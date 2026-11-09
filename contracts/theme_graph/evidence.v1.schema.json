@@ -56,6 +56,13 @@
         {"enum": ["membership", "exposure", "ecosystem_role", "description"]}
       ],
       "description": "What KIND of claim an external_classification row makes. 'X is in theme T' and 'X has exposure to T' are different assertions and must not be read as each other; null on first-party receipts."
+    },
+    "curation_assertion": {
+      "anyOf": [
+        {"type": "null"},
+        {"type": "string", "minLength": 1}
+      ],
+      "description": "OPTIONAL (T02, additive): the canonical JSON encoding of ONE theme_graph.curation_assertion.v1 payload (engine/theme_graph/curation_assertion.py::encode_assertion) — the curated statement this receipt is the evidence FOR, stamped with its content-hash curation_revision so it is tamper-evident in the cell. Null on every legacy row; the guard decodes and fully validates non-null cells (contract: curation_assertion.v1.schema.json). A null is never a violation: an assertion is optional per receipt."
     }
   },
   "$defs": {

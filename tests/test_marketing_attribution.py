@@ -13,9 +13,12 @@ Test list:
 from __future__ import annotations
 
 import json
+import subprocess
 from pathlib import Path
 
 import pytest
+
+from engine.marketing.attribution import join_attribution, load_signups, parse_utm
 
 
 # ---------------------------------------------------------------------------
@@ -327,3 +330,150 @@ def test_trial_to_paid_passthrough():
         assert row["trial_to_paid"] is None, (
             f"Expected trial_to_paid=None for sb_001, got {row['trial_to_paid']!r}"
         )
+
+
+# Landing controller -> Supabase signup metadata -> existing D07 join.
+# Offline contract: actual controller code, mocked storage/auth/render I/O.
+# This does not claim a real signup, verification email, or nightly ingestion.
+UTM = {"utm_source": "x", "utm_medium": "flagship", "utm_campaign": "signal",
+       "utm_content": "post-flagship-001"}
+QUERY = "?" + "&".join(f"{key}={value}" for key, value in UTM.items())
+
+HARNESS = r"""
+const fs = require('node:fs'), vm = require('node:vm');
+const args = JSON.parse(fs.readFileSync(0, 'utf8'));
+const source = fs.readFileSync(args.source, 'utf8');
+const stored = new Map(Object.entries(args.stored || {}));
+let requests = [], transitions = [], removed = [];
+async function page(search, mode = 'signup', changedSearch) {
+  const storage = {
+    getItem(k) { if (args.blocked) throw Error('storage denied'); return stored.get(k) || null; },
+    setItem(k,v) { if (args.blocked) throw Error('storage denied'); stored.set(k,v); },
+    removeItem(k) { if (args.blocked) throw Error('storage denied'); removed.push(k); stored.delete(k); }
+  };
+  const location = {search, pathname:'/', hash:'', hostname:'www.mastermind-x.com'};
+  const document = {readyState:'loading', cookie:'', addEventListener(){},
+    querySelector(){return null;}, getElementById(){return null;},
+    documentElement:{getAttribute(){return 'light';}, setAttribute(){}, classList:{remove(){}}}};
+  const context = {console, URLSearchParams, URL, location, document,
+    localStorage:storage, sessionStorage:storage,
+    fetch:async()=>({ok:false}), setTimeout, clearTimeout,
+    __auth: {auth:{
+      signUp:async o=>{requests.push(o); return {data:{session:null}};},
+      signInWithPassword:async o=>{requests.push({signin:o});return {data:{session:{}}};}
+    }}, __transitions:transitions};
+  context.window = context;
+  const seam = `
+    showErr=function(){};setSubmitBusy=function(){};
+    go=function(step){S.step=step;__transitions.push({step,confirmPending:S.confirmPending});};
+    sbClient=function(){return Promise.resolve(__auth);};authEnabled=function(){return true;};
+    window.__submit=function(mode){S.mode=mode;S.email='reader@example.com';S.password='synthetic-password';
+      S.firstName='Synthetic';S.lastName='Reader';onAccountSubmit({preventDefault(){}});};
+  `;
+  const end = source.lastIndexOf('})();');
+  vm.runInNewContext(source.slice(0,end)+seam+source.slice(end), context);
+  if (changedSearch !== undefined) location.search = changedSearch;
+  context.__submit(mode);
+  await new Promise(resolve=>setImmediate(resolve));
+}
+(async()=>{
+  for (const visit of args.visits) await page(visit.search, visit.mode, visit.changedSearch);
+  process.stdout.write(JSON.stringify({requests,transitions,stored:Object.fromEntries(stored),removed}));
+})().catch(e=>{console.error(e);process.exit(1);});
+"""
+
+
+def controller(visits, **extra):
+    result = subprocess.run(
+        ["node", "-e", HARNESS], input=json.dumps({"source": str(ROOT / "templates/onboard.js"),
+                                                  "visits": visits, **extra}),
+        text=True, capture_output=True, check=True,
+    )
+    return json.loads(result.stdout)
+
+
+def test_landing_signup_metadata_joins_actual_supabase_export(tmp_path):
+    result = controller([{"search": QUERY, "changedSearch": "?onboard=resume&code=synthetic"}])
+    data = result["requests"][0]["options"]["data"]
+    assert data == {"first_name": "Synthetic", "last_name": "Reader", "utm": UTM}
+    assert result["transitions"] == [{"step": 2, "confirmPending": True}]
+    path = tmp_path / "supabase-users.json"
+    path.write_text(json.dumps([{"id": "opaque-account-1", "email": "reader@example.com",
+                                "created_at": "2026-10-24T00:00:00Z",
+                                "raw_user_meta_data": data}]))
+    rows = join_attribution(load_signups(path), {
+        "post-flagship-001": {"account": "authoritative-account", "kind": "authoritative-kind"}})
+    assert rows[0]["matched"] is True
+    assert rows[0]["account"] == "authoritative-account"
+    assert rows[0]["kind"] == "authoritative-kind"
+    assert rows[0]["signup_at"] == "2026-10-24T00:00:00Z"
+    assert rows[0]["plan"] is None and rows[0]["trial_to_paid"] is None
+    for private in ("reader@example.com", "Synthetic", "Reader", "synthetic-password", "code=", "opaque-account-1"):
+        assert private not in json.dumps(rows)
+
+
+def test_first_touch_survives_reload_and_verification_return_without_overwrite():
+    result = controller([{"search": QUERY}, {"search": "?onboard=resume&code=synthetic"},
+                         {"search": QUERY.replace("flagship", "later-account")}])
+    assert [r["options"]["data"]["utm"] for r in result["requests"]] == [UTM] * 3
+
+
+@pytest.mark.parametrize("query", ["", "?utm_source=x", QUERY.replace("=x&", "=a%40b.com&"),
+                                  QUERY + "&utm_source=other", QUERY.replace("=x&", "=" + "a" * 129 + "&"),
+                                  QUERY.replace("=x&", "=https%3A%2F%2Fprivate.example&"),
+                                  QUERY.replace("=x&", "=x%0A&")],
+                         ids=["absent", "partial", "email", "duplicate", "oversized", "url", "newline"])
+def test_invalid_or_absent_touch_adds_no_attribution(query):
+    result = controller([{"search": query}])
+    assert "utm" not in result["requests"][0]["options"]["data"]
+
+
+def test_storage_denial_keeps_signup_working_with_in_memory_touch():
+    result = controller([{"search": QUERY}], blocked=True)
+    assert result["requests"][0]["options"]["data"]["utm"] == UTM
+    assert result["stored"] == {}
+
+
+def test_incomplete_campaigns_are_never_mixed():
+    result = controller([{"search": "?utm_source=old&utm_medium=old"},
+                         {"search": "?utm_campaign=new&utm_content=new"},
+                         {"search": QUERY}])
+    assert all("utm" not in r["options"]["data"] for r in result["requests"][:2])
+    assert result["requests"][2]["options"]["data"]["utm"] == UTM
+
+
+@pytest.mark.parametrize("invalid", ["not-json", "[]", "null", '"string"',
+                                      json.dumps({**UTM, "email": "private@example.com"}),
+                                      json.dumps({"utm_source": "x"}), "x" * 3000],
+                         ids=["bad-json", "array", "null", "string", "unknown-field", "partial", "oversized"])
+def test_invalid_stored_touch_is_cleared_and_replaced_atomically(invalid):
+    result = controller([{"search": QUERY}], stored={"mm.firstTouchUtm": invalid})
+    assert result["requests"][0]["options"]["data"]["utm"] == UTM
+    assert "mm.firstTouchUtm" in result["removed"]
+    assert json.loads(result["stored"]["mm.firstTouchUtm"]) == UTM
+
+
+def test_unknown_query_metadata_is_never_copied_and_signin_has_no_metadata():
+    result = controller([{"search": QUERY + "&email=private%40example.com&plan=pro&access_token=synthetic"},
+                         {"search": QUERY, "mode": "signin"}])
+    assert result["requests"][0]["options"]["data"]["utm"] == UTM
+    assert "options" not in result["requests"][1]
+    assert "private@example.com" not in json.dumps(result["stored"])
+
+
+def test_metadata_is_one_validated_touch_with_explicit_legacy_precedence():
+    assert parse_utm({"raw_user_meta_data": {"utm": UTM}}) == UTM
+    assert parse_utm({"user_metadata": {"utm": UTM}}) == UTM
+    assert parse_utm({"utm_content": None, "raw_user_meta_data": {"utm": UTM}})["utm_content"] is None
+    legacy = {"utm_content": "legacy-post"}
+    assert parse_utm({"utm": legacy, "raw_user_meta_data": {"utm": UTM}})["utm_content"] == "legacy-post"
+    for malformed in ([], "oops", None, {**UTM, "email": "private@example.com"},
+                      {**UTM, "utm_source": "a" * 129}, {"utm_content": UTM["utm_content"]}):
+        assert not any(parse_utm({"raw_user_meta_data": {"utm": malformed}}).values())
+    for malformed in ([], "oops", True, None):
+        assert not any(parse_utm({"raw_user_meta_data": malformed}).values())
+    # A partial legacy touch and a malformed primary export cannot borrow fields
+    # from another shape to invent a complete first touch.
+    legacy_partial = parse_utm({"utm_source": "old", "raw_user_meta_data": {"utm": UTM}})
+    assert legacy_partial["utm_source"] == "old" and legacy_partial["utm_content"] is None
+    assert not any(parse_utm({"raw_user_meta_data": [], "user_metadata": {"utm": UTM}}).values())

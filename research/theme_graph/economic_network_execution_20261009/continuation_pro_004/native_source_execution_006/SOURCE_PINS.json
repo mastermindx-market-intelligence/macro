@@ -1,0 +1,288 @@
+{
+  "schema": "economic_network.native_massive_us_source_pins/v1",
+  "status": "FROZEN_READ_ONLY_SOURCE_TRACE",
+  "native_workspace_head": "7af7a9785d74c1b420b23de3be0eac6946cc2200",
+  "current_macro_revision": "87b01101ef13aa20ded205f3a2b267b68d094def",
+  "protected_source": {
+    "revision": "8d838c8df453a78fac3459b7458576e1ba2cbcb8",
+    "evidence_basis": "Principal reports exact INDEX and ten required companions reread; bytes equal the earlier loaded 8c3 set. This lane did not independently repeat that complete bootstrap read.",
+    "skillpack": "1.0.1"
+  },
+  "source_pin_count": 18,
+  "scope_warning": "A full-file hash establishes the inspected immutable object identity, not that every line received a complete semantic review.",
+  "source_files": [
+    {
+      "path": "agentos/discoveries/DSC-MASSIVE-DAY-AGGS-LASTMODIFIED-FOLLOWS-0430Z.md",
+      "git_revision": "87b01101ef13aa20ded205f3a2b267b68d094def",
+      "git_blob_sha1": "662fc013dc4507fa7575dff41a4d4846fbe79123",
+      "byte_length": 2152,
+      "sha256": "6d126b2c3799eac8c291718a05691f5b25d43d00d8b1e0d54bc79f9fe7d7cc04",
+      "immutable_url": "https://github.com/mastermindx-market-intelligence/macro/blob/87b01101ef13aa20ded205f3a2b267b68d094def/agentos/discoveries/DSC-MASSIVE-DAY-AGGS-LASTMODIFIED-FOLLOWS-0430Z.md",
+      "source_read_basis": "git object at 7af plus observed current-blob equality",
+      "equals_7af": true,
+      "read_receipts": [
+        "READ_002.json"
+      ],
+      "semantic_read_scope": "Entire historical discovery; LastModified observations are not first-publication proof."
+    },
+    {
+      "path": "agentos/discoveries/DSC-MASSIVE-GROUPED-DAILY-AVAILABLE-AT-XNYS-CLOSE.md",
+      "git_revision": "87b01101ef13aa20ded205f3a2b267b68d094def",
+      "git_blob_sha1": "85b2075faaf9ac9ee31871a41652bb4ac6d19c07",
+      "byte_length": 1727,
+      "sha256": "71e4a297d2e91e6eca964022236bcc04f43e5d496cbf26c3431d6c81e6b3cfaa",
+      "immutable_url": "https://github.com/mastermindx-market-intelligence/macro/blob/87b01101ef13aa20ded205f3a2b267b68d094def/agentos/discoveries/DSC-MASSIVE-GROUPED-DAILY-AVAILABLE-AT-XNYS-CLOSE.md",
+      "source_read_basis": "git object at 7af plus observed current-blob equality",
+      "equals_7af": true,
+      "read_receipts": [
+        "READ_002.json"
+      ],
+      "semantic_read_scope": "Entire historical discovery; no generalization to the requested September 30 session."
+    },
+    {
+      "path": "agentos/workstreams/WS-MASSIVE-STOCK-DAY-R2-COHERENCE.md",
+      "git_revision": "87b01101ef13aa20ded205f3a2b267b68d094def",
+      "git_blob_sha1": "0ff65376a7c9e1312cc3baa3d3efe1fa0967903a",
+      "byte_length": 2833,
+      "sha256": "fef7490c2f3576041cbeb728a867bb16095c896bb6085e6ee10c40c27e8b0992",
+      "immutable_url": "https://github.com/mastermindx-market-intelligence/macro/blob/87b01101ef13aa20ded205f3a2b267b68d094def/agentos/workstreams/WS-MASSIVE-STOCK-DAY-R2-COHERENCE.md",
+      "source_read_basis": "git object at 7af plus observed current-blob equality",
+      "equals_7af": true,
+      "read_receipts": [
+        "READ_002.json"
+      ],
+      "semantic_read_scope": "Entire workstream record, treated as advisory ownership/status evidence rather than observed live execution."
+    },
+    {
+      "path": "collectors/massive_flatfiles.py",
+      "git_revision": "87b01101ef13aa20ded205f3a2b267b68d094def",
+      "git_blob_sha1": "f94ae42ea3c9810e4c767dee71abb4846d319ce3",
+      "byte_length": 12770,
+      "sha256": "1b270024530bb4e1ef66553c690786d14c7dcc1d6aa6c1fc56e047ffd4f46eb4",
+      "immutable_url": "https://github.com/mastermindx-market-intelligence/macro/blob/87b01101ef13aa20ded205f3a2b267b68d094def/collectors/massive_flatfiles.py",
+      "source_read_basis": "git object at current pin",
+      "equals_7af": true,
+      "read_receipts": [
+        "READ_003.json",
+        "READ_002.json"
+      ],
+      "semantic_read_scope": "Full source retained; client, bounded availability probe and fetch/cache behavior inspected. No client construction or data access."
+    },
+    {
+      "path": "collectors/massive_stock_day.py",
+      "git_revision": "87b01101ef13aa20ded205f3a2b267b68d094def",
+      "git_blob_sha1": "fcad0850eb5ca3aa699cb52d3ba9a62d92231616",
+      "byte_length": 39815,
+      "sha256": "4fd28b8fc7740a9d9dc0f397b8fb1daf5e24ebeda6aee2cfcece26cf175db105",
+      "immutable_url": "https://github.com/mastermindx-market-intelligence/macro/blob/87b01101ef13aa20ded205f3a2b267b68d094def/collectors/massive_stock_day.py",
+      "source_read_basis": "git object at 7af plus observed current-blob equality",
+      "equals_7af": true,
+      "read_receipts": [
+        "READ_002.json"
+      ],
+      "semantic_read_scope": "Complete immutable text retained; targeted header, store/upsert/path semantics inspected. Not a new full pipeline review."
+    },
+    {
+      "path": "collectors/polygon_options.py",
+      "git_revision": "87b01101ef13aa20ded205f3a2b267b68d094def",
+      "git_blob_sha1": "2271adc2b9d9c787670c66e53eecb526b9a8d3a4",
+      "byte_length": 22124,
+      "sha256": "0c2efcdb11af39fec8b03b83f6f40497f33f6536f6421a99c9ab1714751cad0f",
+      "immutable_url": "https://github.com/mastermindx-market-intelligence/macro/blob/87b01101ef13aa20ded205f3a2b267b68d094def/collectors/polygon_options.py",
+      "source_read_basis": "git object at current pin",
+      "equals_7af": true,
+      "read_receipts": [
+        "READ_007.json"
+      ],
+      "semantic_read_scope": "Lines 1–285: current authenticated reference wrapper and ticker_details; no complete options-module audit."
+    },
+    {
+      "path": "config/dataset_registry.yml",
+      "git_revision": "87b01101ef13aa20ded205f3a2b267b68d094def",
+      "git_blob_sha1": "42252174a9f97c0643d30c9057455761aff35f80",
+      "byte_length": 50632,
+      "sha256": "bb9b6975eeabebf630f73e632d307d280ea1d9e34f30953ac3989c65fc90f0a7",
+      "immutable_url": "https://github.com/mastermindx-market-intelligence/macro/blob/87b01101ef13aa20ded205f3a2b267b68d094def/config/dataset_registry.yml",
+      "source_read_basis": "git object at current pin",
+      "equals_7af": null,
+      "read_receipts": [
+        "READ_004.json"
+      ],
+      "semantic_read_scope": "Targeted Massive bars/split-evidence registrations and matching temporal/licensing/owner fields; not a fresh full registry census."
+    },
+    {
+      "path": "engine/close_pass/massive_close.py",
+      "git_revision": "87b01101ef13aa20ded205f3a2b267b68d094def",
+      "git_blob_sha1": "c5c61536bbba04fd9f8f72b893528bf00e94ee62",
+      "byte_length": 29522,
+      "sha256": "43bc800dedba38a35ea5a94bc2f1de539401350a683123ecd9d40e6581e7bb66",
+      "immutable_url": "https://github.com/mastermindx-market-intelligence/macro/blob/87b01101ef13aa20ded205f3a2b267b68d094def/engine/close_pass/massive_close.py",
+      "source_read_basis": "git object at current pin",
+      "equals_7af": true,
+      "read_receipts": [
+        "READ_003.json",
+        "READ_002.json"
+      ],
+      "semantic_read_scope": "Preamble, credential resolver definition, transport, session-close matching/fetch public path (through line 486) and retain_split_history wrapper; not a new full audit of later corporate-action helpers."
+    },
+    {
+      "path": "engine/close_pass/massive_split_evidence.py",
+      "git_revision": "87b01101ef13aa20ded205f3a2b267b68d094def",
+      "git_blob_sha1": "f7123e761ea83011f603a8e3cd37d4240ab5d59b",
+      "byte_length": 26549,
+      "sha256": "a1d32eacd48c90f793df717a7284fa044054c476241c622e9b9f9abc997c6942",
+      "immutable_url": "https://github.com/mastermindx-market-intelligence/macro/blob/87b01101ef13aa20ded205f3a2b267b68d094def/engine/close_pass/massive_split_evidence.py",
+      "source_read_basis": "git object at current pin",
+      "equals_7af": true,
+      "read_receipts": [
+        "READ_003.json",
+        "READ_002.json"
+      ],
+      "semantic_read_scope": "Full 528-line source: request/transport, numeric row parsing, attempt validation, intake, source family and generation-pinned reader."
+    },
+    {
+      "path": "engine/neuralweb/market_memory_source_kernel.py",
+      "git_revision": "87b01101ef13aa20ded205f3a2b267b68d094def",
+      "git_blob_sha1": "2a75c5016c07e9c1a5377fe4331a4f06b95e79dd",
+      "byte_length": 36991,
+      "sha256": "270f6efdab81d464b7f251d0440c1d82b371bab35a08fab7ee35b8a3e26fffbc",
+      "immutable_url": "https://github.com/mastermindx-market-intelligence/macro/blob/87b01101ef13aa20ded205f3a2b267b68d094def/engine/neuralweb/market_memory_source_kernel.py",
+      "source_read_basis": "git object at current pin",
+      "equals_7af": true,
+      "read_receipts": [
+        "READ_003.json",
+        "READ_008.json"
+      ],
+      "semantic_read_scope": "Preamble/public declaration inventory, root validation lines 215–241, and GenericSourceArtifactReader lines 865–959; not a full new shared-kernel audit."
+    },
+    {
+      "path": "engine/neuralweb/market_memory_sources_spy.py",
+      "git_revision": "87b01101ef13aa20ded205f3a2b267b68d094def",
+      "git_blob_sha1": "de416757bf77946776e1872b437eab9399d4997c",
+      "byte_length": 36909,
+      "sha256": "a29d0ebc0ae4b7fa7949d319b8872abcbef189425da99453a9d017895dc006b3",
+      "immutable_url": "https://github.com/mastermindx-market-intelligence/macro/blob/87b01101ef13aa20ded205f3a2b267b68d094def/engine/neuralweb/market_memory_sources_spy.py",
+      "source_read_basis": "git object at current pin",
+      "equals_7af": true,
+      "read_receipts": [
+        "READ_005.json"
+      ],
+      "semantic_read_scope": "Full source retained; constants/bar validation/seal predicate, receipts, verified reader, root and intake examined. No private store read."
+    },
+    {
+      "path": "engine/neuralweb/market_memory.py",
+      "git_revision": "87b01101ef13aa20ded205f3a2b267b68d094def",
+      "git_blob_sha1": "adffe89b75ea72d58d06fc6618da7ba487b6598a",
+      "byte_length": 107556,
+      "sha256": "d64a53df452eeece71588e61006cb103e8930c6c7a8f3bc1c97b20a7dc747bc5",
+      "immutable_url": "https://github.com/mastermindx-market-intelligence/macro/blob/87b01101ef13aa20ded205f3a2b267b68d094def/engine/neuralweb/market_memory.py",
+      "source_read_basis": "git object at current pin",
+      "equals_7af": true,
+      "read_receipts": [
+        "READ_008.json"
+      ],
+      "semantic_read_scope": "Lines 34–67: inherited AUTHORITY/context contract only."
+    },
+    {
+      "path": "lib/dataos/temporal.py",
+      "git_revision": "87b01101ef13aa20ded205f3a2b267b68d094def",
+      "git_blob_sha1": "094b149a8b9158f19cb99c4005568c12db96ed41",
+      "byte_length": 12847,
+      "sha256": "4415404186f0b0d2870f42d9e4a0b95be87937863adf30cf015ed34e8bf92b67",
+      "immutable_url": "https://github.com/mastermindx-market-intelligence/macro/blob/87b01101ef13aa20ded205f3a2b267b68d094def/lib/dataos/temporal.py",
+      "source_read_basis": "git object at current pin",
+      "equals_7af": null,
+      "read_receipts": [
+        "READ_004.json"
+      ],
+      "semantic_read_scope": "Targeted known_at/as_of_filter behavior; no application import or call."
+    },
+    {
+      "path": "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md",
+      "git_revision": "87b01101ef13aa20ded205f3a2b267b68d094def",
+      "git_blob_sha1": "3969a9aae918141b51baffbb0e17d8a2ec2485a0",
+      "byte_length": 3652,
+      "sha256": "82ad971b46d4159739117d3defe19a25a2a24ede45e5e8d28494c5849e757891",
+      "immutable_url": "https://github.com/mastermindx-market-intelligence/macro/blob/87b01101ef13aa20ded205f3a2b267b68d094def/research/licenses/MASSIVE_ENTITLEMENT_RECORD.md",
+      "source_read_basis": "git object at current pin",
+      "equals_7af": true,
+      "read_receipts": [
+        "READ_008.json"
+      ],
+      "semantic_read_scope": "Entire accepted operator entitlement record. Underlying private agreement and secrets not read."
+    },
+    {
+      "path": "scripts/build_security_master.py",
+      "git_revision": "87b01101ef13aa20ded205f3a2b267b68d094def",
+      "git_blob_sha1": "4a042933f37f32d112bd4d77a704f233bbd7d4a9",
+      "byte_length": 230231,
+      "sha256": "bfe25480ec3e3dca98dcc5a4f0efad5fdad0f19870095066285e795598b022d6",
+      "immutable_url": "https://github.com/mastermindx-market-intelligence/macro/blob/87b01101ef13aa20ded205f3a2b267b68d094def/scripts/build_security_master.py",
+      "source_read_basis": "git object at current pin",
+      "equals_7af": true,
+      "read_receipts": [
+        "READ_007.json"
+      ],
+      "semantic_read_scope": "Bounded lines 3060–3230 around reference-evidence alias admission and clocks; not the complete 230,231-byte module."
+    },
+    {
+      "path": "scripts/entry_radar_vendor.py",
+      "git_revision": "87b01101ef13aa20ded205f3a2b267b68d094def",
+      "git_blob_sha1": "8d0b533f6cac2d884954b6d207bdc48d3c7ce916",
+      "byte_length": 31301,
+      "sha256": "0dcb882f7d311a063a4d7ddeea2bbe9e56a5499c5c224bd15f93e513767b8dea",
+      "immutable_url": "https://github.com/mastermindx-market-intelligence/macro/blob/87b01101ef13aa20ded205f3a2b267b68d094def/scripts/entry_radar_vendor.py",
+      "source_read_basis": "git object at current pin",
+      "equals_7af": true,
+      "read_receipts": [
+        "READ_007.json"
+      ],
+      "semantic_read_scope": "Lines 1–100 and 485–687: request and current-share proxy/cache path only."
+    },
+    {
+      "path": "scripts/ingest_market_memory_sources_spy.py",
+      "git_revision": "87b01101ef13aa20ded205f3a2b267b68d094def",
+      "git_blob_sha1": "b2d4188148b75d1fd6d7a6ce696723f0317dc336",
+      "byte_length": 30383,
+      "sha256": "1caba034ac3757037ab2b38bbfa7aeb80695cf0560116e2ea86c828fbaa7ffdb",
+      "immutable_url": "https://github.com/mastermindx-market-intelligence/macro/blob/87b01101ef13aa20ded205f3a2b267b68d094def/scripts/ingest_market_memory_sources_spy.py",
+      "source_read_basis": "git object at current pin",
+      "equals_7af": true,
+      "read_receipts": [
+        "READ_005.json"
+      ],
+      "semantic_read_scope": "Full source retained; preamble, timing/transport definitions and public ingest path examined. No credential resolver execution or scheduled service inspection."
+    },
+    {
+      "path": "scripts/massive_entitlement_probe.py",
+      "git_revision": "87b01101ef13aa20ded205f3a2b267b68d094def",
+      "git_blob_sha1": "8a6a16d159b8a1c0b9854527206c5785d3173b84",
+      "byte_length": 36743,
+      "sha256": "64f05064e53a256fb9632bfa1f83fb0db53cceee3e84d00234b44caaf4bd7395",
+      "immutable_url": "https://github.com/mastermindx-market-intelligence/macro/blob/87b01101ef13aa20ded205f3a2b267b68d094def/scripts/massive_entitlement_probe.py",
+      "source_read_basis": "git object at 7af plus observed current-blob equality",
+      "equals_7af": true,
+      "read_receipts": [
+        "READ_002.json"
+      ],
+      "semantic_read_scope": "Header/public declarations and endpoint scope only; probe not run."
+    }
+  ],
+  "inherited_starting_evidence": [
+    {
+      "path": "lanes/source_owner_interface_census_v1/SOURCE_PINS.json",
+      "byte_length": 21149,
+      "sha256": "234633f44f9a90e07511b7ef8e98fb7f4ccf5a4d2a251e28929729e6b0e04393",
+      "source_pin_count": 35,
+      "revision": "c4cd21d597521603fb75fe7a4602424e088c6bfa",
+      "role": "Starting bounded owner census; not rerun."
+    },
+    {
+      "path": "lanes/source_product_scope_addendum_v1/MASSIVE_SCOPE_ADJUDICATION.md",
+      "byte_length": 7342,
+      "sha256": "35548286eaee7ba2f999f14e198846946076094e3672924be9cc56cd0f71c42b",
+      "role": "Previously researched US product scope and preserved accepted grant."
+    }
+  ]
+}
+

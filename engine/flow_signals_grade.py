@@ -118,6 +118,42 @@ _PERSIST_FOLLOW_BARS = 3
 _PERSIST_TOL = 0.10
 
 
+def _spy_window_matches(close: pd.Series, fill: int, spy_close: pd.Series,
+                        h: int, session_date: str) -> bool:
+    """Return True iff SPY's native fill and native fill+h dates match the
+    ticker's exactly (and both endpoints are within their respective series).
+
+    LABEL-WINDOW CONTRACT (SPY excess): spy_excess_h = ticker_fwd_ret_h -
+    spy_fwd_ret_h is only evaluable when the two forward windows cover the
+    SAME actual trading dates. A missing SPY bar at either the native fill
+    or the native fill+h position (SPY holiday, ticker-only session) shifts
+    the SPY window to a different date span and the difference would compare
+    different label windows — non-evaluable, return False and let the caller
+    leave the column null. We do NOT reindex, intersect calendars, or substitute
+    prices here; only the native DatetimeIndex endpoints are compared.
+
+    Implementation: locate SPY's own next-bar fill via the standard
+    ``fill_index`` primitive (used by this module) and compare SPY's native
+    index[spy_fill] and index[spy_fill+h] against the ticker's native
+    index[fill] and index[fill+h]. The caller's canonical
+    ``forward_metrics(spy_close)`` supplies the return value when this
+    predicate is True; this helper does not compute any return itself.
+    """
+    if fill + h >= len(close):
+        return False
+    ticker_fill_date = close.index[fill]
+    ticker_endpoint_date = close.index[fill + h]
+
+    spy_fill = fill_index(spy_close, session_date)
+    if spy_fill is None or spy_fill + h >= len(spy_close):
+        return False
+    if spy_close.index[spy_fill] != ticker_fill_date:
+        return False
+    if spy_close.index[spy_fill + h] != ticker_endpoint_date:
+        return False
+    return True
+
+
 def _has_split_seam(close: pd.Series, fill_iloc: int, max_h: int) -> bool:
     """Return True if the forward window [fill, fill+max_h] contains a suspected
     unrepaired stale-tail split seam.
@@ -258,6 +294,9 @@ def _grade_event(
     for h in [5, 21, 63, 126]:
         for suffix in ("fwd_ret", "fwd_mfe", "fwd_mdd", "spy_excess"):
             base[f"{suffix}_{h}"] = None
+        # This is a label-window endpoint, not an absolute-price endpoint.  It
+        # remains absent unless the existing SPY comparability gate accepts H.
+        base[f"outcome_end_session_{h}"] = None
     base["terminal_state_clean8_21"]  = None
     base["terminal_state_clean15_126"] = None
     base["prem_touch_50"] = None  # display-only; always null in FS-0
@@ -314,12 +353,27 @@ def _grade_event(
     # Excess vs SPY (only over matured horizons)
     if spy_close is not None:
         try:
+            # The canonical one-grader-law forward_metrics primitive supplies
+            # the SPY forward return at each matured horizon. The excess
+            # column is gated by the label-window contract: a forward-window
+            # difference is only evaluable when SPY's native fill and
+            # native fill+h dates match the ticker's exactly. Mismatch
+            # (SPY missing a bar at fill or fill+h) leaves spy_excess_h
+            # None — non-evaluable, not a failure.
             spy_metrics = forward_metrics(spy_close, session_date, horizons=tuple(matured))
             for h in matured:
                 ticker_ret = metrics.get(f"fwd_ret_{h}")
+                if ticker_ret is None:
+                    continue
+                if not _spy_window_matches(close, fill, spy_close, h, session_date):
+                    continue
                 spy_ret = spy_metrics.get(f"fwd_ret_{h}")
-                if ticker_ret is not None and spy_ret is not None:
-                    base[f"spy_excess_{h}"] = ticker_ret - spy_ret
+                if spy_ret is None:
+                    continue
+                base[f"spy_excess_{h}"] = ticker_ret - spy_ret
+                base[f"outcome_end_session_{h}"] = (
+                    pd.Timestamp(close.index[fill + h]).date().isoformat()
+                )
         except Exception:  # noqa: BLE001
             pass  # spy excess stays null; not fatal
 
@@ -469,6 +523,7 @@ def grade_matured(
                 **{f"{k}_{h}": None
                    for h in [5, 21, 63, 126]
                    for k in ["fwd_ret", "fwd_mfe", "fwd_mdd", "spy_excess"]},
+                **{f"outcome_end_session_{h}": None for h in [5, 21, 63, 126]},
                 "terminal_state_clean8_21": None,
                 "terminal_state_clean15_126": None,
                 "prem_touch_50": None,
