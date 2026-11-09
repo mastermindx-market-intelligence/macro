@@ -555,6 +555,7 @@
 
   function boot() {
     Array.prototype.forEach.call(document.querySelectorAll('.sc-tab'), function (el) {
+      el.classList.toggle('on', el.getAttribute('data-tab') === TAB);
       el.addEventListener('click', function () { setTab(el.getAttribute('data-tab')); });
     });
     var appEl = document.getElementById('sc-app');

@@ -11,7 +11,7 @@ import pytest
 from engine import subsector_confluence as sc
 
 
-def _execute_return_board(href, lang):
+def _execute_return_board(href, lang, *, pending=False):
     """Execute the actual desk consumer with finite fixture feeds and a minimal DOM."""
     import json
     from pathlib import Path
@@ -28,7 +28,7 @@ const tabs = ['subsectors', 'baskets', 'nasdaq', 'russell'].map(name => ({
   classList: {toggle(key, value) { tabs.find(t => t.name === name).on = value; }},
   addEventListener(event, callback) { this.click = callback; }
 }));
-const app = {innerHTML: '', addEventListener() {}, querySelectorAll() { return []; }};
+const app = {innerHTML: 'Loading…', addEventListener() {}, querySelectorAll() { return []; }};
 const date = {innerHTML: ''};
 const document = {
   readyState: 'complete', documentElement: {getAttribute: () => input.lang},
@@ -46,6 +46,7 @@ vm.runInNewContext(fs.readFileSync(input.source, 'utf8'), {
   document, location: new URL(input.href, 'https://example.invalid/'), URLSearchParams,
   fetch: async url => {
     if (!(url in feeds) && !absent.includes(url)) throw Error('Unexpected fixture read: ' + url);
+    if (input.pending) return new Promise(() => {});
     return {ok: url in feeds, json: async () => feeds[url]};
   }
 }, {timeout: 3000});
@@ -56,7 +57,7 @@ setImmediate(() => process.stdout.write(JSON.stringify({
     result = subprocess.run(
         [node, "-e", script], input=json.dumps({
             "source": str(Path(__file__).resolve().parents[1] / "templates/subsectors.js"),
-            "href": href, "lang": lang,
+            "href": href, "lang": lang, "pending": pending,
         }), capture_output=True, text=True, timeout=10,
     )
     assert result.returncode == 0, result.stderr
@@ -111,6 +112,14 @@ def test_index_return_unknown_or_ambiguous_desk_keeps_default(query):
     board = _execute_return_board("/subsectors.html" + query, "en")
     assert board["active"] == ["subsectors"]
     assert "as of 2026-11-06" in board["date"]
+
+
+@pytest.mark.parametrize("desk", ["nasdaq", "russell"])
+def test_index_return_keeps_desk_cue_while_feeds_are_pending(desk):
+    board = _execute_return_board(f"/subsectors.html?desk={desk}", "en", pending=True)
+    assert board["active"] == [desk]
+    assert board["html"] == "Loading…"
+    assert board["date"] == ""
 
 
 # ----------------------------------------------------------------- pure logic ----
