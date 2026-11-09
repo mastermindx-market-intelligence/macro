@@ -1,4 +1,4 @@
-# Continued Paper improvements — 8 November 2026
+# Continued Paper improvements — 8–9 November 2026
 
 ## Current assignment and source
 The Chairman explicitly extended the estate mission: continue auditing, fixing, implementing and enhancing the existing Paper designs autonomously. This record continues PR #10864 and the wider #10617 programme. It does not create a second programme or claim a product release.
@@ -43,9 +43,69 @@ Verify actual consumer selection by tap, keyboard and date list; retained-sessio
 - No production code, deployment, merge, archive/delete, runtime gate or external message was performed. The earlier inline-browser execution denial remains fenced; no carrier workaround was attempted.
 - Paper/source execution receipts are in PAPER_CONTINUATION_RECEIPTS.json. They distinguish response observation from visual verification and installed-product acceptance.
 
-## Next safe phases already identified
-Policy Monitor: full-row mobile disclosures, plain EN/ZH unknown-data copy, compact historical channel summaries with complete background retained in the existing disclosure. Preserve candidate #10493's data, source-note and release/effect owners.
+## Verified phase: Policy mobile controls and narrow chart evidence
 
-Market Memory CPI revision evidence: a source-qualified period chooser, explicit comparison-pair rules for zero/one/multiple changes, and truthful copy-reference success/failure. Preserve the newer R2 record and unavailable-version work; do not duplicate it.
+Paper: https://app.paper.design/file/01M6Q4WK0EMPV1G2KDGGRQBC1B/p-1-0  
+Build reference: https://app.paper.design/file/01M6Q4WK0EMPV1G2KDGGRQBC1B/p-2-0
 
-These are ongoing work items, not a reason to terminate the continuing mission.
+### What changed
+Ten English/Chinese mobile disclosure labels are now full-width targets of at least 44px: source notes, rate values, Fed projections, Sources, and Methodology. Each contains one label and its canonical theme chevron. The chart SVGs fit the existing mobile cards without changing their viewBox, values, dates, or legend. Chinese unknown-publication copy now plainly says the Fed projection publication date is unverified and a numeric comparison is withheld.
+
+Build amendment 12K-0 adds paired 320px EN/ZH components, numeric-disclosure controls, and exact native details/summary ownership. In the narrower Paper specimens the 340×234 viewBox is resolved to 268×184.45; the build contract requires proportional responsive sizing. This avoids the extra vertical space left when Paper retained the SVG's original intrinsic height.
+
+### Current collaboration and limits
+The compact historical channel/context summaries and expanded reference bodies were created by another active writer and preserved. We did not redo or claim those changes. Existing #10493 source notes, October 30 reference values, July 18 narrative review, uncertain-effect custody and release controls remain with their existing owners. The native amendment does not prove that candidate's deployment.
+
+Screenshots verified the 390px chart cards, full disclosure targets and the paired 320px components. Full-page browser zoom, actual keyboard behavior and native disclosure interactions are still consumer proof, not Paper screenshot proof. The existing numeric table and dialog owner remain authoritative; no asynchronous request, new Escape handler, or operation lifecycle is added.
+
+## Verified phase: CPI period selection and exact-reference outcomes
+
+Paper workflow: https://app.paper.design/file/01M6PXFEP1E1T59M2B3N673PMG/p-4-0  
+Existing build contract: https://app.paper.design/file/01M6PXFEP1E1T59M2B3N673PMG/p-3-0
+
+### Native changes
+New board 1F2-0, “R3 Period chooser and reference outcomes”, has matched 320px English/Chinese inline choosers. Search and native single-choice selection stage a draft; Show history explicitly applies it. The shown query is 1987-01, with the already selected January 1987 month marked Current. No neighboring months or revision counts were invented.
+
+The manual copy fallback retains the existing exact key, zero-based row, record-read clock, full fingerprint and unspecified cutoff. It uses the same selected-reference payload contract; it does not introduce a second serializer. English/Chinese success and failure copy distinguish completed clipboard writes from source verification, receipt binding, saving or synchronization. The dark clear-search icon was visually corrected after the first render.
+
+Six behavior specimens distinguish invalid month, a complete-index no-match outside the retained range, incomplete index lookup, pending selected history, failed history read, and complete zero/one/multiple-record outcomes. Pending January 1947 uses the manifest's real minimum key and displays no invented values or revision counts. January 1987 remains the committed history until a qualified result is ready.
+
+Existing V1-0 text now accurately separates the implemented collector, bounded reader and pure comparison engine from the missing CPI consumer integration. Its entry/return contract uses the active period rather than hard-coding the January example. The full-matrix binding, explicit CPI comparison rule, unavailable-version recovery and incumbent page-path work were preserved.
+
+### Architecture and exact evidence
+
+At Macro b5674d8ef898e503d6164922654f5ff89be9981c:
+
+- The CPI manifest records 293,509 rows, 956 actual periods and 377 distinct vintage dates; period endpoints are 1947-01-01 and 2026-09-01. There are 957 calendar months between those endpoints, so a generated continuous calendar would invent availability. These are whole-archive counts, not January 1987 counts.
+- The selected full archive fingerprint is eabad732825e9d6820774f067e8f86791cc3f64a6a81b655522af621c851f22c. statv1 is a reader file-version guard, not a verified content hash.
+- The internal Market Memory intake retains a newest-vintage slice. It cannot substitute for the full vintage matrix when reopening historical operands.
+- The bounded reader's row_positions, next_offset and scan_complete determine lookup progress. Follow its returned offset; a partial empty result is not absence.
+- engine/rates_command_basis.py remains the pure comparison owner. Its QualifiedObservation can represent CPI identity without stock security/listing IDs. The generic same_basis_level_change.v1 rule defaults to bp and lacks explicit reference_start/reference_end matching. Preserve that rule and bind the explicit CPI contract with same-period matching, source-backed basis and output_unit=index_level. Since the engine computes left minus right, the CPI adapter must bind later as left and earlier as right.
+- The displayed 111.5 / 111.4 values and row 180960 are retained from previously accepted evidence designs. This phase did not re-read those corpus rows. Unknown basis still withholds the real-pair difference.
+
+Exact sources:
+- https://github.com/mastermindx-market-intelligence/macro/blob/b5674d8ef898e503d6164922654f5ff89be9981c/data/fred_vintage/release_targets/manifest.json
+- https://github.com/mastermindx-market-intelligence/macro/blob/b5674d8ef898e503d6164922654f5ff89be9981c/lib/dataos/web_readers.py
+- https://github.com/mastermindx-market-intelligence/macro/blob/b5674d8ef898e503d6164922654f5ff89be9981c/lib/dataos/web_workspace.py
+- https://github.com/mastermindx-market-intelligence/macro/blob/b5674d8ef898e503d6164922654f5ff89be9981c/engine/neuralweb/market_memory_sources.py
+- https://github.com/mastermindx-market-intelligence/macro/blob/b5674d8ef898e503d6164922654f5ff89be9981c/engine/rates_command_basis.py
+- https://github.com/mastermindx-market-intelligence/macro/blob/b5674d8ef898e503d6164922654f5ff89be9981c/app/gmi_bea_view.js
+
+### Implementable interaction contract
+Keep committed context and picker draft under the incumbent page state. Search only filters the actual, content-bound period index. A current-month apply closes with no redundant read. For a different verified month, retain the correctly labelled current history while reading; commit the new period and its qualified history together. Clear or explicitly reselect comparison operands. Do not change the source version or cutoff to make a request succeed.
+
+Cancel discards the draft and restores the Period control. Cancelled or superseded responses cannot commit through the existing request/context guard. Use a labelled input, native radio results and explicit actions; no separate modal or focus trap. Respect IME composition. Preserve access-denied, fingerprint-mismatch, source-change and unavailable-version distinctions already designed.
+
+The structured CPI_PERIOD_FLOW_CONTRACT.json records the sparse fixture, invariants and acceptance cases. A production proof must include a real non-January history from the exact archive; the design does not fake that step.
+
+## Source preservation and delivery
+
+This continuation uses the existing PR #10864 branch. The preceding Breadth milestone is 65a339d04a31110def1db5d4835e12db7119e5d3. Paper's Breadth build board now visibly links to that immutable report. Changes since it are recorded in the continuation receipts; no production implementation, merge or deployment is claimed.
+
+The attempted individual check-run REST read returned INVALID_ARGUMENT because that URL shape is unsupported by the connector. This is a connector schema limitation, not proof of a new CI failure or a permission denial. The earlier inactive-context result is historical and is not asserted as current-head evidence.
+
+## Next safe phase in progress
+
+Bonds: compare the migrated current journeys and build boards with the exact source. A confirmed source mapping turns a signed FINRA net high–low measure into an absolute “lows share”; the current Paper analytical journeys are illustrative and need a precise source adapter contract. Also inspect per-component coverage/clocks, sampled curve dates and stale internal board references after the migration. Preserve other writers' current navigation and evidence work.
+
+Phase completion is save-and-continue; this record does not terminate the continuing mission.

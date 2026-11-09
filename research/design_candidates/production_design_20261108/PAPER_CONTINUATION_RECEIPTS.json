@@ -1,6 +1,6 @@
 {
-  "operation_parent": "paper-estate-audit-20261108-sol-001",
-  "status": "CONTINUING",
+  "operation_parent": "PR #10864 / continuing Paper estate audit",
+  "status": "RESPONSE_OBSERVED_WITH_SEPARATE_VISUAL_PROOF",
   "source_pin": "b5674d8ef898e503d6164922654f5ff89be9981c",
   "receipts": [
     {
@@ -132,9 +132,7 @@
       "targets": [
         "1RF-0",
         "259-0"
-      ],
-      "state": "INVALID_ARGUMENT_RECONCILED_UNCHANGED",
-      "reconciliation": "Original p-2-0 names read unchanged; a materially changed single-node short-name request then succeeded. No unknown effect."
+      ]
     },
     {
       "operation_id": "paper-audit-next-081-mobile-name",
@@ -769,7 +767,634 @@
           }
         ]
       }
+    },
+    {
+      "operation_id": "paper-audit-next-110-breadth-source-packet",
+      "fileId": "01M6Y3CRMC345RTB3ZDP3XSYRP",
+      "tool": "write_html",
+      "targets": [
+        "2KT-0"
+      ],
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3CRMC345RTB3ZDP3XSYRP\",\n    \"name\": \"Mastermind - Market Breadth - Command Center R1\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"2NX-0\",\n      \"name\": \"Verified build packet\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2NY-0\",\n      \"name\": \"Verified source pack…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2NZ-0\",\n      \"name\": \"https://github.com/m…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "operation_id": "paper-audit-next-111-policy-disclosure",
+      "fileId": "01M6Q4WK0EMPV1G2KDGGRQBC1B",
+      "tool": "write_html",
+      "targets": [
+        "EB-0"
+      ],
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M6Q4WK0EMPV1G2KDGGRQBC1B\",\n    \"name\": \"Macro · Policy Monitor · Production Design\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"c8cafbb7\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"ZG-0\",\n      \"name\": \"Closed disclosure Source notes (2)\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"ZH-0\",\n      \"name\": \"Source notes (2)\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"ZI-0\",\n      \"name\": \"SVG\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"ZJ-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "operation_id": "paper-audit-next-112-policy-disclosure",
+      "fileId": "01M6Q4WK0EMPV1G2KDGGRQBC1B",
+      "tool": "write_html",
+      "targets": [
+        "CO-0"
+      ],
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M6Q4WK0EMPV1G2KDGGRQBC1B\",\n    \"name\": \"Macro · Policy Monitor · Production Design\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"c8cafbb7\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"ZL-0\",\n      \"name\": \"Closed disclosure Rate values and sources\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"ZM-0\",\n      \"name\": \"Rate values and sour…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"ZN-0\",\n      \"name\": \"SVG\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"ZO-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "operation_id": "paper-audit-next-113-policy-disclosure",
+      "fileId": "01M6Q4WK0EMPV1G2KDGGRQBC1B",
+      "tool": "write_html",
+      "targets": [
+        "CN-0"
+      ],
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M6Q4WK0EMPV1G2KDGGRQBC1B\",\n    \"name\": \"Macro · Policy Monitor · Production Design\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"c8cafbb7\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"ZQ-0\",\n      \"name\": \"Closed disclosure Fed projections by year\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"ZR-0\",\n      \"name\": \"Fed projections by y…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"ZS-0\",\n      \"name\": \"SVG\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"ZT-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "operation_id": "paper-audit-next-114-policy-disclosure",
+      "fileId": "01M6Q4WK0EMPV1G2KDGGRQBC1B",
+      "tool": "write_html",
+      "targets": [
+        "AV-0"
+      ],
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M6Q4WK0EMPV1G2KDGGRQBC1B\",\n    \"name\": \"Macro · Policy Monitor · Production Design\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"c8cafbb7\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"ZV-0\",\n      \"name\": \"Closed disclosure Sources\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"ZW-0\",\n      \"name\": \"Sources\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"ZX-0\",\n      \"name\": \"SVG\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"ZY-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "operation_id": "paper-audit-next-115-policy-disclosure",
+      "fileId": "01M6Q4WK0EMPV1G2KDGGRQBC1B",
+      "tool": "write_html",
+      "targets": [
+        "AU-0"
+      ],
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M6Q4WK0EMPV1G2KDGGRQBC1B\",\n    \"name\": \"Macro · Policy Monitor · Production Design\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"c8cafbb7\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"100-0\",\n      \"name\": \"Closed disclosure Methodology and boundary\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"101-0\",\n      \"name\": \"Methodology & bounda…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"102-0\",\n      \"name\": \"SVG\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"103-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "operation_id": "paper-audit-next-116-policy-disclosure",
+      "fileId": "01M6Q4WK0EMPV1G2KDGGRQBC1B",
+      "tool": "write_html",
+      "targets": [
+        "K0-0"
+      ],
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M6Q4WK0EMPV1G2KDGGRQBC1B\",\n    \"name\": \"Macro · Policy Monitor · Production Design\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"c8cafbb7\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"105-0\",\n      \"name\": \"Closed disclosure 来源说明（2）\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"106-0\",\n      \"name\": \"来源说明（2）\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"107-0\",\n      \"name\": \"SVG\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"108-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "operation_id": "paper-audit-next-117-policy-disclosure",
+      "fileId": "01M6Q4WK0EMPV1G2KDGGRQBC1B",
+      "tool": "write_html",
+      "targets": [
+        "ID-0"
+      ],
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M6Q4WK0EMPV1G2KDGGRQBC1B\",\n    \"name\": \"Macro · Policy Monitor · Production Design\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"c8cafbb7\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"10A-0\",\n      \"name\": \"Closed disclosure 利率数值与来源\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"10B-0\",\n      \"name\": \"利率数值与来源\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"10C-0\",\n      \"name\": \"SVG\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"10D-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "operation_id": "paper-audit-next-118-policy-disclosure",
+      "fileId": "01M6Q4WK0EMPV1G2KDGGRQBC1B",
+      "tool": "write_html",
+      "targets": [
+        "IC-0"
+      ],
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M6Q4WK0EMPV1G2KDGGRQBC1B\",\n    \"name\": \"Macro · Policy Monitor · Production Design\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"c8cafbb7\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"10F-0\",\n      \"name\": \"Closed disclosure 美联储各年度预测\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"10G-0\",\n      \"name\": \"美联储各年度预测\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"10H-0\",\n      \"name\": \"SVG\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"10I-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "operation_id": "paper-audit-next-119-policy-disclosure",
+      "fileId": "01M6Q4WK0EMPV1G2KDGGRQBC1B",
+      "tool": "write_html",
+      "targets": [
+        "GK-0"
+      ],
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M6Q4WK0EMPV1G2KDGGRQBC1B\",\n    \"name\": \"Macro · Policy Monitor · Production Design\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"c8cafbb7\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"10K-0\",\n      \"name\": \"Closed disclosure 来源\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"10L-0\",\n      \"name\": \"来源\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"10M-0\",\n      \"name\": \"SVG\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"10N-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "operation_id": "paper-audit-next-120-policy-disclosure",
+      "fileId": "01M6Q4WK0EMPV1G2KDGGRQBC1B",
+      "tool": "write_html",
+      "targets": [
+        "GJ-0"
+      ],
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M6Q4WK0EMPV1G2KDGGRQBC1B\",\n    \"name\": \"Macro · Policy Monitor · Production Design\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"c8cafbb7\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"10P-0\",\n      \"name\": \"Closed disclosure 方法与边界\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"10Q-0\",\n      \"name\": \"方法与边界\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"10R-0\",\n      \"name\": \"SVG\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"10S-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "operation_id": "paper-audit-next-121-policy-chart-fluid-en",
+      "fileId": "01M6Q4WK0EMPV1G2KDGGRQBC1B",
+      "tool": "write_html",
+      "targets": [
+        "FJ-0"
+      ],
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M6Q4WK0EMPV1G2KDGGRQBC1B\",\n    \"name\": \"Macro · Policy Monitor · Production Design\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"c8cafbb7\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"10U-0\",\n      \"name\": \"Mobile elapsed-time rate chart\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"10V-0\",\n      \"name\": \"Line\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"10W-0\",\n      \"name\": \"3.80%\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"10X-0\",\n      \"name\": \"Line\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"10Y-0\",\n      \"name\": \"4.00%\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"10Z-0\",\n      \"name\": \"Line\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"110-0\",\n      \"name\": \"4.20%\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"111-0\",\n      \"name\": \"Line\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"112-0\",\n      \"name\": \"4.40%\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"113-0\",\n      \"name\": \"Line\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"114-0\",\n      \"name\": \"4.60%\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"115-0\",\n      \"name\": \"Line\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"116-0\",\n      \"name\": \"1\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"117-0\",\n      \"name\": \"3\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"118-0\",\n      \"name\": \"6\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"119-0\",\n      \"name\": \"12\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"11A-0\",\n      \"name\": \"Fed funds rate (%)\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"11B-0\",\n      \"name\": \"Horizon (months)\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"11C-0\",\n      \"name\": \"Line\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"11D-0\",\n      \"name\": \"Target range midpoin…\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"11E-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"11F-0\",\n      \"name\": \"Polyline\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"11G-0\",\n      \"name\": \"Circle\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"11H-0\",\n      \"name\": \"3.88%\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"11I-0\",\n      \"name\": \"Circle\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"11J-0\",\n      \"name\": \"4.04%\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"11K-0\",\n      \"name\": \"Circle\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"11L-0\",\n      \"name\": \"4.23%\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"11M-0\",\n      \"name\": \"Circle\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"11N-0\",\n      \"name\": \"4.44%\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "operation_id": "paper-audit-next-122-policy-chart-fluid-zh",
+      "fileId": "01M6Q4WK0EMPV1G2KDGGRQBC1B",
+      "tool": "write_html",
+      "targets": [
+        "L5-0"
+      ],
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M6Q4WK0EMPV1G2KDGGRQBC1B\",\n    \"name\": \"Macro · Policy Monitor · Production Design\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"c8cafbb7\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"11P-0\",\n      \"name\": \"移动端利率路径\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"11Q-0\",\n      \"name\": \"Line\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"11R-0\",\n      \"name\": \"3.80%\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"11S-0\",\n      \"name\": \"Line\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"11T-0\",\n      \"name\": \"4.00%\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"11U-0\",\n      \"name\": \"Line\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"11V-0\",\n      \"name\": \"4.20%\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"11W-0\",\n      \"name\": \"Line\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"11X-0\",\n      \"name\": \"4.40%\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"11Y-0\",\n      \"name\": \"Line\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"11Z-0\",\n      \"name\": \"4.60%\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"120-0\",\n      \"name\": \"Line\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"121-0\",\n      \"name\": \"1\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"122-0\",\n      \"name\": \"3\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"123-0\",\n      \"name\": \"6\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"124-0\",\n      \"name\": \"12\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"125-0\",\n      \"name\": \"联邦基金利率（%）\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"126-0\",\n      \"name\": \"期限（月）\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"127-0\",\n      \"name\": \"Line\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"128-0\",\n      \"name\": \"目标区间中值 3.88%\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"129-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"12A-0\",\n      \"name\": \"Polyline\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"12B-0\",\n      \"name\": \"Circle\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"12C-0\",\n      \"name\": \"3.88%\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"12D-0\",\n      \"name\": \"Circle\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"12E-0\",\n      \"name\": \"4.04%\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"12F-0\",\n      \"name\": \"Circle\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"12G-0\",\n      \"name\": \"4.23%\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"12H-0\",\n      \"name\": \"Circle\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"12I-0\",\n      \"name\": \"4.44%\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "operation_id": "paper-audit-next-123-policy-zh-clarity",
+      "fileId": "01M6Q4WK0EMPV1G2KDGGRQBC1B",
+      "tool": "set_text_content",
+      "targets": [
+        "IH-0"
+      ],
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M6Q4WK0EMPV1G2KDGGRQBC1B\",\n    \"name\": \"Macro · Policy Monitor · Production Design\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"c8cafbb7\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"updates\": [\n    {\n      \"nodeId\": \"IH-0\"\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "operation_id": "paper-audit-next-124-policy-320-proof",
+      "fileId": "01M6Q4WK0EMPV1G2KDGGRQBC1B",
+      "tool": "write_html",
+      "targets": [
+        "MH-0"
+      ],
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M6Q4WK0EMPV1G2KDGGRQBC1B\",\n    \"name\": \"Macro · Policy Monitor · Production Design\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"c8cafbb7\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"12K-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"12L-0\",\n      \"name\": \"MOBILE CONTROL & REF…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"12M-0\",\n      \"name\": \"Small screen, comple…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"12N-0\",\n      \"name\": \"320px component proo…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"12O-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"12P-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"12Q-0\",\n      \"name\": \"Rates · 320px\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"12R-0\",\n      \"name\": \"Market path\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"12S-0\",\n      \"name\": \"Mobile elapsed-time rate chart\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"12T-0\",\n      \"name\": \"Line\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"12U-0\",\n      \"name\": \"3.80%\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"12V-0\",\n      \"name\": \"Line\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"12W-0\",\n      \"name\": \"4.00%\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"12X-0\",\n      \"name\": \"Line\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"12Y-0\",\n      \"name\": \"4.20%\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"12Z-0\",\n      \"name\": \"Line\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"130-0\",\n      \"name\": \"4.40%\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"131-0\",\n      \"name\": \"Line\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"132-0\",\n      \"name\": \"4.60%\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"133-0\",\n      \"name\": \"Line\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"134-0\",\n      \"name\": \"1\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"135-0\",\n      \"name\": \"3\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"136-0\",\n      \"name\": \"6\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"137-0\",\n      \"name\": \"12\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"138-0\",\n      \"name\": \"Fed funds rate (%)\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"139-0\",\n      \"name\": \"Horizon (months)\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"13A-0\",\n      \"name\": \"Line\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"13B-0\",\n      \"name\": \"Target range midpoin…\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"13C-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"13D-0\",\n      \"name\": \"Polyline\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"13E-0\",\n      \"name\": \"Circle\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"13F-0\",\n      \"name\": \"3.88%\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"13G-0\",\n      \"name\": \"Circle\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"13H-0\",\n      \"name\": \"4.04%\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"13I-0\",\n      \"name\": \"Circle\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"13J-0\",\n      \"name\": \"4.23%\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"13K-0\",\n      \"name\": \"Circle\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"13L-0\",\n      \"name\": \"4.44%\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"13M-0\",\n      \"name\": \"Chart legend\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"13N-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"13O-0\",\n      \"name\": \"Rectangle\",\n      \"component\": \"Rectangle\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"13P-0\",\n      \"name\": \"Market-implied rate\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"13Q-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"13R-0\",\n      \"name\": \"Reference legend\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"13S-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"13T-0\",\n      \"name\": \"Target range midpoin…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"13U-0\",\n      \"name\": \"Rate detail disclosures\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"13V-0\",\n      \"name\": \"Closed disclosure Rate values and sources\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"13W-0\",\n      \"name\": \"Rate values and sour…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"13X-0\",\n      \"name\": \"SVG\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"13Y-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"13Z-0\",\n      \"name\": \"Closed disclosure Fed projections by year\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"140-0\",\n      \"name\": \"Fed projections by y…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"141-0\",\n      \"name\": \"SVG\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"142-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"143-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"144-0\",\n      \"name\": \"利率 · 320px\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"145-0\",\n      \"name\": \"Market path\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"146-0\",\n      \"name\": \"移动端利率路径\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"147-0\",\n      \"name\": \"Line\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"148-0\",\n      \"name\": \"3.80%\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"149-0\",\n      \"name\": \"Line\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"14A-0\",\n      \"name\": \"4.00%\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"14B-0\",\n      \"name\": \"Line\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"14C-0\",\n      \"name\": \"4.20%\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"14D-0\",\n      \"name\": \"Line\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"14E-0\",\n      \"name\": \"4.40%\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"14F-0\",\n      \"name\": \"Line\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"14G-0\",\n      \"name\": \"4.60%\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"14H-0\",\n      \"name\": \"Line\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"14I-0\",\n      \"name\": \"1\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"14J-0\",\n      \"name\": \"3\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"14K-0\",\n      \"name\": \"6\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"14L-0\",\n      \"name\": \"12\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"14M-0\",\n      \"name\": \"联邦基金利率（%）\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"14N-0\",\n      \"name\": \"期限（月）\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"14O-0\",\n      \"name\": \"Line\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"14P-0\",\n      \"name\": \"目标区间中值 3.88%\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"14Q-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"14R-0\",\n      \"name\": \"Polyline\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"14S-0\",\n      \"name\": \"Circle\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"14T-0\",\n      \"name\": \"3.88%\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"14U-0\",\n      \"name\": \"Circle\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"14V-0\",\n      \"name\": \"4.04%\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"14W-0\",\n      \"name\": \"Circle\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"14X-0\",\n      \"name\": \"4.23%\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"14Y-0\",\n      \"name\": \"Circle\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"14Z-0\",\n      \"name\": \"4.44%\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"150-0\",\n      \"name\": \"Chart legend\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"151-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"152-0\",\n      \"name\": \"Rectangle\",\n      \"component\": \"Rectangle\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"153-0\",\n      \"name\": \"市场隐含利率\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"154-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"155-0\",\n      \"name\": \"Reference legend\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"156-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"157-0\",\n      \"name\": \"目标区间中值\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"158-0\",\n      \"name\": \"Rate detail disclosures\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"159-0\",\n      \"name\": \"Closed disclosure 利率数值与来源\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"15A-0\",\n      \"name\": \"利率数值与来源\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"15B-0\",\n      \"name\": \"SVG\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"15C-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"15D-0\",\n      \"name\": \"Closed disclosure 美联储各年度预测\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"15E-0\",\n      \"name\": \"美联储各年度预测\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"15F-0\",\n      \"name\": \"SVG\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"15G-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"15H-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"15I-0\",\n      \"name\": \"Keep one disclosure …\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"15J-0\",\n      \"name\": \"The entire row is th…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"15K-0\",\n      \"name\": \"Use the existing det…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"15L-0\",\n      \"name\": \"Keep the chart viewB…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"15M-0\",\n      \"name\": \"Verify 44px hit area…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "operation_id": "paper-audit-next-125-policy-ratio",
+      "fileId": "01M6Q4WK0EMPV1G2KDGGRQBC1B",
+      "tool": "write_html",
+      "targets": [
+        "12S-0"
+      ],
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M6Q4WK0EMPV1G2KDGGRQBC1B\",\n    \"name\": \"Macro · Policy Monitor · Production Design\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"c8cafbb7\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"15O-0\",\n      \"name\": \"Mobile elapsed-time rate chart\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"15P-0\",\n      \"name\": \"Line\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"15Q-0\",\n      \"name\": \"3.80%\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"15R-0\",\n      \"name\": \"Line\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"15S-0\",\n      \"name\": \"4.00%\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"15T-0\",\n      \"name\": \"Line\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"15U-0\",\n      \"name\": \"4.20%\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"15V-0\",\n      \"name\": \"Line\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"15W-0\",\n      \"name\": \"4.40%\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"15X-0\",\n      \"name\": \"Line\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"15Y-0\",\n      \"name\": \"4.60%\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"15Z-0\",\n      \"name\": \"Line\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"160-0\",\n      \"name\": \"1\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"161-0\",\n      \"name\": \"3\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"162-0\",\n      \"name\": \"6\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"163-0\",\n      \"name\": \"12\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"164-0\",\n      \"name\": \"Fed funds rate (%)\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"165-0\",\n      \"name\": \"Horizon (months)\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"166-0\",\n      \"name\": \"Line\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"167-0\",\n      \"name\": \"Target range midpoin…\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"168-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"169-0\",\n      \"name\": \"Polyline\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"16A-0\",\n      \"name\": \"Circle\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"16B-0\",\n      \"name\": \"3.88%\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"16C-0\",\n      \"name\": \"Circle\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"16D-0\",\n      \"name\": \"4.04%\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"16E-0\",\n      \"name\": \"Circle\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"16F-0\",\n      \"name\": \"4.23%\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"16G-0\",\n      \"name\": \"Circle\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"16H-0\",\n      \"name\": \"4.44%\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "operation_id": "paper-audit-next-126-policy-ratio",
+      "fileId": "01M6Q4WK0EMPV1G2KDGGRQBC1B",
+      "tool": "write_html",
+      "targets": [
+        "146-0"
+      ],
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M6Q4WK0EMPV1G2KDGGRQBC1B\",\n    \"name\": \"Macro · Policy Monitor · Production Design\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"c8cafbb7\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"16J-0\",\n      \"name\": \"移动端利率路径\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"16K-0\",\n      \"name\": \"Line\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"16L-0\",\n      \"name\": \"3.80%\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"16M-0\",\n      \"name\": \"Line\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"16N-0\",\n      \"name\": \"4.00%\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"16O-0\",\n      \"name\": \"Line\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"16P-0\",\n      \"name\": \"4.20%\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"16Q-0\",\n      \"name\": \"Line\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"16R-0\",\n      \"name\": \"4.40%\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"16S-0\",\n      \"name\": \"Line\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"16T-0\",\n      \"name\": \"4.60%\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"16U-0\",\n      \"name\": \"Line\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"16V-0\",\n      \"name\": \"1\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"16W-0\",\n      \"name\": \"3\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"16X-0\",\n      \"name\": \"6\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"16Y-0\",\n      \"name\": \"12\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"16Z-0\",\n      \"name\": \"联邦基金利率（%）\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"170-0\",\n      \"name\": \"期限（月）\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"171-0\",\n      \"name\": \"Line\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"172-0\",\n      \"name\": \"目标区间中值 3.88%\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"173-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"174-0\",\n      \"name\": \"Polyline\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"175-0\",\n      \"name\": \"Circle\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"176-0\",\n      \"name\": \"3.88%\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"177-0\",\n      \"name\": \"Circle\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"178-0\",\n      \"name\": \"4.04%\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"179-0\",\n      \"name\": \"Circle\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"17A-0\",\n      \"name\": \"4.23%\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"17B-0\",\n      \"name\": \"Circle\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"17C-0\",\n      \"name\": \"4.44%\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "operation_id": "paper-audit-next-127-policy-finish",
+      "fileId": "01M6Q4WK0EMPV1G2KDGGRQBC1B",
+      "tool": "finish_working_on_nodes",
+      "targets": [
+        "ZG-0",
+        "ZL-0",
+        "ZQ-0",
+        "ZV-0",
+        "100-0",
+        "105-0",
+        "10A-0",
+        "10F-0",
+        "10K-0",
+        "10P-0",
+        "10U-0",
+        "11P-0",
+        "IH-0",
+        "12K-0"
+      ],
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M6Q4WK0EMPV1G2KDGGRQBC1B\",\n    \"name\": \"Macro · Policy Monitor · Production Design\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"c8cafbb7\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "OK"
+          }
+        ]
+      }
+    },
+    {
+      "operation_id": "paper-audit-next-128-memory-page",
+      "fileId": "01M6PXFEP1E1T59M2B3N673PMG",
+      "tool": "create_page",
+      "targets": [],
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M6PXFEP1E1T59M2B3N673PMG\",\n    \"name\": \"Market Memory · Revision evidence · R1 · 2026-11-05\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"ee9dbe57\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"pageId\": \"p-4-0\",\n  \"name\": \"03 · Period selection & copy outcomes\",\n  \"icon\": \"design\"\n}"
+          }
+        ]
+      }
+    },
+    {
+      "operation_id": "paper-audit-next-129-memory-variant",
+      "fileId": "01M6PXFEP1E1T59M2B3N673PMG",
+      "tool": "duplicate_nodes",
+      "targets": [
+        "V1-0"
+      ],
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M6PXFEP1E1T59M2B3N673PMG\",\n    \"name\": \"Market Memory · Revision evidence · R1 · 2026-11-05\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"ee9dbe57\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"duplicatedNodes\": [\n    {\n      \"sourceId\": \"V1-0\",\n      \"newId\": \"1F2-0\",\n      \"name\": \"R2 proposal · Record states and build contract\",\n      \"component\": \"Frame\",\n      \"worldX\": 3840,\n      \"worldY\": -450,\n      \"x\": 3840,\n      \"y\": -450,\n      \"descendantIdMap\": {\n        \"WO-0\": \"1JD-0\",\n        \"WR-0\": \"1F3-0\",\n        \"WS-0\": \"1J9-0\",\n        \"WX-0\": \"1IT-0\",\n        \"XH-0\": \"1ID-0\",\n        \"Y1-0\": \"1HV-0\",\n        \"YE-0\": \"1HR-0\",\n        \"1B4-0\": \"1HL-0\",\n        \"1BY-0\": \"1H2-0\",\n        \"1CK-0\": \"1H1-0\",\n        \"1CM-0\": \"1FE-0\",\n        \"1EG-0\": \"1F9-0\",\n        \"1EW-0\": \"1F4-0\",\n        \"1EX-0\": \"1F8-0\",\n        \"1EY-0\": \"1F7-0\",\n        \"1EZ-0\": \"1F6-0\",\n        \"1F0-0\": \"1F5-0\",\n        \"1EH-0\": \"1FD-0\",\n        \"1EI-0\": \"1FC-0\",\n        \"1EJ-0\": \"1FB-0\",\n        \"1EK-0\": \"1FA-0\",\n        \"1CN-0\": \"1G8-0\",\n        \"1CS-0\": \"1FF-0\",\n        \"1CT-0\": \"1G4-0\",\n        \"1DO-0\": \"1FL-0\",\n        \"1E8-0\": \"1FG-0\",\n        \"1E9-0\": \"1FJ-0\",\n        \"1EB-0\": \"1FH-0\",\n        \"1EC-0\": \"1FI-0\",\n        \"1EA-0\": \"1FK-0\",\n        \"1DP-0\": \"1G1-0\",\n        \"1DS-0\": \"1FY-0\",\n        \"1DV-0\": \"1FV-0\",\n        \"1DY-0\": \"1FS-0\",\n        \"1E1-0\": \"1FP-0\",\n        \"1E4-0\": \"1FM-0\",\n        \"1E5-0\": \"1FO-0\",\n        \"1E6-0\": \"1FN-0\",\n        \"1E2-0\": \"1FR-0\",\n        \"1E3-0\": \"1FQ-0\",\n        \"1DZ-0\": \"1FU-0\",\n        \"1E0-0\": \"1FT-0\",\n        \"1DW-0\": \"1FX-0\",\n        \"1DX-0\": \"1FW-0\",\n        \"1DT-0\": \"1G0-0\",\n        \"1DU-0\": \"1FZ-0\",\n        \"1DQ-0\": \"1G3-0\",\n        \"1DR-0\": \"1G2-0\",\n        \"1CU-0\": \"1G7-0\",\n        \"1CV-0\": \"1G6-0\",\n        \"1CW-0\": \"1G5-0\",\n        \"1CO-0\": \"1GX-0\",\n        \"1CY-0\": \"1GE-0\",\n        \"1DI-0\": \"1G9-0\",\n        \"1DJ-0\": \"1GC-0\",\n        \"1DL-0\": \"1GA-0\",\n        \"1DM-0\": \"1GB-0\",\n        \"1DK-0\": \"1GD-0\",\n        \"1CZ-0\": \"1GU-0\",\n        \"1D2-0\": \"1GR-0\",\n        \"1D5-0\": \"1GO-0\",\n        \"1D8-0\": \"1GL-0\",\n        \"1DB-0\": \"1GI-0\",\n        \"1DE-0\": \"1GF-0\",\n        \"1DF-0\": \"1GH-0\",\n        \"1DG-0\": \"1GG-0\",\n        \"1DC-0\": \"1GK-0\",\n        \"1DD-0\": \"1GJ-0\",\n        \"1D9-0\": \"1GN-0\",\n        \"1DA-0\": \"1GM-0\",\n        \"1D6-0\": \"1GQ-0\",\n        \"1D7-0\": \"1GP-0\",\n        \"1D3-0\": \"1GT-0\",\n        \"1D4-0\": \"1GS-0\",\n        \"1D0-0\": \"1GW-0\",\n        \"1D1-0\": \"1GV-0\",\n        \"1CP-0\": \"1H0-0\",\n        \"1CQ-0\": \"1GZ-0\",\n        \"1CR-0\": \"1GY-0\",\n        \"1BZ-0\": \"1HH-0\",\n        \"1C4-0\": \"1H8-0\",\n        \"1CE-0\": \"1H3-0\",\n        \"1CF-0\": \"1H6-0\",\n        \"1CH-0\": \"1H4-0\",\n        \"1CI-0\": \"1H5-0\",\n        \"1CG-0\": \"1H7-0\",\n        \"1C5-0\": \"1HD-0\",\n        \"1C9-0\": \"1H9-0\",\n        \"1CA-0\": \"1HC-0\",\n        \"1CB-0\": \"1HB-0\",\n        \"1CC-0\": \"1HA-0\",\n        \"1C6-0\": \"1HG-0\",\n        \"1C7-0\": \"1HF-0\",\n        \"1C8-0\": \"1HE-0\",\n        \"1C0-0\": \"1HK-0\",\n        \"1C1-0\": \"1HJ-0\",\n        \"1C2-0\": \"1HI-0\",\n        \"1B5-0\": \"1HQ-0\",\n        \"1B6-0\": \"1HP-0\",\n        \"1B7-0\": \"1HO-0\",\n        \"1B8-0\": \"1HN-0\",\n        \"1EE-0\": \"1HM-0\",\n        \"YF-0\": \"1HU-0\",\n        \"YG-0\": \"1HT-0\",\n        \"1EU-0\": \"1HS-0\",\n        \"Y2-0\": \"1IC-0\",\n        \"Y3-0\": \"1I2-0\",\n        \"1EM-0\": \"1HZ-0\",\n        \"1EQ-0\": \"1HW-0\",\n        \"1ER-0\": \"1HY-0\",\n        \"1ES-0\": \"1HX-0\",\n        \"1EN-0\": \"1I1-0\",\n        \"1EO-0\": \"1I0-0\",\n        \"Y4-0\": \"1I9-0\",\n        \"Y7-0\": \"1I6-0\",\n        \"YA-0\": \"1I3-0\",\n        \"YB-0\": \"1I5-0\",\n        \"YC-0\": \"1I4-0\",\n        \"Y8-0\": \"1I8-0\",\n        \"Y9-0\": \"1I7-0\",\n        \"Y5-0\": \"1IB-0\",\n        \"Y6-0\": \"1IA-0\",\n        \"XJ-0\": \"1IO-0\",\n        \"XP-0\": \"1IJ-0\",\n        \"XV-0\": \"1IE-0\",\n        \"XW-0\": \"1II-0\",\n        \"XX-0\": \"1IH-0\",\n        \"XY-0\": \"1IG-0\",\n        \"XZ-0\": \"1IF-0\",\n        \"XQ-0\": \"1IN-0\",\n        \"XR-0\": \"1IM-0\",\n        \"XS-0\": \"1IL-0\",\n        \"XT-0\": \"1IK-0\",\n        \"XK-0\": \"1IS-0\",\n        \"XL-0\": \"1IR-0\",\n        \"XM-0\": \"1IQ-0\",\n        \"XN-0\": \"1IP-0\",\n        \"WZ-0\": \"1J4-0\",\n        \"X5-0\": \"1IZ-0\",\n        \"XB-0\": \"1IU-0\",\n        \"XC-0\": \"1IY-0\",\n        \"XD-0\": \"1IX-0\",\n        \"XE-0\": \"1IW-0\",\n        \"XF-0\": \"1IV-0\",\n        \"X6-0\": \"1J3-0\",\n        \"X7-0\": \"1J2-0\",\n        \"X8-0\": \"1J1-0\",\n        \"X9-0\": \"1J0-0\",\n        \"X0-0\": \"1J8-0\",\n        \"X1-0\": \"1J7-0\",\n        \"X2-0\": \"1J6-0\",\n        \"X3-0\": \"1J5-0\",\n        \"WT-0\": \"1JC-0\",\n        \"WU-0\": \"1JB-0\",\n        \"WV-0\": \"1JA-0\",\n        \"WQ-0\": \"1JF-0\",\n        \"WP-0\": \"1JE-0\"\n      }\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "operation_id": "paper-audit-next-130-memory-contract",
+      "fileId": "01M6PXFEP1E1T59M2B3N673PMG",
+      "tool": "set_text_content",
+      "targets": [
+        "Y9-0",
+        "YF-0",
+        "YG-0",
+        "1B6-0"
+      ],
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M6PXFEP1E1T59M2B3N673PMG\",\n    \"name\": \"Market Memory · Revision evidence · R1 · 2026-11-05\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"ee9dbe57\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"updates\": [\n    {\n      \"nodeId\": \"Y9-0\"\n    },\n    {\n      \"nodeId\": \"YF-0\"\n    },\n    {\n      \"nodeId\": \"YG-0\"\n    },\n    {\n      \"nodeId\": \"1B6-0\"\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "operation_id": "paper-audit-next-131-memory-workflow",
+      "fileId": "01M6PXFEP1E1T59M2B3N673PMG",
+      "tool": "write_html",
+      "targets": [
+        "1F3-0"
+      ],
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M6PXFEP1E1T59M2B3N673PMG\",\n    \"name\": \"Market Memory · Revision evidence · R1 · 2026-11-05\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"ee9dbe57\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1JG-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1JH-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1JI-0\",\n      \"name\": \"PROPOSED WORKFLOW · …\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1JJ-0\",\n      \"name\": \"Period selection & r…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1JK-0\",\n      \"name\": \"Choose an actual ret…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1JL-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1JM-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1JN-0\",\n      \"name\": \"Revision history\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1JO-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1JP-0\",\n      \"name\": \"Period: January 1987\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1JQ-0\",\n      \"name\": \"⌃\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1JR-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1JS-0\",\n      \"name\": \"Choose period\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1JT-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1JU-0\",\n      \"name\": \"Find a retained mont…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1JV-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1JW-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1JX-0\",\n      \"name\": \"1987-01\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1JY-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1JZ-0\",\n      \"name\": \"SVG\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1K0-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1K1-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1K2-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1K3-0\",\n      \"name\": \"Rectangle\",\n      \"component\": \"Rectangle\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1K4-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1K5-0\",\n      \"name\": \"January 1987\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1K6-0\",\n      \"name\": \"Current\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1K7-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1K8-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1K9-0\",\n      \"name\": \"Cancel\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1KA-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1KB-0\",\n      \"name\": \"Show history\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1KC-0\",\n      \"name\": \"Current: January 198…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1KD-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1KE-0\",\n      \"name\": \"修订历史\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1KF-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1KG-0\",\n      \"name\": \"统计月份：1987年1月\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1KH-0\",\n      \"name\": \"⌃\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1KI-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1KJ-0\",\n      \"name\": \"选择统计月份\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1KK-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1KL-0\",\n      \"name\": \"查找已保留的月份\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1KM-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1KN-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1KO-0\",\n      \"name\": \"1987-01\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1KP-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1KQ-0\",\n      \"name\": \"SVG\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1KR-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1KS-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1KT-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1KU-0\",\n      \"name\": \"Rectangle\",\n      \"component\": \"Rectangle\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1KV-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1KW-0\",\n      \"name\": \"1987年1月\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1KX-0\",\n      \"name\": \"当前\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1KY-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1KZ-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1L0-0\",\n      \"name\": \"取消\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1L1-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1L2-0\",\n      \"name\": \"查看历史\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1L3-0\",\n      \"name\": \"当前：1987年1月\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1L4-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1L5-0\",\n      \"name\": \"Earlier CPI record\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1L6-0\",\n      \"name\": \"January 1987 · 1 Jan…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1L7-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1L8-0\",\n      \"name\": \"Couldn’t copy automa…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1L9-0\",\n      \"name\": \"Copy the reference b…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1LA-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1LB-0\",\n      \"name\": \"Record detail / Exact record reference\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1LC-0\",\n      \"name\": \"Exact record referen…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1LD-0\",\n      \"name\": \"CPIAUCSL / 1987-01-0…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1LE-0\",\n      \"name\": \"Record detail / Source row position\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1LF-0\",\n      \"name\": \"Source row position\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1LG-0\",\n      \"name\": \"180960 · zero-based\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1LH-0\",\n      \"name\": \"Record detail / Observed artifact fingerprint\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1LI-0\",\n      \"name\": \"Observed artifact fi…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1LJ-0\",\n      \"name\": \"eabad732825e9d682077…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1LK-0\",\n      \"name\": \"Record detail / Knowledge cutoff\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1LL-0\",\n      \"name\": \"Knowledge cutoff\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1LM-0\",\n      \"name\": \"Not provided\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1LN-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1LO-0\",\n      \"name\": \"Select reference\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1LP-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1LQ-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1LR-0\",\n      \"name\": \"COPY SUCCEEDED\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1LS-0\",\n      \"name\": \"✓ Reference copied\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1LT-0\",\n      \"name\": \"✓ 记录引用已复制\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1LU-0\",\n      \"name\": \"Show this status onl…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1LV-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1LW-0\",\n      \"name\": \"自动复制未完成\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1LX-0\",\n      \"name\": \"请手动复制下方引用。\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1LY-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1LZ-0\",\n      \"name\": \"选择引用\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1M0-0\",\n      \"name\": \"Use the same full se…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1M1-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1M2-0\",\n      \"name\": \"Different outcomes n…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1M3-0\",\n      \"name\": \"Controlled behavior …\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1M4-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1M5-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1M6-0\",\n      \"name\": \"INVALID INPUT · 1987…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1M7-0\",\n      \"name\": \"Enter a valid month\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1M8-0\",\n      \"name\": \"Use a month such as …\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1M9-0\",\n      \"name\": \"请输入有效月份，例如 1987-01。\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1MA-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1MB-0\",\n      \"name\": \"COMPLETE INDEX · 190…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1MC-0\",\n      \"name\": \"No retained month ma…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1MD-0\",\n      \"name\": \"Clear or edit the se…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1ME-0\",\n      \"name\": \"没有与“1900-01”匹配的保留月份。\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1MF-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1MG-0\",\n      \"name\": \"INDEX LOOKUP INCOMPL…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1MH-0\",\n      \"name\": \"More months remain\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1MI-0\",\n      \"name\": \"Continue the existin…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1MJ-0\",\n      \"name\": \"仍有月份尚未检索。\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1MK-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1ML-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1MM-0\",\n      \"name\": \"SELECTED HISTORY PEN…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1MN-0\",\n      \"name\": \"Loading January 1947…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1MO-0\",\n      \"name\": \"Current history: Jan…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1MP-0\",\n      \"name\": \"正在加载所选月份的历史…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1MQ-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1MR-0\",\n      \"name\": \"SELECTED HISTORY FAI…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1MS-0\",\n      \"name\": \"Couldn’t load this h…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1MT-0\",\n      \"name\": \"Your current period …\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1MU-0\",\n      \"name\": \"无法加载此月份的历史，当前月份保持不变。\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1MV-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1MW-0\",\n      \"name\": \"COMPLETE PERIOD LOOK…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1MX-0\",\n      \"name\": \"Zero, one or multipl…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1MY-0\",\n      \"name\": \"Zero: no retained re…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1MZ-0\",\n      \"name\": \"完整检索后再区分：无记录、单条记录或可选…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1N0-0\",\n      \"name\": \"Build through the ex…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1N1-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1N2-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1N3-0\",\n      \"name\": \"1 / Index the retain…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1N4-0\",\n      \"name\": \"Extend the full-vint…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1N5-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1N6-0\",\n      \"name\": \"2 / Stage, then comm…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1N7-0\",\n      \"name\": \"Opening the inline c…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1N8-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1N9-0\",\n      \"name\": \"3 / Cancel without l…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NA-0\",\n      \"name\": \"Cancel, Escape or cl…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NB-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NC-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1ND-0\",\n      \"name\": \"4 / Keep source evid…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NE-0\",\n      \"name\": \"Read the full vintag…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NF-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NG-0\",\n      \"name\": \"5 / Accessible, loca…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NH-0\",\n      \"name\": \"Use a labelled searc…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NI-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NJ-0\",\n      \"name\": \"6 / Copy only what w…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NK-0\",\n      \"name\": \"Use the incumbent co…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NL-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NM-0\",\n      \"name\": \"Acceptance that the …\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NN-0\",\n      \"name\": \"A deliberately spars…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NO-0\",\n      \"name\": \"Source records 111.5…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NP-0\",\n      \"name\": \"Exact source baselin…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NQ-0\",\n      \"name\": \"https://github.com/m…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "operation_id": "paper-audit-next-132-memory-name",
+      "fileId": "01M6PXFEP1E1T59M2B3N673PMG",
+      "tool": "rename_nodes",
+      "targets": [
+        "1F2-0"
+      ],
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M6PXFEP1E1T59M2B3N673PMG\",\n    \"name\": \"Market Memory · Revision evidence · R1 · 2026-11-05\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"ee9dbe57\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"updates\": [\n    {\n      \"nodeId\": \"1F2-0\",\n      \"name\": \"R3 Period chooser and reference outcomes\"\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "operation_id": "paper-audit-next-133-memory-order",
+      "fileId": "01M6PXFEP1E1T59M2B3N673PMG",
+      "tool": "arrange_pages",
+      "targets": [
+        "p-4-0"
+      ],
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M6PXFEP1E1T59M2B3N673PMG\",\n    \"name\": \"Market Memory · Revision evidence · R1 · 2026-11-05\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"ee9dbe57\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"pages\": [\n    {\n      \"type\": \"page\",\n      \"id\": \"p-1-0\",\n      \"name\": \"01 · Revision evidence · Screens & states\",\n      \"icon\": \"arrow\",\n      \"isActive\": true\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-3-0\",\n      \"name\": \"Build · Record states & implementation\",\n      \"icon\": \"blueprint\",\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-2-0\",\n      \"name\": \"02 · Record comparison · Proposed\",\n      \"icon\": \"design\",\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-4-0\",\n      \"name\": \"03 · Period selection & copy outcomes\",\n      \"icon\": \"design\",\n      \"isActive\": false\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "operation_id": "paper-audit-next-134-memory-clear",
+      "fileId": "01M6PXFEP1E1T59M2B3N673PMG",
+      "tool": "write_html",
+      "targets": [
+        "1JZ-0"
+      ],
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M6PXFEP1E1T59M2B3N673PMG\",\n    \"name\": \"Market Memory · Revision evidence · R1 · 2026-11-05\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"ee9dbe57\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1NS-0\",\n      \"name\": \"SVG\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NT-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "operation_id": "paper-audit-next-135-memory-clear",
+      "fileId": "01M6PXFEP1E1T59M2B3N673PMG",
+      "tool": "write_html",
+      "targets": [
+        "1KQ-0"
+      ],
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M6PXFEP1E1T59M2B3N673PMG\",\n    \"name\": \"Market Memory · Revision evidence · R1 · 2026-11-05\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"ee9dbe57\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1NV-0\",\n      \"name\": \"SVG\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NW-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "operation_id": "paper-audit-next-136-memory-copy-clock",
+      "fileId": "01M6PXFEP1E1T59M2B3N673PMG",
+      "tool": "write_html",
+      "targets": [
+        "1LA-0"
+      ],
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M6PXFEP1E1T59M2B3N673PMG\",\n    \"name\": \"Market Memory · Revision evidence · R1 · 2026-11-05\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"ee9dbe57\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1NY-0\",\n      \"name\": \"Record detail / Record read\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1NZ-0\",\n      \"name\": \"Record read\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1O0-0\",\n      \"name\": \"8 Nov 2026 · 14:26:5…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "operation_id": "paper-audit-next-137-memory-copy-order",
+      "fileId": "01M6PXFEP1E1T59M2B3N673PMG",
+      "tool": "move_nodes",
+      "targets": [
+        "1NY-0"
+      ],
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M6PXFEP1E1T59M2B3N673PMG\",\n    \"name\": \"Market Memory · Revision evidence · R1 · 2026-11-05\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"ee9dbe57\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"moves\": [\n    {\n      \"nodeId\": \"1NY-0\",\n      \"parentId\": \"1LA-0\",\n      \"index\": 2\n    }\n  ],\n  \"affectedParents\": [\n    {\n      \"parentId\": \"1LA-0\",\n      \"childIds\": [\n        \"1LB-0\",\n        \"1LE-0\",\n        \"1NY-0\",\n        \"1LH-0\",\n        \"1LK-0\"\n      ]\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "operation_id": "paper-audit-next-138-memory-finish",
+      "fileId": "01M6PXFEP1E1T59M2B3N673PMG",
+      "tool": "finish_working_on_nodes",
+      "targets": [
+        "1F2-0",
+        "Y9-0",
+        "YF-0",
+        "YG-0",
+        "1B6-0"
+      ],
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M6PXFEP1E1T59M2B3N673PMG\",\n    \"name\": \"Market Memory · Revision evidence · R1 · 2026-11-05\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"ee9dbe57\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "OK"
+          }
+        ]
+      }
     }
   ],
-  "concurrency_note": "Another writer replaced Breadth inspector right panel; preserve their new nodes. Our selected plot/mobile/build proof is scoped."
+  "concurrency_note": "Protect disjoint active writers: Breadth inspector right panel and new p1 variants; Policy historical compaction and expanded refs; Memory full-matrix/rule/page-path work. Snapshot guards are not collaboration leases."
 }
