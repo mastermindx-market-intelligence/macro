@@ -1,13 +1,13 @@
 {
   "schema": "neuralweb.evidence_clock.v1",
-  "as_of": "2026-11-07",
-  "generated_utc": "2026-11-07T10:07:46Z",
+  "as_of": "2026-11-08",
+  "generated_utc": "2026-11-08T10:04:01Z",
   "authority": "display_only",
   "summary": {
     "n_rows": 329,
     "by_state": {
-      "overdue": 182,
-      "due": 35,
+      "overdue": 185,
+      "due": 32,
       "human_review": 0,
       "missing": 1,
       "stale": 1,
@@ -2799,7 +2799,7 @@
       "state": "overdue",
       "date_state": "overdue",
       "readiness": {
-        "n_open": 75,
+        "n_open": 73,
         "n_past_check_by": 58
       },
       "allowed_actions": [
@@ -6082,8 +6082,8 @@
       "clock_type": "come_back_on",
       "due_at": "2026-10-31",
       "as_of": "2026-10-03",
-      "state": "due",
-      "date_state": "due",
+      "state": "overdue",
+      "date_state": "overdue",
       "readiness": {
         "horizon_d": 21,
         "status": "registered"
@@ -6114,8 +6114,8 @@
       "clock_type": "come_back_on",
       "due_at": "2026-10-31",
       "as_of": "2026-10-03",
-      "state": "due",
-      "date_state": "due",
+      "state": "overdue",
+      "date_state": "overdue",
       "readiness": {
         "horizon_d": 21,
         "status": "registered"
@@ -6146,8 +6146,8 @@
       "clock_type": "come_back_on",
       "due_at": "2026-10-31",
       "as_of": "2026-07-03",
-      "state": "due",
-      "date_state": "due",
+      "state": "overdue",
+      "date_state": "overdue",
       "readiness": {
         "maturation": "stable-negative T3 on live cohort => wire per-market demote; sign-flip/null => clear flag",
         "cadence": "once",
@@ -7074,7 +7074,7 @@
       "subject_type": "experiment",
       "owner_program": "engine-fix",
       "clock_type": "awaiting_execution",
-      "due_at": "2026-11-07",
+      "due_at": "2026-11-08",
       "as_of": "2026-07-06",
       "state": "due",
       "date_state": "due",
@@ -7106,7 +7106,7 @@
       "subject_type": "experiment",
       "owner_program": "engine-fix",
       "clock_type": "awaiting_execution",
-      "due_at": "2026-11-07",
+      "due_at": "2026-11-08",
       "as_of": "2026-07-06",
       "state": "due",
       "date_state": "due",
@@ -7138,7 +7138,7 @@
       "subject_type": "experiment",
       "owner_program": "engine-fix",
       "clock_type": "awaiting_execution",
-      "due_at": "2026-11-07",
+      "due_at": "2026-11-08",
       "as_of": "2026-07-06",
       "state": "due",
       "date_state": "due",
@@ -7170,7 +7170,7 @@
       "subject_type": "experiment",
       "owner_program": "engine-fix",
       "clock_type": "awaiting_execution",
-      "due_at": "2026-11-07",
+      "due_at": "2026-11-08",
       "as_of": "2026-07-06",
       "state": "due",
       "date_state": "due",
@@ -7329,8 +7329,8 @@
       "state": "blocked",
       "date_state": "accruing",
       "readiness": {
-        "n_claims": 118399,
-        "n_with_falsifier": 1267,
+        "n_claims": 118397,
+        "n_with_falsifier": 1265,
         "falsifier_coverage": "1.1%",
         "blocking_reason": "falsifier coverage 1.1%; not a promotion-grade substrate"
       },
