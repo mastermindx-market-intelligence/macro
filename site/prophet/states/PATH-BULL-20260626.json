@@ -1,32 +1,32 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "PATH-BULL-20260626",
-  "asof": "2026-09-25",
+  "asof": "2026-11-08",
   "phase": "between_t1_t2",
   "detection_phase": "post_t1_failed_hold",
-  "management_confidence": 41.9,
-  "raw_confidence": 41.9,
-  "delta_vs_base": -18.1,
-  "recommended_action": "trim",
-  "human_state": "Deep Giveback \u2014 Reassess",
+  "management_confidence": 40.3,
+  "raw_confidence": 40.2,
+  "delta_vs_base": -19.7,
+  "recommended_action": null,
+  "human_state": "Closed",
   "components": {
     "validity": 100.0,
-    "progress": 34.5,
-    "pace": 3.6,
-    "retention": 7.6,
-    "overlay": 53.0
+    "progress": 34.2,
+    "pace": 3.1,
+    "retention": 6.5,
+    "overlay": 36.0
   },
   "geometry": {
-    "dist_to_stop_r": 1.077,
-    "dist_to_t1_r": 1.423,
-    "dist_to_t2_r": 2.923,
-    "horizon_pct_used": 124.4,
-    "p1": 0.051,
-    "p2": 0.0255,
+    "dist_to_stop_r": 1.066,
+    "dist_to_t1_r": 1.434,
+    "dist_to_t2_r": 2.934,
+    "horizon_pct_used": 222.2,
+    "p1": 0.0437,
+    "p2": 0.0219,
     "p3": null,
-    "move_r": 0.077,
+    "move_r": 0.066,
     "mfe_r": 1.615,
-    "mae_r": 0.0
+    "mae_r": -0.082
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -36,15 +36,17 @@
   "authority_tier": "display",
   "reliability": {
     "management_confidence": "display \u2014 no forward ledger has passed yet",
-    "recommended_action": "display \u2014 narrate, not authoritative order",
+    "recommended_action": "withheld \u2014 canonical forward ledger has closed this plan",
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 5.9100000762939455,
-  "_mae": 0.0,
+  "_mae": -0.29999996185302713,
   "_max_p1": 1.0765027461373307,
   "_first_trigger_ts": "2026-08-06",
   "_first_t1_ts": "2026-08-27",
   "_first_t2_ts": null,
-  "days_elapsed": 56,
-  "tau": 1.2444
+  "days_elapsed": 100,
+  "tau": 2.2222,
+  "closed": true,
+  "outcome": "T1_HIT"
 }

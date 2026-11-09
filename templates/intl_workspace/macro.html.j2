@@ -1,0 +1,235 @@
+{% set field_specs = [
+  {'key': 'gdp_yoy', 'en': 'GDP YoY', 'zh': 'GDP 同比'},
+  {'key': 'cpi_yoy', 'en': 'CPI YoY', 'zh': 'CPI 同比'},
+  {'key': 'policy_rate', 'en': 'Policy rate', 'zh': '政策利率'},
+  {'key': 'policy_proxy', 'en': 'Policy proxy', 'zh': '政策替代指标'},
+  {'key': 'yield_10y', 'en': '10Y yield', 'zh': '10 年期收益率'},
+  {'key': 'yield_change', 'en': 'Yield change', 'zh': '收益率变化'}
+] %}
+{% set quality_labels = {
+  'qualified': {'en': 'Qualified', 'zh': '符合条件'},
+  'stale': {'en': 'Stale data', 'zh': '数据过期'},
+  'missing': {'en': 'Missing data', 'zh': '数据缺失'},
+  'denied': {'en': 'Information withheld', 'zh': '信息未披露'},
+  'failed': {'en': 'Failed', 'zh': '失败'},
+  'unsupported': {'en': 'Unsupported', 'zh': '不支持'},
+  'unknown': {'en': 'Unavailable', 'zh': '不可用'}
+} %}
+{% set unit_labels = {
+  'percent': {'en': 'percent', 'zh': '百分比'},
+  'bp': {'en': 'basis points', 'zh': '基点'},
+  'pp': {'en': 'percentage points', 'zh': '个百分点'}
+} %}
+{% set reason_labels = {
+  'not_supplied': {'en': 'Not supplied', 'zh': '未提供'},
+  'source_unknown': {'en': 'Source unknown', 'zh': '来源未知'},
+  'disclosure_unknown': {'en': 'Disclosure unknown', 'zh': '披露情况未知'},
+  'metadata_denied': {'en': 'Metadata withheld', 'zh': '元数据未披露'},
+  'value_denied': {'en': 'Value withheld', 'zh': '数值未披露'},
+  'source_stale': {'en': 'Source stale', 'zh': '来源过期'},
+  'source_failed': {'en': 'Source failed', 'zh': '来源失败'},
+  'method_unsupported': {'en': 'Method unsupported', 'zh': '方法不支持'},
+  'instrument_mismatch': {'en': 'Instrument mismatch', 'zh': '工具不匹配'},
+  'cycle_support_missing': {'en': 'Cycle support missing', 'zh': '周期依据缺失'},
+  'component_disagreement': {'en': 'Component disagreement', 'zh': '分项不一致'},
+  'target_unavailable': {'en': 'Not available', 'zh': '暂无可用'}
+} %}
+{% set source_notice_exact = source_notice is mapping and source_notice|length == 4 and source_notice.market_id == 'EZ' and source_notice.field == 'policy_rate' and source_notice.instrument_id == 'deposit_facility' and source_notice.origin_url == 'https://data.ecb.europa.eu/data/datasets/FM/FM.D.U2.EUR.4F.KR.DFR.LEV' %}
+{% macro not_supplied() -%}
+<span class="l-en">Not supplied</span><span class="l-zh" lang="zh">未提供</span>
+{%- endmacro %}
+{% macro reason_text(reason) -%}
+{% if reason is none %}{{ not_supplied() }}{% elif reason in reason_labels %}<span class="l-en">{{ reason_labels[reason].en|e }}</span><span class="l-zh" lang="zh">{{ reason_labels[reason].zh|e }}</span>{% else %}{{ reason|e }}{% endif %}
+{%- endmacro %}
+{% macro metric_cell(metric, field, context_id, row_index, market_id) -%}
+<td class="intl-macro__metric" headers="{{ context_id|e }}-row-{{ row_index }} {{ context_id|e }}-{{ field.key|e }}">
+  <div class="intl-macro__metric-slot" id="{{ context_id|e }}-row-{{ row_index }}-{{ field.key|e }}">
+    <strong><span class="l-en">{{ field.en|e }}</span><span class="l-zh" lang="zh">{{ field.zh|e }}</span></strong>
+{% set metric_value = metric.get('value') %}
+{% set metric_unit = metric.get('unit') %}
+{% set metric_quality = metric.get('quality') %}
+        {% if metric_value is not none %}
+          <span class="intl-macro__value" data-im-macro-value>{{ metric_value|e }}</span>
+          {% if metric_unit in unit_labels %}<small><span class="l-en">{{ unit_labels[metric_unit].en|e }}</span><span class="l-zh" lang="zh">{{ unit_labels[metric_unit].zh|e }}</span></small>{% endif %}
+          {% if metric.get('observation_at') is not none %}<small class="intl-macro__observation">{{ metric.get('observation_at')|e }}</small>{% endif %}
+          {% if metric_quality == 'stale' %}<small class="intl-macro__quality"><span class="l-en">Stale data</span><span class="l-zh" lang="zh">数据过期</span></small>{% endif %}
+        {% else %}
+      {% if metric_quality in quality_labels %}
+        <span class="intl-macro__quality"><span class="l-en">{{ quality_labels[metric_quality].en|e }}</span><span class="l-zh" lang="zh">{{ quality_labels[metric_quality].zh|e }}</span></span>
+      {% else %}
+        <span class="intl-macro__quality">{{ metric_quality|e }}</span>
+      {% endif %}
+      <small data-im-macro-reason>{{ reason_text(metric.get('reason')) }}</small>
+    {% endif %}
+    {% set metric_field = metric.get('field') %}
+    {% set metric_instrument = metric.get('instrument') %}
+    {% if market_id == 'EZ' and field.key == 'policy_rate' and metric_quality in ['qualified', 'stale'] and metric_value is not none and metric_instrument is not none and metric_instrument.kind == 'official_policy' and metric_instrument.id == 'deposit_facility' and metric_instrument.market_id == 'EZ' %}
+      {% if source_notice_exact %}
+        <aside class="intl-macro__source-notice">
+          <p><span class="l-en">Source: European Central Bank (ECB). These ECB data are available free of charge at the source.</span><span class="l-zh" lang="zh">来源：欧洲中央银行（ECB）。这些欧洲央行数据可在原始来源免费获取。</span></p>
+          <a href="https://data.ecb.europa.eu/data/datasets/FM/FM.D.U2.EUR.4F.KR.DFR.LEV" target="_blank" rel="noopener"><span class="l-en">ECB data set</span><span class="l-zh" lang="zh">欧洲央行数据集</span></a>
+        </aside>
+      {% else %}
+        <small><span class="l-en">Source link unavailable</span><span class="l-zh" lang="zh">来源链接暂无可用</span></small>
+      {% endif %}
+    {% endif %}
+    {% if metric_field == field.key and metric_quality != 'unknown' and metric.get('reason') != 'metadata_denied' and metric_instrument is not none %}
+      <details class="intl-macro__evidence">
+        <summary class="intl-macro__evidence-summary"><span class="l-en">Evidence</span><span class="l-zh" lang="zh">依据</span></summary>
+        <dl>
+          <div><dt><span class="l-en">Instrument</span><span class="l-zh" lang="zh">工具</span></dt><dd>{{ metric_instrument.id|e }} · {{ metric_instrument.kind|e }} · {{ metric_instrument.market_id|e }}</dd></div>
+          <div><dt><span class="l-en">Quality</span><span class="l-zh" lang="zh">质量</span></dt><dd>{% set evidence_quality = quality_labels.get(metric_quality, quality_labels.unknown) %}<span class="l-en">{{ evidence_quality.en|e }}</span><span class="l-zh" lang="zh">{{ evidence_quality.zh|e }}</span></dd></div>
+          {% if metric_unit in unit_labels %}<div><dt><span class="l-en">Unit</span><span class="l-zh" lang="zh">单位</span></dt><dd><span class="l-en">{{ unit_labels[metric_unit].en|e }}</span><span class="l-zh" lang="zh">{{ unit_labels[metric_unit].zh|e }}</span></dd></div>{% endif %}
+          <div><dt><span class="l-en">Observation date</span><span class="l-zh" lang="zh">观测日期</span></dt><dd>{% if metric.get('observation_at') is none %}{{ not_supplied() }}{% else %}{{ metric.get('observation_at')|e }}{% endif %}</dd></div>
+          <div><dt><span class="l-en">Period / count basis</span><span class="l-zh" lang="zh">区间 / 计数口径</span></dt><dd>
+            {% set metric_period = metric.get('period') %}{% if metric_period is none %}{{ not_supplied() }}{% else %}<span class="intl-macro__period">{{ metric_period.start|e }} – {{ metric_period.end|e }} · {{ metric_period.count|e }} · {{ metric_period.count_basis|e }}</span>{% endif %}
+          </dd></div>
+          <div><dt><span class="l-en">Calculation date</span><span class="l-zh" lang="zh">计算日期</span></dt><dd>{% if metric.get('calculation_at') is none %}{{ not_supplied() }}{% else %}{{ metric.get('calculation_at')|e }}{% endif %}</dd></div>
+          <div><dt><span class="l-en">Source reference</span><span class="l-zh" lang="zh">来源引用</span></dt><dd class="intl-macro__source-reference intl-macro__reference" tabindex="0">{{ metric.get('source_reference')|e }}</dd></div>
+          {% if metric.get('evidence_key') is not none %}<div><dt><span class="l-en">Evidence key</span><span class="l-zh" lang="zh">证据键</span></dt><dd class="intl-macro__reference" tabindex="0">{{ metric.get('evidence_key')|e }}</dd></div>{% endif %}
+        </dl>
+      </details>
+    {% endif %}
+  </div>
+</td>
+{%- endmacro %}
+<section
+  class="intl-macro"
+  id="{{ context_id|e }}-macro"
+  aria-labelledby="{{ context_id|e }}-macro-title"
+  data-im-panel
+  data-view="macro"
+  data-horizon="{{ panel_context.horizon|e }}"
+  data-basis="{{ panel_context.currency_basis|e }}"
+  data-return-basis="{{ panel_context.return_basis|e }}"
+  data-source=""
+  {% if generation is not none %}data-im-generation="{{ generation|e }}"{% endif %}
+>
+  <header class="intl-macro__header">
+    <h2 id="{{ context_id|e }}-macro-title"><span class="l-en">Macro evidence</span><span class="l-zh" lang="zh">宏观依据</span></h2>
+    <div class="intl-macro__context" id="{{ context_id|e }}-context">
+      <span><span class="l-en">Return horizon</span><span class="l-zh" lang="zh">回报期限</span> {{ panel_context.horizon|e }}</span>
+      <span><span class="l-en">Currency basis · {{ 'Local currency' if panel_context.currency_basis == 'local' else 'USD · Unhedged' }}</span><span class="l-zh" lang="zh">货币口径 · {{ '本币' if panel_context.currency_basis == 'local' else '美元 · 未对冲' }}</span></span>
+      <span><span class="l-en">Return basis · Price return</span><span class="l-zh" lang="zh">回报口径 · 价格回报</span></span>
+      <small><span class="l-en">These controls do not redefine GDP or policy observation periods.</span><span class="l-zh" lang="zh">这些控制项不重新定义 GDP 或政策观测区间。</span></small>
+    </div>
+  </header>
+
+  <div class="intl-macro__coverage" id="{{ context_id|e }}-coverage">
+    <h3><span class="l-en">Cycle coverage</span><span class="l-zh" lang="zh">周期覆盖</span></h3>
+    <p><span class="l-en">{{ macro_section.coverage.configured_ids|length }} configured; {{ macro_section.coverage.classified_ids|length }} classified.</span><span class="l-zh" lang="zh">已配置 {{ macro_section.coverage.configured_ids|length }} 个；已分类 {{ macro_section.coverage.classified_ids|length }} 个。</span></p>
+    <dl>
+      {% for item in macro_section.coverage.unclassified %}
+        <div><dt>{{ item.market_id|e }}</dt><dd>{{ reason_text(item.reason) }}</dd></div>
+      {% else %}
+        <div><dt><span class="l-en">All configured markets classified</span><span class="l-zh" lang="zh">所有配置市场均已分类</span></dt><dd><span class="l-en">Coverage follows the available evidence.</span><span class="l-zh" lang="zh">根据已提供的证据显示。</span></dd></div>
+      {% endfor %}
+    </dl>
+  </div>
+
+  <div class="intl-macro__reads" id="{{ context_id|e }}-reads">
+    <section>
+      <h3><span class="l-en">Economic evidence</span><span class="l-zh" lang="zh">经济依据</span></h3>
+      {% if macro_section.selected_market is none %}
+        <p><span class="l-en">Cycle assessment unavailable where growth and inflation evidence is missing.</span><span class="l-zh" lang="zh">缺少增长和通胀依据时，经济周期判断暂无可用。</span></p>
+      {% elif macro_section.selected_reads.economic_cycle.destination is not none %}
+        <p><a href="{{ macro_section.selected_reads.economic_cycle.destination|e }}">{{ macro_section.selected_reads.economic_cycle.title_key|e }}</a></p>
+      {% else %}
+        <p>{{ reason_text(macro_section.selected_reads.economic_cycle.reason) }}</p>
+      {% endif %}
+    </section>
+    <section class="intl-macro__policy-read">
+      <h3><span class="l-en">Realized policy</span><span class="l-zh" lang="zh">已公布政策利率</span></h3>
+      {% if macro_section.selected_market is none %}
+        <p><span class="l-en">Policy levels retain their own observation date.</span><span class="l-zh" lang="zh">政策利率保留各自的观测日期。</span></p>
+      {% elif macro_section.selected_reads.realized_policy.destination is not none %}
+        <p><a href="{{ macro_section.selected_reads.realized_policy.destination|e }}">{{ macro_section.selected_reads.realized_policy.title_key|e }}</a></p>
+      {% else %}
+        <p>{{ reason_text(macro_section.selected_reads.realized_policy.reason) }}</p>
+      {% endif %}
+    </section>
+    <section>
+      <h3><span class="l-en">Market context</span><span class="l-zh" lang="zh">市场背景</span></h3>
+      <p><span class="l-en">Return to Overview for market response.</span><span class="l-zh" lang="zh">返回概览查看市场反应。</span></p>
+      <button type="button" data-im-action="set_view" data-im-view="overview"><span class="l-en">Overview</span><span class="l-zh" lang="zh">概览</span></button>
+    </section>
+  </div>
+
+  {% if macro_section.cycle_rows %}
+    <details class="intl-macro__composite">
+      <summary><span class="l-en">Composite evidence</span><span class="l-zh" lang="zh">综合证据</span></summary>
+      {% for composite in macro_section.cycle_rows %}
+        <section>
+          <h3>{{ composite.market_id|e }} · {{ composite.method_kind|e }}</h3>
+          {% if composite.supported_heading is none %}
+            <p><span class="l-en">Original method retained; no economic-cycle diagnosis is claimed.</span><span class="l-zh" lang="zh">保留原方法；不声称经济周期诊断。</span></p>
+          {% else %}
+            <p>{{ composite.supported_heading|e }}</p>
+          {% endif %}
+          <p><span class="l-en">Method</span><span class="l-zh" lang="zh">方法</span> {{ composite.reported_method_ref|e }} · {{ composite.presentation_quality|e }}</p>
+          <dl>
+            <div><dt><span class="l-en">Growth</span><span class="l-zh" lang="zh">增长</span></dt><dd>{% for component in composite.components.growth %}{{ component.key|e }}{% if component.score is not none %} · {{ component.score|e }}{% endif %} · {{ component.weight|e }}{% if not loop.last %} · {% endif %}{% endfor %}</dd></div>
+            <div><dt><span class="l-en">Inflation</span><span class="l-zh" lang="zh">通胀</span></dt><dd>{% for component in composite.components.inflation %}{{ component.key|e }}{% if component.score is not none %} · {{ component.score|e }}{% endif %} · {{ component.weight|e }}{% if not loop.last %} · {% endif %}{% endfor %}</dd></div>
+            <div><dt><span class="l-en">As of</span><span class="l-zh" lang="zh">截至</span></dt><dd>{{ composite.components.asof|e }}</dd></div>
+          </dl>
+        </section>
+      {% endfor %}
+    </details>
+  {% endif %}
+
+  <div class="intl-macro__table-wrap">
+    <label class="intl-macro__market-select-label" for="{{ context_id|e }}-market-select"><span class="l-en">Market</span><span class="l-zh" lang="zh">市场</span></label>
+    <select id="{{ context_id|e }}-market-select" data-im-action="select_market">
+      <option value="" data-im-label-en="All markets" data-im-label-zh="全部市场">All markets / 全部市场</option>
+      {% for market in registry.markets %}
+        <option value="{{ market.market_id|e }}" data-im-label-en="{{ market.name_en|e }}" data-im-label-zh="{{ market.name_zh|e }}">{{ market.name_en|e }} / {{ market.name_zh|e }}</option>
+      {% endfor %}
+    </select>
+    <table class="intl-macro__table" id="{{ context_id|e }}-market-table" aria-describedby="{{ context_id|e }}-table-caption">
+      <caption id="{{ context_id|e }}-table-caption"><span class="l-en">Available macro observations</span><span class="l-zh" lang="zh">宏观观测数据</span></caption>
+      <thead>
+        <tr>
+          <th scope="col" id="{{ context_id|e }}-market"><span class="l-en">Market</span><span class="l-zh" lang="zh">市场</span></th>
+          {% for field in field_specs %}<th scope="col" id="{{ context_id|e }}-{{ field.key|e }}"><span class="l-en">{{ field.en|e }}</span><span class="l-zh" lang="zh">{{ field.zh|e }}</span></th>{% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in macro_section.market_rows %}
+          {% set registry_market = registry.markets | selectattr('market_id', 'equalto', row.market_id) | first %}
+          <tr class="intl-macro__market" data-im-macro-market="{{ row.market_id|e }}">
+            <th scope="row" class="intl-macro__market" headers="{{ context_id|e }}-market" id="{{ context_id|e }}-row-{{ loop.index }}">
+              <span class="intl-macro__market-id">{{ row.market_id|e }}</span>
+              {% if registry_market is not none %}
+                <span class="intl-macro__market-name"><span class="l-en">{{ registry_market.name_en|e }}</span><span class="l-zh" lang="zh">{{ registry_market.name_zh|e }}</span></span>
+              {% endif %}
+            </th>
+{{ metric_cell(row.gdp_yoy, field_specs[0], context_id, loop.index, row.market_id) }}
+            {{ metric_cell(row.cpi_yoy, field_specs[1], context_id, loop.index, row.market_id) }}
+            {{ metric_cell(row.policy_rate, field_specs[2], context_id, loop.index, row.market_id) }}
+            {{ metric_cell(row.policy_proxy, field_specs[3], context_id, loop.index, row.market_id) }}
+            {{ metric_cell(row.yield_10y, field_specs[4], context_id, loop.index, row.market_id) }}
+            {{ metric_cell(row.yield_change, field_specs[5], context_id, loop.index, row.market_id) }}
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  {% if macro_section.deep_research %}
+    <section class="intl-macro__research" aria-labelledby="{{ context_id|e }}-research-title">
+      <h3 id="{{ context_id|e }}-research-title"><span class="l-en">Research destinations</span><span class="l-zh" lang="zh">研究目的地</span></h3>
+      <ul>
+        {% for research in macro_section.deep_research %}
+          <li class="intl-macro__research-item">
+            {% if research.destination is not none %}
+              <a href="{{ research.destination|e }}"><span class="l-en">{{ research.title.en|e }}</span><span class="l-zh" lang="zh">{{ research.title.zh|e }}</span></a>
+            {% else %}
+              <span><span class="l-en">{{ research.title.en|e }}</span><span class="l-zh" lang="zh">{{ research.title.zh|e }}</span></span>
+              <small>{{ reason_text(research.capability_reason) }}</small>
+            {% endif %}
+          </li>
+        {% endfor %}
+      </ul>
+    </section>
+  {% endif %}
+</section>

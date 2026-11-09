@@ -1,0 +1,43 @@
+{
+  "observed_utc_date": "2026-10-21",
+  "data_workspace_revision": "e5e84272bc9128e2577f907de4d4960e84950a9b",
+  "scope": "specific retained bindings inspected; not global absence census",
+  "earnings_snapshot": {
+    "binding": "macro_snapshot:earnings/earnings.parquet",
+    "rows": 2315,
+    "as_of": "2026-09-30T03:23:30.310911Z",
+    "version": "statv1:f7dde78894e5545b4cd1eed6047806937d4126c7435f62ed028c57e6aa47eada",
+    "mcd_query_receipt": "08fd3d93c4809f89ef3272cd2413e6edc91badea14205db19053b9d9712d91d0",
+    "historical_consensus_vintage_proven": false
+  },
+  "fundamentals": {
+    "root_json_file_count": 4502,
+    "inspected_schema_binding": "fundamental_history:us_fund/A.json",
+    "historical_availability_proven": false
+  },
+  "transcripts": {
+    "binding": "fundamental_history:transcripts/stock_earning_call_transcripts.parquet",
+    "bytes": 2278710963,
+    "version": "statv1:f2e77c89773d0a4a5655906166dad85ba0f1a37d50ce91b52b98c60d88679376",
+    "presence_verified": true,
+    "body_temporal_qualification_performed": false
+  },
+  "current_stock_store": {
+    "files": 251,
+    "wmt_open_present": false,
+    "synthetic_open_created": false
+  },
+  "issuer_cases": {
+    "purpose": "purposive measurement illustrations, not predictive validation",
+    "wmt_dates": [
+      "2022-07-25",
+      "2022-08-16"
+    ],
+    "clx_dates": [
+      "2021-11-01",
+      "2022-02-03"
+    ],
+    "machine_availability_contract_qualified": false
+  },
+  "production_changes": false
+}

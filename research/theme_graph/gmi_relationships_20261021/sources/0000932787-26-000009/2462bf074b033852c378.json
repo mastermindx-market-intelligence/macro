@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-26T21:17:19Z",
+ "accession": "0000932787-26-000009",
+ "cik": "0000932787",
+ "doc_byte_length": 4965839,
+ "doc_sha256": "626d3c9e9346bd284e88097bdf8f5ab5331c0725d7dcf8d03d55f4450d4c68db",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-26",
+ "form": "20-F",
+ "period_of_report": "2025-12-31",
+ "primary_document": "stm-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 645056,
+  "byte_start": 644674,
+  "normalized": "Our business is dependent upon our ability to retain existing customers. In 2025 our largest customer, Apple, accounted for 17.7% of our total revenues. While we do not believe to be dependent on any one customer or group of customers, the loss of key customers or important sockets at key customers could have an adverse effect on our results of operations and financial condition.",
+  "normalized_sha256": "2462bf074b033852c378475012a941a283f650e3a39bef20443b06bcd50f01be",
+  "raw": "Our business is dependent upon our ability to retain existing customers. In 2025 our largest customer, Apple, accounted for 17.7% of our total revenues. While we do not believe to be dependent on any one customer or group of customers, the loss of key customers or important sockets at key customers could have an adverse effect on our results of operations and financial condition.",
+  "raw_sha256": "2462bf074b033852c378475012a941a283f650e3a39bef20443b06bcd50f01be"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/932787/000093278726000009/stm-20251231.htm",
+ "xbrl_contexts": []
+}

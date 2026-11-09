@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-06-30T01:50:45Z",
+ "accession": "0001104659-26-079021",
+ "cik": "0001340677",
+ "doc_byte_length": 3386665,
+ "doc_sha256": "8d381f083e2b1897571cacd1746d3388bd2be0c6046b38dbb2a12ba18a73c218",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-06-30",
+ "form": "40-F",
+ "period_of_report": "2026-03-31",
+ "primary_document": "svm-20260331xex99d3.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 2614990,
+  "byte_start": 2613941,
+  "normalized": "The Company has a precious metals purchase agreement (“PMPA”) with Wheaton Precious Metals International Ltd. (“Wheaton”) for the construction of the El Domo project. Under the PMPA, Wheaton has agreed to provide a deposit of $175.5 million, payable in stages including an early deposit payment and up to four construction payments, each subject to the satisfaction of specific conditions precedent detailed in the agreement.",
+  "normalized_sha256": "269bce2ab1581137763a30e7874d3bae06bf24cabe7898daa6d47a2fcc0ae77b",
+  "raw": "The Company has a precious metals purchase agreement (&#8220;PMPA&#8221;) with Wheaton Precious Metals International&#160;Ltd. (&#8220;Wheaton&#8221;) for the construction of the El Domo project. Under the PMPA, Wheaton has agreed to provide a deposit of $<ix:nonFraction unitRef=\"Unit_Standard_USD_1QZcaS_UsEONkUXjKjdxcg\" contextRef=\"Duration_4_1_2025_To_3_31_2026_1Nbiu-r6QU2VkV9VZmH07Q\" decimals=\"-5\" format=\"ixt:num-dot-decimal\" name=\"svm:MaximumDepositUnderPreciousMetalsPurchaseAgreement\" scale=\"6\" id=\"Narr_R7mC7LpQz0m5XD8xDQ2oLw\">175.5</ix:nonFraction> million, payable in stages including an early deposit payment and up to <ix:nonFraction unitRef=\"Unit_Standard_installment_cFh2IgnR_0CVkW1Nty66UA\" contextRef=\"Duration_4_1_2025_To_3_31_2026_1Nbiu-r6QU2VkV9VZmH07Q\" decimals=\"INF\" format=\"ixt-sec:numwordsen\" name=\"svm:MaximumNumberOfConstructionInstallments\" scale=\"0\" id=\"Narr_uiY2WHuTb02_JoetaVJOwg\">four</ix:nonFraction> construction payments, each subject to the satisfaction of specific conditions precedent detailed in the agreement.",
+  "raw_sha256": "76d04a99683440c18c3389d48fc7b124152137d4bed5a11f4f7ff5a92145e5df"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1340677/000110465926079021/svm-20260331xex99d3.htm",
+ "xbrl_contexts": []
+}
