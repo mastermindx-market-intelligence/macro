@@ -4,7 +4,7 @@
 
 This is the canonical continuation of the [first audit and build plan](AUDIT_AND_BUILD_PLAN.md), on the existing [Macro programme PR #10617](https://github.com/mastermindx-market-intelligence/macro/pull/10617). The Chairman requested further autonomous implementation, correction and enhancement across Paper. The work continues in the foreground; this saved milestone is not a completion claim or a request to resume.
 
-Eight additional files have received applied changes with native visual checks: Guide, Prophet, Market Memory, Policy Monitor, Market Ontology, Sector Intelligence, the Options W3 mobile companion and Risk Radar. Options now has a six-state Watch/review amendment plus eleven source-matched Flow/Volatility screen and recovery states, with exact builder contracts. Risk Radar now gives calibration qualification priority across ten variants. Bounded review is continuing on GMI public source disclosure and the Company R3 mobile composition. The seven-file first pass remains accepted work for this mission and is not repeated here.
+Eight additional files have received applied changes with native visual checks: Guide, Prophet, Market Memory, Policy Monitor, Market Ontology, Sector Intelligence, the Options W3 mobile companion and Risk Radar. Options now has a six-state Watch/review amendment plus eleven source-matched Flow/Volatility screen and recovery states, with exact builder contracts. Risk Radar now gives calibration qualification priority across ten variants. GMI’s existing file now has distinct theme/source disclosures, four expanded receipt specimens and a locale-state build amendment. Bounded work continues on the Company R3 mobile composition. The seven-file first pass remains accepted work for this mission and is not repeated here.
 
 The root session is the only canvas writer among this session’s agents; independent live writers retain their own targets. Read-only design, international-language and architecture advisers contributed bounded judgments. Mutations use fresh snapshot guards and distinct operation identities beginning `paper-estate-cont-20261108-`. Initial changes used the Mastermind Paper connector; after its transport repeatedly timed out on reads, new operations continued through the authorized Studio Direct Paper owner. Completed operations were read back, never replayed; the detailed transport ruling below preserves that boundary. No runtime release, merge, hold change, message to another person, or live-model qualification has been performed.
 
@@ -380,14 +380,81 @@ Native screenshots reviewed all ten affected product variants and the pickup map
 
 The newer Follow-save and generic popup interaction/future-state work on `p-9-0` and `p-8-0`, Pullback studies, other popup redesigns and historical references were preserved. Native visual QA is not browser proof: 320px, 200% text, keyboard, focus, actual disclosure/return and source-read behavior remain implementation checks.
 
-## Active next phase: GMI public source disclosure and Company mobile composition
+## 10. GMI: distinct theme context and public source receipts
 
-GMI has newer proposed S05/public-receipt work tied to Draft PR #10676. Reconcile that exact candidate before designing its expanded disclosure; do not import private clock or ledger fields from a broader internal model. Preserve current public return ownership and all release holds. The empty Company R3 mobile successor can reuse existing historical comparison fragments, subject to fresh target inspection and the current Company navigation/source boundary.
+**Native file:** [GMI Explorer · Product system](https://app.paper.design/file/01M5H6EARN9YHQV17JC6ZG9BRY/p-1-0). **New state page:** [S06 · Source receipt & theme details](https://app.paper.design/file/01M5H6EARN9YHQV17JC6ZG9BRY/p-7-0).
 
-Mastermind OS has substantial newer owner maps, recovery and acceptance work. Preserve it and continue only demonstrated, disjoint improvements.
+### Corrected mapping and applied changes
+
+Inspection of the current Paper structure and the newer candidate source found two different disclosures that had been conflated. The bottom row beside value-chain context belongs to the **theme**, while the selected company card has its own **source receipt**.
+
+| Existing theme variant | Root | Theme-details label | Added card receipt row |
+|---|---|---|---|
+| Desktop EN · Noir | `61M-0` | `69Z-0` | `7E6-0` |
+| Desktop EN · Day | `6A7-0` | `6AC-0` | `7E8-0` |
+| Mobile EN · Noir | `6DR-0` | `6FU-0` | `7EA-0` |
+| Mobile EN · Day | `6FY-0` | `6G4-0` | `7EC-0` |
+| Desktop ZH · Noir | `6I6-0` | `6IB-0` | `7EE-0` |
+| Desktop ZH · Day | `6LQ-0` | `6LV-0` | `7EG-0` |
+| Mobile ZH · Noir | `6PA-0` | `6PG-0` | `7EI-0` |
+| Mobile ZH · Day | `6R7-0` | `6RD-0` | `7EK-0` |
+
+The eight bottom labels now say **Theme details / 主题详情**. Their taxonomy, scope and value-chain meaning is preserved. Each selected evidence card now has a separate **Source receipt / 来源凭证** entry after its product context and actions. The existing S05 controls `77R-0` and `78T-0` were cloned for consistency, then localized. A placement error in one new ZH row was immediately corrected by moving only that new row to its verified card `6PK-0`; final comparison confirms no existing product nodes changed beyond the eight intended labels.
+
+### Expanded states and public field boundary
+
+| New root | Content |
+|---|---|
+| `7EM-0` | S06 scope header |
+| `7ER-0` | Expanded receipt in the existing 390px EN dark theme workflow |
+| `7GR-0` | Expanded receipt in the existing 390px ZH light theme workflow |
+| `7IR-0` | 1080px EN evidence card with aligned desktop receipt rows |
+| `7JR-0` | 320px light evidence-card component for full identifier wrapping |
+| `7M9-0` | Seven builder modules: mapping, public fields/clocks, locale state, focus, return, responsive/motion and acceptance |
+
+The four expanded states retain the existing dated claim, planned lifecycle, product/platform, original-source action and limitations. They display the exact current public receipt:
+
+- Record: `actprop:287edbf7e04b8aba873b7493`
+- Source key: `manual:micron-ir:hbm3e-h200:2024-02-26`
+- Source text hash: `f79bce81f656e826b3aa74380eb9a2b63bf74fc0e60376dc2b40c64600eb890a`
+
+No identifier is shortened or rewritten; wrapping is presentation only. The 320px specimen is a **card component**, not proof of the complete application at that viewport.
+
+Root directly read [PR #10676](https://github.com/mastermindx-market-intelligence/macro/pull/10676) metadata: open, Draft, unmerged; actual head `80d6ff71b9913524c4a381b543ec7a53383f50dc`. The following exact candidate files were read:
+
+- [scripts/build_gmi_explorer.py](https://github.com/mastermindx-market-intelligence/macro/blob/80d6ff71b9913524c4a381b543ec7a53383f50dc/scripts/build_gmi_explorer.py), especially L72–178 and L181–190: exact public observation predicate, narrow render projection, separate valid knowledge date, and stale issuer-file retirement.
+- [templates/_gmi_product_macros.html.j2](https://github.com/mastermindx-market-intelligence/macro/blob/80d6ff71b9913524c4a381b543ec7a53383f50dc/templates/_gmi_product_macros.html.j2), L23 and L39: separate native card receipt and topic-context disclosures.
+- [templates/_gmi_theme_data.html.j2](https://github.com/mastermindx-market-intelligence/macro/blob/80d6ff71b9913524c4a381b543ec7a53383f50dc/templates/_gmi_theme_data.html.j2): exact public card serialization and HTTP(S) source-link filter.
+- [templates/gmi.js](https://github.com/mastermindx-market-intelligence/macro/blob/80d6ff71b9913524c4a381b543ec7a53383f50dc/templates/gmi.js), L199–243, L258–273, L292–317: qualified return, optional receipt fields, dynamic disclosure, card replacement and locale-triggered rebuild.
+- [templates/gmi.css](https://github.com/mastermindx-market-intelligence/macro/blob/80d6ff71b9913524c4a381b543ec7a53383f50dc/templates/gmi.css): existing flexible identifier wrapping, 120px desktop labels, stacked mobile rows and reduced-motion behavior.
+
+This newer candidate is narrower than the broader internal model at the retained Macro pin. **26 February 2024 is the source publication date only.** The valid knowledge date is projected separately as `theme_links.first_seen`; retrieval clocks, curation review dates and magnitude states are not in the connection-card payload. Do not import those fields from the internal model, infer live delivery/revenue exposure, or expand the exact public observation allowance.
+
+### Concrete implementation amendment
+
+1. Keep the two existing native disclosures. Apply Theme details copy to the topic summary, and keep card receipt labels/fields consistent between the Jinja macro and the JS connection renderer. The selected receipt is already in the rendered card; opening it requires no new request, store, inspector or route.
+2. In the existing locale branch of `gmi.js`, capture transient disclosure state before `sync()` replaces card children. Match only a present, unique existing public record within the selected theme and the same source key/hash. Restore only still-supplied matching cards, then discard the capture.
+3. Preserve focus on an intact language control. Only restore a corresponding summary/action if its previous focused node was replaced. If the card disappears, use the current topic heading or available empty-state action. Never restore stale DOM or source URLs.
+4. Missing/duplicate identities must not fall back to row order, ticker, company name or translated text. `evidence=1` remains the evidence-only topic filter; it must not become the disclosure-open bit. No receipt, source hash or internal ledger identity is added to `gmi_return`.
+5. Retain the existing CSS wrapping and desktop/mobile row patterns. Increase the current summary minimum from 40px to the shown 44px. Keep expansion immediate; any optional chevron/opacity motion is ≤120ms and absent with reduced motion.
+6. Verify static/no-JS/dynamic parity, two open records across locale changes, reorder/missing/duplicate identities, removed cards, focus ownership and 200% text. A missing field can receive Not recorded copy only on a still-admitted card. The current exact Micron predicate otherwise withholds the card; template support for an absent URL does not prove that it is a reachable ordinary source outcome.
+
+The existing return owner admits only qualified theme/company-catalogue presentation context, a bounded query and at most one upstream theme return. It does not prove immutable source snapshot, exact opener, scroll or historical-stack restoration. A removed issuer file needs its existing serving/unavailable path verified; the issuer template's empty-card branch does not establish that response. No synthetic Back or replacement-company fallback was introduced.
+
+### Native verification and preservation
+
+Final JSX comparisons across the eight current theme boards found **no lost existing IDs**, exactly one intended existing label change per board, and exactly one new two-node receipt entry per board. Every public identifier appears exactly once in each expanded state, with original bytes intact. Native screenshots checked both full 390px workflows, the 320px component, the final desktop card, the full existing desktop page, themed entries and the seven-module Build sheet. The long hash wraps without clipping; desktop labels align; all inspected text uses the established theme tokens.
+
+The entire S05 root `73X-0` was read back **byte-identical** to its preimage. The ten first-pass historical badges, both company-catalogue boards, original S03–S05 guidance and historical references were preserved. Fourteen exact affected roots were released. PR #10676's Draft/release holds and protected model-run boundaries were unchanged; no fenced result was consumed and no runtime source, model, CI, release or deployment action was performed.
+
+These are applied Paper states and a source-matched implementation plan. The locale-state repair and 44px CSS amendment are not claimed as implemented runtime behavior.
+
+## Active next phase: Company R3 mobile composition
+
+The empty Company R3 mobile successor can reuse the existing source-backed historical comparison and evidence sheet. Verify the target and source fragments again, assemble a disjoint mobile composition, and map the actual Company navigation and earnings-evidence boundary without inventing an existing Expectations route. Mastermind OS's newer accepted owner/recovery work remains preserved.
 
 ## Verification boundary and next actions
 
 This record proves applied native design changes, source inspection and scoped native visual checks. It does not establish functional browser navigation, runtime disclosure/keyboard behavior, real-account access, live data, model qualification, CI, merge or deployment.
 
-Continue GMI public source disclosure and the Company mobile composition, implementing only demonstrated gaps with exact owner and acceptance mapping. Save/read back useful milestones and continue the parent Paper improvement mission; a phase completion is not DONE_WHEN.
+Continue the Company mobile composition and subsequent demonstrated gaps with exact owner and acceptance mapping. Save/read back useful milestones and continue the parent Paper improvement mission; a phase completion is not DONE_WHEN.
