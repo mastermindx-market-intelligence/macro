@@ -325,8 +325,8 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-ui);
 
 <main class="gmi-wrap" id="main">
 
-<header class="gmi-product-head">
-  <div><a class="gmi-product-name" href="gmi.html">GMI Explorer</a><p><span class="l-en">Understand themes, business connections, and the evidence behind them.</span><span class="l-zh">理解产业主题、业务关联，以及背后的证据。</span></p></div>
+<header class="gmi-product-head gmi-product-head--task">
+  <div><a class="gmi-product-name" href="gmi.html">GMI Explorer</a><h1 class="gmi-product-page-title"><span class="l-en">Company evidence</span><span class="l-zh">公司证据</span></h1></div>
   <div class="gmi-snapshot" data-gmi-snapshot="2026-11-03"><span><span class="l-en">Snapshot</span><span class="l-zh">快照日期</span> · <span class="l-en">3 Nov 2026</span><span class="l-zh">2026年11月3日</span></span><span class="gmi-snapshot-stale" hidden><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg><span class="l-en">Older snapshot</span><span class="l-zh">快照较旧</span></span></div>
 <div class="gmi-brain-slot" id="gmi-brain-slot"></div>
 </header>
@@ -339,14 +339,6 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-ui);
   <div class="gmi-product-tools"><a href="gmi-index.html"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6.5h11M9 12h11M9 17.5h11"/><path d="M4.5 6.5h.01M4.5 12h.01M4.5 17.5h.01"/></svg><span class="l-en">Full index</span><span class="l-zh">完整索引</span></a><a href="gmi-coverage.html"><span class="l-en">Coverage &amp; methodology</span><span class="l-zh">覆盖与方法</span><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 12h15M13.5 6l6 6-6 6"/></svg></a></div>
 </nav>
 
-<header class="gmi-head">
-  <div class="gmi-head-main">
-    <nav class="gmi-crumb" aria-label="Breadcrumb"><span class="l-en">Research</span><span class="l-zh">研究</span><i aria-hidden="true">›</i><span class="l-en">Company evidence</span><span class="l-zh">公司证据</span></nav>
-    <h1 class="gmi-h1"><span class="l-en">Company evidence</span><span class="l-zh">公司证据</span></h1>
-    <p class="gmi-sub"><span class="l-en">Find the company. Check the dated claim. Follow its source.</span><span class="l-zh">查找公司，核对有日期的记录，追溯原始来源。</span></p>
-  </div>
-  <div class="gmi-head-side"></div>
-</header>
 <label class="gmi-topic-search"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg><input type="search" data-company-search placeholder="Search company, ticker or product" aria-label="Search company evidence" data-ph-en="Search company, ticker or product" data-ph-zh="搜索公司、代码或产品" data-aria-en="Search company evidence" data-aria-zh="搜索公司证据" autocomplete="off"></label>
 
 
@@ -376,11 +368,10 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-ui);
 </article>
 
 </div>
-<div class="gmi-topic-empty" data-company-empty hidden><h2><span class="l-en">No matching company</span><span class="l-zh">没有匹配的公司</span></h2><p><span class="l-en">Try a company name, ticker or product. This catalogue includes only the evidence currently on file.</span><span class="l-zh">请尝试公司名称、代码或产品。此目录仅包含目前收录的证据。</span></p><button type="button" class="gmi-action-secondary" data-company-reset><span class="l-en">Clear search</span><span class="l-zh">清除搜索</span></button></div>
+<div class="gmi-topic-empty" data-company-empty hidden><h2><span class="l-en">No matching company</span><span class="l-zh">没有匹配的公司</span></h2><p><span class="l-en">Try a company name, ticker or product. This catalogue includes only the evidence currently on file.</span><span class="l-zh">请尝试公司名称、代码或产品。此目录仅包含目前收录的证据。</span></p><button type="button" class="gmi-action-secondary" data-company-reset><span class="l-en">Clear search</span><span class="l-zh">清空搜索</span></button></div>
 </section>
 <aside class="gmi-company-guide" data-company-guide aria-labelledby="gmi-company-guide-title"><h2 id="gmi-company-guide-title"><span class="l-en">What this evidence tells you</span><span class="l-zh">如何理解这些证据</span></h2><section><h3><span class="l-en">A documented product connection</span><span class="l-zh">有据可查的产品关联</span></h3><p><span class="l-en">Read the product, named platform and lifecycle together with the source date.</span><span class="l-zh">结合来源日期，查看产品、所述平台及其所处阶段。</span></p></section><section><h3><span class="l-en">Not a live exposure map</span><span class="l-zh">并非实时敞口图谱</span></h3><p><span class="l-en">These records do not establish current delivery, revenue exposure or complete company coverage.</span><span class="l-zh">这些记录并不证实当前交付、营收敞口或完整的公司覆盖。</span></p></section><nav aria-label="Evidence guidance" data-aria-en="Evidence guidance" data-aria-zh="证据指引"><a href="gmi-coverage.html"><span class="l-en">Coverage &amp; methodology</span><span class="l-zh">覆盖与方法</span><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 12h15M13.5 6l6 6-6 6"/></svg></a><a href="gmi-index.html"><span class="l-en">Explore all themes</span><span class="l-zh">浏览全部主题</span><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 12h15M13.5 6l6 6-6 6"/></svg></a></nav></aside>
 </div>
-<p class="gmi-note"><span class="l-en">A documented product connection does not establish current delivery, revenue exposure or complete company coverage.</span><span class="l-zh">有据可查的产品关联不代表当前交付、营收敞口或完整的公司覆盖。</span></p>
 
 </main>
 

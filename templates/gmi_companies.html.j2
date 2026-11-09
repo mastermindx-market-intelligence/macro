@@ -1,11 +1,9 @@
 {% extends "_gmi_base.html.j2" %}
-{% from "_gmi_macros.html.j2" import t, d, ic, asof with context %}
-{% from "_gmi_head.html.j2" import head %}
+{% from "_gmi_macros.html.j2" import t, d, ic with context %}
 {% from "_gmi_product_macros.html.j2" import lifecycle with context %}
 {% block title %}GMI Explorer — Company evidence{% endblock %}
 {% block seo %}{% set seo_title = 'GMI Explorer — Company evidence | Mastermind' %}{% set seo_desc = 'Documented company products, theme context and dated sources.' %}{% set seo_path = 'gmi-companies.html' %}{% include "_seo_head.html.j2" %}{% endblock %}
 {% block body %}
-{{ head([('Research','研究'),('Company evidence','公司证据')], 'Company evidence', '公司证据', 'Find the company. Check the dated claim. Follow its source.', '查找公司，核对有日期的记录，追溯原始来源。') }}
 <label class="gmi-topic-search">{{ ic('search', 18) }}<input type="search" data-company-search placeholder="Search company, ticker or product" aria-label="Search company evidence" data-ph-en="Search company, ticker or product" data-ph-zh="搜索公司、代码或产品" data-aria-en="Search company evidence" data-aria-zh="搜索公司证据" autocomplete="off"></label>
 {% set catalogue = namespace(count=0, items=[]) %}
 {% for iss in model.issuers %}
@@ -34,9 +32,8 @@
 </article>
 {% endfor %}
 </div>
-<div class="gmi-topic-empty" data-company-empty{% if catalogue.count %} hidden{% endif %}><h2>{{ t('No matching company', '没有匹配的公司') if catalogue.count else t('No company evidence yet', '暂无公司证据') }}</h2><p>{{ t('Try a company name, ticker or product. This catalogue includes only the evidence currently on file.', '请尝试公司名称、代码或产品。此目录仅包含目前收录的证据。') if catalogue.count else t('No reviewed product connection is available in this snapshot. You can still explore the full theme taxonomy.', '此快照暂无可用的经审核产品关联。完整的主题分类体系仍可浏览。') }}</p><button type="button" class="gmi-action-secondary" data-company-reset{% if not catalogue.count %} hidden{% endif %}>{{ t('Clear search', '清除搜索') }}</button>{% if not catalogue.count %}<a class="gmi-action-secondary" href="{{ nav_prefix }}gmi.html">{{ t('Explore themes', '探索主题') }}</a>{% endif %}</div>
+<div class="gmi-topic-empty" data-company-empty{% if catalogue.count %} hidden{% endif %}><h2>{{ t('No matching company', '没有匹配的公司') if catalogue.count else t('No company evidence yet', '暂无公司证据') }}</h2><p>{{ t('Try a company name, ticker or product. This catalogue includes only the evidence currently on file.', '请尝试公司名称、代码或产品。此目录仅包含目前收录的证据。') if catalogue.count else t('No reviewed product connection is available in this snapshot. You can still explore the full theme taxonomy.', '此快照暂无可用的经审核产品关联。完整的主题分类体系仍可浏览。') }}</p><button type="button" class="gmi-action-secondary" data-company-reset{% if not catalogue.count %} hidden{% endif %}>{{ t('Clear search', '清空搜索') }}</button>{% if not catalogue.count %}<a class="gmi-action-secondary" href="{{ nav_prefix }}gmi.html">{{ t('Explore themes', '探索主题') }}</a>{% endif %}</div>
 </section>
 <aside class="gmi-company-guide" data-company-guide aria-labelledby="gmi-company-guide-title"><h2 id="gmi-company-guide-title">{{ t('What this evidence tells you', '如何理解这些证据') }}</h2><section><h3>{{ t('A documented product connection', '有据可查的产品关联') }}</h3><p>{{ t('Read the product, named platform and lifecycle together with the source date.', '结合来源日期，查看产品、所述平台及其所处阶段。') }}</p></section><section><h3>{{ t('Not a live exposure map', '并非实时敞口图谱') }}</h3><p>{{ t('These records do not establish current delivery, revenue exposure or complete company coverage.', '这些记录并不证实当前交付、营收敞口或完整的公司覆盖。') }}</p></section><nav aria-label="Evidence guidance" data-aria-en="Evidence guidance" data-aria-zh="证据指引"><a href="{{ nav_prefix }}gmi-coverage.html">{{ t('Coverage & methodology', '覆盖与方法') }}{{ ic('arrow',16) }}</a><a href="{{ nav_prefix }}gmi-index.html">{{ t('Explore all themes', '浏览全部主题') }}{{ ic('arrow',16) }}</a></nav></aside>
 </div>
-<p class="gmi-note">{{ t('A documented product connection does not establish current delivery, revenue exposure or complete company coverage.', '有据可查的产品关联不代表当前交付、营收敞口或完整的公司覆盖。') }}</p>
 {% endblock %}

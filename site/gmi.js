@@ -388,10 +388,25 @@ function refreshJourney(){
 
 /* Company catalogue uses source-rendered cards and the same URL state owner. */
 var companySearch=document.querySelector('[data-company-search]');
-function companies(){if(!companySearch)return;var q=norm(companySearch.value),count=0;document.querySelectorAll('[data-company-card]').forEach(function(c){c.hidden=!!q&&!norm(c.getAttribute('data-search')).includes(q);if(!c.hidden)count++;});document.querySelector('[data-company-empty]').hidden=count>0;document.querySelector('[data-company-count]').textContent=tr(count+' '+(count===1?'company':'companies')+' with evidence on file','有收录证据的公司：'+count+' 家');}
+function companyHidden(node,hidden){
+  if(hidden&&node.contains(document.activeElement))companySearch.focus();
+  if(node.hidden!==hidden)node.hidden=hidden;
+}
+function companies(){
+  if(!companySearch)return;
+  var q=norm(companySearch.value),count=0;
+  document.querySelectorAll('[data-company-card]').forEach(function(c){
+    var hidden=!!q&&!norm(c.getAttribute('data-search')).includes(q);
+    companyHidden(c,hidden);if(!hidden)count++;
+  });
+  companyHidden(document.querySelector('[data-company-empty]'),count>0);
+  var status=document.querySelector('[data-company-count]');
+  var message=q?tr(count+' matching '+(count===1?'company':'companies'),'匹配到 '+count+' 家公司'):tr(count+' '+(count===1?'company':'companies')+' with evidence on file','有收录证据的公司：'+count+' 家');
+  if(status.textContent!==message)status.textContent=message;
+}
 function restoreCompanies(){if(companySearch){companySearch.value=txt(new URLSearchParams(location.hash.slice(1)).get('q')).slice(0,200);companies();}refreshJourney();}
 function updateCompanies(){var p=new URLSearchParams(location.hash.slice(1)),q=companySearch.value.slice(0,200);if(q)p.set('q',q);else p.delete('q');history.replaceState(null,'',location.pathname+location.search+(p.size?'#'+p.toString():''));companies();refreshJourney();}
-if(companySearch){companySearch.maxLength=200;companySearch.addEventListener('input',updateCompanies);document.querySelector('[data-company-reset]').addEventListener('click',function(){companySearch.value='';updateCompanies();companySearch.focus();});}
+if(companySearch){companySearch.maxLength=200;companySearch.addEventListener('input',updateCompanies);document.querySelector('[data-company-reset]').addEventListener('click',function(){companySearch.focus();companySearch.value='';updateCompanies();});}
 restoreCompanies();
 var workspace=document.querySelector('[data-gmi-explorer]');
 if(!workspace){window.addEventListener('hashchange',restoreCompanies);window.addEventListener('popstate',restoreCompanies);new MutationObserver(function(){languageOptions();companies();refreshJourney();}).observe(root,{attributes:true,attributeFilter:['data-lang']});return;}

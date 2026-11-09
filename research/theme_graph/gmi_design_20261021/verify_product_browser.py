@@ -2386,6 +2386,215 @@ with sync_playwright() as pw:
             check(f'category-picker-static-{width}-{language}',lambda w=width,l=language:index_category_picker_static(w,l))
 
 
+    def company_entry_geometry(p):
+        return p.evaluate('''()=>{
+          const rect=n=>{if(!n)return null;const b=n.getBoundingClientRect();return {left:b.left,right:b.right,top:b.top+scrollY,bottom:b.bottom+scrollY,width:b.width,height:b.height};};
+          const header=document.querySelector('.gmi-product-head'),title=document.querySelector('h1');
+          return {header:rect(header),title:rect(title),brand:rect(document.querySelector('.gmi-product-name')),
+            snapshot:rect(document.querySelector('[data-gmi-snapshot]')),nav:rect(document.querySelector('.gmi-product-nav')),
+            returned:rect(document.querySelector('.gmi-return-context')),search:rect(document.querySelector('[data-company-search]').closest('label')),
+            firstCard:rect(document.querySelector('[data-company-card]')),brain:rect(document.querySelector('#gmi-brain-slot #mmb-boot')),
+            rightPadding:parseFloat(getComputedStyle(header).paddingRight),titleSize:parseFloat(getComputedStyle(title).fontSize),titleTracking:getComputedStyle(title).letterSpacing,
+            overflow:document.documentElement.scrollWidth>innerWidth};
+        }''')
+
+    def company_entry_header(width, language, theme='light', stale=False, consolidated=True):
+        """Move the task title ahead of search while preserving the single snapshot and record dates."""
+        research='gmi.html#'+urlencode({'theme':'theme:hbm_packaging','scope':'core','evidence':'1','lens':'chain','q':'Micron'})
+        with context(width,theme,language,reduced_motion='reduce') as c:
+            c.add_init_script('Date.now=()=>Date.UTC(2026,10,'+('20' if stale else '9')+');')
+            for entry,returned in (('direct',''),('research',research)):
+                params={'q':'Micron','lens':'chain','fixture_key':'retained'}
+                if returned:params['gmi_return']=returned
+                p=page_for(c,'gmi-companies.html?fixture=company-entry#'+urlencode(params))
+                initial=p.url;title=p.locator('h1');brand=p.locator('.gmi-product-name')
+                expect(title).to_have_count(1)
+                assert title.inner_text().strip()==('Company evidence' if language=='en' else '公司证据')
+                assert p.locator('.gmi-head').count()==(0 if consolidated else 1)
+                assert p.locator('.gmi-product-head > div:first-child > p').count()==(0 if consolidated else 1)
+                if consolidated:expect(title).to_have_class('gmi-product-page-title')
+                snapshot=p.locator('[data-gmi-snapshot]')
+                expect(snapshot).to_have_attribute('data-gmi-snapshot','2026-11-03')
+                date='3 Nov 2026' if language=='en' else '2026年11月3日'
+                assert p.locator('main').inner_text().count(date)==1
+                if stale:expect(p.locator('.gmi-snapshot-stale')).to_be_visible()
+                else:expect(p.locator('.gmi-snapshot-stale')).not_to_be_visible()
+                assert p.evaluate('document.activeElement===document.body')
+                assert p.locator('#gmi-brain-slot').count()==1
+                card=p.locator('[data-company-card]');expect(card).to_have_count(1);expect(card).to_be_visible()
+                assert ('26 Feb 2024' if language=='en' else '2024年2月26日') in card.inner_text()
+                assert ('Planned' if language=='en' else '计划中') in card.inner_text()
+                expect(p.locator('[data-company-guide]')).to_be_visible()
+                if consolidated:
+                    expect(p.locator('[data-company-count]')).to_have_text('1 matching company' if language=='en' else '匹配到 1 家公司')
+                assert ('current delivery and revenue exposure are not established' if language=='en' else '尚未证实当前交付或营收敞口') in card.inner_text()
+                expect(p.locator('.gmi-product-tabs a').nth(1)).to_have_attribute('aria-current','page')
+                if returned:
+                    back=p.locator('[data-gmi-return]');expect(back).to_be_visible()
+                    assert back.inner_text().strip()==('Back to theme research' if language=='en' else '返回主题研究')
+                    for link in (back,brand):
+                        actual=urlsplit(link.get_attribute('href'));wanted=urlsplit(returned)
+                        assert actual.path.split('/')[-1]==wanted.path and parse_qs(actual.fragment)==parse_qs(wanted.fragment)
+                    assert p.locator('.gmi-product-nav').evaluate('(n)=>n.nextElementSibling.classList.contains("gmi-return-context")')
+                else:
+                    expect(p.locator('[data-gmi-return]')).to_have_count(0)
+                    assert brand.get_attribute('href')=='gmi.html'
+                for brain in ('empty','fixture'):
+                    if brain=='fixture':
+                        p.evaluate('''()=>{
+                          const b=document.createElement('button');b.id='mmb-boot';b.type='button';b.textContent='Brain';b.setAttribute('aria-label','Brain fixture');
+                          b.style.cssText='width:44px;height:44px;min-width:44px;min-height:44px;padding:0;border:1px solid var(--line);border-radius:12px;background:var(--panel2);color:var(--text);font:11px var(--font-ui)';
+                          window.__companyBrainFixture=b;document.body.append(b);dispatchEvent(new Event('mm-brain-ready'));
+                        }''')
+                        assert p.evaluate('document.querySelector("#gmi-brain-slot #mmb-boot")===window.__companyBrainFixture')
+                    g=company_entry_geometry(p)
+                    assert not g['overflow'] and g['nav']['top']>=g['header']['bottom']-0.5,g
+                    assert g['search']['top']>=(g['returned'] or g['nav'])['bottom']-0.5,g
+                    if consolidated:
+                        assert g['brand']['height']>=44 and g['brand']['width']>=44,g
+                        assert g['titleSize']==(24 if width<=820 else 32),g
+                        if language=='zh':assert g['titleTracking'] in ('normal','0px'),g
+                    if width<=820:
+                        assert g['rightPadding']==72,g
+                        if g['brain']:
+                            if consolidated:assert g['title']['right']<=g['brain']['left']-1,g
+                            assert g['snapshot']['right']<=g['brain']['left']-1,g
+                    gmi_navigation_fit(p,width,language)
+                    report.setdefault('company_entry_header',[]).append({'width':width,'language':language,'theme':theme,'stale_fixture':stale,'entry':entry,'brain':brain,'consolidated':consolidated,'geometry':g})
+                    if entry=='direct' and brain=='empty' and not stale and (width,language) in ((390,'en'),(320,'zh')):
+                        path=args.out/f'company-entry-{width}-{language}-{theme}.png';p.screenshot(path=str(path));report['screenshots'].append(path.name)
+                    if consolidated and stale and entry=='research' and brain=='fixture':
+                        path=args.out/f'company-entry-composite-{width}-{language}.png';p.screenshot(path=str(path));report['screenshots'].append(path.name)
+                assert p.url==initial
+                brand.focus();p.keyboard.press('Tab');expect(p.locator('#mmb-boot')).to_be_focused()
+                p.keyboard.press('Tab');expect(p.locator('.gmi-product-tabs a').first).to_be_focused()
+                p.close()
+
+    def company_entry_focus(width, language):
+        """Reset/history release owned focus before hiding; equal counts do not announce again."""
+        with context(width,'light',language,reduced_motion='reduce') as c:
+            returned='gmi.html#theme=theme:hbm_packaging&q=Micron&scope=core&lens=chain'
+            fragment={'gmi_return':returned,'lens':'chain','fixture_key':'retained'}
+            p=page_for(c,'gmi-companies.html?fixture=company-focus#'+urlencode(fragment))
+            search=p.locator('[data-company-search]');card=p.locator('[data-company-card]');empty=p.locator('[data-company-empty]');reset=p.locator('[data-company-reset]');status=p.locator('[data-company-count]')
+            source=card.locator('a[target="_blank"]').first;issuer=card.locator('a[href*="gmi-issuer-"]')
+            assert card.count()==1 and source.get_attribute('href').startswith('https://')
+            assert 'noopener' in source.get_attribute('rel')
+            p.evaluate('''()=>{
+              window.__companyUnsafe=[];window.__companyWrites=[];window.__companyCountMutations=[];
+              window.__companyOriginalCard=document.querySelector('[data-company-card]');window.__companyOriginalCount=document.querySelector('[data-company-count]');
+              const h=Object.getOwnPropertyDescriptor(HTMLElement.prototype,'hidden');
+              Object.defineProperty(HTMLElement.prototype,'hidden',{...h,set(value){
+                if(this.matches('[data-company-card],[data-company-empty]')){
+                  window.__companyWrites.push({card:this.matches('[data-company-card]'),value});
+                  if(value&&this.contains(document.activeElement))window.__companyUnsafe.push(this.matches('[data-company-card]')?'card':'empty');
+                }
+                h.set.call(this,value);
+              }});
+              window.__companyCountObserver=new MutationObserver(records=>window.__companyCountMutations.push(...records.map(r=>r.type)));
+              window.__companyCountObserver.observe(window.__companyOriginalCount,{subtree:true,childList:true,characterData:true});
+              const replace=history.replaceState.bind(history);window.__companyReplaceCalls=0;
+              history.replaceState=function(...args){window.__companyReplaceCalls++;return replace(...args);};
+            }''')
+            initial_history=p.evaluate('history.length')
+            for activation in ('click','Enter','Space'):
+                search.fill('no-company-entry-match');expect(empty).to_be_visible();expect(card).not_to_be_visible()
+                reset.focus();before=p.evaluate('window.__companyReplaceCalls')
+                if activation=='click':reset.click()
+                else:reset.press(activation)
+                expect(search).to_be_focused();expect(search).to_have_value('');expect(card).to_be_visible();expect(empty).not_to_be_visible()
+                assert p.evaluate('window.__companyReplaceCalls')==before+1
+                assert p.evaluate('history.length')==initial_history
+                assert parse_qs(urlsplit(p.url).fragment)=={k:[v] for k,v in fragment.items()}
+            assert not p.evaluate('window.__companyUnsafe'),'Reset hid its focused empty-state owner before releasing focus'
+            expect(status).to_have_text('1 company with evidence on file' if language=='en' else '有收录证据的公司：1 家')
+            search.fill('   ')
+            expect(status).to_have_text('1 company with evidence on file' if language=='en' else '有收录证据的公司：1 家')
+            search.fill('Micron')
+            expect(status).to_have_text('1 matching company' if language=='en' else '匹配到 1 家公司')
+            search.fill('')
+            expect(status).to_have_text('1 company with evidence on file' if language=='en' else '有收录证据的公司：1 家')
+
+            def restore(query):
+                p.evaluate('''q=>{const h=new URLSearchParams(location.hash.slice(1));if(q)h.set('q',q);else h.delete('q');location.hash=h.toString();}''',query)
+                expect(search).to_have_value(query)
+
+            # Both distinct link purposes inside a hidden card must recover safely.
+            for focused in (source,issuer):
+                restore('Micron');focused.focus();restore('no-company-entry-match')
+                expect(search).to_be_focused();expect(card).not_to_be_visible();expect(empty).to_be_visible()
+                reset.focus();restore('Micron')
+                expect(search).to_be_focused();expect(card).to_be_visible();expect(empty).not_to_be_visible()
+            source.focus();restore('HBM');expect(source).to_be_focused()
+            guide=p.locator('[data-company-guide] a').first;guide.focus();restore('no-company-entry-match');expect(guide).to_be_focused()
+            brand=p.locator('.gmi-product-name');brand.focus();restore('Micron');expect(brand).to_be_focused()
+            # Native back/forward restores queries through the existing listener, without a new writer.
+            source.focus();p.go_back();expect(search).to_have_value('no-company-entry-match');expect(search).to_be_focused()
+            reset.focus();p.go_forward();expect(search).to_have_value('Micron');expect(search).to_be_focused()
+
+            search.fill('no-company-entry-match')
+            before=p.evaluate('({count:window.__companyCountMutations.length,hidden:window.__companyWrites.length})')
+            search.fill('another-no-company-entry-match')
+            assert p.evaluate('({count:window.__companyCountMutations.length,hidden:window.__companyWrites.length})')==before
+            search.fill('Micron');source.focus()
+            before=p.evaluate('({count:window.__companyCountMutations.length,hidden:window.__companyWrites.length})')
+            restore('  micron  ');expect(source).to_be_focused()
+            assert p.evaluate('({count:window.__companyCountMutations.length,hidden:window.__companyWrites.length})')==before
+            for current in ('zh' if language=='en' else 'en',language):
+                before_url=p.url;before_history=p.evaluate('history.length');before=p.evaluate('({count:window.__companyCountMutations.length,hidden:window.__companyWrites.length})')
+                p.evaluate('(value)=>document.documentElement.setAttribute("data-lang",value)',current)
+                expect(status).to_have_text('匹配到 1 家公司' if current=='zh' else '1 matching company')
+                expect(source).to_be_focused()
+                after=p.evaluate('({count:window.__companyCountMutations.length,hidden:window.__companyWrites.length})')
+                assert after=={'count':before['count']+1,'hidden':before['hidden']},(before,after)
+                p.evaluate('(value)=>{document.documentElement.setAttribute("data-lang",value);document.dispatchEvent(new Event("langchange"));}',current)
+                assert p.evaluate('({count:window.__companyCountMutations.length,hidden:window.__companyWrites.length})')==after
+                assert p.url==before_url and p.evaluate('history.length')==before_history
+            assert p.evaluate('window.__companyOriginalCard===document.querySelector("[data-company-card]")&&window.__companyOriginalCount===document.querySelector("[data-company-count]")')
+            assert not p.evaluate('window.__companyUnsafe')
+            assert parse_qs(urlsplit(p.url).fragment)['gmi_return']==[returned]
+            search.fill('no-company-entry-match');reset.focus()
+            expect(reset).to_have_accessible_name('Clear search' if language=='en' else '清空搜索')
+            if (width,language) in ((390,'en'),(320,'zh')):
+                path=args.out/f'company-entry-empty-search-{width}-{language}.png';p.screenshot(path=str(path));report['screenshots'].append(path.name)
+            reset.press('Enter');expect(search).to_be_focused();expect(card).to_be_visible()
+            assert not p.evaluate('document.documentElement.scrollWidth>innerWidth')
+            report.setdefault('company_entry_focus',[]).append({'width':width,'language':language,'native_reset':['click','Enter','Space'],'owned_card_and_empty_focus_recovery':True,'surviving_source_guide_navigation_focus_retained':True,'same_count_and_visibility_writes':0,'locale_count_writes':1,'native_history_restoration':True,'card_and_count_identity_retained':True,'unsafe_hides':0})
+
+    def company_entry_static(width, language):
+        """Disabled scripts retain the task title, single snapshot and dated native evidence links."""
+        with context(width,'light',language,java_script_enabled=False,reduced_motion='reduce') as c:
+            p=page_for(c,'gmi-companies.html#gmi_return=gmi.html%23q%3DMicron')
+            title=p.locator('h1');expect(title).to_have_count(1);expect(title).to_have_class('gmi-product-page-title')
+            assert title.inner_text().strip()==('Company evidence' if language=='en' else '公司证据')
+            assert p.locator('.gmi-head').count()==0
+            date='3 Nov 2026' if language=='en' else '2026年11月3日';assert p.locator('main').inner_text().count(date)==1
+            expect(p.locator('.gmi-snapshot-stale')).not_to_be_visible();expect(p.locator('[data-gmi-return]')).to_have_count(0)
+            assert p.locator('#gmi-brain-slot').evaluate('(n)=>n.childElementCount')==0
+            assert p.locator('.gmi-product-name').get_attribute('href')=='gmi.html'
+            card=p.locator('[data-company-card]');expect(card).to_be_visible()
+            assert ('26 Feb 2024' if language=='en' else '2024年2月26日') in card.inner_text()
+            assert ('Planned' if language=='en' else '计划中') in card.inner_text()
+            source=card.locator('a[target="_blank"]');assert source.get_attribute('href').startswith('https://') and 'noopener' in source.get_attribute('rel')
+            assert card.locator('a[href*="gmi-issuer-"]').get_attribute('href')=='gmi-issuer-mu.html'
+            p.locator('[data-company-search]').fill('no-company-entry-match')
+            expect(card).to_be_visible();expect(p.locator('[data-company-empty]')).not_to_be_visible()
+            g=company_entry_geometry(p);assert not g['overflow'] and g['brand']['height']>=44
+            report.setdefault('company_entry_static',[]).append({'width':width,'language':language,'dated_native_evidence_links':True,'dynamic_filter_not_fabricated':True,'geometry':g})
+
+    for width in (1440,390,320):
+        for language in ('en','zh'):
+            check(f'company-entry-header-{width}-{language}',lambda w=width,l=language:company_entry_header(w,l))
+            check(f'company-entry-focus-{width}-{language}',lambda w=width,l=language:company_entry_focus(w,l))
+    for width,language in ((320,'en'),(390,'zh'),(768,'en')):
+        check(f'company-entry-composite-{width}-{language}',lambda w=width,l=language:company_entry_header(w,l,stale=True))
+    for width,language in ((390,'en'),(320,'zh')):
+        check(f'company-entry-dark-{width}-{language}',lambda w=width,l=language:company_entry_header(w,l,'dark'))
+    for language in ('en','zh'):
+        for width in (1440,320):
+            check(f'company-entry-static-{width}-{language}',lambda w=width,l=language:company_entry_static(w,l))
+
+
     browser.close()
 server.shutdown()
 report['pass'] = all(c['result']=='PASS' for c in report['cases']) and not report['page_errors']

@@ -1123,3 +1123,78 @@ The matrix also verifies three native Go activations, repeated destination use, 
 Two initial harness launches stopped at a missing newline between the module docstring and import, before any browser was launched. The harness was corrected and syntax-checked; product bytes did not change. Those exit1 receipts remain explicit in `CATEGORY_PICKER_VALIDATION_20261109.json`. Final browser and renderer hashes bind the accepted source and exact verifier.
 
 `verify_category_picker_component.py` extracts the named canonical verification definitions and owns no product behavior. Original Draft/model01/release holds remain. No fenced model result, Tools owner, shared admission, navigation publication or deployment boundary was changed.
+
+## 11.30. Enter company evidence sooner and recover search safely — 9 November 2026
+
+### A company task header, with the evidence intact
+
+At parent `9bdc486c6b7622d9f306d29e9d12d572ed88415c`, company entry repeats a generic product introduction, a noninteractive Research breadcrumb, a second title region and a sentence describing the search workflow. The company template already has **one page-level snapshot**: its old `head()` call does not receive an as-of value. This change does not claim to remove a duplicate company date.
+
+The existing shared-header branch now recognizes exactly `page_key == 'companies'`. GMI Explorer remains a small real link with a 44 px minimum target; **Company evidence / 公司证据** becomes the single H1 in that header. The page then proceeds through the existing active navigation and utilities to search and results. The issuer page retains its own existing title path.
+
+The compact index CSS declarations are shared with the company task header using equally specific `:is()` selectors. This preserves their 32 px desktop / 24 px narrow title, 72 px Brain-slot reservation, mobile snapshot wrapping and 16 px nav/return spacing. No alternative header owner, route, component framework or token set is introduced. Index HTML remains byte-identical.
+
+The card remains source-rendered. Its company, ticker, product, theme, source publication date, planned lifecycle, named platform, source URL/label, unavailable-source behavior, historical-context qualification and issuer action are unchanged. The interpretation guide remains complete. Only the final standalone paragraph that repeats the guide's qualification is removed. The source date **26 February 2024** remains separate from the page snapshot **3 November 2026**.
+
+### Count the filtered companies and keep focus on a surviving control
+
+The existing company catalogue controller still owns query, history and result filtering. `companyHidden(node, hidden)` is a small helper within that controller: when hiding an owner that contains the active element, it first focuses the existing company search. It then assigns `hidden` only when the value changes. It applies to company cards and the no-match container.
+
+Explicit Clear search focuses search **before** emptying its value and invoking the existing `updateCompanies()` path. Pointer click, Enter and Space continue to use the native button and make exactly one existing replaceState update. Hashchange, real back/forward and locale refresh use the same existing owners; no observer, return stack, query parameter or state store is added.
+
+| Situation | Result and focus |
+| --- | --- |
+| Blank or whitespace-only normalized query | Preserve the on-file count: N companies with evidence on file / 有收录证据的公司：N 家. |
+| Active query | Report N matching companies / 匹配到 N 家公司, with English singular handled. The count means visible company cards, not product connections or the complete catalogue. |
+| Focused card is filtered out | Move focus from its source or issuer link to search before hiding the card. |
+| Focused no-match Clear is about to disappear | Move focus to search before hiding its container. |
+| Focus remains in a surviving card, navigation, guide or another unrelated control | Leave it in place. No load-time focus movement. |
+| Equivalent input/history/locale refresh | Skip unchanged hidden assignments and complete localized count text. Preserve card/control identities. |
+| Query has no match in a populated catalogue | Show No matching company and the native Clear search action. |
+| Actual catalogue has no admitted company cards | Preserve No company evidence yet / 暂无公司证据 and Explore themes; keep Clear hidden. A search reset must not promise unavailable evidence. |
+
+The visible Chinese Clear label is aligned with the existing search control: **清空搜索**. The polite count owner remains the existing element; this work verifies DOM mutation and focus behavior, not spoken assistive-technology output.
+
+### Measured layout and exact source scope
+
+Eleven matched header scenarios cover EN/ZH at 1440/390/320, crowded stale/return states including 768 px, and two dark states. Each uses direct and research-return entry with empty and populated fixture Brain slots: **44 matched layout pairs**. Search moves upward by **145.984375–215.140625 px**.
+
+| Direct entry, light theme, empty Brain slot | Previous search top | Current search top | Space removed before search |
+| --- | ---: | ---: | ---: |
+| 1440 px, EN or ZH | 343.78125 px | 197.796875 px | 145.984375 px |
+| 390 px, EN | 454.1875 px | 265.796875 px | 188.390625 px |
+| 390 px, ZH | 401.4375 px | 254.296875 px | 147.140625 px |
+| 320 px, EN | 472.9375 px | 265.796875 px | 207.140625 px |
+| 320 px, ZH | 442.6875 px | 254.296875 px | 188.390625 px |
+
+These are generated-main browser measurements with exact accepted source/CSS. The Brain launcher and November 9/20 clocks are explicit layout fixtures. They preserve the existing docking/stale boundary and do not change the published snapshot or establish shared Brain runtime.
+
+| Artifact | Git blob |
+| --- | --- |
+| Shared product header | **b3b860d924408c4d4de0dcb7ad7ea38f7f1e0788** |
+| Company template | **729e2a4a93246d87e9203abd84efdc16fb6f1aea** |
+| Paired stylesheet | **dba2809660f0f16d25325db4bb401674758529a2** |
+| Paired JavaScript | **1facd1b2edcb062422ff65f22689edd7ae160cf8** |
+| Generated company page | **c4b1c81c92c270411c6698a473b55354a05dc8a5** |
+| Canonical browser verifier | **89f32143b6b61e0c12bf1534452550a4e416e1d1** |
+| Extracting company harness | **b21ada78f14a4df72a49e9f3b74fcb4efd35e2d6** |
+
+The production renderer reproduces all nine parent outputs from 48 checked inputs and the same accepted **e644fa48…** model. Final rendering changes only **gmi-companies.html, gmi.css and gmi.js**; all six other HTML pages, including index and issuer, remain exact. Paired template/site assets match. The actual company page is **65,156 bytes**, SHA256 **fda702382d62068f8f39874bcd07bbb915ddacee6a3d4f734b337b58f3e47d3c**, checked against its full transported bytes and Git blob.
+
+Source self-check reverses only the company JS block/reset order, compact CSS selector extension, exact companies header branches and enumerated company-template edits to reproduce their parents. All 44 previous suite-level verifier definitions remain exact; four company definitions are added. Local self-check diagnostics were corrected to reinsert the removed paragraph only at the final template block and to enumerate the actual suite definitions inside the Playwright context, with an asserted count of 44. Those diagnostic corrections changed no product or browser-test bytes.
+
+### Focused proof and builder reuse
+
+Baseline PID42094 records **11 passing original-header observations** and **two expected failures**: Reset hides its focused empty-state owner before releasing focus, in EN390 and ZH320. Exit1, 25.42 seconds, no page errors. Baseline header passes describe the old geometry and are not new-header acceptance.
+
+The initial candidate PID43386 passed 29 cases. A subsequent clarity improvement distinguished active-query counts from the on-file catalogue count. Its initial source, renderer and proof are preserved under `candidate-initial-*`; they are not reported as the final wording proof. Final renderer PID63976 exits0 in 1.90 seconds. Final browser PID66703 passes **29 cases / 29 fresh anonymous contexts**, Chrome **157.0.8103.39**, zero page errors, exit0 in **46.77 seconds**.
+
+The final matrix includes 11 header scenarios, six company focus/count scenarios across EN/ZH and 1440/390/320, four actually JavaScript-disabled cases, two genuinely empty-catalogue fixtures, two existing source-context cases, two real issuer/return journeys and two existing mobile category-picker regressions. It exercises native reset activation, focus before hide, surviving focus, repeated-write suppression, exact localized count scope including whitespace, actual history traversal, 44 px navigation, one H1 and snapshot, slot reservation, no collision or overflow, and static source links.
+
+The empty-catalogue case is produced by the real renderer from an in-memory deep copy of the accepted model with `issuers=[]`. No replacement public model is saved or consumed. Its fixture model SHA256 is **d7425eff920310d8febecd53672fe95173e1c60815e554e51d5e34dc7eb22269**. The component harness alone supplies this fixture; the canonical full-site context receives no incompatible empty-catalogue keyword.
+
+Nine final company captures were inspected, covering EN/ZH light/dark, crowded stale/Brain/return states and no-match recovery. The card truthfully continues below the first phone viewport; it is not compressed to fit an artificial fold.
+
+`COMPANY_ENTRY_VALIDATION_20261109.json` retains exact inputs, process receipts, source checks, both baseline failures, all final measurements and captures. Final geometry/comparison arrays were verified on the native host as exactly equal to the initial accepted layout proof; the transported final delta was reconstructed and checked with normalized sorted-JSON SHA256 **d871e29941e34e7e43eb0ba0c146f1927ed6d4fffb15ac5cd1eea81422b6b74d**. This binds the final count/focus results without replaying unchanged measurements.
+
+Original Draft/model01/release holds remain. This proof does not establish full shared shell/fonts, live account/admission, current hosted CI, public serving, spoken assistive technology or deployment. No fenced model result, relationship publication, Tools owner, shared admission or release control is changed.
