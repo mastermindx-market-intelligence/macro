@@ -374,7 +374,17 @@ function refreshJourney(){
     var action=holder.querySelector('[data-gmi-return]');if(!action){action=el('a','gmi-action-secondary');action.setAttribute('data-gmi-return','');holder.append(action);}
     action.href=new URL(inherited,location.href).href;
     action.replaceChildren(icon('back'),el('span','',catalog?tr('Back to company results','返回公司结果'):tr('Back to theme research','返回主题研究')));
-  }else if(holder)holder.remove();
+  }else if(holder){
+    if(holder.contains(document.activeElement)){
+      var focusTarget=document.querySelector('a.gmi-product-name[href]');
+      if(focusTarget&&!holder.contains(focusTarget))focusTarget.focus({preventScroll:true});
+      if(holder.contains(document.activeElement)&&nav){
+        var fallback=nav.querySelector('a[href]');
+        if(fallback)fallback.focus({preventScroll:true});
+      }
+    }
+    holder.remove();
+  }
   document.querySelectorAll('main a[href]:not([data-gmi-return])').forEach(function(a){
     if(!originalHrefs.has(a))originalHrefs.set(a,a.getAttribute('href'));
     var original=originalHrefs.get(a),page=localPage(original),next=original;

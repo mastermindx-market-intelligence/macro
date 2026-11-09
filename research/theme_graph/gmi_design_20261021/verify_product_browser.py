@@ -2595,6 +2595,228 @@ with sync_playwright() as pw:
             check(f'company-entry-static-{width}-{language}',lambda w=width,l=language:company_entry_static(w,l))
 
 
+    def return_context_focus(route, width, language):
+        """Retire invalid context without removing focused content or inventing navigation."""
+        research='gmi.html#'+urlencode({'theme':'theme:hbm_packaging','scope':'core','evidence':'1','lens':'chain','q':'Micron'})
+        alternate='gmi.html#'+urlencode({'theme':'theme:hbm_packaging','q':'HBM','lens':'coverage'})
+        catalogue='gmi-companies.html#'+urlencode({'q':'Micron','gmi_return':research})
+        with context(width,'light',language,reduced_motion='reduce') as c:
+            def fragment(value):
+                d={'fixture_key':'return-recovery'}
+                if value:d['gmi_return']=value
+                return urlencode(d)
+            p=page_for(c,route+'#'+fragment(research))
+            back=p.locator('[data-gmi-return]');brand=p.locator('a.gmi-product-name[href]')
+            expect(back).to_be_visible()
+            p.evaluate('''()=>{
+              window.__returnRemovals=[];window.__returnFocusCalls=[];
+              const remove=Element.prototype.remove,focus=HTMLElement.prototype.focus;
+              Element.prototype.remove=function(...args){
+                if(this.matches('.gmi-return-context'))window.__returnRemovals.push({owned:this.contains(document.activeElement),target:document.activeElement.className});
+                return remove.apply(this,args);
+              };
+              HTMLElement.prototype.focus=function(options){
+                const before=scrollY,result=focus.call(this,options);
+                if(this.matches('.gmi-product-name,.gmi-product-nav a'))window.__returnFocusCalls.push({target:this.className,preventScroll:!!options?.preventScroll,before,after:scrollY});
+                return result;
+              };
+              window.__originalReturn= document.querySelector('[data-gmi-return]');
+            }''')
+            initial_history=p.evaluate('history.length')
+            def restore(value):
+                p.evaluate('''hash=>{history.replaceState(null,'',location.pathname+location.search+'#'+hash);dispatchEvent(new PopStateEvent('popstate'));}''',fragment(value))
+            # The baseline must fail on this actual focused-node removal.
+            back.focus();restore('')
+            expect(back).to_have_count(0)
+            assert not p.evaluate('window.__returnRemovals.some(x=>x.owned)'), 'Return holder removed its focused link before recovery'
+            expect(brand).to_be_focused()
+            assert brand.get_attribute('href')=='gmi.html'
+            assert p.evaluate('window.__returnFocusCalls.at(-1).preventScroll')
+            assert p.evaluate('history.length')==initial_history
+            assert parse_qs(urlsplit(p.url).fragment)=={'fixture_key':['return-recovery']}
+            for rejected in ('https://example.invalid/','javascript:alert(1)','gmi.html?unqualified=1'):
+                restore(research);expect(back).to_be_visible();back.focus();restore(rejected)
+                expect(back).to_have_count(0);expect(brand).to_be_focused()
+                assert brand.get_attribute('href')=='gmi.html'
+            # A still-valid return uses the same anchor and preserves focused ownership.
+            restore(research);back.focus();p.evaluate('window.__sameReturn=document.querySelector("[data-gmi-return]")')
+            for value in (alternate, catalogue if route!='gmi-companies.html' else research):
+                restore(value);expect(back).to_be_focused()
+                assert p.evaluate('window.__sameReturn===document.querySelector("[data-gmi-return]")')
+                actual=urlsplit(back.get_attribute('href'));wanted=urlsplit(value)
+                assert actual.path.split('/')[-1]==wanted.path and parse_qs(actual.fragment)==parse_qs(wanted.fragment)
+            other='zh' if language=='en' else 'en'
+            before_url=p.url
+            p.evaluate('(v)=>document.documentElement.setAttribute("data-lang",v)',other)
+            expect(back).to_have_text(('返回主题研究' if route=='gmi-companies.html' else '返回公司结果') if other=='zh' else ('Back to theme research' if route=='gmi-companies.html' else 'Back to company results'))
+            expect(back).to_be_focused()
+            assert p.evaluate('window.__sameReturn===document.querySelector("[data-gmi-return]")') and p.url==before_url
+            p.evaluate('(v)=>document.documentElement.setAttribute("data-lang",v)',language)
+            # Unrelated focus is left alone, including the company's source link.
+            restore(research)
+            unrelated=p.locator('[data-company-card] a[target="_blank"]').first if route=='gmi-companies.html' else p.locator('.gmi-product-tabs a').last
+            unrelated.focus();restore('');expect(unrelated).to_be_focused();expect(back).to_have_count(0)
+            assert p.evaluate('history.length')==initial_history
+            # Real hash navigation plus back/forward reaches the same existing listeners.
+            restore(research);back.focus()
+            p.evaluate('(hash)=>{location.hash=hash;}',fragment(''));expect(back).to_have_count(0);expect(brand).to_be_focused()
+            p.go_back();expect(back).to_be_visible();back.focus()
+            p.go_forward();expect(back).to_have_count(0);expect(brand).to_be_focused()
+            assert p.evaluate('history.length')==initial_history+1
+            assert not p.evaluate('window.__returnRemovals.some(x=>x.owned)')
+            exceptional=False;scroll_observation=None
+            if route=='gmi-relationships.html':
+                # Scroll tail is a focus-test fixture only, never used for layout comparison.
+                p.evaluate('''()=>{const tail=document.createElement('div');tail.style.height='1800px';document.body.append(tail);}''')
+                restore(research);back.focus();p.evaluate('scrollTo(0,300)');position=p.evaluate('scrollY')
+                restore('');expect(brand).to_be_focused()
+                focused=p.evaluate('window.__returnFocusCalls.at(-1)')
+                assert focused['preventScroll'] and focused['before']==position and focused['after']==position,focused
+                scroll_observation={'before':position,'after_focus':focused['after'],'after_layout_removal':p.evaluate('scrollY')}
+                # Hidden or removed brand falls back to an existing nav link.
+                restore(research);back.focus();brand.evaluate('(n)=>n.hidden=true');restore('')
+                expect(p.locator('.gmi-product-tabs a').first).to_be_focused();brand.evaluate('(n)=>n.hidden=false')
+                restore(research);back.focus()
+                p.evaluate('''()=>{window.__brandNode=document.querySelector('.gmi-product-name');window.__brandParent=window.__brandNode.parentNode;window.__brandNode.remove();}''')
+                restore('');expect(p.locator('.gmi-product-tabs a').first).to_be_focused()
+                p.evaluate('window.__brandParent.prepend(window.__brandNode)')
+                # Respect another focus handler that already moves to a surviving destination.
+                restore(research);back.focus()
+                p.evaluate('''()=>document.querySelector('.gmi-product-name').addEventListener('focus',()=>document.querySelectorAll('.gmi-product-tabs a')[1].focus(),{once:true})''')
+                restore('');expect(p.locator('.gmi-product-tabs a').nth(1)).to_be_focused()
+                assert not p.evaluate('window.__returnRemovals.some(x=>x.owned)')
+                # Malformed fixture with neither usable destination still removes invalid context.
+                restore(research);back.focus();brand.evaluate('(n)=>n.hidden=true')
+                p.locator('.gmi-product-nav').evaluate('(n)=>n.hidden=true')
+                restore('');expect(back).to_have_count(0)
+                assert p.evaluate('window.__returnRemovals.at(-1).owned')
+                exceptional=True
+            assert not p.evaluate('document.documentElement.scrollWidth>innerWidth')
+            report.setdefault('return_context_focus',[]).append({'route':route,'width':width,'language':language,'ordinary_owned_removal_safe':True,'rejected_returns':3,'valid_anchor_identity_and_locale_focus':True,'unrelated_focus_preserved':True,'real_back_forward':True,'no_product_history_writer':True,'fallback_and_redirect_cases':route=='gmi-relationships.html','missing_all_targets_still_removes_invalid_holder':exceptional,'focus_scroll_observation':scroll_observation})
+
+    def relationship_entry_geometry(p):
+        return p.evaluate('''()=>{
+          const rect=n=>{if(!n)return null;const b=n.getBoundingClientRect();return {top:b.top+scrollY,bottom:b.bottom+scrollY,left:b.left,right:b.right,width:b.width,height:b.height};};
+          const h=document.querySelector('.gmi-product-head');
+          return {header:rect(h),title:rect(document.querySelector('h1')),brand:rect(document.querySelector('.gmi-product-name')),snapshot:rect(document.querySelector('[data-gmi-snapshot]')),nav:rect(document.querySelector('.gmi-product-nav')),returned:rect(document.querySelector('.gmi-return-context')),panel:rect(document.querySelector('.gmi-permission-state')),primary:rect(document.querySelector('.gmi-state-actions .gmi-action-primary')),brain:rect(document.querySelector('#gmi-brain-slot #mmb-boot')),rightPadding:parseFloat(getComputedStyle(h).paddingRight),titleSize:parseFloat(getComputedStyle(document.querySelector('h1')).fontSize),overflow:document.documentElement.scrollWidth>innerWidth};
+        }''')
+
+    def relationship_entry_header(width, language, theme='light', crowded=False, upgraded=True):
+        """Compact task header and qualified recovery; never fabricate a relationship view."""
+        research='gmi.html#'+urlencode({'theme':'theme:hbm_packaging','scope':'core','evidence':'1','lens':'chain','q':'Micron'})
+        catalogue='gmi-companies.html#'+urlencode({'q':'Micron','gmi_return':research})
+        with context(width,theme,language,reduced_motion='reduce') as c:
+            c.add_init_script('Date.now=()=>Date.UTC(2026,10,'+('20' if crowded else '9')+');')
+            for entry,returned in (('direct',''),('research',research),('catalogue',catalogue)):
+                params={'fixture_key':'relationship-entry'}
+                if returned:params['gmi_return']=returned
+                p=page_for(c,'gmi-relationships.html#'+urlencode(params));initial=p.url
+                title=p.locator('h1');expect(title).to_have_count(1)
+                assert title.inner_text().strip()==('Company relationships' if language=='en' else '公司关系')
+                assert p.locator('.gmi-head').count()==(0 if upgraded else 1)
+                assert p.locator('.gmi-product-head > div:first-child > p').count()==(0 if upgraded else 1)
+                expect(p.locator('[data-gmi-snapshot]')).to_have_attribute('data-gmi-snapshot','2026-11-03')
+                assert p.locator('main').inner_text().count('3 Nov 2026' if language=='en' else '2026年11月3日')==1
+                expect(p.locator('.gmi-product-tabs a').last).to_have_attribute('aria-current','page')
+                panel=p.locator('.gmi-permission-state');details=p.locator('.gmi-topic-receipt')
+                expected=('Public relationship view unavailable' if language=='en' else '暂无公开关系视图') if upgraded else ('No relationships cleared for public display' if language=='en' else '暂无获准公开展示的关系')
+                assert panel.locator('h2').inner_text().strip()==expected
+                assert ('This is a publication restriction, not a statement that no relationships exist.' if language=='en' else '这是发布限制，并不表示这些关系不存在。') in panel.inner_text()
+                assert not p.locator('main [data-company-card], main [data-relationship], main script[type="application/json"]').count()
+                assert 'Micron Technology' not in p.locator('main').inner_text()
+                actions=panel.locator('.gmi-state-actions a');expect(actions).to_have_count(3 if upgraded else 2)
+                expect(details).not_to_have_attribute('open','')
+                primary=actions.first
+                if upgraded:
+                    assert primary.inner_text().strip()==('Browse company evidence' if language=='en' else '浏览公司证据')
+                    wanted=catalogue if entry=='catalogue' else 'gmi-companies.html'+('#'+urlencode({'gmi_return':research}) if entry=='research' else '')
+                    href=urlsplit(primary.get_attribute('href'));target=urlsplit(wanted)
+                    assert href.path.split('/')[-1]==target.path and parse_qs(href.fragment)==parse_qs(target.fragment)
+                if returned:
+                    back=p.locator('[data-gmi-return]');expect(back).to_be_visible()
+                    href=urlsplit(back.get_attribute('href'));target=urlsplit(returned)
+                    assert href.path.split('/')[-1]==target.path and parse_qs(href.fragment)==parse_qs(target.fragment)
+                else:expect(p.locator('[data-gmi-return]')).to_have_count(0)
+                if crowded:
+                    expect(p.locator('.gmi-snapshot-stale')).to_be_visible()
+                    p.evaluate('''()=>{const b=document.createElement('button');b.id='mmb-boot';b.type='button';b.textContent='Brain';b.style.cssText='width:44px;height:44px;padding:0;border:1px solid var(--line);border-radius:12px;background:var(--panel2);color:var(--text);font:11px var(--font-ui)';document.body.append(b);dispatchEvent(new Event('mm-brain-ready'));}''')
+                else:expect(p.locator('.gmi-snapshot-stale')).not_to_be_visible()
+                g=relationship_entry_geometry(p)
+                assert not g['overflow'] and g['panel']['top']>=(g['returned'] or g['nav'])['bottom']-0.5
+                if upgraded:
+                    assert g['brand']['height']>=44 and g['titleSize']==(24 if width<=820 else 32)
+                    if width<=820:
+                        assert g['rightPadding']==72
+                        if g['brain']:assert g['title']['right']<=g['brain']['left']-1 and g['snapshot']['right']<=g['brain']['left']-1
+                gmi_navigation_fit(p,width,language)
+                for n in range(actions.count()):
+                    a=actions.nth(n);box=a.bounding_box()
+                    assert box['height']>=44 and box['x']>=0 and box['x']+box['width']<=width+1
+                assert p.evaluate('document.activeElement===document.body') and p.url==initial
+                report.setdefault('relationship_entry_header',[]).append({'width':width,'language':language,'theme':theme,'crowded':crowded,'entry':entry,'upgraded':upgraded,'geometry':g})
+                if upgraded and entry==('catalogue' if crowded else 'direct') and (width,language) in ((390,'en'),(320,'zh'),(320,'en'),(390,'zh')):
+                    path=args.out/f'relationship-entry-{width}-{language}-{theme}.png';p.screenshot(path=str(path));report['screenshots'].append(path.name)
+                p.close()
+
+    def relationship_recovery_paths(width, language):
+        """Use the actual local company destination and incumbent return projection."""
+        research='gmi.html#'+urlencode({'theme':'theme:hbm_packaging','scope':'core','evidence':'1','lens':'chain','q':'Micron'})
+        catalogue='gmi-companies.html#'+urlencode({'q':'Micron','gmi_return':research})
+        with context(width,'light',language,reduced_motion='reduce') as c:
+            for entry,returned in (('direct',''),('research',research),('catalogue',catalogue),('invalid','https://example.invalid/')):
+                params={'gmi_return':returned} if returned else {}
+                p=page_for(c,'gmi-relationships.html'+('#'+urlencode(params) if params else ''))
+                details=p.locator('.gmi-topic-receipt');summary=details.locator('summary')
+                summary.focus();summary.press('Enter');expect(details).to_have_attribute('open','')
+                assert ('Theme research and separately cleared company evidence remain available.' if language=='en' else '主题研究与另行获准展示的公司证据仍可使用。') in details.inner_text()
+                summary.press('Space');expect(details).not_to_have_attribute('open','')
+                primary=p.locator('.gmi-permission-state .gmi-action-primary');primary.focus();primary.press('Enter')
+                expect(p.locator('[data-company-card]')).to_have_count(1)
+                assert urlsplit(p.url).path.endswith('/gmi-companies.html')
+                expected={'q':['Micron'],'gmi_return':[research]} if entry=='catalogue' else {'gmi_return':[research]} if entry=='research' else {}
+                assert parse_qs(urlsplit(p.url).fragment)==expected
+                expect(p.locator('[data-company-search]')).to_have_value('Micron' if entry=='catalogue' else '')
+                if entry in ('catalogue','research'):
+                    p.locator('[data-gmi-return]').click()
+                    expect(p.locator('[data-gmi-ready]')).to_have_count(1)
+                    assert parse_qs(urlsplit(p.url).fragment)==parse_qs(urlsplit(research).fragment)
+                else:expect(p.locator('[data-gmi-return]')).to_have_count(0)
+                p.close()
+            report.setdefault('relationship_recovery_paths',[]).append({'width':width,'language':language,'entries':['direct','research','catalogue','invalid'],'native_primary_Enter':True,'native_disclosure_Enter_Space':True,'company_query_and_upstream_research_preserved':True,'invalid_return_never_forwarded':True})
+
+    def relationship_entry_static(width, language):
+        """Real no-JavaScript pages retain ordinary links and publication disclosure."""
+        with context(width,'light',language,java_script_enabled=False) as c:
+            p=page_for(c,'gmi-relationships.html#gmi_return=invalid')
+            expect(p.locator('h1')).to_have_count(1);expect(p.locator('.gmi-head')).to_have_count(0)
+            assert p.locator('h1').inner_text().strip()==('Company relationships' if language=='en' else '公司关系')
+            expect(p.locator('[data-gmi-return]')).to_have_count(0)
+            expect(p.locator('.gmi-snapshot-stale')).not_to_be_visible()
+            assert p.locator('#gmi-brain-slot').evaluate('(n)=>n.childElementCount')==0
+            actions=p.locator('.gmi-state-actions a')
+            assert actions.evaluate_all('(nodes)=>nodes.map(n=>n.getAttribute("href"))')==['gmi-companies.html','gmi.html','gmi-coverage.html']
+            assert not p.locator('main [data-company-card], main [data-relationship], main script[type="application/json"]').count()
+            details=p.locator('.gmi-topic-receipt');details.locator('summary').click();expect(details).to_have_attribute('open','')
+            assert not p.evaluate('document.documentElement.scrollWidth>innerWidth')
+            actions.first.click();expect(p.locator('[data-company-card]')).to_have_count(1)
+            assert urlsplit(p.url).path.endswith('/gmi-companies.html') and not urlsplit(p.url).fragment
+            report.setdefault('relationship_entry_static',[]).append({'width':width,'language':language,'native_three_links':True,'native_disclosure':True,'actual_company_navigation':True,'no_dynamic_return_or_public_projection':True})
+
+
+    for route in ('gmi-companies.html','gmi-issuer-mu.html','gmi-index.html','gmi-coverage.html','gmi-relationships.html','gmi-states.html'):
+        for width,language in ((390,'en'),(320,'zh')):
+            check(f'return-context-focus-{route}-{language}',lambda r=route,w=width,l=language:return_context_focus(r,w,l))
+    for width in (1440,390,320):
+        for language in ('en','zh'):
+            check(f'relationship-entry-{width}-{language}',lambda w=width,l=language:relationship_entry_header(w,l))
+    for width,language in ((320,'en'),(390,'zh')):
+        check(f'relationship-crowded-{width}-{language}',lambda w=width,l=language:relationship_entry_header(w,l,'dark',crowded=True))
+    for width,language in ((390,'en'),(320,'zh')):
+        check(f'relationship-recovery-{width}-{language}',lambda w=width,l=language:relationship_recovery_paths(w,l))
+    for width in (1440,320):
+        for language in ('en','zh'):
+            check(f'relationship-static-{width}-{language}',lambda w=width,l=language:relationship_entry_static(w,l))
+
     browser.close()
 server.shutdown()
 report['pass'] = all(c['result']=='PASS' for c in report['cases']) and not report['page_errors']

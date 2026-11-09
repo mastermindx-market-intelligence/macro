@@ -1198,3 +1198,78 @@ Nine final company captures were inspected, covering EN/ZH light/dark, crowded s
 `COMPANY_ENTRY_VALIDATION_20261109.json` retains exact inputs, process receipts, source checks, both baseline failures, all final measurements and captures. Final geometry/comparison arrays were verified on the native host as exactly equal to the initial accepted layout proof; the transported final delta was reconstructed and checked with normalized sorted-JSON SHA256 **d871e29941e34e7e43eb0ba0c146f1927ed6d4fffb15ac5cd1eea81422b6b74d**. This binds the final count/focus results without replaying unchanged measurements.
 
 Original Draft/model01/release holds remain. This proof does not establish full shared shell/fonts, live account/admission, current hosted CI, public serving, spoken assistive technology or deployment. No fenced model result, relationship publication, Tools owner, shared admission or release control is changed.
+
+## 11.31. Recover qualified returns and make relationship availability actionable — 9 November 2026
+
+### Keep return removal inside its existing owner
+
+At parent `49d47033f4d758af2ec7212fccee04d762fec956`, `refreshJourney()` removes a return holder as soon as its qualified context disappears. If the Back link owns keyboard focus, the holder is removed while still containing the active element. The exact baseline reproduces this on the company and relationships routes.
+
+Only that removal branch changes. Before removing a holder that contains the active element, it focuses the existing `a.gmi-product-name[href]` outside the holder with `preventScroll:true`. If focus remains in the holder and a product navigation link exists, that existing link is the bounded fallback. A focus handler that already moves to another surviving control is respected. Unrelated focus never enters this recovery path.
+
+If the brand and navigation destinations are both unusable in an exceptional malformed DOM, the invalid holder is still removed. The code does not keep a stale Back action, create a replacement element, assign tabindex to the page, manufacture a return destination or throw because the brand is absent. That exceptional fixture is explicitly not represented as successful focus recovery.
+
+The existing `safeReturn()`, `originalHrefs`, source/catalogue/research projection and following link-refresh loop remain byte-identical. Recovery does not activate the focused link, navigate, call a history writer or copy the retired destination onto the brand. The ordinary href projection completes synchronously afterward. Valid-to-valid context changes keep the same Back anchor, including during localization.
+
+`preventScroll` scopes the effect of the focus call. A diagnostic observed scrollY **300 before focus, 300 immediately after focus, and 240 after the return holder's layout removal**. The later browser layout adjustment must not be misreported as a focus-induced jump or suppressed by another custom scroll owner. The final verifier checks those effects separately; history scroll restoration remains with the browser.
+
+### The Relationships page states availability, then offers useful work
+
+The compact task header now applies to the exact **relationships** page key as well as companies. Its H1 is **Company relationships / 公司关系**. The real brand link, snapshot/stale owner, Brain slot, active tabs and utility navigation remain unchanged. The generic product introduction and old noninteractive breadcrumb/title/instruction region are removed. No stylesheet change is required; the existing compact header declarations are reused.
+
+The state heading becomes **Public relationship view unavailable / 暂无公开关系视图**. The template establishes that no verified public projection is available in this snapshot; it does not inspect every underlying clearance decision. The new heading describes that actual boundary without asserting that no relationship has been cleared.
+
+The existing two explanation paragraphs and native publication disclosure remain exact. They still distinguish a publication restriction from the absence of real relationships, withhold parties/details/figures here, and distinguish public source access from permission to display facts, magnitudes or excerpts.
+
+The panel now gives **Browse company evidence / 浏览公司证据** the primary action. Explore themes and Coverage & methodology remain secondary destinations. These are ordinary native anchors in source markup, including without JavaScript. The new action does not promise a populated company catalogue or expose relationship records. It reaches the existing company page, whose admitted evidence and empty-state rules remain authoritative.
+
+| Entry context | Company-evidence action |
+| --- | --- |
+| Direct arrival | Ordinary `gmi-companies.html` destination. |
+| Qualified theme research | Existing company destination carrying the qualified upstream research return. |
+| Qualified company catalogue | Reuse its exact permitted catalogue search and one qualified upstream research context. |
+| Rejected or absent return | Ordinary company destination; rejected values are not forwarded. |
+| JavaScript disabled | Ordinary company link and native publication disclosure remain usable; no dynamic return is invented. |
+
+The unchanged navigation owner already supplies those projections to the new main-content link. No new routing, URL, storage, language, permission, publication, source-model or retry owner is introduced. No relationship parties, records, financial amounts, excerpts or hidden relationship-search payload is rendered.
+
+### Exact source and measured presentation
+
+| Artifact | Git blob |
+| --- | --- |
+| Shared header | **945b464b1a0380e4b1b86c873866f273fe0c9574** |
+| Relationship template | **e30d0df9e359e529c707468cf952e0aa84a36987** |
+| Paired JavaScript | **ef00b9aca6d4e343a8dea7bbd8010020fec671f1** |
+| Generated relationship page | **8a693c57b649b300a5c3e53e9d24cfa9c92987c7** |
+| Canonical verifier | **77944d4bb9e863d97635dbeda007eba1c30424d3** |
+| Extracting return/relationship harness | **20c26d3a87906a884f81bf25ba4a739d25533bb7** |
+
+Forty-eight checked renderer inputs and the same accepted **e644fa48…** model reproduce all nine parent outputs exactly. Final rendering changes only **gmi-relationships.html and gmi.js**. All six other HTML pages, including company/index/issuer, and gmi.css are byte-identical. The paired template/site script is identical.
+
+The generated relationship page is **61,988 bytes**, SHA256 **86243e69c432370eb83600a45cda897e29a1a63697f55e3a72ccffcf9468c377**. Full transported bytes match the native Git blob. Native subtree checks preserve the complete publication disclosure, both explanation paragraphs, product navigation, snapshot and Brain slot. Source reversal reproduces every prior byte outside the return-removal branch, exact relationship header branch and enumerated template changes. All **48 existing suite-level verifier definitions** remain exact; five definitions are added.
+
+Eight header cases cover EN/ZH at 1440/390/320 plus two crowded dark/stale/Brain cases. Direct, research and catalogue entry produce **24 matched layout pairs**. The publication panel begins **145.984375–196.390625 px sooner**. Six final relationship captures were inspected. The Brain button and stale clock are explicit fixtures, not shared-runtime or changed-public-snapshot claims.
+
+### Focused browser proof and diagnostic corrections
+
+Final PID50506 passes **28 cases / 28 fresh anonymous contexts**, Chrome **157.0.8103.39**, zero page errors, exit0 in **52.66 seconds**. The matrix is:
+
+- Eight relationship-header cases and 24 matched layouts, with complete source-qualified destinations, active navigation, one H1/snapshot, 44 px actions and no horizontal overflow.
+- Twelve return-focus cases: EN/ZH on company, issuer, index, coverage, relationships and state-reference routes.
+- Two actual relationship-to-company journeys: direct, research, catalogue and invalid entries, native primary Enter, native disclosure Enter/Space, preserved company query and real return to research.
+- Four genuinely JavaScript-disabled cases at 1440/320 EN/ZH, including native disclosure and actual company navigation.
+- Two existing company focus/count regressions.
+
+The return matrix covers absent and three rejected returns, valid anchor identity and localized labels, unrelated source/nav focus, real hash/back/forward restoration and unchanged history ownership. Relationship cases additionally exercise hidden/missing brand fallback, another focus handler's redirect, the focus-time scroll measurement, and an exceptional fixture with no usable destination. No exceptional focus success is fabricated.
+
+Corrected baseline PID43349 records **eight original-header observations** and **two expected focused-holder removal failures**, exit1 in **23.48 seconds**. Those header observations describe the previous layout; they are not upgraded-page acceptance.
+
+An earlier baseline run, PID39951, exposed a test-fixture serialization error: the nested research-return string used a different parameter order from the existing canonical projection. Three fixture constants were corrected to that owner's order; product bytes were unchanged. The original ten-failure report is preserved, distinguishing eight fixture-comparison failures from the two actual focus failures.
+
+Initial candidate PID45302 passed 16 cases and stopped at a test that equated final scroll position with the focus effect. Diagnostic PID48600 established 300→300 during focus and 300→240 after removal. The corrected verifier records native focus timing and keeps later layout behavior separate. The initial candidate and diagnostic are preserved; no product code was changed to satisfy either test correction.
+
+`RETURN_RECOVERY_VALIDATION_20261109.json` retains commands, exact source/input hashes, original and corrected receipts, final measurements and scope. The component harness extracts the actual definitions from the canonical verifier and owns no product behavior. No additional relationship model is generated or consumed.
+
+The editable [Relationships · Availability](https://app.paper.design/file/01M5H6EARN9YHQV17JC6ZG9BRY/p-A-0) page shows the current EN390 Day state, ZH320 Noir catalogue-return state and an expanded publication disclosure. Builder guidance must keep return retirement, publication availability, catalogue content and release acceptance separate.
+
+Original Draft/model01/release holds remain. This local proof does not establish full shared shell/fonts, live accounts/public admission, spoken assistive technology, current hosted CI or deployment. No fenced relationship data, Tools owner, original protected Paper style or release control is changed.
