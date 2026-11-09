@@ -1683,3 +1683,55 @@ Append **Q05 company match EN390 Noir** and **Q06 platform match ZH320 Day** to 
 The visual pass separately exposed a real content defect: **Conventional DRAM (non-HBM)** receives the specialized HBM sentence because both client and server macro test for an HBM substring. Continue with a distinct identity-based description correction, preserving both existing bilingual sentences and model/public-data boundaries.
 
 Original model01 `EFFECT_UNKNOWN/ROOT_UNVERIFIED`, Draft and release holds remain. These component checks do not establish full shared shell/fonts, native OS IME, spoken AT, live account/admission, current hosted CI or deployment.
+
+
+## 11.40 · Bind the topic explanation to its identity — 9 Nov 2026
+
+### Confirmed content defect
+
+At parent **ba8a81b6470f88f71bc7c2ec90cede39aba8a9b0**, both **renderAnswer()** in the paired GMI JavaScript and **topic_answer(topic)** in the production Jinja macro selected the special HBM explanation by an English-name substring. The public payload contains two matching names: **HBM & advanced packaging** and **Conventional DRAM (non-HBM)**. The second is a negation, not an HBM identity.
+
+Baseline PID **7753**, exit1, **2.81 s**, renders all 371 topics through the actual production Jinja environment and finds exactly two mismatches: Conventional DRAM's EN and ZH descriptions. Baseline browser PID **7845**, exit1, **16.49 s**, reproduces the same incorrect explanation in EN390 and ZH320. This was source presentation logic; no new market research or model inference was necessary.
+
+### One existing rule in each renderer
+
+Use the stable identifier **theme:hbm_packaging** for the specialized sentence:
+
+- Client: `t.id === 'theme:hbm_packaging'`.
+- Server macro: `topic.id == 'theme:hbm_packaging'`.
+
+Keep the existing specialized EN/ZH text. Every other topic follows its existing generic branch, including Conventional DRAM and NAND. Preserve the incumbent difference between server-generic copy and client-generic copy: the client names the recorded parent, while the server's generic sentence describes taxonomy and company evidence without that parent. This repair does not add topic descriptions to the model or change the facts admitted by the builder.
+
+A topic name, translation, parent label or search hint is presentation text. None may silently establish identity. The search-match improvement in §11.39 continues to explain a result; it does not choose the answer's descriptive rule. Selection, history and locale continue through the existing renderer. There is no new URL field, data cache, state owner or request.
+
+### Production render and consumer proof
+
+The isolated preparation binds **48 existing source inputs** and the retained accepted model, SHA256 **e644fa48a2bb6e6affe8d1fda74556d9db5f82acadffdad839e1efe8f095359f**. Before editing, the actual builder reproduces all nine parent outputs byte-for-byte. After the two conditional changes, all **46 other inputs**, all **seven HTML pages**, and **CSS** remain byte-exact. Only generated **gmi.js** changes. The default server page is already HBM, so its HTML appropriately remains unchanged.
+
+Final server PID **25300**, exit0, **3.40 s**: **371 topics / 742 language checks**, zero mismatches. Per-topic complete-markup hashes show that only **theme:conventional_dram** changes. All 371 comparisons outside the description are exact, including connection cards, source dates, receipts, related-section structure, taxonomy and count text.
+
+Final browser PID **25199**, exit0, **19.61 s**: **7 cases / 7 fresh anonymous contexts**, Chrome **157.0.8103.39**, zero page errors. The matrix covers EN/ZH1440, EN/ZH390/320 and EN820. Each case follows nine observations:
+
+1. Direct Conventional DRAM URL uses the generic description and zero public connection cards.
+2. Actual HBM search-result selection uses the specialized description and its one admitted source card.
+3. The actual related-topic link returns to Conventional DRAM.
+4. Actual Back restores the HBM answer.
+5. Actual Forward restores Conventional DRAM.
+6. Language switching translates the generic parent description without changing research URL.
+7. Switching back preserves topic identity.
+8. Actual NAND selection remains a generic negative control.
+9. The NVIDIA H200 result retains its platform hint and selects the specialized HBM answer with the existing dated card.
+
+All **63 description observations** check the selected identity, title, connection count, query/lens preservation and viewport containment. Four final native captures—Conventional DRAM and HBM in EN390 Noir and ZH320 Day—were inspected. The existing brief descriptions fit without clipping or page overflow.
+
+Source self-check reverses only those two conditions and reconstructs each parent Git blob exactly. All **126 prior qualified verifier definitions remain AST-exact**; the new workflow and two nested helpers add focused coverage without rewriting prior assertions. Paired JS blob **2f609523fe0ca15d96bf82d0a7fd0afe71297c3b**; production macro blob **26d1cb101e719dd65a30978708c2b4861fb99fa5**.
+
+[DESCRIPTION_VALIDATION_20261109.json](DESCRIPTION_VALIDATION_20261109.json) binds source deltas, commands, process results, baseline and final browser reports, all 371 server before/after hashes, changed-topic full descriptions, screenshot hashes and the complete retained native report hashes. Its server projection explicitly omits repeated unchanged description sentences, rather than presenting that projection as the full native reports.
+
+### Paper and continuing scope
+
+Extend existing Build module02 with the stable-topic identity rule and the two existing renderer locations, preserving its exact public-field and separate-clock guidance. Update current source/proof references within the existing eighteen-module guide. The existing HBM views remain accurate; the current Browse match views already use Conventional DRAM's generic backdrop. No extra product control or redundant specimen is needed for this correction.
+
+PR10676 stays Draft, with original model01 **EFFECT_UNKNOWN / ROOT_UNVERIFIED** and release holds intact. Component/production-render checks do not establish full shared shell/fonts, native OS IME, spoken assistive technology, live account/admission, current hosted CI or deployment.
+
+A separate source review found unguarded consumed/composition/modifier handling in the primary result-key navigation and the two incumbent slash shortcuts. Continue with bounded consumer reproduction and their existing owners; that next correction is not included in this phase.

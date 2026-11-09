@@ -29,7 +29,7 @@
   <div class="gmi-topic-heading-top"><div class="gmi-topic-meta"><span data-topic-category>{{ t(topic_names[topic.category].en, topic_names[topic.category].zh) }}</span><span data-topic-tier>{{ t('Core topic', '核心主题') if topic.tier == 'core' else t('Extended topic', '扩展主题') }}</span></div>
   <button type="button" class="gmi-copy" data-gmi-copy><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="8" y="8" width="11" height="12" rx="2"/><path d="M15 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h3"/></svg><span data-copy-label>{{ t('Copy link', '复制链接') }}</span></button></div>
   <h1 id="gmi-topic-title" tabindex="-1">{{ t(topic.en, topic.zh) }}</h1>
-  <p data-topic-description>{% if 'hbm' in topic.en|lower %}{{ t('High-bandwidth memory stacking and its packaging — a distinct part of the AI semiconductor stack.', '高带宽内存的堆叠与封装，是 AI 半导体体系中一个独立的环节。') }}{% else %}{{ t('Explore its place in the taxonomy and the company evidence currently on file.', '了解它在主题体系中的位置，以及目前收录的公司证据。') }}{% endif %}</p>
+  <p data-topic-description>{% if topic.id == 'theme:hbm_packaging' %}{{ t('High-bandwidth memory stacking and its packaging — a distinct part of the AI semiconductor stack.', '高带宽内存的堆叠与封装，是 AI 半导体体系中一个独立的环节。') }}{% else %}{{ t('Explore its place in the taxonomy and the company evidence currently on file.', '了解它在主题体系中的位置，以及目前收录的公司证据。') }}{% endif %}</p>
 </div>
 <div class="gmi-copy-fallback" hidden><label for="gmi-share-url">{{ t('Copy this address', '复制此地址') }}</label><input id="gmi-share-url" type="url" readonly><button type="button" class="gmi-action-secondary" data-copy-close>{{ t('Close', '关闭') }}</button></div>
 <div class="gmi-connection-list" data-topic-connections>

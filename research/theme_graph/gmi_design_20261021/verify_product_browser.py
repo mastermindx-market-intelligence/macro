@@ -4274,6 +4274,82 @@ with sync_playwright() as pw:
     for width,language in ((390,'en'),(320,'zh')):
         check(f'search-match-history-{width}-{language}',lambda w=width,l=language:search_match_history(w,l))
 
+    def topic_description_paths(width,language):
+        with context(width,'dark' if language=='en' else 'light',language,reduced_motion='reduce' if width==320 else 'no-preference') as c:
+            p=page_for(c,'gmi.html?fixture=description#theme=theme%3Aconventional_dram&lens=chain')
+            expect(p.locator('[data-gmi-ready]')).to_have_count(1)
+            payload=json.loads(p.locator('#gmi-topic-data').text_content())
+            topics={t['id']:t for t in payload['topics']}
+            description=p.locator('[data-topic-description]')
+            observed={'width':width,'language':language,'phases':[]}
+            report.setdefault('description_observations',[]).append(observed)
+            def verify(topic_id,phase,active_language,special=False):
+                topic=topics[topic_id];parent=payload['categories'][topic['parent']]
+                generic=('A topic within '+parent['en']+'. Explore its classification and the company evidence currently on file.') if active_language=='en' else ('属于“'+parent['zh']+'”的主题。查看其分类位置与目前收录的公司证据。')
+                hbm='High-bandwidth memory stacking and its packaging — a distinct part of the AI semiconductor stack.' if active_language=='en' else '高带宽内存的堆叠与封装，是 AI 半导体体系中一个独立的环节。'
+                expected=hbm if special else generic
+                expect(description).to_have_text(expected)
+                expect(p.locator('#gmi-topic-title')).to_have_text(topic[active_language])
+                expect(p.locator('[data-topic-connections] .gmi-evidence-card')).to_have_count(len(topic['connections']))
+                params=parse_qs(urlsplit(p.url).fragment)
+                assert params['theme']==[topic_id] and params['lens']==['chain']
+                assert parse_qs(urlsplit(p.url).query)['fixture']==['description']
+                geometry=description.evaluate("""n=>{
+                  const r=n.getBoundingClientRect();
+                  return {x:r.x,right:r.right,width:r.width,height:r.height,viewport:innerWidth,
+                    documentWidth:document.documentElement.scrollWidth,text:n.textContent,
+                    lineHeight:getComputedStyle(n).lineHeight};
+                }""")
+                assert geometry['x']>=-1 and geometry['right']<=width+1
+                assert geometry['height']>0 and geometry['documentWidth']<=width
+                observed['phases'].append({'phase':phase,'topic':topic_id,'language':active_language,
+                    'actual':description.text_content(),'expected':expected,'connections':len(topic['connections']),
+                    'url':p.url,'geometry':geometry})
+                if (width,language) in ((390,'en'),(320,'zh')) and phase in ('initial-conventional','hbm-from-results'):
+                    path=args.out/f'description-{phase}-{width}-{language}.png'
+                    description.scroll_into_view_if_needed()
+                    p.screenshot(path=str(path),full_page=False);report['screenshots'].append(path.name)
+            def search_for(query):
+                if width<=820:
+                    p.locator('[data-browse-open]').click()
+                    expect(p.locator('[data-browse-dialog]')).to_be_visible()
+                field=p.locator('[data-topic-search]');field.fill(query)
+                return field
+            verify('theme:conventional_dram','initial-conventional',language)
+            search_for('HBM')
+            p.locator('[data-topic-results] [data-topic-select="theme:hbm_packaging"]').click()
+            if width<=820:expect(p.locator('[data-browse-dialog]')).not_to_be_visible()
+            verify('theme:hbm_packaging','hbm-from-results',language,True)
+            p.locator('[data-topic-related] [data-topic-select="theme:conventional_dram"]').click()
+            verify('theme:conventional_dram','related-conventional',language)
+            p.go_back()
+            verify('theme:hbm_packaging','history-back-hbm',language,True)
+            p.go_forward()
+            verify('theme:conventional_dram','history-forward-conventional',language)
+            url=p.url;other='zh' if language=='en' else 'en'
+            p.evaluate('(v)=>document.documentElement.setAttribute("data-lang",v)',other)
+            verify('theme:conventional_dram','locale-other',other)
+            assert p.url==url
+            p.evaluate('(v)=>document.documentElement.setAttribute("data-lang",v)',language)
+            verify('theme:conventional_dram','locale-return',language)
+            assert p.url==url
+            search_for('NAND')
+            p.locator('[data-topic-results] [data-topic-select="theme:nand_enterprise_storage"]').click()
+            verify('theme:nand_enterprise_storage','nand-negative-control',language)
+            search_for('NVIDIA H200')
+            row=p.locator('[data-topic-results] [data-topic-select="theme:hbm_packaging"]')
+            expect(row.locator(':scope > span > .l-'+language)).to_have_text('Platform: NVIDIA H200' if language=='en' else '平台：NVIDIA H200')
+            row.click()
+            verify('theme:hbm_packaging','platform-result-hbm',language,True)
+            card=p.locator('[data-topic-connections] .gmi-evidence-card')
+            expect(card.locator('.gmi-product-path strong').filter(has_text='NVIDIA H200')).to_be_visible()
+            expect(card.locator('.gmi-evidence-date')).to_contain_text('2024')
+            assert len(topics['theme:hbm_packaging']['connections'])==1
+            assert not topics['theme:conventional_dram']['connections'] and not topics['theme:nand_enterprise_storage']['connections']
+
+    for width,language in ((1440,'en'),(1440,'zh'),(390,'en'),(320,'zh'),(320,'en'),(390,'zh'),(820,'en')):
+        check(f'topic-description-{width}-{language}',lambda w=width,l=language:topic_description_paths(w,l))
+
     browser.close()
 server.shutdown()
 report['pass'] = all(c['result']=='PASS' for c in report['cases']) and not report['page_errors']
