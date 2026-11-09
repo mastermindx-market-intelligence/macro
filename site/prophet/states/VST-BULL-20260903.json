@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "VST-BULL-20260903",
-  "asof": "2026-11-06",
+  "asof": "2026-11-09",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 11.3,
@@ -14,23 +14,23 @@
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 32.8
+    "overlay": 39.0
   },
   "geometry": {
-    "dist_to_stop_r": -0.936,
+    "dist_to_stop_r": -0.302,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 140.0,
-    "p1": -1.2904,
-    "p2": -0.6452,
+    "horizon_pct_used": 146.7,
+    "p1": -0.8683,
+    "p2": -0.4342,
     "p3": null,
-    "move_r": -1.936,
+    "move_r": -1.302,
     "mfe_r": 0.926,
     "mae_r": -1.936
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "Phase: overtime \u2192 invalidated",
+  "change_reason": "",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
@@ -45,8 +45,8 @@
   "_first_trigger_ts": "2026-09-05",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 63,
-  "tau": 1.4,
+  "days_elapsed": 66,
+  "tau": 1.4667,
   "closed": true,
   "outcome": "EXPIRED"
 }
