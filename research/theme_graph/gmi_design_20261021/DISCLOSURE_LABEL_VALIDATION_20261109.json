@@ -1,0 +1,265 @@
+{
+  "schema": "mastermind.gmi.disclosure_label_validation.v1",
+  "verified_at": "2026-11-09",
+  "base_head": "83f05e360844da4b28d9bbb2d82079908809ba5f",
+  "branch": "claude/gmi-product-upgrade-20261103",
+  "pr": 10676,
+  "change": {
+    "template": "templates/_gmi_product_macros.html.j2",
+    "macro": "topic_answer",
+    "generated": "site/gmi.html",
+    "before": {
+      "en": "Taxonomy & research context",
+      "zh": "分类与研究背景"
+    },
+    "after": {
+      "en": "Theme details",
+      "zh": "主题详情"
+    },
+    "template_before_blob": "88748e51a87c02ae3ae2c7ee17ee0cb0c905020f",
+    "template_after_blob": "3e82a587bb0ad17f536d0513d85a1c0a66304999",
+    "generated_before_blob": "317db9c58873d1b67bb10771bd19cbed4b51b400",
+    "generated_after_blob": "f821055256f57d3fa777e77c14c4a555ef4375cf",
+    "generated_after_sha256": "3185babccf7b0f0ec5b81029dc041dba39d19235723a6db2d2c3b7b85652ea51"
+  },
+  "accepted_input": {
+    "path": "/Volumes/Mastermind/agent-workspaces/verify/gmi-product-continuation-hzln4tqh/native-render-model.json",
+    "sha256": "e644fa48a2bb6e6affe8d1fda74556d9db5f82acadffdad839e1efe8f095359f",
+    "bytes": 1744779,
+    "path_receipt_blob": "8fa8b7e01d76d2344212433b7b2b6d2e38189636",
+    "hash_receipt_blob": "3c2ae8d2d5ed62468f95e42d060c5fb0a99e68bd",
+    "verified_before_and_after": true,
+    "scope": "Existing accepted principal verification input; not the unknown model01 result."
+  },
+  "production_render": {
+    "entry": "scripts.build_gmi_explorer.render_site(model, site_dir)",
+    "builder_blob": "900253d42a7b1d43ad41aa493e8032444c4570de",
+    "input_blobs": {
+      "config.yml": "5be75249c98033d7ee0fbe55928713b1f50af627",
+      "scripts/build_gmi_explorer.py": "900253d42a7b1d43ad41aa493e8032444c4570de",
+      "lib/shared_shell.py": "cffbeba3f8fdcf7a9413d9428aec0154d97d9614",
+      "lib/config.py": "b6fc888269876242597da354aaa726c20ed95802",
+      "lib/pages.py": "db175c463a31828263b57a3287afba661439a765",
+      "lib/site_assets.py": "03d7ce6137a30b990435cb1fee2090e61c2e95e3",
+      "templates/_site_nav.html.j2": "d5c449e9ec498c49007c2de0ced1757a7f36b12d",
+      "templates/gmi_relationships.html.j2": "53b8a697a17064367964b566788d553b7b27a4e0",
+      "templates/_navlinks.html.j2": "70fee6eabeb2cfe6d92590da42aa8c3e3733e837",
+      "templates/_gmi_theme_data.html.j2": "0520256ae0a2f61a33702070686be769d8640124",
+      "templates/theme.css": "619436f58d37a222d1db7021ba9d52bb3a05a7fa",
+      "templates/gmi.css": "23ce5f275ffc07a57278450b560d9d0c20f86632",
+      "templates/_gmi_product_header.html.j2": "c7b10dbfecc66deacfe9b8fbbb2ce72932299695",
+      "templates/_interfonts.html.j2": "f6e84eb856ce66f732aacafe883d5c26c5d1e27e",
+      "templates/_gmi_taxonomy.html.j2": "99ade053147ecb6f42a9b1119af4f522df5c05b7",
+      "templates/_gmi_base.html.j2": "1d76c899cb2ce05b66e7d37d19b53e212e814b4d",
+      "templates/_gmi_macros.html.j2": "1c926c0047dfa3d8a82b45ba0d278e5e51f6bad6",
+      "templates/shared_shell_bridge.js": "00ee9b9fa4d1fba67359d3d6b95c7937aed150b7",
+      "templates/gmi.js": "387383b0e237162421dfebf5eb9d7ef85302cb1e",
+      "templates/_all_tools_menu.html.j2": "3259b4e5c6305fd2f9a33bea65141efb0528680a",
+      "templates/shared_shell.css": "88a0fd9e836fbffac36722dac04189c6eb24af9b",
+      "templates/gmi_map.html.j2": "8da56912a78e4a030be4de0a5f6f4c3fdc1e8ff2",
+      "templates/gmi_states.html.j2": "2e2f66e8f9588403a58434ae6fa80bfa181845bf",
+      "templates/theme.js": "21a1fb1627ac34badc6078cff486f98486e9b773",
+      "templates/_seo_head.html.j2": "1a0f1a7cd3a8499e9d873171171d374424f9ddd8",
+      "templates/gmi_companies.html.j2": "afb542f5740a4147c5ef0d05aaae25481d8d6851",
+      "templates/gmi_issuer.html.j2": "35b06fd42b3ef485564b504fcacecacb89383c49",
+      "templates/data_base.js": "9e7cc392f0bad0e269d26903432faa39d94a1b62",
+      "templates/gmi_coverage.html.j2": "417a1e5ad85e66796201a1879e520db53bc9fbfc",
+      "templates/_gmi_product_macros.html.j2": "88748e51a87c02ae3ae2c7ee17ee0cb0c905020f",
+      "templates/_gmi_head.html.j2": "5fe310cbe1a4a988f60f8b400e47a2de82ff06ef",
+      "templates/gmi_index.html.j2": "ff766f3634bb8954ea29e2363eb5a14f5facfa46",
+      "engine/theme_graph/store.py": "853bc3bb557aaf32251de0eb053bcff55604e68c",
+      "engine/theme_graph/identity_resolution.py": "e3510e69645a96872e7080efe028633ff6836324",
+      "engine/theme_graph/change_report.py": "354a48be5a56416b941fecb9942401a7f0fb7f1c",
+      "engine/theme_graph/membership_evidence.py": "3785874c443ffcd4cde2db31b1f11cafc184d7d5",
+      "engine/theme_graph/rights.py": "d801f2e231e8a0dbf05d30e96fd0024ae70bd63b",
+      "engine/theme_graph/probation.py": "eac18b9804411c10ee8cede2d5d6f9aae2a84f1f",
+      "engine/theme_graph/identity.py": "c27fb161bf401ca05387c4f07ac8e0220b801b2a",
+      "lib/dataos/temporal.py": "094b149a8b9158f19cb99c4005568c12db96ed41",
+      "lib/dataos/registry.py": "65b0d69036da97760f20241468f2549b21d9c686",
+      "lib/dataos/__init__.py": "1ddadafd88a59dfc90a7d68c3ae0897da1aae661",
+      "lib/dataos/nulls.py": "8e7f09ac172f326bab1678ac626fa1d5dc5aa0ab",
+      "lib/dataos/quality.py": "967b943443d9507c5c0078f62848c38c3d2af48a",
+      "lib/dataos/identity.py": "fb99fd182ac506a158c63ab434f09374cdbbd4f8",
+      "lib/dataos/price.py": "be127fa853a6aafbf0bcb33b58783316ac972faa",
+      "scripts/gmi_explorer/present.py": "c5ae61d80a484c07d583831577db52881843061b",
+      "scripts/gmi_explorer/model.py": "2614997dd87bf7d7e2d0b61b283c6b364801e1b1"
+    },
+    "isolated_root": "/Volumes/Mastermind/agent-workspaces/verify/gmi-paper-label-20261109-3su12dkf",
+    "baseline": {
+      "result": "PASS",
+      "exit_code": 0,
+      "runtime_seconds": 1.22,
+      "target_byte_identical_to_committed": true,
+      "gmi_sha256": "12f2f5aee1ded9d656878db968e3c218e7797c659c89043f12346a14f013f190"
+    },
+    "candidate": {
+      "base": "83f05e360844da4b28d9bbb2d82079908809ba5f",
+      "generated_changed": [
+        "gmi.html"
+      ],
+      "generated_unchanged": [
+        "gmi-companies.html",
+        "gmi-coverage.html",
+        "gmi-index.html",
+        "gmi-issuer-mu.html",
+        "gmi-relationships.html",
+        "gmi-states.html",
+        "gmi.css",
+        "gmi.js"
+      ],
+      "exact_label_only_delta": true,
+      "source_macro_blob": "3e82a587bb0ad17f536d0513d85a1c0a66304999",
+      "gmi_blob": "f821055256f57d3fa777e77c14c4a555ef4375cf",
+      "gmi_sha256": "3185babccf7b0f0ec5b81029dc041dba39d19235723a6db2d2c3b7b85652ea51",
+      "model_sha256": "e644fa48a2bb6e6affe8d1fda74556d9db5f82acadffdad839e1efe8f095359f",
+      "generated_pages": 7,
+      "exit_code": 0,
+      "runtime_seconds": 2.13
+    },
+    "publication_transport": "The actual renderer emitted a one-line unified diff. Applying that observed generated delta to the canonical prior page reproduces the native output's complete Git blob and SHA256; those exact rendered bytes are submitted. No independent HTML edits were authored."
+  },
+  "browser": {
+    "version": "157.0.8103.39",
+    "result": "PASS",
+    "exit_code": 0,
+    "runtime_seconds": 9.96,
+    "page_errors": [],
+    "cases": [
+      {
+        "width": 1440,
+        "language": "en",
+        "javascript_enabled": false,
+        "status": "PASS",
+        "target_heights": {
+          "theme": 44,
+          "receipt": 44
+        }
+      },
+      {
+        "width": 1440,
+        "language": "en",
+        "javascript_enabled": true,
+        "status": "PASS",
+        "target_heights": {
+          "theme": 44,
+          "receipt": 44
+        }
+      },
+      {
+        "width": 1440,
+        "language": "zh",
+        "javascript_enabled": false,
+        "status": "PASS",
+        "target_heights": {
+          "theme": 44,
+          "receipt": 44
+        }
+      },
+      {
+        "width": 1440,
+        "language": "zh",
+        "javascript_enabled": true,
+        "status": "PASS",
+        "target_heights": {
+          "theme": 44,
+          "receipt": 44
+        }
+      },
+      {
+        "width": 390,
+        "language": "en",
+        "javascript_enabled": false,
+        "status": "PASS",
+        "target_heights": {
+          "theme": 53.59375,
+          "receipt": 53.59375
+        }
+      },
+      {
+        "width": 390,
+        "language": "en",
+        "javascript_enabled": true,
+        "status": "PASS",
+        "target_heights": {
+          "theme": 53.59375,
+          "receipt": 53.59375
+        }
+      },
+      {
+        "width": 390,
+        "language": "zh",
+        "javascript_enabled": false,
+        "status": "PASS",
+        "target_heights": {
+          "theme": 53.59375,
+          "receipt": 53.59375
+        }
+      },
+      {
+        "width": 390,
+        "language": "zh",
+        "javascript_enabled": true,
+        "status": "PASS",
+        "target_heights": {
+          "theme": 53.59375,
+          "receipt": 53.59375
+        }
+      },
+      {
+        "width": 320,
+        "language": "en",
+        "javascript_enabled": false,
+        "status": "PASS",
+        "target_heights": {
+          "theme": 53.59375,
+          "receipt": 53.59375
+        }
+      },
+      {
+        "width": 320,
+        "language": "en",
+        "javascript_enabled": true,
+        "status": "PASS",
+        "target_heights": {
+          "theme": 53.59375,
+          "receipt": 53.59375
+        }
+      },
+      {
+        "width": 320,
+        "language": "zh",
+        "javascript_enabled": false,
+        "status": "PASS",
+        "target_heights": {
+          "theme": 53.59375,
+          "receipt": 53.59375
+        }
+      },
+      {
+        "width": 320,
+        "language": "zh",
+        "javascript_enabled": true,
+        "status": "PASS",
+        "target_heights": {
+          "theme": 53.59375,
+          "receipt": 53.59375
+        }
+      }
+    ],
+    "checks": [
+      "visible current EN/ZH label, distinct Source receipt label",
+      "one admitted card and byte-exact receipt/source key/hash",
+      "native Enter and Space toggle each disclosure and retain focus",
+      "44px or larger targets at 1440,390,320",
+      "JavaScript enabled and actually disabled, reduced motion"
+    ],
+    "scope": "Extracted actual generated explorer DOM, candidate JS, complete shared theme and GMI CSS, fresh anonymous Chrome with all network blocked. Static EN/ZH attributes are explicit presentation fixtures. Full shared shell/account/live route not exercised."
+  },
+  "preservation": {
+    "same_input_other_rendered_outputs": "All eight other outputs byte-identical between baseline and candidate.",
+    "committed_coverage": "The saved-model coverage output historically differs from the committed snapshot. It is not published. No output other than gmi.html enters this change.",
+    "model_presentation": "Original model.py/present.py are exact immutable blobs; no model generation or change.",
+    "source_receipt": "Static source receipt labels/identity markup and dynamic connection renderer remain unchanged."
+  },
+  "release": "Original PR10676 remains Draft. All model01 EFFECT_UNKNOWN/ROOT_UNVERIFIED and release/admission holds remain. No worker result consumption/retry, public data grant, Ready, enqueue, relabel, merge or deployment."
+}
