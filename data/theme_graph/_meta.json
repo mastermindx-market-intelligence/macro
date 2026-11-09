@@ -1,5 +1,5 @@
 {
-  "belief_time": "2026-11-06",
+  "belief_time": "2026-11-08",
   "capability_counts": {
     "measurement_candidate": 505,
     "semantic_only": 138
@@ -18,12 +18,12 @@
       "symbol": "VMRK"
     }
   ],
-  "computed_at": "2026-11-06T12:38:53Z",
+  "computed_at": "2026-11-08T09:09:11Z",
   "counts": {
     "capability": 645,
-    "edges": 27044,
-    "edges_latest_belief": 14654,
-    "evidence": 30,
+    "edges": 27438,
+    "edges_latest_belief": 15000,
+    "evidence": 31,
     "identity_resolution": 2809,
     "node_lifecycle": 3,
     "nodes": 4331
@@ -59,7 +59,7 @@
       ]
     },
     "ths": {
-      "concept_map_asof": "2026-10-31",
+      "concept_map_asof": "2026-11-07",
       "concepts": 375,
       "expresses_edges": 237,
       "unresolved_concept_names": 0
@@ -138,8 +138,8 @@
   },
   "rows_appended": {
     "capability": 643,
-    "edges": 0,
-    "evidence": 0,
+    "edges": 394,
+    "evidence": 1,
     "identity_resolution": 2806,
     "nodes": 0
   },

@@ -6,9 +6,9 @@
    "receiver": "xlv",
    "tier": "primary",
    "started": "2026-10-16",
-   "lapse_count": 0,
+   "lapse_count": 2,
    "neg_run": 0,
-   "confirm_streak": 2,
+   "confirm_streak": 0,
    "announced": true,
    "last_receipts": {
     "event_type": "into_strength",
@@ -48,8 +48,8 @@
    "receiver": "xlv",
    "tier": "primary",
    "started": "2026-10-20",
-   "lapse_count": 0,
-   "confirm_streak": 1,
+   "lapse_count": 2,
+   "confirm_streak": 0,
    "last_receipts": {
     "event_type": "into_strength",
     "donor_signature": "contagion_bleed",
@@ -86,8 +86,8 @@
    "receiver": "xlv",
    "tier": "primary",
    "started": "2026-10-20",
-   "lapse_count": 0,
-   "confirm_streak": 1,
+   "lapse_count": 2,
+   "confirm_streak": 0,
    "last_receipts": {
     "event_type": "into_strength",
     "donor_signature": "contagion_bleed",
@@ -124,8 +124,8 @@
    "receiver": "xlp",
    "tier": "secondary",
    "started": "2026-10-20",
-   "lapse_count": 0,
-   "confirm_streak": 1,
+   "lapse_count": 2,
+   "confirm_streak": 0,
    "last_receipts": {
     "event_type": "into_strength",
     "donor_signature": "contagion_bleed",
@@ -162,7 +162,7 @@
    "receiver": "xlu",
    "tier": "secondary",
    "started": "2026-10-14",
-   "lapse_count": 2,
+   "lapse_count": 4,
    "confirm_streak": 0,
    "last_receipts": {
     "event_type": "into_strength",
