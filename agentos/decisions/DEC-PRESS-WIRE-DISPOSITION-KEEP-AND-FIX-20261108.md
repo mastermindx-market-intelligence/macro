@@ -57,3 +57,12 @@ confidence: high
 reversibility: easy
 decided_by: mastermind-ceo-disposition-20261108
 decided_at: 2026-11-08
+---
+
+Disposition record for kanban task t_cab13e33 (press-wire workflow disposition).
+Full evidence sweep preserved at .hermes/kanban/workspaces/t_cab13e33/evidence.md
+(workflow 323156104 live read, last-20 run table, header verbatim, X-gate card
+t_fd170576 cross-ref). The in-place timeout fix (wire job timeout-minutes 10 to
+30) ships as a separate code PR in the mastermind-ceo lane; X delivery itself
+remains behind the Chairman's gate card until t_fd170576 unblocks, with
+delivery-readback as the re-arm acceptance probe.
