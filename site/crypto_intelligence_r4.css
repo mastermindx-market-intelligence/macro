@@ -39,6 +39,7 @@ html[data-theme=light] .cri-panel{box-shadow:var(--card-shadow);border-color:var
 html:not([data-theme=light]) .cri-panel{background:var(--glass-bg)}
 .cri-panel h3,.cri-panel h2{font-size:var(--fs-h2);margin:0;line-height:1.4}
 .cri-section-head{align-items:flex-start;margin-bottom:20px}
+.cri-section-head h3{margin:0}
 .cri-section-head p{font-size:var(--fs-sm);color:var(--muted);margin:5px 0 0;line-height:1.5}
 .cri-price{font-size:var(--fs-num-xl);font-weight:650;letter-spacing:-.025em;font-variant-numeric:tabular-nums;line-height:1.2}
 .cri-price-line{display:flex;align-items:baseline;flex-wrap:wrap;gap:12px;margin:8px 0 0}
@@ -72,6 +73,9 @@ html:not([data-theme=light]) .cri-panel{background:var(--glass-bg)}
 .cri-watch-row{display:flex;align-items:center;justify-content:space-between;gap:24px;border-bottom:1px solid var(--line);padding:18px 0}
 .cri-watch-row strong{font-weight:600}
 .cri-watch-row p{margin:5px 0 0;font-size:var(--fs-sm);color:var(--muted)}
+.cri-watch-row>div:has(.cri-watch-meta){min-width:0}
+.cri-watch-meta{display:flex;flex-wrap:wrap;gap:2px 12px}
+.cri-watch-meta>span{max-width:100%;overflow-wrap:anywhere}
 .cri-watch-row button{flex-shrink:0}
 .cri-levels{display:grid;grid-template-columns:1fr 1fr;gap:24px;border-top:1px solid var(--line);padding-top:18px;margin-top:18px}
 .cri-levels span{font-size:var(--fs-sm);color:var(--muted)}

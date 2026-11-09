@@ -1,6 +1,21 @@
 # Crypto R4: safe saved cases and clear asset comparisons
 
-## Current phase — qualified relative values and bilingual states
+## Current phase — clear Overview fields and aligned section headings
+
+Overview now labels the comparison and risk readings explicitly in both languages, keeping two compact wrap groups and the existing Inspect action. Missing comparison evidence is visibly attached to **Vs BTC / 相对 BTC**. Section headings use zero H3 margins, aligning Beyond Bitcoin with Explore markets and removing unintended spacing.
+
+**Five final native contexts/pages and ten Inspect→Close journeys passed.** English/Chinese, 320/390/1440px, retained and synthetic unavailable/history readings are covered. Type remains 12.5px; no row/page overflow or text/action overlap; all returns restore opener focus. Zero errors or external/WebSocket traffic. Eight final captures inspected. A separate native viewport diagnostic confirms the asset row is clear but exposes a pre-existing desktop footer control partially covered by the floating launcher; that is the next correction.
+
+The template, CSS and two retained-data candidate pages change; 16 other inputs remain exact. No JavaScript, projection, producer, view data or tests change. This is focused presentation proof, not a new complete-suite run.
+
+- [Build ownership, visual decisions and qualifications](OVERVIEW_CLARITY.md)
+- [Exact validation](OVERVIEW_CLARITY_VALIDATION.json)
+- [Final native measurements](overview/FINAL_READBACK.json) and [inspected captures](overview/captures)
+- [Reproducible readback script](overview/FINAL_READBACK.py) and [source receipt](overview/PUBLICATION_RECEIPT.json)
+
+Next: correct the demonstrated desktop footer clearance, then qualify asset quotes and prevent small valid prices from displaying as zero. Fallback-name duplication remains a bounded consumer finding.
+
+## Prior phase — qualified relative values and bilingual states
 
 The existing projection now prevents a missing/invalid relative value from retaining a Leading, Lagging or Tracking label in either language. Finite zero stays valid. Explicit Building history remains the canonical bilingual pair; malformed optional relative containers retain the otherwise usable asset.
 
@@ -13,7 +28,7 @@ Eighteen other runtime inputs, including all saved frontend artifacts, remain ex
 - [Initial candidate JUnit](relative/CANDIDATE_RESULTS.xml) and [corrected affected JUnit](relative/FOCUSED_RESULTS.xml)
 - [Inspected synthetic captures](relative/captures)
 
-Next: clarify the Overview's comparison/risk field labels while retaining its compact row and inspection action. Producer numeric validity, missing trend votes and paired-window receipt fields remain separate work.
+The current Overview phase above implements those compact field labels. Producer numeric validity, missing trend votes and paired-window receipt fields remain separate work.
 
 ## Prior phase — complete comparison readings on narrow screens
 

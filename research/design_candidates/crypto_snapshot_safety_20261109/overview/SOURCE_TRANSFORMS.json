@@ -1,0 +1,18 @@
+{
+  "template": [
+    {
+      "before": "<p>{{ t(asset.relative_en,asset.relative_zh) }} · {{ t(asset.risk_en,asset.risk_zh) }}</p>",
+      "after": "<p class=\"cri-watch-meta\"><span>{{ t(\"Vs BTC: \"+asset.relative_en,\"相对 BTC：\"+asset.relative_zh) }}</span> <span>{{ t(\"Risk: \"+asset.risk_en,\"风险：\"+asset.risk_zh) }}</span></p>"
+    }
+  ],
+  "css": [
+    {
+      "before": ".cri-watch-row button{flex-shrink:0}",
+      "after": ".cri-watch-row>div:has(.cri-watch-meta){min-width:0}\n.cri-watch-meta{display:flex;flex-wrap:wrap;gap:2px 12px}\n.cri-watch-meta>span{max-width:100%;overflow-wrap:anywhere}\n.cri-watch-row button{flex-shrink:0}"
+    },
+    {
+      "before": ".cri-section-head{align-items:flex-start;margin-bottom:20px}",
+      "after": ".cri-section-head{align-items:flex-start;margin-bottom:20px}\n.cri-section-head h3{margin:0}"
+    }
+  ]
+}

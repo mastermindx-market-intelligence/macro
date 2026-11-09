@@ -1,0 +1,576 @@
+{
+  "phase": "overview-field-and-heading-clarity",
+  "source_parent": "a027c389a6c5e6c207c35d5bdbecf1e24defe0fb",
+  "assets": "602406872d1d",
+  "native": {
+    "source": {
+      "source_parent": "a027c389a6c5e6c207c35d5bdbecf1e24defe0fb",
+      "runtime_version": "602406872d1d",
+      "files": {
+        "site/crypto-r4.html": {
+          "bytes": 119112,
+          "sha256": "a96d8e783d7196a81f4dbe426ad19d071d036fe8e2d7d2f18cf3044b22225fc8",
+          "blob": "d7a09fe14bb69750075f8b9674a79cffe59334c7"
+        },
+        "site/vector-r4.html": {
+          "bytes": 119111,
+          "sha256": "bb03ddfbab5d041e7a1214feb40cb36b13102314506efd44fdc9f15df6acbf10",
+          "blob": "cb5dac304fa4167c8eaa0e052fd345f87f3ab1ff"
+        },
+        "site/crypto_intelligence_r4.css": {
+          "bytes": 22117,
+          "sha256": "32f3c5e6dfdcb03d4b5c233570956160c5198e26e778af77293bdf6fe2f90b22",
+          "blob": "dd5f677ae48addda218e2320583bf2757c2a5c20"
+        },
+        "templates/crypto_intelligence_r4.html.j2": {
+          "bytes": 21370,
+          "sha256": "56302c504126e210f17f772e2eaaa169ae4120ca6cd84ace3a71e04f2bc491dd",
+          "blob": "dbf2448858a87de401435b95cabe5a265eedb3cb"
+        },
+        "templates/crypto_intelligence_r4.css": {
+          "bytes": 22117,
+          "sha256": "32f3c5e6dfdcb03d4b5c233570956160c5198e26e778af77293bdf6fe2f90b22",
+          "blob": "dd5f677ae48addda218e2320583bf2757c2a5c20"
+        }
+      },
+      "unchanged_inputs": [
+        "templates/crypto_intelligence_r4.js",
+        "tests/test_crypto_intelligence_r4_browser.py",
+        "site/crypto_intelligence_r4.js",
+        "site/crypto_intelligence_r4.json",
+        "scripts/build_crypto_intelligence_r4.py",
+        "tests/test_crypto_intelligence_r4.py",
+        "lib/crypto_intelligence_view.py",
+        "site/theme.js",
+        "site/theme.css",
+        "site/illus.js",
+        "site/illus.css",
+        "site/navigation-refresh.css",
+        "site/logo_config.js",
+        "site/stock-logos.js",
+        "site/live_config.js",
+        "site/live.js"
+      ],
+      "pages": [
+        {
+          "path": "site/crypto-r4.html",
+          "outside_two_overview_summaries_exact_after_version_normalization": true
+        },
+        {
+          "path": "site/vector-r4.html",
+          "outside_two_overview_summaries_exact_after_version_normalization": true
+        }
+      ],
+      "retained_view_json_exact": true,
+      "served_css_matches": true
+    },
+    "inverse_recovers_parent": {
+      "templates/crypto_intelligence_r4.html.j2": true,
+      "templates/crypto_intelligence_r4.css": true
+    },
+    "captures": {
+      "bitcoin-section-retained-en-1440.png": {
+        "bytes": 33294,
+        "sha256": "fa8011dc62e4518bf49ef247e1ac832c8404c82ea4d79f04c62b74f8ca41e6e3",
+        "blob": "b9e2bdbaabc2b0ab865e631a4742b40eae809ba9"
+      },
+      "history-zh-390.png": {
+        "bytes": 23113,
+        "sha256": "0f14126688f314e5552909530fe972fb0ba00c2fcc0e4b80b55bbbede2c7530d",
+        "blob": "a107a55470ab84dbd474b9ee479e609092a075ef"
+      },
+      "overview-retained-en-1440.png": {
+        "bytes": 223274,
+        "sha256": "a008b8bd7cd6ee2d513f2b1105c67506a7e855338ce50590a9444a825c11cd45",
+        "blob": "8ef68583099210d3d6e914f7ca41f9159fc2ef04"
+      },
+      "overview-retained-en-320.png": {
+        "bytes": 171560,
+        "sha256": "c606c60a14a8f6f6dcfb2dde389d05b8531a412762d66085218323da616c2d6a",
+        "blob": "74841786a65cd00288e2e1f81a418973de647e58"
+      },
+      "retained-en-1440.png": {
+        "bytes": 32206,
+        "sha256": "fd1eaa73161f7500998ff5bcc58c7a22ad417558d92ddbe713eb2ce6d93c57e8",
+        "blob": "ae0c4ec142b8800aec65055bf1e15a2be4b90383"
+      },
+      "retained-en-320.png": {
+        "bytes": 22229,
+        "sha256": "17b70ec4caab67dd189aa9f621c266943cab41dcc3177a3cca49c53ef879d6e6",
+        "blob": "0ea2ed63f867afdcb8437ad5858c1fef8c5ffb77"
+      },
+      "retained-zh-320.png": {
+        "bytes": 20830,
+        "sha256": "dd751b0d42aa586a5007efc01dfe8f23b5600d159e6beffda436fd0596b81e05",
+        "blob": "484e4823a6d43ed40e690490f2f28490ccb57241"
+      },
+      "unavailable-en-390.png": {
+        "bytes": 23759,
+        "sha256": "35a51fab65c7e28f8a85d5e5b88e208bfe9a4a2ad1bef44806c2cac1afb194b0",
+        "blob": "6d09071160543582eba14a68242bf7d0f48f897d"
+      }
+    },
+    "native_root": "/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm"
+  },
+  "final": {
+    "stage": "final",
+    "contexts": 5,
+    "pages": 5,
+    "page_errors": [],
+    "blocked_external_requests": 0,
+    "blocked_websockets": 0,
+    "browser": "157.0.8103.39",
+    "seconds": 6.098
+  },
+  "final_cases": [
+    {
+      "name": "retained-en-320",
+      "view_width": 320,
+      "page_width": 320,
+      "header_top": 414.3125,
+      "action_top": 414.3125,
+      "heading_margins": [
+        "0px",
+        "0px"
+      ],
+      "inspect_and_close_focus": true
+    },
+    {
+      "name": "retained-zh-320",
+      "view_width": 320,
+      "page_width": 320,
+      "header_top": 409.15625,
+      "action_top": 409.15625,
+      "heading_margins": [
+        "0px",
+        "0px"
+      ],
+      "inspect_and_close_focus": true
+    },
+    {
+      "name": "unavailable-en-390",
+      "view_width": 390,
+      "page_width": 390,
+      "header_top": 444.25,
+      "action_top": 444.25,
+      "heading_margins": [
+        "0px",
+        "0px"
+      ],
+      "inspect_and_close_focus": true
+    },
+    {
+      "name": "history-zh-390",
+      "view_width": 390,
+      "page_width": 390,
+      "header_top": 475.5,
+      "action_top": 475.5,
+      "heading_margins": [
+        "0px",
+        "0px"
+      ],
+      "inspect_and_close_focus": true
+    },
+    {
+      "name": "retained-en-1440",
+      "view_width": 1440,
+      "page_width": 1440,
+      "header_top": 486.109375,
+      "action_top": 486.109375,
+      "heading_margins": [
+        "0px",
+        "0px"
+      ],
+      "inspect_and_close_focus": true
+    }
+  ],
+  "final_inspect_close_journeys": 10,
+  "parent": {
+    "stage": "parent",
+    "contexts": 2,
+    "pages": 2,
+    "page_errors": [],
+    "blocked_external_requests": 0,
+    "blocked_websockets": 0,
+    "browser": "157.0.8103.39",
+    "seconds": 4.017
+  },
+  "initial_candidate": {
+    "stage": "candidate",
+    "contexts": 5,
+    "pages": 5,
+    "page_errors": [],
+    "blocked_external_requests": 0,
+    "blocked_websockets": 0,
+    "browser": "157.0.8103.39",
+    "seconds": 6.164
+  },
+  "scope": "Bounded native presentation/workflow readback; no new pytest tests or full-suite replay",
+  "qualification": [
+    "Initial parent route lambda was a harness error before accepted rendered-page proof",
+    "Initial candidate preflight counted other-view watch rows and stopped before served copies or browser launch",
+    "Native max-scroll diagnostic: asset row clear at320/1440; desktop footer bottom-right point intercepted by launcher; no desktop action attempt after observed clearance failure",
+    "Historical and synthetic fixtures do not prove current-market freshness or production acceptance",
+    "First strict viewport observer exited before saving point measurements; exact failed point remains unestablished. Second diagnostic preserved all measurements."
+  ],
+  "paper_file": "01M6Y3F0NXNDPAKJMJGCAD759Z",
+  "paper_applied_receipt_owner": "Audit PR10617 §68",
+  "release_status": "Draft, unarmed, unmerged; existing holds retained",
+  "viewport_diagnostic": {
+    "observations": {
+      "contexts": 2,
+      "pages": 2,
+      "page_errors": [],
+      "blocked_external_requests": 0,
+      "blocked_websockets": 0,
+      "browser": "157.0.8103.39",
+      "seconds": 4.972
+    },
+    "cases": [
+      {
+        "width": 320,
+        "height": 844,
+        "scrollY": 1582,
+        "maxScroll": 1582,
+        "documentHeight": 2426,
+        "fixed": [
+          {
+            "tag": "DIV",
+            "id": "mmb-boot",
+            "classes": "",
+            "text": "",
+            "rect": {
+              "left": 248,
+              "right": 304,
+              "top": 772,
+              "bottom": 828,
+              "width": 56,
+              "height": 56
+            },
+            "pointerEvents": "auto",
+            "zIndex": "2147483000"
+          }
+        ],
+        "targets": [
+          {
+            "tag": "BUTTON",
+            "id": "",
+            "classes": "cri-btn cri-btn-text",
+            "text": "Inspect asset",
+            "rect": {
+              "left": 186.640625,
+              "right": 304,
+              "top": 572.8125,
+              "bottom": 612.8125,
+              "width": 117.359375,
+              "height": 40
+            },
+            "points": [
+              {
+                "x": 245.3203125,
+                "y": 592.8125,
+                "clear": true,
+                "hit": {
+                  "tag": "SPAN",
+                  "id": "",
+                  "classes": "l-en",
+                  "text": "Inspect asset"
+                }
+              },
+              {
+                "x": 190.640625,
+                "y": 576.8125,
+                "clear": true,
+                "hit": {
+                  "tag": "BUTTON",
+                  "id": "",
+                  "classes": "cri-btn cri-btn-text",
+                  "text": "Inspect asset"
+                }
+              },
+              {
+                "x": 300,
+                "y": 576.8125,
+                "clear": true,
+                "hit": {
+                  "tag": "BUTTON",
+                  "id": "",
+                  "classes": "cri-btn cri-btn-text",
+                  "text": "Inspect asset"
+                }
+              },
+              {
+                "x": 190.640625,
+                "y": 608.8125,
+                "clear": true,
+                "hit": {
+                  "tag": "BUTTON",
+                  "id": "",
+                  "classes": "cri-btn cri-btn-text",
+                  "text": "Inspect asset"
+                }
+              },
+              {
+                "x": 300,
+                "y": 608.8125,
+                "clear": true,
+                "hit": {
+                  "tag": "BUTTON",
+                  "id": "",
+                  "classes": "cri-btn cri-btn-text",
+                  "text": "Inspect asset"
+                }
+              }
+            ]
+          },
+          {
+            "tag": "BUTTON",
+            "id": "",
+            "classes": "cri-btn cri-btn-text",
+            "text": "Bitcoin model & methods\n↗",
+            "rect": {
+              "left": 16,
+              "right": 180.390625,
+              "top": 740.3125,
+              "bottom": 780.3125,
+              "width": 164.390625,
+              "height": 40
+            },
+            "points": [
+              {
+                "x": 98.1953125,
+                "y": 760.3125,
+                "clear": true,
+                "hit": {
+                  "tag": "SPAN",
+                  "id": "",
+                  "classes": "l-en",
+                  "text": "Bitcoin model & methods"
+                }
+              },
+              {
+                "x": 20,
+                "y": 744.3125,
+                "clear": true,
+                "hit": {
+                  "tag": "BUTTON",
+                  "id": "",
+                  "classes": "cri-btn cri-btn-text",
+                  "text": "Bitcoin model & methods\n↗"
+                }
+              },
+              {
+                "x": 176.390625,
+                "y": 744.3125,
+                "clear": true,
+                "hit": {
+                  "tag": "BUTTON",
+                  "id": "",
+                  "classes": "cri-btn cri-btn-text",
+                  "text": "Bitcoin model & methods\n↗"
+                }
+              },
+              {
+                "x": 20,
+                "y": 776.3125,
+                "clear": true,
+                "hit": {
+                  "tag": "BUTTON",
+                  "id": "",
+                  "classes": "cri-btn cri-btn-text",
+                  "text": "Bitcoin model & methods\n↗"
+                }
+              },
+              {
+                "x": 176.390625,
+                "y": 776.3125,
+                "clear": true,
+                "hit": {
+                  "tag": "BUTTON",
+                  "id": "",
+                  "classes": "cri-btn cri-btn-text",
+                  "text": "Bitcoin model & methods\n↗"
+                }
+              }
+            ]
+          }
+        ],
+        "at_document_end": true,
+        "targets_clear": true,
+        "actions_and_focus": true
+      },
+      {
+        "width": 1440,
+        "height": 844,
+        "scrollY": 669,
+        "maxScroll": 669,
+        "documentHeight": 1513,
+        "fixed": [
+          {
+            "tag": "DIV",
+            "id": "mmb-boot",
+            "classes": "",
+            "text": "Ask Mastermind\nBrain · your desk copilot",
+            "rect": {
+              "left": 1216.375,
+              "right": 1418,
+              "top": 766,
+              "bottom": 822,
+              "width": 201.625,
+              "height": 56
+            },
+            "pointerEvents": "auto",
+            "zIndex": "2147483000"
+          }
+        ],
+        "targets": [
+          {
+            "tag": "BUTTON",
+            "id": "",
+            "classes": "cri-btn cri-btn-text",
+            "text": "Inspect asset",
+            "rect": {
+              "left": 1262.640625,
+              "right": 1380,
+              "top": 622.109375,
+              "bottom": 662.109375,
+              "width": 117.359375,
+              "height": 40
+            },
+            "points": [
+              {
+                "x": 1321.3203125,
+                "y": 642.109375,
+                "clear": true,
+                "hit": {
+                  "tag": "SPAN",
+                  "id": "",
+                  "classes": "l-en",
+                  "text": "Inspect asset"
+                }
+              },
+              {
+                "x": 1266.640625,
+                "y": 626.109375,
+                "clear": true,
+                "hit": {
+                  "tag": "BUTTON",
+                  "id": "",
+                  "classes": "cri-btn cri-btn-text",
+                  "text": "Inspect asset"
+                }
+              },
+              {
+                "x": 1376,
+                "y": 626.109375,
+                "clear": true,
+                "hit": {
+                  "tag": "BUTTON",
+                  "id": "",
+                  "classes": "cri-btn cri-btn-text",
+                  "text": "Inspect asset"
+                }
+              },
+              {
+                "x": 1266.640625,
+                "y": 658.109375,
+                "clear": true,
+                "hit": {
+                  "tag": "BUTTON",
+                  "id": "",
+                  "classes": "cri-btn cri-btn-text",
+                  "text": "Inspect asset"
+                }
+              },
+              {
+                "x": 1376,
+                "y": 658.109375,
+                "clear": true,
+                "hit": {
+                  "tag": "BUTTON",
+                  "id": "",
+                  "classes": "cri-btn cri-btn-text",
+                  "text": "Inspect asset"
+                }
+              }
+            ]
+          },
+          {
+            "tag": "BUTTON",
+            "id": "",
+            "classes": "cri-btn cri-btn-text",
+            "text": "Bitcoin model & methods\n↗",
+            "rect": {
+              "left": 1215.609375,
+              "right": 1380,
+              "top": 740.109375,
+              "bottom": 780.109375,
+              "width": 164.390625,
+              "height": 40
+            },
+            "points": [
+              {
+                "x": 1297.8046875,
+                "y": 760.109375,
+                "clear": true,
+                "hit": {
+                  "tag": "SPAN",
+                  "id": "",
+                  "classes": "l-en",
+                  "text": "Bitcoin model & methods"
+                }
+              },
+              {
+                "x": 1219.609375,
+                "y": 744.109375,
+                "clear": true,
+                "hit": {
+                  "tag": "BUTTON",
+                  "id": "",
+                  "classes": "cri-btn cri-btn-text",
+                  "text": "Bitcoin model & methods\n↗"
+                }
+              },
+              {
+                "x": 1376,
+                "y": 744.109375,
+                "clear": true,
+                "hit": {
+                  "tag": "BUTTON",
+                  "id": "",
+                  "classes": "cri-btn cri-btn-text",
+                  "text": "Bitcoin model & methods\n↗"
+                }
+              },
+              {
+                "x": 1219.609375,
+                "y": 776.109375,
+                "clear": true,
+                "hit": {
+                  "tag": "BUTTON",
+                  "id": "",
+                  "classes": "cri-btn cri-btn-text",
+                  "text": "Bitcoin model & methods\n↗"
+                }
+              },
+              {
+                "x": 1376,
+                "y": 776.109375,
+                "clear": false,
+                "hit": {
+                  "tag": "DIV",
+                  "id": "mmb-boot",
+                  "classes": "",
+                  "text": "Ask Mastermind\nBrain · your desk copilot"
+                }
+              }
+            ]
+          }
+        ],
+        "at_document_end": true,
+        "targets_clear": false,
+        "actions_and_focus": "not attempted: clearance observation first"
+      }
+    ]
+  }
+}

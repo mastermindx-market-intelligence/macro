@@ -1,0 +1,849 @@
+{
+  "observations": {
+    "stage": "candidate",
+    "contexts": 5,
+    "pages": 5,
+    "page_errors": [],
+    "blocked_external_requests": 0,
+    "blocked_websockets": 0,
+    "browser": "157.0.8103.39",
+    "seconds": 6.164
+  },
+  "cases": [
+    {
+      "width": 320,
+      "pageWidth": 320,
+      "section": {
+        "left": 16,
+        "right": 304,
+        "top": 378.40625,
+        "bottom": 638.5,
+        "width": 288,
+        "height": 260.09375
+      },
+      "rows": [
+        {
+          "text": "Vs BTC: Tracking Bitcoin\nRisk: Stressed",
+          "fontSize": "12.5px",
+          "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+          "row": {
+            "left": 16,
+            "right": 304,
+            "top": 454.5,
+            "bottom": 546.5,
+            "width": 288,
+            "height": 92
+          },
+          "info": {
+            "left": 16,
+            "right": 174.640625,
+            "top": 472.5,
+            "bottom": 527.5,
+            "width": 158.640625,
+            "height": 55
+          },
+          "button": {
+            "left": 186.640625,
+            "right": 304,
+            "top": 480,
+            "bottom": 520,
+            "width": 117.359375,
+            "height": 40
+          },
+          "scrollWidth": 288,
+          "clientWidth": 288,
+          "symbol": "asset:ETH",
+          "pairs": [
+            {
+              "text": "Vs BTC: Tracking Bitcoin",
+              "rect": {
+                "left": 16,
+                "right": 159.484375,
+                "top": 495.5,
+                "bottom": 510.5,
+                "width": 143.484375,
+                "height": 15
+              },
+              "lines": [
+                {
+                  "left": 16,
+                  "right": 159.484375,
+                  "top": 495.5,
+                  "bottom": 510.5,
+                  "width": 143.484375
+                }
+              ]
+            },
+            {
+              "text": "Risk: Stressed",
+              "rect": {
+                "left": 16,
+                "right": 99.3125,
+                "top": 512.5,
+                "bottom": 527.5,
+                "width": 83.3125,
+                "height": 15
+              },
+              "lines": [
+                {
+                  "left": 16,
+                  "right": 99.3125,
+                  "top": 512.5,
+                  "bottom": 527.5,
+                  "width": 83.3125
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "text": "Vs BTC: Leading Bitcoin\nRisk: Stressed",
+          "fontSize": "12.5px",
+          "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+          "row": {
+            "left": 16,
+            "right": 304,
+            "top": 546.5,
+            "bottom": 638.5,
+            "width": 288,
+            "height": 92
+          },
+          "info": {
+            "left": 16,
+            "right": 174.640625,
+            "top": 564.5,
+            "bottom": 619.5,
+            "width": 158.640625,
+            "height": 55
+          },
+          "button": {
+            "left": 186.640625,
+            "right": 304,
+            "top": 572,
+            "bottom": 612,
+            "width": 117.359375,
+            "height": 40
+          },
+          "scrollWidth": 288,
+          "clientWidth": 288,
+          "symbol": "asset:SOL",
+          "pairs": [
+            {
+              "text": "Vs BTC: Leading Bitcoin",
+              "rect": {
+                "left": 16,
+                "right": 155.578125,
+                "top": 587.5,
+                "bottom": 602.5,
+                "width": 139.578125,
+                "height": 15
+              },
+              "lines": [
+                {
+                  "left": 16,
+                  "right": 155.578125,
+                  "top": 587.5,
+                  "bottom": 602.5,
+                  "width": 139.578125
+                }
+              ]
+            },
+            {
+              "text": "Risk: Stressed",
+              "rect": {
+                "left": 16,
+                "right": 99.3125,
+                "top": 604.5,
+                "bottom": 619.5,
+                "width": 83.3125,
+                "height": 15
+              },
+              "lines": [
+                {
+                  "left": 16,
+                  "right": 99.3125,
+                  "top": 604.5,
+                  "bottom": 619.5,
+                  "width": 83.3125
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "name": "retained-en-320",
+      "variant": "retained",
+      "lang": "en",
+      "touch": false,
+      "inspect_and_close_focus": true
+    },
+    {
+      "width": 320,
+      "pageWidth": 320,
+      "section": {
+        "left": 16,
+        "right": 304,
+        "top": 374.25,
+        "bottom": 652.34375,
+        "width": 288,
+        "height": 278.09375
+      },
+      "rows": [
+        {
+          "text": "相对 BTC：跟随比特币\n风险：承压",
+          "fontSize": "12.5px",
+          "fontFamily": "\"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", \"Microsoft JhengHei\", \"Heiti SC\", -apple-system, \"system-ui\", Inter, sans-serif",
+          "row": {
+            "left": 16,
+            "right": 304,
+            "top": 454.34375,
+            "bottom": 553.34375,
+            "width": 288,
+            "height": 99
+          },
+          "info": {
+            "left": 16,
+            "right": 204.796875,
+            "top": 472.34375,
+            "bottom": 534.34375,
+            "width": 188.796875,
+            "height": 62
+          },
+          "button": {
+            "left": 216.796875,
+            "right": 304,
+            "top": 483.34375,
+            "bottom": 523.34375,
+            "width": 87.203125,
+            "height": 40
+          },
+          "scrollWidth": 288,
+          "clientWidth": 288,
+          "symbol": "asset:ETH",
+          "pairs": [
+            {
+              "text": "相对 BTC：跟随比特币",
+              "rect": {
+                "left": 16,
+                "right": 148.5625,
+                "top": 498.34375,
+                "bottom": 515.34375,
+                "width": 132.5625,
+                "height": 17
+              },
+              "lines": [
+                {
+                  "left": 16,
+                  "right": 148.5625,
+                  "top": 498.34375,
+                  "bottom": 515.34375,
+                  "width": 132.5625
+                }
+              ]
+            },
+            {
+              "text": "风险：承压",
+              "rect": {
+                "left": 16,
+                "right": 79.796875,
+                "top": 517.34375,
+                "bottom": 534.34375,
+                "width": 63.796875,
+                "height": 17
+              },
+              "lines": [
+                {
+                  "left": 16,
+                  "right": 79.796875,
+                  "top": 517.34375,
+                  "bottom": 534.34375,
+                  "width": 63.796875
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "text": "相对 BTC：领先比特币\n风险：承压",
+          "fontSize": "12.5px",
+          "fontFamily": "\"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", \"Microsoft JhengHei\", \"Heiti SC\", -apple-system, \"system-ui\", Inter, sans-serif",
+          "row": {
+            "left": 16,
+            "right": 304,
+            "top": 553.34375,
+            "bottom": 652.34375,
+            "width": 288,
+            "height": 99
+          },
+          "info": {
+            "left": 16,
+            "right": 204.796875,
+            "top": 571.34375,
+            "bottom": 633.34375,
+            "width": 188.796875,
+            "height": 62
+          },
+          "button": {
+            "left": 216.796875,
+            "right": 304,
+            "top": 582.34375,
+            "bottom": 622.34375,
+            "width": 87.203125,
+            "height": 40
+          },
+          "scrollWidth": 288,
+          "clientWidth": 288,
+          "symbol": "asset:SOL",
+          "pairs": [
+            {
+              "text": "相对 BTC：领先比特币",
+              "rect": {
+                "left": 16,
+                "right": 148.5625,
+                "top": 597.34375,
+                "bottom": 614.34375,
+                "width": 132.5625,
+                "height": 17
+              },
+              "lines": [
+                {
+                  "left": 16,
+                  "right": 148.5625,
+                  "top": 597.34375,
+                  "bottom": 614.34375,
+                  "width": 132.5625
+                }
+              ]
+            },
+            {
+              "text": "风险：承压",
+              "rect": {
+                "left": 16,
+                "right": 79.796875,
+                "top": 616.34375,
+                "bottom": 633.34375,
+                "width": 63.796875,
+                "height": 17
+              },
+              "lines": [
+                {
+                  "left": 16,
+                  "right": 79.796875,
+                  "top": 616.34375,
+                  "bottom": 633.34375,
+                  "width": 63.796875
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "name": "retained-zh-320",
+      "variant": "retained",
+      "lang": "zh",
+      "touch": true,
+      "inspect_and_close_focus": true
+    },
+    {
+      "width": 390,
+      "pageWidth": 390,
+      "section": {
+        "left": 16,
+        "right": 374,
+        "top": 409.34375,
+        "bottom": 654.4375,
+        "width": 358,
+        "height": 245.09375
+      },
+      "rows": [
+        {
+          "text": "Vs BTC: Unavailable\nRisk: Stressed",
+          "fontSize": "12.5px",
+          "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+          "row": {
+            "left": 16,
+            "right": 374,
+            "top": 485.4375,
+            "bottom": 562.4375,
+            "width": 358,
+            "height": 77
+          },
+          "info": {
+            "left": 16,
+            "right": 228.21875,
+            "top": 504.4375,
+            "bottom": 542.4375,
+            "width": 212.21875,
+            "height": 38
+          },
+          "button": {
+            "left": 256.640625,
+            "right": 374,
+            "top": 503.4375,
+            "bottom": 543.4375,
+            "width": 117.359375,
+            "height": 40
+          },
+          "scrollWidth": 358,
+          "clientWidth": 358,
+          "symbol": "asset:ETH",
+          "pairs": [
+            {
+              "text": "Vs BTC: Unavailable",
+              "rect": {
+                "left": 16,
+                "right": 132.90625,
+                "top": 527.4375,
+                "bottom": 542.4375,
+                "width": 116.90625,
+                "height": 15
+              },
+              "lines": [
+                {
+                  "left": 16,
+                  "right": 132.90625,
+                  "top": 527.4375,
+                  "bottom": 542.4375,
+                  "width": 116.90625
+                }
+              ]
+            },
+            {
+              "text": "Risk: Stressed",
+              "rect": {
+                "left": 144.90625,
+                "right": 228.21875,
+                "top": 527.4375,
+                "bottom": 542.4375,
+                "width": 83.3125,
+                "height": 15
+              },
+              "lines": [
+                {
+                  "left": 144.90625,
+                  "right": 228.21875,
+                  "top": 527.4375,
+                  "bottom": 542.4375,
+                  "width": 83.3125
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "text": "Vs BTC: Tracking Bitcoin\nRisk: Stressed",
+          "fontSize": "12.5px",
+          "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+          "row": {
+            "left": 16,
+            "right": 374,
+            "top": 562.4375,
+            "bottom": 654.4375,
+            "width": 358,
+            "height": 92
+          },
+          "info": {
+            "left": 16,
+            "right": 244.640625,
+            "top": 580.4375,
+            "bottom": 635.4375,
+            "width": 228.640625,
+            "height": 55
+          },
+          "button": {
+            "left": 256.640625,
+            "right": 374,
+            "top": 587.9375,
+            "bottom": 627.9375,
+            "width": 117.359375,
+            "height": 40
+          },
+          "scrollWidth": 358,
+          "clientWidth": 358,
+          "symbol": "asset:SOL",
+          "pairs": [
+            {
+              "text": "Vs BTC: Tracking Bitcoin",
+              "rect": {
+                "left": 16,
+                "right": 159.484375,
+                "top": 603.4375,
+                "bottom": 618.4375,
+                "width": 143.484375,
+                "height": 15
+              },
+              "lines": [
+                {
+                  "left": 16,
+                  "right": 159.484375,
+                  "top": 603.4375,
+                  "bottom": 618.4375,
+                  "width": 143.484375
+                }
+              ]
+            },
+            {
+              "text": "Risk: Stressed",
+              "rect": {
+                "left": 16,
+                "right": 99.3125,
+                "top": 620.4375,
+                "bottom": 635.4375,
+                "width": 83.3125,
+                "height": 15
+              },
+              "lines": [
+                {
+                  "left": 16,
+                  "right": 99.3125,
+                  "top": 620.4375,
+                  "bottom": 635.4375,
+                  "width": 83.3125
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "name": "unavailable-en-390",
+      "variant": "unavailable",
+      "lang": "en",
+      "touch": false,
+      "inspect_and_close_focus": true
+    },
+    {
+      "width": 390,
+      "pageWidth": 390,
+      "section": {
+        "left": 16,
+        "right": 374,
+        "top": 440.59375,
+        "bottom": 680.6875,
+        "width": 358,
+        "height": 240.09375
+      },
+      "rows": [
+        {
+          "text": "相对 BTC：积累历史中\n风险：承压",
+          "fontSize": "12.5px",
+          "fontFamily": "\"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", \"Microsoft JhengHei\", \"Heiti SC\", -apple-system, \"system-ui\", Inter, sans-serif",
+          "row": {
+            "left": 16,
+            "right": 374,
+            "top": 520.6875,
+            "bottom": 600.6875,
+            "width": 358,
+            "height": 80
+          },
+          "info": {
+            "left": 16,
+            "right": 224.359375,
+            "top": 538.6875,
+            "bottom": 581.6875,
+            "width": 208.359375,
+            "height": 43
+          },
+          "button": {
+            "left": 286.796875,
+            "right": 374,
+            "top": 540.1875,
+            "bottom": 580.1875,
+            "width": 87.203125,
+            "height": 40
+          },
+          "scrollWidth": 358,
+          "clientWidth": 358,
+          "symbol": "asset:BTC",
+          "pairs": [
+            {
+              "text": "相对 BTC：积累历史中",
+              "rect": {
+                "left": 16,
+                "right": 148.5625,
+                "top": 564.6875,
+                "bottom": 581.6875,
+                "width": 132.5625,
+                "height": 17
+              },
+              "lines": [
+                {
+                  "left": 16,
+                  "right": 148.5625,
+                  "top": 564.6875,
+                  "bottom": 581.6875,
+                  "width": 132.5625
+                }
+              ]
+            },
+            {
+              "text": "风险：承压",
+              "rect": {
+                "left": 160.5625,
+                "right": 224.359375,
+                "top": 564.6875,
+                "bottom": 581.6875,
+                "width": 63.796875,
+                "height": 17
+              },
+              "lines": [
+                {
+                  "left": 160.5625,
+                  "right": 224.359375,
+                  "top": 564.6875,
+                  "bottom": 581.6875,
+                  "width": 63.796875
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "text": "相对 BTC：跟随比特币\n风险：承压",
+          "fontSize": "12.5px",
+          "fontFamily": "\"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", \"Microsoft JhengHei\", \"Heiti SC\", -apple-system, \"system-ui\", Inter, sans-serif",
+          "row": {
+            "left": 16,
+            "right": 374,
+            "top": 600.6875,
+            "bottom": 680.6875,
+            "width": 358,
+            "height": 80
+          },
+          "info": {
+            "left": 16,
+            "right": 224.359375,
+            "top": 618.6875,
+            "bottom": 661.6875,
+            "width": 208.359375,
+            "height": 43
+          },
+          "button": {
+            "left": 286.796875,
+            "right": 374,
+            "top": 620.1875,
+            "bottom": 660.1875,
+            "width": 87.203125,
+            "height": 40
+          },
+          "scrollWidth": 358,
+          "clientWidth": 358,
+          "symbol": "asset:SOL",
+          "pairs": [
+            {
+              "text": "相对 BTC：跟随比特币",
+              "rect": {
+                "left": 16,
+                "right": 148.5625,
+                "top": 644.6875,
+                "bottom": 661.6875,
+                "width": 132.5625,
+                "height": 17
+              },
+              "lines": [
+                {
+                  "left": 16,
+                  "right": 148.5625,
+                  "top": 644.6875,
+                  "bottom": 661.6875,
+                  "width": 132.5625
+                }
+              ]
+            },
+            {
+              "text": "风险：承压",
+              "rect": {
+                "left": 160.5625,
+                "right": 224.359375,
+                "top": 644.6875,
+                "bottom": 661.6875,
+                "width": 63.796875,
+                "height": 17
+              },
+              "lines": [
+                {
+                  "left": 160.5625,
+                  "right": 224.359375,
+                  "top": 644.6875,
+                  "bottom": 661.6875,
+                  "width": 63.796875
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "name": "history-zh-390",
+      "variant": "history",
+      "lang": "zh",
+      "touch": true,
+      "inspect_and_close_focus": true
+    },
+    {
+      "width": 1440,
+      "pageWidth": 1440,
+      "section": {
+        "left": 60,
+        "right": 1380,
+        "top": 451.203125,
+        "bottom": 681.296875,
+        "width": 1320,
+        "height": 230.09375
+      },
+      "rows": [
+        {
+          "text": "Vs BTC: Tracking Bitcoin\nRisk: Stressed",
+          "fontSize": "12.5px",
+          "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+          "row": {
+            "left": 60,
+            "right": 1380,
+            "top": 527.296875,
+            "bottom": 604.296875,
+            "width": 1320,
+            "height": 77
+          },
+          "info": {
+            "left": 60,
+            "right": 298.796875,
+            "top": 546.296875,
+            "bottom": 584.296875,
+            "width": 238.796875,
+            "height": 38
+          },
+          "button": {
+            "left": 1262.640625,
+            "right": 1380,
+            "top": 545.296875,
+            "bottom": 585.296875,
+            "width": 117.359375,
+            "height": 40
+          },
+          "scrollWidth": 1320,
+          "clientWidth": 1320,
+          "symbol": "asset:ETH",
+          "pairs": [
+            {
+              "text": "Vs BTC: Tracking Bitcoin",
+              "rect": {
+                "left": 60,
+                "right": 203.484375,
+                "top": 569.296875,
+                "bottom": 584.296875,
+                "width": 143.484375,
+                "height": 15
+              },
+              "lines": [
+                {
+                  "left": 60,
+                  "right": 203.484375,
+                  "top": 569.296875,
+                  "bottom": 584.296875,
+                  "width": 143.484375
+                }
+              ]
+            },
+            {
+              "text": "Risk: Stressed",
+              "rect": {
+                "left": 215.484375,
+                "right": 298.796875,
+                "top": 569.296875,
+                "bottom": 584.296875,
+                "width": 83.3125,
+                "height": 15
+              },
+              "lines": [
+                {
+                  "left": 215.484375,
+                  "right": 298.796875,
+                  "top": 569.296875,
+                  "bottom": 584.296875,
+                  "width": 83.3125
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "text": "Vs BTC: Leading Bitcoin\nRisk: Stressed",
+          "fontSize": "12.5px",
+          "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+          "row": {
+            "left": 60,
+            "right": 1380,
+            "top": 604.296875,
+            "bottom": 681.296875,
+            "width": 1320,
+            "height": 77
+          },
+          "info": {
+            "left": 60,
+            "right": 294.890625,
+            "top": 623.296875,
+            "bottom": 661.296875,
+            "width": 234.890625,
+            "height": 38
+          },
+          "button": {
+            "left": 1262.640625,
+            "right": 1380,
+            "top": 622.296875,
+            "bottom": 662.296875,
+            "width": 117.359375,
+            "height": 40
+          },
+          "scrollWidth": 1320,
+          "clientWidth": 1320,
+          "symbol": "asset:SOL",
+          "pairs": [
+            {
+              "text": "Vs BTC: Leading Bitcoin",
+              "rect": {
+                "left": 60,
+                "right": 199.578125,
+                "top": 646.296875,
+                "bottom": 661.296875,
+                "width": 139.578125,
+                "height": 15
+              },
+              "lines": [
+                {
+                  "left": 60,
+                  "right": 199.578125,
+                  "top": 646.296875,
+                  "bottom": 661.296875,
+                  "width": 139.578125
+                }
+              ]
+            },
+            {
+              "text": "Risk: Stressed",
+              "rect": {
+                "left": 211.578125,
+                "right": 294.890625,
+                "top": 646.296875,
+                "bottom": 661.296875,
+                "width": 83.3125,
+                "height": 15
+              },
+              "lines": [
+                {
+                  "left": 211.578125,
+                  "right": 294.890625,
+                  "top": 646.296875,
+                  "bottom": 661.296875,
+                  "width": 83.3125
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "name": "retained-en-1440",
+      "variant": "retained",
+      "lang": "en",
+      "touch": false,
+      "inspect_and_close_focus": true
+    }
+  ]
+}

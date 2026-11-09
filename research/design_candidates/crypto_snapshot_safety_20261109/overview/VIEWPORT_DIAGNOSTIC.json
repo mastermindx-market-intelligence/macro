@@ -1,0 +1,357 @@
+{
+  "observations": {
+    "contexts": 2,
+    "pages": 2,
+    "page_errors": [],
+    "blocked_external_requests": 0,
+    "blocked_websockets": 0,
+    "browser": "157.0.8103.39",
+    "seconds": 4.972
+  },
+  "cases": [
+    {
+      "width": 320,
+      "height": 844,
+      "scrollY": 1582,
+      "maxScroll": 1582,
+      "documentHeight": 2426,
+      "fixed": [
+        {
+          "tag": "DIV",
+          "id": "mmb-boot",
+          "classes": "",
+          "text": "",
+          "rect": {
+            "left": 248,
+            "right": 304,
+            "top": 772,
+            "bottom": 828,
+            "width": 56,
+            "height": 56
+          },
+          "pointerEvents": "auto",
+          "zIndex": "2147483000"
+        }
+      ],
+      "targets": [
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "classes": "cri-btn cri-btn-text",
+          "text": "Inspect asset",
+          "rect": {
+            "left": 186.640625,
+            "right": 304,
+            "top": 572.8125,
+            "bottom": 612.8125,
+            "width": 117.359375,
+            "height": 40
+          },
+          "points": [
+            {
+              "x": 245.3203125,
+              "y": 592.8125,
+              "clear": true,
+              "hit": {
+                "tag": "SPAN",
+                "id": "",
+                "classes": "l-en",
+                "text": "Inspect asset"
+              }
+            },
+            {
+              "x": 190.640625,
+              "y": 576.8125,
+              "clear": true,
+              "hit": {
+                "tag": "BUTTON",
+                "id": "",
+                "classes": "cri-btn cri-btn-text",
+                "text": "Inspect asset"
+              }
+            },
+            {
+              "x": 300,
+              "y": 576.8125,
+              "clear": true,
+              "hit": {
+                "tag": "BUTTON",
+                "id": "",
+                "classes": "cri-btn cri-btn-text",
+                "text": "Inspect asset"
+              }
+            },
+            {
+              "x": 190.640625,
+              "y": 608.8125,
+              "clear": true,
+              "hit": {
+                "tag": "BUTTON",
+                "id": "",
+                "classes": "cri-btn cri-btn-text",
+                "text": "Inspect asset"
+              }
+            },
+            {
+              "x": 300,
+              "y": 608.8125,
+              "clear": true,
+              "hit": {
+                "tag": "BUTTON",
+                "id": "",
+                "classes": "cri-btn cri-btn-text",
+                "text": "Inspect asset"
+              }
+            }
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "classes": "cri-btn cri-btn-text",
+          "text": "Bitcoin model & methods\n\u2197",
+          "rect": {
+            "left": 16,
+            "right": 180.390625,
+            "top": 740.3125,
+            "bottom": 780.3125,
+            "width": 164.390625,
+            "height": 40
+          },
+          "points": [
+            {
+              "x": 98.1953125,
+              "y": 760.3125,
+              "clear": true,
+              "hit": {
+                "tag": "SPAN",
+                "id": "",
+                "classes": "l-en",
+                "text": "Bitcoin model & methods"
+              }
+            },
+            {
+              "x": 20,
+              "y": 744.3125,
+              "clear": true,
+              "hit": {
+                "tag": "BUTTON",
+                "id": "",
+                "classes": "cri-btn cri-btn-text",
+                "text": "Bitcoin model & methods\n\u2197"
+              }
+            },
+            {
+              "x": 176.390625,
+              "y": 744.3125,
+              "clear": true,
+              "hit": {
+                "tag": "BUTTON",
+                "id": "",
+                "classes": "cri-btn cri-btn-text",
+                "text": "Bitcoin model & methods\n\u2197"
+              }
+            },
+            {
+              "x": 20,
+              "y": 776.3125,
+              "clear": true,
+              "hit": {
+                "tag": "BUTTON",
+                "id": "",
+                "classes": "cri-btn cri-btn-text",
+                "text": "Bitcoin model & methods\n\u2197"
+              }
+            },
+            {
+              "x": 176.390625,
+              "y": 776.3125,
+              "clear": true,
+              "hit": {
+                "tag": "BUTTON",
+                "id": "",
+                "classes": "cri-btn cri-btn-text",
+                "text": "Bitcoin model & methods\n\u2197"
+              }
+            }
+          ]
+        }
+      ],
+      "at_document_end": true,
+      "targets_clear": true,
+      "actions_and_focus": true
+    },
+    {
+      "width": 1440,
+      "height": 844,
+      "scrollY": 669,
+      "maxScroll": 669,
+      "documentHeight": 1513,
+      "fixed": [
+        {
+          "tag": "DIV",
+          "id": "mmb-boot",
+          "classes": "",
+          "text": "Ask Mastermind\nBrain \u00b7 your desk copilot",
+          "rect": {
+            "left": 1216.375,
+            "right": 1418,
+            "top": 766,
+            "bottom": 822,
+            "width": 201.625,
+            "height": 56
+          },
+          "pointerEvents": "auto",
+          "zIndex": "2147483000"
+        }
+      ],
+      "targets": [
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "classes": "cri-btn cri-btn-text",
+          "text": "Inspect asset",
+          "rect": {
+            "left": 1262.640625,
+            "right": 1380,
+            "top": 622.109375,
+            "bottom": 662.109375,
+            "width": 117.359375,
+            "height": 40
+          },
+          "points": [
+            {
+              "x": 1321.3203125,
+              "y": 642.109375,
+              "clear": true,
+              "hit": {
+                "tag": "SPAN",
+                "id": "",
+                "classes": "l-en",
+                "text": "Inspect asset"
+              }
+            },
+            {
+              "x": 1266.640625,
+              "y": 626.109375,
+              "clear": true,
+              "hit": {
+                "tag": "BUTTON",
+                "id": "",
+                "classes": "cri-btn cri-btn-text",
+                "text": "Inspect asset"
+              }
+            },
+            {
+              "x": 1376,
+              "y": 626.109375,
+              "clear": true,
+              "hit": {
+                "tag": "BUTTON",
+                "id": "",
+                "classes": "cri-btn cri-btn-text",
+                "text": "Inspect asset"
+              }
+            },
+            {
+              "x": 1266.640625,
+              "y": 658.109375,
+              "clear": true,
+              "hit": {
+                "tag": "BUTTON",
+                "id": "",
+                "classes": "cri-btn cri-btn-text",
+                "text": "Inspect asset"
+              }
+            },
+            {
+              "x": 1376,
+              "y": 658.109375,
+              "clear": true,
+              "hit": {
+                "tag": "BUTTON",
+                "id": "",
+                "classes": "cri-btn cri-btn-text",
+                "text": "Inspect asset"
+              }
+            }
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "classes": "cri-btn cri-btn-text",
+          "text": "Bitcoin model & methods\n\u2197",
+          "rect": {
+            "left": 1215.609375,
+            "right": 1380,
+            "top": 740.109375,
+            "bottom": 780.109375,
+            "width": 164.390625,
+            "height": 40
+          },
+          "points": [
+            {
+              "x": 1297.8046875,
+              "y": 760.109375,
+              "clear": true,
+              "hit": {
+                "tag": "SPAN",
+                "id": "",
+                "classes": "l-en",
+                "text": "Bitcoin model & methods"
+              }
+            },
+            {
+              "x": 1219.609375,
+              "y": 744.109375,
+              "clear": true,
+              "hit": {
+                "tag": "BUTTON",
+                "id": "",
+                "classes": "cri-btn cri-btn-text",
+                "text": "Bitcoin model & methods\n\u2197"
+              }
+            },
+            {
+              "x": 1376,
+              "y": 744.109375,
+              "clear": true,
+              "hit": {
+                "tag": "BUTTON",
+                "id": "",
+                "classes": "cri-btn cri-btn-text",
+                "text": "Bitcoin model & methods\n\u2197"
+              }
+            },
+            {
+              "x": 1219.609375,
+              "y": 776.109375,
+              "clear": true,
+              "hit": {
+                "tag": "BUTTON",
+                "id": "",
+                "classes": "cri-btn cri-btn-text",
+                "text": "Bitcoin model & methods\n\u2197"
+              }
+            },
+            {
+              "x": 1376,
+              "y": 776.109375,
+              "clear": false,
+              "hit": {
+                "tag": "DIV",
+                "id": "mmb-boot",
+                "classes": "",
+                "text": "Ask Mastermind\nBrain \u00b7 your desk copilot"
+              }
+            }
+          ]
+        }
+      ],
+      "at_document_end": true,
+      "targets_clear": false,
+      "actions_and_focus": "not attempted: clearance observation first"
+    }
+  ]
+}
