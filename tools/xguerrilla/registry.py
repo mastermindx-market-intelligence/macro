@@ -787,10 +787,19 @@ def links_outside_domain(text: str, entry: dict) -> list[str]:
 
 
 def _link_host(link: str) -> str | None:
-    match = re.match(r"^[a-zA-Z][a-zA-Z0-9+.-]*://([^/@?#:]+)", link)
-    if match:
-        return match.group(1).lower()
-    return None
+    """Host of a link token, scheme or not.
+
+    ``validators.links_in_text`` also emits scheme-less tokens (``www.*`` and
+    bare dotted hosts); those parse as a netloc with ``urlsplit("//" + token)``
+    — the same parse the bio gate uses — so leaving the scheme off can no
+    longer move a link outside the declared domain without a refusal.
+    """
+    token = (link or "").strip()
+    if not token:
+        return None
+    parsed = urlsplit(token) if "://" in token else urlsplit("//" + token)
+    host = (parsed.hostname or "").lower()
+    return host or None
 
 
 def validate_bio_against_registry(text: str, doc: dict, handle: str, *,
