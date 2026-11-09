@@ -5705,9 +5705,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_943),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_964),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_701),
+    ("templates/index.html", 137, 5_948),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_969),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_706),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5715,6 +5715,80 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-09 (PR #10226, reconcile the actual #10192 landing):
+    #10192 merged as7bdfb249486d409ee8634501842c31f51af74c7c.
+    Receiving main9a13c64 already contains both accepted filer postimages,
+    its single test enrollment and its +2 allowance. Retain them unchanged.
+    Only the accepted ledger step remains: commands5->6, test paths10->11,
+    joined characters576->627, owner weight25->28. Add only ledger+3:
+    5945/5966/5703->5948/5969/5706. Preserve400 owners,399 other blocks,
+    jobs137/138/131,ten packs and all current controls/history. The two
+    original #10226 paragraphs below remain historical, not new funding.
+    This is source accounting, not a new planner or timing measurement;
+    the successor still requires its own natural CI qualification.
+
+    2026-11-08 (PR #10226, second current-main conflict composition):
+    retain the accepted four filer/ledger objects and the original two
+    data-base-shim command enrollments. This owner is still byte-identical
+    to its prior base on main8251e41; PR10192 remains unmerged, so its own
+    filer+2 and ledger+3 union is still +5, counted once. Current main has
+    separately landed #10180 B17 coverage and its measured +3 contribution.
+    Preserve that accepted source and complete dated note; compose +5 onto
+    current5923/5944/5681 to yield5928/5949/5686. Keep jobs137/138/131,
+    ten packs, all commands/selectors/timeouts and runtime/admission limits.
+    The prior H6b52c699 had own CLEAR120 jobs/380 semantic proof steps;
+    that proof does not certify this new combined source. Natural new-head
+    CI must qualify it. This is exact source arithmetic, not a new full-tree
+    planner or timing measurement. Both historical paragraphs remain below.
+    Recheck actual10192 settlement before publication; do not double fund it.
+
+    2026-11-08 (PR #10226, filer/ledger current-owner accounting):
+    retain all four accepted filer/ledger source and test postimages.
+    Current main16b9445 has neither component command enrollment;
+    PR10192 is still unmerged at the composition's dependency read.
+    Removing the two accepted command additions from H's data-base-shim
+    reproduces the entire current owner. Preserve395 owners and394
+    other blocks. The existing estimator counts5->6 run commands,
+    9->11 test paths,541->627 joined command characters, weight23->28:
+    ledger+3 and filer+2, total+5 for the same selected owner.
+    Compose only this carrier's union onto5920/5941/5678, yielding
+    5925/5946/5683. Keep jobs137/138/131,ten packs and every current
+    selector, dependency, runtime and admission control. Original H
+    packing is outside its five-path diff, so no H note is transplanted.
+    All current history and landed7352/10735 accounting remain.
+    This is static source arithmetic, not a new paired planner or
+    current-tree failure claim. Natural own CI must qualify the result.
+    If10192 actually lands before publication, retain that new baseline
+    and add only ledger+3; do not enroll or fund the filer twice.
+
+    F09 C3 current-main conflict repair (2026-11-09): retain the complete
+    historical paired measurement below and current main's independent history.
+    The data-base-shim preimage and current weight estimator still establish
+    only +2 from the accepted suite token, with no new selected owner. Apply
+    that contribution to 5943/5964/5701 -> 5945/5966/5703; keep 137/138/131 jobs
+    and ten packs. This is source accounting, not a new planner execution.
+
+    2026-11-08 (PR #10192, accepted F09 suite accounting on current main):
+    own contract-delta run42241879921/job127973971361 compared exact base
+    4b2a019bf31317b994c6f07329565a62c38f7670 with head
+    e287b58381b87d1d1495b3c6f77a194e3eb7d582: index5912->5914,
+    free-content5927->5929, Prophet5668->5670, unchanged selected jobs and
+    ten packs, three introduced findings and zero inherited. Its existing
+    data-base-shim owner adds only tests/test_beneficial_ownership.py to the
+    SharedShell command. Current catalog4f2c0d2fee46d9839560f0f958f3322e5eb9ce1a
+    retains that exact base owner; current runner computes23->25 from five
+    commands and9->10 test-path tokens in the same text-size bucket.
+    Compose only this measured +2 coverage cost onto current ceilings:
+    index5920->5922, free-content5941->5943, Prophet5678->5680.
+    Mainc9e06966920fa3b4b46341d344f90978f1fcd225 has actually landed #7352;
+    its independent +2 free-content benchmark allowance and history are
+    retained. The previous F09 candidate03f5407 conflicted with that landing;
+    this composition includes both actual source contributions once. Keep
+    selected-job ceilings137/138/131, ten packs, all assertions, selectors,
+    suites, runtime deadlines and existing provenance. No unmerged sibling
+    funding. This is source-composition arithmetic, not a new planner run;
+    old exact-base descendant UNKNOWN is unchanged, and new own CI is owed.
 
     2026-11-09 (PR #10870, dependency-coverage correction): the separate
     admission job conservatively owns tools/xguerrilla/** because pytest
