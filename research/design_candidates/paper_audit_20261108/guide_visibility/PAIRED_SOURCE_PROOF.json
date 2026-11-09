@@ -1,0 +1,16 @@
+{
+  "result_ids": 46,
+  "related_ids": 105,
+  "bilingual_filter_notes": 46,
+  "inline_script_matches_template": true,
+  "css_matches_template": true,
+  "css_path": "site/assets/css/79ae929d.css",
+  "unrelated_bytes_preserved": true,
+  "full_builder_executed": false,
+  "writers": [
+    "lib.pages.write_page",
+    "scripts.externalize_css.externalize"
+  ],
+  "original_css_retained_in_git_base": true,
+  "close_excluded_focus": "Existing #rf-q, native focus; matching lesson retains existing scroll"
+}

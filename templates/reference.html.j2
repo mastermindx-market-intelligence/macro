@@ -235,7 +235,9 @@ html[data-theme="light"] .rf-e.rf-closed { background:none; border:0; box-shadow
 .rf-close { font-size:var(--fs-sm); color:var(--muted); }
 
 /* ── filter hiding ──────────────────────────────────────────────────────────── */
-.rf-e.is-off, .rf-group.is-off { display:none; }
+.rf-e.is-off:not(.rf-open), .rf-group.is-off:not(.rf-has-open) { display:none; }
+.rf-filter-note { display:none; margin:0 0 var(--sp-3,12px); color:var(--muted); font-size:var(--fs-sm); }
+.rf-e.rf-open.is-off .rf-filter-note { display:block; }
 
 /* ── footer ─────────────────────────────────────────────────────────────────── */
 .rf-foot { color:var(--muted); font-size:var(--fs-sm); margin-top:var(--sp-8,44px);
@@ -428,8 +430,8 @@ html[data-theme="light"] .rf-cov-row--not_covered .rf-cov-state { background:var
        ONE canonical count per population (§9.5): this number, and the rail's family
        counts which are labelled slices of it. Nothing else on the page prints a total. #}
     <p class="rf-count" aria-live="polite" role="status">
-      <span class="l-en"><span class="tnum" data-count-visible>{{ entries|length }}</span> of <span class="tnum">{{ entries|length }}</span> entries</span>
-      <span class="l-zh">共 <span class="tnum">{{ entries|length }}</span> 条，显示 <span class="tnum" data-count-visible>{{ entries|length }}</span> 条</span>
+      <span class="l-en"><span class="tnum" data-count-visible>{{ entries|length }}</span> of <span class="tnum">{{ entries|length }}</span> entries match</span>
+      <span class="l-zh">共 <span class="tnum">{{ entries|length }}</span> 条，匹配 <span class="tnum" data-count-visible>{{ entries|length }}</span> 条</span>
     </p>
 
     {# Unknown-anchor state (§7 failure state). Server-rendered hidden; JS reveals it when
@@ -463,14 +465,14 @@ html[data-theme="light"] .rf-cov-row--not_covered .rf-cov-state { background:var
         </h2>
 
         {% for e in entries if e.family == fam.id %}
-        <!-- ══ one entry. The ONLY id on the page that matters. ══ -->
+        <!-- ══ one entry. Canonical deep-link identity remains on the article. ══ -->
         <article class="rf-e" id="{{ e.id }}"
                  data-kind="{{ e.kind }}" data-family="{{ e.family }}"
                  data-initial="{{ e.initial }}" data-search="{{ e.search_key }}">
 
           {# ── the always-visible index line. An <a>, not a button: that is what makes
                open/close work with JS disabled and keeps browser back/forward honest. ── #}
-          <a class="rf-sum" href="#{{ e.id }}">
+          <a class="rf-sum" id="rf:result:{{ e.id }}" href="#{{ e.id }}">
             <span class="rf-hash" aria-hidden="true">#</span>
             <span class="rf-label">
               <span class="l-en">{{ e.label_en }}</span><span class="l-zh">{{ e.label_zh }}</span>
@@ -483,6 +485,7 @@ html[data-theme="light"] .rf-cov-row--not_covered .rf-cov-state { background:var
 
           {# ── the record. display:none until :target. Server-rendered in full, always. ── #}
           <div class="rf-body">
+            <p class="rf-filter-note">{{ t('Outside current filters', '不在当前筛选结果中') }}</p>
 
             {# 0 · deprecation — FIRST, above the definition: a superseded meaning must be
                  flagged before it is read. Achromatic; a rename is not danger.
@@ -575,7 +578,7 @@ html[data-theme="light"] .rf-cov-row--not_covered .rf-cov-state { background:var
             {# 9 · related — in-page anchors; keeps the reader inside one document. #}
             {% if e.related %}
             <p class="rf-rel">{{ eyebrow('Related', '相关') }}
-              {% for r in e.related %}<a href="#{{ r.id }}">{{ t(r.label_en, r.label_zh) }}</a>{% endfor %}</p>
+              {% for r in e.related %}<a id="rf:related:{{ e.id }}:{{ r.id }}" href="#{{ r.id }}">{{ t(r.label_en, r.label_zh) }}</a>{% endfor %}</p>
             {% endif %}
 
             <p class="rf-closewrap"><a class="rf-close" href="#rf-top">{{ t('Close', '收起') }}</a></p>
@@ -731,7 +734,7 @@ html[data-theme="light"] .rf-cov-row--not_covered .rf-cov-state { background:var
       }).length;
       g.classList.toggle("is-off", visibleInGroup === 0);
       // M2: the group header's own count (data-count-group) reflects entries
-      // actually visible in THIS section right now — distinct from the
+      // matching the filters in THIS section right now — distinct from the
       // rail's data-count-family "what if I picked this family" number.
       // querySelectorAll (never bare querySelector) even though exactly one
       // match is expected per family, per the reviewer's querySelector-
@@ -782,7 +785,8 @@ html[data-theme="light"] .rf-cov-row--not_covered .rf-cov-state { background:var
     }
   }
 
-  // 6 · Filters and the hash are mutually exclusive, deliberately.
+  // 6 · Filter actions close the selected lesson. Canonical lesson navigation
+  // may reveal an excluded lesson without changing filter membership or counts.
   function clearHashToBrowse(){
     if (!location.hash) return;
     // Close-affordance fallback (verified in headless Chromium): replaceState
@@ -851,7 +855,12 @@ html[data-theme="light"] .rf-cov-row--not_covered .rf-cov-state { background:var
       ev.preventDefault();
       var article = closeLink.closest(".rf-e");
       clearHashToBrowse();
-      if (article) scrollEntryIntoView(article, "auto");
+      if (article && article.classList.contains("is-off")){
+        var qEl = root.querySelector("#rf-q");
+        if (qEl) qEl.focus();
+      } else if (article) {
+        scrollEntryIntoView(article, "auto");
+      }
       return;
     }
   });
@@ -890,6 +899,9 @@ html[data-theme="light"] .rf-cov-row--not_covered .rf-cov-state { background:var
       el.classList.toggle("rf-closed", !open);
       var summary = el.querySelector(".rf-sum");
       if (summary) summary.setAttribute("aria-expanded", open ? "true" : "false");
+    });
+    groups.forEach(function(group){
+      group.classList.toggle("rf-has-open", !!target && group.contains(target));
     });
   }
   function scrollEntryIntoView(entry, behavior){

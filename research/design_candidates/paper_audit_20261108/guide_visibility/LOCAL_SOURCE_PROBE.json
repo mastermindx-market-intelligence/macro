@@ -1,0 +1,56 @@
+{
+  "mode": "exact extracted source/DOM test functions; committed page supplies local markup; full Jinja render and pytest remain hosted obligations",
+  "phase": "after source and Close repair",
+  "results": [
+    {
+      "test": "test_reference_acknowledged_fragment_expansion_tracks_url_not_native_target",
+      "result": "PASS"
+    },
+    {
+      "test": "test_reference_filtered_hash_selection_preserves_matches_and_retires_reveal",
+      "result": "PASS"
+    },
+    {
+      "test": "test_reference_openers_have_stable_unique_shell_focus_ids",
+      "result": "PASS"
+    },
+    {
+      "test": "test_reference_opener_ids_use_the_existing_shell_focus_handoff",
+      "result": "PASS"
+    },
+    {
+      "test": "test_reference_paired_filter_artifact_keeps_template_style_and_behavior",
+      "result": "PASS"
+    },
+    {
+      "test": "test_reference_close_filtered_lesson_returns_to_existing_search_control",
+      "result": "PASS"
+    }
+  ],
+  "inputs": [
+    {
+      "path": "templates/reference.html.j2",
+      "bytes": 56134,
+      "sha256": "9689f6a28430fda41f9b8a0edc7b1f1ebad7ca1855153933f7f57968d0ce24f8",
+      "git_blob_sha": "eddd300a4aa1b6ce598215df09c39ab671310f3e"
+    },
+    {
+      "path": "tests/test_market_reference.py",
+      "bytes": 61354,
+      "sha256": "128d6a0c58a972c4b5501c4889e7ac2d5c1c4d7596b1353fec46f1da6fead688",
+      "git_blob_sha": "f5e8109ec28fb14f503fb9a3e36f1f20366d3569"
+    },
+    {
+      "path": "site/reference.html",
+      "bytes": 394674,
+      "sha256": "61a9ed6b89b62d26098d1d9211331cad2183b1b25562c53e28c021995ac1abe0",
+      "git_blob_sha": "6485814ce5faf4fbe90629bcefa2b995c5a3c0d8"
+    },
+    {
+      "path": "site/assets/css/79ae929d.css",
+      "bytes": 22205,
+      "sha256": "79ae929d2ac3e69bedbfa54c328510f140d1c90f17008cbbc140f27dcda41dc5",
+      "git_blob_sha": "4a05e71e63c59f34561f9c06f3aa9115c1af421f"
+    }
+  ]
+}

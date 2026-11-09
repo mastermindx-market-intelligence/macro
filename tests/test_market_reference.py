@@ -1024,7 +1024,7 @@ const make = id => { const classes = new Set(['rf-e']); const attrs = {};
 const entries = [make('evidence-matrix'), make('evidence-trend')];
 const missEl = {hidden:true, querySelectorAll:()=>[]};
 const location = {hash:'', pathname:'/reference.html', search:''};
-const context = {entries, missEl, location, reduceMotion:true,
+const context = {entries, groups:[], missEl, location, reduceMotion:true,
   root:{getElementById:id=>entries.find(e=>e.id===id), querySelector:()=>({getBoundingClientRect:()=>({height:160})})},
   window:{requestAnimationFrame:fn=>fn()}, history:{replaceState:()=>{location.hash='';}}};
 vm.createContext(context);
@@ -1053,3 +1053,279 @@ console.log(JSON.stringify(result));
     assert steps[-2]["mobileOffset"] == "172px"
     assert steps[-1]["desktopOffset"] == "84px"
     assert ".rf-e:is(:target, .rf-open):not(.rf-closed) .rf-body" in source
+
+
+def test_reference_filtered_hash_selection_preserves_matches_and_retires_reveal():
+    """A linked lesson is an explicit selection, not an extra filter match."""
+    import json
+    import shutil
+    import subprocess
+
+    if not shutil.which("node"):
+        pytest.skip("Node is required for the existing inline-JS behavior probe")
+    source = (TEMPLATE_DIR / "reference.html.j2").read_text()
+    filters = source[source.index("  function normalize("):source.index("\n  // 6 ·")]
+    clear = source[source.index("  function clearHashToBrowse("):source.index("\n  function setPressed(")]
+    selection = source[source.index("  function setOpenEntry("):source.index("\n  handleHash();")]
+    script = r'''
+const vm = require('node:vm');
+function classes(initial) {
+  const values = new Set(initial || []);
+  return {contains:k=>values.has(k), toggle:(k,on)=>on?values.add(k):values.delete(k)};
+}
+function exercise(filter) {
+  function entry(id, kind, family, initial) {
+    const attrs = {'data-kind':kind,'data-family':family,'data-initial':initial,'data-search':id};
+    return {id, attrs, classList:classes(['rf-e']), style:{},
+      getAttribute:k=>attrs[k], querySelector:()=>({setAttribute:(k,v)=>{attrs[k]=v;}}),
+      scrollIntoView(){}};
+  }
+  const entries = [entry('alpha','indicator','regime','A'),
+    entry('beta','glossary','liquidity','B'), entry('gamma','glossary','liquidity','G')];
+  const groups = ['regime','liquidity'].map(id=>{
+    const members = entries.filter(e=>e.attrs['data-family']===id);
+    const count = {textContent:''};
+    return {id, count, classList:classes(['rf-group']), contains:e=>members.includes(e),
+      getAttribute:()=>id, querySelectorAll:q=>q==='.rf-e'?members:[count]};
+  });
+  const familyCounts = {regime:{textContent:''},liquidity:{textContent:''}};
+  const familyButtons = Object.keys(familyCounts).map(id=>({classList:classes(),getAttribute:()=>id}));
+  const letterButtons = ['A','B','G'].map(id=>({classList:classes(),getAttribute:()=>id}));
+  const count = {textContent:''};
+  const countEl = {hidden:false};
+  const noneEl = {hidden:true,querySelectorAll:()=>[]};
+  const missEl = {hidden:true,querySelectorAll:()=>[]};
+  const location = {hash:'',pathname:'/reference.html',search:'?q=alpha'};
+  const writes = [];
+  const context = {state:Object.assign({mode:'all',family:null,letter:null,q:''},filter),
+    entries,groups,countVisibleEls:[count],countEl,noneEl,missEl,location,reduceMotion:true,
+    root:{getElementById:id=>entries.find(e=>e.id===id),
+      querySelector:()=>({getBoundingClientRect:()=>({height:160})}),
+      querySelectorAll:q=>q==='.rf-fam'?familyButtons:q==='.rf-azb'?letterButtons:
+        q.startsWith('[data-count-family=')?[familyCounts[q.split('"')[1]]]:[]},
+    window:{requestAnimationFrame:fn=>fn()},
+    history:{replaceState:(state,title,url)=>{writes.push({state,title,url});location.hash='';}}};
+  vm.createContext(context);
+  vm.runInContext(SOURCE,context);
+  function read() { return {state:JSON.parse(JSON.stringify(context.state)),
+    count:count.textContent, groupCounts:groups.map(g=>g.count.textContent),
+    familyCounts:Object.values(familyCounts).map(c=>c.textContent),
+    entries:entries.map(e=>({id:e.id,off:e.classList.contains('is-off'),open:e.classList.contains('rf-open')})),
+    groups:groups.map(g=>({id:g.id,off:g.classList.contains('is-off'),revealed:g.classList.contains('rf-has-open')})),
+    search:location.search, noneVisible:!noneEl.hidden, countHidden:countEl.hidden,
+    writes:JSON.parse(JSON.stringify(writes))}; }
+  // Cold-load order: the canonical selection precedes the first filter pass.
+  location.hash='#beta'; vm.runInContext('handleHash(); applyFilters()',context);
+  const cold = read();
+  location.hash=''; vm.runInContext('handleHash()',context);
+  vm.runInContext('applyFilters()',context);
+  const before = read();
+  location.hash='#beta'; vm.runInContext('handleHash()',context);
+  const selected = read();
+  location.hash='#gamma'; vm.runInContext('handleHash()',context);
+  const moved = read();
+  location.hash='#alpha'; vm.runInContext('handleHash()',context);
+  const otherGroup = read();
+  const retired = [];
+  for (const hash of ['', '#missing', '#%E0%A4%A']) {
+    location.hash='#beta'; vm.runInContext('handleHash()',context);
+    location.hash=hash; vm.runInContext('handleHash()',context);
+    retired.push(read());
+  }
+  location.hash='#beta'; vm.runInContext('handleHash(); clearHashToBrowse(); applyFilters()',context);
+  return {before,selected,cold,moved,otherGroup,retired,closed:read()};
+}
+console.log(JSON.stringify([{q:'alpha'},{mode:'indicator'},{family:'regime'},{letter:'A'},{q:'missing'}].map(exercise)));
+'''.replace("SOURCE", json.dumps(filters + "\n" + clear + "\n" + selection))
+    result = subprocess.run(["node", "-e", script], check=True, capture_output=True, text=True)
+    cases = json.loads(result.stdout)
+    assert len(cases) == 5
+    for case in cases:
+        before = case["before"]
+        no_matches = before["state"]["q"] == "missing"
+        count = "0" if no_matches else "1"
+        assert before["count"] == count and before["groupCounts"] == [count, "0"]
+        assert before["noneVisible"] == no_matches and before["countHidden"] == no_matches
+        for step in [case["selected"], case["cold"], case["moved"], case["otherGroup"], *case["retired"]]:
+            for field in ["state", "count", "groupCounts", "familyCounts", "search", "noneVisible", "countHidden", "writes"]:
+                assert step[field] == before[field], (field, before, step)
+            assert [e["off"] for e in step["entries"]] == [no_matches, True, True]
+        for step in [case["selected"], case["cold"]]:
+            assert [e["open"] for e in step["entries"]] == [False, True, False]
+            assert [g["revealed"] for g in step["groups"]] == [False, True]
+            assert step["groups"][1]["off"]  # zero matching entries remains true
+        assert [e["open"] for e in case["moved"]["entries"]] == [False, False, True]
+        assert [g["revealed"] for g in case["otherGroup"]["groups"]] == [True, False]
+        for step in [*case["retired"], case["closed"]]:
+            assert not any(e["open"] for e in step["entries"])
+            assert not any(g["revealed"] for g in step["groups"])
+        assert case["closed"]["state"] == before["state"]
+        assert case["closed"]["count"] == before["count"]
+        assert case["closed"]["writes"] == [{"state": None, "title": "", "url": "/reference.html?q=alpha"}]
+
+
+def _reference_openers(html):
+    from html.parser import HTMLParser
+
+    class Openers(HTMLParser):
+        def __init__(self):
+            super().__init__()
+            self.article = None
+            self.related = False
+            self.items = []
+
+        def handle_starttag(self, tag, attrs):
+            attrs = dict(attrs)
+            classes = attrs.get("class", "").split()
+            if tag == "article" and "rf-e" in classes:
+                self.article = attrs["id"]
+            if tag == "p" and "rf-rel" in classes:
+                self.related = True
+            if tag == "a" and self.article and ("rf-sum" in classes or self.related):
+                self.items.append({"source": self.article, "kind": "related" if self.related else "result",
+                                   "id": attrs.get("id"), "href": attrs.get("href")})
+
+        def handle_endtag(self, tag):
+            if tag == "article":
+                self.article = None
+            if tag == "p":
+                self.related = False
+
+    parser = Openers()
+    parser.feed(html)
+    return parser.items
+
+
+def test_reference_openers_have_stable_unique_shell_focus_ids(real_entries, rendered_html):
+    """Real registry links preserve their canonical destinations and gain focus identity."""
+    items = _reference_openers(rendered_html)
+    results = [item for item in items if item["kind"] == "result"]
+    related = [item for item in items if item["kind"] == "related"]
+    canonical = {entry["id"] for entry in real_entries}
+    assert {item["source"] for item in results} == canonical
+    assert len(results) == len(canonical)
+    expected_related = {(entry["id"], target) for entry in real_entries for target in entry.get("related_ids", [])}
+    assert {(item["source"], item["href"][1:]) for item in related} == expected_related
+    assert len(related) == len(expected_related)
+    ids = [item["id"] for item in items]
+    assert len(set(ids)) == len(ids)
+    assert not canonical.intersection(ids)
+    for item in items:
+        assert item["href"].startswith("#") and item["href"][1:] in canonical
+        if item["kind"] == "result":
+            assert item["href"] == "#" + item["source"]
+            assert item["id"] == "rf:result:" + item["source"]
+        else:
+            assert item["id"] == "rf:related:" + item["source"] + ":" + item["href"][1:]
+
+
+def test_reference_opener_ids_use_the_existing_shell_focus_handoff(rendered_html):
+    """Exercise the bridge's real capture/restore functions with actual rendered IDs."""
+    import json
+    import shutil
+    import subprocess
+
+    if not shutil.which("node"):
+        pytest.skip("Node is required for the existing inline-JS behavior probe")
+    bridge = (TEMPLATE_DIR / "shared_shell_bridge.js").read_text()
+    capture = bridge[bridge.index("  function sendViewState("):bridge.index("  function emitNavigate(")]
+    restore = bridge[bridge.index("  function applyRestore("):bridge.index("  function focusPrimary(")]
+    valid = re.search(r"  function validId\(v\) \{[^\n]+\}", bridge).group(0)
+    id_rules = "\n".join(re.findall(r"  var (?:ID_RE|MAX_ID) = [^\n]+", bridge))
+    ids = [item["id"] for item in _reference_openers(rendered_html)]
+    assert ids and all(ids)
+    script = r'''
+const vm = require('node:vm');
+const sent = [], restored = [], scrolled = [], corrections = [];
+const elements = IDS.map(id=>({id,focus:options=>restored.push({id,options})}));
+const document = {activeElement:null,body:{},documentElement:{},getElementById:id=>elements.find(e=>e.id===id)};
+const context = {document,state:{active:true},
+  w:{scrollX:12,scrollY:340,scrollTo:(x,y)=>scrolled.push([x,y])},
+  clampCoord:n=>n,send:(kind,payload)=>sent.push({kind,payload}),
+  scheduleCorrection:(x,y)=>corrections.push([x,y]),focusPrimary:()=>{throw Error('unexpected fallback');}};
+vm.createContext(context); vm.runInContext(SOURCE,context);
+for (const element of elements) {
+  document.activeElement=element;
+  vm.runInContext('sendViewState()',context);
+  context.restore=sent[sent.length-1].payload.view;
+  vm.runInContext('applyRestore(restore)',context);
+}
+console.log(JSON.stringify({sent,restored,scrolled,corrections}));
+'''.replace("IDS", json.dumps(ids)).replace("SOURCE", json.dumps(id_rules + "\n" + valid + "\n" + capture + "\n" + restore))
+    result = subprocess.run(["node", "-e", script], check=True, capture_output=True, text=True)
+    output = json.loads(result.stdout)
+    assert [item["payload"]["view"]["focusId"] for item in output["sent"]] == ids
+    assert all(item["kind"] == "VIEW_STATE" for item in output["sent"])
+    assert output["restored"] == [{"id": id_, "options": {"preventScroll": True}} for id_ in ids]
+    assert output["scrolled"] == [[12, 340]] * len(ids)
+    assert output["corrections"] == [[12, 340]] * len(ids)
+
+
+def test_reference_paired_filter_artifact_keeps_template_style_and_behavior(rendered_html):
+    """The shipped page must include both the visibility CSS and matching page logic."""
+    import hashlib
+
+    committed = SITE_REFERENCE_PATH.read_text()
+    styles = re.findall(r'<link rel="stylesheet" href="assets/css/([0-9a-f]{8})\.css\?v=\1">', committed)
+    assert len(styles) == 1
+    css = (SITE_REFERENCE_PATH.parent / "assets" / "css" / (styles[0] + ".css")).read_text()
+    assert hashlib.sha256(css.encode()).hexdigest()[:8] == styles[0]
+    assert css == re.search(r"<style>(.*?)</style>", rendered_html, re.DOTALL).group(1)
+
+    def reference_script(html):
+        return [body for body in re.findall(r"<script[^>]*>(.*?)</script>", html, re.DOTALL)
+                if "function applyFilters()" in body]
+
+    assert len(reference_script(rendered_html)) == 1
+    assert reference_script(committed) == reference_script(rendered_html)
+    assert _reference_openers(committed) == _reference_openers(rendered_html)
+
+
+def test_reference_close_filtered_lesson_returns_to_existing_search_control():
+    """Exercise the actual Close click branch, including its matching-lesson path."""
+    import json
+    import shutil
+    import subprocess
+
+    if not shutil.which("node"):
+        pytest.skip("Node is required for the existing inline-JS behavior probe")
+    source = (TEMPLATE_DIR / "reference.html.j2").read_text()
+    clear = source[source.index("  function clearHashToBrowse("):source.index("\n  function setPressed(")]
+    selection = source[source.index("  function setOpenEntry("):source.index("\n  handleHash();")]
+    clicks = source[source.index('  root.addEventListener("click", function(ev){'):source.index("\n  // 4 · Search")]
+    script = r'''
+const vm = require('node:vm');
+function close(excluded) {
+  const classes = new Set(['rf-e','rf-open', ...(excluded?['is-off']:[])]);
+  const groupClasses = new Set(['rf-group','rf-has-open', ...(excluded?['is-off']:[])]);
+  const classList = values=>({contains:k=>values.has(k),toggle:(k,on)=>on?values.add(k):values.delete(k)});
+  const scrolls=[],writes=[];let focused=0,prevented=0,click;
+  const article={classList:classList(classes),style:{},
+    querySelector:()=>({setAttribute(){}}),scrollIntoView:options=>scrolls.push(options)};
+  const group={classList:classList(groupClasses),contains:el=>el===article};
+  const input={value:'alpha',focus:()=>focused++};
+  const closeLink={closest:()=>article};
+  const location={hash:'#beta',pathname:'/reference.html',search:'?q=alpha'};
+  const state={q:'alpha',mode:'all',family:'regime',letter:'A'};
+  const context={state,entries:[article],groups:[group],location,
+    root:{addEventListener:(name,fn)=>{click=fn;},
+      querySelector:q=>q==='#rf-q'?input:q==='.rf-bar'?{getBoundingClientRect:()=>({height:0})}:null},
+    history:{replaceState:(s,t,url)=>{writes.push({state:s,title:t,url});location.hash='';}}};
+  vm.createContext(context);vm.runInContext(SOURCE,context);
+  click({preventDefault:()=>prevented++,target:{closest:q=>q==='.rf-close'?closeLink:null}});
+  return {focused,prevented,scrolls,writes,state,query:input.value,search:location.search,
+    open:classes.has('rf-open'),groupRevealed:groupClasses.has('rf-has-open'),
+    filtered:classes.has('is-off'),hash:location.hash};
+}
+console.log(JSON.stringify([close(true),close(false)]));
+'''.replace("SOURCE", json.dumps(clear + "\n" + selection + "\n" + clicks))
+    result = subprocess.run(["node", "-e", script], check=True, capture_output=True, text=True)
+    excluded, matching = json.loads(result.stdout)
+    for step in [excluded, matching]:
+        assert step["prevented"] == 1 and not step["open"] and not step["groupRevealed"]
+        assert step["query"] == "alpha" and step["search"] == "?q=alpha" and step["hash"] == ""
+        assert step["state"] == {"q": "alpha", "mode": "all", "family": "regime", "letter": "A"}
+        assert step["writes"] == [{"state": None, "title": "", "url": "/reference.html?q=alpha"}]
+    assert excluded["filtered"] and excluded["focused"] == 1 and excluded["scrolls"] == []
+    assert not matching["filtered"] and matching["focused"] == 0
+    assert matching["scrolls"] == [{"block": "start", "behavior": "auto"}]
