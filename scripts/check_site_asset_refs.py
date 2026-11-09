@@ -42,7 +42,8 @@ from urllib.parse import unquote
 # `data-src=` / `data-href=`: a plain \b matches at the `-`, and the alerts feed
 # tags every card `data-src="macro"`, which would read as a link to a file named
 # `macro` and fail this checker on markup that is doing nothing wrong.
-_ATTR_RE = re.compile(r"""(?<![\w-])(?:href|src)\s*=\s*["']([^"']+)["']""", re.I)
+# The explicit shared-bundle attributes are executable companion URLs.
+_ATTR_RE = re.compile(r"""(?<![\w-])(?:href|src|data-mmx-shared-(?:theme|onboard))\s*=\s*["']([^"']+)["']""", re.I)
 
 # Schemes and anchors that never resolve to a file in this tree.
 _SKIP_PREFIX = (

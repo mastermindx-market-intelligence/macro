@@ -7,6 +7,7 @@ content-versioned and otherwise follows the existing template/site asset owner.
 from __future__ import annotations
 
 import hashlib
+import logging
 import re
 from functools import lru_cache
 from html.parser import HTMLParser
@@ -135,3 +136,101 @@ def inject_shared_shell_text(html: str, prefix: str = "", *, version: str | None
         + END
     )
     return html[:at] + block + html[at:]
+
+
+log = logging.getLogger(__name__)
+MIN_BYTES = 1024  # smaller inline blocks are cheaper than a request
+_JS_SUBDIR = ("assets", "js")
+_SHARED_ROLES = ("theme", "onboard")
+_SHARED_TAG_RE = re.compile(r"<script\b([^>]*)>(\s*)</script>", re.IGNORECASE)
+SHARED_ROLE_RE = re.compile(r'\sdata-mmx-shared-bundle="(theme|onboard)"')
+_SHARED_SRC_RE = re.compile(r'(?<![\w-])src\s*=\s*"([^"]*)"')
+_SHARED_BINDING_RE = re.compile(r'\sdata-mmx-shared-(?:root|theme|onboard)="[^"]*"')
+_SHARED_ALIAS_RE = re.compile(r"assets/js/([0-9a-f]{8})\.js\?v=\1")
+
+
+def hashed_js_url(js_root: Path, data: bytes, *, write: bool = True) -> str | None:
+    if len(data) < MIN_BYTES:
+        return None
+    h = hashlib.sha256(data).hexdigest()[:8]
+    dst = js_root / f"{h}.js"
+    if write and not dst.exists():
+        try:
+            js_root.mkdir(parents=True, exist_ok=True)
+            dst.write_bytes(data)
+        except OSError as error:
+            log.warning("write js %s failed: %s", dst.name, error)
+            return None
+    return f"assets/js/{h}.js?v={h}"
+
+
+def shared_bundle_urls(site_dir: Path, js_root: Path, *, write: bool = True) -> dict[str, str]:
+    """Bind both linked aliases to final, already-emitted public bundle bytes."""
+    urls = {}
+    for role in _SHARED_ROLES:
+        try:
+            raw = (site_dir / f"{role}.js").read_bytes()
+            url = hashed_js_url(js_root, raw, write=write)
+            if url is None or (site_dir / url.split("?", 1)[0]).read_bytes() != raw:
+                return {}
+        except OSError:
+            return {}
+        urls[role] = url
+    return urls
+
+
+def bind_shared_bundles(text: str, prefix: str, urls: dict[str, str]) -> str:
+    """Rewrite explicitly marked classic tags and keep their timing/position."""
+    bound_tags = 0
+
+    def replace_tag(match):
+        nonlocal bound_tags
+        attrs, body = match.groups()
+        role = SHARED_ROLE_RE.search(attrs)
+        src = _SHARED_SRC_RE.search(attrs)
+        if role is None or src is None or not src[1].startswith(prefix):
+            return match[0]
+        path = src[1][len(prefix):]
+        if (not re.fullmatch(rf"{role[1]}\.js(?:\?v=[0-9a-f]{{8}})?", path)
+                and not _SHARED_ALIAS_RE.fullmatch(path)):
+            return match[0]
+        bound_tags += 1
+        attrs = attrs[:src.start(1)] + prefix + urls[role[1]] + attrs[src.end(1):]
+        attrs = _SHARED_BINDING_RE.sub("", attrs)
+        attrs += f' data-mmx-shared-root="{prefix or "./"}"'
+        attrs += "".join(f' data-mmx-shared-{name}="{prefix}{urls[name]}"' for name in _SHARED_ROLES)
+        return f"<script{attrs}>{body}</script>"
+
+    updated = _SHARED_TAG_RE.sub(replace_tag, text)
+    if bound_tags != len(SHARED_ROLE_RE.findall(text)):
+        raise ValueError("malformed shared bundle script tag")
+    return updated
+
+
+def reconcile_shared_bundles(site_dir: Path, *, fix: bool = False) -> list[str]:
+    """Rebind opted-in pages after the last named copy, or report mismatches read-only."""
+    urls = None
+    invalid = []
+    for html in [site_dir / "forex.html", *sorted((site_dir / "learn").rglob("*.html"))]:
+        if not html.is_file():
+            continue
+        rel = html.relative_to(site_dir)
+        try:
+            text = html.read_bytes().decode("utf-8")
+            if not SHARED_ROLE_RE.search(text):
+                continue
+            if urls is None:
+                urls = shared_bundle_urls(site_dir, site_dir.joinpath(*_JS_SUBDIR), write=fix)
+            if not urls:
+                invalid.append(rel.as_posix())
+                continue
+            bound = bind_shared_bundles(text, "../" * (len(rel.parts) - 1), urls)
+            if bound != text:
+                if fix:
+                    # The finalized page already carries its shim and other stamps.
+                    html.write_bytes(bound.encode("utf-8"))
+                else:
+                    invalid.append(rel.as_posix())
+        except (OSError, ValueError):
+            invalid.append(rel.as_posix())
+    return invalid

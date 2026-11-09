@@ -9,12 +9,19 @@ import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from lib.pages import dbase_prefix, write_page
 from lib.shared_shell import (ASSET_NAME, STYLESHEET_NAME, asset_version,
-                              stylesheet_version, copy_shared_shell_asset, inject_shared_shell_text)
+                              stylesheet_version, copy_shared_shell_asset, inject_shared_shell_text,
+                              reconcile_shared_bundles)
 from scripts.optimize_assets import paired_html_pages
 
 
 def run(site: Path, *, check: bool) -> dict:
     if check:
+        # Render runs this capability gate after bundle externalization; the
+        # earlier generic reference guard also sees raw Jinja pages.
+        invalid_bundles = reconcile_shared_bundles(site)
+        if invalid_bundles:
+            raise ValueError("Shared Shell bundle bindings differ from named bytes: "
+                             + ", ".join(invalid_bundles))
         for name in (ASSET_NAME, STYLESHEET_NAME):
             emitted = site / name
             source = Path(__file__).resolve().parent.parent / "templates" / name

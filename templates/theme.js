@@ -293,17 +293,21 @@
   // for local/custom builds that serve the sources without the production bake.
   var _mmOverlayScript = null, _mmOverlayWaiters = [];
   var _mmThemeScript = document.currentScript ||
-    document.querySelector('script[src$="theme.js"],script[src*="theme.js?"]');
+    document.querySelector('script[data-mmx-shared-bundle="theme"],script[src$="theme.js"],script[src*="theme.js?"]');
+  var _mmSharedRootHint = _mmThemeScript && _mmThemeScript.getAttribute &&
+    _mmThemeScript.getAttribute('data-mmx-shared-bundle') === 'theme' &&
+    _mmThemeScript.getAttribute('data-mmx-shared-root');
+  if (!/^(?:\.\/|(?:\.\.\/)+)$/.test(_mmSharedRootHint)) _mmSharedRootHint = '';
   var _mmSharedAssetRoot = (function () {
     try {
+      if (_mmSharedRootHint) return new URL(_mmSharedRootHint, location.href).href;
       return new URL('.', _mmThemeScript && _mmThemeScript.src
         ? _mmThemeScript.src : location.href).href;
     } catch (e) { return ''; }
   })();
   var _mmOverlaySrc = (function () {
     try {
-      return new URL('terminal_overlay.js', _mmThemeScript && _mmThemeScript.src
-        ? _mmThemeScript.src : location.href).href;
+      return new URL('terminal_overlay.js', _mmSharedAssetRoot || location.href).href;
     } catch (e) { return 'terminal_overlay.js'; }
   })();
   function loadTerminalOverlay(done) {
@@ -3614,9 +3618,11 @@
     // <script src>, which is correct at ANY page depth (blog/ learn/ tools/
     // sectors/ …) and under subpath hosting — a '/sectors/'-only check 404s
     // everywhere else one level deep.
-    var pfx = '';
-    var _ts = document.querySelector('script[src$="theme.js"],script[src*="theme.js?"]');
-    if (_ts) pfx = (_ts.getAttribute('src') || '').replace(/theme\.js(\?.*)?$/, '');
+    var pfx = _mmSharedRootHint;
+    if (!pfx) {
+      var _ts = document.querySelector('script[src$="theme.js"],script[src*="theme.js?"]');
+      if (_ts) pfx = (_ts.getAttribute('src') || '').replace(/theme\.js(\?.*)?$/, '');
+    }
     var syncCard = signedIn
       ? '<div class="sd-sync"><span class="dot"></span><span class="sd-sync-main">' +
           '<span class="sd-sync-t">' + _sdBl('syncOn') + '</span>' +
@@ -3937,6 +3943,16 @@
     window.__mmOnboardLoading = true;
     var s = document.createElement('script');
     s.src = pfx + 'onboard.js'; s.defer = true;
+    if (_mmSharedRootHint) {
+      var prefix = _mmSharedRootHint === './' ? '' : _mmSharedRootHint;
+      var alias = _mmThemeScript.getAttribute('data-mmx-shared-onboard') || '';
+      if (alias.indexOf(prefix) === 0 && /^assets\/js\/([0-9a-f]{8})\.js\?v=\1$/.test(alias.slice(prefix.length))) {
+        s.src = new URL(alias, location.href).href;
+        s.setAttribute('data-mmx-shared-bundle', 'onboard');
+        s.setAttribute('data-mmx-shared-root', _mmSharedRootHint);
+        s.setAttribute('data-mmx-shared-theme', _mmThemeScript.getAttribute('data-mmx-shared-theme') || '');
+      }
+    }
     var fbQ = (m === 'signup') ? 'signup=1' : (m === 'upgrade') ? 'upgrade=1' : 'signin=1';
     var fallbackTarget = pfx + 'index.html?' + fbQ;
     try {

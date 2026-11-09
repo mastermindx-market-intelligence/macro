@@ -256,6 +256,10 @@ def check(root: Path, fix: bool = False) -> list[str]:
                     f"site copies are derived — edit templates/{name} and re-copy, "
                     f"or run: python -m scripts.check_template_site_sync --fix")
             print(f"DIVERGED: site/{name} != templates/{name} ({hint})")
+    # Normal render and post-rebase publication both finalize named bytes here.
+    from lib.shared_shell import reconcile_shared_bundles
+
+    check.bundle_errors = reconcile_shared_bundles(site_dir, fix=fix)
     return diverged
 
 
@@ -352,6 +356,10 @@ def main(argv: list[str]) -> int:
         return 1
     diverged = check(root, fix=fix)
     n_pairs = sum(1 for _ in find_pairs(root))
+    if check.bundle_errors:
+        print(f"template↔site sync FAILED: shared bundle bindings differ from final named bytes: "
+              f"{check.bundle_errors}")
+        return 1
     if not diverged:
         print(f"template↔site sync OK ({n_pairs} pairs checked)")
         return 0

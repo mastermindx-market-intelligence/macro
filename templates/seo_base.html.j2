@@ -506,8 +506,8 @@ html[data-lang="zh"] .est-title{letter-spacing:-.01em;}
 <script>window.MM_API=window.MM_API||'https://app.mastermind-x.com';window.__mmAccountLoading=true;</script>
 <script src="{{ rel }}supabase.js"></script>
 <script src="{{ rel }}account.js"></script>
-<script src="{{ rel }}theme.js"></script>
+<script {% if page.section == "learn" %}data-mmx-shared-bundle="theme" {% endif %}src="{{ rel }}theme.js"></script>
 {% include "_public_chrome_js.html.j2" %}
-<script src="{{ rel }}onboard.js" defer></script>
+<script {% if page.section == "learn" %}data-mmx-shared-bundle="onboard" {% endif %}src="{{ rel }}onboard.js" defer></script>
 </body>
 </html>

@@ -1709,3 +1709,115 @@ for (const parent of ['https://app.mastermind-x.com.evil.example', 'http://app.m
     assert.strictEqual(ctx.sent.length, 0);
   });
 }
+
+
+// Exercise the bundle-relative seams with the actual classic-script source.
+const themeSource = fs.readFileSync(path.join(__dirname, '..', '..', 'templates', 'theme.js'), 'utf8');
+const onboardSource = fs.readFileSync(path.join(__dirname, '..', '..', 'templates', 'onboard.js'), 'utf8');
+
+function sourceBetween(source, first, last) {
+  const start = source.indexOf(first);
+  const end = source.indexOf(last, start);
+  assert.ok(start >= 0 && end > start, first);
+  return source.slice(start, end);
+}
+
+function bundleFixture(page, role, prefix, useAliases, shell = false) {
+  const location = new URL(page);
+  const root = prefix || './';
+  const themeUrl = prefix + 'assets/js/12345678.js?v=12345678';
+  const onboardUrl = prefix + 'assets/js/9abcdef0.js?v=9abcdef0';
+  const marked = {
+    'data-mmx-shared-bundle': role,
+    'data-mmx-shared-root': root,
+    'data-mmx-shared-theme': themeUrl,
+    'data-mmx-shared-onboard': onboardUrl,
+  };
+  const script = {
+    src: new URL(useAliases ? (role === 'theme' ? themeUrl : onboardUrl) : prefix + role + '.js', page).href,
+    getAttribute(name) { return name === 'src' ? prefix + role + '.js' : useAliases ? marked[name] : null; },
+  };
+  const appended = [];
+  const settings = {};
+  const handoffs = [];
+  const document = {
+    currentScript: script,
+    querySelector(selector) { return selector.startsWith('script') ? script : null; },
+    createElement(tag) {
+      return { tag, attrs: {}, setAttribute(name, value) { this.attrs[name] = value; } };
+    },
+    head: { appendChild(element) { appended.push(element); } },
+    getElementById() { return settings; },
+  };
+  const context = vm.createContext({
+    document, location, URL, window: {}, setTimeout() {}, clearTimeout() {},
+    _mmShellAuthHandoff(mode) { handoffs.push(mode); return shell; },
+    _sdHead() { return ''; }, _sdBl() { return ''; }, _sdL() { return ''; },
+    _wireSDSync() {}, _authEnabled: true, SD_ICON: { extlink: '' },
+  });
+  const code = role === 'theme'
+    ? sourceBetween(themeSource, '  var _mmThemeScript', '  function loadTerminalOverlay') +
+      sourceBetween(themeSource, '  function _renderSDSync', '  /* ---- Billing tab') +
+      sourceBetween(themeSource, '  function _mmOpenOnboard', '  function _sdWireCta')
+    : sourceBetween(onboardSource, '  window.__mmOnboard = true;', '  // ── constants') +
+      sourceBetween(onboardSource, '  var _themeLoad', '  function sbClient') +
+      sourceBetween(onboardSource, '  function _pfx', '  var _lastFocus = null;');
+  vm.runInContext(code, context);
+  return { appended, settings, handoffs, context, themeUrl, onboardUrl, marked };
+}
+
+test('nested Learning resolves Settings, onboarding CSS and both lazy companions from the site root', () => {
+  const page = 'https://www.mastermind-x.com/preview/learn/options/lesson.html';
+  const theme = bundleFixture(page, 'theme', '../../', true);
+  vm.runInContext('_renderSDSync("out", {}); _mmOpenOnboard("signup")', theme.context);
+  assert.match(theme.settings.innerHTML, /href="\.\.\/\.\.\/watchlist\.html"/);
+  assert.equal(theme.context._mmOverlaySrc, 'https://www.mastermind-x.com/preview/terminal_overlay.js');
+  assert.equal(theme.appended[0].src, new URL(theme.onboardUrl, page).href);
+  assert.equal(theme.appended[0].attrs['data-mmx-shared-bundle'], 'onboard');
+  assert.equal(theme.appended[0].attrs['data-mmx-shared-theme'], theme.themeUrl);
+
+  const onboard = bundleFixture(page, 'onboard', '../../', true);
+  vm.runInContext('ensureAssets(); ensureAuthBroker()', onboard.context);
+  assert.equal(new URL(onboard.appended[0].href, page).href, 'https://www.mastermind-x.com/preview/onboard.css');
+  assert.equal(onboard.appended[1].src, new URL(onboard.themeUrl, page).href);
+  assert.equal(onboard.appended[1].attrs['data-mmx-shared-bundle'], 'theme');
+  assert.equal(onboard.appended[1].attrs['data-mmx-shared-onboard'], onboard.onboardUrl);
+
+  const invalid = bundleFixture(page, 'theme', '../../', true);
+  invalid.marked['data-mmx-shared-onboard'] = 'https://foreign.example/assets/js/9abcdef0.js?v=9abcdef0';
+  vm.runInContext('_mmOpenOnboard("signin")', invalid.context);
+  assert.equal(invalid.appended[0].src, 'https://www.mastermind-x.com/preview/onboard.js');
+  assert.deepEqual(invalid.appended[0].attrs, {});
+});
+
+test('Forex root alias preserves the shell handoff and legacy scripts keep the named fallback', () => {
+  const page = 'https://www.mastermind-x.com/forex.html';
+  const root = bundleFixture(page, 'theme', '', true);
+  vm.runInContext('_mmOpenOnboard("signin")', root.context);
+  assert.equal(root.appended[0].src, new URL(root.onboardUrl, page).href);
+  const embedded = bundleFixture(page, 'theme', '', true, true);
+  vm.runInContext('_mmOpenOnboard("upgrade")', embedded.context);
+  assert.deepEqual(embedded.handoffs, ['billing']);
+  assert.equal(embedded.appended.length, 0);
+
+  const legacy = bundleFixture(page, 'theme', '', false);
+  vm.runInContext('_mmOpenOnboard("signin")', legacy.context);
+  assert.equal(legacy.appended[0].src, 'https://www.mastermind-x.com/onboard.js');
+  assert.deepEqual(legacy.appended[0].attrs, {});
+  const landing = bundleFixture('https://www.mastermind-x.com/index.html', 'onboard', '', false);
+  vm.runInContext('ensureAssets(); ensureAuthBroker()', landing.context);
+  assert.equal(landing.appended[0].href, 'onboard.css');
+  assert.equal(landing.appended[1].src, 'theme.js');
+});
+
+
+test('marked nested onboarding falls back to the named site-root auth broker', () => {
+  const page = 'https://www.mastermind-x.com/preview/learn/options/lesson.html';
+  for (const companion of [undefined, 'https://foreign.example/assets/js/12345678.js?v=12345678']) {
+    const onboard = bundleFixture(page, 'onboard', '../../', true);
+    onboard.marked['data-mmx-shared-theme'] = companion;
+    vm.runInContext('ensureAuthBroker()', onboard.context);
+    assert.equal(onboard.appended[0].src, 'https://www.mastermind-x.com/preview/theme.js');
+    assert.deepEqual(onboard.appended[0].attrs, {});
+  }
+});
