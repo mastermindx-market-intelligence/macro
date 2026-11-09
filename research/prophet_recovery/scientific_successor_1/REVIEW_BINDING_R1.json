@@ -1,0 +1,130 @@
+{
+  "document_kind": "non_executable_scientific_review_binding",
+  "canonical_schema": false,
+  "operation": "prophet-frontier-hypotheses-20260926-sol-001",
+  "recovery": "prophet-frontier-successor-1-20260928",
+  "hypothesis_version_proposal": "H1-peer-participation-acceleration/v0.2-successor1-r1",
+  "status": "PROPOSED_FOR_PARENT_AND_INDEPENDENT_REVIEW",
+  "run_allowed": false,
+  "specification": {
+    "repository": "mastermindx-market-intelligence/macro",
+    "path": "research/prophet_recovery/scientific_successor_1/SPECIFICATION_R1.md",
+    "commit": "be89e06dbe99c27a64c6a416a79ae4203bde7fb9",
+    "blob": "076b151387db48a316ce3adc7fbc193db52d335c",
+    "effective_read_rule": "Read the specification with the explicit author clarifications below as ONE proposed protocol. Neither file is accepted or executable. These clarifications supersede only the named ambiguous clauses, not the original experiment."
+  },
+  "author_review_clarifications": [
+    {
+      "id": "AR1_COVERAGE_DENOMINATOR",
+      "amends": "Specification section 6 phrase 'source-native target issuer/dates'",
+      "rule": "Base-input coverage denominator is the number of original native (stamp_date,ticker,board_definition) target keys AFTER identical transport-duplicate collapse, including identity-unresolved, ambiguous-primary-listing and core-input-failed keys. Numerator is the number of retained owner-primary issuer/date representatives with all core inputs. Do not estimate an unknown issuer count or merge unresolved aliases to shrink the denominator. Report resolved unique-issuer counts separately. Peer coverage is q=1 representatives divided by base-eligible representatives. Failed captures additionally remain in the expected-session coverage denominator."
+    },
+    {
+      "id": "AR2_FIT_CUTOFF",
+      "amends": "Specification section 4 fixed training-fit cutoff",
+      "rule": "The fit cutoff is the earliest feature-support-start timestamp of the unpurged calibration block, derived solely from the accepted manifest. Retained training labels must have both label-support end and usable/known-at timestamp strictly before that cutoff. Freeze the training source snapshot at that cutoff. If no such snapshot or timestamp witness exists, the historical route is ineligible; do not choose a later convenient cutoff. Use the same support endpoint rule for calibration versus test."
+    },
+    {
+      "id": "AR3_DEGENERATE_INFERENCE",
+      "amends": "Specification sections 6-8 interval qualification",
+      "rule": "If either decision statistic has zero empirical/resampled variation at either prescribed block length, do not interpret a collapsed bootstrap interval as zero population uncertainty. Return INFERENCE_UNQUALIFIED for positive qualification. In particular, observing no differential downside or no adverse observations does not certify the downside tolerance. NO_SELECTION_INCREMENT remains the separate original rule when all frozen top fives coincide."
+    },
+    {
+      "id": "AR4_MISSING_GROUP_DIAGNOSTICS",
+      "amends": "Specification sections 6-7 concentration scope",
+      "rule": "Keep unknown primary groups as an explicit unclassified mass, not an invented additional group. A cross-group qualification is unavailable unless the disagreement mass used for that claim has owner-bound group identity. A post-outcome favorable subgroup is hypothesis-generating only and does not inherit this test's acceptance."
+    }
+  ],
+  "locked_design_summary": {
+    "market": "US",
+    "cohort": "curated",
+    "signal_class": "explicit_owner_momentum",
+    "grain": "native_candidate_date_landmark_not_synthetic_episode",
+    "candidate_key": ["stamp_date", "ticker", "board_definition"],
+    "grade_key": ["stamp_date", "ticker", "board_definition", "horizon"],
+    "primary": "C2-C1",
+    "k": 5,
+    "horizon": 10,
+    "units": "decimal_return",
+    "difference_weight": "(in_C2_top5-in_C1_top5)/5",
+    "missing_selected_endpoint": "unresolved_paired_date_including_common_selected_names",
+    "unavailable_peers": "same_frozen_C0_prediction_for_both_policies",
+    "fit_count_max": 3,
+    "fit_names": ["C0", "C1", "C2"],
+    "ridge_lambda": 1,
+    "loss_normalization": "sum_over_training_dates_of_daily_mean_squared_loss",
+    "intercept_penalized": false,
+    "standardization": "training_only_date_weighted_population_center_scale",
+    "zero_variance_feature": "inactive_zero_slope_zero_transformed_coordinate",
+    "calibration_use": "audit_only_no_tuning_or_refit",
+    "formal_looks_max": 1,
+    "bootstrap_replicates_each_length": 9999,
+    "bootstrap_seed": 20260928,
+    "bootstrap_lengths": "L=max(1+maximum_primitive_support_span,ceil(N_test^(1/3))); stress=2L; normal support floor32",
+    "interval_method": "basic bootstrap; alpha0.025 per statistic; envelope of fixed L and2L intervals",
+    "net_return_claim": false,
+    "probability_claim": false
+  },
+  "parent_review_policy_proposal": {
+    "minimum_useful_gain_lower_interval_bound": 0.005,
+    "maximum_downside_deterioration_upper_interval_bound": 0.0025,
+    "maximum_interval_radius_each_statistic": 0.0025,
+    "downside_statistic": "mean(max(0,-absolute_C2_top5_mark)-max(0,-absolute_C1_top5_mark))",
+    "minimum_base_input_coverage": 0.70,
+    "minimum_peer_coverage": 0.70,
+    "minimum_test_session_k5_coverage": 0.70,
+    "minimum_training_label_coverage": 0.95,
+    "required_selected_pair_completion_for_positive_qualification": 1.0,
+    "minimum_disagreement_date_concentration_effective_count": 20,
+    "minimum_disagreement_issuer_concentration_effective_count": 20,
+    "minimum_disagreement_group_concentration_effective_count_for_cross_group_claim": 5,
+    "concentration_counts_are_statistical_independence": false,
+    "inherited_episode_floors": "Preserved for claims requiring them; native candidate-dates never manufacture genuine B1 episodes.",
+    "historical_partition": "60/20/20 of all expected sessions; floor indices; actual-support purges",
+    "prospective_raw_session_allocation": {"training":126,"calibration":42,"test":252},
+    "formal_look": "first scheduled native publication at or after last planned test support end plus five expected source sessions",
+    "thresholds_are_empirical_findings": false,
+    "sample_allocation_is_power_guarantee": false
+  },
+  "precision_illustration": {
+    "kind": "new_design_stage_arithmetic_only",
+    "z": 2.2414027276049464,
+    "formula": "ceil((z*assumed_sigma/0.0025)^2)",
+    "assumed_sigma_and_independent_equivalent_count": [[0.01,81],[0.02,322],[0.04,1287]],
+    "observed_market_variance": false,
+    "market_data_read": false,
+    "power_simulation": false
+  },
+  "gates_not_yet_supplied": {
+    "parent_exact_version_acceptance": "REQUIRED_BEFORE_PROTECTED_OUTCOME_ACCESS",
+    "independent_protocol_review": "NOT_STARTED_BY_THIS_SEAT",
+    "released_source_and_natural_capture": "EXISTING_DATA_EVALUATION_OWNER",
+    "admissible_input_manifest_and_rights": "EXISTING_DATA_OS_AND_SOURCE_OWNERS",
+    "literal_calendar_partitions_and_prior_access_inventory": "DERIVE_FROM_ACCEPTED_REDACTED_MANIFEST_BEFORE_LABELS",
+    "fit_implementation_environment_and_budget": "EXISTING_B10_AND_ADMISSION_OWNERS",
+    "registered_trial_and_smoke": "EXISTING_B06_EVALUATION_OWNER",
+    "new_numeric_worker": "NONE_DISPATCHED"
+  },
+  "authority": {
+    "protected_outcome_read": false,
+    "model_fit_executed": false,
+    "live_ranking": false,
+    "entry": false,
+    "management_policy_change": false,
+    "sizing": false,
+    "trading": false,
+    "historical_rewrite": false,
+    "production_source_write": false,
+    "paper_edit": false,
+    "worker_launch": false,
+    "new_automation": false
+  },
+  "continuation": {
+    "cumulative_child_return": "macro#6805/5861635963",
+    "parent": "macro#6817",
+    "next_parent_decision": "Adjudicate this two-file proposed specification and conservative risk/precision/inference policy, then bind source-blind review and redacted manifest intake.",
+    "mission_complete": false,
+    "empirical_results": "UNCOMPUTED",
+    "actual_external_child_handles": []
+  }
+}

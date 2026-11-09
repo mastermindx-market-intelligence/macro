@@ -1,0 +1,296 @@
+{
+  "recorded_at": "2026-11-03 06:54:15 UTC",
+  "census": [
+    {
+      "fileName": "Mastermind · Market Dashboard Popups · Redesign",
+      "fileId": "01M38EVF74SJWG1GANN5VP380Z",
+      "pageName": "RISK RADAR SYSTEM",
+      "pageId": "p-1-0",
+      "url": "https://app.paper.design/file/01M38EVF74SJWG1GANN5VP380Z/p-1-0",
+      "artboardCount": 11,
+      "artboards": [
+        {
+          "id": "10V-0",
+          "name": "00 · Risk Radar · Retained Work + Pickup Map",
+          "childCount": 1,
+          "width": 900,
+          "height": 630,
+          "worldX": 0,
+          "worldY": 0
+        },
+        {
+          "id": "1-0",
+          "name": "Risk Radar V2 · US · Primary",
+          "childCount": 8,
+          "width": 1240,
+          "height": 1266,
+          "worldX": 0,
+          "worldY": 750
+        },
+        {
+          "id": "8PS-0",
+          "name": "20 · Risk Radar · STATE · Evidence + Same-context Return",
+          "childCount": 8,
+          "width": 1240,
+          "height": 1555,
+          "worldX": 1320,
+          "worldY": 750
+        },
+        {
+          "id": "8R6-0",
+          "name": "30 · Risk Radar · STATE · Mobile Main · Partial Data",
+          "childCount": 6,
+          "width": 390,
+          "height": 1037,
+          "worldX": 2640,
+          "worldY": 750
+        },
+        {
+          "id": "8SH-0",
+          "name": "31 · Risk Radar · STATE · Mobile Evidence + Return",
+          "childCount": 6,
+          "width": 390,
+          "height": 1713,
+          "worldX": 3110,
+          "worldY": 750
+        },
+        {
+          "id": "8YA-0",
+          "name": "32 · Risk Radar · Mobile Main · Light ZH",
+          "childCount": 6,
+          "width": 390,
+          "height": 1017,
+          "worldX": 0,
+          "worldY": 2600
+        },
+        {
+          "id": "8ZF-0",
+          "name": "33 · Risk Radar · Mobile Evidence · Light ZH",
+          "childCount": 6,
+          "width": 390,
+          "height": 1593,
+          "worldX": 470,
+          "worldY": 2600
+        },
+        {
+          "id": "97F-0",
+          "name": "34 · Risk Radar · Mobile Main · Light EN",
+          "childCount": 6,
+          "width": 390,
+          "height": 1037,
+          "worldX": 3580,
+          "worldY": 750
+        },
+        {
+          "id": "98K-0",
+          "name": "35 · Risk Radar · Mobile Evidence · Light EN",
+          "childCount": 6,
+          "width": 390,
+          "height": 1713,
+          "worldX": 4050,
+          "worldY": 750
+        },
+        {
+          "id": "99D-0",
+          "name": "36 · Risk Radar · Mobile Main · Dark ZH",
+          "childCount": 6,
+          "width": 390,
+          "height": 1017,
+          "worldX": 940,
+          "worldY": 2600
+        },
+        {
+          "id": "9AI-0",
+          "name": "37 · Risk Radar · Mobile Evidence · Dark ZH",
+          "childCount": 6,
+          "width": 390,
+          "height": 1593,
+          "worldX": 1410,
+          "worldY": 2600
+        }
+      ],
+      "classification": "OBSERVED_EXISTING_EDITABLE_REFERENCES_NOT_ACCEPTANCE"
+    },
+    {
+      "fileName": "MASTERMIND PAGES",
+      "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+      "pageName": "Market Breadth · Command Center · R1 · 2026-09-29",
+      "pageId": "p-13-1",
+      "url": "https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-13-1",
+      "artboardCount": 3,
+      "artboards": [
+        {
+          "id": "5J97-1",
+          "name": "01 · R1 · DESKTOP · NYSE Breadth Command Center",
+          "childCount": 1,
+          "width": 1440,
+          "height": 2780,
+          "worldX": 0,
+          "worldY": 0
+        },
+        {
+          "id": "5JUZ-1",
+          "name": "02 · R1 · MOBILE · NYSE Breadth Command Center",
+          "childCount": 1,
+          "width": 390,
+          "height": null,
+          "worldX": 1520,
+          "worldY": 0
+        },
+        {
+          "id": "5K8V-1",
+          "name": "03 · R1 STATE · Desktop · Breadth Evidence Inspector",
+          "childCount": 1,
+          "width": 1440,
+          "height": 960,
+          "worldX": 1990,
+          "worldY": 0
+        }
+      ],
+      "classification": "OBSERVED_EXISTING_EDITABLE_REFERENCES_NOT_ACCEPTANCE"
+    },
+    {
+      "fileName": "Mastermind · Market Dashboard Popups · Redesign",
+      "fileId": "01M38EVF74SJWG1GANN5VP380Z",
+      "pageName": "01B · Risk Radar · Pullback Underway · US + China",
+      "pageId": "p-6-0",
+      "url": "https://app.paper.design/file/01M38EVF74SJWG1GANN5VP380Z/p-6-0",
+      "artboardCount": 10,
+      "artboards": [
+        {
+          "id": "9TH-0",
+          "name": "40 · Pullback underway · US · Illustrative",
+          "childCount": 6,
+          "width": 1240,
+          "height": null,
+          "worldX": 0,
+          "worldY": 0
+        },
+        {
+          "id": "9ZG-0",
+          "name": "42 · Pullback · Mobile · Stabilization watch",
+          "childCount": 6,
+          "width": 390,
+          "height": null,
+          "worldX": 1320,
+          "worldY": 0
+        },
+        {
+          "id": "A5I-0",
+          "name": "45 · Pullback · US · Light EN · Forecast withheld",
+          "childCount": 6,
+          "width": 1240,
+          "height": null,
+          "worldX": 1790,
+          "worldY": 0
+        },
+        {
+          "id": "A7G-0",
+          "name": "46 · Pullback · US · Mobile Light · Observed only",
+          "childCount": 7,
+          "width": 390,
+          "height": null,
+          "worldX": 3110,
+          "worldY": 0
+        },
+        {
+          "id": "9WB-0",
+          "name": "41 · Pullback underway · China · Estimate unavailable",
+          "childCount": 6,
+          "width": 1240,
+          "height": null,
+          "worldX": 0,
+          "worldY": 1920
+        },
+        {
+          "id": "A1M-0",
+          "name": "43 · Pullback · China · Light EN",
+          "childCount": 6,
+          "width": 1240,
+          "height": null,
+          "worldX": 1320,
+          "worldY": 1920
+        },
+        {
+          "id": "A9U-0",
+          "name": "47 · Pullback · China · Dark ZH · Estimate withheld",
+          "childCount": 6,
+          "width": 1240,
+          "height": null,
+          "worldX": 0,
+          "worldY": 3120
+        },
+        {
+          "id": "ABS-0",
+          "name": "48 · Pullback · China · Mobile Dark ZH · No forecast",
+          "childCount": 6,
+          "width": 390,
+          "height": null,
+          "worldX": 1320,
+          "worldY": 3120
+        },
+        {
+          "id": "A3K-0",
+          "name": "44 · Pullback · China · Light ZH",
+          "childCount": 6,
+          "width": 1240,
+          "height": null,
+          "worldX": 1790,
+          "worldY": 3120
+        },
+        {
+          "id": "AD3-0",
+          "name": "49 · Pullback · China · Mobile Light ZH · No forecast",
+          "childCount": 7,
+          "width": 390,
+          "height": null,
+          "worldX": 3110,
+          "worldY": 3120
+        }
+      ],
+      "classification": "OBSERVED_EXISTING_EDITABLE_REFERENCES_NOT_ACCEPTANCE"
+    },
+    {
+      "fileName": "Mastermind · Market Dashboard Popups · Redesign",
+      "fileId": "01M38EVF74SJWG1GANN5VP380Z",
+      "pageName": "00 · Popups + Risk Radar · Start Here · Design Families",
+      "pageId": "p-5-0",
+      "url": "https://app.paper.design/file/01M38EVF74SJWG1GANN5VP380Z/p-5-0",
+      "artboardCount": 1,
+      "artboards": [
+        {
+          "id": "AFT-0",
+          "name": "00 · Design Family Directory · Popups and Risk Radar",
+          "childCount": 4,
+          "width": 1440,
+          "height": 730,
+          "worldX": 0,
+          "worldY": 0
+        }
+      ],
+      "classification": "OBSERVED_EXISTING_EDITABLE_REFERENCES_NOT_ACCEPTANCE"
+    },
+    {
+      "fileName": "Mastermind · Market Dashboard Popups · Redesign",
+      "fileId": "01M38EVF74SJWG1GANN5VP380Z",
+      "pageName": "Program Handoff · Popup Upgrade Sequence",
+      "pageId": "p-2-0",
+      "url": "https://app.paper.design/file/01M38EVF74SJWG1GANN5VP380Z/p-2-0",
+      "artboardCount": 1,
+      "artboards": [
+        {
+          "id": "61-0",
+          "name": "Popup Upgrade · Continuation Checkpoint",
+          "childCount": 1,
+          "width": 900,
+          "height": 720,
+          "worldX": 0,
+          "worldY": 0
+        }
+      ],
+      "classification": "OBSERVED_EXISTING_EDITABLE_REFERENCES_NOT_ACCEPTANCE"
+    }
+  ],
+  "write_effects": 0,
+  "snapshot_is_not_revision_or_lock": true
+}
