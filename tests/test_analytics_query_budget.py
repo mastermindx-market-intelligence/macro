@@ -72,6 +72,35 @@ def test_http_error_status_still_fails_truthfully(patched):
         a._query("select 1")
 
 
+def test_every_statement_carries_the_sort_memory_prelude(patched):
+    """The visit fold sorts ~19k wide rows per statement against a 2MB work_mem.
+
+    That is a spill, not a bad plan, so no index reaches it — measured on production
+    2026-11-09, Visitors (24h) took 13,848ms at the instance default and 4,329ms once the
+    sort could fit in memory. The prelude must ride on EVERY statement, or the panel is
+    back over its 9s budget.
+    """
+    sent = {}
+
+    class _Response:
+        status_code = 201
+        text = ""
+
+        @staticmethod
+        def json():
+            return [{"n": 1}]
+
+    def capture(url, headers=None, json=None, timeout=None):
+        sent.update(json)
+        return _Response()
+
+    patched.setattr(a.requests, "post", capture)
+
+    assert a._query("select 1") == [{"n": 1}]
+    assert "16MB" in a._QUERY_PRELUDE
+    assert sent["query"] == a._QUERY_PRELUDE + "select 1"
+
+
 def test_timeout_cap_narrows_the_reported_budget(patched):
     """A capped best-effort probe must report ITS cap, not the surface's 9s."""
 

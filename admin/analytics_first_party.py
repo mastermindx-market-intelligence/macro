@@ -559,6 +559,19 @@ def status() -> dict:
 _QUERY_TIMEOUT_S = 9
 _OVERVIEW_ALLTIME_TIMEOUT_S = 0.75
 
+# Sort/hash memory for one analytics statement. This instance ships OLTP defaults —
+# work_mem is 2MB — while the visit fold sorts ~19k wide rows per statement, so every one
+# of those sorts spilled to disk. That cost was invisible to EXPLAIN: it is not a bad plan,
+# it is a sort that cannot fit, and no index reaches a window fold. Measured on production
+# 2026-11-09 through this endpoint (24h, median of 2, same statements):
+#     default 2MB   13,848ms      SET LOCAL 8MB   4,329ms      SET LOCAL 16MB   6,580ms
+# work_mem is an UPPER BOUND that a node only allocates when it actually sorts or hashes,
+# so the prelude is inert for the small panels. 16MB rather than 8MB because Sessions (the
+# wider fold) still measured 9.7s at 8MB against 6.1s at 16MB. The panel fans out at most
+# 6 statements at once, so the worst case is ~192MB of transient sort memory on a box with
+# 224MB of shared_buffers; it is set per statement, not per session, and does not leak.
+_QUERY_PRELUDE = "set local work_mem = '16MB'; "
+
 # Whole-surface budget. Every panel here is a chain of round trips to the Supabase
 # Management API, and admin.mastermind-x.com is served THROUGH a CDN edge (see the
 # admin block in app/deploy/Caddyfile) — so an endpoint that outruns the edge's
@@ -644,7 +657,7 @@ def _query(sql: str, timeout_cap_s: float | None = None):
         r = requests.post(
             f"{_API}/projects/{ref}/database/query",
             headers={"Authorization": f"Bearer {pat}", "Content-Type": "application/json"},
-            json={"query": sql}, timeout=timeout)
+            json={"query": _QUERY_PRELUDE + sql}, timeout=timeout)
     except requests.exceptions.Timeout:
         # urllib3's own wording ("HTTPSConnectionPool(host='api.supabase.com', port=443):
         # Read timed out. (read timeout=9.0)") was reaching the operator verbatim. It names
