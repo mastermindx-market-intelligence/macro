@@ -1,0 +1,5752 @@
+{
+  "audit": "Terminal Company R2 product/build separation map",
+  "inspectedAt": "2026-11-08 15:02:38 UTC",
+  "fileId": "01M3NSZGE8JWN2EZCSF0DT05RM",
+  "readOnly": true,
+  "destination": {
+    "pageId": "p-11-0",
+    "pageRootId": "root_node_p-11-0",
+    "name": "00 · Read me & Build contract · D07 Company"
+  },
+  "counts": {
+    "PROMOTE_APP_UI_MOVE_WRAPPER": 16,
+    "MOVE_BUILD_RAIL_ONLY": 39,
+    "PRESERVE_HELD": 1,
+    "PRESERVE_ARCHIVE": 2
+  },
+  "policy": "Preserve node IDs and all product chrome. Execute no moves for held/archive rows. For two-child wrappers promote complete APP UI first, then original wrapper. For inline notes preserve original artboard; move note block alone. Product/source truths and source holds remain unchanged.",
+  "observations": [
+    "58 exact BUILD ONLY/BUILD NOTES headings matched file-wide. 55 are visible, unarchived candidates. 1 safety-held and 2 archived frames are display:none and excluded.",
+    "16 two-child wrappers contain a complete APP UI sibling and builder rail: 10 desktop 1960→1440 product widths; 6 tablet 768→768.",
+    "39 remaining cases retain the original product artboard. 4 phone build-sheet wrappers include additional product menus/state specimens; moving only the rail preserves these. 35 cases have builder text inside product content.",
+    "All 39 MOVE_BUILD_RAIL_ONLY subtrees were read as full JSX and contain the BUILD ONLY header + builder contracts only.",
+    "get_node_info.isVisible was true even for display:none roots; effective exclusions use computed styles and explicit hold/archive names.",
+    "Fixed-height roots may retain bottom space after removing notes; check layout separately. No source/production acceptance is implied."
+  ],
+  "rows": [
+    {
+      "wrapperId": "8NK-0",
+      "wrapperName": "13 · R2 BUILD · Memory · UI + Contract",
+      "originalPageId": "p-1-0",
+      "originalPageRootId": "root_node_p-1-0",
+      "currentWrapperStyle": {
+        "display": "flex",
+        "overflow": "clip",
+        "width": "1960px",
+        "height": "fit-content",
+        "fontFamily": "var(--font-ui)",
+        "left": -19,
+        "top": -9372,
+        "alignItems": "start",
+        "gap": "40px",
+        "minHeight": "1020px",
+        "position": "absolute",
+        "backgroundColor": "var(--mx-light-panel)"
+      },
+      "wrapperMeasured": {
+        "width": 1960,
+        "height": 1732,
+        "worldX": -18.998,
+        "worldY": -9372
+      },
+      "completeProductFrame": {
+        "id": "8NL-0",
+        "name": "APP UI · Market Memory · 1440 × 1020",
+        "style": {
+          "display": "flex",
+          "flexDirection": "column",
+          "width": "1440px",
+          "height": "1020px",
+          "flexShrink": "0",
+          "overflow": "clip",
+          "position": "relative",
+          "backgroundColor": "var(--mx-light-panel)"
+        },
+        "directChildOfWrapper": true
+      },
+      "productChromeLayout": "Complete APP UI sibling exists",
+      "rootChildren": [
+        {
+          "id": "8NL-0",
+          "name": "APP UI · Market Memory · 1440 × 1020"
+        },
+        {
+          "id": "8QL-0",
+          "name": "BUILD ONLY · Market Memory implementation"
+        }
+      ],
+      "builderHeadingId": "8QM-0",
+      "buildRail": {
+        "id": "8QL-0",
+        "name": "BUILD ONLY · Market Memory implementation",
+        "parentId": "8NK-0",
+        "style": {
+          "width": "480px",
+          "display": "flex",
+          "flexDirection": "column",
+          "flexShrink": "0",
+          "alignSelf": "start",
+          "fontFamily": "var(--font-ui)",
+          "padding": "32px",
+          "gap": "24px",
+          "backgroundColor": "var(--mx-light-panel2)",
+          "borderLeftWidth": "3px",
+          "borderLeftStyle": "solid",
+          "borderLeftColor": "var(--mx-light-link)"
+        },
+        "directChildOfWrapper": {
+          "id": "8QL-0",
+          "name": "BUILD ONLY · Market Memory implementation",
+          "component": "Frame",
+          "childCount": 9,
+          "worldX": 1461,
+          "worldY": -9372,
+          "x": 1479.998,
+          "y": 0
+        }
+      },
+      "wrapperIncludesBothProductAndBuild": true,
+      "action": "PROMOTE_APP_UI_MOVE_WRAPPER",
+      "destinationPageId": "p-11-0",
+      "destinationRootId": "root_node_p-11-0",
+      "requiredPreservation": "Move complete APP UI to original page root first, then move original wrapper with builder rail to Build. Preserve IDs and all APP UI descendants.",
+      "layoutRisk": "Reposition/size the remaining Build wrapper after move; original product width stays the APP UI width.",
+      "remainingSiblingsAtRailParent": [
+        {
+          "id": "8NL-0",
+          "name": "APP UI · Market Memory · 1440 × 1020"
+        }
+      ],
+      "suggestedMoves": [
+        {
+          "nodeId": "8NL-0",
+          "parentId": "root_node_p-1-0"
+        },
+        {
+          "nodeId": "8NK-0",
+          "parentId": "root_node_p-11-0"
+        }
+      ],
+      "visibilityChecked": true
+    },
+    {
+      "wrapperId": "8VX-0",
+      "wrapperName": "22 · R2 BUILD · Watch States + Contract",
+      "originalPageId": "p-1-0",
+      "originalPageRootId": "root_node_p-1-0",
+      "currentWrapperStyle": {
+        "display": "flex",
+        "overflow": "clip",
+        "width": "1960px",
+        "height": "fit-content",
+        "fontFamily": "var(--font-ui)",
+        "left": -6139,
+        "top": -7112,
+        "alignItems": "start",
+        "gap": "40px",
+        "minHeight": "960px",
+        "position": "absolute",
+        "backgroundColor": "var(--mx-light-panel)"
+      },
+      "wrapperMeasured": {
+        "width": 1960,
+        "height": 3407,
+        "worldX": -6138.997,
+        "worldY": -7112.001
+      },
+      "completeProductFrame": {
+        "id": "8VY-0",
+        "name": "APP UI STATES · Watch flow · individual specimens",
+        "style": {
+          "display": "flex",
+          "flexDirection": "column",
+          "width": "1440px",
+          "flexShrink": "0",
+          "alignSelf": "start",
+          "gap": "40px",
+          "backgroundColor": "var(--mx-light-panel)"
+        },
+        "directChildOfWrapper": true
+      },
+      "productChromeLayout": "Complete APP UI sibling exists",
+      "rootChildren": [
+        {
+          "id": "8VY-0",
+          "name": "APP UI STATES · Watch flow · individual specimens"
+        },
+        {
+          "id": "93S-0",
+          "name": "BUILD ONLY · Research Watch implementation"
+        }
+      ],
+      "builderHeadingId": "93T-0",
+      "buildRail": {
+        "id": "93S-0",
+        "name": "BUILD ONLY · Research Watch implementation",
+        "parentId": "8VX-0",
+        "style": {
+          "width": "480px",
+          "display": "flex",
+          "flexDirection": "column",
+          "flexShrink": "0",
+          "alignSelf": "start",
+          "fontFamily": "var(--font-ui)",
+          "padding": "32px",
+          "gap": "24px",
+          "backgroundColor": "var(--mx-light-panel2)",
+          "borderLeftWidth": "3px",
+          "borderLeftStyle": "solid",
+          "borderLeftColor": "var(--mx-light-link)"
+        },
+        "directChildOfWrapper": {
+          "id": "93S-0",
+          "name": "BUILD ONLY · Research Watch implementation",
+          "component": "Frame",
+          "childCount": 9,
+          "worldX": -4658.999,
+          "worldY": -7112.001,
+          "x": 1479.9979765625003,
+          "y": 0.000023437500203726813
+        }
+      },
+      "wrapperIncludesBothProductAndBuild": true,
+      "action": "PROMOTE_APP_UI_MOVE_WRAPPER",
+      "destinationPageId": "p-11-0",
+      "destinationRootId": "root_node_p-11-0",
+      "requiredPreservation": "Move complete APP UI to original page root first, then move original wrapper with builder rail to Build. Preserve IDs and all APP UI descendants.",
+      "layoutRisk": "Reposition/size the remaining Build wrapper after move; original product width stays the APP UI width.",
+      "remainingSiblingsAtRailParent": [
+        {
+          "id": "8VY-0",
+          "name": "APP UI STATES · Watch flow · individual specimens"
+        }
+      ],
+      "suggestedMoves": [
+        {
+          "nodeId": "8VY-0",
+          "parentId": "root_node_p-1-0"
+        },
+        {
+          "nodeId": "8VX-0",
+          "parentId": "root_node_p-11-0"
+        }
+      ],
+      "visibilityChecked": true
+    },
+    {
+      "wrapperId": "99N-0",
+      "wrapperName": "15 · R2 BUILD · Valuation Lab · UI + Contract",
+      "originalPageId": "p-1-0",
+      "originalPageRootId": "root_node_p-1-0",
+      "currentWrapperStyle": {
+        "display": "flex",
+        "overflow": "clip",
+        "width": "1960px",
+        "height": "fit-content",
+        "fontFamily": "var(--font-ui)",
+        "left": 2021.001,
+        "top": -9372,
+        "alignItems": "start",
+        "gap": "40px",
+        "minHeight": "1060px",
+        "position": "absolute",
+        "backgroundColor": "var(--mx-light-panel)"
+      },
+      "wrapperMeasured": {
+        "width": 1960,
+        "height": 1700,
+        "worldX": 2021,
+        "worldY": -9372
+      },
+      "completeProductFrame": {
+        "id": "99O-0",
+        "name": "APP UI · Valuation Lab · 1440 × 1060",
+        "style": {
+          "display": "flex",
+          "flexDirection": "column",
+          "width": "1440px",
+          "height": "1060px",
+          "flexShrink": "0",
+          "overflow": "clip",
+          "position": "relative",
+          "backgroundColor": "var(--mx-light-panel)"
+        },
+        "directChildOfWrapper": true
+      },
+      "productChromeLayout": "Complete APP UI sibling exists",
+      "rootChildren": [
+        {
+          "id": "99O-0",
+          "name": "APP UI · Valuation Lab · 1440 × 1060"
+        },
+        {
+          "id": "9DV-0",
+          "name": "BUILD ONLY · Valuation Lab implementation"
+        }
+      ],
+      "builderHeadingId": "9DW-0",
+      "buildRail": {
+        "id": "9DV-0",
+        "name": "BUILD ONLY · Valuation Lab implementation",
+        "parentId": "99N-0",
+        "style": {
+          "width": "480px",
+          "display": "flex",
+          "flexDirection": "column",
+          "flexShrink": "0",
+          "alignSelf": "start",
+          "fontFamily": "var(--font-ui)",
+          "padding": "32px",
+          "gap": "24px",
+          "backgroundColor": "var(--mx-light-panel2)",
+          "borderLeftWidth": "3px",
+          "borderLeftStyle": "solid",
+          "borderLeftColor": "var(--mx-light-link)"
+        },
+        "directChildOfWrapper": {
+          "id": "9DV-0",
+          "name": "BUILD ONLY · Valuation Lab implementation",
+          "component": "Frame",
+          "childCount": 8,
+          "worldX": 3500.998,
+          "worldY": -9372,
+          "x": 1479.998046875,
+          "y": 0
+        }
+      },
+      "wrapperIncludesBothProductAndBuild": true,
+      "action": "PROMOTE_APP_UI_MOVE_WRAPPER",
+      "destinationPageId": "p-11-0",
+      "destinationRootId": "root_node_p-11-0",
+      "requiredPreservation": "Move complete APP UI to original page root first, then move original wrapper with builder rail to Build. Preserve IDs and all APP UI descendants.",
+      "layoutRisk": "Reposition/size the remaining Build wrapper after move; original product width stays the APP UI width.",
+      "remainingSiblingsAtRailParent": [
+        {
+          "id": "99O-0",
+          "name": "APP UI · Valuation Lab · 1440 × 1060"
+        }
+      ],
+      "suggestedMoves": [
+        {
+          "nodeId": "99O-0",
+          "parentId": "root_node_p-1-0"
+        },
+        {
+          "nodeId": "99N-0",
+          "parentId": "root_node_p-11-0"
+        }
+      ],
+      "visibilityChecked": true
+    },
+    {
+      "wrapperId": "16QJ-0",
+      "wrapperName": "101 · R2 BUILD · Market Memory · Dark EN",
+      "originalPageId": "p-1-0",
+      "originalPageRootId": "root_node_p-1-0",
+      "currentWrapperStyle": {
+        "display": "flex",
+        "overflow": "clip",
+        "width": "1960px",
+        "height": "fit-content",
+        "fontFamily": "var(--font-ui)",
+        "left": 3501,
+        "top": -6072,
+        "alignItems": "start",
+        "gap": "40px",
+        "minHeight": "1020px",
+        "position": "absolute",
+        "backgroundColor": "var(--mx-dark-bg)"
+      },
+      "wrapperMeasured": {
+        "width": 1960,
+        "height": 1732,
+        "worldX": 3500.998,
+        "worldY": -6072
+      },
+      "completeProductFrame": {
+        "id": "16RB-0",
+        "name": "APP UI · Market Memory · 1440 × 1020",
+        "style": {
+          "display": "flex",
+          "flexDirection": "column",
+          "width": "1440px",
+          "height": "1020px",
+          "flexShrink": "0",
+          "overflow": "clip",
+          "position": "relative",
+          "backgroundColor": "var(--mx-dark-panel)"
+        },
+        "directChildOfWrapper": true
+      },
+      "productChromeLayout": "Complete APP UI sibling exists",
+      "rootChildren": [
+        {
+          "id": "16RB-0",
+          "name": "APP UI · Market Memory · 1440 × 1020"
+        },
+        {
+          "id": "16QK-0",
+          "name": "BUILD ONLY · Market Memory implementation"
+        }
+      ],
+      "builderHeadingId": "16RA-0",
+      "buildRail": {
+        "id": "16QK-0",
+        "name": "BUILD ONLY · Market Memory implementation",
+        "parentId": "16QJ-0",
+        "style": {
+          "width": "480px",
+          "display": "flex",
+          "flexDirection": "column",
+          "flexShrink": "0",
+          "alignSelf": "start",
+          "fontFamily": "var(--font-ui)",
+          "padding": "32px",
+          "gap": "24px",
+          "backgroundColor": "var(--mx-dark-panel2)",
+          "borderLeftWidth": "3px",
+          "borderLeftStyle": "solid",
+          "borderLeftColor": "var(--mx-dark-link)"
+        },
+        "directChildOfWrapper": {
+          "id": "16QK-0",
+          "name": "BUILD ONLY · Market Memory implementation",
+          "component": "Frame",
+          "childCount": 9,
+          "worldX": 4981.001,
+          "worldY": -6072,
+          "x": 1480.0029765625,
+          "y": 0
+        }
+      },
+      "wrapperIncludesBothProductAndBuild": true,
+      "action": "PROMOTE_APP_UI_MOVE_WRAPPER",
+      "destinationPageId": "p-11-0",
+      "destinationRootId": "root_node_p-11-0",
+      "requiredPreservation": "Move complete APP UI to original page root first, then move original wrapper with builder rail to Build. Preserve IDs and all APP UI descendants.",
+      "layoutRisk": "Reposition/size the remaining Build wrapper after move; original product width stays the APP UI width.",
+      "remainingSiblingsAtRailParent": [
+        {
+          "id": "16RB-0",
+          "name": "APP UI · Market Memory · 1440 × 1020"
+        }
+      ],
+      "suggestedMoves": [
+        {
+          "nodeId": "16RB-0",
+          "parentId": "root_node_p-1-0"
+        },
+        {
+          "nodeId": "16QJ-0",
+          "parentId": "root_node_p-11-0"
+        }
+      ],
+      "visibilityChecked": true
+    },
+    {
+      "wrapperId": "16UB-0",
+      "wrapperName": "102 · R2 BUILD · Valuation Lab · Dark EN",
+      "originalPageId": "p-1-0",
+      "originalPageRootId": "root_node_p-1-0",
+      "currentWrapperStyle": {
+        "display": "flex",
+        "overflow": "clip",
+        "width": "1960px",
+        "height": "fit-content",
+        "fontFamily": "var(--font-ui)",
+        "left": 5541,
+        "top": -6072,
+        "alignItems": "start",
+        "gap": "40px",
+        "minHeight": "1060px",
+        "position": "absolute",
+        "backgroundColor": "var(--mx-dark-bg)"
+      },
+      "wrapperMeasured": {
+        "width": 1960,
+        "height": 1700,
+        "worldX": 5541.001,
+        "worldY": -6072
+      },
+      "completeProductFrame": {
+        "id": "16V0-0",
+        "name": "APP UI · Valuation Lab · 1440 × 1060",
+        "style": {
+          "display": "flex",
+          "flexDirection": "column",
+          "width": "1440px",
+          "height": "1060px",
+          "flexShrink": "0",
+          "overflow": "clip",
+          "position": "relative",
+          "backgroundColor": "var(--mx-dark-panel)"
+        },
+        "directChildOfWrapper": true
+      },
+      "productChromeLayout": "Complete APP UI sibling exists",
+      "rootChildren": [
+        {
+          "id": "16V0-0",
+          "name": "APP UI · Valuation Lab · 1440 × 1060"
+        },
+        {
+          "id": "16UC-0",
+          "name": "BUILD ONLY · Valuation Lab implementation"
+        }
+      ],
+      "builderHeadingId": "16UZ-0",
+      "buildRail": {
+        "id": "16UC-0",
+        "name": "BUILD ONLY · Valuation Lab implementation",
+        "parentId": "16UB-0",
+        "style": {
+          "width": "480px",
+          "display": "flex",
+          "flexDirection": "column",
+          "flexShrink": "0",
+          "alignSelf": "start",
+          "fontFamily": "var(--font-ui)",
+          "padding": "32px",
+          "gap": "24px",
+          "backgroundColor": "var(--mx-dark-panel2)",
+          "borderLeftWidth": "3px",
+          "borderLeftStyle": "solid",
+          "borderLeftColor": "var(--mx-dark-link)"
+        },
+        "directChildOfWrapper": {
+          "id": "16UC-0",
+          "name": "BUILD ONLY · Valuation Lab implementation",
+          "component": "Frame",
+          "childCount": 8,
+          "worldX": 7020.999,
+          "worldY": -6072,
+          "x": 1479.9980234374998,
+          "y": 0
+        }
+      },
+      "wrapperIncludesBothProductAndBuild": true,
+      "action": "PROMOTE_APP_UI_MOVE_WRAPPER",
+      "destinationPageId": "p-11-0",
+      "destinationRootId": "root_node_p-11-0",
+      "requiredPreservation": "Move complete APP UI to original page root first, then move original wrapper with builder rail to Build. Preserve IDs and all APP UI descendants.",
+      "layoutRisk": "Reposition/size the remaining Build wrapper after move; original product width stays the APP UI width.",
+      "remainingSiblingsAtRailParent": [
+        {
+          "id": "16V0-0",
+          "name": "APP UI · Valuation Lab · 1440 × 1060"
+        }
+      ],
+      "suggestedMoves": [
+        {
+          "nodeId": "16V0-0",
+          "parentId": "root_node_p-1-0"
+        },
+        {
+          "nodeId": "16UB-0",
+          "parentId": "root_node_p-11-0"
+        }
+      ],
+      "visibilityChecked": true
+    },
+    {
+      "wrapperId": "UUO-0",
+      "wrapperName": "43 · R2 BUILD · Results + Outlook · EN",
+      "originalPageId": "p-1-0",
+      "originalPageRootId": "root_node_p-1-0",
+      "currentWrapperStyle": {
+        "display": "flex",
+        "overflow": "clip",
+        "width": "1960px",
+        "height": "fit-content",
+        "fontFamily": "var(--font-ui)",
+        "left": "4405px",
+        "top": "-15400px",
+        "minHeight": "2535px",
+        "alignItems": "start",
+        "gap": "40px",
+        "position": "absolute",
+        "backgroundColor": "var(--mx-light-panel)"
+      },
+      "wrapperMeasured": {
+        "width": 1960,
+        "height": 2535,
+        "worldX": 4405.002,
+        "worldY": -15400.001
+      },
+      "completeProductFrame": {
+        "id": "V2D-0",
+        "name": "APP UI · Results + Outlook · 1440px",
+        "style": {
+          "display": "flex",
+          "flexDirection": "column",
+          "width": "1440px",
+          "height": "fit-content",
+          "flexShrink": "0",
+          "fontFamily": "var(--font-ui)",
+          "backgroundColor": "var(--mx-light-panel)"
+        },
+        "directChildOfWrapper": true
+      },
+      "productChromeLayout": "Complete APP UI sibling exists",
+      "rootChildren": [
+        {
+          "id": "V2D-0",
+          "name": "APP UI · Results + Outlook · 1440px"
+        },
+        {
+          "id": "V2F-0",
+          "name": "BUILD ONLY · Results + Outlook implementation"
+        }
+      ],
+      "builderHeadingId": "V2G-0",
+      "buildRail": {
+        "id": "V2F-0",
+        "name": "BUILD ONLY · Results + Outlook implementation",
+        "parentId": "UUO-0",
+        "style": {
+          "display": "flex",
+          "flexDirection": "column",
+          "width": "480px",
+          "flexShrink": "0",
+          "alignSelf": "start",
+          "fontFamily": "var(--font-ui)",
+          "padding": "30px",
+          "gap": "24px",
+          "backgroundColor": "var(--mx-light-panel2)",
+          "borderLeftWidth": "3px",
+          "borderLeftStyle": "solid",
+          "borderLeftColor": "var(--mx-light-link)"
+        },
+        "directChildOfWrapper": {
+          "id": "V2F-0",
+          "name": "BUILD ONLY · Results + Outlook implementation",
+          "component": "Frame",
+          "childCount": 7,
+          "worldX": 5885,
+          "worldY": -15400.001,
+          "x": 1479.9979999999996,
+          "y": 0.000023437500203726813
+        }
+      },
+      "wrapperIncludesBothProductAndBuild": true,
+      "action": "PROMOTE_APP_UI_MOVE_WRAPPER",
+      "destinationPageId": "p-11-0",
+      "destinationRootId": "root_node_p-11-0",
+      "requiredPreservation": "Move complete APP UI to original page root first, then move original wrapper with builder rail to Build. Preserve IDs and all APP UI descendants.",
+      "layoutRisk": "Reposition/size the remaining Build wrapper after move; original product width stays the APP UI width.",
+      "remainingSiblingsAtRailParent": [
+        {
+          "id": "V2D-0",
+          "name": "APP UI · Results + Outlook · 1440px"
+        }
+      ],
+      "suggestedMoves": [
+        {
+          "nodeId": "V2D-0",
+          "parentId": "root_node_p-1-0"
+        },
+        {
+          "nodeId": "UUO-0",
+          "parentId": "root_node_p-11-0"
+        }
+      ],
+      "visibilityChecked": true
+    },
+    {
+      "wrapperId": "1580-0",
+      "wrapperName": "91 · R2 BUILD · Results + Outlook · Dark EN",
+      "originalPageId": "p-1-0",
+      "originalPageRootId": "root_node_p-1-0",
+      "currentWrapperStyle": {
+        "display": "flex",
+        "overflow": "clip",
+        "width": "1960px",
+        "height": "fit-content",
+        "fontFamily": "var(--font-ui)",
+        "left": 20781,
+        "top": -9372,
+        "minHeight": "2535px",
+        "alignItems": "start",
+        "gap": "40px",
+        "position": "absolute",
+        "backgroundColor": "var(--mx-dark-bg)"
+      },
+      "wrapperMeasured": {
+        "width": 1960,
+        "height": 2535,
+        "worldX": 20781,
+        "worldY": -9372
+      },
+      "completeProductFrame": {
+        "id": "158O-0",
+        "name": "APP UI · Results + Outlook · 1440px",
+        "style": {
+          "display": "flex",
+          "flexDirection": "column",
+          "width": "1440px",
+          "height": "fit-content",
+          "flexShrink": "0",
+          "fontFamily": "var(--font-ui)",
+          "backgroundColor": "var(--mx-dark-panel)"
+        },
+        "directChildOfWrapper": true
+      },
+      "productChromeLayout": "Complete APP UI sibling exists",
+      "rootChildren": [
+        {
+          "id": "158O-0",
+          "name": "APP UI · Results + Outlook · 1440px"
+        },
+        {
+          "id": "1581-0",
+          "name": "BUILD ONLY · Results + Outlook implementation"
+        }
+      ],
+      "builderHeadingId": "158N-0",
+      "buildRail": {
+        "id": "1581-0",
+        "name": "BUILD ONLY · Results + Outlook implementation",
+        "parentId": "1580-0",
+        "style": {
+          "display": "flex",
+          "flexDirection": "column",
+          "width": "480px",
+          "flexShrink": "0",
+          "alignSelf": "start",
+          "fontFamily": "var(--font-ui)",
+          "padding": "30px",
+          "gap": "24px",
+          "backgroundColor": "var(--mx-dark-panel2)",
+          "borderLeftWidth": "3px",
+          "borderLeftStyle": "solid",
+          "borderLeftColor": "var(--mx-dark-link)"
+        },
+        "directChildOfWrapper": {
+          "id": "1581-0",
+          "name": "BUILD ONLY · Results + Outlook implementation",
+          "component": "Frame",
+          "childCount": 7,
+          "worldX": 22260.998,
+          "worldY": -9372,
+          "x": 1479.998046875,
+          "y": 0
+        }
+      },
+      "wrapperIncludesBothProductAndBuild": true,
+      "action": "PROMOTE_APP_UI_MOVE_WRAPPER",
+      "destinationPageId": "p-11-0",
+      "destinationRootId": "root_node_p-11-0",
+      "requiredPreservation": "Move complete APP UI to original page root first, then move original wrapper with builder rail to Build. Preserve IDs and all APP UI descendants.",
+      "layoutRisk": "Reposition/size the remaining Build wrapper after move; original product width stays the APP UI width.",
+      "remainingSiblingsAtRailParent": [
+        {
+          "id": "158O-0",
+          "name": "APP UI · Results + Outlook · 1440px"
+        }
+      ],
+      "suggestedMoves": [
+        {
+          "nodeId": "158O-0",
+          "parentId": "root_node_p-1-0"
+        },
+        {
+          "nodeId": "1580-0",
+          "parentId": "root_node_p-11-0"
+        }
+      ],
+      "visibilityChecked": true
+    },
+    {
+      "wrapperId": "8BO-0",
+      "wrapperName": "10 · R2 BUILD · Brief · UI + Contract",
+      "originalPageId": "p-1-0",
+      "originalPageRootId": "root_node_p-1-0",
+      "currentWrapperStyle": {
+        "display": "flex",
+        "overflow": "clip",
+        "width": "1960px",
+        "height": "fit-content",
+        "fontFamily": "var(--font-ui)",
+        "left": -6139,
+        "top": -9372,
+        "alignItems": "start",
+        "gap": "40px",
+        "minHeight": "1140px",
+        "position": "absolute",
+        "backgroundColor": "var(--mx-light-panel)"
+      },
+      "wrapperMeasured": {
+        "width": 1960,
+        "height": 1982,
+        "worldX": -6138.997,
+        "worldY": -9372
+      },
+      "completeProductFrame": {
+        "id": "8BP-0",
+        "name": "APP UI · Company Brief · 1440 × 1140",
+        "style": {
+          "display": "flex",
+          "flexDirection": "column",
+          "width": "1440px",
+          "height": "1140px",
+          "flexShrink": "0",
+          "overflow": "clip",
+          "position": "relative",
+          "backgroundColor": "var(--mx-light-panel)"
+        },
+        "directChildOfWrapper": true
+      },
+      "productChromeLayout": "Complete APP UI sibling exists",
+      "rootChildren": [
+        {
+          "id": "8BP-0",
+          "name": "APP UI · Company Brief · 1440 × 1140"
+        },
+        {
+          "id": "8GS-0",
+          "name": "BUILD ONLY · Company Brief implementation"
+        }
+      ],
+      "builderHeadingId": "8GU-0",
+      "buildRail": {
+        "id": "8GS-0",
+        "name": "BUILD ONLY · Company Brief implementation",
+        "parentId": "8BO-0",
+        "style": {
+          "width": "480px",
+          "display": "flex",
+          "flexDirection": "column",
+          "flexShrink": "0",
+          "alignSelf": "start",
+          "fontFamily": "var(--font-ui)",
+          "padding": "32px",
+          "gap": "24px",
+          "backgroundColor": "var(--mx-light-panel2)",
+          "borderLeftWidth": "3px",
+          "borderLeftStyle": "solid",
+          "borderLeftColor": "var(--mx-light-link)"
+        },
+        "directChildOfWrapper": {
+          "id": "8GS-0",
+          "name": "BUILD ONLY · Company Brief implementation",
+          "component": "Frame",
+          "childCount": 7,
+          "worldX": -4658.999,
+          "worldY": -9372,
+          "x": 1479.9979765625003,
+          "y": 0
+        }
+      },
+      "wrapperIncludesBothProductAndBuild": true,
+      "action": "PROMOTE_APP_UI_MOVE_WRAPPER",
+      "destinationPageId": "p-11-0",
+      "destinationRootId": "root_node_p-11-0",
+      "requiredPreservation": "Move complete APP UI to original page root first, then move original wrapper with builder rail to Build. Preserve IDs and all APP UI descendants.",
+      "layoutRisk": "Reposition/size the remaining Build wrapper after move; original product width stays the APP UI width.",
+      "remainingSiblingsAtRailParent": [
+        {
+          "id": "8BP-0",
+          "name": "APP UI · Company Brief · 1440 × 1140"
+        }
+      ],
+      "suggestedMoves": [
+        {
+          "nodeId": "8BP-0",
+          "parentId": "root_node_p-1-0"
+        },
+        {
+          "nodeId": "8BO-0",
+          "parentId": "root_node_p-11-0"
+        }
+      ],
+      "visibilityChecked": true
+    },
+    {
+      "wrapperId": "8HJ-0",
+      "wrapperName": "11 · R2 BUILD · Expectations · UI + Contract",
+      "originalPageId": "p-1-0",
+      "originalPageRootId": "root_node_p-1-0",
+      "currentWrapperStyle": {
+        "display": "flex",
+        "overflow": "clip",
+        "width": "1960px",
+        "height": "fit-content",
+        "fontFamily": "var(--font-ui)",
+        "left": -2059,
+        "top": -9372,
+        "alignItems": "start",
+        "minHeight": "1080px",
+        "gap": "40px",
+        "position": "absolute",
+        "backgroundColor": "var(--mx-light-panel)"
+      },
+      "wrapperMeasured": {
+        "width": 1960,
+        "height": 1816,
+        "worldX": -2059.002,
+        "worldY": -9372
+      },
+      "completeProductFrame": {
+        "id": "8HK-0",
+        "name": "APP UI · Expectations · 1440 × 1080",
+        "style": {
+          "display": "flex",
+          "flexDirection": "column",
+          "width": "1440px",
+          "height": "1080px",
+          "flexShrink": "0",
+          "overflow": "clip",
+          "position": "relative",
+          "backgroundColor": "var(--mx-light-panel)"
+        },
+        "directChildOfWrapper": true
+      },
+      "productChromeLayout": "Complete APP UI sibling exists",
+      "rootChildren": [
+        {
+          "id": "8HK-0",
+          "name": "APP UI · Expectations · 1440 × 1080"
+        },
+        {
+          "id": "8LH-0",
+          "name": "BUILD ONLY · Expectations + C01 implementation"
+        }
+      ],
+      "builderHeadingId": "8LJ-0",
+      "buildRail": {
+        "id": "8LH-0",
+        "name": "BUILD ONLY · Expectations + C01 implementation",
+        "parentId": "8HJ-0",
+        "style": {
+          "width": "480px",
+          "display": "flex",
+          "flexDirection": "column",
+          "flexShrink": "0",
+          "alignSelf": "start",
+          "fontFamily": "var(--font-ui)",
+          "padding": "32px",
+          "gap": "24px",
+          "backgroundColor": "var(--mx-light-panel2)",
+          "borderLeftWidth": "3px",
+          "borderLeftStyle": "solid",
+          "borderLeftColor": "var(--mx-light-link)"
+        },
+        "directChildOfWrapper": {
+          "id": "8LH-0",
+          "name": "BUILD ONLY · Expectations + C01 implementation",
+          "component": "Frame",
+          "childCount": 7,
+          "worldX": -578.998,
+          "worldY": -9372,
+          "x": 1480.0040141601562,
+          "y": 0
+        }
+      },
+      "wrapperIncludesBothProductAndBuild": true,
+      "action": "PROMOTE_APP_UI_MOVE_WRAPPER",
+      "destinationPageId": "p-11-0",
+      "destinationRootId": "root_node_p-11-0",
+      "requiredPreservation": "Move complete APP UI to original page root first, then move original wrapper with builder rail to Build. Preserve IDs and all APP UI descendants.",
+      "layoutRisk": "Reposition/size the remaining Build wrapper after move; original product width stays the APP UI width.",
+      "remainingSiblingsAtRailParent": [
+        {
+          "id": "8HK-0",
+          "name": "APP UI · Expectations · 1440 × 1080"
+        }
+      ],
+      "suggestedMoves": [
+        {
+          "nodeId": "8HK-0",
+          "parentId": "root_node_p-1-0"
+        },
+        {
+          "nodeId": "8HJ-0",
+          "parentId": "root_node_p-11-0"
+        }
+      ],
+      "visibilityChecked": true
+    },
+    {
+      "wrapperId": "8M8-0",
+      "wrapperName": "12 · R2 BUILD · Connected Drivers · Evidence + Ontology",
+      "originalPageId": "p-1-0",
+      "originalPageRootId": "root_node_p-1-0",
+      "currentWrapperStyle": {
+        "display": "flex",
+        "overflow": "clip",
+        "width": "1440px",
+        "height": "2820px",
+        "fontFamily": "var(--font-ui)",
+        "left": "-3099px",
+        "top": -6072,
+        "flexDirection": "column",
+        "position": "absolute",
+        "backgroundColor": "var(--mx-light-panel)"
+      },
+      "wrapperMeasured": {
+        "width": 1440,
+        "height": 2820,
+        "worldX": -3098.997,
+        "worldY": -6072
+      },
+      "completeProductFrame": null,
+      "productChromeLayout": "Product chrome is spread across wrapper children; preserve original artboard",
+      "rootChildren": [
+        {
+          "id": "8M9-0",
+          "name": "01 / Workspace navigation"
+        },
+        {
+          "id": "8MQ-0",
+          "name": "02 / Research navigation"
+        },
+        {
+          "id": "8N7-0",
+          "name": "03 / Held driver-study introduction"
+        },
+        {
+          "id": "10EE-0",
+          "name": "04 / Relationship truth legend"
+        },
+        {
+          "id": "10EU-0",
+          "name": "05 / Connected driver workspace"
+        }
+      ],
+      "builderHeadingId": "1YT5-0",
+      "buildRail": {
+        "id": "1YT4-0",
+        "name": "BUILD ONLY · Connected Drivers implementation",
+        "parentId": "10EU-0",
+        "style": {
+          "display": "flex",
+          "flexDirection": "column",
+          "width": "1280px",
+          "padding": "22px",
+          "gap": "14px",
+          "backgroundColor": "var(--mx-light-panel2)",
+          "borderTopWidth": "2px",
+          "borderTopStyle": "solid",
+          "borderTopColor": "var(--mx-light-line)"
+        },
+        "directChildOfWrapper": false,
+        "jsxRead": true
+      },
+      "wrapperIncludesBothProductAndBuild": true,
+      "action": "MOVE_BUILD_RAIL_ONLY",
+      "destinationPageId": "p-11-0",
+      "destinationRootId": "root_node_p-11-0",
+      "requiredPreservation": "Move only the identified BUILD ONLY block. Preserve all remaining chrome, component variants, state specimens and action bars in place.",
+      "layoutRisk": "Original production width; wrapper height is 2820px, so inspect bottom space after note removal.",
+      "remainingSiblingsAtRailParent": [
+        {
+          "id": "10EW-0",
+          "name": "05A / Driver map · evidence first"
+        },
+        {
+          "id": "10H5-0",
+          "name": "05B / Historical graph availability"
+        },
+        {
+          "id": "10I1-0",
+          "name": "05C / Relationship ledger"
+        },
+        {
+          "id": "10J3-0",
+          "name": "05D / Research follow-through"
+        }
+      ],
+      "suggestedMoves": [
+        {
+          "nodeId": "1YT4-0",
+          "parentId": "root_node_p-11-0"
+        }
+      ],
+      "visibilityChecked": true
+    },
+    {
+      "wrapperId": "16LU-0",
+      "wrapperName": "100 · R2 BUILD · Expectations · Dark EN",
+      "originalPageId": "p-1-0",
+      "originalPageRootId": "root_node_p-1-0",
+      "currentWrapperStyle": {
+        "display": "flex",
+        "overflow": "clip",
+        "width": "1960px",
+        "height": "fit-content",
+        "fontFamily": "var(--font-ui)",
+        "left": 1461,
+        "top": -6072,
+        "alignItems": "start",
+        "minHeight": "1080px",
+        "gap": "40px",
+        "position": "absolute",
+        "backgroundColor": "var(--mx-dark-bg)"
+      },
+      "wrapperMeasured": {
+        "width": 1960,
+        "height": 1816,
+        "worldX": 1461,
+        "worldY": -6072
+      },
+      "completeProductFrame": {
+        "id": "16MM-0",
+        "name": "APP UI · Expectations · 1440 × 1080",
+        "style": {
+          "display": "flex",
+          "flexDirection": "column",
+          "width": "1440px",
+          "height": "1080px",
+          "flexShrink": "0",
+          "overflow": "clip",
+          "position": "relative",
+          "backgroundColor": "var(--mx-dark-panel)"
+        },
+        "directChildOfWrapper": true
+      },
+      "productChromeLayout": "Complete APP UI sibling exists",
+      "rootChildren": [
+        {
+          "id": "16MM-0",
+          "name": "APP UI · Expectations · 1440 × 1080"
+        },
+        {
+          "id": "16LV-0",
+          "name": "BUILD ONLY · Expectations + C01 implementation"
+        }
+      ],
+      "builderHeadingId": "16ML-0",
+      "buildRail": {
+        "id": "16LV-0",
+        "name": "BUILD ONLY · Expectations + C01 implementation",
+        "parentId": "16LU-0",
+        "style": {
+          "width": "480px",
+          "display": "flex",
+          "flexDirection": "column",
+          "flexShrink": "0",
+          "alignSelf": "start",
+          "fontFamily": "var(--font-ui)",
+          "padding": "32px",
+          "gap": "24px",
+          "backgroundColor": "var(--mx-dark-panel2)",
+          "borderLeftWidth": "3px",
+          "borderLeftStyle": "solid",
+          "borderLeftColor": "var(--mx-dark-link)"
+        },
+        "directChildOfWrapper": {
+          "id": "16LV-0",
+          "name": "BUILD ONLY · Expectations + C01 implementation",
+          "component": "Frame",
+          "childCount": 7,
+          "worldX": 2940.998,
+          "worldY": -6072,
+          "x": 1479.998046875,
+          "y": 0
+        }
+      },
+      "wrapperIncludesBothProductAndBuild": true,
+      "action": "PROMOTE_APP_UI_MOVE_WRAPPER",
+      "destinationPageId": "p-11-0",
+      "destinationRootId": "root_node_p-11-0",
+      "requiredPreservation": "Move complete APP UI to original page root first, then move original wrapper with builder rail to Build. Preserve IDs and all APP UI descendants.",
+      "layoutRisk": "Reposition/size the remaining Build wrapper after move; original product width stays the APP UI width.",
+      "remainingSiblingsAtRailParent": [
+        {
+          "id": "16MM-0",
+          "name": "APP UI · Expectations · 1440 × 1080"
+        }
+      ],
+      "suggestedMoves": [
+        {
+          "nodeId": "16MM-0",
+          "parentId": "root_node_p-1-0"
+        },
+        {
+          "nodeId": "16LU-0",
+          "parentId": "root_node_p-11-0"
+        }
+      ],
+      "visibilityChecked": true
+    },
+    {
+      "wrapperId": "1141-0",
+      "wrapperName": "57 · R2 · Company Change Ledger · Light EN",
+      "originalPageId": "p-1-0",
+      "originalPageRootId": "root_node_p-1-0",
+      "currentWrapperStyle": {
+        "display": "flex",
+        "overflow": "clip",
+        "width": "1440px",
+        "height": "fit-content",
+        "flexDirection": "column",
+        "fontFamily": "var(--font-ui)",
+        "left": 14405,
+        "top": -15400,
+        "minHeight": "1800px",
+        "position": "absolute",
+        "backgroundColor": "var(--mx-light-panel)"
+      },
+      "wrapperMeasured": {
+        "width": 1440,
+        "height": 1956,
+        "worldX": 14405,
+        "worldY": -15400.001
+      },
+      "completeProductFrame": null,
+      "productChromeLayout": "Product chrome is spread across wrapper children; preserve original artboard",
+      "rootChildren": [
+        {
+          "id": "118K-0",
+          "name": "01 / Workspace navigation"
+        },
+        {
+          "id": "117M-0",
+          "name": "02 / Company identity + page-family navigation"
+        },
+        {
+          "id": "1191-0",
+          "name": "CHANGE LEDGER · Reading flow"
+        }
+      ],
+      "builderHeadingId": "17F9-0",
+      "buildRail": {
+        "id": "17F8-0",
+        "name": "BUILD ONLY · Company Change Ledger implementation",
+        "parentId": "1191-0",
+        "style": {
+          "display": "flex",
+          "flexDirection": "column",
+          "width": "1360px",
+          "padding": "22px",
+          "gap": "14px",
+          "backgroundColor": "var(--mx-light-panel2)",
+          "borderTopWidth": "2px",
+          "borderTopStyle": "solid",
+          "borderTopColor": "var(--mx-light-link)"
+        },
+        "directChildOfWrapper": false,
+        "jsxRead": true
+      },
+      "wrapperIncludesBothProductAndBuild": true,
+      "action": "MOVE_BUILD_RAIL_ONLY",
+      "destinationPageId": "p-11-0",
+      "destinationRootId": "root_node_p-11-0",
+      "requiredPreservation": "Move only the identified BUILD ONLY block. Preserve all remaining chrome, component variants, state specimens and action bars in place.",
+      "layoutRisk": "Original production width; wrapper height already fit-content.",
+      "remainingSiblingsAtRailParent": [
+        {
+          "id": "17BB-0",
+          "name": "01 / Change Ledger heading"
+        },
+        {
+          "id": "17BR-0",
+          "name": "02 / Change Ledger summary"
+        },
+        {
+          "id": "17CD-0",
+          "name": "03 / Material changes + research rail"
+        },
+        {
+          "id": "17EP-0",
+          "name": "04 / Evidence and clock ledger"
+        }
+      ],
+      "suggestedMoves": [
+        {
+          "nodeId": "17F8-0",
+          "parentId": "root_node_p-11-0"
+        }
+      ],
+      "visibilityChecked": true
+    },
+    {
+      "wrapperId": "10NC-0",
+      "wrapperName": "55 · R2 · Peer Comparison · Light EN",
+      "originalPageId": "p-1-0",
+      "originalPageRootId": "root_node_p-1-0",
+      "currentWrapperStyle": {
+        "display": "flex",
+        "overflow": "clip",
+        "width": "1440px",
+        "height": "fit-content",
+        "flexDirection": "column",
+        "fontFamily": "var(--font-ui)",
+        "left": 12415,
+        "top": -15400,
+        "minHeight": "1700px",
+        "position": "absolute",
+        "backgroundColor": "var(--mx-light-panel)"
+      },
+      "wrapperMeasured": {
+        "width": 1440,
+        "height": 2375,
+        "worldX": 12414.999,
+        "worldY": -15400.001
+      },
+      "completeProductFrame": null,
+      "productChromeLayout": "Product chrome is spread across wrapper children; preserve original artboard",
+      "rootChildren": [
+        {
+          "id": "10RV-0",
+          "name": "01 / Workspace navigation"
+        },
+        {
+          "id": "10QX-0",
+          "name": "02 / Company identity + page-family navigation"
+        },
+        {
+          "id": "10SC-0",
+          "name": "PEER COMPARISON · Reading flow"
+        }
+      ],
+      "builderHeadingId": "10XA-0",
+      "buildRail": {
+        "id": "10X9-0",
+        "name": "BUILD ONLY · Peer Comparison implementation",
+        "parentId": "10SC-0",
+        "style": {
+          "display": "flex",
+          "flexDirection": "column",
+          "width": "1360px",
+          "padding": "22px",
+          "gap": "14px",
+          "backgroundColor": "var(--mx-light-panel2)",
+          "borderTopWidth": "2px",
+          "borderTopStyle": "solid",
+          "borderTopColor": "var(--mx-light-link)"
+        },
+        "directChildOfWrapper": false,
+        "jsxRead": true
+      },
+      "wrapperIncludesBothProductAndBuild": true,
+      "action": "MOVE_BUILD_RAIL_ONLY",
+      "destinationPageId": "p-11-0",
+      "destinationRootId": "root_node_p-11-0",
+      "requiredPreservation": "Move only the identified BUILD ONLY block. Preserve all remaining chrome, component variants, state specimens and action bars in place.",
+      "layoutRisk": "Original production width; wrapper height already fit-content.",
+      "remainingSiblingsAtRailParent": [
+        {
+          "id": "10SE-0",
+          "name": "01 / Peer comparison heading + cohort"
+        },
+        {
+          "id": "10SU-0",
+          "name": "02 / Peer event cards"
+        },
+        {
+          "id": "10UE-0",
+          "name": "03 / Comparability matrix"
+        },
+        {
+          "id": "10VE-0",
+          "name": "04 / Differences worth explaining"
+        },
+        {
+          "id": "10WI-0",
+          "name": "05 / Peer source ledger"
+        }
+      ],
+      "suggestedMoves": [
+        {
+          "nodeId": "10X9-0",
+          "parentId": "root_node_p-11-0"
+        }
+      ],
+      "visibilityChecked": true
+    },
+    {
+      "wrapperId": "WBM-0",
+      "wrapperName": "49 · R2 · Event Research · Light EN",
+      "originalPageId": "p-1-0",
+      "originalPageRootId": "root_node_p-1-0",
+      "currentWrapperStyle": {
+        "display": "flex",
+        "overflow": "clip",
+        "width": "1440px",
+        "height": "fit-content",
+        "flexDirection": "column",
+        "fontFamily": "var(--font-ui)",
+        "left": 9485,
+        "top": -15400,
+        "minHeight": "1500px",
+        "position": "absolute",
+        "backgroundColor": "var(--mx-light-panel)"
+      },
+      "wrapperMeasured": {
+        "width": 1440,
+        "height": 1500,
+        "worldX": 9484.999,
+        "worldY": -15400.001
+      },
+      "completeProductFrame": null,
+      "productChromeLayout": "Product chrome is spread across wrapper children; preserve original artboard",
+      "rootChildren": [
+        {
+          "id": "WG5-0",
+          "name": "01 / Workspace navigation"
+        },
+        {
+          "id": "WF7-0",
+          "name": "02 / Company identity + page-family navigation"
+        },
+        {
+          "id": "WGM-0",
+          "name": "EVENT RESEARCH · Reading flow"
+        }
+      ],
+      "builderHeadingId": "WIX-0",
+      "buildRail": {
+        "id": "WIW-0",
+        "name": "BUILD ONLY · Event Research implementation",
+        "parentId": "WGM-0",
+        "style": {
+          "display": "flex",
+          "flexDirection": "column",
+          "width": "1360px",
+          "padding": "22px",
+          "gap": "12px",
+          "backgroundColor": "var(--mx-light-panel2)",
+          "borderTopWidth": "2px",
+          "borderTopStyle": "solid",
+          "borderTopColor": "var(--mx-light-link)"
+        },
+        "directChildOfWrapper": false,
+        "jsxRead": true
+      },
+      "wrapperIncludesBothProductAndBuild": true,
+      "action": "MOVE_BUILD_RAIL_ONLY",
+      "destinationPageId": "p-11-0",
+      "destinationRootId": "root_node_p-11-0",
+      "requiredPreservation": "Move only the identified BUILD ONLY block. Preserve all remaining chrome, component variants, state specimens and action bars in place.",
+      "layoutRisk": "Original production width; wrapper height already fit-content.",
+      "remainingSiblingsAtRailParent": [
+        {
+          "id": "WGO-0",
+          "name": "01 / Event research heading + source availability"
+        },
+        {
+          "id": "WH6-0",
+          "name": "02 / Research questions + selected source reading"
+        }
+      ],
+      "suggestedMoves": [
+        {
+          "nodeId": "WIW-0",
+          "parentId": "root_node_p-11-0"
+        }
+      ],
+      "visibilityChecked": true
+    },
+    {
+      "wrapperId": "126W-0",
+      "wrapperName": "67 · R2 · Call + Q&A · Transcript Unavailable · Light EN",
+      "originalPageId": "p-1-0",
+      "originalPageRootId": "root_node_p-1-0",
+      "currentWrapperStyle": {
+        "display": "flex",
+        "overflow": "clip",
+        "width": "1440px",
+        "height": "fit-content",
+        "flexDirection": "column",
+        "fontFamily": "var(--font-ui)",
+        "left": 18935,
+        "top": -15400,
+        "minHeight": "1500px",
+        "position": "absolute",
+        "backgroundColor": "var(--mx-light-panel)"
+      },
+      "wrapperMeasured": {
+        "width": 1440,
+        "height": 1500,
+        "worldX": 18935.001,
+        "worldY": -15400.001
+      },
+      "completeProductFrame": null,
+      "productChromeLayout": "Product chrome is spread across wrapper children; preserve original artboard",
+      "rootChildren": [
+        {
+          "id": "12AE-0",
+          "name": "01 / Workspace navigation"
+        },
+        {
+          "id": "129G-0",
+          "name": "02 / Company identity + page-family navigation"
+        },
+        {
+          "id": "12AV-0",
+          "name": "CALL + Q&A · exact-event unavailable state"
+        }
+      ],
+      "builderHeadingId": "12D3-0",
+      "buildRail": {
+        "id": "12D2-0",
+        "name": "Frame",
+        "parentId": "12AV-0",
+        "style": {
+          "display": "flex",
+          "flexDirection": "column",
+          "width": "1360px",
+          "padding": "22px",
+          "gap": "12px",
+          "backgroundColor": "var(--mx-light-panel2)",
+          "borderTopWidth": "2px",
+          "borderTopStyle": "solid",
+          "borderTopColor": "var(--mx-light-link)"
+        },
+        "directChildOfWrapper": false,
+        "jsxRead": true
+      },
+      "wrapperIncludesBothProductAndBuild": true,
+      "action": "MOVE_BUILD_RAIL_ONLY",
+      "destinationPageId": "p-11-0",
+      "destinationRootId": "root_node_p-11-0",
+      "requiredPreservation": "Move only the identified BUILD ONLY block. Preserve all remaining chrome, component variants, state specimens and action bars in place.",
+      "layoutRisk": "Original production width; wrapper height already fit-content.",
+      "remainingSiblingsAtRailParent": [
+        {
+          "id": "12AW-0",
+          "name": "Frame"
+        },
+        {
+          "id": "12B3-0",
+          "name": "Frame"
+        },
+        {
+          "id": "12B9-0",
+          "name": "Frame"
+        }
+      ],
+      "suggestedMoves": [
+        {
+          "nodeId": "12D2-0",
+          "parentId": "root_node_p-11-0"
+        }
+      ],
+      "visibilityChecked": true
+    },
+    {
+      "wrapperId": "12I6-0",
+      "wrapperName": "69 · R2 · Sources + Coverage · Light EN",
+      "originalPageId": "p-1-0",
+      "originalPageRootId": "root_node_p-1-0",
+      "currentWrapperStyle": {
+        "display": "flex",
+        "overflow": "clip",
+        "width": "1440px",
+        "height": "fit-content",
+        "flexDirection": "column",
+        "fontFamily": "var(--font-ui)",
+        "left": 20925,
+        "top": -15400,
+        "minHeight": "1500px",
+        "position": "absolute",
+        "backgroundColor": "var(--mx-light-panel)"
+      },
+      "wrapperMeasured": {
+        "width": 1440,
+        "height": 1500,
+        "worldX": 20925.003,
+        "worldY": -15400.001
+      },
+      "completeProductFrame": null,
+      "productChromeLayout": "Product chrome is spread across wrapper children; preserve original artboard",
+      "rootChildren": [
+        {
+          "id": "12LV-0",
+          "name": "01 / Workspace navigation"
+        },
+        {
+          "id": "12KX-0",
+          "name": "02 / Company identity + page-family navigation"
+        },
+        {
+          "id": "12MC-0",
+          "name": "SOURCES + COVERAGE · exact-event source workspace"
+        }
+      ],
+      "builderHeadingId": "12PH-0",
+      "buildRail": {
+        "id": "12PG-0",
+        "name": "Frame",
+        "parentId": "12MC-0",
+        "style": {
+          "display": "flex",
+          "flexDirection": "column",
+          "width": "1360px",
+          "padding": "22px",
+          "gap": "12px",
+          "backgroundColor": "var(--mx-light-panel2)",
+          "borderTopWidth": "2px",
+          "borderTopStyle": "solid",
+          "borderTopColor": "var(--mx-light-link)"
+        },
+        "directChildOfWrapper": false,
+        "jsxRead": true
+      },
+      "wrapperIncludesBothProductAndBuild": true,
+      "action": "MOVE_BUILD_RAIL_ONLY",
+      "destinationPageId": "p-11-0",
+      "destinationRootId": "root_node_p-11-0",
+      "requiredPreservation": "Move only the identified BUILD ONLY block. Preserve all remaining chrome, component variants, state specimens and action bars in place.",
+      "layoutRisk": "Original production width; wrapper height already fit-content.",
+      "remainingSiblingsAtRailParent": [
+        {
+          "id": "12MD-0",
+          "name": "Frame"
+        },
+        {
+          "id": "12MK-0",
+          "name": "Frame"
+        },
+        {
+          "id": "12N9-0",
+          "name": "Frame"
+        }
+      ],
+      "suggestedMoves": [
+        {
+          "nodeId": "12PG-0",
+          "parentId": "root_node_p-11-0"
+        }
+      ],
+      "visibilityChecked": true
+    },
+    {
+      "wrapperId": "15YJ-0",
+      "wrapperName": "96 · R2 BUILD · Connected Drivers · Dark EN",
+      "originalPageId": "p-1-0",
+      "originalPageRootId": "root_node_p-1-0",
+      "currentWrapperStyle": {
+        "display": "flex",
+        "overflow": "clip",
+        "width": "1440px",
+        "height": "2820px",
+        "fontFamily": "var(--font-ui)",
+        "left": -1579,
+        "top": -6072,
+        "flexDirection": "column",
+        "position": "absolute",
+        "backgroundColor": "var(--mx-dark-bg)"
+      },
+      "wrapperMeasured": {
+        "width": 1440,
+        "height": 2820,
+        "worldX": -1579,
+        "worldY": -6072
+      },
+      "completeProductFrame": null,
+      "productChromeLayout": "Product chrome is spread across wrapper children; preserve original artboard",
+      "rootChildren": [
+        {
+          "id": "1658-0",
+          "name": "01 / Workspace navigation"
+        },
+        {
+          "id": "164R-0",
+          "name": "02 / Research navigation"
+        },
+        {
+          "id": "164H-0",
+          "name": "03 / Held driver-study introduction"
+        },
+        {
+          "id": "1642-0",
+          "name": "04 / Relationship truth legend"
+        },
+        {
+          "id": "15YK-0",
+          "name": "05 / Connected driver workspace"
+        }
+      ],
+      "builderHeadingId": "1YVY-0",
+      "buildRail": {
+        "id": "1YVX-0",
+        "name": "BUILD ONLY · Connected Drivers implementation",
+        "parentId": "15YK-0",
+        "style": {
+          "display": "flex",
+          "flexDirection": "column",
+          "width": "1280px",
+          "padding": "22px",
+          "gap": "14px",
+          "backgroundColor": "var(--mx-dark-panel2)",
+          "borderTopWidth": "2px",
+          "borderTopStyle": "solid",
+          "borderTopColor": "var(--mx-dark-line)"
+        },
+        "directChildOfWrapper": false,
+        "jsxRead": true
+      },
+      "wrapperIncludesBothProductAndBuild": true,
+      "action": "MOVE_BUILD_RAIL_ONLY",
+      "destinationPageId": "p-11-0",
+      "destinationRootId": "root_node_p-11-0",
+      "requiredPreservation": "Move only the identified BUILD ONLY block. Preserve all remaining chrome, component variants, state specimens and action bars in place.",
+      "layoutRisk": "Original production width; wrapper height is 2820px, so inspect bottom space after note removal.",
+      "remainingSiblingsAtRailParent": [
+        {
+          "id": "161U-0",
+          "name": "05A / Driver map · evidence first"
+        },
+        {
+          "id": "160Z-0",
+          "name": "05B / Historical graph availability"
+        },
+        {
+          "id": "15ZY-0",
+          "name": "05C / Relationship ledger"
+        },
+        {
+          "id": "15ZB-0",
+          "name": "05D / Research follow-through"
+        }
+      ],
+      "suggestedMoves": [
+        {
+          "nodeId": "1YVX-0",
+          "parentId": "root_node_p-11-0"
+        }
+      ],
+      "visibilityChecked": true
+    },
+    {
+      "wrapperId": "165P-0",
+      "wrapperName": "97 · R2 · Peer Comparison · Dark EN",
+      "originalPageId": "p-1-0",
+      "originalPageRootId": "root_node_p-1-0",
+      "currentWrapperStyle": {
+        "display": "flex",
+        "overflow": "clip",
+        "width": "1440px",
+        "height": "fit-content",
+        "flexDirection": "column",
+        "fontFamily": "var(--font-ui)",
+        "left": 881,
+        "top": -11872,
+        "minHeight": "1700px",
+        "position": "absolute",
+        "backgroundColor": "var(--mx-dark-bg)"
+      },
+      "wrapperMeasured": {
+        "width": 1440,
+        "height": 2375,
+        "worldX": 881,
+        "worldY": -11872
+      },
+      "completeProductFrame": null,
+      "productChromeLayout": "Product chrome is spread across wrapper children; preserve original artboard",
+      "rootChildren": [
+        {
+          "id": "16C4-0",
+          "name": "01 / Workspace navigation"
+        },
+        {
+          "id": "16B6-0",
+          "name": "02 / Company identity + page-family navigation"
+        },
+        {
+          "id": "165Q-0",
+          "name": "PEER COMPARISON · Reading flow"
+        }
+      ],
+      "builderHeadingId": "166F-0",
+      "buildRail": {
+        "id": "165R-0",
+        "name": "BUILD ONLY · Peer Comparison implementation",
+        "parentId": "165Q-0",
+        "style": {
+          "display": "flex",
+          "flexDirection": "column",
+          "width": "1360px",
+          "padding": "22px",
+          "gap": "14px",
+          "backgroundColor": "var(--mx-dark-panel2)",
+          "borderTopWidth": "2px",
+          "borderTopStyle": "solid",
+          "borderTopColor": "var(--mx-dark-link)"
+        },
+        "directChildOfWrapper": false,
+        "jsxRead": true
+      },
+      "wrapperIncludesBothProductAndBuild": true,
+      "action": "MOVE_BUILD_RAIL_ONLY",
+      "destinationPageId": "p-11-0",
+      "destinationRootId": "root_node_p-11-0",
+      "requiredPreservation": "Move only the identified BUILD ONLY block. Preserve all remaining chrome, component variants, state specimens and action bars in place.",
+      "layoutRisk": "Original production width; wrapper height already fit-content.",
+      "remainingSiblingsAtRailParent": [
+        {
+          "id": "16AR-0",
+          "name": "01 / Peer comparison heading + cohort"
+        },
+        {
+          "id": "1698-0",
+          "name": "02 / Peer event cards"
+        },
+        {
+          "id": "1689-0",
+          "name": "03 / Comparability matrix"
+        },
+        {
+          "id": "1676-0",
+          "name": "04 / Differences worth explaining"
+        },
+        {
+          "id": "166G-0",
+          "name": "05 / Peer source ledger"
+        }
+      ],
+      "suggestedMoves": [
+        {
+          "nodeId": "165R-0",
+          "parentId": "root_node_p-11-0"
+        }
+      ],
+      "visibilityChecked": true
+    },
+    {
+      "wrapperId": "15UK-0",
+      "wrapperName": "95 · R2 · Event Research · Dark EN",
+      "originalPageId": "p-1-0",
+      "originalPageRootId": "root_node_p-1-0",
+      "currentWrapperStyle": {
+        "display": "flex",
+        "overflow": "clip",
+        "width": "1440px",
+        "height": "fit-content",
+        "flexDirection": "column",
+        "fontFamily": "var(--font-ui)",
+        "left": -639,
+        "top": -11872,
+        "minHeight": "1500px",
+        "position": "absolute",
+        "backgroundColor": "var(--mx-dark-bg)"
+      },
+      "wrapperMeasured": {
+        "width": 1440,
+        "height": 1500,
+        "worldX": -639.002,
+        "worldY": -11872
+      },
+      "completeProductFrame": null,
+      "productChromeLayout": "Product chrome is spread across wrapper children; preserve original artboard",
+      "rootChildren": [
+        {
+          "id": "15Y2-0",
+          "name": "01 / Workspace navigation"
+        },
+        {
+          "id": "15X4-0",
+          "name": "02 / Company identity + page-family navigation"
+        },
+        {
+          "id": "15UL-0",
+          "name": "EVENT RESEARCH · Reading flow"
+        }
+      ],
+      "builderHeadingId": "15UX-0",
+      "buildRail": {
+        "id": "15UM-0",
+        "name": "BUILD ONLY · Event Research implementation",
+        "parentId": "15UL-0",
+        "style": {
+          "display": "flex",
+          "flexDirection": "column",
+          "width": "1360px",
+          "padding": "22px",
+          "gap": "12px",
+          "backgroundColor": "var(--mx-dark-panel2)",
+          "borderTopWidth": "2px",
+          "borderTopStyle": "solid",
+          "borderTopColor": "var(--mx-dark-link)"
+        },
+        "directChildOfWrapper": false,
+        "jsxRead": true
+      },
+      "wrapperIncludesBothProductAndBuild": true,
+      "action": "MOVE_BUILD_RAIL_ONLY",
+      "destinationPageId": "p-11-0",
+      "destinationRootId": "root_node_p-11-0",
+      "requiredPreservation": "Move only the identified BUILD ONLY block. Preserve all remaining chrome, component variants, state specimens and action bars in place.",
+      "layoutRisk": "Original production width; wrapper height already fit-content.",
+      "remainingSiblingsAtRailParent": [
+        {
+          "id": "15WN-0",
+          "name": "01 / Event research heading + source availability"
+        },
+        {
+          "id": "15UY-0",
+          "name": "02 / Research questions + selected source reading"
+        }
+      ],
+      "suggestedMoves": [
+        {
+          "nodeId": "15UM-0",
+          "parentId": "root_node_p-11-0"
+        }
+      ],
+      "visibilityChecked": true
+    },
+    {
+      "wrapperId": "16CL-0",
+      "wrapperName": "98 · R2 · Call + Q&A · Transcript Unavailable · Dark EN",
+      "originalPageId": "p-1-0",
+      "originalPageRootId": "root_node_p-1-0",
+      "currentWrapperStyle": {
+        "display": "flex",
+        "overflow": "clip",
+        "width": "1440px",
+        "height": "fit-content",
+        "flexDirection": "column",
+        "fontFamily": "var(--font-ui)",
+        "left": 18935,
+        "top": -13820,
+        "minHeight": "1500px",
+        "position": "absolute",
+        "backgroundColor": "var(--mx-dark-bg)"
+      },
+      "wrapperMeasured": {
+        "width": 1440,
+        "height": 1500,
+        "worldX": 18935.001,
+        "worldY": -13820
+      },
+      "completeProductFrame": null,
+      "productChromeLayout": "Product chrome is spread across wrapper children; preserve original artboard",
+      "rootChildren": [
+        {
+          "id": "16GA-0",
+          "name": "01 / Workspace navigation"
+        },
+        {
+          "id": "16FC-0",
+          "name": "02 / Company identity + page-family navigation"
+        },
+        {
+          "id": "16CM-0",
+          "name": "CALL + Q&A · exact-event unavailable state"
+        }
+      ],
+      "builderHeadingId": "16D5-0",
+      "buildRail": {
+        "id": "16CN-0",
+        "name": "Frame",
+        "parentId": "16CM-0",
+        "style": {
+          "display": "flex",
+          "flexDirection": "column",
+          "width": "1360px",
+          "padding": "22px",
+          "gap": "12px",
+          "backgroundColor": "var(--mx-dark-panel2)",
+          "borderTopWidth": "2px",
+          "borderTopStyle": "solid",
+          "borderTopColor": "var(--mx-dark-link)"
+        },
+        "directChildOfWrapper": false,
+        "jsxRead": true
+      },
+      "wrapperIncludesBothProductAndBuild": true,
+      "action": "MOVE_BUILD_RAIL_ONLY",
+      "destinationPageId": "p-11-0",
+      "destinationRootId": "root_node_p-11-0",
+      "requiredPreservation": "Move only the identified BUILD ONLY block. Preserve all remaining chrome, component variants, state specimens and action bars in place.",
+      "layoutRisk": "Original production width; wrapper height already fit-content.",
+      "remainingSiblingsAtRailParent": [
+        {
+          "id": "16F5-0",
+          "name": "Frame"
+        },
+        {
+          "id": "16EZ-0",
+          "name": "Frame"
+        },
+        {
+          "id": "16D6-0",
+          "name": "Frame"
+        }
+      ],
+      "suggestedMoves": [
+        {
+          "nodeId": "16CN-0",
+          "parentId": "root_node_p-11-0"
+        }
+      ],
+      "visibilityChecked": true
+    },
+    {
+      "wrapperId": "16GR-0",
+      "wrapperName": "99 · R2 · Sources + Coverage · Dark EN",
+      "originalPageId": "p-1-0",
+      "originalPageRootId": "root_node_p-1-0",
+      "currentWrapperStyle": {
+        "display": "flex",
+        "overflow": "clip",
+        "width": "1440px",
+        "height": "fit-content",
+        "flexDirection": "column",
+        "fontFamily": "var(--font-ui)",
+        "left": -59,
+        "top": -6072,
+        "minHeight": "1500px",
+        "position": "absolute",
+        "backgroundColor": "var(--mx-dark-bg)"
+      },
+      "wrapperMeasured": {
+        "width": 1440,
+        "height": 1500,
+        "worldX": -58.997,
+        "worldY": -6072
+      },
+      "completeProductFrame": null,
+      "productChromeLayout": "Product chrome is spread across wrapper children; preserve original artboard",
+      "rootChildren": [
+        {
+          "id": "16LD-0",
+          "name": "01 / Workspace navigation"
+        },
+        {
+          "id": "16KF-0",
+          "name": "02 / Company identity + page-family navigation"
+        },
+        {
+          "id": "16GS-0",
+          "name": "SOURCES + COVERAGE · exact-event source workspace"
+        }
+      ],
+      "builderHeadingId": "16HB-0",
+      "buildRail": {
+        "id": "16GT-0",
+        "name": "Frame",
+        "parentId": "16GS-0",
+        "style": {
+          "display": "flex",
+          "flexDirection": "column",
+          "width": "1360px",
+          "padding": "22px",
+          "gap": "12px",
+          "backgroundColor": "var(--mx-dark-panel2)",
+          "borderTopWidth": "2px",
+          "borderTopStyle": "solid",
+          "borderTopColor": "var(--mx-dark-link)"
+        },
+        "directChildOfWrapper": false,
+        "jsxRead": true
+      },
+      "wrapperIncludesBothProductAndBuild": true,
+      "action": "MOVE_BUILD_RAIL_ONLY",
+      "destinationPageId": "p-11-0",
+      "destinationRootId": "root_node_p-11-0",
+      "requiredPreservation": "Move only the identified BUILD ONLY block. Preserve all remaining chrome, component variants, state specimens and action bars in place.",
+      "layoutRisk": "Original production width; wrapper height already fit-content.",
+      "remainingSiblingsAtRailParent": [
+        {
+          "id": "16K8-0",
+          "name": "Frame"
+        },
+        {
+          "id": "16JJ-0",
+          "name": "Frame"
+        },
+        {
+          "id": "16HC-0",
+          "name": "Frame"
+        }
+      ],
+      "suggestedMoves": [
+        {
+          "nodeId": "16GT-0",
+          "parentId": "root_node_p-11-0"
+        }
+      ],
+      "visibilityChecked": true
+    },
+    {
+      "wrapperId": "W2R-0",
+      "wrapperName": "48 · R2 · Margin Reconciliation · Light EN",
+      "originalPageId": "p-1-0",
+      "originalPageRootId": "root_node_p-1-0",
+      "currentWrapperStyle": {
+        "display": "flex",
+        "overflow": "clip",
+        "width": "1440px",
+        "height": "fit-content",
+        "flexDirection": "column",
+        "fontFamily": "var(--font-ui)",
+        "left": 6445,
+        "top": -13131,
+        "minHeight": "1500px",
+        "position": "absolute",
+        "backgroundColor": "var(--mx-light-panel)"
+      },
+      "wrapperMeasured": {
+        "width": 1440,
+        "height": 1575,
+        "worldX": 6444.999,
+        "worldY": -13131.001
+      },
+      "completeProductFrame": null,
+      "productChromeLayout": "Product chrome is spread across wrapper children; preserve original artboard",
+      "rootChildren": [
+        {
+          "id": "W7A-0",
+          "name": "01 / Workspace navigation"
+        },
+        {
+          "id": "W6C-0",
+          "name": "02 / Company identity + page-family navigation"
+        },
+        {
+          "id": "W7R-0",
+          "name": "MARGIN RECONCILIATION · Reading flow"
+        }
+      ],
+      "builderHeadingId": "WBA-0",
+      "buildRail": {
+        "id": "WB9-0",
+        "name": "BUILD ONLY · Margin reconciliation implementation",
+        "parentId": "W7R-0",
+        "style": {
+          "display": "flex",
+          "flexDirection": "column",
+          "width": "1360px",
+          "padding": "22px",
+          "gap": "12px",
+          "backgroundColor": "var(--mx-light-panel2)",
+          "borderTopWidth": "2px",
+          "borderTopStyle": "solid",
+          "borderTopColor": "var(--mx-light-link)"
+        },
+        "directChildOfWrapper": false,
+        "jsxRead": true
+      },
+      "wrapperIncludesBothProductAndBuild": true,
+      "action": "MOVE_BUILD_RAIL_ONLY",
+      "destinationPageId": "p-11-0",
+      "destinationRootId": "root_node_p-11-0",
+      "requiredPreservation": "Move only the identified BUILD ONLY block. Preserve all remaining chrome, component variants, state specimens and action bars in place.",
+      "layoutRisk": "Original production width; wrapper height already fit-content.",
+      "remainingSiblingsAtRailParent": [
+        {
+          "id": "W7T-0",
+          "name": "01 / Margin heading + period controls"
+        },
+        {
+          "id": "W8B-0",
+          "name": "02 / Q1 and Q2 basis reconciliations"
+        },
+        {
+          "id": "WAC-0",
+          "name": "03 / Like-for-like comparison + interpretation"
+        }
+      ],
+      "suggestedMoves": [
+        {
+          "nodeId": "WB9-0",
+          "parentId": "root_node_p-11-0"
+        }
+      ],
+      "visibilityChecked": true
+    },
+    {
+      "wrapperId": "VUB-0",
+      "wrapperName": "47 · R2 · Revenue Drivers · Light EN",
+      "originalPageId": "p-1-0",
+      "originalPageRootId": "root_node_p-1-0",
+      "currentWrapperStyle": {
+        "display": "flex",
+        "overflow": "clip",
+        "width": "1440px",
+        "height": "fit-content",
+        "flexDirection": "column",
+        "fontFamily": "var(--font-ui)",
+        "left": 7965,
+        "top": -15400,
+        "minHeight": "1500px",
+        "position": "absolute",
+        "backgroundColor": "var(--mx-light-panel)"
+      },
+      "wrapperMeasured": {
+        "width": 1440,
+        "height": 1501,
+        "worldX": 7965.002,
+        "worldY": -15400.001
+      },
+      "completeProductFrame": null,
+      "productChromeLayout": "Product chrome is spread across wrapper children; preserve original artboard",
+      "rootChildren": [
+        {
+          "id": "VYU-0",
+          "name": "01 / Workspace navigation"
+        },
+        {
+          "id": "VXW-0",
+          "name": "02 / Company identity + page-family navigation"
+        },
+        {
+          "id": "VZB-0",
+          "name": "REVENUE DRIVERS · Reading flow"
+        }
+      ],
+      "builderHeadingId": "W2F-0",
+      "buildRail": {
+        "id": "W2E-0",
+        "name": "BUILD ONLY · Revenue Drivers implementation",
+        "parentId": "VZB-0",
+        "style": {
+          "display": "flex",
+          "flexDirection": "column",
+          "width": "1360px",
+          "padding": "22px",
+          "gap": "14px",
+          "backgroundColor": "var(--mx-light-panel2)",
+          "borderTopWidth": "2px",
+          "borderTopStyle": "solid",
+          "borderTopColor": "var(--mx-light-link)"
+        },
+        "directChildOfWrapper": false,
+        "jsxRead": true
+      },
+      "wrapperIncludesBothProductAndBuild": true,
+      "action": "MOVE_BUILD_RAIL_ONLY",
+      "destinationPageId": "p-11-0",
+      "destinationRootId": "root_node_p-11-0",
+      "requiredPreservation": "Move only the identified BUILD ONLY block. Preserve all remaining chrome, component variants, state specimens and action bars in place.",
+      "layoutRisk": "Original production width; wrapper height already fit-content.",
+      "remainingSiblingsAtRailParent": [
+        {
+          "id": "VZD-0",
+          "name": "01 / Revenue drivers heading + controls"
+        },
+        {
+          "id": "VZX-0",
+          "name": "02 / Revenue decomposition + selected evidence"
+        },
+        {
+          "id": "W1V-0",
+          "name": "03 / Reportable segment lens"
+        }
+      ],
+      "suggestedMoves": [
+        {
+          "nodeId": "W2E-0",
+          "parentId": "root_node_p-11-0"
+        }
+      ],
+      "visibilityChecked": true
+    },
+    {
+      "wrapperId": "15PE-0",
+      "wrapperName": "94 · R2 · Margin Reconciliation · Dark EN",
+      "originalPageId": "p-1-0",
+      "originalPageRootId": "root_node_p-1-0",
+      "currentWrapperStyle": {
+        "display": "flex",
+        "overflow": "clip",
+        "width": "1440px",
+        "height": "fit-content",
+        "flexDirection": "column",
+        "fontFamily": "var(--font-ui)",
+        "left": 6445,
+        "top": -11476,
+        "minHeight": "1500px",
+        "position": "absolute",
+        "backgroundColor": "var(--mx-dark-bg)"
+      },
+      "wrapperMeasured": {
+        "width": 1440,
+        "height": 1575,
+        "worldX": 6444.999,
+        "worldY": -11476
+      },
+      "completeProductFrame": null,
+      "productChromeLayout": "Product chrome is spread across wrapper children; preserve original artboard",
+      "rootChildren": [
+        {
+          "id": "15U3-0",
+          "name": "01 / Workspace navigation"
+        },
+        {
+          "id": "15T5-0",
+          "name": "02 / Company identity + page-family navigation"
+        },
+        {
+          "id": "15PF-0",
+          "name": "MARGIN RECONCILIATION · Reading flow"
+        }
+      ],
+      "builderHeadingId": "15PR-0",
+      "buildRail": {
+        "id": "15PG-0",
+        "name": "BUILD ONLY · Margin reconciliation implementation",
+        "parentId": "15PF-0",
+        "style": {
+          "display": "flex",
+          "flexDirection": "column",
+          "width": "1360px",
+          "padding": "22px",
+          "gap": "12px",
+          "backgroundColor": "var(--mx-dark-panel2)",
+          "borderTopWidth": "2px",
+          "borderTopStyle": "solid",
+          "borderTopColor": "var(--mx-dark-link)"
+        },
+        "directChildOfWrapper": false,
+        "jsxRead": true
+      },
+      "wrapperIncludesBothProductAndBuild": true,
+      "action": "MOVE_BUILD_RAIL_ONLY",
+      "destinationPageId": "p-11-0",
+      "destinationRootId": "root_node_p-11-0",
+      "requiredPreservation": "Move only the identified BUILD ONLY block. Preserve all remaining chrome, component variants, state specimens and action bars in place.",
+      "layoutRisk": "Original production width; wrapper height already fit-content.",
+      "remainingSiblingsAtRailParent": [
+        {
+          "id": "15SO-0",
+          "name": "01 / Margin heading + period controls"
+        },
+        {
+          "id": "15QO-0",
+          "name": "02 / Q1 and Q2 basis reconciliations"
+        },
+        {
+          "id": "15PS-0",
+          "name": "03 / Like-for-like comparison + interpretation"
+        }
+      ],
+      "suggestedMoves": [
+        {
+          "nodeId": "15PG-0",
+          "parentId": "root_node_p-11-0"
+        }
+      ],
+      "visibilityChecked": true
+    },
+    {
+      "wrapperId": "15KN-0",
+      "wrapperName": "93 · R2 · Revenue Drivers · Dark EN",
+      "originalPageId": "p-1-0",
+      "originalPageRootId": "root_node_p-1-0",
+      "currentWrapperStyle": {
+        "display": "flex",
+        "overflow": "clip",
+        "width": "1440px",
+        "height": "fit-content",
+        "flexDirection": "column",
+        "fontFamily": "var(--font-ui)",
+        "left": 12415,
+        "top": -12537,
+        "minHeight": "1500px",
+        "position": "absolute",
+        "backgroundColor": "var(--mx-dark-bg)"
+      },
+      "wrapperMeasured": {
+        "width": 1440,
+        "height": 1501,
+        "worldX": 12414.999,
+        "worldY": -12536.999
+      },
+      "completeProductFrame": null,
+      "productChromeLayout": "Product chrome is spread across wrapper children; preserve original artboard",
+      "rootChildren": [
+        {
+          "id": "15OX-0",
+          "name": "01 / Workspace navigation"
+        },
+        {
+          "id": "15NZ-0",
+          "name": "02 / Company identity + page-family navigation"
+        },
+        {
+          "id": "15KO-0",
+          "name": "REVENUE DRIVERS · Reading flow"
+        }
+      ],
+      "builderHeadingId": "15L0-0",
+      "buildRail": {
+        "id": "15KP-0",
+        "name": "BUILD ONLY · Revenue Drivers implementation",
+        "parentId": "15KO-0",
+        "style": {
+          "display": "flex",
+          "flexDirection": "column",
+          "width": "1360px",
+          "padding": "22px",
+          "gap": "14px",
+          "backgroundColor": "var(--mx-dark-panel2)",
+          "borderTopWidth": "2px",
+          "borderTopStyle": "solid",
+          "borderTopColor": "var(--mx-dark-link)"
+        },
+        "directChildOfWrapper": false,
+        "jsxRead": true
+      },
+      "wrapperIncludesBothProductAndBuild": true,
+      "action": "MOVE_BUILD_RAIL_ONLY",
+      "destinationPageId": "p-11-0",
+      "destinationRootId": "root_node_p-11-0",
+      "requiredPreservation": "Move only the identified BUILD ONLY block. Preserve all remaining chrome, component variants, state specimens and action bars in place.",
+      "layoutRisk": "Original production width; wrapper height already fit-content.",
+      "remainingSiblingsAtRailParent": [
+        {
+          "id": "15NG-0",
+          "name": "01 / Revenue drivers heading + controls"
+        },
+        {
+          "id": "15LJ-0",
+          "name": "02 / Revenue decomposition + selected evidence"
+        },
+        {
+          "id": "15L1-0",
+          "name": "03 / Reportable segment lens"
+        }
+      ],
+      "suggestedMoves": [
+        {
+          "nodeId": "15KP-0",
+          "parentId": "root_node_p-11-0"
+        }
+      ],
+      "visibilityChecked": true
+    },
+    {
+      "wrapperId": "189S-0",
+      "wrapperName": "HELD · ZH Research Watch localization · Hidden · Safety-blocked",
+      "originalPageId": "p-1-0",
+      "originalPageRootId": "root_node_p-1-0",
+      "currentWrapperStyle": {
+        "display": "none",
+        "overflow": "clip",
+        "width": "390px",
+        "height": "fit-content",
+        "left": -4729,
+        "top": 2820,
+        "position": "absolute",
+        "backgroundColor": "var(--mx-light-panel)"
+      },
+      "wrapperMeasured": {
+        "width": null,
+        "height": null,
+        "worldX": -67755.433,
+        "worldY": -49354.961
+      },
+      "completeProductFrame": null,
+      "productChromeLayout": "Product chrome is spread across wrapper children; preserve original artboard",
+      "rootChildren": [
+        {
+          "id": "18C8-0",
+          "name": "Status bar"
+        },
+        {
+          "id": "18BZ-0",
+          "name": "Watch mobile header"
+        },
+        {
+          "id": "189T-0",
+          "name": "Watch mobile journey"
+        }
+      ],
+      "builderHeadingId": "189W-0",
+      "buildRail": {
+        "id": "189U-0",
+        "name": "Frame",
+        "parentId": "189T-0",
+        "directChildOfWrapper": false
+      },
+      "wrapperIncludesBothProductAndBuild": true,
+      "action": "PRESERVE_HELD",
+      "destinationPageId": null,
+      "destinationRootId": null,
+      "requiredPreservation": "Do not mutate held/hidden archived design",
+      "layoutRisk": "Excluded",
+      "remainingSiblingsAtRailParent": [],
+      "suggestedMoves": [],
+      "visibilityChecked": false
+    },
+    {
+      "wrapperId": "17JT-0",
+      "wrapperName": "104 · R2 · Company Change Ledger · Dark EN",
+      "originalPageId": "p-1-0",
+      "originalPageRootId": "root_node_p-1-0",
+      "currentWrapperStyle": {
+        "display": "flex",
+        "overflow": "clip",
+        "width": "1440px",
+        "height": "fit-content",
+        "flexDirection": "column",
+        "fontFamily": "var(--font-ui)",
+        "left": 8051,
+        "top": -6072,
+        "minHeight": "1800px",
+        "position": "absolute",
+        "backgroundColor": "var(--mx-dark-bg)"
+      },
+      "wrapperMeasured": {
+        "width": 1440,
+        "height": 1956,
+        "worldX": 8050.998,
+        "worldY": -6072
+      },
+      "completeProductFrame": null,
+      "productChromeLayout": "Product chrome is spread across wrapper children; preserve original artboard",
+      "rootChildren": [
+        {
+          "id": "17PL-0",
+          "name": "01 / Workspace navigation"
+        },
+        {
+          "id": "17ON-0",
+          "name": "02 / Company identity + page-family navigation"
+        },
+        {
+          "id": "17JU-0",
+          "name": "CHANGE LEDGER · Reading flow"
+        }
+      ],
+      "builderHeadingId": "17KR-0",
+      "buildRail": {
+        "id": "17JV-0",
+        "name": "BUILD ONLY · Company Change Ledger implementation",
+        "parentId": "17JU-0",
+        "style": {
+          "display": "flex",
+          "flexDirection": "column",
+          "width": "1360px",
+          "padding": "22px",
+          "gap": "14px",
+          "backgroundColor": "var(--mx-dark-panel2)",
+          "borderTopWidth": "2px",
+          "borderTopStyle": "solid",
+          "borderTopColor": "var(--mx-dark-link)"
+        },
+        "directChildOfWrapper": false,
+        "jsxRead": true
+      },
+      "wrapperIncludesBothProductAndBuild": true,
+      "action": "MOVE_BUILD_RAIL_ONLY",
+      "destinationPageId": "p-11-0",
+      "destinationRootId": "root_node_p-11-0",
+      "requiredPreservation": "Move only the identified BUILD ONLY block. Preserve all remaining chrome, component variants, state specimens and action bars in place.",
+      "layoutRisk": "Original production width; wrapper height already fit-content.",
+      "remainingSiblingsAtRailParent": [
+        {
+          "id": "17O7-0",
+          "name": "01 / Change Ledger heading"
+        },
+        {
+          "id": "17NM-0",
+          "name": "02 / Change Ledger summary"
+        },
+        {
+          "id": "17LB-0",
+          "name": "03 / Material changes + research rail"
+        },
+        {
+          "id": "17KS-0",
+          "name": "04 / Evidence and clock ledger"
+        }
+      ],
+      "suggestedMoves": [
+        {
+          "nodeId": "17JV-0",
+          "parentId": "root_node_p-11-0"
+        }
+      ],
+      "visibilityChecked": true
+    },
+    {
+      "wrapperId": "AS7-0",
+      "wrapperName": "24 · R2 · Mobile Brief · Dark ZH",
+      "originalPageId": "p-M-1",
+      "originalPageRootId": "root_node_p-M-1",
+      "currentWrapperStyle": {
+        "display": "flex",
+        "overflow": "clip",
+        "width": "390px",
+        "height": "fit-content",
+        "flexDirection": "column",
+        "left": 4340.997,
+        "top": -2971.985,
+        "gap": "32px",
+        "alignItems": "start",
+        "minHeight": "1400px",
+        "position": "absolute",
+        "backgroundColor": "var(--mx-dark-bg)"
+      },
+      "wrapperMeasured": {
+        "width": 390,
+        "height": null,
+        "worldX": 4340.997,
+        "worldY": -2971.985
+      },
+      "completeProductFrame": {
+        "id": "AS8-0",
+        "name": "APP UI · 中文手机简报 · Dark · 390px",
+        "style": {
+          "display": "flex",
+          "flexDirection": "column",
+          "width": "390px",
+          "height": "fit-content",
+          "minHeight": "1024px",
+          "flexShrink": "0",
+          "fontFamily": "var(--font-ui)",
+          "backgroundColor": "var(--mx-dark-bg)"
+        },
+        "directChildOfWrapper": true
+      },
+      "productChromeLayout": "Complete APP UI sibling exists",
+      "rootChildren": [
+        {
+          "id": "AS8-0",
+          "name": "APP UI · 中文手机简报 · Dark · 390px"
+        },
+        {
+          "id": "AX6-0",
+          "name": "BUILD ONLY · Mobile Brief contract + current frontier"
+        },
+        {
+          "id": "AXJ-0",
+          "name": "APP COMPONENT · Mobile research menu · Dark ZH"
+        }
+      ],
+      "builderHeadingId": "AX7-0",
+      "buildRail": {
+        "id": "AX6-0",
+        "name": "BUILD ONLY · Mobile Brief contract + current frontier",
+        "parentId": "AS7-0",
+        "style": {
+          "width": "390px",
+          "display": "flex",
+          "flexDirection": "column",
+          "flexShrink": "0",
+          "fontFamily": "var(--font-ui)",
+          "padding": "24px",
+          "gap": "18px",
+          "backgroundColor": "var(--mx-dark-panel)",
+          "borderTopWidth": "3px",
+          "borderTopStyle": "solid",
+          "borderTopColor": "var(--mx-dark-link)"
+        },
+        "directChildOfWrapper": true,
+        "jsxRead": true
+      },
+      "wrapperIncludesBothProductAndBuild": true,
+      "action": "MOVE_BUILD_RAIL_ONLY",
+      "destinationPageId": "p-11-0",
+      "destinationRootId": "root_node_p-11-0",
+      "requiredPreservation": "Move only the identified BUILD ONLY block. Preserve all remaining chrome, component variants, state specimens and action bars in place.",
+      "layoutRisk": "Original production width; wrapper height already fit-content.",
+      "remainingSiblingsAtRailParent": [
+        {
+          "id": "AS8-0",
+          "name": "APP UI · 中文手机简报 · Dark · 390px"
+        },
+        {
+          "id": "AXJ-0",
+          "name": "APP COMPONENT · Mobile research menu · Dark ZH"
+        }
+      ],
+      "suggestedMoves": [
+        {
+          "nodeId": "AX6-0",
+          "parentId": "root_node_p-11-0"
+        }
+      ],
+      "visibilityChecked": true
+    },
+    {
+      "wrapperId": "AYN-0",
+      "wrapperName": "25 · R2 · Mobile Evidence · Dark ZH",
+      "originalPageId": "p-M-1",
+      "originalPageRootId": "root_node_p-M-1",
+      "currentWrapperStyle": {
+        "display": "flex",
+        "overflow": "clip",
+        "width": "390px",
+        "height": "fit-content",
+        "flexDirection": "column",
+        "left": 4810.999,
+        "top": -2971.985,
+        "gap": "32px",
+        "minHeight": "900px",
+        "position": "absolute",
+        "backgroundColor": "var(--mx-dark-bg)"
+      },
+      "wrapperMeasured": {
+        "width": 390,
+        "height": null,
+        "worldX": 4810.999,
+        "worldY": -2971.985
+      },
+      "completeProductFrame": {
+        "id": "AYO-0",
+        "name": "APP UI · 中文手机简报 · Dark · 390px",
+        "style": {
+          "display": "flex",
+          "flexDirection": "column",
+          "width": "390px",
+          "height": "900px",
+          "minHeight": "900px",
+          "flexShrink": "0",
+          "fontFamily": "var(--font-ui)",
+          "overflow": "clip",
+          "position": "relative",
+          "backgroundColor": "var(--mx-dark-bg)"
+        },
+        "directChildOfWrapper": true
+      },
+      "productChromeLayout": "Complete APP UI sibling exists",
+      "rootChildren": [
+        {
+          "id": "AYO-0",
+          "name": "APP UI · 中文手机简报 · Dark · 390px"
+        },
+        {
+          "id": "B4N-0",
+          "name": "BUILD ONLY · Mobile C01 contract"
+        },
+        {
+          "id": "B4Z-0",
+          "name": "SPECIMEN · 320px C01 reflow · same evidence"
+        },
+        {
+          "id": "SIV-0",
+          "name": "SPECIMENS · C01 Sources, Lineage and Access · Dark ZH"
+        },
+        {
+          "id": "SP3-0",
+          "name": "SPECIMENS · C01 Trust States · 320 · Dark ZH"
+        },
+        {
+          "id": "TNI-0",
+          "name": "SPECIMENS · C01 Context Changed · Dark ZH"
+        }
+      ],
+      "builderHeadingId": "B4O-0",
+      "buildRail": {
+        "id": "B4N-0",
+        "name": "BUILD ONLY · Mobile C01 contract",
+        "parentId": "AYN-0",
+        "style": {
+          "width": "390px",
+          "display": "flex",
+          "flexDirection": "column",
+          "flexShrink": "0",
+          "fontFamily": "var(--font-ui)",
+          "padding": "24px",
+          "gap": "18px",
+          "backgroundColor": "var(--mx-dark-panel)",
+          "borderTopWidth": "3px",
+          "borderTopStyle": "solid",
+          "borderTopColor": "var(--mx-dark-link)"
+        },
+        "directChildOfWrapper": true,
+        "jsxRead": true
+      },
+      "wrapperIncludesBothProductAndBuild": true,
+      "action": "MOVE_BUILD_RAIL_ONLY",
+      "destinationPageId": "p-11-0",
+      "destinationRootId": "root_node_p-11-0",
+      "requiredPreservation": "Move only the identified BUILD ONLY block. Preserve all remaining chrome, component variants, state specimens and action bars in place.",
+      "layoutRisk": "Original production width; wrapper height already fit-content.",
+      "remainingSiblingsAtRailParent": [
+        {
+          "id": "AYO-0",
+          "name": "APP UI · 中文手机简报 · Dark · 390px"
+        },
+        {
+          "id": "B4Z-0",
+          "name": "SPECIMEN · 320px C01 reflow · same evidence"
+        },
+        {
+          "id": "SIV-0",
+          "name": "SPECIMENS · C01 Sources, Lineage and Access · Dark ZH"
+        },
+        {
+          "id": "SP3-0",
+          "name": "SPECIMENS · C01 Trust States · 320 · Dark ZH"
+        },
+        {
+          "id": "TNI-0",
+          "name": "SPECIMENS · C01 Context Changed · Dark ZH"
+        }
+      ],
+      "suggestedMoves": [
+        {
+          "nodeId": "B4N-0",
+          "parentId": "root_node_p-11-0"
+        }
+      ],
+      "visibilityChecked": true
+    },
+    {
+      "wrapperId": "B63-0",
+      "wrapperName": "26 · R2 · Mobile Brief · Light ZH",
+      "originalPageId": "p-M-1",
+      "originalPageRootId": "root_node_p-M-1",
+      "currentWrapperStyle": {
+        "display": "flex",
+        "overflow": "clip",
+        "width": "390px",
+        "height": "fit-content",
+        "flexDirection": "column",
+        "left": 5281,
+        "top": -2971.985,
+        "gap": "32px",
+        "alignItems": "start",
+        "paddingBottom": "24px",
+        "position": "absolute",
+        "backgroundColor": "var(--mx-light-bg)"
+      },
+      "wrapperMeasured": {
+        "width": 390,
+        "height": null,
+        "worldX": 5281,
+        "worldY": -2971.985
+      },
+      "completeProductFrame": {
+        "id": "B64-0",
+        "name": "APP UI · 中文手机简报 · Light · 390px",
+        "style": {
+          "display": "flex",
+          "flexDirection": "column",
+          "width": "390px",
+          "height": "fit-content",
+          "minHeight": "1024px",
+          "flexShrink": "0",
+          "fontFamily": "var(--font-ui)",
+          "backgroundColor": "var(--mx-light-bg)"
+        },
+        "directChildOfWrapper": true
+      },
+      "productChromeLayout": "Complete APP UI sibling exists",
+      "rootChildren": [
+        {
+          "id": "B64-0",
+          "name": "APP UI · 中文手机简报 · Light · 390px"
+        },
+        {
+          "id": "BB2-0",
+          "name": "BUILD ONLY · Light Chinese phone Brief contract"
+        },
+        {
+          "id": "BBF-0",
+          "name": "APP COMPONENT · Research menu · Light ZH"
+        }
+      ],
+      "builderHeadingId": "BB3-0",
+      "buildRail": {
+        "id": "BB2-0",
+        "name": "BUILD ONLY · Light Chinese phone Brief contract",
+        "parentId": "B63-0",
+        "style": {
+          "display": "flex",
+          "flexDirection": "column",
+          "width": "390px",
+          "flexShrink": "0",
+          "padding": "24px",
+          "gap": "20px",
+          "backgroundColor": "var(--mx-light-panel)",
+          "borderTopWidth": "3px",
+          "borderTopStyle": "solid",
+          "borderTopColor": "var(--mx-light-link)"
+        },
+        "directChildOfWrapper": true,
+        "jsxRead": true
+      },
+      "wrapperIncludesBothProductAndBuild": true,
+      "action": "MOVE_BUILD_RAIL_ONLY",
+      "destinationPageId": "p-11-0",
+      "destinationRootId": "root_node_p-11-0",
+      "requiredPreservation": "Move only the identified BUILD ONLY block. Preserve all remaining chrome, component variants, state specimens and action bars in place.",
+      "layoutRisk": "Original production width; wrapper height already fit-content.",
+      "remainingSiblingsAtRailParent": [
+        {
+          "id": "B64-0",
+          "name": "APP UI · 中文手机简报 · Light · 390px"
+        },
+        {
+          "id": "BBF-0",
+          "name": "APP COMPONENT · Research menu · Light ZH"
+        }
+      ],
+      "suggestedMoves": [
+        {
+          "nodeId": "BB2-0",
+          "parentId": "root_node_p-11-0"
+        }
+      ],
+      "visibilityChecked": true
+    },
+    {
+      "wrapperId": "BCJ-0",
+      "wrapperName": "27 · R2 · Mobile Evidence · Light ZH",
+      "originalPageId": "p-M-1",
+      "originalPageRootId": "root_node_p-M-1",
+      "currentWrapperStyle": {
+        "display": "flex",
+        "overflow": "clip",
+        "width": "390px",
+        "height": "fit-content",
+        "flexDirection": "column",
+        "left": 5751.001,
+        "top": -2971.985,
+        "gap": "32px",
+        "alignItems": "start",
+        "position": "absolute",
+        "backgroundColor": "var(--mx-light-bg)"
+      },
+      "wrapperMeasured": {
+        "width": 390,
+        "height": null,
+        "worldX": 5751.001,
+        "worldY": -2971.985
+      },
+      "completeProductFrame": {
+        "id": "BCK-0",
+        "name": "APP UI · 中文手机证据 · Light · 390 × 900",
+        "style": {
+          "display": "flex",
+          "flexDirection": "column",
+          "width": "390px",
+          "height": "900px",
+          "minHeight": "0px",
+          "flexShrink": "0",
+          "fontFamily": "var(--font-ui)",
+          "overflow": "clip",
+          "position": "relative",
+          "backgroundColor": "var(--mx-light-bg)"
+        },
+        "directChildOfWrapper": true
+      },
+      "productChromeLayout": "Complete APP UI sibling exists",
+      "rootChildren": [
+        {
+          "id": "BCK-0",
+          "name": "APP UI · 中文手机证据 · Light · 390 × 900"
+        },
+        {
+          "id": "BIJ-0",
+          "name": "BUILD ONLY · Light Chinese C01 phone contract"
+        },
+        {
+          "id": "BJ7-0",
+          "name": "SPECIMEN · C01 light ZH at 320px"
+        },
+        {
+          "id": "BKB-0",
+          "name": "SPECIMENS · C01 Sources and Lineage · Light ZH"
+        },
+        {
+          "id": "BMZ-0",
+          "name": "SPECIMENS · C01 trust states at 320px"
+        },
+        {
+          "id": "TKX-0",
+          "name": "SPECIMENS · C01 Context Changed · Light ZH"
+        }
+      ],
+      "builderHeadingId": "BIK-0",
+      "buildRail": {
+        "id": "BIJ-0",
+        "name": "BUILD ONLY · Light Chinese C01 phone contract",
+        "parentId": "BCJ-0",
+        "style": {
+          "display": "flex",
+          "flexDirection": "column",
+          "width": "390px",
+          "flexShrink": "0",
+          "padding": "24px",
+          "gap": "20px",
+          "backgroundColor": "var(--mx-light-panel)",
+          "borderTopWidth": "3px",
+          "borderTopStyle": "solid",
+          "borderTopColor": "var(--mx-light-link)"
+        },
+        "directChildOfWrapper": true,
+        "jsxRead": true
+      },
+      "wrapperIncludesBothProductAndBuild": true,
+      "action": "MOVE_BUILD_RAIL_ONLY",
+      "destinationPageId": "p-11-0",
+      "destinationRootId": "root_node_p-11-0",
+      "requiredPreservation": "Move only the identified BUILD ONLY block. Preserve all remaining chrome, component variants, state specimens and action bars in place.",
+      "layoutRisk": "Original production width; wrapper height already fit-content.",
+      "remainingSiblingsAtRailParent": [
+        {
+          "id": "BCK-0",
+          "name": "APP UI · 中文手机证据 · Light · 390 × 900"
+        },
+        {
+          "id": "BJ7-0",
+          "name": "SPECIMEN · C01 light ZH at 320px"
+        },
+        {
+          "id": "BKB-0",
+          "name": "SPECIMENS · C01 Sources and Lineage · Light ZH"
+        },
+        {
+          "id": "BMZ-0",
+          "name": "SPECIMENS · C01 trust states at 320px"
+        },
+        {
+          "id": "TKX-0",
+          "name": "SPECIMENS · C01 Context Changed · Light ZH"
+        }
+      ],
+      "suggestedMoves": [
+        {
+          "nodeId": "BIJ-0",
+          "parentId": "root_node_p-11-0"
+        }
+      ],
+      "visibilityChecked": true
+    },
+    {
+      "wrapperId": "17TO-0",
+      "wrapperName": "108 · R2 · Mobile Expectations · Light ZH",
+      "originalPageId": "p-M-1",
+      "originalPageRootId": "root_node_p-M-1",
+      "currentWrapperStyle": {
+        "display": "flex",
+        "overflow": "clip",
+        "width": "390px",
+        "height": "fit-content",
+        "alignItems": "center",
+        "flexDirection": "column",
+        "left": 6221.002,
+        "top": -2972,
+        "position": "absolute",
+        "backgroundColor": "var(--mx-light-panel)"
+      },
+      "wrapperMeasured": {
+        "width": 390,
+        "height": null,
+        "worldX": 6221.002,
+        "worldY": -2972
+      },
+      "completeProductFrame": null,
+      "productChromeLayout": "Product chrome is spread across wrapper children; preserve original artboard",
+      "rootChildren": [
+        {
+          "id": "17W8-0",
+          "name": "Status bar"
+        },
+        {
+          "id": "17WG-0",
+          "name": "中文研究导航"
+        },
+        {
+          "id": "17X1-0",
+          "name": "中文预期工作台"
+        },
+        {
+          "id": "17YW-0",
+          "name": "中文 Expectations action bar"
+        }
+      ],
+      "builderHeadingId": "17YT-0",
+      "buildRail": {
+        "id": "17YS-0",
+        "name": "Frame",
+        "parentId": "17X1-0",
+        "style": {
+          "display": "flex",
+          "flexDirection": "column",
+          "padding": "16px",
+          "gap": "8px",
+          "backgroundColor": "var(--mx-light-panel2)",
+          "borderTopWidth": "2px",
+          "borderTopStyle": "solid",
+          "borderTopColor": "var(--mx-light-link)"
+        },
+        "directChildOfWrapper": false,
+        "jsxRead": true
+      },
+      "wrapperIncludesBothProductAndBuild": true,
+      "action": "MOVE_BUILD_RAIL_ONLY",
+      "destinationPageId": "p-11-0",
+      "destinationRootId": "root_node_p-11-0",
+      "requiredPreservation": "Move only the identified BUILD ONLY block. Preserve all remaining chrome, component variants, state specimens and action bars in place.",
+      "layoutRisk": "Original production width; wrapper height already fit-content.",
+      "remainingSiblingsAtRailParent": [
+        {
+          "id": "17X2-0",
+          "name": "Frame"
+        },
+        {
+          "id": "17X6-0",
+          "name": "Frame"
+        },
+        {
+          "id": "17XD-0",
+          "name": "Frame"
+        },
+        {
+          "id": "17XX-0",
+          "name": "Frame"
+        },
+        {
+          "id": "17YE-0",
+          "name": "Frame"
+        },
+        {
+          "id": "17YI-0",
+          "name": "Frame"
+        }
+      ],
+      "suggestedMoves": [
+        {
+          "nodeId": "17YS-0",
+          "parentId": "root_node_p-11-0"
+        }
+      ],
+      "visibilityChecked": true
+    },
+    {
+      "wrapperId": "17Z2-0",
+      "wrapperName": "109 · R2 · Mobile Expectations · Dark ZH",
+      "originalPageId": "p-M-1",
+      "originalPageRootId": "root_node_p-M-1",
+      "currentWrapperStyle": {
+        "display": "flex",
+        "overflow": "clip",
+        "width": "390px",
+        "height": "fit-content",
+        "alignItems": "center",
+        "flexDirection": "column",
+        "left": 6690.997,
+        "top": -2972,
+        "position": "absolute",
+        "backgroundColor": "var(--mx-dark-bg)"
+      },
+      "wrapperMeasured": {
+        "width": 390,
+        "height": null,
+        "worldX": 6690.997,
+        "worldY": -2972
+      },
+      "completeProductFrame": null,
+      "productChromeLayout": "Product chrome is spread across wrapper children; preserve original artboard",
+      "rootChildren": [
+        {
+          "id": "181M-0",
+          "name": "Status bar"
+        },
+        {
+          "id": "1812-0",
+          "name": "中文研究导航"
+        },
+        {
+          "id": "17Z8-0",
+          "name": "中文预期工作台"
+        },
+        {
+          "id": "17Z3-0",
+          "name": "中文 Expectations action bar"
+        }
+      ],
+      "builderHeadingId": "17ZB-0",
+      "buildRail": {
+        "id": "17Z9-0",
+        "name": "Frame",
+        "parentId": "17Z8-0",
+        "style": {
+          "display": "flex",
+          "flexDirection": "column",
+          "padding": "16px",
+          "gap": "8px",
+          "backgroundColor": "var(--mx-dark-panel2)",
+          "borderTopWidth": "2px",
+          "borderTopStyle": "solid",
+          "borderTopColor": "var(--mx-dark-link)"
+        },
+        "directChildOfWrapper": false,
+        "jsxRead": true
+      },
+      "wrapperIncludesBothProductAndBuild": true,
+      "action": "MOVE_BUILD_RAIL_ONLY",
+      "destinationPageId": "p-11-0",
+      "destinationRootId": "root_node_p-11-0",
+      "requiredPreservation": "Move only the identified BUILD ONLY block. Preserve all remaining chrome, component variants, state specimens and action bars in place.",
+      "layoutRisk": "Original production width; wrapper height already fit-content.",
+      "remainingSiblingsAtRailParent": [
+        {
+          "id": "180Y-0",
+          "name": "Frame"
+        },
+        {
+          "id": "180R-0",
+          "name": "Frame"
+        },
+        {
+          "id": "1807-0",
+          "name": "Frame"
+        },
+        {
+          "id": "17ZQ-0",
+          "name": "Frame"
+        },
+        {
+          "id": "17ZM-0",
+          "name": "Frame"
+        },
+        {
+          "id": "17ZC-0",
+          "name": "Frame"
+        }
+      ],
+      "suggestedMoves": [
+        {
+          "nodeId": "17Z9-0",
+          "parentId": "root_node_p-11-0"
+        }
+      ],
+      "visibilityChecked": true
+    },
+    {
+      "wrapperId": "181U-0",
+      "wrapperName": "110 · R2 · Mobile Valuation Lab · Light ZH",
+      "originalPageId": "p-M-1",
+      "originalPageRootId": "root_node_p-M-1",
+      "currentWrapperStyle": {
+        "display": "flex",
+        "overflow": "clip",
+        "width": "390px",
+        "height": "fit-content",
+        "alignItems": "center",
+        "flexDirection": "column",
+        "left": -5669,
+        "top": 2820.001,
+        "position": "absolute",
+        "backgroundColor": "var(--mx-light-panel)"
+      },
+      "wrapperMeasured": {
+        "width": 390,
+        "height": null,
+        "worldX": -5669,
+        "worldY": 2820.001
+      },
+      "completeProductFrame": null,
+      "productChromeLayout": "Product chrome is spread across wrapper children; preserve original artboard",
+      "rootChildren": [
+        {
+          "id": "185L-0",
+          "name": "Status bar"
+        },
+        {
+          "id": "1857-0",
+          "name": "Mobile Valuation header"
+        },
+        {
+          "id": "1820-0",
+          "name": "Mobile Valuation content"
+        },
+        {
+          "id": "181V-0",
+          "name": "Frame"
+        }
+      ],
+      "builderHeadingId": "1823-0",
+      "buildRail": {
+        "id": "1821-0",
+        "name": "Frame",
+        "parentId": "1820-0",
+        "style": {
+          "display": "flex",
+          "flexDirection": "column",
+          "padding": "16px",
+          "gap": "8px",
+          "backgroundColor": "var(--mx-light-panel2)",
+          "borderTopWidth": "2px",
+          "borderTopStyle": "solid",
+          "borderTopColor": "var(--mx-light-link)"
+        },
+        "directChildOfWrapper": false,
+        "jsxRead": true
+      },
+      "wrapperIncludesBothProductAndBuild": true,
+      "action": "MOVE_BUILD_RAIL_ONLY",
+      "destinationPageId": "p-11-0",
+      "destinationRootId": "root_node_p-11-0",
+      "requiredPreservation": "Move only the identified BUILD ONLY block. Preserve all remaining chrome, component variants, state specimens and action bars in place.",
+      "layoutRisk": "Original production width; wrapper height already fit-content.",
+      "remainingSiblingsAtRailParent": [
+        {
+          "id": "1853-0",
+          "name": "Frame"
+        },
+        {
+          "id": "184M-0",
+          "name": "Frame"
+        },
+        {
+          "id": "184E-0",
+          "name": "Frame"
+        },
+        {
+          "id": "182E-0",
+          "name": "Frame"
+        },
+        {
+          "id": "1827-0",
+          "name": "Frame"
+        },
+        {
+          "id": "1824-0",
+          "name": "Frame"
+        }
+      ],
+      "suggestedMoves": [
+        {
+          "nodeId": "1821-0",
+          "parentId": "root_node_p-11-0"
+        }
+      ],
+      "visibilityChecked": true
+    },
+    {
+      "wrapperId": "185T-0",
+      "wrapperName": "111 · R2 · Mobile Valuation Lab · Dark ZH",
+      "originalPageId": "p-M-1",
+      "originalPageRootId": "root_node_p-M-1",
+      "currentWrapperStyle": {
+        "display": "flex",
+        "overflow": "clip",
+        "width": "390px",
+        "height": "fit-content",
+        "alignItems": "center",
+        "flexDirection": "column",
+        "left": -5198.999,
+        "top": 2820.001,
+        "position": "absolute",
+        "backgroundColor": "var(--mx-dark-bg)"
+      },
+      "wrapperMeasured": {
+        "width": 390,
+        "height": null,
+        "worldX": -5198.999,
+        "worldY": 2820.001
+      },
+      "completeProductFrame": null,
+      "productChromeLayout": "Product chrome is spread across wrapper children; preserve original artboard",
+      "rootChildren": [
+        {
+          "id": "189K-0",
+          "name": "Status bar"
+        },
+        {
+          "id": "1896-0",
+          "name": "Mobile Valuation header"
+        },
+        {
+          "id": "185Z-0",
+          "name": "Mobile Valuation content"
+        },
+        {
+          "id": "185U-0",
+          "name": "Frame"
+        }
+      ],
+      "builderHeadingId": "1862-0",
+      "buildRail": {
+        "id": "1860-0",
+        "name": "Frame",
+        "parentId": "185Z-0",
+        "style": {
+          "display": "flex",
+          "flexDirection": "column",
+          "padding": "16px",
+          "gap": "8px",
+          "backgroundColor": "var(--mx-dark-panel2)",
+          "borderTopWidth": "2px",
+          "borderTopStyle": "solid",
+          "borderTopColor": "var(--mx-dark-link)"
+        },
+        "directChildOfWrapper": false,
+        "jsxRead": true
+      },
+      "wrapperIncludesBothProductAndBuild": true,
+      "action": "MOVE_BUILD_RAIL_ONLY",
+      "destinationPageId": "p-11-0",
+      "destinationRootId": "root_node_p-11-0",
+      "requiredPreservation": "Move only the identified BUILD ONLY block. Preserve all remaining chrome, component variants, state specimens and action bars in place.",
+      "layoutRisk": "Original production width; wrapper height already fit-content.",
+      "remainingSiblingsAtRailParent": [
+        {
+          "id": "1892-0",
+          "name": "Frame"
+        },
+        {
+          "id": "188L-0",
+          "name": "Frame"
+        },
+        {
+          "id": "188D-0",
+          "name": "Frame"
+        },
+        {
+          "id": "186D-0",
+          "name": "Frame"
+        },
+        {
+          "id": "1866-0",
+          "name": "Frame"
+        },
+        {
+          "id": "1863-0",
+          "name": "Frame"
+        }
+      ],
+      "suggestedMoves": [
+        {
+          "nodeId": "1860-0",
+          "parentId": "root_node_p-11-0"
+        }
+      ],
+      "visibilityChecked": true
+    },
+    {
+      "wrapperId": "13MY-0",
+      "wrapperName": "80 · R2 · Mobile Call + Q&A · Transcript Unavailable · Light ZH",
+      "originalPageId": "p-M-1",
+      "originalPageRootId": "root_node_p-M-1",
+      "currentWrapperStyle": {
+        "display": "flex",
+        "overflow": "clip",
+        "width": "390px",
+        "height": "2300px",
+        "alignItems": "center",
+        "flexDirection": "column",
+        "left": 9375,
+        "top": -13131,
+        "position": "absolute",
+        "backgroundColor": "var(--mx-light-panel)"
+      },
+      "wrapperMeasured": {
+        "width": 390,
+        "height": 2300,
+        "worldX": 9375,
+        "worldY": -13131
+      },
+      "completeProductFrame": null,
+      "productChromeLayout": "Product chrome is spread across wrapper children; preserve original artboard",
+      "rootChildren": [
+        {
+          "id": "13N0-0",
+          "name": "Status bar"
+        },
+        {
+          "id": "13N8-0",
+          "name": "中文电话会导航"
+        },
+        {
+          "id": "13NT-0",
+          "name": "中文电话会不可用状态"
+        },
+        {
+          "id": "13PH-0",
+          "name": "Frame"
+        }
+      ],
+      "builderHeadingId": "13PF-0",
+      "buildRail": {
+        "id": "13PE-0",
+        "name": "Frame",
+        "parentId": "13NT-0",
+        "style": {
+          "display": "flex",
+          "flexDirection": "column",
+          "padding": "16px",
+          "gap": "8px",
+          "backgroundColor": "var(--mx-light-panel2)",
+          "borderTopWidth": "2px",
+          "borderTopStyle": "solid",
+          "borderTopColor": "var(--mx-light-link)"
+        },
+        "directChildOfWrapper": false,
+        "jsxRead": true
+      },
+      "wrapperIncludesBothProductAndBuild": true,
+      "action": "MOVE_BUILD_RAIL_ONLY",
+      "destinationPageId": "p-11-0",
+      "destinationRootId": "root_node_p-11-0",
+      "requiredPreservation": "Move only the identified BUILD ONLY block. Preserve all remaining chrome, component variants, state specimens and action bars in place.",
+      "layoutRisk": "Original production width; wrapper height is 2300px, so inspect bottom space after note removal.",
+      "remainingSiblingsAtRailParent": [
+        {
+          "id": "13NU-0",
+          "name": "Frame"
+        },
+        {
+          "id": "13NY-0",
+          "name": "Frame"
+        },
+        {
+          "id": "13O4-0",
+          "name": "值得继续追问的问题"
+        },
+        {
+          "id": "13O5-0",
+          "name": "Frame"
+        },
+        {
+          "id": "13OO-0",
+          "name": "Frame"
+        },
+        {
+          "id": "13P6-0",
+          "name": "Frame"
+        },
+        {
+          "id": "13PA-0",
+          "name": "Frame"
+        }
+      ],
+      "suggestedMoves": [
+        {
+          "nodeId": "13PE-0",
+          "parentId": "root_node_p-11-0"
+        }
+      ],
+      "visibilityChecked": true
+    },
+    {
+      "wrapperId": "13MZ-0",
+      "wrapperName": "81 · R2 · Mobile Sources + Coverage · Light ZH",
+      "originalPageId": "p-M-1",
+      "originalPageRootId": "root_node_p-M-1",
+      "currentWrapperStyle": {
+        "display": "flex",
+        "overflow": "clip",
+        "width": "390px",
+        "height": "2300px",
+        "alignItems": "center",
+        "flexDirection": "column",
+        "left": 9845.001,
+        "top": -13131,
+        "position": "absolute",
+        "backgroundColor": "var(--mx-light-panel)"
+      },
+      "wrapperMeasured": {
+        "width": 390,
+        "height": 2300,
+        "worldX": 9845.001,
+        "worldY": -13131
+      },
+      "completeProductFrame": null,
+      "productChromeLayout": "Product chrome is spread across wrapper children; preserve original artboard",
+      "rootChildren": [
+        {
+          "id": "13PN-0",
+          "name": "Status bar"
+        },
+        {
+          "id": "13PV-0",
+          "name": "中文来源导航"
+        },
+        {
+          "id": "13QG-0",
+          "name": "中文来源与覆盖"
+        },
+        {
+          "id": "13T6-0",
+          "name": "Frame"
+        }
+      ],
+      "builderHeadingId": "13T4-0",
+      "buildRail": {
+        "id": "13T3-0",
+        "name": "Frame",
+        "parentId": "13QG-0",
+        "style": {
+          "display": "flex",
+          "flexDirection": "column",
+          "padding": "16px",
+          "gap": "8px",
+          "backgroundColor": "var(--mx-light-panel2)",
+          "borderTopWidth": "2px",
+          "borderTopStyle": "solid",
+          "borderTopColor": "var(--mx-light-link)"
+        },
+        "directChildOfWrapper": false,
+        "jsxRead": true
+      },
+      "wrapperIncludesBothProductAndBuild": true,
+      "action": "MOVE_BUILD_RAIL_ONLY",
+      "destinationPageId": "p-11-0",
+      "destinationRootId": "root_node_p-11-0",
+      "requiredPreservation": "Move only the identified BUILD ONLY block. Preserve all remaining chrome, component variants, state specimens and action bars in place.",
+      "layoutRisk": "Original production width; wrapper height is 2300px, so inspect bottom space after note removal.",
+      "remainingSiblingsAtRailParent": [
+        {
+          "id": "13QH-0",
+          "name": "Frame"
+        },
+        {
+          "id": "13QL-0",
+          "name": "Frame"
+        },
+        {
+          "id": "13R6-0",
+          "name": "来源清单"
+        },
+        {
+          "id": "13R7-0",
+          "name": "Frame"
+        },
+        {
+          "id": "13SD-0",
+          "name": "Frame"
+        },
+        {
+          "id": "13SW-0",
+          "name": "Frame"
+        },
+        {
+          "id": "13SZ-0",
+          "name": "Frame"
+        }
+      ],
+      "suggestedMoves": [
+        {
+          "nodeId": "13T3-0",
+          "parentId": "root_node_p-11-0"
+        }
+      ],
+      "visibilityChecked": true
+    },
+    {
+      "wrapperId": "1498-0",
+      "wrapperName": "82 · R2 · Mobile Call + Q&A · Transcript Unavailable · Dark ZH",
+      "originalPageId": "p-M-1",
+      "originalPageRootId": "root_node_p-M-1",
+      "currentWrapperStyle": {
+        "display": "flex",
+        "overflow": "clip",
+        "width": "390px",
+        "height": "2300px",
+        "alignItems": "center",
+        "flexDirection": "column",
+        "left": 5253.003,
+        "top": -11997,
+        "position": "absolute",
+        "backgroundColor": "var(--mx-dark-bg)"
+      },
+      "wrapperMeasured": {
+        "width": 390,
+        "height": 2300,
+        "worldX": 5253.003,
+        "worldY": -11997
+      },
+      "completeProductFrame": null,
+      "productChromeLayout": "Product chrome is spread across wrapper children; preserve original artboard",
+      "rootChildren": [
+        {
+          "id": "14BN-0",
+          "name": "Status bar"
+        },
+        {
+          "id": "14B2-0",
+          "name": "中文电话会导航"
+        },
+        {
+          "id": "149E-0",
+          "name": "中文电话会不可用状态"
+        },
+        {
+          "id": "1499-0",
+          "name": "Frame"
+        }
+      ],
+      "builderHeadingId": "149H-0",
+      "buildRail": {
+        "id": "149F-0",
+        "name": "Frame",
+        "parentId": "149E-0",
+        "style": {
+          "display": "flex",
+          "flexDirection": "column",
+          "padding": "16px",
+          "gap": "8px",
+          "backgroundColor": "var(--mx-dark-panel2)",
+          "borderTopWidth": "2px",
+          "borderTopStyle": "solid",
+          "borderTopColor": "var(--mx-dark-link)"
+        },
+        "directChildOfWrapper": false,
+        "jsxRead": true
+      },
+      "wrapperIncludesBothProductAndBuild": true,
+      "action": "MOVE_BUILD_RAIL_ONLY",
+      "destinationPageId": "p-11-0",
+      "destinationRootId": "root_node_p-11-0",
+      "requiredPreservation": "Move only the identified BUILD ONLY block. Preserve all remaining chrome, component variants, state specimens and action bars in place.",
+      "layoutRisk": "Original production width; wrapper height is 2300px, so inspect bottom space after note removal.",
+      "remainingSiblingsAtRailParent": [
+        {
+          "id": "14AY-0",
+          "name": "Frame"
+        },
+        {
+          "id": "14AS-0",
+          "name": "Frame"
+        },
+        {
+          "id": "14AR-0",
+          "name": "值得继续追问的问题"
+        },
+        {
+          "id": "14A8-0",
+          "name": "Frame"
+        },
+        {
+          "id": "149Q-0",
+          "name": "Frame"
+        },
+        {
+          "id": "149M-0",
+          "name": "Frame"
+        },
+        {
+          "id": "149I-0",
+          "name": "Frame"
+        }
+      ],
+      "suggestedMoves": [
+        {
+          "nodeId": "149F-0",
+          "parentId": "root_node_p-11-0"
+        }
+      ],
+      "visibilityChecked": true
+    },
+    {
+      "wrapperId": "14BV-0",
+      "wrapperName": "83 · R2 · Mobile Sources + Coverage · Dark ZH",
+      "originalPageId": "p-M-1",
+      "originalPageRootId": "root_node_p-M-1",
+      "currentWrapperStyle": {
+        "display": "flex",
+        "overflow": "clip",
+        "width": "390px",
+        "height": "2300px",
+        "alignItems": "center",
+        "flexDirection": "column",
+        "left": 5722.998,
+        "top": -11997,
+        "position": "absolute",
+        "backgroundColor": "var(--mx-dark-bg)"
+      },
+      "wrapperMeasured": {
+        "width": 390,
+        "height": 2300,
+        "worldX": 5722.998,
+        "worldY": -11997
+      },
+      "completeProductFrame": null,
+      "productChromeLayout": "Product chrome is spread across wrapper children; preserve original artboard",
+      "rootChildren": [
+        {
+          "id": "14FC-0",
+          "name": "Status bar"
+        },
+        {
+          "id": "14ER-0",
+          "name": "中文来源导航"
+        },
+        {
+          "id": "14C1-0",
+          "name": "中文来源与覆盖"
+        },
+        {
+          "id": "14BW-0",
+          "name": "Frame"
+        }
+      ],
+      "builderHeadingId": "14C4-0",
+      "buildRail": {
+        "id": "14C2-0",
+        "name": "Frame",
+        "parentId": "14C1-0",
+        "style": {
+          "display": "flex",
+          "flexDirection": "column",
+          "padding": "16px",
+          "gap": "8px",
+          "backgroundColor": "var(--mx-dark-panel2)",
+          "borderTopWidth": "2px",
+          "borderTopStyle": "solid",
+          "borderTopColor": "var(--mx-dark-link)"
+        },
+        "directChildOfWrapper": false,
+        "jsxRead": true
+      },
+      "wrapperIncludesBothProductAndBuild": true,
+      "action": "MOVE_BUILD_RAIL_ONLY",
+      "destinationPageId": "p-11-0",
+      "destinationRootId": "root_node_p-11-0",
+      "requiredPreservation": "Move only the identified BUILD ONLY block. Preserve all remaining chrome, component variants, state specimens and action bars in place.",
+      "layoutRisk": "Original production width; wrapper height is 2300px, so inspect bottom space after note removal.",
+      "remainingSiblingsAtRailParent": [
+        {
+          "id": "14EN-0",
+          "name": "Frame"
+        },
+        {
+          "id": "14E2-0",
+          "name": "Frame"
+        },
+        {
+          "id": "14E1-0",
+          "name": "来源清单"
+        },
+        {
+          "id": "14CV-0",
+          "name": "Frame"
+        },
+        {
+          "id": "14CC-0",
+          "name": "Frame"
+        },
+        {
+          "id": "14C9-0",
+          "name": "Frame"
+        },
+        {
+          "id": "14C5-0",
+          "name": "Frame"
+        }
+      ],
+      "suggestedMoves": [
+        {
+          "nodeId": "14C2-0",
+          "parentId": "root_node_p-11-0"
+        }
+      ],
+      "visibilityChecked": true
+    },
+    {
+      "wrapperId": "18CG-0",
+      "wrapperName": "113 · R2 · Mobile Company Change Ledger · Light ZH",
+      "originalPageId": "p-M-1",
+      "originalPageRootId": "root_node_p-M-1",
+      "currentWrapperStyle": {
+        "display": "flex",
+        "overflow": "clip",
+        "width": "390px",
+        "height": "fit-content",
+        "alignItems": "center",
+        "flexDirection": "column",
+        "left": 3428.998,
+        "top": -1179.001,
+        "position": "absolute",
+        "backgroundColor": "var(--mx-light-panel)"
+      },
+      "wrapperMeasured": {
+        "width": 390,
+        "height": null,
+        "worldX": 3428.998,
+        "worldY": -1179.001
+      },
+      "completeProductFrame": null,
+      "productChromeLayout": "Product chrome is spread across wrapper children; preserve original artboard",
+      "rootChildren": [
+        {
+          "id": "18FS-0",
+          "name": "Status bar"
+        },
+        {
+          "id": "18F8-0",
+          "name": "Mobile Change Ledger header"
+        },
+        {
+          "id": "18CM-0",
+          "name": "Mobile Change Ledger content"
+        },
+        {
+          "id": "18CH-0",
+          "name": "Frame"
+        }
+      ],
+      "builderHeadingId": "18CP-0",
+      "buildRail": {
+        "id": "18CN-0",
+        "name": "Frame",
+        "parentId": "18CM-0",
+        "style": {
+          "display": "flex",
+          "flexDirection": "column",
+          "padding": "16px",
+          "gap": "8px",
+          "backgroundColor": "var(--mx-light-panel2)",
+          "borderTopWidth": "2px",
+          "borderTopStyle": "solid",
+          "borderTopColor": "var(--mx-light-link)"
+        },
+        "directChildOfWrapper": false,
+        "jsxRead": true
+      },
+      "wrapperIncludesBothProductAndBuild": true,
+      "action": "MOVE_BUILD_RAIL_ONLY",
+      "destinationPageId": "p-11-0",
+      "destinationRootId": "root_node_p-11-0",
+      "requiredPreservation": "Move only the identified BUILD ONLY block. Preserve all remaining chrome, component variants, state specimens and action bars in place.",
+      "layoutRisk": "Original production width; wrapper height already fit-content.",
+      "remainingSiblingsAtRailParent": [
+        {
+          "id": "18F4-0",
+          "name": "Frame"
+        },
+        {
+          "id": "18EV-0",
+          "name": "Frame"
+        },
+        {
+          "id": "18EA-0",
+          "name": "Frame"
+        },
+        {
+          "id": "18E9-0",
+          "name": "Material changes"
+        },
+        {
+          "id": "18D8-0",
+          "name": "Frame"
+        },
+        {
+          "id": "18D4-0",
+          "name": "Frame"
+        },
+        {
+          "id": "18D0-0",
+          "name": "Frame"
+        },
+        {
+          "id": "18CQ-0",
+          "name": "Frame"
+        }
+      ],
+      "suggestedMoves": [
+        {
+          "nodeId": "18CN-0",
+          "parentId": "root_node_p-11-0"
+        }
+      ],
+      "visibilityChecked": true
+    },
+    {
+      "wrapperId": "9UI-0",
+      "wrapperName": "32 · R2 · Tablet Brief · Dark EN",
+      "originalPageId": "p-K-1",
+      "originalPageRootId": "root_node_p-K-1",
+      "currentWrapperStyle": {
+        "display": "flex",
+        "overflow": "clip",
+        "width": "768px",
+        "height": "fit-content",
+        "flexDirection": "column",
+        "fontFamily": "var(--font-ui)",
+        "left": "848px",
+        "top": "0px",
+        "minHeight": "1024px",
+        "alignItems": "start",
+        "gap": "32px",
+        "position": "absolute",
+        "backgroundColor": "var(--mx-dark-bg)"
+      },
+      "wrapperMeasured": {
+        "width": 768,
+        "height": null,
+        "worldX": 848,
+        "worldY": 0
+      },
+      "completeProductFrame": {
+        "id": "9UJ-0",
+        "name": "APP UI · Tablet Brief · 768px content flow",
+        "style": {
+          "display": "flex",
+          "flexDirection": "column",
+          "width": "768px",
+          "height": "fit-content",
+          "minHeight": "1024px",
+          "flexShrink": "0",
+          "fontFamily": "var(--font-ui)",
+          "backgroundColor": "var(--mx-dark-bg)"
+        },
+        "directChildOfWrapper": true
+      },
+      "productChromeLayout": "Complete APP UI sibling exists",
+      "rootChildren": [
+        {
+          "id": "9UJ-0",
+          "name": "APP UI · Tablet Brief · 768px content flow"
+        },
+        {
+          "id": "9ZB-0",
+          "name": "BUILD ONLY · Dark tablet Brief contract"
+        }
+      ],
+      "builderHeadingId": "9ZC-0",
+      "buildRail": {
+        "id": "9ZB-0",
+        "name": "BUILD ONLY · Dark tablet Brief contract",
+        "parentId": "9UI-0",
+        "style": {
+          "display": "flex",
+          "flexDirection": "column",
+          "width": "768px",
+          "flexShrink": "0",
+          "fontFamily": "var(--font-ui)",
+          "padding": "28px",
+          "gap": "20px",
+          "backgroundColor": "var(--mx-dark-panel)",
+          "borderTopWidth": "3px",
+          "borderTopStyle": "solid",
+          "borderTopColor": "var(--mx-dark-link)"
+        },
+        "directChildOfWrapper": {
+          "id": "9ZB-0",
+          "name": "BUILD ONLY · Dark tablet Brief contract",
+          "component": "Frame",
+          "childCount": 5,
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        }
+      },
+      "wrapperIncludesBothProductAndBuild": true,
+      "action": "PROMOTE_APP_UI_MOVE_WRAPPER",
+      "destinationPageId": "p-11-0",
+      "destinationRootId": "root_node_p-11-0",
+      "requiredPreservation": "Move complete APP UI to original page root first, then move original wrapper with builder rail to Build. Preserve IDs and all APP UI descendants.",
+      "layoutRisk": "Reposition/size the remaining Build wrapper after move; original product width stays the APP UI width.",
+      "remainingSiblingsAtRailParent": [
+        {
+          "id": "9UJ-0",
+          "name": "APP UI · Tablet Brief · 768px content flow"
+        }
+      ],
+      "suggestedMoves": [
+        {
+          "nodeId": "9UJ-0",
+          "parentId": "root_node_p-K-1"
+        },
+        {
+          "nodeId": "9UI-0",
+          "parentId": "root_node_p-11-0"
+        }
+      ],
+      "visibilityChecked": true
+    },
+    {
+      "wrapperId": "9ZN-0",
+      "wrapperName": "33 · R2 · Tablet Evidence · Dark EN",
+      "originalPageId": "p-K-1",
+      "originalPageRootId": "root_node_p-K-1",
+      "currentWrapperStyle": {
+        "display": "flex",
+        "overflow": "clip",
+        "width": "768px",
+        "height": "fit-content",
+        "flexDirection": "column",
+        "fontFamily": "var(--font-ui)",
+        "left": "848px",
+        "top": "3440px",
+        "minHeight": "1024px",
+        "alignItems": "start",
+        "gap": "32px",
+        "position": "absolute",
+        "backgroundColor": "var(--mx-dark-bg)"
+      },
+      "wrapperMeasured": {
+        "width": 768,
+        "height": null,
+        "worldX": 848,
+        "worldY": 3440
+      },
+      "completeProductFrame": {
+        "id": "9ZO-0",
+        "name": "APP UI · Tablet Evidence · 768 × 1024",
+        "style": {
+          "display": "flex",
+          "flexDirection": "column",
+          "width": "768px",
+          "height": "1024px",
+          "flexShrink": "0",
+          "fontFamily": "var(--font-ui)",
+          "overflow": "clip",
+          "position": "relative",
+          "backgroundColor": "var(--mx-dark-bg)"
+        },
+        "directChildOfWrapper": true
+      },
+      "productChromeLayout": "Complete APP UI sibling exists",
+      "rootChildren": [
+        {
+          "id": "9ZO-0",
+          "name": "APP UI · Tablet Evidence · 768 × 1024"
+        },
+        {
+          "id": "A5G-0",
+          "name": "BUILD ONLY · Dark tablet evidence contract"
+        }
+      ],
+      "builderHeadingId": "A5H-0",
+      "buildRail": {
+        "id": "A5G-0",
+        "name": "BUILD ONLY · Dark tablet evidence contract",
+        "parentId": "9ZN-0",
+        "style": {
+          "display": "flex",
+          "flexDirection": "column",
+          "width": "768px",
+          "flexShrink": "0",
+          "fontFamily": "var(--font-ui)",
+          "padding": "28px",
+          "gap": "20px",
+          "backgroundColor": "var(--mx-dark-panel)",
+          "borderTopWidth": "3px",
+          "borderTopStyle": "solid",
+          "borderTopColor": "var(--mx-dark-link)"
+        },
+        "directChildOfWrapper": {
+          "id": "A5G-0",
+          "name": "BUILD ONLY · Dark tablet evidence contract",
+          "component": "Frame",
+          "childCount": 5,
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        }
+      },
+      "wrapperIncludesBothProductAndBuild": true,
+      "action": "PROMOTE_APP_UI_MOVE_WRAPPER",
+      "destinationPageId": "p-11-0",
+      "destinationRootId": "root_node_p-11-0",
+      "requiredPreservation": "Move complete APP UI to original page root first, then move original wrapper with builder rail to Build. Preserve IDs and all APP UI descendants.",
+      "layoutRisk": "Reposition/size the remaining Build wrapper after move; original product width stays the APP UI width.",
+      "remainingSiblingsAtRailParent": [
+        {
+          "id": "9ZO-0",
+          "name": "APP UI · Tablet Evidence · 768 × 1024"
+        }
+      ],
+      "suggestedMoves": [
+        {
+          "nodeId": "9ZO-0",
+          "parentId": "root_node_p-K-1"
+        },
+        {
+          "nodeId": "9ZN-0",
+          "parentId": "root_node_p-11-0"
+        }
+      ],
+      "visibilityChecked": true
+    },
+    {
+      "wrapperId": "A5S-0",
+      "wrapperName": "34 · R2 · Tablet Brief · Light ZH",
+      "originalPageId": "p-K-1",
+      "originalPageRootId": "root_node_p-K-1",
+      "currentWrapperStyle": {
+        "display": "flex",
+        "overflow": "clip",
+        "width": "768px",
+        "height": "fit-content",
+        "flexDirection": "column",
+        "fontFamily": "var(--font-ui)",
+        "left": "1696px",
+        "top": "0px",
+        "minHeight": "1024px",
+        "alignItems": "start",
+        "gap": "32px",
+        "position": "absolute",
+        "backgroundColor": "var(--mx-light-panel)"
+      },
+      "wrapperMeasured": {
+        "width": 768,
+        "height": null,
+        "worldX": 1696,
+        "worldY": 0
+      },
+      "completeProductFrame": {
+        "id": "A5T-0",
+        "name": "APP UI · 中文平板简报 · 768px",
+        "style": {
+          "display": "flex",
+          "flexDirection": "column",
+          "width": "768px",
+          "height": "fit-content",
+          "minHeight": "1024px",
+          "flexShrink": "0",
+          "fontFamily": "var(--font-ui)",
+          "backgroundColor": "var(--mx-light-panel)"
+        },
+        "directChildOfWrapper": true
+      },
+      "productChromeLayout": "Complete APP UI sibling exists",
+      "rootChildren": [
+        {
+          "id": "A5T-0",
+          "name": "APP UI · 中文平板简报 · 768px"
+        },
+        {
+          "id": "AAL-0",
+          "name": "BUILD ONLY · Chinese tablet localization contract"
+        }
+      ],
+      "builderHeadingId": "AAM-0",
+      "buildRail": {
+        "id": "AAL-0",
+        "name": "BUILD ONLY · Chinese tablet localization contract",
+        "parentId": "A5S-0",
+        "style": {
+          "width": "768px",
+          "display": "flex",
+          "flexDirection": "column",
+          "flexShrink": "0",
+          "fontFamily": "var(--font-ui)",
+          "padding": "28px",
+          "gap": "20px",
+          "backgroundColor": "var(--mx-light-panel2)",
+          "borderTopWidth": "3px",
+          "borderTopStyle": "solid",
+          "borderTopColor": "var(--mx-light-link)"
+        },
+        "directChildOfWrapper": {
+          "id": "AAL-0",
+          "name": "BUILD ONLY · Chinese tablet localization contract",
+          "component": "Frame",
+          "childCount": 5,
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        }
+      },
+      "wrapperIncludesBothProductAndBuild": true,
+      "action": "PROMOTE_APP_UI_MOVE_WRAPPER",
+      "destinationPageId": "p-11-0",
+      "destinationRootId": "root_node_p-11-0",
+      "requiredPreservation": "Move complete APP UI to original page root first, then move original wrapper with builder rail to Build. Preserve IDs and all APP UI descendants.",
+      "layoutRisk": "Reposition/size the remaining Build wrapper after move; original product width stays the APP UI width.",
+      "remainingSiblingsAtRailParent": [
+        {
+          "id": "A5T-0",
+          "name": "APP UI · 中文平板简报 · 768px"
+        }
+      ],
+      "suggestedMoves": [
+        {
+          "nodeId": "A5T-0",
+          "parentId": "root_node_p-K-1"
+        },
+        {
+          "nodeId": "A5S-0",
+          "parentId": "root_node_p-11-0"
+        }
+      ],
+      "visibilityChecked": true
+    },
+    {
+      "wrapperId": "AAW-0",
+      "wrapperName": "35 · R2 · Tablet Evidence · Light ZH",
+      "originalPageId": "p-K-1",
+      "originalPageRootId": "root_node_p-K-1",
+      "currentWrapperStyle": {
+        "display": "flex",
+        "overflow": "clip",
+        "width": "768px",
+        "height": "fit-content",
+        "flexDirection": "column",
+        "fontFamily": "var(--font-ui)",
+        "left": "1696px",
+        "top": "3440px",
+        "minHeight": "1024px",
+        "alignItems": "start",
+        "gap": "32px",
+        "position": "absolute",
+        "backgroundColor": "var(--mx-light-panel)"
+      },
+      "wrapperMeasured": {
+        "width": 768,
+        "height": null,
+        "worldX": 1696,
+        "worldY": 3440
+      },
+      "completeProductFrame": {
+        "id": "AAX-0",
+        "name": "APP UI · 中文平板证据 · 768 × 1024",
+        "style": {
+          "display": "flex",
+          "flexDirection": "column",
+          "width": "768px",
+          "height": "1024px",
+          "flexShrink": "0",
+          "fontFamily": "var(--font-ui)",
+          "overflow": "clip",
+          "position": "relative",
+          "backgroundColor": "var(--mx-light-panel)"
+        },
+        "directChildOfWrapper": true
+      },
+      "productChromeLayout": "Complete APP UI sibling exists",
+      "rootChildren": [
+        {
+          "id": "AAX-0",
+          "name": "APP UI · 中文平板证据 · 768 × 1024"
+        },
+        {
+          "id": "AGP-0",
+          "name": "BUILD ONLY · Chinese C01 evidence contract"
+        }
+      ],
+      "builderHeadingId": "AGQ-0",
+      "buildRail": {
+        "id": "AGP-0",
+        "name": "BUILD ONLY · Chinese C01 evidence contract",
+        "parentId": "AAW-0",
+        "style": {
+          "width": "768px",
+          "display": "flex",
+          "flexDirection": "column",
+          "flexShrink": "0",
+          "fontFamily": "var(--font-ui)",
+          "padding": "28px",
+          "gap": "20px",
+          "backgroundColor": "var(--mx-light-panel2)",
+          "borderTopWidth": "3px",
+          "borderTopStyle": "solid",
+          "borderTopColor": "var(--mx-light-link)"
+        },
+        "directChildOfWrapper": {
+          "id": "AGP-0",
+          "name": "BUILD ONLY · Chinese C01 evidence contract",
+          "component": "Frame",
+          "childCount": 5,
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        }
+      },
+      "wrapperIncludesBothProductAndBuild": true,
+      "action": "PROMOTE_APP_UI_MOVE_WRAPPER",
+      "destinationPageId": "p-11-0",
+      "destinationRootId": "root_node_p-11-0",
+      "requiredPreservation": "Move complete APP UI to original page root first, then move original wrapper with builder rail to Build. Preserve IDs and all APP UI descendants.",
+      "layoutRisk": "Reposition/size the remaining Build wrapper after move; original product width stays the APP UI width.",
+      "remainingSiblingsAtRailParent": [
+        {
+          "id": "AAX-0",
+          "name": "APP UI · 中文平板证据 · 768 × 1024"
+        }
+      ],
+      "suggestedMoves": [
+        {
+          "nodeId": "AAX-0",
+          "parentId": "root_node_p-K-1"
+        },
+        {
+          "nodeId": "AAW-0",
+          "parentId": "root_node_p-11-0"
+        }
+      ],
+      "visibilityChecked": true
+    },
+    {
+      "wrapperId": "AGZ-0",
+      "wrapperName": "36 · R2 · Tablet Brief · Dark ZH",
+      "originalPageId": "p-K-1",
+      "originalPageRootId": "root_node_p-K-1",
+      "currentWrapperStyle": {
+        "display": "flex",
+        "overflow": "clip",
+        "width": "768px",
+        "height": "fit-content",
+        "flexDirection": "column",
+        "left": "2544px",
+        "top": "0px",
+        "gap": "32px",
+        "alignItems": "start",
+        "minHeight": "1024px",
+        "position": "absolute",
+        "backgroundColor": "var(--mx-dark-bg)"
+      },
+      "wrapperMeasured": {
+        "width": 768,
+        "height": null,
+        "worldX": 2544,
+        "worldY": 0
+      },
+      "completeProductFrame": {
+        "id": "AH0-0",
+        "name": "APP UI · 中文平板简报 · Dark · 768px",
+        "style": {
+          "display": "flex",
+          "flexDirection": "column",
+          "width": "768px",
+          "height": "fit-content",
+          "minHeight": "1024px",
+          "flexShrink": "0",
+          "fontFamily": "var(--font-ui)",
+          "backgroundColor": "var(--mx-dark-bg)"
+        },
+        "directChildOfWrapper": true
+      },
+      "productChromeLayout": "Complete APP UI sibling exists",
+      "rootChildren": [
+        {
+          "id": "AH0-0",
+          "name": "APP UI · 中文平板简报 · Dark · 768px"
+        },
+        {
+          "id": "ALS-0",
+          "name": "BUILD ONLY · Dark Chinese tablet Brief contract"
+        }
+      ],
+      "builderHeadingId": "ALT-0",
+      "buildRail": {
+        "id": "ALS-0",
+        "name": "BUILD ONLY · Dark Chinese tablet Brief contract",
+        "parentId": "AGZ-0",
+        "style": {
+          "display": "flex",
+          "flexDirection": "column",
+          "width": "768px",
+          "flexShrink": "0",
+          "padding": "28px",
+          "gap": "20px",
+          "backgroundColor": "var(--mx-dark-panel)",
+          "borderTopWidth": "3px",
+          "borderTopStyle": "solid",
+          "borderTopColor": "var(--mx-dark-link)"
+        },
+        "directChildOfWrapper": {
+          "id": "ALS-0",
+          "name": "BUILD ONLY · Dark Chinese tablet Brief contract",
+          "component": "Frame",
+          "childCount": 5,
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        }
+      },
+      "wrapperIncludesBothProductAndBuild": true,
+      "action": "PROMOTE_APP_UI_MOVE_WRAPPER",
+      "destinationPageId": "p-11-0",
+      "destinationRootId": "root_node_p-11-0",
+      "requiredPreservation": "Move complete APP UI to original page root first, then move original wrapper with builder rail to Build. Preserve IDs and all APP UI descendants.",
+      "layoutRisk": "Reposition/size the remaining Build wrapper after move; original product width stays the APP UI width.",
+      "remainingSiblingsAtRailParent": [
+        {
+          "id": "AH0-0",
+          "name": "APP UI · 中文平板简报 · Dark · 768px"
+        }
+      ],
+      "suggestedMoves": [
+        {
+          "nodeId": "AH0-0",
+          "parentId": "root_node_p-K-1"
+        },
+        {
+          "nodeId": "AGZ-0",
+          "parentId": "root_node_p-11-0"
+        }
+      ],
+      "visibilityChecked": true
+    },
+    {
+      "wrapperId": "AM3-0",
+      "wrapperName": "37 · R2 · Tablet Evidence · Dark ZH",
+      "originalPageId": "p-K-1",
+      "originalPageRootId": "root_node_p-K-1",
+      "currentWrapperStyle": {
+        "display": "flex",
+        "overflow": "clip",
+        "width": "768px",
+        "height": "fit-content",
+        "flexDirection": "column",
+        "left": "2544px",
+        "top": "3440px",
+        "gap": "32px",
+        "alignItems": "start",
+        "minHeight": "1024px",
+        "position": "absolute",
+        "backgroundColor": "var(--mx-dark-bg)"
+      },
+      "wrapperMeasured": {
+        "width": 768,
+        "height": null,
+        "worldX": 2544,
+        "worldY": 3440
+      },
+      "completeProductFrame": {
+        "id": "AM4-0",
+        "name": "APP UI · 中文平板证据 · Dark · 768 × 1024",
+        "style": {
+          "display": "flex",
+          "flexDirection": "column",
+          "width": "768px",
+          "height": "1024px",
+          "minHeight": "1024px",
+          "flexShrink": "0",
+          "fontFamily": "var(--font-ui)",
+          "overflow": "clip",
+          "position": "relative",
+          "backgroundColor": "var(--mx-dark-bg)"
+        },
+        "directChildOfWrapper": true
+      },
+      "productChromeLayout": "Complete APP UI sibling exists",
+      "rootChildren": [
+        {
+          "id": "AM4-0",
+          "name": "APP UI · 中文平板证据 · Dark · 768 × 1024"
+        },
+        {
+          "id": "ARW-0",
+          "name": "BUILD ONLY · Dark Chinese C01 contract"
+        }
+      ],
+      "builderHeadingId": "ARX-0",
+      "buildRail": {
+        "id": "ARW-0",
+        "name": "BUILD ONLY · Dark Chinese C01 contract",
+        "parentId": "AM3-0",
+        "style": {
+          "display": "flex",
+          "flexDirection": "column",
+          "width": "768px",
+          "flexShrink": "0",
+          "padding": "28px",
+          "gap": "20px",
+          "backgroundColor": "var(--mx-dark-panel)",
+          "borderTopWidth": "3px",
+          "borderTopStyle": "solid",
+          "borderTopColor": "var(--mx-dark-link)"
+        },
+        "directChildOfWrapper": {
+          "id": "ARW-0",
+          "name": "BUILD ONLY · Dark Chinese C01 contract",
+          "component": "Frame",
+          "childCount": 5,
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        }
+      },
+      "wrapperIncludesBothProductAndBuild": true,
+      "action": "PROMOTE_APP_UI_MOVE_WRAPPER",
+      "destinationPageId": "p-11-0",
+      "destinationRootId": "root_node_p-11-0",
+      "requiredPreservation": "Move complete APP UI to original page root first, then move original wrapper with builder rail to Build. Preserve IDs and all APP UI descendants.",
+      "layoutRisk": "Reposition/size the remaining Build wrapper after move; original product width stays the APP UI width.",
+      "remainingSiblingsAtRailParent": [
+        {
+          "id": "AM4-0",
+          "name": "APP UI · 中文平板证据 · Dark · 768 × 1024"
+        }
+      ],
+      "suggestedMoves": [
+        {
+          "nodeId": "AM4-0",
+          "parentId": "root_node_p-K-1"
+        },
+        {
+          "nodeId": "AM3-0",
+          "parentId": "root_node_p-11-0"
+        }
+      ],
+      "visibilityChecked": true
+    },
+    {
+      "wrapperId": "13ZO-0",
+      "wrapperName": "84 · R2 · Tablet Results + Analysis · Light EN",
+      "originalPageId": "p-K-1",
+      "originalPageRootId": "root_node_p-K-1",
+      "currentWrapperStyle": {
+        "display": "flex",
+        "overflow": "clip",
+        "width": "768px",
+        "height": "fit-content",
+        "flexDirection": "column",
+        "fontFamily": "var(--font-ui)",
+        "left": "0px",
+        "top": "5400px",
+        "position": "absolute",
+        "backgroundColor": "var(--mx-light-panel)"
+      },
+      "wrapperMeasured": {
+        "width": 768,
+        "height": null,
+        "worldX": 0,
+        "worldY": 5400
+      },
+      "completeProductFrame": null,
+      "productChromeLayout": "Product chrome is spread across wrapper children; preserve original artboard",
+      "rootChildren": [
+        {
+          "id": "143L-0",
+          "name": "01 / Tablet company context + navigation"
+        },
+        {
+          "id": "14FK-0",
+          "name": "TABLET RESULTS · Reading flow"
+        },
+        {
+          "id": "13ZP-0",
+          "name": "03 / Tablet watch and scoped AI actions"
+        }
+      ],
+      "builderHeadingId": "14HT-0",
+      "buildRail": {
+        "id": "14HS-0",
+        "name": "Frame",
+        "parentId": "14FK-0",
+        "style": {
+          "display": "flex",
+          "flexDirection": "column",
+          "padding": "16px",
+          "gap": "7px",
+          "backgroundColor": "var(--mx-light-panel2)",
+          "borderTopWidth": "2px",
+          "borderTopStyle": "solid",
+          "borderTopColor": "var(--mx-light-link)"
+        },
+        "directChildOfWrapper": false,
+        "jsxRead": true
+      },
+      "wrapperIncludesBothProductAndBuild": true,
+      "action": "MOVE_BUILD_RAIL_ONLY",
+      "destinationPageId": "p-11-0",
+      "destinationRootId": "root_node_p-11-0",
+      "requiredPreservation": "Move only the identified BUILD ONLY block. Preserve all remaining chrome, component variants, state specimens and action bars in place.",
+      "layoutRisk": "Original production width; wrapper height already fit-content.",
+      "remainingSiblingsAtRailParent": [
+        {
+          "id": "14FL-0",
+          "name": "Frame"
+        },
+        {
+          "id": "14FS-0",
+          "name": "Frame"
+        },
+        {
+          "id": "14G9-0",
+          "name": "Frame"
+        },
+        {
+          "id": "14GQ-0",
+          "name": "Frame"
+        },
+        {
+          "id": "14H5-0",
+          "name": "Frame"
+        },
+        {
+          "id": "14HI-0",
+          "name": "Frame"
+        }
+      ],
+      "suggestedMoves": [
+        {
+          "nodeId": "14HS-0",
+          "parentId": "root_node_p-11-0"
+        }
+      ],
+      "visibilityChecked": true
+    },
+    {
+      "wrapperId": "144G-0",
+      "wrapperName": "85 · R2 · Tablet Research + Relationships · Light EN",
+      "originalPageId": "p-K-1",
+      "originalPageRootId": "root_node_p-K-1",
+      "currentWrapperStyle": {
+        "display": "flex",
+        "overflow": "clip",
+        "width": "768px",
+        "height": "fit-content",
+        "flexDirection": "column",
+        "fontFamily": "var(--font-ui)",
+        "left": "848px",
+        "top": "5400px",
+        "position": "absolute",
+        "backgroundColor": "var(--mx-light-panel)"
+      },
+      "wrapperMeasured": {
+        "width": 768,
+        "height": null,
+        "worldX": 848,
+        "worldY": 5400
+      },
+      "completeProductFrame": null,
+      "productChromeLayout": "Product chrome is spread across wrapper children; preserve original artboard",
+      "rootChildren": [
+        {
+          "id": "148D-0",
+          "name": "01 / Tablet company context + navigation"
+        },
+        {
+          "id": "14HW-0",
+          "name": "TABLET RESEARCH · Reading flow"
+        },
+        {
+          "id": "144H-0",
+          "name": "03 / Tablet watch and scoped AI actions"
+        }
+      ],
+      "builderHeadingId": "14KD-0",
+      "buildRail": {
+        "id": "14KC-0",
+        "name": "Frame",
+        "parentId": "14HW-0",
+        "style": {
+          "display": "flex",
+          "flexDirection": "column",
+          "padding": "16px",
+          "gap": "7px",
+          "backgroundColor": "var(--mx-light-panel2)",
+          "borderTopWidth": "2px",
+          "borderTopStyle": "solid",
+          "borderTopColor": "var(--mx-light-link)"
+        },
+        "directChildOfWrapper": false,
+        "jsxRead": true
+      },
+      "wrapperIncludesBothProductAndBuild": true,
+      "action": "MOVE_BUILD_RAIL_ONLY",
+      "destinationPageId": "p-11-0",
+      "destinationRootId": "root_node_p-11-0",
+      "requiredPreservation": "Move only the identified BUILD ONLY block. Preserve all remaining chrome, component variants, state specimens and action bars in place.",
+      "layoutRisk": "Original production width; wrapper height already fit-content.",
+      "remainingSiblingsAtRailParent": [
+        {
+          "id": "14HX-0",
+          "name": "Frame"
+        },
+        {
+          "id": "14I1-0",
+          "name": "Frame"
+        },
+        {
+          "id": "14I8-0",
+          "name": "Frame"
+        },
+        {
+          "id": "14JB-0",
+          "name": "Frame"
+        },
+        {
+          "id": "14JQ-0",
+          "name": "Frame"
+        },
+        {
+          "id": "14K6-0",
+          "name": "Frame"
+        }
+      ],
+      "suggestedMoves": [
+        {
+          "nodeId": "14KC-0",
+          "parentId": "root_node_p-11-0"
+        }
+      ],
+      "visibilityChecked": true
+    },
+    {
+      "wrapperId": "12XV-0",
+      "wrapperName": "71 · R2 · Mobile Expectations · Light EN",
+      "originalPageId": "p-J-1",
+      "originalPageRootId": "root_node_p-J-1",
+      "currentWrapperStyle": {
+        "display": "flex",
+        "overflow": "clip",
+        "width": "390px",
+        "height": "fit-content",
+        "alignItems": "center",
+        "flexDirection": "column",
+        "fontFamily": "var(--font-ui)",
+        "left": 22915.002,
+        "top": -15400,
+        "position": "absolute",
+        "backgroundColor": "var(--mx-light-panel)"
+      },
+      "wrapperMeasured": {
+        "width": 390,
+        "height": null,
+        "worldX": 22915.002,
+        "worldY": -15400
+      },
+      "completeProductFrame": null,
+      "productChromeLayout": "Product chrome is spread across wrapper children; preserve original artboard",
+      "rootChildren": [
+        {
+          "id": "12XX-0",
+          "name": "Status bar"
+        },
+        {
+          "id": "12Y5-0",
+          "name": "Mobile research navigation"
+        },
+        {
+          "id": "12YP-0",
+          "name": "Mobile Expectations content"
+        },
+        {
+          "id": "130J-0",
+          "name": "Frame"
+        }
+      ],
+      "builderHeadingId": "130H-0",
+      "buildRail": {
+        "id": "130G-0",
+        "name": "Frame",
+        "parentId": "12YP-0",
+        "style": {
+          "display": "flex",
+          "flexDirection": "column",
+          "padding": "16px",
+          "gap": "8px",
+          "backgroundColor": "var(--mx-light-panel2)",
+          "borderTopWidth": "2px",
+          "borderTopStyle": "solid",
+          "borderTopColor": "var(--mx-light-link)"
+        },
+        "directChildOfWrapper": false,
+        "jsxRead": true
+      },
+      "wrapperIncludesBothProductAndBuild": true,
+      "action": "MOVE_BUILD_RAIL_ONLY",
+      "destinationPageId": "p-11-0",
+      "destinationRootId": "root_node_p-11-0",
+      "requiredPreservation": "Move only the identified BUILD ONLY block. Preserve all remaining chrome, component variants, state specimens and action bars in place.",
+      "layoutRisk": "Original production width; wrapper height already fit-content.",
+      "remainingSiblingsAtRailParent": [
+        {
+          "id": "12YQ-0",
+          "name": "Frame"
+        },
+        {
+          "id": "12YU-0",
+          "name": "Frame"
+        },
+        {
+          "id": "12Z1-0",
+          "name": "Frame"
+        },
+        {
+          "id": "12ZL-0",
+          "name": "Frame"
+        },
+        {
+          "id": "1302-0",
+          "name": "Frame"
+        },
+        {
+          "id": "1306-0",
+          "name": "Frame"
+        }
+      ],
+      "suggestedMoves": [
+        {
+          "nodeId": "130G-0",
+          "parentId": "root_node_p-11-0"
+        }
+      ],
+      "visibilityChecked": true
+    },
+    {
+      "wrapperId": "130P-0",
+      "wrapperName": "73 · R2 · Mobile Valuation Lab · Light EN",
+      "originalPageId": "p-J-1",
+      "originalPageRootId": "root_node_p-J-1",
+      "currentWrapperStyle": {
+        "display": "flex",
+        "overflow": "clip",
+        "width": "390px",
+        "height": "fit-content",
+        "alignItems": "center",
+        "flexDirection": "column",
+        "fontFamily": "var(--font-ui)",
+        "left": 20925,
+        "top": -13435.001,
+        "position": "absolute",
+        "backgroundColor": "var(--mx-light-panel)"
+      },
+      "wrapperMeasured": {
+        "width": 390,
+        "height": null,
+        "worldX": 20925,
+        "worldY": -13435.001
+      },
+      "completeProductFrame": null,
+      "productChromeLayout": "Product chrome is spread across wrapper children; preserve original artboard",
+      "rootChildren": [
+        {
+          "id": "130Q-0",
+          "name": "Status bar"
+        },
+        {
+          "id": "130Y-0",
+          "name": "Mobile Valuation header"
+        },
+        {
+          "id": "131C-0",
+          "name": "Mobile Valuation content"
+        },
+        {
+          "id": "134J-0",
+          "name": "Frame"
+        }
+      ],
+      "builderHeadingId": "134H-0",
+      "buildRail": {
+        "id": "134G-0",
+        "name": "Frame",
+        "parentId": "131C-0",
+        "style": {
+          "display": "flex",
+          "flexDirection": "column",
+          "padding": "16px",
+          "gap": "8px",
+          "backgroundColor": "var(--mx-light-panel2)",
+          "borderTopWidth": "2px",
+          "borderTopStyle": "solid",
+          "borderTopColor": "var(--mx-light-link)"
+        },
+        "directChildOfWrapper": false,
+        "jsxRead": true
+      },
+      "wrapperIncludesBothProductAndBuild": true,
+      "action": "MOVE_BUILD_RAIL_ONLY",
+      "destinationPageId": "p-11-0",
+      "destinationRootId": "root_node_p-11-0",
+      "requiredPreservation": "Move only the identified BUILD ONLY block. Preserve all remaining chrome, component variants, state specimens and action bars in place.",
+      "layoutRisk": "Original production width; wrapper height already fit-content.",
+      "remainingSiblingsAtRailParent": [
+        {
+          "id": "131D-0",
+          "name": "Frame"
+        },
+        {
+          "id": "131H-0",
+          "name": "Frame"
+        },
+        {
+          "id": "131Y-0",
+          "name": "Frame"
+        },
+        {
+          "id": "1326-0",
+          "name": "Frame"
+        },
+        {
+          "id": "1346-0",
+          "name": "Frame"
+        },
+        {
+          "id": "134D-0",
+          "name": "Frame"
+        }
+      ],
+      "suggestedMoves": [
+        {
+          "nodeId": "134G-0",
+          "parentId": "root_node_p-11-0"
+        }
+      ],
+      "visibilityChecked": true
+    },
+    {
+      "wrapperId": "134P-0",
+      "wrapperName": "74 · R2 · Mobile Expectations · Dark EN",
+      "originalPageId": "p-J-1",
+      "originalPageRootId": "root_node_p-J-1",
+      "currentWrapperStyle": {
+        "display": "flex",
+        "overflow": "clip",
+        "width": "390px",
+        "height": "fit-content",
+        "alignItems": "center",
+        "flexDirection": "column",
+        "fontFamily": "var(--font-ui)",
+        "left": 21395.001,
+        "top": -13435.001,
+        "position": "absolute",
+        "backgroundColor": "var(--mx-dark-bg)"
+      },
+      "wrapperMeasured": {
+        "width": 390,
+        "height": null,
+        "worldX": 21395.001,
+        "worldY": -13435.001
+      },
+      "completeProductFrame": null,
+      "productChromeLayout": "Product chrome is spread across wrapper children; preserve original artboard",
+      "rootChildren": [
+        {
+          "id": "1379-0",
+          "name": "Status bar"
+        },
+        {
+          "id": "136P-0",
+          "name": "Mobile research navigation"
+        },
+        {
+          "id": "134V-0",
+          "name": "Mobile Expectations content"
+        },
+        {
+          "id": "134Q-0",
+          "name": "Frame"
+        }
+      ],
+      "builderHeadingId": "134Y-0",
+      "buildRail": {
+        "id": "134W-0",
+        "name": "Frame",
+        "parentId": "134V-0",
+        "style": {
+          "display": "flex",
+          "flexDirection": "column",
+          "padding": "16px",
+          "gap": "8px",
+          "backgroundColor": "var(--mx-dark-panel2)",
+          "borderTopWidth": "2px",
+          "borderTopStyle": "solid",
+          "borderTopColor": "var(--mx-dark-link)"
+        },
+        "directChildOfWrapper": false,
+        "jsxRead": true
+      },
+      "wrapperIncludesBothProductAndBuild": true,
+      "action": "MOVE_BUILD_RAIL_ONLY",
+      "destinationPageId": "p-11-0",
+      "destinationRootId": "root_node_p-11-0",
+      "requiredPreservation": "Move only the identified BUILD ONLY block. Preserve all remaining chrome, component variants, state specimens and action bars in place.",
+      "layoutRisk": "Original production width; wrapper height already fit-content.",
+      "remainingSiblingsAtRailParent": [
+        {
+          "id": "136L-0",
+          "name": "Frame"
+        },
+        {
+          "id": "136E-0",
+          "name": "Frame"
+        },
+        {
+          "id": "135U-0",
+          "name": "Frame"
+        },
+        {
+          "id": "135D-0",
+          "name": "Frame"
+        },
+        {
+          "id": "1359-0",
+          "name": "Frame"
+        },
+        {
+          "id": "134Z-0",
+          "name": "Frame"
+        }
+      ],
+      "suggestedMoves": [
+        {
+          "nodeId": "134W-0",
+          "parentId": "root_node_p-11-0"
+        }
+      ],
+      "visibilityChecked": true
+    },
+    {
+      "wrapperId": "13B4-0",
+      "wrapperName": "76 · R2 · Mobile Valuation Lab · Dark EN",
+      "originalPageId": "p-J-1",
+      "originalPageRootId": "root_node_p-J-1",
+      "currentWrapperStyle": {
+        "display": "flex",
+        "overflow": "clip",
+        "width": "390px",
+        "height": "fit-content",
+        "alignItems": "center",
+        "flexDirection": "column",
+        "fontFamily": "var(--font-ui)",
+        "left": 21865.002,
+        "top": -13435.001,
+        "position": "absolute",
+        "backgroundColor": "var(--mx-dark-bg)"
+      },
+      "wrapperMeasured": {
+        "width": 390,
+        "height": null,
+        "worldX": 21865.002,
+        "worldY": -13435.001
+      },
+      "completeProductFrame": null,
+      "productChromeLayout": "Product chrome is spread across wrapper children; preserve original artboard",
+      "rootChildren": [
+        {
+          "id": "13EV-0",
+          "name": "Status bar"
+        },
+        {
+          "id": "13EH-0",
+          "name": "Mobile Valuation header"
+        },
+        {
+          "id": "13BA-0",
+          "name": "Mobile Valuation content"
+        },
+        {
+          "id": "13B5-0",
+          "name": "Frame"
+        }
+      ],
+      "builderHeadingId": "13BD-0",
+      "buildRail": {
+        "id": "13BB-0",
+        "name": "Frame",
+        "parentId": "13BA-0",
+        "style": {
+          "display": "flex",
+          "flexDirection": "column",
+          "padding": "16px",
+          "gap": "8px",
+          "backgroundColor": "var(--mx-dark-panel2)",
+          "borderTopWidth": "2px",
+          "borderTopStyle": "solid",
+          "borderTopColor": "var(--mx-dark-link)"
+        },
+        "directChildOfWrapper": false,
+        "jsxRead": true
+      },
+      "wrapperIncludesBothProductAndBuild": true,
+      "action": "MOVE_BUILD_RAIL_ONLY",
+      "destinationPageId": "p-11-0",
+      "destinationRootId": "root_node_p-11-0",
+      "requiredPreservation": "Move only the identified BUILD ONLY block. Preserve all remaining chrome, component variants, state specimens and action bars in place.",
+      "layoutRisk": "Original production width; wrapper height already fit-content.",
+      "remainingSiblingsAtRailParent": [
+        {
+          "id": "13ED-0",
+          "name": "Frame"
+        },
+        {
+          "id": "13DW-0",
+          "name": "Frame"
+        },
+        {
+          "id": "13DO-0",
+          "name": "Frame"
+        },
+        {
+          "id": "13BO-0",
+          "name": "Frame"
+        },
+        {
+          "id": "13BH-0",
+          "name": "Frame"
+        },
+        {
+          "id": "13BE-0",
+          "name": "Frame"
+        }
+      ],
+      "suggestedMoves": [
+        {
+          "nodeId": "13BB-0",
+          "parentId": "root_node_p-11-0"
+        }
+      ],
+      "visibilityChecked": true
+    },
+    {
+      "wrapperId": "13F3-0",
+      "wrapperName": "77 · R2 · Mobile Research Watch · Activation + Recovery",
+      "originalPageId": "p-J-1",
+      "originalPageRootId": "root_node_p-J-1",
+      "currentWrapperStyle": {
+        "display": "flex",
+        "overflow": "clip",
+        "width": "390px",
+        "height": "fit-content",
+        "alignItems": "center",
+        "flexDirection": "column",
+        "fontFamily": "var(--font-ui)",
+        "left": 7965.002,
+        "top": -13131,
+        "position": "absolute",
+        "backgroundColor": "var(--mx-light-panel)"
+      },
+      "wrapperMeasured": {
+        "width": 390,
+        "height": null,
+        "worldX": 7965.002,
+        "worldY": -13131
+      },
+      "completeProductFrame": null,
+      "productChromeLayout": "Product chrome is spread across wrapper children; preserve original artboard",
+      "rootChildren": [
+        {
+          "id": "13F4-0",
+          "name": "Status bar"
+        },
+        {
+          "id": "13FC-0",
+          "name": "Watch mobile header"
+        },
+        {
+          "id": "13FL-0",
+          "name": "Watch mobile journey"
+        }
+      ],
+      "builderHeadingId": "13HP-0",
+      "buildRail": {
+        "id": "13HO-0",
+        "name": "Frame",
+        "parentId": "13FL-0",
+        "style": {
+          "display": "flex",
+          "flexDirection": "column",
+          "padding": "16px",
+          "gap": "8px",
+          "backgroundColor": "var(--mx-light-panel2)",
+          "borderTopWidth": "2px",
+          "borderTopStyle": "solid",
+          "borderTopColor": "var(--mx-light-link)"
+        },
+        "directChildOfWrapper": false,
+        "jsxRead": true
+      },
+      "wrapperIncludesBothProductAndBuild": true,
+      "action": "MOVE_BUILD_RAIL_ONLY",
+      "destinationPageId": "p-11-0",
+      "destinationRootId": "root_node_p-11-0",
+      "requiredPreservation": "Move only the identified BUILD ONLY block. Preserve all remaining chrome, component variants, state specimens and action bars in place.",
+      "layoutRisk": "Original production width; wrapper height already fit-content.",
+      "remainingSiblingsAtRailParent": [
+        {
+          "id": "13FM-0",
+          "name": "Frame"
+        },
+        {
+          "id": "13FV-0",
+          "name": "Frame"
+        },
+        {
+          "id": "13FZ-0",
+          "name": "Frame"
+        },
+        {
+          "id": "13G6-0",
+          "name": "Frame"
+        },
+        {
+          "id": "13GG-0",
+          "name": "Activation creates a…"
+        },
+        {
+          "id": "13GH-0",
+          "name": "Frame"
+        },
+        {
+          "id": "13GM-0",
+          "name": "Rectangle"
+        },
+        {
+          "id": "13GN-0",
+          "name": "Activation and recov…"
+        },
+        {
+          "id": "13GO-0",
+          "name": "Frame"
+        },
+        {
+          "id": "13GX-0",
+          "name": "Frame"
+        },
+        {
+          "id": "13H5-0",
+          "name": "Frame"
+        },
+        {
+          "id": "13HF-0",
+          "name": "Frame"
+        }
+      ],
+      "suggestedMoves": [
+        {
+          "nodeId": "13HO-0",
+          "parentId": "root_node_p-11-0"
+        }
+      ],
+      "visibilityChecked": true
+    },
+    {
+      "wrapperId": "13KA-0",
+      "wrapperName": "79 · R2 · Mobile Research Watch · Activation + Recovery · Dark EN",
+      "originalPageId": "p-J-1",
+      "originalPageRootId": "root_node_p-J-1",
+      "currentWrapperStyle": {
+        "display": "flex",
+        "overflow": "clip",
+        "width": "390px",
+        "height": "fit-content",
+        "alignItems": "center",
+        "flexDirection": "column",
+        "fontFamily": "var(--font-ui)",
+        "left": 8904.999,
+        "top": -13131,
+        "position": "absolute",
+        "backgroundColor": "var(--mx-dark-bg)"
+      },
+      "wrapperMeasured": {
+        "width": 390,
+        "height": null,
+        "worldX": 8904.999,
+        "worldY": -13131
+      },
+      "completeProductFrame": null,
+      "productChromeLayout": "Product chrome is spread across wrapper children; preserve original artboard",
+      "rootChildren": [
+        {
+          "id": "13MQ-0",
+          "name": "Status bar"
+        },
+        {
+          "id": "13MH-0",
+          "name": "Watch mobile header"
+        },
+        {
+          "id": "13KB-0",
+          "name": "Watch mobile journey"
+        }
+      ],
+      "builderHeadingId": "13KE-0",
+      "buildRail": {
+        "id": "13KC-0",
+        "name": "Frame",
+        "parentId": "13KB-0",
+        "style": {
+          "display": "flex",
+          "flexDirection": "column",
+          "padding": "16px",
+          "gap": "8px",
+          "backgroundColor": "var(--mx-dark-panel2)",
+          "borderTopWidth": "2px",
+          "borderTopStyle": "solid",
+          "borderTopColor": "var(--mx-dark-link)"
+        },
+        "directChildOfWrapper": false,
+        "jsxRead": true
+      },
+      "wrapperIncludesBothProductAndBuild": true,
+      "action": "MOVE_BUILD_RAIL_ONLY",
+      "destinationPageId": "p-11-0",
+      "destinationRootId": "root_node_p-11-0",
+      "requiredPreservation": "Move only the identified BUILD ONLY block. Preserve all remaining chrome, component variants, state specimens and action bars in place.",
+      "layoutRisk": "Original production width; wrapper height already fit-content.",
+      "remainingSiblingsAtRailParent": [
+        {
+          "id": "13M8-0",
+          "name": "Frame"
+        },
+        {
+          "id": "13M4-0",
+          "name": "Frame"
+        },
+        {
+          "id": "13LX-0",
+          "name": "Frame"
+        },
+        {
+          "id": "13LN-0",
+          "name": "Frame"
+        },
+        {
+          "id": "13LM-0",
+          "name": "Activation creates a…"
+        },
+        {
+          "id": "13LH-0",
+          "name": "Frame"
+        },
+        {
+          "id": "13LG-0",
+          "name": "Rectangle"
+        },
+        {
+          "id": "13LF-0",
+          "name": "Activation and recov…"
+        },
+        {
+          "id": "13L6-0",
+          "name": "Frame"
+        },
+        {
+          "id": "13KY-0",
+          "name": "Frame"
+        },
+        {
+          "id": "13KO-0",
+          "name": "Frame"
+        },
+        {
+          "id": "13KF-0",
+          "name": "Frame"
+        }
+      ],
+      "suggestedMoves": [
+        {
+          "nodeId": "13KC-0",
+          "parentId": "root_node_p-11-0"
+        }
+      ],
+      "visibilityChecked": true
+    },
+    {
+      "wrapperId": "17G6-0",
+      "wrapperName": "103 · R2 · Mobile Company Change Ledger · Light EN",
+      "originalPageId": "p-J-1",
+      "originalPageRootId": "root_node_p-J-1",
+      "currentWrapperStyle": {
+        "display": "flex",
+        "overflow": "clip",
+        "width": "390px",
+        "height": "fit-content",
+        "alignItems": "center",
+        "flexDirection": "column",
+        "fontFamily": "var(--font-ui)",
+        "left": 7581,
+        "top": -6072,
+        "position": "absolute",
+        "backgroundColor": "var(--mx-light-panel)"
+      },
+      "wrapperMeasured": {
+        "width": 390,
+        "height": null,
+        "worldX": 7581,
+        "worldY": -6072
+      },
+      "completeProductFrame": null,
+      "productChromeLayout": "Product chrome is spread across wrapper children; preserve original artboard",
+      "rootChildren": [
+        {
+          "id": "17G7-0",
+          "name": "Status bar"
+        },
+        {
+          "id": "17GA-0",
+          "name": "Mobile Change Ledger header"
+        },
+        {
+          "id": "17GU-0",
+          "name": "Mobile Change Ledger content"
+        },
+        {
+          "id": "17JG-0",
+          "name": "Frame"
+        }
+      ],
+      "builderHeadingId": "17JE-0",
+      "buildRail": {
+        "id": "17JD-0",
+        "name": "Frame",
+        "parentId": "17GU-0",
+        "style": {
+          "display": "flex",
+          "flexDirection": "column",
+          "padding": "16px",
+          "gap": "8px",
+          "backgroundColor": "var(--mx-light-panel2)",
+          "borderTopWidth": "2px",
+          "borderTopStyle": "solid",
+          "borderTopColor": "var(--mx-light-link)"
+        },
+        "directChildOfWrapper": false,
+        "jsxRead": true
+      },
+      "wrapperIncludesBothProductAndBuild": true,
+      "action": "MOVE_BUILD_RAIL_ONLY",
+      "destinationPageId": "p-11-0",
+      "destinationRootId": "root_node_p-11-0",
+      "requiredPreservation": "Move only the identified BUILD ONLY block. Preserve all remaining chrome, component variants, state specimens and action bars in place.",
+      "layoutRisk": "Original production width; wrapper height already fit-content.",
+      "remainingSiblingsAtRailParent": [
+        {
+          "id": "17GV-0",
+          "name": "Frame"
+        },
+        {
+          "id": "17GZ-0",
+          "name": "Frame"
+        },
+        {
+          "id": "17H8-0",
+          "name": "Frame"
+        },
+        {
+          "id": "17HT-0",
+          "name": "Material changes"
+        },
+        {
+          "id": "17HU-0",
+          "name": "Frame"
+        },
+        {
+          "id": "17IV-0",
+          "name": "Frame"
+        },
+        {
+          "id": "17IZ-0",
+          "name": "Frame"
+        },
+        {
+          "id": "17J3-0",
+          "name": "Frame"
+        }
+      ],
+      "suggestedMoves": [
+        {
+          "nodeId": "17JD-0",
+          "parentId": "root_node_p-11-0"
+        }
+      ],
+      "visibilityChecked": true
+    },
+    {
+      "wrapperId": "17Q2-0",
+      "wrapperName": "105 · R2 · Mobile Company Change Ledger · Dark EN",
+      "originalPageId": "p-J-1",
+      "originalPageRootId": "root_node_p-J-1",
+      "currentWrapperStyle": {
+        "display": "flex",
+        "overflow": "clip",
+        "width": "390px",
+        "height": "fit-content",
+        "alignItems": "center",
+        "flexDirection": "column",
+        "fontFamily": "var(--font-ui)",
+        "left": 7581,
+        "top": -3153,
+        "position": "absolute",
+        "backgroundColor": "var(--mx-dark-bg)"
+      },
+      "wrapperMeasured": {
+        "width": 390,
+        "height": null,
+        "worldX": 7581,
+        "worldY": -3153
+      },
+      "completeProductFrame": null,
+      "productChromeLayout": "Product chrome is spread across wrapper children; preserve original artboard",
+      "rootChildren": [
+        {
+          "id": "17TE-0",
+          "name": "Status bar"
+        },
+        {
+          "id": "17SU-0",
+          "name": "Mobile Change Ledger header"
+        },
+        {
+          "id": "17Q8-0",
+          "name": "Mobile Change Ledger content"
+        },
+        {
+          "id": "17Q3-0",
+          "name": "Frame"
+        }
+      ],
+      "builderHeadingId": "17QB-0",
+      "buildRail": {
+        "id": "17Q9-0",
+        "name": "Frame",
+        "parentId": "17Q8-0",
+        "style": {
+          "display": "flex",
+          "flexDirection": "column",
+          "padding": "16px",
+          "gap": "8px",
+          "backgroundColor": "var(--mx-dark-panel2)",
+          "borderTopWidth": "2px",
+          "borderTopStyle": "solid",
+          "borderTopColor": "var(--mx-dark-link)"
+        },
+        "directChildOfWrapper": false,
+        "jsxRead": true
+      },
+      "wrapperIncludesBothProductAndBuild": true,
+      "action": "MOVE_BUILD_RAIL_ONLY",
+      "destinationPageId": "p-11-0",
+      "destinationRootId": "root_node_p-11-0",
+      "requiredPreservation": "Move only the identified BUILD ONLY block. Preserve all remaining chrome, component variants, state specimens and action bars in place.",
+      "layoutRisk": "Original production width; wrapper height already fit-content.",
+      "remainingSiblingsAtRailParent": [
+        {
+          "id": "17SQ-0",
+          "name": "Frame"
+        },
+        {
+          "id": "17SH-0",
+          "name": "Frame"
+        },
+        {
+          "id": "17RW-0",
+          "name": "Frame"
+        },
+        {
+          "id": "17RV-0",
+          "name": "Material changes"
+        },
+        {
+          "id": "17QU-0",
+          "name": "Frame"
+        },
+        {
+          "id": "17QQ-0",
+          "name": "Frame"
+        },
+        {
+          "id": "17QM-0",
+          "name": "Frame"
+        },
+        {
+          "id": "17QC-0",
+          "name": "Frame"
+        }
+      ],
+      "suggestedMoves": [
+        {
+          "nodeId": "17Q9-0",
+          "parentId": "root_node_p-11-0"
+        }
+      ],
+      "visibilityChecked": true
+    },
+    {
+      "wrapperId": "13TC-0",
+      "wrapperName": "SUPERSEDED · Dark ZH Call duplicate · Hidden",
+      "originalPageId": "p-C-0",
+      "originalPageRootId": "root_node_p-C-0",
+      "currentWrapperStyle": {
+        "display": "none",
+        "overflow": "clip",
+        "width": "390px",
+        "height": "fit-content",
+        "left": -53000,
+        "top": -43300,
+        "position": "absolute",
+        "backgroundColor": "var(--mx-dark-bg)"
+      },
+      "wrapperMeasured": {
+        "width": 390,
+        "height": null,
+        "worldX": -53000,
+        "worldY": -43300
+      },
+      "completeProductFrame": null,
+      "productChromeLayout": "Product chrome is spread across wrapper children; preserve original artboard",
+      "rootChildren": [
+        {
+          "id": "13VR-0",
+          "name": "Status bar"
+        },
+        {
+          "id": "13V6-0",
+          "name": "中文电话会导航"
+        },
+        {
+          "id": "13TI-0",
+          "name": "中文电话会不可用状态"
+        },
+        {
+          "id": "13TD-0",
+          "name": "Frame"
+        }
+      ],
+      "builderHeadingId": "13TL-0",
+      "buildRail": {
+        "id": "13TJ-0",
+        "name": "Frame",
+        "parentId": "13TI-0",
+        "directChildOfWrapper": false
+      },
+      "wrapperIncludesBothProductAndBuild": true,
+      "action": "PRESERVE_ARCHIVE",
+      "destinationPageId": null,
+      "destinationRootId": null,
+      "requiredPreservation": "Do not mutate held/hidden archived design",
+      "layoutRisk": "Excluded",
+      "remainingSiblingsAtRailParent": [],
+      "suggestedMoves": [],
+      "visibilityChecked": false
+    },
+    {
+      "wrapperId": "13VZ-0",
+      "wrapperName": "SUPERSEDED · Dark ZH Sources duplicate · Hidden",
+      "originalPageId": "p-C-0",
+      "originalPageRootId": "root_node_p-C-0",
+      "currentWrapperStyle": {
+        "display": "none",
+        "overflow": "clip",
+        "width": "390px",
+        "height": "fit-content",
+        "left": -53000,
+        "top": -43300,
+        "position": "absolute",
+        "backgroundColor": "var(--mx-dark-bg)"
+      },
+      "wrapperMeasured": {
+        "width": 390,
+        "height": null,
+        "worldX": -53000,
+        "worldY": -43300
+      },
+      "completeProductFrame": null,
+      "productChromeLayout": "Product chrome is spread across wrapper children; preserve original artboard",
+      "rootChildren": [
+        {
+          "id": "13ZG-0",
+          "name": "Status bar"
+        },
+        {
+          "id": "13YV-0",
+          "name": "中文来源导航"
+        },
+        {
+          "id": "13W5-0",
+          "name": "中文来源与覆盖"
+        },
+        {
+          "id": "13W0-0",
+          "name": "Frame"
+        }
+      ],
+      "builderHeadingId": "13W8-0",
+      "buildRail": {
+        "id": "13W6-0",
+        "name": "Frame",
+        "parentId": "13W5-0",
+        "directChildOfWrapper": false
+      },
+      "wrapperIncludesBothProductAndBuild": true,
+      "action": "PRESERVE_ARCHIVE",
+      "destinationPageId": null,
+      "destinationRootId": null,
+      "requiredPreservation": "Do not mutate held/hidden archived design",
+      "layoutRisk": "Excluded",
+      "remainingSiblingsAtRailParent": [],
+      "suggestedMoves": [],
+      "visibilityChecked": false
+    }
+  ]
+}

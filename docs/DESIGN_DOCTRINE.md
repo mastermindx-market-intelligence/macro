@@ -103,6 +103,17 @@ spin words on tape rows (giveback / dead-cat / bounce — banned by adversarial 
 
 ## 3. Ratified patterns (case law — reuse, don't reinvent)
 
+**Chairman design direction — 2026-10-18: no colored container edges.**
+Do not use a colored left border, inset stripe, pseudo-element rail, or equivalent
+edge accent on cards, panels, callouts, rows, navigation selections, or banners.
+This replaces all earlier advice to add a 3px state rail. Containers use even,
+neutral borders; hierarchy comes from spacing, typography, surface depth, and
+concise labels. Selected items use a quiet fill and stronger text with an accessible
+selected/current state. Status may use a labeled icon or text in the semantic ink
+palette. Chart series, actual data marks, neutral dividers, and complete keyboard
+focus outlines retain their distinct jobs. Do not move the decorative stripe to
+another edge. Apply this rule to every new or touched design and shared primitive.
+
 - **Plain-English lanes** (#2206, us_stocks action board): 🟢 Buy now · 🔵 Almost ready ·
   🏃 In favour · 🟠 Take profits · ⚪ Stand aside. Lane names ARE stances. Unknown states
   route to the cautious lane.
@@ -168,7 +179,8 @@ upgrade).
    `html[data-theme="light"]` counterpart or be redesigned: glow/aurora backdrops
    (become pastel stains), blur-teasers over locked content (become dirty smudges —
    ghost them: `saturate(.35)`, opacity ≤ .5), accent-tinted highlight rows (become
-   highlighter smears — quiet tint + 3px rail + deepened ink), panel-on-canvas depth
+   highlighter smears — use a quiet neutral fill, even neutral border, and stronger
+   text; labeled semantic ink carries status, never a colored edge), panel-on-canvas depth
    (light needs white panels on a perceptibly deeper canvas — the shipped value is
    `--bg:#f7f8fa`, superseding this note's earlier `#e8ebf1`; panel≈bg is
    the flatness bug), and colored segment bars (neutral segments vanish on white; add
@@ -240,3 +252,42 @@ Design is judgment work, not mechanical work. Model routing for it is law (CLAUD
 - Every design task starts by loading BOTH inputs: this doctrine (content law — wins on
   conflict) and the `frontend-design:frontend-design` skill (visual bar: deliberate
   palette/type/signature, no templated defaults, one risk you can justify).
+
+
+## 8. Paper product clarity and builder separation — 8 November 2026
+
+Chairman directive: designs are for humans to understand immediately. Implementation detail must survive outside the customer interface. This section clarifies the existing disclosure law; it creates no parallel design system.
+
+### Three destinations, one complete feature
+
+1. **Product:** subject, useful result, meaningful state, relevant units/window, next action and material limitation. Descriptions are optional. A budget is a ceiling, never a quota to fill below every heading. Show source/freshness once at its truthful scope.
+2. **User explanation:** a named, accessible destination for sources, calculation, methodology, history and deeper evidence. Use a clear label such as “How counts work”, not an unexplained icon alone. Keyboard and touch must reach it; closing restores focus and investigation context.
+3. **Build:** separate architecture/implementation guide for components, APIs, schemas, formulas, state machines, entitlements, corrections, persistence, time semantics, test/fixture/evidence requirements and implementation order. Link to the exact product and state frames. This is not customer copy.
+
+A long article, research finding, comparison or recovery instruction that is the user's actual task is substantive content, not automatically bloat. Keep consequential uncertainty, access limits, destructive effects and unavailable data visible at the relevant decision. Never hide a limitation behind help to achieve a word count, invent a trade stance or turn a count into a price signal.
+
+### Paper organization and extraction
+
+Keep current product frames, interaction/help states, builder references and superseded explorations in clearly named pages or sections. For files large enough to need pages, use Product / States & user help / Build / Archive. A small file may use separated artboards. Reuse the existing file; do not create duplicate products or parallel architecture owners.
+
+Put design rules once on a dedicated rules artboard, outside customer frames. Mark build/archive frames unmistakably and link to their governing source. Production JSX extraction targets product/state nodes only. Internal paths, component/test names, fixture instructions, PR/CI status, acceptance checklists and implementation narration must not appear inside customer frames.
+
+### Preserve before simplifying
+
+Record original file/page/node, disposition (keep, rewrite, user disclosure, build guide, archive), exact destination and verification. Move existing notes with their IDs when possible. Preserve the sole copy of a requirement before rewriting its frame. Archive duplicate studies only after useful jobs, states and detail have a named home. A new summary without a reachable detailed destination does not preserve the feature.
+
+### Required review for new or touched designs
+
+- A reviewer can identify purpose, main result/state and next useful action from the composition without reading a methodology paragraph. Do not claim a measured five-second user test unless one occurred.
+- No repeated explanation, decorative footnote wall, duplicate freshness, unexplained internal vocabulary or builder instructions in the customer frame.
+- Current facts retain units, time windows, uncertainty, data quality and access scope. Missing is not zero; stale is not live; counts are not forecasts.
+- A disclosure has a designed destination, opening/closing behavior, keyboard/touch access, focus return and context preservation. A visual button alone is not implemented behavior.
+- Desktop and narrow layouts remain readable in supported EN/ZH and themes; do not shrink text, add ellipses to critical qualifiers or bury the primary action to fit.
+- Builder documents retain source owners, dependencies, full semantics and discriminating acceptance cases. Their references agree with the current code or explicitly identify a source/design gap.
+- Inspect actual Paper screenshots after edits and record exact nodes. Paper proof, implemented code, browser proof and production acceptance are separate.
+
+### News Intelligence precedent
+
+The compact activity view keeps reports/stories, last-24h window, activity state, truthful count time and the historical chart. Sources and calculation details have named secondary destinations. Calendar-day history and a rolling 24h tally remain visibly distinct. No-record periods, recorded zero, limited history, partial coverage and unavailable counts remain different states.
+
+Thresholds, report/cluster identities, rights filtering, withdrawals, timestamp fallback, refresh behavior, baseline policy, schemas and tests belong in the source-linked News builder guide. The older expanded-count specimens remain archival reference, not a copy-ready production design. Existing content, numeric and authorization owners are unchanged.

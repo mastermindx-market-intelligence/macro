@@ -1,0 +1,142 @@
+{
+  "subject_head": "2dfc6953f0939f3480db4835c482005cb782bb21",
+  "tested_merge": "1697114ab567ab1897eab765faa9e4ebe7f50849",
+  "tested_base": "c12ecb86c312542a5f00f9d6e419cdc3542a3503",
+  "run_id": 38103314008,
+  "job_id": 114364119719,
+  "job": "ci-pack-10",
+  "selected_owner_job": "leader-radar-unit",
+  "new_step_selected": true,
+  "failure": "ModuleNotFoundError: No module named test_build_leader_radar",
+  "location": "tests/test_leader_recovery_integration.py:7",
+  "repair": "Use package-qualified tests.test_build_leader_radar import in integration and original RS-high test",
+  "repair_staged": true,
+  "hosted_fix_verified": true,
+  "legacy_suites_passed": {
+    "lifecycle": 141,
+    "builder": 138
+  },
+  "subsequent": [
+    {
+      "subject_head": "a71eea31afb631bbf6cfd9c228720c3eb8427903",
+      "run_id": 38105080477,
+      "job_id": 114369407950,
+      "job": "ci-pack-9",
+      "failed_jobs": [
+        "design-governance",
+        "unrun-import-hygiene"
+      ],
+      "failures": [
+        {
+          "check": "tests/test_check_script_import_pinning.py::test_unpinned_entry_scripts_only_shrink",
+          "message": "unpinned and not in the baseline: scripts/research/leader_recovery_census.py, scripts/research/leader_recovery_policy_study.py",
+          "repair": "Top-level unconditional repo-root pin (_ROOT = Path(__file__).resolve().parents[2]; sys.path.insert(0, str(_ROOT))) ahead of the first engine/lib/scripts import in both research scripts; baseline not extended; no tests-directory sys.path insertion"
+        },
+        {
+          "check": "scripts/check_design_system.py --mode enforce-added (R0 radius-literal)",
+          "message": "templates/leader_radar.html.j2:548 border-radius: 12px; :553 border-radius: 7px",
+          "repair": ".rs-highs-col -> var(--r-card,12px); .rs-highs-ticker -> var(--r-ctl,8px) (nearest documented scale; 1px visual change on the chip)"
+        }
+      ],
+      "repair_author": "RS LEADER Meta-CEO session 5ec0472d (Claude Fable 5.1), 2026-10-11, lane tree claude/ssd-rs-leader-wp1-1d927f831ec5f94e pushed by refspec onto the PR branch",
+      "local_checks": {
+        "import_pinning": "python3 -m pytest tests/test_check_script_import_pinning.py -q -> 11 passed",
+        "design_governance": "python3 scripts/check_design_system.py --mode enforce-added --diff-file <templates diff vs origin/main fcc82790> -> 0 blocking",
+        "focused_suite": "398 passed",
+        "agentos": "python3 scripts/agentos.py validate --root agentos --quiet -> 0 errors",
+        "diff_check": "git diff --check clean"
+      },
+      "hosted_fix_verified": true,
+      "hosted_fix_verified_by": {
+        "run_id": 38117862214,
+        "head": "a7189a98f1c1991e3cf5e1e0b4816b6552f238c9",
+        "note": "unrun-import-hygiene and the R0 radius literal did not recur on this run (see subsequent[1].previous_failures_cleared); that run itself failed only the visual-evidence gate, repaired in subsequent[1]."
+      }
+    },
+    {
+      "subject_head": "a7189a98f1c1991e3cf5e1e0b4816b6552f238c9",
+      "run_id": 38117862214,
+      "job_id": 114406836084,
+      "job": "ci-pack-8",
+      "failed_jobs": [
+        "design-governance"
+      ],
+      "gate_jobs_concluded_failure": [
+        "ci-pack-8",
+        "ci-gate"
+      ],
+      "previous_failures_cleared": [
+        "unrun-import-hygiene",
+        "design-governance (R0 radius-literal)"
+      ],
+      "failures": [
+        {
+          "check": "scripts/check_ui_visual_evidence.py (design-governance \u2014 visual evidence for a material UI change)",
+          "message": "visual evidence required for a material UI change: templates/leader_radar.html.j2",
+          "repair": "mockups/evidence/rs-leader-highs-watch/ (EVIDENCE.yml + manifest.json + PNG cells) captured with scripts/capture_page_evidence.py against the read-only scratch render of the existing page, including hover/focus force states on .rs-highs-ticker; gate exit 0 locally",
+          "evidence_manifest_totals": {
+            "pages": 1,
+            "states_attempted": 36,
+            "states_captured": 36
+          },
+          "evidence_axes": {
+            "access": [
+              "anonymous"
+            ],
+            "force_states": [
+              "rs_highs_ticker_hover:hover(.rs-highs-ticker)",
+              "rs_highs_ticker_focus:focus(.rs-highs-ticker)"
+            ],
+            "locales": [
+              "en",
+              "zh"
+            ],
+            "themes": [
+              "light",
+              "dark"
+            ],
+            "viewports": {
+              "desktop": [
+                1440,
+                900
+              ],
+              "mobile": [
+                390,
+                844
+              ],
+              "tablet": [
+                820,
+                1180
+              ]
+            }
+          },
+          "evidence_generated_at": "2026-10-11T08:29:31Z"
+        }
+      ],
+      "also_in_this_repair_push": [
+        "engine: restoration target is the fixed pre-correction peak (original_price_target_recovered), not the advancing high-water; gapped-history episodes complete with reason price_and_pre_correction_rs_restored_gapped_history instead of being barred",
+        "builder: recovery_roster.additive_clock (universe-majority completed session) + ::warning leader_radar_additive_clock + template lag section-note; incumbent payload parity 0 differences (producer_parity.json)",
+        "research: census --as-of cut; CENSUS_SUMMARY/POLICY_SUMMARY regenerated at 2026-10-08 under the corrected engine"
+      ],
+      "repair_author": "RS LEADER Meta-CEO session 5ec0472d (Claude Fable 5.1), 2026-10-11, lane tree claude/ssd-rs-leader-wp1-1d927f831ec5f94e pushed by refspec onto the PR branch",
+      "local_checks": {
+        "visual_evidence": "python3 scripts/check_ui_visual_evidence.py -> exit 0 (evidence folder resolves the changed template)",
+        "focused_suite": "401 passed",
+        "producer_parity": "scratchpad/parity.py -> n_differences_outside_exclusions 0 (173 names)",
+        "operational_stores": "177 files hashed before/after research + render -> unchanged",
+        "agentos": "python3 scripts/agentos.py validate --root agentos --quiet (run before commit)",
+        "diff_check": "git diff --check (run before commit)"
+      },
+      "hosted_fix_verified": true,
+      "hosted_fix_verified_by": {
+        "run_id": 38128428074,
+        "head": "7164b018ecd00f44e158b69252afce27accb28f0",
+        "note": "exact-head hosted ci.yml run concluded with every binding check green (standing excluded contexts: ci-authority/codex/merge-queue-pilot, Workers Builds: macro)."
+      }
+    }
+  ],
+  "hosted_fix_verified_by": {
+    "run_id": 38128428074,
+    "head": "7164b018ecd00f44e158b69252afce27accb28f0"
+  }
+}
