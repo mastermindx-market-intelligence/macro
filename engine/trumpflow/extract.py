@@ -22,8 +22,12 @@ from __future__ import annotations
 
 import json
 import logging
+import os
 import re
+import secrets
+import stat
 from datetime import datetime, timezone
+from pathlib import Path
 
 import requests
 
@@ -108,7 +112,34 @@ def _key(e: dict) -> str:
 
 # --------------------------------------------------------------------------- io
 def _path(root=None):
-    return (config.data_dir() if root is None else (root / "data")) / "trumpflow" / "extracted_edges.jsonl"
+    return _data_root(root) / "trumpflow" / "extracted_edges.jsonl"
+
+
+def _data_root(root=None):
+    configured = Path(config.ROOT if root is None else root).absolute()
+    actual = configured.resolve(strict=True)
+    data = Path(config.data_dir()).absolute() if root is None else configured / "data"
+    if data.is_relative_to(configured):
+        relative = data.relative_to(configured)
+    elif data.is_relative_to(actual):
+        relative = data.relative_to(actual)
+    else:
+        # An explicitly configured external store is its own existing owner.
+        return data.resolve(strict=True)
+    current = actual
+    for part in relative.parts:
+        if part in (".", ".."):
+            raise ValueError("extract_directory_invalid")
+        current = current / part
+        if current.is_symlink():
+            raise ValueError("extract_directory_invalid")
+    return current
+
+
+def _lock_root(root=None):
+    actual = Path(config.ROOT if root is None else root).resolve(strict=True)
+    data = _data_root(root)
+    return actual if data.is_relative_to(actual) else data.resolve(strict=True)
 
 
 def load_candidates(root=None) -> list[dict]:
@@ -194,26 +225,199 @@ def _filing_items(root=None, limit: int = 15, max_age_days: int = 45) -> list[di
 
 
 def _seen_path(root=None):
-    return (config.data_dir() if root is None else (root / "data")) / "trumpflow" / "extract_seen.json"
+    directory = _data_root(root) / "trumpflow"
+    if directory.is_symlink():
+        raise ValueError("extract_directory_invalid")
+    return directory / "extract_seen.json"
+
+
+def _logical_source(source_id):
+    return {"task": "trumpflow-extract", "source_id": source_id}
+
+
+def _seen_document(root=None):
+    return _seen_value(_ct._cache_read(_seen_path(root)))
+
+
+def _seen_value(raw):
+    if raw is None:
+        return {"schema": "trumpflow.extract_seen.v2", "seen": [], "selected": {}}
+    if type(raw) is list:
+        if any(type(value) is not str or not value for value in raw):
+            raise ValueError("extract_seen_invalid")
+        return {"schema": "trumpflow.extract_seen.v2", "seen": sorted(set(raw))[-5000:], "selected": {}}
+    if (type(raw) is not dict or set(raw) != {"schema", "seen", "selected"}
+            or raw["schema"] != "trumpflow.extract_seen.v2"
+            or type(raw["seen"]) is not list or len(raw["seen"]) > 5000
+            or any(type(value) is not str or not value for value in raw["seen"])
+            or raw["seen"] != sorted(set(raw["seen"])) or type(raw["selected"]) is not dict):
+        raise ValueError("extract_seen_invalid")
+    operations = set()
+    for source_id, record in raw["selected"].items():
+        if (type(source_id) is not str or not source_id or len(source_id) > 4096
+                or type(record) is not dict or set(record) != {"source", "source_digest", "cache", "delivered"}
+                or type(record["delivered"]) is not bool):
+            raise ValueError("extract_seen_selected_invalid")
+        source = record["source"]
+        if (type(source) is not dict or set(source) != {"text", "url", "time", "source_id", "source_type"}
+                or source["source_id"] != source_id or source["source_type"] not in {"news", "filing"}
+                or type(source["text"]) is not str or not source["text"].strip()
+                or len(source["text"].encode()) > 1048576
+                or any(source[key] is not None and type(source[key]) is not str for key in ("url", "time"))
+                or _ct._cache_hash(source) != record["source_digest"]):
+            raise ValueError("extract_seen_source_invalid")
+        cache = _ct._fabric_cache_value(record["cache"], _logical_source(source_id))
+        if len(cache["entries"]) != 1:
+            raise ValueError("extract_seen_operation_invalid")
+        row = cache["entries"][0]
+        if (row["operation_id"] in operations
+                or record["delivered"] and row["state"] != "terminal"):
+            raise ValueError("extract_seen_operation_invalid")
+        operations.add(row["operation_id"])
+    return raw
+
+
+def _write_seen(document, root=None):
+    # A native-only watermark retains its incumbent list representation.
+    document["seen"] = sorted(set(document["seen"]))[-5000:]
+    _seen_value(document)
+    _ct._cache_save(_seen_path(root), document if document["selected"] else document["seen"])
 
 
 def _load_seen(root=None) -> set:
-    p = _seen_path(root)
-    if not p.exists():
-        return set()
-    try:
-        return set(json.loads(p.read_text()) or [])
-    except Exception:  # noqa: BLE001
-        return set()
+    document = _seen_document(root)
+    return set(document["seen"]) | set(document["selected"])
 
 
 def _save_seen(seen: set, root=None) -> None:
-    p = _seen_path(root)
-    p.parent.mkdir(parents=True, exist_ok=True)
-    p.write_text(json.dumps(sorted(seen)[-5000:]))   # cap the watermark file
+    with _ct._cache_lock(_seen_path(root), _lock_root(root)):
+        document = _seen_document(root)
+        document["seen"] = sorted(set(document["seen"]) | set(seen))[-5000:]
+        _write_seen(document, root)
+
+
+def _candidate_bytes(root=None):
+    try:
+        fd = os.open(_path(root), os.O_RDONLY | os.O_NOFOLLOW)
+    except FileNotFoundError:
+        return b""
+    with os.fdopen(fd, "rb") as source:
+        info = os.fstat(source.fileno())
+        if not stat.S_ISREG(info.st_mode) or info.st_size > 64 * 1024 * 1024:
+            raise ValueError("extract_candidates_invalid")
+        raw = source.read(64 * 1024 * 1024 + 1)
+    if len(raw) > 64 * 1024 * 1024 or raw and not raw.endswith(b"\n"):
+        raise ValueError("extract_candidates_invalid")
+    return raw
+
+
+def _merge_candidates(new, root=None):
+    """Called under the same seen-owner lock for native and selected delivery."""
+    current = []
+    for line in _candidate_bytes(root).splitlines():
+        if not line.strip():
+            continue
+        row = _ct._cache_decode(line)
+        if type(row) is not dict or any(type(row.get(k)) is not str or not row[k] for k in ("src", "rel", "dst")):
+            raise ValueError("extract_candidates_invalid")
+        current.append(row)
+    keys = {_key(row) for row in current}
+    added = 0
+    for row in new:
+        if _key(row) not in keys:
+            current.append(row)
+            keys.add(_key(row))
+            added += 1
+    if not added:
+        return 0
+    raw = b"".join(_ct._cache_json(row) + b"\n" for row in current)
+    if len(raw) > 64 * 1024 * 1024:
+        raise ValueError("extract_candidates_bound")
+    path = _path(root)
+    temporary = path.with_name(path.name + ".tmp-" + secrets.token_hex(12))
+    fd = os.open(temporary, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o600)
+    try:
+        with os.fdopen(fd, "wb") as target:
+            target.write(raw)
+            target.flush()
+            os.fsync(target.fileno())
+        os.replace(temporary, path)
+        _ct._cache_sync_directory(path.parent)
+        if _candidate_bytes(root) != raw:
+            raise ValueError("extract_candidates_readback_mismatch")
+    finally:
+        if temporary.exists():
+            temporary.unlink()
+    return added
+
+
+def _selected_edges(source, text):
+    parsed = _ct._extract_json(text)
+    if type(parsed) is not dict or set(parsed) != {"edges"} or type(parsed["edges"]) is not list or len(parsed["edges"]) > 256:
+        raise ValueError("extract_reply_invalid")
+    return _extract_edges(source["text"], text)
+
+
+def _deliver_selected(source_id, root=None):
+    with _ct._cache_lock(_seen_path(root), _lock_root(root)):
+        document = _seen_document(root)
+        record = document["selected"][source_id]
+        row = record["cache"]["entries"][0]
+        if record["delivered"]:
+            return 0
+        if row["state"] != "terminal":
+            raise ValueError("fabric_original_held")
+        result = row["result"]
+        if result is not None and _selected_edges(record["source"], row["text"]) != result:
+            raise ValueError("extract_saved_result_invalid")
+        source, receipt = record["source"], row["receipt"]
+        candidates = [{**edge, "url": source["url"], "source_type": source["source_type"],
+            "source_time": source["time"], "extracted_at": receipt["completed_at"],
+            "fabric_operation_id": row["operation_id"], "llm_model": receipt["served_model"]}
+            for edge in result or []]
+        added = _merge_candidates(candidates, root)
+        record["delivered"] = True
+        document["seen"].append(source_id)
+        _write_seen(document, root)
+        return added
+
+
+def _selected_call(item, cfg, root=None):
+    source_id = item["source_id"]
+    logical = _logical_source(source_id)
+    def load_cache():
+        record = _seen_document(root)["selected"].get(source_id)
+        if record is not None and record["source"] != item:
+            raise ValueError("extract_original_input_changed")
+        return record["cache"] if record is not None else None
+    def store_cache(cache):
+        if len(cache["entries"]) != 1:
+            raise ValueError("extract_source_already_claimed")
+        document = _seen_document(root)
+        record = document["selected"].get(source_id)
+        if record is not None and record["source"] != item:
+            raise ValueError("extract_original_input_changed")
+        if record is not None and any(cache["entries"][0][key] != record["cache"]["entries"][0][key]
+                for key in ("operation_id", "input_digest")):
+            raise ValueError("extract_source_already_claimed")
+        document["selected"][source_id] = {"source": item, "source_digest": _ct._cache_hash(item),
+            "cache": cache, "delivered": record["delivered"] if record else False}
+        _write_seen(document, root)
+    return _ct._fabric_cached_document(path=_seen_path(root),
+        root=Path(config.ROOT if root is None else root), cache_root=_lock_root(root),
+        logical_source=logical, cfg={"max_tokens": 1200, **cfg}, lane="trumpflow-extract",
+        system=_SYSTEM, user=f"<doc>\n{item['text']}\n</doc>",
+        input_context={"source": item, "relations": sorted(_RELS)},
+        validate=lambda text: _selected_edges(item, text), load_cache=load_cache, store_cache=store_cache)
 
 
 def _call(source_text: str, cfg: dict) -> str | None:
+    from engine import llm_auth
+    try:
+        if llm_auth.application_mode_id(cfg) is not None:
+            return None
+    except Exception:
+        return None
     client = _ct._client(cfg)
     if client is None:
         return None
@@ -236,31 +440,59 @@ def run(root=None, news_limit: int = 40, filing_limit: int = 15) -> dict:
     so each source is processed once."""
     if not enabled():
         return {"extracted": 0, "reason": "disabled"}
-    cfg = _cfg()
-    if _ct._client(cfg) is None:
-        return {"extracted": 0, "reason": "no_key"}
-    seen = _load_seen(root)
-    existing = {_key(e) for e in load_candidates(root)}
+    from engine import llm_auth
+    recovered = 0
+    try:
+        document = _seen_document(root)
+        for source_id, record in document["selected"].items():
+            if record["cache"]["entries"][0]["state"] != "terminal":
+                return {"extracted": 0, "processed": 0, "reason": "fabric_original_held"}
+        with _ct._cache_lock(_seen_path(root), _lock_root(root)):
+            _merge_candidates([], root)
+        for source_id, record in document["selected"].items():
+            if not record["delivered"]:
+                recovered += _deliver_selected(source_id, root)
+        cfg = _cfg()
+        selected = llm_auth.application_mode_id(cfg) is not None
+        seen = _load_seen(root)
+    except Exception:
+        return {"extracted": recovered, "processed": 0, "reason": "fabric_state_refused"}
     items = [it for it in (_news_items(root, news_limit) + _filing_items(root, filing_limit))
              if it["source_id"] not in seen]
+    if items and not selected and _ct._client(cfg) is None:
+        return {"extracted": recovered, "reason": "no_key"}
     new, processed = [], []
     for item in items:
+        if selected:
+            try:
+                result = _selected_call(item, cfg, root)
+                if result is None:
+                    return {"extracted": recovered, "processed": len(processed), "reason": "fabric_selection_changed"}
+                document = _seen_document(root)
+                record = document["selected"].get(item["source_id"])
+                if record is None or record["cache"]["entries"][0]["state"] != "terminal":
+                    return {"extracted": recovered, "processed": len(processed), "reason": result["error"] or "fabric_original_held"}
+                recovered += _deliver_selected(item["source_id"], root)
+                processed.append(item["source_id"])
+                if result["error"]:
+                    return {"extracted": recovered, "processed": len(processed), "reason": result["error"]}
+            except Exception:
+                return {"extracted": recovered, "processed": len(processed), "reason": "fabric_delivery_refused"}
+            continue
         processed.append(item["source_id"])
         for e in _extract_edges(item["text"], _call(item["text"], cfg)):
-            if _key(e) in existing:
-                continue
-            existing.add(_key(e))
             e.update({"url": item.get("url"), "source_type": item.get("source_type"),
                       "source_time": item.get("time"),
                       "extracted_at": datetime.now(timezone.utc).isoformat()})
             new.append(e)
-    if new:
-        p = _path(root)
-        p.parent.mkdir(parents=True, exist_ok=True)
-        with open(p, "a") as fh:
-            for e in new:
-                fh.write(json.dumps(e, default=str) + "\n")
-    if processed:
-        _save_seen(seen | set(processed), root)     # watermark even when an item yields no edge
-    log.info("trumpflow extract: %d candidate edge(s) from %d source(s)", len(new), len(processed))
-    return {"extracted": len(new), "processed": len(processed), "reason": "ok"}
+    if processed and not selected:
+        try:
+            with _ct._cache_lock(_seen_path(root), _lock_root(root)):
+                document = _seen_document(root)
+                recovered += _merge_candidates(new, root)
+                document["seen"] = sorted(set(document["seen"]) | set(processed))[-5000:]
+                _write_seen(document, root)
+        except Exception:
+            return {"extracted": recovered, "processed": len(processed), "reason": "delivery_refused"}
+    log.info("trumpflow extract: %d candidate edge(s) from %d source(s)", recovered, len(processed))
+    return {"extracted": recovered, "processed": len(processed), "reason": "ok"}

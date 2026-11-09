@@ -5338,6 +5338,12 @@ CURATED_EXCLUSIVE = {
     # package, so the three packing probes keep their base aggregates
     # with no ceiling moved.
     "xguerrilla-admission",
+    # Existing Fabric closures already declare these exclusive jobs.
+    'billing-emails',
+    'sa-w4-improvement-lanes',
+    'unrun-brain-gateway',
+    # The Fabric consumer join retains this desk job's complete named closure.
+    "unrun-brain-desks",
 }
 
 
@@ -5702,10 +5708,28 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # Actual composed compiler: index135/5878, free135/5874, Prophet128/5628;
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
+# Fabric application composition (2026-11-04): canonical tracked-tree probes at
+# c166bb33 measured 137/5924, 137/5939 and 131/5680 (jobs/weight seconds).
+# The added production, gateway and authenticated Admin coverage costs exactly
+# 12 weight seconds above protected ec67; job and ten-pack ceilings are unchanged.
+# Trusted application-owner composition at 26f62c1a adds six measured weight
+# seconds: 137/5930, 137/5945, 131/5686; all ten packs, no new selected jobs.
+# Paired five-service identity proof (2026-11-06) adds exactly 14 planning units
+# to unrun-brain-gateway: one command + four test-path mentions * 2 + five
+# 800-character buckets. Keep its verified 27-file fixture and both real suites.
+# Original hosted run 42245790043 measured 137/5974, 136/5985, 130/5726,
+# all ten packs; these are estimator units, not observed execution duration.
+# Fund +14 in each ceiling, retaining existing same-tree margins of 0/4/4.
+# Job counts, pack limit, selection and the estimator remain unchanged.
+# Protected options-question composition (2026-11-07): actual combined probes
+# are index134/5721, free134/5991, Prophet127/5475, ten packs each.
+# The protected options widget browser test adds exactly two planning units
+# to unrun-brain-gateway, selected here only by free-content. Fund those two
+# measured units there; preserve the other ceilings, suites and all limits.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_958),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_979),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_716),
+    ("templates/index.html", 137, 5_943),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 6_000),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_701),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5847,6 +5871,58 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     accounting, not an elapsed-time claim; natural successor CI must qualify
     the repaired source.
 
+    H4 protected-86/head-344 composition (2026-11-08): the complete
+    147,995-file source measured index134/5747/10, free134/6020/11 and
+    Prophet127/5504/10 (jobs/weight/packs). Preserve the accepted synthetic
+    enrollment and recover its exact20-unit excess with real interpreter
+    startup consolidation: unrun-scoring-engine runs the same21 ordered
+    selectors in one invocation instead of16; unrun-template-chips combines
+    its separate3- and4-invocation groups while retaining the intervening
+    filtered command. The same31 selectors, contexts and inferred scopes
+    remain. Their weights60->45 and31->26 remove20 startup units without
+    changing the estimator, any selector, the6,000 ceiling or ten-pack cap.
+    Joint execution and the canonical full-source gates qualify this
+    composition; the historical receipts below retain their original scope.
+
+    H4 current-main ab2a2a7a integration (2026-11-08): the complete
+    immutable candidate measured 134 free-content jobs, 6,003 planning
+    units and 11 packs. The unchanged selected admin-js-no-undef owner
+    has four adjacent ordinary pytest steps with identical context.
+    Run their same four explicit modules in one invocation, preserving
+    their order, all assertions, setup steps, selectors and timeouts.
+    This removes three interpreter startups and three measured estimator
+    units (14 -> 11) without changing weights, duration overrides, the
+    6,000 ceiling or the ten-pack limit. The exact combined invocation
+    and all three canonical probes must qualify this composed source;
+    preserved historical receipts below remain scoped to their sources.
+
+    H4 current-main intake (2026-11-08): complete source332cae885da6
+    passed all422 paired consumer cases but its canonical packing test
+    found6,001 free-content units required11 packs. Retain protected PR7352's
+    full benchmark enrollment and every selected suite. Consolidate the two
+    adjacent ordinary pytest steps for typed datapoints and source-bound
+    Brain evidence into one invocation in their incumbent owner. Their cwd,
+    environment, interpreter, flags and explicit test paths are identical;
+    neither step carries a distinct source fixture or isolation contract.
+    This removes one Python/pytest startup and one command-estimator unit,
+    yielding6,000 without changing the estimator or any duration override.
+    Preserve all job/count/ten-pack bounds, selectors and admission limits.
+    The combined invocation and unchanged canonical planner must qualify
+    this actual new source before release; arithmetic is not a test receipt.
+
+    H4 current-main f3a8cf04 integration (2026-11-09): the complete
+    ordinary union preserved all400 job IDs and measured134/6009/11 for
+    free-content. Preserve PR6867's full lifecycle and ledger coverage.
+    Join its four selectors into the existing data-base-shim pytest call,
+    then join the five ordinary China Native calls and the five ordinary
+    Flow Signal calls in their existing owners. Their exact ordered
+    selectors, contexts, dependencies and process-isolated cold-import
+    probes remain unchanged. The three owners remove1+4+4 real Python
+    startups and estimator units; no duration override, suite, assertion,
+    selection rule, count ceiling,6000-unit ceiling or ten-pack cap changes.
+    Exact joint execution and the original canonical planner qualify this
+    source; historical evidence below keeps its original scope.
+
     2026-11-08 (PR #6867, intraday lifecycle and ledger regression coverage):
     natural contract job 128831388767 measured head
     f218bb91b29683dd662eb573127620aae9e2c9d6 against base
@@ -5978,6 +6054,26 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     selector and every suite stay unchanged. These are planner estimates,
     not measured execution times.
 
+    2026-11-08 (H4 original APPLICATION + protected-main composition):
+    candidate ca8de427c92e/tree ccfa82d02fd9 was materialized from the
+    complete immutable source and exercised by this unchanged pytest test,
+    with ancestor Git discovery fenced. It measured free-content 134 jobs /
+    5,999 planning units within the existing ten-pack bound; only its weight
+    ceiling failed. The paired protected ec26dac8e5e2 source passed this same
+    test. Retain current job ceilings 137 / 138 / 131 and all index/Prophet
+    ceilings, suites, selectors, timeouts and admission limits. Bind only the
+    free-content ceiling to the measured 5,999 units, retaining both accepted
+    histories below. The original APPLICATION ceiling was 5,993; the accepted
+    protected QTUM and Immune enrollments contribute three units each. These
+    are estimator units, not elapsed runtime. Natural CI remains required.
+
+    Protected Press/GSC and Fabric composition (2026-11-07): the actual
+    445d86584a50 + 0e48e731791f source measures index134/5721,
+    free-content134/5993 and Prophet127/5475, all ten packs. The accepted
+    GSC suite adds exactly two free-content planning units to the retained
+    Fabric ceiling5991. Fund only5991->5993 and preserve all other weight,
+    job-count, pack, timeout and admission bounds and both histories below.
+
     2026-11-08 (PR #7694, current-main content-conflict composition):
     preserve the accepted full Immune-suite enrollment below together with
     current main cef4e3797c186d6da7adbaa9da450ca790b00f8b's landed QTUM
@@ -6050,6 +6146,54 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     two free-content planning-weight units. Fund precisely5931->5933;
     retain incoming index/Prophet ceilings, all job-count and pack bounds,
     selectors, suites, timeouts and admission limits. No runtime claim.
+
+    Native caller joins and held Go recipe (2026-11-05): the actual managed
+    source planner measured index137/5959, free137/5974 and Prophet131/5715,
+    all ten packs. Two suites added to the existing Fabric command cost four
+    weight units, with no new selected jobs. Preserve every job-count, pack,
+    runtime and admission bound.
+    Qualifying the external native fixture paths then measures 5960, 5975,
+    and 5716 respectively: one additional estimator unit on the same command,
+    with identical job counts and ten packs. Fund only that measured unit.
+
+    Buffered native Brain delivery (2026-11-05): actual current-source
+    measurements are index137/5955, free137/5970 and Prophet131/5711,
+    all ten packs. Registering one native-backed suite in the incumbent
+    Fabric command adds exactly two planner weight units. Preserve every
+    existing job-count, pack, runtime and admission bound.
+
+    Native application client (2026-11-05): canonical head closure/packing
+    measured index137/5953, free137/5968 and Prophet131/5709, all ten packs,
+    zero missing closure paths or unrun suites. The existing Fabric step now
+    fetches the closed immutable native fixture and runs two additional
+    suites, adding nine estimated weight seconds with no selected-job entrants.
+    Preserve every job-count, pack, runtime and admission bound.
+
+    Cached Brain callbacks and Translation (2026-11-05): canonical head
+    closure/packing functions measured index137/5944, free137/5959 and
+    Prophet131/5700, all ten packs, zero missing closure paths or unrun
+    suites. Three new owner/consumer suites add six estimated weight
+    seconds. Preserve all job-count, pack, timeout and admission bounds.
+
+    News and authenticated Ask (2026-11-05): canonical contract-delta
+    measured index137/5938, free137/5953 and Prophet131/5694, all ten
+    packs with no selected-job entrants. Registering both real-owner suites
+    adds four estimated weight seconds. Preserve every existing gate,
+    job, timeout and pack bound; widen the two China dependency closures.
+
+    Shared consumers and AI Brief (2026-11-05): canonical contract-delta
+    against protected ec67 measured index137/5934, free137/5949 and
+    Prophet131/5690, all ten packs and no selected-job entrants. Registering
+    the two new real-owner suites in the existing Fabric step adds exactly
+    four estimated weight seconds. Fund only these measured four seconds;
+    retain every selected test, job-count, pack, runtime and admission bound.
+
+    Fabric application owner (2026-11-04): canonical contract-delta at
+    26f62c1a against protected ec67 measured index137/5930, free137/5945,
+    Prophet131/5686, ten packs each, with no selected-job entrants. The new
+    owner/startup proof adds six planner weight seconds above the prior
+    consumer composition. Fund only these measured six seconds; preserve
+    job-count, pack, runtime, admission and all required test bounds.
 
     Current-main composition (2026-11-07, PR10710): preserve the original
     P15.T2.S3 paired measurement below; this paragraph is arithmetic composition,

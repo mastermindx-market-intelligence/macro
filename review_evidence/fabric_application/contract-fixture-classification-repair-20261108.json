@@ -1,0 +1,49 @@
+{
+  "schema": "mastermind.fabric-application.contract-fixture-repair.v1",
+  "source_only": true,
+  "qualified_parent": "870ca1f7508c8b1d611d5880791258cfdda64d01",
+  "tested_hosted_merge": "886dd09a59a3ae41384c020b0f59442933af80db",
+  "tested_hosted_base": "f034710e6bf0c554f8011b1251f8ba1e88621d64",
+  "failures": {
+    "run": 42488341005,
+    "contract_delta_job": 128755036092,
+    "ci_pack_2_job": 128755544490,
+    "introduced_closure_findings": 11,
+    "shared_roots": [
+      "templates/index.html",
+      "scripts/build_free_content.py"
+    ]
+  },
+  "repair": {
+    "path": "tests/test_ci_pack.py",
+    "before_blob": "18a48da3082abd9fc461fa0505082cff208443ef",
+    "after_blob": "af6e6df3a7540d3098388954935357908557560f",
+    "after_sha256": "4c3ad6a817b1da54c028a70524ddb63b9bbdbbda16d43ee0b0b03d5708e1c94f",
+    "comment_replacements": 2,
+    "restored_marker": "ci-trigger-closure: data",
+    "python_ast_unchanged": true,
+    "job_inventory_unchanged": true,
+    "manifest_unchanged": true,
+    "packing_ceilings_unchanged": true,
+    "reason": "The two literals are planner fixture inputs. Restoring the accepted inline data markers removes falsely inferred executable dependencies without excluding any actual import."
+  },
+  "qualification": {
+    "tests": [
+      "tests/test_ci_pack.py::test_curated_exclusive_scopes_cover_their_own_import_closure",
+      "tests/test_ci_pack.py::test_curated_exclusivity_drops_only_the_opaque_fallback_tier"
+    ],
+    "passed": 2,
+    "failed": 0,
+    "errors": 0,
+    "seconds": 252.97,
+    "log_sha256": "99db33d5c94c6f7da021687c7391181685cc33299c5435b1c861e2db3be3ec87",
+    "canonical_owner": "scripts.run_ci_pack.curated_exclusive_closure_findings",
+    "all_exclusive_jobs_checked": true,
+    "git_ref_or_worktree_authoring": false
+  },
+  "acceptance": {
+    "hosted_ci_after_publication": "owed",
+    "macro_merge": "owed",
+    "native_provider_and_H4_journeys": "owed"
+  }
+}

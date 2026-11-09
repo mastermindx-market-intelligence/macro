@@ -1256,7 +1256,7 @@ RENDER.overview = async () => {
       ${adminOverviewMetric("health", "Data pipeline", !healthKnown ? "Unavailable" : hh.healthy ? "Healthy" : "Needs attention", sourceDetail, !healthKnown || !hh.healthy ? "warn" : "ok")}
       ${adminOverviewMetric("system", "Background services", serviceValue, sv.available && serviceCounts ? `${sv.ok_count}/${sv.total} services running` : "Live service checks unavailable", !serviceKnown ? "" : sv.healthy ? "ok" : "bad")}
       ${adminOverviewMetric("system", "Server resources", serverValue, serverDetail)}
-      ${adminOverviewMetric("cost", "Estimated AI cost", costValue, costDetail)}
+      ${adminOverviewMetric("cost", "Legacy DeepSeek estimate", costValue, costDetail)}
     </div>
     <section class="admin-attention" aria-labelledby="admin-attention-title"><h2 id="admin-attention-title">Operational attention</h2>
       ${notices.length ? notices.map(n => `<button type="button" class="admin-notice" data-admin-go="${n.page}"><span class="led ${n.tone}"></span><span><strong>${esc(n.title)}</strong><span class="sub">${esc(n.detail)}</span></span><span aria-hidden="true">→</span></button>`).join("") : `<div class="admin-notice"><span class="led ok"></span><span>No issues reported by the available pipeline and service checks.</span></div>`}
@@ -3099,15 +3099,26 @@ RENDER.cost = async () => {
   }
 
   const T = u.totals || {}, W = u.windows || {};
+  const costValue = (bucket) => {
+    const b = bucket || {};
+    if (b.no_usd) return "Cost unavailable";
+    const calls = Number.isInteger(b.calls) ? b.calls : null;
+    const unpriced = Number.isInteger(b.unpriced_calls) ? b.unpriced_calls : null;
+    if (calls === 0 && b.calls_coverage_complete !== false && !(Number(b.usd) > 0)) return "No recorded calls";
+    if (unpriced > 0 && calls === unpriced && b.unpriced_coverage_complete !== false)
+      return `Unpriced · ${unpriced} calls`;
+    const amount = b.usd == null ? "Cost unavailable" : fmtUSD(b.usd);
+    return unpriced > 0 ? `${amount} known · ${unpriced} unpriced calls` : amount;
+  };
 
   // ── (a) headline spend ──
   const headHtml = `
-    <div class="sub" style="margin-bottom:10px">Every measured AI call across all lobes — unified from the usage ledger, the Mastermind bot, and Codex. Percentages are each lobe's share of spend, so a lobe that has become too heavy a burden stands out and you can decide whether to throttle it.</div>
+    <div class="sub" style="margin-bottom:10px">Observed usage from the ledger, Mastermind bot and Codex. Dollar amounts show known cost estimates; unpriced calls remain unpriced. Percentages describe the known priced cost. External source coverage is listed below.</div>
     <div class="grid">
-      ${card("30-day spend · all sources", `<div class="big">${fmtUSD(T.usd)}</div><div class="sub">${fmtTokens(T.tokens)} tokens · ${T.calls || 0} calls</div>`)}
-      ${card("Subscription-equivalent", `<div class="big">${fmtUSD(T.subscription_usd)}</div><div class="sub">OAuth / CLI flat-fee value — not billed</div>`)}
-      ${card("Metered (billed)", `<div class="big">${fmtUSD(T.metered_usd)}</div><div class="sub">API + DeepSeek pay-as-you-go</div>`)}
-      ${card("Ledger trend", `<div class="sub" style="line-height:1.8">today <b>${fmtUSD((W.today || {}).usd)}</b><br>7d <b>${fmtUSD((W.d7 || {}).usd)}</b> · 30d <b>${fmtUSD((W.d30 || {}).usd)}</b></div>`)}
+      ${card("30-day known cost estimate", `<div class="big">${costValue(T)}</div><div class="sub">${fmtTokens(T.tokens)} tokens · ${T.calls || 0} observed calls${T.calls_coverage_complete === false ? " · call coverage incomplete" : ""} · ${T.unpriced_calls || 0} unpriced ledger calls${T.unpriced_coverage_complete === false ? " · external price coverage incomplete" : ""}</div>`)}
+      ${card("Subscription-equivalent · ledger", `<div class="big">${costValue({calls: 0, ...(u.cost_basis || {}).subscription, usd: T.subscription_usd})}</div><div class="sub">Explicit subscription basis · equivalent value, not billed</div>`)}
+      ${card("Metered estimate · ledger", `<div class="big">${costValue({calls: 0, ...(u.cost_basis || {}).metered, usd: T.metered_usd})}</div><div class="sub">Explicit metered basis · external aggregates listed below</div>`)}
+      ${card("Ledger trend", `<div class="sub" style="line-height:1.8">today <b>${costValue(W.today)}</b><br>7d <b>${costValue(W.d7)}</b> · 30d <b>${costValue(W.d30)}</b></div>`)}
     </div>`;
 
   // ── (b) lobe leaderboard (centerpiece) ──
@@ -3117,22 +3128,22 @@ RENDER.cost = async () => {
     if (!lanes || !lanes.length) return `<div class="sub muted" style="margin:6px 0 2px">Single source — no finer lane breakdown.</div>`;
     return `<table style="margin-top:8px"><thead><tr><th>Sub-component (lane)</th><th class="r">USD</th><th class="r">% of $</th><th class="r">Tokens</th><th class="r">Calls</th></tr></thead><tbody>
       ${lanes.map(ln => {
-        const lu = ln.no_usd ? `<span class="muted">—</span>` : fmtUSD(ln.usd);
+        const lu = ln.no_usd ? `<span class="muted">Cost unavailable</span>` : costValue(ln);
         const stages = ln.stages || [];
-        const stageRows = stages.map(st => `<tr><td class="sub" style="padding-left:20px">↳ ${esc(st.name)}</td><td class="r sub">${fmtUSD(st.usd)}</td><td class="r sub">${st.pct_usd != null ? st.pct_usd + "%" : "—"}</td><td class="r sub">${fmtTokens(st.tokens)}</td><td class="r sub">${st.calls != null ? st.calls : "—"}</td></tr>`).join("");
+        const stageRows = stages.map(st => `<tr><td class="sub" style="padding-left:20px">↳ ${esc(st.name)}</td><td class="r sub">${costValue(st)}</td><td class="r sub">${st.pct_usd != null ? st.pct_usd + "%" : "—"}</td><td class="r sub">${fmtTokens(st.tokens)}</td><td class="r sub">${st.calls != null ? st.calls : "—"}</td></tr>`).join("");
         return `<tr><td class="mono">${esc(ln.name)}</td><td class="r">${lu}</td><td class="r">${ln.pct_usd != null ? ln.pct_usd + "%" : "—"}</td><td class="r">${fmtTokens(ln.tokens)}</td><td class="r">${ln.calls != null ? ln.calls : "—"}</td></tr>${stageRows}`;
       }).join("")}
       </tbody></table>`;
   };
   const lobeRows = lobes.map(l => {
-    const usd = l.no_usd ? `<span class="muted">—</span>` : `<b>${fmtUSD(l.usd)}</b>`;
+    const usd = l.no_usd ? `<span class="muted">Cost unavailable</span>` : `<b>${costValue(l)}</b>`;
     const burden = l.no_usd ? "" : (l.pct_usd >= 40 ? `<span class="statpill s-bad">high burden</span>` : l.pct_usd >= 20 ? `<span class="statpill s-warn">watch</span>` : "");
-    const shareTxt = l.no_usd ? `${fmtTokens(l.tokens)} tok · no $ (rate-limited plan)` : `${l.pct_usd}% of spend · ${fmtTokens(l.tokens)} tok (${l.pct_tokens}% of volume)`;
+    const shareTxt = l.no_usd ? `${fmtTokens(l.tokens)} tok · price unavailable` : `${l.pct_usd}% of known priced cost · ${fmtTokens(l.tokens)} tok (${l.pct_tokens}% of volume)`;
     return `<details class="lobe-row"${l === topBurden ? " open" : ""}>
       <summary>
         <div class="lobe-head"><b>${esc(l.name)}</b> ${srcBadge(l.source)} ${burden}<span style="flex:1"></span>${usd} <span class="sub">${l.no_usd ? "" : l.pct_usd + "%"}</span></div>
         <div class="meter" style="margin:6px 0 0">
-          <div class="top"><span class="sub">${l.calls || 0} calls</span><span class="sub">${shareTxt}</span></div>
+          <div class="top"><span class="sub">${l.calls == null ? "Call count unavailable" : l.calls + " calls"}</span><span class="sub">${shareTxt}</span></div>
           ${pctBar(l.no_usd ? l.pct_tokens : l.pct_usd)}
         </div>
       </summary>
@@ -3140,14 +3151,14 @@ RENDER.cost = async () => {
     </details>`;
   }).join("");
   const lobeHtml = `<div class="section">Cost by lobe <span class="cnt">${lobes.length}</span></div>
-    <div class="card sub muted" style="margin-bottom:8px">Ranked by 30-day cost. Bar = share of total spend (amber ≥20%, red ≥40%). Click a lobe to expand its engines / lanes. A lobe can rank high in <b>tokens</b> yet low in <b>cost</b> when it runs a cheap model (e.g. DeepSeek) — watch the $ column for burden.</div>
+    <div class="card sub muted" style="margin-bottom:8px">Ranked by known 30-day cost estimates. Bars show the share of known priced cost (amber ≥20%, red ≥40%). Expand a lobe to see its lanes and unpriced-call coverage. Token volume remains visible when price is unknown.</div>
     ${lobeRows || `<div class="card sub muted">No measured spend yet.</div>`}`;
 
   // ── (c) tracking coverage ──
   const covHtml = `<div class="section">Tracking coverage</div>
     <div class="card sub muted" style="margin-bottom:8px">What the totals above do — and don't — see. A "missing" or "stale" source is spend not yet fully captured here.</div>
     <table><thead><tr><th>Source</th><th>Status</th><th class="r">Updated</th><th class="r">30d USD</th><th>Notes</th></tr></thead><tbody>
-    ${(u.sources || []).map(s => `<tr><td><b>${esc(s.label)}</b></td><td>${statusPill(s.status)}</td><td class="r sub">${s.age_h != null ? fmtAge(s.age_h) + " ago" : "—"}</td><td class="r">${s.usd_30d != null ? fmtUSD(s.usd_30d) : `<span class="muted">—</span>`}</td><td class="sub">${esc(s.note || "")}</td></tr>`).join("")}
+    ${(u.sources || []).map(s => `<tr><td><b>${esc(s.label)}</b></td><td>${statusPill(s.status)}</td><td class="r sub">${s.age_h != null ? fmtAge(s.age_h) + " ago" : "—"}</td><td class="r">${s.usd_30d != null ? costValue({...s, usd: s.usd_30d}) : `<span class="muted">—</span>`}</td><td class="sub">${esc(s.note || "")}</td></tr>`).join("")}
     </tbody></table>`;
 
   // ── (d) provider / model / key breakdowns ──
@@ -3155,12 +3166,13 @@ RENDER.cost = async () => {
     if (!arr || !arr.length) return "";
     return `<div class="section">${title}</div>
       <table><thead><tr><th>${keyLabel}</th><th class="r">Calls</th><th class="r">Tokens</th><th class="r">USD</th><th class="r">% of $</th></tr></thead><tbody>
-      ${arr.map(b => `<tr><td class="mono">${esc(b.name)}</td><td class="r">${b.calls || 0}</td><td class="r">${fmtTokens(b.tokens || 0)}</td><td class="r">${fmtUSD(b.usd || 0)}</td><td class="r">${b.pct_usd != null ? b.pct_usd + "%" : "—"}</td></tr>`).join("")}
+      ${arr.map(b => `<tr><td class="mono">${esc(b.name)}</td><td class="r">${b.calls || 0}</td><td class="r">${fmtTokens(b.tokens || 0)}</td><td class="r">${costValue(b)}</td><td class="r">${b.pct_usd != null ? b.pct_usd + "%" : "—"}</td></tr>`).join("")}
       </tbody></table>`;
   };
   const breakdownsHtml = brkTable("By provider (ledger · 30d)", u.providers, "Provider")
     + brkTable("By model (ledger · 30d)", u.models, "Model")
-    + brkTable("By key / env var (ledger · 30d)", u.keys, "Key");
+    + brkTable("By key / env var (ledger · 30d)", u.keys, "Key")
+    + brkTable("Billing basis (ledger · 30d)", Object.entries(u.cost_basis || {}).map(([name, value]) => ({name, ...value})), "Basis");
 
   // ── (e) codex detail ──
   let codexHtml = "";
@@ -6708,10 +6720,47 @@ RENDER.marketing_floor = async () => {
 /* ---- MODEL DESK ------------------------------------------------------- */
 /* Answers the operator's 2026-07-29 question directly: is the load balancer
    actually being used for the OAuth tokens, and is ChatGPT the default. */
-RENDER.marketing_models = async () => {
+function fabricPoolViewHtml(fabric) {
+  const f = fabric || {};
+  const stale = f.available && (f.freshness === "stale" || !Number.isFinite(f.stale_after) || Date.now() / 1000 > f.stale_after);
+  const age = !f.available ? "unobserved" : stale ? "stale" : "fresh at last read";
+  const asOf = Number.isFinite(f.observed_at) ? new Date(f.observed_at * 1000).toISOString() : "unobserved";
+  const n = value => Number.isInteger(value) && value >= 0 ? flrN(value) : "—";
+  const words = value => esc(String(value || "unobserved").replace(/_/g, " "));
+  const rows = (f.pools || []).map(p => {
+    const models = (p.models || []).map(m => `<tr>
+      <td class="mono sub">${esc(m.model)}</td><td>${esc(m.protocol)}</td>
+      <td>${Object.entries(m.capabilities || {}).filter(([, yes]) => yes === true).map(([name]) => words(name)).join(" · ") || "—"}</td>
+      <td>${words(m.transport_state)}<div class="note muted">${words(m.application_state)}</div></td>
+      <td class="mono">${n(m.ledger_room)}<div class="note muted">${words(m.capacity_state)}</div></td>
+      <td class="note muted">${(m.blockers || []).map(words).join(" · ") || "Fresh admission required"}</td>
+    </tr>`).join("");
+    return `<div class="card">
+      <h3>${esc(p.pool)} <span class="cnt">${words(p.application_state)}</span></h3>
+      <div class="note">Accounts configured: ${n(p.configured_accounts)} · enabled: ${n(p.enabled_accounts)} · held work: ${n(p.held_leases)}</div>
+      <div class="note muted">Pool enabled: ${p.enabled === true ? "yes" : p.enabled === false ? "no" : "unobserved"} · capacity basis: ${words(p.capacity_basis)}</div>
+      ${(p.blockers || []).length ? `<div class="note muted">${p.blockers.map(words).join(" · ")}</div>` : ""}
+      <details><summary>${(p.models || []).length ? `${p.models.length} bound models` : "Application models unobserved"}</summary>
+        ${models ? `<table><thead><tr><th>Model</th><th>Protocol</th><th>Capabilities</th><th>Transport / application</th><th>Broker room</th><th>Condition</th></tr></thead><tbody>${models}</tbody></table>`
+          : `<div class="note muted">This observation does not qualify an application transport for this pool.</div>`}
+      </details>
+    </div>`;
+  }).join("");
+  return `<div class="section">Subagent Fabric <span class="cnt">${esc(age)} · ${(f.pools || []).length} pools</span></div>
+    <div class="card">
+      <button id="marketingModelsRefresh">Refresh pool observation</button>
+      <div class="note muted">Native observation: ${esc(asOf)}</div>
+      ${!f.available ? `<div class="note">${words(f.reason || "metadata unavailable")}</div>` : ""}
+      <div class="note">Configured accounts and held work are separate from application permission. Broker room is observed per model and is not provider quota. Models can share the same accounts.</div>
+      <div class="note muted">Every call still requires fresh admission. Refreshing this view does not allocate a turn.</div>
+    </div>${rows}`;
+}
+
+RENDER.marketing_models = async (force = false) => {
   const v = $("#view");
   v.innerHTML = `<div class="spin">loading…</div>`;
-  const d = await api("/api/marketing/models");
+  if (force) clearApiCache();
+  const d = await api(`/api/marketing/models${force ? "?force=1" : ""}`);
   if (!d || !d.ok) {
     v.innerHTML = nwEmpty("Model desk unavailable", (d && d.error) || "panel error");
     return;
@@ -6720,7 +6769,8 @@ RENDER.marketing_models = async () => {
   /* Waterfall — rung order is the information. */
   const first = (d.lanes || []).map(l => l.first_choice);
   const allCodex = first.length && first.every(f => f === "codex");
-  const fall = `<div class="flr-fall">${(d.waterfall || []).map((r, i) => {
+  const fabricCount = (d.lanes || []).filter(l => l.fabric_route && l.fabric_route.selected).length;
+  const fall = fabricCount === first.length ? "" : `<div class="flr-fall">${(d.waterfall || []).map((r, i) => {
     const isFirst = (d.waterfall || [])[0] === r;
     return `<div class="flr-rung ${isFirst ? "is-first" : ""}">
       <div class="flr-rung-i">${i + 1}</div>
@@ -6729,21 +6779,25 @@ RENDER.marketing_models = async () => {
     </div>`;
   }).join("")}</div>`;
 
-  const routeVerdict = allCodex
-    ? `<span style="color:var(--ok)">All ${first.length} marketing lanes try ChatGPT first.</span> Claude is fallback depth, drawn only when ChatGPT refuses.`
-    : `<span style="color:var(--loss)">Not every lane leads with ChatGPT.</span> Lanes below whose first choice is not “codex” are still spending Claude tokens first.`;
+  const routeVerdict = fabricCount
+    ? `Fabric is selected exclusively for ${fabricCount} marketing lanes. A held Fabric route stays held; each lane's current configuration appears below.`
+    : allCodex ? `All ${first.length} marketing lanes are configured to try ChatGPT first.`
+    : "Provider order varies by lane. The configured first choice appears below.";
 
   /* Per-lane routing table. */
   const laneRows = (d.lanes || []).map(l => {
+    const selected = l.fabric_route && l.fabric_route.selected;
     const tierCls = l.codex_tier === "Sol" ? "s-ok" : l.codex_tier === "Luna" ? "s-bad" : "s-mut";
     const firstCls = l.first_choice === "codex" ? "s-ok" : "s-warn";
     return `<tr>
       <td class="sub"><b>${esc(l.name)}</b><div class="note muted">${esc(l.job)}</div></td>
-      <td><span class="statpill ${firstCls}">${esc(l.first_choice || "—")}</span></td>
-      <td><span class="statpill ${tierCls}">${esc(l.codex_tier)}</span>
-        <div class="note muted">${esc(l.codex_tier_word || "")}</div></td>
-      <td class="mono">${esc(l.effort)}</td>
-      <td class="mono sub">${esc(l.pool_lane)}</td>
+      <td><span class="statpill ${firstCls}">${esc(l.first_choice || "—")}</span>
+        ${selected ? `<div class="note muted">${esc(l.fabric_route.state)} · ${esc(l.fabric_route.model || "model unobserved")}</div>
+        <div class="note muted">${esc(String(l.fabric_route.blocker || "Fresh admission required").replace(/_/g, " "))}</div>` : ""}</td>
+      <td>${selected ? "—" : `<span class="statpill ${tierCls}">${esc(l.codex_tier)}</span>
+        <div class="note muted">${esc(l.codex_tier_word || "")}</div>`}</td>
+      <td class="mono">${selected ? "—" : esc(l.effort)}</td>
+      <td class="mono sub">${selected ? "Fabric service" : esc(l.pool_lane)}</td>
       <td class="note muted">${esc(l.source)}</td>
     </tr>`;
   }).join("");
@@ -6776,13 +6830,13 @@ RENDER.marketing_models = async () => {
        own card so "1 of 10 ready" always counts the same kind of thing. */
     const provs = (pool.providers || []).length
       ? `<div class="card">
-          <h3>Single-key providers <span class="cnt">not balanced</span></h3>
-          <div class="note muted" style="margin-bottom:10px">One key each, used directly rather than spread. ChatGPT sits here — it is the primary rung, so its state is what decides whether the marketing lanes write anything tonight.</div>
+          <h3>Legacy provider observations</h3>
+          <div class="note muted" style="margin-bottom:10px">Recorded Codex and DeepSeek usage. Current credential presence is unobserved on this page.</div>
           ${(pool.providers || []).map(keyRow).join("")}
         </div>`
       : "";
     poolHtml = `<div class="card">
-      <h3>Claude key pool <span class="cnt">${flrN(pool.ready)} of ${flrN(pool.total)} ready</span></h3>
+      <h3>Claude key pool <span class="cnt">${pool.unobserved ? `${flrN(pool.unobserved)} presence unobserved` : `${flrN(pool.ready)} of ${flrN(pool.total)} observed ready`}</span></h3>
       <div class="note muted" style="margin-bottom:10px">The balancer spreads fallback calls across these keys, resting any key that hits a rate limit until its window reopens. Names and load only — no token value is ever read into this console.</div>
       ${(pool.keys || []).map(keyRow).join("")}
       <div class="note" style="margin-top:9px">${esc(pool.verdict || "")}</div>
@@ -6817,9 +6871,10 @@ RENDER.marketing_models = async () => {
   }
 
   v.innerHTML = `<div class="section">Model desk <span class="cnt">who writes the words</span></div>
+    ${fabricPoolViewHtml(d.fabric)}
     <div class="card">
-      <h3>Provider order</h3>
-      <div class="note muted" style="margin-bottom:11px">Each lane walks these rungs in order until one answers.</div>
+      <h3>Configured routing</h3>
+      <div class="note muted" style="margin-bottom:11px">Legacy lanes use their configured provider order. Selected Fabric lanes use their exclusive application binding.</div>
       ${fall}
       <div class="note" style="margin-top:11px">${routeVerdict}</div>
       <div class="note muted" style="margin-top:6px">${esc(d.law || "")}</div>
@@ -6827,9 +6882,10 @@ RENDER.marketing_models = async () => {
     <div class="section">Per-lane routing <span class="cnt">${(d.lanes || []).length} lanes</span></div>
     <table><thead><tr><th>Lane</th><th>First choice</th><th>ChatGPT tier</th><th>Effort</th><th>Pool lane</th><th>Set in</th></tr></thead>
       <tbody>${laneRows}</tbody></table>
-    <div class="section">Claude fallback — the load balancer</div>
+    <div class="section">Legacy pool observations</div>
     ${poolHtml}
     ${ledHtml}`;
+  $("#marketingModelsRefresh").onclick = () => RENDER.marketing_models(true);
 };
 
 /* ---- X LANES ---------------------------------------------------------- */

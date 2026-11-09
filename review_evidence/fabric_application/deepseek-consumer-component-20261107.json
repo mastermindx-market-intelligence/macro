@@ -1,0 +1,77 @@
+{
+  "account_enrollment": false,
+  "component": "macro_deepseek_consumer_and_versioned_admin_metadata",
+  "native_http_component": "6ed5c68fa3c74e2f29a006f875ba256a5c39da3b",
+  "paired_legacy_native_source": "d0c543124b47372becd8ee632a1c29b32ffc3ef0",
+  "production_activated": false,
+  "provider_requests": 0,
+  "qualification": {
+    "duration_s": 16.225,
+    "errors": 0,
+    "failures": 0,
+    "junit_sha256": "5083ce4ea548289f720bfe398870b7a762ffa26dc8e810c864026444a70f57f2",
+    "log_sha256": "03d0a6c6245b8325ca2e5578ebebbb3ba00e92504256167c5785562b5211445c",
+    "passed": 422,
+    "skipped": 0,
+    "test_files": [
+      "tests/test_fabric_deepseek_consumer_contract.py",
+      "tests/test_fabric_admin_pool_view.py",
+      "tests/test_fabric_inference_client.py",
+      "tests/test_fabric_native_application_client.py",
+      "tests/test_fabric_application_inspection.py",
+      "tests/test_fabric_application_binding.py",
+      "tests/test_fabric_admin_pool_server.py",
+      "tests/test_fabric_exact_scoped_model_composition.py"
+    ],
+    "tested_source_identity_sha256": "b6cc30732c4515e99722f1747d204836ba3fe946417f90d7b7d5bef65031bb24"
+  },
+  "remaining": [
+    "Native producer must implement and source-qualify the actual DeepSeek pool/recipe, closed admission/lease/startup joins, and genuine v2 metadata.",
+    "The candidate realm remains inactive pending a governed exact-source provider qualification; this client acceptance is not that receipt.",
+    "Consume through the existing Macro10740 source/release carrier after its original refresh effect is reconciled.",
+    "Protected release, native bindings/grants, VPS activation and named consumer/browser proof remain owed."
+  ],
+  "schema": "mastermind.fabric_application_component_evidence.v1",
+  "self_review": {
+    "admin_versions": {
+      "mastermind.fabric_admin_pool_view.v1": [
+        "go",
+        "glm",
+        "minimax",
+        "bailian",
+        "grok",
+        "cursor",
+        "codex-native",
+        "claude-native",
+        "ocfree"
+      ],
+      "mastermind.fabric_admin_pool_view.v2": [
+        "go",
+        "glm",
+        "minimax",
+        "bailian",
+        "grok",
+        "cursor",
+        "codex-native",
+        "claude-native",
+        "ocfree",
+        "deepseek"
+      ]
+    },
+    "capacity": "DeepSeek unqualified/unobserved values remain non-authoritative; only Go may carry existing broker ledger room",
+    "incumbent_controls": "request/route commitments, fixed turn identity, model and usage evidence, single attempt, freshness, authentication and cache-generation controls retained",
+    "legacy_peer": "literal v1/nine fixture exercised through existing authenticated HTTP endpoint and actual renderer; no synthesized DeepSeek row",
+    "renderer_production_changed": false,
+    "routing": "DeepSeek is a closed Responses route with a required recipe digest; native admission and frozen route/request identity remain authoritative.",
+    "scope": "two production consumer modules; three focused test modules",
+    "source_identity_checked_at_collection": true
+  },
+  "source_files_sha256": {
+    "engine/fabric_inference_client.py": "d6434e9fe0303dfc7685fcdab7fec214c92a0a183eea79ad6dd8cdb4ad9e941a",
+    "engine/provider_capacity.py": "04785bf188b81d993c254bed83923ae9c778dd39a4ed7399d91dd1f7c8f28283",
+    "tests/test_fabric_admin_pool_server.py": "85eb79cc7bdcb87e35fd55515f89b626bd1b8975faff5c0f200830d94d0efb49",
+    "tests/test_fabric_admin_pool_view.py": "655783c9003697e519be224455df7c297e609c9c271d52b8089fc0217ce789db",
+    "tests/test_fabric_deepseek_consumer_contract.py": "8403fbd0d848d030746d6b6baad7511bd1dd36008e5deb5c35a8bac54f3f5312"
+  },
+  "source_parent": "25ba92bb52120fae550b54c29f82929c0b77d37b"
+}

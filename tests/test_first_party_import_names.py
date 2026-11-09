@@ -691,3 +691,25 @@ def test_archival_classification_requires_the_exact_import_tuple(tmp_path, modul
     assert not modules
     assert len(names) == 1 and rel in names[0]
     assert len(archived) == 2
+
+def test_archival_classification_keeps_other_aliases_in_the_same_import_guarded(tmp_path):
+    (tmp_path / "scripts").mkdir()
+    (tmp_path / "scripts/__init__.py").write_text("")
+    relative = "historical_alias_fixture.py"
+    raw = (
+        b"raise AssertionError('archival source must never execute')\n"
+        b"from scripts import verify_d06_macro, missing_current_verifier\n"
+    )
+    target = tmp_path / relative
+    target.write_bytes(raw)
+    target.chmod(0o644)
+    entries = ((
+        relative, len(raw), hashlib.sha256(raw).hexdigest(),
+        "scripts", "verify_d06_macro",
+    ),)
+
+    modules, names, checked, archived = _sweep(tmp_path, entries)
+    assert not modules
+    assert checked == 2
+    assert archived == ((relative, "scripts", "verify_d06_macro"),)
+    assert len(names) == 1 and "missing_current_verifier" in names[0]

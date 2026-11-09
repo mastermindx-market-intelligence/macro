@@ -473,20 +473,31 @@ def _resolve_proposal_id_for_branch(
 def _audit_approved(pr_number: int, head_sha: str, root: Path | None = None) -> tuple[bool, str]:
     """Return (approved, reason) for the V7 audit gate (step 5.5).
 
-    Reads data/metabolism/audit/<pr_number>.json and requires:
+    Reads the audit owner for data/metabolism/audit/<pr_number>.json and requires:
+      - the owner holds a completed audit for this PR (a held, incomplete or
+        malformed retained operation is never an approval)
       - verdict == "approve"
       - record["head_sha"] == head_sha (post-audit push invalidates the record)
 
-    Fail-closed: missing record / reject / SHA mismatch → (False, reason).
+    A genuine legacy record with no retained operation keeps its behaviour.
+
+    Fail-closed: missing record / held / reject / SHA mismatch → (False, reason).
     NEVER raises.
     """
     try:
         r = root or _ROOT
-        audit_path = r / "data" / "metabolism" / "audit" / f"{pr_number}.json"
-        if not audit_path.exists():
-            return False, f"no audit record found for PR #{pr_number}"
+        from scripts.metabolism_journal import audit_owner_result  # type: ignore[import]
 
-        record = json.loads(audit_path.read_text(encoding="utf-8"))
+        result = audit_owner_result(r, pr_number)
+        if result["status"] == "absent":
+            return False, f"no audit record found for PR #{pr_number}"
+        if result["status"] == "held":
+            return False, (
+                f"audit record for PR #{pr_number} is held "
+                f"({result.get('reason') or 'incomplete'}) — no approval"
+            )
+
+        record = result["record"] or {}
 
         stored_sha = record.get("head_sha") or ""
         if stored_sha != head_sha:

@@ -82,29 +82,37 @@ def _call(source_text: str, cfg: dict) -> str | None:
     """Call the LLM for one source text via llm_auth waterfall.  Never raises."""
     try:
         from engine import llm_auth  # noqa: PLC0415
-        providers = llm_auth.build_providers(
-            cfg, opus_model=cfg.get("model", "claude-haiku-4-5-20251001"))
-    except Exception as e:  # noqa: BLE001
-        log.warning("influence extract: provider build failed (%s)", e)
-        return None
-    if not providers:
-        return None
-    max_tokens = int(cfg.get("max_tokens", 1200))
-    model = cfg.get("model", "claude-haiku-4-5-20251001")
+        provider_cfg = dict(cfg)
+        if llm_auth.application_mode_id(provider_cfg) is not None:
+            provider_cfg.setdefault("workload_profile", "site_batch")
+        model = cfg.get("model", "claude-haiku-4-5-20251001")
+        providers = llm_auth.build_providers(provider_cfg, opus_model=model)
+        if not providers:
+            return None
+        selected = llm_auth.is_fabric_selection(providers)
+        max_tokens = int(cfg.get("max_tokens", 1200))
 
-    def _call_fn(client, m: str):
-        resp = client.messages.create(
-            model=m,
-            max_tokens=max_tokens,
-            system=[{"type": "text", "text": _SYSTEM, "cache_control": {"type": "ephemeral"}}],
-            messages=[{"role": "user", "content": f"<doc>\n{source_text}\n</doc>"}],
-        )
-        return "".join(b.text for b in resp.content if getattr(b, "type", "") == "text") or None, None, resp
+        def _call_fn(client, m: str):
+            resp = client.messages.create(
+                model=m,
+                max_tokens=max_tokens,
+                system=(_SYSTEM if selected else
+                        [{"type": "text", "text": _SYSTEM, "cache_control": {"type": "ephemeral"}}]),
+                messages=[{"role": "user", "content": f"<doc>\n{source_text}\n</doc>"}],
+            )
+            if selected and (getattr(resp, "stop_reason", None) != "end_turn"
+                             or not resp.content
+                             or any(getattr(block, "type", "") != "text" for block in resp.content)):
+                raise llm_auth.FabricProviderError("fabric_text_completion_required")
+            text = "".join(b.text for b in resp.content if getattr(b, "type", "") == "text")
+            if selected and not text.strip():
+                raise llm_auth.FabricProviderError("fabric_text_completion_required")
+            return text or None, None, resp
 
-    model_providers = [{**p, "model": model} for p in providers]
-    try:
-        text, _, _ = llm_auth.make_call(model_providers, _call_fn,
-                                         context="influence_extract")
+        model_providers = providers if selected else [{**p, "model": model} for p in providers]
+        with llm_auth.begin_operation(model_providers, context="influence_extract") as operation:
+            text, _, _ = llm_auth.make_call(operation.providers, _call_fn,
+                                          context="influence_extract")
         return text or None
     except Exception as e:  # noqa: BLE001
         log.warning("influence extract model call failed (%s)", e)

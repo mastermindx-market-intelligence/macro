@@ -49,6 +49,7 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
+import math
 import os
 import re
 import sys
@@ -424,6 +425,10 @@ class OpenAICompatResult:
     usage: dict[str, int | None] | None = None
     status_code: int | None = None
     error_kind: str | None = None
+    # Actual response evidence also survives rejected/empty answers. Legacy
+    # usage remains the accepted-answer projection used by existing callers.
+    observed_usage: dict[str, int | None] | None = None
+    served_model: str | None = None
 
 
 #: The ONLY keys a caller-supplied ``request_profile`` may overlay onto the
@@ -485,6 +490,43 @@ def _normalize_openai_usage(usage: Any) -> dict[str, int | None] | None:
     if total is None and prompt is not None and completion is not None:
         total = prompt + completion
     return {"prompt_tokens": prompt, "completion_tokens": completion, "total_tokens": total}
+
+
+def _openai_response_observation(data: Any) -> tuple[dict[str, int | None] | None, str | None]:
+    """Retain actual response metadata independently of answer acceptance.
+
+    Unlike the legacy usage projection, observations never coerce malformed
+    counts or manufacture zero. Each result owns its own metadata.
+    """
+    if not isinstance(data, dict):
+        return None, None
+    raw = data.get("usage")
+
+    def count(primary: str, alias: str | None = None) -> int | None:
+        if not isinstance(raw, dict):
+            return None
+        key = primary if primary in raw else alias
+        value = raw.get(key) if key is not None else None
+        if type(value) is not int or value < 0:
+            return None
+        if alias is not None and primary in raw and alias in raw:
+            other = raw[alias]
+            if type(other) is not int or other != value:
+                return None
+        return value
+
+    usage = {
+        "prompt_tokens": count("prompt_tokens", "input_tokens"),
+        "completion_tokens": count("completion_tokens", "output_tokens"),
+        "total_tokens": count("total_tokens"),
+    }
+    observed = usage if any(value is not None for value in usage.values()) else None
+    model = data.get("model")
+    served = model if (
+        isinstance(model, str) and 0 < len(model) <= 256
+        and model == model.strip() and all(ord(char) >= 32 for char in model)
+    ) else None
+    return observed, served
 
 
 def _openai_compat_error_kind(exc: BaseException) -> str:
@@ -559,6 +601,7 @@ def _call_openai_compat_detailed(
     payload = _merge_request_profile(payload, request_profile)
     timeout = float(oc_cfg.get("timeout_s", 120))
     connect_timeout = float(oc_cfg.get("connect_timeout_s", min(timeout, 5)))
+    status_code = None
     try:
         import requests  # noqa: PLC0415
         r = requests.post(
@@ -567,37 +610,44 @@ def _call_openai_compat_detailed(
             json=payload,
             timeout=(connect_timeout, timeout),
         )
-        if r.status_code != 200:
+        status_code = int(r.status_code)
+        if status_code != 200:
+            try:
+                observed_usage, served_model = _openai_response_observation(r.json())
+            except Exception:  # A non-JSON error is still the observed HTTP error.
+                observed_usage, served_model = None, None
             return OpenAICompatResult(
-                None,
-                f"openai_compat_http_{r.status_code}",
-                None,
-                int(r.status_code),
-                "http",
+                None, f"openai_compat_http_{status_code}", None, status_code, "http",
+                observed_usage=observed_usage, served_model=served_model,
             )
         data = r.json()
-        status_code = int(r.status_code)
     except Exception as exc:  # noqa: BLE001
         log.warning("earnings_qual: openai_compat call failed (%s)", exc)
-        return OpenAICompatResult(None, "openai_compat_error", None, None, _openai_compat_error_kind(exc))
-    _log_prompt_truncation(
-        sum(len(str(m.get("content") or "")) for m in payload["messages"]),
-        data if isinstance(data, dict) else {},
-        model,
-    )
+        return OpenAICompatResult(
+            None, "openai_compat_error", None, status_code, _openai_compat_error_kind(exc)
+        )
+    observed_usage, served_model = _openai_response_observation(data)
+    metadata = {"observed_usage": observed_usage, "served_model": served_model}
     try:
+        _log_prompt_truncation(
+            sum(len(str(m.get("content") or "")) for m in payload["messages"]),
+            data if isinstance(data, dict) else {},
+            model,
+        )
         choices = data.get("choices") or []
         if not choices:
-            return OpenAICompatResult(None, "openai_compat_empty", None, status_code, "empty")
+            return OpenAICompatResult(None, "openai_compat_empty", None, status_code, "empty", **metadata)
         msg = choices[0].get("message") or {}
         text = msg.get("content")
         if not text:
-            return OpenAICompatResult(None, "openai_compat_empty", None, status_code, "empty")
+            return OpenAICompatResult(None, "openai_compat_empty", None, status_code, "empty", **metadata)
+        if not isinstance(text, str):
+            return OpenAICompatResult(None, "openai_compat_bad_shape", None, status_code, "bad_shape", **metadata)
         usage = _normalize_openai_usage(data.get("usage"))
-        return OpenAICompatResult(str(text), None, usage, status_code, None)
+        return OpenAICompatResult(text, None, usage, status_code, None, **metadata)
     except Exception as exc:  # noqa: BLE001
         log.warning("earnings_qual: openai_compat parse failed (%s)", exc)
-        return OpenAICompatResult(None, "openai_compat_bad_shape", None, status_code, "bad_shape")
+        return OpenAICompatResult(None, "openai_compat_bad_shape", None, status_code, "bad_shape", **metadata)
 
 
 def _call_openai_compat(
@@ -858,6 +908,332 @@ def source_sha256(text: str) -> str:
     return hashlib.sha256((text or "").encode("utf-8")).hexdigest()
 
 
+def earnings_state_path(root: Path, state_path: Path | None = None) -> Path:
+    """Use the incumbent intake owner for every Earnings entrypoint."""
+    root = Path(root).resolve()
+    # An explicit relative filename retains the worker's existing CWD-relative
+    # meaning. Resolve it once; the repository prefix must never be added again.
+    return (Path(state_path).absolute() if state_path is not None
+            else root / "data/earnings_calls/terminal_intake_state.json")
+
+
+def _fabric_source_identity(base: dict, origin: str) -> dict:
+    if base.get("source_record_id"):
+        return {"origin": origin, "source_record_id": base["source_record_id"]}
+    return {"origin": origin, **{k: base[k] for k in ("ticker", "quarter", "year", "source")}}
+
+
+def _fabric_selected_cfg(cfg: dict, provider_cfg: dict) -> tuple[dict, str | None]:
+    from engine import llm_auth
+    selected = {**cfg, **provider_cfg}
+    keys = ("application_fabric_mode", "workload_profile", "usage_sink")
+    present = ("MM_PROVIDER_APPLICATION_MODE" in os.environ
+               or "application_fabric_mode" in cfg or "application_fabric_mode" in provider_cfg)
+    if present:
+        for key in keys:
+            if key in cfg and key in provider_cfg and (type(cfg[key]) is not type(provider_cfg[key])
+                                                       or cfg[key] != provider_cfg[key]):
+                raise ValueError("earnings_fabric_configuration_conflict")
+        # The host owns selection, but cannot make a conflicting or invalid
+        # explicit caller value disappear. Do this without resolving credentials.
+        if "application_fabric_mode" in selected:
+            caller = selected["application_fabric_mode"]
+            if (type(caller) is not str or re.fullmatch(r"[a-z][a-z0-9_]{2,63}", caller) is None
+                    or "MM_PROVIDER_APPLICATION_MODE" in os.environ
+                    and caller != os.environ["MM_PROVIDER_APPLICATION_MODE"]):
+                raise ValueError("earnings_fabric_selection_conflict")
+    mode = llm_auth.application_mode_id(selected)
+    return selected, mode
+
+
+def fabric_requires_scoring(payload: dict, text: str, *, root: Path, state_path: Path | None,
+                            source_origin: str, cfg: dict, provider_cfg: dict | None = None,
+                            completed_revision: str | None = None) -> bool:
+    """Product dedup cannot bypass original custody or a new selected revision."""
+    from engine import earnings_transcript_intake as intake
+    base = {"ticker": str(payload.get("ticker") or "").upper(),
+            "quarter": _norm_quarter(payload.get("quarter")), "year": _norm_year(payload.get("year")),
+            "source": payload.get("source", "transcript"), "source_record_id": payload.get("source_record_id")}
+    try:
+        original = intake.fabric_lookup(earnings_state_path(root, state_path),
+            _fabric_source_identity(base, source_origin),
+            str(payload.get("source_revision_sha256") or source_sha256(text)))
+        if original is not None:
+            if original["state"] != "terminal" or original["result"] is None:
+                return True
+            _fabric_return(original["base_row"], original)  # revalidate before any product ACK
+            return bool(base["source_record_id"] and completed_revision != original["revision"])
+        if _fabric_selected_cfg(cfg, provider_cfg or {})[1] is None:
+            return False
+        # Keep accepted historical rows. A canonical metadata correction with
+        # identical text still needs the current revision's operation/result.
+        revision = payload.get("source_revision_sha256")
+        return bool(revision and completed_revision != revision)
+    except Exception:
+        # Forward the original/corruption to score_text for a selected refusal;
+        # a healthy historical parquet row must not silently acknowledge it.
+        return True
+
+
+class _FabricScoreSchemaError(ValueError):
+    """Only completed text that violates the requested schema permits repair."""
+
+
+def _fabric_valid_score(text: str) -> dict:
+    from engine import earnings_transcript_intake as intake
+    try:
+        obj = intake._strict_json(text)
+    except ValueError:
+        raise _FabricScoreSchemaError("earnings_fabric_score_schema") from None
+    fields = {"sentiment", "performance", "confidence", "tone_word", "summary",
+              "positive_highlights", "negative_highlights", "tags"}
+    if type(obj) is not dict or set(obj) != fields:
+        raise _FabricScoreSchemaError("earnings_fabric_score_schema")
+    for key, lo, hi in (("sentiment", -1, 1), ("performance", 0, 10), ("confidence", 0, 1)):
+        if type(obj[key]) not in (int, float) or not lo <= obj[key] <= hi or not math.isfinite(obj[key]):
+            raise _FabricScoreSchemaError("earnings_fabric_score_schema")
+    if (type(obj["tone_word"]) is not str or obj["tone_word"] not in _TONE_WORDS
+            or type(obj["summary"]) is not str or not obj["summary"].strip() or len(obj["summary"]) > 4096):
+        raise _FabricScoreSchemaError("earnings_fabric_score_schema")
+    for key in ("positive_highlights", "negative_highlights"):
+        if (type(obj[key]) is not list or len(obj[key]) > _MAX_HIGHLIGHTS
+                or any(type(v) is not str or not v.strip() or len(v) > 600 for v in obj[key])):
+            raise _FabricScoreSchemaError("earnings_fabric_score_schema")
+    tags = obj["tags"]
+    if (type(tags) is not list or len(tags) > len(_TAG_SET)
+            or any(type(v) is not str or v not in _TAG_SET for v in tags)
+            or len(set(tags)) != len(tags)
+            or any({a, b} <= set(tags) for a, b in (("guidance_raised", "guidance_lowered"),
+                                                   ("beat_and_raise", "miss_and_cut")))):
+        raise _FabricScoreSchemaError("earnings_fabric_score_schema")
+    return obj
+
+
+def _fabric_scored_row(base: dict, text: str, model: str) -> dict:
+    obj = _fabric_valid_score(text)
+    row = dict(base)
+    row.update(model=model, **{k: obj[k] for k in ("sentiment", "performance", "confidence")},
+        tone_word=_clean_tone(obj["tone_word"]),
+        positive_highlights=_clean_highlights(obj["positive_highlights"]),
+        negative_highlights=_clean_highlights(obj["negative_highlights"]), tags=_clean_tags(obj["tags"]),
+        summary=_scrub_advice_text(obj["summary"].strip()[:1600]))
+    return row
+
+
+def _fabric_return(base: dict, original: dict | None, error: str | None = None) -> dict:
+    """Return original provenance; full custody stays in intake, not parquet."""
+    row = dict(base)
+    if original is not None:
+        row = dict(original["base_row"])
+        if (original["state"] == "terminal" and original["result"] is not None
+                and original["receipt"] is not None):
+            saved = _fabric_scored_row(original["base_row"], original["steps"][-1]["text"],
+                                       original["receipt"]["served_model"])
+            from engine import earnings_transcript_intake as intake
+            if intake.fabric_digest(saved) != original["result_digest"]:
+                raise ValueError("earnings_fabric_saved_result_invalid")
+            row = saved
+        else:
+            row["model"] = (original["receipt"] or {}).get("served_model")
+            row["degraded_reason"] = error or original["error"] or "fabric_original_held"
+    else:
+        row["degraded_reason"] = error or "fabric_unavailable"
+    row["_fabric_operation"] = {
+        "operation_id": original["operation_id"] if original else None,
+        "state": original["state"] if original else "not_claimed",
+        "receipt": original["receipt"] if original else None,
+    }
+    return row
+
+
+def _fabric_score_text(text: str, base: dict, *, cfg: dict, provider_cfg: dict,
+                       root: Path | None, state_path: Path | None,
+                       source_origin: str | None) -> dict | None:
+    """One durable operation, at most two intentional steps, no native fallback."""
+    from engine import earnings_transcript_intake as intake, llm_auth
+    original = provider = operation = None
+    try:
+        path = logical = None
+        if root is not None and source_origin is not None:
+            path = earnings_state_path(root, state_path)
+            logical = _fabric_source_identity(base, source_origin)
+            original = intake.fabric_lookup(path, logical,
+                base["source_revision_sha256"] or base["source_sha256"])
+            if original is not None and original["state"] != "terminal":
+                return _fabric_return(base, original, "fabric_original_held")
+        selected_cfg, mode_id = _fabric_selected_cfg(cfg, provider_cfg)
+        if mode_id is None:
+            if original is not None:
+                return _fabric_return(base, None, "fabric_selection_changed")
+            return None
+        if path is None or logical is None:
+            raise ValueError("earnings_fabric_durable_context_required")
+        if not text or not str(text).strip():
+            return _fabric_return(base, None, "empty_text")
+        if base["source_revision_sha256"] is not None and not intake._is_sha(base["source_revision_sha256"]):
+            raise ValueError("earnings_fabric_revision_invalid")
+        selected_cfg = {**selected_cfg, "provider_order": ["fabric"], "usage_lane": "earnings-qual"}
+        selected_cfg.setdefault("workload_profile", "site_batch")
+        fabric_cfg = {}
+        for settings in (cfg, provider_cfg):
+            if "fabric" in settings:
+                if type(settings["fabric"]) is not dict:
+                    raise ValueError("earnings_fabric_bounds_invalid")
+                fabric_cfg.update(settings["fabric"])
+            for block in (settings, settings.get("fabric", {})):
+                for key in ("max_chars", "tail_chars"):
+                    if key in block and (type(block[key]) is not int or not 0 <= block[key] <= 1048576):
+                        raise ValueError("earnings_fabric_bounds_invalid")
+        bound = fabric_cfg.get("max_tokens", selected_cfg.get("max_tokens", 1200))
+        retries = cfg.get("retry_on_bad_json", 1)
+        if (type(bound) is not int or not 1 <= bound <= 32768
+                or type(retries) is not int or retries < 0):
+            raise ValueError("earnings_fabric_bounds_invalid")
+        max_chars, tail_chars = _rung_text_bounds(cfg, provider_cfg, "fabric")
+        if max_chars <= 0:
+            raise ValueError("earnings_fabric_bounds_invalid")
+        body = _bounded_transcript_text(str(text), max_chars=max_chars, tail_chars=tail_chars)
+        user = _build_user_prompt(base["ticker"], base["quarter"], base["year"], base["source"], body)
+        if len((user + _RETRY_SUFFIX).encode("utf-8")) > 1048576:
+            raise ValueError("earnings_fabric_bounds_invalid")
+        frozen = {"text_sha256": base["source_sha256"], "body_sha256": source_sha256(body),
+            "system_sha256": source_sha256(_SYSTEM_PROMPT), "user_sha256": source_sha256(user),
+            "repair_user_sha256": source_sha256(user + _RETRY_SUFFIX),
+            "max_tokens": bound, "max_chars": max_chars, "tail_chars": tail_chars,
+            "retry_on_bad_json": retries > 0, "metadata": {k: base[k] for k in intake._FABRIC_METADATA},
+            "prompt_version": base["prompt_version"], "analysis_schema_version": base["analysis_schema_version"],
+            "logical_source": logical}
+        from engine.provider_production_modes import make_application_fabric_factory
+        factory = make_application_fabric_factory(mode_id=mode_id, lane="earnings-qual", root=Path(root),
+            workload_cfg={**selected_cfg, "workload_profile": "site_batch"})
+        identity = factory.inspect(selected_cfg)
+        original, claimed = intake.fabric_claim(path, logical,
+            revision=base["source_revision_sha256"] or base["source_sha256"],
+            frozen=frozen, base_row=base, mode_id=mode_id, inspection=identity)
+        if not claimed:
+            if original["state"] != "terminal":
+                return _fabric_return(base, original, "fabric_original_held")
+            if (original["input_digest"] != intake.fabric_digest(frozen)
+                    or original["mode_id"] != mode_id or original["inspection"] != identity):
+                return _fabric_return(base, None, "fabric_original_input_changed")
+            return _fabric_return(base, original)
+        # Only the claimant crosses this boundary. Every later invocation is
+        # delivery/diagnosis, including a crash after a visible write/ACK loss.
+        error = None
+        observed_model = None
+        persistence_failed = False
+        escaped = None
+        try:
+            provider = llm_auth.build_fabric_provider(factory.with_inspection(identity),
+                request_id=original["operation_id"], workload_cfg=selected_cfg)
+            provider["usage_lane"] = "earnings-qual"
+            operation = llm_auth.begin_operation([provider], operation_id=original["operation_id"], context="earnings-qual")
+            for index in range(2 if retries > 0 else 1):
+                observed_model = None
+                response_text = None
+                step_error = None
+                try:
+                    def call(client, model):
+                        nonlocal observed_model
+                        response = client.messages.create(model=model, max_tokens=bound, system=_SYSTEM_PROMPT,
+                            messages=[{"role": "user", "content": user + (_RETRY_SUFFIX if index else "")}])
+                        observed_model = getattr(response, "model", None)
+                        blocks = getattr(response, "content", None)
+                        if (observed_model != model or getattr(response, "stop_reason", None) != "end_turn"
+                                or type(blocks) is not list or not blocks
+                                or any(getattr(b, "type", None) != "text" or type(getattr(b, "text", None)) is not str
+                                       for b in blocks)):
+                            raise llm_auth.FabricProviderError("fabric_response_not_complete")
+                        content = "".join(b.text for b in blocks)
+                        if not content.strip() or len(content.encode("utf-8")) > 1048576:
+                            raise llm_auth.FabricProviderError("fabric_response_invalid")
+                        # Shared make_call remains the sole global usage writer.
+                        return content, None, response
+                    response_text, _, _ = llm_auth.make_call(operation.providers, call, context="earnings-qual")
+                except BaseException as exc:
+                    step_error = getattr(exc, "code", "fabric_call_failed")
+                    if not isinstance(exc, Exception):
+                        escaped = exc
+                observation = provider.get("_fabric_last_observation")
+                if observation is not None and observation.get("request_id") != original["steps"][-1]["request_id"]:
+                    observation = None
+                if observation is not None:
+                    observed_model = observation.get("serving_model")
+                try:
+                    original = intake.fabric_transition(path, logical, original, "observe",
+                        text=response_text, observation=observation, error=step_error)
+                except BaseException:
+                    persistence_failed = True
+                    raise
+                if step_error is not None:
+                    error = step_error
+                    break
+                try:
+                    result = _fabric_scored_row(original["base_row"], response_text, observed_model)
+                except _FabricScoreSchemaError:
+                    error = "invalid_json_or_score_schema"
+                    if index == 0 and retries > 0:
+                        try:
+                            original = intake.fabric_transition(path, logical, original, "repair")
+                        except BaseException:
+                            persistence_failed = True
+                            raise
+                        continue
+                    break
+                try:
+                    original = intake.fabric_transition(path, logical, original, "result", result=result)
+                except BaseException:
+                    persistence_failed = True
+                    raise
+                error = None
+                break
+        except BaseException as exc:
+            error = getattr(exc, "code", "fabric_operation_failed")
+            if not isinstance(exc, Exception):
+                escaped = exc
+        finally:
+            # All exits invalidate the original local handle. Only the real
+            # returned native receipt may claim remote close/release.
+            try:
+                if operation is not None:
+                    operation.close()
+                elif provider is not None:
+                    llm_auth.close_fabric_provider(provider)
+            except BaseException as exc:
+                error = error or "fabric_close_unknown"
+                if provider is not None:
+                    provider["_fabric_close"] = {"disposition": "effect_unknown", "closed": False,
+                                                 "effect_unknown": True, "attempted": True}
+                if not isinstance(exc, Exception):
+                    escaped = exc
+        if persistence_failed:
+            # The original CAS may have committed despite a lost ACK. Do not
+            # write from the stale local version or authorize another step.
+            if escaped is not None:
+                raise escaped
+            return _fabric_return(base, None, "fabric_original_persistence_unknown")
+        close = (provider.get("_fabric_close") if provider is not None else
+                 {"disposition": "not_bound", "closed": False, "effect_unknown": False, "attempted": False})
+        if not isinstance(close, dict):
+            close = {"disposition": "effect_unknown", "closed": False, "effect_unknown": True, "attempted": True}
+        unknown = (close.get("effect_unknown") is not False or close.get("disposition") in ("pending", "effect_unknown")
+                   or bool(provider and (provider.get("_fabric_pending")
+                       or getattr(provider.get("_fabric_failure"), "effect_unknown", False))))
+        receipt = {"operation_id": original["operation_id"], "provider": identity["provider"],
+            "requested_model": identity["model"], "served_model": observed_model,
+            "usage": llm_auth.fabric_usage(provider) if provider is not None else None,
+            "close": close, "effect_unknown": unknown, "completed_at": datetime.now(timezone.utc).isoformat()}
+        original = intake.fabric_transition(path, logical, original, "finish", receipt=receipt,
+            error=error or ("fabric_close_unknown" if unknown else None))
+        if escaped is not None:
+            raise escaped
+        return _fabric_return(base, original)
+    except Exception as exc:
+        # An invalid/changed selector, input, original state or persistence
+        # failure is a selected refusal. It must never discover native keys.
+        return _fabric_return(base, None, getattr(exc, "code", "fabric_original_refused"))
+
+
 # --------------------------------------------------------------------------- #
 # score_text — the harness core
 # --------------------------------------------------------------------------- #
@@ -875,6 +1251,9 @@ def score_text(
     source_updated_at: str | None = None,
     source_url: str | None = None,
     source_revision_sha256: str | None = None,
+    root: Path | None = None,
+    state_path: Path | None = None,
+    source_origin: str | None = None,
 ) -> dict:
     """Score one earnings-call text.  Provider-agnostic; never raises.
 
@@ -911,7 +1290,7 @@ def score_text(
     hundreds of rows while the estate reported itself local-first.  It is
     ``None`` when the first configured rung answered.
     """
-    cfg = cfg if cfg is not None else load_config()
+    cfg = cfg if cfg is not None else load_config(root)
     provider_cfg = provider_cfg or {}
     sha = source_sha256(text or "")
     q_norm = _norm_quarter(quarter)
@@ -946,6 +1325,11 @@ def score_text(
         # earlier rung failed; degraded_reason keeps its exact prior meaning.
         "provider_fallback_reason": None,
     }
+
+    selected_row = _fabric_score_text(text, base_row, cfg=cfg, provider_cfg=provider_cfg,
+        root=root, state_path=state_path, source_origin=source_origin)
+    if selected_row is not None:
+        return selected_row
 
     if not text or not str(text).strip():
         base_row["degraded_reason"] = "empty_text"
@@ -1597,6 +1981,7 @@ def score_new(
     *,
     cfg: dict | None = None,
     provider_cfg: dict | None = None,
+    state_path: Path | None = None,
 ) -> int:
     """Cold-start scoring lane: score un-scored earnings text, upsert to parquet.
 
@@ -1618,6 +2003,9 @@ def score_new(
         return 0
 
     seen = _seen_shas(r)
+    completed_records = _completed_record_shas(r)
+    transcript_origin = "local:" + str(_transcripts_dir(r).resolve())
+    filing_origin = "edgar:earnings-8k:" + str(r.resolve())
 
     # Choose input iterators per source mode.
     inputs: list[tuple[dict, str]] = []
@@ -1640,7 +2028,9 @@ def score_new(
         if n >= cap:
             break
         sha = source_sha256(text)
-        if sha in seen:
+        if sha in seen and not fabric_requires_scoring(payload, text, root=r, state_path=state_path,
+                source_origin=transcript_origin, cfg=cfg, provider_cfg=provider_cfg,
+                completed_revision=completed_records.get(str(payload.get("source_record_id") or ""))):
             continue
         row = score_text(
             text,
@@ -1653,9 +2043,13 @@ def score_new(
             source=payload.get("source", "transcript"),
             source_record_id=payload.get("source_record_id"),
             source_updated_at=payload.get("source_updated_at"),
+            source_url=payload.get("terminal_url") or payload.get("source_url"),
+            source_revision_sha256=payload.get("source_revision_sha256"),
+            root=r, state_path=state_path, source_origin=transcript_origin,
         )
         seen.add(sha)
-        scored_rows.append(row)
+        if not (row.get("_fabric_operation") and row.get("degraded_reason")):
+            scored_rows.append(row)
         n += 1
 
     if n < cap and use_8k:
@@ -1663,7 +2057,10 @@ def score_new(
             if n >= cap:
                 break
             sha = source_sha256(text)
-            if sha in seen:
+            if sha in seen and not fabric_requires_scoring({**payload, "source": "8k"}, text,
+                    root=r, state_path=state_path, source_origin=filing_origin, cfg=cfg,
+                    provider_cfg=provider_cfg,
+                    completed_revision=completed_records.get(str(payload.get("source_record_id") or ""))):
                 continue
             row = score_text(
                 text,
@@ -1676,9 +2073,13 @@ def score_new(
                 source="8k",
                 source_record_id=payload.get("source_record_id"),
                 source_updated_at=payload.get("source_updated_at"),
+                source_url=payload.get("source_url") or payload.get("terminal_url"),
+                source_revision_sha256=payload.get("source_revision_sha256"),
+                root=r, state_path=state_path, source_origin=filing_origin,
             )
             seen.add(sha)
-            scored_rows.append(row)
+            if not (row.get("_fabric_operation") and row.get("degraded_reason")):
+                scored_rows.append(row)
             n += 1
 
     if not scored_rows:

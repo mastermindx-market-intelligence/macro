@@ -173,11 +173,15 @@ def run(
     limit: int,
     do_publish: bool,
     auto: bool,
+    state_path: Path | None = None,
 ) -> int:
     """Score `tickers` (or, with auto=True, everything un-scored in the dir).
 
     Returns the number of rows scored + upserted.
     """
+    repo_root = Path(repo_root).resolve()
+    transcripts_dir = Path(transcripts_dir).absolute()
+    state_path = Path(state_path).absolute() if state_path is not None else None
     # Import the repo harness (repo_root must be on sys.path).
     if str(repo_root) not in sys.path:
         sys.path.insert(0, str(repo_root))
@@ -198,6 +202,7 @@ def run(
         n = earnings_qual.score_new(
             root=repo_root, source="auto", limit=limit,
             cfg=cfg, provider_cfg=provider_cfg,
+            state_path=state_path,
         )
         log.info("auto score_new wrote %d row(s)", n)
         if do_publish and earnings_qual.store_path(repo_root).exists():
@@ -206,6 +211,8 @@ def run(
 
     # Explicit / custom-dir path: resolve tickers, load text, score each.
     seen = earnings_qual._seen_shas(repo_root)  # dedup against existing store
+    completed_records = earnings_qual._completed_record_shas(repo_root)
+    source_origin = "local:" + str(transcripts_dir.resolve())
     if auto:
         # score everything un-scored in the custom dir (bounded by limit)
         found: list[tuple[dict, str]] = []
@@ -230,13 +237,17 @@ def run(
             work.append(hit)
 
     rows = []
+    attempted = 0
     for payload, text in work:
-        if len(rows) >= limit:
+        if attempted >= min(int(limit), int(cfg.get("daily_cap", 64))):
             break
         sha = earnings_qual.source_sha256(text)
-        if sha in seen:
+        if sha in seen and not earnings_qual.fabric_requires_scoring(payload, text, root=repo_root,
+                state_path=state_path, source_origin=source_origin, cfg=cfg, provider_cfg=provider_cfg,
+                completed_revision=completed_records.get(str(payload.get("source_record_id") or ""))):
             log.info("already scored (sha match): %s — skip", payload.get("ticker"))
             continue
+        attempted += 1
         row = earnings_qual.score_text(
             text,
             payload.get("ticker", ""),
@@ -248,7 +259,9 @@ def run(
             source=payload.get("source", "transcript"),
             source_record_id=payload.get("source_record_id"),
             source_updated_at=payload.get("source_updated_at"),
-            source_url=payload.get("terminal_url"),
+            source_url=payload.get("terminal_url") or payload.get("source_url"),
+            source_revision_sha256=payload.get("source_revision_sha256"),
+            root=repo_root, state_path=state_path, source_origin=source_origin,
         )
         if row.get("degraded_reason"):
             log.warning("scored %s DEGRADED (%s)", row.get("ticker"),
@@ -260,7 +273,8 @@ def run(
                      row.get("tone_word"))
         _log_provider_fallback(row)
         seen.add(sha)
-        rows.append(row)
+        if not (row.get("_fabric_operation") and row.get("degraded_reason")):
+            rows.append(row)
 
     if not rows:
         log.info("nothing new to score")
@@ -293,6 +307,8 @@ def run_terminal(
     fetch or degraded model row stays pending and retries on the next run.
     """
 
+    repo_root = Path(repo_root).resolve()
+    state_path = Path(state_path).absolute()
     if str(repo_root) not in sys.path:
         sys.path.insert(0, str(repo_root))
     from engine import earnings_qual  # noqa: PLC0415
@@ -326,14 +342,10 @@ def run_terminal(
     first_run = not bool(state.get("initialized"))
     # Safe default: a first unattended run establishes a forward-only cursor.
     # --bootstrap-since deliberately opts into a bounded recent catch-up.
-    state, pending = intake.plan_index(
-        refs,
-        state,
-        metadata=metadata,
-        seed_existing=(seed_existing or (first_run and not bootstrap_since)),
-        bootstrap_since=bootstrap_since,
-    )
-    intake.save_state(state_path, state)
+    state, pending = intake.transact_state(state_path, source=source_key,
+        change=lambda current: intake.plan_index(refs, current, metadata=metadata,
+            seed_existing=(seed_existing or (not current.get("initialized") and not bootstrap_since)),
+            bootstrap_since=bootstrap_since))
     if first_run and not bootstrap_since:
         log.info(
             "seeded Terminal cursor with %d committed bodies; future calls will queue",
@@ -375,12 +387,9 @@ def run_terminal(
             )
         except Exception as exc:  # noqa: BLE001
             log.warning("Terminal transcript %s unavailable/invalid (%s) — retry", ref.pair, exc)
-            state = intake.mark_failed(
-                state,
-                ref,
-                error=f"source_unavailable:{type(exc).__name__}",
-            )
-            intake.save_state(state_path, state)
+            state, _ = intake.transact_state(state_path, source=source_key,
+                change=lambda current: (intake.mark_failed(current, ref,
+                    error=f"source_unavailable:{type(exc).__name__}"), None))
             continue
 
         if _future_call_date(
@@ -395,22 +404,21 @@ def run_terminal(
                 ref.pair,
                 payload.get("call_date"),
             )
-            state = intake.mark_failed(
-                state,
-                ref,
-                error="source_future_call_date",
-            )
-            intake.save_state(state_path, state)
+            state, _ = intake.transact_state(state_path, source=source_key,
+                change=lambda current: (intake.mark_failed(current, ref, error="source_future_call_date"), None))
             continue
 
         sha = str(payload.get("source_revision_sha256") or ref.body_sha256 or "")
         if not sha:
             sha = earnings_qual.source_sha256(text)
         record_id = str(payload.get("source_record_id") or "")
-        if record_id and completed_records.get(record_id) == sha:
+        if (record_id and completed_records.get(record_id) == sha
+                and not earnings_qual.fabric_requires_scoring(payload, text, root=repo_root,
+                    state_path=state_path, source_origin=source_key, cfg=cfg, provider_cfg=provider_cfg,
+                    completed_revision=completed_records.get(record_id))):
             log.info("Terminal transcript already scored: %s", ref.pair)
-            state = intake.mark_completed(state, ref)
-            intake.save_state(state_path, state)
+            state, _ = intake.transact_state(state_path, source=source_key,
+                change=lambda current: (intake.mark_completed(current, ref), None))
             continue
 
         row = earnings_qual.score_text(
@@ -426,23 +434,22 @@ def run_terminal(
             source_updated_at=payload.get("source_updated_at"),
             source_url=payload.get("terminal_url"),
             source_revision_sha256=payload.get("source_revision_sha256"),
+            root=repo_root, state_path=state_path, source_origin=source_key,
         )
         if row.get("degraded_reason"):
             # Keep the cursor pending.  upsert_scores may retain a degraded
             # observability receipt, but it will preserve any prior healthy row.
-            earnings_qual.upsert_scores([row], root=repo_root)
+            if not row.get("_fabric_operation"):
+                earnings_qual.upsert_scores([row], root=repo_root)
             _log_provider_fallback(row)
             log.warning(
                 "Terminal transcript %s DEGRADED (%s) — retained in retry queue",
                 ref.pair,
                 row.get("degraded_reason"),
             )
-            state = intake.mark_failed(
-                state,
-                ref,
-                error=f"model:{row.get('degraded_reason') or 'unknown'}",
-            )
-            intake.save_state(state_path, state)
+            state, _ = intake.transact_state(state_path, source=source_key,
+                change=lambda current: (intake.mark_failed(current, ref,
+                    error=f"model:{row.get('degraded_reason') or 'unknown'}"), None))
             continue
 
         earnings_qual.upsert_scores([row], root=repo_root)
@@ -450,8 +457,8 @@ def run_terminal(
         if record_id:
             completed_records[record_id] = sha
         succeeded += 1
-        state = intake.mark_completed(state, ref)
-        intake.save_state(state_path, state)
+        state, _ = intake.transact_state(state_path, source=source_key,
+            change=lambda current: (intake.mark_completed(current, ref), None))
         log.info(
             "scored Terminal %s — sentiment=%.2f performance=%.1f tone=%s",
             ref.pair,
@@ -652,7 +659,7 @@ def main(argv: list[str] | None = None) -> int:
                     help="Repo root override (default: two dirs up from this file).")
     args = ap.parse_args(argv)
 
-    repo_root = Path(args.repo_root) if args.repo_root else _default_repo_root()
+    repo_root = (Path(args.repo_root) if args.repo_root else _default_repo_root()).resolve()
     if str(repo_root) not in sys.path:
         sys.path.insert(0, str(repo_root))
 
@@ -699,12 +706,12 @@ def main(argv: list[str] | None = None) -> int:
         log.error("no work: pass --tickers, --queue, --auto, or --terminal-auto")
         return 2
 
+    state_path = (
+        Path(args.terminal_state).absolute()
+        if args.terminal_state
+        else repo_root / "data" / "earnings_calls" / "terminal_intake_state.json"
+    )
     if args.terminal_auto:
-        state_path = (
-            Path(args.terminal_state)
-            if args.terminal_state
-            else repo_root / "data" / "earnings_calls" / "terminal_intake_state.json"
-        )
         tx_root = Path(args.terminal_tx_root) if args.terminal_tx_root else None
         n = run_terminal(
             repo_root=repo_root,
@@ -734,6 +741,7 @@ def main(argv: list[str] | None = None) -> int:
         limit=args.limit,
         do_publish=not args.no_publish,
         auto=args.auto,
+        state_path=state_path,
     )
     print(f"earnings_worker: scored {n} row(s)")
     return 0

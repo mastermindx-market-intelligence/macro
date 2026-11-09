@@ -28,6 +28,7 @@ import json
 import os
 import re
 import sys
+from contextlib import ExitStack
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -342,11 +343,75 @@ def validate_summary(
 # LLM-gated summarizer (mirrors copywriter.write_posts_llm gate exactly)
 # ─────────────────────────────────────────────────────────────────────────────
 
+_SUMMARY_UNBOUND = object()
+
+
+def _summary_recipe(item: dict, cfg: dict, wire: dict | None):
+    """Build one inert recipe for the draft and its sole business repair."""
+    breaking_cfg = cfg if "llm" in cfg else cfg.get("breaking", {})
+    llm_cfg = breaking_cfg.get("llm", {})
+    if (not bool(llm_cfg.get("enabled", False))
+            or os.environ.get("MARKETING_LLM_ENABLED", "").lower() not in ("1", "true", "yes")):
+        return None
+    from engine import llm_auth  # noqa: PLC0415
+
+    provider_cfg = {
+        "usage_lane": llm_cfg.get("usage_lane", "marketing-breaking"),
+        "oauth_pool_lane": llm_cfg.get("oauth_pool_lane", "marketing-breaking"),
+        "provider_order": llm_cfg.get("provider_order")
+        or ["codex", "oauth", "anthropic", "deepseek"],
+        "codex_source_model": llm_cfg.get("codex_source_model", "gpt-5.6-sol"),
+        "codex_reasoning_effort": llm_cfg.get("codex_reasoning_effort", "medium"),
+        # Preserve the explicitly configured final local rung on native mode.
+        "ollama_base_url": llm_cfg.get("ollama_base_url"),
+        "ollama_base_url_env": llm_cfg.get("ollama_base_url_env"),
+        "ollama_model": llm_cfg.get("ollama_model"),
+        "ollama_timeout_s": llm_cfg.get("ollama_timeout_s"),
+        "ollama_num_ctx": llm_cfg.get("ollama_num_ctx"),
+    }
+    for field in (llm_auth.APPLICATION_MODE_CFG_KEY, "workload_profile"):
+        if field in llm_cfg:
+            provider_cfg[field] = llm_cfg[field]
+    selected = llm_auth.application_mode_id(provider_cfg) is not None
+    model_id = None
+    if selected:
+        provider_cfg.setdefault("workload_profile", "site_batch")
+        provider_cfg["provider_order"] = ["fabric"]
+    else:
+        try:
+            from lib import config as _config  # noqa: PLC0415
+            llm_models = _config.load().get("llm_models", {}) or {}
+        except Exception:  # noqa: BLE001
+            import yaml as _yaml  # noqa: PLC0415
+            _cfgp = Path(__file__).resolve().parents[2] / "config.yml"
+            llm_models = ((_yaml.safe_load(_cfgp.read_text(encoding="utf-8")) or {})
+                          .get("llm_models", {}) or {})
+        model_key = llm_cfg.get("model_key", "marketing_copy")
+        if wire is not None:
+            try:
+                from engine.marketing.wire_voice import resolve_model_key  # noqa: PLC0415
+                model_key = resolve_model_key(item, cfg=wire)
+            except Exception:  # noqa: BLE001
+                pass
+        model_id = llm_models.get(model_key, "")
+        if not model_id:
+            return None
+    max_tokens = int(llm_cfg.get("max_tokens", 800))
+    providers = llm_auth.build_providers(provider_cfg, opus_model=model_id)
+    if not providers:
+        return None
+    if llm_auth.is_fabric_selection(providers) != selected:
+        raise llm_auth.FabricProviderError("fabric_selection_changed")
+    return providers, selected, max_tokens
+
+
 def _llm_summarize(
     item: dict,
     cfg: dict,
     wire: dict | None = None,
     repair: tuple[str, list[str]] | None = None,
+    *,
+    _bound: Any = _SUMMARY_UNBOUND,
 ) -> str | None:
     """Call the LLM to produce a ≤2-sentence restate-only summary.
 
@@ -373,65 +438,23 @@ def _llm_summarize(
         return None
 
     try:
-        # Resolve model via config.yml llm_models block
-        try:
-            from lib import config as _config  # noqa: PLC0415
-            llm_models = _config.load().get("llm_models", {}) or {}
-        except Exception:  # noqa: BLE001
-            import yaml as _yaml  # noqa: PLC0415
-            _cfgp = Path(__file__).resolve().parents[2] / "config.yml"
-            llm_models = (
-                (_yaml.safe_load(_cfgp.read_text(encoding="utf-8")) or {})
-                .get("llm_models", {}) or {}
-            )
-        model_key = llm_cfg.get("model_key", "marketing_copy")
-        if wire is not None:
-            try:
-                from engine.marketing.wire_voice import resolve_model_key  # noqa: PLC0415
-                model_key = resolve_model_key(item, cfg=wire)
-            except Exception:  # noqa: BLE001
-                pass
-        model_id = llm_models.get(model_key, "")
-        if not model_id:
-            return None
-
-        max_tokens = int(llm_cfg.get("max_tokens", 800))
-
-        # CHATGPT-FIRST (operator directive 2026-07-29, recorded on
-        # config/marketing.yml copywriter.llm): the attached Codex account leads,
-        # Claude follows as the balanced fallback drawn through the key_pool load
-        # balancer. Sol — the breaking rewriter produces the published sentence.
         from engine import llm_auth  # noqa: PLC0415
-        providers = llm_auth.build_providers(
-            {
-                "usage_lane": llm_cfg.get("usage_lane", "marketing-breaking"),
-                "oauth_pool_lane": llm_cfg.get("oauth_pool_lane", "marketing-breaking"),
-                "provider_order": llm_cfg.get("provider_order")
-                or ["codex", "oauth", "anthropic", "deepseek"],
-                "codex_source_model": llm_cfg.get("codex_source_model", "gpt-5.6-sol"),
-                "codex_reasoning_effort": llm_cfg.get("codex_reasoning_effort", "medium"),
-                # LOCAL MODEL RUNG (2026-08-04). Forwarded so a config that lists
-                # `ollama` in provider_order actually reaches the local box —
-                # build_providers never inserts this rung implicitly, and without
-                # these keys the entry silently resolved to nothing.
-                #
-                # It belongs LAST and only last. A local 9B is a weaker writer
-                # than any hosted rung, so it must never take work they can do;
-                # but when every hosted rung has failed the alternative is not a
-                # better sentence, it is the deterministic relay of a raw RSS
-                # title — the exact path that put a publisher's page furniture on
-                # the timeline. A restatement from a small local model is a
-                # strictly better last resort than no restatement at all.
-                "ollama_base_url": llm_cfg.get("ollama_base_url"),
-                "ollama_base_url_env": llm_cfg.get("ollama_base_url_env"),
-                "ollama_model": llm_cfg.get("ollama_model"),
-                "ollama_timeout_s": llm_cfg.get("ollama_timeout_s"),
-                "ollama_num_ctx": llm_cfg.get("ollama_num_ctx"),
-            },
-            opus_model=model_id,
-        )
-        if not providers:
-            return None
+        if _bound is _SUMMARY_UNBOUND:
+            recipe = _summary_recipe(item, cfg, wire)
+            if recipe is None:
+                return None
+            providers, selected, max_tokens = recipe
+            with llm_auth.begin_operation(providers, context="marketing_breaking") as operation:
+                return _llm_summarize(item, cfg, wire, repair,
+                                      _bound=(operation.providers, selected, max_tokens))
+        if not isinstance(_bound, tuple) or len(_bound) != 3 or not _bound[0]:
+            raise llm_auth.FabricProviderError("fabric_operation_required")
+        providers, selected, max_tokens = _bound
+        if (not isinstance(providers, list)
+                or not all(isinstance(provider, dict) for provider in providers)
+                or type(selected) is not bool
+                or llm_auth.is_fabric_selection(providers) != selected):
+            raise llm_auth.FabricProviderError("fabric_selection_changed")
 
         system_prompt = (
             "You are a citation rewriter for a market-intelligence publisher. "
@@ -481,11 +504,17 @@ def _llm_summarize(
                 system=system_prompt,
                 messages=[{"role": "user", "content": user_msg}],
             )
+            if selected and (getattr(resp, "stop_reason", None) != "end_turn"
+                             or not resp.content
+                             or any(getattr(part, "type", "") != "text" for part in resp.content)):
+                raise llm_auth.FabricProviderError("fabric_text_completion_required")
             if getattr(resp, "stop_reason", None) == "refusal":
                 return None, "stop_refusal", resp
             text = "".join(
                 b.text for b in resp.content if getattr(b, "type", "") == "text"
             )
+            if selected and not text.strip():
+                raise llm_auth.FabricProviderError("fabric_text_completion_required")
             return (text.strip() or None), None, resp
 
         raw_text, _reason, _provider = llm_auth.make_call(
@@ -699,94 +728,115 @@ def summarize_item(
             published_at: str,
         }
     """
-    source_name = item.get("source_name", item.get("source", ""))
-    source_tier = item.get("source_tier", "aggregator")
-    url = item.get("url", "")
-    published_at = item.get("published_at", "")
+    with ExitStack() as lifetime:
+        bound = _SUMMARY_UNBOUND
 
-    # Try LLM path (or override for tests)
-    llm_text: str | None = None
-    if _llm_override is not None:
-        try:
-            llm_text = _llm_override(item, cfg)
-        except Exception:  # noqa: BLE001
-            llm_text = None
-    else:
-        llm_text = _llm_summarize(item, cfg, wire)
+        def summarize_bound(repair=None):
+            nonlocal bound
+            if bound is _SUMMARY_UNBOUND:
+                try:
+                    recipe = _summary_recipe(item, cfg, wire)
+                    if recipe is None:
+                        bound = None
+                    else:
+                        from engine import llm_auth  # noqa: PLC0415
+                        providers, selected, max_tokens = recipe
+                        operation = lifetime.enter_context(llm_auth.begin_operation(
+                            providers, context="marketing_breaking"))
+                        bound = (operation.providers, selected, max_tokens)
+                except Exception as exc:  # noqa: BLE001 — deterministic restatement survives
+                    print(f"[breaking_summary] provider binding failed: {exc}", file=sys.stderr)
+                    bound = None
+            if bound is None:
+                return None
+            return _llm_summarize(item, cfg, wire, repair, _bound=bound)
 
-    violations_seen: list[str] = []
-    mode = "deterministic"
-    summary = _deterministic_summary(item)
+        source_name = item.get("source_name", item.get("source", ""))
+        source_tier = item.get("source_tier", "aggregator")
+        url = item.get("url", "")
+        published_at = item.get("published_at", "")
 
-    # B2-COPY: the wire_deep format is two short paragraphs (400-700 chars), so it
-    # validates against the wider budget — otherwise a rich source body is force-
-    # failed back to the deterministic fallback and wire_deep can never fill.
-    is_deep = (isinstance(wire, dict)
-               and str(wire.get("_format", "flash")) == "wire_deep")
-    max_chars = _MAX_SUMMARY_CHARS
-    max_sentences = _MAX_SUMMARY_SENTENCES
-    if is_deep:
-        max_chars = int(wire.get("deep_summary_max_chars", 700))
-        max_sentences = int(wire.get("deep_summary_max_sentences", 6))
-
-    if llm_text is not None:
-        violations = validate_summary(
-            llm_text, item, max_chars=max_chars, max_sentences=max_sentences,
-            skip_length_check=is_deep,
-        )
-        if not violations:
-            summary = llm_text
-            mode = "llm"
+        # Try LLM path (or override for tests)
+        llm_text: str | None = None
+        if _llm_override is not None:
+            try:
+                llm_text = _llm_override(item, cfg)
+            except Exception:  # noqa: BLE001
+                llm_text = None
         else:
-            violations_seen = violations
-            # ── ONE REPAIR ATTEMPT (2026-08-04) ───────────────────────────────
-            # A rejected draft used to go straight in the bin, and the bin's
-            # replacement is the deterministic relay — which on a thin packet is
-            # the raw RSS title, page furniture and all. That is the single
-            # biggest source of unwritten posts on this lane: the summarizer was
-            # armed, paid for, and its output discarded without ever being told
-            # what was wrong with it.
-            #
-            # The validator's complaints are SPECIFIC ("number 4,070 not in
-            # source", "summary near-verbatim of source headline"), which makes
-            # them a usable instruction rather than a score. One retry, never
-            # two: a second failure means the packet cannot support a compliant
-            # restatement, and at that point more calls buy drift, not quality.
-            #
-            # Skipped for the test seam (_llm_override), which is a pure
-            # callable with no repair contract.
-            repaired: str | None = None
-            if _llm_override is None:
-                repaired = _llm_summarize(
-                    item, cfg, wire, repair=(llm_text, violations)
-                )
-            if repaired is not None:
-                repair_violations = validate_summary(
-                    repaired, item, max_chars=max_chars,
-                    max_sentences=max_sentences, skip_length_check=is_deep,
-                )
-                if not repair_violations:
-                    summary = repaired
-                    mode = "llm_repaired"
+            llm_text = summarize_bound()
+
+        violations_seen: list[str] = []
+        mode = "deterministic"
+        summary = _deterministic_summary(item)
+
+        # B2-COPY: the wire_deep format is two short paragraphs (400-700 chars), so it
+        # validates against the wider budget — otherwise a rich source body is force-
+        # failed back to the deterministic fallback and wire_deep can never fill.
+        is_deep = (isinstance(wire, dict)
+                   and str(wire.get("_format", "flash")) == "wire_deep")
+        max_chars = _MAX_SUMMARY_CHARS
+        max_sentences = _MAX_SUMMARY_SENTENCES
+        if is_deep:
+            max_chars = int(wire.get("deep_summary_max_chars", 700))
+            max_sentences = int(wire.get("deep_summary_max_sentences", 6))
+
+        if llm_text is not None:
+            violations = validate_summary(
+                llm_text, item, max_chars=max_chars, max_sentences=max_sentences,
+                skip_length_check=is_deep,
+            )
+            if not violations:
+                summary = llm_text
+                mode = "llm"
+            else:
+                violations_seen = violations
+                # ── ONE REPAIR ATTEMPT (2026-08-04) ───────────────────────────────
+                # A rejected draft used to go straight in the bin, and the bin's
+                # replacement is the deterministic relay — which on a thin packet is
+                # the raw RSS title, page furniture and all. That is the single
+                # biggest source of unwritten posts on this lane: the summarizer was
+                # armed, paid for, and its output discarded without ever being told
+                # what was wrong with it.
+                #
+                # The validator's complaints are SPECIFIC ("number 4,070 not in
+                # source", "summary near-verbatim of source headline"), which makes
+                # them a usable instruction rather than a score. One retry, never
+                # two: a second failure means the packet cannot support a compliant
+                # restatement, and at that point more calls buy drift, not quality.
+                #
+                # Skipped for the test seam (_llm_override), which is a pure
+                # callable with no repair contract.
+                repaired: str | None = None
+                if _llm_override is None:
+                    repaired = summarize_bound(repair=(llm_text, violations))
+                if repaired is not None:
+                    repair_violations = validate_summary(
+                        repaired, item, max_chars=max_chars,
+                        max_sentences=max_sentences, skip_length_check=is_deep,
+                    )
+                    if not repair_violations:
+                        summary = repaired
+                        mode = "llm_repaired"
+                    else:
+                        violations_seen = violations + [
+                            f"repair:{v}" for v in repair_violations
+                        ]
+                        summary = _deterministic_summary(item)
+                        mode = "llm_fallback"
                 else:
-                    violations_seen = violations + [
-                        f"repair:{v}" for v in repair_violations
-                    ]
                     summary = _deterministic_summary(item)
                     mode = "llm_fallback"
-            else:
-                summary = _deterministic_summary(item)
-                mode = "llm_fallback"
 
-    return {
-        "summary": summary,
-        "mode": mode,
-        "violations_seen": violations_seen,
-        "source_name": source_name,
-        "source_tier": source_tier,
-        "url": url,
-        "published_at": published_at,
-    }
+        return {
+            "summary": summary,
+            "mode": mode,
+            "violations_seen": violations_seen,
+            "source_name": source_name,
+            "source_tier": source_tier,
+            "url": url,
+            "published_at": published_at,
+        }
 
 
 # ─────────────────────────────────────────────────────────────────────────────

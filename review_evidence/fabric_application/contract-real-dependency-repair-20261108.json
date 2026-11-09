@@ -1,0 +1,68 @@
+{
+  "schema": "mastermind.fabric-application.contract-real-dependency-repair.v1",
+  "source_only": true,
+  "qualified_parent": "fa4a0cb147bd2090fe6b6c2198a9091b92c9a289",
+  "tested_hosted_merge": "2c147ed13854158b036d8106cabae7f54f125b76",
+  "tested_hosted_base": "cb8e54f4b5859c43fdbc3cab94515e9b0935334d",
+  "failed_gate": {
+    "run": 42494002180,
+    "job": 128772341383,
+    "introduced_findings": 2,
+    "inherited_findings": 0
+  },
+  "repair": {
+    "path": ".github/ci/legacy-jobs.yml",
+    "jobs": [
+      "sa-w4-improvement-lanes",
+      "unrun-brain-gateway"
+    ],
+    "added_dependency": "engine/research_codegen/prospective_contract.py",
+    "original_job_blocks_byte_identical_between_head_and_tested_merge": true,
+    "head_before_blob": "7c79948e8aca2561f9535c76b472095a2605eb9d",
+    "head_after_blob": "4104aa0d16a339e616ff19b02e51e4658d940629",
+    "head_after_sha256": "ed8de6250a6ff6423a42e3cccc0d13847daf6df9f70d1e179bf090036a530483",
+    "qualified_merge_before_blob": "5103f7bb8556c4baeac7014793b8ecf31dc826af",
+    "qualified_merge_after_blob": "bb9c43581f8f2d21a8bc6dbe2f4b7a30f49c0b00",
+    "qualified_merge_after_sha256": "88a8dc033e7dc365516f2924bb5d5bdd9b766068104c6a46a7f577d8ab8ebd1e",
+    "job_inventory_unchanged": true,
+    "commands_unchanged": true,
+    "packing_ceilings_unchanged": true
+  },
+  "dependency_witnesses": [
+    [
+      "tests/test_standout_review.py",
+      "engine/experiments_registry.py",
+      "engine/research_codegen/bridge.py",
+      "engine/research_codegen/prospective_contract.py"
+    ],
+    [
+      "tests/test_fabric_admin_pool_server.py",
+      "admin/server.py",
+      "admin/experiments.py",
+      "engine/research_codegen/bridge.py",
+      "engine/research_codegen/prospective_contract.py"
+    ]
+  ],
+  "qualification": {
+    "tests": [
+      "tests/test_ci_pack.py::test_curated_exclusive_scopes_cover_their_own_import_closure",
+      "tests/test_ci_pack.py::test_curated_exclusivity_drops_only_the_opaque_fallback_tier",
+      "tests/test_ci_pack.py::test_exclusive_curation_narrows_ordinary_code_prs"
+    ],
+    "passed": 3,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0,
+    "seconds": 208.2,
+    "log_sha256": "cf426ab35f3b06fccef8290fde5325d90af130a79da1d1752031518df77c4236",
+    "immutable_source_archive_sha256": "c20a3b3e59090103427bc2fd4de16095ccd67ee5200d3613dd818356bef146dd",
+    "canonical_owner": "scripts.run_ci_pack.curated_exclusive_closure_findings",
+    "all_exclusive_jobs_checked": true,
+    "native_git_ref_or_worktree_authoring": false
+  },
+  "acceptance": {
+    "natural_new_head_ci": "owed",
+    "original_merge_on_green_controller": "owed",
+    "native_H4_live_journeys": "owed"
+  }
+}

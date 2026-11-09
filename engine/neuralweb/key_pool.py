@@ -553,7 +553,7 @@ def _read_usage_ledger(root: Path | None = None) -> list[dict[str, Any]]:
         return []
 
 
-def usage_snapshot(root: Path | None = None) -> list[dict[str, Any]]:
+def usage_snapshot(root: Path | None = None, *, recorded_only: bool = False) -> list[dict[str, Any]]:
     """Return per-key usage rows for the admin panel.
 
     Each row covers one key_id and has fields:
@@ -571,6 +571,8 @@ def usage_snapshot(root: Path | None = None) -> list[dict[str, Any]]:
             False/None when the bot has published nothing.
 
     Covers POOL_CAPABILITY_IDS + PROVIDER_CAPABILITY_IDS + "legacy".
+    recorded_only=True preserves observed usage/cooling but leaves credential
+    presence (and attached Codex enablement) unobserved; it performs no discovery.
     Returns [] on error (NEVER-RAISE).
     """
     try:
@@ -684,25 +686,32 @@ def usage_snapshot(root: Path | None = None) -> list[dict[str, Any]]:
                     "headers_ts": row.get("ts"),
                 }
 
-        # Determine which keys are present
-        present_set: set[str] = set(discover_present_keys(root))
-        # Legacy token presence (REDLINE: check only, never read value)
-        try:
-            from lib import config as _config  # noqa: PLC0415
-            legacy_present = bool(_config.secret("CLAUDE_CODE_OAUTH_TOKEN"))
-            deepseek_present = bool(_config.secret("DEEPSEEK_API_KEY"))
-        except Exception:  # noqa: BLE001
-            legacy_present = bool(os.environ.get("CLAUDE_CODE_OAUTH_TOKEN", ""))
-            deepseek_present = bool(os.environ.get("DEEPSEEK_API_KEY", ""))
-        try:
-            from engine import codex_provider as _codex  # noqa: PLC0415
-            codex_accounts = {
-                cap_id for cap_id, _home in _codex.available_accounts()
-            }
-            codex_enabled = _codex.provider_enabled()
-        except Exception:  # noqa: BLE001
-            codex_accounts = set()
-            codex_enabled = False
+        # The Model Desk reads recorded evidence without opening credentials or
+        # discovering attached accounts. Existing callers retain their default.
+        if type(recorded_only) is not bool:
+            return []
+        present_set, legacy_present, deepseek_present = set(), None, None
+        codex_accounts, codex_enabled = set(), None
+        if not recorded_only:
+            # Determine which keys are present
+            present_set: set[str] = set(discover_present_keys(root))
+            # Legacy token presence (REDLINE: check only, never read value)
+            try:
+                from lib import config as _config  # noqa: PLC0415
+                legacy_present = bool(_config.secret("CLAUDE_CODE_OAUTH_TOKEN"))
+                deepseek_present = bool(_config.secret("DEEPSEEK_API_KEY"))
+            except Exception:  # noqa: BLE001
+                legacy_present = bool(os.environ.get("CLAUDE_CODE_OAUTH_TOKEN", ""))
+                deepseek_present = bool(os.environ.get("DEEPSEEK_API_KEY", ""))
+            try:
+                from engine import codex_provider as _codex  # noqa: PLC0415
+                codex_accounts = {
+                    cap_id for cap_id, _home in _codex.available_accounts()
+                }
+                codex_enabled = _codex.provider_enabled()
+            except Exception:  # noqa: BLE001
+                codex_accounts = set()
+                codex_enabled = False
 
         all_ids = list(POOL_CAPABILITY_IDS) + list(PROVIDER_CAPABILITY_IDS) + ["legacy"]
         enabled_ids = enabled_key_ids()  # None = all enabled
@@ -731,6 +740,8 @@ def usage_snapshot(root: Path | None = None) -> list[dict[str, Any]]:
                 enabled = enabled_ids is None or kid in enabled_ids
                 provider = "Claude OAuth"
                 model_translation = None
+            if recorded_only:
+                present = None
             cooling = is_cooling(kid, root) if kid != "legacy" else False
             ci = cooling_info.get(kid, {})
             agg = per_key.get(kid, {})

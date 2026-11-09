@@ -164,13 +164,28 @@ def _resolve_proposal_for_branch(
 
 # ── Audit record idempotency check ────────────────────────────────────────────
 
-def _already_audited(pr_number: int, head_sha: str, root: Path) -> bool:
-    """Return True if a matching audit record exists for (pr_number, head_sha). NEVER raises."""
+def _audit_owner_result(pr_number: int, root: Path) -> dict[str, Any]:
+    """Read the validated audit owner result for one PR. NEVER raises."""
     try:
-        audit_path = root / "data" / "metabolism" / "audit" / f"{pr_number}.json"
-        if not audit_path.exists():
+        from scripts.metabolism_journal import audit_owner_result  # type: ignore[import]
+        return audit_owner_result(root, pr_number)
+    except Exception as exc:  # noqa: BLE001
+        log.warning("metabolism_audit._audit_owner_result #%d: %s", pr_number, exc)
+        return {"status": "held", "record": None, "original": None,
+                "reason": f"metabolism_audit_owner_unreadable: {exc}"}
+
+
+def _already_audited(pr_number: int, head_sha: str, root: Path) -> bool:
+    """Return True if a completed audit for (pr_number, head_sha) is owned.
+
+    A held original, an incomplete operation or a malformed record is not an
+    audited PR: only the owner's validated result can say so. NEVER raises.
+    """
+    try:
+        result = _audit_owner_result(pr_number, root)
+        if result["status"] != "audited":
             return False
-        record = json.loads(audit_path.read_text(encoding="utf-8"))
+        record = result["record"] or {}
         return record.get("head_sha") == head_sha
     except Exception as exc:  # noqa: BLE001
         log.warning("metabolism_audit._already_audited #%d: %s", pr_number, exc)
@@ -324,9 +339,22 @@ def _audit_pr_for_cycle(
 
         # Run audit
         record = audit_pr(pr_number, proposal, diff_text, head_sha, root=root)
+        if record.get("status") == "held":
+            # A held original is not an audited PR.
+            status["status"] = "held"
+            status["reason"] = str(record.get("rationale") or "")[:200]
+            log.info("metabolism_audit: PR #%d held (%s)", pr_number, status["reason"])
+            return status
+        owned = _audit_owner_result(pr_number, root)
+        if owned["status"] != "audited" or (owned["record"] or {}).get("head_sha") != head_sha:
+            status["status"] = "held"
+            status["reason"] = str(owned.get("reason") or "metabolism_audit_owner_unverified")[:200]
+            log.info("metabolism_audit: PR #%d not owned as audited (%s)",
+                     pr_number, status["reason"])
+            return status
         status["status"] = "audited"
-        status["verdict"] = record.get("verdict")
-        log.info("metabolism_audit: PR #%d verdict=%s", pr_number, record.get("verdict"))
+        status["verdict"] = (owned["record"] or {}).get("verdict")
+        log.info("metabolism_audit: PR #%d verdict=%s", pr_number, status["verdict"])
         return status
 
     except Exception as exc:  # noqa: BLE001

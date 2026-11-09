@@ -204,6 +204,7 @@ class _Response:
     def __init__(self, status_code=200, payload=None):
         self.status_code = status_code
         self._payload = [] if payload is None else payload
+        self.text = json.dumps(self._payload)
 
     def json(self):
         return self._payload
@@ -215,11 +216,17 @@ class _Session:
 
     def get(self, url, **kwargs):
         self.calls.append(("get", url, kwargs))
+        if "id" in kwargs["params"]:
+            return _Response(200, [{"id": kwargs["params"]["id"][3:],
+                "user_id": kwargs["params"]["user_id"][3:], "evidence_packet": None}])
         return _Response(200, [{"id": "row"}])
 
     def patch(self, url, **kwargs):
         self.calls.append(("patch", url, kwargs))
-        return _Response(204)
+        assert kwargs["params"]["evidence_packet"] == "is.null"
+        assert kwargs["headers"]["Prefer"] == "return=representation"
+        return _Response(200, [{"id": kwargs["params"]["id"][3:],
+            "user_id": kwargs["params"]["user_id"][3:], **json.loads(kwargs["data"])}])
 
     def delete(self, url, **kwargs):
         self.calls.append(("delete", url, kwargs))
@@ -245,6 +252,8 @@ def test_store_scopes_every_episode_operation_to_operator():
     get_params = session.calls[0][2]["params"]
     patch_call = next(c for c in session.calls if c[0] == "patch")
     assert get_params["user_id"] == f"eq.{owner}"
+    assert all(call[2]["params"]["user_id"] == f"eq.{owner}"
+               for call in session.calls if call[0] == "get")
     assert patch_call[2]["params"]["user_id"] == f"eq.{owner}"
     assert "attacker" not in patch_call[2]["data"]
 

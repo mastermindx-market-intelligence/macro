@@ -1,0 +1,28 @@
+{
+  "installed_acceptance": false,
+  "junit_sha256": "eeb9937a3b60b06154aa7f3539617420b74cfe8eb47729462ab8914e8fcdc3ec",
+  "live_provider_acceptance": false,
+  "native_owner_fixture": "41e86c7aa89905f9b4592d57fbf32c2d7c0f1458",
+  "original_contribution": "dcb0ef02d700bbc97422b4e1046837641f9fe5ae",
+  "paired_carrier_parent": "12efe39a6b6e2f6d19f3a9893f978c55d4656681",
+  "qualification": {
+    "errors": 0,
+    "failures": 0,
+    "skipped": 0,
+    "tests": 245
+  },
+  "runtime_application_map_empty": true,
+  "runtime_enrollment": false,
+  "schema": "mastermind.hermes_attended_auto_current_owner_qualification/v1",
+  "source_files": {
+    "engine/fabric_inference_client.py": "0817202d609637ce024b5f4f1bbe6ba4507825424649f407a235bdf5ef441b8e",
+    "engine/provider_production_modes.py": "56996272225840ff7adefb95d8949c871cb91b1a578bbbf981ee8b8480454df8",
+    "tests/test_hermes_application_source_support.py": "6e4a9b8b477cc29512b1ed5bc02d2dbbab290a0313a2f432bac6568c240cbdf0",
+    "tests/test_hermes_attended_fabric_identity.py": "69e7b4486924772d8d9b00e19b0a740fd16656c66a365e3777458ebf755019cd"
+  },
+  "source_support": {
+    "attended_auto": true,
+    "attended_fixed": true,
+    "same_service_identity": true
+  }
+}

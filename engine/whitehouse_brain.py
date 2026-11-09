@@ -32,6 +32,9 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
+import copy
+import os
+import secrets
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -221,7 +224,20 @@ def _provider(cfg: dict) -> tuple[str, str, str] | None:
 
 
 def provider_label(cfg: dict | None = None) -> str:
-    prov = _provider(cfg or _cfg())
+    cfg = _cfg() if cfg is None else cfg
+    from engine import llm_auth
+    try:
+        mode = llm_auth.application_mode_id(cfg)
+        if mode is not None:
+            from engine.provider_production_modes import make_application_fabric_factory
+            selected = {**cfg, "provider_order": ["fabric"], "usage_lane": "whitehouse"}
+            selected.setdefault("workload_profile", "site_batch")
+            factory = make_application_fabric_factory(mode_id=mode, lane="whitehouse",
+                workload_cfg={**selected, "workload_profile": "site_batch"}, root=config.ROOT)
+            return "Fabric " + factory.inspect(selected)["model"] + " (eligible)"
+    except Exception:
+        return ""
+    prov = _provider(cfg)
     if prov is None:
         return ""
     provider, _, model = prov
@@ -271,6 +287,189 @@ def _wh_reply_cache_put(prompt_hash: str, text: str, cfg: dict) -> None:
         pass
 
 
+def _wh_source_key(item):
+    for field in ("guid", "id", "url"):
+        value = item.get(field)
+        if type(value) is str and value.strip():
+            return {"task": "whitehouse-source-v1", "identity_kind": field, "source_id": value}
+    return None
+
+
+def _wh_fabric_selection(cfg):
+    from engine import llm_auth
+    fields = ("application_fabric_mode", "workload_profile", "max_tokens", "client_timeout_s", "usage_sink")
+    return (llm_auth.application_mode_id(cfg),
+            copy.deepcopy({key: cfg[key] for key in fields if key in cfg}))
+
+
+def _wh_fabric_route(cfg, logical_source):
+    """Consult this source's existing cache before mutable provider discovery."""
+    from engine import catalyst_tone as cache
+    try:
+        root = Path(config.ROOT)
+        path = (cache._fabric_cache_path(root / cfg.get("reply_cache_dir", "data/whitehouse/reply_cache"),
+                                        logical_source) if logical_source is not None else None)
+        history = False
+        if path is not None and os.path.lexists(path):
+            with cache._cache_lock(path, root):
+                state = cache._fabric_cache_state(path, logical_source)
+                history = bool(state["entries"])
+                if any(row["state"] != "terminal" for row in state["entries"]):
+                    return {"error": "fabric_original_held"}
+        selection = _wh_fabric_selection(cfg)
+        if selection[0] is None:
+            return {"error": "fabric_selection_changed"} if history else None
+        if logical_source is None:
+            return {"error": "fabric_source_identity_required"}
+        return {"error": None, "root": root, "path": path, "source": logical_source,
+                "selection": selection, "cfg": copy.deepcopy(cfg)}
+    except Exception:
+        return {"error": "fabric_cache_refused"}
+
+
+def _wh_fabric_parse(text):
+    """Keep the incumbent alert coercion, but reject unsafe container shapes."""
+    from engine import catalyst_tone as cache
+    value = _extract_json(text)
+    if type(value) is not dict:
+        return None
+    if any(value.get(key) is not None and type(value[key]) is not list
+           for key in ("sectors", "tickers")):
+        return None
+    cache._cache_json(value)  # nonfinite numbers are not reusable model evidence
+    return value
+
+
+def _wh_fabric_call(system, user, cfg, route):
+    """One original call; the existing reply cache owns intent and settlement."""
+    from engine import catalyst_tone as cache, llm_auth
+    if route.get("error"):
+        return {"text": None, "model": None, "error": route["error"]}
+    provider = operation = None
+    try:
+        path, root, logical = route["path"], route["root"], route["source"]
+        frozen = route["cfg"]
+        mode = route["selection"][0]
+        selected = {**frozen, "provider_order": ["fabric"], "usage_lane": "whitehouse"}
+        selected.setdefault("workload_profile", "site_batch")
+        bound = frozen.get("max_tokens", 4000)
+        if type(bound) is not int or not 1 <= bound <= 32768:
+            raise ValueError("fabric_token_bound_invalid")
+        if (type(system) is not str or type(user) is not str or not user.strip()
+                or len(system.encode()) + len(user.encode()) > 1048576):
+            raise ValueError("fabric_input_invalid")
+        with cache._cache_lock(path, root):
+            state = cache._fabric_cache_state(path, logical)
+            if any(row["state"] != "terminal" for row in state["entries"]):
+                return {"text": None, "model": None, "error": "fabric_original_held"}
+        if _wh_fabric_selection(cfg) != route["selection"]:
+            raise ValueError("fabric_selection_changed")
+        from engine.provider_production_modes import make_application_fabric_factory
+        factory = make_application_fabric_factory(mode_id=mode, lane="whitehouse",
+            workload_cfg={**selected, "workload_profile": "site_batch"}, root=root)
+        inspection = factory.inspect(selected)
+        commitment = {"system": system, "user": user, "max_tokens": bound,
+                      "response_contract": "wh_alert.v1-complete-text-v1"}
+        if "client_timeout_s" in frozen:
+            commitment["client_timeout_s"] = frozen["client_timeout_s"]
+        digest = cache._cache_hash(commitment)
+        with cache._cache_lock(path, root):
+            state = cache._fabric_cache_state(path, logical)
+            if any(row["state"] != "terminal" for row in state["entries"]):
+                return {"text": None, "model": None, "error": "fabric_original_held"}
+            prior = next((row for row in state["entries"] if row["input_digest"] == digest), None)
+            if prior is not None:
+                if prior["mode_id"] != mode or prior["inspection"] != inspection:
+                    raise ValueError("fabric_cache_identity_changed")
+                if prior["result"] is not None and _wh_fabric_parse(prior["text"]) != prior["result"]:
+                    raise ValueError("fabric_cache_result_invalid")
+                receipt = prior["receipt"]
+                ready = (prior["result"] is not None and prior["error"] is None
+                         and receipt["effect_unknown"] is False
+                         and receipt["close"]["disposition"] in ("closed", "local_only"))
+                return {"text": prior["text"] if ready else None,
+                        "model": receipt["served_model"] if ready else None,
+                        "error": None if ready else prior["error"] or "fabric_original_held"}
+            if len(state["entries"]) >= 64:
+                raise ValueError("fabric_cache_bound")
+            claim = {"operation_id": "whitehouse:" + secrets.token_hex(16), "input_digest": digest,
+                     "mode_id": mode, "inspection": inspection, "state": "pending",
+                     "text": None, "result": None, "result_digest": None, "receipt": None, "error": None}
+            state["entries"].append(copy.deepcopy(claim))
+            cache._cache_save(path, state)
+        text = result = observed_model = None
+        error = None
+        try:
+            # Presence and mode are rechecked AFTER durable intent, including
+            # environment removal. The captured factory cannot authorize drift.
+            if _wh_fabric_selection(cfg) != route["selection"]:
+                raise ValueError("fabric_selection_changed")
+            provider = llm_auth.build_fabric_provider(factory.with_inspection(inspection),
+                request_id=claim["operation_id"], workload_cfg=selected)
+            provider["usage_lane"] = "whitehouse"
+            operation = llm_auth.begin_operation([provider], operation_id=claim["operation_id"],
+                                                 context="whitehouse_brain")
+            def call(client, model):
+                nonlocal observed_model
+                response = client.messages.create(model=model, max_tokens=bound, system=system,
+                    messages=[{"role": "user", "content": user}])
+                observed_model = getattr(response, "model", None)
+                blocks = getattr(response, "content", None)
+                if (getattr(response, "stop_reason", None) != "end_turn"
+                        or not isinstance(blocks, (list, tuple)) or not blocks
+                        or any(getattr(block, "type", None) != "text"
+                               or type(getattr(block, "text", None)) is not str for block in blocks)):
+                    raise llm_auth.FabricProviderError("fabric_response_not_complete")
+                answer = "".join(block.text for block in blocks)
+                if not answer.strip() or len(answer.encode()) > 1048576:
+                    raise llm_auth.FabricProviderError("fabric_response_invalid")
+                return answer, None, response
+            text, _, _ = llm_auth.make_call(operation.providers, call, context="whitehouse_brain")
+            result = _wh_fabric_parse(text)
+            if result is None:
+                raise ValueError("fabric_result_invalid")
+        except Exception as exc:
+            error = getattr(exc, "code", "fabric_result_invalid")
+            result = None
+        finally:
+            if operation is not None:
+                operation.close()
+            elif provider is not None:
+                llm_auth.close_fabric_provider(provider)
+        close = (provider.get("_fabric_close") if provider is not None else
+                 {"disposition": "not_bound", "closed": False, "effect_unknown": False, "attempted": False})
+        unknown = (not isinstance(close, dict) or close.get("effect_unknown") is not False
+                   or close.get("disposition") not in ("closed", "local_only", "not_bound")
+                   or bool(provider and (provider.get("_fabric_pending")
+                       or getattr(provider.get("_fabric_failure"), "effect_unknown", False))))
+        observation = provider.get("_fabric_last_observation") if provider is not None else None
+        if observed_model is None and isinstance(observation, dict):
+            observed_model = observation.get("serving_model")
+        receipt = {"operation_id": claim["operation_id"], "provider": inspection["provider"],
+                   "requested_model": inspection["model"], "served_model": observed_model,
+                   "observed_usage": observation,
+                   "usage": llm_auth.fabric_usage(provider) if provider is not None else None,
+                   "close": close, "effect_unknown": unknown,
+                   "completed_at": datetime.now(timezone.utc).isoformat()}
+        settled = {**claim, "state": "held" if unknown else "terminal", "text": text, "result": result,
+                   "result_digest": cache._cache_hash(result) if result is not None else None,
+                   "receipt": receipt, "error": error or ("fabric_close_unknown" if unknown else None)}
+        with cache._cache_lock(path, root):
+            state = cache._fabric_cache_state(path, logical)
+            original = next(row for row in state["entries"] if row["operation_id"] == claim["operation_id"])
+            if cache._cache_json(original) != cache._cache_json(claim):
+                raise ValueError("fabric_cache_original_changed")
+            original.update(settled)
+            cache._fabric_cache_value(state, logical)
+            cache._cache_save(path, state)
+        ready = result is not None and not unknown and error is None
+        return {"text": text if ready else None, "model": observed_model if ready else None,
+                "error": settled["error"]}
+    except Exception:
+        # Failed write/readback/close leaves original durable custody intact.
+        return {"text": None, "model": None, "error": "fabric_cache_refused"}
+
+
 def _call_model(system: str, user: str, cfg: dict) -> tuple[str | None, str | None]:
     """(reply_text, degraded_reason). Never raises.
 
@@ -290,8 +489,29 @@ def _call_model(system: str, user: str, cfg: dict) -> tuple[str | None, str | No
     """
     from engine import llm_auth
 
+    # Direct callers lack an item identity: only exact system/user continuity
+    # is available. Public evaluate below uses the stable government source ID.
+    from engine import catalyst_tone as cache
+    logical = {"task": "whitehouse-direct-v1", "request": cache._cache_hash([system, user])}
+    route = _wh_fabric_route(cfg, logical)
+    if route is not None:
+        selected = _wh_fabric_call(system, user, cfg, route)
+        return selected["text"], selected["error"]
+
+    try:
+        native_selection = _wh_fabric_selection(cfg)
+        if native_selection[0] is not None:
+            return None, "fabric_selection_changed"
+    except Exception:
+        return None, "fabric_selection_changed"
+
     providers = llm_auth.build_providers(cfg, opus_model=cfg.get("opus_model", "claude-opus-4-8"),
                                          deepseek_model=cfg.get("deepseek_model", "deepseek-v4-pro"))
+    try:
+        if _wh_fabric_selection(cfg) != native_selection:
+            return None, "fabric_selection_changed"
+    except Exception:
+        return None, "fabric_selection_changed"
     if not providers:
         return None, "no_provider"
 
@@ -324,6 +544,8 @@ def _call_model(system: str, user: str, cfg: dict) -> tuple[str | None, str | No
         return text, ("truncated" if sr == "max_tokens" else None), resp
 
     try:
+        if _wh_fabric_selection(cfg) != native_selection:
+            return None, "fabric_selection_changed"
         text, reason, provider_used = llm_auth.make_call(
             providers, _do_call, context="whitehouse_brain")
     except Exception as e:  # noqa: BLE001 — degrade, never raise
@@ -394,7 +616,7 @@ def _macro_backdrop(root: Path) -> str:
 def _coerce_int(v, lo: int, hi: int, default: int) -> int:
     try:
         return max(lo, min(hi, int(round(float(v)))))
-    except (TypeError, ValueError):
+    except (TypeError, ValueError, OverflowError):
         return default
 
 
@@ -481,7 +703,7 @@ def _norm_tickers(raw, cfg: dict, root: Path) -> list[dict]:
 def evaluate(item: dict, cfg: dict | None = None, root: Path | None = None) -> dict:
     """Run the significance gate + report for ONE White House item. Always returns a
     record (activated True/False, degraded fields flagged); never raises."""
-    cfg = cfg or _cfg()
+    cfg = _cfg() if cfg is None else cfg
     root = Path(root) if root else config.ROOT
     now = datetime.now(timezone.utc)
     rec: dict = {
@@ -492,7 +714,7 @@ def evaluate(item: dict, cfg: dict | None = None, root: Path | None = None) -> d
         "section": item.get("section"),
         "published": item.get("published"),
         "generated_at": now.isoformat(),
-        "model": provider_label(cfg) or "(none)",
+        "model": "(none)",
         "activated": False,
         "importance": None,
         "banner_days": None,
@@ -507,6 +729,25 @@ def evaluate(item: dict, cfg: dict | None = None, root: Path | None = None) -> d
         "degraded_reason": None,
         "raw_text": None,
     }
+
+    if not cfg.get("enabled", True):
+        rec["degraded_reason"] = "disabled"
+        return rec
+    # Resolve an existing original before readiness labels, selector changes or
+    # mutable backdrop/request content can choose another provider.
+    route = _wh_fabric_route(cfg, _wh_source_key(item))
+    if route is not None and route.get("error"):
+        rec["degraded_reason"] = route["error"]
+        return rec
+    if route is None:
+        try:
+            native_selection = _wh_fabric_selection(cfg)
+            if native_selection[0] is not None:
+                raise ValueError("fabric_selection_changed")
+        except Exception:
+            rec["degraded_reason"] = "fabric_selection_changed"
+            return rec
+        rec["model"] = provider_label(cfg) or "(none)"
 
     # Treasury lane: a pre-detected TGA cash-flow event routes to the liquidity-strategist
     # system prompt (SAME JSON output contract as SYSTEM — the pipeline is unchanged).
@@ -526,7 +767,19 @@ def evaluate(item: dict, cfg: dict | None = None, root: Path | None = None) -> d
         "Apply the significance gate, then (only if it clears) write the alert. JSON only."
     )
 
-    reply, reason = _call_model(system, user, cfg)
+    if route is None:
+        try:
+            if _wh_fabric_selection(cfg) != native_selection:
+                raise ValueError("fabric_selection_changed")
+        except Exception:
+            rec["model"] = "(none)"
+            rec["degraded_reason"] = "fabric_selection_changed"
+            return rec
+        reply, reason = _call_model(system, user, cfg)
+    else:
+        selected = _wh_fabric_call(system, user, cfg, route)
+        reply, reason = selected["text"], selected["error"]
+        rec["model"] = selected["model"] or "(none)"
     rec["raw_text"] = reply
     if reply is None:
         rec["degraded_reason"] = reason

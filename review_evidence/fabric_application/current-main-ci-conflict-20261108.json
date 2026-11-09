@@ -1,0 +1,40 @@
+{
+  "schema": "mastermind.fabric_application.current_main_conflict_resolution.v1",
+  "original_pr": "https://github.com/mastermindx-market-intelligence/macro/pull/10740",
+  "original_head": "f38c5b9ea25ea598094a309f0edf48e2722408be",
+  "integrated_main": "14fd85ad014ddbc3e0c9bf07c3166588ccab0a99",
+  "common_ancestor": "067c32074bf6c2d5128bf4f7498859d11f24e791",
+  "controller_refusal": "https://github.com/mastermindx-market-intelligence/macro/pull/10740#issuecomment-6719156118",
+  "controller_attempt_effect": "No update-branch write attempted; no refresh budget spent.",
+  "resolution": {
+    "path": ".github/ci/legacy-jobs.yml",
+    "conflict_count": 1,
+    "kind": "Preserve both additive ontology-explorer dependency-path groups.",
+    "git_blob": "1d1f8af281901edf21588c1ef3e1e2e3d30fd9b0",
+    "sha256": "9337250d684192ccc6ad9c01d829a9de1842eb54e512893b26e70fdf35ec5a41",
+    "bytes": 2818572,
+    "jobs": 395,
+    "other_original_delta_blobs_preserved": 192,
+    "main_ontology_steps_preserved": true,
+    "duplicate_mapping_keys": 0,
+    "duplicate_ontology_paths": 0,
+    "original_h4_paths": 7,
+    "current_main_paths": 2
+  },
+  "qualification": {
+    "canonical_control_source": "14fd85ad014ddbc3e0c9bf07c3166588ccab0a99",
+    "canonical_binder_passed": true,
+    "main_to_candidate_changed_jobs": 61,
+    "original_head_to_candidate_changed_jobs": 4,
+    "control_sha256": "9ba4d60cb6d730b972790f737d600901f81794f8e571106e2e917fe7e4ca3827",
+    "retained_current_base_replay_tests": {
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "log_sha256": "c4b808d34f4db00b333696dec1f3a43a2887d8bfe0cb7af07a3cb98ff43a7830",
+      "source_sha256": "1d14a4b48d560e6999972ca70ede40ab6df7b69dff45ea9747072f93833570f4"
+    }
+  },
+  "scope": "Source conflict repair only. Existing packing limits, selectors outside the joined paths, runtime closure, model/provider/account policy and original effect fences are preserved. Exact new-head CI and incumbent controller freshness remain required. No live activation or H4 acceptance is claimed."
+}

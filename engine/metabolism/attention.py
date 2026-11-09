@@ -30,6 +30,7 @@ from datetime import datetime, timezone
 from math import floor
 from pathlib import Path
 from typing import Any
+from scripts.metabolism_journal import FabricHeld, guard_native_route, native_provider_call
 
 from engine.metabolism.criticality import (  # noqa: PLC2403
     AUTHORITY_BLOCK,
@@ -178,14 +179,13 @@ def _call_llm(
     system_prompt: str,
     user_prompt: str,
     max_tokens: int = 4000,
+    *, root: Path | None = None, cycle_id: str = "attention-model",
 ) -> tuple[str | None, str | None, str | None]:
     """Call the LLM via llm_auth.make_call.
 
     Returns (text, degraded_reason, provider_used). NEVER raises.
     """
     try:
-        from engine.llm_auth import make_call  # noqa: PLC0415
-
         def _call_fn(client: Any, model: str) -> tuple[str | None, str | None]:
             resp = client.messages.create(
                 model=model,
@@ -196,7 +196,10 @@ def _call_llm(
             text = resp.content[0].text if resp.content else None
             return text, None
 
-        return make_call(providers, _call_fn, context="metabolism_attention")
+        return native_provider_call(_repo_root(root), "attention", cycle_id, ["attention"],
+                                    providers, _call_fn, context="metabolism_attention")
+    except FabricHeld:
+        raise
     except Exception as exc:  # noqa: BLE001
         log.warning("attention._call_llm: failed — %s", exc)
         return None, f"llm_error: {exc}", None
@@ -242,6 +245,8 @@ def build_attention(
             providers=providers,
             model=model,
         )
+    except FabricHeld:
+        raise
     except Exception as exc:  # noqa: BLE001
         log.warning("attention.build_attention: fatal — %s", exc)
         return {
@@ -265,6 +270,8 @@ def _build_attention_inner(
 ) -> dict:
     """Inner builder — may raise; wrapped by build_attention."""
     repo = _repo_root(root)
+    guard_native_route(repo, "attention", cycle_id, ["attention"],
+                       model_requested=bool(providers) or model is not None)
     cfg = load_attention_config(root=repo)
     max_focus_lobes: int = cfg["max_focus_lobes"]
     docket_share: dict[str, float] = cfg["docket_share"]
@@ -329,12 +336,14 @@ def _build_attention_inner(
             "deprioritize ancillary low-frequency support."
         )
 
+        guard_native_route(repo, "attention", cycle_id, ["attention"], providers=providers)
         text, llm_degraded, provider_used = _call_llm(
             providers=providers,
             system_prompt=system_prompt,
             user_prompt=user_prompt,
             max_tokens=4000,
         )
+        guard_native_route(repo, "attention", cycle_id, ["attention"], providers=providers, reason=llm_degraded)
         if llm_degraded:
             degraded_reason = llm_degraded
         else:

@@ -1,0 +1,47 @@
+{
+  "schema": "macro.fabric_final_protected_join.v1",
+  "source_parent": "fec000177d9fb2353f64730e73854fce0ca16532",
+  "protected_main": "b94d5c0fce15e69479c33ea233a5ae5ab3da82a1",
+  "merge_base": "5c8d02f78ca2fe317e861d69169733e56237cbcc",
+  "governing_file_delta": [],
+  "protected_changed_path_count": 8153,
+  "only_composed_postimages": [
+    ".github/ci/legacy-jobs.yml",
+    "tests/test_commodity_workspace_ui.js"
+  ],
+  "all_other_changed_postimages": "Exact protected main blobs, including published data and inherited formatting",
+  "runtime_code_config_delta": [],
+  "ci_fixture_steps": "Historical39-module invocation and distinct current19-file Metabolism step preserved exactly from fec000177d",
+  "commodity_resolution": {
+    "path": "tests/test_commodity_workspace_ui.js",
+    "preimage_conflict_sha256": "3d151c95492ab7da1757b8a9bc9d805449ee965b80979b9bf39d14473e530723",
+    "postimage_sha256": "c9f07c1cf7a0a8cbb4aa8a9545b5a9ef3ea06f7b0562574b552df4977038740f",
+    "postimage_blob": "5a5d87da4e10471f6349122e2d88d2f28eb9227d",
+    "decision": "Preserve protected published-component linked/empty/unavailable cohort journeys and richer receipt. Preserve original isolated pipeline empty-cohort/identity-unavailable navigation cases; retain both fixture sources, only one main html and receipt write."
+  },
+  "commodity_proof": {
+    "returncode": 0,
+    "passed": 31,
+    "log_sha256": "55a2bd28531ac1e135bb0dcaa6a32d26b0e89573daf79889340841c55c86ce99",
+    "receipt": {
+      "passed": 31,
+      "assets": 17,
+      "snapshot": "f5760a3947f0bb16c696087f15adc127b971d58d338cbed7654ba168853cf432",
+      "published_snapshot": "3c9f7eebaf4c9374b3ac596835a17b074d533cf7ea6f8012fe0895f0dbd5b619",
+      "company_cohort_cases": [
+        "linked",
+        "empty",
+        "unavailable"
+      ],
+      "fixture_only": true,
+      "export_bytes": 47380,
+      "visual_layout_verified": false
+    }
+  },
+  "prior_source_proofs": [
+    "docs/reports/fabric-auto-source-support-and-private-fixture-20261107.json",
+    "docs/reports/native-ci-fixture-alignment-20261107.json",
+    "docs/reports/native-current-historical-ci-separation-20261107.json"
+  ],
+  "release_status": "Exact published-head PR CI and merge-on-green owner proof remain required; no production activation."
+}

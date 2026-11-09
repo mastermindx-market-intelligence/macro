@@ -187,33 +187,57 @@ def _classify_cause(asset: str, move_desc: str, headlines: list[dict],
         "oauth_pool_lane": "commodity-news",
         "usage_lane": "commodity-news",
     }
-    model = cfg.get("llm_model", "claude-haiku-4-5")
-    providers = llm_auth.build_providers(llm_cfg, opus_model=model)
-    if not providers:
-        return None, None   # no key present — graceful skip
     try:
+        for key in (llm_auth.APPLICATION_MODE_CFG_KEY, "workload_profile"):
+            if key in cfg:
+                llm_cfg[key] = cfg[key]
+        if llm_auth.application_mode_id(llm_cfg) is not None:
+            llm_cfg.setdefault("workload_profile", "site_batch")
+        model = cfg.get("llm_model", "claude-haiku-4-5")
+        providers = llm_auth.build_providers(llm_cfg, opus_model=model)
+        if not providers:
+            return None, None   # no key present — graceful skip
+        selected = llm_auth.is_fabric_selection(providers)
+        served_model = model
         lines = "\n".join(f"- {h['title']} ({h['domain']}, {h['seendate'][:10]})" for h in headlines)
         user = f"Commodity: {asset}\nDetected move: {move_desc}\nHeadlines:\n{lines}"
 
         def _call_fn(client, m: str):
-            resp = client.messages.create(
-                model=m, max_tokens=256,
-                system=CLASSIFY_SYSTEM, messages=[{"role": "user", "content": user}],
-                output_config={"format": {"type": "json_schema", "schema": CLASSIFY_SCHEMA}})
+            nonlocal served_model
+            request = {"model": m, "max_tokens": 256, "system": CLASSIFY_SYSTEM,
+                       "messages": [{"role": "user", "content": user}]}
+            if selected:
+                request["system"] += ("\nReturn one JSON object matching this exact schema:\n"
+                                      + json.dumps(CLASSIFY_SCHEMA, sort_keys=True))
+            else:
+                request["output_config"] = {"format": {"type": "json_schema", "schema": CLASSIFY_SCHEMA}}
+            resp = client.messages.create(**request)
+            if selected and (getattr(resp, "stop_reason", None) != "end_turn"
+                             or not resp.content
+                             or any(getattr(block, "type", "") != "text" for block in resp.content)):
+                raise llm_auth.FabricProviderError("fabric_text_completion_required")
             if getattr(resp, "stop_reason", None) in ("refusal", "max_tokens"):
                 return None, "llm_refusal", resp
-            text = next(b.text for b in resp.content if getattr(b, "type", "") == "text")
+            text = ("".join(block.text for block in resp.content) if selected else
+                    next(b.text for b in resp.content if getattr(b, "type", "") == "text"))
+            if selected and not text.strip():
+                raise llm_auth.FabricProviderError("fabric_text_completion_required")
+            served_model = str(getattr(resp, "model", None) or m or "")
             return text, None, resp
 
-        text, degraded, _ = llm_auth.make_call(providers, _call_fn, context="commodity_news")
+        with llm_auth.begin_operation(providers, context="commodity_news") as operation:
+            text, degraded, _ = llm_auth.make_call(operation.providers, _call_fn, context="commodity_news")
         if not text:
             return None, degraded or "llm_error"
         parsed = json.loads(text)
+        if selected:
+            from jsonschema import validate  # noqa: PLC0415
+            validate(parsed, CLASSIFY_SCHEMA)
         # auditable code-side confidence gate (not in the prompt)
         thr = cfg.get("llm_min_confidence", "high")
         if _CONF_RANK.get(parsed.get("confidence"), 0) < _CONF_RANK.get(thr, 2):
             parsed["cause"] = "unknown"
-        parsed["model"] = model
+        parsed["model"] = served_model if selected else model
         parsed["applied_threshold"] = thr
         return parsed, None
     except Exception as e:  # noqa: BLE001 — degrade, never raise

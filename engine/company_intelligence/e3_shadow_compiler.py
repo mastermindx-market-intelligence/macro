@@ -688,9 +688,9 @@ class ModelAttempt:
     degraded_reason: str | None = None
     raw_response: str | None = None
     candidates: list[dict] = field(default_factory=list)
-    input_tokens: int = 0
-    output_tokens: int = 0
-    est_cost_usd: float = 0.0
+    input_tokens: int | None = 0
+    output_tokens: int | None = 0
+    est_cost_usd: float | None = 0.0
     latency_ms: float = 0.0
     provider_fallback_reason: str | None = None
     is_comparator: bool = False
@@ -698,6 +698,10 @@ class ModelAttempt:
     endpoint_class: str | None = None
     base_url_source: str | None = None
     preflight: dict[str, Any] = field(default_factory=dict)
+    served_model: str | None = None
+    http_status: int | None = None
+    error_kind: str | None = None
+    observed_usage: dict[str, int | None] | None = None
 
 
 def _parse_plist_llm(root: Path) -> tuple[str, str]:
@@ -805,43 +809,40 @@ def _record_health(*, rung: str, ok: bool, latency_ms: float, model: str, error_
         print(f"[e3_shadow_compiler] provider_health record failed: {exc}")
 
 
-def ledger_attempt(attempt: ModelAttempt, root: Path, run_id: str) -> None:
-    """Write one ai_costs row per attempt.
-
-    Local Ollama transport stays openai_compat; cost_basis is local/free $0.00,
-    never an unpriced metered call.
-    """
+def ledger_attempt(attempt: ModelAttempt, root: Path, run_id: str, *,
+                   fabric: bool = False, fabric_observation: dict | None = None) -> bool:
+    """Publish through the incumbent usage owner and return its actual ACK."""
     try:
         from lib.ai_costs import record_usage
 
-        local = attempt.endpoint_class in {"loopback", "private_lan"}
-        if local:
-            cost_basis = "local"
-            est_cost = 0.0
-        else:
-            cost_basis = "metered"
-            est_cost = attempt.est_cost_usd
-        note = (
-            f"comparator=True {attempt.comparator_note}" if attempt.is_comparator
-            else "qwen_first_rung"
-        )
-        if local:
-            note = f"{note} transport=openai_compat cost_basis=local"
-        record_usage(
-            lane=LANE,
-            provider=attempt.provider,
-            model=attempt.model,
-            input_tokens=attempt.input_tokens,
-            output_tokens=attempt.output_tokens,
-            est_cost_usd=est_cost,
-            cost_basis=cost_basis,
-            cycle_id=run_id,
-            stage="e3a_shadow_eval",
-            note=note,
-            root=root,
-        )
+        local = not fabric and attempt.endpoint_class in {"loopback", "private_lan"}
+        cost_basis = "unknown" if fabric else ("local" if local else
+            ("unknown" if attempt.est_cost_usd is None else "metered"))
+        est_cost = None if fabric else (0.0 if local else attempt.est_cost_usd)
+        note = (f"comparator=True {attempt.comparator_note}" if attempt.is_comparator
+                else "qwen_first_rung")
+        route = None
+        if fabric:
+            note += f" transport=fabric requested_model={attempt.model} cost_basis=unknown"
+            if fabric_observation is not None:
+                routed = fabric_observation["routing"]
+                route = {key: routed[key] for key in (
+                    "selected_model", "mode", "protocol", "driver", "profile",
+                    "source", "recipe_digest", "selection_digest")}
+        elif local:
+            note += " transport=openai_compat cost_basis=local"
+        return record_usage(
+            lane=LANE, provider=attempt.provider,
+            model=attempt.served_model if fabric else attempt.model,
+            input_tokens=attempt.input_tokens, output_tokens=attempt.output_tokens,
+            est_cost_usd=est_cost, cost_basis=cost_basis,
+            cycle_id=run_id, stage="e3a_shadow_eval", note=note,
+            **({"fabric_route": route} if fabric else {}), root=root,
+        ) is True
     except Exception as exc:  # noqa: BLE001
-        print(f"[e3_shadow_compiler] ai_costs ledger FAILED: {exc}")
+        if not fabric:
+            print(f"[e3_shadow_compiler] ai_costs ledger FAILED: {exc}")
+        return False
 
 
 def _attempt_qwen(user_prompt: str, repo_root: Path) -> ModelAttempt:
@@ -850,11 +851,14 @@ def _attempt_qwen(user_prompt: str, repo_root: Path) -> ModelAttempt:
         provider="openai_compat",
         model="qwen3.5:9b",
         is_comparator=False,
+        input_tokens=None,
+        output_tokens=None,
+        est_cost_usd=None,
     )
     t0 = time.monotonic()
     try:
         import yaml
-        from engine.earnings_qual import _call_openai_compat
+        from engine.earnings_qual import _call_openai_compat_detailed
 
         with open(repo_root / "config/earnings_qual.yml") as f:
             cfg = yaml.safe_load(f)
@@ -879,45 +883,21 @@ def _attempt_qwen(user_prompt: str, repo_root: Path) -> ModelAttempt:
             )
             return attempt
 
-        captured: dict[str, Any] = {}
-        try:
-            import requests as _requests
-
-            _orig_post = _requests.post
-
-            def _wrapped_post(*args: Any, **kwargs: Any):
-                resp = _orig_post(*args, **kwargs)
-                captured["json"] = resp.json() if resp.ok else None
-                return resp
-
-            _requests.post = _wrapped_post  # type: ignore[method-assign]
-            try:
-                text, reason = _call_openai_compat(
-                    system=SYSTEM_PROMPT,
-                    user=user_prompt,
-                    oc_cfg=oc_cfg,
-                    max_tokens=int(oc_cfg.get("max_tokens") or EXTRACTION_MAX_TOKENS)
-                    if int(oc_cfg.get("max_tokens") or 0) >= EXTRACTION_MAX_TOKENS
-                    else EXTRACTION_MAX_TOKENS,
-                )
-            finally:
-                _requests.post = _orig_post  # type: ignore[method-assign]
-        except Exception:
-            text, reason = _call_openai_compat(
-                system=SYSTEM_PROMPT,
-                user=user_prompt,
-                oc_cfg=oc_cfg,
-                max_tokens=int(oc_cfg.get("max_tokens") or EXTRACTION_MAX_TOKENS)
-                if int(oc_cfg.get("max_tokens") or 0) >= EXTRACTION_MAX_TOKENS
-                else EXTRACTION_MAX_TOKENS,
-            )
-        usage = (captured.get("json") or {}).get("usage") or {}
-        attempt.input_tokens = int(
-            usage.get("prompt_tokens") or usage.get("input_tokens") or 0
+        result = _call_openai_compat_detailed(
+            system=SYSTEM_PROMPT,
+            user=user_prompt,
+            oc_cfg=oc_cfg,
+            max_tokens=max(int(oc_cfg.get("max_tokens") or EXTRACTION_MAX_TOKENS),
+                           EXTRACTION_MAX_TOKENS),
         )
-        attempt.output_tokens = int(
-            usage.get("completion_tokens") or usage.get("output_tokens") or 0
-        )
+        text, reason = result.text, result.reason
+        attempt.observed_usage = result.observed_usage
+        attempt.served_model = result.served_model
+        attempt.http_status = result.status_code
+        attempt.error_kind = result.error_kind
+        usage = result.observed_usage or {}
+        attempt.input_tokens = usage.get("prompt_tokens")
+        attempt.output_tokens = usage.get("completion_tokens")
         attempt.latency_ms = (time.monotonic() - t0) * 1000
         if text is None:
             attempt.status = "provider_unavailable"
@@ -1223,15 +1203,564 @@ def _enable_eval_shards(run_id: str, repo_root: Path) -> dict[str, str]:
     return {"ai_costs_shard": shard, "provider_health_path": str(health_path.relative_to(repo_root))}
 
 
-def run_e3a_eval(repo_root: Path | None = None) -> dict:
-    """Execute the E3-A leakage-free eval sequence.
 
-    Returns the full eval receipt (written to EVAL_RECEIPT_PATH).
-    Does NOT write to event_workspace.v1. Does NOT write to R2.
-    """
-    if repo_root is None:
-        repo_root = Path(__file__).parent.parent.parent
+# The existing evaluation receipt owns selected inference and publication.
+_FABRIC_E3_SCHEMA = "e3a_eval_receipt.v2"
+_FABRIC_E3_KEY = "_fabric_evaluation"
+_FABRIC_QWEN_MODEL = "qwen3.8-flash"
 
+
+def _fabric_e3_owners():
+    from engine import catalyst_tone, fabric_inference_client, llm_auth
+    return catalyst_tone, fabric_inference_client, llm_auth
+
+
+def _fabric_e3_hash(value):
+    cache, _, _ = _fabric_e3_owners()
+    return hashlib.sha256(cache._cache_json(value)).hexdigest()
+
+
+def _fabric_e3_fields(value, fields):
+    if type(value) is not dict or set(value) != set(fields.split()):
+        raise ValueError("fabric_e3_receipt_invalid")
+    return value
+
+
+def _fabric_e3_kwargs(frozen):
+    return {
+        "model": _FABRIC_QWEN_MODEL,
+        "system": SYSTEM_PROMPT,
+        "messages": [{"role": "user",
+                      "content": _build_user_prompt(frozen["segments"]) + "\n\n/no_think"}],
+        "max_tokens": EXTRACTION_MAX_TOKENS,
+        "temperature": 0,
+        "reasoning_effort": "none",
+        "stream": False,
+        "request_id": frozen["run_id"] + ":qwen:brain:0",
+    }
+
+
+def _fabric_e3_candidates(answer):
+    cache, _, _ = _fabric_e3_owners()
+    if not isinstance(answer, str) or not answer.strip():
+        raise ValueError("fabric_e3_response_invalid")
+    if len(answer.encode("utf-8")) > 1024 * 1024:
+        raise ValueError("fabric_e3_response_invalid")
+    parsed = cache._cache_decode(answer.encode("utf-8"))
+    if type(parsed) is not list or len(parsed) > 256 or any(type(x) is not dict for x in parsed):
+        raise ValueError("fabric_e3_response_invalid")
+    return parsed
+
+
+def _fabric_e3_attempt(original):
+    leg = original["qwen"]
+    observation = leg["observation"]
+    actual = leg["actual_observation"] or {
+        "serving_model": None, "input_tokens": None, "output_tokens": None}
+    settled = (leg["close"]["outcome"] is not None
+               and leg["close"]["outcome"]["disposition"] == "closed"
+               and leg["close"]["outcome"]["closed"]
+               and not leg["close"]["outcome"]["effect_unknown"])
+    status = leg["answer_status"] if leg["phase"] == "complete" and settled else "held"
+    candidates = _fabric_e3_candidates(leg["answer"]) if status == "ok" else []
+    return ModelAttempt(
+        provider=observation["routing"]["pool"] if observation is not None else "unknown",
+        model=_FABRIC_QWEN_MODEL, status=status,
+        degraded_reason=None if status == "ok" else leg["reason"],
+        raw_response=leg["answer"], candidates=candidates,
+        input_tokens=actual["input_tokens"], output_tokens=actual["output_tokens"],
+        est_cost_usd=None, latency_ms=leg["latency_ms"] or 0.0,
+        endpoint_class="fabric", base_url_source="application_fabric_factory",
+        preflight={"status": "original_inspection_retained" if leg["inspection"] else
+                   "qualification_held"},
+        served_model=actual["serving_model"],
+        observed_usage={"prompt_tokens": actual["input_tokens"],
+                        "completion_tokens": actual["output_tokens"]},
+    )
+
+
+def _fabric_e3_document(original):
+    frozen, leg = original["input"], original["qwen"]
+    attempt = _fabric_e3_attempt(original)
+    comparator = ModelAttempt(
+        provider="unknown", model=FROZEN_COMPARATOR_MODEL, is_comparator=True,
+        status="held", degraded_reason="fabric_native_comparator_unqualified",
+        input_tokens=None, output_tokens=None, est_cost_usd=None)
+    scores = {}
+    # Gold is decoded for scoring only after the owned model call has returned.
+    if leg["answer_status"] is not None:
+        gold = json.loads(frozen["gold_text"])
+        scores = {
+            "qwen": score_attempt(attempt, gold, frozen["segments"]),
+            "comparator": score_attempt(comparator, gold, frozen["segments"]),
+        }
+    qwen = {
+        "provider": attempt.provider, "model": attempt.model,
+        "requested_model": _FABRIC_QWEN_MODEL, "served_model": attempt.served_model,
+        "status": attempt.status, "degraded_reason": attempt.degraded_reason,
+        "n_candidates": len(attempt.candidates), "raw_excerpt": (attempt.raw_response or "")[:400],
+        "input_tokens": attempt.input_tokens, "output_tokens": attempt.output_tokens,
+        "observed_usage": attempt.observed_usage, "latency_ms": round(attempt.latency_ms, 1),
+        "est_cost_usd": None, "cost_basis": "unknown", "transport": "fabric",
+        "endpoint_class": "fabric", "base_url_source": "application_fabric_factory",
+        "preflight": attempt.preflight, "gold_labels_seen": False,
+        "operation_id": leg["operation_id"], "phase": leg["phase"],
+        "close": leg["close"], "ledger": leg["ledger"],
+    }
+    bindings = frozen["bindings"]
+    return {
+        "schema": _FABRIC_E3_SCHEMA, "run_id": frozen["run_id"], "lane": LANE,
+        "event_id": EVENT_ID, "gold_path": str(GOLD_PATH),
+        "bindings": bindings, **bindings,
+        "telemetry": {"owner": "lib.ai_costs.record_usage", "process_environment_mutated": False},
+        "steps": {
+            "sha_verification": frozen["sha_verification"],
+            "segmenter": {"segment_count": len(frozen["segments"]), "truncation": "none",
+                          "id_method": "sha256[:16]_index04d"},
+            "prompt_built": {"prompt_version": "e3a-qa-extraction-v1",
+                             "uses_bounded_transcript_text": False,
+                             "segment_count": len(frozen["segments"]),
+                             "gold_labels_in_prompt": False},
+            "comparator_freeze": dict(original["comparator"]),
+        },
+        "model_attempts": {
+            "qwen": qwen,
+            "comparator": {"provider": None, "model": FROZEN_COMPARATOR_MODEL,
+                           "requested_model": FROZEN_COMPARATOR_MODEL, "served_model": None,
+                           "status": "held", "phase": "unattempted", "is_comparator": True,
+                           "non_authoritative": True, "n_candidates": 0, "gold_labels_seen": False,
+                           "degraded_reason": "fabric_native_comparator_unqualified",
+                           "input_tokens": None, "output_tokens": None,
+                           "est_cost_usd": None, "cost_basis": "unknown",
+                           "operation_id": original["comparator"]["operation_id"]},
+        },
+        "scores": scores,
+        "summary": {
+            "sha_check": "pass", "live_workspace_verified": True,
+            "gold_sha256": FROZEN_GOLD_SHA, "gold_frozen_before_inference": True,
+            "neither_model_saw_gold_labels": True, "qwen_status": attempt.status,
+            "comparator_status": "held",
+            "hard_gates_qwen": scores.get("qwen", {}).get("hard_gates", {}).get("status", "NOT_EXERCISED"),
+            "hard_gates_comparator": scores.get("comparator", {}).get("hard_gates", {}).get("status", "NOT_EXERCISED"),
+            "usefulness_bar_decision": "refusal_n7_too_small", "return_to_sol": True,
+            "e3b_auto_unlocked": False, "event_workspace_v1_advanced": False, "r2_written": False,
+            "note": "Exact Qwen3.8 Fabric evaluation; original evidence is retained. "
+                    "Haiku remains unattempted until its native route is qualified. "
+                    "The frozen N=7 refusal and all E3-B/product gates remain closed.",
+        },
+        _FABRIC_E3_KEY: original,
+    }
+
+
+def _fabric_e3_validate(document):
+    import math
+    import re
+    cache, transport, auth = _fabric_e3_owners()
+    if type(document) is not dict or document.get("schema") != _FABRIC_E3_SCHEMA:
+        raise ValueError("fabric_e3_receipt_invalid")
+    original = _fabric_e3_fields(document.get(_FABRIC_E3_KEY),
+        "schema input input_digest legacy_receipt legacy_digest qwen comparator")
+    if original["schema"] != "e3a.fabric_original.v1":
+        raise ValueError("fabric_e3_receipt_invalid")
+    frozen = _fabric_e3_fields(original["input"],
+        "run_id mode_id bindings sha_verification segments gold_text request")
+    segments = frozen["segments"]
+    if (type(segments) is not list or not 1 <= len(segments) <= 4096
+            or any(type(s) is not dict or not isinstance(s.get("text", ""), str) for s in segments)
+            or not isinstance(frozen["gold_text"], str)
+            or hashlib.sha256(frozen["gold_text"].encode("utf-8")).hexdigest() != FROZEN_GOLD_SHA
+            or type(frozen["mode_id"]) is not str
+            or re.fullmatch(r"[a-z][a-z0-9_]{2,63}", frozen["mode_id"]) is None
+            or original["input_digest"] != _fabric_e3_hash(frozen)):
+        raise ValueError("fabric_e3_input_changed")
+    basis = [_FABRIC_E3_SCHEMA, EVENT_ID, FROZEN_TRANSCRIPT_SHA, FROZEN_GOLD_SHA,
+             TAXONOMY_HASH, SYSTEM_PROMPT, _build_user_prompt(segments)]
+    if frozen["run_id"] != "e3a-fabric:" + _fabric_e3_hash(basis)[:24]:
+        raise ValueError("fabric_e3_identity_changed")
+    bindings = _fabric_e3_fields(frozen["bindings"],
+        "git_head compiler_sha256 system_prompt_sha256 gold_sha256 taxonomy_hash "
+        "exhibit_sha256 transcript_sha256 workspace_sha256 generation_id run_id "
+        "superseded_gold_sha256_v1")
+    expected = {
+        "system_prompt_sha256": hashlib.sha256(SYSTEM_PROMPT.encode("utf-8")).hexdigest(),
+        "gold_sha256": FROZEN_GOLD_SHA, "taxonomy_hash": TAXONOMY_HASH,
+        "exhibit_sha256": FROZEN_EXHIBIT_SHA, "transcript_sha256": FROZEN_TRANSCRIPT_SHA,
+        "workspace_sha256": PINNED_WORKSPACE_SHA, "generation_id": PINNED_GENERATION_ID,
+        "run_id": frozen["run_id"], "superseded_gold_sha256_v1": SUPERSEDED_GOLD_SHA_V1,
+    }
+    if (any(bindings[k] != v for k, v in expected.items())
+            or not isinstance(bindings["compiler_sha256"], str)
+            or re.fullmatch(r"[0-9a-f]{64}", bindings["compiler_sha256"]) is None
+            or not isinstance(bindings["git_head"], str) or len(bindings["git_head"]) > 128
+            or type(frozen["sha_verification"]) is not dict
+            or frozen["sha_verification"].get("check") != "pass"
+            or frozen["sha_verification"].get("exhibit_sha") != FROZEN_EXHIBIT_SHA
+            or frozen["sha_verification"].get("transcript_sha") != FROZEN_TRANSCRIPT_SHA
+            or frozen["sha_verification"].get("live_workspace", {}).get("source_shas_match") is not True
+            or frozen["request"] != _fabric_e3_kwargs(frozen)):
+        raise ValueError("fabric_e3_input_changed")
+    prior = original["legacy_receipt"]
+    if (prior is not None and (type(prior) is not dict or prior.get("schema") != "e3a_eval_receipt.v1")
+            or original["legacy_digest"] != (_fabric_e3_hash(prior) if prior is not None else None)):
+        raise ValueError("fabric_e3_legacy_changed")
+    comparator = {
+        "phase": "unattempted", "requested_model": FROZEN_COMPARATOR_MODEL,
+        "operation_id": frozen["run_id"] + ":comparator",
+        "reason": "fabric_native_comparator_unqualified",
+    }
+    if original["comparator"] != comparator:
+        raise ValueError("fabric_e3_comparator_changed")
+    leg = _fabric_e3_fields(original["qwen"],
+        "phase reason operation_id request_id request_digest inspection answer answer_sha256 "
+        "answer_status observation actual_observation usage latency_ms close ledger")
+    rid, body = transport._request(frozen["request"], _FABRIC_QWEN_MODEL, False, exact_scoped=True)
+    if (leg["operation_id"] != frozen["run_id"] + ":qwen" or leg["request_id"] != rid
+            or leg["request_digest"] != transport._auto_request_digest(json.loads(body))
+            or leg["phase"] not in {"unattempted", "claimed", "observed", "closed", "complete", "held"}
+            or leg["reason"] not in {None, "fabric_qualification_required", "fabric_qualification_unavailable",
+                "fabric_operation_claimed", "fabric_binding_unavailable", "fabric_response_invalid",
+                "fabric_observation_unavailable", "fabric_operation_unavailable",
+                "fabric_close_unknown", "fabric_ledger_unknown"}
+            or leg["answer_status"] not in {None, "ok", "invalid_response", "provider_unavailable"}):
+        raise ValueError("fabric_e3_operation_changed")
+    close = _fabric_e3_fields(leg["close"], "phase outcome")
+    ledger = _fabric_e3_fields(leg["ledger"], "phase ack")
+    if (close["phase"] not in {"unattempted", "reserved", "intent", "observed", "unavailable"}
+            or ledger["phase"] not in {"unattempted", "intent", "complete", "unknown"}
+            or ledger["ack"] not in (None, True, False)
+            or ledger["ack"] is not None and type(ledger["ack"]) is not bool
+            or (ledger["phase"] == "complete") != (ledger["ack"] is True)
+            or (ledger["phase"] == "unknown") != (ledger["ack"] is False)):
+        raise ValueError("fabric_e3_effect_changed")
+    if leg["inspection"] is not None:
+        inspection = transport.validate_auto_inspection(leg["inspection"])
+        if (inspection["schema"] != transport.EXACT_INSPECTION_SCHEMA
+                or inspection["requested_model"] != _FABRIC_QWEN_MODEL
+                or inspection["workload_policy"].get("execution_surface") != "inference"
+                or inspection["workload_policy"].get("allowed_order") != ["fabric"]
+                or "site_batch" not in inspection["workload_policy"].get("profiles", [])):
+            raise ValueError("fabric_e3_inspection_changed")
+    if leg["phase"] == "unattempted":
+        if (any(leg[k] is not None for k in ("inspection", "answer", "answer_sha256", "answer_status",
+                "observation", "actual_observation", "usage", "latency_ms"))
+                or close != {"phase": "unattempted", "outcome": None}
+                or ledger != {"phase": "unattempted", "ack": None}):
+            raise ValueError("fabric_e3_unattempted_changed")
+    elif leg["inspection"] is None:
+        raise ValueError("fabric_e3_inspection_missing")
+    if leg["answer"] is None:
+        if leg["answer_sha256"] is not None or leg["answer_status"] == "ok":
+            raise ValueError("fabric_e3_answer_changed")
+    elif (type(leg["answer"]) is not str or len(leg["answer"].encode("utf-8")) > 1024 * 1024
+            or leg["answer_sha256"] != hashlib.sha256(leg["answer"].encode("utf-8")).hexdigest()):
+        raise ValueError("fabric_e3_answer_changed")
+    if leg["answer_status"] == "ok":
+        _fabric_e3_candidates(leg["answer"])
+    if leg["observation"] is not None:
+        transport.validate_auto_observation(leg["observation"], leg["inspection"],
+            operation_id=leg["operation_id"], request_id=rid, request_digest=leg["request_digest"],
+            routed_request_digest=None, max_tokens=EXTRACTION_MAX_TOKENS,
+            require_success=leg["answer_status"] == "ok")
+    elif leg["answer_status"] == "ok":
+        raise ValueError("fabric_e3_observation_missing")
+    actual = leg["actual_observation"]
+    if actual is not None:
+        _fabric_e3_fields(actual, "request_id serving_model input_tokens output_tokens")
+        if (actual["request_id"] != leg["request_id"]
+                or actual["serving_model"] is not None and (
+                    not isinstance(actual["serving_model"], str)
+                    or auth._FABRIC_ID.fullmatch(actual["serving_model"]) is None)
+                or any(actual[k] is not None and (
+                    type(actual[k]) is not int or not 0 <= actual[k] <= transport.MAX_NATIVE_TOKENS)
+                    for k in ("input_tokens", "output_tokens"))):
+            raise ValueError("fabric_e3_actual_observation_invalid")
+    if leg["observation"] is not None and (
+            actual is None or actual["serving_model"] != leg["observation"]["serving_model"]
+            or any(actual[k] != leg["observation"]["usage"][k]
+                   for k in ("input_tokens", "output_tokens"))):
+        raise ValueError("fabric_e3_actual_observation_changed")
+    if leg["usage"] is not None:
+        usage = _fabric_e3_fields(leg["usage"],
+            "input_tokens output_tokens usage_state completed_input_tokens completed_output_tokens")
+        if (usage["usage_state"] not in {"known", "unknown"}
+                or any(type(usage[k]) is not int or not 0 <= usage[k] <= transport.MAX_NATIVE_TOKENS
+                       for k in ("completed_input_tokens", "completed_output_tokens"))
+                or any(usage[k] is not None and (
+                    type(usage[k]) is not int or not 0 <= usage[k] <= transport.MAX_NATIVE_TOKENS)
+                       for k in ("input_tokens", "output_tokens"))
+                or usage["usage_state"] == "known" and any(
+                    usage[k] != usage["completed_" + k] for k in ("input_tokens", "output_tokens"))
+                or usage["usage_state"] == "unknown" and any(
+                    usage[k] is not None for k in ("input_tokens", "output_tokens"))):
+            raise ValueError("fabric_e3_usage_invalid")
+        complete_actual = actual is not None and all(actual[k] is not None
+            for k in ("input_tokens", "output_tokens"))
+        if any(usage["completed_" + k] != (actual[k] if complete_actual else 0)
+               for k in ("input_tokens", "output_tokens")):
+            raise ValueError("fabric_e3_usage_changed")
+    if leg["latency_ms"] is not None and (type(leg["latency_ms"]) not in (int, float)
+            or not math.isfinite(leg["latency_ms"]) or leg["latency_ms"] < 0):
+        raise ValueError("fabric_e3_latency_invalid")
+    if close["outcome"] is not None:
+        outcome = _fabric_e3_fields(close["outcome"], "disposition closed effect_unknown attempted")
+        if (outcome["disposition"] not in {"local_only", "refused", "pending", "effect_unknown", "closed"}
+                or any(type(outcome[k]) is not bool for k in ("closed", "effect_unknown", "attempted"))
+                or outcome["closed"] != (outcome["disposition"] == "closed")
+                or outcome["closed"] and (outcome["effect_unknown"] or not outcome["attempted"])
+                or close["phase"] != "observed"):
+            raise ValueError("fabric_e3_close_invalid")
+    elif close["phase"] == "observed":
+        raise ValueError("fabric_e3_close_missing")
+    result_keys = ("answer", "answer_sha256", "answer_status", "observation",
+                   "actual_observation", "usage", "latency_ms")
+    has_result = (leg["answer_status"] is not None and leg["usage"] is not None
+                  and leg["latency_ms"] is not None)
+    if leg["phase"] == "claimed" and (
+            any(leg[k] is not None for k in result_keys)
+            or close != {"phase": "reserved", "outcome": None}
+            or ledger != {"phase": "unattempted", "ack": None}
+            or leg["reason"] != "fabric_operation_claimed"):
+        raise ValueError("fabric_e3_claim_changed")
+    if leg["phase"] == "observed" and (
+            not has_result or close != {"phase": "intent", "outcome": None}
+            or ledger != {"phase": "unattempted", "ack": None}):
+        raise ValueError("fabric_e3_observed_changed")
+    if leg["phase"] == "closed" and (
+            not has_result or close["phase"] != "observed"
+            or ledger["phase"] not in {"unattempted", "intent"}):
+        raise ValueError("fabric_e3_closed_changed")
+    if leg["phase"] == "complete" and (
+            not has_result or leg["answer_status"] != "ok"
+            or close["phase"] != "observed" or not close["outcome"]["closed"]
+            or ledger != {"phase": "complete", "ack": True} or leg["reason"] is not None):
+        raise ValueError("fabric_e3_completion_invalid")
+    if leg["phase"] == "held":
+        binding_held = (leg["reason"] == "fabric_binding_unavailable"
+            and all(leg[k] is None for k in result_keys)
+            and close == {"phase": "unavailable", "outcome": None}
+            and ledger == {"phase": "unattempted", "ack": None})
+        settled_held = (has_result and close["phase"] == "observed"
+            and ledger["phase"] in {"complete", "unknown"})
+        if not (binding_held or settled_held):
+            raise ValueError("fabric_e3_hold_changed")
+    if document != _fabric_e3_document(original):
+        raise ValueError("fabric_e3_report_changed")
+    return document
+
+
+def _fabric_e3_save(path, original):
+    cache, _, _ = _fabric_e3_owners()
+    document = _fabric_e3_validate(_fabric_e3_document(original))
+    cache._cache_save(path, document)
+    return document
+
+
+def _fabric_e3_update(root, before, change):
+    import copy
+    cache, _, _ = _fabric_e3_owners()
+    path = root / EVAL_RECEIPT_PATH
+    with cache._cache_lock(path, root):
+        current = _fabric_e3_validate(cache._cache_read(path))
+        if _fabric_e3_hash(current) != _fabric_e3_hash(before):
+            raise ValueError("fabric_e3_original_changed")
+        original = copy.deepcopy(current[_FABRIC_E3_KEY])
+        change(original["qwen"])
+        return _fabric_e3_save(path, original)
+
+
+def _fabric_e3_new(root, mode, legacy):
+    cache, transport, _ = _fabric_e3_owners()
+    sha_check = verify_fixture_shas(root)
+    live = verify_live_workspace_shas()
+    if not live.get("available") or not live.get("source_shas_match"):
+        raise RuntimeError("fabric_e3_live_source_unavailable")
+    segments = load_transcript_segments(root)
+    gold_text = (root / GOLD_PATH).read_text(encoding="utf-8")
+    if hashlib.sha256(gold_text.encode("utf-8")).hexdigest() != FROZEN_GOLD_SHA:
+        raise ValueError("fabric_e3_gold_changed")
+    basis = [_FABRIC_E3_SCHEMA, EVENT_ID, FROZEN_TRANSCRIPT_SHA, FROZEN_GOLD_SHA,
+             TAXONOMY_HASH, SYSTEM_PROMPT, _build_user_prompt(segments)]
+    run_id = "e3a-fabric:" + _fabric_e3_hash(basis)[:24]
+    frozen = {
+        "run_id": run_id, "mode_id": mode,
+        "bindings": eval_bindings(root, gold_sha=FROZEN_GOLD_SHA,
+                                  taxonomy_hash=TAXONOMY_HASH, run_id=run_id),
+        "sha_verification": {**sha_check, "live_workspace": live},
+        "segments": segments, "gold_text": gold_text,
+    }
+    frozen["request"] = _fabric_e3_kwargs(frozen)
+    rid, body = transport._request(frozen["request"], _FABRIC_QWEN_MODEL, False, exact_scoped=True)
+    original = {
+        "schema": "e3a.fabric_original.v1", "input": frozen, "input_digest": _fabric_e3_hash(frozen),
+        "legacy_receipt": legacy, "legacy_digest": _fabric_e3_hash(legacy) if legacy is not None else None,
+        "qwen": {
+            "phase": "unattempted", "reason": "fabric_qualification_required",
+            "operation_id": run_id + ":qwen", "request_id": rid,
+            "request_digest": transport._auto_request_digest(json.loads(body)),
+            "inspection": None, "answer": None, "answer_sha256": None, "answer_status": None,
+            "observation": None, "actual_observation": None, "usage": None, "latency_ms": None,
+            "close": {"phase": "unattempted", "outcome": None},
+            "ledger": {"phase": "unattempted", "ack": None},
+        },
+        "comparator": {"phase": "unattempted", "requested_model": FROZEN_COMPARATOR_MODEL,
+                       "operation_id": run_id + ":comparator",
+                       "reason": "fabric_native_comparator_unqualified"},
+    }
+    return _fabric_e3_validate(_fabric_e3_document(original))
+
+
+def _fabric_e3_publish(root, document):
+    leg = document[_FABRIC_E3_KEY]["qwen"]
+    if leg["phase"] != "closed" or leg["ledger"] != {"phase": "unattempted", "ack": None}:
+        return document
+    document = _fabric_e3_update(root, document,
+        lambda q: q.update(ledger={"phase": "intent", "ack": None}))
+    original = document[_FABRIC_E3_KEY]
+    attempt = _fabric_e3_attempt(original)
+    ack = ledger_attempt(attempt, root, original["input"]["run_id"],
+                         fabric=True, fabric_observation=original["qwen"]["observation"]) is True
+    def finish(q):
+        q["ledger"] = {"phase": "complete" if ack else "unknown", "ack": ack}
+        settled = q["close"]["outcome"] is not None and q["close"]["outcome"]["closed"]
+        q["phase"] = "complete" if settled and ack and q["answer_status"] == "ok" else "held"
+        if not ack:
+            q["reason"] = "fabric_ledger_unknown"
+        elif not settled:
+            q["reason"] = "fabric_close_unknown"
+        elif q["answer_status"] == "ok":
+            q["reason"] = None
+    return _fabric_e3_update(root, document, finish)
+
+
+def _fabric_e3_execute(root, document):
+    import copy
+    cache, transport, auth = _fabric_e3_owners()
+    from engine.provider_production_modes import make_application_fabric_factory
+    original = document[_FABRIC_E3_KEY]
+    leg, frozen = original["qwen"], original["input"]
+    if leg["phase"] == "closed":
+        return _fabric_e3_publish(root, document)
+    if leg["phase"] != "unattempted":
+        return document
+    try:
+        mode, _ = auth._application_mode({})
+        if mode != frozen["mode_id"]:
+            raise ValueError("fabric_e3_selector_changed")
+        factory = make_application_fabric_factory(
+            mode_id=mode, lane=LANE, root=root,
+            workload_cfg={"provider_order": ["fabric"], "workload_profile": "site_batch"},
+        ).with_requested_model(_FABRIC_QWEN_MODEL)
+        inspection = factory.inspect()
+    except Exception:
+        if leg["reason"] == "fabric_qualification_unavailable":
+            return document
+        return _fabric_e3_update(root, document,
+            lambda q: q.update(reason="fabric_qualification_unavailable"))
+    document = _fabric_e3_update(root, document, lambda q: q.update(
+        phase="claimed", reason="fabric_operation_claimed", inspection=inspection,
+        close={"phase": "reserved", "outcome": None}))
+    started = time.monotonic()
+    try:
+        provider = auth.build_fabric_provider(factory.with_inspection(inspection),
+            request_id=leg["operation_id"],
+            workload_cfg={"workload_profile": "site_batch", "usage_sink": "none"})
+    except Exception:
+        return _fabric_e3_update(root, document, lambda q: q.update(
+            phase="held", reason="fabric_binding_unavailable",
+            close={"phase": "unavailable", "outcome": None}))
+    answer, answer_status, reason = None, "provider_unavailable", "fabric_operation_unavailable"
+    observed, actual, usage = None, None, None
+    try:
+        try:
+            kwargs = dict(frozen["request"])
+            kwargs.pop("request_id")
+            response = provider["client"].messages.create(**kwargs)
+            content = getattr(response, "content", None)
+            if not isinstance(content, (list, tuple)) or not content:
+                raise ValueError("fabric_e3_response_incomplete")
+            answer = "".join(b.text for b in content
+                if getattr(b, "type", None) == "text" and isinstance(getattr(b, "text", None), str))
+            if (getattr(response, "stop_reason", None) != "end_turn"
+                    or any(getattr(b, "type", None) != "text"
+                           or not isinstance(getattr(b, "text", None), str) for b in content)):
+                raise ValueError("fabric_e3_response_incomplete")
+            _fabric_e3_candidates(answer)
+            answer_status, reason = "ok", None
+        except Exception:
+            if answer is not None:
+                answer_status, reason = "invalid_response", "fabric_response_invalid"
+        observation = auth.fabric_observation(provider)
+        actual = copy.deepcopy(provider.get("_fabric_last_observation"))
+        usage = auth.fabric_usage(provider)
+        if observation is not None:
+            observed = transport.validate_auto_observation(observation.document, inspection,
+                operation_id=leg["operation_id"], request_id=leg["request_id"],
+                request_digest=leg["request_digest"], routed_request_digest=None,
+                max_tokens=EXTRACTION_MAX_TOKENS, require_success=answer_status == "ok")
+        elif answer_status == "ok":
+            answer_status, reason = "provider_unavailable", "fabric_observation_unavailable"
+        if answer is not None:
+            try:
+                if len(answer.encode("utf-8")) > 1024 * 1024:
+                    answer = None
+            except UnicodeError:
+                answer = None
+            if answer is None:
+                answer_status, reason = "invalid_response", "fabric_response_invalid"
+        def observed_reply(q):
+            q.update(phase="observed", reason=reason, answer=answer,
+                     answer_sha256=hashlib.sha256(answer.encode("utf-8")).hexdigest()
+                        if answer is not None else None,
+                     answer_status=answer_status, observation=observed,
+                     actual_observation=actual, usage=usage,
+                     latency_ms=(time.monotonic() - started) * 1000,
+                     close={"phase": "intent", "outcome": None})
+        document = _fabric_e3_update(root, document, observed_reply)
+    finally:
+        # All post-bind work, including cancellation and persistence failure,
+        # owns one close. Restoring this original never repeats that effect.
+        auth.close_fabric_provider(provider)
+    outcome = provider.get("_fabric_close")
+    if outcome is None:
+        outcome = {"disposition": "effect_unknown", "closed": False,
+                   "effect_unknown": True, "attempted": True}
+    document = _fabric_e3_update(root, document, lambda q: q.update(
+        phase="closed", close={"phase": "observed", "outcome": outcome}))
+    return _fabric_e3_publish(root, document)
+
+
+def _fabric_e3_run(root):
+    cache, _, auth = _fabric_e3_owners()
+    path = root / EVAL_RECEIPT_PATH
+    # Original lookup precedes current selectors, qualifications and credentials.
+    current = cache._cache_read(path)
+    if type(current) is dict and (current.get("schema") == _FABRIC_E3_SCHEMA
+                                  or _FABRIC_E3_KEY in current):
+        document = _fabric_e3_validate(current)
+    else:
+        mode, _ = auth._application_mode({})
+        if mode is None:
+            return None
+        if current is not None and (type(current) is not dict
+                                    or current.get("schema") != "e3a_eval_receipt.v1"):
+            raise ValueError("fabric_e3_predecessor_invalid")
+        prepared = _fabric_e3_new(root, mode, current)
+        with cache._cache_lock(path, root):
+            actual = cache._cache_read(path)
+            if actual != current:
+                if type(actual) is dict and actual.get("schema") == _FABRIC_E3_SCHEMA:
+                    document = _fabric_e3_validate(actual)
+                else:
+                    raise ValueError("fabric_e3_predecessor_changed")
+            else:
+                cache._cache_save(path, prepared)
+                document = prepared
+    document = _fabric_e3_execute(root, document)
+    return {**document, "receipt_sha256": _fabric_e3_hash(document)}
+
+
+def _run_e3a_native_eval(repo_root: Path) -> dict:
+    """Preserve the legacy evaluation while its receipt lock is owned."""
     run_id = hashlib.sha256(str(time.time_ns()).encode()).hexdigest()[:16]
     shard_info = _enable_eval_shards(run_id, repo_root)
 
@@ -1329,10 +1858,14 @@ def run_e3a_eval(repo_root: Path | None = None) -> dict:
         "latency_ms": round(qwen_attempt.latency_ms, 1),
         "input_tokens": qwen_attempt.input_tokens,
         "output_tokens": qwen_attempt.output_tokens,
+        "served_model": qwen_attempt.served_model,
+        "http_status": qwen_attempt.http_status,
+        "error_kind": qwen_attempt.error_kind,
+        "observed_usage": qwen_attempt.observed_usage,
         "est_cost_usd": qwen_attempt.est_cost_usd,
         "cost_basis": (
             "local" if qwen_attempt.endpoint_class in {"loopback", "private_lan"}
-            else "metered"
+            else ("unknown" if qwen_attempt.est_cost_usd is None else "metered")
         ),
         "transport": "openai_compat",
         "gold_labels_seen": False,
@@ -1403,6 +1936,28 @@ def run_e3a_eval(repo_root: Path | None = None) -> dict:
     receipt["receipt_sha256"] = hashlib.sha256(receipt_bytes).hexdigest()
     print(f"[e3_shadow_compiler] Eval receipt written: {receipt_path}")
     return receipt
+
+def run_e3a_eval(repo_root: Path | None = None) -> dict:
+    """Execute the original E3 evaluation through its selected receipt owner."""
+    if repo_root is None:
+        repo_root = Path(__file__).parent.parent.parent
+    root = Path(repo_root).resolve()
+    selected = _fabric_e3_run(root)
+    if selected is not None:
+        return selected
+    cache, _, auth = _fabric_e3_owners()
+    # The existing receipt lock also fences a legacy evaluation before inference.
+    # A selected original cannot overtake a native evaluation already in progress.
+    receipt_path = root / EVAL_RECEIPT_PATH
+    lock_root = root if receipt_path.is_relative_to(root) else receipt_path.parent
+    with cache._cache_lock(receipt_path, lock_root):
+        current = cache._cache_read(receipt_path)
+        selected_original = type(current) is dict and (
+            current.get("schema") == _FABRIC_E3_SCHEMA or _FABRIC_E3_KEY in current)
+        mode, _ = auth._application_mode({})
+        if not selected_original and mode is None:
+            return _run_e3a_native_eval(root)
+    return _fabric_e3_run(root)
 
 
 if __name__ == "__main__":
