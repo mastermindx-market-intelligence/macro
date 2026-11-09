@@ -242,11 +242,27 @@ body.page-commod .aurora.au-red .au-a3   { background: radial-gradient(ellipse, 
   font-size: 50px; font-weight: 800; letter-spacing: -.025em;
   line-height: .95; margin: 4px 0 10px;
 }
-.big-stance.t-watch, .big-stance.t-selective, .big-stance.t-getready { color: var(--ink-warn, var(--amb)); text-shadow: 0 0 36px var(--commod-stance-glow-warn, transparent); }
+.big-stance.t-watch, .big-stance.t-selective, .big-stance.t-getready { color: var(--ink-warn, var(--amb)); text-shadow: none; }
 .big-stance.t-protect  { color: var(--ink-down, var(--dn));  text-shadow: 0 0 36px rgba(255,106,106,.35); }
 
-.big-stance.t-act { color: var(--ink-up, var(--up));  text-shadow: 0 0 36px var(--commod-stance-glow-up, transparent); }
+.big-stance.t-act { color: var(--ink-up, var(--up));  text-shadow: none; }
 .big-stance.t-standaside { color: var(--mut); text-shadow: none; }
+/* Keep the 35% decorative glow local; the foreground keeps its full contrast. */
+.big-stance.t-watch, .big-stance.t-selective, .big-stance.t-getready, .big-stance.t-act {
+  position: relative; isolation: isolate;
+}
+.big-stance .stance-glow {
+  position: absolute; inset: 0; z-index: -1; color: transparent; opacity: .35;
+  font: inherit; letter-spacing: inherit; text-align: inherit;
+  pointer-events: none; user-select: none; overflow: visible;
+}
+.stance-glow::before { content: attr(data-glow-en); }
+html[data-lang="zh"] .stance-glow::before { content: attr(data-glow-zh); }
+.big-stance.t-watch .stance-glow, .big-stance.t-selective .stance-glow, .big-stance.t-getready .stance-glow {
+  text-shadow: 0 0 36px var(--amb, var(--warn));
+}
+.big-stance.t-act .stance-glow { text-shadow: 0 0 36px var(--up); }
+html[data-theme="light"] .big-stance .stance-glow { display: none; }
 @media(max-width:560px){ .big-stance { font-size: 36px; } }
 
 .stance-sub { font-size: 14px; color: var(--tx); max-width: 44ch; line-height: 1.55; margin-bottom: 12px;
@@ -758,7 +774,7 @@ html[data-theme="light"] :is(
   <!-- stance hero (left) -->
   <div class="panel">
     <p class="kick">{{ t('Commodity conditions — not a sector trade call', '商品条件——非板块交易指令') }}</p>
-    <div class="big-stance t-{{ st.tone }}">{{ t(st.word_en, st.word_zh) }}</div>
+    <div class="big-stance t-{{ st.tone }}">{{ t(st.word_en, st.word_zh) }}{% if st.tone in ['watch', 'selective', 'getready', 'act'] %}<span class="stance-glow" aria-hidden="true" data-glow-en="{{ st.word_en|e }}" data-glow-zh="{{ (st.word_zh if st.word_zh else st.word_en)|e }}"></span>{% endif %}</div>
     <div class="stance-sub">
       <span class="stance-sub-copy">{{ t(st.sub_en, st.sub_zh) }}</span>
       {% if st.tip_en %}

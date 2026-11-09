@@ -157,9 +157,6 @@
   /* Retained evidence states share the canonical theme surfaces. */
   --surface-warn-subtle: color-mix(in srgb, var(--warn) 6%, var(--panel));
   --surface-skeleton-deep: color-mix(in srgb, var(--panel2) 86%, var(--line));
-  /* Commodity stance glows retain the existing page hues and 35% opacity. */
-  --commod-stance-glow-warn: color-mix(in srgb, var(--amb, var(--warn)) 35%, transparent);
-  --commod-stance-glow-up: color-mix(in srgb, var(--up) 35%, transparent);
   /* ── Macro Command tints (templates/macro_command.css) ────────────────────
      color-mix on an added surface line is enforce-added-illegal; the mixes
      live here so the surface only names tokens. --text/--info/--ok track
