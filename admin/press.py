@@ -2,7 +2,8 @@
 
 Read-only, fail-soft (mirrors admin/chronicle.py conventions exactly): the
 single public function returns {"ok": True, ...} or {"ok": False, "error": ...}.
-Never writes.  Reads only the committed data/press/ store and config/press.yml.
+Never writes. Reads committed Press state; the authenticated route may supply the
+existing aggregate-only users reader for an explicitly scoped audience observation.
 
 Single entry point: overview(root=None) -> dict, exposing
 
@@ -23,6 +24,8 @@ import logging
 import os
 from pathlib import Path
 from typing import Any
+
+from . import press_audience
 
 log = logging.getLogger(__name__)
 
@@ -65,23 +68,7 @@ def _read_json(path: Path) -> Any:
 
 
 def _read_jsonl(path: Path) -> list[dict]:
-    try:
-        if not path.exists():
-            return []
-        out: list[dict] = []
-        for line in path.read_text(encoding="utf-8").splitlines():
-            line = line.strip()
-            if not line:
-                continue
-            try:
-                obj = json.loads(line)
-            except Exception:  # noqa: BLE001
-                continue
-            if isinstance(obj, dict):
-                out.append(obj)
-        return out
-    except Exception:  # noqa: BLE001
-        return []
+    return press_audience.ledger_snapshot(path)[0]
 
 
 def _read_yaml(path: Path) -> dict:
@@ -143,7 +130,7 @@ def _resolved_cap(cfg: dict, desk_cfg: dict, name: str):
         return None
 
 
-def overview(root=None) -> dict:
+def overview(root=None, *, audience_query=None) -> dict:
     """Kill-switch + cadence + thresholds + staged/quarantine + ledger tail."""
     repo = Path(root) if root is not None else _default_root()
     try:
@@ -220,7 +207,7 @@ def overview(root=None) -> dict:
                     row["reason"] = obj.get("quarantine_reason")
                     quarantine.append(row)
 
-        ledger = _read_jsonl(repo / _LEDGER_REL)
+        ledger, ledger_digest, ledger_complete = press_audience.ledger_snapshot(repo / _LEDGER_REL)
         tail = [
             {
                 "id": r.get("id"),
@@ -248,6 +235,8 @@ def overview(root=None) -> dict:
             "total_published": len(ledger),
             "ledger_tail": tail,
         }
+        if audience_query is not None:
+            out["signup_claims"] = press_audience.signup_claims(ledger, ledger_digest, ledger_complete, audience_query, publication_limit=_N_LEDGER_TAIL)
         if not cfg:
             out["note"] = "config/press.yml not found — press lane is not configured."
         elif not ledger:

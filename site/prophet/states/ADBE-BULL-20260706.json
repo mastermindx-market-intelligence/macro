@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "ADBE-BULL-20260706",
-  "asof": "2026-11-07",
+  "asof": "2026-11-09",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 43.2,
@@ -20,7 +20,7 @@
     "dist_to_stop_r": 1.202,
     "dist_to_t1_r": 1.298,
     "dist_to_t2_r": 2.798,
-    "horizon_pct_used": 257.8,
+    "horizon_pct_used": 262.2,
     "p1": 0.1349,
     "p2": 0.0675,
     "p3": null,
@@ -45,8 +45,8 @@
   "_first_trigger_ts": "2026-07-17",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 116,
-  "tau": 2.5778,
+  "days_elapsed": 118,
+  "tau": 2.6222,
   "closed": true,
   "outcome": "EXPIRED"
 }

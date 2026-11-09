@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "SONO-BULL-20260716",
-  "asof": "2026-11-07",
+  "asof": "2026-11-09",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 44.6,
@@ -20,7 +20,7 @@
     "dist_to_stop_r": 1.466,
     "dist_to_t1_r": 1.034,
     "dist_to_t2_r": 2.534,
-    "horizon_pct_used": 251.1,
+    "horizon_pct_used": 255.6,
     "p1": 0.3106,
     "p2": 0.1553,
     "p3": null,
@@ -30,7 +30,7 @@
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "Moving Away from Stop",
+  "change_reason": "",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
@@ -45,8 +45,8 @@
   "_first_trigger_ts": "2026-07-27",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 113,
-  "tau": 2.5111,
+  "days_elapsed": 115,
+  "tau": 2.5556,
   "closed": true,
   "outcome": "EXPIRED"
 }

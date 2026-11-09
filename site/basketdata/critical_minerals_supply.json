@@ -1,7 +1,7 @@
 {
   "schema": "critical_minerals_supply.v1",
-  "as_of": "2026-11-07",
-  "generated_at": "2026-11-07T09:06:57Z",
+  "as_of": "2026-11-09",
+  "generated_at": "2026-11-09T06:05:38Z",
   "authority": {
     "may_rank": false,
     "may_gate": false,

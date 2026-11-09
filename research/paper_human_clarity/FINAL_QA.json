@@ -1,0 +1,3080 @@
+{
+  "schema": "paper-human-clarity-final-qa/v1",
+  "date": "2026-11-08",
+  "capability": "PAPER_DESIGN_APPLIED_AND_RENDERED",
+  "runtimeImplementationClaim": false,
+  "scope": {
+    "resourcesInventoried": 39,
+    "productSystemFilesAudited": 18,
+    "filesEdited": 15,
+    "filesAuditedRetained": 3,
+    "method": "Inventory/page triage, exact-copy/parent checks, full JSX for selected frames, representative native renders and targeted residual review.",
+    "limits": [
+      "Not an exhaustive pixel-by-pixel audit of every historical frame.",
+      "Inactive-page natural bounds may be unavailable; unknown bounds are not treated as zero.",
+      "No browser, live navigation, provider-data accuracy, backend or production proof is claimed."
+    ]
+  },
+  "newActivity": {
+    "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+    "roots": [
+      "2G9-0",
+      "2JL-0"
+    ],
+    "result": "PASS",
+    "observations": [
+      "Reports/stories/24h and UTC calendar-history remain distinct.",
+      "27 reports / 12 stories and 13 reports / 9 stories remain distinct.",
+      "Limited history, no-record gap and outlined 24h mark remain.",
+      "Named sources and count help fit in EN/ZH with no methodology wall."
+    ]
+  },
+  "latestChecks": {
+    "popup-international-final-recheck-2026-11-08.json": {
+      "date": "2026-11-08",
+      "kind": "read_only_final_targeted_qa",
+      "carrier": "C3 paper_read only",
+      "materialDefects": [],
+      "paperMutations": false,
+      "sourceMutations": false,
+      "checks": [
+        {
+          "fileId": "01M38EVF74SJWG1GANN5VP380Z",
+          "nodeId": "8VD-0",
+          "parentId": "root_node_p-4-0",
+          "nativeSize": [
+            390,
+            1047
+          ],
+          "result": "PASS",
+          "evidence": "Review subject/included/excluded/delivery meanings remain readable. 8WP Save unavailable; 8WQ review/change choices; 8WR Edit choices; 8WS Draft only. No clipping."
+        },
+        {
+          "fileId": "01M38EVF74SJWG1GANN5VP380Z",
+          "nodeId": "92Q-0",
+          "parentId": "92N-0",
+          "artboardId": "8Y4-0",
+          "nativeSize": [
+            390,
+            978
+          ],
+          "result": "PASS",
+          "evidence": "Chinese review remains draft, 保存不可用 (93U), 修改选项 (93W), 仅草稿 (93X). Source/subject/delivery semantics readable. No clipping."
+        },
+        {
+          "fileId": "01M38EVF74SJWG1GANN5VP380Z",
+          "nodeId": "AI1-0",
+          "parentId": "AJW-0",
+          "artboardId": "AJV-0",
+          "nativeSize": [
+            390,
+            672
+          ],
+          "result": "PASS",
+          "evidence": "Light future state retains unknown outcome, retained draft, checking original request before another save, no automatic resubmit, Check save status (8XW), Back to story (8XY). No clipping."
+        },
+        {
+          "fileId": "01M38EVF74SJWG1GANN5VP380Z",
+          "nodeId": "AI2-0",
+          "parentId": "AJW-0",
+          "artboardId": "AJV-0",
+          "nativeSize": [
+            390,
+            672
+          ],
+          "result": "PASS",
+          "evidence": "Dark future state retains unknown outcome, retained draft, checking original request before another save, no automatic resubmit, Check save status (92G), Back to story (92I). Labels and actions readable. No clipping."
+        },
+        {
+          "fileId": "01M38EVF74SJWG1GANN5VP380Z",
+          "nodeId": "AIE-0",
+          "parentId": "AHN-0",
+          "nativeSize": [
+            1320,
+            426
+          ],
+          "result": "PASS",
+          "evidence": "Dark wrapper #101318; main #D7DCE3 and muted #8B93A1 labels readable. EN/ZH return/focus rules, static-state distinction and method implementation notes preserved. All six direct children in normal flex-column flow, no overlap or clipping."
+        },
+        {
+          "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+          "nodeId": "IV5-0",
+          "parentId": "IV1-0",
+          "nativeSize": [
+            160,
+            40
+          ],
+          "result": "PASS",
+          "evidence": "IV6 Sources, IV7 31/34, IV8 3 partial fit on a single line. Previous clipped partial status resolved."
+        },
+        {
+          "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+          "nodeId": "M4O-0",
+          "parentId": "M4N-0",
+          "nativeSize": [
+            185,
+            32
+          ],
+          "result": "PASS",
+          "evidence": "M4R Sources, M4Q 31/34, M4P 3 partial fit on a single line. Previous broken denominator resolved."
+        }
+      ],
+      "scopeLimits": [
+        "Native screenshots and current JSX only; no interaction/runtime proof",
+        "No new broad audit",
+        "Held or unattributed assets not inspected or modified"
+      ]
+    },
+    "paper_international_help_final_qa.json": {
+      "status": "READ_ONLY_VISUAL_QA_COMPLETE",
+      "file": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "nodes": [
+        "O39-0",
+        "OPF-0",
+        "O17-0",
+        "O23-0",
+        "O1H-0",
+        "O2D-0"
+      ],
+      "nativeScreenshots": [
+        "O17-0",
+        "O23-0",
+        "O1H-0",
+        "O2D-0",
+        "OIU-0",
+        "OGO-0",
+        "OG0-0",
+        "O64-0",
+        "O3E-0"
+      ],
+      "copyFindings": [
+        {
+          "severity": "minor-semantic",
+          "id": "OGT-0",
+          "current": "什么能确认或否定判断？",
+          "issue": "Names confirmation/refutation but omits expiry from the thesis-resolution question. Source English is broader: What resolves the thesis? Existing Q6 resolution contract includes expiry.",
+          "suggested": "确认、否定或到期条件？",
+          "parent": "OGR-0"
+        }
+      ],
+      "layoutFindings": [],
+      "translationDistinctionsVerified": [
+        "Qualified=附条件",
+        "Acquired+qualified=已获取并完成核验",
+        "Holiday closed=休市",
+        "Dated closed session=已收盘"
+      ],
+      "dataComparison": {
+        "alignedLeaves": 268,
+        "exactStringsUnchanged": 100,
+        "numericTokenMultisetsEqual": true,
+        "source": "Earlier native M06 read; excludes new OHZ method control. This is value-preservation evidence, not live data validation."
+      },
+      "limitations": [
+        "No live navigation click proof.",
+        "Method index proves labels and structure; unrendered method topics are not claimed implemented.",
+        "Previously recorded R14 fixture chronology/device differences remain unresolved; no fixture values altered by this lane."
+      ]
+    }
+  },
+  "priorChecks": {
+    "terminal-final-copy-native-qa-2026-11-08.json": {
+      "date": "2026-11-08",
+      "fileId": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "scope": "Native visual check after the 16 mapped current-desktop copy replacements",
+      "result": "PASS",
+      "paperMutations": false,
+      "screens": [
+        {
+          "nodeId": "1ZPN-0",
+          "theme": "light",
+          "section": "legend",
+          "size": [
+            1360,
+            54
+          ]
+        },
+        {
+          "nodeId": "1ZW4-0",
+          "theme": "dark",
+          "section": "legend",
+          "size": [
+            1360,
+            54
+          ]
+        },
+        {
+          "nodeId": "1ZSB-0",
+          "theme": "light",
+          "section": "history",
+          "size": [
+            1280,
+            299
+          ]
+        },
+        {
+          "nodeId": "1ZYS-0",
+          "theme": "dark",
+          "section": "history",
+          "size": [
+            1280,
+            299
+          ]
+        },
+        {
+          "nodeId": "1ZT6-0",
+          "theme": "light",
+          "section": "ledger",
+          "size": [
+            1280,
+            433
+          ]
+        },
+        {
+          "nodeId": "1ZZN-0",
+          "theme": "dark",
+          "section": "ledger",
+          "size": [
+            1280,
+            433
+          ]
+        }
+      ],
+      "visualResult": "All replacement labels fit; no clipping or unwanted wrapping. New explanatory lines remain within their cards and ledger rows.",
+      "textReadback": {
+        "all16ReplacementsExact": true,
+        "all22PreservedTextsExact": true
+      },
+      "preservedNumericFacts": [
+        "+17%",
+        "+$2.295B",
+        "−$0.311B"
+      ],
+      "preservedMeaning": "Historical identity not loaded, historical relationships not established for this date, unavailable membership dash, no H20 outlook assumption and missing dated policy evidence remain unchanged.",
+      "canonicalPreimageBlobReportedByParent": "fbcef731c439f5e23598253553be7cd141d2bc27"
+    },
+    "primary-variant-visual-qa-2026-11-08.json": {
+      "audit": "Primary variant post-change visual and semantic QA",
+      "date": "2026-11-08",
+      "readOnly": true,
+      "mutationsPerformed": false,
+      "scope": {
+        "rootScreenshots": [
+          {
+            "family": "GMI",
+            "fileId": "01M5H6EARN9YHQV17JC6ZG9BRY",
+            "nodeId": "61M-0",
+            "name": "01 · Explore a theme · Noir · EN · Desktop",
+            "screenshot": {
+              "nodeId": "61M-0",
+              "width": 1440,
+              "height": 1145,
+              "resized": false
+            }
+          },
+          {
+            "family": "GMI",
+            "fileId": "01M5H6EARN9YHQV17JC6ZG9BRY",
+            "nodeId": "6DR-0",
+            "name": "03 · Theme evidence · Noir · EN · Mobile",
+            "screenshot": {
+              "nodeId": "6DR-0",
+              "width": 390,
+              "height": 1265,
+              "resized": false
+            }
+          },
+          {
+            "family": "Hub",
+            "fileId": "01M2VWK62FA5S4VVF6G7SBPE5J",
+            "nodeId": "86-0",
+            "name": "40 · R4 CURRENT · US Command · Desktop EN",
+            "screenshot": {
+              "nodeId": "86-0",
+              "width": 1133,
+              "height": 2000,
+              "resized": true
+            }
+          },
+          {
+            "family": "Hub",
+            "fileId": "01M2VWK62FA5S4VVF6G7SBPE5J",
+            "nodeId": "2OW-0",
+            "name": "59 · R4 CURRENT · Research List · Mobile Light EN",
+            "screenshot": {
+              "nodeId": "2OW-0",
+              "width": 239,
+              "height": 2000,
+              "resized": true
+            }
+          },
+          {
+            "family": "Sector",
+            "fileId": "01M6FAXA774QT1VRDMAG7DFQ2W",
+            "nodeId": "DSJ-0",
+            "name": "R4 · Explore · Market map · desktop · dark · EN",
+            "screenshot": {
+              "nodeId": "DSJ-0",
+              "width": 1151,
+              "height": 2000,
+              "resized": true
+            }
+          },
+          {
+            "family": "Sector",
+            "fileId": "01M6FAXA774QT1VRDMAG7DFQ2W",
+            "nodeId": "FO0-0",
+            "name": "R4 · Explore · Rotation compare · mobile · dark · EN",
+            "screenshot": {
+              "nodeId": "FO0-0",
+              "width": 146,
+              "height": 2000,
+              "resized": true
+            }
+          },
+          {
+            "family": "Intl",
+            "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+            "nodeId": "IRV-0",
+            "name": "R14 · Scanner · Mobile · Dark · EN",
+            "screenshot": {
+              "nodeId": "IRV-0",
+              "width": 203,
+              "height": 2000,
+              "resized": true
+            }
+          },
+          {
+            "family": "Intl",
+            "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+            "nodeId": "G9J-0",
+            "name": "R14 · Scanner · Desktop · Dark · EN",
+            "screenshot": {
+              "nodeId": "G9J-0",
+              "width": 1440,
+              "height": 1990,
+              "resized": false
+            }
+          }
+        ],
+        "nativeDetailScreenshots": [
+          "FVC-0",
+          "FXN-0",
+          "J6F-0"
+        ],
+        "hubGeometryChildScreenshots": [
+          "8T-0",
+          "98-0",
+          "9Z-0",
+          "G6-0",
+          "AQ-0",
+          "GR-0",
+          "I5-0",
+          "9G-0",
+          "K7-0"
+        ],
+        "extraScope": "Exact-family matches for code footers, success-state samples and internal field keys on current pages only. Held SectorG4P andBML untouched."
+      },
+      "verdicts": [
+        {
+          "family": "GMI",
+          "roots": [
+            "61M-0",
+            "6DR-0"
+          ],
+          "result": "PASS",
+          "details": [
+            "No clipping or major empty tail.",
+            "Source date26Feb2024 and planned-in-source status remain explicit.",
+            "Current shipments/revenue exposure unconfirmed;1documented connection/incomplete coverage retained.",
+            "Taxonomy topic counts are kept distinct from company evidence."
+          ]
+        },
+        {
+          "family": "Hub",
+          "roots": [
+            "86-0",
+            "2OW-0"
+          ],
+          "result": "LAYOUT_REPAIR_ONE_ROOT",
+          "details": [
+            "86 has approximately228px fixed-height excess. Its entire direct-child stack is normal flow.",
+            "2OW content fits:123+3108+34=3265px versus3264px root;1px difference is rounding, not a meaningful blank tail.",
+            "Seven0.0 research indices appear in the price-unavailable group, but footer explicitly identifies0.0 as index rather than missing data; price absence is separately labelled.",
+            "Ranking correlation, observation counts and source-order research priority remain qualified, not recast as returns/entry readiness."
+          ]
+        },
+        {
+          "family": "Sector",
+          "roots": [
+            "DSJ-0",
+            "FO0-0"
+          ],
+          "result": "SEMANTICS_PASS_WITH_FIELD_KEY_CLEANUP",
+          "details": [
+            "No clipping or major tail in fit-content roots.",
+            "Observed current≤1month model cells show— withMODEL·Unavailable. DSJHealthCare remains unavailable at both horizons.",
+            "FO0historical3month priors33%/44% and6month Energy52% remain; Technology6monthunavailable remains.",
+            "Measured ETF21-session and member-basket20-session populations remain distinct, with respective values preserved.",
+            "Global fixture/stale-tape dates and no-live-readings qualification remain visible.",
+            "Parent reports32current model numbers suppressed acrossfamily; this audit visually checks the requested two roots, not a separateall32node count.",
+            "Eight visible internal field-label targets remain, enumerated below."
+          ]
+        },
+        {
+          "family": "Intl",
+          "roots": [
+            "G9J-0",
+            "IRV-0"
+          ],
+          "result": "LAYOUT_PASS_WITH_STATE_SAMPLE_CLEANUP_AND_FIXTURE_MISMATCH",
+          "details": [
+            "No clipping or major tail in fit-content roots.",
+            "Specimen/not-live qualification remains visible near headline.",
+            "Insufficient history uses—/unranked, pending response staysdistinct from noise/noresponse; proxy/delayed tiers remain explicit.",
+            "Four mobile variants still show success-state sample simultaneously with Arm alert; move sample toBuild.",
+            "Thirteen route/device/locale code footers belongBuild.",
+            "Desktop/mobile examplefixture consistency issue remains; see separate finding. Timing of introduction not established by this post-change audit."
+          ]
+        }
+      ],
+      "hubLayoutRepair": {
+        "fileId": "01M2VWK62FA5S4VVF6G7SBPE5J",
+        "productPageId": "p-3-0",
+        "preserveDestination": {
+          "fileId": "01M2VWK62FA5S4VVF6G7SBPE5J",
+          "pageId": "p-2-0",
+          "pageName": "00B · R4 contracts + Navigation",
+          "rootNodeId": "root_node_p-2-0",
+          "artboardCount": 7
+        },
+        "originalRoot": {
+          "id": "86-0",
+          "name": "40 · R4 CURRENT · US Command · Desktop EN",
+          "component": "Frame",
+          "width": 1440,
+          "height": 2542,
+          "worldX": 0,
+          "worldY": 0,
+          "x": 0,
+          "y": 0,
+          "isVisible": true,
+          "isLocked": false,
+          "parentId": "root_node_p-3-0",
+          "childIds": [
+            "87-0",
+            "8S-0"
+          ],
+          "childCount": 2,
+          "artboardId": null,
+          "textContent": null
+        },
+        "originalStyle": {
+          "display": "flex",
+          "overflow": "clip",
+          "width": "1440px",
+          "height": "2542px",
+          "flexDirection": "column",
+          "left": "0px",
+          "top": 0,
+          "position": "absolute",
+          "backgroundColor": "var(--mx-light-bg)"
+        },
+        "proposedStyle": {
+          "display": "flex",
+          "overflow": "clip",
+          "width": "1440px",
+          "height": "fit-content",
+          "flexDirection": "column",
+          "left": "0px",
+          "top": 0,
+          "position": "absolute",
+          "backgroundColor": "var(--mx-light-bg)"
+        },
+        "cloneDirectChildrenInOrder": [
+          "87-0",
+          "8S-0"
+        ],
+        "childStyles": {
+          "87-0": {
+            "alignItems": "center",
+            "display": "flex",
+            "flexShrink": "0",
+            "fontFamily": "var(--font-ui)",
+            "fontSynthesisWeight": "none",
+            "fontSynthesisStyle": "none",
+            "fontSynthesisSmallCaps": "none",
+            "height": "68px",
+            "justifyContent": "space-between",
+            "width": "1440px",
+            "paddingInline": "48px",
+            "backgroundColor": "var(--mx-light-panel)",
+            "borderBottomWidth": "1px",
+            "borderBottomStyle": "solid",
+            "borderBottomColor": "var(--mx-light-line)"
+          },
+          "8S-0": {
+            "display": "flex",
+            "flexDirection": "column",
+            "fontFamily": "var(--font-ui)",
+            "fontSynthesisWeight": "none",
+            "fontSynthesisStyle": "none",
+            "fontSynthesisSmallCaps": "none",
+            "width": "1440px",
+            "paddingTop": "28px",
+            "paddingBottom": "36px",
+            "gap": "18px",
+            "paddingInline": "48px"
+          },
+          "2OX-0": {
+            "display": "flex",
+            "flexDirection": "column",
+            "flexShrink": "0",
+            "fontFamily": "var(--font-ui)",
+            "fontSynthesisWeight": "none",
+            "fontSynthesisStyle": "none",
+            "fontSynthesisSmallCaps": "none",
+            "width": "390px",
+            "backgroundColor": "var(--mx-light-panel)"
+          },
+          "2PF-0": {
+            "display": "flex",
+            "flexDirection": "column",
+            "flexShrink": "0",
+            "fontSynthesisWeight": "none",
+            "fontSynthesisStyle": "none",
+            "fontSynthesisSmallCaps": "none",
+            "width": "390px",
+            "paddingBlock": "24px",
+            "paddingInline": "20px"
+          },
+          "2X4-0": {
+            "alignItems": "center",
+            "display": "flex",
+            "flexShrink": "0",
+            "height": "34px",
+            "justifyContent": "center",
+            "width": "390px",
+            "backgroundColor": "var(--mx-light-panel)"
+          }
+        },
+        "bodyChildDimensions": [
+          {
+            "nodeId": "8T-0",
+            "width": 1344,
+            "height": 86,
+            "resized": false
+          },
+          {
+            "nodeId": "98-0",
+            "width": 1344,
+            "height": 42,
+            "resized": false
+          },
+          {
+            "nodeId": "9Z-0",
+            "width": 1344,
+            "height": 33,
+            "resized": false
+          },
+          {
+            "nodeId": "G6-0",
+            "width": 1344,
+            "height": 237,
+            "resized": false
+          },
+          {
+            "nodeId": "AQ-0",
+            "width": 1344,
+            "height": 719,
+            "resized": false
+          },
+          {
+            "nodeId": "GR-0",
+            "width": 1344,
+            "height": 360,
+            "resized": false
+          },
+          {
+            "nodeId": "I5-0",
+            "width": 1344,
+            "height": 438,
+            "resized": false
+          },
+          {
+            "nodeId": "9G-0",
+            "width": 1344,
+            "height": 57,
+            "resized": false
+          },
+          {
+            "nodeId": "K7-0",
+            "width": 1344,
+            "height": 66,
+            "resized": false
+          }
+        ],
+        "bodyHeightEstimate": 2246,
+        "rootHeightEstimate": 2314,
+        "blankTailEstimate": 228,
+        "measurement": "9native scale1 child screenshot dimensions +8gaps18px+bodypadding28/36+nav68. Raster bounds may round individually; use fit-content rather than fixed estimate.",
+        "steps": [
+          "Preserve complete original86root in clearly named Build layout-reference slot.",
+          "Create new productroot at original0,0 with originalwidth1440/styles andheightfit-content.",
+          "Clone complete87+8S directchildren in original order; do not recast or remove numeric/state/source content.",
+          "Recordold→new rootID and updatecurrentdirectory references; screenshot newroot."
+        ]
+      },
+      "intlMoves": {
+        "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+        "productPageId": "p-I-0",
+        "destination": {
+          "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+          "pageId": "p-B-0",
+          "pageName": "80 · R10 · Builder Contracts & Reference States",
+          "rootNodeId": "root_node_p-B-0",
+          "artboardCount": 13
+        },
+        "rows": [
+          {
+            "nodeId": "GWE-0",
+            "expectedParentId": "GWA-0",
+            "productRoot": "G9J-0",
+            "kind": "MOVE_CODE_FOOTER_TEXT",
+            "oldText": "intl_workspace · scanner · 1440",
+            "why": "Workspace slug, route and viewport size are builder metadata. Preserve separate specimen/illustrative-values label in existing footer."
+          },
+          {
+            "nodeId": "HJ0-0",
+            "expectedParentId": "HIZ-0",
+            "productRoot": "HIX-0",
+            "kind": "MOVE_CODE_FOOTER_TEXT",
+            "oldText": "intl_workspace · scanner · 1440",
+            "why": "Workspace slug, route and viewport size are builder metadata. Preserve separate specimen/illustrative-values label in existing footer."
+          },
+          {
+            "nodeId": "I5H-0",
+            "expectedParentId": "I5G-0",
+            "productRoot": "I5E-0",
+            "kind": "MOVE_CODE_FOOTER_TEXT",
+            "oldText": "intl_workspace · scanner · 1440",
+            "why": "Workspace slug, route and viewport size are builder metadata. Preserve separate specimen/illustrative-values label in existing footer."
+          },
+          {
+            "nodeId": "GWJ-0",
+            "expectedParentId": "GWI-0",
+            "productRoot": "GWG-0",
+            "kind": "MOVE_CODE_FOOTER_TEXT",
+            "oldText": "intl_workspace · scanner · 1440",
+            "why": "Workspace slug, route and viewport size are builder metadata. Preserve separate specimen/illustrative-values label in existing footer."
+          },
+          {
+            "nodeId": "KTJ-0",
+            "expectedParentId": "KTH-0",
+            "productRoot": "KF1-0",
+            "kind": "MOVE_CODE_FOOTER_TEXT",
+            "oldText": "intl_workspace · dislocations · 1440",
+            "why": "Workspace slug, route and viewport size are builder metadata. Preserve separate specimen/illustrative-values label in existing footer."
+          },
+          {
+            "nodeId": "KUV-0",
+            "expectedParentId": "KUU-0",
+            "productRoot": "KUS-0",
+            "kind": "MOVE_CODE_FOOTER_TEXT",
+            "oldText": "intl_workspace · transmission · 1440",
+            "why": "Workspace slug, route and viewport size are builder metadata. Preserve separate specimen/illustrative-values label in existing footer."
+          },
+          {
+            "nodeId": "LQN-0",
+            "expectedParentId": "LQM-0",
+            "productRoot": "LLI-0",
+            "kind": "MOVE_CODE_FOOTER_TEXT",
+            "oldText": "intl_workspace · dossier · 1440",
+            "why": "Workspace slug, route and viewport size are builder metadata. Preserve separate specimen/illustrative-values label in existing footer."
+          },
+          {
+            "nodeId": "MHB-0",
+            "expectedParentId": "MHA-0",
+            "productRoot": "MH8-0",
+            "kind": "MOVE_CODE_FOOTER_TEXT",
+            "oldText": "intl_workspace · scenario · replay · watch · dark · 1440",
+            "why": "Workspace slug, route and viewport size are builder metadata. Preserve separate specimen/illustrative-values label in existing footer."
+          },
+          {
+            "nodeId": "M5B-0",
+            "expectedParentId": "M5A-0",
+            "productRoot": "M06-0",
+            "kind": "MOVE_CODE_FOOTER_TEXT",
+            "oldText": "intl_workspace · coverage · light · 1440",
+            "why": "Workspace slug, route and viewport size are builder metadata. Preserve separate specimen/illustrative-values label in existing footer."
+          },
+          {
+            "nodeId": "J70-0",
+            "expectedParentId": "J6F-0",
+            "productRoot": "IRV-0",
+            "kind": "MOVE_CODE_ONLY_FOOTER_FRAME",
+            "childIds": [
+              "J72-0"
+            ],
+            "oldText": "R14 · scanner · 390 · dark · EN",
+            "why": "Verified sole child is R14/route/device/theme/locale metadata. Moving whole footer avoids empty border/padding. Hero specimen/not-live marker remains."
+          },
+          {
+            "nodeId": "J77-0",
+            "expectedParentId": "J76-0",
+            "productRoot": "J74-0",
+            "kind": "MOVE_CODE_ONLY_FOOTER_FRAME",
+            "childIds": [
+              "J78-0"
+            ],
+            "oldText": "R14 · scanner · 390 · light · EN",
+            "why": "Verified sole child is R14/route/device/theme/locale metadata. Moving whole footer avoids empty border/padding. Hero specimen/not-live marker remains."
+          },
+          {
+            "nodeId": "JLU-0",
+            "expectedParentId": "JLT-0",
+            "productRoot": "JLR-0",
+            "kind": "MOVE_CODE_ONLY_FOOTER_FRAME",
+            "childIds": [
+              "JLV-0"
+            ],
+            "oldText": "R14 · scanner · 390 · dark · ZH",
+            "why": "Verified sole child is R14/route/device/theme/locale metadata. Moving whole footer avoids empty border/padding. Hero specimen/not-live marker remains."
+          },
+          {
+            "nodeId": "K0H-0",
+            "expectedParentId": "K0G-0",
+            "productRoot": "K0E-0",
+            "kind": "MOVE_CODE_ONLY_FOOTER_FRAME",
+            "childIds": [
+              "K0I-0"
+            ],
+            "oldText": "R14 · scanner · 390 · light · ZH",
+            "why": "Verified sole child is R14/route/device/theme/locale metadata. Moving whole footer avoids empty border/padding. Hero specimen/not-live marker remains."
+          },
+          {
+            "nodeId": "J6Y-0",
+            "expectedParentId": "J6V-0",
+            "productRoot": "IRV-0",
+            "kind": "MOVE_SUCCESS_STATE_SAMPLE",
+            "childIds": [
+              "J6Z-0"
+            ],
+            "oldText": "Armed ✓ (state)",
+            "why": "Success-state sample is currently simultaneous with Arm alert in one product condition card. Preserve it as state reference in Build. Keep the actual Arm alert control, whose flex-grow1 will fill the remaining row."
+          },
+          {
+            "nodeId": "J7C-0",
+            "expectedParentId": "J7B-0",
+            "productRoot": "J74-0",
+            "kind": "MOVE_SUCCESS_STATE_SAMPLE",
+            "childIds": [
+              "J7D-0"
+            ],
+            "oldText": "Armed ✓ (state)",
+            "why": "Success-state sample is currently simultaneous with Arm alert in one product condition card. Preserve it as state reference in Build. Keep the actual Arm alert control, whose flex-grow1 will fill the remaining row."
+          },
+          {
+            "nodeId": "JLZ-0",
+            "expectedParentId": "JLY-0",
+            "productRoot": "JLR-0",
+            "kind": "MOVE_SUCCESS_STATE_SAMPLE",
+            "childIds": [
+              "JM0-0"
+            ],
+            "oldText": "已启用 ✓（状态）",
+            "why": "Success-state sample is currently simultaneous with Arm alert in one product condition card. Preserve it as state reference in Build. Keep the actual Arm alert control, whose flex-grow1 will fill the remaining row."
+          },
+          {
+            "nodeId": "K0M-0",
+            "expectedParentId": "K0L-0",
+            "productRoot": "K0E-0",
+            "kind": "MOVE_SUCCESS_STATE_SAMPLE",
+            "childIds": [
+              "K0N-0"
+            ],
+            "oldText": "已启用 ✓（状态）",
+            "why": "Success-state sample is currently simultaneous with Arm alert in one product condition card. Preserve it as state reference in Build. Keep the actual Arm alert control, whose flex-grow1 will fill the remaining row."
+          }
+        ],
+        "counts": {
+          "desktopCodeText": 9,
+          "mobileCodeOnlyFooters": 4,
+          "successStateSamples": 4
+        },
+        "preserve": [
+          "Hero specimen/not-live markers",
+          "Actual Arm alert/启用提醒 action and focus state",
+          "Source clocks, delayed/proxy/qualified/licensed/insufficient-history badges",
+          "Existing accepted-source/release status; R14 frozen does not become productionaccepted"
+        ]
+      },
+      "sectorTextCleanup": {
+        "fileId": "01M6FAXA774QT1VRDMAG7DFQ2W",
+        "productPageId": "p-4-0",
+        "destination": {
+          "fileId": "01M6FAXA774QT1VRDMAG7DFQ2W",
+          "pageId": "p-5-0",
+          "pageName": "Build · Clarity, models & interaction",
+          "rootNodeId": "root_node_p-5-0",
+          "artboardCount": 2
+        },
+        "rows": [
+          {
+            "nodeId": "FFV-0",
+            "expectedParentId": "FFT-0",
+            "productRoot": "FB7-0",
+            "action": "REPLACE_TEXT",
+            "oldText": "rs_21d · 21 sessions vs S&P 500 · total return · as of 30 Oct 2026 close",
+            "newText": "21 sessions vs S&P 500 · total return · as of 30 Oct 2026 close"
+          },
+          {
+            "nodeId": "FRZ-0",
+            "expectedParentId": "FRX-0",
+            "productRoot": "FO0-0",
+            "action": "REPLACE_TEXT",
+            "oldText": "rs_21d · 21 sessions vs S&P 500 · total return · as of 30 Oct 2026 close",
+            "newText": "21 sessions vs S&P 500 · total return · as of 30 Oct 2026 close"
+          },
+          {
+            "nodeId": "FIG-0",
+            "expectedParentId": "FIE-0",
+            "productRoot": "FB7-0",
+            "action": "REPLACE_TEXT",
+            "oldText": "rs_21d · sector ETF · total return",
+            "newText": "Sector ETF · total return"
+          },
+          {
+            "nodeId": "FUK-0",
+            "expectedParentId": "FUI-0",
+            "productRoot": "FO0-0",
+            "action": "REPLACE_TEXT",
+            "oldText": "rs_21d · sector ETF · total return",
+            "newText": "Sector ETF · total return"
+          },
+          {
+            "nodeId": "FG5-0",
+            "expectedParentId": "FG0-0",
+            "productRoot": "FB7-0",
+            "action": "MOVE_FIELD_KEY_TO_BUILD",
+            "oldText": "rs_21d",
+            "why": "Standalone internal key duplicates the visible 21-session comparison heading and basis."
+          },
+          {
+            "nodeId": "FSB-0",
+            "expectedParentId": "FS8-0",
+            "productRoot": "FO0-0",
+            "action": "MOVE_FIELD_KEY_TO_BUILD",
+            "oldText": "rs_21d",
+            "why": "Standalone internal key duplicates the visible 21-session comparison heading and basis."
+          },
+          {
+            "nodeId": "FXR-0",
+            "expectedParentId": "FXO-0",
+            "productRoot": "FO0-0",
+            "action": "REPLACE_TEXT",
+            "oldText": "score · pulse_rank_delta_5d",
+            "newText": "Score · rank change over 5 sessions"
+          },
+          {
+            "nodeId": "G2T-0",
+            "expectedParentId": "G2S-0",
+            "productRoot": "FO0-0",
+            "action": "REPLACE_TEXT",
+            "oldText": "pulse_rank_delta_5d · as of 30 Oct 2026 close",
+            "newText": "5-session rank change · as of 30 Oct 2026 close"
+          }
+        ],
+        "preserve": "Store internal field names rs_21d andpulse_rank_delta_5d with exact currentnode/root lineage inBuild guide before replacing visiblelabels. Keep window, benchmark, ETFversusbasketpopulation, totalreturn basis andsnapshotclock."
+      },
+      "currentIntlFixtureMismatch": {
+        "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+        "pageId": "p-I-0",
+        "desktop": "G9J-0",
+        "mobile": "IRV-0",
+        "finding": "Responsive examples do not share a fully identical fixture. This audit does not establish whether that predates the clarity edits.",
+        "examples": [
+          {
+            "desktopNode": "GI0-0",
+            "desktopText": "B3 · BRL · close 21 Oct",
+            "mobileNode": "IYK-0",
+            "mobileText": "own close 20 Oct 20:07 UTC",
+            "reason": "SameBR−6.9%example has differing reference dates. Both top snapshots sayAsia closeTue21Oct."
+          },
+          {
+            "desktopNode": "GVP-0",
+            "desktopText": "USD/BRL closes above 5.80 and BR spread above 270 bp",
+            "desktopTimingNode": "GVQ-0",
+            "desktopTimingText": "by 23 Oct close · now 5.71 · 262 bp",
+            "mobileNode": "J6O-0",
+            "mobileText": "BR spread widens past +50 bp 5D and C·BAC lag below −1% by 24 Oct",
+            "reason": "Confirmconditions anddeadline differ acrossdesktop/mobile."
+          },
+          {
+            "desktopNode": "GW3-0",
+            "desktopText": "Neither by 28 Oct close (5 sessions): read expires and is logged",
+            "mobileNode": "J6U-0",
+            "mobileText": "Fri 24 Oct 20:00 UTC · auto-archive",
+            "reason": "Expiryconditions differ acrossdesktop/mobile."
+          }
+        ],
+        "recommendation": "Record this exact fixture mismatch in current R14 Build guide. If aligning within thismission, identify the canonicalR14fixture first and align source clock/conditions acrossvariants; do not guess or silently change financial thresholds. Otherwise keep it explicit as remaining designfixture inconsistency, not claimfullbehavioralequivalence."
+      },
+      "optionalPlainLanguage": {
+        "fileId": "01M6FAXA774QT1VRDMAG7DFQ2W",
+        "root": "DSJ-0",
+        "nodeId": "DYB-0",
+        "oldText": "Never drawn as zero. Quantum Computing has 12 sessions of history and needs 21, so it is not placed. Health Care has no turn reading at either horizon.",
+        "newText": "Unavailable does not mean zero. Quantum Computing has 12 of the 21 required sessions, so it is not placed. Health Care has no turn reading at either horizon.",
+        "reason": "Sameuser-facing absence/coverage meaning, without renderer imperative."
+      }
+    },
+    "prophet-ds-sector-separation-qa-2026-11-08.json": {
+      "audit": "Prophet/Canonical Design System/Sector separation — representative visual QA",
+      "date": "2026-11-08",
+      "readOnly": true,
+      "mutationsPerformed": false,
+      "coverage": [
+        {
+          "family": "DS",
+          "fileId": "01M312VSDSZFVT45674GDVJVZN",
+          "nodeId": "7CM-0",
+          "info": {
+            "id": "7CM-0",
+            "name": "F02 · Macro comparison · EN · Dark · 390",
+            "component": "Frame",
+            "width": 390,
+            "height": 1289,
+            "worldX": 4820,
+            "worldY": -2275,
+            "x": 4820,
+            "y": -2275,
+            "isVisible": true,
+            "isLocked": false,
+            "parentId": "root_node_p-5-0",
+            "childIds": [
+              "7CN-0",
+              "7CQ-0",
+              "7CY-0"
+            ],
+            "childCount": 3,
+            "artboardId": null,
+            "textContent": null
+          },
+          "styles": {
+            "display": "flex",
+            "overflow": "clip",
+            "width": "390px",
+            "height": "fit-content",
+            "flexDirection": "column",
+            "left": "4820px",
+            "top": "-2275px",
+            "position": "absolute",
+            "backgroundColor": "var(--noir-canvas)"
+          },
+          "screenshot": {
+            "nodeId": "7CM-0",
+            "width": 390,
+            "height": 1289,
+            "resized": false
+          }
+        },
+        {
+          "family": "DS",
+          "fileId": "01M312VSDSZFVT45674GDVJVZN",
+          "nodeId": "7IS-0",
+          "info": {
+            "id": "7IS-0",
+            "name": "F02 · Macro comparison · 中文 · Light · 390",
+            "component": "Frame",
+            "width": 390,
+            "height": 1331,
+            "worldX": 5290,
+            "worldY": -2275,
+            "x": 5290,
+            "y": -2275,
+            "isVisible": true,
+            "isLocked": false,
+            "parentId": "root_node_p-5-0",
+            "childIds": [
+              "7IT-0",
+              "7IW-0",
+              "7J4-0"
+            ],
+            "childCount": 3,
+            "artboardId": null,
+            "textContent": null
+          },
+          "styles": {
+            "display": "flex",
+            "overflow": "clip",
+            "width": "390px",
+            "height": "fit-content",
+            "flexDirection": "column",
+            "left": "5290px",
+            "top": "-2275px",
+            "position": "absolute",
+            "backgroundColor": "#F6F6F3"
+          },
+          "screenshot": {
+            "nodeId": "7IS-0",
+            "width": 390,
+            "height": 1331,
+            "resized": false
+          }
+        },
+        {
+          "family": "Prophet",
+          "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+          "nodeId": "DAZ-0",
+          "info": {
+            "id": "DAZ-0",
+            "name": "103 · R4.5 · Prophet Daily Brief + Top Picks · Desktop · Light",
+            "component": "Frame",
+            "width": 1440,
+            "height": null,
+            "worldX": 0,
+            "worldY": 1400,
+            "x": 0,
+            "y": 1400,
+            "isVisible": true,
+            "isLocked": false,
+            "parentId": "root_node_p-1-0",
+            "childIds": [
+              "DB0-0",
+              "DC8-0",
+              "DBI-0",
+              "DBV-0",
+              "DCH-0"
+            ],
+            "childCount": 5,
+            "artboardId": null,
+            "textContent": null
+          },
+          "styles": {
+            "display": "flex",
+            "overflow": "clip",
+            "width": "1440px",
+            "height": "fit-content",
+            "fontFamily": "var(--font-ui)",
+            "left": "0px",
+            "top": "1400px",
+            "flexDirection": "column",
+            "position": "absolute",
+            "backgroundColor": "var(--mx-light-bg)"
+          },
+          "screenshot": {
+            "nodeId": "DAZ-0",
+            "width": 1013,
+            "height": 2000,
+            "resized": true
+          }
+        },
+        {
+          "family": "Prophet",
+          "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+          "nodeId": "DPQ-0",
+          "info": {
+            "id": "DPQ-0",
+            "name": "104 · R4.5 · Prophet Daily Brief + Top Picks · Mobile · Light",
+            "component": "Frame",
+            "width": 390,
+            "height": null,
+            "worldX": 1520,
+            "worldY": 1400,
+            "x": 1520,
+            "y": 1400,
+            "isVisible": true,
+            "isLocked": false,
+            "parentId": "root_node_p-1-0",
+            "childIds": [
+              "DPR-0",
+              "DQ1-0"
+            ],
+            "childCount": 2,
+            "artboardId": null,
+            "textContent": null
+          },
+          "styles": {
+            "display": "flex",
+            "overflow": "clip",
+            "width": "390px",
+            "height": "fit-content",
+            "flexDirection": "column",
+            "fontFamily": "var(--font-ui)",
+            "left": "1520px",
+            "top": "1400px",
+            "position": "absolute",
+            "backgroundColor": "var(--mx-light-bg)"
+          },
+          "screenshot": {
+            "nodeId": "DPQ-0",
+            "width": 153,
+            "height": 2000,
+            "resized": true
+          }
+        },
+        {
+          "family": "Sector",
+          "fileId": "01M6FAXA774QT1VRDMAG7DFQ2W",
+          "nodeId": "AOT-0",
+          "info": {
+            "id": "AOT-0",
+            "name": "D05 A04 · Canada sector · 1024 light · modal evidence",
+            "component": "Frame",
+            "width": 1024,
+            "height": 900,
+            "worldX": 2460,
+            "worldY": 0,
+            "x": 2460,
+            "y": 0,
+            "isVisible": true,
+            "isLocked": false,
+            "parentId": "root_node_p-3-0",
+            "childIds": [
+              "AOU-0",
+              "AP8-0",
+              "AQF-0"
+            ],
+            "childCount": 3,
+            "artboardId": null,
+            "textContent": null
+          },
+          "styles": {
+            "display": "flex",
+            "overflow": "clip",
+            "width": "1024px",
+            "height": "900px",
+            "left": "2460px",
+            "top": "0px",
+            "position": "absolute",
+            "backgroundColor": "#F6F6F3"
+          },
+          "screenshot": {
+            "nodeId": "AOT-0",
+            "width": 1024,
+            "height": 900,
+            "resized": false
+          }
+        },
+        {
+          "family": "Sector",
+          "fileId": "01M6FAXA774QT1VRDMAG7DFQ2W",
+          "nodeId": "ATF-0",
+          "info": {
+            "id": "ATF-0",
+            "name": "D05 A06 · Namespaced group to Company · 1440 light",
+            "component": "Frame",
+            "width": 1440,
+            "height": 960,
+            "worldX": 4412,
+            "worldY": 0,
+            "x": 4412,
+            "y": 0,
+            "isVisible": true,
+            "isLocked": false,
+            "parentId": "root_node_p-3-0",
+            "childIds": [
+              "ATG-0",
+              "ATU-0"
+            ],
+            "childCount": 2,
+            "artboardId": null,
+            "textContent": null
+          },
+          "styles": {
+            "display": "flex",
+            "overflow": "clip",
+            "width": "1440px",
+            "height": "960px",
+            "left": "4412px",
+            "top": "0px",
+            "position": "absolute",
+            "backgroundColor": "#F6F6F3"
+          },
+          "screenshot": {
+            "nodeId": "ATF-0",
+            "width": 1440,
+            "height": 960,
+            "resized": false
+          }
+        }
+      ],
+      "layoutVerdict": "No material new clipping or excess blanktail found in the six requested product representatives. No geometry reconstruction recommended for this sample.",
+      "products": [
+        {
+          "family": "DS",
+          "roots": [
+            "7CM-0",
+            "7IS-0"
+          ],
+          "pass": [
+            "Both roots fit content: 390 × 1289 for dark EN and 390 × 1331 for light ZH.",
+            "All ten sector rows, source actions, selected/focused row, sort/scroll affordance, history gap and View exact values action remain visible.",
+            "66.7%, 709/1063, +1.13 pp, the measured 0.00 Health Care change and unavailable Energy values remain distinct.",
+            "Historical 7/8 coverage and the missing-session gap remain visible. There is no blank tail."
+          ],
+          "residual": "The 7IS top strip still contains F02 / 390 CSS px / design-candidate metadata. Replace it with 示例数据."
+        },
+        {
+          "family": "Prophet",
+          "roots": [
+            "DAZ-0",
+            "DPQ-0"
+          ],
+          "pass": [
+            "Both roots fit their content, with no major empty tail or clipping after the builder contract and provenance sections were removed.",
+            "No entry cleared, WAIT pre-trigger and current quote unavailable / not connected remain prominent.",
+            "Dated plan levels, invalidation, reset band, trigger, T1/T2, the meaning of the 67.9 management score and separate source clocks remain.",
+            "Dated LFUS/PFE quotes and the no-price-history/data-gap card remain. Missing data has not become a flat line or zero.",
+            "Playbook, evidence, compare, all-candidate and six deeper research routes remain."
+          ],
+          "residual": "Several inline builder-proof and route-implementation phrases remain in the retained body. Exact targets are below; the architecture is already retained in Build slots."
+        },
+        {
+          "family": "Sector",
+          "roots": [
+            "AOT-0",
+            "ATF-0"
+          ],
+          "pass": [
+            "AOT intentionally remains a 1024 × 900 modal viewport. The Canadian Natural Resources dialog, close control, membership limitation and Open Company · CNQ.TO action are fully visible.",
+            "The exact Canadian listing, currency and calendar remain. The US listing is not substituted.",
+            "The current membership observation still does not assert historical membership.",
+            "ATF intentionally remains a 1440 × 960 desktop viewport. Its 4/4 histories, missing member-price dates, small-group qualification, below-200-day and unconfirmed group state, four constituent rows, percentage-point definition and Company action remain.",
+            "The space after Data coverage is ordinary viewport space. No oversized remnant of the notes or clipping was observed."
+          ],
+          "residual": "No additional issue was confirmed in the two requested Sector products."
+        }
+      ],
+      "buildPreservation": {
+        "counts": {
+          "Prophet": {
+            "slots": 7,
+            "preservedNodesFromSlotCounts": 14
+          },
+          "DS": {
+            "slots": 22,
+            "preservedNodesFromSlotCounts": 40
+          },
+          "Sector": {
+            "slots": 13,
+            "preservedNodesFromSlotCounts": 16
+          }
+        },
+        "expectedMovedNodes": {
+          "Prophet": 14,
+          "DS": 40,
+          "Sector": 16
+        },
+        "sampledSlots": [
+          {
+            "family": "DS",
+            "fileId": "01M312VSDSZFVT45674GDVJVZN",
+            "slotId": "9YR-0",
+            "style": {
+              "display": "flex",
+              "flexDirection": "column",
+              "width": "1624px",
+              "height": "fit-content",
+              "padding": "24px",
+              "gap": "16px",
+              "backgroundColor": "var(--noir-canvas)"
+            },
+            "screenshot": {
+              "nodeId": "9YR-0",
+              "width": 1624,
+              "height": 281,
+              "resized": false
+            },
+            "children": [
+              {
+                "id": "9YS-0",
+                "name": "Source product 7CM-0…"
+              },
+              {
+                "id": "7IN-0",
+                "name": "Adjacent mobile build contract"
+              }
+            ]
+          },
+          {
+            "family": "DS",
+            "fileId": "01M312VSDSZFVT45674GDVJVZN",
+            "slotId": "9YT-0",
+            "style": {
+              "display": "flex",
+              "flexDirection": "column",
+              "width": "1624px",
+              "height": "fit-content",
+              "padding": "24px",
+              "gap": "16px",
+              "backgroundColor": "#F6F6F3"
+            },
+            "screenshot": {
+              "nodeId": "9YT-0",
+              "width": 1624,
+              "height": 270,
+              "resized": false
+            },
+            "children": [
+              {
+                "id": "9YU-0",
+                "name": "Source product 7IS-0…"
+              },
+              {
+                "id": "9SM-0",
+                "name": "Adjacent mobile build contract"
+              }
+            ]
+          },
+          {
+            "family": "Prophet",
+            "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+            "slotId": "146K-0",
+            "style": {
+              "display": "flex",
+              "flexDirection": "column",
+              "width": "1624px",
+              "height": "fit-content",
+              "padding": "24px",
+              "gap": "16px",
+              "backgroundColor": "var(--mx-light-bg)"
+            },
+            "screenshot": {
+              "nodeId": "146K-0",
+              "width": 1624,
+              "height": 731,
+              "resized": false
+            },
+            "children": [
+              {
+                "id": "146L-0",
+                "name": "Source product DAZ-0…"
+              },
+              {
+                "id": "DO7-0",
+                "name": "Daily brief builder contract"
+              },
+              {
+                "id": "DPC-0",
+                "name": "Daily brief provenance"
+              }
+            ]
+          },
+          {
+            "family": "Prophet",
+            "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+            "slotId": "146M-0",
+            "style": {
+              "display": "flex",
+              "flexDirection": "column",
+              "width": "1624px",
+              "height": "fit-content",
+              "padding": "24px",
+              "gap": "16px",
+              "backgroundColor": "var(--mx-light-bg)"
+            },
+            "screenshot": {
+              "nodeId": "146M-0",
+              "width": 1624,
+              "height": 1467,
+              "resized": false
+            },
+            "children": [
+              {
+                "id": "146N-0",
+                "name": "Source product DPQ-0…"
+              },
+              {
+                "id": "E0E-0",
+                "name": "Mobile daily brief builder contract"
+              },
+              {
+                "id": "E2J-0",
+                "name": "Mobile daily brief provenance"
+              }
+            ]
+          },
+          {
+            "family": "Sector",
+            "fileId": "01M6FAXA774QT1VRDMAG7DFQ2W",
+            "slotId": "GOX-0",
+            "style": {
+              "display": "flex",
+              "flexDirection": "column",
+              "width": "1624px",
+              "height": "fit-content",
+              "padding": "24px",
+              "gap": "16px",
+              "backgroundColor": "#F6F6F3"
+            },
+            "screenshot": {
+              "nodeId": "GOX-0",
+              "width": 1624,
+              "height": 172,
+              "resized": false
+            },
+            "children": [
+              {
+                "id": "GOY-0",
+                "name": "Source product AOT-0…"
+              },
+              {
+                "id": "AR6-0",
+                "name": "Frame"
+              }
+            ]
+          },
+          {
+            "family": "Sector",
+            "fileId": "01M6FAXA774QT1VRDMAG7DFQ2W",
+            "slotId": "GP1-0",
+            "style": {
+              "display": "flex",
+              "flexDirection": "column",
+              "width": "1624px",
+              "height": "fit-content",
+              "padding": "24px",
+              "gap": "16px",
+              "backgroundColor": "#F6F6F3"
+            },
+            "screenshot": {
+              "nodeId": "GP1-0",
+              "width": 1624,
+              "height": 104,
+              "resized": false
+            },
+            "children": [
+              {
+                "id": "GP2-0",
+                "name": "Source product ATF-0…"
+              },
+              {
+                "id": "AWT-0",
+                "name": "Rotation detail reus…"
+              }
+            ]
+          }
+        ],
+        "verdict": "All six sampled Build slots render their full preserved content, with original source-product labels and matching light/noir backgrounds. No text clipping or overlap was observed. Some former mobile contracts occupy a narrow column within a wider preservation slot.",
+        "matchedThemes": [
+          {
+            "product": "7CM-0",
+            "slot": "9YR-0",
+            "background": "var(--noir-canvas)"
+          },
+          {
+            "product": "7IS-0",
+            "slot": "9YT-0",
+            "background": "#F6F6F3"
+          },
+          {
+            "product": "DAZ-0",
+            "slot": "146K-0",
+            "background": "var(--mx-light-bg)"
+          },
+          {
+            "product": "DPQ-0",
+            "slot": "146M-0",
+            "background": "var(--mx-light-bg)"
+          },
+          {
+            "product": "AOT-0",
+            "slot": "GOX-0",
+            "background": "#F6F6F3"
+          },
+          {
+            "product": "ATF-0",
+            "slot": "GP1-0",
+            "background": "#F6F6F3"
+          }
+        ]
+      },
+      "dsSmallCopy": {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "root": "7IS-0",
+        "nodeId": "7IU-0",
+        "oldText": "F02 / 390 CSS px / 中文 / 设计候选",
+        "newText": "示例数据",
+        "preserveMetadataInSlot": "9YT-0",
+        "why": "Matches the English Illustrative data label while moving viewport and design-candidate metadata out of the product."
+      },
+      "prophetResidual": {
+        "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+        "productPageId": "p-1-0",
+        "buildPageId": "p-5-0",
+        "buildRootId": "146H-0",
+        "moves": [
+          {
+            "root": "DAZ-0",
+            "nodeId": "12WW-0",
+            "expectedParentId": "12WP-0",
+            "oldText": "Proposed routes · not click-wiring proof",
+            "destinationSlot": "146K-0"
+          },
+          {
+            "root": "DAZ-0",
+            "nodeId": "DMS-0",
+            "expectedParentId": "DMN-0",
+            "oldText": "PROPOSED ROUTES · NOT RUNTIME PROOF",
+            "destinationSlot": "146K-0"
+          },
+          {
+            "root": "DPQ-0",
+            "nodeId": "DU6-0",
+            "expectedParentId": "DTY-0",
+            "oldText": "Proposed routes · not click-wiring proof",
+            "destinationSlot": "146M-0"
+          },
+          {
+            "root": "DPQ-0",
+            "nodeId": "DZ4-0",
+            "expectedParentId": "DZ0-0",
+            "oldText": "PROPOSED ROUTES · NOT RUNTIME PROOF",
+            "destinationSlot": "146M-0"
+          },
+          {
+            "root": "DAZ-0",
+            "nodeId": "DDL-0",
+            "expectedParentId": "DDB-0",
+            "oldText": "UI-created rank · none",
+            "destinationSlot": "146K-0",
+            "moveCompleteFrame": true,
+            "why": "This is a no-new-ranker architecture assertion; it is not a user decision datum."
+          }
+        ],
+        "copyChanges": [
+          {
+            "root": "DAZ-0",
+            "nodeId": "DH9-0",
+            "expectedParentId": "DH6-0",
+            "oldText": "Same cards, same source-owned states. No UI promotion, probability or hidden re-ranking.",
+            "newText": "Candidates retain their source order and current assessment.",
+            "destinationSlot": "146K-0"
+          },
+          {
+            "root": "DPQ-0",
+            "nodeId": "DUD-0",
+            "expectedParentId": "DU8-0",
+            "oldText": "Same source-owned states. No UI promotion, probability or hidden re-ranking.",
+            "newText": "Candidates retain their source order and current assessment.",
+            "destinationSlot": "146M-0"
+          },
+          {
+            "root": "DAZ-0",
+            "nodeId": "DMH-0",
+            "expectedParentId": "DMF-0",
+            "oldText": "A change appears only when a canonical source object changes. The UI cannot infer a recommendation from price movement.",
+            "newText": "Updates reflect changed source records. Price movement alone is not a new recommendation.",
+            "destinationSlot": "146K-0"
+          },
+          {
+            "root": "DPQ-0",
+            "nodeId": "DYU-0",
+            "expectedParentId": "DYS-0",
+            "oldText": "A change appears only when a canonical candidate, quote, plan, assessment or evidence object changes. Price movement alone cannot become a recommendation.",
+            "newText": "Updates reflect changed source records. Price movement alone is not a new recommendation.",
+            "destinationSlot": "146M-0"
+          },
+          {
+            "root": "DAZ-0",
+            "nodeId": "DMR-0",
+            "expectedParentId": "DMO-0",
+            "oldText": "Every route keeps the candidate episode, source clocks, filters and return position intact.",
+            "newText": "Continue researching this candidate.",
+            "destinationSlot": "146K-0"
+          },
+          {
+            "root": "DPQ-0",
+            "nodeId": "DZ3-0",
+            "expectedParentId": "DZ0-0",
+            "oldText": "Every route keeps the episode, source clocks, filters, compare state, focus and return position intact.",
+            "newText": "Continue researching this candidate.",
+            "destinationSlot": "146M-0"
+          }
+        ],
+        "preservation": "Preserve each full old passage with its source product/node ID in the existing 146K / 146M Build slots or the canonical guide before changing product copy. Keep the actual route controls. Existing DO7 / DPC / E0E / E2J contracts remain unchanged.",
+        "semanticGuard": "Do not change plan values, source clocks, entry permission, quote availability, score meaning, priority semantics or accepted assessment states. This is inline-copy and annotation separation.",
+        "scope": "Exact residual targets were validated on DAZ / DPQ only. This QA pass does not claim an independent recheck of the other Daily Brief variants."
+      },
+      "relatedPrimaryQA": "The eight Sector field-key targets already have exact old/new/move mappings in primary-variant-visual-qa-2026-11-08.json. No edits were made here.",
+      "holds": "No held Sector BML/G4P, archive root, publication status or acceptance state was changed.",
+      "terminalBuildPreservationCheck": {
+        "fileId": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "pageId": "p-11-0",
+        "columnId": "1ZHS-0",
+        "sampleSlots": [
+          {
+            "slotId": "1ZHV-0",
+            "originalWrapperId": "8NK-0",
+            "railId": "8QL-0"
+          },
+          {
+            "slotId": "1ZHX-0",
+            "originalWrapperId": "8VX-0",
+            "railId": "93S-0"
+          }
+        ],
+        "verdict": "PASS — the sampled original wrappers are normal-flow children inside their Build slots. No overlap from old canvas offsets, clipping or lost text was observed.",
+        "currentStyles": {
+          "1ZHS-0": {
+            "display": "flex",
+            "flexDirection": "column",
+            "width": "2040px",
+            "padding": "20px",
+            "gap": "32px",
+            "position": "absolute",
+            "backgroundColor": "#E8EBF0"
+          },
+          "8NK-0": {
+            "display": "flex",
+            "overflow": "clip",
+            "width": "1960px",
+            "fontFamily": "var(--font-ui)",
+            "alignItems": "start",
+            "gap": "40px",
+            "minHeight": "1020px",
+            "backgroundColor": "var(--mx-light-panel)"
+          },
+          "8QL-0": {
+            "width": "480px",
+            "display": "flex",
+            "flexDirection": "column",
+            "flexShrink": "0",
+            "alignSelf": "start",
+            "fontFamily": "var(--font-ui)",
+            "padding": "32px",
+            "gap": "24px",
+            "backgroundColor": "var(--mx-light-panel2)",
+            "borderLeftWidth": "3px",
+            "borderLeftStyle": "solid",
+            "borderLeftColor": "var(--mx-light-link)"
+          },
+          "1ZHV-0": {
+            "display": "flex",
+            "flexDirection": "column",
+            "width": "2000px",
+            "padding": "20px",
+            "gap": "16px",
+            "backgroundColor": "var(--mx-light-panel)"
+          },
+          "1ZHX-0": {
+            "display": "flex",
+            "flexDirection": "column",
+            "width": "2000px",
+            "padding": "20px",
+            "gap": "16px",
+            "backgroundColor": "var(--mx-light-panel)"
+          },
+          "8VX-0": {
+            "display": "flex",
+            "overflow": "clip",
+            "width": "1960px",
+            "fontFamily": "var(--font-ui)",
+            "alignItems": "start",
+            "gap": "40px",
+            "minHeight": "960px",
+            "backgroundColor": "var(--mx-light-panel)"
+          }
+        },
+        "renderEvidence": [
+          {
+            "nodeId": "1ZHV-0",
+            "width": 2000,
+            "height": 1814,
+            "resized": false
+          },
+          {
+            "nodeId": "1ZHX-0",
+            "width": 1803,
+            "height": 2000,
+            "resized": true
+          }
+        ],
+        "jsxEvidence": "Current 1ZHV JSX shows 8NK as display:flex, width:1960px, min-height:1020px, with no position:absolute, left or top. The 480px rail is a normal-flow child. Computed styles show the same position removal on 8VX.",
+        "metadataCaveat": "get_node_info still returned old world coordinates for inactive-page 8NK. Current JSX, computed styles and the rendered slot agree that old offsets are not being applied.",
+        "preservedWidth": "The original 1960px wrappers leave unused width to the right of their 480px note rails. This is retained Build geometry, not a product-layout defect. No further rebuild is recommended for this bounded check.",
+        "mutationsPerformed": false
+      }
+    },
+    "international-final-content-qa-2026-11-08.json": {
+      "kind": "read_only_visual_qa",
+      "date": "2026-11-08",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "scope": "Final targeted International individual-root content review after parent's 315 copy changes, 148 moves, 4 clock-row reorderings and empty-row removals. Canvas auto-placement excluded.",
+      "mutationPerformed": false,
+      "roots": [
+        {
+          "id": "G9J-0",
+          "pageId": "p-I-0",
+          "role": "Scanner desktop EN",
+          "nativeScreenshot": {
+            "width": 1440,
+            "height": 1976
+          },
+          "result": "Meaning retained; one empty footer remnant"
+        },
+        {
+          "id": "IRV-0",
+          "pageId": "p-I-0",
+          "role": "Scanner phone EN",
+          "rootScreenshot": "Resized to 2000px height; native snapshot and US response sections inspected",
+          "result": "Meaning retained; source chip wraps and clips"
+        },
+        {
+          "id": "JLR-0",
+          "pageId": "p-I-0",
+          "role": "Scanner phone ZH",
+          "rootScreenshot": "Resized to 2000px height; native snapshot and US response sections inspected",
+          "result": "Pass; readable counts and distinct response states"
+        },
+        {
+          "id": "7D2-0",
+          "pageId": "p-D-0",
+          "role": "Review comparison changes",
+          "nativeScreenshot": {
+            "width": 1440,
+            "height": 776
+          },
+          "result": "Pass; compact content after 7GI separation"
+        },
+        {
+          "id": "6L2-0",
+          "pageId": "p-C-0",
+          "role": "Saved Research, 320px, 200% text",
+          "rootScreenshot": "Resized; header, banner, all three question cards, actions and boundary inspected natively",
+          "result": "Pass; all enlarged text and actions remain within cards"
+        },
+        {
+          "id": "5DS-0",
+          "pageId": "p-E-0",
+          "role": "R10 Follow Japan, Outcome Checking, 320px",
+          "nativeScreenshot": {
+            "width": 320,
+            "height": 881
+          },
+          "result": "Pass; pending effect remains unknown, no duplicate submit"
+        },
+        {
+          "id": "M06-0",
+          "pageId": "p-I-0",
+          "role": "Sources & method desktop",
+          "nativeScreenshot": {
+            "width": 1440,
+            "height": 1705
+          },
+          "result": "Method and counts retained; source chip denominator wraps"
+        }
+      ],
+      "findings": [
+        {
+          "severity": "readability",
+          "rootId": "IRV-0",
+          "nodeId": "IV6-0",
+          "parentId": "IV5-0",
+          "currentText": "Sources & method",
+          "proposedText": "Sources",
+          "issue": "Native IUI-0 snapshot shows 31/34 split across lines and 3 partial forced to three lines; final l extends outside the fixed 40px chip.",
+          "preserve": [
+            {
+              "nodeId": "IV7-0",
+              "text": "31/34"
+            },
+            {
+              "nodeId": "IV8-0",
+              "text": "3 partial"
+            }
+          ],
+          "action": "Shorten only the action label, then inspect IUI-0 natively. Do not remove the denominator or partial status.",
+          "currentParentReadbackConfirmed": true
+        },
+        {
+          "severity": "readability",
+          "rootId": "M06-0",
+          "nodeId": "M4R-0",
+          "parentId": "M4O-0",
+          "currentText": "Sources & method",
+          "proposedText": "Sources",
+          "issue": "Native M3O-0 snapshot shows 31/34 wrapping as 31/3 plus 4 within the 32px-high source chip.",
+          "preserve": [
+            {
+              "nodeId": "M4Q-0",
+              "text": "31/34"
+            },
+            {
+              "nodeId": "M4P-0",
+              "text": "3 partial"
+            }
+          ],
+          "action": "Shorten only the action label, then inspect M3O-0 natively. Keep all source clocks and counts.",
+          "currentParentReadbackConfirmed": true
+        },
+        {
+          "severity": "empty_remnant",
+          "rootId": "G9J-0",
+          "nodeId": "GWA-0",
+          "parentId": "GAW-0",
+          "childIds": [
+            "GWB-0"
+          ],
+          "currentText": null,
+          "issue": "GWA-0 is a visible border/padding footer containing only an empty width-0 GWB-0. It remains after builder footnotes were separated.",
+          "styles": {
+            "borderTopWidth": "1px",
+            "paddingTop": "16px",
+            "paddingBottom": "8px",
+            "parentGap": "16px",
+            "parentPaddingBottom": "48px"
+          },
+          "action": "Move the empty GWA-0 subtree to the existing Build destination or omit it in a root reconstruction. Keep ordinary 48px body bottom padding.",
+          "currentParentReadbackConfirmed": true
+        }
+      ],
+      "preservedSemantics": [
+        {
+          "roots": [
+            "G9J-0",
+            "IRV-0",
+            "JLR-0"
+          ],
+          "facts": [
+            "31 of 34 markets scored / 3 partial retained",
+            "Breadth 14/31 retained",
+            "Source/licensing/proxy/delayed/stale qualifiers remain visible",
+            "Poland remains unranked for insufficient history, using dashes rather than zero",
+            "Two US responses, one pending and one within-noise/not-seen outcome remain distinct",
+            "Specimen/not-live qualification remains visible"
+          ],
+          "nodeExamples": [
+            "GDQ-0",
+            "GDR-0",
+            "GF3-0",
+            "IV7-0",
+            "IV8-0",
+            "IWH-0",
+            "JX8-0",
+            "JW0-0",
+            "JQA-0"
+          ]
+        },
+        {
+          "roots": [
+            "IRV-0",
+            "JLR-0"
+          ],
+          "nativeSections": [
+            "J5J-0",
+            "JMH-0"
+          ],
+          "facts": [
+            "EWZ -2.1% and VALE -1.4% are Responded/已响应",
+            "C·BAC +0.2% is Pending/not ignored / 待定·未忽略",
+            "EMB -0.1% is Not seen/in noise / 未出现·在噪声内",
+            "Window ending 20:00 UTC remains explicit"
+          ],
+          "noEmptyQ6Footer": true
+        },
+        {
+          "root": "7D2-0",
+          "facts": [
+            "3 setting changes with question text unchanged",
+            "Saved Not selected comparison economy becomes United States; focus remains Japan",
+            "Rolling 1 month becomes fixed 31 Aug–30 Sep 2026",
+            "Nominal policy settings retain absolute rate-gap basis in bp",
+            "Only settings are saved; comparison refreshes on reopen",
+            "No saved baseline remains explicit; it is not shown as zero",
+            "Save changes and Back to preview remain visible"
+          ],
+          "nodeExamples": [
+            "7EO-0",
+            "7EW-0",
+            "7F0-0",
+            "7F1-0",
+            "7F7-0",
+            "7FB-0",
+            "7FC-0",
+            "7FM-0",
+            "7FN-0",
+            "7G3-0",
+            "7GG-0"
+          ]
+        },
+        {
+          "root": "6L2-0",
+          "facts": [
+            "3 saved questions; 2 changed questions",
+            "Japan has 2 updates; Korea has 1 update; Taiwan is up to date",
+            "Evidence coverage 2/3 PARTIAL retained",
+            "Inventory check 09:12 UTC remains distinct from policy update 09:00 UTC",
+            "Stale liquidity exclusion and comparison/date requirement remain visible",
+            "Open updated research, Start new research and Manage saved research remain legible at 200% text"
+          ],
+          "nativeChildren": [
+            {
+              "id": "6MV-0",
+              "width": 288,
+              "height": 400
+            },
+            {
+              "id": "6MK-0",
+              "width": 288,
+              "height": 454
+            },
+            {
+              "id": "6LX-0",
+              "width": 288,
+              "height": 1134
+            },
+            {
+              "id": "6LO-0",
+              "width": 288,
+              "height": 483
+            },
+            {
+              "id": "6LF-0",
+              "width": 288,
+              "height": 437
+            },
+            {
+              "id": "6L8-0",
+              "width": 288,
+              "height": 242
+            },
+            {
+              "id": "6L4-0",
+              "width": 288,
+              "height": 161
+            }
+          ],
+          "nodeExamples": [
+            "6N0-0",
+            "6MY-0",
+            "6ML-0",
+            "6MB-0",
+            "6MA-0",
+            "6M5-0",
+            "6M2-0"
+          ]
+        },
+        {
+          "root": "5DS-0",
+          "facts": [
+            "Request sent is separate from confirmed follow success",
+            "Follow status is not known yet remains explicit",
+            "One request/status reconciling remains explicit",
+            "4 selected conditions and 1 month/USD retained",
+            "Checking follow status… remains disabled rather than a duplicate request",
+            "Return action and Draft preserved retained"
+          ],
+          "nodeExamples": [
+            "5E9-0",
+            "5EG-0",
+            "5EK-0",
+            "5ET-0",
+            "5EW-0",
+            "5FD-0",
+            "5FF-0",
+            "5FG-0"
+          ]
+        },
+        {
+          "root": "M06-0",
+          "facts": [
+            "Reference period, source available 06:31, acquired+qualified 06:44 and published 08:10 stay in order",
+            "Cell-state counts sum correctly to 204 = 34 markets × 6 source families",
+            "Complete 184 plus distinct Qualified 2, Partial 1, Stale 3, Abstain 2, Closed 6, Restricted 5 and Corrected 1 = 204",
+            "Missing close removes market from ranking; never interpolated",
+            "Late/missing FX qualifies USD return while preserving local basis",
+            "Restricted/stale credit inputs name omissions",
+            "Older US proxy is Pending rather than Absent",
+            "Qualified/stale/partial inputs limit stance to Watch",
+            "Corrections and recoveries keep their timestamps and effects"
+          ],
+          "nodeExamples": [
+            "MFW-0",
+            "MG1-0",
+            "MG4-0",
+            "MG7-0",
+            "MGD-0",
+            "MGG-0"
+          ],
+          "stateCounts": {
+            "Complete": 184,
+            "Qualified": 2,
+            "Partial": 1,
+            "Stale": 3,
+            "Abstain": 2,
+            "Closed": 6,
+            "Restricted": 5,
+            "Corrected": 1
+          }
+        }
+      ],
+      "geometryAssessment": "All seven inspected roots use fit-content height. No large blank tail or material content clipping seen except the reported EN source chip; G9J retains one small empty footer. The long 6L2 page is caused by deliberate 200% text reflow and meaningful cards.",
+      "limitations": [
+        "Read-only design QA; no runtime interaction proof",
+        "Individual root content only, no canvas collision assessment",
+        "Cross-variant frozen fixture values were not reconciled in this bounded pass",
+        "Recommended source-label shortening still requires parent application and native screenshot readback"
+      ]
+    },
+    "seven-file-clarity-triage-2026-11-08.json": {
+      "readOnly": true,
+      "coverage": {
+        "files": 7,
+        "fileWideSearches": 54,
+        "candidateArtboardsClassified": 80,
+        "initialTargetedFullJSXArtboards": 25,
+        "extraFullJSXArtboards": 17,
+        "terminalBuildRailsMapped": 58,
+        "terminalInlineBuildSubtreesFullJSX": 39
+      },
+      "files": [
+        {
+          "key": "terminal",
+          "fileId": "01M3NSZGE8JWN2EZCSF0DT05RM",
+          "pageCount": 44,
+          "starQuery": {
+            "count": 200,
+            "truncated": true
+          },
+          "queryCounts": [
+            {
+              "query": "builder",
+              "count": 20,
+              "truncated": false
+            },
+            {
+              "query": "implementation",
+              "count": 49,
+              "truncated": false
+            },
+            {
+              "query": "contract",
+              "count": 200,
+              "truncated": true
+            },
+            {
+              "query": "static",
+              "count": 5,
+              "truncated": false
+            },
+            {
+              "query": "notwired",
+              "count": 1,
+              "truncated": false
+            },
+            {
+              "query": "long",
+              "count": 200,
+              "truncated": true
+            },
+            {
+              "query": "buildonly",
+              "count": 54,
+              "truncated": false
+            },
+            {
+              "query": "notui",
+              "count": 58,
+              "truncated": false
+            },
+            {
+              "query": "long50",
+              "count": 95,
+              "truncated": false
+            }
+          ],
+          "uniqueCandidateTextNodes": 569,
+          "scopeNote": "Candidate union, not total file text count; '*' and some 20-word/contract searches are capped at 200."
+        },
+        {
+          "key": "os",
+          "fileId": "01M3NRCX55B452A12819WNE1RH",
+          "pageCount": 20,
+          "starQuery": {
+            "count": 200,
+            "truncated": true
+          },
+          "queryCounts": [
+            {
+              "query": "builder",
+              "count": 43,
+              "truncated": false
+            },
+            {
+              "query": "implementation",
+              "count": 175,
+              "truncated": false
+            },
+            {
+              "query": "contract",
+              "count": 184,
+              "truncated": false
+            },
+            {
+              "query": "static",
+              "count": 5,
+              "truncated": false
+            },
+            {
+              "query": "notwired",
+              "count": 0,
+              "truncated": false
+            },
+            {
+              "query": "long",
+              "count": 200,
+              "truncated": true
+            },
+            {
+              "query": "long50",
+              "count": 32,
+              "truncated": false
+            }
+          ],
+          "uniqueCandidateTextNodes": 579,
+          "scopeNote": "Candidate union, not total file text count; '*' and some 20-word/contract searches are capped at 200."
+        },
+        {
+          "key": "prophet",
+          "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+          "pageCount": 13,
+          "starQuery": {
+            "count": 200,
+            "truncated": true
+          },
+          "queryCounts": [
+            {
+              "query": "builder",
+              "count": 25,
+              "truncated": false
+            },
+            {
+              "query": "implementation",
+              "count": 21,
+              "truncated": false
+            },
+            {
+              "query": "contract",
+              "count": 108,
+              "truncated": false
+            },
+            {
+              "query": "static",
+              "count": 11,
+              "truncated": false
+            },
+            {
+              "query": "notwired",
+              "count": 17,
+              "truncated": false
+            },
+            {
+              "query": "long",
+              "count": 200,
+              "truncated": true
+            },
+            {
+              "query": "long50",
+              "count": 11,
+              "truncated": false
+            }
+          ],
+          "uniqueCandidateTextNodes": 341,
+          "scopeNote": "Candidate union, not total file text count; '*' and some 20-word/contract searches are capped at 200."
+        },
+        {
+          "key": "ontology",
+          "fileId": "01M3P1X4FR6BRTB13KA736Y1HT",
+          "pageCount": 6,
+          "starQuery": {
+            "count": 200,
+            "truncated": true
+          },
+          "queryCounts": [
+            {
+              "query": "builder",
+              "count": 9,
+              "truncated": false
+            },
+            {
+              "query": "implementation",
+              "count": 16,
+              "truncated": false
+            },
+            {
+              "query": "contract",
+              "count": 46,
+              "truncated": false
+            },
+            {
+              "query": "static",
+              "count": 5,
+              "truncated": false
+            },
+            {
+              "query": "notwired",
+              "count": 0,
+              "truncated": false
+            },
+            {
+              "query": "long",
+              "count": 133,
+              "truncated": false
+            }
+          ],
+          "uniqueCandidateTextNodes": 181,
+          "scopeNote": "Candidate union, not total file text count; '*' and some 20-word/contract searches are capped at 200."
+        },
+        {
+          "key": "guide",
+          "fileId": "01M32XYWDYSFTNDZVJKQ5QHT33",
+          "pageCount": 6,
+          "starQuery": {
+            "count": 200,
+            "truncated": true
+          },
+          "queryCounts": [
+            {
+              "query": "builder",
+              "count": 0,
+              "truncated": false
+            },
+            {
+              "query": "implementation",
+              "count": 0,
+              "truncated": false
+            },
+            {
+              "query": "contract",
+              "count": 0,
+              "truncated": false
+            },
+            {
+              "query": "static",
+              "count": 0,
+              "truncated": false
+            },
+            {
+              "query": "notwired",
+              "count": 0,
+              "truncated": false
+            },
+            {
+              "query": "long",
+              "count": 38,
+              "truncated": false
+            }
+          ],
+          "uniqueCandidateTextNodes": 38,
+          "scopeNote": "Candidate union, not total file text count; '*' and some 20-word/contract searches are capped at 200."
+        },
+        {
+          "key": "popups",
+          "fileId": "01M38EVF74SJWG1GANN5VP380Z",
+          "pageCount": 6,
+          "starQuery": {
+            "count": 200,
+            "truncated": true
+          },
+          "queryCounts": [
+            {
+              "query": "builder",
+              "count": 7,
+              "truncated": false
+            },
+            {
+              "query": "implementation",
+              "count": 51,
+              "truncated": false
+            },
+            {
+              "query": "contract",
+              "count": 41,
+              "truncated": false
+            },
+            {
+              "query": "static",
+              "count": 13,
+              "truncated": false
+            },
+            {
+              "query": "notwired",
+              "count": 9,
+              "truncated": false
+            },
+            {
+              "query": "long",
+              "count": 191,
+              "truncated": false
+            }
+          ],
+          "uniqueCandidateTextNodes": 274,
+          "scopeNote": "Candidate union, not total file text count; '*' and some 20-word/contract searches are capped at 200."
+        },
+        {
+          "key": "ai",
+          "fileId": "01M3P1QEHS5XXQY85BJT6QR2E1",
+          "pageCount": 9,
+          "starQuery": {
+            "count": 200,
+            "truncated": true
+          },
+          "queryCounts": [
+            {
+              "query": "builder",
+              "count": 4,
+              "truncated": false
+            },
+            {
+              "query": "implementation",
+              "count": 7,
+              "truncated": false
+            },
+            {
+              "query": "contract",
+              "count": 10,
+              "truncated": false
+            },
+            {
+              "query": "static",
+              "count": 5,
+              "truncated": false
+            },
+            {
+              "query": "notwired",
+              "count": 0,
+              "truncated": false
+            },
+            {
+              "query": "long",
+              "count": 134,
+              "truncated": false
+            }
+          ],
+          "uniqueCandidateTextNodes": 143,
+          "scopeNote": "Candidate union, not total file text count; '*' and some 20-word/contract searches are capped at 200."
+        }
+      ],
+      "confirmedNewTargets": [
+        {
+          "file": "terminal",
+          "map": "terminal-company-build-rail-map-2026-11-08.json",
+          "visibleTargets": 55,
+          "excluded": 3
+        },
+        {
+          "file": "ontology",
+          "destinationPage": "p-6-0",
+          "moves": [
+            {
+              "artboard": "27A-0",
+              "subtree": "2FZ-0"
+            },
+            {
+              "artboard": "2Z0-0",
+              "subtree": "38S-0"
+            },
+            {
+              "artboard": "3AC-0",
+              "subtree": "3KS-0"
+            }
+          ],
+          "preserve": "Owner-gated Portfolio status; complete product data and navigation."
+        },
+        {
+          "file": "popups",
+          "artboard": "8Y4-0",
+          "moves": [
+            "92J-0",
+            "94X-0",
+            "97B-0",
+            "9MC-0",
+            "9NP-0",
+            "9P2-0"
+          ],
+          "copy": [
+            {
+              "nodes": [
+                "93X-0",
+                "96B-0"
+              ],
+              "replacement": "仅草稿 · 暂不可保存"
+            }
+          ]
+        },
+        {
+          "file": "popups",
+          "moves": [
+            {
+              "artboard": "4FO-0",
+              "subtree": "4M5-0",
+              "scope": "Text only; retain 4M4 and 4M6."
+            },
+            {
+              "artboard": "5K1-0",
+              "subtree": "5Q9-0",
+              "scope": "Retain 5QC action."
+            },
+            {
+              "artboard": "5QG-0",
+              "subtree": "5WO-0",
+              "scope": "Retain 5WR action."
+            }
+          ]
+        },
+        {
+          "file": "prophet",
+          "map": "prophet-build-separation-map-2026-11-08.json",
+          "scope": "13 builder/source subtrees across six retained Daily Brief baseline screens plus IB6 Plans definitions contract; no current R8 mutations."
+        }
+      ],
+      "noNewCurrentLeak": [
+        {
+          "file": "os",
+          "reason": "Keyword candidates chiefly p-E builder flow, explicit REF or ARCHIVE pages. AT90 KSQ is intentional shell/token specification, not end-user product frame."
+        },
+        {
+          "file": "guide",
+          "reason": "No builder/implementation/contract/static/not-wired matches. 38 long-copy matches are meaningful guide/methodology; retain."
+        },
+        {
+          "file": "ai",
+          "reason": "All four strong builder matches are directory or explicit R2/R7 BUILDER SPEC reference boards. R10 current answer and save recovery explanation is meaningful."
+        }
+      ],
+      "acceptedOrProtectedNotRedone": [
+        "All previously sent News/Terminal/OS/Ontology/Popups actions are excluded from this new-target list.",
+        "Prophet LEX-0 is hidden.",
+        "Terminal 189S-0 held and 13TC-0/13VZ-0 hidden archives.",
+        "Ontology QA p5 and AI QA p6 unchanged.",
+        "Source/baseline, partial coverage, unknown save, saved vs monitoring, numeric method and entitlement truth preserved."
+      ]
+    }
+  },
+  "resolutions": {
+    "internationalExpiry": {
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "nodeId": "OGT-0",
+      "parentId": "OGR-0",
+      "before": "什么能确认或否定判断？",
+      "after": "确认、否定或到期条件？",
+      "verified": true,
+      "nativeScreenshotParent": "OGR-0",
+      "result": "PASS"
+    },
+    "terminalFinalCopy": {
+      "applied": [
+        {
+          "theme": "light",
+          "rootId": "1ZOE-0",
+          "nodeId": "1ZQ1-0",
+          "parentId": "1ZPN-0",
+          "preimage": "Relationship style communicates evidence status—not magnitude, confidence, ranking, or trade direction.",
+          "replacement": "Line styles show evidence status.",
+          "key": "legend",
+          "currentParentAndPreimageMatch": true
+        },
+        {
+          "theme": "light",
+          "rootId": "1ZOE-0",
+          "nodeId": "1ZSP-0",
+          "parentId": "1ZSM-0",
+          "preimage": "Exact Q2 event sources",
+          "replacement": "Q2 company sources",
+          "key": "q2_sources",
+          "currentParentAndPreimageMatch": true
+        },
+        {
+          "theme": "light",
+          "rootId": "1ZOE-0",
+          "nodeId": "1ZST-0",
+          "parentId": "1ZSQ-0",
+          "preimage": "When exact binding exists",
+          "replacement": "Requires a matching dated source.",
+          "key": "dated_source_condition",
+          "currentParentAndPreimageMatch": true
+        },
+        {
+          "theme": "light",
+          "rootId": "1ZOE-0",
+          "nodeId": "1ZSX-0",
+          "parentId": "1ZSU-0",
+          "preimage": "No current-vintage leak",
+          "replacement": "Current relationships kept separate",
+          "key": "historical_separation",
+          "currentParentAndPreimageMatch": true
+        },
+        {
+          "theme": "light",
+          "rootId": "1ZOE-0",
+          "nodeId": "1ZT0-0",
+          "parentId": "1ZSZ-0",
+          "preimage": "Current-vintage graph context",
+          "replacement": "Current relationships",
+          "key": "current_context_heading",
+          "currentParentAndPreimageMatch": true
+        },
+        {
+          "theme": "light",
+          "rootId": "1ZOE-0",
+          "nodeId": "1ZT5-0",
+          "parentId": "1ZSZ-0",
+          "preimage": "No ranking, weight, confidence scalar, causal DAG, or trade semantic is inferred by this Company Intelligence view.",
+          "replacement": "Links do not prove cause and effect.",
+          "key": "view_purpose",
+          "currentParentAndPreimageMatch": true
+        },
+        {
+          "theme": "light",
+          "rootId": "1ZOE-0",
+          "nodeId": "1ZTB-0",
+          "parentId": "1ZT7-0",
+          "preimage": "Deterministic display · no ranking by magnitude",
+          "replacement": "Not ranked by impact",
+          "key": "ledger_order",
+          "currentParentAndPreimageMatch": true
+        },
+        {
+          "theme": "light",
+          "rootId": "1ZOE-0",
+          "nodeId": "1ZU4-0",
+          "parentId": "1ZU2-0",
+          "preimage": "Research direction only. Do not infer a causal graph or “most important driver” from adjacency.",
+          "replacement": "Delivery impact needs supporting evidence.",
+          "key": "delivery_hypothesis",
+          "currentParentAndPreimageMatch": true
+        },
+        {
+          "theme": "dark",
+          "rootId": "1ZUV-0",
+          "nodeId": "1ZWI-0",
+          "parentId": "1ZW4-0",
+          "preimage": "Relationship style communicates evidence status—not magnitude, confidence, ranking, or trade direction.",
+          "replacement": "Line styles show evidence status.",
+          "key": "legend",
+          "currentParentAndPreimageMatch": true
+        },
+        {
+          "theme": "dark",
+          "rootId": "1ZUV-0",
+          "nodeId": "1ZZ6-0",
+          "parentId": "1ZZ3-0",
+          "preimage": "Exact Q2 event sources",
+          "replacement": "Q2 company sources",
+          "key": "q2_sources",
+          "currentParentAndPreimageMatch": true
+        },
+        {
+          "theme": "dark",
+          "rootId": "1ZUV-0",
+          "nodeId": "1ZZA-0",
+          "parentId": "1ZZ7-0",
+          "preimage": "When exact binding exists",
+          "replacement": "Requires a matching dated source.",
+          "key": "dated_source_condition",
+          "currentParentAndPreimageMatch": true
+        },
+        {
+          "theme": "dark",
+          "rootId": "1ZUV-0",
+          "nodeId": "1ZZE-0",
+          "parentId": "1ZZB-0",
+          "preimage": "No current-vintage leak",
+          "replacement": "Current relationships kept separate",
+          "key": "historical_separation",
+          "currentParentAndPreimageMatch": true
+        },
+        {
+          "theme": "dark",
+          "rootId": "1ZUV-0",
+          "nodeId": "1ZZH-0",
+          "parentId": "1ZZG-0",
+          "preimage": "Current-vintage graph context",
+          "replacement": "Current relationships",
+          "key": "current_context_heading",
+          "currentParentAndPreimageMatch": true
+        },
+        {
+          "theme": "dark",
+          "rootId": "1ZUV-0",
+          "nodeId": "1ZZM-0",
+          "parentId": "1ZZG-0",
+          "preimage": "No ranking, weight, confidence scalar, causal DAG, or trade semantic is inferred by this Company Intelligence view.",
+          "replacement": "Links do not prove cause and effect.",
+          "key": "view_purpose",
+          "currentParentAndPreimageMatch": true
+        },
+        {
+          "theme": "dark",
+          "rootId": "1ZUV-0",
+          "nodeId": "1ZZS-0",
+          "parentId": "1ZZO-0",
+          "preimage": "Deterministic display · no ranking by magnitude",
+          "replacement": "Not ranked by impact",
+          "key": "ledger_order",
+          "currentParentAndPreimageMatch": true
+        },
+        {
+          "theme": "dark",
+          "rootId": "1ZUV-0",
+          "nodeId": "200L-0",
+          "parentId": "200J-0",
+          "preimage": "Research direction only. Do not infer a causal graph or “most important driver” from adjacency.",
+          "replacement": "Delivery impact needs supporting evidence.",
+          "key": "delivery_hypothesis",
+          "currentParentAndPreimageMatch": true
+        }
+      ],
+      "result": "PASS",
+      "nativeProof": "terminal-final-copy-native-qa-2026-11-08.json"
+    },
+    "internationalSourceChips": {
+      "applied": [
+        {
+          "nodeId": "IV6-0",
+          "parentId": "IV5-0",
+          "old": "Sources & method",
+          "next": "Sources"
+        },
+        {
+          "nodeId": "M4R-0",
+          "parentId": "M4O-0",
+          "old": "Sources & method",
+          "next": "Sources"
+        }
+      ],
+      "result": "PASS",
+      "nativeProof": "popup-international-final-recheck-2026-11-08.json"
+    },
+    "internationalEmptyFooters": {
+      "applied": [
+        {
+          "nodeId": "GWA-0",
+          "parentId": "GAW-0",
+          "boardId": "G9J-0",
+          "destinationId": "O0L-0"
+        },
+        {
+          "nodeId": "GWI-0",
+          "parentId": "GWH-0",
+          "boardId": "GWG-0",
+          "destinationId": "O0N-0"
+        },
+        {
+          "nodeId": "HIZ-0",
+          "parentId": "HIY-0",
+          "boardId": "HIX-0",
+          "destinationId": "O0P-0"
+        },
+        {
+          "nodeId": "I5G-0",
+          "parentId": "I5F-0",
+          "boardId": "I5E-0",
+          "destinationId": "O0R-0"
+        },
+        {
+          "nodeId": "KUU-0",
+          "parentId": "KUT-0",
+          "boardId": "KUS-0",
+          "destinationId": "O0B-0"
+        },
+        {
+          "nodeId": "LQM-0",
+          "parentId": "LLJ-0",
+          "boardId": "LLI-0",
+          "destinationId": "O0D-0"
+        }
+      ],
+      "result": "Moved after verifying empty content."
+    },
+    "terminalFixedHeight": {
+      "lineage": [
+        {
+          "fileId": "01M3NSZGE8JWN2EZCSF0DT05RM",
+          "oldRootId": "8M8-0",
+          "newRootId": "1ZOE-0",
+          "name": "12 · R2 · Connected Drivers · Evidence + Ontology",
+          "sourcePageId": "p-1-0",
+          "archivePageId": "p-1A-0",
+          "style": {
+            "display": "flex",
+            "overflow": "clip",
+            "width": "1440px",
+            "height": "2340px",
+            "fontFamily": "var(--font-ui)",
+            "left": "-3099px",
+            "top": -6072,
+            "flexDirection": "column",
+            "position": "absolute",
+            "backgroundColor": "var(--mx-light-panel)"
+          },
+          "sourceChildren": [
+            "8M9-0",
+            "8MQ-0",
+            "8N7-0",
+            "10EE-0",
+            "10EU-0"
+          ]
+        },
+        {
+          "fileId": "01M3NSZGE8JWN2EZCSF0DT05RM",
+          "oldRootId": "15YJ-0",
+          "newRootId": "1ZUV-0",
+          "name": "96 · R2 · Connected Drivers · Dark EN",
+          "sourcePageId": "p-1-0",
+          "archivePageId": "p-1A-0",
+          "style": {
+            "display": "flex",
+            "overflow": "clip",
+            "width": "1440px",
+            "height": "2340px",
+            "fontFamily": "var(--font-ui)",
+            "left": -1579,
+            "top": -6072,
+            "flexDirection": "column",
+            "position": "absolute",
+            "backgroundColor": "var(--mx-dark-bg)"
+          },
+          "sourceChildren": [
+            "1658-0",
+            "164R-0",
+            "164H-0",
+            "1642-0",
+            "15YK-0"
+          ]
+        },
+        {
+          "fileId": "01M3NSZGE8JWN2EZCSF0DT05RM",
+          "oldRootId": "13MY-0",
+          "newRootId": "201C-0",
+          "name": "80 · R2 · Mobile Call + Q&A · Transcript Unavailable · Light ZH",
+          "sourcePageId": "p-M-1",
+          "archivePageId": "p-1A-0",
+          "style": {
+            "display": "flex",
+            "overflow": "clip",
+            "width": "390px",
+            "height": "fit-content",
+            "alignItems": "center",
+            "flexDirection": "column",
+            "left": 9375,
+            "top": -13131,
+            "position": "absolute",
+            "backgroundColor": "var(--mx-light-panel)"
+          },
+          "sourceChildren": [
+            "13N0-0",
+            "13N8-0",
+            "13NT-0",
+            "13PH-0"
+          ]
+        },
+        {
+          "fileId": "01M3NSZGE8JWN2EZCSF0DT05RM",
+          "oldRootId": "13MZ-0",
+          "newRootId": "203X-0",
+          "name": "81 · R2 · Mobile Sources + Coverage · Light ZH",
+          "sourcePageId": "p-M-1",
+          "archivePageId": "p-1A-0",
+          "style": {
+            "display": "flex",
+            "overflow": "clip",
+            "width": "390px",
+            "height": "fit-content",
+            "alignItems": "center",
+            "flexDirection": "column",
+            "left": 9845.001,
+            "top": -13131,
+            "position": "absolute",
+            "backgroundColor": "var(--mx-light-panel)"
+          },
+          "sourceChildren": [
+            "13PN-0",
+            "13PV-0",
+            "13QG-0",
+            "13T6-0"
+          ]
+        },
+        {
+          "fileId": "01M3NSZGE8JWN2EZCSF0DT05RM",
+          "oldRootId": "1498-0",
+          "newRootId": "207K-0",
+          "name": "82 · R2 · Mobile Call + Q&A · Transcript Unavailable · Dark ZH",
+          "sourcePageId": "p-M-1",
+          "archivePageId": "p-1A-0",
+          "style": {
+            "display": "flex",
+            "overflow": "clip",
+            "width": "390px",
+            "height": "fit-content",
+            "alignItems": "center",
+            "flexDirection": "column",
+            "left": 5253.003,
+            "top": -11997,
+            "position": "absolute",
+            "backgroundColor": "var(--mx-dark-bg)"
+          },
+          "sourceChildren": [
+            "14BN-0",
+            "14B2-0",
+            "149E-0",
+            "1499-0"
+          ]
+        },
+        {
+          "fileId": "01M3NSZGE8JWN2EZCSF0DT05RM",
+          "oldRootId": "14BV-0",
+          "newRootId": "20A5-0",
+          "name": "83 · R2 · Mobile Sources + Coverage · Dark ZH",
+          "sourcePageId": "p-M-1",
+          "archivePageId": "p-1A-0",
+          "style": {
+            "display": "flex",
+            "overflow": "clip",
+            "width": "390px",
+            "height": "fit-content",
+            "alignItems": "center",
+            "flexDirection": "column",
+            "left": 5722.998,
+            "top": -11997,
+            "position": "absolute",
+            "backgroundColor": "var(--mx-dark-bg)"
+          },
+          "sourceChildren": [
+            "14FC-0",
+            "14ER-0",
+            "14C1-0",
+            "14BW-0"
+          ]
+        }
+      ],
+      "result": "Six originals archived; six current roots retain complete contents with corrected height/flow."
+    },
+    "hubFixedHeight": {
+      "lineage": [
+        {
+          "fileId": "01M2VWK62FA5S4VVF6G7SBPE5J",
+          "oldRootId": "86-0",
+          "newRootId": "73Q-0",
+          "name": "40 · R4 CURRENT · US Command · Desktop EN",
+          "sourcePageId": "p-3-0",
+          "archivePageId": "p-B-0",
+          "style": {
+            "display": "flex",
+            "overflow": "clip",
+            "width": "1440px",
+            "height": "fit-content",
+            "flexDirection": "column",
+            "left": "0px",
+            "top": 0,
+            "position": "absolute",
+            "backgroundColor": "var(--mx-light-bg)"
+          },
+          "sourceChildren": [
+            "87-0",
+            "8S-0"
+          ]
+        }
+      ],
+      "result": "Original86 preserved; current73Q fits content."
+    },
+    "prophetResidual": {
+      "copyCount": 12,
+      "moves": [
+        {
+          "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+          "boardId": "DAZ-0",
+          "nodeId": "12WW-0",
+          "parentId": "12WP-0",
+          "old": "Proposed routes · not click-wiring proof",
+          "destinationId": "146K-0"
+        },
+        {
+          "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+          "boardId": "DAZ-0",
+          "nodeId": "DMS-0",
+          "parentId": "DMN-0",
+          "old": "PROPOSED ROUTES · NOT RUNTIME PROOF",
+          "destinationId": "146K-0"
+        },
+        {
+          "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+          "boardId": "DPQ-0",
+          "nodeId": "DU6-0",
+          "parentId": "DTY-0",
+          "old": "Proposed routes · not click-wiring proof",
+          "destinationId": "146M-0"
+        },
+        {
+          "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+          "boardId": "DPQ-0",
+          "nodeId": "DZ4-0",
+          "parentId": "DZ0-0",
+          "old": "PROPOSED ROUTES · NOT RUNTIME PROOF",
+          "destinationId": "146M-0"
+        },
+        {
+          "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+          "boardId": "DAZ-0",
+          "nodeId": "DDL-0",
+          "parentId": "DDB-0",
+          "old": "UI-created rank · none",
+          "destinationId": "146K-0"
+        },
+        {
+          "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+          "boardId": "E36-0",
+          "nodeId": "EF4-0",
+          "parentId": "EF3-0",
+          "old": null,
+          "destinationId": "146O-0"
+        },
+        {
+          "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+          "boardId": "E36-0",
+          "nodeId": "1300-0",
+          "parentId": "12ZT-0",
+          "old": "Proposed routes · not order-wiring proof",
+          "destinationId": "146O-0"
+        },
+        {
+          "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+          "boardId": "E36-0",
+          "nodeId": "E64-0",
+          "parentId": "E63-0",
+          "old": "PROPOSED ROUTES · NOT RUNTIME PROOF",
+          "destinationId": "146O-0"
+        },
+        {
+          "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+          "boardId": "EHM-0",
+          "nodeId": "EQ9-0",
+          "parentId": "EQ8-0",
+          "old": "Proposed routes · not order-wiring proof",
+          "destinationId": "146Q-0"
+        },
+        {
+          "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+          "boardId": "EHM-0",
+          "nodeId": "ELJ-0",
+          "parentId": "ELI-0",
+          "old": "PROPOSED ROUTES · NOT RUNTIME PROOF",
+          "destinationId": "146Q-0"
+        },
+        {
+          "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+          "boardId": "EUE-0",
+          "nodeId": "FBV-0",
+          "parentId": "FBG-0",
+          "old": "No UI-created probability, entry permission, size or broker effect.",
+          "destinationId": "146S-0"
+        }
+      ],
+      "result": "Mirrored product implementation fragments separated; actual research retained."
+    },
+    "existingR14FixtureMismatch": "UNRESOLVED_PREEXISTING; nine original/current fields preserved; no device snapshot equivalence asserted."
+  },
+  "canvas": {
+    "parentCount": 20,
+    "rowCount": 21,
+    "membershipResult": "PASS",
+    "placements": [
+      {
+        "fileId": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "pageId": "p-1-0",
+        "carrier": "212W-0",
+        "bounds": {
+          "id": "212W-0",
+          "name": "PRODUCT REFERENCES · Connected Drivers · Light and dark",
+          "childCount": 2,
+          "width": 2960,
+          "height": 2340,
+          "worldX": 9571,
+          "worldY": -6072
+        },
+        "knownOtherBounds": 33,
+        "unknownOtherBounds": 1,
+        "intersections": []
+      },
+      {
+        "fileId": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "pageId": "p-M-1",
+        "carrier": "2131-0",
+        "bounds": {
+          "id": "2131-0",
+          "name": "PRODUCT REFERENCES · Mobile call and source states · 中文",
+          "childCount": 4,
+          "width": 1800,
+          "height": 2101,
+          "worldX": 18935,
+          "worldY": -15400
+        },
+        "knownOtherBounds": 0,
+        "unknownOtherBounds": 17,
+        "intersections": []
+      },
+      {
+        "fileId": "01M2VWK62FA5S4VVF6G7SBPE5J",
+        "pageId": "p-3-0",
+        "carrier": "7FJ-0",
+        "bounds": {
+          "id": "7FJ-0",
+          "name": "PRODUCT REFERENCE · US Command",
+          "childCount": 1,
+          "width": 1440,
+          "height": 2320,
+          "worldX": 4560,
+          "worldY": 0
+        },
+        "knownOtherBounds": 4,
+        "unknownOtherBounds": 0,
+        "intersections": []
+      },
+      {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "pageId": "p-9-0",
+        "carrier": "9ZX-0",
+        "bounds": {
+          "id": "9ZX-0",
+          "name": "LAW REFERENCE · Human-first clarity",
+          "childCount": 1,
+          "width": 1040,
+          "height": 694,
+          "worldX": 2320,
+          "worldY": -480
+        },
+        "knownOtherBounds": 0,
+        "unknownOtherBounds": 1,
+        "intersections": []
+      }
+    ],
+    "lawRaster": {
+      "width": 1040,
+      "height": 693
+    }
+  },
+  "finalOwnershipReadback": {
+    "targetNodes": 458,
+    "ownedArtboards": 338,
+    "files": 15,
+    "indicatorsReleased": true,
+    "protectedTargetsExcluded": [
+      "Terminal189S-0/13TC-0/13VZ-0",
+      "Hub6Z2-0",
+      "ProphetZE5-0",
+      "Ontologyheldp5",
+      "AIheldp6"
+    ]
+  },
+  "syntaxVerification": "All delivered JSON is parsed before publication and source contents are read back byte-for-byte.",
+  "agentOSCandidateValidation": {
+    "command": "python3 scripts/agentos.py validate --paths agentos/decisions/DEC-PAPER-HUMAN-CLARITY-LAW.md",
+    "sourcePin": "86f9aa3238dfbcba7262f9d6777cd43c0dc167bb",
+    "scope": "Isolated candidate store with exact incumbent validator and current program registry. Full-store CI remains separate.",
+    "exitCode": 0,
+    "stdout": "agentos: 1 records (0 workstreams, 1 decisions, 0 discoveries, 0 handoffs) — 0 error(s), 0 warning(s)"
+  }
+}
