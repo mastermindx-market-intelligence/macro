@@ -1,0 +1,245 @@
+{
+  "kind": "D08A_SOURCE_CANDIDATE_FREEZE",
+  "created_at": "2026-11-04T00:56:58.593216+00:00",
+  "mission_complete": false,
+  "paper_applied": false,
+  "scope": "research/design_candidates/production_design_20261102/d08a/",
+  "files": [
+    {
+      "path": "ANNOTATED_DESIGN.md",
+      "bytes": 10820,
+      "sha256": "23b7769c24de04b6d8303e2af9964ad377a377d9015bb418d280a893432322f6",
+      "git_blob_sha": "2917806107417419b5e236192e4a3fd7cb55c160"
+    },
+    {
+      "path": "BACKEND_CONTRACTS.md",
+      "bytes": 14716,
+      "sha256": "0c41a23665f22c26973d27102bce8e210268fa07558188eb90d60836f4d720d1",
+      "git_blob_sha": "1d1dcefe7c0df3b1e3714d6aa05e3c25e96ee2c9"
+    },
+    {
+      "path": "FEATURE_LEDGER.md",
+      "bytes": 10871,
+      "sha256": "125da39dcf8e40750194a9252eb04c0e5d787b3f0c552ce8c10a0837a9cb9a3c",
+      "git_blob_sha": "396432b67a078eaa4ddc16e7ffbf554695ef73da"
+    },
+    {
+      "path": "IMPLEMENTATION_HANDOFF.md",
+      "bytes": 8592,
+      "sha256": "9c28f0f3e7910622ce98dfa77003ad4fa4cbc8fc1516945e1e51bbaeb2c9cd97",
+      "git_blob_sha": "0c35daf4091f1068201f732d8f24dfed0d294565"
+    },
+    {
+      "path": "PLAN.md",
+      "bytes": 4689,
+      "sha256": "48ea8f0aaffcd9dbde52dbe3f366712ea152cfb5ece0630f484cb5db800bbb68",
+      "git_blob_sha": "833981aae9e6e7987e12d9423e1bca732ec88b25"
+    },
+    {
+      "path": "README.md",
+      "bytes": 6669,
+      "sha256": "f2b76ce70cf8d8cea764880f16fc123a8c5e48ec1ba3f27caea74aec1e42a947",
+      "git_blob_sha": "1d893506b0d159fae99e63e65b9d073175aee17d"
+    },
+    {
+      "path": "RESPONSIVE.md",
+      "bytes": 7448,
+      "sha256": "ec7aee9b6aa182c6588febe3727cb6ddc13bf478988856f42f80a3f1ee186dd6",
+      "git_blob_sha": "8a0b4ba17ad41bccd111ab9e91159c41c590051d"
+    },
+    {
+      "path": "REVIEW_AND_RETURN.md",
+      "bytes": 8424,
+      "sha256": "fb0270c87d5d942a4b2e29e42da24845964e5ec2a633f87cb776b768444356c5",
+      "git_blob_sha": "4e454a3682bb50d25c005e59949ca39357884df4"
+    },
+    {
+      "path": "SOURCE_AUDIT.md",
+      "bytes": 12133,
+      "sha256": "5de1b99dc22032f9090d745dcf8e8afdc43df57a78342b88c586a34c1b4f2ea1",
+      "git_blob_sha": "a4e3d2cb708f3af25f5aef92db72cba0ff184679"
+    },
+    {
+      "path": "TEST_PLAN.md",
+      "bytes": 8726,
+      "sha256": "ada33c27437dc5d92f9e5dfbfe2a0385a30d9a73aa7d7d57d931e445d015eae6",
+      "git_blob_sha": "182824b4d5e2ab3c8b164e696097766067a3675d"
+    },
+    {
+      "path": "WORKFLOW_AND_STATES.md",
+      "bytes": 15134,
+      "sha256": "d5dfd61048893ec6646ac555aa9f6b4a6004f399ed06bd4b5f55bd1bad3de0ad",
+      "git_blob_sha": "8bce5ec4fb9937a3c905daf9dab7708f2a878be4"
+    },
+    {
+      "path": "evidence/browser-observations.json",
+      "bytes": 40830,
+      "sha256": "2fb4e13a3201eed6cb4e0baddde8d15d541b063be54b30186efcc6afd43b5def",
+      "git_blob_sha": "ae0951fbba5207d3b66448d7698942e1e8fba1fb"
+    },
+    {
+      "path": "evidence/capture-manifest.json",
+      "bytes": 2073,
+      "sha256": "40a00a96602d0be3ec91ddfb38b356a75f60c9eea1940ec697211bc2fdf44005",
+      "git_blob_sha": "679da1f7de9c84b34dcf2ed6d05f50c205e03130"
+    },
+    {
+      "path": "evidence/design-witness-results.json",
+      "bytes": 3973,
+      "sha256": "0063b3a3bf54bf202b11ff2575b2783278292119e644eecf17d8eb4e11c2d9d0",
+      "git_blob_sha": "9817faf69f2482ca9642e6dd6a365c192093044b"
+    },
+    {
+      "path": "evidence/feature-ledger.json",
+      "bytes": 21190,
+      "sha256": "1ccccf57a86b8e1768fe5a58988bcd6001f02d668305f6bd0bc032f6e864b0c2",
+      "git_blob_sha": "ef9eea432f72ec693d6308623c2e73b404857679"
+    },
+    {
+      "path": "evidence/native-desk-tutorial-before.jpg",
+      "bytes": 105141,
+      "sha256": "a27d16302719985ae52e0b37b80b1268d04214f6d1e4c29a6e9162a84055f825",
+      "git_blob_sha": "4511da401e1eb9f5eb99ad4004b29e9aed53a974"
+    },
+    {
+      "path": "evidence/native-screener-desktop-before.jpg",
+      "bytes": 126792,
+      "sha256": "8e222cd012f3f5eec15925ec932cf0b08877647d15b21e1597264197a677b873",
+      "git_blob_sha": "7032204486ca8f35ba5a454abc3037fda2c9123f"
+    },
+    {
+      "path": "evidence/native-statistics-desktop-before.jpg",
+      "bytes": 142375,
+      "sha256": "178147b88c30659c37b85a4e1c3b4cfbe092a4edd8b00386db699f0f8dead4cd",
+      "git_blob_sha": "446efe1953b6c4f95c9c3b5d58ee37b13f36add4"
+    },
+    {
+      "path": "evidence/native-tape-desktop-before.jpg",
+      "bytes": 193053,
+      "sha256": "6553ff3e926d177a21be41439e9928d078ed38a12b6e7824f20b3050525313e5",
+      "git_blob_sha": "c3bfa5867c0d334451d5c920beb383bc4d7fc20a"
+    },
+    {
+      "path": "evidence/native-tape-phone390-before.jpg",
+      "bytes": 47721,
+      "sha256": "9edb30adaec63fcb6a696ea6ac9bce9fcbc8170ecbcdd5c12afcc9785d8b41f9",
+      "git_blob_sha": "0d0850f2950fe4efd7710b97a0c5e4aaa811a1b8"
+    },
+    {
+      "path": "evidence/paper-brief-before.jpg",
+      "bytes": 181306,
+      "sha256": "39b435ec1409c57739b5ca268996130426a06bc9abd0843a04855c253c59d025",
+      "git_blob_sha": "2ebe662dba0e959cce4abeca5f069094d26e8c72"
+    },
+    {
+      "path": "evidence/paper-flow-before.jpg",
+      "bytes": 183290,
+      "sha256": "86efc34c47f9d96a2608db83d75a8b92df09cb0c91b8a7e78e9de6b6dfac4a6d",
+      "git_blob_sha": "4f9cd39ff359e2da8ed61e82c7ac2b2828844666"
+    },
+    {
+      "path": "evidence/public-wrapper-error-before.jpg",
+      "bytes": 41969,
+      "sha256": "5d481396907872c8616d59681180d57055a1120fcd6880109962190b98479097",
+      "git_blob_sha": "dce7f5cb48fe8ab448bbf5ca3f08fd95a949512d"
+    },
+    {
+      "path": "evidence/review-amendment.md",
+      "bytes": 4076,
+      "sha256": "f4eea08fca30a19531d55cfa30a17a3f417ce898c67b7bc0774d7471db4da953",
+      "git_blob_sha": "0e7cb98084f4b12a7643625f82470630ace36447"
+    },
+    {
+      "path": "evidence/source-manifest.json",
+      "bytes": 15710,
+      "sha256": "f775f6d496b552a38f31f19ef07f0a60864d906b198aacdc17f5501624e8ade6",
+      "git_blob_sha": "e8de20b0727f78e4659a96faaa08c1881619fc3b"
+    },
+    {
+      "path": "evidence/source-test-results.json",
+      "bytes": 8803,
+      "sha256": "e23e8d1160ef7a02f5ae16aea39a3f61df3d90c899a6fc226c36c2c0d2526374",
+      "git_blob_sha": "9274b9adfb1bc242c7a49c137f6a8adbe973fe94"
+    },
+    {
+      "path": "support/critic-task-manifest.md",
+      "bytes": 2861,
+      "sha256": "5bdb385f717b7785ef201bdbb78d3c25a1d73f5607b22a33e028be1a4a19a093",
+      "git_blob_sha": "f63191c3c35a5b2476bce0f47f65e5b540e022ca"
+    },
+    {
+      "path": "support/detail-states.png",
+      "bytes": 414721,
+      "sha256": "77d30538c781652b651210f5d2aa5f9d64fc17c2b293827b2d8d2e242c4eab89",
+      "git_blob_sha": "0a3ba3cccb839cefa1b09e6ea10eba2080ca1768"
+    },
+    {
+      "path": "support/detail-states.svg",
+      "bytes": 10329,
+      "sha256": "1ec920474e7edfa9a292dd56d408062ef3de9400d6da0fcc0e1d240c3a1bedb2",
+      "git_blob_sha": "cb5712d429733da9bbc890cb8556b56aa0122b72"
+    },
+    {
+      "path": "support/interaction-study.png",
+      "bytes": 445648,
+      "sha256": "6966a1a7a4d35566ac9613b904625d2373c00e350dc857ad8591a93c734c80f1",
+      "git_blob_sha": "d1c1a97febb21ae5dcb0cbc4143733b122873bfa"
+    },
+    {
+      "path": "support/interaction-study.svg",
+      "bytes": 9732,
+      "sha256": "0369db73505dfc6de996252fa2e1322591b8d937e0ab4d35cb856145584ef98a",
+      "git_blob_sha": "f2bcb22483f2484d2147033ba4a20348ee951760"
+    },
+    {
+      "path": "support/review1/critic-task-manifest.md",
+      "bytes": 2861,
+      "sha256": "5bdb385f717b7785ef201bdbb78d3c25a1d73f5607b22a33e028be1a4a19a093",
+      "git_blob_sha": "f63191c3c35a5b2476bce0f47f65e5b540e022ca"
+    },
+    {
+      "path": "support/review1/interaction-study.png",
+      "bytes": 428841,
+      "sha256": "184dd69842e1950b46130032cd291e073216686d2db7a6b699888d67445df084",
+      "git_blob_sha": "553b353f881f49bca1f600ef244f158502adea1e"
+    },
+    {
+      "path": "support/review1/interaction-study.svg",
+      "bytes": 8108,
+      "sha256": "ce9f0d453c6c8b318f5394ace01642d2909bf991e4276778077f1adb3139bea3",
+      "git_blob_sha": "208e8ddbef5a4d5f6ede1982d7b31ddee7f1a714"
+    },
+    {
+      "path": "support/review1/study-fixture.json",
+      "bytes": 647,
+      "sha256": "390e9df283dfdf15c32839e740b284d9fe60156d5a2e98cdddfef221d18b1243",
+      "git_blob_sha": "87389949eec7ac2e99b1f63cf988171a6b939662"
+    },
+    {
+      "path": "support/study-fixture.json",
+      "bytes": 2907,
+      "sha256": "c38417fd31fb8c7798e4e05a53307a6b9639ed3f66a8ffe4e639e2e2aeac2655",
+      "git_blob_sha": "6929f16b1bb09c8d4597f2d34e7945a7163408a3"
+    },
+    {
+      "path": "tests/design-obligations.mjs",
+      "bytes": 10277,
+      "sha256": "41bfd96d3568b62888bfdce0d5ff07a58ac94f8604381225846dedca77b64a11",
+      "git_blob_sha": "ede9d564aad7ade6f9c4e019c4634cfe932dff9e"
+    },
+    {
+      "path": "tests/source-characterization.mjs",
+      "bytes": 15888,
+      "sha256": "cdcaea6a54868cc37091d6acf8a821535d5bd264fcb899831a36bb59ddc3ec96",
+      "git_blob_sha": "7a616250cbf75833e5b1f96701d95edb6982a3c9"
+    }
+  ],
+  "checks": {
+    "relative_links": "PASS",
+    "json_parse": "PASS",
+    "source_cases": 41,
+    "design_witnesses": 27,
+    "expected_baseline_gaps": 5,
+    "actual_before_images": 8
+  }
+}

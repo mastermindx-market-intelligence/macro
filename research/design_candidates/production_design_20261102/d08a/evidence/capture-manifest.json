@@ -1,0 +1,70 @@
+{
+  "saved_at_utc": "2026-11-04T00:33:58.663179+00:00",
+  "capture_time": "During 2026-11-04 UTC audit; exact per-image wall clock was not recorded",
+  "images": [
+    {
+      "file": "native-desk-tutorial-before.jpg",
+      "bytes": 105141,
+      "sha256": "a27d16302719985ae52e0b37b80b1268d04214f6d1e4c29a6e9162a84055f825",
+      "width": 1585,
+      "height": 1180,
+      "role": "BEFORE_ONLY"
+    },
+    {
+      "file": "native-screener-desktop-before.jpg",
+      "bytes": 126792,
+      "sha256": "8e222cd012f3f5eec15925ec932cf0b08877647d15b21e1597264197a677b873",
+      "width": 1585,
+      "height": 1180,
+      "role": "BEFORE_ONLY"
+    },
+    {
+      "file": "native-statistics-desktop-before.jpg",
+      "bytes": 142375,
+      "sha256": "178147b88c30659c37b85a4e1c3b4cfbe092a4edd8b00386db699f0f8dead4cd",
+      "width": 1585,
+      "height": 1180,
+      "role": "BEFORE_ONLY"
+    },
+    {
+      "file": "native-tape-desktop-before.jpg",
+      "bytes": 193053,
+      "sha256": "6553ff3e926d177a21be41439e9928d078ed38a12b6e7824f20b3050525313e5",
+      "width": 1585,
+      "height": 1180,
+      "role": "BEFORE_ONLY"
+    },
+    {
+      "file": "native-tape-phone390-before.jpg",
+      "bytes": 47721,
+      "sha256": "9edb30adaec63fcb6a696ea6ac9bce9fcbc8170ecbcdd5c12afcc9785d8b41f9",
+      "width": 390,
+      "height": 844,
+      "role": "BEFORE_ONLY"
+    },
+    {
+      "file": "paper-brief-before.jpg",
+      "bytes": 181306,
+      "sha256": "39b435ec1409c57739b5ca268996130426a06bc9abd0843a04855c253c59d025",
+      "width": 1440,
+      "height": 1179,
+      "role": "BEFORE_ONLY"
+    },
+    {
+      "file": "paper-flow-before.jpg",
+      "bytes": 183290,
+      "sha256": "86efc34c47f9d96a2608db83d75a8b92df09cb0c91b8a7e78e9de6b6dfac4a6d",
+      "width": 1269,
+      "height": 2000,
+      "role": "BEFORE_ONLY"
+    },
+    {
+      "file": "public-wrapper-error-before.jpg",
+      "bytes": 41969,
+      "sha256": "5d481396907872c8616d59681180d57055a1120fcd6880109962190b98479097",
+      "width": 1585,
+      "height": 1180,
+      "role": "BEFORE_ONLY"
+    }
+  ]
+}

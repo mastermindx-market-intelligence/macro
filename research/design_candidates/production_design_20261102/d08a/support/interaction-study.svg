@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1780" height="1250" viewBox="0 0 1780 1250">
+<defs><style>text{font-family:Arial,sans-serif;fill:#17202b}.t{font-size:26px;font-weight:700}.h{font-size:19px;font-weight:700}.b{font-size:15px}.s{font-size:12px;fill:#52606d}.n{font-size:14px;font-weight:700}.rule{stroke:#d4dae1;stroke-width:1}.frame{fill:white;stroke:#aab4c0;stroke-width:1}.muted{fill:#f1f3f6}.num{font-variant-numeric:tabular-nums}.btn{fill:#243447}.btntext{fill:white;font-size:14px;font-weight:700}</style></defs>
+<rect width="1780" height="1250" fill="#f6f7f9"/>
+<text x="40" y="46" class="t">D08A · Scan → observation → investigation → evidence → return</text>
+<text x="40" y="75" class="b">Interaction study · synthetic fixture, not live data · domain content slot only</text>
+<text x="40" y="110" class="s">A02 / A05 · 1168 px useful content = 824 px primary + 24 px gap + 320 px inspector</text>
+<rect x="40" y="128" width="824" height="636" rx="8" class="frame"/>
+<text x="64" y="165" class="h">Options Tape</text><text x="64" y="191" class="s">Snapshot 2026-10-30 · 16:13 ET · Retained source</text>
+<rect x="64" y="211" width="114" height="40" rx="5" class="muted"/><text x="78" y="236" class="b">Filters · 1</text>
+<rect x="190" y="211" width="122" height="40" rx="5" class="muted"/><text x="202" y="236" class="b">Columns</text>
+<text x="330" y="236" class="s">Premium ≥ $1M</text><text x="505" y="236" class="b">Filter to NVDA</text><text x="710" y="236" class="b">Export CSV</text>
+<rect x="64" y="265" width="776" height="36" rx="4" class="muted"/><text x="78" y="288" class="b">12 buffered rows · same source / session · Show updates</text>
+<text x="64" y="327" class="s">CONTRACT / EVENT</text><text x="356" y="327" class="s">PREMIUM ↓</text><text x="466" y="327" class="s">TIME ET</text><text x="563" y="327" class="s">REASON</text><text x="734" y="327" class="s">ACTION</text>
+<rect x="55" y="343" width="798" height="52" rx="4" fill="#e7ecf2"/><text x="70" y="363" class="b" font-weight="700">NVDA · 210 Call</text><text x="70" y="384" class="s">2026-11-20 · aggregate event</text><text x="356" y="373" class="h num">$1.70M</text><text x="466" y="373" class="b">15:59</text><text x="563" y="373" class="s">Publisher repeat</text><rect x="721" y="347" width="112" height="44" rx="4" class="muted"/><text x="749" y="374" class="b">Inspect</text><text x="70" y="415" class="b" font-weight="700">SPY · 755 Put</text><text x="70" y="436" class="s">2026-10-30 · aggregate event</text><text x="356" y="425" class="h num">$1.32M</text><text x="466" y="425" class="b">15:58</text><text x="563" y="425" class="s">0DTE flag</text><rect x="721" y="399" width="112" height="44" rx="4" class="muted"/><text x="749" y="426" class="b">Inspect</text><line x1="64" y1="446" x2="840" y2="446" class="rule"/><text x="70" y="467" class="b" font-weight="700">QQQ · 710 Call</text><text x="70" y="488" class="s">2026-11-06 · aggregate event</text><text x="356" y="477" class="h num">$1.12M</text><text x="466" y="477" class="b">15:57</text><text x="563" y="477" class="s">—</text><rect x="721" y="451" width="112" height="44" rx="4" class="muted"/><text x="749" y="478" class="b">Inspect</text><line x1="64" y1="498" x2="840" y2="498" class="rule"/><text x="70" y="519" class="b" font-weight="700">NVDA · 215 Put</text><text x="70" y="540" class="s">2026-11-20 · aggregate event</text><text x="356" y="529" class="h num">$1.08M</text><text x="466" y="529" class="b">15:56</text><text x="563" y="529" class="s">Publisher repeat</text><rect x="721" y="503" width="112" height="44" rx="4" class="muted"/><text x="749" y="530" class="b">Inspect</text><line x1="64" y1="550" x2="840" y2="550" class="rule"/><text x="70" y="571" class="b" font-weight="700">IWM · 240 Call</text><text x="70" y="592" class="s">2026-11-06 · aggregate event</text><text x="356" y="581" class="h num">$1.06M</text><text x="466" y="581" class="b">15:55</text><text x="563" y="581" class="s">—</text><rect x="721" y="555" width="112" height="44" rx="4" class="muted"/><text x="749" y="582" class="b">Inspect</text><line x1="64" y1="602" x2="840" y2="602" class="rule"/><text x="70" y="623" class="b" font-weight="700">AAPL · 250 Put</text><text x="70" y="644" class="s">2026-11-20 · aggregate event</text><text x="356" y="633" class="h num">$1.04M</text><text x="466" y="633" class="b">15:54</text><text x="563" y="633" class="s">—</text><rect x="721" y="607" width="112" height="44" rx="4" class="muted"/><text x="749" y="634" class="b">Inspect</text><line x1="64" y1="654" x2="840" y2="654" class="rule"/><text x="70" y="675" class="b" font-weight="700">TSLA · 400 Call</text><text x="70" y="696" class="s">2026-11-20 · aggregate event</text><text x="356" y="685" class="h num">$1.02M</text><text x="466" y="685" class="b">15:53</text><text x="563" y="685" class="s">—</text><rect x="721" y="659" width="112" height="44" rx="4" class="muted"/><text x="749" y="686" class="b">Inspect</text><line x1="64" y1="706" x2="840" y2="706" class="rule"/><text x="64" y="739" class="s">7 synthetic matching rows shown · All 11 fields: Columns · 30-field full-collection CSV</text><rect x="888" y="128" width="320" height="636" rx="8" class="frame"/>
+<text x="910" y="160" class="s">OBSERVATION · CLOSE ×</text><text x="910" y="196" class="h">NVDA · 210 Call</text><text x="910" y="222" class="b">2026-11-20</text><text x="910" y="249" class="s">Aggregate event · 3 reported prints</text>
+<text x="910" y="295" class="t num">$1.70M</text><text x="910" y="322" class="b">Estimated trade side: buy</text><text x="910" y="348" class="s">Method: last-price change proxy</text>
+<line x1="910" y1="369" x2="1186" y2="369" class="rule"/>
+<text x="910" y="399" class="b">Event: Oct 30 · 15:59 ET</text><text x="910" y="426" class="b">Source: qualifying flow feed</text><text x="910" y="453" class="b">Terms / quote: not supplied</text>
+<rect x="910" y="484" width="276" height="46" rx="5" class="btn"/><text x="936" y="513" class="btntext">Investigate contract →</text>
+<text x="910" y="554" class="s">Open this contract in the dated book.</text><text x="910" y="575" class="s">Compare its date with this event.</text>
+<rect x="910" y="599" width="276" height="44" rx="5" class="muted"/><text x="929" y="626" class="b">Source evidence</text>
+<text x="910" y="684" class="b">Back to Tape</text><text x="910" y="711" class="s">Restore row, filters, scroll and focus</text>
+<text x="1260" y="110" class="s">A02 / A11 · phone390 · useful content358</text>
+<rect x="1260" y="128" width="390" height="636" rx="18" class="frame"/>
+<text x="1280" y="166" class="h">Options Tape</text><text x="1529" y="166" class="b">Views ▾</text>
+<text x="1280" y="196" class="s">Snapshot 2026-10-30 · 16:13 ET</text>
+<rect x="1280" y="215" width="136" height="44" rx="5" class="muted"/><text x="1298" y="242" class="b">Filters · 1</text><text x="1440" y="242" class="b">Sort · Premium ↓</text>
+<line x1="1280" y1="278" x2="1630" y2="278" class="rule"/>
+<text x="1280" y="308" class="h">NVDA · 210 Call</text><text x="1280" y="335" class="b">2026-11-20 · aggregate event</text>
+<text x="1280" y="374" class="t num">$1.70M</text><text x="1484" y="374" class="b">15:59 ET</text><text x="1280" y="401" class="s">3 prints · Estimated buy · Publisher repeat</text>
+<rect x="1280" y="421" width="350" height="44" rx="5" class="muted"/><text x="1374" y="448" class="b">Inspect observation</text>
+<line x1="1280" y1="490" x2="1630" y2="490" class="rule"/>
+<text x="1280" y="522" class="h">SPY · 755 Put</text><text x="1280" y="548" class="b">2026-10-30 · aggregate event</text><text x="1280" y="586" class="t num">$1.32M</text><text x="1484" y="586" class="b">15:58 ET</text>
+<rect x="1280" y="614" width="350" height="44" rx="5" class="muted"/><text x="1384" y="641" class="b">Inspect observation</text>
+<text x="1280" y="707" class="s">Inspect opens observation details first.</text>
+<text x="40" y="815" class="h">Annotations and exact continuation</text>
+<text x="40" y="848" class="b">N01 / N04 · Source session and event clock remain visible. “Retained” is not “live.”</text>
+<text x="40" y="879" class="b">N05 / N06 · Full expiry, strike and right survive on phone. Aggregate grain remains attached to premium.</text>
+<text x="40" y="910" class="b">N08 / N20 · Inspect and Filter are separate. Updates do not replace the focused observation.</text>
+<text x="40" y="941" class="b">N17 / N21 · Missing or ambiguous identity yields labeled underlying context or source evidence, not a fabricated contract.</text>
+<text x="40" y="972" class="b">N22 / N24 · A later book or corrected source is separate evidence. No automatic promotion to event-time knowledge.</text>
+<text x="40" y="1003" class="b">N26 / N27 · Back restores exact context. An expired row returns to the scan heading with an explicit absence notice.</text>
+<rect x="40" y="1040" width="1610" height="147" rx="8" class="frame"/>
+<text x="64" y="1074" class="h">Receiving investigation / return states</text>
+<text x="64" y="1105" class="b">Accepted: exact contract + separately dated book → inspect source → Back to Tape.</text>
+<text x="64" y="1133" class="b">Root-only: “A unique contract was not supplied” → choose an actual book row independently; preserve the origin.</text>
+<text x="64" y="1161" class="b">Aged out: “Original observation is outside this window” → original filters retained, heading focused; no nearest-row substitute.</text>
+<text x="40" y="1221" class="s">Supporting interaction diagram. Final typography, tokens, global shell and editable Paper qualification are not represented by this study.</text>
+</svg>

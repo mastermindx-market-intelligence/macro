@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1780" height="1250" viewBox="0 0 1780 1250">
+<defs><style>text{font-family:Arial,sans-serif;fill:#17202b}.t{font-size:26px;font-weight:700}.h{font-size:19px;font-weight:700}.b{font-size:15px}.s{font-size:12px;fill:#52606d}.n{font-size:14px;font-weight:700}.rule{stroke:#d4dae1;stroke-width:1}.frame{fill:white;stroke:#aab4c0;stroke-width:1}.muted{fill:#f1f3f6}.num{font-variant-numeric:tabular-nums}.btn{fill:#243447}.btntext{fill:white;font-size:14px;font-weight:700}</style></defs>
+<rect width="1780" height="1250" fill="#f6f7f9"/>
+<text x="40" y="46" class="t">D08A · Scan → observation → investigation → evidence → return</text>
+<text x="40" y="75" class="b">Interaction study · synthetic fixture, not live data · domain content slot only</text>
+<text x="40" y="110" class="s">A02 / A05 · 1168 px useful content = 824 px primary + 24 px gap + 320 px inspector</text>
+<rect x="40" y="128" width="824" height="636" rx="8" class="frame"/>
+<text x="64" y="165" class="h">Options Tape</text><text x="64" y="191" class="s">Qualifying contract events · Source session 2026-10-30 · Retained snapshot</text>
+<rect x="64" y="211" width="114" height="40" rx="5" class="muted"/><text x="78" y="236" class="b">Filters · 1</text>
+<rect x="190" y="211" width="122" height="40" rx="5" class="muted"/><text x="202" y="236" class="b">Columns</text>
+<text x="330" y="236" class="s">Premium ≥ $1M · All expiries</text>
+<text x="710" y="236" class="b">Export CSV</text>
+<rect x="64" y="265" width="776" height="36" rx="4" class="muted"/><text x="78" y="288" class="b">12 new observations · Show updates</text>
+<text x="64" y="327" class="s">CONTRACT / EVENT</text><text x="379" y="327" class="s">PREMIUM ↓</text><text x="510" y="327" class="s">SOURCE TIME</text><text x="661" y="327" class="s">REASON / ACTION</text>
+<line x1="64" y1="340" x2="840" y2="340" class="rule"/>
+<rect x="55" y="349" width="798" height="107" rx="5" fill="#e7ecf2"/>
+<text x="71" y="377" class="h">NVDA · 210 Call</text><text x="71" y="401" class="b">2026-11-20 · aggregate event</text><text x="71" y="426" class="s">3 reported prints · estimated buy side</text>
+<text x="382" y="384" class="h num">$1.70M</text><text x="510" y="383" class="b">15:59 ET</text><text x="510" y="408" class="s">2026-10-30</text>
+<text x="661" y="375" class="b">Repeated root</text><rect x="657" y="391" width="171" height="44" rx="5" class="btn"/><text x="670" y="418" class="btntext">Inspect observation</text>
+<text x="71" y="486" class="h">SPY · 755 Put</text><text x="71" y="510" class="b">2026-10-30 · aggregate event</text><text x="382" y="490" class="h num">$1.32M</text><text x="510" y="490" class="b">15:58 ET</text><text x="661" y="490" class="b">0DTE · Inspect</text>
+<line x1="64" y1="531" x2="840" y2="531" class="rule"/>
+<text x="71" y="563" class="h">QQQ · 710 Call</text><text x="71" y="587" class="b">2026-11-06 · aggregate event</text><text x="382" y="566" class="h num">$1.12M</text><text x="510" y="566" class="b">15:57 ET</text><text x="661" y="566" class="b">Inspect</text>
+<line x1="64" y1="608" x2="840" y2="608" class="rule"/>
+<text x="64" y="639" class="s">All fields remain available in Columns and row details.</text><text x="64" y="662" class="s">The export includes the full filtered collection and source receipt.</text>
+<rect x="64" y="686" width="184" height="42" rx="5" class="muted"/><text x="78" y="713" class="b">Filter to NVDA</text><text x="269" y="713" class="s">Separate from inspecting this event</text>
+<rect x="888" y="128" width="320" height="636" rx="8" class="frame"/>
+<text x="910" y="160" class="s">OBSERVATION · CLOSE ×</text><text x="910" y="196" class="h">NVDA · 210 Call</text><text x="910" y="222" class="b">2026-11-20</text><text x="910" y="249" class="s">Aggregate event · 3 reported prints</text>
+<text x="910" y="295" class="t num">$1.70M</text><text x="910" y="322" class="b">Estimated trade side: buy</text><text x="910" y="348" class="s">Classification does not prove intent.</text>
+<line x1="910" y1="369" x2="1186" y2="369" class="rule"/>
+<text x="910" y="399" class="b">Event: Oct 30 · 15:59 ET</text><text x="910" y="426" class="b">Source: qualifying flow feed</text><text x="910" y="453" class="b">Terms / quote: not supplied</text>
+<rect x="910" y="484" width="276" height="46" rx="5" class="btn"/><text x="936" y="513" class="btntext">Investigate contract →</text>
+<text x="910" y="554" class="s">Receiver qualifies the dated book.</text><text x="910" y="575" class="s">Original observation stays separate.</text>
+<rect x="910" y="599" width="276" height="44" rx="5" class="muted"/><text x="929" y="626" class="b">Source evidence</text>
+<text x="910" y="684" class="b">Back to Tape</text><text x="910" y="711" class="s">Restore row, filters, scroll and focus</text>
+<text x="1260" y="110" class="s">A02 / A11 · phone390 · useful content358</text>
+<rect x="1260" y="128" width="390" height="636" rx="18" class="frame"/>
+<text x="1280" y="166" class="h">Options Tape</text><text x="1529" y="166" class="b">Views ▾</text>
+<text x="1280" y="196" class="s">Source Oct 30 · Retained snapshot</text>
+<rect x="1280" y="215" width="136" height="44" rx="5" class="muted"/><text x="1298" y="242" class="b">Filters · 1</text><text x="1440" y="242" class="b">Sort · Premium ↓</text>
+<line x1="1280" y1="278" x2="1630" y2="278" class="rule"/>
+<text x="1280" y="308" class="h">NVDA · 210 Call</text><text x="1280" y="335" class="b">2026-11-20 · aggregate event</text>
+<text x="1280" y="374" class="t num">$1.70M</text><text x="1484" y="374" class="b">15:59 ET</text><text x="1280" y="401" class="s">3 prints · Estimated buy · Repeated root</text>
+<rect x="1280" y="421" width="350" height="44" rx="5" class="btn"/><text x="1374" y="448" class="btntext">Inspect observation</text>
+<line x1="1280" y1="490" x2="1630" y2="490" class="rule"/>
+<text x="1280" y="522" class="h">SPY · 755 Put</text><text x="1280" y="548" class="b">2026-10-30 · aggregate event</text><text x="1280" y="586" class="t num">$1.32M</text><text x="1484" y="586" class="b">15:58 ET</text>
+<rect x="1280" y="614" width="350" height="44" rx="5" class="muted"/><text x="1384" y="641" class="b">Inspect observation</text>
+<text x="1280" y="707" class="s">Full-width investigation opens on selection.</text>
+<text x="40" y="815" class="h">Annotations and exact continuation</text>
+<text x="40" y="848" class="b">N01 / N04 · Source session and event clock remain visible. “Retained” is not “live.”</text>
+<text x="40" y="879" class="b">N05 / N06 · Full expiry, strike and right survive on phone. Aggregate grain remains attached to premium.</text>
+<text x="40" y="910" class="b">N08 / N20 · Inspect and Filter are separate. Updates do not replace the focused observation.</text>
+<text x="40" y="941" class="b">N17 / N21 · Missing or ambiguous identity yields labeled underlying context or source evidence, not a fabricated contract.</text>
+<text x="40" y="972" class="b">N22 / N24 · A later book or corrected source is separate evidence. No automatic promotion to event-time knowledge.</text>
+<text x="40" y="1003" class="b">N26 / N27 · Back restores exact context. An expired row returns to the scan heading with an explicit absence notice.</text>
+<rect x="40" y="1040" width="1610" height="147" rx="8" class="frame"/>
+<text x="64" y="1074" class="h">Receiving investigation / return states</text>
+<text x="64" y="1105" class="b">Accepted: exact contract + separately dated book → inspect source → Back to Tape.</text>
+<text x="64" y="1133" class="b">Root-only: “A unique contract was not supplied” → choose an actual book row independently; preserve the origin.</text>
+<text x="64" y="1161" class="b">Aged out: “Original observation is outside this window” → original filters retained, heading focused; no nearest-row substitute.</text>
+<text x="40" y="1221" class="s">Supporting interaction diagram. Final typography, tokens, global shell and editable Paper qualification are not represented by this study.</text>
+</svg>

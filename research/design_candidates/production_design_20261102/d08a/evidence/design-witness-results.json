@@ -1,0 +1,146 @@
+{
+  "kind": "D08A_PROPOSED_DESIGN_WITNESSES_NOT_PRODUCT_TESTS",
+  "executedAt": "2026-11-04T00:48:38.649Z",
+  "tests": [
+    {
+      "id": "D01",
+      "description": "Exact qualified transfer keeps original aggregate grain and independent book",
+      "status": "PASS"
+    },
+    {
+      "id": "D02",
+      "description": "Missing record ID cannot be supplied by the receiver book",
+      "status": "PASS"
+    },
+    {
+      "id": "D03",
+      "description": "Incomplete contract remains root context, never repaired from later book",
+      "status": "PASS"
+    },
+    {
+      "id": "D04",
+      "description": "Unverified listing mapping refuses automatic ticker join",
+      "status": "PASS"
+    },
+    {
+      "id": "D05",
+      "description": "Missing dated book returns reason and intact origin",
+      "status": "PASS"
+    },
+    {
+      "id": "D06",
+      "description": "Later book cannot be presented as available at observation cutoff",
+      "status": "PASS"
+    },
+    {
+      "id": "D07",
+      "description": "Unknown availability is not supplied by build/retrieval clocks",
+      "status": "PASS"
+    },
+    {
+      "id": "D08",
+      "description": "Denied and unverified access remain different declines",
+      "status": "PASS"
+    },
+    {
+      "id": "D09",
+      "description": "0DTE is source-session based across UTC day boundaries",
+      "status": "PASS"
+    },
+    {
+      "id": "D10",
+      "description": "Impossible expiry and flag/date mismatch do not qualify0DTE",
+      "status": "PASS"
+    },
+    {
+      "id": "D11",
+      "description": "Daylight-saving duplicate local clocks need explicit offsets",
+      "status": "PASS"
+    },
+    {
+      "id": "D12",
+      "description": "Late prior-root response cannot populate current root",
+      "status": "PASS"
+    },
+    {
+      "id": "D13",
+      "description": "Access revocation rejects a late successful response",
+      "status": "PASS"
+    },
+    {
+      "id": "D14",
+      "description": "Different principal,source,session or view invalidates cached response",
+      "status": "PASS"
+    },
+    {
+      "id": "D15",
+      "description": "Row reorder preserves exact selected reference",
+      "status": "PASS"
+    },
+    {
+      "id": "D16",
+      "description": "Expired row does not select nearest time/lookalike",
+      "status": "PASS"
+    },
+    {
+      "id": "D17",
+      "description": "Duplicate reference returns ambiguity, not first match",
+      "status": "PASS"
+    },
+    {
+      "id": "D18",
+      "description": "Same URL/session with changed digest is a correction, not original bytes",
+      "status": "PASS"
+    },
+    {
+      "id": "D19",
+      "description": "No digest means reference restoration, not original-byte proof",
+      "status": "PASS"
+    },
+    {
+      "id": "D20",
+      "description": "Revoked access clears protected selection on return",
+      "status": "PASS"
+    },
+    {
+      "id": "D21",
+      "description": "Return rejects external,credential-bearing and script URLs",
+      "status": "PASS"
+    },
+    {
+      "id": "D22",
+      "description": "Origin history merge preserves incumbent host state",
+      "status": "PASS"
+    },
+    {
+      "id": "D23",
+      "description": "Candidate default dock boundary1255/1256 is exact",
+      "status": "PASS"
+    },
+    {
+      "id": "D24",
+      "description": "Candidate compact boundary1095/1096 and explicit preference remain distinct",
+      "status": "PASS"
+    },
+    {
+      "id": "D25",
+      "description": "Additional chrome/larger domain minimum can refuse otherwise-wide dock",
+      "status": "PASS"
+    },
+    {
+      "id": "D26",
+      "description": "Fractional content rules and narrow widths use actual usable width",
+      "status": "PASS"
+    },
+    {
+      "id": "D27",
+      "description": "Saved requires readback; uncertain effect never creates a new operation",
+      "status": "PASS"
+    }
+  ],
+  "summary": {
+    "total": 27,
+    "passed": 27,
+    "failed": 0
+  }
+}
