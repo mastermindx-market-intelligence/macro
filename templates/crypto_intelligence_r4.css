@@ -131,6 +131,9 @@ html:not([data-theme=light]) .cri-panel{background:var(--glass-bg)}
 .cri-dialog-body dl>div{padding:15px 0;border-bottom:1px solid var(--line)}
 .cri-dialog-body dt{font-size:var(--fs-sm);color:var(--muted)}
 .cri-dialog-body dd{margin:6px 0 0;font-size:var(--fs-body);line-height:1.5}
+.cri-dialog-body .cri-asset-quote{padding-top:0;padding-bottom:8px;border-bottom:0}
+.cri-dialog-body .cri-asset-quote>dd{font-size:30px;line-height:38px;font-weight:600;font-variant-numeric:tabular-nums}
+.cri-dialog-body .cri-asset-observed{padding-top:0}
 .cri-dialog-body .cri-btn{margin-top:16px}
 .cri-dialog-body a{color:var(--ink-link,var(--link))}
 .cri-dialog-body .cri-large-number{font-size:var(--fs-display);font-variant-numeric:tabular-nums;color:var(--text);font-weight:700}

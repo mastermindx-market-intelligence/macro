@@ -1,0 +1,52 @@
+...............FFFFFF                                                    [100%]
+=================================== FAILURES ===================================
+_ test_r4_quote_clarity_server_and_inspector_agree_without_losing_asset_context[quote-invalid-en-390-False] _
+tests/test_crypto_intelligence_r4_browser.py:1852: in test_r4_quote_clarity_server_and_inspector_agree_without_losing_asset_context
+    assert visual["font"] == "30px" and visual["line"] == "38px" and visual["weight"] == "600"
+E   AssertionError: assert ('14px' == '30px'
+E     
+E     - 30px
+E     + 14px)
+_ test_r4_quote_clarity_server_and_inspector_agree_without_losing_asset_context[quote-invalid-zh-320-True] _
+tests/test_crypto_intelligence_r4_browser.py:1852: in test_r4_quote_clarity_server_and_inspector_agree_without_losing_asset_context
+    assert visual["font"] == "30px" and visual["line"] == "38px" and visual["weight"] == "600"
+E   AssertionError: assert ('14px' == '30px'
+E     
+E     - 30px
+E     + 14px)
+_ test_r4_quote_clarity_server_and_inspector_agree_without_losing_asset_context[quote-small-en-390-False] _
+tests/test_crypto_intelligence_r4_browser.py:1852: in test_r4_quote_clarity_server_and_inspector_agree_without_losing_asset_context
+    assert visual["font"] == "30px" and visual["line"] == "38px" and visual["weight"] == "600"
+E   AssertionError: assert ('14px' == '30px'
+E     
+E     - 30px
+E     + 14px)
+_ test_r4_quote_clarity_server_and_inspector_agree_without_losing_asset_context[quote-small-zh-320-True] _
+tests/test_crypto_intelligence_r4_browser.py:1852: in test_r4_quote_clarity_server_and_inspector_agree_without_losing_asset_context
+    assert visual["font"] == "30px" and visual["line"] == "38px" and visual["weight"] == "600"
+E   AssertionError: assert ('14px' == '30px'
+E     
+E     - 30px
+E     + 14px)
+_ test_r4_asset_identity_is_clear_without_changing_search_routes_or_context[en-390-False] _
+tests/test_crypto_intelligence_r4_browser.py:1875: in test_r4_asset_identity_is_clear_without_changing_search_routes_or_context
+    assert watch.locator("strong").all_inner_texts() == ["BTC", "XRP"]
+E   AssertionError: assert ['btc BTC', 'None XRP'] == ['BTC', 'XRP']
+E     
+E     At index 0 diff: 'btc BTC' != 'BTC'
+E     Use -v to get more diff
+_ test_r4_asset_identity_is_clear_without_changing_search_routes_or_context[zh-320-True] _
+tests/test_crypto_intelligence_r4_browser.py:1875: in test_r4_asset_identity_is_clear_without_changing_search_routes_or_context
+    assert watch.locator("strong").all_inner_texts() == ["BTC", "XRP"]
+E   AssertionError: assert ['btc BTC', 'None XRP'] == ['BTC', 'XRP']
+E     
+E     At index 0 diff: 'btc BTC' != 'BTC'
+E     Use -v to get more diff
+=========================== short test summary info ============================
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_quote_clarity_server_and_inspector_agree_without_losing_asset_context[quote-invalid-en-390-False]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_quote_clarity_server_and_inspector_agree_without_losing_asset_context[quote-invalid-zh-320-True]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_quote_clarity_server_and_inspector_agree_without_losing_asset_context[quote-small-en-390-False]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_quote_clarity_server_and_inspector_agree_without_losing_asset_context[quote-small-zh-320-True]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_asset_identity_is_clear_without_changing_search_routes_or_context[en-390-False]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_asset_identity_is_clear_without_changing_search_routes_or_context[zh-320-True]
+6 failed, 15 passed in 7.16s

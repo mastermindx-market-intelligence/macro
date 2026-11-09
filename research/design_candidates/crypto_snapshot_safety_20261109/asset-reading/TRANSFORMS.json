@@ -1,0 +1,57 @@
+{
+  "source": {
+    "templates/crypto_intelligence_r4.html.j2": [
+      {
+        "before": "{% macro scenario_paths() -%}\n",
+        "after": "{% macro asset_identity(asset,stacked=false) -%}{% set name = asset.name if asset.name is string else '' %}{% if name|trim and name|trim|lower != asset.symbol|trim|lower %}{{ name }}{% if stacked %}<small>{{ asset.symbol }}</small>{% else %} <span class=\"cri-subtle\">{{ asset.symbol }}</span>{% endif %}{% else %}{{ asset.symbol }}{% endif %}{%- endmacro %}\n{% macro scenario_paths() -%}\n"
+      },
+      {
+        "before": "<strong>{{ asset.name }} <span class=\"cri-subtle\">{{ asset.symbol }}</span></strong>",
+        "after": "<strong>{{ asset_identity(asset) }}</strong>"
+      },
+      {
+        "before": "<span class=\"cri-coin\">{{ asset.symbol[:1] }}</span><span>{{ asset.name }}<small>{{ asset.symbol }}</small></span>",
+        "after": "<span class=\"cri-coin\" aria-hidden=\"true\">{{ asset.symbol[:1] }}</span><span>{{ asset_identity(asset,true) }}</span>"
+      }
+    ],
+    "templates/crypto_intelligence_r4.js": [
+      {
+        "before": "  function pct(value) {",
+        "after": "  function assetTitle(asset) {\n    var name = typeof asset.name === \"string\" ? asset.name : \"\";\n    return name.trim() && name.trim().toLowerCase() !== asset.symbol.trim().toLowerCase() ?\n      name + \" · \" + asset.symbol : asset.symbol;\n  }\n  function pct(value) {"
+      },
+      {
+        "before": "    (parent || body).appendChild(list);\n  }\n",
+        "after": "    (parent || body).appendChild(list);\n    return list;\n  }\n"
+      },
+      {
+        "before": "title.textContent = asset ? asset.name + \" · \" + asset.symbol : t(\"Asset unavailable\", \"资产暂不可用\");",
+        "after": "title.textContent = asset ? assetTitle(asset) : t(\"Asset unavailable\", \"资产暂不可用\");"
+      },
+      {
+        "before": "        definition([[t(\"Price\", \"价格\"), assetMoney(asset.price)], [t(\"Asset observation date\", \"资产观测日期\"), asset.as_of],",
+        "after": "        var assetReadings = definition([[t(\"Price\", \"价格\"), assetMoney(asset.price)], [t(\"Asset observation date\", \"资产观测日期\"), asset.as_of],"
+      },
+      {
+        "before": "          [t(\"Structure\", \"结构\"), field(asset, \"trend\")], [t(\"Risk\", \"风险\"), field(asset, \"risk\")]]);\n",
+        "after": "          [t(\"Structure\", \"结构\"), field(asset, \"trend\")], [t(\"Risk\", \"风险\"), field(asset, \"risk\")]]);\n        assetReadings.children[0].classList.add(\"cri-asset-quote\");\n        assetReadings.children[1].classList.add(\"cri-asset-observed\");\n"
+      }
+    ],
+    "templates/crypto_intelligence_r4.css": [
+      {
+        "before": ".cri-dialog-body dd{margin:6px 0 0;font-size:var(--fs-body);line-height:1.5}\n",
+        "after": ".cri-dialog-body dd{margin:6px 0 0;font-size:var(--fs-body);line-height:1.5}\n.cri-dialog-body .cri-asset-quote{padding-top:0;padding-bottom:8px;border-bottom:0}\n.cri-dialog-body .cri-asset-quote>dd{font-size:30px;line-height:38px;font-weight:600;font-variant-numeric:tabular-nums}\n.cri-dialog-body .cri-asset-observed{padding-top:0}\n"
+      }
+    ]
+  },
+  "tests": {
+    "fixture": {
+      "before": "        elif variant in (\"missing\", \"empty\"):\n",
+      "after": "        elif variant == \"identity-clarity\":\n            from lib.crypto_intelligence_view import build_view\n            from test_crypto_intelligence_r4 import relative_integrity_inputs\n            view = build_view(*relative_integrity_inputs())\n            assets = {asset[\"symbol\"]: asset for asset in view[\"assets\"]}\n            assets[\"BTC\"][\"name\"] = \" btc \"\n            assets[\"XRP\"][\"name\"] = None\n            view[\"assets\"] = [assets[symbol] for symbol in (\"BTC\", \"XRP\", \"ETH\", \"SOL\")]\n        elif variant in (\"missing\", \"empty\"):\n"
+    },
+    "hierarchy": {
+      "before": "        assert readings.nth(1).inner_text() == asset[\"as_of\"]\n",
+      "after": "        assert readings.nth(1).inner_text() == asset[\"as_of\"]\n        visual = readings.nth(0).evaluate(\"\"\"quote => {\n            const row=quote.parentElement, observed=row.nextElementSibling;\n            const label=observed.querySelector('dt'), date=observed.querySelector('dd');\n            const q=quote.getBoundingClientRect(), d=date.getBoundingClientRect();\n            const style=getComputedStyle(quote);\n            return {font:style.fontSize, line:style.lineHeight, weight:style.fontWeight,\n                quoteHeight:q.height, dateFont:getComputedStyle(date).fontSize,\n                dateLabel:label.textContent, gap:label.getBoundingClientRect().top-q.bottom,\n                divider:getComputedStyle(row).borderBottomWidth,\n                fits:quote.scrollWidth<=quote.clientWidth, dateBelow:d.top>=q.bottom};\n        }\"\"\")\n        assert visual[\"font\"] == \"30px\" and visual[\"line\"] == \"38px\" and visual[\"weight\"] == \"600\"\n        assert visual[\"quoteHeight\"] == 38 and visual[\"fits\"] and visual[\"dateBelow\"]\n        assert visual[\"dateFont\"] == \"14px\" and 7 <= visual[\"gap\"] <= 9\n        assert visual[\"divider\"] == \"0px\"\n        assert visual[\"dateLabel\"] == (\"Asset observation date\" if lang == \"en\" else \"资产观测日期\")\n"
+    },
+    "addition": "\n\n@pytest.mark.parametrize(\"lang,width,touch\", [(\"en\", 390, False), (\"zh\", 320, True)])\ndef test_r4_asset_identity_is_clear_without_changing_search_routes_or_context(comparison_page, lang, width, touch):\n    page, view = comparison_page(lang, width, \"identity-clarity\", start=\"#overview\", touch=touch)\n    watch = page.locator('[data-view=\"overview\"] .cri-watch-row')\n    assert watch.locator(\"strong\").all_inner_texts() == [\"BTC\", \"XRP\"]\n    assert watch.locator(\".cri-subtle\").count() == 0\n    if os.environ.get(\"MMX_CRYPTO_SNAPSHOT_CAPTURE_DIR\"):\n        out = Path(os.environ[\"MMX_CRYPTO_SNAPSHOT_CAPTURE_DIR\"])\n        out.mkdir(parents=True, exist_ok=True)\n        page.locator('[data-view=\"overview\"] .cri-section').last.screenshot(\n            path=str(out / (\"identity-overview-\" + lang + \"-\" + str(width) + \".png\")))\n    for index, symbol in enumerate((\"BTC\", \"XRP\")):\n        opener = watch.nth(index).locator(\"button\")\n        opener.click()\n        page.wait_for_function(\"(symbol)=>document.getElementById('cri-dialog').open&&document.getElementById('cri-dialog-body').dataset.panel==='asset:'+symbol\", arg=symbol)\n        assert page.locator(\"#cri-dialog-title\").inner_text() == symbol\n        page.locator(\"#cri-dialog-close\").click()\n        page.wait_for_function(\"location.hash==='#overview'&&!document.getElementById('cri-dialog').open\")\n        assert opener.evaluate(\"n=>document.activeElement===n\")\n    page.locator('[data-route=\"markets\"]').first.click()\n    page.wait_for_function(\"location.hash==='#markets'\")\n    rows = page.locator(\"#cri-market-table tbody tr\")\n    assert rows.evaluate_all(\"nodes=>nodes.map(n=>n.dataset.assetRow)\") == [\"BTC\", \"XRP\", \"ETH\", \"SOL\"]\n    labels = [\"BTC\", \"XRP\", \"Ethereum ETH\", \"Solana SOL\"]\n    titles = [\"BTC\", \"XRP\", \"Ethereum · ETH\", \"Solana · SOL\"]\n    for index, (label, title) in enumerate(zip(labels, titles)):\n        row = rows.nth(index)\n        # Accessible identity excludes the decorative initial and any duplicate fallback.\n        opener = row.get_by_role(\"button\", name=label, exact=True)\n        assert opener.count() == 1\n        assert \" \".join(row.locator(\".cri-asset > span\").nth(1).inner_text().split()) == label\n        assert row.locator(\".cri-asset small\").count() == (0 if index < 2 else 1)\n        opener.click()\n        page.wait_for_function(\"document.getElementById('cri-dialog').open\")\n        assert page.locator(\"#cri-dialog-title\").inner_text() == title\n        assert page.locator(\"#cri-dialog-body > dl dd\").nth(1).inner_text() == view[\"assets\"][index][\"as_of\"]\n        if index == 0:\n            _capture(page, \"identity-inspector-\" + lang + \"-\" + str(width))\n        page.locator(\"#cri-dialog-close\").click()\n        page.wait_for_function(\"location.hash==='#markets'&&!document.getElementById('cri-dialog').open\")\n        assert opener.evaluate(\"n=>document.activeElement===n\")\n    for query, symbol, title in [(\"btc\", \"BTC\", \"BTC\"), (\"ethereum\", \"ETH\", \"Ethereum · ETH\")]:\n        page.locator(\"#cri-search\").fill(query)\n        page.wait_for_function(\"(symbol)=>Array.from(document.querySelectorAll('#cri-market-table tbody tr')).filter(n=>!n.hidden).map(n=>n.dataset.assetRow).join(',')===symbol\", arg=symbol)\n        opener = page.locator('[data-asset-row=\"' + symbol + '\"] .cri-asset')\n        opener.click()\n        page.wait_for_function(\"document.getElementById('cri-dialog').open\")\n        assert page.locator(\"#cri-dialog-title\").inner_text() == title\n        page.locator(\"#cri-dialog-close\").click()\n        page.wait_for_function(\"!document.getElementById('cri-dialog').open\")\n        assert page.locator(\"#cri-search\").input_value() == query\n        assert opener.evaluate(\"n=>document.activeElement===n\")\n    page.locator(\"#cri-search\").fill(\"\")\n    compare = page.locator(\"#cri-market-compare button\")\n    compare.click()\n    page.wait_for_function(\"document.getElementById('cri-dialog-body').dataset.panel==='comparison'\")\n    assert page.locator(\".cri-comparison-table thead th\").all_inner_texts() == [\n        \"Measure\" if lang == \"en\" else \"指标\", \"BTC\", \"XRP\", \"ETH\", \"SOL\"\n    ]\n    page.locator(\"#cri-dialog-close\").click()\n    page.wait_for_function(\"!document.getElementById('cri-dialog').open\")\n    assert compare.evaluate(\"n=>document.activeElement===n\")\n    page.locator('[data-route=\"overview\"]').first.click()\n    page.wait_for_function(\"location.hash==='#overview'\")\n    page.locator('[data-view=\"overview\"] [data-open=\"coverage\"]').first.click()\n    page.wait_for_function(\"document.getElementById('cri-dialog-body').dataset.panel==='coverage'\")\n    assert page.locator(\"#cri-dialog-body > dl dd\").first.evaluate(\"n=>getComputedStyle(n).fontSize\") == \"14px\"\n    assert page.locator(\"#cri-dialog-body .cri-asset-quote\").count() == 0\n    page.locator(\"#cri-dialog-close\").click()\n    page.wait_for_function(\"!document.getElementById('cri-dialog').open\")\n    assert page.evaluate(\"JSON.parse(document.getElementById('cri-data').textContent).assets\") == view[\"assets\"]\n    assert page.evaluate(\"document.documentElement.scrollWidth<=innerWidth\")\n    _comparison_storage_untouched(page)\n"
+  }
+}

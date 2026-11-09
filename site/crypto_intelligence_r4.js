@@ -20,6 +20,11 @@
     if (value < 0.01) return "$" + value.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 8, useGrouping: false });
     return money(value);
   }
+  function assetTitle(asset) {
+    var name = typeof asset.name === "string" ? asset.name : "";
+    return name.trim() && name.trim().toLowerCase() !== asset.symbol.trim().toLowerCase() ?
+      name + " · " + asset.symbol : asset.symbol;
+  }
   function pct(value) { return typeof value === "number" && isFinite(value) ? (value > 0 ? "+" : "") + value.toFixed(1) + "%" : t("Unavailable", "暂无"); }
   function node(tag, text, className) {
     var element = document.createElement(tag);
@@ -34,6 +39,7 @@
     var list = node("dl");
     rows.forEach(function (row) { var item = node("div"); item.append(node("dt", row[0]), node("dd", row[1] == null ? t("Unavailable", "暂无") : row[1])); list.appendChild(item); });
     (parent || body).appendChild(list);
+    return list;
   }
   function link(text, url) { var a = node("a", text); a.href = url; var p = node("p"); p.appendChild(a); body.appendChild(p); }
   function state() {
@@ -542,14 +548,16 @@
       scenario(savedVersion(collection, id), true);
     } else if (category === "asset") {
       var asset = data.assets.find(function (a) { return a.symbol === id; });
-      title.textContent = asset ? asset.name + " · " + asset.symbol : t("Asset unavailable", "资产暂不可用");
+      title.textContent = asset ? assetTitle(asset) : t("Asset unavailable", "资产暂不可用");
       if (asset) {
         comparisonBasis(asset);
-        definition([[t("Price", "价格"), assetMoney(asset.price)], [t("Asset observation date", "资产观测日期"), asset.as_of],
+        var assetReadings = definition([[t("Price", "价格"), assetMoney(asset.price)], [t("Asset observation date", "资产观测日期"), asset.as_of],
           [t("Price change", "价格涨跌"), pct(asset.change_30d_pct)],
           [t("Asset/BTC ratio change", "资产/BTC比值变化"), pct(asset.relative_90d_pct)],
           [t("Relative state", "相对状态"), field(asset, "relative") || t("Unavailable", "暂无")],
           [t("Structure", "结构"), field(asset, "trend")], [t("Risk", "风险"), field(asset, "risk")]]);
+        assetReadings.children[0].classList.add("cri-asset-quote");
+        assetReadings.children[1].classList.add("cri-asset-observed");
       } else {
         paragraph(data.contracts && data.contracts.asset_states === "accepted" ?
           t("This asset is not present in the snapshot.", "本快照中没有此资产。") : assetEmptyCopy()[1]);

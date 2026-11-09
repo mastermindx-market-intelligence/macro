@@ -1324,6 +1324,14 @@ def comparison_page(browser, page_url, request, tmp_path):
             from lib.crypto_intelligence_view import build_view
             from test_crypto_intelligence_r4 import quote_clarity_inputs
             view = build_view(*quote_clarity_inputs(variant))
+        elif variant == "identity-clarity":
+            from lib.crypto_intelligence_view import build_view
+            from test_crypto_intelligence_r4 import relative_integrity_inputs
+            view = build_view(*relative_integrity_inputs())
+            assets = {asset["symbol"]: asset for asset in view["assets"]}
+            assets["BTC"]["name"] = " btc "
+            assets["XRP"]["name"] = None
+            view["assets"] = [assets[symbol] for symbol in ("BTC", "XRP", "ETH", "SOL")]
         elif variant in ("missing", "empty"):
             view["assets"] = []
             view["contracts"]["asset_states"] = "accepted" if variant == "empty" else "missing_or_schema_mismatch"
@@ -1830,6 +1838,22 @@ def test_r4_quote_clarity_server_and_inspector_agree_without_losing_asset_contex
         readings = page.locator("#cri-dialog-body > dl dd")
         assert readings.nth(0).inner_text() == price
         assert readings.nth(1).inner_text() == asset["as_of"]
+        visual = readings.nth(0).evaluate("""quote => {
+            const row=quote.parentElement, observed=row.nextElementSibling;
+            const label=observed.querySelector('dt'), date=observed.querySelector('dd');
+            const q=quote.getBoundingClientRect(), d=date.getBoundingClientRect();
+            const style=getComputedStyle(quote);
+            return {font:style.fontSize, line:style.lineHeight, weight:style.fontWeight,
+                quoteHeight:q.height, dateFont:getComputedStyle(date).fontSize,
+                dateLabel:label.textContent, gap:label.getBoundingClientRect().top-q.bottom,
+                divider:getComputedStyle(row).borderBottomWidth,
+                fits:quote.scrollWidth<=quote.clientWidth, dateBelow:d.top>=q.bottom};
+        }""")
+        assert visual["font"] == "30px" and visual["line"] == "38px" and visual["weight"] == "600"
+        assert visual["quoteHeight"] == 38 and visual["fits"] and visual["dateBelow"]
+        assert visual["dateFont"] == "14px" and 7 <= visual["gap"] <= 9
+        assert visual["divider"] == "0px"
+        assert visual["dateLabel"] == ("Asset observation date" if lang == "en" else "资产观测日期")
         assert readings.nth(4).inner_text() == asset["relative_" + lang]
         assert readings.nth(5).inner_text() == asset["trend_" + lang]
         assert readings.nth(6).inner_text() == asset["risk_" + lang]
@@ -1841,4 +1865,79 @@ def test_r4_quote_clarity_server_and_inspector_agree_without_losing_asset_contex
         assert opener.evaluate("n=>document.activeElement===n")
     assert page.locator('[data-asset-row="SOL"] td').nth(3).inner_text() == "0.0%"
     assert page.evaluate("JSON.parse(document.getElementById('cri-data').textContent).assets") == view["assets"]
+    _comparison_storage_untouched(page)
+
+
+@pytest.mark.parametrize("lang,width,touch", [("en", 390, False), ("zh", 320, True)])
+def test_r4_asset_identity_is_clear_without_changing_search_routes_or_context(comparison_page, lang, width, touch):
+    page, view = comparison_page(lang, width, "identity-clarity", start="#overview", touch=touch)
+    watch = page.locator('[data-view="overview"] .cri-watch-row')
+    assert watch.locator("strong").all_inner_texts() == ["BTC", "XRP"]
+    assert watch.locator(".cri-subtle").count() == 0
+    if os.environ.get("MMX_CRYPTO_SNAPSHOT_CAPTURE_DIR"):
+        out = Path(os.environ["MMX_CRYPTO_SNAPSHOT_CAPTURE_DIR"])
+        out.mkdir(parents=True, exist_ok=True)
+        page.locator('[data-view="overview"] .cri-section').last.screenshot(
+            path=str(out / ("identity-overview-" + lang + "-" + str(width) + ".png")))
+    for index, symbol in enumerate(("BTC", "XRP")):
+        opener = watch.nth(index).locator("button")
+        opener.click()
+        page.wait_for_function("(symbol)=>document.getElementById('cri-dialog').open&&document.getElementById('cri-dialog-body').dataset.panel==='asset:'+symbol", arg=symbol)
+        assert page.locator("#cri-dialog-title").inner_text() == symbol
+        page.locator("#cri-dialog-close").click()
+        page.wait_for_function("location.hash==='#overview'&&!document.getElementById('cri-dialog').open")
+        assert opener.evaluate("n=>document.activeElement===n")
+    page.locator('[data-route="markets"]').first.click()
+    page.wait_for_function("location.hash==='#markets'")
+    rows = page.locator("#cri-market-table tbody tr")
+    assert rows.evaluate_all("nodes=>nodes.map(n=>n.dataset.assetRow)") == ["BTC", "XRP", "ETH", "SOL"]
+    labels = ["BTC", "XRP", "Ethereum ETH", "Solana SOL"]
+    titles = ["BTC", "XRP", "Ethereum · ETH", "Solana · SOL"]
+    for index, (label, title) in enumerate(zip(labels, titles)):
+        row = rows.nth(index)
+        # Accessible identity excludes the decorative initial and any duplicate fallback.
+        opener = row.get_by_role("button", name=label, exact=True)
+        assert opener.count() == 1
+        assert " ".join(row.locator(".cri-asset > span").nth(1).inner_text().split()) == label
+        assert row.locator(".cri-asset small").count() == (0 if index < 2 else 1)
+        opener.click()
+        page.wait_for_function("document.getElementById('cri-dialog').open")
+        assert page.locator("#cri-dialog-title").inner_text() == title
+        assert page.locator("#cri-dialog-body > dl dd").nth(1).inner_text() == view["assets"][index]["as_of"]
+        if index == 0:
+            _capture(page, "identity-inspector-" + lang + "-" + str(width))
+        page.locator("#cri-dialog-close").click()
+        page.wait_for_function("location.hash==='#markets'&&!document.getElementById('cri-dialog').open")
+        assert opener.evaluate("n=>document.activeElement===n")
+    for query, symbol, title in [("btc", "BTC", "BTC"), ("ethereum", "ETH", "Ethereum · ETH")]:
+        page.locator("#cri-search").fill(query)
+        page.wait_for_function("(symbol)=>Array.from(document.querySelectorAll('#cri-market-table tbody tr')).filter(n=>!n.hidden).map(n=>n.dataset.assetRow).join(',')===symbol", arg=symbol)
+        opener = page.locator('[data-asset-row="' + symbol + '"] .cri-asset')
+        opener.click()
+        page.wait_for_function("document.getElementById('cri-dialog').open")
+        assert page.locator("#cri-dialog-title").inner_text() == title
+        page.locator("#cri-dialog-close").click()
+        page.wait_for_function("!document.getElementById('cri-dialog').open")
+        assert page.locator("#cri-search").input_value() == query
+        assert opener.evaluate("n=>document.activeElement===n")
+    page.locator("#cri-search").fill("")
+    compare = page.locator("#cri-market-compare button")
+    compare.click()
+    page.wait_for_function("document.getElementById('cri-dialog-body').dataset.panel==='comparison'")
+    assert page.locator(".cri-comparison-table thead th").all_inner_texts() == [
+        "Measure" if lang == "en" else "指标", "BTC", "XRP", "ETH", "SOL"
+    ]
+    page.locator("#cri-dialog-close").click()
+    page.wait_for_function("!document.getElementById('cri-dialog').open")
+    assert compare.evaluate("n=>document.activeElement===n")
+    page.locator('[data-route="overview"]').first.click()
+    page.wait_for_function("location.hash==='#overview'")
+    page.locator('[data-view="overview"] [data-open="coverage"]').first.click()
+    page.wait_for_function("document.getElementById('cri-dialog-body').dataset.panel==='coverage'")
+    assert page.locator("#cri-dialog-body > dl dd").first.evaluate("n=>getComputedStyle(n).fontSize") == "14px"
+    assert page.locator("#cri-dialog-body .cri-asset-quote").count() == 0
+    page.locator("#cri-dialog-close").click()
+    page.wait_for_function("!document.getElementById('cri-dialog').open")
+    assert page.evaluate("JSON.parse(document.getElementById('cri-data').textContent).assets") == view["assets"]
+    assert page.evaluate("document.documentElement.scrollWidth<=innerWidth")
     _comparison_storage_untouched(page)

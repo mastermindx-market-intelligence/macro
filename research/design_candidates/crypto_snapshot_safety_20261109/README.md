@@ -1,6 +1,22 @@
 # Crypto R4: safe saved cases and clear asset comparisons
 
-## Current phase — honest quote availability and useful small prices
+## Current phase — clear asset identity and quote hierarchy
+
+Fallback tickers now appear once across Overview, Markets and the inspector. Distinct names remain visible, and decorative initials no longer enter the accessible button name.
+
+The inspector uses a **30px / 38px quote with its labeled observation date directly beneath it**, keeping the comparison disclosure and supporting readings in their existing order.
+
+**21 affected cases pass**: 15 server-price checks and six native browser cases in EN390/ZH320. Six contexts/pages, zero errors or external/WebSocket traffic. Eight captures inspected. Search, routes, comparison cohort, Close focus, storage and a non-asset Coverage list remain verified.
+
+The template, drawer helper and scoped CSS own the change. Eight source/served/test paths change; 13 other inputs stay exact. Paper Markets terminology is aligned with the existing observation-step and missing-window contract.
+
+- [Identity, hierarchy and builder contract](ASSET_READING.md)
+- [Exact native proof and source conservation](asset-reading/PUBLICATION_RECEIPT.json)
+- [Eight inspected captures](asset-reading/captures)
+
+Next: reconcile builder navigation and the Chinese mobile reference with current source.
+
+## Prior phase — honest quote availability and useful small prices
 
 Asset quotes now require finite positive numbers. Invalid quotes read **Unavailable / 暂无**; positive sub-cent quotes retain up to eight decimals, with **<$0.00000001** below the display limit. Other asset evidence and genuine zero percentage changes remain intact.
 
@@ -12,7 +28,7 @@ The existing projection, builder and two presentation consumers own the repair. 
 - [Exact validation and limitations](QUOTE_CLARITY_VALIDATION.json)
 - [Native publication receipt](quote/PUBLICATION_RECEIPT.json) and [six inspected captures](quote/captures)
 
-Next: remove redundant fallback names without changing asset identity or navigation.
+The current asset-reading phase above implements that presentation correction.
 
 ## Prior phase — footer actions clear the shared launcher
 

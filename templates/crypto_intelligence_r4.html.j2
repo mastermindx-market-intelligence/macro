@@ -1,6 +1,7 @@
 {% macro t(en,zh) -%}<span class="l-en">{{ en }}</span><span class="l-zh">{{ zh }}</span>{%- endmacro %}
 {% macro arrow() -%}<svg class="cri-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>{%- endmacro %}
 {% macro inspect_button(target,en='Inspect view',zh='查看依据') -%}<button class="cri-btn" data-open="{{ target }}">{{ t(en,zh) }}{{ arrow() }}</button>{%- endmacro %}
+{% macro asset_identity(asset,stacked=false) -%}{% set name = asset.name if asset.name is string else '' %}{% if name|trim and name|trim|lower != asset.symbol|trim|lower %}{{ name }}{% if stacked %}<small>{{ asset.symbol }}</small>{% else %} <span class="cri-subtle">{{ asset.symbol }}</span>{% endif %}{% else %}{{ asset.symbol }}{% endif %}{%- endmacro %}
 {% macro scenario_paths() -%}
 <aside class="cri-panel cri-next">
   <div class="cri-section-head"><div><h3>{{ t('What could follow','接下来关注什么') }}</h3><p>{{ t('Bitcoin · conditional outlook','比特币 · 条件展望') }}</p></div>
@@ -77,7 +78,7 @@
     </div>
     <div class="cri-section">
       <div class="cri-section-head"><h3>{{ t('Beyond Bitcoin','比特币之外') }}</h3><a href="#markets" data-route="markets">{{ t('Explore markets','探索市场') }} →</a></div>
-      {% for asset in view.assets[:2] %}<div class="cri-watch-row"><div><strong>{{ asset.name }} <span class="cri-subtle">{{ asset.symbol }}</span></strong><p class="cri-watch-meta"><span>{{ t("Vs BTC: "+asset.relative_en,"相对 BTC："+asset.relative_zh) }}</span> <span>{{ t("Risk: "+asset.risk_en,"风险："+asset.risk_zh) }}</span></p></div><button class="cri-btn cri-btn-text" data-open="asset:{{ asset.symbol }}">{{ t('Inspect asset','查看资产') }}{{ arrow() }}</button></div>{% else %}<p class="cri-note">{{ t('Broader asset evidence is unavailable.','暂无更多资产证据。') }}</p>{% endfor %}
+      {% for asset in view.assets[:2] %}<div class="cri-watch-row"><div><strong>{{ asset_identity(asset) }}</strong><p class="cri-watch-meta"><span>{{ t("Vs BTC: "+asset.relative_en,"相对 BTC："+asset.relative_zh) }}</span> <span>{{ t("Risk: "+asset.risk_en,"风险："+asset.risk_zh) }}</span></p></div><button class="cri-btn cri-btn-text" data-open="asset:{{ asset.symbol }}">{{ t('Inspect asset','查看资产') }}{{ arrow() }}</button></div>{% else %}<p class="cri-note">{{ t('Broader asset evidence is unavailable.','暂无更多资产证据。') }}</p>{% endfor %}
     </div>
   </section>
 
@@ -112,7 +113,7 @@
     <div class="cri-panel">
       <div class="cri-table-wrap"><table class="cri-table" id="cri-market-table" {% if not view.assets %}hidden{% endif %}><thead><tr><th>{{ t('Asset','资产') }}</th><th>{{ t('Price','价格') }}</th><th>{{ t('Price change','价格涨跌') }}</th><th>{{ t('Asset/BTC ratio change','资产/BTC比值变化') }}</th><th>{{ t('Structure','结构') }}</th><th>{{ t('Risk','风险') }}</th><th></th></tr></thead><tbody>
       {% for asset in view.assets %}<tr data-asset-row="{{ asset.symbol }}">
-        <td><button class="cri-asset" data-open="asset:{{ asset.symbol }}"><span class="cri-coin">{{ asset.symbol[:1] }}</span><span>{{ asset.name }}<small>{{ asset.symbol }}</small></span></button></td>
+        <td><button class="cri-asset" data-open="asset:{{ asset.symbol }}"><span class="cri-coin" aria-hidden="true">{{ asset.symbol[:1] }}</span><span>{{ asset_identity(asset,true) }}</span></button></td>
         <td data-label="Price" data-label-zh="价格">{{ asset_money(asset.price) or t('Unavailable','暂无') }}</td><td data-label="Price change" data-label-zh="价格涨跌" class="{% if asset.change_30d_pct is not none and asset.change_30d_pct>0 %}cri-up{% elif asset.change_30d_pct is not none and asset.change_30d_pct<0 %}cri-down{% endif %}">{{ t('Unavailable','暂无') if asset.change_30d_pct is none else pct(asset.change_30d_pct) }}</td>
         <td data-label="Asset/BTC ratio change" data-label-zh="资产/BTC比值变化">{{ t('Unavailable','暂无') if asset.relative_90d_pct is none else pct(asset.relative_90d_pct) }}{% if asset.relative_90d_pct is none and asset.relative_en != 'Unavailable' %}<span class="cri-measure-state">{{ t(asset.relative_en,asset.relative_zh) }}</span>{% endif %}</td><td data-label="Structure" data-label-zh="结构">{{ t(asset.trend_en,asset.trend_zh) }}</td><td data-label="Risk" data-label-zh="风险"><span class="cri-status">{{ t(asset.risk_en,asset.risk_zh) }}</span></td><td><button class="cri-btn cri-btn-text" data-open="asset:{{ asset.symbol }}">{{ t('Inspect','查看') }}{{ arrow() }}</button></td>
       </tr>{% endfor %}
