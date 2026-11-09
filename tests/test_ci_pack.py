@@ -5703,9 +5703,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_943),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_964),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_701),
+    ("templates/index.html", 137, 5_945),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_966),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_703),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5713,6 +5713,26 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-09 (PR #7374, public-evidence adapter suite enrollment):
+    natural contract run 42583154175 / job 129046497754 measured exact
+    head d040b328dd78e3993fde50814cbab414a9422ce8 with three introduced
+    packing findings and zero inherited findings. Appending the complete
+    tests/test_brain_public_research.py suite to existing unrun-brain-gateway
+    is the sole catalog change (53343f64 -> af1dd1d0). Its six commands
+    remain six; test references51->52 and command characters2345->2381
+    keep length bucket two, so owner weight110->112. The owner already
+    rides all three probes: index137jobs/5943->5945,
+    free-content137jobs/5964->5966, Prophet131jobs/5701->5703; each remains
+    ten packs, with no additional selected job. Fund only those measured
+    +2 expectations, with no cushion or unmerged sibling contribution.
+    This accounting amendment preserves all six published source objects,
+    the full suite, all 400 owner definitions and existing provenance.
+    Keep job ceilings137/138/131, ten-pack bound, selection and coverage
+    rules, assertions, timeouts and global admission/concurrency controls.
+    The paired measurements above are real contract output; this amendment
+    itself still requires natural exact-head successor proof. They are
+    planner weights, not elapsed-time measurements or provider acceptance.
 
     2026-11-09 (PR #10870, dependency-coverage correction): the separate
     admission job conservatively owns tools/xguerrilla/** because pytest
