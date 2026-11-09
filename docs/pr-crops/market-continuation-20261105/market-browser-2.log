@@ -1,0 +1,11 @@
+Traceback (most recent call last):
+  File "/Volumes/Mastermind 2/agent-workspaces/macro/web/d06-macro-implementation-20261104-c4/scripts/verify_d06_macro.py", line 636, in <module>
+    main()
+    ~~~~^^
+  File "/Volumes/Mastermind 2/agent-workspaces/macro/web/d06-macro-implementation-20261104-c4/scripts/verify_d06_macro.py", line 619, in main
+    receipt.update(globals()[args.only](browser, base))
+                   ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/Volumes/Mastermind 2/agent-workspaces/macro/web/d06-macro-implementation-20261104-c4/scripts/verify_d06_macro.py", line 146, in market
+    assert "Unavailable" in exact and "0" in exact
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError
