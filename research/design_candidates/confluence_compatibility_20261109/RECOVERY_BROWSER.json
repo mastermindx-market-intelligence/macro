@@ -1,0 +1,1807 @@
+{
+  "schema": "confluence_recovery_browser/v1",
+  "observed_at": "2026-11-09T12:51:38.469068+00:00",
+  "browser": "157.0.8103.39",
+  "contexts": 10,
+  "passed": 10,
+  "failed": 0,
+  "page_errors": [],
+  "cases": [
+    {
+      "name": "retry_to_reload-1440-en",
+      "mode": "retry_to_reload",
+      "width": 1440,
+      "lang": "en",
+      "observations": [
+        {
+          "phase": "initial_unavailable",
+          "state": "unavailable",
+          "statusHidden": false,
+          "message": "Matching stocks could not be loaded. The public counts are unchanged.暂时无法加载匹配股票，公开数量保持不变。",
+          "messageVisible": "Matching stocks could not be loaded. The public counts are unchanged.",
+          "retryHidden": false,
+          "retryDisabled": "false",
+          "reloadHidden": true,
+          "activeId": "",
+          "activeTag": "BODY",
+          "activeHref": null,
+          "activePublicMethod": false,
+          "activeHidden": false,
+          "focusVisible": false,
+          "reloadBox": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0,
+            "right": 0
+          },
+          "statusBox": {
+            "x": 200,
+            "y": 2631.109375,
+            "width": 1040,
+            "height": 78,
+            "right": 1240
+          },
+          "documentWidth": 1440,
+          "locked": 2,
+          "hydrated": 0,
+          "paidLinks": [],
+          "busy": [
+            "false",
+            "false"
+          ],
+          "focusEvents": [],
+          "url": "http://127.0.0.1:49729/confluence_screener.html?keep=a&keep=b#return-point",
+          "public_markup_sha256": "f6c1d1c9f88237ded8edd9a030a93d07c4dc670aa0c1d9c606f1ee0a40a372d8",
+          "public_regions": 8
+        },
+        {
+          "phase": "pending_keyboard_retry",
+          "state": "checking",
+          "statusHidden": false,
+          "message": "Checking access to matching stocks…正在检查匹配股票的访问权限…",
+          "messageVisible": "Checking access to matching stocks…",
+          "retryHidden": false,
+          "retryDisabled": "true",
+          "reloadHidden": true,
+          "activeId": "confluence-check-access",
+          "activeTag": "BUTTON",
+          "activeHref": null,
+          "activePublicMethod": false,
+          "activeHidden": false,
+          "focusVisible": true,
+          "reloadBox": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0,
+            "right": 0
+          },
+          "statusBox": {
+            "x": 200,
+            "y": 815.109375,
+            "width": 1040,
+            "height": 78,
+            "right": 1240
+          },
+          "documentWidth": 1440,
+          "locked": 2,
+          "hydrated": 0,
+          "paidLinks": [],
+          "busy": [
+            "true",
+            "true"
+          ],
+          "focusEvents": [],
+          "url": "http://127.0.0.1:49729/confluence_screener.html?keep=a&keep=b#return-point",
+          "public_markup_sha256": "f6c1d1c9f88237ded8edd9a030a93d07c4dc670aa0c1d9c606f1ee0a40a372d8",
+          "public_regions": 8
+        },
+        {
+          "phase": "mismatch_response_settled",
+          "state": "mismatch",
+          "statusHidden": false,
+          "message": "This page and the stock list are from different updates. Reload the latest page.此页面与股票名单来自不同更新，请重新加载最新页面。",
+          "messageVisible": "This page and the stock list are from different updates. Reload the latest page.",
+          "retryHidden": true,
+          "retryDisabled": "false",
+          "reloadHidden": false,
+          "activeId": "confluence-reload-access",
+          "activeTag": "BUTTON",
+          "activeHref": null,
+          "activePublicMethod": false,
+          "activeHidden": false,
+          "focusVisible": true,
+          "reloadBox": {
+            "x": 735.171875,
+            "y": 832.109375,
+            "width": 148.875,
+            "height": 44,
+            "right": 884.046875
+          },
+          "statusBox": {
+            "x": 200,
+            "y": 815.109375,
+            "width": 1040,
+            "height": 78,
+            "right": 1240
+          },
+          "documentWidth": 1440,
+          "locked": 2,
+          "hydrated": 0,
+          "paidLinks": [],
+          "busy": [
+            "false",
+            "false"
+          ],
+          "focusEvents": [
+            {
+              "retryHidden": false,
+              "reloadHidden": false,
+              "state": "mismatch",
+              "message": "This page and the stock list are from different updates. Reload the latest page.",
+              "activeId": "confluence-reload-access"
+            }
+          ],
+          "url": "http://127.0.0.1:49729/confluence_screener.html?keep=a&keep=b#return-point",
+          "public_markup_sha256": "f6c1d1c9f88237ded8edd9a030a93d07c4dc670aa0c1d9c606f1ee0a40a372d8",
+          "public_regions": 8
+        },
+        {
+          "phase": "native_reload_valid_pair",
+          "state": "loaded",
+          "statusHidden": true,
+          "message": "",
+          "messageVisible": "",
+          "retryHidden": true,
+          "retryDisabled": "false",
+          "reloadHidden": true,
+          "activeId": "",
+          "activeTag": "BODY",
+          "activeHref": null,
+          "activePublicMethod": false,
+          "activeHidden": false,
+          "focusVisible": false,
+          "reloadBox": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0,
+            "right": 0
+          },
+          "statusBox": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0,
+            "right": 0
+          },
+          "documentWidth": 1440,
+          "locked": 0,
+          "hydrated": 2,
+          "paidLinks": [
+            "stocks/WMB.html",
+            "stocks/WMB.html"
+          ],
+          "busy": [
+            "false",
+            "false"
+          ],
+          "focusEvents": [],
+          "url": "http://127.0.0.1:49729/confluence_screener.html?keep=a&keep=b#return-point",
+          "public_markup_sha256": "f6c1d1c9f88237ded8edd9a030a93d07c4dc670aa0c1d9c606f1ee0a40a372d8",
+          "public_regions": 8
+        },
+        {
+          "phase": "signout_after_recovery",
+          "state": "locked",
+          "statusHidden": true,
+          "message": "",
+          "messageVisible": "",
+          "retryHidden": true,
+          "retryDisabled": "false",
+          "reloadHidden": true,
+          "activeId": "",
+          "activeTag": "BODY",
+          "activeHref": null,
+          "activePublicMethod": false,
+          "activeHidden": false,
+          "focusVisible": false,
+          "reloadBox": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0,
+            "right": 0
+          },
+          "statusBox": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0,
+            "right": 0
+          },
+          "documentWidth": 1440,
+          "locked": 2,
+          "hydrated": 0,
+          "paidLinks": [],
+          "busy": [
+            "false",
+            "false"
+          ],
+          "focusEvents": [],
+          "url": "http://127.0.0.1:49729/confluence_screener.html?keep=a&keep=b#return-point",
+          "public_markup_sha256": "f6c1d1c9f88237ded8edd9a030a93d07c4dc670aa0c1d9c606f1ee0a40a372d8",
+          "public_regions": 8
+        }
+      ],
+      "status": "PASS",
+      "requests": [
+        {
+          "path": "/premiumdata/confluence_screener.json",
+          "method": "GET"
+        },
+        {
+          "path": "/premiumdata/confluence_screener.json",
+          "method": "GET"
+        },
+        {
+          "path": "/premiumdata/confluence_screener.json",
+          "method": "GET"
+        }
+      ],
+      "page_hits": [
+        "/confluence_screener.html?keep=a&keep=b",
+        "/confluence_screener.html?keep=a&keep=b"
+      ],
+      "server_errors": [],
+      "aborted_responses": 0
+    },
+    {
+      "name": "preserve_moved_focus-1440-en",
+      "mode": "preserve_moved_focus",
+      "width": 1440,
+      "lang": "en",
+      "observations": [
+        {
+          "phase": "initial_unavailable",
+          "state": "unavailable",
+          "statusHidden": false,
+          "message": "Matching stocks could not be loaded. The public counts are unchanged.暂时无法加载匹配股票，公开数量保持不变。",
+          "messageVisible": "Matching stocks could not be loaded. The public counts are unchanged.",
+          "retryHidden": false,
+          "retryDisabled": "false",
+          "reloadHidden": true,
+          "activeId": "",
+          "activeTag": "BODY",
+          "activeHref": null,
+          "activePublicMethod": false,
+          "activeHidden": false,
+          "focusVisible": false,
+          "reloadBox": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0,
+            "right": 0
+          },
+          "statusBox": {
+            "x": 200,
+            "y": 2631.109375,
+            "width": 1040,
+            "height": 78,
+            "right": 1240
+          },
+          "documentWidth": 1440,
+          "locked": 2,
+          "hydrated": 0,
+          "paidLinks": [],
+          "busy": [
+            "false",
+            "false"
+          ],
+          "focusEvents": [],
+          "url": "http://127.0.0.1:49729/confluence_screener.html?keep=a&keep=b#return-point",
+          "public_markup_sha256": "f6c1d1c9f88237ded8edd9a030a93d07c4dc670aa0c1d9c606f1ee0a40a372d8",
+          "public_regions": 8
+        },
+        {
+          "phase": "pending_keyboard_retry",
+          "state": "checking",
+          "statusHidden": false,
+          "message": "Checking access to matching stocks…正在检查匹配股票的访问权限…",
+          "messageVisible": "Checking access to matching stocks…",
+          "retryHidden": false,
+          "retryDisabled": "true",
+          "reloadHidden": true,
+          "activeId": "confluence-check-access",
+          "activeTag": "BUTTON",
+          "activeHref": null,
+          "activePublicMethod": false,
+          "activeHidden": false,
+          "focusVisible": true,
+          "reloadBox": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0,
+            "right": 0
+          },
+          "statusBox": {
+            "x": 200,
+            "y": 815.109375,
+            "width": 1040,
+            "height": 78,
+            "right": 1240
+          },
+          "documentWidth": 1440,
+          "locked": 2,
+          "hydrated": 0,
+          "paidLinks": [],
+          "busy": [
+            "true",
+            "true"
+          ],
+          "focusEvents": [],
+          "url": "http://127.0.0.1:49729/confluence_screener.html?keep=a&keep=b#return-point",
+          "public_markup_sha256": "f6c1d1c9f88237ded8edd9a030a93d07c4dc670aa0c1d9c606f1ee0a40a372d8",
+          "public_regions": 8
+        },
+        {
+          "phase": "mismatch_response_settled",
+          "state": "mismatch",
+          "statusHidden": false,
+          "message": "This page and the stock list are from different updates. Reload the latest page.此页面与股票名单来自不同更新，请重新加载最新页面。",
+          "messageVisible": "This page and the stock list are from different updates. Reload the latest page.",
+          "retryHidden": true,
+          "retryDisabled": "false",
+          "reloadHidden": false,
+          "activeId": "",
+          "activeTag": "SUMMARY",
+          "activeHref": null,
+          "activePublicMethod": true,
+          "activeHidden": false,
+          "focusVisible": true,
+          "reloadBox": {
+            "x": 735.171875,
+            "y": 832.109375,
+            "width": 148.875,
+            "height": 44,
+            "right": 884.046875
+          },
+          "statusBox": {
+            "x": 200,
+            "y": 815.109375,
+            "width": 1040,
+            "height": 78,
+            "right": 1240
+          },
+          "documentWidth": 1440,
+          "locked": 2,
+          "hydrated": 0,
+          "paidLinks": [],
+          "busy": [
+            "false",
+            "false"
+          ],
+          "focusEvents": [],
+          "url": "http://127.0.0.1:49729/confluence_screener.html?keep=a&keep=b#return-point",
+          "public_markup_sha256": "f6c1d1c9f88237ded8edd9a030a93d07c4dc670aa0c1d9c606f1ee0a40a372d8",
+          "public_regions": 8
+        }
+      ],
+      "status": "PASS",
+      "requests": [
+        {
+          "path": "/premiumdata/confluence_screener.json",
+          "method": "GET"
+        },
+        {
+          "path": "/premiumdata/confluence_screener.json",
+          "method": "GET"
+        }
+      ],
+      "page_hits": [
+        "/confluence_screener.html?keep=a&keep=b"
+      ],
+      "server_errors": [],
+      "aborted_responses": 0
+    },
+    {
+      "name": "focus_signout_reentry-1440-en",
+      "mode": "focus_signout_reentry",
+      "width": 1440,
+      "lang": "en",
+      "observations": [
+        {
+          "phase": "initial_unavailable",
+          "state": "unavailable",
+          "statusHidden": false,
+          "message": "Matching stocks could not be loaded. The public counts are unchanged.暂时无法加载匹配股票，公开数量保持不变。",
+          "messageVisible": "Matching stocks could not be loaded. The public counts are unchanged.",
+          "retryHidden": false,
+          "retryDisabled": "false",
+          "reloadHidden": true,
+          "activeId": "",
+          "activeTag": "BODY",
+          "activeHref": null,
+          "activePublicMethod": false,
+          "activeHidden": false,
+          "focusVisible": false,
+          "reloadBox": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0,
+            "right": 0
+          },
+          "statusBox": {
+            "x": 200,
+            "y": 2631.109375,
+            "width": 1040,
+            "height": 78,
+            "right": 1240
+          },
+          "documentWidth": 1440,
+          "locked": 2,
+          "hydrated": 0,
+          "paidLinks": [],
+          "busy": [
+            "false",
+            "false"
+          ],
+          "focusEvents": [],
+          "url": "http://127.0.0.1:49729/confluence_screener.html?keep=a&keep=b#return-point",
+          "public_markup_sha256": "f6c1d1c9f88237ded8edd9a030a93d07c4dc670aa0c1d9c606f1ee0a40a372d8",
+          "public_regions": 8
+        },
+        {
+          "phase": "pending_keyboard_retry",
+          "state": "checking",
+          "statusHidden": false,
+          "message": "Checking access to matching stocks…正在检查匹配股票的访问权限…",
+          "messageVisible": "Checking access to matching stocks…",
+          "retryHidden": false,
+          "retryDisabled": "true",
+          "reloadHidden": true,
+          "activeId": "confluence-check-access",
+          "activeTag": "BUTTON",
+          "activeHref": null,
+          "activePublicMethod": false,
+          "activeHidden": false,
+          "focusVisible": true,
+          "reloadBox": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0,
+            "right": 0
+          },
+          "statusBox": {
+            "x": 200,
+            "y": 815.109375,
+            "width": 1040,
+            "height": 78,
+            "right": 1240
+          },
+          "documentWidth": 1440,
+          "locked": 2,
+          "hydrated": 0,
+          "paidLinks": [],
+          "busy": [
+            "true",
+            "true"
+          ],
+          "focusEvents": [],
+          "url": "http://127.0.0.1:49729/confluence_screener.html?keep=a&keep=b#return-point",
+          "public_markup_sha256": "f6c1d1c9f88237ded8edd9a030a93d07c4dc670aa0c1d9c606f1ee0a40a372d8",
+          "public_regions": 8
+        },
+        {
+          "phase": "mismatch_response_settled",
+          "state": "locked",
+          "statusHidden": true,
+          "message": "",
+          "messageVisible": "",
+          "retryHidden": true,
+          "retryDisabled": "false",
+          "reloadHidden": true,
+          "activeId": "",
+          "activeTag": "BODY",
+          "activeHref": null,
+          "activePublicMethod": false,
+          "activeHidden": false,
+          "focusVisible": false,
+          "reloadBox": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0,
+            "right": 0
+          },
+          "statusBox": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0,
+            "right": 0
+          },
+          "documentWidth": 1440,
+          "locked": 2,
+          "hydrated": 0,
+          "paidLinks": [],
+          "busy": [
+            "false",
+            "false"
+          ],
+          "focusEvents": [
+            {
+              "retryHidden": false,
+              "reloadHidden": false,
+              "state": "mismatch",
+              "message": "This page and the stock list are from different updates. Reload the latest page.",
+              "activeId": "confluence-reload-access"
+            }
+          ],
+          "url": "http://127.0.0.1:49729/confluence_screener.html?keep=a&keep=b#return-point",
+          "public_markup_sha256": "f6c1d1c9f88237ded8edd9a030a93d07c4dc670aa0c1d9c606f1ee0a40a372d8",
+          "public_regions": 8
+        }
+      ],
+      "status": "PASS",
+      "requests": [
+        {
+          "path": "/premiumdata/confluence_screener.json",
+          "method": "GET"
+        },
+        {
+          "path": "/premiumdata/confluence_screener.json",
+          "method": "GET"
+        }
+      ],
+      "page_hits": [
+        "/confluence_screener.html?keep=a&keep=b"
+      ],
+      "server_errors": [],
+      "aborted_responses": 0
+    },
+    {
+      "name": "focus_returns_to_retry-1440-en",
+      "mode": "focus_returns_to_retry",
+      "width": 1440,
+      "lang": "en",
+      "observations": [
+        {
+          "phase": "initial_unavailable",
+          "state": "unavailable",
+          "statusHidden": false,
+          "message": "Matching stocks could not be loaded. The public counts are unchanged.暂时无法加载匹配股票，公开数量保持不变。",
+          "messageVisible": "Matching stocks could not be loaded. The public counts are unchanged.",
+          "retryHidden": false,
+          "retryDisabled": "false",
+          "reloadHidden": true,
+          "activeId": "",
+          "activeTag": "BODY",
+          "activeHref": null,
+          "activePublicMethod": false,
+          "activeHidden": false,
+          "focusVisible": false,
+          "reloadBox": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0,
+            "right": 0
+          },
+          "statusBox": {
+            "x": 200,
+            "y": 2631.109375,
+            "width": 1040,
+            "height": 78,
+            "right": 1240
+          },
+          "documentWidth": 1440,
+          "locked": 2,
+          "hydrated": 0,
+          "paidLinks": [],
+          "busy": [
+            "false",
+            "false"
+          ],
+          "focusEvents": [],
+          "url": "http://127.0.0.1:49729/confluence_screener.html?keep=a&keep=b#return-point",
+          "public_markup_sha256": "f6c1d1c9f88237ded8edd9a030a93d07c4dc670aa0c1d9c606f1ee0a40a372d8",
+          "public_regions": 8
+        },
+        {
+          "phase": "pending_keyboard_retry",
+          "state": "checking",
+          "statusHidden": false,
+          "message": "Checking access to matching stocks…正在检查匹配股票的访问权限…",
+          "messageVisible": "Checking access to matching stocks…",
+          "retryHidden": false,
+          "retryDisabled": "true",
+          "reloadHidden": true,
+          "activeId": "confluence-check-access",
+          "activeTag": "BUTTON",
+          "activeHref": null,
+          "activePublicMethod": false,
+          "activeHidden": false,
+          "focusVisible": true,
+          "reloadBox": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0,
+            "right": 0
+          },
+          "statusBox": {
+            "x": 200,
+            "y": 815.109375,
+            "width": 1040,
+            "height": 78,
+            "right": 1240
+          },
+          "documentWidth": 1440,
+          "locked": 2,
+          "hydrated": 0,
+          "paidLinks": [],
+          "busy": [
+            "true",
+            "true"
+          ],
+          "focusEvents": [],
+          "url": "http://127.0.0.1:49729/confluence_screener.html?keep=a&keep=b#return-point",
+          "public_markup_sha256": "f6c1d1c9f88237ded8edd9a030a93d07c4dc670aa0c1d9c606f1ee0a40a372d8",
+          "public_regions": 8
+        },
+        {
+          "phase": "mismatch_response_settled",
+          "state": "mismatch",
+          "statusHidden": false,
+          "message": "This page and the stock list are from different updates. Reload the latest page.此页面与股票名单来自不同更新，请重新加载最新页面。",
+          "messageVisible": "This page and the stock list are from different updates. Reload the latest page.",
+          "retryHidden": false,
+          "retryDisabled": "false",
+          "reloadHidden": false,
+          "activeId": "confluence-check-access",
+          "activeTag": "BUTTON",
+          "activeHref": null,
+          "activePublicMethod": false,
+          "activeHidden": false,
+          "focusVisible": true,
+          "reloadBox": {
+            "x": 867.1875,
+            "y": 832.109375,
+            "width": 148.875,
+            "height": 44,
+            "right": 1016.0625
+          },
+          "statusBox": {
+            "x": 200,
+            "y": 815.109375,
+            "width": 1040,
+            "height": 78,
+            "right": 1240
+          },
+          "documentWidth": 1440,
+          "locked": 2,
+          "hydrated": 0,
+          "paidLinks": [],
+          "busy": [
+            "false",
+            "false"
+          ],
+          "focusEvents": [
+            {
+              "retryHidden": false,
+              "reloadHidden": false,
+              "state": "mismatch",
+              "message": "This page and the stock list are from different updates. Reload the latest page.",
+              "activeId": "confluence-reload-access"
+            }
+          ],
+          "url": "http://127.0.0.1:49729/confluence_screener.html?keep=a&keep=b#return-point",
+          "public_markup_sha256": "f6c1d1c9f88237ded8edd9a030a93d07c4dc670aa0c1d9c606f1ee0a40a372d8",
+          "public_regions": 8
+        }
+      ],
+      "status": "PASS",
+      "requests": [
+        {
+          "path": "/premiumdata/confluence_screener.json",
+          "method": "GET"
+        },
+        {
+          "path": "/premiumdata/confluence_screener.json",
+          "method": "GET"
+        }
+      ],
+      "page_hits": [
+        "/confluence_screener.html?keep=a&keep=b"
+      ],
+      "server_errors": [],
+      "aborted_responses": 0
+    },
+    {
+      "name": "focus_moves_to_public-1440-en",
+      "mode": "focus_moves_to_public",
+      "width": 1440,
+      "lang": "en",
+      "observations": [
+        {
+          "phase": "initial_unavailable",
+          "state": "unavailable",
+          "statusHidden": false,
+          "message": "Matching stocks could not be loaded. The public counts are unchanged.暂时无法加载匹配股票，公开数量保持不变。",
+          "messageVisible": "Matching stocks could not be loaded. The public counts are unchanged.",
+          "retryHidden": false,
+          "retryDisabled": "false",
+          "reloadHidden": true,
+          "activeId": "",
+          "activeTag": "BODY",
+          "activeHref": null,
+          "activePublicMethod": false,
+          "activeHidden": false,
+          "focusVisible": false,
+          "reloadBox": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0,
+            "right": 0
+          },
+          "statusBox": {
+            "x": 200,
+            "y": 2631.109375,
+            "width": 1040,
+            "height": 78,
+            "right": 1240
+          },
+          "documentWidth": 1440,
+          "locked": 2,
+          "hydrated": 0,
+          "paidLinks": [],
+          "busy": [
+            "false",
+            "false"
+          ],
+          "focusEvents": [],
+          "url": "http://127.0.0.1:49729/confluence_screener.html?keep=a&keep=b#return-point",
+          "public_markup_sha256": "f6c1d1c9f88237ded8edd9a030a93d07c4dc670aa0c1d9c606f1ee0a40a372d8",
+          "public_regions": 8
+        },
+        {
+          "phase": "pending_keyboard_retry",
+          "state": "checking",
+          "statusHidden": false,
+          "message": "Checking access to matching stocks…正在检查匹配股票的访问权限…",
+          "messageVisible": "Checking access to matching stocks…",
+          "retryHidden": false,
+          "retryDisabled": "true",
+          "reloadHidden": true,
+          "activeId": "confluence-check-access",
+          "activeTag": "BUTTON",
+          "activeHref": null,
+          "activePublicMethod": false,
+          "activeHidden": false,
+          "focusVisible": true,
+          "reloadBox": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0,
+            "right": 0
+          },
+          "statusBox": {
+            "x": 200,
+            "y": 815.109375,
+            "width": 1040,
+            "height": 78,
+            "right": 1240
+          },
+          "documentWidth": 1440,
+          "locked": 2,
+          "hydrated": 0,
+          "paidLinks": [],
+          "busy": [
+            "true",
+            "true"
+          ],
+          "focusEvents": [],
+          "url": "http://127.0.0.1:49729/confluence_screener.html?keep=a&keep=b#return-point",
+          "public_markup_sha256": "f6c1d1c9f88237ded8edd9a030a93d07c4dc670aa0c1d9c606f1ee0a40a372d8",
+          "public_regions": 8
+        },
+        {
+          "phase": "mismatch_response_settled",
+          "state": "mismatch",
+          "statusHidden": false,
+          "message": "This page and the stock list are from different updates. Reload the latest page.此页面与股票名单来自不同更新，请重新加载最新页面。",
+          "messageVisible": "This page and the stock list are from different updates. Reload the latest page.",
+          "retryHidden": true,
+          "retryDisabled": "false",
+          "reloadHidden": false,
+          "activeId": "",
+          "activeTag": "SUMMARY",
+          "activeHref": null,
+          "activePublicMethod": true,
+          "activeHidden": false,
+          "focusVisible": true,
+          "reloadBox": {
+            "x": 735.171875,
+            "y": 832.109375,
+            "width": 148.875,
+            "height": 44,
+            "right": 884.046875
+          },
+          "statusBox": {
+            "x": 200,
+            "y": 815.109375,
+            "width": 1040,
+            "height": 78,
+            "right": 1240
+          },
+          "documentWidth": 1440,
+          "locked": 2,
+          "hydrated": 0,
+          "paidLinks": [],
+          "busy": [
+            "false",
+            "false"
+          ],
+          "focusEvents": [
+            {
+              "retryHidden": false,
+              "reloadHidden": false,
+              "state": "mismatch",
+              "message": "This page and the stock list are from different updates. Reload the latest page.",
+              "activeId": "confluence-reload-access"
+            }
+          ],
+          "url": "http://127.0.0.1:49729/confluence_screener.html?keep=a&keep=b#return-point",
+          "public_markup_sha256": "f6c1d1c9f88237ded8edd9a030a93d07c4dc670aa0c1d9c606f1ee0a40a372d8",
+          "public_regions": 8
+        }
+      ],
+      "status": "PASS",
+      "requests": [
+        {
+          "path": "/premiumdata/confluence_screener.json",
+          "method": "GET"
+        },
+        {
+          "path": "/premiumdata/confluence_screener.json",
+          "method": "GET"
+        }
+      ],
+      "page_hits": [
+        "/confluence_screener.html?keep=a&keep=b"
+      ],
+      "server_errors": [],
+      "aborted_responses": 0
+    },
+    {
+      "name": "retry_to_reload-320-zh",
+      "mode": "retry_to_reload",
+      "width": 320,
+      "lang": "zh",
+      "observations": [
+        {
+          "phase": "initial_unavailable",
+          "state": "unavailable",
+          "statusHidden": false,
+          "message": "Matching stocks could not be loaded. The public counts are unchanged.暂时无法加载匹配股票，公开数量保持不变。",
+          "messageVisible": "暂时无法加载匹配股票，公开数量保持不变。",
+          "retryHidden": false,
+          "retryDisabled": "false",
+          "reloadHidden": true,
+          "activeId": "",
+          "activeTag": "BODY",
+          "activeHref": null,
+          "activePublicMethod": false,
+          "activeHidden": false,
+          "focusVisible": false,
+          "reloadBox": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0,
+            "right": 0
+          },
+          "statusBox": {
+            "x": 20,
+            "y": 3638.296875,
+            "width": 280,
+            "height": 132,
+            "right": 300
+          },
+          "documentWidth": 320,
+          "locked": 2,
+          "hydrated": 0,
+          "paidLinks": [],
+          "busy": [
+            "false",
+            "false"
+          ],
+          "focusEvents": [],
+          "url": "http://127.0.0.1:49729/confluence_screener.html?keep=a&keep=b#return-point",
+          "public_markup_sha256": "f6c1d1c9f88237ded8edd9a030a93d07c4dc670aa0c1d9c606f1ee0a40a372d8",
+          "public_regions": 8
+        },
+        {
+          "phase": "pending_keyboard_retry",
+          "state": "checking",
+          "statusHidden": false,
+          "message": "Checking access to matching stocks…正在检查匹配股票的访问权限…",
+          "messageVisible": "正在检查匹配股票的访问权限…",
+          "retryHidden": false,
+          "retryDisabled": "true",
+          "reloadHidden": true,
+          "activeId": "confluence-check-access",
+          "activeTag": "BUTTON",
+          "activeHref": null,
+          "activePublicMethod": false,
+          "activeHidden": false,
+          "focusVisible": true,
+          "reloadBox": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0,
+            "right": 0
+          },
+          "statusBox": {
+            "x": 20,
+            "y": 391.296875,
+            "width": 280,
+            "height": 111,
+            "right": 300
+          },
+          "documentWidth": 320,
+          "locked": 2,
+          "hydrated": 0,
+          "paidLinks": [],
+          "busy": [
+            "true",
+            "true"
+          ],
+          "focusEvents": [],
+          "url": "http://127.0.0.1:49729/confluence_screener.html?keep=a&keep=b#return-point",
+          "public_markup_sha256": "f6c1d1c9f88237ded8edd9a030a93d07c4dc670aa0c1d9c606f1ee0a40a372d8",
+          "public_regions": 8
+        },
+        {
+          "phase": "mismatch_response_settled",
+          "state": "mismatch",
+          "statusHidden": false,
+          "message": "This page and the stock list are from different updates. Reload the latest page.此页面与股票名单来自不同更新，请重新加载最新页面。",
+          "messageVisible": "此页面与股票名单来自不同更新，请重新加载最新页面。",
+          "retryHidden": true,
+          "retryDisabled": "false",
+          "reloadHidden": false,
+          "activeId": "confluence-reload-access",
+          "activeTag": "BUTTON",
+          "activeHref": null,
+          "activePublicMethod": false,
+          "activeHidden": false,
+          "focusVisible": true,
+          "reloadBox": {
+            "x": 37,
+            "y": 441.296875,
+            "width": 138,
+            "height": 44,
+            "right": 175
+          },
+          "statusBox": {
+            "x": 20,
+            "y": 370.296875,
+            "width": 280,
+            "height": 132,
+            "right": 300
+          },
+          "documentWidth": 320,
+          "locked": 2,
+          "hydrated": 0,
+          "paidLinks": [],
+          "busy": [
+            "false",
+            "false"
+          ],
+          "focusEvents": [
+            {
+              "retryHidden": false,
+              "reloadHidden": false,
+              "state": "mismatch",
+              "message": "此页面与股票名单来自不同更新，请重新加载最新页面。",
+              "activeId": "confluence-reload-access"
+            }
+          ],
+          "url": "http://127.0.0.1:49729/confluence_screener.html?keep=a&keep=b#return-point",
+          "public_markup_sha256": "f6c1d1c9f88237ded8edd9a030a93d07c4dc670aa0c1d9c606f1ee0a40a372d8",
+          "public_regions": 8
+        },
+        {
+          "phase": "native_reload_valid_pair",
+          "state": "loaded",
+          "statusHidden": true,
+          "message": "",
+          "messageVisible": "",
+          "retryHidden": true,
+          "retryDisabled": "false",
+          "reloadHidden": true,
+          "activeId": "",
+          "activeTag": "BODY",
+          "activeHref": null,
+          "activePublicMethod": false,
+          "activeHidden": false,
+          "focusVisible": false,
+          "reloadBox": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0,
+            "right": 0
+          },
+          "statusBox": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0,
+            "right": 0
+          },
+          "documentWidth": 320,
+          "locked": 0,
+          "hydrated": 2,
+          "paidLinks": [
+            "stocks/WMB.html",
+            "stocks/WMB.html"
+          ],
+          "busy": [
+            "false",
+            "false"
+          ],
+          "focusEvents": [],
+          "url": "http://127.0.0.1:49729/confluence_screener.html?keep=a&keep=b#return-point",
+          "public_markup_sha256": "f6c1d1c9f88237ded8edd9a030a93d07c4dc670aa0c1d9c606f1ee0a40a372d8",
+          "public_regions": 8
+        },
+        {
+          "phase": "signout_after_recovery",
+          "state": "locked",
+          "statusHidden": true,
+          "message": "",
+          "messageVisible": "",
+          "retryHidden": true,
+          "retryDisabled": "false",
+          "reloadHidden": true,
+          "activeId": "",
+          "activeTag": "BODY",
+          "activeHref": null,
+          "activePublicMethod": false,
+          "activeHidden": false,
+          "focusVisible": false,
+          "reloadBox": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0,
+            "right": 0
+          },
+          "statusBox": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0,
+            "right": 0
+          },
+          "documentWidth": 320,
+          "locked": 2,
+          "hydrated": 0,
+          "paidLinks": [],
+          "busy": [
+            "false",
+            "false"
+          ],
+          "focusEvents": [],
+          "url": "http://127.0.0.1:49729/confluence_screener.html?keep=a&keep=b#return-point",
+          "public_markup_sha256": "f6c1d1c9f88237ded8edd9a030a93d07c4dc670aa0c1d9c606f1ee0a40a372d8",
+          "public_regions": 8
+        }
+      ],
+      "status": "PASS",
+      "requests": [
+        {
+          "path": "/premiumdata/confluence_screener.json",
+          "method": "GET"
+        },
+        {
+          "path": "/premiumdata/confluence_screener.json",
+          "method": "GET"
+        },
+        {
+          "path": "/premiumdata/confluence_screener.json",
+          "method": "GET"
+        }
+      ],
+      "page_hits": [
+        "/confluence_screener.html?keep=a&keep=b",
+        "/confluence_screener.html?keep=a&keep=b"
+      ],
+      "server_errors": [],
+      "aborted_responses": 0
+    },
+    {
+      "name": "preserve_moved_focus-320-zh",
+      "mode": "preserve_moved_focus",
+      "width": 320,
+      "lang": "zh",
+      "observations": [
+        {
+          "phase": "initial_unavailable",
+          "state": "unavailable",
+          "statusHidden": false,
+          "message": "Matching stocks could not be loaded. The public counts are unchanged.暂时无法加载匹配股票，公开数量保持不变。",
+          "messageVisible": "暂时无法加载匹配股票，公开数量保持不变。",
+          "retryHidden": false,
+          "retryDisabled": "false",
+          "reloadHidden": true,
+          "activeId": "",
+          "activeTag": "BODY",
+          "activeHref": null,
+          "activePublicMethod": false,
+          "activeHidden": false,
+          "focusVisible": false,
+          "reloadBox": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0,
+            "right": 0
+          },
+          "statusBox": {
+            "x": 20,
+            "y": 3638.296875,
+            "width": 280,
+            "height": 132,
+            "right": 300
+          },
+          "documentWidth": 320,
+          "locked": 2,
+          "hydrated": 0,
+          "paidLinks": [],
+          "busy": [
+            "false",
+            "false"
+          ],
+          "focusEvents": [],
+          "url": "http://127.0.0.1:49729/confluence_screener.html?keep=a&keep=b#return-point",
+          "public_markup_sha256": "f6c1d1c9f88237ded8edd9a030a93d07c4dc670aa0c1d9c606f1ee0a40a372d8",
+          "public_regions": 8
+        },
+        {
+          "phase": "pending_keyboard_retry",
+          "state": "checking",
+          "statusHidden": false,
+          "message": "Checking access to matching stocks…正在检查匹配股票的访问权限…",
+          "messageVisible": "正在检查匹配股票的访问权限…",
+          "retryHidden": false,
+          "retryDisabled": "true",
+          "reloadHidden": true,
+          "activeId": "confluence-check-access",
+          "activeTag": "BUTTON",
+          "activeHref": null,
+          "activePublicMethod": false,
+          "activeHidden": false,
+          "focusVisible": true,
+          "reloadBox": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0,
+            "right": 0
+          },
+          "statusBox": {
+            "x": 20,
+            "y": 391.296875,
+            "width": 280,
+            "height": 111,
+            "right": 300
+          },
+          "documentWidth": 320,
+          "locked": 2,
+          "hydrated": 0,
+          "paidLinks": [],
+          "busy": [
+            "true",
+            "true"
+          ],
+          "focusEvents": [],
+          "url": "http://127.0.0.1:49729/confluence_screener.html?keep=a&keep=b#return-point",
+          "public_markup_sha256": "f6c1d1c9f88237ded8edd9a030a93d07c4dc670aa0c1d9c606f1ee0a40a372d8",
+          "public_regions": 8
+        },
+        {
+          "phase": "mismatch_response_settled",
+          "state": "mismatch",
+          "statusHidden": false,
+          "message": "This page and the stock list are from different updates. Reload the latest page.此页面与股票名单来自不同更新，请重新加载最新页面。",
+          "messageVisible": "此页面与股票名单来自不同更新，请重新加载最新页面。",
+          "retryHidden": true,
+          "retryDisabled": "false",
+          "reloadHidden": false,
+          "activeId": "",
+          "activeTag": "SUMMARY",
+          "activeHref": null,
+          "activePublicMethod": true,
+          "activeHidden": false,
+          "focusVisible": true,
+          "reloadBox": {
+            "x": 37,
+            "y": 1118.296875,
+            "width": 138,
+            "height": 44,
+            "right": 175
+          },
+          "statusBox": {
+            "x": 20,
+            "y": 1047.296875,
+            "width": 280,
+            "height": 132,
+            "right": 300
+          },
+          "documentWidth": 320,
+          "locked": 2,
+          "hydrated": 0,
+          "paidLinks": [],
+          "busy": [
+            "false",
+            "false"
+          ],
+          "focusEvents": [],
+          "url": "http://127.0.0.1:49729/confluence_screener.html?keep=a&keep=b#return-point",
+          "public_markup_sha256": "f6c1d1c9f88237ded8edd9a030a93d07c4dc670aa0c1d9c606f1ee0a40a372d8",
+          "public_regions": 8
+        }
+      ],
+      "status": "PASS",
+      "requests": [
+        {
+          "path": "/premiumdata/confluence_screener.json",
+          "method": "GET"
+        },
+        {
+          "path": "/premiumdata/confluence_screener.json",
+          "method": "GET"
+        }
+      ],
+      "page_hits": [
+        "/confluence_screener.html?keep=a&keep=b"
+      ],
+      "server_errors": [],
+      "aborted_responses": 0
+    },
+    {
+      "name": "focus_signout_reentry-320-zh",
+      "mode": "focus_signout_reentry",
+      "width": 320,
+      "lang": "zh",
+      "observations": [
+        {
+          "phase": "initial_unavailable",
+          "state": "unavailable",
+          "statusHidden": false,
+          "message": "Matching stocks could not be loaded. The public counts are unchanged.暂时无法加载匹配股票，公开数量保持不变。",
+          "messageVisible": "暂时无法加载匹配股票，公开数量保持不变。",
+          "retryHidden": false,
+          "retryDisabled": "false",
+          "reloadHidden": true,
+          "activeId": "",
+          "activeTag": "BODY",
+          "activeHref": null,
+          "activePublicMethod": false,
+          "activeHidden": false,
+          "focusVisible": false,
+          "reloadBox": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0,
+            "right": 0
+          },
+          "statusBox": {
+            "x": 20,
+            "y": 3638.296875,
+            "width": 280,
+            "height": 132,
+            "right": 300
+          },
+          "documentWidth": 320,
+          "locked": 2,
+          "hydrated": 0,
+          "paidLinks": [],
+          "busy": [
+            "false",
+            "false"
+          ],
+          "focusEvents": [],
+          "url": "http://127.0.0.1:49729/confluence_screener.html?keep=a&keep=b#return-point",
+          "public_markup_sha256": "f6c1d1c9f88237ded8edd9a030a93d07c4dc670aa0c1d9c606f1ee0a40a372d8",
+          "public_regions": 8
+        },
+        {
+          "phase": "pending_keyboard_retry",
+          "state": "checking",
+          "statusHidden": false,
+          "message": "Checking access to matching stocks…正在检查匹配股票的访问权限…",
+          "messageVisible": "正在检查匹配股票的访问权限…",
+          "retryHidden": false,
+          "retryDisabled": "true",
+          "reloadHidden": true,
+          "activeId": "confluence-check-access",
+          "activeTag": "BUTTON",
+          "activeHref": null,
+          "activePublicMethod": false,
+          "activeHidden": false,
+          "focusVisible": true,
+          "reloadBox": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0,
+            "right": 0
+          },
+          "statusBox": {
+            "x": 20,
+            "y": 391.296875,
+            "width": 280,
+            "height": 111,
+            "right": 300
+          },
+          "documentWidth": 320,
+          "locked": 2,
+          "hydrated": 0,
+          "paidLinks": [],
+          "busy": [
+            "true",
+            "true"
+          ],
+          "focusEvents": [],
+          "url": "http://127.0.0.1:49729/confluence_screener.html?keep=a&keep=b#return-point",
+          "public_markup_sha256": "f6c1d1c9f88237ded8edd9a030a93d07c4dc670aa0c1d9c606f1ee0a40a372d8",
+          "public_regions": 8
+        },
+        {
+          "phase": "mismatch_response_settled",
+          "state": "locked",
+          "statusHidden": true,
+          "message": "",
+          "messageVisible": "",
+          "retryHidden": true,
+          "retryDisabled": "false",
+          "reloadHidden": true,
+          "activeId": "",
+          "activeTag": "BODY",
+          "activeHref": null,
+          "activePublicMethod": false,
+          "activeHidden": false,
+          "focusVisible": false,
+          "reloadBox": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0,
+            "right": 0
+          },
+          "statusBox": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0,
+            "right": 0
+          },
+          "documentWidth": 320,
+          "locked": 2,
+          "hydrated": 0,
+          "paidLinks": [],
+          "busy": [
+            "false",
+            "false"
+          ],
+          "focusEvents": [
+            {
+              "retryHidden": false,
+              "reloadHidden": false,
+              "state": "mismatch",
+              "message": "此页面与股票名单来自不同更新，请重新加载最新页面。",
+              "activeId": "confluence-reload-access"
+            }
+          ],
+          "url": "http://127.0.0.1:49729/confluence_screener.html?keep=a&keep=b#return-point",
+          "public_markup_sha256": "f6c1d1c9f88237ded8edd9a030a93d07c4dc670aa0c1d9c606f1ee0a40a372d8",
+          "public_regions": 8
+        }
+      ],
+      "status": "PASS",
+      "requests": [
+        {
+          "path": "/premiumdata/confluence_screener.json",
+          "method": "GET"
+        },
+        {
+          "path": "/premiumdata/confluence_screener.json",
+          "method": "GET"
+        }
+      ],
+      "page_hits": [
+        "/confluence_screener.html?keep=a&keep=b"
+      ],
+      "server_errors": [],
+      "aborted_responses": 0
+    },
+    {
+      "name": "focus_returns_to_retry-320-zh",
+      "mode": "focus_returns_to_retry",
+      "width": 320,
+      "lang": "zh",
+      "observations": [
+        {
+          "phase": "initial_unavailable",
+          "state": "unavailable",
+          "statusHidden": false,
+          "message": "Matching stocks could not be loaded. The public counts are unchanged.暂时无法加载匹配股票，公开数量保持不变。",
+          "messageVisible": "暂时无法加载匹配股票，公开数量保持不变。",
+          "retryHidden": false,
+          "retryDisabled": "false",
+          "reloadHidden": true,
+          "activeId": "",
+          "activeTag": "BODY",
+          "activeHref": null,
+          "activePublicMethod": false,
+          "activeHidden": false,
+          "focusVisible": false,
+          "reloadBox": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0,
+            "right": 0
+          },
+          "statusBox": {
+            "x": 20,
+            "y": 3638.296875,
+            "width": 280,
+            "height": 132,
+            "right": 300
+          },
+          "documentWidth": 320,
+          "locked": 2,
+          "hydrated": 0,
+          "paidLinks": [],
+          "busy": [
+            "false",
+            "false"
+          ],
+          "focusEvents": [],
+          "url": "http://127.0.0.1:49729/confluence_screener.html?keep=a&keep=b#return-point",
+          "public_markup_sha256": "f6c1d1c9f88237ded8edd9a030a93d07c4dc670aa0c1d9c606f1ee0a40a372d8",
+          "public_regions": 8
+        },
+        {
+          "phase": "pending_keyboard_retry",
+          "state": "checking",
+          "statusHidden": false,
+          "message": "Checking access to matching stocks…正在检查匹配股票的访问权限…",
+          "messageVisible": "正在检查匹配股票的访问权限…",
+          "retryHidden": false,
+          "retryDisabled": "true",
+          "reloadHidden": true,
+          "activeId": "confluence-check-access",
+          "activeTag": "BUTTON",
+          "activeHref": null,
+          "activePublicMethod": false,
+          "activeHidden": false,
+          "focusVisible": true,
+          "reloadBox": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0,
+            "right": 0
+          },
+          "statusBox": {
+            "x": 20,
+            "y": 391.296875,
+            "width": 280,
+            "height": 111,
+            "right": 300
+          },
+          "documentWidth": 320,
+          "locked": 2,
+          "hydrated": 0,
+          "paidLinks": [],
+          "busy": [
+            "true",
+            "true"
+          ],
+          "focusEvents": [],
+          "url": "http://127.0.0.1:49729/confluence_screener.html?keep=a&keep=b#return-point",
+          "public_markup_sha256": "f6c1d1c9f88237ded8edd9a030a93d07c4dc670aa0c1d9c606f1ee0a40a372d8",
+          "public_regions": 8
+        },
+        {
+          "phase": "mismatch_response_settled",
+          "state": "mismatch",
+          "statusHidden": false,
+          "message": "This page and the stock list are from different updates. Reload the latest page.此页面与股票名单来自不同更新，请重新加载最新页面。",
+          "messageVisible": "此页面与股票名单来自不同更新，请重新加载最新页面。",
+          "retryHidden": false,
+          "retryDisabled": "false",
+          "reloadHidden": false,
+          "activeId": "confluence-check-access",
+          "activeTag": "BUTTON",
+          "activeHref": null,
+          "activePublicMethod": false,
+          "activeHidden": false,
+          "focusVisible": true,
+          "reloadBox": {
+            "x": 37,
+            "y": 497.296875,
+            "width": 138,
+            "height": 44,
+            "right": 175
+          },
+          "statusBox": {
+            "x": 20,
+            "y": 370.296875,
+            "width": 280,
+            "height": 188,
+            "right": 300
+          },
+          "documentWidth": 320,
+          "locked": 2,
+          "hydrated": 0,
+          "paidLinks": [],
+          "busy": [
+            "false",
+            "false"
+          ],
+          "focusEvents": [
+            {
+              "retryHidden": false,
+              "reloadHidden": false,
+              "state": "mismatch",
+              "message": "此页面与股票名单来自不同更新，请重新加载最新页面。",
+              "activeId": "confluence-reload-access"
+            }
+          ],
+          "url": "http://127.0.0.1:49729/confluence_screener.html?keep=a&keep=b#return-point",
+          "public_markup_sha256": "f6c1d1c9f88237ded8edd9a030a93d07c4dc670aa0c1d9c606f1ee0a40a372d8",
+          "public_regions": 8
+        }
+      ],
+      "status": "PASS",
+      "requests": [
+        {
+          "path": "/premiumdata/confluence_screener.json",
+          "method": "GET"
+        },
+        {
+          "path": "/premiumdata/confluence_screener.json",
+          "method": "GET"
+        }
+      ],
+      "page_hits": [
+        "/confluence_screener.html?keep=a&keep=b"
+      ],
+      "server_errors": [],
+      "aborted_responses": 0
+    },
+    {
+      "name": "focus_moves_to_public-320-zh",
+      "mode": "focus_moves_to_public",
+      "width": 320,
+      "lang": "zh",
+      "observations": [
+        {
+          "phase": "initial_unavailable",
+          "state": "unavailable",
+          "statusHidden": false,
+          "message": "Matching stocks could not be loaded. The public counts are unchanged.暂时无法加载匹配股票，公开数量保持不变。",
+          "messageVisible": "暂时无法加载匹配股票，公开数量保持不变。",
+          "retryHidden": false,
+          "retryDisabled": "false",
+          "reloadHidden": true,
+          "activeId": "",
+          "activeTag": "BODY",
+          "activeHref": null,
+          "activePublicMethod": false,
+          "activeHidden": false,
+          "focusVisible": false,
+          "reloadBox": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0,
+            "right": 0
+          },
+          "statusBox": {
+            "x": 20,
+            "y": 3638.296875,
+            "width": 280,
+            "height": 132,
+            "right": 300
+          },
+          "documentWidth": 320,
+          "locked": 2,
+          "hydrated": 0,
+          "paidLinks": [],
+          "busy": [
+            "false",
+            "false"
+          ],
+          "focusEvents": [],
+          "url": "http://127.0.0.1:49729/confluence_screener.html?keep=a&keep=b#return-point",
+          "public_markup_sha256": "f6c1d1c9f88237ded8edd9a030a93d07c4dc670aa0c1d9c606f1ee0a40a372d8",
+          "public_regions": 8
+        },
+        {
+          "phase": "pending_keyboard_retry",
+          "state": "checking",
+          "statusHidden": false,
+          "message": "Checking access to matching stocks…正在检查匹配股票的访问权限…",
+          "messageVisible": "正在检查匹配股票的访问权限…",
+          "retryHidden": false,
+          "retryDisabled": "true",
+          "reloadHidden": true,
+          "activeId": "confluence-check-access",
+          "activeTag": "BUTTON",
+          "activeHref": null,
+          "activePublicMethod": false,
+          "activeHidden": false,
+          "focusVisible": true,
+          "reloadBox": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0,
+            "right": 0
+          },
+          "statusBox": {
+            "x": 20,
+            "y": 391.296875,
+            "width": 280,
+            "height": 111,
+            "right": 300
+          },
+          "documentWidth": 320,
+          "locked": 2,
+          "hydrated": 0,
+          "paidLinks": [],
+          "busy": [
+            "true",
+            "true"
+          ],
+          "focusEvents": [],
+          "url": "http://127.0.0.1:49729/confluence_screener.html?keep=a&keep=b#return-point",
+          "public_markup_sha256": "f6c1d1c9f88237ded8edd9a030a93d07c4dc670aa0c1d9c606f1ee0a40a372d8",
+          "public_regions": 8
+        },
+        {
+          "phase": "mismatch_response_settled",
+          "state": "mismatch",
+          "statusHidden": false,
+          "message": "This page and the stock list are from different updates. Reload the latest page.此页面与股票名单来自不同更新，请重新加载最新页面。",
+          "messageVisible": "此页面与股票名单来自不同更新，请重新加载最新页面。",
+          "retryHidden": true,
+          "retryDisabled": "false",
+          "reloadHidden": false,
+          "activeId": "",
+          "activeTag": "SUMMARY",
+          "activeHref": null,
+          "activePublicMethod": true,
+          "activeHidden": false,
+          "focusVisible": true,
+          "reloadBox": {
+            "x": 37,
+            "y": 441.296875,
+            "width": 138,
+            "height": 44,
+            "right": 175
+          },
+          "statusBox": {
+            "x": 20,
+            "y": 370.296875,
+            "width": 280,
+            "height": 132,
+            "right": 300
+          },
+          "documentWidth": 320,
+          "locked": 2,
+          "hydrated": 0,
+          "paidLinks": [],
+          "busy": [
+            "false",
+            "false"
+          ],
+          "focusEvents": [
+            {
+              "retryHidden": false,
+              "reloadHidden": false,
+              "state": "mismatch",
+              "message": "此页面与股票名单来自不同更新，请重新加载最新页面。",
+              "activeId": "confluence-reload-access"
+            }
+          ],
+          "url": "http://127.0.0.1:49729/confluence_screener.html?keep=a&keep=b#return-point",
+          "public_markup_sha256": "f6c1d1c9f88237ded8edd9a030a93d07c4dc670aa0c1d9c606f1ee0a40a372d8",
+          "public_regions": 8
+        }
+      ],
+      "status": "PASS",
+      "requests": [
+        {
+          "path": "/premiumdata/confluence_screener.json",
+          "method": "GET"
+        },
+        {
+          "path": "/premiumdata/confluence_screener.json",
+          "method": "GET"
+        }
+      ],
+      "page_hits": [
+        "/confluence_screener.html?keep=a&keep=b"
+      ],
+      "server_errors": [],
+      "aborted_responses": 0
+    }
+  ],
+  "captures": [
+    {
+      "file": "mismatch-focus-1440-en.png",
+      "width": 1440,
+      "lang": "en",
+      "bytes": 14861,
+      "sha256": "fe6acbc74ac48e65edece5d9e6e9f62ddb06cad957dbe4195522659029360900",
+      "blob": "de8b8fc60137460cf912a3d0384118ea563156ef"
+    },
+    {
+      "file": "mismatch-focus-320-zh.png",
+      "width": 320,
+      "lang": "zh",
+      "bytes": 11280,
+      "sha256": "ffe0be5cae2881e50e085dad2bfc7e30509ce29a45fa43b562e4c928544249b1",
+      "blob": "85faed67390e809d487aae3732b1f44411c6fad7"
+    }
+  ],
+  "sources": {
+    "page": {
+      "bytes": 123115,
+      "sha256": "f32a914ea6d9f5d2ab877ec6520f116eaddf55a2f3d80003cfd1a691cc0d0fd2",
+      "blob": "ca589e98196b2b29c10b98ff440d1e8b23008aee"
+    },
+    "protected_payload": {
+      "bytes": 542,
+      "sha256": "11a76bb62e26bd344ef29c198b7791df95b4140d18328f46f54b343f78aa4e7d",
+      "blob": "ed039512de9bf2fe3c838b6d562d0ef5da72658f"
+    },
+    "harness": {
+      "bytes": 18443,
+      "sha256": "1c1f21389550bae1b99e07bb37b5a7a25155189c95dbea2806332496d6ed1681",
+      "blob": "1e628e8ba042d492d7f1732c578c2d28c993fbd5"
+    },
+    "existing_auth_fixture_owner": {
+      "bytes": 33564,
+      "sha256": "177903221965eeaceed7a8ff952e64cbdb0ad19d4d77c658710dd8ef8da4e147",
+      "blob": "a2a8a69944c5dd05f4c321d409305772a9a6360a"
+    }
+  },
+  "fixture": {
+    "page": "actual saved HTML",
+    "payload": "actual saved protected JSON",
+    "mismatch": "only full-source hash replaced with an intentionally different hash; same schema and clock",
+    "sequence": "503 unavailable -> held mismatching v2 -> valid pair after native reload",
+    "auth": "existing controlled AUTH fixture; no live entitlement"
+  },
+  "scope": "Native Tab/Enter retry, pending response, focus-before-hide handoff, newer user focus, synchronous sign-out reentry, URL-preserving reload, matching-pair hydration and sign-out. No deployment/live-account/production-auth or spoken AT claim."
+}

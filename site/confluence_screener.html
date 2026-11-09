@@ -1003,7 +1003,7 @@ html[data-theme="light"] .cs-tipped:hover,html[data-theme="light"] .cs-tipped:fo
       <li><span class="l-en"><b>Leads, not proof.</b> These combos were found by searching a large pool of signal recipes. Treat them as things to watch and research, not a guarantee.</span>
         <span class="l-zh"><b>线索，非定论。</b>这些组合由自动搜索大量信号配方得出。请将其视为值得观察与研究的线索，而非保证。</span></li>
       <li><span class="l-en"><b>The stocks are survivors.</b> The list covers 256 large, established US companies — names that made it. That flatters the win rates. Small and failed companies aren't here.</span>
-        <span class="l-zh"><b>标的是幸存者。</b>名单覆盖 256 家大型成熟美国公司——都是活下来的赢家。这会美化胜率。小盘股与失败公司不在其中。</span></li>
+        <span class="l-zh"><b>标的是幸存者。</b>名单覆盖 256 家大型成熟美国公司——都是留存下来的公司。这会美化胜率。小盘股与失败公司不在其中。</span></li>
       <li><span class="l-en"><b>Small recent samples.</b> A recent-era rate can rest on only a couple dozen monthly readings — samples that thin will wobble. Months and fires are shown beside each rate; open “How these readings are calculated” for definitions.</span>
         <span class="l-zh"><b>近期样本偏小。</b>近期胜率可能只基于二十来个月度读数——样本这么小，数字会有波动。月份与触发次数列在各读数旁；打开「这些读数如何计算」可查看定义。</span></li>
       <li><span class="l-en"><b>Win rates are historical, month-by-month reads.</b> First average wins within each month, then average those months equally. This does not remove dependence between observations or selection bias from searching many recipes.</span>
@@ -1088,7 +1088,8 @@ html[data-theme="light"] .cs-tipped:hover,html[data-theme="light"] .cs-tipped:fo
     };
     statusBox.setAttribute('data-state', state);
     statusBox.hidden = !copy[state];
-    retry.hidden = ['unavailable', 'invalid', 'denied', 'expired'].indexOf(state) < 0 && !(state === 'checking' && inFlight && inFlight.returnFocus);
+    var hideRetry = ['unavailable', 'invalid', 'denied', 'expired'].indexOf(state) < 0 && !(state === 'checking' && inFlight && inFlight.returnFocus);
+    var moveToReload = state === 'mismatch' && hideRetry && document.activeElement === retry;
     /* Keep a deliberate retry focusable while checking; the handler guards
        duplicate activation. Native disabling can discard keyboard focus. */
     retry.setAttribute('aria-disabled', state === 'checking' ? 'true' : 'false');
@@ -1096,6 +1097,14 @@ html[data-theme="light"] .cs-tipped:hover,html[data-theme="light"] .cs-tipped:fo
     message.textContent = '';
     if(copy[state]) message.appendChild(bilingual(copy[state][0], copy[state][1]));
     rows.forEach(function(row){ row.live.setAttribute('aria-busy', state === 'checking' ? 'true' : 'false'); });
+    if(moveToReload){
+      var focusTicket = inFlight;
+      /* Reveal and describe the next action before retiring its focused predecessor.
+         Focus callbacks can invalidate this request or choose another destination. */
+      reload.focus({preventScroll:true});
+      if(!focusTicket || inFlight !== focusTicket || !sameRequest(focusTicket) || document.activeElement === retry) return;
+    }
+    retry.hidden = hideRetry;
   }
 
   function currentUserId(){

@@ -1,10 +1,14 @@
 # Confluence compatibility and truthful actions
 
-## Current continuation: method figure and narrow locked grouping
+## Current continuation: focus-safe reload recovery
+
+When a keyboard retry receives a different source generation, focus now moves to the existing Reload action before the retry hides. Newer user focus and synchronous existing-owner callbacks are preserved. A Chinese survivorship phrase also drops an unsupported winner implication. [FOCUS_RECOVERY.md](FOCUS_RECOVERY.md) contains the exact same-controller contract, 10 focused recovery cases, 14 compatibility regressions, 92 existing page tests and original before/after captures. All card markup, layout, method/motion code, builder and protected data remain exact.
+
+## Previous continuation: method figure and narrow locked grouping
 
 The native method disclosure now explains monthly aggregation in two visible steps, with a precise entry-price definition and one 120ms opacity reveal that disappears under reduced motion. At 320px, the locked icon stays beside its explanation and its unchanged action moves upward. [METHOD_AND_NARROW_LAYOUT.md](METHOD_AND_NARROW_LAYOUT.md) records the source contract, original captures, 92 existing page tests and 13 focused browser cases, including page-JavaScript-disabled native disclosure. The builder, protected JSON, four remaining method paragraphs and scripts remain exact.
 
-## Previous continuation: access and snapshot copy
+## Earlier continuation: access and snapshot copy
 
 The locked explanation now names the existing eligible-plan requirement. A retained empty-match fallback describes only its snapshot and no longer infers today’s market state or rarity. [COPY_CLARITY.md](COPY_CLARITY.md) records the four text substitutions, exact inverse/source checks, **92 existing page tests** and two native visual inspections. Access, trial CTA, hrefs, source selection, layout and scripts remain unchanged.
 

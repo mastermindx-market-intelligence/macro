@@ -1,0 +1,228 @@
+{
+  "schema": "confluence_recovery_validation/v1",
+  "parent": "a981425d32d9a26c520d2d4c267080178c477931",
+  "changes": [
+    [
+      "  function showState(state){\n    if(!statusBox) return;\n    var copy = {\n      checking: ['Checking access to matching stocks…', '正在检查匹配股票的访问权限…'],\n      denied: ['Your plan does not include these matching names. Public evidence remains available.', '您的方案不包含这些匹配名称，公开历史依据仍可查看。'],\n      expired: ['Sign in again to check access. Public evidence remains available.', '请重新登录以检查访问权限，公开历史依据仍可查看。'],\n      unavailable: ['Matching stocks could not be loaded. The public counts are unchanged.', '暂时无法加载匹配股票，公开数量保持不变。'],\n      mismatch: ['This page and the stock list are from different updates. Reload the latest page.', '此页面与股票名单来自不同更新，请重新加载最新页面。'],\n      invalid: ['The matching-stock response is incomplete. No paid names were displayed.', '匹配股票的返回数据不完整，未显示任何付费名称。']\n    };\n    statusBox.setAttribute('data-state', state);\n    statusBox.hidden = !copy[state];\n    retry.hidden = ['unavailable', 'invalid', 'denied', 'expired'].indexOf(state) < 0 && !(state === 'checking' && inFlight && inFlight.returnFocus);\n    /* Keep a deliberate retry focusable while checking; the handler guards\n       duplicate activation. Native disabling can discard keyboard focus. */\n    retry.setAttribute('aria-disabled', state === 'checking' ? 'true' : 'false');\n    reload.hidden = state !== 'mismatch';\n    message.textContent = '';\n    if(copy[state]) message.appendChild(bilingual(copy[state][0], copy[state][1]));\n    rows.forEach(function(row){ row.live.setAttribute('aria-busy', state === 'checking' ? 'true' : 'false'); });\n  }\n",
+      "  function showState(state){\n    if(!statusBox) return;\n    var copy = {\n      checking: ['Checking access to matching stocks…', '正在检查匹配股票的访问权限…'],\n      denied: ['Your plan does not include these matching names. Public evidence remains available.', '您的方案不包含这些匹配名称，公开历史依据仍可查看。'],\n      expired: ['Sign in again to check access. Public evidence remains available.', '请重新登录以检查访问权限，公开历史依据仍可查看。'],\n      unavailable: ['Matching stocks could not be loaded. The public counts are unchanged.', '暂时无法加载匹配股票，公开数量保持不变。'],\n      mismatch: ['This page and the stock list are from different updates. Reload the latest page.', '此页面与股票名单来自不同更新，请重新加载最新页面。'],\n      invalid: ['The matching-stock response is incomplete. No paid names were displayed.', '匹配股票的返回数据不完整，未显示任何付费名称。']\n    };\n    statusBox.setAttribute('data-state', state);\n    statusBox.hidden = !copy[state];\n    var hideRetry = ['unavailable', 'invalid', 'denied', 'expired'].indexOf(state) < 0 && !(state === 'checking' && inFlight && inFlight.returnFocus);\n    var moveToReload = state === 'mismatch' && hideRetry && document.activeElement === retry;\n    /* Keep a deliberate retry focusable while checking; the handler guards\n       duplicate activation. Native disabling can discard keyboard focus. */\n    retry.setAttribute('aria-disabled', state === 'checking' ? 'true' : 'false');\n    reload.hidden = state !== 'mismatch';\n    message.textContent = '';\n    if(copy[state]) message.appendChild(bilingual(copy[state][0], copy[state][1]));\n    rows.forEach(function(row){ row.live.setAttribute('aria-busy', state === 'checking' ? 'true' : 'false'); });\n    if(moveToReload){\n      var focusTicket = inFlight;\n      /* Reveal and describe the next action before retiring its focused predecessor.\n         Focus callbacks can invalidate this request or choose another destination. */\n      reload.focus({preventScroll:true});\n      if(!focusTicket || inFlight !== focusTicket || !sameRequest(focusTicket) || document.activeElement === retry) return;\n    }\n    retry.hidden = hideRetry;\n  }\n"
+    ],
+    [
+      "都是活下来的赢家",
+      "都是留存下来的公司"
+    ]
+  ],
+  "source_receipt": {
+    "parent": "a981425d32d9a26c520d2d4c267080178c477931",
+    "template_inverse_exact": true,
+    "served_inverse_exact": true,
+    "controller_and_honesty_render_match": true,
+    "all_styles_exact": true,
+    "all_card_markup_exact": true,
+    "hero_exact": true,
+    "all_hrefs_exact": true,
+    "only_one_script_changed": true,
+    "only_showState_changed_in_script": true,
+    "unchanged_files": [
+      "scripts/build_confluence_screener.py",
+      "tests/test_confluence_screener_page.py",
+      "site/premiumdata/confluence_screener.json"
+    ],
+    "protected_payload_matches_actual_producer": true,
+    "source_generation": {
+      "schema": "confluence_source.v1",
+      "generated_utc": "2026-11-08T11:31:29Z",
+      "sha256": "4f8c3dcd8508a55978f4b27d7c4d34828bc1044881ed404120cb353b1d4dc7c1"
+    },
+    "tagged_cta_exact": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+    "files": {
+      "templates/confluence_screener.html.j2": {
+        "bytes": 53004,
+        "sha256": "2d0767740c858683d4f933534a22587491d43c4a05e30d95f0b8fbf8d4b67dbb",
+        "blob": "c6c47b9e9436bca09b799b80355d3e8ca855d2b2"
+      },
+      "site/confluence_screener.html": {
+        "bytes": 123115,
+        "sha256": "f32a914ea6d9f5d2ab877ec6520f116eaddf55a2f3d80003cfd1a691cc0d0fd2",
+        "blob": "ca589e98196b2b29c10b98ff440d1e8b23008aee"
+      },
+      "scripts/verify_confluence_recovery_browser.py": {
+        "bytes": 18443,
+        "sha256": "1c1f21389550bae1b99e07bb37b5a7a25155189c95dbea2806332496d6ed1681",
+        "blob": "1e628e8ba042d492d7f1732c578c2d28c993fbd5"
+      },
+      "scripts/build_confluence_screener.py": {
+        "bytes": 19003,
+        "sha256": "b5aa86624a18a17fd985870d9baaaa8cb745b0baffa6d4c17b6e198b6668d50a",
+        "blob": "b3db0ced7bc46607f728764c6f9f00dd851f9012"
+      },
+      "tests/test_confluence_screener_page.py": {
+        "bytes": 39299,
+        "sha256": "d1877abe2a29d2c5d7412566eface17f81c62fdd980dff178efa2d0c5e657257",
+        "blob": "906eb06bc02fb37140fa403b425316bc8341ac87"
+      },
+      "site/premiumdata/confluence_screener.json": {
+        "bytes": 542,
+        "sha256": "11a76bb62e26bd344ef29c198b7791df95b4140d18328f46f54b343f78aa4e7d",
+        "blob": "ed039512de9bf2fe3c838b6d562d0ef5da72658f"
+      }
+    }
+  },
+  "snapshot": {
+    "command": "python3 - <<'PY'\nfrom pathlib import Path\nimport shutil,hashlib,json\nr=Path(\"/Volumes/Mastermind/agent-workspaces/verify/confluence-compat-20261109-klbmhv4a\");p=r/'recovery-parent'\nassert not p.exists(),'Parent snapshot already exists; reconcile it'\npaths={'templates/confluence_screener.html.j2':'6aa36e72ee8c10ffa30ee45e4f7b2b0cac6686aa','site/confluence_screener.html':'5cc4cfce90800c399c4396142288bc5a8173d00c','scripts/build_confluence_screener.py':'b3db0ced7bc46607f728764c6f9f00dd851f9012','tests/test_confluence_screener_page.py':'906eb06bc02fb37140fa403b425316bc8341ac87','site/premiumdata/confluence_screener.json':'ed039512de9bf2fe3c838b6d562d0ef5da72658f'}\nrecords={}\nfor path,expected in paths.items():\n b=(r/path).read_bytes();blob=hashlib.sha1(b'blob '+str(len(b)).encode()+b'\\0'+b).hexdigest();assert blob==expected,(path,blob);records[path]={'blob':blob,'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest()}\nshutil.copytree(r/'templates',p/'templates')\nfor path in paths:\n if not path.startswith('templates/'):\n  dest=p/path;dest.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(r/path,dest)\n(p/'source-snapshot.json').write_text(json.dumps({'parent':'a981425d32d9a26c520d2d4c267080178c477931','files':records},indent=2)+'\\n')\nprint(json.dumps({'snapshot':str(p),'files':records}))\nPY",
+    "receipt": {
+      "content": [
+        {
+          "type": "text",
+          "text": "Process started with PID 64684 (shell: /bin/zsh)\nInitial output:\n{\"snapshot\": \"/Volumes/Mastermind/agent-workspaces/verify/confluence-compat-20261109-klbmhv4a/recovery-parent\", \"files\": {\"templates/confluence_screener.html.j2\": {\"blob\": \"6aa36e72ee8c10ffa30ee45e4f7b2b0cac6686aa\", \"bytes\": 52475, \"sha256\": \"b8883532f7db6b4a57b03dd2dd2bf94e0f9ed39a95f85b140071e446c0d86442\"}, \"site/confluence_screener.html\": {\"blob\": \"5cc4cfce90800c399c4396142288bc5a8173d00c\", \"bytes\": 122586, \"sha256\": \"7e2867cb6759edeb4208c2c28802946aad345cb710960efc1f2d44a9e0f6b88a\"}, \"scripts/build_confluence_screener.py\": {\"blob\": \"b3db0ced7bc46607f728764c6f9f00dd851f9012\", \"bytes\": 19003, \"sha256\": \"b5aa86624a18a17fd985870d9baaaa8cb745b0baffa6d4c17b6e198b6668d50a\"}, \"tests/test_confluence_screener_page.py\": {\"blob\": \"906eb06bc02fb37140fa403b425316bc8341ac87\", \"bytes\": 39299, \"sha256\": \"d1877abe2a29d2c5d7412566eface17f81c62fdd980dff178efa2d0c5e657257\"}, \"site/premiumdata/confluence_screener.json\": {\"blob\": \"ed039512de9bf2fe3c838b6d562d0ef5da72658f\", \"bytes\": 542, \"sha256\": \"11a76bb62e26bd344ef29c198b7791df95b4140d18328f46f54b343f78aa4e7d\"}}}\n"
+        }
+      ],
+      "structuredContent": null,
+      "isError": false
+    }
+  },
+  "projection": {
+    "command": "python3 - <<'PY'\nfrom pathlib import Path\nimport hashlib,html,json,re,sys\nfrom bs4 import BeautifulSoup\nr=Path(\"/Volumes/Mastermind/agent-workspaces/verify/confluence-compat-20261109-klbmhv4a\");p=r/'recovery-parent';sys.path.insert(0,str(r));m=json.loads((r/'recovery-manifest.json').read_text())\nold_template=(p/'templates/confluence_screener.html.j2').read_text();new_template=(r/'templates/confluence_screener.html.j2').read_text();inverse=new_template\nfor a,b in reversed(m['changes']):\n assert inverse.count(b)==1;inverse=inverse.replace(b,a,1)\nassert inverse==old_template\nold=(p/'site/confluence_screener.html').read_bytes().decode();new=old\nfor a,b in m['changes']:\n assert new.count(a)==1;new=new.replace(a,b,1)\nback=new\nfor a,b in reversed(m['changes']):\n assert back.count(b)==1;back=back.replace(b,a,1)\nassert back==old\nbs,ns=BeautifulSoup(old,'html.parser'),BeautifulSoup(new,'html.parser')\nassert [str(n) for n in bs.find_all('style')]==[str(n) for n in ns.find_all('style')]\nassert [str(n) for n in bs.select('.lc')]==[str(n) for n in ns.select('.lc')]\nassert str(bs.select_one('.hero'))==str(ns.select_one('.hero'))\nassert [(n.name,n.get('href')) for n in bs.select('[href]')]==[(n.name,n.get('href')) for n in ns.select('[href]')]\nbefore_scripts=[str(n) for n in bs.find_all('script')];after_scripts=[str(n) for n in ns.find_all('script')]\nassert len(before_scripts)==len(after_scripts)\nchanged_scripts=[i for i,(a,b) in enumerate(zip(before_scripts,after_scripts)) if a!=b]\nassert len(changed_scripts)==1\ni=changed_scripts[0];assert after_scripts[i].replace(m['changes'][0][1],m['changes'][0][0],1)==before_scripts[i]\nfrom scripts.build_confluence_screener import build_context,render_html,build_premium_payload\nraw=json.loads((r/'site/factordata/tech_confluence.json').read_text());tiles=json.loads((r/'site/marketdata/sp500_heatmap.json').read_text()).get('tiles',[]);names={t['t']:t['name'] for t in tiles if t.get('t') and t.get('name')}\nctx=build_context(raw,names);ctx['generated_utc']='FIXED_RECOVERY_CLOCK';ctx['cta_url']=html.unescape(re.search(r'<a class=\"btn\" href=\"([^\"]+)\"><span class=\"l-en\">Start free trial',old).group(1))\nro,rn=render_html(p,ctx),render_html(r,ctx)\ndef controller(t):\n return next(str(n) for n in BeautifulSoup(t,'html.parser').find_all('script') if 'function showState(state)' in str(n))\ndef honesty(t):return str(BeautifulSoup(t,'html.parser').select_one('.honesty'))\nassert controller(ro)==controller(old) and controller(rn)==controller(new)\nassert honesty(ro)==honesty(old) and honesty(rn)==honesty(new)\nunchanged=['scripts/build_confluence_screener.py','tests/test_confluence_screener_page.py','site/premiumdata/confluence_screener.json']\nfor path in unchanged:assert (r/path).read_bytes()==(p/path).read_bytes(),path\nassert build_premium_payload(raw,names)==json.loads((r/'site/premiumdata/confluence_screener.json').read_text())\n(r/'site/confluence_screener.html').write_bytes(new.encode())\ndef meta(path):\n b=path.read_bytes();return {'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest(),'blob':hashlib.sha1(b'blob '+str(len(b)).encode()+b'\\0'+b).hexdigest()}\nproof={'parent':m['parent'],'template_inverse_exact':True,'served_inverse_exact':True,'controller_and_honesty_render_match':True,'all_styles_exact':True,'all_card_markup_exact':True,'hero_exact':True,'all_hrefs_exact':True,'only_one_script_changed':True,'only_showState_changed_in_script':True,'unchanged_files':unchanged,'protected_payload_matches_actual_producer':True,'source_generation':ctx['source_generation'],'tagged_cta_exact':ctx['cta_url'],'files':{s:meta(r/s) for s in ['templates/confluence_screener.html.j2','site/confluence_screener.html','scripts/verify_confluence_recovery_browser.py']+unchanged}}\n(r/'recovery-source-receipt.json').write_text(json.dumps(proof,ensure_ascii=False,indent=2)+'\\n')\nprint(json.dumps(proof,ensure_ascii=False))\nPY",
+    "receipt": {
+      "content": [
+        {
+          "type": "text",
+          "text": "[Reading 2 new lines (total: 2 lines)]\n\n{\"parent\": \"a981425d32d9a26c520d2d4c267080178c477931\", \"template_inverse_exact\": true, \"served_inverse_exact\": true, \"controller_and_honesty_render_match\": true, \"all_styles_exact\": true, \"all_card_markup_exact\": true, \"hero_exact\": true, \"all_hrefs_exact\": true, \"only_one_script_changed\": true, \"only_showState_changed_in_script\": true, \"unchanged_files\": [\"scripts/build_confluence_screener.py\", \"tests/test_confluence_screener_page.py\", \"site/premiumdata/confluence_screener.json\"], \"protected_payload_matches_actual_producer\": true, \"source_generation\": {\"schema\": \"confluence_source.v1\", \"generated_utc\": \"2026-11-08T11:31:29Z\", \"sha256\": \"4f8c3dcd8508a55978f4b27d7c4d34828bc1044881ed404120cb353b1d4dc7c1\"}, \"tagged_cta_exact\": \"https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta\", \"files\": {\"templates/confluence_screener.html.j2\": {\"bytes\": 53004, \"sha256\": \"2d0767740c858683d4f933534a22587491d43c4a05e30d95f0b8fbf8d4b67dbb\", \"blob\": \"c6c47b9e9436bca09b799b80355d3e8ca855d2b2\"}, \"site/confluence_screener.html\": {\"bytes\": 123115, \"sha256\": \"f32a914ea6d9f5d2ab877ec6520f116eaddf55a2f3d80003cfd1a691cc0d0fd2\", \"blob\": \"ca589e98196b2b29c10b98ff440d1e8b23008aee\"}, \"scripts/verify_confluence_recovery_browser.py\": {\"bytes\": 18443, \"sha256\": \"1c1f21389550bae1b99e07bb37b5a7a25155189c95dbea2806332496d6ed1681\", \"blob\": \"1e628e8ba042d492d7f1732c578c2d28c993fbd5\"}, \"scripts/build_confluence_screener.py\": {\"bytes\": 19003, \"sha256\": \"b5aa86624a18a17fd985870d9baaaa8cb745b0baffa6d4c17b6e198b6668d50a\", \"blob\": \"b3db0ced7bc46607f728764c6f9f00dd851f9012\"}, \"tests/test_confluence_screener_page.py\": {\"bytes\": 39299, \"sha256\": \"d1877abe2a29d2c5d7412566eface17f81c62fdd980dff178efa2d0c5e657257\", \"blob\": \"906eb06bc02fb37140fa403b425316bc8341ac87\"}, \"site/premiumdata/confluence_screener.json\": {\"bytes\": 542, \"sha256\": \"11a76bb62e26bd344ef29c198b7791df95b4140d18328f46f54b343f78aa4e7d\", \"blob\": \"ed039512de9bf2fe3c838b6d562d0ef5da72658f\"}}}\n\n✅ Process completed with exit code 0 (runtime: 5.74s)"
+        }
+      ],
+      "structuredContent": null,
+      "isError": false
+    }
+  },
+  "runs": {
+    "commands": {
+      "browser": "python3 -B '/Volumes/Mastermind/agent-workspaces/verify/confluence-compat-20261109-klbmhv4a/scripts/verify_confluence_recovery_browser.py' --out '/Volumes/Mastermind/agent-workspaces/verify/confluence-compat-20261109-klbmhv4a/recovery-reviewed-proof' --browser-executable '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'",
+      "tests": "python3 - <<'PY'\nfrom pathlib import Path\nimport json,subprocess,sys\nr=Path('/Volumes/Mastermind/agent-workspaces/verify/confluence-compat-20261109-klbmhv4a')\np=subprocess.run([sys.executable,'-B','-m','pytest','-q','tests/test_confluence_screener_page.py','--disable-warnings','--basetemp',str(r/'pytest-recovery-reviewed-render')],cwd=r,text=True,capture_output=True)\n(r/'recovery-reviewed-page-tests-output.txt').write_text(p.stdout+p.stderr);print(p.stdout);print(p.stderr);print(json.dumps({'exit':p.returncode}));raise SystemExit(p.returncode)\nPY",
+      "compatibility": "python3 -B '/Volumes/Mastermind/agent-workspaces/verify/confluence-compat-20261109-klbmhv4a/scripts/verify_confluence_compatibility_browser.py' --out '/Volumes/Mastermind/agent-workspaces/verify/confluence-compat-20261109-klbmhv4a/recovery-compatibility-proof' --browser-executable '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'"
+    },
+    "recovery": {
+      "content": [
+        {
+          "type": "text",
+          "text": "[Reading 2 new lines (total: 2 lines)]\n\n{\"passed\": 10, \"failed\": 0, \"contexts\": 10, \"page_errors\": 0, \"report\": \"/Volumes/Mastermind/agent-workspaces/verify/confluence-compat-20261109-klbmhv4a/recovery-reviewed-proof/browser-report.json\", \"failures\": []}\n\n✅ Process completed with exit code 0 (runtime: 16.58s)"
+        }
+      ],
+      "structuredContent": null,
+      "isError": false
+    },
+    "compatibility": {
+      "content": [
+        {
+          "type": "text",
+          "text": "[Reading 2 new lines (total: 2 lines)]\n\n{\"passed\": 14, \"failed\": 0, \"contexts\": 14, \"page_errors\": 0, \"selection\": {\"case_prefix\": [], \"status\": \"SELECTED\"}, \"report\": \"/Volumes/Mastermind/agent-workspaces/verify/confluence-compat-20261109-klbmhv4a/recovery-compatibility-proof/browser-report.json\", \"failures\": []}\n\n✅ Process completed with exit code 0 (runtime: 20.65s)"
+        }
+      ],
+      "structuredContent": null,
+      "isError": false
+    },
+    "page_tests": {
+      "content": [
+        {
+          "type": "text",
+          "text": "[Reading 7 new lines (total: 7 lines)]\n\n........................................................................ [ 78%]\n....................                                                     [100%]\n92 passed in 13.23s\n\n\n{\"exit\": 0}\n\n✅ Process completed with exit code 0 (runtime: 14.64s)"
+        }
+      ],
+      "structuredContent": null,
+      "isError": false
+    },
+    "tests_output": "........................................................................ [ 78%]\n....................                                                     [100%]\n92 passed in 13.23s\n"
+  },
+  "baseline": {
+    "command": "python3 -B '/Volumes/Mastermind/agent-workspaces/verify/confluence-compat-20261109-klbmhv4a/scripts/verify_confluence_recovery_browser.py' --out '/Volumes/Mastermind/agent-workspaces/verify/confluence-compat-20261109-klbmhv4a/recovery-baseline-proof' --page '/Volumes/Mastermind/agent-workspaces/verify/confluence-compat-20261109-klbmhv4a/recovery-parent/site/confluence_screener.html' --browser-executable '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'",
+    "run": {
+      "content": [
+        {
+          "type": "text",
+          "text": "[Reading 2 new lines (total: 2 lines)]\n\n{\"passed\": 2, \"failed\": 4, \"contexts\": 6, \"page_errors\": 0, \"report\": \"/Volumes/Mastermind/agent-workspaces/verify/confluence-compat-20261109-klbmhv4a/recovery-baseline-proof/browser-report.json\", \"failures\": [{\"name\": \"retry_to_reload-1440-en\", \"error\": \"{'state': 'mismatch', 'statusHidden': False, 'message': 'This page and the stock list are from different updates. Reload the latest page.此页面与股票名单来自不同更新，请重新加载最新页面。', 'messageVisible': 'This page and the stock list are from different updates.\"}, {\"name\": \"focus_signout_reentry-1440-en\", \"error\": \"{'state': 'mismatch', 'statusHidden': False, 'message': 'This page and the stock list are from different updates. Reload the latest page.此页面与股票名单来自不同更新，请重新加载最新页面。', 'messageVisible': 'This page and the stock list are from different updates.\"}, {\"name\": \"retry_to_reload-320-zh\", \"error\": \"{'state': 'mismatch', 'statusHidden': False, 'message': 'This page and the stock list are from different updates. Reload the latest page.此页面与股票名单来自不同更新，请重新加载最新页面。', 'messageVisible': '此页面与股票名单来自不同更新，请重新加载最新页面。', 'retryHidden': True, 'retryD\"}, {\"name\": \"focus_signout_reentry-320-zh\", \"error\": \"{'state': 'mismatch', 'statusHidden': False, 'message': 'This page and the stock list are from different updates. Reload the latest page.此页面与股票名单来自不同更新，请重新加载最新页面。', 'messageVisible': '此页面与股票名单来自不同更新，请重新加载最新页面。', 'retryHidden': True, 'retryD\"}]}\n\n✅ Process completed with exit code 1 (runtime: 12.09s)"
+        }
+      ],
+      "structuredContent": null,
+      "isError": false
+    },
+    "diagnosis": {
+      "content": [
+        {
+          "type": "text",
+          "text": "[Reading 2 new lines (total: 2 lines)]\n\n{\"bytes\": 769505, \"sha256\": \"3b639bb11e7cb887f7e86afcadad1434ef61ce0bb5d951b21bd0e95d079851c6\", \"cases\": [{\"name\": \"retry_to_reload-1440-en\", \"status\": \"FAIL\", \"last\": {\"phase\": \"mismatch_response_settled\", \"state\": \"mismatch\", \"activeId\": \"\", \"activeTag\": \"BODY\", \"activeHidden\": false, \"retryHidden\": true, \"reloadHidden\": false, \"focusEvents\": []}, \"trace\": \"   <p><span class=\\\"l-en\\\">Source ordering uses a Wilson-based ranking heuristic on the recent monthly win average, minus the random-entry baseline. It is a ranking heuristic, not a statistical-significance result.</span><span class=\\\"l-zh\\\">源数据排序使用近期月均胜率的 Wilson 近似值并减去随机入场基准。这是排序方法，不是统计显著性结果。</span></p>\\\\n      </details>'], 'locked': 2, 'hydrated': 0, 'paidLinks': [], 'busy': ['false', 'false'], 'focusEvents': [], 'url': 'http://127.0.0.1:64793/confluence_screener.html?keep=a&keep=b#return-point'}\\n\"}, {\"name\": \"preserve_moved_focus-1440-en\", \"status\": \"PASS\", \"last\": {\"phase\": \"mismatch_response_settled\", \"state\": \"mismatch\", \"activeId\": \"\", \"activeTag\": \"SUMMARY\", \"activeHidden\": false, \"retryHidden\": true, \"reloadHidden\": false, \"focusEvents\": []}, \"trace\": \"\"}, {\"name\": \"focus_signout_reentry-1440-en\", \"status\": \"FAIL\", \"last\": {\"phase\": \"mismatch_response_settled\", \"state\": \"mismatch\", \"activeId\": \"\", \"activeTag\": \"BODY\", \"activeHidden\": false, \"retryHidden\": true, \"reloadHidden\": false, \"focusEvents\": []}, \"trace\": \"   <p><span class=\\\"l-en\\\">Source ordering uses a Wilson-based ranking heuristic on the recent monthly win average, minus the random-entry baseline. It is a ranking heuristic, not a statistical-significance result.</span><span class=\\\"l-zh\\\">源数据排序使用近期月均胜率的 Wilson 近似值并减去随机入场基准。这是排序方法，不是统计显著性结果。</span></p>\\\\n      </details>'], 'locked': 2, 'hydrated': 0, 'paidLinks': [], 'busy': ['false', 'false'], 'focusEvents': [], 'url': 'http://127.0.0.1:64793/confluence_screener.html?keep=a&keep=b#return-point'}\\n\"}, {\"name\": \"retry_to_reload-320-zh\", \"status\": \"FAIL\", \"last\": {\"phase\": \"mismatch_response_settled\", \"state\": \"mismatch\", \"activeId\": \"\", \"activeTag\": \"BODY\", \"activeHidden\": false, \"retryHidden\": true, \"reloadHidden\": false, \"focusEvents\": []}, \"trace\": \"   <p><span class=\\\"l-en\\\">Source ordering uses a Wilson-based ranking heuristic on the recent monthly win average, minus the random-entry baseline. It is a ranking heuristic, not a statistical-significance result.</span><span class=\\\"l-zh\\\">源数据排序使用近期月均胜率的 Wilson 近似值并减去随机入场基准。这是排序方法，不是统计显著性结果。</span></p>\\\\n      </details>'], 'locked': 2, 'hydrated': 0, 'paidLinks': [], 'busy': ['false', 'false'], 'focusEvents': [], 'url': 'http://127.0.0.1:64793/confluence_screener.html?keep=a&keep=b#return-point'}\\n\"}, {\"name\": \"preserve_moved_focus-320-zh\", \"status\": \"PASS\", \"last\": {\"phase\": \"mismatch_response_settled\", \"state\": \"mismatch\", \"activeId\": \"\", \"activeTag\": \"SUMMARY\", \"activeHidden\": false, \"retryHidden\": true, \"reloadHidden\": false, \"focusEvents\": []}, \"trace\": \"\"}, {\"name\": \"focus_signout_reentry-320-zh\", \"status\": \"FAIL\", \"last\": {\"phase\": \"mismatch_response_settled\", \"state\": \"mismatch\", \"activeId\": \"\", \"activeTag\": \"BODY\", \"activeHidden\": false, \"retryHidden\": true, \"reloadHidden\": false, \"focusEvents\": []}, \"trace\": \"   <p><span class=\\\"l-en\\\">Source ordering uses a Wilson-based ranking heuristic on the recent monthly win average, minus the random-entry baseline. It is a ranking heuristic, not a statistical-significance result.</span><span class=\\\"l-zh\\\">源数据排序使用近期月均胜率的 Wilson 近似值并减去随机入场基准。这是排序方法，不是统计显著性结果。</span></p>\\\\n      </details>'], 'locked': 2, 'hydrated': 0, 'paidLinks': [], 'busy': ['false', 'false'], 'focusEvents': [], 'url': 'http://127.0.0.1:64793/confluence_screener.html?keep=a&keep=b#return-point'}\\n\"}]}\n\n✅ Process completed with exit code 0 (runtime: 1.34s)"
+        }
+      ],
+      "structuredContent": null,
+      "isError": false
+    },
+    "projection_file": "RECOVERY_BASELINE.json",
+    "original_gzip": "RECOVERY_BASELINE_FULL.json.gz",
+    "raw": {
+      "bytes": 769505,
+      "sha256": "3b639bb11e7cb887f7e86afcadad1434ef61ce0bb5d951b21bd0e95d079851c6",
+      "blob": "c72f66a130f28af8b4620276a39c718eb4d807ea"
+    },
+    "gzip": {
+      "bytes": 19645,
+      "sha256": "b1a38ee96b19987faf7db25d24a7de08da2b34b30af5f56d275b696dd71d60c8",
+      "blob": "68590d82dda6ca0f08598f290a98d0af4220821a"
+    },
+    "classification": "One focus-loss defect in two layouts; two further callback expectations fail because the handoff is absent. Two moved-focus cases already pass."
+  },
+  "final": {
+    "focused_cases": 10,
+    "compatibility_cases": 14,
+    "total_contexts": 24,
+    "existing_page_tests": 92,
+    "page_errors": 0,
+    "focused_report": "RECOVERY_BROWSER.json",
+    "compatibility_report": "RECOVERY_COMPATIBILITY_BROWSER.json"
+  },
+  "proof_limits": [
+    "Controlled existing AUTH fixture and HTTP; no live entitlement or deployed cache proof.",
+    "Public markup compared exactly in each native case and retained as canonical JSON hashes in observations.",
+    "All layout and method/motion source exact; earlier motion/browser reports retain their own head identity.",
+    "Paper examples are static editable reference states, not runnable controllers.",
+    "Existing PR10705 admission/calendar and shared-navigation ownership remain."
+  ],
+  "paper_copy_search": [
+    {
+      "id": "UM-0",
+      "term": "survivor",
+      "excerpt": "'var(--fs-label)', lineHeight: '14px' }}>\n          Method: survivor bias · sample size · month-collapsed history · watch-not-buy. Labels and counts require a verified builder snapshot.\n        </div>\n        <"
+    },
+    {
+      "id": "100-0",
+      "term": "survivor",
+      "excerpt": "'var(--fs-label)', lineHeight: '14px' }}>\n          Method: survivor bias · sample size · month-collapsed history · watch-not-buy. Labels and counts require a verified builder snapshot.\n        </div>\n        <"
+    },
+    {
+      "id": "1F2-0",
+      "term": "幸存",
+      "excerpt": "ui)', fontSize: '10px', lineHeight: '12px' }}>\n          方法：幸存者偏差 · 样本量 · 按月历史 · 观察非买入。标签与计数须来自已验证的构建快照；行动前核对来源新鲜度。\n        </div>\n      </div>\n    </div>\n  )"
+    },
+    {
+      "id": "1JV-0",
+      "term": "幸存",
+      "excerpt": "ui)', fontSize: '10px', lineHeight: '12px' }}>\n          方法：幸存者偏差 · 样本量 · 按月历史 · 观察非买入。标签与计数须来自已验证的构建快照；行动前核对来源新鲜度。\n        </div>\n      </div>\n    </div>\n  )"
+    },
+    {
+      "id": "15E-0",
+      "term": "survivor",
+      "excerpt": " fontSize: '10px', lineHeight: '135%' }}>\n          Method: survivor bias · sample size · monthly history · watch-not-buy. Labels and counts require a verified builder snapshot.\n        </div>\n        <div id=\""
+    },
+    {
+      "id": "1TI-0",
+      "term": "survivor",
+      "excerpt": " fontSize: '10px', lineHeight: '135%' }}>\n          Method: survivor bias · sample size · monthly history · watch-not-buy. Labels and counts require a verified builder snapshot.\n        </div>\n        <div id=\""
+    },
+    {
+      "id": "1OO-0",
+      "term": "幸存",
+      "excerpt": "ui)', fontSize: '10px', lineHeight: '145%' }}>\n          方法：幸存者偏差 · 样本量 · 按月历史 · 观察非买入。标签与计数须来自已验证的构建快照；行动前核对来源新鲜度。\n        </div>\n        <div id=\"1SP-0\" style={{ borderTopColor: 'var(--mx-dark-line)', borderT"
+    },
+    {
+      "id": "1A8-0",
+      "term": "幸存",
+      "excerpt": "ui)', fontSize: '10px', lineHeight: '145%' }}>\n          方法：幸存者偏差 · 样本量 · 按月历史 · 观察非买入。标签与计数须来自已验证的构建快照；行动前核对来源新鲜度。\n        </div>\n        <div id=\"1E9-0\" style={{ borderTopColor: 'var(--mx-light-line)', border"
+    }
+  ]
+}

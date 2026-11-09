@@ -1,0 +1,535 @@
+{
+  "schema": "confluence_compat_browser/v1",
+  "observed_at": "2026-11-09T12:51:44.630626+00:00",
+  "browser": "157.0.8103.39",
+  "contexts": 14,
+  "cases": [
+    {
+      "name": "old_reader_rejects_new_payload-1440-en",
+      "observations": [
+        {
+          "url": "http://127.0.0.1:49803/confluence_screener.html?fixture=legacy&keep=a&keep=b#return-point",
+          "locked": 2,
+          "hydrated": 0,
+          "paidLinks": [],
+          "state": null,
+          "publicLinks": [
+            "stocks/FREEAA.html"
+          ],
+          "activeTag": "BODY",
+          "activeHref": null,
+          "phase": "frozen-old-reader/new-generation-payload",
+          "requests": 1,
+          "schema": "tier_payload.v2",
+          "same_clock_changed_recipe": true
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "name": "new_reader_rejects_prior_bound_v1-1440-en",
+      "observations": [
+        {
+          "url": "http://127.0.0.1:49803/confluence_screener.html?fixture=current&keep=a&keep=b#return-point",
+          "locked": 2,
+          "hydrated": 0,
+          "paidLinks": [],
+          "state": "invalid",
+          "publicLinks": [
+            "stocks/FREEAA.html"
+          ],
+          "activeTag": "BODY",
+          "activeHref": null,
+          "phase": "prior_bound_v1",
+          "requests": 1,
+          "schema": "tier_payload.v1"
+        },
+        {
+          "url": "http://127.0.0.1:49803/confluence_screener.html?fixture=current&keep=a&keep=b#return-point",
+          "locked": 0,
+          "hydrated": 2,
+          "paidLinks": [
+            "stocks/GATEDBB.html",
+            "stocks/GATEDCC.html"
+          ],
+          "state": "loaded",
+          "publicLinks": [
+            "stocks/FREEAA.html"
+          ],
+          "activeTag": "A",
+          "activeHref": "stocks/GATEDBB.html",
+          "phase": "valid-retry-after-version-rejection",
+          "requests": 2,
+          "schema": "tier_payload.v2"
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "name": "new_reader_rejects_legacy_unbound_v1-1440-en",
+      "observations": [
+        {
+          "url": "http://127.0.0.1:49803/confluence_screener.html?fixture=current&keep=a&keep=b#return-point",
+          "locked": 2,
+          "hydrated": 0,
+          "paidLinks": [],
+          "state": "invalid",
+          "publicLinks": [
+            "stocks/FREEAA.html"
+          ],
+          "activeTag": "BODY",
+          "activeHref": null,
+          "phase": "legacy_unbound_v1",
+          "requests": 1,
+          "schema": "tier_payload.v1"
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "name": "matching_pair_and_signout-1440-en",
+      "observations": [
+        {
+          "url": "http://127.0.0.1:49803/confluence_screener.html?fixture=current&keep=a&keep=b#return-point",
+          "locked": 0,
+          "hydrated": 2,
+          "paidLinks": [
+            "stocks/GATEDBB.html",
+            "stocks/GATEDCC.html"
+          ],
+          "state": "loaded",
+          "publicLinks": [
+            "stocks/FREEAA.html"
+          ],
+          "activeTag": "BODY",
+          "activeHref": null,
+          "phase": "matching-new-pair",
+          "requests": 1,
+          "schema": "tier_payload.v2"
+        },
+        {
+          "url": "http://127.0.0.1:49803/confluence_screener.html?fixture=current&keep=a&keep=b#return-point",
+          "locked": 2,
+          "hydrated": 0,
+          "paidLinks": [],
+          "state": "locked",
+          "publicLinks": [
+            "stocks/FREEAA.html"
+          ],
+          "activeTag": "B",
+          "activeHref": null,
+          "phase": "signout-retains-public-evidence",
+          "requests": 1,
+          "schema": "tier_payload.v2"
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "name": "generation_mismatch_and_existing_reload-1440-en",
+      "observations": [
+        {
+          "url": "http://127.0.0.1:49803/confluence_screener.html?fixture=current&keep=a&keep=b#return-point",
+          "locked": 2,
+          "hydrated": 0,
+          "paidLinks": [],
+          "state": "mismatch",
+          "publicLinks": [
+            "stocks/FREEAA.html"
+          ],
+          "activeTag": "BODY",
+          "activeHref": null,
+          "phase": "same-clock-different-recipe",
+          "requests": 1,
+          "schema": "tier_payload.v2"
+        },
+        {
+          "url": "http://127.0.0.1:49803/confluence_screener.html?fixture=current&keep=a&keep=b#return-point",
+          "locked": 0,
+          "hydrated": 2,
+          "paidLinks": [
+            "stocks/GATEDBB.html",
+            "stocks/GATEDCC.html"
+          ],
+          "state": "loaded",
+          "publicLinks": [
+            "stocks/FREEAA.html"
+          ],
+          "activeTag": "BODY",
+          "activeHref": null,
+          "phase": "valid-recovery-after-existing-reload",
+          "requests": 2,
+          "schema": "tier_payload.v2"
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "name": "old_reader_rejects_new_payload-320-zh",
+      "observations": [
+        {
+          "url": "http://127.0.0.1:49803/confluence_screener.html?fixture=legacy&keep=a&keep=b#return-point",
+          "locked": 2,
+          "hydrated": 0,
+          "paidLinks": [],
+          "state": null,
+          "publicLinks": [
+            "stocks/FREEAA.html"
+          ],
+          "activeTag": "BODY",
+          "activeHref": null,
+          "phase": "frozen-old-reader/new-generation-payload",
+          "requests": 1,
+          "schema": "tier_payload.v2",
+          "same_clock_changed_recipe": true
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "name": "new_reader_rejects_prior_bound_v1-320-zh",
+      "observations": [
+        {
+          "url": "http://127.0.0.1:49803/confluence_screener.html?fixture=current&keep=a&keep=b#return-point",
+          "locked": 2,
+          "hydrated": 0,
+          "paidLinks": [],
+          "state": "invalid",
+          "publicLinks": [
+            "stocks/FREEAA.html"
+          ],
+          "activeTag": "BODY",
+          "activeHref": null,
+          "phase": "prior_bound_v1",
+          "requests": 1,
+          "schema": "tier_payload.v1"
+        },
+        {
+          "url": "http://127.0.0.1:49803/confluence_screener.html?fixture=current&keep=a&keep=b#return-point",
+          "locked": 0,
+          "hydrated": 2,
+          "paidLinks": [
+            "stocks/GATEDBB.html",
+            "stocks/GATEDCC.html"
+          ],
+          "state": "loaded",
+          "publicLinks": [
+            "stocks/FREEAA.html"
+          ],
+          "activeTag": "A",
+          "activeHref": "stocks/GATEDBB.html",
+          "phase": "valid-retry-after-version-rejection",
+          "requests": 2,
+          "schema": "tier_payload.v2"
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "name": "new_reader_rejects_legacy_unbound_v1-320-zh",
+      "observations": [
+        {
+          "url": "http://127.0.0.1:49803/confluence_screener.html?fixture=current&keep=a&keep=b#return-point",
+          "locked": 2,
+          "hydrated": 0,
+          "paidLinks": [],
+          "state": "invalid",
+          "publicLinks": [
+            "stocks/FREEAA.html"
+          ],
+          "activeTag": "BODY",
+          "activeHref": null,
+          "phase": "legacy_unbound_v1",
+          "requests": 1,
+          "schema": "tier_payload.v1"
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "name": "matching_pair_and_signout-320-zh",
+      "observations": [
+        {
+          "url": "http://127.0.0.1:49803/confluence_screener.html?fixture=current&keep=a&keep=b#return-point",
+          "locked": 0,
+          "hydrated": 2,
+          "paidLinks": [
+            "stocks/GATEDBB.html",
+            "stocks/GATEDCC.html"
+          ],
+          "state": "loaded",
+          "publicLinks": [
+            "stocks/FREEAA.html"
+          ],
+          "activeTag": "BODY",
+          "activeHref": null,
+          "phase": "matching-new-pair",
+          "requests": 1,
+          "schema": "tier_payload.v2"
+        },
+        {
+          "url": "http://127.0.0.1:49803/confluence_screener.html?fixture=current&keep=a&keep=b#return-point",
+          "locked": 2,
+          "hydrated": 0,
+          "paidLinks": [],
+          "state": "locked",
+          "publicLinks": [
+            "stocks/FREEAA.html"
+          ],
+          "activeTag": "B",
+          "activeHref": null,
+          "phase": "signout-retains-public-evidence",
+          "requests": 1,
+          "schema": "tier_payload.v2"
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "name": "generation_mismatch_and_existing_reload-320-zh",
+      "observations": [
+        {
+          "url": "http://127.0.0.1:49803/confluence_screener.html?fixture=current&keep=a&keep=b#return-point",
+          "locked": 2,
+          "hydrated": 0,
+          "paidLinks": [],
+          "state": "mismatch",
+          "publicLinks": [
+            "stocks/FREEAA.html"
+          ],
+          "activeTag": "BODY",
+          "activeHref": null,
+          "phase": "same-clock-different-recipe",
+          "requests": 1,
+          "schema": "tier_payload.v2"
+        },
+        {
+          "url": "http://127.0.0.1:49803/confluence_screener.html?fixture=current&keep=a&keep=b#return-point",
+          "locked": 0,
+          "hydrated": 2,
+          "paidLinks": [
+            "stocks/GATEDBB.html",
+            "stocks/GATEDCC.html"
+          ],
+          "state": "loaded",
+          "publicLinks": [
+            "stocks/FREEAA.html"
+          ],
+          "activeTag": "BODY",
+          "activeHref": null,
+          "phase": "valid-recovery-after-existing-reload",
+          "requests": 2,
+          "schema": "tier_payload.v2"
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "name": "zero_action-390-en",
+      "observations": [
+        {
+          "phase": "zero-action",
+          "expected_label": "Open Mastermind",
+          "text": "Open Mastermind",
+          "href": "https://app.mastermind-x.com/",
+          "tag": "A",
+          "x": 120.53125,
+          "y": 550.3125,
+          "width": 148.9375,
+          "height": 44,
+          "right": 269.46875,
+          "viewport": 390,
+          "documentWidth": 390
+        },
+        {
+          "phase": "native-app-navigation",
+          "intercepted_fixture": true,
+          "requests": [
+            {
+              "url": "https://app.mastermind-x.com/",
+              "method": "GET"
+            }
+          ]
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "name": "unavailable_action-390-en",
+      "observations": [
+        {
+          "phase": "unavailable-action",
+          "expected_label": "Reload page",
+          "text": "Reload page",
+          "href": null,
+          "tag": "BUTTON",
+          "x": 139.34375,
+          "y": 567.546875,
+          "width": 111.296875,
+          "height": 44,
+          "right": 250.640625,
+          "viewport": 390,
+          "documentWidth": 390
+        },
+        {
+          "phase": "native-reload",
+          "url_preserved": true,
+          "document_requests": 1
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "name": "zero_action-320-zh",
+      "observations": [
+        {
+          "phase": "zero-action",
+          "expected_label": "打开 Mastermind",
+          "text": "打开 Mastermind",
+          "href": "https://app.mastermind-x.com/",
+          "tag": "A",
+          "x": 91.140625,
+          "y": 764.890625,
+          "width": 137.71875,
+          "height": 44,
+          "right": 228.859375,
+          "viewport": 320,
+          "documentWidth": 320
+        },
+        {
+          "phase": "native-app-navigation",
+          "intercepted_fixture": true,
+          "requests": [
+            {
+              "url": "https://app.mastermind-x.com/",
+              "method": "GET"
+            }
+          ]
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "name": "unavailable_action-320-zh",
+      "observations": [
+        {
+          "phase": "unavailable-action",
+          "expected_label": "重新加载页面",
+          "text": "重新加载页面",
+          "href": null,
+          "tag": "BUTTON",
+          "x": 104,
+          "y": 782.046875,
+          "width": 112,
+          "height": 44,
+          "right": 216,
+          "viewport": 320,
+          "documentWidth": 320
+        },
+        {
+          "phase": "native-reload",
+          "url_preserved": true,
+          "document_requests": 1
+        }
+      ],
+      "status": "PASS"
+    }
+  ],
+  "page_errors": [],
+  "selection": {
+    "case_prefix": [],
+    "status": "SELECTED"
+  },
+  "passed": 14,
+  "failed": 0,
+  "captures": [
+    {
+      "file": "zero-action-390-en.png",
+      "width": 390,
+      "lang": "en",
+      "theme": "dark",
+      "fixture": "zero",
+      "bytes": 13888,
+      "sha256": "129178c90f99bc5773a71b326089cfe14709cc130a1734f8f840a904f45cba00",
+      "blob": "44ea62f432fcdcdcded7e41a973f9d9bc2b23fdc"
+    },
+    {
+      "file": "unavailable-action-390-en.png",
+      "width": 390,
+      "lang": "en",
+      "theme": "dark",
+      "fixture": "unavailable",
+      "bytes": 12513,
+      "sha256": "a989239036adeaac55d2bbb9917dff4d348cc0d3c952dc5f2541ba8be3bf60d0",
+      "blob": "a074b4a1c3099aa4f8c30bf4024f252f953500b4"
+    },
+    {
+      "file": "zero-action-320-zh.png",
+      "width": 320,
+      "lang": "zh",
+      "theme": "light",
+      "fixture": "zero",
+      "bytes": 24629,
+      "sha256": "e68bf0073d00b8dbb2516d42321407b30206283de5ade7cfd1f555928791c296",
+      "blob": "619fbadb7aa58a0a2bc1b7ad93eb96e3a11639e2"
+    },
+    {
+      "file": "unavailable-action-320-zh.png",
+      "width": 320,
+      "lang": "zh",
+      "theme": "light",
+      "fixture": "unavailable",
+      "bytes": 21308,
+      "sha256": "310dd783f2dffce756ce5cd603509bba92738aa470bf39fd94551b876df59a25",
+      "blob": "333e002170530f2c0f0fa6e55d6b4e121d4f2d06"
+    }
+  ],
+  "sources": {
+    "scripts/build_confluence_screener.py": {
+      "bytes": 19003,
+      "sha256": "b5aa86624a18a17fd985870d9baaaa8cb745b0baffa6d4c17b6e198b6668d50a",
+      "blob": "b3db0ced7bc46607f728764c6f9f00dd851f9012"
+    },
+    "templates/confluence_screener.html.j2": {
+      "bytes": 53004,
+      "sha256": "2d0767740c858683d4f933534a22587491d43c4a05e30d95f0b8fbf8d4b67dbb",
+      "blob": "c6c47b9e9436bca09b799b80355d3e8ca855d2b2"
+    },
+    "tests/test_confluence_screener_page.py": {
+      "bytes": 39299,
+      "sha256": "d1877abe2a29d2c5d7412566eface17f81c62fdd980dff178efa2d0c5e657257",
+      "blob": "906eb06bc02fb37140fa403b425316bc8341ac87"
+    },
+    "scripts/verify_confluence_screener_browser.py": {
+      "bytes": 33564,
+      "sha256": "177903221965eeaceed7a8ff952e64cbdb0ad19d4d77c658710dd8ef8da4e147",
+      "blob": "a2a8a69944c5dd05f4c321d409305772a9a6360a"
+    },
+    "scripts/verify_confluence_compatibility_browser.py": {
+      "bytes": 21063,
+      "sha256": "167597dc8d9a9b275bf4eef7a9dedba9d7f2203cdef84cf8e2f2a8c8c2f918d1",
+      "blob": "c282b41649b35603e3c14f6ed7d6015e38c93ca4"
+    },
+    "tests/fixtures/confluence_legacy_template_f9588ff5.html.j2": {
+      "bytes": 38078,
+      "sha256": "a782c6288f2d24917511a182470d521993c567297a965dc7bba8a7e53de83e5b",
+      "blob": "8e18461db98d7141d573cd047aa8637189ad4250"
+    },
+    "site/confluence_screener.html": {
+      "bytes": 123115,
+      "sha256": "f32a914ea6d9f5d2ab877ec6520f116eaddf55a2f3d80003cfd1a691cc0d0fd2",
+      "blob": "ca589e98196b2b29c10b98ff440d1e8b23008aee"
+    },
+    "site/premiumdata/confluence_screener.json": {
+      "bytes": 542,
+      "sha256": "11a76bb62e26bd344ef29c198b7791df95b4140d18328f46f54b343f78aa4e7d",
+      "blob": "ed039512de9bf2fe3c838b6d562d0ef5da72658f"
+    }
+  },
+  "legacy_source": {
+    "commit": "f9588ff57391350bbd7225a7bbe56eb589d5a47d",
+    "blob": "8e18461db98d7141d573cd047aa8637189ad4250"
+  },
+  "scope": "Actual template/controller/production renderer with synthetic data, controlled auth/HTTP and intercepted app destination. No production entitlement, full shared shell or deployment claim.",
+  "observer": "Fetch JSON-read completion is observed without changing the returned payload. Two animation frames settle existing controller continuations; no fixed sleep."
+}
