@@ -550,8 +550,9 @@ def test_audit_a_k2_forecast_renders_unavailable_without_numbers():
     views = _compose(day=day, env=_env(day), t09=real)["statistical_forecast"]
     assert views["package_as_of"] == "2026-10-19"
     assert all(c["estimate_type"] == "unavailable" for c in views["cells"])
-    # O1: an all-rejected package is a readable package (status) whose section
-    # disposition is "unavailable"; nothing reads it as an available forecast.
+    # O1: an all-rejected package stays readable (status "available") while the
+    # section disposition is "unavailable" with basis no_issued_cell; the two
+    # fields are read separately.
     assert views["status"] == "available"
     assert views["disposition"] == "unavailable"
     assert views["disposition_basis"] == "no_issued_cell"
@@ -592,9 +593,38 @@ def test_o1_forecast_section_disposition_follows_issued_cells():
     validate_views(_compose(t09=_pkg(cells=[rejected])))
 
 
-def test_o2_rule_c_path_claim_allowed_is_refused_at_every_input_depth():
-    # Rule c: no input may carry path_claim_allowed, at any depth, under any
-    # value; the composer refuses rather than reading it.
+def test_o1b_mixed_cells_are_available_and_empty_cells_are_unavailable():
+    # One supported cell among rejected ones makes the section "available"
+    # with no basis; the rejected cell still carries no number.
+    mixed = _compose(t09=_pkg(cells=[
+        _issued_cell(), _cell(disposition="withheld_no_gain", horizon=8)]))
+    section = mixed["statistical_forecast"]
+    assert section["status"] == "available"
+    assert section["disposition"] == "available"
+    assert "disposition_basis" not in section
+    assert section["horizons_weeks"] == [4, 8]
+    by_h = {c["horizon_weeks"]: c for c in section["cells"]}
+    assert by_h[4]["disposition"] == "supported"
+    assert by_h[8]["disposition"] == "rejected"
+    assert by_h[8]["estimate_type"] == "unavailable"
+    assert _walk_numbers(by_h[8]) == [8]
+    validate_views(mixed)
+    # An empty cells list is a readable package with nothing issued.
+    empty = _compose(t09=_pkg(cells=[]))
+    section = empty["statistical_forecast"]
+    assert section["status"] == "available"
+    assert section["disposition"] == "unavailable"
+    assert section["disposition_basis"] == "no_issued_cell"
+    assert section["cells"] == []
+    assert section["horizons_weeks"] == []
+    validate_views(empty)
+
+
+def test_o2_rule_c_path_claim_allowed_is_refused_on_required_input_nodes():
+    # Rule c: no input may carry path_claim_allowed under any value; the
+    # composer refuses rather than reading it. This case plants the key on the
+    # three required top-level nodes (first list element where the node is a
+    # list); nested, optional and top-level placements follow in test_o2b.
     for value in (True, False, None, 1):
         for key in ("anchor", "announcements", "assumptions"):
             oi = copy.deepcopy(_outlook_inputs())
@@ -606,6 +636,33 @@ def test_o2_rule_c_path_claim_allowed_is_refused_at_every_input_depth():
     # and the composed document never carries the key
     dump = json.dumps(_compose(oi=_outlook_inputs()), sort_keys=True)
     assert "path_claim_allowed" not in dump
+
+
+def test_o2b_rule_c_path_claim_allowed_is_refused_in_nested_and_optional_inputs():
+    # Nested two levels under a required node: the key scan runs before any
+    # node-shape validation, so the refusal names the key.
+    oi = copy.deepcopy(_outlook_inputs())
+    oi["anchor"]["extra"] = {"deeper": [{"path_claim_allowed": 1}]}
+    with pytest.raises(ViewsContractError, match="refused key"):
+        _compose(oi=oi)
+    # Inside an optional scenario_bounds entry.
+    oi = _outlook_inputs(bounds=[
+        {"component": "reserves", "horizon_weeks": 4, "low": -1, "high": 1,
+         "path_claim_allowed": True}])
+    with pytest.raises(ViewsContractError, match="refused key"):
+        _compose(oi=oi)
+    # Replacing the scalar unit with a mapping that carries the key: refused
+    # by the scan before the unit check could return "unit not declared".
+    oi = copy.deepcopy(_outlook_inputs())
+    oi["unit"] = {"path_claim_allowed": "USD_bn"}
+    with pytest.raises(ViewsContractError, match="refused key"):
+        _compose(oi=oi)
+    # As a top-level outlook_inputs key it is refused by the key-subset gate
+    # (a different message), never read.
+    oi = copy.deepcopy(_outlook_inputs())
+    oi["path_claim_allowed"] = True
+    with pytest.raises(ViewsContractError, match="outlook_inputs keys"):
+        _compose(oi=oi)
 
 
 def test_audit_c_no_path_claim_allowed_read():
@@ -1123,7 +1180,7 @@ def test_t22_c37_estimate_type_labels_are_distinct():
     assert texts["forecast_rejected"]["en"] == "Forecast rejected"
     assert texts["forecast_not_cleared"]["en"] == "Not cleared for display"
     assert texts["association"]["en"].startswith("Observed association, not a causal effect.")
-    assert texts["identified"]["en"].startswith("Causal-effect study.")
+    assert texts["identified"]["en"].startswith("Identification study.")
     assert texts["residual"]["en"] == "Unavailable: no value"
     en = [p["en"] for p in texts.values()]
     zh = [p["zh"] for p in texts.values()]

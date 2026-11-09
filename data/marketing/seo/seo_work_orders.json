@@ -1,6 +1,6 @@
 {
   "schema": "seo_work_orders.v1",
-  "as_of": "2026-11-01T19:22:40Z",
+  "as_of": "2026-11-08T19:21:02Z",
   "orders": [
     {
       "id": "missing_description",
@@ -175,8 +175,22 @@
       "falsifiable_check": "grep '<html' in page — should include lang= attribute"
     },
     {
-      "id": "brand_facts_stale",
+      "id": "page_weight",
       "priority": 11,
+      "title": "Reduce HTML page weight to <2.5 MB",
+      "class": "page_weight",
+      "severity": "low",
+      "pages": [
+        "china_stocks.html",
+        "intl.html"
+      ],
+      "pages_count": 2,
+      "suggested_fix": "Reduce HTML page weight to <2.5 MB",
+      "falsifiable_check": "wc -c site/<page>.html < 2621440 bytes"
+    },
+    {
+      "id": "brand_facts_stale",
+      "priority": 12,
       "title": "Refresh brand-facts.json (>90 days stale)",
       "class": "brand_facts_stale",
       "severity": "low",
@@ -186,19 +200,6 @@
       "pages_count": 1,
       "suggested_fix": "Refresh brand-facts.json (>90 days stale)",
       "falsifiable_check": "effective_at in brand-facts.json is within 90 days"
-    },
-    {
-      "id": "page_weight",
-      "priority": 12,
-      "title": "Reduce HTML page weight to <2.5 MB",
-      "class": "page_weight",
-      "severity": "low",
-      "pages": [
-        "intl.html"
-      ],
-      "pages_count": 1,
-      "suggested_fix": "Reduce HTML page weight to <2.5 MB",
-      "falsifiable_check": "wc -c site/<page>.html < 2621440 bytes"
     }
   ]
 }

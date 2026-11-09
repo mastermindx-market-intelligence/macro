@@ -1,0 +1,159 @@
+{
+  "schema": "eval_os.task_role_continuity.v1",
+  "at": "2026-10-24T20:33:37.774388+00:00",
+  "source_decision": "DEC:EVAL-OS-WAVE-AUTHORITY-AND-LEADERSHIP-CONTINUITY-20261024",
+  "before_count": 27,
+  "after_count": 27,
+  "before_sha256": "802a4320dd0358dbe47fc2d6ac3332b26240492b0ee0faca6cbeda773153f853",
+  "after_sha256": "980676c35e94b993c723fe7fa15a84f1533d2979046abfd7f43877f75431a9a6",
+  "existing_ids_preserved": true,
+  "protected_fields_preserved": {
+    "status": true,
+    "depends_on": true,
+    "acceptance": true,
+    "evidence": true,
+    "created": true,
+    "created_by": true,
+    "parent": true,
+    "wave": true,
+    "workstream": true
+  },
+  "role_changes": [
+    {
+      "id": "T001",
+      "before_owner": "codex:01a1333d-b0c0-7f33-9259-dd718391d9e4 / O6 original recovery",
+      "after_owner": "Intelligence Evaluation OS programme lead / O6 original recovery"
+    },
+    {
+      "id": "T01",
+      "before_owner": "codex:01a1333d-b0c0-7f33-9259-dd718391d9e4 / O6 integration/custody/release",
+      "after_owner": "Intelligence Evaluation OS programme lead / O6 integration/custody/release"
+    },
+    {
+      "id": "T02",
+      "before_owner": "codex:01a1333d-b0c0-7f33-9259-dd718391d9e4 / O1 identity/adoption",
+      "after_owner": "Intelligence Evaluation OS programme lead / O1 identity/adoption"
+    },
+    {
+      "id": "T03",
+      "before_owner": "codex:01a1333d-b0c0-7f33-9259-dd718391d9e4 / O1 identity/adoption",
+      "after_owner": "Intelligence Evaluation OS programme lead / O1 identity/adoption"
+    },
+    {
+      "id": "T04",
+      "before_owner": "codex:01a1333d-b0c0-7f33-9259-dd718391d9e4 / O5 product/semantics",
+      "after_owner": "Intelligence Evaluation OS programme lead / O5 product/semantics"
+    },
+    {
+      "id": "T05",
+      "before_owner": "codex:01a1333d-b0c0-7f33-9259-dd718391d9e4 / O2 temporal/cohort integrity",
+      "after_owner": "Intelligence Evaluation OS programme lead / O2 temporal/cohort integrity"
+    },
+    {
+      "id": "T06",
+      "before_owner": "codex:01a1333d-b0c0-7f33-9259-dd718391d9e4 / O2 temporal/cohort integrity",
+      "after_owner": "Intelligence Evaluation OS programme lead / O2 temporal/cohort integrity"
+    },
+    {
+      "id": "T07",
+      "before_owner": "codex:01a1333d-b0c0-7f33-9259-dd718391d9e4 / O2 temporal/cohort integrity",
+      "after_owner": "Intelligence Evaluation OS programme lead / O2 temporal/cohort integrity"
+    },
+    {
+      "id": "T09",
+      "before_owner": "codex:01a1333d-b0c0-7f33-9259-dd718391d9e4 / O4 storage/cache/performance",
+      "after_owner": "Intelligence Evaluation OS programme lead / O4 storage/cache/performance"
+    },
+    {
+      "id": "T10",
+      "before_owner": "codex:01a1333d-b0c0-7f33-9259-dd718391d9e4 / O3 scientific measurement",
+      "after_owner": "Intelligence Evaluation OS programme lead / O3 scientific measurement"
+    },
+    {
+      "id": "T11",
+      "before_owner": "codex:01a1333d-b0c0-7f33-9259-dd718391d9e4 / O3 scientific measurement",
+      "after_owner": "Intelligence Evaluation OS programme lead / O3 scientific measurement"
+    },
+    {
+      "id": "T12",
+      "before_owner": "codex:01a1333d-b0c0-7f33-9259-dd718391d9e4 / O3 scientific measurement",
+      "after_owner": "Intelligence Evaluation OS programme lead / O3 scientific measurement"
+    },
+    {
+      "id": "T13",
+      "before_owner": "codex:01a1333d-b0c0-7f33-9259-dd718391d9e4 / O5 product/semantics",
+      "after_owner": "Intelligence Evaluation OS programme lead / O5 product/semantics"
+    },
+    {
+      "id": "T14",
+      "before_owner": "codex:01a1333d-b0c0-7f33-9259-dd718391d9e4 / O5 product/semantics",
+      "after_owner": "Intelligence Evaluation OS programme lead / O5 product/semantics"
+    },
+    {
+      "id": "T15",
+      "before_owner": "codex:01a1333d-b0c0-7f33-9259-dd718391d9e4 / O5 product/semantics",
+      "after_owner": "Intelligence Evaluation OS programme lead / O5 product/semantics"
+    },
+    {
+      "id": "T16",
+      "before_owner": "codex:01a1333d-b0c0-7f33-9259-dd718391d9e4 / O6 integration/custody/release; Chris owns existing SecurityAgent consent",
+      "after_owner": "Intelligence Evaluation OS programme lead / O6 integration/custody/release"
+    },
+    {
+      "id": "T17",
+      "before_owner": "codex:01a1333d-b0c0-7f33-9259-dd718391d9e4 / O7 independent acceptance coordination; original review carriers retained",
+      "after_owner": "Intelligence Evaluation OS programme lead / O7 independent acceptance coordination"
+    },
+    {
+      "id": "T18",
+      "before_owner": "codex:01a1333d-b0c0-7f33-9259-dd718391d9e4 / O6 integration/custody/release",
+      "after_owner": "Intelligence Evaluation OS programme lead / O6 integration/custody/release"
+    },
+    {
+      "id": "T19",
+      "before_owner": "codex:01a1333d-b0c0-7f33-9259-dd718391d9e4 / O3 scientific measurement",
+      "after_owner": "Intelligence Evaluation OS programme lead / O3 scientific measurement"
+    },
+    {
+      "id": "T20",
+      "before_owner": "codex:01a1333d-b0c0-7f33-9259-dd718391d9e4 / O1 identity/adoption",
+      "after_owner": "Intelligence Evaluation OS programme lead / O1 identity/adoption"
+    },
+    {
+      "id": "T21",
+      "before_owner": "codex:01a1333d-b0c0-7f33-9259-dd718391d9e4 / O6 integration/custody/release; QLedger dependency owner codex:01a153e8-3c85-7bb2-af63-7f477b570512",
+      "after_owner": "Intelligence Evaluation OS programme lead / O6 integration/custody/release"
+    },
+    {
+      "id": "T22",
+      "before_owner": "codex:01a1333d-b0c0-7f33-9259-dd718391d9e4 / O7 independent acceptance coordination; original review carriers retained",
+      "after_owner": "Intelligence Evaluation OS programme lead / O7 independent acceptance coordination"
+    },
+    {
+      "id": "T23",
+      "before_owner": "codex:01a1333d-b0c0-7f33-9259-dd718391d9e4 / O6 integration/custody/release",
+      "after_owner": "Intelligence Evaluation OS programme lead / O6 integration/custody/release"
+    },
+    {
+      "id": "T24",
+      "before_owner": "codex:01a1333d-b0c0-7f33-9259-dd718391d9e4 / O6 integration/custody/release",
+      "after_owner": "Intelligence Evaluation OS programme lead / O6 integration/custody/release"
+    },
+    {
+      "id": "P12.T25",
+      "before_owner": "web:eval-os-pro-census-20261024",
+      "after_owner": "Intelligence Evaluation OS programme lead / census and continuity"
+    },
+    {
+      "id": "T20.S1",
+      "before_owner": null,
+      "after_owner": "Intelligence Evaluation OS programme lead / numeric consumer source qualification"
+    }
+  ],
+  "T16_consent_reason_preserved": true,
+  "T21_reason_refreshed": "Original QLedger transition/activation action remains held pending exact selected-source/effect qualification; this is not an absent-owner gate and does not block independent W4 inspection or A1. Fresh PR10079 readback: OPEN head23a9ee1b899b6be942fd94ae9bb0080c8b61b827, updated19:09Z. Old8f7 contract failure is historical, not the new-head verdict. Protect actual integration writes and unknown effects; no parallel cutover or sealed read.",
+  "original_root_T20_S1_implementation_preserved": true,
+  "interruption": "Initial T21 reason command omitted required --reason; parser rejected before mutation. Source parser verified; only that reason update resumed with correct syntax. Role edits were not replayed.",
+  "scope": "Ownership metadata and stale reason refresh only; no task completion, application source effect, external integration takeover or browser action."
+}
+
