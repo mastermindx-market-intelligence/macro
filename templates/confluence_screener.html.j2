@@ -18,7 +18,7 @@
    Context contract (builder passes EXACTLY this):
      generated_utc, asof, source_status, source_generation, source_built,
       universe_n, split_date,
-     n_active_total, cta_url, premium_payload_url,
+     n_active_total, cta_url, premium_payload_url, premium_payload_schema,
      combos = [ { rank, combo_id, name_en, name_zh,
        legs: [ {en, zh, tf} ],          # tf "D" | "W"
        wr_test_pct, wr_train_pct,
@@ -246,7 +246,7 @@ html[data-theme="light"] .cs-tipped:hover,html[data-theme="light"] .cs-tipped:fo
   <section class="empty" aria-labelledby="confluence-data-title" data-source-state="unavailable">
     <h1 id="confluence-data-title">{{ t('Data unavailable', '数据暂不可用') }}</h1>
     <p>{{ t('We could not verify this source. The number of matching line-ups is unknown.', '无法核实此源数据，匹配的信号组合数量未知。') }}</p>
-    <button type="button" class="btn ghost" id="confluence-reload-page">{{ t('Check again', '重新检查') }}</button>
+    <button type="button" class="btn ghost" id="confluence-reload-page">{{ t('Reload page', '重新加载页面') }}</button>
   </section>
   {% elif _n_today > 0 %}
   {# ================= HERO ================= #}
@@ -467,7 +467,7 @@ html[data-theme="light"] .cs-tipped:hover,html[data-theme="light"] .cs-tipped:fo
     <p><span class="l-en">This source contains no active line-ups with historical readings for both periods. Check the next update.</span>
       <span class="l-zh">此源数据没有同时具备两段历史读数的活跃信号组合。请查看下次更新。</span></p>
     <div style="margin-top:18px">
-      <a class="btn ghost" href="{{ cta_url }}"><span class="l-en">Get notified when setups fire</span><span class="l-zh">布局触发时通知我</span></a>
+      <a class="btn ghost" href="{{ cta_url }}"><span class="l-en">Open Mastermind</span><span class="l-zh">打开 Mastermind</span></a>
     </div>
   </div>
   {% endif %}
@@ -489,6 +489,7 @@ html[data-theme="light"] .cs-tipped:hover,html[data-theme="light"] .cs-tipped:fo
   /* A generation receipt joins two projections; only the existing protected
      endpoint authorizes names. Never commit part of a paid response. */
   var PREMIUM_PAYLOAD = {{ premium_payload_url | tojson }};
+  var PAYLOAD_SCHEMA = {{ premium_payload_schema | tojson }};
   var SOURCE_RECEIPT = {{ source_generation | tojson }};
   var rows = Array.prototype.map.call(document.querySelectorAll('[data-confluence-combo]'), function(wall){
     return {
@@ -600,7 +601,7 @@ html[data-theme="light"] .cs-tipped:hover,html[data-theme="light"] .cs-tipped:fo
   }
 
   function prepareRows(payload){
-    if(!payload || payload.schema !== 'tier_payload.v1' || payload.page !== 'confluence_screener' ||
+    if(!payload || payload.schema !== PAYLOAD_SCHEMA || payload.page !== 'confluence_screener' ||
        payload.gated !== true || payload.required_tier !== 'essential' ||
        payload.source_status !== 'available' || !Array.isArray(payload.combos)){
       throw new Error('invalid');

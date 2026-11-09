@@ -31,6 +31,8 @@ sys.path.insert(0, str(_ROOT))
 
 PAYLOAD_DIR = "premiumdata"
 PAYLOAD_NAME = "confluence_screener.json"
+# Only this asset advances: cached v1 readers cannot enforce its source receipt.
+PAYLOAD_SCHEMA = "tier_payload.v2"
 PAYLOAD_URL = f"/{PAYLOAD_DIR}/{PAYLOAD_NAME}"
 
 
@@ -189,6 +191,7 @@ def build_context(raw: dict | None, name_map: dict) -> dict:
             "combos": [],
             "cta_url": _cta_url(),
             "premium_payload_url": PAYLOAD_URL,
+            "premium_payload_schema": PAYLOAD_SCHEMA,
         }
 
     # Derive asof from generated_utc field in artifact
@@ -304,6 +307,7 @@ def build_context(raw: dict | None, name_map: dict) -> dict:
         "combos": combos,
         "cta_url": _cta_url(),
         "premium_payload_url": PAYLOAD_URL,
+        "premium_payload_schema": PAYLOAD_SCHEMA,
     }
 
 
@@ -330,7 +334,7 @@ def build_premium_payload(raw: dict | None, name_map: dict) -> dict:
         })
 
     return {
-        "schema": "tier_payload.v1",
+        "schema": PAYLOAD_SCHEMA,
         "page": "confluence_screener",
         "gated": True,
         "required_tier": "essential",

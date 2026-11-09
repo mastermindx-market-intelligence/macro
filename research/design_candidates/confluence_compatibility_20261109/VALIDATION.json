@@ -1,0 +1,2421 @@
+{
+  "schema": "confluence_compatibility_validation/v1",
+  "observed_date": "2026-11-09",
+  "scope": "Dependent Confluence compatibility and truthful-action source candidate; no merge, deployment or production entitlement claim.",
+  "source": {
+    "repository": "mastermindx-market-intelligence/Macro",
+    "parent_pr": 10705,
+    "parent_head": "dce11e42c79da7bf45bdda930b473d3f6a97e54e",
+    "parent_tree": "711c4ac94b2f61cf1e4e4d6345bca4ad0d2527f6",
+    "branch": "claude/confluence-compatibility-paper-20261109",
+    "base": "sol/web-d04-confluence-evidence-20261104",
+    "law_pin": "5c3d3885234358aefb97ecdbc59be0864df14f8b",
+    "draft": true,
+    "incumbent_branch_untouched": true
+  },
+  "custody": {
+    "classification": "Behavior/hunk-disjoint dependent follow-up, not file-disjoint.",
+    "scope_adoption": "https://github.com/mastermindx-market-intelligence/Macro/pull/10705#issuecomment-6724281889",
+    "later_incumbent_semantic_proof": "https://github.com/mastermindx-market-intelligence/Macro/pull/10705#issuecomment-6727854529",
+    "boundary": "The incumbent source adoption is not transferred to this follow-up. The unrelated calendar proof refusal remains with its original owner. No merge-on-green, Ready, enqueue or deployment action is requested."
+  },
+  "implementation": {
+    "schema_owner": "scripts/build_confluence_screener.py: PAYLOAD_SCHEMA",
+    "protected_asset": "/premiumdata/confluence_screener.json",
+    "schema": "tier_payload.v2",
+    "source_receipt_schema": "confluence_source.v1",
+    "canonical_source_receipt": "4f8c3dcd8508a55978f4b27d7c4d34828bc1044881ed404120cb353b1d4dc7c1",
+    "actions": {
+      "unavailable": {
+        "en": "Reload page",
+        "zh": "重新加载页面",
+        "behavior": "existing location.reload() with current URL/query/hash"
+      },
+      "qualified_zero": {
+        "en": "Open Mastermind",
+        "zh": "打开 Mastermind",
+        "behavior": "existing cta_url app navigation; no notification subscription"
+      }
+    }
+  },
+  "native_verification": {
+    "root": "/Volumes/Mastermind/agent-workspaces/verify/confluence-compat-20261109-klbmhv4a",
+    "page_tests": {
+      "pid": 15498,
+      "exit": 0,
+      "passed": 82,
+      "pytest_seconds": 9.79,
+      "process_seconds": 10.94
+    },
+    "browser": {
+      "pid": 15780,
+      "exit": 0,
+      "passed": 14,
+      "failed": 0,
+      "contexts": 14,
+      "page_errors": 0,
+      "process_seconds": 19.16,
+      "version": "157.0.8103.39"
+    },
+    "empty_selection": {
+      "pid": 16119,
+      "exit": 2,
+      "status": "NO_CASES_SELECTED",
+      "cases": 0,
+      "contexts": 0,
+      "process_seconds": 5
+    },
+    "commands": {
+      "tests": "python3 - <<'PY'\nfrom pathlib import Path\nimport json,subprocess,sys\nr=Path('/Volumes/Mastermind/agent-workspaces/verify/confluence-compat-20261109-klbmhv4a')\np=subprocess.run([sys.executable,'-B','-m','pytest','-q','tests/test_confluence_screener_page.py','--disable-warnings','--basetemp',str(r/'pytest-reviewed-render')],cwd=r,text=True,capture_output=True)\n(r/'candidate-reviewed-page-tests-output.txt').write_text(p.stdout+p.stderr);print(p.stdout);print(p.stderr);print(json.dumps({'exit':p.returncode}));raise SystemExit(p.returncode)\nPY",
+      "browser": "python3 -B '/Volumes/Mastermind/agent-workspaces/verify/confluence-compat-20261109-klbmhv4a/scripts/verify_confluence_compatibility_browser.py' --out '/Volumes/Mastermind/agent-workspaces/verify/confluence-compat-20261109-klbmhv4a/candidate-reviewed-compat-proof' --browser-executable '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'",
+      "empty": "python3 -B '/Volumes/Mastermind/agent-workspaces/verify/confluence-compat-20261109-klbmhv4a/scripts/verify_confluence_compatibility_browser.py' --out '/Volumes/Mastermind/agent-workspaces/verify/confluence-compat-20261109-klbmhv4a/candidate-no-case-proof' --browser-executable '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' --case-prefix definitely-no-matching-case",
+      "source": "python3 - <<'PY'\nimport json,subprocess\nrepo='mastermindx-market-intelligence/Macro'\nsha='dce11e42c79da7bf45bdda930b473d3f6a97e54e'\nc=subprocess.run(['gh','api',f'repos/{repo}/git/commits/{sha}'],capture_output=True,text=True,check=True)\no=json.loads(c.stdout)\nb=subprocess.run(['gh','api',f'repos/{repo}/git/ref/heads/claude/confluence-compatibility-paper-20261109'],capture_output=True,text=True)\nprint(json.dumps({'parent':o['sha'],'tree':o['tree']['sha'],'parents':[p['sha'] for p in o['parents']],'branch_preflight':{'exit':b.returncode,'response':json.loads(b.stdout) if b.stdout.strip() else b.stderr[:500]}}))\nPY"
+    }
+  },
+  "proof_qualifications": [
+    "Browser cases render synthetic pages through the actual renderer/template/controller with controlled auth and HTTP; they do not browse the saved production-input HTML/JSON pair. Served-file hashes identify that pair only.",
+    "Nine parametrized tests invoke actual builder.render, render_html and real public/protected file writers in isolated temporary roots, with the real writer shim flag restored by pytest monkeypatch.",
+    "Overwrite proof covers successful render, not crash-atomic publication or failures before the protected write.",
+    "The changed-generation fixture changes recipe legs and protected identity at the same source clock; it is not a recipe-only isolation experiment.",
+    "The protocol fence blocks subsequent incompatible hydration. It cannot evict names already painted by an old reader before the transition.",
+    "The public/protected current-input pair is byte-conserved except for two HTML protocol projections and the one JSON schema field; its protected JSON equals the actual producer. Rendered HTML inverse comparison fixes only the page-generation clock for that comparison.",
+    "Four action-card crops are visually inspected. No whole-page production, account entitlement, CDN, or deployment proof is claimed."
+  ],
+  "baseline_classification": {
+    "initial_page_tests": "71 passed; two failures were a missing local engine.tech_confluence dependency. After exact dependency repair, all 73 prior tests passed.",
+    "initial_browser": {
+      "passed": 4,
+      "failed": 10,
+      "actual_old_reader_compatibility_defects": 2,
+      "new_contract_expectation_failures": 2,
+      "requested_copy_expectation_failures": 4,
+      "harness_wrong_hidden_recovery_control": 2
+    },
+    "harness_recovery": "Mismatch recovery uses existing Reload latest page; protocol rejection uses existing Check access. Correcting this harness choice yielded 2/2 parent recovery cases, not a product fix.",
+    "candidate_before_review": "82 page tests and 14 browser cases passed. Two review corrections then restored the shim flag and made empty selection nonzero; the final reviewed source was rerun above."
+  },
+  "review_disposition": {
+    "kind": "Read-only adversarial judgment plus principal self-check; not a formal GitHub approval.",
+    "findings": [
+      {
+        "issue": "Temporary-root writer leaves process-global _shim_checked",
+        "resolution": "monkeypatch lib.pages._shim_checked to False before real render, restoring its prior state afterward."
+      },
+      {
+        "issue": "An unmatched --case-prefix could report empty success",
+        "resolution": "NO_CASES_SELECTED and exit 2; directly verified."
+      }
+    ]
+  },
+  "consumer_scan": {
+    "query": "\"tier_payload.v1\"",
+    "default_main": "f9588ff57391350bbd7225a7bbe56eb589d5a47d",
+    "results": 60,
+    "incomplete": false,
+    "paths": {
+      "total_count": 60,
+      "incomplete_results": false,
+      "items": [
+        {
+          "path": "docs/TIER_PREVIEW_PATTERN.md",
+          "sha": "4f4756b526e3d23ad7538e6983bb21ad7452ab30",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/f9588ff57391350bbd7225a7bbe56eb589d5a47d/docs/TIER_PREVIEW_PATTERN.md"
+        },
+        {
+          "path": "scripts/build_china_special_situations.py",
+          "sha": "b36b02219fe76219ae098d1b19aebe083bcee687",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/f9588ff57391350bbd7225a7bbe56eb589d5a47d/scripts/build_china_special_situations.py"
+        },
+        {
+          "path": "scripts/build_confluence_screener.py",
+          "sha": "118c23550f5d0bf41e39a6a3c2198e9890f534f8",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/f9588ff57391350bbd7225a7bbe56eb589d5a47d/scripts/build_confluence_screener.py"
+        },
+        {
+          "path": "scripts/build_sector_central.py",
+          "sha": "01e3f4bb0ca458217e3c2657e702404cb6c3b8df",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/f9588ff57391350bbd7225a7bbe56eb589d5a47d/scripts/build_sector_central.py"
+        },
+        {
+          "path": "scripts/build_special_situations.py",
+          "sha": "3e54709abf982a414e48ddcb39a612120cd7f481",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/f9588ff57391350bbd7225a7bbe56eb589d5a47d/scripts/build_special_situations.py"
+        },
+        {
+          "path": "scripts/check_nightly_liveness.py",
+          "sha": "568c769999a447dde8f50b2143421973b79317a6",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/f9588ff57391350bbd7225a7bbe56eb589d5a47d/scripts/check_nightly_liveness.py"
+        },
+        {
+          "path": "site/confluence_screener.html",
+          "sha": "c7e157c775e52d17a0183c7f00e6213ac4f28789",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/f9588ff57391350bbd7225a7bbe56eb589d5a47d/site/confluence_screener.html"
+        },
+        {
+          "path": "research/seo_supercharge/W2_HEATMAP_ETFS_PREVIEW_SPEC.md",
+          "sha": "c96eddba85706cca260cb0f991e3a48deb27d576",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/f9588ff57391350bbd7225a7bbe56eb589d5a47d/research/seo_supercharge/W2_HEATMAP_ETFS_PREVIEW_SPEC.md"
+        },
+        {
+          "path": "research/seo_supercharge/W1B_BASKETS_CHINA_PREVIEW_SPEC.md",
+          "sha": "94a1dffcbecbd5fae4def2290ee99f9eedff7aea",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/f9588ff57391350bbd7225a7bbe56eb589d5a47d/research/seo_supercharge/W1B_BASKETS_CHINA_PREVIEW_SPEC.md"
+        },
+        {
+          "path": "mockups/refs/reference_integrity/mastermind-xpv2-sector-r3b/evidence/access_evidence.md",
+          "sha": "762ffe6a749ea35ff6315850f6970cba4816f2fc",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/f9588ff57391350bbd7225a7bbe56eb589d5a47d/mockups/refs/reference_integrity/mastermind-xpv2-sector-r3b/evidence/access_evidence.md"
+        },
+        {
+          "path": "site/premiumdata/confluence_screener.json",
+          "sha": "3a864e4f2a5f63634929bf62521664b30e524cb3",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/f9588ff57391350bbd7225a7bbe56eb589d5a47d/site/premiumdata/confluence_screener.json"
+        },
+        {
+          "path": "templates/sector_central.html.j2",
+          "sha": "9266e9413a62ae1ba72942f30a9904824593690d",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/f9588ff57391350bbd7225a7bbe56eb589d5a47d/templates/sector_central.html.j2"
+        },
+        {
+          "path": "research/sector_completion_20261021/B01_OWNERSHIP_MAP.md",
+          "sha": "735b6884d7fe408607c7272651963b6dc032bd97",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/f9588ff57391350bbd7225a7bbe56eb589d5a47d/research/sector_completion_20261021/B01_OWNERSHIP_MAP.md"
+        },
+        {
+          "path": "research/sector_completion_20261021/RECEIVER_CONTRACTS.md",
+          "sha": "0801ea59aeffacc6ab4711ccac843d48ca26dfa5",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/f9588ff57391350bbd7225a7bbe56eb589d5a47d/research/sector_completion_20261021/RECEIVER_CONTRACTS.md"
+        },
+        {
+          "path": "templates/confluence_screener.html.j2",
+          "sha": "8e18461db98d7141d573cd047aa8637189ad4250",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/f9588ff57391350bbd7225a7bbe56eb589d5a47d/templates/confluence_screener.html.j2"
+        },
+        {
+          "path": "research/sector_completion_20261021/p19/verifier_A_R3A-01-46.md",
+          "sha": "9150861763d0edf2020054299df0fda71cb59889",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/f9588ff57391350bbd7225a7bbe56eb589d5a47d/research/sector_completion_20261021/p19/verifier_A_R3A-01-46.md"
+        },
+        {
+          "path": "research/reference_integrity/mastermind-xpv2-sector-r3/access_hydration_contract.md",
+          "sha": "283c5b8b23cac7b59cccb048ca83493073a048b9",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/f9588ff57391350bbd7225a7bbe56eb589d5a47d/research/reference_integrity/mastermind-xpv2-sector-r3/access_hydration_contract.md"
+        },
+        {
+          "path": "research/sector_completion_20261021/CAPABILITY_MAP_2026-10-21.md",
+          "sha": "87b70d609f402b6bf45f1083dc3bc09db226d034",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/f9588ff57391350bbd7225a7bbe56eb589d5a47d/research/sector_completion_20261021/CAPABILITY_MAP_2026-10-21.md"
+        },
+        {
+          "path": "research/sector_completion_20261021/MASTERPLAN_2026-10-21.md",
+          "sha": "707a8859213aaba95984deba3201c4d076d6fc12",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/f9588ff57391350bbd7225a7bbe56eb589d5a47d/research/sector_completion_20261021/MASTERPLAN_2026-10-21.md"
+        },
+        {
+          "path": "research/reference_integrity/mastermind-xpv2-sector-r3b-1/R3C_HANDOFF_DRAFT.md",
+          "sha": "1ce8c8620c61c9cb14b49580a7d4d8421e1d871d",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/f9588ff57391350bbd7225a7bbe56eb589d5a47d/research/reference_integrity/mastermind-xpv2-sector-r3b-1/R3C_HANDOFF_DRAFT.md"
+        },
+        {
+          "path": "research/reference_integrity/mastermind-xpv2-sector-r3/fixture/PROVENANCE.md",
+          "sha": "37a17694f64f53b0de138c0ec73503b2a8d3d165",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/f9588ff57391350bbd7225a7bbe56eb589d5a47d/research/reference_integrity/mastermind-xpv2-sector-r3/fixture/PROVENANCE.md"
+        },
+        {
+          "path": "research/reference_integrity/mastermind-xpv2-sector-r3/R3_DESIGN_BRIEF.md",
+          "sha": "1878b5a17e67dc75e255b68d3361a7704da3689f",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/f9588ff57391350bbd7225a7bbe56eb589d5a47d/research/reference_integrity/mastermind-xpv2-sector-r3/R3_DESIGN_BRIEF.md"
+        },
+        {
+          "path": "research/reference_integrity/mastermind-xpv2-sector-r3b/COMMISSION.md",
+          "sha": "6dbbccc8bbb24fd01a0ce3d86b70f077629cfb0a",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/f9588ff57391350bbd7225a7bbe56eb589d5a47d/research/reference_integrity/mastermind-xpv2-sector-r3b/COMMISSION.md"
+        },
+        {
+          "path": "research/redesign/SECTOR_CENTRAL_20261018_CAPABILITY_CROSSWALK_DRAFT.md",
+          "sha": "9fe5ab19c5ec912ebb23f1b9f468d0ee0b0c8b63",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/f9588ff57391350bbd7225a7bbe56eb589d5a47d/research/redesign/SECTOR_CENTRAL_20261018_CAPABILITY_CROSSWALK_DRAFT.md"
+        },
+        {
+          "path": "mockups/refs/reference_integrity/mastermind-xpv2-sector-r3b/evidence/EVIDENCE_INDEX.md",
+          "sha": "a9d8c309ea96cbde2853110c1d72439353b77ecc",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/f9588ff57391350bbd7225a7bbe56eb589d5a47d/mockups/refs/reference_integrity/mastermind-xpv2-sector-r3b/evidence/EVIDENCE_INDEX.md"
+        },
+        {
+          "path": "research/reference_integrity/mastermind-xpv2-turn3-r2/reviews/product_regression.md",
+          "sha": "a33d5277bca3e95ef6574c244c8cf957b4625725",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/f9588ff57391350bbd7225a7bbe56eb589d5a47d/research/reference_integrity/mastermind-xpv2-turn3-r2/reviews/product_regression.md"
+        },
+        {
+          "path": "research/reference_integrity/mastermind-xpv2-sector-r3b/capability_crosscheck.md",
+          "sha": "1fa898bb72880ad1d1d280179068dd2420c5fd10",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/f9588ff57391350bbd7225a7bbe56eb589d5a47d/research/reference_integrity/mastermind-xpv2-sector-r3b/capability_crosscheck.md"
+        },
+        {
+          "path": "research/reference_integrity/mastermind-xpv2-sector-r3b/reviews/data_authority.md",
+          "sha": "d4a044c6963998bffe9988fb7e03adb459dfa527",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/f9588ff57391350bbd7225a7bbe56eb589d5a47d/research/reference_integrity/mastermind-xpv2-sector-r3b/reviews/data_authority.md"
+        },
+        {
+          "path": "research/reference_integrity/mastermind-xpv2-sector-r3/capability_disposition_ledger.md",
+          "sha": "8defb10b448325165ac2b8ae1d38292678b0a1c1",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/f9588ff57391350bbd7225a7bbe56eb589d5a47d/research/reference_integrity/mastermind-xpv2-sector-r3/capability_disposition_ledger.md"
+        },
+        {
+          "path": "research/reference_integrity/mastermind-xpv2-sector-r3/archaeology/lane_F_state_matrix.md",
+          "sha": "66cacde36477a05924cb3389ab405aa90062777d",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/f9588ff57391350bbd7225a7bbe56eb589d5a47d/research/reference_integrity/mastermind-xpv2-sector-r3/archaeology/lane_F_state_matrix.md"
+        },
+        {
+          "path": "research/reference_integrity/mastermind-xpv2-sector-r3/archaeology/lane_A_action_overview.md",
+          "sha": "c01e207d3b5cc287d03c1d07b73a0bec60bf428d",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/f9588ff57391350bbd7225a7bbe56eb589d5a47d/research/reference_integrity/mastermind-xpv2-sector-r3/archaeology/lane_A_action_overview.md"
+        },
+        {
+          "path": "research/reference_integrity/mastermind-xpv2-sector-r3/archaeology/lane_D_explore_history.md",
+          "sha": "b5ed8c51db4c22ac3c0c36e3a0656c9c3934305b",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/f9588ff57391350bbd7225a7bbe56eb589d5a47d/research/reference_integrity/mastermind-xpv2-sector-r3/archaeology/lane_D_explore_history.md"
+        },
+        {
+          "path": "site/premiumdata/etfs.json",
+          "sha": "7da5a58a9bc4d702306a245b88685edcf441a0d5",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/f9588ff57391350bbd7225a7bbe56eb589d5a47d/site/premiumdata/etfs.json"
+        },
+        {
+          "path": "research/design_candidates/sector_central_20261018/MP-20261018-sector-central-capability-crosswalk.md",
+          "sha": "fa2b3f3941d3757f9a18545a616003e3aa8428b3",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/f9588ff57391350bbd7225a7bbe56eb589d5a47d/research/design_candidates/sector_central_20261018/MP-20261018-sector-central-capability-crosswalk.md"
+        },
+        {
+          "path": "site/premiumdata/sector_central.json",
+          "sha": "014e8718988c305b74eb23fa3cf58bd6b4b1df1a",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/f9588ff57391350bbd7225a7bbe56eb589d5a47d/site/premiumdata/sector_central.json"
+        },
+        {
+          "path": "mockups/refs/reference_integrity/mastermind-xpv2-sector-r3b/build/views/overview.html",
+          "sha": "395c07ee32cbed588077f2fb2307c4f10b21699d",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/f9588ff57391350bbd7225a7bbe56eb589d5a47d/mockups/refs/reference_integrity/mastermind-xpv2-sector-r3b/build/views/overview.html"
+        },
+        {
+          "path": "site/premiumdata/china_special_situations.json",
+          "sha": "abbc99b14d69184bc33570180eadac5edeef6830",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/f9588ff57391350bbd7225a7bbe56eb589d5a47d/site/premiumdata/china_special_situations.json"
+        },
+        {
+          "path": "mockups/refs/reference_integrity/mastermind-xpv2-sector-r3b-1/build/views/overview.html",
+          "sha": "313ce1f280fbef2c66fb635e651fd20996ad1b64",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/f9588ff57391350bbd7225a7bbe56eb589d5a47d/mockups/refs/reference_integrity/mastermind-xpv2-sector-r3b-1/build/views/overview.html"
+        },
+        {
+          "path": "mockups/refs/reference_integrity/mastermind-xpv2-sector-r3b-2/build/views/overview.html",
+          "sha": "aa9c626fb01d12a1927c07a7b8652864811f065d",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/f9588ff57391350bbd7225a7bbe56eb589d5a47d/mockups/refs/reference_integrity/mastermind-xpv2-sector-r3b-2/build/views/overview.html"
+        },
+        {
+          "path": "research/reference_integrity/mastermind-xpv2-sector-r3b/proposal.yml",
+          "sha": "4765c9b5201b0b2b33521eed9345b2759e790bde",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/f9588ff57391350bbd7225a7bbe56eb589d5a47d/research/reference_integrity/mastermind-xpv2-sector-r3b/proposal.yml"
+        },
+        {
+          "path": "research/reference_integrity/mastermind-xpv2-sector-r3b/baseline.yml",
+          "sha": "0bee8b404b4dc931b212a0061d9847cd22409ca7",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/f9588ff57391350bbd7225a7bbe56eb589d5a47d/research/reference_integrity/mastermind-xpv2-sector-r3b/baseline.yml"
+        },
+        {
+          "path": "research/sector_completion_20261021/CAPABILITY_MATRIX_2026-10-21.csv",
+          "sha": "5dda1c495a539fa4998f9281f978db70058d818d",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/f9588ff57391350bbd7225a7bbe56eb589d5a47d/research/sector_completion_20261021/CAPABILITY_MATRIX_2026-10-21.csv"
+        },
+        {
+          "path": "research/reference_integrity/mastermind-xpv2-sector-r3b-1/proposal.yml",
+          "sha": "bf9edd8cf8038a2f1671f650d269c1d5aba1571f",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/f9588ff57391350bbd7225a7bbe56eb589d5a47d/research/reference_integrity/mastermind-xpv2-sector-r3b-1/proposal.yml"
+        },
+        {
+          "path": "research/reference_integrity/mastermind-xpv2-sector-r3b-2/proposal.yml",
+          "sha": "00c33cbc67e84912a2a5a703244a1d5f329dee79",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/f9588ff57391350bbd7225a7bbe56eb589d5a47d/research/reference_integrity/mastermind-xpv2-sector-r3b-2/proposal.yml"
+        },
+        {
+          "path": "research/reference_integrity/mastermind-xpv2-sector-r3b-1/baseline.yml",
+          "sha": "e04616d17f6c4fff7a46c3ad4ed85c1d32bc4b2c",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/f9588ff57391350bbd7225a7bbe56eb589d5a47d/research/reference_integrity/mastermind-xpv2-sector-r3b-1/baseline.yml"
+        },
+        {
+          "path": "research/reference_integrity/mastermind-xpv2-sector-r3b-2/baseline.yml",
+          "sha": "35d7e5df5ea93c0529412bbc105c0f558d10f38f",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/f9588ff57391350bbd7225a7bbe56eb589d5a47d/research/reference_integrity/mastermind-xpv2-sector-r3b-2/baseline.yml"
+        },
+        {
+          "path": "research/reference_integrity/sector-intelligence-cycles-20261021/baseline.yml",
+          "sha": "20538f62585f47d16c6a9557a58dd6091fd260cf",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/f9588ff57391350bbd7225a7bbe56eb589d5a47d/research/reference_integrity/sector-intelligence-cycles-20261021/baseline.yml"
+        },
+        {
+          "path": "research/sector_completion_20261021/P19_CAPABILITY_DISPOSITION_2026-11-02.csv",
+          "sha": "b43cf369c1e0813cd810cd9d2a0e627bbc35bf53",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/f9588ff57391350bbd7225a7bbe56eb589d5a47d/research/sector_completion_20261021/P19_CAPABILITY_DISPOSITION_2026-11-02.csv"
+        },
+        {
+          "path": "research/reference_integrity/mastermind-xpv2-sector-r3/fixture/premiumdata/sector_central.json",
+          "sha": "04f552f3a4d1a00cb232e50a183bdfbb077673e4",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/f9588ff57391350bbd7225a7bbe56eb589d5a47d/research/reference_integrity/mastermind-xpv2-sector-r3/fixture/premiumdata/sector_central.json"
+        },
+        {
+          "path": "tests/test_sector_central_gate.py",
+          "sha": "7c0f06b757ee508284bc723a282eae23b0b8c5bd",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/f9588ff57391350bbd7225a7bbe56eb589d5a47d/tests/test_sector_central_gate.py"
+        },
+        {
+          "path": "tests/test_etfs_gate.py",
+          "sha": "7549ac8b37de8e98049828cef4faf4094da79b91",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/f9588ff57391350bbd7225a7bbe56eb589d5a47d/tests/test_etfs_gate.py"
+        },
+        {
+          "path": "tests/test_confluence_screener_page.py",
+          "sha": "cfc2c0ba08162f4515e62b8b0607317ea746257d",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/f9588ff57391350bbd7225a7bbe56eb589d5a47d/tests/test_confluence_screener_page.py"
+        },
+        {
+          "path": "tests/test_special_situations_gate.py",
+          "sha": "778a00252347c4340970cd195a887bf5c48e0980",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/f9588ff57391350bbd7225a7bbe56eb589d5a47d/tests/test_special_situations_gate.py"
+        },
+        {
+          "path": "tests/test_us_board_gate.py",
+          "sha": "add79ee4a30ddabef3f7cb54bed01583af7dbf0a",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/f9588ff57391350bbd7225a7bbe56eb589d5a47d/tests/test_us_board_gate.py"
+        },
+        {
+          "path": "tests/test_build_live_quotes.py",
+          "sha": "b34f96b4a1ea7186eb6d487eb595683f52114d67",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/f9588ff57391350bbd7225a7bbe56eb589d5a47d/tests/test_build_live_quotes.py"
+        },
+        {
+          "path": "tests/test_sector_central_publication.py",
+          "sha": "1e24da836b02d1d05273b96ec9a3cb1cc21f4f84",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/f9588ff57391350bbd7225a7bbe56eb589d5a47d/tests/test_sector_central_publication.py"
+        },
+        {
+          "path": "tests/test_us_board_hydration_merge.py",
+          "sha": "92652de4ba809b2abecfa0d372d550ecd8d1ebd3",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/f9588ff57391350bbd7225a7bbe56eb589d5a47d/tests/test_us_board_hydration_merge.py"
+        },
+        {
+          "path": "tests/test_china_special_situations_gate.py",
+          "sha": "d09984c30de6a0e8d31efd2152428e8e2d282f62",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/f9588ff57391350bbd7225a7bbe56eb589d5a47d/tests/test_china_special_situations_gate.py"
+        },
+        {
+          "path": "tests/test_xpv2_sector_r3_fixture.py",
+          "sha": "bb4d5fe7a6f3fe5eb4c1807bd90350b20d969a14",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/f9588ff57391350bbd7225a7bbe56eb589d5a47d/tests/test_xpv2_sector_r3_fixture.py"
+        },
+        {
+          "path": "tests/test_sector_intelligence_page.py",
+          "sha": "3c5eb6fab3b9b02d0b6358db60d81785d2ed6d90",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/f9588ff57391350bbd7225a7bbe56eb589d5a47d/tests/test_sector_intelligence_page.py"
+        }
+      ]
+    },
+    "assessment": "check_nightly_liveness.py's v1 occurrence is a comment for US premium; its registry does not monitor this Confluence payload. Other operative v1 readers belong to other assets and remain unchanged."
+  },
+  "source_conservation": {
+    "source_parent": "dce11e42c79da7bf45bdda930b473d3f6a97e54e",
+    "schema": "tier_payload.v2",
+    "source_built": "2026-11-08T11:31:29Z",
+    "source_generation": {
+      "schema": "confluence_source.v1",
+      "generated_utc": "2026-11-08T11:31:29Z",
+      "sha256": "4f8c3dcd8508a55978f4b27d7c4d34828bc1044881ed404120cb353b1d4dc7c1"
+    },
+    "exact_input_count": 33,
+    "changed_inputs": [
+      "scripts/build_confluence_screener.py",
+      "templates/confluence_screener.html.j2",
+      "tests/test_confluence_screener_page.py",
+      "site/confluence_screener.html",
+      "site/premiumdata/confluence_screener.json"
+    ],
+    "unchanged_inputs": 28,
+    "builder_ast_changed": [
+      "build_context",
+      "build_premium_payload"
+    ],
+    "builder_ast_unchanged": 9,
+    "test_ast_changed": [
+      "test_premium_payload_contains_only_gated_top_three_tickers",
+      "test_premium_payload_none_raw_overwrites_with_empty_fail_soft_payload",
+      "test_render_html_has_protected_payload_hydration_contract",
+      "test_shipped_shell_and_protected_payload_are_paired"
+    ],
+    "test_ast_unchanged": 37,
+    "new_test_definitions": [
+      "test_actual_render_overwrites_stale_protected_rows"
+    ],
+    "served_inverse_exact": true,
+    "served_payload_equals_actual_producer": true,
+    "actual_render_inverse_exact": true
+  },
+  "bound_inputs": {
+    "schema": "confluence_bound_inputs/v1",
+    "source_head": "dce11e42c79da7bf45bdda930b473d3f6a97e54e",
+    "root": "/Volumes/Mastermind/agent-workspaces/verify/confluence-compat-20261109-klbmhv4a",
+    "inputs": [
+      {
+        "path": "scripts/build_confluence_screener.py",
+        "blob": "f6a34870ab7a7ff527f16594fa845a362a4d230d",
+        "bytes": 18786,
+        "sha256": "fa4895396a5935eaad655509133893b8abc0c52ac459afaf1be6116b3335fefd"
+      },
+      {
+        "path": "templates/confluence_screener.html.j2",
+        "blob": "64864e622d0e788558f5fe15a94587494063f9c5",
+        "bytes": 49884,
+        "sha256": "a512eef3ffa0ad7fa5d0b13fe05f664e6408c8d6e284b18f63c62deafe57ef50"
+      },
+      {
+        "path": "tests/test_confluence_screener_page.py",
+        "blob": "34c7fe2984147428d104b30d5f7b3e22171a58b1",
+        "bytes": 31700,
+        "sha256": "648e321e557b47cb959e75a9bcea81b8def94aaadcfcb7beb10c7e4b2994046a"
+      },
+      {
+        "path": "scripts/verify_confluence_screener_browser.py",
+        "blob": "a2a8a69944c5dd05f4c321d409305772a9a6360a",
+        "bytes": 33564,
+        "sha256": "177903221965eeaceed7a8ff952e64cbdb0ad19d4d77c658710dd8ef8da4e147"
+      },
+      {
+        "path": "engine/__init__.py",
+        "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "engine/i18n.py",
+        "blob": "d3b240fa5e9b91b3e8070ae372c294c897e37464",
+        "bytes": 35238,
+        "sha256": "64e55cf5d0396ae12075eab53e0a838d004fde47f574ffb170b07011b0e6e152"
+      },
+      {
+        "path": "engine/marketing/__init__.py",
+        "blob": "43080bba5ba2a0649a4ae0a7a18a1493cb5f39b2",
+        "bytes": 660,
+        "sha256": "6c9056208c0a9c0115eb54b9f8abfd01b36fd168e843b0d5235c9291240bfa5c"
+      },
+      {
+        "path": "engine/marketing/links.py",
+        "blob": "718eb80d33e05561bb08132339e981a29904b200",
+        "bytes": 17373,
+        "sha256": "029677dee27dbc721a78ac340be7827da1168762989486b7c5d06e07c7a468c2"
+      },
+      {
+        "path": "lib/__init__.py",
+        "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "lib/config.py",
+        "blob": "b6fc888269876242597da354aaa726c20ed95802",
+        "bytes": 1131,
+        "sha256": "fa22ec934ec5294072b6bb4bf081d787f3f8ad5da4702ce3f4818b1674dbd53f"
+      },
+      {
+        "path": "lib/pages.py",
+        "blob": "db175c463a31828263b57a3287afba661439a765",
+        "bytes": 38933,
+        "sha256": "9ec5d5ceeff55e5e269c5de26d1f54b9d72db1a755940f7029f47d98820014ba"
+      },
+      {
+        "path": "lib/shared_shell.py",
+        "blob": "cffbeba3f8fdcf7a9413d9428aec0154d97d9614",
+        "bytes": 5407,
+        "sha256": "eb1f06843b556968f15a0478d756e8312a3b6f4f4c8cb3daf047a6c438f79c1c"
+      },
+      {
+        "path": "lib/site_assets.py",
+        "blob": "03d7ce6137a30b990435cb1fee2090e61c2e95e3",
+        "bytes": 7180,
+        "sha256": "61ed68657b38b006962c653553bcd1d2e25f4ce918ce98ab30f99e7cdc09b275"
+      },
+      {
+        "path": "templates/_seo_head.html.j2",
+        "blob": "1a0f1a7cd3a8499e9d873171171d374424f9ddd8",
+        "bytes": 2335,
+        "sha256": "eda59eeb5f7cf0fb83a1a6430ff523939ee43cd214fe2b4aebba7ca4561bbbee"
+      },
+      {
+        "path": "templates/_site_nav.html.j2",
+        "blob": "d5c449e9ec498c49007c2de0ced1757a7f36b12d",
+        "bytes": 3684,
+        "sha256": "2a1f60a27bfdb2c86ab6aa60e6efd1b40515f94d1afc6d38692047f1de3d0376"
+      },
+      {
+        "path": "templates/_navlinks.html.j2",
+        "blob": "70fee6eabeb2cfe6d92590da42aa8c3e3733e837",
+        "bytes": 54533,
+        "sha256": "da495f935455e24d117bc556d82c634b0229c9604c8fb2ad711f9542a3f29a83"
+      },
+      {
+        "path": "templates/theme.js",
+        "blob": "21a1fb1627ac34badc6078cff486f98486e9b773",
+        "bytes": 400176,
+        "sha256": "918e7acece23ab6df8211305a938e569f0de4184c0fd9c0b2f1e56c50e3cac4d"
+      },
+      {
+        "path": "templates/theme.css",
+        "blob": "619436f58d37a222d1db7021ba9d52bb3a05a7fa",
+        "bytes": 227583,
+        "sha256": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757"
+      },
+      {
+        "path": "templates/data_base.js",
+        "blob": "9e7cc392f0bad0e269d26903432faa39d94a1b62",
+        "bytes": 2367,
+        "sha256": "2aaceaf98a0f534aa342bdc6e64c831a2261a04fafebab4becf50f2d7c82620a"
+      },
+      {
+        "path": "templates/shared_shell_bridge.js",
+        "blob": "00ee9b9fa4d1fba67359d3d6b95c7937aed150b7",
+        "bytes": 51296,
+        "sha256": "071ef7202d8886228342c00f0e7a3026eaba1d0103c4dcf1e6d204a7da77451b"
+      },
+      {
+        "path": "templates/shared_shell.css",
+        "blob": "88a0fd9e836fbffac36722dac04189c6eb24af9b",
+        "bytes": 467,
+        "sha256": "b1918ccaa2294f18c0fd5bca123e38267251c7e9d9a7c4fce1f296ef9e4c3c1e"
+      },
+      {
+        "path": "site/theme.js",
+        "blob": "d85bf9fb55cd67faf32dd49e88423fe249fb8855",
+        "bytes": 280236,
+        "sha256": "aa83d371263aa05e866a6a79a9f425f4c16b1cdedc8845ae78f1f8ee52ff3b71"
+      },
+      {
+        "path": "site/theme.css",
+        "blob": "619436f58d37a222d1db7021ba9d52bb3a05a7fa",
+        "bytes": 227583,
+        "sha256": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757"
+      },
+      {
+        "path": "site/shared_shell_bridge.js",
+        "blob": "00ee9b9fa4d1fba67359d3d6b95c7937aed150b7",
+        "bytes": 51296,
+        "sha256": "071ef7202d8886228342c00f0e7a3026eaba1d0103c4dcf1e6d204a7da77451b"
+      },
+      {
+        "path": "site/shared_shell.css",
+        "blob": "88a0fd9e836fbffac36722dac04189c6eb24af9b",
+        "bytes": 467,
+        "sha256": "b1918ccaa2294f18c0fd5bca123e38267251c7e9d9a7c4fce1f296ef9e4c3c1e"
+      },
+      {
+        "path": "site/data_base.js",
+        "blob": "9e7cc392f0bad0e269d26903432faa39d94a1b62",
+        "bytes": 2367,
+        "sha256": "2aaceaf98a0f534aa342bdc6e64c831a2261a04fafebab4becf50f2d7c82620a"
+      },
+      {
+        "path": "site/confluence_screener.html",
+        "blob": "6045dff80f90a9e5e81d08572ed974d56506deff",
+        "bytes": 119151,
+        "sha256": "24ca8713b2d4d6d3888e8982c0202ed0ee8d7252c9462bea1c501ac18130db6f"
+      },
+      {
+        "path": "site/premiumdata/confluence_screener.json",
+        "blob": "b8012f9501a5e0e495bff91e1a0c99d1e21a12df",
+        "bytes": 542,
+        "sha256": "b44f6baa2b7b7614e1471075b45f42a8819c4865e344e0458855531308ee9c0f"
+      },
+      {
+        "path": "site/factordata/tech_confluence.json",
+        "blob": "e52184ccebe0a395857e3daec7535de70cc6d472",
+        "bytes": 604763,
+        "sha256": "3c7e07de0df56f234cc70c9370b5607d184871e947f27d992de6d59591038210"
+      },
+      {
+        "path": "site/marketdata/sp500_heatmap.json",
+        "blob": "feb75e02414a120f99aefd880ec466a75c834ecf",
+        "bytes": 118073,
+        "sha256": "baf1ecf28714e9c7a2c5f76b0d64f614a90a1fcbd88f86e841b1659bd3a736d6"
+      },
+      {
+        "path": "config.yml",
+        "blob": "5be75249c98033d7ee0fbe55928713b1f50af627",
+        "bytes": 496073,
+        "sha256": "701229b33bbd6260c561023e2c2611a8fca24bc2c97e784cf97d55aa0357b402"
+      },
+      {
+        "path": "config/sparse_worktree.json",
+        "blob": "46b4d13bb5302a68b437a257eebe066d07bdc7ff",
+        "bytes": 2180,
+        "sha256": "5885514e1079a7c4d8679b4671880201682c591bb858726a25d76265f5d4ec6b"
+      },
+      {
+        "path": "engine/tech_confluence.py",
+        "bytes": 35126,
+        "blob": "cf2640d407a452ce07d6a5a76f9affe9bc52832e",
+        "sha256": "0a58e55b4a624879127f624c75e1b8a92ad3f9d9a90587efce19f95b377d2958"
+      }
+    ]
+  },
+  "full_native_reports": {
+    "baseline-compat-proof/browser-report.json": {
+      "schema": "confluence_compat_browser/v1",
+      "observed_at": "2026-11-09T11:35:45.141502+00:00",
+      "browser": "157.0.8103.39",
+      "contexts": 14,
+      "cases": [
+        {
+          "name": "old_reader_rejects_new_payload-1440-en",
+          "observations": [
+            {
+              "url": "http://127.0.0.1:61738/confluence_screener.html?fixture=legacy&keep=a&keep=b#return-point",
+              "locked": 0,
+              "hydrated": 0,
+              "paidLinks": [
+                "stocks/NEWERA.html",
+                "stocks/GATEDCC.html"
+              ],
+              "state": null,
+              "publicLinks": [
+                "stocks/FREEAA.html"
+              ],
+              "activeTag": "BODY",
+              "activeHref": null,
+              "phase": "frozen-old-reader/new-generation-payload",
+              "requests": 1,
+              "schema": "tier_payload.v1"
+            }
+          ],
+          "status": "FAIL",
+          "error": "{'url': 'http://127.0.0.1:61738/confluence_screener.html?fixture=legacy&keep=a&keep=b#return-point', 'locked': 0, 'hydrated': 0, 'paidLinks': ['stocks/NEWERA.html', 'stocks/GATEDCC.html'], 'state': None, 'publicLinks': ['stocks/FREEAA.html'], 'activeTag': 'BODY', 'activeHref': None, 'phase': 'frozen-old-reader/new-generation-payload', 'requests': 1, 'schema': 'tier_payload.v1'}",
+          "trace": "Traceback (most recent call last):\n  File \"/Volumes/Mastermind/agent-workspaces/verify/confluence-compat-20261109-klbmhv4a/scripts/verify_confluence_compatibility_browser.py\", line 111, in record\n    fn(case[\"observations\"])\n    ~~^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Volumes/Mastermind/agent-workspaces/verify/confluence-compat-20261109-klbmhv4a/scripts/verify_confluence_compatibility_browser.py\", line 190, in legacy_case\n    value = locked_snapshot(page, ctl, obs, \"frozen-old-reader/new-generation-payload\")\n  File \"/Volumes/Mastermind/agent-workspaces/verify/confluence-compat-20261109-klbmhv4a/scripts/verify_confluence_compatibility_browser.py\", line 176, in locked_snapshot\n    assert value[\"locked\"] == 2 and value[\"hydrated\"] == 0 and not value[\"paidLinks\"], value\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: {'url': 'http://127.0.0.1:61738/confluence_screener.html?fixture=legacy&keep=a&keep=b#return-point', 'locked': 0, 'hydrated': 0, 'paidLinks': ['stocks/NEWERA.html', 'stocks/GATEDCC.html'], 'state': None, 'publicLinks': ['stocks/FREEAA.html'], 'activeTag': 'BODY', 'activeHref': None, 'phase': 'frozen-old-reader/new-generation-payload', 'requests': 1, 'schema': 'tier_payload.v1'}\n"
+        },
+        {
+          "name": "new_reader_rejects_prior_bound_v1-1440-en",
+          "observations": [
+            {
+              "url": "http://127.0.0.1:61738/confluence_screener.html?fixture=current&keep=a&keep=b#return-point",
+              "locked": 0,
+              "hydrated": 2,
+              "paidLinks": [
+                "stocks/GATEDBB.html",
+                "stocks/GATEDCC.html"
+              ],
+              "state": "loaded",
+              "publicLinks": [
+                "stocks/FREEAA.html"
+              ],
+              "activeTag": "BODY",
+              "activeHref": null,
+              "phase": "prior_bound_v1",
+              "requests": 1,
+              "schema": "tier_payload.v1"
+            }
+          ],
+          "status": "FAIL",
+          "error": "{'url': 'http://127.0.0.1:61738/confluence_screener.html?fixture=current&keep=a&keep=b#return-point', 'locked': 0, 'hydrated': 2, 'paidLinks': ['stocks/GATEDBB.html', 'stocks/GATEDCC.html'], 'state': 'loaded', 'publicLinks': ['stocks/FREEAA.html'], 'activeTag': 'BODY', 'activeHref': None, 'phase': 'prior_bound_v1', 'requests': 1, 'schema': 'tier_payload.v1'}",
+          "trace": "Traceback (most recent call last):\n  File \"/Volumes/Mastermind/agent-workspaces/verify/confluence-compat-20261109-klbmhv4a/scripts/verify_confluence_compatibility_browser.py\", line 111, in record\n    fn(case[\"observations\"])\n    ~~^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Volumes/Mastermind/agent-workspaces/verify/confluence-compat-20261109-klbmhv4a/scripts/verify_confluence_compatibility_browser.py\", line 204, in rejection\n    locked_snapshot(page, ctl, obs, name, \"invalid\")\n    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Volumes/Mastermind/agent-workspaces/verify/confluence-compat-20261109-klbmhv4a/scripts/verify_confluence_compatibility_browser.py\", line 176, in locked_snapshot\n    assert value[\"locked\"] == 2 and value[\"hydrated\"] == 0 and not value[\"paidLinks\"], value\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: {'url': 'http://127.0.0.1:61738/confluence_screener.html?fixture=current&keep=a&keep=b#return-point', 'locked': 0, 'hydrated': 2, 'paidLinks': ['stocks/GATEDBB.html', 'stocks/GATEDCC.html'], 'state': 'loaded', 'publicLinks': ['stocks/FREEAA.html'], 'activeTag': 'BODY', 'activeHref': None, 'phase': 'prior_bound_v1', 'requests': 1, 'schema': 'tier_payload.v1'}\n"
+        },
+        {
+          "name": "new_reader_rejects_legacy_unbound_v1-1440-en",
+          "observations": [
+            {
+              "url": "http://127.0.0.1:61738/confluence_screener.html?fixture=current&keep=a&keep=b#return-point",
+              "locked": 2,
+              "hydrated": 0,
+              "paidLinks": [],
+              "state": "invalid",
+              "publicLinks": [
+                "stocks/FREEAA.html"
+              ],
+              "activeTag": "BODY",
+              "activeHref": null,
+              "phase": "legacy_unbound_v1",
+              "requests": 1,
+              "schema": "tier_payload.v1"
+            }
+          ],
+          "status": "PASS"
+        },
+        {
+          "name": "matching_pair_and_signout-1440-en",
+          "observations": [
+            {
+              "url": "http://127.0.0.1:61738/confluence_screener.html?fixture=current&keep=a&keep=b#return-point",
+              "locked": 0,
+              "hydrated": 2,
+              "paidLinks": [
+                "stocks/GATEDBB.html",
+                "stocks/GATEDCC.html"
+              ],
+              "state": "loaded",
+              "publicLinks": [
+                "stocks/FREEAA.html"
+              ],
+              "activeTag": "BODY",
+              "activeHref": null,
+              "phase": "matching-new-pair",
+              "requests": 1,
+              "schema": "tier_payload.v1"
+            },
+            {
+              "url": "http://127.0.0.1:61738/confluence_screener.html?fixture=current&keep=a&keep=b#return-point",
+              "locked": 2,
+              "hydrated": 0,
+              "paidLinks": [],
+              "state": "locked",
+              "publicLinks": [
+                "stocks/FREEAA.html"
+              ],
+              "activeTag": "B",
+              "activeHref": null,
+              "phase": "signout-retains-public-evidence",
+              "requests": 1,
+              "schema": "tier_payload.v1"
+            }
+          ],
+          "status": "PASS"
+        },
+        {
+          "name": "generation_mismatch_and_existing_retry-1440-en",
+          "observations": [
+            {
+              "url": "http://127.0.0.1:61738/confluence_screener.html?fixture=current&keep=a&keep=b#return-point",
+              "locked": 2,
+              "hydrated": 0,
+              "paidLinks": [],
+              "state": "mismatch",
+              "publicLinks": [
+                "stocks/FREEAA.html"
+              ],
+              "activeTag": "BODY",
+              "activeHref": null,
+              "phase": "same-clock-different-recipe",
+              "requests": 1,
+              "schema": "tier_payload.v1"
+            }
+          ],
+          "status": "FAIL",
+          "error": "Page.wait_for_function: Timeout 6000ms exceeded.",
+          "trace": "Traceback (most recent call last):\n  File \"/Volumes/Mastermind/agent-workspaces/verify/confluence-compat-20261109-klbmhv4a/scripts/verify_confluence_compatibility_browser.py\", line 111, in record\n    fn(case[\"observations\"])\n    ~~^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Volumes/Mastermind/agent-workspaces/verify/confluence-compat-20261109-klbmhv4a/scripts/verify_confluence_compatibility_browser.py\", line 239, in mismatch_retry\n    settle_response(page, prior_reads)\n    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^\n  File \"/Volumes/Mastermind/agent-workspaces/verify/confluence-compat-20261109-klbmhv4a/scripts/verify_confluence_compatibility_browser.py\", line 156, in settle_response\n    page.wait_for_function(\"n => window.__compatJsonReads > n\", arg=previous)\n    ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nplaywright._impl._errors.TimeoutError: Page.wait_for_function: Timeout 6000ms exceeded.\n"
+        },
+        {
+          "name": "old_reader_rejects_new_payload-320-zh",
+          "observations": [
+            {
+              "url": "http://127.0.0.1:61738/confluence_screener.html?fixture=legacy&keep=a&keep=b#return-point",
+              "locked": 0,
+              "hydrated": 0,
+              "paidLinks": [
+                "stocks/NEWERA.html",
+                "stocks/GATEDCC.html"
+              ],
+              "state": null,
+              "publicLinks": [
+                "stocks/FREEAA.html"
+              ],
+              "activeTag": "BODY",
+              "activeHref": null,
+              "phase": "frozen-old-reader/new-generation-payload",
+              "requests": 1,
+              "schema": "tier_payload.v1"
+            }
+          ],
+          "status": "FAIL",
+          "error": "{'url': 'http://127.0.0.1:61738/confluence_screener.html?fixture=legacy&keep=a&keep=b#return-point', 'locked': 0, 'hydrated': 0, 'paidLinks': ['stocks/NEWERA.html', 'stocks/GATEDCC.html'], 'state': None, 'publicLinks': ['stocks/FREEAA.html'], 'activeTag': 'BODY', 'activeHref': None, 'phase': 'frozen-old-reader/new-generation-payload', 'requests': 1, 'schema': 'tier_payload.v1'}",
+          "trace": "Traceback (most recent call last):\n  File \"/Volumes/Mastermind/agent-workspaces/verify/confluence-compat-20261109-klbmhv4a/scripts/verify_confluence_compatibility_browser.py\", line 111, in record\n    fn(case[\"observations\"])\n    ~~^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Volumes/Mastermind/agent-workspaces/verify/confluence-compat-20261109-klbmhv4a/scripts/verify_confluence_compatibility_browser.py\", line 190, in legacy_case\n    value = locked_snapshot(page, ctl, obs, \"frozen-old-reader/new-generation-payload\")\n  File \"/Volumes/Mastermind/agent-workspaces/verify/confluence-compat-20261109-klbmhv4a/scripts/verify_confluence_compatibility_browser.py\", line 176, in locked_snapshot\n    assert value[\"locked\"] == 2 and value[\"hydrated\"] == 0 and not value[\"paidLinks\"], value\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: {'url': 'http://127.0.0.1:61738/confluence_screener.html?fixture=legacy&keep=a&keep=b#return-point', 'locked': 0, 'hydrated': 0, 'paidLinks': ['stocks/NEWERA.html', 'stocks/GATEDCC.html'], 'state': None, 'publicLinks': ['stocks/FREEAA.html'], 'activeTag': 'BODY', 'activeHref': None, 'phase': 'frozen-old-reader/new-generation-payload', 'requests': 1, 'schema': 'tier_payload.v1'}\n"
+        },
+        {
+          "name": "new_reader_rejects_prior_bound_v1-320-zh",
+          "observations": [
+            {
+              "url": "http://127.0.0.1:61738/confluence_screener.html?fixture=current&keep=a&keep=b#return-point",
+              "locked": 0,
+              "hydrated": 2,
+              "paidLinks": [
+                "stocks/GATEDBB.html",
+                "stocks/GATEDCC.html"
+              ],
+              "state": "loaded",
+              "publicLinks": [
+                "stocks/FREEAA.html"
+              ],
+              "activeTag": "BODY",
+              "activeHref": null,
+              "phase": "prior_bound_v1",
+              "requests": 1,
+              "schema": "tier_payload.v1"
+            }
+          ],
+          "status": "FAIL",
+          "error": "{'url': 'http://127.0.0.1:61738/confluence_screener.html?fixture=current&keep=a&keep=b#return-point', 'locked': 0, 'hydrated': 2, 'paidLinks': ['stocks/GATEDBB.html', 'stocks/GATEDCC.html'], 'state': 'loaded', 'publicLinks': ['stocks/FREEAA.html'], 'activeTag': 'BODY', 'activeHref': None, 'phase': 'prior_bound_v1', 'requests': 1, 'schema': 'tier_payload.v1'}",
+          "trace": "Traceback (most recent call last):\n  File \"/Volumes/Mastermind/agent-workspaces/verify/confluence-compat-20261109-klbmhv4a/scripts/verify_confluence_compatibility_browser.py\", line 111, in record\n    fn(case[\"observations\"])\n    ~~^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Volumes/Mastermind/agent-workspaces/verify/confluence-compat-20261109-klbmhv4a/scripts/verify_confluence_compatibility_browser.py\", line 204, in rejection\n    locked_snapshot(page, ctl, obs, name, \"invalid\")\n    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Volumes/Mastermind/agent-workspaces/verify/confluence-compat-20261109-klbmhv4a/scripts/verify_confluence_compatibility_browser.py\", line 176, in locked_snapshot\n    assert value[\"locked\"] == 2 and value[\"hydrated\"] == 0 and not value[\"paidLinks\"], value\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: {'url': 'http://127.0.0.1:61738/confluence_screener.html?fixture=current&keep=a&keep=b#return-point', 'locked': 0, 'hydrated': 2, 'paidLinks': ['stocks/GATEDBB.html', 'stocks/GATEDCC.html'], 'state': 'loaded', 'publicLinks': ['stocks/FREEAA.html'], 'activeTag': 'BODY', 'activeHref': None, 'phase': 'prior_bound_v1', 'requests': 1, 'schema': 'tier_payload.v1'}\n"
+        },
+        {
+          "name": "new_reader_rejects_legacy_unbound_v1-320-zh",
+          "observations": [
+            {
+              "url": "http://127.0.0.1:61738/confluence_screener.html?fixture=current&keep=a&keep=b#return-point",
+              "locked": 2,
+              "hydrated": 0,
+              "paidLinks": [],
+              "state": "invalid",
+              "publicLinks": [
+                "stocks/FREEAA.html"
+              ],
+              "activeTag": "BODY",
+              "activeHref": null,
+              "phase": "legacy_unbound_v1",
+              "requests": 1,
+              "schema": "tier_payload.v1"
+            }
+          ],
+          "status": "PASS"
+        },
+        {
+          "name": "matching_pair_and_signout-320-zh",
+          "observations": [
+            {
+              "url": "http://127.0.0.1:61738/confluence_screener.html?fixture=current&keep=a&keep=b#return-point",
+              "locked": 0,
+              "hydrated": 2,
+              "paidLinks": [
+                "stocks/GATEDBB.html",
+                "stocks/GATEDCC.html"
+              ],
+              "state": "loaded",
+              "publicLinks": [
+                "stocks/FREEAA.html"
+              ],
+              "activeTag": "BODY",
+              "activeHref": null,
+              "phase": "matching-new-pair",
+              "requests": 1,
+              "schema": "tier_payload.v1"
+            },
+            {
+              "url": "http://127.0.0.1:61738/confluence_screener.html?fixture=current&keep=a&keep=b#return-point",
+              "locked": 2,
+              "hydrated": 0,
+              "paidLinks": [],
+              "state": "locked",
+              "publicLinks": [
+                "stocks/FREEAA.html"
+              ],
+              "activeTag": "B",
+              "activeHref": null,
+              "phase": "signout-retains-public-evidence",
+              "requests": 1,
+              "schema": "tier_payload.v1"
+            }
+          ],
+          "status": "PASS"
+        },
+        {
+          "name": "generation_mismatch_and_existing_retry-320-zh",
+          "observations": [
+            {
+              "url": "http://127.0.0.1:61738/confluence_screener.html?fixture=current&keep=a&keep=b#return-point",
+              "locked": 2,
+              "hydrated": 0,
+              "paidLinks": [],
+              "state": "mismatch",
+              "publicLinks": [
+                "stocks/FREEAA.html"
+              ],
+              "activeTag": "BODY",
+              "activeHref": null,
+              "phase": "same-clock-different-recipe",
+              "requests": 1,
+              "schema": "tier_payload.v1"
+            }
+          ],
+          "status": "FAIL",
+          "error": "Page.wait_for_function: Timeout 6000ms exceeded.",
+          "trace": "Traceback (most recent call last):\n  File \"/Volumes/Mastermind/agent-workspaces/verify/confluence-compat-20261109-klbmhv4a/scripts/verify_confluence_compatibility_browser.py\", line 111, in record\n    fn(case[\"observations\"])\n    ~~^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Volumes/Mastermind/agent-workspaces/verify/confluence-compat-20261109-klbmhv4a/scripts/verify_confluence_compatibility_browser.py\", line 239, in mismatch_retry\n    settle_response(page, prior_reads)\n    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^\n  File \"/Volumes/Mastermind/agent-workspaces/verify/confluence-compat-20261109-klbmhv4a/scripts/verify_confluence_compatibility_browser.py\", line 156, in settle_response\n    page.wait_for_function(\"n => window.__compatJsonReads > n\", arg=previous)\n    ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nplaywright._impl._errors.TimeoutError: Page.wait_for_function: Timeout 6000ms exceeded.\n"
+        },
+        {
+          "name": "zero_action-390-en",
+          "observations": [
+            {
+              "phase": "zero-action",
+              "expected_label": "Open Mastermind",
+              "text": "Get notified when setups fire",
+              "href": "https://app.mastermind-x.com/",
+              "tag": "A",
+              "x": 84.53125,
+              "y": 550.3125,
+              "width": 220.921875,
+              "height": 44,
+              "right": 305.453125,
+              "viewport": 390,
+              "documentWidth": 390
+            }
+          ],
+          "status": "FAIL",
+          "error": "{'text': 'Get notified when setups fire', 'href': 'https://app.mastermind-x.com/', 'tag': 'A', 'x': 84.53125, 'y': 550.3125, 'width': 220.921875, 'height': 44, 'right': 305.453125, 'viewport': 390, 'documentWidth': 390}",
+          "trace": "Traceback (most recent call last):\n  File \"/Volumes/Mastermind/agent-workspaces/verify/confluence-compat-20261109-klbmhv4a/scripts/verify_confluence_compatibility_browser.py\", line 111, in record\n    fn(case[\"observations\"])\n    ~~^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Volumes/Mastermind/agent-workspaces/verify/confluence-compat-20261109-klbmhv4a/scripts/verify_confluence_compatibility_browser.py\", line 264, in action_case\n    assert value[\"text\"] == expected, value\n           ^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: {'text': 'Get notified when setups fire', 'href': 'https://app.mastermind-x.com/', 'tag': 'A', 'x': 84.53125, 'y': 550.3125, 'width': 220.921875, 'height': 44, 'right': 305.453125, 'viewport': 390, 'documentWidth': 390}\n"
+        },
+        {
+          "name": "unavailable_action-390-en",
+          "observations": [
+            {
+              "phase": "unavailable-action",
+              "expected_label": "Reload page",
+              "text": "Check again",
+              "href": null,
+              "tag": "BUTTON",
+              "x": 139.703125,
+              "y": 567.546875,
+              "width": 110.59375,
+              "height": 44,
+              "right": 250.296875,
+              "viewport": 390,
+              "documentWidth": 390
+            }
+          ],
+          "status": "FAIL",
+          "error": "{'text': 'Check again', 'href': None, 'tag': 'BUTTON', 'x': 139.703125, 'y': 567.546875, 'width': 110.59375, 'height': 44, 'right': 250.296875, 'viewport': 390, 'documentWidth': 390}",
+          "trace": "Traceback (most recent call last):\n  File \"/Volumes/Mastermind/agent-workspaces/verify/confluence-compat-20261109-klbmhv4a/scripts/verify_confluence_compatibility_browser.py\", line 111, in record\n    fn(case[\"observations\"])\n    ~~^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Volumes/Mastermind/agent-workspaces/verify/confluence-compat-20261109-klbmhv4a/scripts/verify_confluence_compatibility_browser.py\", line 264, in action_case\n    assert value[\"text\"] == expected, value\n           ^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: {'text': 'Check again', 'href': None, 'tag': 'BUTTON', 'x': 139.703125, 'y': 567.546875, 'width': 110.59375, 'height': 44, 'right': 250.296875, 'viewport': 390, 'documentWidth': 390}\n"
+        },
+        {
+          "name": "zero_action-320-zh",
+          "observations": [
+            {
+              "phase": "zero-action",
+              "expected_label": "打开 Mastermind",
+              "text": "布局触发时通知我",
+              "href": "https://app.mastermind-x.com/",
+              "tag": "A",
+              "x": 91,
+              "y": 764.890625,
+              "width": 138,
+              "height": 44,
+              "right": 229,
+              "viewport": 320,
+              "documentWidth": 320
+            }
+          ],
+          "status": "FAIL",
+          "error": "{'text': '布局触发时通知我', 'href': 'https://app.mastermind-x.com/', 'tag': 'A', 'x': 91, 'y': 764.890625, 'width': 138, 'height': 44, 'right': 229, 'viewport': 320, 'documentWidth': 320}",
+          "trace": "Traceback (most recent call last):\n  File \"/Volumes/Mastermind/agent-workspaces/verify/confluence-compat-20261109-klbmhv4a/scripts/verify_confluence_compatibility_browser.py\", line 111, in record\n    fn(case[\"observations\"])\n    ~~^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Volumes/Mastermind/agent-workspaces/verify/confluence-compat-20261109-klbmhv4a/scripts/verify_confluence_compatibility_browser.py\", line 264, in action_case\n    assert value[\"text\"] == expected, value\n           ^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: {'text': '布局触发时通知我', 'href': 'https://app.mastermind-x.com/', 'tag': 'A', 'x': 91, 'y': 764.890625, 'width': 138, 'height': 44, 'right': 229, 'viewport': 320, 'documentWidth': 320}\n"
+        },
+        {
+          "name": "unavailable_action-320-zh",
+          "observations": [
+            {
+              "phase": "unavailable-action",
+              "expected_label": "重新加载页面",
+              "text": "重新检查",
+              "href": null,
+              "tag": "BUTTON",
+              "x": 117,
+              "y": 782.046875,
+              "width": 86,
+              "height": 44,
+              "right": 203,
+              "viewport": 320,
+              "documentWidth": 320
+            }
+          ],
+          "status": "FAIL",
+          "error": "{'text': '重新检查', 'href': None, 'tag': 'BUTTON', 'x': 117, 'y': 782.046875, 'width': 86, 'height': 44, 'right': 203, 'viewport': 320, 'documentWidth': 320}",
+          "trace": "Traceback (most recent call last):\n  File \"/Volumes/Mastermind/agent-workspaces/verify/confluence-compat-20261109-klbmhv4a/scripts/verify_confluence_compatibility_browser.py\", line 111, in record\n    fn(case[\"observations\"])\n    ~~^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Volumes/Mastermind/agent-workspaces/verify/confluence-compat-20261109-klbmhv4a/scripts/verify_confluence_compatibility_browser.py\", line 264, in action_case\n    assert value[\"text\"] == expected, value\n           ^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: {'text': '重新检查', 'href': None, 'tag': 'BUTTON', 'x': 117, 'y': 782.046875, 'width': 86, 'height': 44, 'right': 203, 'viewport': 320, 'documentWidth': 320}\n"
+        }
+      ],
+      "page_errors": [],
+      "passed": 4,
+      "failed": 10,
+      "captures": [],
+      "sources": {
+        "scripts/build_confluence_screener.py": {
+          "bytes": 18786,
+          "sha256": "fa4895396a5935eaad655509133893b8abc0c52ac459afaf1be6116b3335fefd",
+          "blob": "f6a34870ab7a7ff527f16594fa845a362a4d230d"
+        },
+        "templates/confluence_screener.html.j2": {
+          "bytes": 49884,
+          "sha256": "a512eef3ffa0ad7fa5d0b13fe05f664e6408c8d6e284b18f63c62deafe57ef50",
+          "blob": "64864e622d0e788558f5fe15a94587494063f9c5"
+        },
+        "tests/test_confluence_screener_page.py": {
+          "bytes": 31700,
+          "sha256": "648e321e557b47cb959e75a9bcea81b8def94aaadcfcb7beb10c7e4b2994046a",
+          "blob": "34c7fe2984147428d104b30d5f7b3e22171a58b1"
+        },
+        "scripts/verify_confluence_screener_browser.py": {
+          "bytes": 33564,
+          "sha256": "177903221965eeaceed7a8ff952e64cbdb0ad19d4d77c658710dd8ef8da4e147",
+          "blob": "a2a8a69944c5dd05f4c321d409305772a9a6360a"
+        },
+        "scripts/verify_confluence_compatibility_browser.py": {
+          "bytes": 19353,
+          "sha256": "6d726ab5ef6b23bbc37dd3bd3d3e46f0b1990cefd1a8b6912bb64d4c7cf9a4c1",
+          "blob": "3e94341df261c4d3428e1570e7a53115bfce23be"
+        },
+        "tests/fixtures/confluence_legacy_template_f9588ff5.html.j2": {
+          "bytes": 38078,
+          "sha256": "a782c6288f2d24917511a182470d521993c567297a965dc7bba8a7e53de83e5b",
+          "blob": "8e18461db98d7141d573cd047aa8637189ad4250"
+        },
+        "site/confluence_screener.html": {
+          "bytes": 119151,
+          "sha256": "24ca8713b2d4d6d3888e8982c0202ed0ee8d7252c9462bea1c501ac18130db6f",
+          "blob": "6045dff80f90a9e5e81d08572ed974d56506deff"
+        },
+        "site/premiumdata/confluence_screener.json": {
+          "bytes": 542,
+          "sha256": "b44f6baa2b7b7614e1471075b45f42a8819c4865e344e0458855531308ee9c0f",
+          "blob": "b8012f9501a5e0e495bff91e1a0c99d1e21a12df"
+        }
+      },
+      "legacy_source": {
+        "commit": "f9588ff57391350bbd7225a7bbe56eb589d5a47d",
+        "blob": "8e18461db98d7141d573cd047aa8637189ad4250"
+      },
+      "scope": "Actual template/controller/production renderer with synthetic data, controlled auth/HTTP and intercepted app destination. No production entitlement, full shared shell or deployment claim.",
+      "observer": "Fetch JSON-read completion is observed without changing the returned payload. Two animation frames settle existing controller continuations; no fixed sleep."
+    },
+    "baseline-recovery-proof/browser-report.json": {
+      "schema": "confluence_compat_browser/v1",
+      "observed_at": "2026-11-09T11:36:50.903282+00:00",
+      "browser": "157.0.8103.39",
+      "contexts": 2,
+      "cases": [
+        {
+          "name": "generation_mismatch_and_existing_reload-1440-en",
+          "observations": [
+            {
+              "url": "http://127.0.0.1:63147/confluence_screener.html?fixture=current&keep=a&keep=b#return-point",
+              "locked": 2,
+              "hydrated": 0,
+              "paidLinks": [],
+              "state": "mismatch",
+              "publicLinks": [
+                "stocks/FREEAA.html"
+              ],
+              "activeTag": "BODY",
+              "activeHref": null,
+              "phase": "same-clock-different-recipe",
+              "requests": 1,
+              "schema": "tier_payload.v1"
+            },
+            {
+              "url": "http://127.0.0.1:63147/confluence_screener.html?fixture=current&keep=a&keep=b#return-point",
+              "locked": 0,
+              "hydrated": 2,
+              "paidLinks": [
+                "stocks/GATEDBB.html",
+                "stocks/GATEDCC.html"
+              ],
+              "state": "loaded",
+              "publicLinks": [
+                "stocks/FREEAA.html"
+              ],
+              "activeTag": "BODY",
+              "activeHref": null,
+              "phase": "valid-recovery-after-existing-reload",
+              "requests": 2,
+              "schema": "tier_payload.v1"
+            }
+          ],
+          "status": "PASS"
+        },
+        {
+          "name": "generation_mismatch_and_existing_reload-320-zh",
+          "observations": [
+            {
+              "url": "http://127.0.0.1:63147/confluence_screener.html?fixture=current&keep=a&keep=b#return-point",
+              "locked": 2,
+              "hydrated": 0,
+              "paidLinks": [],
+              "state": "mismatch",
+              "publicLinks": [
+                "stocks/FREEAA.html"
+              ],
+              "activeTag": "BODY",
+              "activeHref": null,
+              "phase": "same-clock-different-recipe",
+              "requests": 1,
+              "schema": "tier_payload.v1"
+            },
+            {
+              "url": "http://127.0.0.1:63147/confluence_screener.html?fixture=current&keep=a&keep=b#return-point",
+              "locked": 0,
+              "hydrated": 2,
+              "paidLinks": [
+                "stocks/GATEDBB.html",
+                "stocks/GATEDCC.html"
+              ],
+              "state": "loaded",
+              "publicLinks": [
+                "stocks/FREEAA.html"
+              ],
+              "activeTag": "BODY",
+              "activeHref": null,
+              "phase": "valid-recovery-after-existing-reload",
+              "requests": 2,
+              "schema": "tier_payload.v1"
+            }
+          ],
+          "status": "PASS"
+        }
+      ],
+      "page_errors": [],
+      "passed": 2,
+      "failed": 0,
+      "captures": [],
+      "sources": {
+        "scripts/build_confluence_screener.py": {
+          "bytes": 18786,
+          "sha256": "fa4895396a5935eaad655509133893b8abc0c52ac459afaf1be6116b3335fefd",
+          "blob": "f6a34870ab7a7ff527f16594fa845a362a4d230d"
+        },
+        "templates/confluence_screener.html.j2": {
+          "bytes": 49884,
+          "sha256": "a512eef3ffa0ad7fa5d0b13fe05f664e6408c8d6e284b18f63c62deafe57ef50",
+          "blob": "64864e622d0e788558f5fe15a94587494063f9c5"
+        },
+        "tests/test_confluence_screener_page.py": {
+          "bytes": 31700,
+          "sha256": "648e321e557b47cb959e75a9bcea81b8def94aaadcfcb7beb10c7e4b2994046a",
+          "blob": "34c7fe2984147428d104b30d5f7b3e22171a58b1"
+        },
+        "scripts/verify_confluence_screener_browser.py": {
+          "bytes": 33564,
+          "sha256": "177903221965eeaceed7a8ff952e64cbdb0ad19d4d77c658710dd8ef8da4e147",
+          "blob": "a2a8a69944c5dd05f4c321d409305772a9a6360a"
+        },
+        "scripts/verify_confluence_compatibility_browser.py": {
+          "bytes": 20895,
+          "sha256": "8a3e603c7dbfaabb834bf5026419601fc43b53d621ee6e5b04d799c516c78bbc",
+          "blob": "c95634237d544e5c91961109ef3c7e48dd093de0"
+        },
+        "tests/fixtures/confluence_legacy_template_f9588ff5.html.j2": {
+          "bytes": 38078,
+          "sha256": "a782c6288f2d24917511a182470d521993c567297a965dc7bba8a7e53de83e5b",
+          "blob": "8e18461db98d7141d573cd047aa8637189ad4250"
+        },
+        "site/confluence_screener.html": {
+          "bytes": 119151,
+          "sha256": "24ca8713b2d4d6d3888e8982c0202ed0ee8d7252c9462bea1c501ac18130db6f",
+          "blob": "6045dff80f90a9e5e81d08572ed974d56506deff"
+        },
+        "site/premiumdata/confluence_screener.json": {
+          "bytes": 542,
+          "sha256": "b44f6baa2b7b7614e1471075b45f42a8819c4865e344e0458855531308ee9c0f",
+          "blob": "b8012f9501a5e0e495bff91e1a0c99d1e21a12df"
+        }
+      },
+      "legacy_source": {
+        "commit": "f9588ff57391350bbd7225a7bbe56eb589d5a47d",
+        "blob": "8e18461db98d7141d573cd047aa8637189ad4250"
+      },
+      "scope": "Actual template/controller/production renderer with synthetic data, controlled auth/HTTP and intercepted app destination. No production entitlement, full shared shell or deployment claim.",
+      "observer": "Fetch JSON-read completion is observed without changing the returned payload. Two animation frames settle existing controller continuations; no fixed sleep."
+    },
+    "candidate-compat-proof/browser-report.json": {
+      "schema": "confluence_compat_browser/v1",
+      "observed_at": "2026-11-09T11:38:31.264924+00:00",
+      "browser": "157.0.8103.39",
+      "contexts": 14,
+      "cases": [
+        {
+          "name": "old_reader_rejects_new_payload-1440-en",
+          "observations": [
+            {
+              "url": "http://127.0.0.1:64521/confluence_screener.html?fixture=legacy&keep=a&keep=b#return-point",
+              "locked": 2,
+              "hydrated": 0,
+              "paidLinks": [],
+              "state": null,
+              "publicLinks": [
+                "stocks/FREEAA.html"
+              ],
+              "activeTag": "BODY",
+              "activeHref": null,
+              "phase": "frozen-old-reader/new-generation-payload",
+              "requests": 1,
+              "schema": "tier_payload.v2",
+              "same_clock_changed_recipe": true
+            }
+          ],
+          "status": "PASS"
+        },
+        {
+          "name": "new_reader_rejects_prior_bound_v1-1440-en",
+          "observations": [
+            {
+              "url": "http://127.0.0.1:64521/confluence_screener.html?fixture=current&keep=a&keep=b#return-point",
+              "locked": 2,
+              "hydrated": 0,
+              "paidLinks": [],
+              "state": "invalid",
+              "publicLinks": [
+                "stocks/FREEAA.html"
+              ],
+              "activeTag": "BODY",
+              "activeHref": null,
+              "phase": "prior_bound_v1",
+              "requests": 1,
+              "schema": "tier_payload.v1"
+            },
+            {
+              "url": "http://127.0.0.1:64521/confluence_screener.html?fixture=current&keep=a&keep=b#return-point",
+              "locked": 0,
+              "hydrated": 2,
+              "paidLinks": [
+                "stocks/GATEDBB.html",
+                "stocks/GATEDCC.html"
+              ],
+              "state": "loaded",
+              "publicLinks": [
+                "stocks/FREEAA.html"
+              ],
+              "activeTag": "A",
+              "activeHref": "stocks/GATEDBB.html",
+              "phase": "valid-retry-after-version-rejection",
+              "requests": 2,
+              "schema": "tier_payload.v2"
+            }
+          ],
+          "status": "PASS"
+        },
+        {
+          "name": "new_reader_rejects_legacy_unbound_v1-1440-en",
+          "observations": [
+            {
+              "url": "http://127.0.0.1:64521/confluence_screener.html?fixture=current&keep=a&keep=b#return-point",
+              "locked": 2,
+              "hydrated": 0,
+              "paidLinks": [],
+              "state": "invalid",
+              "publicLinks": [
+                "stocks/FREEAA.html"
+              ],
+              "activeTag": "BODY",
+              "activeHref": null,
+              "phase": "legacy_unbound_v1",
+              "requests": 1,
+              "schema": "tier_payload.v1"
+            }
+          ],
+          "status": "PASS"
+        },
+        {
+          "name": "matching_pair_and_signout-1440-en",
+          "observations": [
+            {
+              "url": "http://127.0.0.1:64521/confluence_screener.html?fixture=current&keep=a&keep=b#return-point",
+              "locked": 0,
+              "hydrated": 2,
+              "paidLinks": [
+                "stocks/GATEDBB.html",
+                "stocks/GATEDCC.html"
+              ],
+              "state": "loaded",
+              "publicLinks": [
+                "stocks/FREEAA.html"
+              ],
+              "activeTag": "BODY",
+              "activeHref": null,
+              "phase": "matching-new-pair",
+              "requests": 1,
+              "schema": "tier_payload.v2"
+            },
+            {
+              "url": "http://127.0.0.1:64521/confluence_screener.html?fixture=current&keep=a&keep=b#return-point",
+              "locked": 2,
+              "hydrated": 0,
+              "paidLinks": [],
+              "state": "locked",
+              "publicLinks": [
+                "stocks/FREEAA.html"
+              ],
+              "activeTag": "B",
+              "activeHref": null,
+              "phase": "signout-retains-public-evidence",
+              "requests": 1,
+              "schema": "tier_payload.v2"
+            }
+          ],
+          "status": "PASS"
+        },
+        {
+          "name": "generation_mismatch_and_existing_reload-1440-en",
+          "observations": [
+            {
+              "url": "http://127.0.0.1:64521/confluence_screener.html?fixture=current&keep=a&keep=b#return-point",
+              "locked": 2,
+              "hydrated": 0,
+              "paidLinks": [],
+              "state": "mismatch",
+              "publicLinks": [
+                "stocks/FREEAA.html"
+              ],
+              "activeTag": "BODY",
+              "activeHref": null,
+              "phase": "same-clock-different-recipe",
+              "requests": 1,
+              "schema": "tier_payload.v2"
+            },
+            {
+              "url": "http://127.0.0.1:64521/confluence_screener.html?fixture=current&keep=a&keep=b#return-point",
+              "locked": 0,
+              "hydrated": 2,
+              "paidLinks": [
+                "stocks/GATEDBB.html",
+                "stocks/GATEDCC.html"
+              ],
+              "state": "loaded",
+              "publicLinks": [
+                "stocks/FREEAA.html"
+              ],
+              "activeTag": "BODY",
+              "activeHref": null,
+              "phase": "valid-recovery-after-existing-reload",
+              "requests": 2,
+              "schema": "tier_payload.v2"
+            }
+          ],
+          "status": "PASS"
+        },
+        {
+          "name": "old_reader_rejects_new_payload-320-zh",
+          "observations": [
+            {
+              "url": "http://127.0.0.1:64521/confluence_screener.html?fixture=legacy&keep=a&keep=b#return-point",
+              "locked": 2,
+              "hydrated": 0,
+              "paidLinks": [],
+              "state": null,
+              "publicLinks": [
+                "stocks/FREEAA.html"
+              ],
+              "activeTag": "BODY",
+              "activeHref": null,
+              "phase": "frozen-old-reader/new-generation-payload",
+              "requests": 1,
+              "schema": "tier_payload.v2",
+              "same_clock_changed_recipe": true
+            }
+          ],
+          "status": "PASS"
+        },
+        {
+          "name": "new_reader_rejects_prior_bound_v1-320-zh",
+          "observations": [
+            {
+              "url": "http://127.0.0.1:64521/confluence_screener.html?fixture=current&keep=a&keep=b#return-point",
+              "locked": 2,
+              "hydrated": 0,
+              "paidLinks": [],
+              "state": "invalid",
+              "publicLinks": [
+                "stocks/FREEAA.html"
+              ],
+              "activeTag": "BODY",
+              "activeHref": null,
+              "phase": "prior_bound_v1",
+              "requests": 1,
+              "schema": "tier_payload.v1"
+            },
+            {
+              "url": "http://127.0.0.1:64521/confluence_screener.html?fixture=current&keep=a&keep=b#return-point",
+              "locked": 0,
+              "hydrated": 2,
+              "paidLinks": [
+                "stocks/GATEDBB.html",
+                "stocks/GATEDCC.html"
+              ],
+              "state": "loaded",
+              "publicLinks": [
+                "stocks/FREEAA.html"
+              ],
+              "activeTag": "A",
+              "activeHref": "stocks/GATEDBB.html",
+              "phase": "valid-retry-after-version-rejection",
+              "requests": 2,
+              "schema": "tier_payload.v2"
+            }
+          ],
+          "status": "PASS"
+        },
+        {
+          "name": "new_reader_rejects_legacy_unbound_v1-320-zh",
+          "observations": [
+            {
+              "url": "http://127.0.0.1:64521/confluence_screener.html?fixture=current&keep=a&keep=b#return-point",
+              "locked": 2,
+              "hydrated": 0,
+              "paidLinks": [],
+              "state": "invalid",
+              "publicLinks": [
+                "stocks/FREEAA.html"
+              ],
+              "activeTag": "BODY",
+              "activeHref": null,
+              "phase": "legacy_unbound_v1",
+              "requests": 1,
+              "schema": "tier_payload.v1"
+            }
+          ],
+          "status": "PASS"
+        },
+        {
+          "name": "matching_pair_and_signout-320-zh",
+          "observations": [
+            {
+              "url": "http://127.0.0.1:64521/confluence_screener.html?fixture=current&keep=a&keep=b#return-point",
+              "locked": 0,
+              "hydrated": 2,
+              "paidLinks": [
+                "stocks/GATEDBB.html",
+                "stocks/GATEDCC.html"
+              ],
+              "state": "loaded",
+              "publicLinks": [
+                "stocks/FREEAA.html"
+              ],
+              "activeTag": "BODY",
+              "activeHref": null,
+              "phase": "matching-new-pair",
+              "requests": 1,
+              "schema": "tier_payload.v2"
+            },
+            {
+              "url": "http://127.0.0.1:64521/confluence_screener.html?fixture=current&keep=a&keep=b#return-point",
+              "locked": 2,
+              "hydrated": 0,
+              "paidLinks": [],
+              "state": "locked",
+              "publicLinks": [
+                "stocks/FREEAA.html"
+              ],
+              "activeTag": "B",
+              "activeHref": null,
+              "phase": "signout-retains-public-evidence",
+              "requests": 1,
+              "schema": "tier_payload.v2"
+            }
+          ],
+          "status": "PASS"
+        },
+        {
+          "name": "generation_mismatch_and_existing_reload-320-zh",
+          "observations": [
+            {
+              "url": "http://127.0.0.1:64521/confluence_screener.html?fixture=current&keep=a&keep=b#return-point",
+              "locked": 2,
+              "hydrated": 0,
+              "paidLinks": [],
+              "state": "mismatch",
+              "publicLinks": [
+                "stocks/FREEAA.html"
+              ],
+              "activeTag": "BODY",
+              "activeHref": null,
+              "phase": "same-clock-different-recipe",
+              "requests": 1,
+              "schema": "tier_payload.v2"
+            },
+            {
+              "url": "http://127.0.0.1:64521/confluence_screener.html?fixture=current&keep=a&keep=b#return-point",
+              "locked": 0,
+              "hydrated": 2,
+              "paidLinks": [
+                "stocks/GATEDBB.html",
+                "stocks/GATEDCC.html"
+              ],
+              "state": "loaded",
+              "publicLinks": [
+                "stocks/FREEAA.html"
+              ],
+              "activeTag": "BODY",
+              "activeHref": null,
+              "phase": "valid-recovery-after-existing-reload",
+              "requests": 2,
+              "schema": "tier_payload.v2"
+            }
+          ],
+          "status": "PASS"
+        },
+        {
+          "name": "zero_action-390-en",
+          "observations": [
+            {
+              "phase": "zero-action",
+              "expected_label": "Open Mastermind",
+              "text": "Open Mastermind",
+              "href": "https://app.mastermind-x.com/",
+              "tag": "A",
+              "x": 120.53125,
+              "y": 550.3125,
+              "width": 148.9375,
+              "height": 44,
+              "right": 269.46875,
+              "viewport": 390,
+              "documentWidth": 390
+            },
+            {
+              "phase": "native-app-navigation",
+              "intercepted_fixture": true,
+              "requests": [
+                {
+                  "url": "https://app.mastermind-x.com/",
+                  "method": "GET"
+                }
+              ]
+            }
+          ],
+          "status": "PASS"
+        },
+        {
+          "name": "unavailable_action-390-en",
+          "observations": [
+            {
+              "phase": "unavailable-action",
+              "expected_label": "Reload page",
+              "text": "Reload page",
+              "href": null,
+              "tag": "BUTTON",
+              "x": 139.34375,
+              "y": 567.546875,
+              "width": 111.296875,
+              "height": 44,
+              "right": 250.640625,
+              "viewport": 390,
+              "documentWidth": 390
+            },
+            {
+              "phase": "native-reload",
+              "url_preserved": true,
+              "document_requests": 1
+            }
+          ],
+          "status": "PASS"
+        },
+        {
+          "name": "zero_action-320-zh",
+          "observations": [
+            {
+              "phase": "zero-action",
+              "expected_label": "打开 Mastermind",
+              "text": "打开 Mastermind",
+              "href": "https://app.mastermind-x.com/",
+              "tag": "A",
+              "x": 91.140625,
+              "y": 764.890625,
+              "width": 137.71875,
+              "height": 44,
+              "right": 228.859375,
+              "viewport": 320,
+              "documentWidth": 320
+            },
+            {
+              "phase": "native-app-navigation",
+              "intercepted_fixture": true,
+              "requests": [
+                {
+                  "url": "https://app.mastermind-x.com/",
+                  "method": "GET"
+                }
+              ]
+            }
+          ],
+          "status": "PASS"
+        },
+        {
+          "name": "unavailable_action-320-zh",
+          "observations": [
+            {
+              "phase": "unavailable-action",
+              "expected_label": "重新加载页面",
+              "text": "重新加载页面",
+              "href": null,
+              "tag": "BUTTON",
+              "x": 104,
+              "y": 782.046875,
+              "width": 112,
+              "height": 44,
+              "right": 216,
+              "viewport": 320,
+              "documentWidth": 320
+            },
+            {
+              "phase": "native-reload",
+              "url_preserved": true,
+              "document_requests": 1
+            }
+          ],
+          "status": "PASS"
+        }
+      ],
+      "page_errors": [],
+      "passed": 14,
+      "failed": 0,
+      "captures": [
+        {
+          "file": "zero-action-390-en.png",
+          "width": 390,
+          "lang": "en",
+          "theme": "dark",
+          "fixture": "zero",
+          "bytes": 13888,
+          "sha256": "129178c90f99bc5773a71b326089cfe14709cc130a1734f8f840a904f45cba00",
+          "blob": "44ea62f432fcdcdcded7e41a973f9d9bc2b23fdc"
+        },
+        {
+          "file": "unavailable-action-390-en.png",
+          "width": 390,
+          "lang": "en",
+          "theme": "dark",
+          "fixture": "unavailable",
+          "bytes": 12513,
+          "sha256": "a989239036adeaac55d2bbb9917dff4d348cc0d3c952dc5f2541ba8be3bf60d0",
+          "blob": "a074b4a1c3099aa4f8c30bf4024f252f953500b4"
+        },
+        {
+          "file": "zero-action-320-zh.png",
+          "width": 320,
+          "lang": "zh",
+          "theme": "light",
+          "fixture": "zero",
+          "bytes": 24629,
+          "sha256": "e68bf0073d00b8dbb2516d42321407b30206283de5ade7cfd1f555928791c296",
+          "blob": "619fbadb7aa58a0a2bc1b7ad93eb96e3a11639e2"
+        },
+        {
+          "file": "unavailable-action-320-zh.png",
+          "width": 320,
+          "lang": "zh",
+          "theme": "light",
+          "fixture": "unavailable",
+          "bytes": 21308,
+          "sha256": "310dd783f2dffce756ce5cd603509bba92738aa470bf39fd94551b876df59a25",
+          "blob": "333e002170530f2c0f0fa6e55d6b4e121d4f2d06"
+        }
+      ],
+      "sources": {
+        "scripts/build_confluence_screener.py": {
+          "bytes": 19003,
+          "sha256": "b5aa86624a18a17fd985870d9baaaa8cb745b0baffa6d4c17b6e198b6668d50a",
+          "blob": "b3db0ced7bc46607f728764c6f9f00dd851f9012"
+        },
+        "templates/confluence_screener.html.j2": {
+          "bytes": 49952,
+          "sha256": "438f9702fb7b3b68b705c22340e478dc06be0b1cccf72d879b06c97546e1112a",
+          "blob": "9b009d0aecf68f3e982f5a468c97256cb2949a6a"
+        },
+        "tests/test_confluence_screener_page.py": {
+          "bytes": 35595,
+          "sha256": "120ec39e1eedb1de43cea3eb2f51e8242ed0cfa53c846b8e8b0274906f39e81a",
+          "blob": "62df622b19b0b0fc6e5a43c30f4351c9f4d3f11c"
+        },
+        "scripts/verify_confluence_screener_browser.py": {
+          "bytes": 33564,
+          "sha256": "177903221965eeaceed7a8ff952e64cbdb0ad19d4d77c658710dd8ef8da4e147",
+          "blob": "a2a8a69944c5dd05f4c321d409305772a9a6360a"
+        },
+        "scripts/verify_confluence_compatibility_browser.py": {
+          "bytes": 20895,
+          "sha256": "8a3e603c7dbfaabb834bf5026419601fc43b53d621ee6e5b04d799c516c78bbc",
+          "blob": "c95634237d544e5c91961109ef3c7e48dd093de0"
+        },
+        "tests/fixtures/confluence_legacy_template_f9588ff5.html.j2": {
+          "bytes": 38078,
+          "sha256": "a782c6288f2d24917511a182470d521993c567297a965dc7bba8a7e53de83e5b",
+          "blob": "8e18461db98d7141d573cd047aa8637189ad4250"
+        },
+        "site/confluence_screener.html": {
+          "bytes": 119190,
+          "sha256": "1612420a229ff2437be4b1ca5b1ac7861bb3d4cc9e4a42dad2b012f30872d7fc",
+          "blob": "f52eab291d5e760d0471bf9343a4d032c1360b45"
+        },
+        "site/premiumdata/confluence_screener.json": {
+          "bytes": 542,
+          "sha256": "11a76bb62e26bd344ef29c198b7791df95b4140d18328f46f54b343f78aa4e7d",
+          "blob": "ed039512de9bf2fe3c838b6d562d0ef5da72658f"
+        }
+      },
+      "legacy_source": {
+        "commit": "f9588ff57391350bbd7225a7bbe56eb589d5a47d",
+        "blob": "8e18461db98d7141d573cd047aa8637189ad4250"
+      },
+      "scope": "Actual template/controller/production renderer with synthetic data, controlled auth/HTTP and intercepted app destination. No production entitlement, full shared shell or deployment claim.",
+      "observer": "Fetch JSON-read completion is observed without changing the returned payload. Two animation frames settle existing controller continuations; no fixed sleep."
+    },
+    "candidate-reviewed-compat-proof/browser-report.json": {
+      "schema": "confluence_compat_browser/v1",
+      "observed_at": "2026-11-09T11:42:33.078239+00:00",
+      "browser": "157.0.8103.39",
+      "contexts": 14,
+      "cases": [
+        {
+          "name": "old_reader_rejects_new_payload-1440-en",
+          "observations": [
+            {
+              "url": "http://127.0.0.1:51989/confluence_screener.html?fixture=legacy&keep=a&keep=b#return-point",
+              "locked": 2,
+              "hydrated": 0,
+              "paidLinks": [],
+              "state": null,
+              "publicLinks": [
+                "stocks/FREEAA.html"
+              ],
+              "activeTag": "BODY",
+              "activeHref": null,
+              "phase": "frozen-old-reader/new-generation-payload",
+              "requests": 1,
+              "schema": "tier_payload.v2",
+              "same_clock_changed_recipe": true
+            }
+          ],
+          "status": "PASS"
+        },
+        {
+          "name": "new_reader_rejects_prior_bound_v1-1440-en",
+          "observations": [
+            {
+              "url": "http://127.0.0.1:51989/confluence_screener.html?fixture=current&keep=a&keep=b#return-point",
+              "locked": 2,
+              "hydrated": 0,
+              "paidLinks": [],
+              "state": "invalid",
+              "publicLinks": [
+                "stocks/FREEAA.html"
+              ],
+              "activeTag": "BODY",
+              "activeHref": null,
+              "phase": "prior_bound_v1",
+              "requests": 1,
+              "schema": "tier_payload.v1"
+            },
+            {
+              "url": "http://127.0.0.1:51989/confluence_screener.html?fixture=current&keep=a&keep=b#return-point",
+              "locked": 0,
+              "hydrated": 2,
+              "paidLinks": [
+                "stocks/GATEDBB.html",
+                "stocks/GATEDCC.html"
+              ],
+              "state": "loaded",
+              "publicLinks": [
+                "stocks/FREEAA.html"
+              ],
+              "activeTag": "A",
+              "activeHref": "stocks/GATEDBB.html",
+              "phase": "valid-retry-after-version-rejection",
+              "requests": 2,
+              "schema": "tier_payload.v2"
+            }
+          ],
+          "status": "PASS"
+        },
+        {
+          "name": "new_reader_rejects_legacy_unbound_v1-1440-en",
+          "observations": [
+            {
+              "url": "http://127.0.0.1:51989/confluence_screener.html?fixture=current&keep=a&keep=b#return-point",
+              "locked": 2,
+              "hydrated": 0,
+              "paidLinks": [],
+              "state": "invalid",
+              "publicLinks": [
+                "stocks/FREEAA.html"
+              ],
+              "activeTag": "BODY",
+              "activeHref": null,
+              "phase": "legacy_unbound_v1",
+              "requests": 1,
+              "schema": "tier_payload.v1"
+            }
+          ],
+          "status": "PASS"
+        },
+        {
+          "name": "matching_pair_and_signout-1440-en",
+          "observations": [
+            {
+              "url": "http://127.0.0.1:51989/confluence_screener.html?fixture=current&keep=a&keep=b#return-point",
+              "locked": 0,
+              "hydrated": 2,
+              "paidLinks": [
+                "stocks/GATEDBB.html",
+                "stocks/GATEDCC.html"
+              ],
+              "state": "loaded",
+              "publicLinks": [
+                "stocks/FREEAA.html"
+              ],
+              "activeTag": "BODY",
+              "activeHref": null,
+              "phase": "matching-new-pair",
+              "requests": 1,
+              "schema": "tier_payload.v2"
+            },
+            {
+              "url": "http://127.0.0.1:51989/confluence_screener.html?fixture=current&keep=a&keep=b#return-point",
+              "locked": 2,
+              "hydrated": 0,
+              "paidLinks": [],
+              "state": "locked",
+              "publicLinks": [
+                "stocks/FREEAA.html"
+              ],
+              "activeTag": "B",
+              "activeHref": null,
+              "phase": "signout-retains-public-evidence",
+              "requests": 1,
+              "schema": "tier_payload.v2"
+            }
+          ],
+          "status": "PASS"
+        },
+        {
+          "name": "generation_mismatch_and_existing_reload-1440-en",
+          "observations": [
+            {
+              "url": "http://127.0.0.1:51989/confluence_screener.html?fixture=current&keep=a&keep=b#return-point",
+              "locked": 2,
+              "hydrated": 0,
+              "paidLinks": [],
+              "state": "mismatch",
+              "publicLinks": [
+                "stocks/FREEAA.html"
+              ],
+              "activeTag": "BODY",
+              "activeHref": null,
+              "phase": "same-clock-different-recipe",
+              "requests": 1,
+              "schema": "tier_payload.v2"
+            },
+            {
+              "url": "http://127.0.0.1:51989/confluence_screener.html?fixture=current&keep=a&keep=b#return-point",
+              "locked": 0,
+              "hydrated": 2,
+              "paidLinks": [
+                "stocks/GATEDBB.html",
+                "stocks/GATEDCC.html"
+              ],
+              "state": "loaded",
+              "publicLinks": [
+                "stocks/FREEAA.html"
+              ],
+              "activeTag": "BODY",
+              "activeHref": null,
+              "phase": "valid-recovery-after-existing-reload",
+              "requests": 2,
+              "schema": "tier_payload.v2"
+            }
+          ],
+          "status": "PASS"
+        },
+        {
+          "name": "old_reader_rejects_new_payload-320-zh",
+          "observations": [
+            {
+              "url": "http://127.0.0.1:51989/confluence_screener.html?fixture=legacy&keep=a&keep=b#return-point",
+              "locked": 2,
+              "hydrated": 0,
+              "paidLinks": [],
+              "state": null,
+              "publicLinks": [
+                "stocks/FREEAA.html"
+              ],
+              "activeTag": "BODY",
+              "activeHref": null,
+              "phase": "frozen-old-reader/new-generation-payload",
+              "requests": 1,
+              "schema": "tier_payload.v2",
+              "same_clock_changed_recipe": true
+            }
+          ],
+          "status": "PASS"
+        },
+        {
+          "name": "new_reader_rejects_prior_bound_v1-320-zh",
+          "observations": [
+            {
+              "url": "http://127.0.0.1:51989/confluence_screener.html?fixture=current&keep=a&keep=b#return-point",
+              "locked": 2,
+              "hydrated": 0,
+              "paidLinks": [],
+              "state": "invalid",
+              "publicLinks": [
+                "stocks/FREEAA.html"
+              ],
+              "activeTag": "BODY",
+              "activeHref": null,
+              "phase": "prior_bound_v1",
+              "requests": 1,
+              "schema": "tier_payload.v1"
+            },
+            {
+              "url": "http://127.0.0.1:51989/confluence_screener.html?fixture=current&keep=a&keep=b#return-point",
+              "locked": 0,
+              "hydrated": 2,
+              "paidLinks": [
+                "stocks/GATEDBB.html",
+                "stocks/GATEDCC.html"
+              ],
+              "state": "loaded",
+              "publicLinks": [
+                "stocks/FREEAA.html"
+              ],
+              "activeTag": "A",
+              "activeHref": "stocks/GATEDBB.html",
+              "phase": "valid-retry-after-version-rejection",
+              "requests": 2,
+              "schema": "tier_payload.v2"
+            }
+          ],
+          "status": "PASS"
+        },
+        {
+          "name": "new_reader_rejects_legacy_unbound_v1-320-zh",
+          "observations": [
+            {
+              "url": "http://127.0.0.1:51989/confluence_screener.html?fixture=current&keep=a&keep=b#return-point",
+              "locked": 2,
+              "hydrated": 0,
+              "paidLinks": [],
+              "state": "invalid",
+              "publicLinks": [
+                "stocks/FREEAA.html"
+              ],
+              "activeTag": "BODY",
+              "activeHref": null,
+              "phase": "legacy_unbound_v1",
+              "requests": 1,
+              "schema": "tier_payload.v1"
+            }
+          ],
+          "status": "PASS"
+        },
+        {
+          "name": "matching_pair_and_signout-320-zh",
+          "observations": [
+            {
+              "url": "http://127.0.0.1:51989/confluence_screener.html?fixture=current&keep=a&keep=b#return-point",
+              "locked": 0,
+              "hydrated": 2,
+              "paidLinks": [
+                "stocks/GATEDBB.html",
+                "stocks/GATEDCC.html"
+              ],
+              "state": "loaded",
+              "publicLinks": [
+                "stocks/FREEAA.html"
+              ],
+              "activeTag": "BODY",
+              "activeHref": null,
+              "phase": "matching-new-pair",
+              "requests": 1,
+              "schema": "tier_payload.v2"
+            },
+            {
+              "url": "http://127.0.0.1:51989/confluence_screener.html?fixture=current&keep=a&keep=b#return-point",
+              "locked": 2,
+              "hydrated": 0,
+              "paidLinks": [],
+              "state": "locked",
+              "publicLinks": [
+                "stocks/FREEAA.html"
+              ],
+              "activeTag": "B",
+              "activeHref": null,
+              "phase": "signout-retains-public-evidence",
+              "requests": 1,
+              "schema": "tier_payload.v2"
+            }
+          ],
+          "status": "PASS"
+        },
+        {
+          "name": "generation_mismatch_and_existing_reload-320-zh",
+          "observations": [
+            {
+              "url": "http://127.0.0.1:51989/confluence_screener.html?fixture=current&keep=a&keep=b#return-point",
+              "locked": 2,
+              "hydrated": 0,
+              "paidLinks": [],
+              "state": "mismatch",
+              "publicLinks": [
+                "stocks/FREEAA.html"
+              ],
+              "activeTag": "BODY",
+              "activeHref": null,
+              "phase": "same-clock-different-recipe",
+              "requests": 1,
+              "schema": "tier_payload.v2"
+            },
+            {
+              "url": "http://127.0.0.1:51989/confluence_screener.html?fixture=current&keep=a&keep=b#return-point",
+              "locked": 0,
+              "hydrated": 2,
+              "paidLinks": [
+                "stocks/GATEDBB.html",
+                "stocks/GATEDCC.html"
+              ],
+              "state": "loaded",
+              "publicLinks": [
+                "stocks/FREEAA.html"
+              ],
+              "activeTag": "BODY",
+              "activeHref": null,
+              "phase": "valid-recovery-after-existing-reload",
+              "requests": 2,
+              "schema": "tier_payload.v2"
+            }
+          ],
+          "status": "PASS"
+        },
+        {
+          "name": "zero_action-390-en",
+          "observations": [
+            {
+              "phase": "zero-action",
+              "expected_label": "Open Mastermind",
+              "text": "Open Mastermind",
+              "href": "https://app.mastermind-x.com/",
+              "tag": "A",
+              "x": 120.53125,
+              "y": 550.3125,
+              "width": 148.9375,
+              "height": 44,
+              "right": 269.46875,
+              "viewport": 390,
+              "documentWidth": 390
+            },
+            {
+              "phase": "native-app-navigation",
+              "intercepted_fixture": true,
+              "requests": [
+                {
+                  "url": "https://app.mastermind-x.com/",
+                  "method": "GET"
+                }
+              ]
+            }
+          ],
+          "status": "PASS"
+        },
+        {
+          "name": "unavailable_action-390-en",
+          "observations": [
+            {
+              "phase": "unavailable-action",
+              "expected_label": "Reload page",
+              "text": "Reload page",
+              "href": null,
+              "tag": "BUTTON",
+              "x": 139.34375,
+              "y": 567.546875,
+              "width": 111.296875,
+              "height": 44,
+              "right": 250.640625,
+              "viewport": 390,
+              "documentWidth": 390
+            },
+            {
+              "phase": "native-reload",
+              "url_preserved": true,
+              "document_requests": 1
+            }
+          ],
+          "status": "PASS"
+        },
+        {
+          "name": "zero_action-320-zh",
+          "observations": [
+            {
+              "phase": "zero-action",
+              "expected_label": "打开 Mastermind",
+              "text": "打开 Mastermind",
+              "href": "https://app.mastermind-x.com/",
+              "tag": "A",
+              "x": 91.140625,
+              "y": 764.890625,
+              "width": 137.71875,
+              "height": 44,
+              "right": 228.859375,
+              "viewport": 320,
+              "documentWidth": 320
+            },
+            {
+              "phase": "native-app-navigation",
+              "intercepted_fixture": true,
+              "requests": [
+                {
+                  "url": "https://app.mastermind-x.com/",
+                  "method": "GET"
+                }
+              ]
+            }
+          ],
+          "status": "PASS"
+        },
+        {
+          "name": "unavailable_action-320-zh",
+          "observations": [
+            {
+              "phase": "unavailable-action",
+              "expected_label": "重新加载页面",
+              "text": "重新加载页面",
+              "href": null,
+              "tag": "BUTTON",
+              "x": 104,
+              "y": 782.046875,
+              "width": 112,
+              "height": 44,
+              "right": 216,
+              "viewport": 320,
+              "documentWidth": 320
+            },
+            {
+              "phase": "native-reload",
+              "url_preserved": true,
+              "document_requests": 1
+            }
+          ],
+          "status": "PASS"
+        }
+      ],
+      "page_errors": [],
+      "selection": {
+        "case_prefix": [],
+        "status": "SELECTED"
+      },
+      "passed": 14,
+      "failed": 0,
+      "captures": [
+        {
+          "file": "zero-action-390-en.png",
+          "width": 390,
+          "lang": "en",
+          "theme": "dark",
+          "fixture": "zero",
+          "bytes": 13888,
+          "sha256": "129178c90f99bc5773a71b326089cfe14709cc130a1734f8f840a904f45cba00",
+          "blob": "44ea62f432fcdcdcded7e41a973f9d9bc2b23fdc"
+        },
+        {
+          "file": "unavailable-action-390-en.png",
+          "width": 390,
+          "lang": "en",
+          "theme": "dark",
+          "fixture": "unavailable",
+          "bytes": 12513,
+          "sha256": "a989239036adeaac55d2bbb9917dff4d348cc0d3c952dc5f2541ba8be3bf60d0",
+          "blob": "a074b4a1c3099aa4f8c30bf4024f252f953500b4"
+        },
+        {
+          "file": "zero-action-320-zh.png",
+          "width": 320,
+          "lang": "zh",
+          "theme": "light",
+          "fixture": "zero",
+          "bytes": 24629,
+          "sha256": "e68bf0073d00b8dbb2516d42321407b30206283de5ade7cfd1f555928791c296",
+          "blob": "619fbadb7aa58a0a2bc1b7ad93eb96e3a11639e2"
+        },
+        {
+          "file": "unavailable-action-320-zh.png",
+          "width": 320,
+          "lang": "zh",
+          "theme": "light",
+          "fixture": "unavailable",
+          "bytes": 21308,
+          "sha256": "310dd783f2dffce756ce5cd603509bba92738aa470bf39fd94551b876df59a25",
+          "blob": "333e002170530f2c0f0fa6e55d6b4e121d4f2d06"
+        }
+      ],
+      "sources": {
+        "scripts/build_confluence_screener.py": {
+          "bytes": 19003,
+          "sha256": "b5aa86624a18a17fd985870d9baaaa8cb745b0baffa6d4c17b6e198b6668d50a",
+          "blob": "b3db0ced7bc46607f728764c6f9f00dd851f9012"
+        },
+        "templates/confluence_screener.html.j2": {
+          "bytes": 49952,
+          "sha256": "438f9702fb7b3b68b705c22340e478dc06be0b1cccf72d879b06c97546e1112a",
+          "blob": "9b009d0aecf68f3e982f5a468c97256cb2949a6a"
+        },
+        "tests/test_confluence_screener_page.py": {
+          "bytes": 35677,
+          "sha256": "9fc4672177ae032d3d58e5014a2a5c4647ef009d9f15e0634e8147631e60b854",
+          "blob": "91fa1588cd69235082e2326536d978ffd32c9335"
+        },
+        "scripts/verify_confluence_screener_browser.py": {
+          "bytes": 33564,
+          "sha256": "177903221965eeaceed7a8ff952e64cbdb0ad19d4d77c658710dd8ef8da4e147",
+          "blob": "a2a8a69944c5dd05f4c321d409305772a9a6360a"
+        },
+        "scripts/verify_confluence_compatibility_browser.py": {
+          "bytes": 21063,
+          "sha256": "167597dc8d9a9b275bf4eef7a9dedba9d7f2203cdef84cf8e2f2a8c8c2f918d1",
+          "blob": "c282b41649b35603e3c14f6ed7d6015e38c93ca4"
+        },
+        "tests/fixtures/confluence_legacy_template_f9588ff5.html.j2": {
+          "bytes": 38078,
+          "sha256": "a782c6288f2d24917511a182470d521993c567297a965dc7bba8a7e53de83e5b",
+          "blob": "8e18461db98d7141d573cd047aa8637189ad4250"
+        },
+        "site/confluence_screener.html": {
+          "bytes": 119190,
+          "sha256": "1612420a229ff2437be4b1ca5b1ac7861bb3d4cc9e4a42dad2b012f30872d7fc",
+          "blob": "f52eab291d5e760d0471bf9343a4d032c1360b45"
+        },
+        "site/premiumdata/confluence_screener.json": {
+          "bytes": 542,
+          "sha256": "11a76bb62e26bd344ef29c198b7791df95b4140d18328f46f54b343f78aa4e7d",
+          "blob": "ed039512de9bf2fe3c838b6d562d0ef5da72658f"
+        }
+      },
+      "legacy_source": {
+        "commit": "f9588ff57391350bbd7225a7bbe56eb589d5a47d",
+        "blob": "8e18461db98d7141d573cd047aa8637189ad4250"
+      },
+      "scope": "Actual template/controller/production renderer with synthetic data, controlled auth/HTTP and intercepted app destination. No production entitlement, full shared shell or deployment claim.",
+      "observer": "Fetch JSON-read completion is observed without changing the returned payload. Two animation frames settle existing controller continuations; no fixed sleep."
+    },
+    "candidate-no-case-proof/browser-report.json": {
+      "schema": "confluence_compat_browser/v1",
+      "observed_at": "2026-11-09T11:42:23.669358+00:00",
+      "browser": "157.0.8103.39",
+      "contexts": 0,
+      "cases": [],
+      "page_errors": [],
+      "selection": {
+        "case_prefix": [
+          "definitely-no-matching-case"
+        ],
+        "status": "NO_CASES_SELECTED"
+      },
+      "passed": 0,
+      "failed": 0,
+      "captures": [],
+      "sources": {
+        "scripts/build_confluence_screener.py": {
+          "bytes": 19003,
+          "sha256": "b5aa86624a18a17fd985870d9baaaa8cb745b0baffa6d4c17b6e198b6668d50a",
+          "blob": "b3db0ced7bc46607f728764c6f9f00dd851f9012"
+        },
+        "templates/confluence_screener.html.j2": {
+          "bytes": 49952,
+          "sha256": "438f9702fb7b3b68b705c22340e478dc06be0b1cccf72d879b06c97546e1112a",
+          "blob": "9b009d0aecf68f3e982f5a468c97256cb2949a6a"
+        },
+        "tests/test_confluence_screener_page.py": {
+          "bytes": 35677,
+          "sha256": "9fc4672177ae032d3d58e5014a2a5c4647ef009d9f15e0634e8147631e60b854",
+          "blob": "91fa1588cd69235082e2326536d978ffd32c9335"
+        },
+        "scripts/verify_confluence_screener_browser.py": {
+          "bytes": 33564,
+          "sha256": "177903221965eeaceed7a8ff952e64cbdb0ad19d4d77c658710dd8ef8da4e147",
+          "blob": "a2a8a69944c5dd05f4c321d409305772a9a6360a"
+        },
+        "scripts/verify_confluence_compatibility_browser.py": {
+          "bytes": 21063,
+          "sha256": "167597dc8d9a9b275bf4eef7a9dedba9d7f2203cdef84cf8e2f2a8c8c2f918d1",
+          "blob": "c282b41649b35603e3c14f6ed7d6015e38c93ca4"
+        },
+        "tests/fixtures/confluence_legacy_template_f9588ff5.html.j2": {
+          "bytes": 38078,
+          "sha256": "a782c6288f2d24917511a182470d521993c567297a965dc7bba8a7e53de83e5b",
+          "blob": "8e18461db98d7141d573cd047aa8637189ad4250"
+        },
+        "site/confluence_screener.html": {
+          "bytes": 119190,
+          "sha256": "1612420a229ff2437be4b1ca5b1ac7861bb3d4cc9e4a42dad2b012f30872d7fc",
+          "blob": "f52eab291d5e760d0471bf9343a4d032c1360b45"
+        },
+        "site/premiumdata/confluence_screener.json": {
+          "bytes": 542,
+          "sha256": "11a76bb62e26bd344ef29c198b7791df95b4140d18328f46f54b343f78aa4e7d",
+          "blob": "ed039512de9bf2fe3c838b6d562d0ef5da72658f"
+        }
+      },
+      "legacy_source": {
+        "commit": "f9588ff57391350bbd7225a7bbe56eb589d5a47d",
+        "blob": "8e18461db98d7141d573cd047aa8637189ad4250"
+      },
+      "scope": "Actual template/controller/production renderer with synthetic data, controlled auth/HTTP and intercepted app destination. No production entitlement, full shared shell or deployment claim.",
+      "observer": "Fetch JSON-read completion is observed without changing the returned payload. Two animation frames settle existing controller continuations; no fixed sleep."
+    }
+  },
+  "full_native_test_logs": {
+    "baseline-page-tests-output.txt": ".......................F......................F......................... [ 98%]\n.                                                                        [100%]\n=================================== FAILURES ===================================\n____________ test_gates_receipt_literals_match_minerconfig_defaults ____________\n\n    def test_gates_receipt_literals_match_minerconfig_defaults():\n        \"\"\"T1 Gates numbers are literals; they must track MinerConfig defaults.\"\"\"\n>       from engine.tech_confluence import MinerConfig\nE       ModuleNotFoundError: No module named 'engine.tech_confluence'\n\ntests/test_confluence_screener_page.py:470: ModuleNotFoundError\n___________ test_month_mean_is_not_pooled_or_winning_month_incidence ___________\n\n    def test_month_mean_is_not_pooled_or_winning_month_incidence():\n        import numpy as np\n>       from engine.tech_confluence import _month_collapsed_wr\nE       ModuleNotFoundError: No module named 'engine.tech_confluence'\n\ntests/test_confluence_screener_page.py:616: ModuleNotFoundError\n=========================== short test summary info ============================\nFAILED tests/test_confluence_screener_page.py::test_gates_receipt_literals_match_minerconfig_defaults\nFAILED tests/test_confluence_screener_page.py::test_month_mean_is_not_pooled_or_winning_month_incidence\n2 failed, 71 passed in 4.94s\n",
+    "baseline-page-tests-complete.txt": "........................................................................ [ 98%]\n.                                                                        [100%]\n73 passed in 7.24s\n",
+    "candidate-page-tests-output.txt": "........................................................................ [ 87%]\n..........                                                               [100%]\n82 passed in 9.55s\n",
+    "candidate-reviewed-page-tests-output.txt": "........................................................................ [ 87%]\n..........                                                               [100%]\n82 passed in 9.79s\n"
+  },
+  "historical_harnesses": {
+    "initial_baseline": "#!/usr/bin/env python3\n\"\"\"Confluence protocol and action proof using actual old/new page code.\nControlled auth and HTTP fixtures; no production entitlement or deployment claim.\n\"\"\"\nfrom __future__ import annotations\nimport argparse, copy, hashlib, http.server, importlib.util, json, re\nimport socketserver, sys, threading, traceback\nfrom datetime import datetime, timezone\nfrom pathlib import Path\nfrom urllib.parse import parse_qs, urlsplit\nfrom jinja2 import Environment, FileSystemLoader\nfrom playwright.sync_api import sync_playwright, expect\n\nROOT = Path(__file__).resolve().parents[1]\nsys.path.insert(0, str(ROOT))\nfrom scripts.build_confluence_screener import build_context, build_premium_payload, render_html\nfrom scripts.verify_confluence_screener_browser import AUTH\nfrom engine import i18n\n\nspec = importlib.util.spec_from_file_location(\"compat_fixture\", ROOT / \"tests/test_confluence_screener_page.py\")\nfixture = importlib.util.module_from_spec(spec)\nspec.loader.exec_module(fixture)\nLEGACY = ROOT / \"tests/fixtures/confluence_legacy_template_f9588ff5.html.j2\"\nLEGACY_BLOB = \"8e18461db98d7141d573cd047aa8637189ad4250\"\nFETCH_OBSERVER = \"\"\"(() => {\n  const original = window.fetch;\n  window.__compatJsonReads = 0;\n  window.fetch = function(...args) {\n    return original.apply(this, args).then(response => {\n      if (new URL(typeof args[0] === 'string' ? args[0] : args[0].url, location.href).pathname === '/premiumdata/confluence_screener.json') {\n        const read = response.json.bind(response);\n        response.json = () => read().then(value => { window.__compatJsonReads += 1; return value; });\n      }\n      return response;\n    });\n  };\n})();\"\"\"\n\ndef file_meta(path):\n    data = path.read_bytes()\n    return {\"bytes\": len(data), \"sha256\": hashlib.sha256(data).hexdigest(),\n            \"blob\": hashlib.sha1(b\"blob \" + str(len(data)).encode() + b\"\\0\" + data).hexdigest()}\n\ndef main():\n    parser = argparse.ArgumentParser()\n    parser.add_argument(\"--out\", type=Path, required=True)\n    parser.add_argument(\"--browser-executable\")\n    args = parser.parse_args()\n    out = args.out.resolve()\n    out.mkdir(parents=True, exist_ok=True)\n    assert file_meta(LEGACY)[\"blob\"] == LEGACY_BLOB\n    raw = copy.deepcopy(fixture._make_raw())\n    zero = copy.deepcopy(raw)\n    zero[\"combos\"][\"long\"] = []\n    changed = copy.deepcopy(raw)\n    changed[\"combos\"][\"long\"][1][\"legs\"] = [1, 2]\n    changed[\"combos\"][\"long\"][1][\"active_now\"] = [\"NEWERA\"]\n    payload = build_premium_payload(raw, {\"GATEDBB\": \"Protected fixture B\", \"GATEDCC\": \"Protected fixture C\"})\n    changed_payload = build_premium_payload(changed, {\"NEWERA\": \"Different recipe fixture\"})\n    assert payload[\"built\"] == changed_payload[\"built\"]\n    assert payload[\"source_generation\"][\"sha256\"] != changed_payload[\"source_generation\"][\"sha256\"]\n    prior_bound = copy.deepcopy(payload)\n    prior_bound[\"schema\"] = \"tier_payload.v1\"\n    prior_unbound = copy.deepcopy(prior_bound)\n    del prior_unbound[\"source_generation\"]\n    del prior_unbound[\"source_status\"]\n    env = Environment(loader=FileSystemLoader(str(ROOT / \"templates\")), autoescape=True)\n    env.globals.update(td=i18n.td, tr=i18n.tr, zip=zip)\n    legacy_html = re.sub(r\"(?m)^[ \\t]+$\", \"\", env.from_string(LEGACY.read_text()).render(**build_context(raw, {})))\n    pages = {\n        \"legacy\": legacy_html.encode(),\n        \"current\": render_html(ROOT, build_context(raw, {})).encode(),\n        \"zero\": render_html(ROOT, build_context(zero, {})).encode(),\n        \"unavailable\": render_html(ROOT, build_context(None, {})).encode(),\n    }\n    expected_cta = build_context(zero, {})[\"cta_url\"]\n    page_hits = []\n\n    class Handler(http.server.SimpleHTTPRequestHandler):\n        def __init__(self, *a, **kw):\n            super().__init__(*a, directory=str(ROOT / \"site\"), **kw)\n        def do_GET(self):\n            parsed = urlsplit(self.path)\n            if parsed.path.startswith(\"/premiumdata/\"):\n                self.send_response(403)\n                self.end_headers()\n                return\n            if parsed.path == \"/confluence_screener.html\":\n                key = parse_qs(parsed.query).get(\"fixture\", [\"current\"])[0]\n                body = pages[key]\n                page_hits.append(self.path)\n                self.send_response(200)\n                self.send_header(\"Content-Type\", \"text/html; charset=utf-8\")\n                self.send_header(\"Content-Length\", str(len(body)))\n                self.end_headers()\n                self.wfile.write(body)\n                return\n            super().do_GET()\n        def log_message(self, *_):\n            pass\n\n    server = socketserver.ThreadingTCPServer((\"127.0.0.1\", 0), Handler)\n    threading.Thread(target=server.serve_forever, daemon=True).start()\n    origin = \"http://127.0.0.1:\" + str(server.server_address[1])\n    cases, captures, errors = [], [], []\n    context_count = 0\n\n    def record(name, fn):\n        case = {\"name\": name, \"observations\": []}\n        try:\n            fn(case[\"observations\"])\n            case[\"status\"] = \"PASS\"\n        except Exception as exc:\n            case.update(status=\"FAIL\", error=str(exc), trace=traceback.format_exc(limit=3))\n        cases.append(case)\n\n    try:\n        with sync_playwright() as pw:\n            opts = {\"headless\": True}\n            if args.browser_executable:\n                opts[\"executable_path\"] = args.browser_executable\n            browser = pw.chromium.launch(**opts)\n            version = browser.version\n\n            def opened(key, width, lang, theme, response):\n                nonlocal context_count\n                context_count += 1\n                context = browser.new_context(\n                    viewport={\"width\": width, \"height\": 900 if width > 500 else 844},\n                    device_scale_factor=1, reduced_motion=\"reduce\",\n                    is_mobile=width <= 500, has_touch=width <= 500)\n                context.route(\"**/*\", lambda route: route.continue_() if urlsplit(route.request.url).hostname == \"127.0.0.1\" else route.abort())\n                context.add_init_script(\"localStorage.setItem('lang',\" + json.dumps(lang) + \");localStorage.setItem('theme',\" + json.dumps(theme) + \");\")\n                context.add_init_script(FETCH_OBSERVER)\n                page = context.new_page()\n                page.set_default_timeout(6000)\n                local_errors = []\n                page.on(\"pageerror\", lambda error: (local_errors.append(str(error)), errors.append(str(error))))\n                ctl = {\"armed\": False, \"body\": copy.deepcopy(response), \"requests\": [], \"initial_requests\": 0}\n                def reply(route):\n                    if not ctl[\"armed\"]:\n                        ctl[\"initial_requests\"] += 1\n                        route.fulfill(status=403, content_type=\"application/json\", body=\"{}\")\n                        return\n                    ctl[\"requests\"].append({\"url\": route.request.url, \"method\": route.request.method})\n                    route.fulfill(content_type=\"application/json\", body=json.dumps(ctl[\"body\"]))\n                page.route(\"**/premiumdata/confluence_screener.json\", reply)\n                url = origin + \"/confluence_screener.html?fixture=\" + key + \"&keep=a&keep=b#return-point\"\n                page.goto(url, wait_until=\"load\")\n                page.evaluate(AUTH)\n                page.wait_for_function(\"document.querySelector('.wrap') !== null\")\n                ctl[\"armed\"] = True\n                return context, page, ctl, local_errors\n\n            def settle_response(page, previous=0):\n                page.wait_for_function(\"n => window.__compatJsonReads > n\", arg=previous)\n                page.evaluate(\"() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))\")\n\n            def observation(page, ctl, label):\n                value = page.evaluate(\"\"\"() => ({\n                  url: location.href,\n                  locked: document.querySelectorAll('.locked[data-confluence-combo]').length,\n                  hydrated: document.querySelectorAll('[data-confluence-hydrated]').length,\n                  paidLinks: Array.from(document.querySelectorAll('.lc.gated a.tkr')).map(n => n.getAttribute('href')),\n                  state: document.querySelector('#confluence-access-status')?.getAttribute('data-state') || null,\n                  publicLinks: Array.from(document.querySelector('.lc.free')?.querySelectorAll('a.tkr') || []).map(n=>n.getAttribute('href')),\n                  activeTag: document.activeElement?.tagName,\n                  activeHref: document.activeElement?.getAttribute('href') || null\n                })\"\"\")\n                value.update(phase=label, requests=len(ctl[\"requests\"]), schema=ctl[\"body\"].get(\"schema\"))\n                return value\n\n            def locked_snapshot(page, ctl, obs, label, expected_state=None):\n                value = observation(page, ctl, label)\n                obs.append(value)\n                assert value[\"locked\"] == 2 and value[\"hydrated\"] == 0 and not value[\"paidLinks\"], value\n                assert value[\"publicLinks\"] == [\"stocks/FREEAA.html\"], value\n                if expected_state:\n                    assert value[\"state\"] == expected_state, value\n                return value\n\n            for width, lang, theme in ((1440, \"en\", \"dark\"), (320, \"zh\", \"light\")):\n                suffix = str(width) + \"-\" + lang\n                def legacy_case(obs, width=width, lang=lang, theme=theme):\n                    context, page, ctl, local_errors = opened(\"legacy\", width, lang, theme, changed_payload)\n                    try:\n                        before = page.locator(\".lc.gated\").all_inner_texts()\n                        page.evaluate(\"window.__d04Auth('owner-A','SIGNED_IN')\")\n                        settle_response(page)\n                        value = locked_snapshot(page, ctl, obs, \"frozen-old-reader/new-generation-payload\")\n                        assert page.locator(\".lc.gated\").all_inner_texts() == before\n                        assert len(ctl[\"requests\"]) == 1 and not local_errors\n                        value[\"same_clock_changed_recipe\"] = True\n                    finally:\n                        context.close()\n                record(\"old_reader_rejects_new_payload-\" + suffix, legacy_case)\n\n                for name, body in ((\"prior_bound_v1\", prior_bound), (\"legacy_unbound_v1\", prior_unbound)):\n                    def rejection(obs, width=width, lang=lang, theme=theme, body=body, name=name):\n                        context, page, ctl, local_errors = opened(\"current\", width, lang, theme, body)\n                        try:\n                            page.evaluate(\"window.__d04Auth('owner-A','SIGNED_IN')\")\n                            settle_response(page)\n                            locked_snapshot(page, ctl, obs, name, \"invalid\")\n                            assert len(ctl[\"requests\"]) == 1 and not local_errors\n                        finally:\n                            context.close()\n                    record(\"new_reader_rejects_\" + name + \"-\" + suffix, rejection)\n\n                def success(obs, width=width, lang=lang, theme=theme):\n                    context, page, ctl, local_errors = opened(\"current\", width, lang, theme, payload)\n                    try:\n                        page.evaluate(\"window.__d04Auth('owner-A','SIGNED_IN')\")\n                        settle_response(page)\n                        value = observation(page, ctl, \"matching-new-pair\")\n                        obs.append(value)\n                        assert value[\"state\"] == \"loaded\" and value[\"hydrated\"] == 2 and value[\"locked\"] == 0, value\n                        assert value[\"paidLinks\"] == [\"stocks/GATEDBB.html\", \"stocks/GATEDCC.html\"], value\n                        page.locator('[data-confluence-combo=\"L0002\"] a.tkr').focus()\n                        page.evaluate(\"window.__d04Auth(null,'SIGNED_OUT')\")\n                        locked_snapshot(page, ctl, obs, \"signout-retains-public-evidence\")\n                        assert page.evaluate(\"document.activeElement.closest('[data-confluence-combo]')?.getAttribute('data-confluence-combo')\") == \"L0002\"\n                        assert len(ctl[\"requests\"]) == 1 and not local_errors\n                    finally:\n                        context.close()\n                record(\"matching_pair_and_signout-\" + suffix, success)\n\n                def mismatch_retry(obs, width=width, lang=lang, theme=theme):\n                    context, page, ctl, local_errors = opened(\"current\", width, lang, theme, changed_payload)\n                    try:\n                        page.evaluate(\"window.__d04Auth('owner-A','SIGNED_IN')\")\n                        settle_response(page)\n                        locked_snapshot(page, ctl, obs, \"same-clock-different-recipe\", \"mismatch\")\n                        ctl[\"body\"] = copy.deepcopy(payload)\n                        prior_reads = page.evaluate(\"window.__compatJsonReads\")\n                        retry = page.locator(\"#confluence-check-access\")\n                        retry.focus()\n                        retry.press(\"Enter\")\n                        settle_response(page, prior_reads)\n                        value = observation(page, ctl, \"valid-recovery\")\n                        obs.append(value)\n                        assert value[\"state\"] == \"loaded\" and value[\"hydrated\"] == 2, value\n                        assert value[\"activeHref\"] == \"stocks/GATEDBB.html\", value\n                        assert len(ctl[\"requests\"]) == 2 and not local_errors\n                    finally:\n                        context.close()\n                record(\"generation_mismatch_and_existing_retry-\" + suffix, mismatch_retry)\n\n            for width, lang, theme in ((390, \"en\", \"dark\"), (320, \"zh\", \"light\")):\n                for key in (\"zero\", \"unavailable\"):\n                    def action_case(obs, width=width, lang=lang, theme=theme, key=key):\n                        context, page, ctl, local_errors = opened(key, width, lang, theme, payload)\n                        try:\n                            expected = (\"Open Mastermind\" if lang == \"en\" else \"打开 Mastermind\") if key == \"zero\" else (\"Reload page\" if lang == \"en\" else \"重新加载页面\")\n                            target = page.locator('[data-source-state=\"available-empty\"] a.btn') if key == \"zero\" else page.locator(\"#confluence-reload-page\")\n                            target.scroll_into_view_if_needed()\n                            value = target.evaluate(\"\"\"n => {\n                              const r=n.getBoundingClientRect();\n                              return {text:n.innerText.trim(),href:n.getAttribute('href'),tag:n.tagName,\n                                x:r.x,y:r.y,width:r.width,height:r.height,right:r.right,\n                                viewport:innerWidth,documentWidth:document.documentElement.scrollWidth};\n                            }\"\"\")\n                            obs.append({\"phase\":key+\"-action\",\"expected_label\":expected,**value})\n                            assert value[\"text\"] == expected, value\n                            assert value[\"height\"] >= 44 and value[\"right\"] <= width and value[\"x\"] >= 0, value\n                            assert value[\"documentWidth\"] <= width, value\n                            file = key + \"-action-\" + str(width) + \"-\" + lang + \".png\"\n                            page.locator(\".empty\").screenshot(path=str(out / file))\n                            captures.append({\"file\":file,\"width\":width,\"lang\":lang,\"theme\":theme,\"fixture\":key})\n                            if key == \"zero\":\n                                assert value[\"href\"] == expected_cta\n                                hits = []\n                                def app_navigation(route):\n                                    hits.append({\"url\":route.request.url,\"method\":route.request.method})\n                                    route.fulfill(content_type=\"text/html\", body=\"<!doctype html><title>App destination fixture</title><h1>Application destination fixture</h1>\")\n                                page.route(\"https://app.mastermind-x.com/**\", app_navigation)\n                                with page.expect_navigation(wait_until=\"load\"):\n                                    target.click()\n                                assert hits == [{\"url\":expected_cta,\"method\":\"GET\"}], hits\n                                obs.append({\"phase\":\"native-app-navigation\",\"intercepted_fixture\":True,\"requests\":hits})\n                            else:\n                                before_url = page.url\n                                before_hits = len(page_hits)\n                                with page.expect_navigation(wait_until=\"load\"):\n                                    target.click()\n                                assert page.url == before_url\n                                assert len(page_hits) == before_hits + 1\n                                expect(page.locator('[data-source-state=\"unavailable\"]')).to_have_count(1)\n                                obs.append({\"phase\":\"native-reload\",\"url_preserved\":True,\"document_requests\":1})\n                            assert not ctl[\"requests\"] and not local_errors\n                        finally:\n                            context.close()\n                    record(key + \"_action-\" + str(width) + \"-\" + lang, action_case)\n            browser.close()\n    finally:\n        server.shutdown()\n        server.server_close()\n\n    for capture in captures:\n        capture.update(file_meta(out / capture[\"file\"]))\n    paths = [\"scripts/build_confluence_screener.py\",\"templates/confluence_screener.html.j2\",\n             \"tests/test_confluence_screener_page.py\",\"scripts/verify_confluence_screener_browser.py\",\n             \"scripts/verify_confluence_compatibility_browser.py\",\n             \"tests/fixtures/confluence_legacy_template_f9588ff5.html.j2\",\n             \"site/confluence_screener.html\",\"site/premiumdata/confluence_screener.json\"]\n    report = {\"schema\":\"confluence_compat_browser/v1\",\"observed_at\":datetime.now(timezone.utc).isoformat(),\n              \"browser\":version,\"contexts\":context_count,\"cases\":cases,\"page_errors\":errors,\n              \"passed\":sum(c[\"status\"]==\"PASS\" for c in cases),\"failed\":sum(c[\"status\"]==\"FAIL\" for c in cases),\n              \"captures\":captures,\"sources\":{p:file_meta(ROOT/p) for p in paths},\n              \"legacy_source\":{\"commit\":\"f9588ff57391350bbd7225a7bbe56eb589d5a47d\",\"blob\":LEGACY_BLOB},\n              \"scope\":\"Actual template/controller/production renderer with synthetic data, controlled auth/HTTP and intercepted app destination. No production entitlement, full shared shell or deployment claim.\",\n              \"observer\":\"Fetch JSON-read completion is observed without changing the returned payload. Two animation frames settle existing controller continuations; no fixed sleep.\"}\n    (out/\"browser-report.json\").write_text(json.dumps(report,ensure_ascii=False,indent=2)+\"\\n\")\n    print(json.dumps({\"passed\":report[\"passed\"],\"failed\":report[\"failed\"],\"contexts\":context_count,\n                      \"page_errors\":len(errors),\"report\":str(out/\"browser-report.json\"),\n                      \"failures\":[{\"name\":c[\"name\"],\"error\":c[\"error\"][:500]} for c in cases if c[\"status\"]==\"FAIL\"]},ensure_ascii=False))\n    return 1 if report[\"failed\"] else 0\n\nif __name__ == \"__main__\":\n    raise SystemExit(main())\n",
+    "before_review": "#!/usr/bin/env python3\n\"\"\"Confluence protocol and action proof using actual old/new page code.\nControlled auth and HTTP fixtures; no production entitlement or deployment claim.\n\"\"\"\nfrom __future__ import annotations\nimport argparse, copy, hashlib, http.server, importlib.util, json, re\nimport socketserver, sys, threading, traceback\nfrom datetime import datetime, timezone\nfrom pathlib import Path\nfrom urllib.parse import parse_qs, urlsplit\nfrom jinja2 import Environment, FileSystemLoader\nfrom playwright.sync_api import sync_playwright, expect\n\nROOT = Path(__file__).resolve().parents[1]\nsys.path.insert(0, str(ROOT))\nfrom scripts.build_confluence_screener import build_context, build_premium_payload, render_html\nfrom scripts.verify_confluence_screener_browser import AUTH\nfrom engine import i18n\n\nspec = importlib.util.spec_from_file_location(\"compat_fixture\", ROOT / \"tests/test_confluence_screener_page.py\")\nfixture = importlib.util.module_from_spec(spec)\nspec.loader.exec_module(fixture)\nLEGACY = ROOT / \"tests/fixtures/confluence_legacy_template_f9588ff5.html.j2\"\nLEGACY_BLOB = \"8e18461db98d7141d573cd047aa8637189ad4250\"\nFETCH_OBSERVER = \"\"\"(() => {\n  const original = window.fetch;\n  window.__compatJsonReads = 0;\n  window.fetch = function(...args) {\n    return original.apply(this, args).then(response => {\n      if (new URL(typeof args[0] === 'string' ? args[0] : args[0].url, location.href).pathname === '/premiumdata/confluence_screener.json') {\n        const read = response.json.bind(response);\n        response.json = () => read().then(value => { window.__compatJsonReads += 1; return value; });\n      }\n      return response;\n    });\n  };\n})();\"\"\"\n\ndef file_meta(path):\n    data = path.read_bytes()\n    return {\"bytes\": len(data), \"sha256\": hashlib.sha256(data).hexdigest(),\n            \"blob\": hashlib.sha1(b\"blob \" + str(len(data)).encode() + b\"\\0\" + data).hexdigest()}\n\ndef main():\n    parser = argparse.ArgumentParser()\n    parser.add_argument(\"--out\", type=Path, required=True)\n    parser.add_argument(\"--browser-executable\")\n    parser.add_argument(\"--case-prefix\", action=\"append\", default=[])\n    args = parser.parse_args()\n    out = args.out.resolve()\n    out.mkdir(parents=True, exist_ok=True)\n    assert file_meta(LEGACY)[\"blob\"] == LEGACY_BLOB\n    raw = copy.deepcopy(fixture._make_raw())\n    zero = copy.deepcopy(raw)\n    zero[\"combos\"][\"long\"] = []\n    changed = copy.deepcopy(raw)\n    changed[\"combos\"][\"long\"][1][\"legs\"] = [1, 2]\n    changed[\"combos\"][\"long\"][1][\"active_now\"] = [\"NEWERA\"]\n    payload = build_premium_payload(raw, {\"GATEDBB\": \"Protected fixture B\", \"GATEDCC\": \"Protected fixture C\"})\n    changed_payload = build_premium_payload(changed, {\"NEWERA\": \"Different recipe fixture\"})\n    assert payload[\"built\"] == changed_payload[\"built\"]\n    assert payload[\"source_generation\"][\"sha256\"] != changed_payload[\"source_generation\"][\"sha256\"]\n    prior_bound = copy.deepcopy(payload)\n    prior_bound[\"schema\"] = \"tier_payload.v1\"\n    prior_unbound = copy.deepcopy(prior_bound)\n    del prior_unbound[\"source_generation\"]\n    del prior_unbound[\"source_status\"]\n    env = Environment(loader=FileSystemLoader(str(ROOT / \"templates\")), autoescape=True)\n    env.globals.update(td=i18n.td, tr=i18n.tr, zip=zip)\n    legacy_html = re.sub(r\"(?m)^[ \\t]+$\", \"\", env.from_string(LEGACY.read_text()).render(**build_context(raw, {})))\n    pages = {\n        \"legacy\": legacy_html.encode(),\n        \"current\": render_html(ROOT, build_context(raw, {})).encode(),\n        \"zero\": render_html(ROOT, build_context(zero, {})).encode(),\n        \"unavailable\": render_html(ROOT, build_context(None, {})).encode(),\n    }\n    expected_cta = build_context(zero, {})[\"cta_url\"]\n    page_hits = []\n\n    class Handler(http.server.SimpleHTTPRequestHandler):\n        def __init__(self, *a, **kw):\n            super().__init__(*a, directory=str(ROOT / \"site\"), **kw)\n        def do_GET(self):\n            parsed = urlsplit(self.path)\n            if parsed.path.startswith(\"/premiumdata/\"):\n                self.send_response(403)\n                self.end_headers()\n                return\n            if parsed.path == \"/confluence_screener.html\":\n                key = parse_qs(parsed.query).get(\"fixture\", [\"current\"])[0]\n                body = pages[key]\n                page_hits.append(self.path)\n                self.send_response(200)\n                self.send_header(\"Content-Type\", \"text/html; charset=utf-8\")\n                self.send_header(\"Content-Length\", str(len(body)))\n                self.end_headers()\n                self.wfile.write(body)\n                return\n            super().do_GET()\n        def log_message(self, *_):\n            pass\n\n    server = socketserver.ThreadingTCPServer((\"127.0.0.1\", 0), Handler)\n    threading.Thread(target=server.serve_forever, daemon=True).start()\n    origin = \"http://127.0.0.1:\" + str(server.server_address[1])\n    cases, captures, errors = [], [], []\n    context_count = 0\n\n    def record(name, fn):\n        if args.case_prefix and not any(name.startswith(prefix) for prefix in args.case_prefix):\n            return\n        case = {\"name\": name, \"observations\": []}\n        try:\n            fn(case[\"observations\"])\n            case[\"status\"] = \"PASS\"\n        except Exception as exc:\n            case.update(status=\"FAIL\", error=str(exc), trace=traceback.format_exc(limit=3))\n        cases.append(case)\n\n    try:\n        with sync_playwright() as pw:\n            opts = {\"headless\": True}\n            if args.browser_executable:\n                opts[\"executable_path\"] = args.browser_executable\n            browser = pw.chromium.launch(**opts)\n            version = browser.version\n\n            def opened(key, width, lang, theme, response):\n                nonlocal context_count\n                context_count += 1\n                context = browser.new_context(\n                    viewport={\"width\": width, \"height\": 900 if width > 500 else 844},\n                    device_scale_factor=1, reduced_motion=\"reduce\",\n                    is_mobile=width <= 500, has_touch=width <= 500)\n                context.route(\"**/*\", lambda route: route.continue_() if urlsplit(route.request.url).hostname == \"127.0.0.1\" else route.abort())\n                context.add_init_script(\"localStorage.setItem('lang',\" + json.dumps(lang) + \");localStorage.setItem('theme',\" + json.dumps(theme) + \");\")\n                context.add_init_script(FETCH_OBSERVER)\n                page = context.new_page()\n                page.set_default_timeout(6000)\n                local_errors = []\n                page.on(\"pageerror\", lambda error: (local_errors.append(str(error)), errors.append(str(error))))\n                ctl = {\"armed\": False, \"body\": copy.deepcopy(response), \"requests\": [], \"initial_requests\": 0}\n                def reply(route):\n                    if not ctl[\"armed\"]:\n                        ctl[\"initial_requests\"] += 1\n                        route.fulfill(status=403, content_type=\"application/json\", body=\"{}\")\n                        return\n                    ctl[\"requests\"].append({\"url\": route.request.url, \"method\": route.request.method})\n                    route.fulfill(content_type=\"application/json\", body=json.dumps(ctl[\"body\"]))\n                page.route(\"**/premiumdata/confluence_screener.json\", reply)\n                url = origin + \"/confluence_screener.html?fixture=\" + key + \"&keep=a&keep=b#return-point\"\n                page.goto(url, wait_until=\"load\")\n                page.evaluate(AUTH)\n                page.wait_for_function(\"document.querySelector('.wrap') !== null\")\n                ctl[\"armed\"] = True\n                return context, page, ctl, local_errors\n\n            def settle_response(page, previous=0):\n                page.wait_for_function(\"n => window.__compatJsonReads > n\", arg=previous)\n                page.evaluate(\"() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))\")\n\n            def observation(page, ctl, label):\n                value = page.evaluate(\"\"\"() => ({\n                  url: location.href,\n                  locked: document.querySelectorAll('.locked[data-confluence-combo]').length,\n                  hydrated: document.querySelectorAll('[data-confluence-hydrated]').length,\n                  paidLinks: Array.from(document.querySelectorAll('.lc.gated a.tkr')).map(n => n.getAttribute('href')),\n                  state: document.querySelector('#confluence-access-status')?.getAttribute('data-state') || null,\n                  publicLinks: Array.from(document.querySelector('.lc.free')?.querySelectorAll('a.tkr') || []).map(n=>n.getAttribute('href')),\n                  activeTag: document.activeElement?.tagName,\n                  activeHref: document.activeElement?.getAttribute('href') || null\n                })\"\"\")\n                value.update(phase=label, requests=len(ctl[\"requests\"]), schema=ctl[\"body\"].get(\"schema\"))\n                return value\n\n            def locked_snapshot(page, ctl, obs, label, expected_state=None):\n                value = observation(page, ctl, label)\n                obs.append(value)\n                assert value[\"locked\"] == 2 and value[\"hydrated\"] == 0 and not value[\"paidLinks\"], value\n                assert value[\"publicLinks\"] == [\"stocks/FREEAA.html\"], value\n                if expected_state:\n                    assert value[\"state\"] == expected_state, value\n                return value\n\n            for width, lang, theme in ((1440, \"en\", \"dark\"), (320, \"zh\", \"light\")):\n                suffix = str(width) + \"-\" + lang\n                def legacy_case(obs, width=width, lang=lang, theme=theme):\n                    context, page, ctl, local_errors = opened(\"legacy\", width, lang, theme, changed_payload)\n                    try:\n                        before = page.locator(\".lc.gated\").all_inner_texts()\n                        page.evaluate(\"window.__d04Auth('owner-A','SIGNED_IN')\")\n                        settle_response(page)\n                        value = locked_snapshot(page, ctl, obs, \"frozen-old-reader/new-generation-payload\")\n                        assert page.locator(\".lc.gated\").all_inner_texts() == before\n                        assert len(ctl[\"requests\"]) == 1 and not local_errors\n                        value[\"same_clock_changed_recipe\"] = True\n                    finally:\n                        context.close()\n                record(\"old_reader_rejects_new_payload-\" + suffix, legacy_case)\n\n                for name, body in ((\"prior_bound_v1\", prior_bound), (\"legacy_unbound_v1\", prior_unbound)):\n                    def rejection(obs, width=width, lang=lang, theme=theme, body=body, name=name):\n                        context, page, ctl, local_errors = opened(\"current\", width, lang, theme, body)\n                        try:\n                            page.evaluate(\"window.__d04Auth('owner-A','SIGNED_IN')\")\n                            settle_response(page)\n                            locked_snapshot(page, ctl, obs, name, \"invalid\")\n                            assert len(ctl[\"requests\"]) == 1 and not local_errors\n                            if name == \"prior_bound_v1\":\n                                ctl[\"body\"] = copy.deepcopy(payload)\n                                before_reads = page.evaluate(\"window.__compatJsonReads\")\n                                retry = page.locator(\"#confluence-check-access\")\n                                expect(retry).to_be_visible()\n                                retry.focus()\n                                retry.press(\"Enter\")\n                                settle_response(page, before_reads)\n                                value = observation(page, ctl, \"valid-retry-after-version-rejection\")\n                                obs.append(value)\n                                assert value[\"state\"] == \"loaded\" and value[\"hydrated\"] == 2, value\n                                assert value[\"activeHref\"] == \"stocks/GATEDBB.html\", value\n                                assert len(ctl[\"requests\"]) == 2 and not local_errors\n                        finally:\n                            context.close()\n                    record(\"new_reader_rejects_\" + name + \"-\" + suffix, rejection)\n\n                def success(obs, width=width, lang=lang, theme=theme):\n                    context, page, ctl, local_errors = opened(\"current\", width, lang, theme, payload)\n                    try:\n                        page.evaluate(\"window.__d04Auth('owner-A','SIGNED_IN')\")\n                        settle_response(page)\n                        value = observation(page, ctl, \"matching-new-pair\")\n                        obs.append(value)\n                        assert value[\"state\"] == \"loaded\" and value[\"hydrated\"] == 2 and value[\"locked\"] == 0, value\n                        assert value[\"paidLinks\"] == [\"stocks/GATEDBB.html\", \"stocks/GATEDCC.html\"], value\n                        page.locator('[data-confluence-combo=\"L0002\"] a.tkr').focus()\n                        page.evaluate(\"window.__d04Auth(null,'SIGNED_OUT')\")\n                        locked_snapshot(page, ctl, obs, \"signout-retains-public-evidence\")\n                        assert page.evaluate(\"document.activeElement.closest('[data-confluence-combo]')?.getAttribute('data-confluence-combo')\") == \"L0002\"\n                        assert len(ctl[\"requests\"]) == 1 and not local_errors\n                    finally:\n                        context.close()\n                record(\"matching_pair_and_signout-\" + suffix, success)\n\n                def mismatch_retry(obs, width=width, lang=lang, theme=theme):\n                    context, page, ctl, local_errors = opened(\"current\", width, lang, theme, changed_payload)\n                    try:\n                        page.evaluate(\"window.__d04Auth('owner-A','SIGNED_IN')\")\n                        settle_response(page)\n                        locked_snapshot(page, ctl, obs, \"same-clock-different-recipe\", \"mismatch\")\n                        ctl[\"body\"] = copy.deepcopy(payload)\n                        before_url = page.url\n                        reload = page.locator(\"#confluence-reload-access\")\n                        expect(reload).to_be_visible()\n                        expect(page.locator(\"#confluence-check-access\")).to_be_hidden()\n                        reload.focus()\n                        with page.expect_navigation(wait_until=\"load\"):\n                            reload.press(\"Enter\")\n                        assert page.url == before_url\n                        page.evaluate(AUTH)\n                        page.evaluate(\"window.__d04Auth('owner-A','SIGNED_IN')\")\n                        settle_response(page)\n                        value = observation(page, ctl, \"valid-recovery-after-existing-reload\")\n                        obs.append(value)\n                        assert value[\"state\"] == \"loaded\" and value[\"hydrated\"] == 2, value\n                        assert value[\"paidLinks\"] == [\"stocks/GATEDBB.html\", \"stocks/GATEDCC.html\"], value\n                        assert len(ctl[\"requests\"]) == 2 and not local_errors\n                    finally:\n                        context.close()\n                record(\"generation_mismatch_and_existing_reload-\" + suffix, mismatch_retry)\n\n            for width, lang, theme in ((390, \"en\", \"dark\"), (320, \"zh\", \"light\")):\n                for key in (\"zero\", \"unavailable\"):\n                    def action_case(obs, width=width, lang=lang, theme=theme, key=key):\n                        context, page, ctl, local_errors = opened(key, width, lang, theme, payload)\n                        try:\n                            expected = (\"Open Mastermind\" if lang == \"en\" else \"打开 Mastermind\") if key == \"zero\" else (\"Reload page\" if lang == \"en\" else \"重新加载页面\")\n                            target = page.locator('[data-source-state=\"available-empty\"] a.btn') if key == \"zero\" else page.locator(\"#confluence-reload-page\")\n                            target.scroll_into_view_if_needed()\n                            value = target.evaluate(\"\"\"n => {\n                              const r=n.getBoundingClientRect();\n                              return {text:n.innerText.trim(),href:n.getAttribute('href'),tag:n.tagName,\n                                x:r.x,y:r.y,width:r.width,height:r.height,right:r.right,\n                                viewport:innerWidth,documentWidth:document.documentElement.scrollWidth};\n                            }\"\"\")\n                            obs.append({\"phase\":key+\"-action\",\"expected_label\":expected,**value})\n                            assert value[\"text\"] == expected, value\n                            assert value[\"height\"] >= 44 and value[\"right\"] <= width and value[\"x\"] >= 0, value\n                            assert value[\"documentWidth\"] <= width, value\n                            file = key + \"-action-\" + str(width) + \"-\" + lang + \".png\"\n                            page.locator(\".empty\").screenshot(path=str(out / file))\n                            captures.append({\"file\":file,\"width\":width,\"lang\":lang,\"theme\":theme,\"fixture\":key})\n                            if key == \"zero\":\n                                assert value[\"href\"] == expected_cta\n                                hits = []\n                                def app_navigation(route):\n                                    hits.append({\"url\":route.request.url,\"method\":route.request.method})\n                                    route.fulfill(content_type=\"text/html\", body=\"<!doctype html><title>App destination fixture</title><h1>Application destination fixture</h1>\")\n                                page.route(\"https://app.mastermind-x.com/**\", app_navigation)\n                                with page.expect_navigation(wait_until=\"load\"):\n                                    target.click()\n                                assert hits == [{\"url\":expected_cta,\"method\":\"GET\"}], hits\n                                obs.append({\"phase\":\"native-app-navigation\",\"intercepted_fixture\":True,\"requests\":hits})\n                            else:\n                                before_url = page.url\n                                before_hits = len(page_hits)\n                                with page.expect_navigation(wait_until=\"load\"):\n                                    target.click()\n                                assert page.url == before_url\n                                assert len(page_hits) == before_hits + 1\n                                expect(page.locator('[data-source-state=\"unavailable\"]')).to_have_count(1)\n                                obs.append({\"phase\":\"native-reload\",\"url_preserved\":True,\"document_requests\":1})\n                            assert not ctl[\"requests\"] and not local_errors\n                        finally:\n                            context.close()\n                    record(key + \"_action-\" + str(width) + \"-\" + lang, action_case)\n            browser.close()\n    finally:\n        server.shutdown()\n        server.server_close()\n\n    for capture in captures:\n        capture.update(file_meta(out / capture[\"file\"]))\n    paths = [\"scripts/build_confluence_screener.py\",\"templates/confluence_screener.html.j2\",\n             \"tests/test_confluence_screener_page.py\",\"scripts/verify_confluence_screener_browser.py\",\n             \"scripts/verify_confluence_compatibility_browser.py\",\n             \"tests/fixtures/confluence_legacy_template_f9588ff5.html.j2\",\n             \"site/confluence_screener.html\",\"site/premiumdata/confluence_screener.json\"]\n    report = {\"schema\":\"confluence_compat_browser/v1\",\"observed_at\":datetime.now(timezone.utc).isoformat(),\n              \"browser\":version,\"contexts\":context_count,\"cases\":cases,\"page_errors\":errors,\n              \"passed\":sum(c[\"status\"]==\"PASS\" for c in cases),\"failed\":sum(c[\"status\"]==\"FAIL\" for c in cases),\n              \"captures\":captures,\"sources\":{p:file_meta(ROOT/p) for p in paths},\n              \"legacy_source\":{\"commit\":\"f9588ff57391350bbd7225a7bbe56eb589d5a47d\",\"blob\":LEGACY_BLOB},\n              \"scope\":\"Actual template/controller/production renderer with synthetic data, controlled auth/HTTP and intercepted app destination. No production entitlement, full shared shell or deployment claim.\",\n              \"observer\":\"Fetch JSON-read completion is observed without changing the returned payload. Two animation frames settle existing controller continuations; no fixed sleep.\"}\n    (out/\"browser-report.json\").write_text(json.dumps(report,ensure_ascii=False,indent=2)+\"\\n\")\n    print(json.dumps({\"passed\":report[\"passed\"],\"failed\":report[\"failed\"],\"contexts\":context_count,\n                      \"page_errors\":len(errors),\"report\":str(out/\"browser-report.json\"),\n                      \"failures\":[{\"name\":c[\"name\"],\"error\":c[\"error\"][:500]} for c in cases if c[\"status\"]==\"FAIL\"]},ensure_ascii=False))\n    return 1 if report[\"failed\"] else 0\n\nif __name__ == \"__main__\":\n    raise SystemExit(main())\n"
+  },
+  "reviewed_capture_inspection": {
+    "rootReviewed": true,
+    "captureHashes": {
+      "zero-action-390-en.png": "129178c90f99bc5773a71b326089cfe14709cc130a1734f8f840a904f45cba00",
+      "zero-action-320-zh.png": "e68bf0073d00b8dbb2516d42321407b30206283de5ade7cfd1f555928791c296",
+      "unavailable-action-320-zh.png": "310dd783f2dffce756ce5cd603509bba92738aa470bf39fd94551b876df59a25",
+      "unavailable-action-390-en.png": "a989239036adeaac55d2bbb9917dff4d348cc0d3c952dc5f2541ba8be3bf60d0"
+    },
+    "scope": "Four current native action-card crops; labels readable and no clipping/overflow/action-orb overlap. Not a whole-page or production capture."
+  },
+  "source_objects": {
+    "scripts/build_confluence_screener.py": {
+      "bytes": 19003,
+      "sha256": "b5aa86624a18a17fd985870d9baaaa8cb745b0baffa6d4c17b6e198b6668d50a",
+      "blob": "b3db0ced7bc46607f728764c6f9f00dd851f9012"
+    },
+    "templates/confluence_screener.html.j2": {
+      "bytes": 49952,
+      "sha256": "438f9702fb7b3b68b705c22340e478dc06be0b1cccf72d879b06c97546e1112a",
+      "blob": "9b009d0aecf68f3e982f5a468c97256cb2949a6a"
+    },
+    "tests/test_confluence_screener_page.py": {
+      "bytes": 35677,
+      "sha256": "9fc4672177ae032d3d58e5014a2a5c4647ef009d9f15e0634e8147631e60b854",
+      "blob": "91fa1588cd69235082e2326536d978ffd32c9335"
+    },
+    "scripts/verify_confluence_screener_browser.py": {
+      "bytes": 33564,
+      "sha256": "177903221965eeaceed7a8ff952e64cbdb0ad19d4d77c658710dd8ef8da4e147",
+      "blob": "a2a8a69944c5dd05f4c321d409305772a9a6360a"
+    },
+    "scripts/verify_confluence_compatibility_browser.py": {
+      "bytes": 21063,
+      "sha256": "167597dc8d9a9b275bf4eef7a9dedba9d7f2203cdef84cf8e2f2a8c8c2f918d1",
+      "blob": "c282b41649b35603e3c14f6ed7d6015e38c93ca4"
+    },
+    "tests/fixtures/confluence_legacy_template_f9588ff5.html.j2": {
+      "bytes": 38078,
+      "sha256": "a782c6288f2d24917511a182470d521993c567297a965dc7bba8a7e53de83e5b",
+      "blob": "8e18461db98d7141d573cd047aa8637189ad4250"
+    },
+    "site/confluence_screener.html": {
+      "bytes": 119190,
+      "sha256": "1612420a229ff2437be4b1ca5b1ac7861bb3d4cc9e4a42dad2b012f30872d7fc",
+      "blob": "f52eab291d5e760d0471bf9343a4d032c1360b45"
+    },
+    "site/premiumdata/confluence_screener.json": {
+      "bytes": 542,
+      "sha256": "11a76bb62e26bd344ef29c198b7791df95b4140d18328f46f54b343f78aa4e7d",
+      "blob": "ed039512de9bf2fe3c838b6d562d0ef5da72658f"
+    }
+  },
+  "export_receipt": {
+    "bytes": 346079,
+    "sha256": "0e935f0950c3291a1e1035975f19ca0d27648b76987cfbb1040b3899f906c2a9",
+    "description": "Native full JSON export before publication packaging; exact file content/PNG bytes retained separately."
+  }
+}

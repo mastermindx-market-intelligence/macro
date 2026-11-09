@@ -22,6 +22,7 @@ if str(_HERE) not in sys.path:
 
 from scripts.build_confluence_screener import (
     PAYLOAD_URL,
+    PAYLOAD_SCHEMA,
     build_context,
     build_premium_payload,
     render_html,
@@ -252,7 +253,7 @@ def test_premium_payload_contains_only_gated_top_three_tickers():
     raw = _make_raw()
     payload = build_premium_payload(raw, {"GATEDBB": "Gated B"})
 
-    assert payload["schema"] == "tier_payload.v1"
+    assert payload["schema"] == PAYLOAD_SCHEMA
     assert payload["page"] == "confluence_screener"
     assert payload["gated"] is True
     assert payload["required_tier"] == "essential"
@@ -269,7 +270,7 @@ def test_premium_payload_contains_only_gated_top_three_tickers():
 
 def test_premium_payload_none_raw_overwrites_with_empty_fail_soft_payload():
     payload = build_premium_payload(None, {})
-    assert payload["schema"] == "tier_payload.v1"
+    assert payload["schema"] == PAYLOAD_SCHEMA
     assert payload["gated"] is True
     assert payload["combos"] == []
     assert payload["built"] == ""
@@ -303,7 +304,7 @@ def test_render_html_has_protected_payload_hydration_contract():
     assert "credentials: 'same-origin'" in html
     assert "freshSession" in html
     assert "mdx-auth" in html
-    assert "tier_payload.v1" in html
+    assert PAYLOAD_SCHEMA in html
     assert 'id="confluence-paid-cta"' in html
 
 
@@ -339,7 +340,7 @@ def test_shipped_shell_and_protected_payload_are_paired():
         .read_text(encoding="utf-8")
     )
 
-    assert payload["schema"] == "tier_payload.v1"
+    assert payload["schema"] == PAYLOAD_SCHEMA
     assert payload["page"] == "confluence_screener"
     assert payload["gated"] is True
     assert payload["required_tier"] == "essential"
@@ -729,3 +730,91 @@ def test_consistency_flag_cannot_supply_missing_older_comparison(flag):
     assert "Older-period comparison unavailable" in card
     assert "Above baseline only in the recent period" not in card
     assert "Above baseline in both periods" not in card
+
+
+@pytest.mark.parametrize("input_kind", [
+    "missing", "malformed_json", "non_object", "read_error",
+    "missing_collection", "missing_clock", "invalid_clock",
+    "mixed_malformed_row", "qualified_zero",
+])
+def test_actual_render_overwrites_stale_protected_rows(tmp_path, monkeypatch, input_kind):
+    """Exercise the real renderer and file writers, not only payload construction.
+
+    Only output-root configuration and its shim cache are isolated. This proves a successful render;
+    a failure before the protected write is a separate publication contract.
+    """
+    import shutil
+    from lib import config, pages
+    from scripts import build_confluence_screener as builder
+
+    templates = tmp_path / "templates"
+    templates.mkdir()
+    for name in (
+        "confluence_screener.html.j2", "_seo_head.html.j2",
+        "_site_nav.html.j2", "_navlinks.html.j2", "data_base.js",
+        "shared_shell_bridge.js", "shared_shell.css",
+    ):
+        shutil.copyfile(_ROOT / "templates" / name, templates / name)
+    site = tmp_path / "site"
+    source = site / "factordata" / "tech_confluence.json"
+    source.parent.mkdir(parents=True)
+    protected = site / "premiumdata" / "confluence_screener.json"
+    protected.parent.mkdir()
+    protected.write_text(json.dumps({
+        "schema": PAYLOAD_SCHEMA, "page": "confluence_screener",
+        "combos": [{"combo_id": "OLD", "active_tickers": [
+            {"ticker": "STALE_PRIVATE", "name": "Old protected fixture"}
+        ]}],
+    }), encoding="utf-8")
+    public = site / "confluence_screener.html"
+    public.write_text("OLD_PUBLIC_SHELL", encoding="utf-8")
+
+    raw = copy.deepcopy(_make_raw())
+    if input_kind == "read_error":
+        source.mkdir()  # An existing non-file produces a real read failure.
+    elif input_kind == "malformed_json":
+        source.write_text("{bad-json", encoding="utf-8")
+    elif input_kind == "non_object":
+        source.write_text("[]", encoding="utf-8")
+    elif input_kind != "missing":
+        if input_kind == "missing_collection":
+            del raw["combos"]["long"]
+        elif input_kind == "missing_clock":
+            del raw["generated_utc"]
+        elif input_kind == "invalid_clock":
+            raw["generated_utc"] = "not-a-clock"
+        elif input_kind == "mixed_malformed_row":
+            raw["combos"]["long"].append(None)
+        elif input_kind == "qualified_zero":
+            raw["combos"]["long"] = []
+        source.write_text(json.dumps(raw), encoding="utf-8")
+
+    monkeypatch.setattr(config, "ROOT", tmp_path)
+    monkeypatch.setattr(config, "load", lambda: {"storage": {"site_dir": "site"}})
+    monkeypatch.setattr(pages, "_shim_checked", False)
+    builder.render(tmp_path)
+
+    html = public.read_text(encoding="utf-8")
+    payload_text = protected.read_text(encoding="utf-8")
+    payload = json.loads(payload_text)
+    assert "OLD_PUBLIC_SHELL" not in html
+    assert "STALE_PRIVATE" not in html + payload_text
+    assert "Old protected fixture" not in html + payload_text
+    assert payload["schema"] == PAYLOAD_SCHEMA
+    assert payload["page"] == "confluence_screener"
+    assert payload["gated"] is True and payload["required_tier"] == "essential"
+    assert payload["combos"] == []
+
+    if input_kind == "qualified_zero":
+        assert payload["source_status"] == "available"
+        assert payload["source_generation"] == build_context(raw, {})["source_generation"]
+        assert payload["built"] == raw["generated_utc"]
+        assert 'data-source-state="available-empty"' in html
+        assert 'data-source-state="unavailable"' not in html
+        assert "No eligible line-ups" in html
+    else:
+        assert payload["source_status"] == "unavailable"
+        assert payload["source_generation"] is None and payload["built"] == ""
+        assert 'data-source-state="unavailable"' in html
+        assert 'data-source-state="available-empty"' not in html
+        assert "number of matching line-ups is unknown" in html

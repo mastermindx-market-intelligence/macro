@@ -975,6 +975,7 @@ html[data-theme="light"] .cs-tipped:hover,html[data-theme="light"] .cs-tipped:fo
   /* A generation receipt joins two projections; only the existing protected
      endpoint authorizes names. Never commit part of a paid response. */
   var PREMIUM_PAYLOAD = "/premiumdata/confluence_screener.json";
+  var PAYLOAD_SCHEMA = "tier_payload.v2";
   var SOURCE_RECEIPT = {"generated_utc": "2026-11-08T11:31:29Z", "schema": "confluence_source.v1", "sha256": "4f8c3dcd8508a55978f4b27d7c4d34828bc1044881ed404120cb353b1d4dc7c1"};
   var rows = Array.prototype.map.call(document.querySelectorAll('[data-confluence-combo]'), function(wall){
     return {
@@ -1086,7 +1087,7 @@ html[data-theme="light"] .cs-tipped:hover,html[data-theme="light"] .cs-tipped:fo
   }
 
   function prepareRows(payload){
-    if(!payload || payload.schema !== 'tier_payload.v1' || payload.page !== 'confluence_screener' ||
+    if(!payload || payload.schema !== PAYLOAD_SCHEMA || payload.page !== 'confluence_screener' ||
        payload.gated !== true || payload.required_tier !== 'essential' ||
        payload.source_status !== 'available' || !Array.isArray(payload.combos)){
       throw new Error('invalid');
