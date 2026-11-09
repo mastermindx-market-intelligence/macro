@@ -104,7 +104,7 @@
 
 <script>try{document.addEventListener('DOMContentLoaded',function(){if(window.matchMedia&&window.matchMedia('(max-width:640px)').matches){document.querySelectorAll('body.page-macro .ud-watch-details[open]').forEach(function(d){d.removeAttribute('open');});}});}catch(e){}</script>
 <link rel="stylesheet" href="tier_preview.css?v=d390f599">
-<link rel="stylesheet" href="risk_radar_workspace.css?v=052f114a">
+<link rel="stylesheet" href="risk_radar_workspace.css?v=d8f8563a">
 
 <link rel="preload" href="/fonts/InterDisplay-600.woff2" as="font" type="font/woff2" crossorigin>
 
@@ -5240,11 +5240,11 @@
         
         <span class="mx5-ai-ticker-pill">QQQ</span>
         
+        <span class="mx5-ai-ticker-pill">XLK</span>
+        
+        <span class="mx5-ai-ticker-pill">NVDA</span>
+        
         <span class="mx5-ai-ticker-pill">XLF</span>
-        
-        <span class="mx5-ai-ticker-pill">SPY</span>
-        
-        <span class="mx5-ai-ticker-pill">XHB</span>
         
       </div>
       
@@ -5252,14 +5252,14 @@
       <div class="mx5-ai-body">
         
         <span class="l-en">
-          <span style="color:var(--ink-3,rgba(255,255,255,.36));font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;">3 High-Impact Items</span><br>
-          Dominant theme: <span style="color:var(--mx5-accent-ink);font-weight:600">rates</span><br>
-          3 high-impact signals across channels
+          <span style="color:var(--ink-3,rgba(255,255,255,.36));font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;">1 High-Impact Items</span><br>
+          Dominant theme: <span style="color:var(--mx5-accent-ink);font-weight:600">individual stocks</span><br>
+          1 high-impact signals across channels
         </span>
         <span class="l-zh">
-          <span style="color:var(--ink-3,rgba(255,255,255,.36));font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;">3 条高影响信息</span><br>
-          主线：<span style="color:var(--mx5-accent-ink);font-weight:600">利率</span><br>
-          3 条高影响信号
+          <span style="color:var(--ink-3,rgba(255,255,255,.36));font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;">1 条高影响信息</span><br>
+          主线：<span style="color:var(--mx5-accent-ink);font-weight:600">个股</span><br>
+          1 条高影响信号
         </span>
         
       </div>
@@ -5267,10 +5267,12 @@
       
         
         
+        
+        
       
       <div class="mx5-card-stance">
-        <span class="l-en">Watch — don&#39;t chase headlines; let prices settle first.</span>
-        <span class="l-zh">观望——不追新闻，先等价格企稳。</span>
+        <span class="l-en">Watch the individual stocks thread — no action needed yet.</span>
+        <span class="l-zh">关注个股主线——暂无需操作。</span>
       </div>
       
       <div class="mx5-ai-note">
@@ -5342,11 +5344,11 @@
             <div class="mx5-alert-title">
               <span class="mx5-alert-k"><span class="l-en">Headline</span><span class="l-zh">头条</span></span>
               <span style="font-size:12px;margin-right:3px">📰</span>
-              <span class="l-en">Pollard Banknote declares CAD 0.05 dividend</span>
-              <span class="l-zh">Pollard Banknote宣布每股CAD 0.05股息</span>
+              <span class="l-en">Berkshire Hathaway more than doubles buybacks in third quarter as earnings decli…</span>
+              <span class="l-zh">伯克希尔·哈撒韦第三季度回购规模增加逾一倍，但盈利下滑</span>
             </div>
             <div class="mx5-alert-detail">
-              <span>Seeking Alpha - Market Currents</span> · 
+              <span>CNBC - Stock Blog</span> · 
               <span style="color:var(--mx5-warn-ink,#9c6212);font-weight:600"><span class="l-en">High impact</span><span class="l-zh">高影响</span></span>
             </div>
           </div>
@@ -6226,49 +6228,78 @@
           <div class="rkw-eyebrow" id="rkw-state-label"><span class="l-en">Risk reading</span><span class="l-zh">风险读数</span></div>
           <div class="rkw-state-slot"></div>
           <div class="rkw-reason-slot"></div>
+          <p class="rkw-completeness" role="status" hidden></p>
           <div class="rkw-stance">
             <span class="rkw-stance-icon" aria-hidden="true">↳</span>
             <div><span class="rkw-label"><span class="l-en">Current stance</span><span class="l-zh">当前立场</span></span><div class="rkw-stance-slot"></div></div>
           </div>
           <div class="rkw-authority-slot"></div>
-          <button type="button" class="rkw-index" data-rkw-view="signals">
-            <span class="rkw-index-label"><span class="l-en">Signal index</span><span class="l-zh">信号指数</span></span>
-            <span class="rkw-score-slot"></span><span class="rkw-arrow" aria-hidden="true">↗</span>
-          </button>
+          <button type="button" class="rkw-primary" data-rkw-view="sources"><span class="l-en">Inspect risk evidence</span><span class="l-zh">查看风险依据</span><span aria-hidden="true">→</span></button>
         </section>
         <section class="rkw-odds" aria-labelledby="rkw-odds-title">
-          <div class="rkw-odds-heading">
-            <h3 id="rkw-odds-title"><span class="l-en">SPY · ≥5% pullback</span><span class="l-zh">SPY · ≥5% 回撤</span></h3>
-            <button type="button" class="rkw-info" data-rkw-view="odds"><span class="l-en">About these odds</span><span class="l-zh">概率说明</span><span aria-hidden="true">↗</span></button>
+          <div class="rkw-index-block">
+            <button type="button" class="rkw-index" data-rkw-view="signals">
+              <span class="rkw-index-label"><span class="l-en">Signal index · not odds</span><span class="l-zh">信号指数 · 非概率</span></span>
+              <span class="rkw-score-slot"></span>
+              <span class="rkw-index-meter" aria-hidden="true"><span class="rkw-index-meter-fill"></span></span>
+              <span class="rkw-arrow" aria-hidden="true">↗</span>
+            </button>
           </div>
-          <div class="rkw-horizons" role="group" aria-label="Probability horizon">
-            
-            <button type="button" class="rkw-horizon" data-rkw-horizon="5" aria-pressed="false"><span class="l-en">5d</span><span class="l-zh">5日</span></button>
-            
-            <button type="button" class="rkw-horizon" data-rkw-horizon="10" aria-pressed="false"><span class="l-en">10d</span><span class="l-zh">10日</span></button>
-            
-            <button type="button" class="rkw-horizon" data-rkw-horizon="21" aria-pressed="true"><span class="l-en">21d</span><span class="l-zh">21日</span></button>
-            
+          <div class="rkw-odds-block">
+            <div class="rkw-odds-heading">
+              <h3 id="rkw-odds-title"><span class="l-en">SPY · ≥5% pullback</span><span class="l-zh">SPY · ≥5% 回撤</span></h3>
+              <button type="button" class="rkw-info" data-rkw-view="odds"><span class="l-en">About these odds</span><span class="l-zh">概率说明</span><span aria-hidden="true">↗</span></button>
+            </div>
+            <div class="rkw-horizons" role="group" aria-label="Probability horizon">
+              
+              <button type="button" class="rkw-horizon" data-rkw-horizon="5" aria-pressed="false"><span class="l-en">5d</span><span class="l-zh">5日</span><strong class="rkw-horizon-value">—</strong></button>
+              
+              <button type="button" class="rkw-horizon" data-rkw-horizon="10" aria-pressed="false"><span class="l-en">10d</span><span class="l-zh">10日</span><strong class="rkw-horizon-value">—</strong></button>
+              
+              <button type="button" class="rkw-horizon" data-rkw-horizon="21" aria-pressed="true"><span class="l-en">21d</span><span class="l-zh">21日</span><strong class="rkw-horizon-value">—</strong></button>
+              
+            </div>
+            <div class="rkw-odds-reading" aria-live="polite" aria-atomic="true">
+              <strong class="rkw-probability">—</strong>
+              <span class="rkw-probability-caption"><span class="l-en">Estimate unavailable</span><span class="l-zh">暂无估计</span></span>
+            </div>
+            <div class="rkw-probability-track" aria-hidden="true"><span class="rkw-probability-fill"></span><i class="rkw-baseline-marker" hidden></i></div>
+            <div class="rkw-probability-scale" aria-hidden="true"><span>0%</span><span>100%</span></div>
+            <div class="rkw-odds-footer"><span class="rkw-baseline"></span><button type="button" class="rkw-quality" data-rkw-view="odds"></button></div>
           </div>
-          <div class="rkw-odds-reading" aria-live="polite" aria-atomic="true">
-            <strong class="rkw-probability">—</strong>
-            <span class="rkw-probability-caption"><span class="l-en">Estimate unavailable</span><span class="l-zh">暂无估计</span></span>
-          </div>
-          <div class="rkw-probability-track" aria-hidden="true"><span class="rkw-probability-fill"></span><i class="rkw-baseline-marker" hidden></i></div>
-          <div class="rkw-probability-scale" aria-hidden="true"><span>0%</span><span>100%</span></div>
-          <div class="rkw-odds-footer"><span class="rkw-baseline"></span><button type="button" class="rkw-quality" data-rkw-view="odds"></button></div>
         </section>
       </div>
-      <div class="rkw-internals-slot"></div>
       <section class="rkw-drivers" aria-labelledby="rkw-drivers-title">
         <div class="rkw-section-heading"><h3 id="rkw-drivers-title"><span class="l-en">What matters now</span><span class="l-zh">当前重点</span></h3><span class="rkw-section-hint"><span class="l-en">Select a signal to explore</span><span class="l-zh">点击信号深入了解</span></span></div>
         <div class="rkw-driver-grid"></div>
       </section>
-      <nav class="rkw-explore" aria-label="Risk Radar evidence">
-        <button type="button" data-rkw-view="signals"><span class="rkw-explore-icon" aria-hidden="true">≋</span><span class="l-en">All risk signals</span><span class="l-zh">全部风险信号</span><span class="rkw-count"></span><span class="rkw-arrow" aria-hidden="true">↗</span></button>
-        <button type="button" data-rkw-view="sentiment"><span class="rkw-explore-icon" aria-hidden="true">◒</span><span class="l-en">Market context</span><span class="l-zh">市场背景</span><span class="rkw-arrow" aria-hidden="true">↗</span></button>
-        <button type="button" data-rkw-view="sources"><span class="rkw-explore-icon" aria-hidden="true">⊙</span><span class="l-en">Sources &amp; method</span><span class="l-zh">来源与方法</span><span class="rkw-arrow" aria-hidden="true">↗</span></button>
-      </nav>
+      <div class="rkw-analytical">
+        <section class="rkw-panel rkw-ladder-panel" aria-labelledby="rkw-ladder-title">
+          <div class="rkw-panel-heading"><h3 id="rkw-ladder-title"><span class="l-en">Driver-specific risk</span><span class="l-zh">驱动专项风险</span></h3><span class="rkw-panel-hint"><span class="l-en">Own scales · not probabilities</span><span class="l-zh">各自刻度 · 并非概率</span></span></div>
+          <div class="rkw-ladder-slot"></div>
+        </section>
+        <section class="rkw-panel rkw-band-panel" aria-labelledby="rkw-band-title">
+          <div class="rkw-panel-heading"><h3 id="rkw-band-title"><span class="l-en">Trend &amp; resilience</span><span class="l-zh">趋势与韧性</span></h3></div>
+          <div class="rkw-band-slot"></div>
+        </section>
+      </div>
+      <section class="rkw-panel rkw-sentiment-panel" aria-labelledby="rkw-sentiment-title">
+        <div class="rkw-panel-heading"><h3 id="rkw-sentiment-title"><span class="l-en">Positioning &amp; sentiment</span><span class="l-zh">仓位与情绪</span></h3><span class="rkw-panel-hint"><span class="l-en">Separate lenses · not crash odds</span><span class="l-zh">两把独立尺 · 非崩盘概率</span></span></div>
+        <div class="rkw-sentiment-slot"></div>
+      </section>
+      <section class="rkw-panel rkw-leadership-panel" aria-labelledby="rkw-leadership-title">
+        <div class="rkw-panel-heading"><h3 id="rkw-leadership-title"><span class="l-en">Leadership context</span><span class="l-zh">领涨背景</span></h3></div>
+        <div class="rkw-leadership-slot"></div>
+      </section>
+      <div class="rkw-foot">
+        <p class="rkw-foot-note"><span class="l-en">Review the source dates and method before interpreting these readings.</span><span class="l-zh">解读这些读数前，请核对来源日期与方法。</span></p>
+        <nav class="rkw-explore" aria-label="Risk Radar evidence">
+          <button type="button" data-rkw-view="signals"><span class="rkw-explore-icon" aria-hidden="true">≋</span><span class="l-en">All risk signals</span><span class="l-zh">全部风险信号</span><span class="rkw-count"></span><span class="rkw-arrow" aria-hidden="true">↗</span></button>
+          <button type="button" data-rkw-view="sentiment"><span class="rkw-explore-icon" aria-hidden="true">◒</span><span class="l-en">Market context</span><span class="l-zh">市场背景</span><span class="rkw-arrow" aria-hidden="true">↗</span></button>
+          <button type="button" data-rkw-view="sources"><span class="rkw-explore-icon" aria-hidden="true">⊙</span><span class="l-en">Sources &amp; method</span><span class="l-zh">来源与方法</span><span class="rkw-arrow" aria-hidden="true">↗</span></button>
+          <button type="button" data-rkw-view="method"><span class="rkw-explore-icon" aria-hidden="true">◷</span><span class="l-en">Method &amp; track record</span><span class="l-zh">方法与历史记录</span><span class="rkw-arrow" aria-hidden="true">↗</span></button>
+        </nav>
+      </div>
     </div>
     <section class="rkw-inspector" id="rkw-inspector" aria-labelledby="rkw-inspector-title" hidden>
       <div class="rkw-inspector-toolbar"><button type="button" class="rkw-back"><span aria-hidden="true">←</span><span class="l-en">Overview</span><span class="l-zh">概览</span></button><div class="rkw-step"></div></div>
@@ -7331,7 +7362,7 @@
             <span><span class="l-en">Greed</span><span class="l-zh">贪婪</span></span>
             <span><span class="l-en">Euphoria</span><span class="l-zh">欣喜</span></span>
           </div>
-          <div class="rkc-mood-note"><span class="l-en">Use both lenses to size risk — neither is a trade signal.</span><span class="l-zh">用两把尺共同控制仓位——两者都不是交易信号。</span></div>
+          <div class="rkc-mood-note"><span class="l-en">Read both lenses as context, not as trade signals.</span><span class="l-zh">两把尺仅供背景参考，均非交易信号。</span></div>
           
           
           <div class="rsx-disagree">
@@ -7412,8 +7443,8 @@
 
         
         <div class="rsx-dlg-footer">
-          <span class="l-en">Model estimates and mood gauges are display-only context — not forecasts; the response is sizing, not selection; forward records accruing.</span>
-          <span class="l-zh">以上模型估计与情绪读数仅为参考——非预测；应对是仓位控制而非选股；前瞻记录积累中。</span>
+          <span class="l-en">Model estimates and mood gauges provide context, not validated trade signals; distinguish horizon, scale and completeness while forward records are accruing.</span>
+          <span class="l-zh">模型估计与情绪读数提供背景参考，并非经验证的交易信号；请区分期限、刻度与数据完整性，前瞻记录仍在积累中。</span>
         </div>
         </div>
                 
@@ -7496,7 +7527,7 @@
             <span class="l-zh">它不是当下龙头名单，也不否决大盘状态。</span>
           </p>
           <details class="riskdlg-fold" id="riskdlg-damage-more">
-          <summary><span class="l-en">Residual hardware damage</span><span class="l-zh">残余硬件受损</span><span class="l-en"> — median </span><span class="l-zh">——中位数回撤 </span>44%<span class="l-en"> below </span><span class="l-zh">较过去 </span>63<span class="l-en">-session high</span><span class="l-zh"> 个交易日高点</span></summary>
+          <summary><span class="riskdlg-damage-label"><span class="l-en">Residual hardware damage</span><span class="l-zh">残余硬件受损</span></span><span class="riskdlg-damage-reading"><span class="l-en">Median </span><span class="l-zh">中位数回撤 </span>44%<span class="l-en"> below </span><span class="l-zh">，较过去 </span>63<span class="l-en">-session high</span><span class="l-zh"> 个交易日高点</span></span></summary>
           <div class="rkc-cohort-kicker"><span class="l-en">Tracked AI-hardware damage cohort</span><span class="l-zh">跟踪中的 AI 硬件受损群组</span><small><span class="l-en">as of</span><span class="l-zh">截至</span> 2026-11-06</small></div>
           
           
@@ -8331,10 +8362,10 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
           
           
           
-          <a class="nbx-item" href="https://seekingalpha.com/news/4668750-pollard-banknote-declares-cad-0_05-dividend?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener">
+          <a class="nbx-item" href="https://seekingalpha.com/news/4668780-asian-stocks-face-new-pressure-as-nvidia-spy-probe-rattles-tech-sector?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener">
             <div class="nbx-top">
-              <span class="nbx-theme"><span class="l-en">Buybacks</span><span class="l-zh">回购/分红</span></span>
-              <span class="nbx-title"><span class="l-en">Pollard Banknote declares CAD 0.05 dividend</span><span class="l-zh">Pollard Banknote宣布每股CAD 0.05股息</span></span>
+              <span class="nbx-theme"><span class="l-en">Stocks</span><span class="l-zh">个股</span></span>
+              <span class="nbx-title"><span class="l-en">Asian stocks face new pressure as Nvidia spy probe rattles tech sector</span><span class="l-zh">英伟达间谍调查震动科技板块，亚洲股市面临新的压力</span></span>
             </div>
             <div class="nbx-meta">
               <span class="nbx-src">news_rss</span>
@@ -8367,10 +8398,10 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
           
           
           
-          <a class="nbx-item" href="https://seekingalpha.com/news/4668751-westshore-terminals-investment-corporation-declares-cad-0_375-dividend?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener">
+          <a class="nbx-item" href="https://seekingalpha.com/news/4668778-nuclear-stocks-surge-as-oklo-results-spark-rally-for-reactors-uranium-suppliers?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener">
             <div class="nbx-top">
-              <span class="nbx-theme"><span class="l-en">Buybacks</span><span class="l-zh">回购/分红</span></span>
-              <span class="nbx-title"><span class="l-en">Westshore Terminals Investment Corporation declares CAD 0.375 dividend</span><span class="l-zh">Westshore Terminals Investment Corporation宣布每股CAD 0.375股息</span></span>
+              <span class="nbx-theme"><span class="l-en">Stocks</span><span class="l-zh">个股</span></span>
+              <span class="nbx-title"><span class="l-en">Nuclear stocks surge as Oklo results spark rally for reactors, uranium suppliers</span><span class="l-zh">Oklo业绩点燃反应堆和铀供应商涨势，核能股飙升</span></span>
             </div>
             <div class="nbx-meta">
               <span class="nbx-src">news_rss</span>
@@ -8385,15 +8416,51 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
           
           
           
-          <a class="nbx-item" href="https://www.cnbc.com/2026/11/07/berkshire-shares-surge-as-wall-street-swoons-amid-ai-fears.html" target="_blank" rel="noopener">
+          <a class="nbx-item" href="https://www.cnbc.com/2026/11/05/rheinmetall-stock-outlook-sales-germany.html" target="_blank" rel="noopener">
             <div class="nbx-top">
-              <span class="nbx-theme"><span class="l-en">Stocks</span><span class="l-zh">个股</span></span>
-              <span class="nbx-title"><span class="l-en">Berkshire shares surge as Wall Street swoons amid AI fears</span><span class="l-zh">受AI担忧拖累华尔街暴跌，伯克希尔股价逆势大涨</span></span>
+              <span class="nbx-theme"><span class="l-en">Guidance</span><span class="l-zh">指引</span></span>
+              <span class="nbx-title"><span class="l-en">Rheinmetall shares plunge 16% after outlook cut as military contracts stall</span><span class="l-zh">莱茵金属下调业绩展望后股价暴跌16%，因军事合同停滞</span></span>
             </div>
             <div class="nbx-meta">
               <span class="nbx-src">news_rss</span>
               <span class="nbx-dot">·</span>
-              <span class="nbx-date">Nov 7</span>
+              <span class="nbx-date">Nov 6</span>
+              <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
+            </div>
+            
+          </a>
+          
+          
+          
+          
+          
+          <a class="nbx-item" href="https://seekingalpha.com/news/4668779-vir-biotechnology-reports-positive-hepatitis-results-early-signs-of-possible-cure?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener">
+            <div class="nbx-top">
+              <span class="nbx-theme"><span class="l-en">Stocks</span><span class="l-zh">个股</span></span>
+              <span class="nbx-title"><span class="l-en">Vir Biotechnology reports positive hepatitis results, early signs of possible cure</span><span class="l-zh">Vir Biotechnology报告积极的肝炎结果，显现可能治愈的早期迹象</span></span>
+            </div>
+            <div class="nbx-meta">
+              <span class="nbx-src">news_rss</span>
+              <span class="nbx-dot">·</span>
+              <span class="nbx-date">Nov 8</span>
+              <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
+            </div>
+            
+          </a>
+          
+          
+          
+          
+          
+          <a class="nbx-item" href="https://seekingalpha.com/news/4668783-abbvie-reports-improved-facial-satisfaction-among-weight-loss-drug-users?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener">
+            <div class="nbx-top">
+              <span class="nbx-theme"><span class="l-en">Stocks</span><span class="l-zh">个股</span></span>
+              <span class="nbx-title"><span class="l-en">AbbVie reports improved facial satisfaction among weight-loss drug users</span><span class="l-zh">AbbVie报告减肥药使用者面部满意度改善</span></span>
+            </div>
+            <div class="nbx-meta">
+              <span class="nbx-src">news_rss</span>
+              <span class="nbx-dot">·</span>
+              <span class="nbx-date">Nov 9</span>
               <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
             </div>
             
@@ -8421,15 +8488,33 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
           
           
           
-          <a class="nbx-item" href="https://www.cnbc.com/2026/11/07/anthropic-ipo-ai-data-center-backlash.html" target="_blank" rel="noopener">
+          <a class="nbx-item" href="https://www.cnbc.com/2026/11/06/tech-stocks-sk-hynix-samsung-softbank.html" target="_blank" rel="noopener">
             <div class="nbx-top">
-              <span class="nbx-theme"><span class="l-en">Deals</span><span class="l-zh">并购/IPO</span></span>
-              <span class="nbx-title"><span class="l-en">Anthropic IPO meets AI backlash after midterms show stinging rebuke of data centers</span><span class="l-zh">Anthropic IPO遭遇AI反弹，中期选举显示对数据中心的强烈斥责</span></span>
+              <span class="nbx-theme"><span class="l-en">Stocks</span><span class="l-zh">个股</span></span>
+              <span class="nbx-title"><span class="l-en">Nasdaq sell-off batters Asian chip stocks as SK Hynix, Samsung, Softbank, TSMC tumble</span><span class="l-zh">纳斯达克抛售重创亚洲芯片股，SK海力士、三星、软银和台积电纷纷大跌</span></span>
             </div>
             <div class="nbx-meta">
               <span class="nbx-src">news_rss</span>
               <span class="nbx-dot">·</span>
-              <span class="nbx-date">Nov 7</span>
+              <span class="nbx-date">Nov 6</span>
+              <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
+            </div>
+            
+          </a>
+          
+          
+          
+          
+          
+          <a class="nbx-item" href="https://www.marketwatch.com/story/nvidias-board-will-probe-ceo-jensen-huangs-relationship-with-an-alleged-spy-heres-what-to-know-86656cd9?mod=mw_rss_topstories" target="_blank" rel="noopener">
+            <div class="nbx-top">
+              <span class="nbx-theme"><span class="l-en">Macro</span><span class="l-zh">宏观</span></span>
+              <span class="nbx-title"><span class="l-en">A new setback for the AI trade: Nvidia’s board is probing CEO Huang’s relationship with alleged spy</span><span class="l-zh">AI交易遭遇新挫折：英伟达董事会正调查CEO黄仁勋与涉嫌间谍人员的关系</span></span>
+            </div>
+            <div class="nbx-meta">
+              <span class="nbx-src">news_rss</span>
+              <span class="nbx-dot">·</span>
+              <span class="nbx-date">Nov 8</span>
               <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
             </div>
             
@@ -8442,66 +8527,12 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
           <a class="nbx-item" href="https://www.bls.gov/news.release/archives/empsit_11062026.htm" target="_blank" rel="noopener">
             <div class="nbx-top">
               <span class="nbx-theme"><span class="l-en">Labor</span><span class="l-zh">就业</span></span>
-              <span class="nbx-title"><span class="l-en">Payroll employment rises by 165,000 in October; unemployment rate changes little at 4.1%</span><span class="l-zh">10月非农就业人数增加165,000人；失业率小幅变动至4.1%</span></span>
+              <span class="nbx-title"><span class="l-en">Payroll employment rises by 165,000 in October; unemployment rate changes little at 4.1%</span><span class="l-zh">10月非农就业人数增加16.5万；失业率变动不大，为4.1%</span></span>
             </div>
             <div class="nbx-meta">
               <span class="nbx-src">official</span>
               <span class="nbx-dot">·</span>
               <span class="nbx-date">Nov 6</span>
-              <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
-            </div>
-            
-          </a>
-          
-          
-          
-          
-          
-          <a class="nbx-item" href="https://www.federalreserve.gov/newsevents/pressreleases/monetary20261028a.htm" target="_blank" rel="noopener">
-            <div class="nbx-top">
-              <span class="nbx-theme"><span class="l-en">Fed</span><span class="l-zh">美联储</span></span>
-              <span class="nbx-title"><span class="l-en">Federal Reserve issues FOMC statement</span><span class="l-zh">美联储发布FOMC声明</span></span>
-            </div>
-            <div class="nbx-meta">
-              <span class="nbx-src">official</span>
-              <span class="nbx-dot">·</span>
-              <span class="nbx-date">Oct 28</span>
-              <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
-            </div>
-            
-          </a>
-          
-          
-          
-          
-          
-          <a class="nbx-item" href="https://www.npr.org/2026/11/05/nx-s1-6026480/with-stubbornly-high-interest-rates-some-are-reconsidering-adjustable-rate-mortgages" target="_blank" rel="noopener">
-            <div class="nbx-top">
-              <span class="nbx-theme"><span class="l-en">Fed</span><span class="l-zh">美联储</span></span>
-              <span class="nbx-title"><span class="l-en">With stubbornly high interest rates, some are reconsidering adjustable-rate mortgages</span><span class="l-zh">利率居高不下，一些人开始重新考虑可调利率抵押贷款</span></span>
-            </div>
-            <div class="nbx-meta">
-              <span class="nbx-src">news_rss</span>
-              <span class="nbx-dot">·</span>
-              <span class="nbx-date">Nov 5</span>
-              <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
-            </div>
-            
-          </a>
-          
-          
-          
-          
-          
-          <a class="nbx-item" href="https://www.marketwatch.com/story/the-s-p-500-has-become-a-big-ai-bet-here-are-some-simple-alternatives-3c7574a4?mod=mw_rss_topstories" target="_blank" rel="noopener">
-            <div class="nbx-top">
-              <span class="nbx-theme"><span class="l-en">Macro</span><span class="l-zh">宏观</span></span>
-              <span class="nbx-title"><span class="l-en">The S&amp;P 500 could be dangerously exposed to AI. Here are some simple alternatives.</span><span class="l-zh">标普500可能面临危险的AI敞口。以下是一些简单的替代方案。</span></span>
-            </div>
-            <div class="nbx-meta">
-              <span class="nbx-src">news_rss</span>
-              <span class="nbx-dot">·</span>
-              <span class="nbx-date">Nov 7</span>
               <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
             </div>
             
@@ -10480,7 +10511,7 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>26</td><td>2026-11-06</td>
+        <td>25</td><td>2026-11-06</td>
         <td class="l muted"></td>
       </tr>
       
@@ -10507,7 +10538,7 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-11-07</td>
+        <td>1</td><td>2026-11-08</td>
         <td class="l muted"></td>
       </tr>
       
@@ -10516,7 +10547,7 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-11-07</td>
+        <td>1</td><td>2026-11-08</td>
         <td class="l muted"></td>
       </tr>
       
@@ -10525,7 +10556,7 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>5</td><td>2026-11-06</td>
+        <td>4</td><td>2026-11-06</td>
         <td class="l muted"></td>
       </tr>
       
@@ -10552,7 +10583,7 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-11-07</td>
+        <td>1</td><td>2026-11-08</td>
         <td class="l muted"></td>
       </tr>
       
@@ -10561,7 +10592,7 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-11-07</td>
+        <td>1</td><td>2026-11-08</td>
         <td class="l muted"></td>
       </tr>
       
@@ -10570,7 +10601,7 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-11-07</td>
+        <td>1</td><td>2026-11-08</td>
         <td class="l muted"></td>
       </tr>
       
@@ -10597,7 +10628,7 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-11-07</td>
+        <td>1</td><td>2026-11-08</td>
         <td class="l muted"></td>
       </tr>
       
@@ -10606,7 +10637,7 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>6</td><td>2026-11-07</td>
+        <td>6</td><td>2026-11-08</td>
         <td class="l muted"></td>
       </tr>
       
@@ -10615,7 +10646,7 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-11-07</td>
+        <td>1</td><td>2026-11-08</td>
         <td class="l muted"></td>
       </tr>
       
@@ -10624,7 +10655,7 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-11-07</td>
+        <td>1</td><td>2026-11-08</td>
         <td class="l muted"></td>
       </tr>
       
@@ -10633,7 +10664,7 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-11-07</td>
+        <td>1</td><td>2026-11-08</td>
         <td class="l muted"></td>
       </tr>
       
@@ -10651,7 +10682,7 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>656</td><td>2026-11-07</td>
+        <td>656</td><td>2026-11-08</td>
         <td class="l muted"></td>
       </tr>
       
@@ -10678,7 +10709,7 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-11-07</td>
+        <td>1</td><td>2026-11-08</td>
         <td class="l muted"></td>
       </tr>
       
@@ -10687,7 +10718,7 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>144213</td><td>2026-11-07</td>
+        <td>144213</td><td>2026-11-08</td>
         <td class="l muted"></td>
       </tr>
       
@@ -10714,7 +10745,7 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-11-07</td>
+        <td>1</td><td>2026-11-08</td>
         <td class="l muted"></td>
       </tr>
       
@@ -10723,7 +10754,7 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-11-07</td>
+        <td>1</td><td>2026-11-08</td>
         <td class="l muted"></td>
       </tr>
       
@@ -10741,7 +10772,7 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-11-07</td>
+        <td>1</td><td>2026-11-08</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11119,7 +11150,7 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>668</td><td>2026-11-06</td>
+        <td>669</td><td>2026-11-08</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11155,7 +11186,7 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-11-07</td>
+        <td>1</td><td>2026-11-08</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11181,9 +11212,9 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
         <td class="l">hk_full_breadth</td>
         
         
-        <td class="l"><span class="pill pill-blocked"><span class="l-en">blocked</span><span class="l-zh">已屏蔽</span></span></td>
-        <td>0</td><td>—</td>
-        <td class="l muted">HK full main-board spot snapshot unavailable (Eastmoney flaky)</td>
+        <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
+        <td>0</td><td>2026-11-03</td>
+        <td class="l muted"></td>
       </tr>
       
       <tr>
@@ -11191,7 +11222,7 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-11-07</td>
+        <td>1</td><td>2026-11-08</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11227,7 +11258,7 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>185</td><td>2026-11-07</td>
+        <td>185</td><td>2026-11-08</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11281,7 +11312,7 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-11-07</td>
+        <td>1</td><td>2026-11-08</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12017,9 +12048,9 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
     </table>
       </div>
     <p class="muted"><span class="l-en">A failed source never crashes the dashboard — affected signals just lose confidence until it heals.
-       Generated 2026-11-08 10:47 UTC · <a href="aibrief.html">AI daily brief</a> ·
+       Generated 2026-11-09 02:10 UTC · <a href="aibrief.html">AI daily brief</a> ·
        <a href="history.html">history & charts</a></span><span class="l-zh">数据源失败绝不会让仪表盘崩溃 — 受影响的信号只是降低置信度，直到其恢复。
-       生成于 2026-11-08 10:47 UTC · <a href="aibrief.html">AI每日简报</a> ·
+       生成于 2026-11-09 02:10 UTC · <a href="aibrief.html">AI每日简报</a> ·
        <a href="history.html">历史与图表</a></span></p>
     </template>
   </details>
@@ -12142,7 +12173,7 @@ window.__CHART_SWAP__ = {
 <script src="risk_state_live.js?v=2b9d32d5" defer></script>
 
 <script async src="risk_envelope_live.js?v=47a6eb04"></script>
-<script defer src="risk_radar_workspace.js?v=4df5cb03"></script>
+<script defer src="risk_radar_workspace.js?v=5c4ec640"></script>
 <script async src="release_publications_live.js?v=d9a19340"></script>
 <script>
 /* Keep .help tooltips on-screen: flip below the icon when it's near the top of
