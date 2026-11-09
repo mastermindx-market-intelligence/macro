@@ -1,0 +1,341 @@
+{
+  "source": {
+    "parent": "7fd7d84f8b53ad0cd43c5175d3c149ad0d3ccf62",
+    "assets": "0bad44b2e1ef",
+    "changed": {
+      "site/crypto-r4.html": {
+        "bytes": 119112,
+        "sha256": "b085786ce6b51e9bb24cf32e347b5887037d86c3b76cad78935df27a23f54f4a",
+        "blob": "31312bcbf7b7918a0638f54c970f91f2cbebd3a5"
+      },
+      "site/vector-r4.html": {
+        "bytes": 119111,
+        "sha256": "29b9d350a3fff2fd4703eb62e8fce720b0c7330853ef00d7e1c5d17b2beabfab",
+        "blob": "596022d494dc44d4268e5a6f3b42f30f584b6cb0"
+      },
+      "site/crypto_intelligence_r4.css": {
+        "bytes": 22157,
+        "sha256": "37bb6355a82c8b1ccc3cdd43e31812c02f601439c327f9651b7f991824bd8bed",
+        "blob": "a9d6d2619b2e86c1f787534532c31b4320ad2e21"
+      },
+      "templates/crypto_intelligence_r4.css": {
+        "bytes": 22157,
+        "sha256": "37bb6355a82c8b1ccc3cdd43e31812c02f601439c327f9651b7f991824bd8bed",
+        "blob": "a9d6d2619b2e86c1f787534532c31b4320ad2e21"
+      }
+    },
+    "unchanged": {
+      "templates/crypto_intelligence_r4.js": {
+        "bytes": 64811,
+        "sha256": "917775e6c2f85b4e333bfe14472b36fc05ef28de9429314243ce49401c41bc96",
+        "blob": "e4b62c20b732e601f67765987f4c451fa65b2c28"
+      },
+      "tests/test_crypto_intelligence_r4_browser.py": {
+        "bytes": 98724,
+        "sha256": "a739c5da623c3998278a866391deb20231c32f22b20a0d08e8b72203c0d095fe",
+        "blob": "de01b0bae02b39ddbd32b946b4d141732f5bb415"
+      },
+      "site/crypto_intelligence_r4.js": {
+        "bytes": 64811,
+        "sha256": "917775e6c2f85b4e333bfe14472b36fc05ef28de9429314243ce49401c41bc96",
+        "blob": "e4b62c20b732e601f67765987f4c451fa65b2c28"
+      },
+      "site/crypto_intelligence_r4.json": {
+        "bytes": 28027,
+        "sha256": "807839328e14080902df593408c9001d958b69be70d74d09fadbdc811d859401",
+        "blob": "024278d4143ee076f4253cd295230636818e97bd"
+      },
+      "templates/crypto_intelligence_r4.html.j2": {
+        "bytes": 21370,
+        "sha256": "56302c504126e210f17f772e2eaaa169ae4120ca6cd84ace3a71e04f2bc491dd",
+        "blob": "dbf2448858a87de401435b95cabe5a265eedb3cb"
+      },
+      "scripts/build_crypto_intelligence_r4.py": {
+        "bytes": 4727,
+        "sha256": "2712bd70ada1a9e5d39d62c581feb5ad7cbdbcf530be6d41634f9797b7dd85a2",
+        "blob": "64105d836bfe13492749425bea65a3f3749e0494"
+      },
+      "tests/test_crypto_intelligence_r4.py": {
+        "bytes": 18002,
+        "sha256": "6a875ad1dc61f3f6a09b4fcd7d59279871b8953a05ec36cad906903be93717c0",
+        "blob": "88488cd27a2510ce64497ec6e24de4e59a79ec13"
+      },
+      "lib/crypto_intelligence_view.py": {
+        "bytes": 22546,
+        "sha256": "31c2e78441e3f582e89c14ec1eff70982a456bc1dfff2625a4ad2b7dbf0cf91e",
+        "blob": "a940f672db768a8142f26f4e46a6c7e22a3bfd5f"
+      },
+      "site/theme.js": {
+        "bytes": 265200,
+        "sha256": "46939917d2e233cb0d8af828d97b1e3b7d18886fd829f88d0bc08c9f3b643455",
+        "blob": "937779ef5770fa92ef93a5e6b0f7e3415f6a7cf3"
+      },
+      "site/theme.css": {
+        "bytes": 221941,
+        "sha256": "2e8611477fd3499877721f9ce9386b1c3a55e00a2ed87c4187387845775ae64a",
+        "blob": "620895319be7e3f7808439ecbae8c33c2197389f"
+      },
+      "site/illus.js": {
+        "bytes": 2752,
+        "sha256": "8e0a3779784525f15bb4a1b20e50f39ef4d0ddf243827f5ab609cfb08a69c620",
+        "blob": "dfe818277c5068fe665337531f89d4fe7976565b"
+      },
+      "site/illus.css": {
+        "bytes": 14335,
+        "sha256": "cbe6a0b4f83095ed300ee49a5d9f4d03e88005170a4792a7a9f41805a67e5f07",
+        "blob": "cda4f3e53a34c5e996b49bdac5732357ed94b2d5"
+      },
+      "site/navigation-refresh.css": {
+        "bytes": 93481,
+        "sha256": "ef068fe19adab3779512462c40ab67b3e75a997a2dc6edfae2d5a36dd604eb5c",
+        "blob": "276c1986f2a728ca59e0f9e0bc7fe269869fdff0"
+      },
+      "site/logo_config.js": {
+        "bytes": 202,
+        "sha256": "b37d33d3194c191b1bb64db3f5c33d17c7dc06a74892e4aa8ea4d50320aae215",
+        "blob": "523923f9f424a144f4a0cf3e4814e2ea36392474"
+      },
+      "site/stock-logos.js": {
+        "bytes": 16539,
+        "sha256": "cc29be531bc08e655464b6c0d384e1a46041aeb31caf7d982e926681fda7cb49",
+        "blob": "759d78f4dfb11de591d8db5cec36a91ca372fe3c"
+      },
+      "site/live_config.js": {
+        "bytes": 367,
+        "sha256": "52943e92422103557d94066ceb65f4402816322281f95e8bd376293fe14d9c10",
+        "blob": "2ad84da9b70e83cd9825a684d3c846fc81e7366d"
+      },
+      "site/live.js": {
+        "bytes": 50731,
+        "sha256": "f8cda39dd4258a5778864b3b7e0bd8b9cc685bd1f926211a72268883a937a592",
+        "blob": "7e91599afb20a69c4010d5dc36c85439381d529f"
+      }
+    },
+    "pages_only_asset_version_changed": true,
+    "retained_view_exact": true,
+    "served_css_matches": true
+  },
+  "css_inverse_recovers_parent": true,
+  "comparisons": [
+    {
+      "view": "overview",
+      "width": 320,
+      "lang": "en",
+      "text_fonts_dimensions_launcher_exact": true,
+      "scroll_extent_delta": 32,
+      "before_clear": true,
+      "after_clear": true,
+      "after_gap": 23.6875,
+      "after_focus_gap": 17.6875
+    },
+    {
+      "view": "bitcoin",
+      "width": 320,
+      "lang": "en",
+      "text_fonts_dimensions_launcher_exact": true,
+      "scroll_extent_delta": 32,
+      "before_clear": true,
+      "after_clear": true,
+      "after_gap": 23.890625,
+      "after_focus_gap": 17.890625
+    },
+    {
+      "view": "markets",
+      "width": 320,
+      "lang": "en",
+      "text_fonts_dimensions_launcher_exact": true,
+      "scroll_extent_delta": 32,
+      "before_clear": true,
+      "after_clear": true,
+      "after_gap": 24.0625,
+      "after_focus_gap": 18.0625
+    },
+    {
+      "view": "scenarios",
+      "width": 320,
+      "lang": "en",
+      "text_fonts_dimensions_launcher_exact": true,
+      "scroll_extent_delta": 32,
+      "before_clear": true,
+      "after_clear": true,
+      "after_gap": 24.21875,
+      "after_focus_gap": 18.21875
+    },
+    {
+      "view": "overview",
+      "width": 320,
+      "lang": "zh",
+      "text_fonts_dimensions_launcher_exact": true,
+      "scroll_extent_delta": 32,
+      "before_clear": true,
+      "after_clear": true,
+      "after_gap": 23.84375,
+      "after_focus_gap": 17.84375
+    },
+    {
+      "view": "bitcoin",
+      "width": 320,
+      "lang": "zh",
+      "text_fonts_dimensions_launcher_exact": true,
+      "scroll_extent_delta": 32,
+      "before_clear": true,
+      "after_clear": true,
+      "after_gap": 24.046875,
+      "after_focus_gap": 18.046875
+    },
+    {
+      "view": "markets",
+      "width": 320,
+      "lang": "zh",
+      "text_fonts_dimensions_launcher_exact": true,
+      "scroll_extent_delta": 32,
+      "before_clear": true,
+      "after_clear": true,
+      "after_gap": 24.0625,
+      "after_focus_gap": 18.0625
+    },
+    {
+      "view": "scenarios",
+      "width": 320,
+      "lang": "zh",
+      "text_fonts_dimensions_launcher_exact": true,
+      "scroll_extent_delta": 32,
+      "before_clear": true,
+      "after_clear": true,
+      "after_gap": 23.859375,
+      "after_focus_gap": 17.859375
+    },
+    {
+      "view": "overview",
+      "width": 1440,
+      "lang": "en",
+      "text_fonts_dimensions_launcher_exact": true,
+      "scroll_extent_delta": 32,
+      "before_clear": false,
+      "after_clear": true,
+      "after_gap": 17.890625,
+      "after_focus_gap": 11.890625
+    },
+    {
+      "view": "bitcoin",
+      "width": 1440,
+      "lang": "en",
+      "text_fonts_dimensions_launcher_exact": true,
+      "scroll_extent_delta": 32,
+      "before_clear": false,
+      "after_clear": true,
+      "after_gap": 18.09375,
+      "after_focus_gap": 12.09375
+    },
+    {
+      "view": "markets",
+      "width": 1440,
+      "lang": "en",
+      "text_fonts_dimensions_launcher_exact": true,
+      "scroll_extent_delta": 32,
+      "before_clear": false,
+      "after_clear": true,
+      "after_gap": 18.484375,
+      "after_focus_gap": 12.484375
+    },
+    {
+      "view": "scenarios",
+      "width": 1440,
+      "lang": "en",
+      "text_fonts_dimensions_launcher_exact": true,
+      "scroll_extent_delta": 32,
+      "before_clear": false,
+      "after_clear": true,
+      "after_gap": 17.609375,
+      "after_focus_gap": 11.609375
+    },
+    {
+      "view": "overview",
+      "width": 1440,
+      "lang": "zh",
+      "text_fonts_dimensions_launcher_exact": true,
+      "scroll_extent_delta": 32,
+      "before_clear": false,
+      "after_clear": true,
+      "after_gap": 17.890625,
+      "after_focus_gap": 11.890625
+    },
+    {
+      "view": "bitcoin",
+      "width": 1440,
+      "lang": "zh",
+      "text_fonts_dimensions_launcher_exact": true,
+      "scroll_extent_delta": 32,
+      "before_clear": false,
+      "after_clear": true,
+      "after_gap": 18.09375,
+      "after_focus_gap": 12.09375
+    },
+    {
+      "view": "markets",
+      "width": 1440,
+      "lang": "zh",
+      "text_fonts_dimensions_launcher_exact": true,
+      "scroll_extent_delta": 32,
+      "before_clear": false,
+      "after_clear": true,
+      "after_gap": 18.484375,
+      "after_focus_gap": 12.484375
+    },
+    {
+      "view": "scenarios",
+      "width": 1440,
+      "lang": "zh",
+      "text_fonts_dimensions_launcher_exact": true,
+      "scroll_extent_delta": 32,
+      "before_clear": false,
+      "after_clear": true,
+      "after_gap": 17.609375,
+      "after_focus_gap": 11.609375
+    }
+  ],
+  "captures": {
+    "overview-bottom-en-1440.png": {
+      "bytes": 200472,
+      "sha256": "79355673f889f53e13b2fc6babe85e846cdac850891e5717a7c3eb0c65a0c7b7",
+      "blob": "4dd63a163be7769e78b2fe2ee3fe78f6a6a8d874"
+    },
+    "overview-bottom-en-320.png": {
+      "bytes": 121709,
+      "sha256": "487b052f2d40fe6beb5493585fde3a0af48f18ec5cdd0f46b502052e9b948f3a",
+      "blob": "efcc8d8967e6bc0bd49b2ef5a06ca39f48a87169"
+    },
+    "overview-bottom-zh-1440.png": {
+      "bytes": 173324,
+      "sha256": "df0a4f4d425bfd766ae12e056812d260a7ee933384a1cec98022e253da0eec40",
+      "blob": "7f12b5cf9c1dd7223e03bdcae947d049282f8d28"
+    },
+    "overview-bottom-zh-320.png": {
+      "bytes": 108794,
+      "sha256": "51694c39a47dbae9e0e63f4542eb3654f6f3b0855288dbb0911524cf4111bc9c",
+      "blob": "4cc01d52dd8aca1c5b73d838b2859b7fd43a2b00"
+    }
+  },
+  "parent": {
+    "stage": "parent",
+    "contexts": 4,
+    "pages": 4,
+    "page_errors": [],
+    "blocked_external_requests": 0,
+    "blocked_websockets": 0,
+    "browser": "157.0.8103.39",
+    "seconds": 9.045
+  },
+  "candidate": {
+    "stage": "candidate",
+    "contexts": 4,
+    "pages": 4,
+    "page_errors": [],
+    "blocked_external_requests": 0,
+    "blocked_websockets": 0,
+    "browser": "157.0.8103.39",
+    "seconds": 11.045
+  },
+  "native_safe_area_inset_px": 0,
+  "nonzero_physical_safe_area_verified": false
+}

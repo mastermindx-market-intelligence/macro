@@ -1,7 +1,7 @@
 /* R4 composition. House tokens and shared navigation retain their ownership. */
 body.crypto-r4{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-ui)}
 .crypto-r4 *{box-sizing:border-box}
-.cri{max-width:1320px;width:calc(100% - 48px);margin:0 auto;padding:24px 0 64px}
+.cri{max-width:1320px;width:calc(100% - 48px);margin:0 auto;padding:24px 0 calc(96px + env(safe-area-inset-bottom,0px))}
 .cri button,.cri input,.cri select,.cri-dialog button,.cri-dialog select{font:inherit}
 .cri button,.cri-dialog button{cursor:pointer}
 .cri [hidden],.cri-dialog [hidden]{display:none!important}

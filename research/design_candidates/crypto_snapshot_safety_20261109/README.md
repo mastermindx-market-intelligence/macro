@@ -1,6 +1,21 @@
 # Crypto R4: safe saved cases and clear asset comparisons
 
-## Current phase — clear Overview fields and aligned section headings
+## Current phase — footer actions clear the shared launcher
+
+The existing Crypto content owner now reserves **96px plus the safe-area bottom inset**, making the final model/methods control and its keyboard focus outline fully reachable above the unchanged shared launcher.
+
+**All16 view/locale/width combinations pass** across four fresh native contexts/pages: Overview, Bitcoin, Markets and Scenarios; English/Chinese;320/1440px. All16 model-panel open→Close paths restore the originating view and footer focus. Eight blocked parent desktop combinations are now clear. Zero errors or external/WebSocket traffic; four final viewport captures inspected.
+
+One CSS declaration and the candidate pages' asset-version references change. Seventeen other inputs remain exact. Before/after proof preserves content dimensions, text, fonts and launcher geometry; scroll extent increases by exactly32px. A nonzero physical-device safe area is not claimed.
+
+- [Sizing, ownership and builder acceptance](FOOTER_CLEARANCE.md)
+- [Native comparisons and source receipt](footer/PUBLICATION_RECEIPT.json)
+- [Parent](footer/PARENT_READBACK.json) and [candidate](footer/CANDIDATE_READBACK.json) measurements
+- [Readback script](footer/READBACK.py) and [inspected viewport captures](footer/captures)
+
+Next: qualify asset quotes and show useful small positive prices without rounding them to zero.
+
+## Prior phase — clear Overview fields and aligned section headings
 
 Overview now labels the comparison and risk readings explicitly in both languages, keeping two compact wrap groups and the existing Inspect action. Missing comparison evidence is visibly attached to **Vs BTC / 相对 BTC**. Section headings use zero H3 margins, aligning Beyond Bitcoin with Explore markets and removing unintended spacing.
 
@@ -13,7 +28,7 @@ The template, CSS and two retained-data candidate pages change; 16 other inputs 
 - [Final native measurements](overview/FINAL_READBACK.json) and [inspected captures](overview/captures)
 - [Reproducible readback script](overview/FINAL_READBACK.py) and [source receipt](overview/PUBLICATION_RECEIPT.json)
 
-Next: correct the demonstrated desktop footer clearance, then qualify asset quotes and prevent small valid prices from displaying as zero. Fallback-name duplication remains a bounded consumer finding.
+The current footer-clearance phase above implements that measured repair. Quote validity/precision and fallback-name duplication remain bounded consumer findings.
 
 ## Prior phase — qualified relative values and bilingual states
 
