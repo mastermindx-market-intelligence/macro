@@ -1,0 +1,35 @@
+{
+  "schema": "tiingo_account_qualification_observation.v1",
+  "date_utc": "2026-10-11",
+  "method": "Computer Use signed-in account observations and existing collector request",
+  "account_api_key_matches_provisioned_collector_key": true,
+  "key_comparison": "SHA-256 equality; browser hash algorithm checked against abc test vector",
+  "credential_disclosed": false,
+  "organization_plan_ui": "ACTIVE",
+  "boats_realtime_addon_ui": "ACTIVE",
+  "base_plan_business_advanced": "CHAIRMAN_ATTESTED; exact base plan name not displayed by current-plan UI",
+  "hourly_request_allocation": 20000,
+  "daily_request_allocation": 150000,
+  "monthly_bandwidth_allocation_gb": 100,
+  "quota_snapshot_after_initial_68_requests": {
+    "hourly_requests_left": 19932,
+    "daily_requests_left": 149932,
+    "bandwidth_left_gb": 99.96
+  },
+  "fundamentals_permanent_id_diagnostic": {
+    "source": "fund-statements",
+    "symbol": "US000000000710",
+    "startDate": "2023-10-12",
+    "endDate": "2026-10-09",
+    "asReported": "true",
+    "http_status": 400,
+    "response_bytes_bounded": 216,
+    "response_body_sha256": "f9bb527e6ddde0c2f1f00cd6b7723e0ea2fc44a935e358c5d201fb53185f7f66",
+    "matched_error_terms": ["free", "dow 30", "limit"],
+    "response_body_disclosed": false
+  },
+  "full_fundamentals_activation": "UNVERIFIED; actual current-key response remains evaluation-scoped",
+  "vendor_support_message_sent": false,
+  "subscription_changed": false,
+  "publication_or_runtime_admission_proven": false
+}

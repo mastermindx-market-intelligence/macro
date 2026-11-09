@@ -121,26 +121,32 @@ import logging
 import os
 import sys
 import tempfile
-from datetime import datetime, timezone
+from datetime import date, datetime, time, timezone
 from pathlib import Path
 from typing import Any
 
 _REPO_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(_REPO_ROOT))
 
-from engine.risk_envelope import compose_envelope, canonical_json  # noqa: E402
+from engine.risk_envelope import (
+    compose_envelope, canonical_json, live_market_freshness,
+    LIVE_MARKET_FUTURE_TOLERANCE_S as _FUTURE_TOLERANCE_S,
+)  # noqa: E402
 from lib import config  # noqa: E402
 from lib import nyse_calendar  # noqa: E402
 from scripts.build_risk_envelope import (  # noqa: E402
     _leadership_crack_read,
     _market_state_read,
     _risk_radar_read,
+    _rotation_read,
+    _recorded_market_transition,
+    _CONTEXT_NOT_PROVIDED,
+    _NATIVE_MARKET_FIELDS,
 )
 
 log = logging.getLogger(__name__)
 
 MARKET = "US"
-_FUTURE_TOLERANCE_S = 120.0
 
 _DEBOUNCE_TICKS_DEFAULT = 3
 _STALE_AFTER_MIN_DEFAULT = 5.0
@@ -152,7 +158,8 @@ def _read_json(path: Path) -> dict[str, Any] | None:
     try:
         if not path.exists():
             return None
-        return json.loads(path.read_text(encoding="utf-8"))
+        parsed = json.loads(path.read_text(encoding="utf-8"))
+        return parsed if isinstance(parsed, dict) else None
     except Exception as e:  # noqa: BLE001 — a bad source becomes a missing one
         log.warning("live_risk_envelope: source unreadable %s (%s)", path, e)
         return None
@@ -192,6 +199,13 @@ def leadership_crack_path(root: Path | None = None) -> Path:
 
 def settled_envelope_path(root: Path | None = None) -> Path:
     return (root or _REPO_ROOT) / "data" / "risk_envelope" / "latest.json"
+
+
+def settled_public_path(root: Path | None = None) -> Path:
+    """The PUBLIC settled copy (scripts/build_risk_envelope.py writes it beside the
+    durable data/risk_envelope/latest.json). EW-P5 S01/S02/S12: a same-session
+    settle counts only when this copy is paired with the durable one."""
+    return (root or _REPO_ROOT) / "site" / "riskdata" / "risk_envelope.json"
 
 
 def out_path(root: Path | None = None) -> Path:
@@ -248,9 +262,61 @@ def _normalize_event_time(raw: Any, now: datetime) -> str | None:
         return None
     if dt.tzinfo is None:
         return None  # F5: naive clock -> never assumed UTC, dropped
-    if (dt - now).total_seconds() > _FUTURE_TOLERANCE_S:
-        return None  # F6: defense-in-depth future-clock guard
-    return _iso_z(dt)
+    try:
+        if (dt - now).total_seconds() > _FUTURE_TOLERANCE_S:
+            return None  # F6: defense-in-depth future-clock guard
+        return _iso_z(dt)
+    except (ValueError, OverflowError):
+        return None  # malformed offset must not abort the source projection
+
+
+# EW-P5 S02/S12: the settled revisions that may settle a session. A label alone
+# never settles it (see _settled_qualification).
+_SETTLED_REVISIONS = frozenset({"settled", "corrected"})
+# The regular NYSE close. A settled copy produced before 16:00 America/New_York on
+# its own source session was produced while that session was still open. On a half
+# day this keeps the live overlay a little longer, never shorter.
+_SETTLE_CLOSE_ET = time(16, 0)
+
+
+def _settled_qualification(settled: dict[str, Any], public: dict[str, Any] | None,
+                           session: str | None) -> dict[str, Any]:
+    """Whether the durable settled copy may settle the live session it names.
+
+    Consulted only when the live session L equals the settled session S. ALL must
+    hold, checked in this order; the first failure is the published reason:
+      1. `revision` is "settled" or "corrected";
+      2. `produced_at` parses, is tz-aware and is at or after 16:00
+         America/New_York on the date `session`;
+      3. the public copy exists and carries the same `source_session` and
+         `bundle_id` as the durable copy.
+    No wall clock is read here: `produced_at` is the settled builder's own stamp.
+    """
+    rev = settled.get("revision")
+    if rev not in _SETTLED_REVISIONS:
+        return {"qualified": False, "reason": f"revision {rev!r} is not settled or corrected"}
+    raw = settled.get("produced_at")
+    produced: datetime | None
+    try:
+        produced = datetime.fromisoformat(str(raw)) if raw else None
+    except (TypeError, ValueError):
+        produced = None
+    if produced is None or produced.tzinfo is None:
+        return {"qualified": False, "reason": "produced_at is missing, unparseable or naive"}
+    try:
+        close = datetime.combine(date.fromisoformat(str(session)), _SETTLE_CLOSE_ET,
+                                 tzinfo=nyse_calendar.ET)
+    except (TypeError, ValueError):
+        return {"qualified": False, "reason": "source_session is not an ISO date"}
+    if produced < close:
+        return {"qualified": False,
+                "reason": "produced_at is before 16:00 America/New_York on the source session"}
+    if not public:
+        return {"qualified": False, "reason": "public settled copy is missing"}
+    if public.get("source_session") != session or public.get("bundle_id") != settled.get("bundle_id"):
+        return {"qualified": False,
+                "reason": "public settled copy does not match the durable source_session and bundle_id"}
+    return {"qualified": True}
 
 
 def _live_session(built_dt: datetime | None) -> str | None:
@@ -273,16 +339,11 @@ def market_freshness(
     never drift apart. `usable` folds live_active, the stale_after_min horizon, and
     a wall-clock skew guard on the carrying artifact's own `built` clock (>120s
     ahead of wall-clock is refused, same as the general clock law)."""
-    live_active = bool((risk_state_doc or {}).get("live_active"))
-    built_dt = _parse_built((risk_state_doc or {}).get("built"))
-    fresh_enough = bool(built_dt) and (now - built_dt).total_seconds() <= stale_after_min * 60.0
-    future_artifact = bool(built_dt) and (built_dt - now).total_seconds() > _FUTURE_TOLERANCE_S
-    usable = live_active and fresh_enough and not future_artifact
-    return {
-        "live_active": live_active, "built_dt": built_dt,
-        "fresh_enough": fresh_enough, "future_artifact": future_artifact,
-        "usable": usable,
-    }
+    return live_market_freshness(
+        live_active=bool((risk_state_doc or {}).get("live_active")),
+        built_dt=_parse_built((risk_state_doc or {}).get("built")),
+        stale_after_min=stale_after_min, now=now,
+    )
 
 
 def _is_future(as_of: str | None, ceiling: str | None, wall_now: datetime) -> bool:
@@ -313,6 +374,8 @@ def build_live_sources(
     live_session: str | None,
     market_usable: bool,
     now: datetime,
+    rotation_doc: Any = _CONTEXT_NOT_PROVIDED,
+    market_transition: dict[str, Any] | None = None,
 ) -> list:
     """Reshape the live plane's own artifacts into the SETTLED adapters' doc shapes
     and call them with an explicit `stale_override`. Field re-housing only — no
@@ -325,6 +388,7 @@ def build_live_sources(
     too, so source-level usability and the wrapper's `live_active` can never
     disagree with each other."""
     L, S = live_session, settled_source_session
+    context_enabled = rotation_doc is not _CONTEXT_NOT_PROVIDED
 
     market_stale_override = not market_usable
     # "radar live read carries the same freshness verdict as its carrying artifact"
@@ -357,6 +421,16 @@ def build_live_sources(
                 "capped": False,
                 "freshness": {"stale": market_stale_override},
             }
+            if context_enabled:
+                # Source-native attribution survives the fast-lane adapter. Missing
+                # provenance stays absent; 'live_fast_lane' is a delivery path, not
+                # evidence that the native score was uncapped or blend-derived.
+                for key in _NATIVE_MARKET_FIELDS:
+                    if key in live_blk:
+                        ms_doc[key] = live_blk[key]
+                for key in ("score_source", "capped"):
+                    if key not in live_blk:
+                        ms_doc.pop(key, None)
             radar_raw = live_blk.get("radar") or {}
             if radar_raw.get("state") is not None:
                 radar_doc = {
@@ -369,9 +443,12 @@ def build_live_sources(
                 }
 
     measured = (
-        _market_state_read(ms_doc, L, stale_override=market_stale_override)
+        _market_state_read(ms_doc, L, stale_override=market_stale_override,
+                           context_enabled=context_enabled, transition_context=market_transition,
+                           now=now)
         if ms_doc is not None
-        else _market_state_read(None, L)
+        else _market_state_read(None, L, context_enabled=context_enabled,
+                                transition_context=market_transition, now=now)
     )
     radar = (
         _risk_radar_read(radar_doc, L, L, stale_override=radar_stale_override)
@@ -395,7 +472,10 @@ def build_live_sources(
             S, stale_override=True,
         )
 
-    return [measured, leadership, radar]
+    sources = [measured, leadership, radar]
+    if context_enabled:
+        sources.append(_rotation_read(rotation_doc, L, now=now))
+    return sources
 
 
 def _advance_transition(
@@ -608,6 +688,8 @@ def build(root: Path | None = None, now: datetime | None = None,
     risk_state_doc = _read_json(risk_state_path(root))
     leadership_doc = _read_json(leadership_crack_path(root))
     settled = _read_json(settled_envelope_path(root)) or {}
+    rotation_doc = _read_json(root / "site" / "marketdata" / "rotation_events.json")
+    market_state_doc = _read_json(root / "data" / "market_state" / "latest.json")
     S = settled.get("source_session")
     B = settled.get("bundle_id")
     settled_stage = (settled.get("hazard_summary") or {}).get("stage")
@@ -634,6 +716,11 @@ def build(root: Path | None = None, now: datetime | None = None,
         live_session=L,
         market_usable=fresh["usable"],
         now=now,
+        rotation_doc=rotation_doc,
+        market_transition=_recorded_market_transition(
+            root / "data" / "market_state" / "forward_log.jsonl", S,
+            now=now, current=market_state_doc,
+        ),
     )
 
     # OBSERVATION CLOCK: `now`, captured/injected above. PRODUCTION CLOCK: sampled
@@ -663,14 +750,24 @@ def build(root: Path | None = None, now: datetime | None = None,
     )
     candidate_stage = envelope["hazard_summary"]["stage"]
 
+    # EW-P5 S02/S12: at L == S the durable copy settles the session only when it is
+    # qualified (settled/corrected revision, produced at or after the close, paired
+    # public copy). An unqualified same-session file never suppresses the overlay.
+    settled_qualification: dict[str, Any] | None = None
+    if not future_refused and L is not None and S is not None and L == S:
+        settled_qualification = _settled_qualification(
+            settled, _read_json(settled_public_path(root)), S)
+
     if future_refused:
         precedence = "settled"
     elif L is None or S is None:
         precedence = "settled"
     elif L > S:
         precedence = "live"
+    elif L == S and not (settled_qualification or {}).get("qualified"):
+        precedence = "live"  # unqualified same-session settle: the overlay stays live
     else:
-        precedence = "settled"  # L == S (just settled) or L < S (older than settled)
+        precedence = "settled"  # qualified L == S (just settled) or L < S (older than settled)
 
     wrapper_live_active = bool(fresh["usable"] and precedence == "live")
 
@@ -686,7 +783,7 @@ def build(root: Path | None = None, now: datetime | None = None,
         stale_reason = "stale (older than stale_after_min)"
     elif L is not None and S is not None and L < S:
         stale_reason = "older than settled"
-    elif L is not None and S is not None and L == S:
+    elif L is not None and S is not None and L == S and precedence == "settled":
         stale_reason = "session already settled"
     else:
         stale_reason = "not live"
@@ -715,6 +812,8 @@ def build(root: Path | None = None, now: datetime | None = None,
         "stale_after_min": stale_after_min,
         "precedence": precedence,
         "overlays": {"settled_bundle_id": B, "settled_source_session": S},
+        # EW-P5 S02/S12: null unless L == S; then whether the settled copy qualified.
+        "settled_qualification": settled_qualification,
         "live_transition": live_transition,
         "clocks": {
             # SOURCE EVENT CLOCK (GD-3R1): the real source-market quote clock —

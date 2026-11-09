@@ -362,13 +362,17 @@ _BLIND_CAVEAT = (
 )
 _BLIND_CAVEAT_ZH = "对缓慢/期权平静式下跌无效（例如未能领先 2026-06-24 的下跌）。"
 _IMPULSE_EDGE = (
-    "Forward de-risk window from a verified LEADING precursor cross "
-    "(impulse radar). Holdout-validated, leak-free; act early — the "
-    "edge decays in ~2-4 days. " + _BLIND_CAVEAT
+    "Forward de-risk window from a precursor cross in the impulse radar "
+    "(a Deribit DVOL range jolt or a SOPR profit-take spike). Research-stage: "
+    "the radar's re-check zeroes the score of a leg that fails its 2024+ lift "
+    "floor or permutation test. "
+    "Any effect fades in ~2-4 days. " + _BLIND_CAVEAT
 )
 _IMPULSE_EDGE_ZH_LIVE = (
-    "来自经验证的领先前兆突破的前瞻减仓窗口（脉冲雷达）。"
-    "已通过留出样本、无前视；应尽早行动 — 优势在约 2-4 天内衰减。"
+    "来自脉冲雷达前兆突破的前瞻减仓窗口（Deribit DVOL 区间跳升或 SOPR 获利了结骤升）。"
+    "处于研究阶段：若某条腿未通过 2024 年以来的提升倍数下限或置换检验，"
+    "雷达复核时其分值归零。"
+    "任何效果约 2-4 天内衰减。"
     + _BLIND_CAVEAT_ZH
 )
 # Render fixture is a superstring of the live producer so a ZH-only 200/120
@@ -445,6 +449,7 @@ def test_impulse_radar_edge_carries_the_blind_caveat_past_the_old_cap():
     assert _BLIND_CAVEAT_ZH in edge_zh
     assert len(edge) > 120
     assert edge[:120] != edge          # the old cap would have amputated it
+    assert edge == _IMPULSE_EDGE
     assert edge_zh == _IMPULSE_EDGE_ZH_LIVE
     assert _IMPULSE_EDGE_ZH.startswith(edge_zh)
 
@@ -491,6 +496,7 @@ def test_page_keeps_long_bodies_and_the_blind_caveat():
     assert "if (field(v, 'note'))" in js
     assert ".slice(0, 200)" not in js and ".slice(0, 120)" not in js
 
+
 def test_signal_rows_preserve_long_headlines_and_wrap_instead_of_midword_slicing():
     """The V2 queue replaces the old storyline truncation with complete wrapping rows."""
     template = (config.ROOT / "templates" / "alerts.html.j2").read_text()
@@ -535,6 +541,7 @@ def test_signal_rows_preserve_long_headlines_and_wrap_instead_of_midword_slicing
     assert ".page-alerts .acx-row-main" in css and "overflow-wrap:anywhere" in css
 
 
+
 def test_macro_raw_rewrites_transition_enum_in_detail(tmp_path, monkeypatch):
     import pandas as pd
     monkeypatch.setattr(at.config, "data_dir", lambda: tmp_path)
@@ -567,3 +574,44 @@ def test_enum_en_maps_nfci_and_transition():
     assert at.enum_zh("cycle", "late") == "晚期"
     assert at.enum_en("nfci", "brand_new") == "brand_new"
     assert at.enum_en("nfci", None) is None
+
+# Watchlist read truth: only synthetic files, never the committed event store.
+import json as _watchlist_json
+import pytest as _watchlist_pytest
+from engine import watchlist_alerts as _watchlist_reader
+
+
+@_watchlist_pytest.mark.parametrize('bad', ['{private-marker', 'null', '[]', 'true', '7', '"private-marker"'])
+@_watchlist_pytest.mark.parametrize('placement', ['only', 'before', 'after'])
+def test_watchlist_store_corruption_is_unavailable(tmp_path, monkeypatch, caplog, bad, placement):
+    valid = _watchlist_json.dumps({'type': 'buy_zone_enter', 'asset': 'SYNTH',
+                                  'ts': '2026-06-14', 'headline': 'Synthetic event'})
+    rows = {'only': [bad], 'before': [bad, valid], 'after': [valid, bad]}[placement]
+    path = tmp_path / 'watchlist.jsonl'
+    path.write_text('\n'.join(rows), encoding='utf-8')
+    monkeypatch.setattr(_watchlist_reader, '_path', lambda: path)
+    result = at._jsonl_raw('watchlist', TODAY, TODAY, at._WATCHLIST_TIER)
+    assert result['state'] == at.READ_UNAVAILABLE
+    assert result['events'] == []
+    assert 'private-marker' not in caplog.text
+    assert 'private-marker' not in (result['reason'] or '')
+    with _watchlist_pytest.raises(ValueError):
+        _watchlist_reader.load_events()
+
+
+@_watchlist_pytest.mark.parametrize('content,expected', [
+    (None, at.READ_NO_COVERAGE), ('', at.READ_OK_ZERO), (' \n\t\n', at.READ_OK_ZERO),
+    (_watchlist_json.dumps({'type':'buy_zone_enter','asset':'SYNTH','ts':'2026-06-14'}), at.READ_OK),
+    (_watchlist_json.dumps({'type':'buy_zone_enter','asset':'SYNTH','ts':'2026-06-01'}), at.READ_OK_ZERO),
+])
+def test_watchlist_store_valid_empty_missing_truth(tmp_path, monkeypatch, content, expected):
+    path = tmp_path / 'watchlist.jsonl'
+    if content is not None:
+        path.write_text(content, encoding='utf-8')
+    monkeypatch.setattr(_watchlist_reader, '_path', lambda: path)
+    result = at._jsonl_raw('watchlist', TODAY, TODAY, at._WATCHLIST_TIER)
+    assert result['state'] == expected
+    assert len(result['events']) == (1 if expected == at.READ_OK else 0)
+    if result['events']:
+        assert result['events'][0]['asset'] == 'SYNTH'
+        assert result['events'][0]['tier'] == 'context'

@@ -130,3 +130,15 @@ def test_client_surfaces_structured_related_observations_without_fake_confirmati
                  'relatedAlertId'):
         assert text in source
     assert 'acx-related-observation' in source
+
+
+def test_inspector_keeps_source_evidence_without_restoring_public_study_navigation():
+    """The private research destination is not a public alert navigation target."""
+    source = (ROOT / "templates" / "alert_center.js").read_text()
+    assert "Inspect the study" not in source
+    assert "查看研究" not in source
+    assert "safeHref(v.link)" not in source
+    assert "safeHref(a.link)" in source
+    assert "field(v, 'note')" in source
+    assert "A family-level study is not a probability for this individual alert." in source
+    assert "类别研究并非此条警报的成功概率。" in source

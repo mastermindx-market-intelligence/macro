@@ -26,7 +26,6 @@ from .contracts import (
 from .promotion import PROMOTION_POLICY_SCHEMA, load_promotion_policy, promotion_policy_sha256, validate_promotion_policy
 from .story_packets import (
     STORY_PACKET_MANIFEST_SCHEMA,
-    STORY_PACKET_SCHEMA,
     build_story_packet,
     evidence_receipts_from_manifest,
     load_evidence_event,
@@ -68,6 +67,8 @@ def _packet_body(
     if len(body) != receipt["bytes"] or sha256_bytes(body) != receipt["sha256"]:
         raise ContractError(f"story packet object receipt mismatch: {object_key}")
     validate_story_packet(payload, policy=policy)
+    if payload["schema"] != receipt["schema"]:
+        raise ContractError("story packet schema differs from its file receipt")
     return payload, body
 
 
@@ -125,7 +126,7 @@ def _packet_file_receipt(packet: Mapping[str, Any], body: bytes) -> dict[str, An
     return {
         "sha256": digest,
         "bytes": len(body),
-        "schema": STORY_PACKET_SCHEMA,
+        "schema": str(packet["schema"]),
         "object_key": f"objects/{digest}.json",
     }
 
@@ -253,6 +254,7 @@ def build_story_packet_generation(
     prior_store_dir: str | Path | None = None,
     max_new_events: int | None = None,
     prior_body_keys: set[str] | None = None,
+    dossier_root: Path | None = None,
 ) -> tuple[dict[str, Any], dict[str, bytes]]:
     """Build an immutable aggregate marker plus only newly needed packet bytes.
 
@@ -272,6 +274,10 @@ def build_story_packet_generation(
     index + immutable receipt and never read from disk.  ``None`` retains the
     full local-replay behavior for callers that intentionally hydrate the whole
     store.
+
+    dossier_root explicitly opts newly built Tier-B packets into the linked
+    v2 contract, freezing one committed page receipt from that repository. It
+    never upgrades unchanged packets. The unattended projector leaves it unset.
     """
     evidence_root = Path(evidence_dir)
     evidence_manifest = _canonical_marker(evidence_root / "manifest.json", label="evidence root marker")
@@ -352,6 +358,7 @@ def build_story_packet_generation(
                 if prior_packet is not None and prior is not None
                 else None
             ),
+            dossier_root=dossier_root,
         )
         body = canonical_json_bytes(packet)
         receipt = _packet_file_receipt(packet, body)
@@ -462,6 +469,7 @@ def write_story_packet_generation(
     prior_manifest: object | None = None,
     max_new_events: int | None = None,
     prior_body_keys: set[str] | None = None,
+    dossier_root: Path | None = None,
 ) -> tuple[Path, dict[str, Any]]:
     """Write immutable objects/generation, then atomically advance the marker."""
     root = Path(out_dir)
@@ -475,6 +483,7 @@ def write_story_packet_generation(
         prior_store_dir=root,
         max_new_events=max_new_events,
         prior_body_keys=prior_body_keys,
+        dossier_root=dossier_root,
     )
     for object_key, body in sorted(artifacts.items()):
         _write_immutable_object(root, object_key, body)

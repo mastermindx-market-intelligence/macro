@@ -1,0 +1,88 @@
+{
+  "source_pin": "52abe2e183833a216267942a99513e6c9cbe062f",
+  "purpose": "Actual Stage reader and publisher verification with pinned producer artifacts",
+  "source_missing": [],
+  "files": {
+    "data/stage_analysis/altdata_trending.json": {
+      "git_blob": "79f507ee8397eaf8368e674a44db2b565b99476d",
+      "bytes": 1194,
+      "sha256": "4c9d6abc09b72726199fdb8c9e4897337f42621a8f2d5ca5e7a8893df75c3354"
+    },
+    "data/stage_analysis/context/latest.json": {
+      "git_blob": "1aa5a828b4c45d0707c304632dbdf7511820066e",
+      "bytes": 702850,
+      "sha256": "dd559f5ee91824e48d3d5641428108a6544f2ee7335ecb1b00a3dce14f1c31c7"
+    },
+    "data/stage_analysis/earnings_compare.json": {
+      "git_blob": "fe4c27af6188bd0927bcc97e3a6f8d1d4be111a8",
+      "bytes": 1268550,
+      "sha256": "f3add86b238a25367b56b7ef288a984c3cfa64bc078b4e670b84c6c98a093b36"
+    },
+    "data/stage_analysis/earnings_season.json": {
+      "git_blob": "33504b33f7e3989ac04790abaadab88a8aa136f6",
+      "bytes": 23870,
+      "sha256": "e04ed4d9f2ec48f7be756a03b6a2343cf29d0da80f83e4f176d435a33db9a2a3"
+    },
+    "data/stage_analysis/earnings_table.json": {
+      "git_blob": "538b0dc1a5cc8e1a619d7dd1024565c979863894",
+      "bytes": 599853,
+      "sha256": "606962ba809656a6c80aecaa3ab7cc2d330305cd43e9d45e84c636bc1ae58130"
+    },
+    "data/stage_analysis/ec_industry.json": {
+      "git_blob": "4b3ad49c066ced5425ceef1f793fb6af043f09f7",
+      "bytes": 442511,
+      "sha256": "881971e39b8eeb0efec7d7c0543d271a5b61bd11d0672c910c4e4878442b3f99"
+    },
+    "data/stage_analysis/ec_industry_heatmap.json": {
+      "git_blob": "d3a85e241b70423c8bd1a57559f3573ba16fcf4c",
+      "bytes": 180242,
+      "sha256": "ee5cb22e19bf4ac9b081ebf42be350f1fa0a62af5d3623aa7550a0d1396475fb"
+    },
+    "data/stage_analysis/industry_flows.json": {
+      "git_blob": "ca464a2a61767fc8fdfcf8af4b0dec52d4126ab4",
+      "bytes": 104067,
+      "sha256": "0686e7bb058d19459cfad343f11da40e6bf65f33e135fe7f949ad4bd9bf634d1"
+    },
+    "data/stage_analysis/industry_heatmap.json": {
+      "git_blob": "805fd80cfdf48a6f68deb22d916668e59a075690",
+      "bytes": 9273,
+      "sha256": "815f5d1247283601dd1dcb4b42e92db6962e0d9f8ba7e2c543f0335f6cd93883"
+    },
+    "data/stage_analysis/industry_name_pctile.json": {
+      "git_blob": "24804d0b82ea517a367be1c7af12f081d090adf5",
+      "bytes": 21296,
+      "sha256": "46abeb9de2459b8c0af953039157df416a11a2b7c81f8246e9458d60ed53c023"
+    },
+    "data/stage_analysis/industry_ranks.json": {
+      "git_blob": "c987c7409c216480033c6e243f684e3caba479eb",
+      "bytes": 17141,
+      "sha256": "2d6115d5cd4f7c0e9c3d049956260d3f7911c3e63fadfd99e194ae83814e69e8"
+    },
+    "data/stage_analysis/research_index.json": {
+      "git_blob": "5ffec0b23c34ce55c67baaf476937466f599df7a",
+      "bytes": 857,
+      "sha256": "1651583352f01137456a1dfe69f942437d2ce1d7b3863e4e76658d3fe6a266ba"
+    },
+    "data/stage_analysis/screener.json": {
+      "git_blob": "c23cc1ad9f13d23432e4ab3ef99972b3dbe6cb61",
+      "bytes": 1698798,
+      "sha256": "8722fe340e77b82faee4ba67858a345bd61721fad9d026a14c31cb28a47a6989"
+    },
+    "data/stage_analysis/stage_board_daily.json": {
+      "git_blob": "7ac07770619532408b655fbe14bb987495e3fdff",
+      "bytes": 1699048,
+      "sha256": "34abc5cdbd6b28be41179fc0a76512942589e2e371fb42f88e2450f3813664f7"
+    },
+    "data/stage_analysis/stage_board_weekly.json": {
+      "git_blob": "b7b5bba477f6f52c63b90dac9605c71a634ecc55",
+      "bytes": 1698807,
+      "sha256": "1dbd8951637b8cb8e9cb1d15b4f90d2243d2de5f03c19f2e3104055f74c5d357"
+    }
+  },
+  "publication": {
+    "copied": 14,
+    "revoked": 0,
+    "explicitly_stale": 0,
+    "target": "owned temporary public snapshot"
+  }
+}

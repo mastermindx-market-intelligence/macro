@@ -275,8 +275,6 @@
     if (metrics.length) pairs(validation, metrics);
     for (const pair of v.extra || []) if (Array.isArray(pair) && pair.length === 2) pairs(validation, [pair]);
     if (field(v, 'note')) { validation.append(node('h3', tr('Source research note', '来源研究说明')), node('p', field(v, 'note'))); }
-    const validationHref = safeHref(v.link);
-    if (validationHref) { const link = node('a', tr('Inspect the study →','查看研究 →'), 'acx-text-link'); link.href = validationHref; validation.append(link); }
     validation.append(node('p', tr('A family-level study is not a probability for this individual alert.','类别研究并非此条警报的成功概率。')));
     const priority = section(body, 'Why it is in this position', '为何排在此处');
     priority.append(node('p', tr('Attention priority ','关注优先级 ') + (finite(a.priority) ? a.priority : '—') + tr(' · not a trading score',' · 并非交易评分')));
