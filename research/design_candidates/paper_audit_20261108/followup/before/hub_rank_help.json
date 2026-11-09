@@ -1,0 +1,7 @@
+{
+  "fileId": "01M2VWK62FA5S4VVF6G7SBPE5J",
+  "pageId": "p-3-0",
+  "trigger": "(\n    <div id=\"75X-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-ink-link)', fontFamily: 'var(--font-ui)', fontSize: '13px', lineHeight: '16px', overflowWrap: 'anywhere' }}>\n      How ranking works ↗\n    </div>\n  )",
+  "definition": "(\n    <div id=\"72P-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: 'var(--font-ui)', fontSize: '15px', lineHeight: '24px' }}>\n      <span style={{ fontWeight: 700 }}>Two indices, one separate stage.</span> The main value is opportunity_score. Edge index is edge_remaining × 100. Early / Emerging / Distribution is the categorical stage, not the numeric edge index. Missing desk direction does not by itself prove missing source coverage.\n    </div>\n  )",
+  "decision": "Use a named same-context explanation destination. Preserve published source order, main opportunity_score, separate edge_remaining*100 and categorical stage. Separate US/China methods. New EN/ZH help inherits existing origin-return owner; no refresh, ranking computation, save or entry permission."
+}
