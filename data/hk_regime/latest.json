@@ -2,11 +2,11 @@
   "date": "2026-11-06",
   "quad": "Q3",
   "quad_name": "Stagflation",
-  "growth_score": -0.25,
+  "growth_score": -0.4,
   "inflation_score": 0.667,
-  "growth_confidence": 0.15,
+  "growth_confidence": 0.267,
   "inflation_confidence": 0.444,
-  "confidence": 0.297,
+  "confidence": 0.356,
   "liquidity_overlay": "contracting",
   "cycle_tag": "mid",
   "pending_quad": NaN,
@@ -15,6 +15,7 @@
     "growth_pmi_mfg",
     "growth_tech_hsi",
     "growth_cyclical_defensive",
+    "growth_global_growth",
     "inflation_cpi_direction",
     "inflation_ppi_direction"
   ],
@@ -23,42 +24,42 @@
     "growth_breadth_direction",
     "inflation_inflation_beta_basket"
   ],
-  "global_score": -0.462,
+  "global_score": -0.731,
   "risk_state": "Risk-off",
   "peg_state": "weak-side (outflow)",
-  "peg_distance": 0.888,
+  "peg_distance": 0.887,
   "global_snapshot": {
-    "score": -0.462,
+    "score": -0.731,
     "state": "Risk-off",
     "factors": [
       {
         "key": "dxy",
         "label": "US Dollar (DXY)",
-        "z": -0.41,
+        "z": -0.22,
         "sign": -1,
-        "risk": "on",
-        "level": 101.705
+        "risk": "neutral",
+        "level": 102.3
       },
       {
         "key": "vix",
         "label": "Volatility (VIX)",
-        "z": 1.4,
+        "z": 1.25,
         "sign": -1,
         "risk": "off",
-        "level": 28.18
+        "level": 25.64
       },
       {
         "key": "spy",
         "label": "S&P 500",
-        "z": -1.38,
+        "z": -1.46,
         "sign": 1.0,
         "risk": "off",
-        "level": 733.0
+        "level": 735.29
       },
       {
         "key": "copper_gold",
         "label": "Copper / Gold",
-        "z": -0.41,
+        "z": -0.73,
         "sign": 1.0,
         "risk": "off",
         "level": 0.0015
@@ -66,18 +67,18 @@
       {
         "key": "usdcny",
         "label": "USD / CNY",
-        "z": -0.79,
+        "z": -0.16,
         "sign": -1,
-        "risk": "on",
-        "level": 6.6718
+        "risk": "neutral",
+        "level": 6.688
       },
       {
         "key": "eem",
         "label": "EM equity (EEM)",
-        "z": -1.7,
+        "z": -1.74,
         "sign": 1.0,
         "risk": "off",
-        "level": 59.48
+        "level": 59.33
       },
       {
         "key": "vhsi",
@@ -89,7 +90,7 @@
       }
     ],
     "peg": {
-      "level": 7.8388,
+      "level": 7.8387,
       "distance": 0.89,
       "state": "weak-side (outflow)"
     },
@@ -155,11 +156,11 @@
       "ticker": "Healthcare & Pharma",
       "name": "Healthcare & Pharma",
       "tv": "HKEX:1093",
-      "rs": 6.599759659293959e-05,
-      "mom_20d_pct": -1.15,
-      "mom_60d_pct": 5.41,
+      "rs": 6.602243581009392e-05,
+      "mom_20d_pct": -1.11,
+      "mom_60d_pct": 5.45,
       "above_200d_trend": true,
-      "pctile_252d": 92.5,
+      "pctile_252d": 92.9,
       "rank": 6
     },
     {
@@ -276,7 +277,7 @@
       "chg_20d_pct": -12.36
     },
     "usdhkd": {
-      "level": 7.8388,
+      "level": 7.8387,
       "chg_20d_pct": -0.11
     }
   },
@@ -304,7 +305,7 @@
     "confidence": "low",
     "confidence_zh": "\u4f4e",
     "strength": 2.01,
-    "dominance_ratio": 1.09,
+    "dominance_ratio": 1.08,
     "agreement": 1.0,
     "runner_up": "commodity_energy",
     "runner_up_label": "Commodity / energy",
@@ -349,8 +350,8 @@
         "label": "Commodity / energy",
         "label_zh": "\u5927\u5b97/\u80fd\u6e90",
         "family": "inflation",
-        "projection": -1.84,
-        "strength": 1.84,
+        "projection": -1.87,
+        "strength": 1.87,
         "direction": "upstream disinflation \u2014 energy/materials basket & copper lead down"
       },
       {
@@ -358,8 +359,8 @@
         "label": "Global risk-on / risk-off",
         "label_zh": "\u5168\u7403\u98ce\u9669\u504f\u597d",
         "family": "risk",
-        "projection": -1.76,
-        "strength": 1.76,
+        "projection": -1.66,
+        "strength": 1.66,
         "direction": "global risk-OFF \u2014 S&P down, VIX & dollar up, EM/copper sold"
       },
       {
@@ -367,8 +368,8 @@
         "label": "Peg / HIBOR funding stress",
         "label_zh": "\u8054\u6c47/HIBOR\u8d44\u91d1\u538b\u529b",
         "family": "funding",
-        "projection": -0.98,
-        "strength": 0.98,
+        "projection": -0.99,
+        "strength": 0.99,
         "direction": "funding easing \u2014 HKD toward 7.75 strong-side, HIBOR down, Aggregate Balance refilled"
       },
       {
@@ -376,26 +377,17 @@
         "label": "China stimulus spillover",
         "label_zh": "\u4e2d\u56fd\u523a\u6fc0\u5916\u6ea2",
         "family": "growth",
-        "projection": 0.36,
-        "strength": 0.36,
+        "projection": 0.34,
+        "strength": 0.34,
         "direction": "China bid spilling into HK \u2014 H-shares & southbound lead up"
-      },
-      {
-        "driver": "us_rate_repricing",
-        "label": "US-rate repricing (via the peg)",
-        "label_zh": "\u7f8e\u606f\u91cd\u5b9a\u4ef7\uff08\u7ecf\u8054\u6c47\uff09",
-        "family": "rates",
-        "projection": -0.23,
-        "strength": 0.23,
-        "direction": "US rates repricing lower \u2014 dollar & HIBOR down, the peg imports easing"
       },
       {
         "driver": "risk_off_washout",
         "label": "Risk-off / washout",
         "label_zh": "\u907f\u9669/\u6050\u614c\u51fa\u6e05",
         "family": "volatility",
-        "projection": -0.2,
-        "strength": 0.2,
+        "projection": -0.19,
+        "strength": 0.19,
         "direction": "fear unwind \u2014 VHSI down, breadth recovering, HSI rising"
       },
       {
@@ -403,71 +395,80 @@
         "label": "Southbound / mainland appetite",
         "label_zh": "\u5357\u5411/\u5185\u8d44\u504f\u597d",
         "family": "flows",
+        "projection": 0.13,
+        "strength": 0.13,
+        "direction": "mainland risk-on \u2014 southbound buying HK, AH premium narrowing"
+      },
+      {
+        "driver": "us_rate_repricing",
+        "label": "US-rate repricing (via the peg)",
+        "label_zh": "\u7f8e\u606f\u91cd\u5b9a\u4ef7\uff08\u7ecf\u8054\u6c47\uff09",
+        "family": "rates",
         "projection": 0.09,
         "strength": 0.09,
-        "direction": "mainland risk-on \u2014 southbound buying HK, AH premium narrowing"
+        "direction": "US rates repricing higher \u2014 dollar & HIBOR up, the peg imports tightening"
       }
     ],
     "note": "Deterministic HK cross-asset attribution \u2014 a regime READ, not a signal; never gates a score or the quad."
   },
   "conditions": {
     "roro": {
-      "roro": -0.551,
-      "roro_raw": -0.619,
+      "roro": -0.562,
+      "roro_raw": -0.636,
       "roro_state": "risk-off",
-      "hk_roro_copper_gold": 1.057,
-      "hk_roro_spy": -2.084,
-      "hk_roro_vix": -2.987,
-      "hk_roro_dxy": 0.481,
-      "hk_roro_eem": -2.053,
-      "hk_roro_usdcny": -0.127,
+      "hk_roro_copper_gold": 0.998,
+      "hk_roro_spy": -1.998,
+      "hk_roro_vix": -2.261,
+      "hk_roro_dxy": 0.081,
+      "hk_roro_eem": -2.09,
+      "hk_roro_usdcny": -0.703,
       "hk_roro_southbound": 0.068,
       "hk_roro_vhsi": -0.321,
-      "hk_roro_breadth": 0.558,
-      "hk_roro_peg": -0.61,
-      "hk_roro_ah_premium": -1.001,
+      "hk_roro_breadth": 0.539,
+      "hk_roro_peg": -0.604,
+      "hk_roro_ah_premium": -0.929,
       "hk_roro_hibor": -0.414,
       "legs": [
         {
           "key": "copper_gold",
           "name_en": "Copper / Gold",
           "name_zh": "\u94dc\uff0f\u91d1 \u6bd4",
-          "value": 1.057,
+          "value": 0.998,
           "lean": "risk-on"
         },
         {
           "key": "spy",
           "name_en": "S&P 500 (20d)",
           "name_zh": "\u6807\u666e500\uff0820\u65e5\uff09",
-          "value": -2.084,
+          "value": -1.998,
           "lean": "risk-off"
         },
         {
           "key": "vix",
           "name_en": "Volatility (VIX)",
           "name_zh": "\u6ce2\u52a8\u7387\uff08VIX\uff09",
-          "value": -2.987,
+          "value": -2.261,
           "lean": "risk-off"
         },
         {
           "key": "dxy",
           "name_en": "US Dollar (20d)",
           "name_zh": "\u7f8e\u5143\uff0820\u65e5\uff09",
-          "value": 0.481,
+          "value": 0.081,
           "lean": "risk-on"
         },
         {
           "key": "eem",
           "name_en": "EM equity (EEM)",
           "name_zh": "\u65b0\u5174\u5e02\u573a\u80a1\u7968",
-          "value": -2.053,
+          "value": -2.09,
           "lean": "risk-off"
         },
         {
           "key": "usdcny",
           "name_en": "Offshore yuan (20d)",
           "name_zh": "\u4eba\u6c11\u5e01\uff0820\u65e5\uff09",
-          "value": -0.127,
+          "value": -0.703,
           "lean": "risk-off"
         },
         {
@@ -488,21 +489,21 @@
           "key": "breadth",
           "name_en": "Breadth (% > 50d)",
           "name_zh": "\u5e02\u573a\u5bbd\u5ea6\uff08>50\u65e5\uff09",
-          "value": 0.558,
+          "value": 0.539,
           "lean": "risk-on"
         },
         {
           "key": "peg",
           "name_en": "HKD peg distance",
           "name_zh": "\u6e2f\u5143\u8054\u6c47\u8ddd\u79bb",
-          "value": -0.61,
+          "value": -0.604,
           "lean": "risk-off"
         },
         {
           "key": "ah_premium",
           "name_en": "AH premium",
           "name_zh": "AH \u6ea2\u4ef7",
-          "value": -1.001,
+          "value": -0.929,
           "lean": "risk-off"
         },
         {
@@ -560,7 +561,7 @@
           "label_zh": "\u8054\u6c47\u8d44\u91d1\u538b\u529b",
           "weight": 1.0,
           "active": true,
-          "value": 88.8,
+          "value": 88.7,
           "points": 15.3
         },
         {
@@ -591,7 +592,7 @@
       "note_zh": "\u672a\u6821\u51c6\u7684\u5c55\u793a\u6027\u4eea\u8868 \u2014\u2014 \u9999\u6e2f\u5386\u53f2\u77ed\u4e14\u4e0e\u5168\u7403\u9ad8\u5ea6\u8026\u5408\uff0c\u4e0d\u58f0\u79f0\u4efb\u4f55\u524d\u77bb\u56de\u64a4\u4f18\u52bf\uff1b\u533a\u95f4\u4e3a\u8be5\u4eea\u8868\u81ea\u8eab\u7684\u5386\u53f2\u5206\u4f4d\u951a\u5b9a\u3002\u4ece\u4e0d\u8ba1\u5165\u8bc4\u5206\u3002"
     },
     "drawdown_risk": {
-      "score": 79.7,
+      "score": 79.8,
       "band": "high",
       "calibrated": false,
       "note": "history-anchored rank-percentile of HK stress legs \u2014 uncalibrated, display-only context, never scored",
@@ -2174,8 +2175,8 @@
           -0.419,
           -0.148,
           -0.198,
-          -0.651,
-          -0.551
+          -0.65,
+          -0.562
         ]
       },
       "recession": {
@@ -5335,7 +5336,7 @@
           79.5,
           77.7,
           79.6,
-          79.7
+          79.8
         ]
       },
       "fear_euphoria": {
@@ -6915,7 +6916,7 @@
           37.4,
           33.4,
           7.7,
-          12.2
+          11.7
         ]
       }
     },
@@ -6926,14 +6927,14 @@
     "fe_score": 12,
     "band": "Fear",
     "band_zh": "\u6050\u60e7",
-    "roro": -0.551,
+    "roro": -0.562,
     "roro_state": "risk-off",
     "legs": [
       {
         "key": "copper_gold",
         "name_en": "Copper / Gold",
         "name_zh": "\u94dc\uff0f\u91d1 \u6bd4",
-        "value": 1.057,
+        "value": 0.998,
         "pct": 88,
         "lean": "risk-on"
       },
@@ -6941,31 +6942,31 @@
         "key": "spy",
         "name_en": "S&P 500 (20d)",
         "name_zh": "\u6807\u666e500\uff0820\u65e5\uff09",
-        "value": -2.084,
-        "pct": 4,
+        "value": -1.998,
+        "pct": 5,
         "lean": "risk-off"
       },
       {
         "key": "vix",
         "name_en": "Volatility (VIX)",
         "name_zh": "\u6ce2\u52a8\u7387\uff08VIX\uff09",
-        "value": -2.987,
-        "pct": 2,
+        "value": -2.261,
+        "pct": 5,
         "lean": "risk-off"
       },
       {
         "key": "dxy",
         "name_en": "US Dollar (20d)",
         "name_zh": "\u7f8e\u5143\uff0820\u65e5\uff09",
-        "value": 0.481,
-        "pct": 66,
+        "value": 0.081,
+        "pct": 53,
         "lean": "risk-on"
       },
       {
         "key": "eem",
         "name_en": "EM equity (EEM)",
         "name_zh": "\u65b0\u5174\u5e02\u573a\u80a1\u7968",
-        "value": -2.053,
+        "value": -2.09,
         "pct": 3,
         "lean": "risk-off"
       },
@@ -6973,8 +6974,8 @@
         "key": "usdcny",
         "name_en": "Offshore yuan (20d)",
         "name_zh": "\u4eba\u6c11\u5e01\uff0820\u65e5\uff09",
-        "value": -0.127,
-        "pct": 40,
+        "value": -0.703,
+        "pct": 19,
         "lean": "risk-off"
       },
       {
@@ -6997,7 +6998,7 @@
         "key": "breadth",
         "name_en": "Breadth (% > 50d)",
         "name_zh": "\u5e02\u573a\u5bbd\u5ea6\uff08>50\u65e5\uff09",
-        "value": 0.558,
+        "value": 0.539,
         "pct": 70,
         "lean": "risk-on"
       },
@@ -7005,7 +7006,7 @@
         "key": "peg",
         "name_en": "HKD peg distance",
         "name_zh": "\u6e2f\u5143\u8054\u6c47\u8ddd\u79bb",
-        "value": -0.61,
+        "value": -0.604,
         "pct": 39,
         "lean": "risk-off"
       },
@@ -7013,7 +7014,7 @@
         "key": "ah_premium",
         "name_en": "AH premium",
         "name_zh": "AH \u6ea2\u4ef7",
-        "value": -1.001,
+        "value": -0.929,
         "pct": 7,
         "lean": "risk-off"
       },
@@ -7106,8 +7107,8 @@
     {
       "rule": "hk_regime_confidence_floor",
       "severity": "warn",
-      "message": "Regime confidence dropped below 30%: 39% -> 30% \u2014 trust the label less, size down",
-      "message_zh": "\u5468\u671f\u4e00\u81f4\u5ea6\u8dcc\u7834 30%\uff1a39% -> 30% \u2014 \u964d\u4f4e\u5bf9\u6807\u7b7e\u7684\u4fe1\u4efb\uff0c\u7f29\u5c0f\u4ed3\u4f4d",
+      "message": "Regime confidence dropped below 30%: 46% -> 30% \u2014 trust the label less, size down",
+      "message_zh": "\u5468\u671f\u4e00\u81f4\u5ea6\u8dcc\u7834 30%\uff1a46% -> 30% \u2014 \u964d\u4f4e\u5bf9\u6807\u7b7e\u7684\u4fe1\u4efb\uff0c\u7f29\u5c0f\u4ed3\u4f4d",
       "icon": "\ud83c\udf9a\ufe0f",
       "plain_en": "Regime read got muddy \u2014 trust the quad less",
       "plain_zh": "\u5468\u671f\u4fe1\u53f7\u53d8\u6d51\u6d4a \u2014 \u964d\u4f4e\u5bf9\u8c61\u9650\u7684\u4fe1\u4efb",
@@ -7121,8 +7122,8 @@
     {
       "rule": "hk_growth_confidence_floor",
       "severity": "warn",
-      "message": "Growth axis confidence dropped below 30%: 34% -> 15% \u2014 trust the label less, size down",
-      "message_zh": "\u589e\u957f\u8f74\u4e00\u81f4\u5ea6\u8dcc\u7834 30%\uff1a34% -> 15% \u2014 \u964d\u4f4e\u5bf9\u6807\u7b7e\u7684\u4fe1\u4efb\uff0c\u7f29\u5c0f\u4ed3\u4f4d",
+      "message": "Growth axis confidence dropped below 30%: 48% -> 27% \u2014 trust the label less, size down",
+      "message_zh": "\u589e\u957f\u8f74\u4e00\u81f4\u5ea6\u8dcc\u7834 30%\uff1a48% -> 27% \u2014 \u964d\u4f4e\u5bf9\u6807\u7b7e\u7684\u4fe1\u4efb\uff0c\u7f29\u5c0f\u4ed3\u4f4d",
       "icon": "\ud83c\udf9a\ufe0f",
       "plain_en": "Growth read got muddy \u2014 trust the quad less",
       "plain_zh": "\u589e\u957f\u4fe1\u53f7\u53d8\u6d51\u6d4a \u2014 \u964d\u4f4e\u5bf9\u8c61\u9650\u7684\u4fe1\u4efb",

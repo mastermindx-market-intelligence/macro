@@ -1,0 +1,160 @@
+{
+  "schema": "pb_g_artifact_manifest.v1",
+  "scope": "Final packet file digests; this manifest excludes itself to avoid a circular hash. Exact commit identity is the publication readback.",
+  "files": [
+    {
+      "path": "PB_G_ACCEPTANCE.md",
+      "bytes": 8243,
+      "chars": 8235,
+      "git_blob_sha": "57a461800ad398a07a2951f1a28b81b2051ffc5d",
+      "sha256": "a1a2ec0ca822342400ac3022506eda7f6d7ecec99a91469643f615e83fe77600"
+    },
+    {
+      "path": "PB_G_ARCHITECTURE_FREEZE.md",
+      "bytes": 22686,
+      "chars": 22660,
+      "git_blob_sha": "7db54ba0b15aece616d0157edca0e20955c2868e",
+      "sha256": "23161973bd73a2162ffd230ecae8ec835d546513009b5c1c85fe2f5c92663cb4"
+    },
+    {
+      "path": "PB_G_BASELINE_RECOMPUTED.json",
+      "bytes": 472260,
+      "chars": 472260,
+      "git_blob_sha": "53f8d8341de49cb0c5ce2e66b87e077ac7456a0a",
+      "sha256": "5c9b534ae8e1fe1c78ad5bc432f1ba094fea4a8867b2e069116755960bd7e0e7"
+    },
+    {
+      "path": "PB_G_BASELINE_SOURCE_RECEIPTS.json",
+      "bytes": 10713,
+      "chars": 10713,
+      "git_blob_sha": "704bae988ee736db43876e08f1e2d97ff4efb2e5",
+      "sha256": "5e96d4bfe7d18e3aac382cc1439d42a5b299fc2fc84fd90f48feb6ceafb87014"
+    },
+    {
+      "path": "PB_G_BUILD_ROADMAP.md",
+      "bytes": 9023,
+      "chars": 9019,
+      "git_blob_sha": "b1ded852224d610590c5e4f78100c6d0b4ae9708",
+      "sha256": "e60b0c2d7483d72d5f640abe086f148e4e34246f2162a5349793ff1753d23600"
+    },
+    {
+      "path": "PB_G_CHECKPOINT.md",
+      "bytes": 6160,
+      "chars": 6156,
+      "git_blob_sha": "35cc621353535ff02f33ce0b07165de3d353cca2",
+      "sha256": "c49add9727fce20b943dc5a613e4a4baef2d67b48911a5fb974fe0cf2cda1dde"
+    },
+    {
+      "path": "PB_G_CLAIM_LEDGER.json",
+      "bytes": 705415,
+      "chars": 704888,
+      "git_blob_sha": "fa86c290d2c6d62e51037cda6770a2aacbdb516a",
+      "sha256": "f3b5d9e8a52ecf1ac81ef5f7a62e67ff315425986d6cbde92be2b37885b7614e"
+    },
+    {
+      "path": "PB_G_IMPLEMENTATION_HANDOFF_INDEX.md",
+      "bytes": 5675,
+      "chars": 5665,
+      "git_blob_sha": "db104d5fbe91821a9d120e203ea81f5cbe6d32b2",
+      "sha256": "09b418d678c37362d8edacad3070a621513e639ac4516dafe230665bcde341e1"
+    },
+    {
+      "path": "PB_G_INTEGRATED_FINDINGS.md",
+      "bytes": 20934,
+      "chars": 20913,
+      "git_blob_sha": "e33f34319f6c87d6d200428a7efdabc03b0b6136",
+      "sha256": "927134a4a6b42bcbac1c8db963263fb29d08bcf8a9e6569c00772815b6f6a42c"
+    },
+    {
+      "path": "PB_G_NO_DUPLICATION_MAP.md",
+      "bytes": 29049,
+      "chars": 28993,
+      "git_blob_sha": "e5c5cdcdc0c5a03680297e7fd24d2295cfb580d4",
+      "sha256": "8e8ed8e731a8b37340bbc9bef42eeac35456f65a5487d3393edf04253676c8f2"
+    },
+    {
+      "path": "PB_G_POLICY_BEHAVIOR_BASELINE.md",
+      "bytes": 23604,
+      "chars": 23499,
+      "git_blob_sha": "954ee33d4d3770e629dd88a2adf032e7b8d98cba",
+      "sha256": "84c320ad259448afbdbf299861f7c6ddb3d06551499f116c28926588c948bf29"
+    },
+    {
+      "path": "PB_G_SOURCE_MANIFEST.json",
+      "bytes": 40775,
+      "chars": 40771,
+      "git_blob_sha": "08a34ecbe21b26174d0d03993cbf0f6580006556",
+      "sha256": "9b9ab2fb54ad1dc3d8ea1d94e4561c8cd2a6d9786e334fce9de811c40931045f"
+    },
+    {
+      "path": "PB_G_VERIFICATION.json",
+      "bytes": 1476,
+      "chars": 1476,
+      "git_blob_sha": "43b643ebe7e9ef8a6be81cdcc89874699dfa3fea",
+      "sha256": "7f4329a77f9d43605c2dc0380767978d49ff52d618be02b9d86c70377fb3e061"
+    },
+    {
+      "path": "handoffs/PBG_01_SOURCE_CLOCKS.md",
+      "bytes": 5147,
+      "chars": 5139,
+      "git_blob_sha": "da54cdd6cbfa1642d2c270af4e5f68a3a85dd64c",
+      "sha256": "71bd52039ad5fcaf10c32b18f0c1bdb37de7b54a895990088aa415c43d37a360"
+    },
+    {
+      "path": "handoffs/PBG_02_POLICY_BEHAVIOR_VIEW.md",
+      "bytes": 4597,
+      "chars": 4581,
+      "git_blob_sha": "218ef4e740358a23a32c1237ff97784f31c728d8",
+      "sha256": "a8e0e4ec545eecb2cdeb85d904b873feaa7231d70097206c6a263cfc69299bb7"
+    },
+    {
+      "path": "handoffs/PBG_03_FINANCING_SUPPORT_DOSSIER.md",
+      "bytes": 6826,
+      "chars": 6820,
+      "git_blob_sha": "d038a58598122df47ff141da123e2cd8f597aeb2",
+      "sha256": "63f2f9353573cf6d55ca14f8dbbf1a41b8ea207e872a8fdc76d4c93e9a9b2f4c"
+    },
+    {
+      "path": "handoffs/PBG_04_US_JAPAN_CONSTRAINTS.md",
+      "bytes": 4100,
+      "chars": 4094,
+      "git_blob_sha": "808b87e367ee45cdda5c6d85f0006db0296b125f",
+      "sha256": "8dbae08510cfb507a1e679467fd0dbcd6dfa16e0826cc06041a5919e3032036d"
+    },
+    {
+      "path": "handoffs/PBG_05_T2_INCUMBENT_INTERFACE.md",
+      "bytes": 5569,
+      "chars": 5565,
+      "git_blob_sha": "52efa95a53bd8215e17ee865c3cf850d72742a13",
+      "sha256": "fdb9ca1e81af812dc7b444636078401b22da3166f6bf61fd1b229464134ce323"
+    },
+    {
+      "path": "handoffs/PBG_06_ANNOUNCEMENT_PANEL.md",
+      "bytes": 5063,
+      "chars": 5061,
+      "git_blob_sha": "c4bc3c431e505c26891889de1784adf8fd27e258",
+      "sha256": "80987e2d6da8f0294a338b438ebe631942b46631cf0f93e4241017a78c96a8d4"
+    },
+    {
+      "path": "handoffs/PBG_07_EVALUATION_MATURITY.md",
+      "bytes": 5001,
+      "chars": 4985,
+      "git_blob_sha": "a246b7a1fa5f6607631890c8a3092beb33edd962",
+      "sha256": "121995f5420041f47787d523f0bc475c93d2deb97380a29130de3e25cdc28e42"
+    },
+    {
+      "path": "scripts/reproduce_baseline.py",
+      "bytes": 10563,
+      "chars": 10563,
+      "git_blob_sha": "6ecc358f9405e89f1cf22791cd0409d44a66a94b",
+      "sha256": "0d0081bba3a61dd4a2deb3515b1ac3ccf279706c80bfbeaa7e6c1d95949e768c"
+    },
+    {
+      "path": "scripts/verify_packet.py",
+      "bytes": 12605,
+      "chars": 12605,
+      "git_blob_sha": "d11afc3cdc418d168ed94d93d160b666ce78aaf6",
+      "sha256": "9978e4b06891da1b7df4ca0ee57b69d4f5bc7c8abd66e51e41a687af18e7c1ef"
+    }
+  ]
+}
