@@ -2,7 +2,7 @@
 
 This is the dependent candidate for reliable saved cases, asset readings and navigation in [Macro PR #10901](https://github.com/mastermindx-market-intelligence/Macro/pull/10901). Start with the workflow below, then open its contract and exact proof.
 
-**Latest recorded runtime proof: 9 November 2026, assets `7fc541a886d1`; [scenario-card lifecycle receipt](card-lifecycle/PUBLICATION_RECEIPT.json).** The candidate remains Draft, unmerged and unarmed. Its incumbent base is [PR #9580](https://github.com/mastermindx-market-intelligence/Macro/pull/9580) at `5e496c24c962e85a4f7f514dd43dc61443b95cab`. These are recorded checkpoints, not live-head assertions.
+**Latest recorded runtime proof: 9 November 2026, assets `2698fd4fd4ed`; [current-case navigation receipt](current-return/PUBLICATION_RECEIPT.json).** The candidate remains Draft, unmerged and unarmed. Its incumbent base is [PR #9580](https://github.com/mastermindx-market-intelligence/Macro/pull/9580) at `5e496c24c962e85a4f7f514dd43dc61443b95cab`. These are recorded checkpoints, not live-head assertions.
 
 ## Find the workflow
 
@@ -12,6 +12,7 @@ This is the dependent candidate for reliable saved cases, asset readings and nav
 | Reopen the original saved horizon; return to the same version and reading position | [Saved navigation](NAVIGATION.md) | [Navigation validation](NAVIGATION_VALIDATION.json) |
 | Read a frozen case, its condition and retained evidence; distinguish unavailable historical results | [Frozen-case hierarchy](FROZEN_LAYOUT.md) | [Layout validation](FROZEN_LAYOUT_VALIDATION.json) |
 | Distinguish an open, expired, future-dated or unverifiable case before inspection | [Scenario-card lifecycle](SCENARIO_CARD_LIFECYCLE.md) | [Native proof and exact scope](card-lifecycle/PUBLICATION_RECEIPT.json) |
+| Return from current Historical review, keep the case reading and start new review entries clearly | [Current-case review and return](CURRENT_CASE_RETURN.md) | [Native proof and exact scope](current-return/PUBLICATION_RECEIPT.json) |
 | Recover from a missing current scenario or named review | [Current-case recovery](SCENARIO_RECOVERY.md) | [Native proof](scenario-recovery/PUBLICATION_RECEIPT.json) |
 | Copy/open route links with their context; navigate without hiding the focused control | [Native navigation](NATIVE_NAVIGATION.md) | [Native proof](route-context/PUBLICATION_RECEIPT.json) · [Captures](route-context/CAPTURE_REFERENCES.json) |
 | Understand price change versus Asset/BTC ratio change; compare the complete cohort | [Comparison meaning and ownership](COMPARISON_BASIS.md) | [Comparison validation](COMPARISON_VALIDATION.json) |

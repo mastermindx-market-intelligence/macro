@@ -1,0 +1,1165 @@
+{
+  "source": {
+    "source_parent": "bcf8e84957017181dc323ff3c3a9f4b32b218799",
+    "assets": "2698fd4fd4ed",
+    "changed": {
+      "templates/crypto_intelligence_r4.js": {
+        "bytes": 73102,
+        "sha256": "7d2d286c5251768703a436602571c01cd6aad71aeb89960a020b3b5cb3cd89f8",
+        "blob": "924ee60a216d1aa33667a20423d449c53dff8b21"
+      },
+      "tests/test_crypto_intelligence_r4_browser.py": {
+        "bytes": 160032,
+        "sha256": "739350df65b10ef86e18b4d4fb1ba9662f366dba8ef29d5dfe85ecf1e12a7dbc",
+        "blob": "7fb555bf40f5099f551f610c7400a78376cf8424"
+      },
+      "site/crypto-r4.html": {
+        "bytes": 129566,
+        "sha256": "27a82d2cc8cd2c870fa01721c1f96638d6e72f0b4094cb10acf7209141496b87",
+        "blob": "36b74f9a87902d061b5f9e17739e9c636c4f8d86"
+      },
+      "site/vector-r4.html": {
+        "bytes": 129565,
+        "sha256": "20907e7a3f556f21cf1777d4dfa9ff79b545301649d5dd95ddfc459e37e4c253",
+        "blob": "d593e44e59ac4ba23c4f14aa4f29275df8d0876a"
+      },
+      "site/crypto_intelligence_r4.js": {
+        "bytes": 73102,
+        "sha256": "7d2d286c5251768703a436602571c01cd6aad71aeb89960a020b3b5cb3cd89f8",
+        "blob": "924ee60a216d1aa33667a20423d449c53dff8b21"
+      }
+    },
+    "unchanged": {
+      "templates/crypto_intelligence_r4.html.j2": {
+        "bytes": 23230,
+        "sha256": "76c6a23231e5c9b97ccef4964a04af2d70869a7e93a560adeee27d7cab67c38c",
+        "blob": "6938792268784fca2d19bc0c8eddb634dad2ca88"
+      },
+      "site/crypto_intelligence_r4.css": {
+        "bytes": 23199,
+        "sha256": "ecbe6e8b1e4e10042877dd2c372b8f6aa7b75f6ea013b4bb01ac94465eef7370",
+        "blob": "0ff8227746d546facac1d1f073a9cf9ae20c2b53"
+      },
+      "templates/crypto_intelligence_r4.css": {
+        "bytes": 23199,
+        "sha256": "ecbe6e8b1e4e10042877dd2c372b8f6aa7b75f6ea013b4bb01ac94465eef7370",
+        "blob": "0ff8227746d546facac1d1f073a9cf9ae20c2b53"
+      },
+      "scripts/build_crypto_intelligence_r4.py": {
+        "bytes": 5326,
+        "sha256": "abf594e7c1cf34273f4017f6bfc28333df810eb2cff2f8ee30972335671888c0",
+        "blob": "f276092b8e72925c5d967a1f5066bd940392ceb5"
+      },
+      "tests/test_crypto_intelligence_r4.py": {
+        "bytes": 23038,
+        "sha256": "878131aea7d56e5de7f21641f60bdd2fc43cd345f738dd2b8f111c32c9219fa3",
+        "blob": "4ecf96b6707e474a34ca04437f3afd0e8c8ec8e0"
+      },
+      "lib/crypto_intelligence_view.py": {
+        "bytes": 22671,
+        "sha256": "3457d4a183444f6b4d2b8bbed1d5678d30f93e387cd9861f147d58211eb83f73",
+        "blob": "5c90c35c1307d425cb5979aa3ce609e408cfddc6"
+      },
+      "site/crypto_intelligence_r4.json": {
+        "bytes": 28027,
+        "sha256": "807839328e14080902df593408c9001d958b69be70d74d09fadbdc811d859401",
+        "blob": "024278d4143ee076f4253cd295230636818e97bd"
+      },
+      "site/theme.js": {
+        "bytes": 265200,
+        "sha256": "46939917d2e233cb0d8af828d97b1e3b7d18886fd829f88d0bc08c9f3b643455",
+        "blob": "937779ef5770fa92ef93a5e6b0f7e3415f6a7cf3"
+      },
+      "site/theme.css": {
+        "bytes": 221941,
+        "sha256": "2e8611477fd3499877721f9ce9386b1c3a55e00a2ed87c4187387845775ae64a",
+        "blob": "620895319be7e3f7808439ecbae8c33c2197389f"
+      },
+      "site/illus.js": {
+        "bytes": 2752,
+        "sha256": "8e0a3779784525f15bb4a1b20e50f39ef4d0ddf243827f5ab609cfb08a69c620",
+        "blob": "dfe818277c5068fe665337531f89d4fe7976565b"
+      },
+      "site/illus.css": {
+        "bytes": 14335,
+        "sha256": "cbe6a0b4f83095ed300ee49a5d9f4d03e88005170a4792a7a9f41805a67e5f07",
+        "blob": "cda4f3e53a34c5e996b49bdac5732357ed94b2d5"
+      },
+      "site/navigation-refresh.css": {
+        "bytes": 93481,
+        "sha256": "ef068fe19adab3779512462c40ab67b3e75a997a2dc6edfae2d5a36dd604eb5c",
+        "blob": "276c1986f2a728ca59e0f9e0bc7fe269869fdff0"
+      },
+      "site/logo_config.js": {
+        "bytes": 202,
+        "sha256": "b37d33d3194c191b1bb64db3f5c33d17c7dc06a74892e4aa8ea4d50320aae215",
+        "blob": "523923f9f424a144f4a0cf3e4814e2ea36392474"
+      },
+      "site/stock-logos.js": {
+        "bytes": 16539,
+        "sha256": "cc29be531bc08e655464b6c0d384e1a46041aeb31caf7d982e926681fda7cb49",
+        "blob": "759d78f4dfb11de591d8db5cec36a91ca372fe3c"
+      },
+      "site/live_config.js": {
+        "bytes": 367,
+        "sha256": "52943e92422103557d94066ceb65f4402816322281f95e8bd376293fe14d9c10",
+        "blob": "2ad84da9b70e83cd9825a684d3c846fc81e7366d"
+      },
+      "site/live.js": {
+        "bytes": 50731,
+        "sha256": "f8cda39dd4258a5778864b3b7e0bd8b9cc685bd1f926211a72268883a937a592",
+        "blob": "7e91599afb20a69c4010d5dc36c85439381d529f"
+      }
+    },
+    "product_inverse_exact": {
+      "templates/crypto_intelligence_r4.js": true
+    },
+    "browser_test_inverse_exact": true,
+    "retained_html_except_two_asset_refs_exact": {
+      "crypto-r4.html": true,
+      "vector-r4.html": true
+    },
+    "retained_view_exact": true,
+    "served_assets_exact": true,
+    "new_entry_source_and_test_inverse_exact": true,
+    "earlier_visual_and_injection_correction_proofs_retained": true
+  },
+  "runs": {
+    "current-return-baseline": {
+      "result": {
+        "command": [
+          "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "-m",
+          "pytest",
+          "-q",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_review_returns_to_the_same_case_and_reading",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_review_close_exits_the_managed_journey",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_detached_current_review_replaces_with_exact_scenario",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_parent_rejects_the_same_id_at_a_different_horizon",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_parent_accepts_the_normalized_default_horizon",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_return_rejects_stale_reading_identity",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_locale_preserves_disclosure_focus_and_reading",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_restore_uses_heading_when_save_becomes_disabled",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_restore_does_not_swap_remove_focus_to_save",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_return_survives_unreadable_saved_storage",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_parent_focus_callback_keeps_the_new_destination",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_parent_double_activation_moves_back_once",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_parent_is_absent_without_a_resolved_case",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_evidence_native_back_restores_the_case_reader",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_saved_journey_restores_the_exact_outer_horizon",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_detached_saved_item_still_has_a_real_review_parent",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_truly_detached_review_opens_exact_saved_case_by_replace",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_saved_parent_focus_callback_keeps_its_new_destination",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_saved_parent_rechecks_the_requested_record_before_return",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_legacy_saved_parent_horizon_is_repaired_in_the_same_entry",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_saved_locale_keeps_disclosure_focus_and_reading_position",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_close_falls_back_to_the_restored_active_view_heading",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_missing_current_case_recovers_without_borrowing_review_context",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_generic_and_valid_current_reviews_remain_distinct",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_scenario_retains_its_existing_reading_order",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_newer_focus_during_confirmation_survives",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_completion_focus_callbacks_keep_their_new_panel",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_programmatic_save_preserves_unrelated_focus_and_stale_save_stays_safe",
+          "--tb=short",
+          "--junitxml=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/current-return-baseline/junit.xml",
+          "--basetemp=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/current-return-baseline/pytest-temp"
+        ],
+        "exit_code": 1,
+        "seconds": 30.786,
+        "source_parent": "bcf8e84957017181dc323ff3c3a9f4b32b218799",
+        "test_sha256": "06530d838bd9392957e9cc158266d5366ee178b8acc2d4dc66ba8ce331b5b9c0"
+      },
+      "observations": {
+        "contexts": 57,
+        "pages": 57,
+        "page_errors": [],
+        "blocked_external_requests": 0,
+        "blocked_websockets": 0,
+        "browser": "157.0.8103.39"
+      },
+      "cases": {
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_review_returns_to_the_same_case_and_reading[en-390-7-2026-11-09T12:00:00Z]": "failed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_review_returns_to_the_same_case_and_reading[zh-320-7-2026-11-09T12:00:00Z]": "failed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_review_returns_to_the_same_case_and_reading[en-1440-30-2026-10-18T12:00:00Z]": "failed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_review_returns_to_the_same_case_and_reading[zh-390-30-2026-10-18T12:00:00Z]": "failed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_review_close_exits_the_managed_journey[en-390]": "failed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_review_close_exits_the_managed_journey[zh-320]": "failed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_detached_current_review_replaces_with_exact_scenario[en-390-7]": "failed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_detached_current_review_replaces_with_exact_scenario[zh-320-30]": "failed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_parent_rejects_the_same_id_at_a_different_horizon": "failed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_parent_accepts_the_normalized_default_horizon": "failed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_return_rejects_stale_reading_identity[revision-another-publication]": "failed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_return_rejects_stale_reading_identity[cutoff-1900-01-01]": "failed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_locale_preserves_disclosure_focus_and_reading[390]": "failed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_locale_preserves_disclosure_focus_and_reading[320]": "failed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_restore_uses_heading_when_save_becomes_disabled": "failed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_restore_does_not_swap_remove_focus_to_save": "failed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_return_survives_unreadable_saved_storage[malformed]": "failed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_return_survives_unreadable_saved_storage[unreadable]": "failed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_parent_focus_callback_keeps_the_new_destination": "failed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_parent_double_activation_moves_back_once": "failed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_parent_is_absent_without_a_resolved_case[memory]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_parent_is_absent_without_a_resolved_case[memory:missing]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_parent_is_absent_without_a_resolved_case[memory:]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_evidence_native_back_restores_the_case_reader[en-390]": "failed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_evidence_native_back_restores_the_case_reader[zh-320]": "failed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_saved_journey_restores_the_exact_outer_horizon[en-1440]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_saved_journey_restores_the_exact_outer_horizon[zh-390]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_saved_journey_restores_the_exact_outer_horizon[en-320]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_detached_saved_item_still_has_a_real_review_parent": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_truly_detached_review_opens_exact_saved_case_by_replace[en-1440]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_truly_detached_review_opens_exact_saved_case_by_replace[zh-320]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_saved_parent_focus_callback_keeps_its_new_destination": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_saved_parent_rechecks_the_requested_record_before_return[missing]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_saved_parent_rechecks_the_requested_record_before_return[duplicate]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_saved_parent_rechecks_the_requested_record_before_return[unreadable]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_legacy_saved_parent_horizon_is_repaired_in_the_same_entry": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_saved_locale_keeps_disclosure_focus_and_reading_position[1440]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_saved_locale_keeps_disclosure_focus_and_reading_position[320]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_close_falls_back_to_the_restored_active_view_heading[hidden]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_close_falls_back_to_the_restored_active_view_heading[removed]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_missing_current_case_recovers_without_borrowing_review_context[scenario:absent-en-390]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_missing_current_case_recovers_without_borrowing_review_context[scenario:absent-zh-320]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_missing_current_case_recovers_without_borrowing_review_context[memory:absent-en-390]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_missing_current_case_recovers_without_borrowing_review_context[memory:absent-zh-320]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_missing_current_case_recovers_without_borrowing_review_context[memory:-en-390]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_missing_current_case_recovers_without_borrowing_review_context[memory:-zh-320]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_generic_and_valid_current_reviews_remain_distinct[memory-en-390]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_generic_and_valid_current_reviews_remain_distinct[memory-zh-320]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_generic_and_valid_current_reviews_remain_distinct[memory:continuation-en-390]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_generic_and_valid_current_reviews_remain_distinct[memory:continuation-zh-320]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_scenario_retains_its_existing_reading_order[en-320]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_scenario_retains_its_existing_reading_order[zh-1440]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_newer_focus_during_confirmation_survives[save]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_newer_focus_during_confirmation_survives[remove]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_completion_focus_callbacks_keep_their_new_panel[frozen-remove]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_completion_focus_callbacks_keep_their_new_panel[current-save]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_programmatic_save_preserves_unrelated_focus_and_stale_save_stays_safe": "passed"
+      },
+      "counts": {
+        "passed": 35,
+        "failed": 22,
+        "error": 0,
+        "skipped": 0
+      }
+    },
+    "current-return-final": {
+      "result": {
+        "command": [
+          "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "-m",
+          "pytest",
+          "-q",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_review_returns_to_the_same_case_and_reading",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_review_close_exits_the_managed_journey",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_detached_current_review_replaces_with_exact_scenario",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_parent_rejects_the_same_id_at_a_different_horizon",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_parent_accepts_the_normalized_default_horizon",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_return_rejects_stale_reading_identity",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_locale_preserves_disclosure_focus_and_reading",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_restore_uses_heading_when_save_becomes_disabled",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_restore_does_not_swap_remove_focus_to_save",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_return_survives_unreadable_saved_storage",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_parent_focus_callback_keeps_the_new_destination",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_parent_double_activation_moves_back_once",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_parent_is_absent_without_a_resolved_case",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_evidence_native_back_restores_the_case_reader",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_saved_journey_restores_the_exact_outer_horizon",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_detached_saved_item_still_has_a_real_review_parent",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_truly_detached_review_opens_exact_saved_case_by_replace",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_saved_parent_focus_callback_keeps_its_new_destination",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_saved_parent_rechecks_the_requested_record_before_return",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_legacy_saved_parent_horizon_is_repaired_in_the_same_entry",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_saved_locale_keeps_disclosure_focus_and_reading_position",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_close_falls_back_to_the_restored_active_view_heading",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_missing_current_case_recovers_without_borrowing_review_context",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_generic_and_valid_current_reviews_remain_distinct",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_scenario_retains_its_existing_reading_order",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_newer_focus_during_confirmation_survives",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_completion_focus_callbacks_keep_their_new_panel",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_programmatic_save_preserves_unrelated_focus_and_stale_save_stays_safe",
+          "--tb=short",
+          "--junitxml=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/current-return-final/junit.xml",
+          "--basetemp=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/current-return-final/pytest-temp"
+        ],
+        "exit_code": 1,
+        "seconds": 33.693,
+        "source_parent": "bcf8e84957017181dc323ff3c3a9f4b32b218799",
+        "runtime_asset_version": "54f56205be7e",
+        "candidate_inputs": {
+          "templates/crypto_intelligence_r4.js": {
+            "bytes": 72772,
+            "sha256": "765291d05555948ad8345b4cbbc48cc9be28277f048ec45165e388edcbada329",
+            "blob": "c1add7fdc157549a4766c69c112fc8a5f7e7bda3"
+          },
+          "tests/test_crypto_intelligence_r4_browser.py": {
+            "bytes": 156154,
+            "sha256": "06530d838bd9392957e9cc158266d5366ee178b8acc2d4dc66ba8ce331b5b9c0",
+            "blob": "5e8f577600459c169c14d08f41a990db4e8a00e5"
+          },
+          "site/crypto-r4.html": {
+            "bytes": 129566,
+            "sha256": "09bbac3d9c22d82804f578ea790928cfef5a0192ef253efd7487d57fc04742f6",
+            "blob": "725b75e54ded71f4406f879ba939c2fd5cb37e81"
+          },
+          "site/vector-r4.html": {
+            "bytes": 129565,
+            "sha256": "9d807473eb1372762d8c7ae1fbf06aa62e69895eed996aedfcb90c3199dcb921",
+            "blob": "bd393e59b62e199e752934311665960d3fb3a30b"
+          },
+          "site/crypto_intelligence_r4.js": {
+            "bytes": 72772,
+            "sha256": "765291d05555948ad8345b4cbbc48cc9be28277f048ec45165e388edcbada329",
+            "blob": "c1add7fdc157549a4766c69c112fc8a5f7e7bda3"
+          }
+        }
+      },
+      "observations": {
+        "contexts": 57,
+        "pages": 57,
+        "page_errors": [],
+        "blocked_external_requests": 0,
+        "blocked_websockets": 0,
+        "browser": "157.0.8103.39"
+      },
+      "cases": {
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_review_returns_to_the_same_case_and_reading[en-390-7-2026-11-09T12:00:00Z]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_review_returns_to_the_same_case_and_reading[zh-320-7-2026-11-09T12:00:00Z]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_review_returns_to_the_same_case_and_reading[en-1440-30-2026-10-18T12:00:00Z]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_review_returns_to_the_same_case_and_reading[zh-390-30-2026-10-18T12:00:00Z]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_review_close_exits_the_managed_journey[en-390]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_review_close_exits_the_managed_journey[zh-320]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_detached_current_review_replaces_with_exact_scenario[en-390-7]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_detached_current_review_replaces_with_exact_scenario[zh-320-30]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_parent_rejects_the_same_id_at_a_different_horizon": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_parent_accepts_the_normalized_default_horizon": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_return_rejects_stale_reading_identity[revision-another-publication]": "failed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_return_rejects_stale_reading_identity[cutoff-1900-01-01]": "failed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_locale_preserves_disclosure_focus_and_reading[390]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_locale_preserves_disclosure_focus_and_reading[320]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_restore_uses_heading_when_save_becomes_disabled": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_restore_does_not_swap_remove_focus_to_save": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_return_survives_unreadable_saved_storage[malformed]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_return_survives_unreadable_saved_storage[unreadable]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_parent_focus_callback_keeps_the_new_destination": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_parent_double_activation_moves_back_once": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_parent_is_absent_without_a_resolved_case[memory]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_parent_is_absent_without_a_resolved_case[memory:missing]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_parent_is_absent_without_a_resolved_case[memory:]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_evidence_native_back_restores_the_case_reader[en-390]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_evidence_native_back_restores_the_case_reader[zh-320]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_saved_journey_restores_the_exact_outer_horizon[en-1440]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_saved_journey_restores_the_exact_outer_horizon[zh-390]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_saved_journey_restores_the_exact_outer_horizon[en-320]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_detached_saved_item_still_has_a_real_review_parent": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_truly_detached_review_opens_exact_saved_case_by_replace[en-1440]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_truly_detached_review_opens_exact_saved_case_by_replace[zh-320]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_saved_parent_focus_callback_keeps_its_new_destination": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_saved_parent_rechecks_the_requested_record_before_return[missing]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_saved_parent_rechecks_the_requested_record_before_return[duplicate]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_saved_parent_rechecks_the_requested_record_before_return[unreadable]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_legacy_saved_parent_horizon_is_repaired_in_the_same_entry": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_saved_locale_keeps_disclosure_focus_and_reading_position[1440]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_saved_locale_keeps_disclosure_focus_and_reading_position[320]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_close_falls_back_to_the_restored_active_view_heading[hidden]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_close_falls_back_to_the_restored_active_view_heading[removed]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_missing_current_case_recovers_without_borrowing_review_context[scenario:absent-en-390]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_missing_current_case_recovers_without_borrowing_review_context[scenario:absent-zh-320]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_missing_current_case_recovers_without_borrowing_review_context[memory:absent-en-390]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_missing_current_case_recovers_without_borrowing_review_context[memory:absent-zh-320]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_missing_current_case_recovers_without_borrowing_review_context[memory:-en-390]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_missing_current_case_recovers_without_borrowing_review_context[memory:-zh-320]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_generic_and_valid_current_reviews_remain_distinct[memory-en-390]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_generic_and_valid_current_reviews_remain_distinct[memory-zh-320]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_generic_and_valid_current_reviews_remain_distinct[memory:continuation-en-390]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_generic_and_valid_current_reviews_remain_distinct[memory:continuation-zh-320]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_scenario_retains_its_existing_reading_order[en-320]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_scenario_retains_its_existing_reading_order[zh-1440]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_newer_focus_during_confirmation_survives[save]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_newer_focus_during_confirmation_survives[remove]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_completion_focus_callbacks_keep_their_new_panel[frozen-remove]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_completion_focus_callbacks_keep_their_new_panel[current-save]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_programmatic_save_preserves_unrelated_focus_and_stale_save_stays_safe": "passed"
+      },
+      "counts": {
+        "passed": 55,
+        "failed": 2,
+        "error": 0,
+        "skipped": 0
+      }
+    },
+    "current-return-harness-final": {
+      "result": {
+        "command": [
+          "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "-m",
+          "pytest",
+          "-q",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_return_rejects_stale_reading_identity",
+          "--tb=short",
+          "--junitxml=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/current-return-harness-final/junit.xml",
+          "--basetemp=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/current-return-harness-final/pytest-temp"
+        ],
+        "exit_code": 0,
+        "seconds": 4.23,
+        "source_parent": "bcf8e84957017181dc323ff3c3a9f4b32b218799",
+        "runtime_asset_version": "54f56205be7e",
+        "test_inputs": {
+          "bytes": 157110,
+          "sha256": "fb8e0bfb4e9976061ecdd9350cb115d3d3d42753a66739a109675c30a3484ddb",
+          "blob": "832147c3ede08f31eaefa67fc2866f716aada1c0"
+        },
+        "runtime_unchanged_from_initial_candidate": true
+      },
+      "observations": {
+        "contexts": 2,
+        "pages": 2,
+        "page_errors": [],
+        "blocked_external_requests": 0,
+        "blocked_websockets": 0,
+        "browser": "157.0.8103.39"
+      },
+      "cases": {
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_return_rejects_stale_reading_identity[revision-another-publication]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_return_rejects_stale_reading_identity[cutoff-1900-01-01]": "passed"
+      },
+      "counts": {
+        "passed": 2,
+        "failed": 0,
+        "error": 0,
+        "skipped": 0
+      }
+    },
+    "current-return-verified": {
+      "result": {
+        "command": [
+          "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "-m",
+          "pytest",
+          "-q",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_review_returns_to_the_same_case_and_reading",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_review_close_exits_the_managed_journey",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_detached_current_review_replaces_with_exact_scenario",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_parent_rejects_the_same_id_at_a_different_horizon",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_parent_accepts_the_normalized_default_horizon",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_return_rejects_stale_reading_identity",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_locale_preserves_disclosure_focus_and_reading",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_restore_uses_heading_when_save_becomes_disabled",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_restore_does_not_swap_remove_focus_to_save",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_return_survives_unreadable_saved_storage",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_parent_focus_callback_keeps_the_new_destination",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_parent_double_activation_moves_back_once",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_parent_is_absent_without_a_resolved_case",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_evidence_native_back_restores_the_case_reader",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_saved_journey_restores_the_exact_outer_horizon",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_detached_saved_item_still_has_a_real_review_parent",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_truly_detached_review_opens_exact_saved_case_by_replace",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_saved_parent_focus_callback_keeps_its_new_destination",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_saved_parent_rechecks_the_requested_record_before_return",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_legacy_saved_parent_horizon_is_repaired_in_the_same_entry",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_saved_locale_keeps_disclosure_focus_and_reading_position",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_close_falls_back_to_the_restored_active_view_heading",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_missing_current_case_recovers_without_borrowing_review_context",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_generic_and_valid_current_reviews_remain_distinct",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_scenario_retains_its_existing_reading_order",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_newer_focus_during_confirmation_survives",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_completion_focus_callbacks_keep_their_new_panel",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_programmatic_save_preserves_unrelated_focus_and_stale_save_stays_safe",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_review_locale_does_not_restart_existing_reading",
+          "--tb=short",
+          "--junitxml=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/current-return-verified/junit.xml",
+          "--basetemp=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/current-return-verified/pytest-temp"
+        ],
+        "exit_code": 0,
+        "seconds": 34.749,
+        "source_parent": "bcf8e84957017181dc323ff3c3a9f4b32b218799",
+        "runtime_asset_version": "35617892939a",
+        "candidate_inputs": {
+          "templates/crypto_intelligence_r4.js": {
+            "bytes": 72960,
+            "sha256": "45447d1912ade2ec51c5f097b31d31582353ab1081b5fab17b2177be38c32999",
+            "blob": "9d983207eca2d4fb02eeb2fee0354e6e314e969c"
+          },
+          "tests/test_crypto_intelligence_r4_browser.py": {
+            "bytes": 158330,
+            "sha256": "ce64c9fb5e3efd8dda242f9cf9df77e2a81d797452aecbd5ef798d18ddbbfd46",
+            "blob": "d21660efa526abd43218994523425598ba305b5c"
+          },
+          "site/crypto-r4.html": {
+            "bytes": 129566,
+            "sha256": "bb34c4fde9da2bd30c50f0b1deaea45e139fe3bab358bb858d0196036e9faec3",
+            "blob": "f2c1eacfb247eaacb395fb0bfe99752c2e387d72"
+          },
+          "site/vector-r4.html": {
+            "bytes": 129565,
+            "sha256": "985ad91feb0606a1f94c44f5e356a56b838e70999a417dddaa6f8c3f42c7dae1",
+            "blob": "317c77728e4d1b26dc3d9e580988c4b120a32746"
+          },
+          "site/crypto_intelligence_r4.js": {
+            "bytes": 72960,
+            "sha256": "45447d1912ade2ec51c5f097b31d31582353ab1081b5fab17b2177be38c32999",
+            "blob": "9d983207eca2d4fb02eeb2fee0354e6e314e969c"
+          }
+        }
+      },
+      "observations": {
+        "contexts": 59,
+        "pages": 59,
+        "page_errors": [],
+        "blocked_external_requests": 0,
+        "blocked_websockets": 0,
+        "browser": "157.0.8103.39"
+      },
+      "cases": {
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_review_returns_to_the_same_case_and_reading[en-390-7-2026-11-09T12:00:00Z]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_review_returns_to_the_same_case_and_reading[zh-320-7-2026-11-09T12:00:00Z]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_review_returns_to_the_same_case_and_reading[en-1440-30-2026-10-18T12:00:00Z]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_review_returns_to_the_same_case_and_reading[zh-390-30-2026-10-18T12:00:00Z]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_review_close_exits_the_managed_journey[en-390]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_review_close_exits_the_managed_journey[zh-320]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_detached_current_review_replaces_with_exact_scenario[en-390-7]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_detached_current_review_replaces_with_exact_scenario[zh-320-30]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_parent_rejects_the_same_id_at_a_different_horizon": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_parent_accepts_the_normalized_default_horizon": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_return_rejects_stale_reading_identity[revision-another-publication]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_return_rejects_stale_reading_identity[cutoff-1900-01-01]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_locale_preserves_disclosure_focus_and_reading[390]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_locale_preserves_disclosure_focus_and_reading[320]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_restore_uses_heading_when_save_becomes_disabled": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_restore_does_not_swap_remove_focus_to_save": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_return_survives_unreadable_saved_storage[malformed]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_return_survives_unreadable_saved_storage[unreadable]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_parent_focus_callback_keeps_the_new_destination": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_parent_double_activation_moves_back_once": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_parent_is_absent_without_a_resolved_case[memory]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_parent_is_absent_without_a_resolved_case[memory:missing]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_parent_is_absent_without_a_resolved_case[memory:]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_evidence_native_back_restores_the_case_reader[en-390]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_evidence_native_back_restores_the_case_reader[zh-320]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_saved_journey_restores_the_exact_outer_horizon[en-1440]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_saved_journey_restores_the_exact_outer_horizon[zh-390]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_saved_journey_restores_the_exact_outer_horizon[en-320]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_detached_saved_item_still_has_a_real_review_parent": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_truly_detached_review_opens_exact_saved_case_by_replace[en-1440]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_truly_detached_review_opens_exact_saved_case_by_replace[zh-320]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_saved_parent_focus_callback_keeps_its_new_destination": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_saved_parent_rechecks_the_requested_record_before_return[missing]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_saved_parent_rechecks_the_requested_record_before_return[duplicate]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_saved_parent_rechecks_the_requested_record_before_return[unreadable]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_legacy_saved_parent_horizon_is_repaired_in_the_same_entry": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_saved_locale_keeps_disclosure_focus_and_reading_position[1440]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_saved_locale_keeps_disclosure_focus_and_reading_position[320]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_close_falls_back_to_the_restored_active_view_heading[hidden]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_close_falls_back_to_the_restored_active_view_heading[removed]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_missing_current_case_recovers_without_borrowing_review_context[scenario:absent-en-390]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_missing_current_case_recovers_without_borrowing_review_context[scenario:absent-zh-320]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_missing_current_case_recovers_without_borrowing_review_context[memory:absent-en-390]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_missing_current_case_recovers_without_borrowing_review_context[memory:absent-zh-320]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_missing_current_case_recovers_without_borrowing_review_context[memory:-en-390]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_missing_current_case_recovers_without_borrowing_review_context[memory:-zh-320]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_generic_and_valid_current_reviews_remain_distinct[memory-en-390]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_generic_and_valid_current_reviews_remain_distinct[memory-zh-320]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_generic_and_valid_current_reviews_remain_distinct[memory:continuation-en-390]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_generic_and_valid_current_reviews_remain_distinct[memory:continuation-zh-320]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_scenario_retains_its_existing_reading_order[en-320]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_scenario_retains_its_existing_reading_order[zh-1440]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_newer_focus_during_confirmation_survives[save]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_newer_focus_during_confirmation_survives[remove]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_completion_focus_callbacks_keep_their_new_panel[frozen-remove]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_completion_focus_callbacks_keep_their_new_panel[current-save]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_programmatic_save_preserves_unrelated_focus_and_stale_save_stays_safe": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_review_locale_does_not_restart_existing_reading[en-390]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_review_locale_does_not_restart_existing_reading[zh-320]": "passed"
+      },
+      "counts": {
+        "passed": 59,
+        "failed": 0,
+        "error": 0,
+        "skipped": 0
+      }
+    },
+    "current-return-entry-baseline": {
+      "result": {
+        "command": [
+          "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "-m",
+          "pytest",
+          "-q",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_new_current_review_entry_starts_at_its_own_beginning",
+          "--tb=short",
+          "--junitxml=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/current-return-entry-baseline/junit.xml",
+          "--basetemp=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/current-return-entry-baseline/pytest-temp"
+        ],
+        "exit_code": 1,
+        "seconds": 4.254,
+        "source_parent": "bcf8e84957017181dc323ff3c3a9f4b32b218799",
+        "runtime_asset_version": "35617892939a",
+        "test_sha256": "739350df65b10ef86e18b4d4fb1ba9662f366dba8ef29d5dfe85ecf1e12a7dbc"
+      },
+      "observations": {
+        "contexts": 2,
+        "pages": 2,
+        "page_errors": [],
+        "blocked_external_requests": 0,
+        "blocked_websockets": 0,
+        "browser": "157.0.8103.39"
+      },
+      "cases": {
+        "tests.test_crypto_intelligence_r4_browser::test_r4_new_current_review_entry_starts_at_its_own_beginning[different-horizon]": "failed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_new_current_review_entry_starts_at_its_own_beginning[same-url]": "failed"
+      },
+      "counts": {
+        "passed": 0,
+        "failed": 2,
+        "error": 0,
+        "skipped": 0
+      }
+    },
+    "current-return-entry-verified": {
+      "result": {
+        "command": [
+          "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "-m",
+          "pytest",
+          "-q",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_review_returns_to_the_same_case_and_reading",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_review_close_exits_the_managed_journey",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_detached_current_review_replaces_with_exact_scenario",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_parent_rejects_the_same_id_at_a_different_horizon",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_parent_accepts_the_normalized_default_horizon",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_return_rejects_stale_reading_identity",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_locale_preserves_disclosure_focus_and_reading",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_restore_uses_heading_when_save_becomes_disabled",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_restore_does_not_swap_remove_focus_to_save",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_return_survives_unreadable_saved_storage",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_parent_focus_callback_keeps_the_new_destination",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_parent_double_activation_moves_back_once",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_parent_is_absent_without_a_resolved_case",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_evidence_native_back_restores_the_case_reader",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_saved_journey_restores_the_exact_outer_horizon",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_detached_saved_item_still_has_a_real_review_parent",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_truly_detached_review_opens_exact_saved_case_by_replace",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_saved_parent_focus_callback_keeps_its_new_destination",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_saved_parent_rechecks_the_requested_record_before_return",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_legacy_saved_parent_horizon_is_repaired_in_the_same_entry",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_saved_locale_keeps_disclosure_focus_and_reading_position",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_close_falls_back_to_the_restored_active_view_heading",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_missing_current_case_recovers_without_borrowing_review_context",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_generic_and_valid_current_reviews_remain_distinct",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_scenario_retains_its_existing_reading_order",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_newer_focus_during_confirmation_survives",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_completion_focus_callbacks_keep_their_new_panel",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_programmatic_save_preserves_unrelated_focus_and_stale_save_stays_safe",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_review_locale_does_not_restart_existing_reading",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_new_current_review_entry_starts_at_its_own_beginning",
+          "--tb=short",
+          "--junitxml=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/current-return-entry-verified/junit.xml",
+          "--basetemp=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/current-return-entry-verified/pytest-temp"
+        ],
+        "exit_code": 0,
+        "seconds": 35.989,
+        "source_parent": "bcf8e84957017181dc323ff3c3a9f4b32b218799",
+        "runtime_asset_version": "2698fd4fd4ed",
+        "candidate_inputs": {
+          "templates/crypto_intelligence_r4.js": {
+            "bytes": 73102,
+            "sha256": "7d2d286c5251768703a436602571c01cd6aad71aeb89960a020b3b5cb3cd89f8",
+            "blob": "924ee60a216d1aa33667a20423d449c53dff8b21"
+          },
+          "tests/test_crypto_intelligence_r4_browser.py": {
+            "bytes": 160032,
+            "sha256": "739350df65b10ef86e18b4d4fb1ba9662f366dba8ef29d5dfe85ecf1e12a7dbc",
+            "blob": "7fb555bf40f5099f551f610c7400a78376cf8424"
+          },
+          "site/crypto-r4.html": {
+            "bytes": 129566,
+            "sha256": "27a82d2cc8cd2c870fa01721c1f96638d6e72f0b4094cb10acf7209141496b87",
+            "blob": "36b74f9a87902d061b5f9e17739e9c636c4f8d86"
+          },
+          "site/vector-r4.html": {
+            "bytes": 129565,
+            "sha256": "20907e7a3f556f21cf1777d4dfa9ff79b545301649d5dd95ddfc459e37e4c253",
+            "blob": "d593e44e59ac4ba23c4f14aa4f29275df8d0876a"
+          },
+          "site/crypto_intelligence_r4.js": {
+            "bytes": 73102,
+            "sha256": "7d2d286c5251768703a436602571c01cd6aad71aeb89960a020b3b5cb3cd89f8",
+            "blob": "924ee60a216d1aa33667a20423d449c53dff8b21"
+          }
+        }
+      },
+      "observations": {
+        "contexts": 61,
+        "pages": 61,
+        "page_errors": [],
+        "blocked_external_requests": 0,
+        "blocked_websockets": 0,
+        "browser": "157.0.8103.39"
+      },
+      "cases": {
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_review_returns_to_the_same_case_and_reading[en-390-7-2026-11-09T12:00:00Z]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_review_returns_to_the_same_case_and_reading[zh-320-7-2026-11-09T12:00:00Z]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_review_returns_to_the_same_case_and_reading[en-1440-30-2026-10-18T12:00:00Z]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_review_returns_to_the_same_case_and_reading[zh-390-30-2026-10-18T12:00:00Z]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_review_close_exits_the_managed_journey[en-390]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_review_close_exits_the_managed_journey[zh-320]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_detached_current_review_replaces_with_exact_scenario[en-390-7]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_detached_current_review_replaces_with_exact_scenario[zh-320-30]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_parent_rejects_the_same_id_at_a_different_horizon": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_parent_accepts_the_normalized_default_horizon": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_return_rejects_stale_reading_identity[revision-another-publication]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_return_rejects_stale_reading_identity[cutoff-1900-01-01]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_locale_preserves_disclosure_focus_and_reading[390]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_locale_preserves_disclosure_focus_and_reading[320]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_restore_uses_heading_when_save_becomes_disabled": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_restore_does_not_swap_remove_focus_to_save": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_return_survives_unreadable_saved_storage[malformed]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_return_survives_unreadable_saved_storage[unreadable]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_parent_focus_callback_keeps_the_new_destination": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_parent_double_activation_moves_back_once": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_parent_is_absent_without_a_resolved_case[memory]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_parent_is_absent_without_a_resolved_case[memory:missing]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_parent_is_absent_without_a_resolved_case[memory:]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_evidence_native_back_restores_the_case_reader[en-390]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_evidence_native_back_restores_the_case_reader[zh-320]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_saved_journey_restores_the_exact_outer_horizon[en-1440]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_saved_journey_restores_the_exact_outer_horizon[zh-390]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_saved_journey_restores_the_exact_outer_horizon[en-320]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_detached_saved_item_still_has_a_real_review_parent": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_truly_detached_review_opens_exact_saved_case_by_replace[en-1440]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_truly_detached_review_opens_exact_saved_case_by_replace[zh-320]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_saved_parent_focus_callback_keeps_its_new_destination": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_saved_parent_rechecks_the_requested_record_before_return[missing]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_saved_parent_rechecks_the_requested_record_before_return[duplicate]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_saved_parent_rechecks_the_requested_record_before_return[unreadable]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_legacy_saved_parent_horizon_is_repaired_in_the_same_entry": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_saved_locale_keeps_disclosure_focus_and_reading_position[1440]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_saved_locale_keeps_disclosure_focus_and_reading_position[320]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_close_falls_back_to_the_restored_active_view_heading[hidden]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_close_falls_back_to_the_restored_active_view_heading[removed]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_missing_current_case_recovers_without_borrowing_review_context[scenario:absent-en-390]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_missing_current_case_recovers_without_borrowing_review_context[scenario:absent-zh-320]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_missing_current_case_recovers_without_borrowing_review_context[memory:absent-en-390]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_missing_current_case_recovers_without_borrowing_review_context[memory:absent-zh-320]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_missing_current_case_recovers_without_borrowing_review_context[memory:-en-390]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_missing_current_case_recovers_without_borrowing_review_context[memory:-zh-320]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_generic_and_valid_current_reviews_remain_distinct[memory-en-390]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_generic_and_valid_current_reviews_remain_distinct[memory-zh-320]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_generic_and_valid_current_reviews_remain_distinct[memory:continuation-en-390]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_generic_and_valid_current_reviews_remain_distinct[memory:continuation-zh-320]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_scenario_retains_its_existing_reading_order[en-320]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_scenario_retains_its_existing_reading_order[zh-1440]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_newer_focus_during_confirmation_survives[save]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_newer_focus_during_confirmation_survives[remove]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_completion_focus_callbacks_keep_their_new_panel[frozen-remove]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_completion_focus_callbacks_keep_their_new_panel[current-save]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_programmatic_save_preserves_unrelated_focus_and_stale_save_stays_safe": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_review_locale_does_not_restart_existing_reading[en-390]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_review_locale_does_not_restart_existing_reading[zh-320]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_new_current_review_entry_starts_at_its_own_beginning[different-horizon]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_new_current_review_entry_starts_at_its_own_beginning[same-url]": "passed"
+      },
+      "counts": {
+        "passed": 61,
+        "failed": 0,
+        "error": 0,
+        "skipped": 0
+      }
+    }
+  },
+  "case_set_checks": {
+    "baseline_equals_initial_57": true,
+    "initial_two_failures_equal_corrected_cases": true,
+    "first_view_59_pass": true,
+    "new_entry_baseline_two_fail": true,
+    "final_all_61_pass": true,
+    "final_cases_equal_prior_59_plus_new_entry_two": true
+  },
+  "diagnostic": {
+    "source_assets": "54f56205be7e",
+    "browser": "157.0.8103.39",
+    "results": [
+      {
+        "installation": "after_application",
+        "at_fault": {
+          "panel": "scenario:continuation",
+          "renderedAddress": "http://127.0.0.1:52832/crypto-r4.html?lang=en#scenarios?h=30&panel=scenario%3Acontinuation",
+          "address": "http://127.0.0.1:52832/crypto-r4.html?lang=en#scenarios?h=30&panel=scenario%3Acontinuation"
+        },
+        "disclosure_open_after": true
+      },
+      {
+        "installation": "before_application",
+        "at_fault": {
+          "panel": "memory:continuation",
+          "renderedAddress": "http://127.0.0.1:52832/crypto-r4.html?lang=en#scenarios?h=30&panel=memory%3Acontinuation",
+          "address": "http://127.0.0.1:52832/crypto-r4.html?lang=en#scenarios?h=30&panel=scenario%3Acontinuation"
+        },
+        "disclosure_open_after": false
+      }
+    ],
+    "observations": {
+      "contexts": 2,
+      "pages": 2,
+      "page_errors": [],
+      "blocked_external_requests": 0,
+      "blocked_websockets": 0
+    },
+    "purpose": "Diagnose fault-injection timing only; not additional product acceptance."
+  },
+  "files": {
+    "current-return-parent-input.json": {
+      "bytes": 4477,
+      "sha256": "ce6f80d0a26fc5079ace048bc79422e6a5c7d92057ebd3e5da1065bfa9522d0f",
+      "blob": "e1e7dd3af46337e045ae5382eedd7c90562966b9"
+    },
+    "current-return-parent-receipt.json": {
+      "bytes": 9079,
+      "sha256": "5d1473bef1777b3baee4ef60735333aa251c34da11df57eaa9690887841d55e3",
+      "blob": "8fd068384f0e5d69b0b0f8b168537f532e30f8f3"
+    },
+    "current-return-parent-snapshot.py": {
+      "bytes": 1000,
+      "sha256": "e8940dc63e875fdf9ad64cd0bf4ed363419f7656021b6137f3a3c7ed89908a26",
+      "blob": "e8a71b6b4be016d18c09a4386b3b565ee8d43d6d"
+    },
+    "current-return-initial-source-receipt.json": {
+      "bytes": 4746,
+      "sha256": "87ba413c860c3f710b75bf7efd27e9e6128f2027c20c9adde75df0cc81302f5b",
+      "blob": "d62b9e343701ffa28a95356a11c0e9db035a302b"
+    },
+    "current-return-pre-visual-source-receipt.json": {
+      "bytes": 4797,
+      "sha256": "115b2bba79e204fd2f4d9f014f30b6c5919e49a28b0e4ab428548a12ad8f98dc",
+      "blob": "81bc1edb172b291c8fcf8ebbf63acbd0178153b8"
+    },
+    "current-return-source-receipt.json": {
+      "bytes": 4864,
+      "sha256": "04b7440ba1e789276c9fd0629288e7d53dc8f7895f5e43aeb987a15bae5953f8",
+      "blob": "902147f92f434bceb6a97ab2ba2772634f9bad80"
+    },
+    "current-return-initial-transforms.json": {
+      "bytes": 25210,
+      "sha256": "0ce057705d054d92f77c4401d4706e1fcf5d268983c4251a12c77858e1e5e547",
+      "blob": "6936bd34d3c1cc52536c436177172705d4d189f0"
+    },
+    "current-return-pre-visual-transforms.json": {
+      "bytes": 29685,
+      "sha256": "b184109528b06f227058f1cfdd9231a298816b1af0ce7fff1a9d3590562cbfca",
+      "blob": "fc8473b2333de5dc7ee17205e8c64970cd894426"
+    },
+    "current-return-transforms.json": {
+      "bytes": 38674,
+      "sha256": "cac6d05aa65325a4479e84e3a34bbd6196bca0b149e7e427ec514639b52368ef",
+      "blob": "124f1fbfcaf10acaf1468bd05807833ba16a1139"
+    },
+    "current-return-baseline.py": {
+      "bytes": 4948,
+      "sha256": "96a682fa7c752da98e3aad2ac0f49b7228eb8c4bcacf0418a02d45bae8842cad",
+      "blob": "ea8ad08f97ae49027139130932c31f70b7c1e455"
+    },
+    "current-return-candidate.py": {
+      "bytes": 7085,
+      "sha256": "857da4f05d91b26d4898ebb33c4daa70ef9dc2c043c040e8161b6ade318ffbd3",
+      "blob": "24ab8df99d45cf71629a2ea08a87d4c99aaeb293"
+    },
+    "current-return-harness-correction.py": {
+      "bytes": 2689,
+      "sha256": "84255e57717a954e15c2f3b4c569b4f7822e5e1cab5f2dcd85b9c68529afcbaf",
+      "blob": "363e1f95aa88e137de69f3eaaeada193dddfa4c0"
+    },
+    "current-return-verified.py": {
+      "bytes": 8076,
+      "sha256": "0642a739957fd5592ef111b5a1e4dfc27a994ccf2e805d6b3dd1c656e4b13aba",
+      "blob": "f893053b0f1b8ed28874c2c789ab101e1d62129c"
+    },
+    "current-return-injection-diagnostic.py": {
+      "bytes": 3250,
+      "sha256": "719905e7a7d3e59dca64f8f3cfeb76b76890e9cc32b397d21b6ec2ca025b191b",
+      "blob": "2d9f1a952edc8b01184082d2c1b280487f232e27"
+    },
+    "current-return-injection-diagnostic.json": {
+      "bytes": 1113,
+      "sha256": "d6319a641adbe3e1fe1bf0955215ef21f1ea53f71187ecab3610bd2ffcf8b659",
+      "blob": "084171313b1c4e0fa2301283b0f29f0899ee7647"
+    },
+    "current-return-baseline/result.json": {
+      "bytes": 3768,
+      "sha256": "d813aeb86f8e3a2c8b70ff81fbe2f859910a9eeb2d32f52e7dc63c7b9895a038",
+      "blob": "9273e3a64db8856d3d242439b2e31fdf5b126972"
+    },
+    "current-return-baseline/observations.json": {
+      "bytes": 148,
+      "sha256": "2b39742bb534561fdcacc0cd23f8912f053c8b9dbb60e0f9b3ebeb61e99a19ab",
+      "blob": "d3f3d64fd87e5a063ddc401c0793264006581bfd"
+    },
+    "current-return-baseline/stdout.txt": {
+      "bytes": 21853,
+      "sha256": "99eeacb00d8de4c65d7e572c0838ce3073002409e4b7f006c4a621fcebeefff5",
+      "blob": "17cd75ff91b1535a9cdd06ba943774fd1e250e75"
+    },
+    "current-return-baseline/stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "current-return-baseline/junit.xml": {
+      "bytes": 38758,
+      "sha256": "400dd9afb5a9548ca7c2a8ceaddce017626dd0495a3dd1abe6c90402e2f0d1bd",
+      "blob": "f4ebc9383071840e8afa5c0dc1f31e82abe4fa35"
+    },
+    "current-return-final/result.json": {
+      "bytes": 4798,
+      "sha256": "ac89a3c81417b9d94990cdb8809febe6eae063b94d527ced30ab3edcc79e1c2f",
+      "blob": "824d5489f44cdeb3f5f9ad604734d10610bf6c96"
+    },
+    "current-return-final/observations.json": {
+      "bytes": 148,
+      "sha256": "2b39742bb534561fdcacc0cd23f8912f053c8b9dbb60e0f9b3ebeb61e99a19ab",
+      "blob": "d3f3d64fd87e5a063ddc401c0793264006581bfd"
+    },
+    "current-return-final/stdout.txt": {
+      "bytes": 2362,
+      "sha256": "73b56ccd811c1d17dbe8ab8ff7abc054fc3aff250ddd7d13d302d3ff5987b2b2",
+      "blob": "5f32461bf75343328b41af3641131ddfdde90270"
+    },
+    "current-return-final/stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "current-return-final/junit.xml": {
+      "bytes": 12485,
+      "sha256": "7413056facb5a1b9526b26b5dfecf295df0953197ca903fe80aebb45bc3256d2",
+      "blob": "e522679123d54b15b19617426cd13c953323808b"
+    },
+    "current-return-harness-final/result.json": {
+      "bytes": 882,
+      "sha256": "d58efbdaad5cdbbd035c1efabde7502994380997d25cf8dfb1f81db98e83ef09",
+      "blob": "306286eab0f79167887b37945afead172c26d1e2"
+    },
+    "current-return-harness-final/observations.json": {
+      "bytes": 146,
+      "sha256": "0cca1259c16b02c18465ffc533ecdecab800de438836a4ab17cc902d10a403e8",
+      "blob": "2f231ece9567df133566961c95b282b2e5a3dee6"
+    },
+    "current-return-harness-final/stdout.txt": {
+      "bytes": 98,
+      "sha256": "adf43b16b39889666b56c71f6514e554fbad6652c3f4dca46f215ca5545b6ee5",
+      "blob": "6bf1bffd104e8dadaf46a6c5208e1a9cf5332281"
+    },
+    "current-return-harness-final/stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "current-return-harness-final/junit.xml": {
+      "bytes": 573,
+      "sha256": "78ce99141694f7a52378d03768a85d3ba78808f02af3ccb74922478fe7e0411e",
+      "blob": "9b7fdd05ca9855ade98d6ea204a76e1b6baad80d"
+    },
+    "current-return-verified/result.json": {
+      "bytes": 4921,
+      "sha256": "f6b8189524c36bdca4981f9b974a4a6cc043951cfdfe9b99719b915ea596078a",
+      "blob": "2755f004abbd5c374a28286fdbfe913552a66956"
+    },
+    "current-return-verified/observations.json": {
+      "bytes": 148,
+      "sha256": "0c6ac1eacc5702684c9d54eff96e9d9903a8f68dc2bc45a9970164216020a021",
+      "blob": "9c0457161fea898e9f56be27e8cf550202a710f1"
+    },
+    "current-return-verified/stdout.txt": {
+      "bytes": 100,
+      "sha256": "53b57b8a4c72c315d27b8d9a1ceadb318d68036b114616b8b4091833b5516978",
+      "blob": "c74545a665f63ee59dcb7206c093f9339d71cea9"
+    },
+    "current-return-verified/stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "current-return-verified/junit.xml": {
+      "bytes": 9609,
+      "sha256": "c7a36643221ad4dca6d2004972cb8c8f7aedc5482d4c909192bfa3ca4be6fac0",
+      "blob": "e95381403286b4022769595b5996ac0091efbe48"
+    },
+    "current-return-pre-entry-source-receipt.json": {
+      "bytes": 4862,
+      "sha256": "a623d30648f6f72c17244e55a176bb42f96058f0fe974ba017fa41718af79cf4",
+      "blob": "fc96a29ab7ea8abb6567ba700c2d2084de9f5c0f"
+    },
+    "current-return-pre-entry-transforms.json": {
+      "bytes": 34028,
+      "sha256": "665f15687d8af604121fcd140decde10f9198ac0d38ec2bdf74a2180a15ef40d",
+      "blob": "ce66493e487a01332d2562e10072bd047edb277d"
+    },
+    "current-return-entry-test-addition.txt": {
+      "bytes": 1702,
+      "sha256": "41f898ea99f1016303bea83d7e20f4f8a7e24760da6bfed3195e9d91db21fb4d",
+      "blob": "8b761cfab7de6758f512c07518b38c8ce1ff93b0"
+    },
+    "current-return-entry-baseline.py": {
+      "bytes": 1852,
+      "sha256": "a423756129b5198a135aec9fd9fc392fd9891fdd6f8179d0a39e1fcfcb980118",
+      "blob": "acded774ab9d3a9f4061119e4f246be418a6f2b3"
+    },
+    "current-return-entry-verified.py": {
+      "bytes": 8002,
+      "sha256": "6cea4b3ee4333f984f7a38d776f4cf3277a66c78f1ba264b05dd0e84dd212c12",
+      "blob": "1feb3f881db29ec5c5a100214d773568fcc5f317"
+    },
+    "current-return-publication-readback.py": {
+      "bytes": 6179,
+      "sha256": "774ca27fddf1df4ddd606910127311a6fd37023da3f3fa8404677f9231d3efcd",
+      "blob": "b9819b6dcf7931d58f05dc64c195a5be3c1b8271"
+    },
+    "current-return-publication-receipt.json": {
+      "bytes": 58912,
+      "sha256": "98f5d0e50d9efc14f6f140c866e9e0560c70ccd0482f04793aeddf8a4760e555",
+      "blob": "31dead9e5bd85b72ea763aca956e3f48fdb863dc"
+    },
+    "current-return-entry-baseline/result.json": {
+      "bytes": 743,
+      "sha256": "ac6c7fbcea65fd49675170a16278613974974b7801863c639968f341a7454b28",
+      "blob": "e9b08322700b7586021364a4c0ae74624b3f76de"
+    },
+    "current-return-entry-baseline/observations.json": {
+      "bytes": 146,
+      "sha256": "0cca1259c16b02c18465ffc533ecdecab800de438836a4ab17cc902d10a403e8",
+      "blob": "2f231ece9567df133566961c95b282b2e5a3dee6"
+    },
+    "current-return-entry-baseline/stdout.txt": {
+      "bytes": 2381,
+      "sha256": "87be30522d2291bfa2c11823a8538e0b783dd6d80de040b27d6a3b0d1d9f4fb0",
+      "blob": "297f1b1a92992ad345ac59f47d430fce88209644"
+    },
+    "current-return-entry-baseline/stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "current-return-entry-baseline/junit.xml": {
+      "bytes": 3937,
+      "sha256": "051486ab271329d6f7af00db3174b6a2b0f60ce8eaf7bdf7f7d22f0b75f5346a",
+      "blob": "a6bd346d01a7a159fd9436d6db9260a0f5d64c6e"
+    },
+    "current-return-entry-verified/result.json": {
+      "bytes": 5047,
+      "sha256": "339c775ad9bf7515572e63151b955dedb0ec903f40f5e3864ebb815ba4d74134",
+      "blob": "1efc3ca7759514ac66b6e7a04ed1630c0b5de034"
+    },
+    "current-return-entry-verified/observations.json": {
+      "bytes": 148,
+      "sha256": "8f9d99850226ce08ed746391e4b2d23efc69459b9b0d5823f57ef8ce75fd9797",
+      "blob": "b664a1f61c372c53c016da69583e8a704304eae5"
+    },
+    "current-return-entry-verified/stdout.txt": {
+      "bytes": 100,
+      "sha256": "8c6d4e40468e3c2192af83023c097aa79b2b5a9d5f84d1caa906b0570456c732",
+      "blob": "8120b90dbe11119e605fbce1f65bafbbf2d2ca30"
+    },
+    "current-return-entry-verified/stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "current-return-entry-verified/junit.xml": {
+      "bytes": 9932,
+      "sha256": "eb76a3b406a494c358bebe2ca3f18976d4d889c68d5f16e63cd30886d1ce1476",
+      "blob": "1c1df5169de1c7b6199c09f409b7b6a8c5ab9ff4"
+    },
+    "current-return-entry-publication-readback.py": {
+      "bytes": 7327,
+      "sha256": "d5f2fccc7bbaba83404e285f1e04adca93366fc071859215f4a8e506156ce81a",
+      "blob": "84b014ddf74670cd08e274347f1d36fddc95c593"
+    }
+  },
+  "captures": [
+    {
+      "name": "current-return-review-en-390.png",
+      "path": "current-return-entry-verified/captures/current-return-review-en-390.png",
+      "role": "Final verified UI",
+      "bytes": 41791,
+      "sha256": "6e693eddac3a60b42fbcf6bdde8a65efb5de46b5526861f32897f07a2bb79ea1",
+      "blob": "21c07fa072c928aaca721c27ec562b441c0a9dc2",
+      "width": 390,
+      "height": 520
+    },
+    {
+      "name": "current-return-review-zh-320.png",
+      "path": "current-return-entry-verified/captures/current-return-review-zh-320.png",
+      "role": "Final verified UI",
+      "bytes": 36317,
+      "sha256": "3f10ad246bc94a2be3dddb3e532cc90251507cedea2d88f04dacd23399acd330",
+      "blob": "793cb5e2f77f0ac016576ce22e9328f4f49c59c3",
+      "width": 320,
+      "height": 520
+    },
+    {
+      "name": "current-return-details-en-390.png",
+      "path": "current-return-entry-verified/captures/current-return-details-en-390.png",
+      "role": "Final verified UI",
+      "bytes": 45142,
+      "sha256": "43cc4d6f3abcd3f85023637dd58be5f009bb9ecd750af4880bf0dc0cf0429b5b",
+      "blob": "ac76fb93b7f6a2f5a62093f0c909cdc9f70b7332",
+      "width": 390,
+      "height": 520
+    },
+    {
+      "name": "current-return-details-zh-320.png",
+      "path": "current-return-entry-verified/captures/current-return-details-zh-320.png",
+      "role": "Final verified UI",
+      "bytes": 42740,
+      "sha256": "a226954219bcbd2f88a167b035755095283d8260db587b09d6df23de3cb1ec88",
+      "blob": "c3119768faf1e37936bd6a70e3b9194e73da2acd",
+      "width": 320,
+      "height": 520
+    },
+    {
+      "name": "current-return-detached-en-390.png",
+      "path": "current-return-entry-verified/captures/current-return-detached-en-390.png",
+      "role": "Final verified UI",
+      "bytes": 54722,
+      "sha256": "84fef949e19c4556f2618fadc97fbf8974d86d23c4666a777cd422641aeea398",
+      "blob": "9aba471d6ec6d44d27f13a1e67ff1bea0d68de8f",
+      "width": 390,
+      "height": 764
+    },
+    {
+      "name": "current-return-detached-zh-320.png",
+      "path": "current-return-entry-verified/captures/current-return-detached-zh-320.png",
+      "role": "Final verified UI",
+      "bytes": 49247,
+      "sha256": "6faf02865ac4a64b145ad0c0d5053d53f89378e80bace11ca233b94d69984781",
+      "blob": "195e2b9c04582d8e17fd0c3b53318d3a21796855",
+      "width": 320,
+      "height": 764
+    },
+    {
+      "name": "initial-current-return-review-en-390.png",
+      "path": "current-return-final/captures/current-return-review-en-390.png",
+      "role": "Initial candidate before first-reading correction",
+      "bytes": 35364,
+      "sha256": "37a8e68f997e9254847c9ebcc97d53f088874e33cc0b2bcef557cecee9503273",
+      "blob": "72f3c3724812a2606be915ed2768aed5fc64a2af",
+      "width": 390,
+      "height": 520
+    },
+    {
+      "name": "initial-current-return-review-zh-320.png",
+      "path": "current-return-final/captures/current-return-review-zh-320.png",
+      "role": "Initial candidate before first-reading correction",
+      "bytes": 28911,
+      "sha256": "30ab65ab6c2ae44ae6b8fd1f0bdd7bb6f969c28d5b4e082e96c545e36e5b4e24",
+      "blob": "7005d1ce60d97fdf3af15fe710cfca604539dc94",
+      "width": 320,
+      "height": 520
+    }
+  ],
+  "limits": [
+    "Native isolated HTTP fixture only; no hosted acceptance or public-route cutover.",
+    "Current case reading uses supplied revision/cutoff/horizon; no historical results or forecast calibration are created.",
+    "New named current-review entries start at the beginning; same-entry locale refresh retains its deliberate scroll.",
+    "Capture crops show actual dialog viewport; offscreen content is exercised by browser assertions."
+  ]
+}

@@ -9,7 +9,7 @@
   var title = document.getElementById("cri-dialog-title"), kicker = document.getElementById("cri-dialog-kicker");
   var views = ["overview", "bitcoin", "markets", "scenarios"], lastTrigger = null, toastTimer = null;
   var storageKey = "mmx.crypto.r4.scenarios.v1", currentShock = "tightening";
-  var renderedHistory = null, readingSuspended = false, pendingSavedReturn = null;
+  var renderedHistory = null, readingSuspended = false, pendingCaseReturn = null;
   function zh() { return document.documentElement.dataset.lang === "zh"; }
   function t(en, cn) { return zh() ? cn : en; }
   function field(value, name) { return value[name + (zh() ? "_zh" : "_en")] || ""; }
@@ -59,6 +59,14 @@
     return matches.length === 1 ? matches[0] : null;
   }
   function readingScope() {
+    var panel = body.dataset.panel;
+    if (panel && panel.indexOf("scenario:") === 0) {
+      if (state().params.get("panel") !== panel) return null;
+      var current = activeScenario(panel.slice(9));
+      if (!current || !savedText(current.revision) || !savedDay(current.as_of) ||
+          current.horizon_days !== Number(horizon())) return null;
+      return { panel: panel, revision: current.revision, horizon: current.horizon_days, cutoff: current.as_of };
+    }
     if (!body.dataset.savedRevision && body.dataset.savedList !== "true") return null;
     return { panel: body.dataset.panel, revision: body.dataset.savedRevision || null,
       horizon: body.dataset.savedHorizon ? Number(body.dataset.savedHorizon) : null,
@@ -89,7 +97,7 @@
       renderedHistory = historySignature();
     } catch (error) { /* Optional reading state must not break navigation. */ }
   }
-  function savedReading() {
+  function drawerReading() {
     var scope = readingScope(), reading = history.state && history.state.reading;
     if (!scope || !reading || typeof reading !== "object" || reading.panel !== scope.panel ||
         reading.revision !== scope.revision || reading.horizon !== scope.horizon ||
@@ -103,22 +111,23 @@
     body.dataset.savedHorizon = String(s.horizon_days);
     body.dataset.savedCutoff = s.as_of;
   }
-  function hasDrawerParent(panel) {
+  function hasDrawerParent(panel, expectedHorizon) {
     var metadata = history.state, current = state();
     if (!metadata || metadata.r4 !== true || metadata.drawer !== true ||
         !Number.isInteger(metadata.depth) || metadata.depth < 1 ||
         typeof metadata.previous !== "string" || metadata.previous.charAt(0) !== "#") return false;
     var parts = metadata.previous.slice(1).split("?"), params = new URLSearchParams(parts.slice(1).join("?"));
-    return views.indexOf(parts[0]) >= 0 && parts[0] === current.view && params.get("panel") === panel;
+    return views.indexOf(parts[0]) >= 0 && parts[0] === current.view && params.get("panel") === panel &&
+      (expectedHorizon === undefined || (params.get("h") === "30" ? "30" : "7") === String(expectedHorizon));
   }
-  function drawerParent(label, action) {
+  function drawerParent(label, action, context) {
     var parent = node("button", label, "cri-dialog-parent");
     parent.type = "button"; parent.dataset.drawerFocus = "parent";
     parent.addEventListener("click", action);
-    kicker.replaceChildren(parent, node("span", t("Saved snapshot", "已存快照"), "cri-saved-kicker"));
+    kicker.replaceChildren(parent, node("span", context === undefined ? t("Saved snapshot", "已存快照") : context, "cri-saved-kicker"));
   }
   function returnToSavedCase(revision) {
-    if (pendingSavedReturn && pendingSavedReturn.childAddress === location.href) return;
+    if (pendingCaseReturn && pendingCaseReturn.childAddress === location.href) return;
     var addressBefore = location.href, languageBefore = zh(), subtree = body.firstChild, focusBefore = document.activeElement;
     var collection = stored();
     if (location.href !== addressBefore || zh() !== languageBefore || body.firstChild !== subtree || document.activeElement !== focusBefore) return;
@@ -126,11 +135,25 @@
     if (!collection.ready || !saved) { apply({ collection: collection }); return; }
     if (hasDrawerParent("saved-item:" + revision)) {
       rememberDrawer();
-      pendingSavedReturn = { revision: revision, childAddress: location.href,
+      pendingCaseReturn = { panel: "saved-item:" + revision, revision: revision,
+        horizon: saved.horizon_days, cutoff: saved.as_of, childAddress: location.href,
         parentAddress: location.href.split("#")[0] + history.state.previous };
       history.back();
     }
     else update(null, { panel: "saved-item:" + revision, h: String(saved.horizon_days) }, true);
+  }
+  function returnToCurrentCase(id, caseHorizon) {
+    if (state().params.get("panel") !== "memory:" + id || horizon() !== caseHorizon ||
+        pendingCaseReturn && pendingCaseReturn.childAddress === location.href) return;
+    var current = activeScenario(id), panel = "scenario:" + id;
+    if (!current) { apply(); return; }
+    if (hasDrawerParent(panel, caseHorizon)) {
+      rememberDrawer();
+      pendingCaseReturn = { panel: panel, revision: current.revision, horizon: current.horizon_days,
+        cutoff: current.as_of, childAddress: location.href,
+        parentAddress: location.href.split("#")[0] + history.state.previous };
+      history.back();
+    } else update(null, { panel: panel, h: caseHorizon }, true);
   }
   function returnToSavedList() {
     if (hasDrawerParent("saved")) { rememberDrawer(); history.back(); }
@@ -147,7 +170,7 @@
     return root.querySelector('[data-view="' + view + '"] h2') || root.querySelector("h1");
   }
   function update(view, changes, replace) {
-    pendingSavedReturn = null; rememberDrawer();
+    pendingCaseReturn = null; rememberDrawer();
     var current = state(), params = current.params, oldPanel = params.get("panel");
     Object.keys(changes || {}).forEach(function (key) { if (changes[key] == null || changes[key] === "") params.delete(key); else params.set(key, changes[key]); });
     var metadata = replace && params.has("panel") && history.state && history.state.drawer ? Object.assign({}, history.state) : { r4: true };
@@ -158,7 +181,7 @@
   function horizon() { return state().params.get("h") === "30" ? "30" : "7"; }
   function activeScenario(id) { return (data.scenarios[horizon()] || []).find(function (s) { return s.id === id; }); }
   function open(key, trigger, scenarioHorizon, returnFocus) {
-    pendingSavedReturn = null; rememberDrawer(returnFocus);
+    pendingCaseReturn = null; rememberDrawer(returnFocus);
     var s = state(), addressBefore = location.href, languageBefore = zh(), subtree = body.firstChild, focusBefore = document.activeElement;
     var savedKey = /^(saved-item|memory-saved):/.test(key), retained;
     if (savedKey) {
@@ -185,7 +208,7 @@
     apply();
   }
   function close() {
-    pendingSavedReturn = null; rememberDrawer();
+    pendingCaseReturn = null; rememberDrawer();
     if (history.state && history.state.r4 && history.state.drawer && !history.state.detachedOrigin && Number.isInteger(history.state.depth) && history.state.depth > 0) history.go(-history.state.depth);
     else update(null, { panel: null }, true);
   }
@@ -527,24 +550,29 @@
     heading(expired(s) ? t("Original invalidation condition", "原始失效条件") : t("What changes the view", "什么会改变判断")); paragraph(field(s, "invalidation"));
     var details = node("details", null, "mx-disc");
     var caseSummary = node("summary", t("Conditions and evidence", "条件与证据"));
+    details.dataset.drawerDisclosure = "scenario-conditions"; caseSummary.dataset.drawerFocus = "scenario-conditions";
     details.appendChild(caseSummary);
     details.appendChild(node("p", field(s, "condition")));
     details.appendChild(node("p", field(s, "counter")));
     details.appendChild(node("p", t("Expires: ", "到期日：") + s.expires));
     details.appendChild(node("p", t("Levels use prior daily closes. They are research conditions, not official model invalidations.", "价位来自前期日收盘，属于研究条件，并非官方模型失效位。")));
     body.appendChild(details);
-    button(t("Historical review", "历史检验"), function () { open("memory:" + s.id, null, String(s.horizon_days)); });
+    button(t("Historical review", "历史检验"), function () {
+      open("memory:" + s.id, null, String(s.horizon_days), "review");
+    }).dataset.drawerFocus = "review";
     collection = collection === undefined ? stored() : collection;
     if (!collection.ready) {
       paragraph(t("Saved snapshots couldn’t be read.", "无法读取已存快照。")).className = "cri-warning";
-      button(t("Try reading again", "重试读取"), function () { apply(); });
+      button(t("Try reading again", "重试读取"), function () { apply(); }).dataset.drawerFocus = "storage-retry";
     } else {
       var saved = savedMatches(collection, s.revision).length > 0, intent = saved ? "remove" : "save";
       var saveButton = button(saved ? t("Remove snapshot", "移除快照") : t("Save snapshot", "保存快照"), function (event) { save(s, intent, event.currentTarget); });
-      saveButton.dataset.snapshotAction = intent;
+      saveButton.dataset.snapshotAction = intent; saveButton.dataset.drawerFocus = "snapshot-" + intent;
       saveButton.disabled = !saved && (expired(s) || s.state === "insufficient" || s.progress_state === "unavailable");
     }
-    button(t("Inspect demand evidence", "查看需求证据"), function () { open("evidence:liquidity_flows"); });
+    button(t("Inspect demand evidence", "查看需求证据"), function () {
+      open("evidence:liquidity_flows", null, null, "demand-evidence");
+    }).dataset.drawerFocus = "demand-evidence";
   }
   function comparisonBasis(asset) {
     // One bilingual copy owner: the server-rendered Markets disclosure.
@@ -693,6 +721,11 @@
       } else {
         historicalContext = id ? activeScenario(id) : null;
         if (key !== "memory" && !historicalContext) { scenario(null, false); return; }
+        if (historicalContext) {
+          var caseHorizon = horizon();
+          drawerParent(hasDrawerParent("scenario:" + id, caseHorizon) ? t("← Scenario details", "← 情景详情") :
+            t("Open scenario details", "打开情景详情"), function () { returnToCurrentCase(id, caseHorizon); }, t("Scenario", "情景"));
+        }
       }
       paragraph(historicalContext ? field(historicalContext, "title") + " · BTC · " + historicalContext.horizon_days + t(" days · evidence at ", "天 · 证据日期 ") + historicalContext.as_of : "BTC · " + horizon() + t(" days · evidence at ", "天 · 证据日期 ") + (data.as_of || t("Unavailable", "暂无")));
       paragraph(t("No qualified comparison yet", "暂无合格的历史比较")).className = "cri-warning";
@@ -803,9 +836,12 @@
     var priorSuspension = readingSuspended; readingSuspended = true;
     try {
       var s = state(), panel = s.params.get("panel"), requestAddress = location.href, requestLanguage = zh(), requestSubtree = body.firstChild, requestFocus = document.activeElement;
-      var returning = pendingSavedReturn && pendingSavedReturn.parentAddress === requestAddress &&
-        panel === "saved-item:" + pendingSavedReturn.revision;
-      if (pendingSavedReturn && requestAddress !== pendingSavedReturn.childAddress) pendingSavedReturn = null;
+      var startingCurrentReview = panel && panel.indexOf("memory:") === 0 && activeScenario(panel.slice(7)) &&
+        (!dialog.open || root.dataset.renderedAddress !== requestAddress ||
+         event && event.type === "popstate" || renderedHistory !== historySignature());
+      var returning = pendingCaseReturn && pendingCaseReturn.parentAddress === requestAddress &&
+        panel === pendingCaseReturn.panel ? pendingCaseReturn : null;
+      if (pendingCaseReturn && requestAddress !== pendingCaseReturn.childAddress) pendingCaseReturn = null;
       var collection = event && event.collection, retained;
       if (panel && (panel === "saved" || /^(scenario|saved-item|memory-saved):/.test(panel))) {
         collection = collection === undefined ? stored() : collection;
@@ -841,6 +877,7 @@
           focus: basisFocus && priorBasis.contains(basisFocus) ? basisFocus.dataset.basisFocus : null };
       }
       if (panel) renderDrawer(panel, collection);
+      if (startingCurrentReview) dialog.scrollTop = 0;
       var renderedBasis = body.querySelector("[data-comparison-basis]");
       if (basisReading && renderedBasis) renderedBasis.open = basisReading.open;
       root.dataset.renderedAddress = location.href; root.dataset.renderedLanguage = String(zh());
@@ -858,7 +895,9 @@
           if (!ownsRender() || !dialog.open || openingFocusEvents > 1) return;
         }
         if (basisReading && renderedBasis && ownsRender()) dialog.scrollTop = basisReading.scroll;
-        var reading = savedReading(), returningToCase = returning && retained && body.dataset.savedRevision === retained.revision;
+        var reading = drawerReading(), scope = readingScope();
+        var returningToCase = returning && scope && returning.panel === scope.panel &&
+          returning.revision === scope.revision && returning.horizon === scope.horizon && returning.cutoff === scope.cutoff;
         if (reading || returningToCase) {
           if (reading) {
             body.querySelectorAll("details[data-drawer-disclosure]").forEach(function (element) {
@@ -868,6 +907,9 @@
           }
           var restored = returningToCase ? drawerFocus("review") :
             reading && typeof reading.focus === "string" ? drawerFocus(reading.focus) : null;
+          if (restored && (!restored.isConnected || restored.matches(":disabled") ||
+              !restored.getClientRects().length || restored.closest("[hidden],[inert]") ||
+              getComputedStyle(restored).visibility === "hidden")) restored = null;
           restored = restored || title;
           if (restored === title) title.tabIndex = -1;
           restored.focus({ preventScroll: !!reading });

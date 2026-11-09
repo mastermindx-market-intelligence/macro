@@ -1,0 +1,32 @@
+{
+  "source_assets": "54f56205be7e",
+  "browser": "157.0.8103.39",
+  "results": [
+    {
+      "installation": "after_application",
+      "at_fault": {
+        "panel": "scenario:continuation",
+        "renderedAddress": "http://127.0.0.1:52832/crypto-r4.html?lang=en#scenarios?h=30&panel=scenario%3Acontinuation",
+        "address": "http://127.0.0.1:52832/crypto-r4.html?lang=en#scenarios?h=30&panel=scenario%3Acontinuation"
+      },
+      "disclosure_open_after": true
+    },
+    {
+      "installation": "before_application",
+      "at_fault": {
+        "panel": "memory:continuation",
+        "renderedAddress": "http://127.0.0.1:52832/crypto-r4.html?lang=en#scenarios?h=30&panel=memory%3Acontinuation",
+        "address": "http://127.0.0.1:52832/crypto-r4.html?lang=en#scenarios?h=30&panel=scenario%3Acontinuation"
+      },
+      "disclosure_open_after": false
+    }
+  ],
+  "observations": {
+    "contexts": 2,
+    "pages": 2,
+    "page_errors": [],
+    "blocked_external_requests": 0,
+    "blocked_websockets": 0
+  },
+  "purpose": "Diagnose fault-injection timing only; not additional product acceptance."
+}

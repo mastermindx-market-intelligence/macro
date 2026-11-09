@@ -1,0 +1,31 @@
+
+
+
+@pytest.mark.parametrize("entry", ["different-horizon", "same-url"])
+def test_r4_new_current_review_entry_starts_at_its_own_beginning(snapshot_page, entry):
+    page = snapshot_page(width=390, start="#scenarios?h=7&window=30&keep=entry")
+    page.set_viewport_size({"width": 390, "height": 600})
+    _open_scenario(page)
+    _review_saved(page)
+    page.locator("#cri-dialog-close").focus()
+    page.locator("#cri-dialog").evaluate("n => n.scrollTop=100")
+    assert page.locator("#cri-dialog").evaluate("n => n.scrollTop") == 100
+    if entry == "different-horizon":
+        page.evaluate("""() => {
+          const params=new URLSearchParams(location.hash.split('?')[1]);params.set('h','30');
+          location.hash='#scenarios?'+params.toString();
+        }""")
+        page.wait_for_function("""() => document.getElementById('crypto-intelligence').dataset.renderedAddress===location.href &&
+          new URLSearchParams(location.hash.split('?')[1]).get('h')==='30'""")
+        assert "30 days" in page.locator("#cri-dialog-body").inner_text()
+    else:
+        # Two real history entries can have identical URL and serialized metadata.
+        page.evaluate("""() => {
+          history.pushState(history.state,'',location.href);
+          window.addEventListener('popstate',()=>window.__currentEntryArrived=true,{once:true});
+        }""")
+        page.go_back()
+        page.wait_for_function("window.__currentEntryArrived===true")
+    assert page.locator("#cri-dialog").evaluate("n => n.scrollTop") == 0
+    assert page.locator("#cri-dialog").get_by_role("button", name="← Scenario details", exact=True).count() == (0 if entry == "different-horizon" else 1)
+    assert _writes(page) == 0

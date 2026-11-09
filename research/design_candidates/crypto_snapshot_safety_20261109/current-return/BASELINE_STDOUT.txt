@@ -1,0 +1,232 @@
+FFFFFFFFFFFFFFFFFFFF...FF................................                [100%]
+=================================== FAILURES ===================================
+_ test_r4_current_review_returns_to_the_same_case_and_reading[en-390-7-2026-11-09T12:00:00Z] _
+tests/test_crypto_intelligence_r4_browser.py:2497: in test_r4_current_review_returns_to_the_same_case_and_reading
+    parent = _current_parent(page, lang)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_crypto_intelligence_r4_browser.py:2469: in _current_parent
+    assert control.count() == 1, "A case-specific historical review needs its exact scenario destination"
+E   AssertionError: A case-specific historical review needs its exact scenario destination
+E   assert 0 == 1
+E    +  where 0 = count()
+E    +    where count = <Locator frame=<Frame name= url='http://127.0.0.1:64378/crypto-r4.html?lang=en#scenarios?h=7&window=30&q=BTC&filter=al...bol&keep=case&panel=memory%3Acontinuation'> selector='#cri-dialog >> internal:role=button[name="← Scenario details"s]'>.count
+_ test_r4_current_review_returns_to_the_same_case_and_reading[zh-320-7-2026-11-09T12:00:00Z] _
+tests/test_crypto_intelligence_r4_browser.py:2497: in test_r4_current_review_returns_to_the_same_case_and_reading
+    parent = _current_parent(page, lang)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_crypto_intelligence_r4_browser.py:2469: in _current_parent
+    assert control.count() == 1, "A case-specific historical review needs its exact scenario destination"
+E   AssertionError: A case-specific historical review needs its exact scenario destination
+E   assert 0 == 1
+E    +  where 0 = count()
+E    +    where count = <Locator frame=<Frame name= url='http://127.0.0.1:64378/crypto-r4.html?lang=zh#scenarios?h=7&window=30&q=BTC&filter=all&sort=symbol&keep=case&panel=memory%3Acontinuation'> selector='#cri-dialog >> internal:role=button[name="← 情景详情"s]'>.count
+_ test_r4_current_review_returns_to_the_same_case_and_reading[en-1440-30-2026-10-18T12:00:00Z] _
+tests/test_crypto_intelligence_r4_browser.py:2497: in test_r4_current_review_returns_to_the_same_case_and_reading
+    parent = _current_parent(page, lang)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_crypto_intelligence_r4_browser.py:2469: in _current_parent
+    assert control.count() == 1, "A case-specific historical review needs its exact scenario destination"
+E   AssertionError: A case-specific historical review needs its exact scenario destination
+E   assert 0 == 1
+E    +  where 0 = count()
+E    +    where count = <Locator frame=<Frame name= url='http://127.0.0.1:64378/crypto-r4.html?lang=en#scenarios?h=30&window=30&q=BTC&filter=a...bol&keep=case&panel=memory%3Acontinuation'> selector='#cri-dialog >> internal:role=button[name="← Scenario details"s]'>.count
+_ test_r4_current_review_returns_to_the_same_case_and_reading[zh-390-30-2026-10-18T12:00:00Z] _
+tests/test_crypto_intelligence_r4_browser.py:2497: in test_r4_current_review_returns_to_the_same_case_and_reading
+    parent = _current_parent(page, lang)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_crypto_intelligence_r4_browser.py:2469: in _current_parent
+    assert control.count() == 1, "A case-specific historical review needs its exact scenario destination"
+E   AssertionError: A case-specific historical review needs its exact scenario destination
+E   assert 0 == 1
+E    +  where 0 = count()
+E    +    where count = <Locator frame=<Frame name= url='http://127.0.0.1:64378/crypto-r4.html?lang=zh#scenarios?h=30&window=30&q=BTC&filter=all&sort=symbol&keep=case&panel=memory%3Acontinuation'> selector='#cri-dialog >> internal:role=button[name="← 情景详情"s]'>.count
+________ test_r4_current_review_close_exits_the_managed_journey[en-390] ________
+tests/test_crypto_intelligence_r4_browser.py:2537: in test_r4_current_review_close_exits_the_managed_journey
+    _current_parent(page, lang)
+tests/test_crypto_intelligence_r4_browser.py:2469: in _current_parent
+    assert control.count() == 1, "A case-specific historical review needs its exact scenario destination"
+E   AssertionError: A case-specific historical review needs its exact scenario destination
+E   assert 0 == 1
+E    +  where 0 = count()
+E    +    where count = <Locator frame=<Frame name= url='http://127.0.0.1:64378/crypto-r4.html?lang=en#scenarios?h=30&window=30&keep=outer&panel=memory%3Acontinuation'> selector='#cri-dialog >> internal:role=button[name="← Scenario details"s]'>.count
+________ test_r4_current_review_close_exits_the_managed_journey[zh-320] ________
+tests/test_crypto_intelligence_r4_browser.py:2537: in test_r4_current_review_close_exits_the_managed_journey
+    _current_parent(page, lang)
+tests/test_crypto_intelligence_r4_browser.py:2469: in _current_parent
+    assert control.count() == 1, "A case-specific historical review needs its exact scenario destination"
+E   AssertionError: A case-specific historical review needs its exact scenario destination
+E   assert 0 == 1
+E    +  where 0 = count()
+E    +    where count = <Locator frame=<Frame name= url='http://127.0.0.1:64378/crypto-r4.html?lang=zh#scenarios?h=30&window=30&keep=outer&panel=memory%3Acontinuation'> selector='#cri-dialog >> internal:role=button[name="← 情景详情"s]'>.count
+____ test_r4_detached_current_review_replaces_with_exact_scenario[en-390-7] ____
+tests/test_crypto_intelligence_r4_browser.py:2551: in test_r4_detached_current_review_replaces_with_exact_scenario
+    parent = _current_parent(page, lang, detached=True)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_crypto_intelligence_r4_browser.py:2469: in _current_parent
+    assert control.count() == 1, "A case-specific historical review needs its exact scenario destination"
+E   AssertionError: A case-specific historical review needs its exact scenario destination
+E   assert 0 == 1
+E    +  where 0 = count()
+E    +    where count = <Locator frame=<Frame name= url='http://127.0.0.1:64378/crypto-r4.html?lang=en#scenarios?h=7&window=30&q=BTC&filter=al...p=detached&panel=memory%3Acontinuation'> selector='#cri-dialog >> internal:role=button[name="Open scenario details"s]'>.count
+___ test_r4_detached_current_review_replaces_with_exact_scenario[zh-320-30] ____
+tests/test_crypto_intelligence_r4_browser.py:2551: in test_r4_detached_current_review_replaces_with_exact_scenario
+    parent = _current_parent(page, lang, detached=True)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_crypto_intelligence_r4_browser.py:2469: in _current_parent
+    assert control.count() == 1, "A case-specific historical review needs its exact scenario destination"
+E   AssertionError: A case-specific historical review needs its exact scenario destination
+E   assert 0 == 1
+E    +  where 0 = count()
+E    +    where count = <Locator frame=<Frame name= url='http://127.0.0.1:64378/crypto-r4.html?lang=zh#scenarios?h=30&window=30&q=BTC&filter=all&sort=symbol&keep=detached&panel=memory%3Acontinuation'> selector='#cri-dialog >> internal:role=button[name="打开情景详情"s]'>.count
+______ test_r4_current_parent_rejects_the_same_id_at_a_different_horizon _______
+tests/test_crypto_intelligence_r4_browser.py:2581: in test_r4_current_parent_rejects_the_same_id_at_a_different_horizon
+    _current_parent(page, detached=True).click()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_crypto_intelligence_r4_browser.py:2469: in _current_parent
+    assert control.count() == 1, "A case-specific historical review needs its exact scenario destination"
+E   AssertionError: A case-specific historical review needs its exact scenario destination
+E   assert 0 == 1
+E    +  where 0 = count()
+E    +    where count = <Locator frame=<Frame name= url='http://127.0.0.1:64378/crypto-r4.html?lang=en#scenarios?h=7&window=30&keep=wrong-horizon&panel=memory%3Acontinuation'> selector='#cri-dialog >> internal:role=button[name="Open scenario details"s]'>.count
+________ test_r4_current_parent_accepts_the_normalized_default_horizon _________
+tests/test_crypto_intelligence_r4_browser.py:2602: in test_r4_current_parent_accepts_the_normalized_default_horizon
+    _current_parent(page).click()
+    ^^^^^^^^^^^^^^^^^^^^^
+tests/test_crypto_intelligence_r4_browser.py:2469: in _current_parent
+    assert control.count() == 1, "A case-specific historical review needs its exact scenario destination"
+E   AssertionError: A case-specific historical review needs its exact scenario destination
+E   assert 0 == 1
+E    +  where 0 = count()
+E    +    where count = <Locator frame=<Frame name= url='http://127.0.0.1:64378/crypto-r4.html?lang=en#scenarios?window=30&keep=default&panel=memory%3Acontinuation&h=7'> selector='#cri-dialog >> internal:role=button[name="← Scenario details"s]'>.count
+_ test_r4_current_return_rejects_stale_reading_identity[revision-another-publication] _
+tests/test_crypto_intelligence_r4_browser.py:2625: in test_r4_current_return_rejects_stale_reading_identity
+    _current_parent(page).click()
+    ^^^^^^^^^^^^^^^^^^^^^
+tests/test_crypto_intelligence_r4_browser.py:2469: in _current_parent
+    assert control.count() == 1, "A case-specific historical review needs its exact scenario destination"
+E   AssertionError: A case-specific historical review needs its exact scenario destination
+E   assert 0 == 1
+E    +  where 0 = count()
+E    +    where count = <Locator frame=<Frame name= url='http://127.0.0.1:64378/crypto-r4.html?lang=en#scenarios?h=30&panel=memory%3Acontinuation'> selector='#cri-dialog >> internal:role=button[name="← Scenario details"s]'>.count
+___ test_r4_current_return_rejects_stale_reading_identity[cutoff-1900-01-01] ___
+tests/test_crypto_intelligence_r4_browser.py:2625: in test_r4_current_return_rejects_stale_reading_identity
+    _current_parent(page).click()
+    ^^^^^^^^^^^^^^^^^^^^^
+tests/test_crypto_intelligence_r4_browser.py:2469: in _current_parent
+    assert control.count() == 1, "A case-specific historical review needs its exact scenario destination"
+E   AssertionError: A case-specific historical review needs its exact scenario destination
+E   assert 0 == 1
+E    +  where 0 = count()
+E    +    where count = <Locator frame=<Frame name= url='http://127.0.0.1:64378/crypto-r4.html?lang=en#scenarios?h=30&panel=memory%3Acontinuation'> selector='#cri-dialog >> internal:role=button[name="← Scenario details"s]'>.count
+______ test_r4_current_locale_preserves_disclosure_focus_and_reading[390] ______
+tests/test_crypto_intelligence_r4_browser.py:2648: in test_r4_current_locale_preserves_disclosure_focus_and_reading
+    assert page.locator("#cri-dialog-body details").evaluate("n => n.open")
+E   AssertionError: assert False
+E    +  where False = evaluate('n => n.open')
+E    +    where evaluate = <Locator frame=<Frame name= url='http://127.0.0.1:64378/crypto-r4.html?lang=en#scenarios?h=30&panel=scenario%3Acontinuation'> selector='#cri-dialog-body details'>.evaluate
+E    +      where <Locator frame=<Frame name= url='http://127.0.0.1:64378/crypto-r4.html?lang=en#scenarios?h=30&panel=scenario%3Acontinuation'> selector='#cri-dialog-body details'> = locator('#cri-dialog-body details')
+E    +        where locator = <Page url='http://127.0.0.1:64378/crypto-r4.html?lang=en#scenarios?h=30&panel=scenario%3Acontinuation'>.locator
+______ test_r4_current_locale_preserves_disclosure_focus_and_reading[320] ______
+tests/test_crypto_intelligence_r4_browser.py:2648: in test_r4_current_locale_preserves_disclosure_focus_and_reading
+    assert page.locator("#cri-dialog-body details").evaluate("n => n.open")
+E   AssertionError: assert False
+E    +  where False = evaluate('n => n.open')
+E    +    where evaluate = <Locator frame=<Frame name= url='http://127.0.0.1:64378/crypto-r4.html?lang=en#scenarios?h=30&panel=scenario%3Acontinuation'> selector='#cri-dialog-body details'>.evaluate
+E    +      where <Locator frame=<Frame name= url='http://127.0.0.1:64378/crypto-r4.html?lang=en#scenarios?h=30&panel=scenario%3Acontinuation'> selector='#cri-dialog-body details'> = locator('#cri-dialog-body details')
+E    +        where locator = <Page url='http://127.0.0.1:64378/crypto-r4.html?lang=en#scenarios?h=30&panel=scenario%3Acontinuation'>.locator
+_______ test_r4_current_restore_uses_heading_when_save_becomes_disabled ________
+tests/test_crypto_intelligence_r4_browser.py:2667: in test_r4_current_restore_uses_heading_when_save_becomes_disabled
+    assert page.locator("#cri-dialog-title").evaluate("n => document.activeElement===n")
+E   AssertionError: assert False
+E    +  where False = evaluate('n => document.activeElement===n')
+E    +    where evaluate = <Locator frame=<Frame name= url='http://127.0.0.1:64378/crypto-r4.html?lang=en#scenarios?h=30&panel=scenario%3Acontinuation'> selector='#cri-dialog-title'>.evaluate
+E    +      where <Locator frame=<Frame name= url='http://127.0.0.1:64378/crypto-r4.html?lang=en#scenarios?h=30&panel=scenario%3Acontinuation'> selector='#cri-dialog-title'> = locator('#cri-dialog-title')
+E    +        where locator = <Page url='http://127.0.0.1:64378/crypto-r4.html?lang=en#scenarios?h=30&panel=scenario%3Acontinuation'>.locator
+__________ test_r4_current_restore_does_not_swap_remove_focus_to_save __________
+tests/test_crypto_intelligence_r4_browser.py:2682: in test_r4_current_restore_does_not_swap_remove_focus_to_save
+    assert page.locator("#cri-dialog-title").evaluate("n => document.activeElement===n")
+E   AssertionError: assert False
+E    +  where False = evaluate('n => document.activeElement===n')
+E    +    where evaluate = <Locator frame=<Frame name= url='http://127.0.0.1:64378/crypto-r4.html?lang=en#scenarios?h=30&panel=scenario%3Acontinuation'> selector='#cri-dialog-title'>.evaluate
+E    +      where <Locator frame=<Frame name= url='http://127.0.0.1:64378/crypto-r4.html?lang=en#scenarios?h=30&panel=scenario%3Acontinuation'> selector='#cri-dialog-title'> = locator('#cri-dialog-title')
+E    +        where locator = <Page url='http://127.0.0.1:64378/crypto-r4.html?lang=en#scenarios?h=30&panel=scenario%3Acontinuation'>.locator
+_____ test_r4_current_return_survives_unreadable_saved_storage[malformed] ______
+tests/test_crypto_intelligence_r4_browser.py:2703: in test_r4_current_return_survives_unreadable_saved_storage
+    _current_parent(page).click()
+    ^^^^^^^^^^^^^^^^^^^^^
+tests/test_crypto_intelligence_r4_browser.py:2469: in _current_parent
+    assert control.count() == 1, "A case-specific historical review needs its exact scenario destination"
+E   AssertionError: A case-specific historical review needs its exact scenario destination
+E   assert 0 == 1
+E    +  where 0 = count()
+E    +    where count = <Locator frame=<Frame name= url='http://127.0.0.1:64378/crypto-r4.html?lang=en#scenarios?h=30&panel=memory%3Acontinuation'> selector='#cri-dialog >> internal:role=button[name="← Scenario details"s]'>.count
+_____ test_r4_current_return_survives_unreadable_saved_storage[unreadable] _____
+tests/test_crypto_intelligence_r4_browser.py:2703: in test_r4_current_return_survives_unreadable_saved_storage
+    _current_parent(page).click()
+    ^^^^^^^^^^^^^^^^^^^^^
+tests/test_crypto_intelligence_r4_browser.py:2469: in _current_parent
+    assert control.count() == 1, "A case-specific historical review needs its exact scenario destination"
+E   AssertionError: A case-specific historical review needs its exact scenario destination
+E   assert 0 == 1
+E    +  where 0 = count()
+E    +    where count = <Locator frame=<Frame name= url='http://127.0.0.1:64378/crypto-r4.html?lang=en#scenarios?h=30&panel=memory%3Acontinuation'> selector='#cri-dialog >> internal:role=button[name="← Scenario details"s]'>.count
+_______ test_r4_current_parent_focus_callback_keeps_the_new_destination ________
+tests/test_crypto_intelligence_r4_browser.py:2736: in test_r4_current_parent_focus_callback_keeps_the_new_destination
+    _current_parent(page).click()
+    ^^^^^^^^^^^^^^^^^^^^^
+tests/test_crypto_intelligence_r4_browser.py:2469: in _current_parent
+    assert control.count() == 1, "A case-specific historical review needs its exact scenario destination"
+E   AssertionError: A case-specific historical review needs its exact scenario destination
+E   assert 0 == 1
+E    +  where 0 = count()
+E    +    where count = <Locator frame=<Frame name= url='http://127.0.0.1:64378/crypto-r4.html?lang=en#scenarios?h=30&panel=memory%3Acontinuation'> selector='#cri-dialog >> internal:role=button[name="← Scenario details"s]'>.count
+___________ test_r4_current_parent_double_activation_moves_back_once ___________
+tests/test_crypto_intelligence_r4_browser.py:2747: in test_r4_current_parent_double_activation_moves_back_once
+    parent = _current_parent(page)
+             ^^^^^^^^^^^^^^^^^^^^^
+tests/test_crypto_intelligence_r4_browser.py:2469: in _current_parent
+    assert control.count() == 1, "A case-specific historical review needs its exact scenario destination"
+E   AssertionError: A case-specific historical review needs its exact scenario destination
+E   assert 0 == 1
+E    +  where 0 = count()
+E    +    where count = <Locator frame=<Frame name= url='http://127.0.0.1:64378/crypto-r4.html?lang=en#scenarios?h=30&panel=memory%3Acontinuation'> selector='#cri-dialog >> internal:role=button[name="← Scenario details"s]'>.count
+____ test_r4_current_evidence_native_back_restores_the_case_reader[en-390] _____
+tests/test_crypto_intelligence_r4_browser.py:2778: in test_r4_current_evidence_native_back_restores_the_case_reader
+    assert page.locator("#cri-dialog-body details").evaluate("n => n.open")
+E   AssertionError: assert False
+E    +  where False = evaluate('n => n.open')
+E    +    where evaluate = <Locator frame=<Frame name= url='http://127.0.0.1:64378/crypto-r4.html?lang=en#scenarios?h=30&panel=scenario%3Acontinuation'> selector='#cri-dialog-body details'>.evaluate
+E    +      where <Locator frame=<Frame name= url='http://127.0.0.1:64378/crypto-r4.html?lang=en#scenarios?h=30&panel=scenario%3Acontinuation'> selector='#cri-dialog-body details'> = locator('#cri-dialog-body details')
+E    +        where locator = <Page url='http://127.0.0.1:64378/crypto-r4.html?lang=en#scenarios?h=30&panel=scenario%3Acontinuation'>.locator
+____ test_r4_current_evidence_native_back_restores_the_case_reader[zh-320] _____
+tests/test_crypto_intelligence_r4_browser.py:2778: in test_r4_current_evidence_native_back_restores_the_case_reader
+    assert page.locator("#cri-dialog-body details").evaluate("n => n.open")
+E   AssertionError: assert False
+E    +  where False = evaluate('n => n.open')
+E    +    where evaluate = <Locator frame=<Frame name= url='http://127.0.0.1:64378/crypto-r4.html?lang=zh#scenarios?h=30&panel=scenario%3Acontinuation'> selector='#cri-dialog-body details'>.evaluate
+E    +      where <Locator frame=<Frame name= url='http://127.0.0.1:64378/crypto-r4.html?lang=zh#scenarios?h=30&panel=scenario%3Acontinuation'> selector='#cri-dialog-body details'> = locator('#cri-dialog-body details')
+E    +        where locator = <Page url='http://127.0.0.1:64378/crypto-r4.html?lang=zh#scenarios?h=30&panel=scenario%3Acontinuation'>.locator
+=========================== short test summary info ============================
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_current_review_returns_to_the_same_case_and_reading[en-390-7-2026-11-09T12:00:00Z]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_current_review_returns_to_the_same_case_and_reading[zh-320-7-2026-11-09T12:00:00Z]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_current_review_returns_to_the_same_case_and_reading[en-1440-30-2026-10-18T12:00:00Z]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_current_review_returns_to_the_same_case_and_reading[zh-390-30-2026-10-18T12:00:00Z]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_current_review_close_exits_the_managed_journey[en-390]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_current_review_close_exits_the_managed_journey[zh-320]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_detached_current_review_replaces_with_exact_scenario[en-390-7]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_detached_current_review_replaces_with_exact_scenario[zh-320-30]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_current_parent_rejects_the_same_id_at_a_different_horizon
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_current_parent_accepts_the_normalized_default_horizon
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_current_return_rejects_stale_reading_identity[revision-another-publication]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_current_return_rejects_stale_reading_identity[cutoff-1900-01-01]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_current_locale_preserves_disclosure_focus_and_reading[390]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_current_locale_preserves_disclosure_focus_and_reading[320]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_current_restore_uses_heading_when_save_becomes_disabled
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_current_restore_does_not_swap_remove_focus_to_save
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_current_return_survives_unreadable_saved_storage[malformed]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_current_return_survives_unreadable_saved_storage[unreadable]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_current_parent_focus_callback_keeps_the_new_destination
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_current_parent_double_activation_moves_back_once
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_current_evidence_native_back_restores_the_case_reader[en-390]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_current_evidence_native_back_restores_the_case_reader[zh-320]
+22 failed, 35 passed in 30.43s

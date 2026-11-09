@@ -1,0 +1,22 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+_ test_r4_new_current_review_entry_starts_at_its_own_beginning[different-horizon] _
+tests/test_crypto_intelligence_r4_browser.py:2848: in test_r4_new_current_review_entry_starts_at_its_own_beginning
+    assert page.locator("#cri-dialog").evaluate("n => n.scrollTop") == 0
+E   AssertionError: assert 100 == 0
+E    +  where 100 = evaluate('n => n.scrollTop')
+E    +    where evaluate = <Locator frame=<Frame name= url='http://127.0.0.1:59328/crypto-r4.html?lang=en#scenarios?h=30&window=30&keep=entry&panel=memory%3Acontinuation'> selector='#cri-dialog'>.evaluate
+E    +      where <Locator frame=<Frame name= url='http://127.0.0.1:59328/crypto-r4.html?lang=en#scenarios?h=30&window=30&keep=entry&panel=memory%3Acontinuation'> selector='#cri-dialog'> = locator('#cri-dialog')
+E    +        where locator = <Page url='http://127.0.0.1:59328/crypto-r4.html?lang=en#scenarios?h=30&window=30&keep=entry&panel=memory%3Acontinuation'>.locator
+____ test_r4_new_current_review_entry_starts_at_its_own_beginning[same-url] ____
+tests/test_crypto_intelligence_r4_browser.py:2848: in test_r4_new_current_review_entry_starts_at_its_own_beginning
+    assert page.locator("#cri-dialog").evaluate("n => n.scrollTop") == 0
+E   AssertionError: assert 100 == 0
+E    +  where 100 = evaluate('n => n.scrollTop')
+E    +    where evaluate = <Locator frame=<Frame name= url='http://127.0.0.1:59328/crypto-r4.html?lang=en#scenarios?h=7&window=30&keep=entry&panel=memory%3Acontinuation'> selector='#cri-dialog'>.evaluate
+E    +      where <Locator frame=<Frame name= url='http://127.0.0.1:59328/crypto-r4.html?lang=en#scenarios?h=7&window=30&keep=entry&panel=memory%3Acontinuation'> selector='#cri-dialog'> = locator('#cri-dialog')
+E    +        where locator = <Page url='http://127.0.0.1:59328/crypto-r4.html?lang=en#scenarios?h=7&window=30&keep=entry&panel=memory%3Acontinuation'>.locator
+=========================== short test summary info ============================
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_new_current_review_entry_starts_at_its_own_beginning[different-horizon]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_new_current_review_entry_starts_at_its_own_beginning[same-url]
+2 failed in 3.90s

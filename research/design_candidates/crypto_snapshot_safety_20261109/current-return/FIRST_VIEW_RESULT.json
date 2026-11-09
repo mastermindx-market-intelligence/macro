@@ -1,0 +1,71 @@
+{
+  "command": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_review_returns_to_the_same_case_and_reading",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_review_close_exits_the_managed_journey",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_detached_current_review_replaces_with_exact_scenario",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_parent_rejects_the_same_id_at_a_different_horizon",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_parent_accepts_the_normalized_default_horizon",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_return_rejects_stale_reading_identity",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_locale_preserves_disclosure_focus_and_reading",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_restore_uses_heading_when_save_becomes_disabled",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_restore_does_not_swap_remove_focus_to_save",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_return_survives_unreadable_saved_storage",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_parent_focus_callback_keeps_the_new_destination",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_parent_double_activation_moves_back_once",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_parent_is_absent_without_a_resolved_case",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_evidence_native_back_restores_the_case_reader",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_saved_journey_restores_the_exact_outer_horizon",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_detached_saved_item_still_has_a_real_review_parent",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_truly_detached_review_opens_exact_saved_case_by_replace",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_saved_parent_focus_callback_keeps_its_new_destination",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_saved_parent_rechecks_the_requested_record_before_return",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_legacy_saved_parent_horizon_is_repaired_in_the_same_entry",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_saved_locale_keeps_disclosure_focus_and_reading_position",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_close_falls_back_to_the_restored_active_view_heading",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_missing_current_case_recovers_without_borrowing_review_context",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_generic_and_valid_current_reviews_remain_distinct",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_scenario_retains_its_existing_reading_order",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_newer_focus_during_confirmation_survives",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_completion_focus_callbacks_keep_their_new_panel",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_programmatic_save_preserves_unrelated_focus_and_stale_save_stays_safe",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_review_locale_does_not_restart_existing_reading",
+    "--tb=short",
+    "--junitxml=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/current-return-verified/junit.xml",
+    "--basetemp=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/current-return-verified/pytest-temp"
+  ],
+  "exit_code": 0,
+  "seconds": 34.749,
+  "source_parent": "bcf8e84957017181dc323ff3c3a9f4b32b218799",
+  "runtime_asset_version": "35617892939a",
+  "candidate_inputs": {
+    "templates/crypto_intelligence_r4.js": {
+      "bytes": 72960,
+      "sha256": "45447d1912ade2ec51c5f097b31d31582353ab1081b5fab17b2177be38c32999",
+      "blob": "9d983207eca2d4fb02eeb2fee0354e6e314e969c"
+    },
+    "tests/test_crypto_intelligence_r4_browser.py": {
+      "bytes": 158330,
+      "sha256": "ce64c9fb5e3efd8dda242f9cf9df77e2a81d797452aecbd5ef798d18ddbbfd46",
+      "blob": "d21660efa526abd43218994523425598ba305b5c"
+    },
+    "site/crypto-r4.html": {
+      "bytes": 129566,
+      "sha256": "bb34c4fde9da2bd30c50f0b1deaea45e139fe3bab358bb858d0196036e9faec3",
+      "blob": "f2c1eacfb247eaacb395fb0bfe99752c2e387d72"
+    },
+    "site/vector-r4.html": {
+      "bytes": 129565,
+      "sha256": "985ad91feb0606a1f94c44f5e356a56b838e70999a417dddaa6f8c3f42c7dae1",
+      "blob": "317c77728e4d1b26dc3d9e580988c4b120a32746"
+    },
+    "site/crypto_intelligence_r4.js": {
+      "bytes": 72960,
+      "sha256": "45447d1912ade2ec51c5f097b31d31582353ab1081b5fab17b2177be38c32999",
+      "blob": "9d983207eca2d4fb02eeb2fee0354e6e314e969c"
+    }
+  }
+}

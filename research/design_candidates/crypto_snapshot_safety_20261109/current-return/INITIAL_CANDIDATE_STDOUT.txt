@@ -1,0 +1,22 @@
+..........FF.............................................                [100%]
+=================================== FAILURES ===================================
+_ test_r4_current_return_rejects_stale_reading_identity[revision-another-publication] _
+tests/test_crypto_intelligence_r4_browser.py:2627: in test_r4_current_return_rejects_stale_reading_identity
+    assert not page.locator("#cri-dialog-body details").evaluate("n => n.open")
+E   AssertionError: assert not True
+E    +  where True = evaluate('n => n.open')
+E    +    where evaluate = <Locator frame=<Frame name= url='http://127.0.0.1:50125/crypto-r4.html?lang=en#scenarios?h=30&panel=scenario%3Acontinuation'> selector='#cri-dialog-body details'>.evaluate
+E    +      where <Locator frame=<Frame name= url='http://127.0.0.1:50125/crypto-r4.html?lang=en#scenarios?h=30&panel=scenario%3Acontinuation'> selector='#cri-dialog-body details'> = locator('#cri-dialog-body details')
+E    +        where locator = <Page url='http://127.0.0.1:50125/crypto-r4.html?lang=en#scenarios?h=30&panel=scenario%3Acontinuation'>.locator
+___ test_r4_current_return_rejects_stale_reading_identity[cutoff-1900-01-01] ___
+tests/test_crypto_intelligence_r4_browser.py:2627: in test_r4_current_return_rejects_stale_reading_identity
+    assert not page.locator("#cri-dialog-body details").evaluate("n => n.open")
+E   AssertionError: assert not True
+E    +  where True = evaluate('n => n.open')
+E    +    where evaluate = <Locator frame=<Frame name= url='http://127.0.0.1:50125/crypto-r4.html?lang=en#scenarios?h=30&panel=scenario%3Acontinuation'> selector='#cri-dialog-body details'>.evaluate
+E    +      where <Locator frame=<Frame name= url='http://127.0.0.1:50125/crypto-r4.html?lang=en#scenarios?h=30&panel=scenario%3Acontinuation'> selector='#cri-dialog-body details'> = locator('#cri-dialog-body details')
+E    +        where locator = <Page url='http://127.0.0.1:50125/crypto-r4.html?lang=en#scenarios?h=30&panel=scenario%3Acontinuation'>.locator
+=========================== short test summary info ============================
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_current_return_rejects_stale_reading_identity[revision-another-publication]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_current_return_rejects_stale_reading_identity[cutoff-1900-01-01]
+2 failed, 55 passed in 32.86s

@@ -2455,3 +2455,396 @@ def test_r4_card_empty_input_preserves_the_existing_empty_branch(scenario_card_p
         "heading", name="Price conditions unavailable" if lang == "en" else "价格条件暂不可用", exact=True
     ).first.is_visible()
     _card_storage_untouched(page, view)
+
+
+
+# Current-case review returns use the existing history and reading-state owner.
+def _current_source(page, horizon):
+    return page.evaluate("h => JSON.parse(document.getElementById('cri-data').textContent).scenarios[h].find(s => s.id === 'continuation')", str(horizon))
+
+
+def _current_parent(page, lang="en", detached=False):
+    label = ("Open scenario details" if detached else "← Scenario details") if lang == "en" else ("打开情景详情" if detached else "← 情景详情")
+    control = page.locator("#cri-dialog").get_by_role("button", name=label, exact=True)
+    assert control.count() == 1, "A case-specific historical review needs its exact scenario destination"
+    return control
+
+
+@pytest.mark.parametrize("lang,width,horizon,at", [
+    ("en", 390, 7, "2026-11-09T12:00:00Z"),
+    ("zh", 320, 7, "2026-11-09T12:00:00Z"),
+    ("en", 1440, 30, "2026-10-18T12:00:00Z"),
+    ("zh", 390, 30, "2026-10-18T12:00:00Z"),
+])
+def test_r4_current_review_returns_to_the_same_case_and_reading(snapshot_page, lang, width, horizon, at):
+    page = snapshot_page(lang, width, at=at, start=f"#scenarios?h={horizon}&window=30&q=BTC&filter=all&sort=symbol&keep=case")
+    if width <= 400:
+        page.set_viewport_size({"width": width, "height": 600})
+    source = _current_source(page, horizon)
+    original_url, original_history, original_raw = page.url, page.evaluate("history.length"), _raw(page)
+    opener = page.locator('[data-open="scenario:continuation"]:visible').first
+    opener.click()
+    details = page.locator("#cri-dialog-body details")
+    details.locator("summary").click()
+    review = page.locator("#cri-dialog-body").get_by_role("button", name="Historical review" if lang == "en" else "历史检验", exact=True)
+    review.scroll_into_view_if_needed()
+    review.focus()
+    reading_scroll = page.locator("#cri-dialog").evaluate("n => n.scrollTop")
+    if width <= 400:
+        assert reading_scroll > 0
+    review.click()
+    child_history = page.evaluate("history.length")
+    parent = _current_parent(page, lang)
+    assert page.locator("#cri-dialog").evaluate("n => n.scrollTop") == 0
+    assert parent.bounding_box()["height"] >= 44
+    assert source["title_" + lang] in page.locator("#cri-dialog-body").text_content()
+    assert source["as_of"] in page.locator("#cri-dialog-body").text_content()
+    assert page.locator("#cri-dialog-kicker .cri-saved-kicker").text_content() == ("Scenario" if lang == "en" else "情景")
+    assert not page.locator("#cri-dialog").evaluate("n => n.classList.contains('cri-dialog-saved')")
+    if horizon == 7:
+        _capture(page, f"current-return-review-{lang}-{width}")
+    parent.click()
+    _wait_drawer(page, "scenario:" + source["id"], source["title_" + lang])
+    assert page.evaluate("history.length") == child_history == original_history + 2
+    assert page.evaluate("new URLSearchParams(location.hash.split('?')[1]).get('h')") == str(horizon)
+    assert details.evaluate("n => n.open")
+    assert review.evaluate("n => document.activeElement === n")
+    assert abs(page.locator("#cri-dialog").evaluate("n => n.scrollTop") - reading_scroll) <= 1
+    assert source["condition_" + lang] in details.text_content()
+    assert page.evaluate("document.documentElement.scrollWidth <= innerWidth")
+    assert page.locator("#cri-dialog").evaluate("n => n.scrollWidth <= n.clientWidth + 1")
+    if horizon == 7:
+        _capture(page, f"current-return-details-{lang}-{width}")
+    # Native forward/back consumes the same entry without a parent-button intent.
+    page.go_forward()
+    _wait_drawer(page, "memory:" + source["id"], "Historical review" if lang == "en" else "历史检验")
+    page.go_back()
+    _wait_drawer(page, "scenario:" + source["id"], source["title_" + lang])
+    assert details.evaluate("n => n.open") and review.evaluate("n => document.activeElement === n")
+    assert abs(page.locator("#cri-dialog").evaluate("n => n.scrollTop") - reading_scroll) <= 1
+    page.locator("#cri-dialog-close").click()
+    _wait_closed(page)
+    assert page.url == original_url and opener.evaluate("n => document.activeElement === n")
+    assert _raw(page) == original_raw and _writes(page) == 0
+
+
+@pytest.mark.parametrize("lang,width", [("en", 390), ("zh", 320)])
+def test_r4_current_review_close_exits_the_managed_journey(snapshot_page, lang, width):
+    page = snapshot_page(lang, width, start="#scenarios?h=30&window=30&keep=outer")
+    original_url = page.url
+    opener = page.locator('[data-open="scenario:continuation"]:visible').first
+    opener.click()
+    _review_saved(page, lang)
+    _current_parent(page, lang)
+    page.keyboard.press("Escape")
+    _wait_closed(page)
+    assert page.url == original_url and opener.evaluate("n => document.activeElement === n")
+    assert _writes(page) == 0
+
+
+@pytest.mark.parametrize("lang,width,horizon", [("en", 390, 7), ("zh", 320, 30)])
+def test_r4_detached_current_review_replaces_with_exact_scenario(snapshot_page, lang, width, horizon):
+    start = f"#scenarios?h={horizon}&window=30&q=BTC&filter=all&sort=symbol&keep=detached&panel=memory%3Acontinuation"
+    page = snapshot_page(lang, width, at="2026-11-09T12:00:00Z", start=start)
+    source = _current_source(page, horizon)
+    before_history, before_raw = page.evaluate("history.length"), _raw(page)
+    context = page.evaluate("Object.fromEntries(new URLSearchParams(location.hash.split('?')[1]))")
+    parent = _current_parent(page, lang, detached=True)
+    _capture(page, f"current-return-detached-{lang}-{width}")
+    parent.click()
+    _wait_drawer(page, "scenario:" + source["id"], source["title_" + lang])
+    expected = dict(context, panel="scenario:" + source["id"])
+    assert page.evaluate("Object.fromEntries(new URLSearchParams(location.hash.split('?')[1]))") == expected
+    assert page.evaluate("history.length") == before_history
+    assert not page.locator("#cri-dialog-body details").evaluate("n => n.open")
+    page.locator("#cri-dialog-close").click()
+    _wait_closed(page)
+    expected.pop("panel")
+    assert page.evaluate("Object.fromEntries(new URLSearchParams(location.hash.split('?')[1]))") == expected
+    assert _raw(page) == before_raw and _writes(page) == 0
+
+
+def test_r4_current_parent_rejects_the_same_id_at_a_different_horizon(snapshot_page):
+    page = snapshot_page(width=390, start="#scenarios?h=30&window=30&keep=wrong-horizon")
+    original_url = page.url
+    source = _current_source(page, 7)
+    _open_scenario(page)
+    page.locator("#cri-dialog-body summary").click()
+    page.evaluate("""() => {
+      const previous=location.hash, params=new URLSearchParams(location.hash.split('?')[1]);
+      params.set('panel','memory:continuation');params.set('h','7');
+      history.pushState({r4:true,drawer:true,depth:history.state.depth+1,previous,detachedOrigin:false},
+        '', '#scenarios?'+params.toString());
+      window.dispatchEvent(new PopStateEvent('popstate',{state:history.state}));
+    }""")
+    before_history = page.evaluate("history.length")
+    assert page.locator("#cri-dialog").get_by_role("button", name="← Scenario details", exact=True).count() == 0
+    _current_parent(page, detached=True).click()
+    _wait_drawer(page, "scenario:continuation", source["title_en"])
+    assert page.evaluate("history.length") == before_history
+    assert page.evaluate("new URLSearchParams(location.hash.split('?')[1]).get('h')") == "7"
+    assert not page.locator("#cri-dialog-body details").evaluate("n => n.open")
+    assert source["condition_en"] in page.locator("#cri-dialog-body").text_content()
+    page.locator("#cri-dialog-close").click()
+    _wait_closed(page)
+    assert page.url == original_url and _writes(page) == 0
+
+
+def test_r4_current_parent_accepts_the_normalized_default_horizon(snapshot_page):
+    page = snapshot_page(width=390, start="#scenarios?window=30&keep=default")
+    source = _current_source(page, 7)
+    _open_scenario(page)
+    page.evaluate("""() => {
+      const params=new URLSearchParams(location.hash.split('?')[1]);params.delete('h');
+      history.replaceState(history.state,'','#scenarios?'+params.toString());
+      window.dispatchEvent(new PopStateEvent('popstate',{state:history.state}));
+    }""")
+    _review_saved(page)
+    _current_parent(page).click()
+    _wait_drawer(page, "scenario:continuation", source["title_en"])
+    assert not page.evaluate("new URLSearchParams(location.hash.split('?')[1]).has('h')")
+    assert page.locator('[data-drawer-focus="review"]').evaluate("n => document.activeElement === n")
+    assert _writes(page) == 0
+
+
+@pytest.mark.parametrize("field,value", [("revision", "another-publication"), ("cutoff", "1900-01-01")])
+def test_r4_current_return_rejects_stale_reading_identity(snapshot_page, field, value):
+    page = snapshot_page(width=390)
+    # Install before the app: a later window listener can observe an already-rendered entry.
+    page.add_init_script("""(() => {
+      const fault=FAULT_INPUT;
+      window.__snapshotKey='mmx.crypto.r4.scenarios.v1';
+      window.__snapshotNativeGet=Storage.prototype.getItem;
+      window.__snapshotNativeSet=Storage.prototype.setItem;
+      window.__snapshotWrites=0;
+      Storage.prototype.setItem=function(key,value) {
+        if(key===__snapshotKey)__snapshotWrites+=1;
+        return __snapshotNativeSet.call(this,key,value);
+      };
+      window.addEventListener('popstate', () => {
+        if(!window.__currentFaultArmed)return;
+        window.__currentFaultArmed=false;
+        window.__currentFaultPanel=document.getElementById('cri-dialog-body').dataset.panel;
+        const metadata=Object.assign({},history.state);
+        if(metadata.reading) {
+          metadata.reading=Object.assign({},metadata.reading,{[fault.field]:fault.value});
+          history.replaceState(metadata,'',location.href);
+          window.__currentFaultInjected=true;
+        }
+      },{capture:true});
+    })();""".replace("FAULT_INPUT", json.dumps({"field": field, "value": value})))
+    page.reload(wait_until="load")
+    source = _current_source(page, 30)
+    _open_scenario(page)
+    page.locator("#cri-dialog-body summary").click()
+    _review_saved(page)
+    page.evaluate("window.__currentFaultArmed=true")
+    _current_parent(page).click()
+    _wait_drawer(page, "scenario:continuation", source["title_en"])
+    assert page.evaluate("__currentFaultInjected && __currentFaultPanel==='memory:continuation'")
+    assert not page.locator("#cri-dialog-body details").evaluate("n => n.open")
+    assert page.locator('[data-drawer-focus="review"]').evaluate("n => document.activeElement === n")
+    assert _writes(page) == 0
+
+
+@pytest.mark.parametrize("width", [390, 320])
+def test_r4_current_locale_preserves_disclosure_focus_and_reading(snapshot_page, width):
+    page = snapshot_page(width=width)
+    page.set_viewport_size({"width": width, "height": 600})
+    source = _current_source(page, 30)
+    _open_scenario(page)
+    summary = page.locator("#cri-dialog-body summary")
+    summary.click()
+    summary.focus()
+    page.locator("#cri-dialog").evaluate("n => n.scrollTop=180")
+    before_scroll = page.locator("#cri-dialog").evaluate("n => n.scrollTop")
+    assert before_scroll > 0
+    original_url, original_history, original_raw = page.url, page.evaluate("history.length"), _raw(page)
+    for lang in ("zh", "en"):
+        page.locator("html").evaluate("(n,lang) => n.dataset.lang=lang", lang)
+        _wait_drawer(page, "scenario:continuation", source["title_" + lang])
+        assert page.locator("#cri-dialog-body details").evaluate("n => n.open")
+        assert summary.evaluate("n => document.activeElement===n")
+        assert abs(page.locator("#cri-dialog").evaluate("n => n.scrollTop") - before_scroll) <= 1
+        assert page.url == original_url and page.evaluate("history.length") == original_history
+    assert _raw(page) == original_raw and _writes(page) == 0
+
+
+def test_r4_current_restore_uses_heading_when_save_becomes_disabled(snapshot_page):
+    page = snapshot_page(width=390)
+    source = _current_source(page, 30)
+    _open_scenario(page)
+    action = page.locator('[data-snapshot-action="save"]')
+    assert action.is_enabled()
+    action.focus()
+    after_expiry = page.evaluate("day => new Date(Date.parse(day+'T00:00:00Z')+86400000).toISOString()", source["expires"])
+    _freeze_time(page, after_expiry)
+    page.locator("html").evaluate("n => n.dataset.lang='zh'")
+    _wait_drawer(page, "scenario:continuation", source["title_zh"])
+    assert page.locator('[data-snapshot-action="save"]').is_disabled()
+    assert page.locator("#cri-dialog-title").evaluate("n => document.activeElement===n")
+    assert _writes(page) == 0
+
+
+def test_r4_current_restore_does_not_swap_remove_focus_to_save(snapshot_page):
+    page = snapshot_page(width=390)
+    source = _current_source(page, 30)
+    _seed(page, [_frozen(source)])
+    _open_scenario(page)
+    page.locator('[data-snapshot-action="remove"]').focus()
+    _seed(page, [])
+    original_raw = _raw(page)
+    page.locator("html").evaluate("n => n.dataset.lang='zh'")
+    _wait_drawer(page, "scenario:continuation", source["title_zh"])
+    assert page.locator('[data-snapshot-action="save"]').is_enabled()
+    assert page.locator("#cri-dialog-title").evaluate("n => document.activeElement===n")
+    assert _raw(page) == original_raw and _writes(page) == 0
+
+
+@pytest.mark.parametrize("failure", ["malformed", "unreadable"])
+def test_r4_current_return_survives_unreadable_saved_storage(snapshot_page, failure):
+    page = snapshot_page(width=390)
+    source = _current_source(page, 30)
+    _open_scenario(page)
+    page.locator("#cri-dialog-body summary").click()
+    _review_saved(page)
+    if failure == "malformed":
+        page.evaluate("() => __snapshotNativeSet.call(localStorage,__snapshotKey,'{broken')")
+    else:
+        page.evaluate("""() => {
+          Storage.prototype.getItem=function(key) {
+            if(key===__snapshotKey)throw new DOMException('Unavailable','SecurityError');
+            return __snapshotNativeGet.call(this,key);
+          };
+        }""")
+    original_raw = _raw(page)
+    _current_parent(page).click()
+    _wait_drawer(page, "scenario:continuation", source["title_en"])
+    assert page.locator("#cri-dialog-body details").evaluate("n => n.open")
+    assert page.locator('[data-drawer-focus="review"]').evaluate("n => document.activeElement===n")
+    assert "Saved snapshots couldn’t be read." in page.locator("#cri-dialog-body").inner_text()
+    assert page.locator("#cri-dialog-body").get_by_role("button", name="Try reading again", exact=True).count() == 1
+    assert page.locator("[data-snapshot-action]").count() == 0
+    assert _raw(page) == original_raw and _writes(page) == 0
+    # Reading retry belongs to the same case and never writes the collection.
+    retry = page.locator('[data-drawer-focus="storage-retry"]')
+    retry.focus()
+    page.evaluate("() => {Storage.prototype.getItem=__snapshotNativeGet;__snapshotNativeSet.call(localStorage,__snapshotKey,'[]');}")
+    retry.click()
+    assert "Saved snapshots couldn’t be read." not in page.locator("#cri-dialog-body").inner_text()
+    assert page.locator("#cri-dialog-body details").evaluate("n => n.open")
+    assert page.locator("#cri-dialog-title").evaluate("n => document.activeElement===n")
+    assert _raw(page) == "[]" and _writes(page) == 0
+
+
+def test_r4_current_parent_focus_callback_keeps_the_new_destination(snapshot_page):
+    page = snapshot_page(width=390)
+    _open_scenario(page)
+    _review_saved(page)
+    page.evaluate("""() => {
+      let done=false;
+      document.addEventListener('focusin',event => {
+        if(done||event.target.dataset.drawerFocus!=='review')return;
+        done=true;
+        document.querySelector('#crypto-intelligence [data-open="evidence:liquidity_flows"]').click();
+        window.__currentReturnFocus=document.querySelector('#cri-dialog-body summary');
+        __currentReturnFocus.focus();
+      });
+    }""")
+    _current_parent(page).click()
+    _wait_drawer(page, "evidence:liquidity_flows", "Evidence behind the view")
+    assert page.evaluate("__currentReturnFocus.isConnected && document.activeElement===__currentReturnFocus")
+    assert _writes(page) == 0
+
+
+def test_r4_current_parent_double_activation_moves_back_once(snapshot_page):
+    page = snapshot_page(width=390)
+    source = _current_source(page, 30)
+    _open_scenario(page)
+    _review_saved(page)
+    parent = _current_parent(page)
+    page.evaluate("""() => {
+      const back=history.back.bind(history);window.__currentBackCalls=0;
+      history.back=function(){__currentBackCalls+=1;return back();};
+    }""")
+    parent.evaluate("n => {n.click();n.click();}")
+    _wait_drawer(page, "scenario:continuation", source["title_en"])
+    assert page.evaluate("__currentBackCalls") == 1
+    assert _writes(page) == 0
+
+
+@pytest.mark.parametrize("panel", ["memory", "memory:missing", "memory:"])
+def test_r4_current_parent_is_absent_without_a_resolved_case(snapshot_page, panel):
+    page = snapshot_page(width=390, start="#scenarios?h=30&panel=" + quote(panel))
+    assert page.locator("#cri-dialog .cri-dialog-parent").count() == 0
+    assert _writes(page) == 0
+
+
+
+@pytest.mark.parametrize("lang,width", [("en", 390), ("zh", 320)])
+def test_r4_current_evidence_native_back_restores_the_case_reader(snapshot_page, lang, width):
+    page = snapshot_page(lang, width)
+    source = _current_source(page, 30)
+    _open_scenario(page)
+    page.locator("#cri-dialog-body summary").click()
+    evidence = page.locator("#cri-dialog-body").get_by_role("button", name="Inspect demand evidence" if lang == "en" else "查看需求证据", exact=True)
+    evidence.focus()
+    evidence.click()
+    _wait_drawer(page, "evidence:liquidity_flows", "Evidence behind the view" if lang == "en" else "判断背后的证据")
+    page.go_back()
+    _wait_drawer(page, "scenario:continuation", source["title_" + lang])
+    assert page.locator("#cri-dialog-body details").evaluate("n => n.open")
+    assert evidence.evaluate("n => document.activeElement===n")
+    assert _writes(page) == 0
+
+
+
+@pytest.mark.parametrize("lang,width", [("en", 390), ("zh", 320)])
+def test_r4_current_review_locale_does_not_restart_existing_reading(snapshot_page, lang, width):
+    page = snapshot_page(lang, width)
+    page.set_viewport_size({"width": width, "height": 600})
+    _open_scenario(page)
+    _review_saved(page, lang)
+    page.locator("#cri-dialog-close").focus()
+    page.locator("#cri-dialog").evaluate("n => n.scrollTop=100")
+    before_scroll = page.locator("#cri-dialog").evaluate("n => n.scrollTop")
+    assert before_scroll == 100
+    original_url, original_history = page.url, page.evaluate("history.length")
+    other = "zh" if lang == "en" else "en"
+    page.locator("html").evaluate("(n,lang) => n.dataset.lang=lang", other)
+    _wait_drawer(page, "memory:continuation", "历史检验" if other == "zh" else "Historical review")
+    assert page.locator("#cri-dialog-close").evaluate("n => document.activeElement===n")
+    assert abs(page.locator("#cri-dialog").evaluate("n => n.scrollTop") - before_scroll) <= 1
+    assert page.url == original_url and page.evaluate("history.length") == original_history
+    assert _writes(page) == 0
+
+
+
+@pytest.mark.parametrize("entry", ["different-horizon", "same-url"])
+def test_r4_new_current_review_entry_starts_at_its_own_beginning(snapshot_page, entry):
+    page = snapshot_page(width=390, start="#scenarios?h=7&window=30&keep=entry")
+    page.set_viewport_size({"width": 390, "height": 600})
+    _open_scenario(page)
+    _review_saved(page)
+    page.locator("#cri-dialog-close").focus()
+    page.locator("#cri-dialog").evaluate("n => n.scrollTop=100")
+    assert page.locator("#cri-dialog").evaluate("n => n.scrollTop") == 100
+    if entry == "different-horizon":
+        page.evaluate("""() => {
+          const params=new URLSearchParams(location.hash.split('?')[1]);params.set('h','30');
+          location.hash='#scenarios?'+params.toString();
+        }""")
+        page.wait_for_function("""() => document.getElementById('crypto-intelligence').dataset.renderedAddress===location.href &&
+          new URLSearchParams(location.hash.split('?')[1]).get('h')==='30'""")
+        assert "30 days" in page.locator("#cri-dialog-body").inner_text()
+    else:
+        # Two real history entries can have identical URL and serialized metadata.
+        page.evaluate("""() => {
+          history.pushState(history.state,'',location.href);
+          window.addEventListener('popstate',()=>window.__currentEntryArrived=true,{once:true});
+        }""")
+        page.go_back()
+        page.wait_for_function("window.__currentEntryArrived===true")
+    assert page.locator("#cri-dialog").evaluate("n => n.scrollTop") == 0
+    assert page.locator("#cri-dialog").get_by_role("button", name="← Scenario details", exact=True).count() == (0 if entry == "different-horizon" else 1)
+    assert _writes(page) == 0
