@@ -5703,9 +5703,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_943),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_964),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_701),
+    ("templates/index.html", 137, 5_947),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_968),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_705),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5713,6 +5713,48 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    Account mobile shell (#7620, 2026-11-09): own contract-delta run
+    42618399987/job129163949433 bound H71878518887fb1c71dc1475baa0ad4f866f4fd4c
+    to basecf07e7a73334c646a09c043647c43e43ee6e4060 through tested commit
+    3d78a5237edc7329ab9717aa3b0c10fc13d1cf59, whose whole tree equals H.
+    Paired probes measured index137/5943 ->137/5945, free137/5964 ->137/5966,
+    Prophet131/5701 ->131/5703; all ten packs, no new selected owner,
+    three introduced findings and zero inherited. The sole suite token is
+    in the existing billing-emails command; no install or job is added.
+    Current main has actually landed F09's independent +2 and its complete
+    provenance below. Preserve it, then compose only this PR's measured +2:
+    5945/5966/5703 ->5947/5968/5705, with ceilings137/138/131 and ten packs.
+    This is source accounting, not a new planner run or unmerged-sibling
+    funding. All commands, selectors, assertions and runtime limits remain.
+
+    F09 C3 current-main conflict repair (2026-11-09): retain the complete
+    historical paired measurement below and current main's independent history.
+    The data-base-shim preimage and current weight estimator still establish
+    only +2 from the accepted suite token, with no new selected owner. Apply
+    that contribution to 5943/5964/5701 -> 5945/5966/5703; keep 137/138/131 jobs
+    and ten packs. This is source accounting, not a new planner execution.
+
+    2026-11-08 (PR #10192, accepted F09 suite accounting on current main):
+    own contract-delta run42241879921/job127973971361 compared exact base
+    4b2a019bf31317b994c6f07329565a62c38f7670 with head
+    e287b58381b87d1d1495b3c6f77a194e3eb7d582: index5912->5914,
+    free-content5927->5929, Prophet5668->5670, unchanged selected jobs and
+    ten packs, three introduced findings and zero inherited. Its existing
+    data-base-shim owner adds only tests/test_beneficial_ownership.py to the
+    SharedShell command. Current catalog4f2c0d2fee46d9839560f0f958f3322e5eb9ce1a
+    retains that exact base owner; current runner computes23->25 from five
+    commands and9->10 test-path tokens in the same text-size bucket.
+    Compose only this measured +2 coverage cost onto current ceilings:
+    index5920->5922, free-content5941->5943, Prophet5678->5680.
+    Mainc9e06966920fa3b4b46341d344f90978f1fcd225 has actually landed #7352;
+    its independent +2 free-content benchmark allowance and history are
+    retained. The previous F09 candidate03f5407 conflicted with that landing;
+    this composition includes both actual source contributions once. Keep
+    selected-job ceilings137/138/131, ten packs, all assertions, selectors,
+    suites, runtime deadlines and existing provenance. No unmerged sibling
+    funding. This is source-composition arithmetic, not a new planner run;
+    old exact-base descendant UNKNOWN is unchanged, and new own CI is owed.
 
     2026-11-09 (PR #10870, dependency-coverage correction): the separate
     admission job conservatively owns tools/xguerrilla/** because pytest
