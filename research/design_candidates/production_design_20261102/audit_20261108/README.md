@@ -15,7 +15,6 @@ Applied and visually checked focused improvements in thirteen existing Paper fil
 | Intelligence Hub | [Current desktop](https://app.paper.design/file/01M2VWK62FA5S4VVF6G7SBPE5J/p-3-0) | One setup introduction; source-defined score names and honest null semantics. |
 | News | [R3 and behavior references](https://app.paper.design/file/01M5EXPMQTSBFBAM8KKG83FTZH/p-1-0) | Supported comparison before clocks; unverified scope distinguished from contradiction. |
 | Mastermind AI | [Build page](https://app.paper.design/file/01M3P1QEHS5XXQY85BJT6QR2E1/p-9-0) | Answer-bound evidence receipts and a viable non-monitoring save contract. |
-
 | Guide | [Current designs](https://app.paper.design/file/01M32XYWDYSFTNDZVJKQ5QHT33/p-1-0) | Explicit Macro dashboard destination in all four EN/ZH desktop/mobile calls to action. |
 | Prophet | [Current designs](https://app.paper.design/file/01M3NT5Y3G5HTJHVR0K5W2MDJM/p-1-0) | Watchlist action names the required review step. |
 | Market Memory | [Current variants](https://app.paper.design/file/01M6PXFEP1E1T59M2B3N673PMG/p-1-0) · [Build](https://app.paper.design/file/01M6PXFEP1E1T59M2B3N673PMG/p-3-0) | Eight prominent comparison entries; receipt binding and CPI comparison units clarified. |
