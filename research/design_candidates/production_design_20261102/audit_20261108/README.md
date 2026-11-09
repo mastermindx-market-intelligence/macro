@@ -1,5 +1,16 @@
 # Paper audit and upgrade — 8–9 November 2026
 
+
+## Latest applied work — Crypto Overview clarity
+
+Dependent [PR #10901](https://github.com/mastermindx-market-intelligence/Macro/pull/10901) is now `7fd7d84f8b53ad0cd43c5175d3c149ad0d3ccf62` (assets `602406872d1d`). Overview explicitly labels comparison and risk in both languages, preserves compact wrapping and aligns section headings.
+
+Five final contexts/pages and ten Inspect→Close journeys passed, with zero page errors or external/WebSocket traffic. Type and data are retained. Nineteen text/source/evidence files and ten PNGs match readback. Paper Overview and comparison Build have four text changes across **219 conserved nodes/styles**; the existing responsive and proposed comparison frames remain exact. Both roots finished; full screenshots inspected.
+
+A separate native viewport diagnostic establishes the next correction: the asset row is clear, while the desktop footer model/methods control is partly covered by the shared launcher. Continue by adjusting the existing page-bottom clearance, then address quote validity/precision. See [§68](WORKFLOW_CONTINUATION_20261108.md) and [applied Paper/source receipt](PAPER_CRYPTO_OVERVIEW_CLARITY_20261109.json).
+
+All earlier proof scopes and holds remain. This is Draft candidate work, not production acceptance.
+
 ## Current implementation — Crypto relative-state integrity (§67)
 
 Dependent Draft [PR #10901](https://github.com/mastermindx-market-intelligence/Macro/pull/10901), head `a027c389a6c5e6c207c35d5bdbecf1e24defe0fb`, now qualifies the relative value and both labels together. Missing/invalid values cannot retain a direction; genuine zero remains valid, and supplied Building history has one canonical bilingual meaning. Malformed optional relative containers retain the usable asset.

@@ -3206,3 +3206,44 @@ Next safe phase: the Overview's existing unlabelled “Unavailable · Stressed�
 Separate unresolved producer work is documented: finite positive price/ratio validity; missing 30-step input at exactly 30 observations; actual paired endpoints/counts/Bitcoin source and basis. The current repair does not implement those items, infer missing reasons or validate finite producer classifications.
 
 All H5/model, alert, hosted/independent visual, public-route cutover, admission/release, denied-capture and unknown-effect worker boundaries remain. This phase is saved and read back; continue the parent design/architecture mission in the same session.
+
+
+## 68. Crypto Overview — explicit field labels and aligned headings (2026-11-09)
+
+**Implemented and locally verified; continuing into the demonstrated footer-clearance repair.** Dependent Draft [PR #10901](https://github.com/mastermindx-market-intelligence/Macro/pull/10901) advances from `a027c389a6c5e6c207c35d5bdbecf1e24defe0fb` to **`7fd7d84f8b53ad0cd43c5175d3c149ad0d3ccf62`**, tree `56e881683b6af70e367054a66c5a073570ddeed5`, assets `602406872d1d`. Original PR #9580 remains at `5e496c24c962e85a4f7f514dd43dc61443b95cab`.
+
+### User-visible change and ownership
+
+Overview now labels the two supplied readings **Vs BTC** and **Risk**, with corresponding Chinese labels. Each stays in one of two compact wrap groups inside the existing summary paragraph. Unavailable belongs clearly to the comparison field. No new explanatory paragraph, tooltip, controller or navigation surface is added.
+
+Section H3 margins are reset to zero, aligning Beyond Bitcoin with Explore markets and removing unintended native heading space from What matters. Existing panel headings already had zero margins. The information-column shrink rule is scoped to the new summary class so the other watch-row families retain their current behavior.
+
+One template transformation and two CSS transformations reverse to the exact parent. Five runtime paths change: template, template/served CSS and two retained-data HTML pages. Sixteen other inputs, including JavaScript, view JSON, projection, producer-facing builder and tests, stay exact. The renderer replays retained JSON; it does not collect or rebuild current data.
+
+### Proof and limitations
+
+- Corrected parent readback: two contexts/pages, four Inspect→Close journeys, 4.017s, zero errors/outside traffic. An earlier two-argument route lambda failed before accepted rendered-page proof; it was a harness error.
+- The first source preflight counted watch rows in other views. It stopped before served copies or candidate browser launch. Overview-only matching and a narrowed shrink selector corrected that scope.
+- First served candidate `c41504ba8019`: five contexts/pages and ten returns passed in6.164s; the images still exposed the inherited heading offset.
+- Final `602406872d1d`: five contexts/pages, ten Inspect→Close journeys,6.098s script/6.349s subprocess/6.56s wrapper. Both locales;320,390,1440px; retained, unavailable and Building-history cases. Original values,12.5px fonts, action targets and opener focus retained. No page/row overflow or text/action overlap; all five heading instances have zero H3 margins. Beyond Bitcoin/action top coordinates match in every case. Zero page errors/external/WebSocket requests.
+- Eight final layout crops/full elements and two subsequent viewport images were inspected. Nineteen text/source/evidence files and ten PNGs match exact GitHub readback.
+- Separate viewport diagnostic: two contexts/pages,4.972s, zero errors/outside traffic. The Solana action is clear at actual maximum scroll at320 and1440. The desktop footer action is partly intercepted by the existing launcher: footer y740.109–780.109, launcher top766, bottom-right hit goes to `#mmb-boot`. The320 footer is clear and two action/focus journeys passed. Desktop actions were intentionally not attempted after failed clearance. An earlier strict observer failed before saving point measurements, so its exact failed point remains unestablished.
+
+The last finding is a real pre-existing footer-clearance defect, not the apparent asset-row obstruction in tall-element screenshots. The next safe implementation phase will reserve sufficient bottom space through the existing Crypto content owner; no shared launcher/stacking/controller change is needed.
+
+### Applied Paper alignment
+
+File `01M6Y3F0NXNDPAKJMJGCAD759Z`:
+
+- Overview `1-0`: nodes `41-0`/`46-0` now show the explicit compact labels; **147 nodes, parent/order/style relationships preserved**.
+- Comparison Build `2ZJ-0`: `33Q-0` records the Overview/null distinction and `31F-0` points to this source/proof; **72 nodes and styles preserved**.
+- Proposed comparison frames `2XH-0`/`2YI-0` and existing responsive `HX-0` are byte-exact.
+- Both changed roots were finished; full1440×1298/1440×1200 screenshots inspected. No Paper style effect or held family was used.
+
+[Build contract and native proof](https://github.com/mastermindx-market-intelligence/Macro/tree/7fd7d84f8b53ad0cd43c5175d3c149ad0d3ccf62/research/design_candidates/crypto_snapshot_safety_20261109). Applied receipt: `PAPER_CRYPTO_OVERVIEW_CLARITY_20261109.json`.
+
+### Continuation
+
+Start the measured footer-clearance repair, then qualify invalid asset prices and prevent small valid prices from rounding to zero. Fallback-name duplication remains a bounded consumer finding. Producer history validity, missing trend inputs and paired-window receipt work stay separate.
+
+Prior storage/navigation/frozen-case/comparison/integrity/compact proofs retain their exact source scopes; no new complete suite is claimed. PR stays Draft/unarmed/unmerged. H5/model, alerts, hosted/independent acceptance, public-route cutover, admission/release and all denied/unknown-effect action families remain held. Native historical/synthetic proof is not current freshness or production acceptance.
