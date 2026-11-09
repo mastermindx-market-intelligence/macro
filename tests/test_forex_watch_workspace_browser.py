@@ -346,3 +346,64 @@ def test_empty_reload_cannot_resolve_an_unconfirmed_save(browser_page):
     expect(page.locator("#fxr-saved-list article")).to_have_count(1)
     expect(page.locator("#fxr-pending-list article")).to_have_count(0)
     assert len(owner.writes) == 1
+
+
+@pytest.mark.parametrize("width,lang,theme", [(1440, "en", "dark"), (390, "zh", "light")])
+def test_hashless_history_restores_default_filters_and_forward_context(browser_page, width, lang, theme):
+    owner = AccountOwner()
+    page = browser_page(owner, width=width, lang=lang, theme=theme)
+    base = page.url.split("#")[0]
+    page.goto(base, wait_until="load")
+    page.evaluate("([lang,theme]) => {document.documentElement.setAttribute('data-lang',lang);document.documentElement.setAttribute('data-theme',theme)}", [lang, theme])
+    page.locator("#fxr-nav-explore").click()
+    page.locator("#fxr-search").fill("JPY")
+    page.locator("#fxr-filter").select_option("down")
+    expect(page.locator("[data-fxr-search-row]:not([hidden])")).to_have_count(1)
+    filtered = page.url
+
+    page.go_back(wait_until="domcontentloaded")
+    expect(page).to_have_url(base)
+    expect(page.locator("#fxr-nav-today")).to_have_attribute("aria-selected", "true")
+    expect(page.locator("#fxr-search")).to_have_value("")
+    expect(page.locator("#fxr-filter")).to_have_value("all")
+    expect(page.locator("[data-fxr-search-row]:not([hidden])")).to_have_count(9)
+
+    page.go_forward(wait_until="domcontentloaded")
+    expect(page).to_have_url(filtered)
+    expect(page.locator("#fxr-search")).to_have_value("JPY")
+    expect(page.locator("#fxr-filter")).to_have_value("down")
+    expect(page.locator("[data-fxr-search-row]:not([hidden])")).to_have_count(1)
+    page.locator('[data-fxr-view="explore"] [data-fxr-open-pair="USDJPY"]').click()
+    pair = page.locator('[data-fxr-pair="USDJPY"]')
+    expect(pair).to_be_visible()
+    pair.locator('[data-fxr-pair-tab="history"]').click()
+    expect(pair.locator('[data-fxr-pair-tab="history"]')).to_have_attribute("aria-selected", "true")
+    page.go_back(wait_until="domcontentloaded")
+    expect(pair.locator('[data-fxr-pair-tab="outlook"]')).to_have_attribute("aria-selected", "true")
+    page.go_back(wait_until="domcontentloaded")
+    expect(page).to_have_url(filtered)
+    expect(page.locator('[data-fxr-view="explore"]')).to_be_visible()
+    expect(page.locator("#fxr-search")).to_have_value("JPY")
+    expect(page.locator("#fxr-filter")).to_have_value("down")
+    assert owner.writes == []
+
+
+def test_reopening_explore_after_hashless_back_shows_the_default_pair_set(browser_page):
+    owner = AccountOwner()
+    page = browser_page(owner)
+    base = page.url.split("#")[0]
+    page.goto(base, wait_until="load")
+    page.locator("#fxr-nav-explore").click()
+    page.locator("#fxr-search").fill("JPY")
+    page.locator("#fxr-filter").select_option("down")
+    expect(page.locator("[data-fxr-search-row]:not([hidden])")).to_have_count(1)
+    page.go_back(wait_until="domcontentloaded")
+    expect(page).to_have_url(base)
+    expect(page.locator("#fxr-nav-today")).to_have_attribute("aria-selected", "true")
+    page.locator("#fxr-nav-explore").click()
+    expect(page.locator('[data-fxr-view="explore"]')).to_be_visible()
+    expect(page.locator("#fxr-search")).to_have_value("")
+    expect(page.locator("#fxr-filter")).to_have_value("all")
+    expect(page.locator("[data-fxr-search-row]:not([hidden])")).to_have_count(9)
+    assert page.url.endswith("#forex/explore")
+    assert owner.writes == []

@@ -1,0 +1,125 @@
+{
+  "status": "passed",
+  "surface": "market",
+  "matrix": [
+    {
+      "width": 1440,
+      "theme": "light",
+      "locale": "en",
+      "metrics": {
+        "width": 1440,
+        "scroll": 1440,
+        "wrap": 1180
+      },
+      "range_persistence": true,
+      "keyboard_help": true,
+      "image": {
+        "path": "docs/pr-crops/d06-macro-integration-20261104/market-locale-fix/market-1440-light-en.png",
+        "sha256": "aa8225d09459f6f2677105213c5bfef0f58fc5e56086bc69bd73b72d978fec49"
+      }
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "locale": "zh",
+      "metrics": {
+        "width": 1440,
+        "scroll": 1440,
+        "wrap": 1180
+      },
+      "range_persistence": true,
+      "keyboard_help": true,
+      "image": {
+        "path": "docs/pr-crops/d06-macro-integration-20261104/market-locale-fix/market-1440-dark-zh.png",
+        "sha256": "22fc0726a329c264a8ae2c0aaf6be2ef0f3e7fc8318cbdb876e2523f646964e5"
+      }
+    },
+    {
+      "width": 720,
+      "theme": "light",
+      "locale": "en",
+      "metrics": {
+        "width": 720,
+        "scroll": 720,
+        "wrap": 720
+      },
+      "range_persistence": true,
+      "keyboard_help": true,
+      "image": {
+        "path": "docs/pr-crops/d06-macro-integration-20261104/market-locale-fix/market-720-light-en.png",
+        "sha256": "0f4992a0382a44ef04aa2d0816b76f33af5d0db909ba936bd1fa7a9d0ea5d378"
+      }
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "locale": "en",
+      "metrics": {
+        "width": 390,
+        "scroll": 390,
+        "wrap": 390
+      },
+      "range_persistence": true,
+      "keyboard_help": true,
+      "image": {
+        "path": "docs/pr-crops/d06-macro-integration-20261104/market-locale-fix/market-390-dark-en.png",
+        "sha256": "cad03aa649d808b8ec1a236a14d66cf092eebeb6238561a11aa6a7644932f56c"
+      }
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "locale": "zh",
+      "metrics": {
+        "width": 390,
+        "scroll": 390,
+        "wrap": 390
+      },
+      "range_persistence": true,
+      "keyboard_help": true,
+      "image": {
+        "path": "docs/pr-crops/d06-macro-integration-20261104/market-locale-fix/market-390-light-zh.png",
+        "sha256": "1525fa6484d615365774b3151d6ab82ce312239b287553ca8e630a7aa03e77b8"
+      }
+    },
+    {
+      "width": 320,
+      "theme": "light",
+      "locale": "en",
+      "metrics": {
+        "width": 320,
+        "scroll": 320,
+        "wrap": 320
+      },
+      "range_persistence": true,
+      "keyboard_help": true,
+      "image": {
+        "path": "docs/pr-crops/d06-macro-integration-20261104/market-locale-fix/market-320-light-en.png",
+        "sha256": "5cd1da14892ba5016a4e37c3f15d947080b5ba3c99ddce39d4d572af6e183327"
+      }
+    }
+  ],
+  "edge_cases": [
+    {
+      "case": "gaps-zero-singleton-outer-only",
+      "image": {
+        "path": "docs/pr-crops/d06-macro-integration-20261104/market-locale-fix/market-partial-outer-only.png",
+        "sha256": "789265c370d61188fa256360a92c51f1b064288824dae365c3b60930c8dcb936"
+      }
+    },
+    {
+      "case": "all-missing-and-language-change",
+      "image": {
+        "path": "docs/pr-crops/d06-macro-integration-20261104/market-locale-fix/market-missing-zh.png",
+        "sha256": "96f624f4834be8e43cb7d746950d46881841029dff395f56d3d56bd5338bddb4"
+      }
+    }
+  ],
+  "scope": "Actual owned generated page plus explicit missing-data fixtures.",
+  "source_hashes": {
+    "scripts/verify_d06_macro.py": "5855f2a79e94b30b8cd2127058b4f3fccc00dd7986ba65e2c5df9133f312ff52",
+    "templates/market_structure.html.j2": "f34e88b11467e73b88ffeb8438c1acddbe21f681d948373cb06f59be541ae1bb",
+    "templates/stage_analysis.html.j2": "fe8307c9ceb5b6f562ec3d51541f516c1f0a92ce00dba5611b9d98ef8fa2f72b",
+    "templates/spvector.html.j2": "8c6ea6ddfcd23fd4444230db9cecf65b60613338dbfac344a7641e1755d8c15f"
+  }
+}

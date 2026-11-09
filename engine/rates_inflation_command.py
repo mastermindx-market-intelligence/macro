@@ -1906,6 +1906,12 @@ def build_board(root=None, *, cutoff=None) -> dict:
         intel=intel,
     )
 
+    # Add measured contract/roll context AFTER stance construction. This neither
+    # replaces the policy normalization owner nor changes scores or forecasts.
+    from engine.rate_futures_repricing import build_policy_repricing
+    artifact["policy_path_repricing"] = build_policy_repricing(
+        data_dir, asof=asof, evaluated_at=artifact["built"])
+
     return artifact
 
 
