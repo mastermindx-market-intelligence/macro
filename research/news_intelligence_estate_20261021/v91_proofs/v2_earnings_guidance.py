@@ -62,6 +62,7 @@ from engine.fundamental_forensics.disclosure_diff import normalize_filing  # noq
 from engine.news_impact import cluster as CL  # noqa: E402
 from engine.news_impact import issuer as ISS  # noqa: E402
 from engine.news_impact import producer_facts as pf  # noqa: E402
+from engine.news_impact.producer import PRODUCER_VERSION  # noqa: E402
 from engine.news_impact import prophet_adapter as PA  # noqa: E402
 from engine.news_impact import thesis as TH  # noqa: E402
 from engine.news_impact.validate import validate_event  # noqa: E402
@@ -254,9 +255,19 @@ def _run_facts(scratch: Path, name: str, events: list[dict]):
     rows = [{"case_id": f"{name}_{i}", "shadow": False,
              "novelty_source": "label_provisional", "event": ev}
             for i, ev in enumerate(events, 1)]
-    path = scratch / f"{name}_events.jsonl"
+    generation = scratch / f"{name}_source"
+    generation.mkdir(parents=True, exist_ok=True)
+    path = generation / "events.jsonl"
     path.write_text("".join(json.dumps(r, sort_keys=True) + "\n" for r in rows),
                     encoding="utf-8")
+    # Synthetic fixture of the adjudicated generation format, not a label run.
+    raw = path.read_bytes()
+    (generation / "events_report.json").write_text(json.dumps({
+        "producer_version": PRODUCER_VERSION, "mode": "adjudicated",
+        "n_cases": len(rows), "n_emitted": len(rows),
+        "emitted": {"synthetic": len(rows)}, "deferred": {}, "rejected": {},
+        "events_sha256": sha256(raw).hexdigest(), "events_bytes": len(raw),
+    }, sort_keys=True) + "\n", encoding="utf-8")
     out = scratch / name
     pf.run([path], out, None)
     log = json.loads((out / "fact_log.json").read_text(encoding="utf-8"))

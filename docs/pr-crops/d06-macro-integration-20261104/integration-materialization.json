@@ -1,0 +1,18 @@
+{
+  "status": "materialized",
+  "head": "ede62cbbc69441aca64973ee638c55be544cfc4d",
+  "base": "eb312bea9cbbc7550b157c071fbb41dea990321b",
+  "provisional_tree": "0cb0e7805eab68782f103c30ee3a7aa7ba5d2f49",
+  "changed_paths": 4784,
+  "materialized_paths": 4782,
+  "deferred_generated_conflicts": [
+    "site/market_structure.html",
+    "site/spvector.html"
+  ],
+  "bytes": 870340075,
+  "duration_seconds": 5.59,
+  "all_modes": "100644",
+  "added_paths": 55,
+  "new_ignored_paths": 0,
+  "plan": "/tmp/d06-macro-c4-11l44i0i/integration-materialization-plan.json"
+}
