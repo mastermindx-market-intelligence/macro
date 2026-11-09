@@ -1,8 +1,8 @@
 {
   "schema": "stage_context.v1",
-  "asof": "2026-11-08",
+  "asof": "2026-11-09",
   "data_session": "2026-11-06",
-  "built": "2026-11-08T08:56:31Z",
+  "built": "2026-11-09T09:16:15Z",
   "is_context_only": true,
   "display_only": true,
   "disclaimer": "Context only — stage classification display, never a signal or sizing input.",
@@ -190,17 +190,18 @@
       "arc_pos": 0.2625,
       "earnings": {
         "present": true,
-        "sentiment": 0.85,
-        "performance": 9.0,
-        "tone_word": "upbeat",
+        "sentiment": -0.1,
+        "performance": 6.5,
+        "tone_word": "mixed",
         "tags": [
-          "guidance_raised",
-          "beat_and_raise",
+          "guidance_lowered",
           "margin_expansion",
-          "demand_acceleration"
+          "demand_slowdown",
+          "buyback_or_dividend",
+          "macro_sensitivity"
         ],
-        "quarter": "Q2",
-        "summary": "Compass reported record Q2 FY2026 revenue of $4.3 billion, up 14% year-over-year on a pro forma basis, and record adjusted EBITDA of $363 million, both above guidance. The company raised its year-one cost synergies target to $330 million from $300 million, achieved five months…"
+        "quarter": "Q3",
+        "summary": "Compass reported record Q3 revenue of $3.9 billion and record Q3 Adjusted EBITDA of $306 million, above the high end of guidance, with GAAP net income of $62 million (first positive Q3 net income) and record free cash flow of $240 million on $841 million of cash. Organic broke…"
       },
       "why": [
         "Early in its climb — 1 weeks up so far",
@@ -334,16 +335,12 @@
       "arc_pos": 0.2625,
       "earnings": {
         "present": true,
-        "sentiment": 0.85,
-        "performance": 9.2,
+        "sentiment": 0.6,
+        "performance": 8.5,
         "tone_word": "confident",
-        "tags": [
-          "guidance_raised",
-          "beat_and_raise",
-          "demand_acceleration"
-        ],
-        "quarter": "Q2",
-        "summary": "Ironwood reported Q2 FY26 revenue of $113 million with LINZESS U.S. net sales reaching $282.3 million (up 14% YoY). Management raised full-year guidance for LINZESS to a range of $1.15 billion-$1.20 billion and adjusted EBITDA to greater than $310 million, citing mid-single-di…"
+        "tags": [],
+        "quarter": "Q3",
+        "summary": "Ironwood reported Q3 FY2026 total revenue of $133 million with LINZESS U.S. net sales of $325 million, GAAP net income of $60 million and record adjusted EBITDA of $98 million; YTD LINZESS sales of $880 million already exceed full-year 2025. Management raised full-year 2026 LI…"
       },
       "why": [
         "Early in its climb — 1 weeks up so far",
@@ -1068,15 +1065,12 @@
       "arc_pos": 0.325,
       "earnings": {
         "present": true,
-        "sentiment": -0.5,
+        "sentiment": 0.3,
         "performance": 2.5,
-        "tone_word": "cautious",
-        "tags": [
-          "miss_and_cut",
-          "demand_slowdown"
-        ],
-        "quarter": "Q2",
-        "summary": "Q2 FY2026 revenue was $20 million, down 48% year-over-year to $137 million in Q2 2025, with H1 2026 revenue of $40 million excluding a one-time non-cash item. Net loss from continuing operations widened slightly to $57 million compared to $53 million last quarter, while adjust…"
+        "tone_word": "confident",
+        "tags": [],
+        "quarter": "Q3",
+        "summary": "Q3 FY2026 revenue was $28M, down 6% YoY, with the sequential increase driven largely by a cumulative catch-up on a modified long-term contract; nine-month revenue fell 37% YoY (about 32% ex the prior-year $7.5M BiomEdit non-cash item). Net loss from continuing operations narro…"
       },
       "why": [
         "Early in its climb — 6 weeks up so far",
@@ -1406,18 +1400,17 @@
       "arc_pos": 0.275,
       "earnings": {
         "present": true,
-        "sentiment": -0.2,
-        "performance": 5.5,
+        "sentiment": 0.0,
+        "performance": 5.0,
         "tone_word": "mixed",
         "tags": [
-          "guidance_lowered",
           "demand_slowdown",
-          "margin_expansion",
-          "new_product",
-          "macro_sensitivity"
+          "margin_contraction",
+          "macro_sensitivity",
+          "new_product"
         ],
-        "quarter": "Q2",
-        "summary": "Kimberly-Clark's Q2 2026 organic sales fell ~100 bps below internal expectations, hit by a China diaper disruption in late June, a North America trade inventory reduction, and softer category growth. Adjusted operating profit and EPS beat expectations, helped by a $45M U.S. ta…"
+        "quarter": "Q3",
+        "summary": "Kimberly-Clark closed its acquisition of Kenvue during the quarter and framed Q3 as solid but impacted by discrete headwinds, including a ~130 bp retailer inventory drag in North America and a postponed major new product launch. Standalone FY2026 guidance was maintained; the c…"
       },
       "why": [
         "Early in its climb — 2 weeks up so far",
@@ -2081,21 +2074,16 @@
       "arc_pos": 0.3375,
       "earnings": {
         "present": true,
-        "sentiment": 0.5555555555555556,
-        "performance": 9.166666666666668,
+        "sentiment": 0.7,
+        "performance": 8.5,
         "tone_word": "confident",
         "tags": [
-          "genomic_testing",
-          "dermatology",
-          "gastroenterology",
-          "melanoma",
-          "barretts_esophagus",
-          "atopic_dermatitis",
-          "diagnostic_tests",
-          "revenue_guidance"
+          "guidance_raised",
+          "demand_acceleration",
+          "margin_expansion"
         ],
-        "quarter": "Q1",
-        "summary": "Our revenue growth...is approximately 42%...highlighted by double-digit year-over-year test report volume growth for both DecisionDx-Melanoma and TissueCypher."
+        "quarter": "Q3",
+        "summary": "Castle Biosciences reported Q3 FY2026 revenue of $102.9 million, up 24% YoY, driven by TissueCypher test report volume growth of 47% to 15,574 reports. Full-year 2026 revenue guidance was raised to $385-395 million from $365-375 million, a $20 million increase at the midpoint,…"
       },
       "why": [
         "Early in its climb — 7 weeks up so far",
@@ -2676,15 +2664,19 @@
       "arc_pos": 0.3125,
       "earnings": {
         "present": true,
-        "sentiment": -0.2,
-        "performance": 7.5,
-        "tone_word": "confident",
+        "sentiment": 0.1,
+        "performance": 2.5,
+        "tone_word": "reassuring",
         "tags": [
-          "beat_and_raise",
-          "demand_slowdown"
+          "margin_contraction",
+          "demand_slowdown",
+          "supply_constraint",
+          "new_product",
+          "regulatory_headwind",
+          "macro_sensitivity"
         ],
-        "quarter": "Q2",
-        "summary": "Mativ reported Q2 FY2026 net sales of $532 million (up nearly 2% organically) and adjusted EBITDA of $75 million, marking a quarterly record with margins expanding to 14.1%. Management raised the full-year inflation impact estimate for Middle East conflict costs but maintained…"
+        "quarter": "Q3",
+        "summary": "Q3 net sales were $500 million, down ~2% organically and ~3% as reported, with adjusted EBITDA of $62 million down 7% and margin contracting 50 bps to 12.5%. FAM delivered record organic growth of over 11% and EBITDA up 20% with 150 bps margin expansion to 18.1%, while SAS sal…"
       },
       "why": [
         "Early in its climb — 5 weeks up so far",
