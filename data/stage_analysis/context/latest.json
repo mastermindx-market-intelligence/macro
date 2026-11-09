@@ -1,8 +1,8 @@
 {
   "schema": "stage_context.v1",
-  "asof": "2026-11-07",
+  "asof": "2026-11-09",
   "data_session": "2026-11-06",
-  "built": "2026-11-07T08:12:35Z",
+  "built": "2026-11-09T09:16:15Z",
   "is_context_only": true,
   "display_only": true,
   "disclaimer": "Context only — stage classification display, never a signal or sizing input.",
@@ -61,15 +61,15 @@
   "counts": {
     "total": 2700,
     "stage1": 159,
-    "stage2": 1359,
-    "stage2_fresh": 397,
-    "stage3": 218,
+    "stage2": 1360,
+    "stage2_fresh": 396,
+    "stage3": 217,
     "stage4": 964,
     "too_young": 362,
     "new_today": 29
   },
   "market": {
-    "pct_stage2": 50.3,
+    "pct_stage2": 50.4,
     "pct_stage4": 35.7,
     "weather": "mixed",
     "spy_stage": 2,
@@ -77,156 +77,50 @@
   },
   "top_stage2": [
     {
-      "ticker": "RYTM",
-      "company": "Rhythm Pharmaceuticals Inc",
-      "sector": "Healthcare",
+      "ticker": "FOXA",
+      "company": "Fox Corporation (Class A)",
+      "sector": "Communication Services",
       "stage_source_asof": "2026-11-06",
       "stage_week_end": "2026-11-06",
       "stage_current": true,
       "stage": 2,
-      "weeks_in_stage": 1,
-      "fresh": true,
-      "sga_score": 79,
-      "ma30_slope_pct5w": 1.718,
-      "pct_vs_ma30": 14.38,
-      "mansfield_rs": 10.88,
-      "vol_ratio": 2.01,
-      "event": "trendline_recapture",
-      "gate_tier": "T1",
-      "blackout": false,
-      "arc_pos": 0.2625,
-      "earnings": {
-        "present": true,
-        "sentiment": 0.8,
-        "performance": 8.0,
-        "tone_word": "confident",
-        "tags": [
-          "new_product",
-          "demand_acceleration",
-          "margin_expansion"
-        ],
-        "quarter": "Q2",
-        "summary": "Q2 2026 marked the first full quarter of the U.S. launch of IMCIVREE for acquired hypothalamic obesity, with strong early demand: over 400 start forms from ~300 unique prescribers in 14 weeks, and positive payer access. Management highlighted encouraging RM-718 phase II data s…"
-      },
-      "why": [
-        "Early in its climb — 1 weeks up so far",
-        "Trading above its 30-week line — the trend is with it",
-        "Also shows a strong confirmation from our other checks"
-      ],
-      "why_zh": [
-        "上升初期 — 已上行 1 周",
-        "位于 30 周均线之上 — 趋势向好",
-        "其他多项验证同样给出强确认"
-      ],
-      "atr_14w": 10.1381,
-      "atr_ext": 1.392,
-      "atr_pct_price": 0.09029,
-      "sata_score": 7,
-      "sata_change_1w": 3,
-      "stage_detailed": "2X_fallback_bullish",
-      "industry_percentile": 72.5
-    },
-    {
-      "ticker": "PRG",
-      "company": "PROG Holdings, Inc.",
-      "sector": "Financials",
-      "stage_source_asof": "2026-11-06",
-      "stage_week_end": "2026-11-06",
-      "stage_current": true,
-      "stage": 2,
-      "weeks_in_stage": 1,
-      "fresh": true,
-      "sga_score": 77,
-      "ma30_slope_pct5w": 2.123,
-      "pct_vs_ma30": 0.97,
-      "mansfield_rs": 6.58,
-      "vol_ratio": 1.36,
-      "event": "trendline_recapture",
-      "gate_tier": "T1",
-      "blackout": false,
-      "arc_pos": 0.2625,
-      "earnings": {
-        "present": true,
-        "sentiment": -0.2,
-        "performance": 2.5,
-        "tone_word": "mixed",
-        "tags": [
-          "guidance_lowered",
-          "margin_contraction",
-          "buyback_or_dividend",
-          "demand_slowdown",
-          "macro_sensitivity"
-        ],
-        "quarter": "Q3",
-        "summary": "PROG delivered Q3 FY2026 revenue up ~26% to $725.8M and non-GAAP EPS of $1.06 (up 21.8%), with consolidated Adjusted EBITDA of $80M (11% margin) at the low end of the range, driven by leasing portfolio pressures. The company revised down its full-year 2026 outlook to revenue o…"
-      },
-      "why": [
-        "Early in its climb — 1 weeks up so far",
-        "Trading above its 30-week line — the trend is with it",
-        "Also shows a strong confirmation from our other checks"
-      ],
-      "why_zh": [
-        "上升初期 — 已上行 1 周",
-        "位于 30 周均线之上 — 趋势向好",
-        "其他多项验证同样给出强确认"
-      ],
-      "atr_14w": 3.5534,
-      "atr_ext": 0.102,
-      "atr_pct_price": 0.09423,
-      "sata_score": 5,
-      "sata_change_1w": 1,
-      "stage_detailed": "2X_fallback_bullish",
-      "industry_percentile": 85.7
-    },
-    {
-      "ticker": "FSUN",
-      "company": "Firstsun Capital Bancorp",
-      "sector": "Financial",
-      "stage_source_asof": "2026-11-06",
-      "stage_week_end": "2026-11-06",
-      "stage_current": true,
-      "stage": 2,
-      "weeks_in_stage": 5,
+      "weeks_in_stage": 7,
       "fresh": true,
       "sga_score": 71,
-      "ma30_slope_pct5w": 1.205,
-      "pct_vs_ma30": 2.36,
-      "mansfield_rs": 0.56,
-      "vol_ratio": 1.3,
-      "event": null,
-      "gate_tier": "T1",
+      "ma30_slope_pct5w": 1.649,
+      "pct_vs_ma30": 6.76,
+      "mansfield_rs": 2.06,
+      "vol_ratio": 1.25,
+      "event": "pullback_resume",
+      "gate_tier": "T2",
       "blackout": false,
-      "arc_pos": 0.3125,
+      "arc_pos": 0.3375,
       "earnings": {
         "present": true,
-        "sentiment": 0.2,
-        "performance": 5.5,
+        "sentiment": 0.5,
+        "performance": 8.0,
         "tone_word": "confident",
-        "tags": [
-          "margin_expansion",
-          "demand_slowdown",
-          "buyback_or_dividend"
-        ],
-        "quarter": "Q3",
-        "summary": "Adjusted EPS was $1.03 with adjusted ROAA of 1.23%, and PPNR per share fell to $1.42 from $1.50 in Q2. NIM expanded 24 bps to 3.82% and service fee revenue was $39.4M (down ~4% QoQ, 21.9% of revenue), while total loans declined $110M (3.8% annualized) and total deposits fell $…"
+        "tags": [],
+        "quarter": "Q1",
+        "summary": "Fox reported record fiscal Q1 revenue of $4.6 billion, up 22%, and record EBITDA of $1.64 billion, up 54%, with adjusted EPS of $2.54 up 68% from $1.51. Advertising revenue rose 47% on the FIFA Men's World Cup, over $350 million in record midterm political advertising, and Tub…"
       },
       "why": [
-        "Early in its climb — 5 weeks up so far",
+        "Early in its climb — 7 weeks up so far",
         "Trading above its 30-week line — the trend is with it",
         "Also shows a strong confirmation from our other checks"
       ],
       "why_zh": [
-        "上升初期 — 已上行 5 周",
+        "上升初期 — 已上行 7 周",
         "位于 30 周均线之上 — 趋势向好",
         "其他多项验证同样给出强确认"
       ],
-      "atr_14w": 1.9607,
-      "atr_ext": 0.458,
-      "atr_pct_price": 0.05039,
-      "sata_score": 5,
-      "sata_change_1w": 0,
+      "atr_14w": 4.7401,
+      "atr_ext": 0.89,
+      "atr_pct_price": 0.07113,
+      "sata_score": 6,
+      "sata_change_1w": 1,
       "stage_detailed": "2X_catch_price_above_ma",
-      "industry_percentile": null
+      "industry_percentile": 52.6
     },
     {
       "ticker": "MXCT",
@@ -276,155 +170,56 @@
       "industry_percentile": null
     },
     {
-      "ticker": "RDNT",
-      "company": "RadNet, Inc.",
-      "sector": "Health Care",
+      "ticker": "COMP",
+      "company": "Compass Inc",
+      "sector": "Real Estate",
       "stage_source_asof": "2026-11-06",
       "stage_week_end": "2026-11-06",
       "stage_current": true,
       "stage": 2,
-      "weeks_in_stage": 9,
-      "fresh": true,
-      "sga_score": 71,
-      "ma30_slope_pct5w": 3.665,
-      "pct_vs_ma30": 15.83,
-      "mansfield_rs": 9.5,
-      "vol_ratio": 0.89,
-      "event": "pullback_resume",
-      "gate_tier": "T1",
-      "blackout": true,
-      "arc_pos": 0.3625,
-      "earnings": {
-        "present": true,
-        "sentiment": 0.85,
-        "performance": 9.2,
-        "tone_word": "confident",
-        "tags": [
-          "beat_and_raise",
-          "margin_expansion",
-          "demand_acceleration",
-          "new_product",
-          "buyback_or_dividend"
-        ],
-        "quarter": "Q2",
-        "summary": "RadNet reported record Q2 FY2026 revenue of $622.7 million (up 25% YoY) and adjusted EBITDA of $99.7 million (up 22.7%), driven by strong volume growth in advanced imaging modalities like PET CT (+31%) and MRI/CT, alongside significant Digital Health ARR expansion to over $105…"
-      },
-      "why": [
-        "Early in its climb — 9 weeks up so far",
-        "Already stretched well above its 30-week line — may need a rest",
-        "Earnings soon — wait, don't chase"
-      ],
-      "why_zh": [
-        "上升初期 — 已上行 9 周",
-        "已明显高于 30 周均线 — 可能需要回踩",
-        "财报临近 — 先等待，不要追高"
-      ],
-      "atr_14w": 5.7841,
-      "atr_ext": 1.796,
-      "atr_pct_price": 0.07611,
-      "sata_score": 8,
-      "sata_change_1w": 1,
-      "stage_detailed": "2X_fallback_bullish",
-      "industry_percentile": 39.1
-    },
-    {
-      "ticker": "SKY",
-      "company": "Champion Homes, Inc.",
-      "sector": "Consumer Discretionary",
-      "stage_source_asof": "2026-11-06",
-      "stage_week_end": "2026-11-06",
-      "stage_current": true,
-      "stage": 2,
-      "weeks_in_stage": 2,
-      "fresh": true,
-      "sga_score": 66,
-      "ma30_slope_pct5w": 1.51,
-      "pct_vs_ma30": 10.86,
-      "mansfield_rs": 6.28,
-      "vol_ratio": 1.1,
-      "event": null,
-      "gate_tier": "T1",
-      "blackout": false,
-      "arc_pos": 0.275,
-      "earnings": {
-        "present": true,
-        "sentiment": 0.3,
-        "performance": 5.5,
-        "tone_word": "mixed",
-        "tags": [
-          "margin_contraction",
-          "demand_acceleration",
-          "new_product",
-          "buyback_or_dividend",
-          "macro_sensitivity",
-          "regulatory_headwind"
-        ],
-        "quarter": "Q2",
-        "summary": "Champion Homes reported Q2 FY2027 net sales up 6.2% YoY, in line with its mid-single-digit expectation, with 6,922 homes sold (+2.2%), U.S. ASP up 4.1% to ~$102,700, adjusted gross margin of 25.5% and adjusted EBITDA of $76 million (10.5% margin). Manufacturing orders rose 17%…"
-      },
-      "why": [
-        "Early in its climb — 2 weeks up so far",
-        "Trading above its 30-week line — the trend is with it",
-        "Also shows a strong confirmation from our other checks"
-      ],
-      "why_zh": [
-        "上升初期 — 已上行 2 周",
-        "位于 30 周均线之上 — 趋势向好",
-        "其他多项验证同样给出强确认"
-      ],
-      "atr_14w": 7.6957,
-      "atr_ext": 1.164,
-      "atr_pct_price": 0.0842,
-      "sata_score": 6,
-      "sata_change_1w": 1,
-      "stage_detailed": "2X_fallback_bullish",
-      "industry_percentile": 76.2
-    },
-    {
-      "ticker": "DGICA",
-      "company": "Donegal Group Inc",
-      "sector": "Financial",
-      "stage_source_asof": "2026-11-06",
-      "stage_week_end": "2026-11-06",
-      "stage_current": true,
-      "stage": 2,
-      "weeks_in_stage": 8,
+      "weeks_in_stage": 1,
       "fresh": true,
       "sga_score": 65,
-      "ma30_slope_pct5w": 1.851,
-      "pct_vs_ma30": 3.76,
-      "mansfield_rs": 0.91,
-      "vol_ratio": 0.97,
-      "event": "pullback_resume",
+      "ma30_slope_pct5w": 3.508,
+      "pct_vs_ma30": 2.36,
+      "mansfield_rs": -1.06,
+      "vol_ratio": 1.1,
+      "event": "trendline_recapture",
       "gate_tier": "T1",
       "blackout": false,
-      "arc_pos": 0.35,
+      "arc_pos": 0.2625,
       "earnings": {
         "present": true,
         "sentiment": -0.1,
-        "performance": 4.5,
+        "performance": 6.5,
         "tone_word": "mixed",
-        "tags": [],
+        "tags": [
+          "guidance_lowered",
+          "margin_expansion",
+          "demand_slowdown",
+          "buyback_or_dividend",
+          "macro_sensitivity"
+        ],
         "quarter": "Q3",
-        "summary": "Donegal reported Q3 2026 net premiums earned down 3% to $222.9 million and net premiums written down 4.5%, with a combined ratio of 96.5% versus 95.9% a year ago. After-tax net income was $18.2 million, an annualized ROE of 10.9%, helped by a 5% increase in net investment inco…"
+        "summary": "Compass reported record Q3 revenue of $3.9 billion and record Q3 Adjusted EBITDA of $306 million, above the high end of guidance, with GAAP net income of $62 million (first positive Q3 net income) and record free cash flow of $240 million on $841 million of cash. Organic broke…"
       },
       "why": [
-        "Early in its climb — 8 weeks up so far",
+        "Early in its climb — 1 weeks up so far",
         "Trading above its 30-week line — the trend is with it",
         "Also shows a strong confirmation from our other checks"
       ],
       "why_zh": [
-        "上升初期 — 已上行 8 周",
+        "上升初期 — 已上行 1 周",
         "位于 30 周均线之上 — 趋势向好",
         "其他多项验证同样给出强确认"
       ],
-      "atr_14w": 0.9645,
-      "atr_ext": 0.704,
-      "atr_pct_price": 0.0515,
+      "atr_14w": 1.2089,
+      "atr_ext": 0.195,
+      "atr_pct_price": 0.11841,
       "sata_score": 5,
-      "sata_change_1w": 0,
+      "sata_change_1w": 1,
       "stage_detailed": "2X_catch_price_above_ma",
-      "industry_percentile": 32.7
+      "industry_percentile": 90.0
     },
     {
       "ticker": "KMTS",
@@ -476,58 +271,6 @@
       "industry_percentile": null
     },
     {
-      "ticker": "SW",
-      "company": "Smurfit Westrock",
-      "sector": "Materials",
-      "stage_source_asof": "2026-11-06",
-      "stage_week_end": "2026-11-06",
-      "stage_current": true,
-      "stage": 2,
-      "weeks_in_stage": 1,
-      "fresh": true,
-      "sga_score": 65,
-      "ma30_slope_pct5w": 1.457,
-      "pct_vs_ma30": 1.34,
-      "mansfield_rs": 2.56,
-      "vol_ratio": 1.09,
-      "event": "trendline_recapture",
-      "gate_tier": "T1",
-      "blackout": false,
-      "arc_pos": 0.2625,
-      "earnings": {
-        "present": true,
-        "sentiment": -0.3,
-        "performance": 3.5,
-        "tone_word": "defensive",
-        "tags": [
-          "guidance_lowered",
-          "margin_contraction",
-          "macro_sensitivity",
-          "demand_slowdown",
-          "supply_constraint"
-        ],
-        "quarter": "Q3",
-        "summary": "Smurfit Westrock reported Q3 adjusted EBITDA of $1,205 million, a 14.8% margin, and guided full-year 2026 adjusted EBITDA to approximately $4.7 billion, citing $700 million of energy and freight cost headwinds versus earlier expectations. Management repeatedly said the cost in…"
-      },
-      "why": [
-        "Early in its climb — 1 weeks up so far",
-        "Trading above its 30-week line — the trend is with it",
-        "Also shows a strong confirmation from our other checks"
-      ],
-      "why_zh": [
-        "上升初期 — 已上行 1 周",
-        "位于 30 周均线之上 — 趋势向好",
-        "其他多项验证同样给出强确认"
-      ],
-      "atr_14w": 3.2199,
-      "atr_ext": 0.181,
-      "atr_pct_price": 0.07303,
-      "sata_score": 5,
-      "sata_change_1w": 1,
-      "stage_detailed": "2X_catch_price_above_ma",
-      "industry_percentile": 50.0
-    },
-    {
       "ticker": "TBCH",
       "company": "Turtle Beach Corp",
       "sector": "Technology",
@@ -572,59 +315,8 @@
       "industry_percentile": 73.3
     },
     {
-      "ticker": "CVNA",
-      "company": "Carvana",
-      "sector": "Consumer Discretionary",
-      "stage_source_asof": "2026-11-06",
-      "stage_week_end": "2026-11-06",
-      "stage_current": true,
-      "stage": 2,
-      "weeks_in_stage": 1,
-      "fresh": true,
-      "sga_score": 64,
-      "ma30_slope_pct5w": 0.759,
-      "pct_vs_ma30": 7.32,
-      "mansfield_rs": 0.36,
-      "vol_ratio": 1.14,
-      "event": "trendline_recapture",
-      "gate_tier": "T1",
-      "blackout": false,
-      "arc_pos": 0.2625,
-      "earnings": {
-        "present": true,
-        "sentiment": 0.5,
-        "performance": 7.5,
-        "tone_word": "confident",
-        "tags": [
-          "margin_contraction",
-          "demand_acceleration",
-          "buyback_or_dividend",
-          "macro_sensitivity"
-        ],
-        "quarter": "Q3",
-        "summary": "Carvana reported Q3 FY2026 retail units of 217,385 (+39% YoY) and revenue of $8.04 billion (+42%), both company records, with net income of $483 million and record Adjusted EBITDA of $800 million. Adjusted EBITDA margin fell to 10.0% from 11.3%, driven by mix toward higher-pri…"
-      },
-      "why": [
-        "Early in its climb — 1 weeks up so far",
-        "Trading above its 30-week line — the trend is with it",
-        "Also shows a strong confirmation from our other checks"
-      ],
-      "why_zh": [
-        "上升初期 — 已上行 1 周",
-        "位于 30 周均线之上 — 趋势向好",
-        "其他多项验证同样给出强确认"
-      ],
-      "atr_14w": 7.9629,
-      "atr_ext": 0.63,
-      "atr_pct_price": 0.10824,
-      "sata_score": 5,
-      "sata_change_1w": 1,
-      "stage_detailed": "2X_catch_price_above_ma",
-      "industry_percentile": 59.8
-    },
-    {
-      "ticker": "MNKD",
-      "company": "Mannkind Corp",
+      "ticker": "IRWD",
+      "company": "Ironwood Pharmaceuticals Inc",
       "sector": "Healthcare",
       "stage_source_asof": "2026-11-06",
       "stage_week_end": "2026-11-06",
@@ -633,25 +325,22 @@
       "weeks_in_stage": 1,
       "fresh": true,
       "sga_score": 64,
-      "ma30_slope_pct5w": 4.12,
-      "pct_vs_ma30": 6.92,
-      "mansfield_rs": -7.21,
-      "vol_ratio": 0.75,
+      "ma30_slope_pct5w": 1.728,
+      "pct_vs_ma30": 10.2,
+      "mansfield_rs": 9.87,
+      "vol_ratio": 0.89,
       "event": "trendline_recapture",
-      "gate_tier": "T1",
+      "gate_tier": "T2",
       "blackout": false,
       "arc_pos": 0.2625,
       "earnings": {
         "present": true,
-        "sentiment": -0.5,
-        "performance": 2.5,
-        "tone_word": "cautious",
-        "tags": [
-          "guidance_raised",
-          "margin_contraction"
-        ],
-        "quarter": "Q2",
-        "summary": "MannKind reported Q2 FY2026 revenue of $109.4 million (up 43% YoY) and a GAAP net loss of $19 million versus prior year income due to significant investments in the FUROSCIX ReadyFlow launch, pediatric Afrezza expansion, and MNKD-201 development. While all three major catalyst…"
+        "sentiment": 0.6,
+        "performance": 8.5,
+        "tone_word": "confident",
+        "tags": [],
+        "quarter": "Q3",
+        "summary": "Ironwood reported Q3 FY2026 total revenue of $133 million with LINZESS U.S. net sales of $325 million, GAAP net income of $60 million and record adjusted EBITDA of $98 million; YTD LINZESS sales of $880 million already exceed full-year 2025. Management raised full-year 2026 LI…"
       },
       "why": [
         "Early in its climb — 1 weeks up so far",
@@ -663,63 +352,13 @@
         "位于 30 周均线之上 — 趋势向好",
         "其他多项验证同样给出强确认"
       ],
-      "atr_14w": 0.4786,
-      "atr_ext": 0.527,
-      "atr_pct_price": 0.12271,
-      "sata_score": 5,
-      "sata_change_1w": 1,
-      "stage_detailed": "2X_catch_price_above_ma",
-      "industry_percentile": 55.0
-    },
-    {
-      "ticker": "BMY",
-      "company": "Bristol Myers Squibb",
-      "sector": "Health Care",
-      "stage_source_asof": "2026-11-06",
-      "stage_week_end": "2026-11-06",
-      "stage_current": true,
-      "stage": 2,
-      "weeks_in_stage": 2,
-      "fresh": true,
-      "sga_score": 63,
-      "ma30_slope_pct5w": 0.928,
-      "pct_vs_ma30": 2.75,
-      "mansfield_rs": 4.41,
-      "vol_ratio": 1.09,
-      "event": null,
-      "gate_tier": "T1",
-      "blackout": false,
-      "arc_pos": 0.275,
-      "earnings": {
-        "present": true,
-        "sentiment": 0.5,
-        "performance": 7.5,
-        "tone_word": "confident",
-        "tags": [
-          "guidance_raised",
-          "margin_expansion",
-          "demand_slowdown"
-        ],
-        "quarter": "Q3",
-        "summary": "Total Q3 FY2026 revenue rose 7% YoY to approximately $13.1B, with the growth portfolio up 12% to $7.7B and legacy portfolio up 1% on ELIQUIS strength (+26% to ~$4.7B). Non-GAAP diluted EPS was $1.35, including a $0.58 per-share hit from acquired IPR&D and licensing; excluding …"
-      },
-      "why": [
-        "Early in its climb — 2 weeks up so far",
-        "Trading above its 30-week line — the trend is with it",
-        "Also shows a strong confirmation from our other checks"
-      ],
-      "why_zh": [
-        "上升初期 — 已上行 2 周",
-        "位于 30 周均线之上 — 趋势向好",
-        "其他多项验证同样给出强确认"
-      ],
-      "atr_14w": 3.7357,
-      "atr_ext": 0.446,
-      "atr_pct_price": 0.06012,
-      "sata_score": 5,
-      "sata_change_1w": 0,
-      "stage_detailed": "2X_catch_price_above_ma",
-      "industry_percentile": 62.5
+      "atr_14w": 0.4864,
+      "atr_ext": 0.835,
+      "atr_pct_price": 0.1108,
+      "sata_score": 6,
+      "sata_change_1w": 3,
+      "stage_detailed": "2X_fallback_bullish",
+      "industry_percentile": null
     },
     {
       "ticker": "BOOM",
@@ -821,6 +460,57 @@
       "industry_percentile": null
     },
     {
+      "ticker": "FOX",
+      "company": "Fox Corporation (Class B)",
+      "sector": "Communication Services",
+      "stage_source_asof": "2026-11-06",
+      "stage_week_end": "2026-11-06",
+      "stage_current": true,
+      "stage": 2,
+      "weeks_in_stage": 7,
+      "fresh": true,
+      "sga_score": 63,
+      "ma30_slope_pct5w": 1.465,
+      "pct_vs_ma30": 6.54,
+      "mansfield_rs": 1.62,
+      "vol_ratio": 0.7,
+      "event": "pullback_resume",
+      "gate_tier": "T2",
+      "blackout": false,
+      "arc_pos": 0.3375,
+      "earnings": {
+        "present": true,
+        "sentiment": 0.7,
+        "performance": 9.0,
+        "tone_word": "confident",
+        "tags": [
+          "beat_and_raise",
+          "margin_expansion",
+          "demand_acceleration",
+          "buyback_or_dividend"
+        ],
+        "quarter": "Q1",
+        "summary": "Fox reported Q1 FY2027 revenue up 22% to $4.6 billion and EBITDA up 54% to $1.64 billion, both first-quarter records, with advertising revenue up 47% on the FIFA Men's World Cup and political advertising surpassing $350 million. Adjusted EPS rose 68% to $2.54 from $1.51, cable…"
+      },
+      "why": [
+        "Early in its climb — 7 weeks up so far",
+        "Trading above its 30-week line — the trend is with it",
+        "Also shows a strong confirmation from our other checks"
+      ],
+      "why_zh": [
+        "上升初期 — 已上行 7 周",
+        "位于 30 周均线之上 — 趋势向好",
+        "其他多项验证同样给出强确认"
+      ],
+      "atr_14w": 4.0304,
+      "atr_ext": 0.907,
+      "atr_pct_price": 0.06774,
+      "sata_score": 6,
+      "sata_change_1w": 2,
+      "stage_detailed": "2X_fallback_bullish",
+      "industry_percentile": null
+    },
+    {
       "ticker": "BWMN",
       "company": "Bowman Consulting Group Ltd",
       "sector": "Industrials",
@@ -863,65 +553,6 @@
       "sata_change_1w": 0,
       "stage_detailed": "2A_strong_breakout",
       "industry_percentile": null
-    },
-    {
-      "ticker": "CMCO",
-      "company": "Columbus Mckinnon Corp",
-      "sector": "Industrials",
-      "stage_source_asof": "2026-11-06",
-      "stage_week_end": "2026-11-06",
-      "stage_current": true,
-      "stage": 2,
-      "weeks_in_stage": 1,
-      "fresh": true,
-      "sga_score": 62,
-      "ma30_slope_pct5w": 1.091,
-      "pct_vs_ma30": 11.18,
-      "mansfield_rs": 3.82,
-      "vol_ratio": 1.01,
-      "event": "trendline_recapture",
-      "gate_tier": "T2",
-      "blackout": false,
-      "arc_pos": 0.2625,
-      "earnings": {
-        "present": true,
-        "sentiment": 0.3333333333333333,
-        "performance": 3.75,
-        "tone_word": "confident",
-        "tags": [
-          "m&a_integration",
-          "synergies",
-          "new_guidance",
-          "deleveraging",
-          "geopolitical_headwinds",
-          "inflationary_pressure",
-          "margin_analysis",
-          "industrial_machinery",
-          "material_handling",
-          "lifting_equipment",
-          "motion_control",
-          "automation_solutions"
-        ],
-        "quarter": "Q4",
-        "summary": "Adjusted EBITDA margin expanded 130 bps, driven by the accretive Kito Crosby acquisition and benefits of scale from our newly combined company."
-      },
-      "why": [
-        "Early in its climb — 1 weeks up so far",
-        "Trading above its 30-week line — the trend is with it",
-        "Also shows a strong confirmation from our other checks"
-      ],
-      "why_zh": [
-        "上升初期 — 已上行 1 周",
-        "位于 30 周均线之上 — 趋势向好",
-        "其他多项验证同样给出强确认"
-      ],
-      "atr_14w": 2.106,
-      "atr_ext": 0.842,
-      "atr_pct_price": 0.11952,
-      "sata_score": 6,
-      "sata_change_1w": 2,
-      "stage_detailed": "2X_catch_price_above_ma",
-      "industry_percentile": 77.1
     },
     {
       "ticker": "DIN",
@@ -1073,6 +704,57 @@
       "sata_change_1w": -1,
       "stage_detailed": "2A_strong_breakout",
       "industry_percentile": 69.4
+    },
+    {
+      "ticker": "NEM",
+      "company": "Newmont",
+      "sector": "Materials",
+      "stage_source_asof": "2026-11-06",
+      "stage_week_end": "2026-11-06",
+      "stage_current": true,
+      "stage": 2,
+      "weeks_in_stage": 4,
+      "fresh": true,
+      "sga_score": 61,
+      "ma30_slope_pct5w": 0.994,
+      "pct_vs_ma30": 8.93,
+      "mansfield_rs": 7.58,
+      "vol_ratio": 0.93,
+      "event": "trendline_recapture",
+      "gate_tier": "T2",
+      "blackout": false,
+      "arc_pos": 0.3,
+      "earnings": {
+        "present": true,
+        "sentiment": 0.2,
+        "performance": 5.0,
+        "tone_word": "mixed",
+        "tags": [
+          "buyback_or_dividend",
+          "margin_expansion",
+          "macro_sensitivity",
+          "new_product"
+        ],
+        "quarter": "Q3",
+        "summary": "Newmont reported Q3 2026 gold production of ~1.3 Moz plus 23,000 tons copper and 11 Moz silver, with $1.9 billion free cash flow, $2.20 adjusted EPS (a Q3 record), and $4 billion adjusted EBITDA at a realized gold price of $4,317/oz; AISC was $1,454/oz. Full-year production, c…"
+      },
+      "why": [
+        "Early in its climb — 4 weeks up so far",
+        "Trading above its 30-week line — the trend is with it",
+        "Also shows a strong confirmation from our other checks"
+      ],
+      "why_zh": [
+        "上升初期 — 已上行 4 周",
+        "位于 30 周均线之上 — 趋势向好",
+        "其他多项验证同样给出强确认"
+      ],
+      "atr_14w": 10.4366,
+      "atr_ext": 0.95,
+      "atr_pct_price": 0.08632,
+      "sata_score": 6,
+      "sata_change_1w": 2,
+      "stage_detailed": "2X_fallback_bullish",
+      "industry_percentile": 90.5
     },
     {
       "ticker": "RYZ",
@@ -1383,15 +1065,12 @@
       "arc_pos": 0.325,
       "earnings": {
         "present": true,
-        "sentiment": -0.5,
+        "sentiment": 0.3,
         "performance": 2.5,
-        "tone_word": "cautious",
-        "tags": [
-          "miss_and_cut",
-          "demand_slowdown"
-        ],
-        "quarter": "Q2",
-        "summary": "Q2 FY2026 revenue was $20 million, down 48% year-over-year to $137 million in Q2 2025, with H1 2026 revenue of $40 million excluding a one-time non-cash item. Net loss from continuing operations widened slightly to $57 million compared to $53 million last quarter, while adjust…"
+        "tone_word": "confident",
+        "tags": [],
+        "quarter": "Q3",
+        "summary": "Q3 FY2026 revenue was $28M, down 6% YoY, with the sequential increase driven largely by a cumulative catch-up on a modified long-term contract; nine-month revenue fell 37% YoY (about 32% ex the prior-year $7.5M BiomEdit non-cash item). Net loss from continuing operations narro…"
       },
       "why": [
         "Early in its climb — 6 weeks up so far",
@@ -1574,15 +1253,16 @@
       "arc_pos": 0.375,
       "earnings": {
         "present": true,
-        "sentiment": -0.5,
-        "performance": 2.5,
-        "tone_word": "cautious",
+        "sentiment": 0.5,
+        "performance": 7.5,
+        "tone_word": "confident",
         "tags": [
           "guidance_raised",
-          "margin_expansion"
+          "margin_expansion",
+          "demand_slowdown"
         ],
-        "quarter": "Q2",
-        "summary": "Novavax reported Q2 FY26 revenue of $57 million (down from $239M prior year due to a one-time milestone in the comparison period) and an adjusted net loss driven by R&D expenses. Management raised its full-year 2026 guidance for non-GAAP total revenues ($235-$275M midpoint inc…"
+        "quarter": "Q3",
+        "summary": "Novavax reported Q3 FY2026 revenue of $68 million, a decrease from $70 million in the prior year, driven by reduced R&D reimbursement offset by product sales growth and a $125 million milestone. The company raised its full-year 2026 adjusted revenue guidance to a midpoint of $…"
       },
       "why": [
         "Early in its climb — 10 weeks up so far",
@@ -1700,57 +1380,6 @@
       "industry_percentile": 95.5
     },
     {
-      "ticker": "JACK",
-      "company": "Jack In The Box Inc",
-      "sector": "Consumer Cyclical",
-      "stage_source_asof": "2026-11-06",
-      "stage_week_end": "2026-11-06",
-      "stage_current": true,
-      "stage": 2,
-      "weeks_in_stage": 1,
-      "fresh": true,
-      "sga_score": 55,
-      "ma30_slope_pct5w": 2.013,
-      "pct_vs_ma30": 1.35,
-      "mansfield_rs": -11.57,
-      "vol_ratio": 0.65,
-      "event": "trendline_recapture",
-      "gate_tier": "T1",
-      "blackout": false,
-      "arc_pos": 0.2625,
-      "earnings": {
-        "present": true,
-        "sentiment": -0.5,
-        "performance": 2.5,
-        "tone_word": "cautious",
-        "tags": [
-          "miss_and_cut",
-          "margin_contraction",
-          "demand_slowdown",
-          "supply_constraint"
-        ],
-        "quarter": "Q3",
-        "summary": "Q3 same-store sales decreased 1.1% driven by a decline in transactions and polarizing Hot Ones promotion performance, partially offset by menu price increases. Restaurant level margin contracted to 17.6%, pressured by elevated beef costs (commodity inflation of 5.4%) and lower…"
-      },
-      "why": [
-        "Early in its climb — 1 weeks up so far",
-        "Trading above its 30-week line — the trend is with it",
-        "Also shows a strong confirmation from our other checks"
-      ],
-      "why_zh": [
-        "上升初期 — 已上行 1 周",
-        "位于 30 周均线之上 — 趋势向好",
-        "其他多项验证同样给出强确认"
-      ],
-      "atr_14w": 2.1457,
-      "atr_ext": 0.087,
-      "atr_pct_price": 0.15229,
-      "sata_score": 4,
-      "sata_change_1w": 0,
-      "stage_detailed": "2X_catch_price_above_ma",
-      "industry_percentile": 27.6
-    },
-    {
       "ticker": "KMB",
       "company": "Kimberly-Clark",
       "sector": "Consumer Staples",
@@ -1771,18 +1400,17 @@
       "arc_pos": 0.275,
       "earnings": {
         "present": true,
-        "sentiment": -0.2,
-        "performance": 5.5,
+        "sentiment": 0.0,
+        "performance": 5.0,
         "tone_word": "mixed",
         "tags": [
-          "guidance_lowered",
           "demand_slowdown",
-          "margin_expansion",
-          "new_product",
-          "macro_sensitivity"
+          "margin_contraction",
+          "macro_sensitivity",
+          "new_product"
         ],
-        "quarter": "Q2",
-        "summary": "Kimberly-Clark's Q2 2026 organic sales fell ~100 bps below internal expectations, hit by a China diaper disruption in late June, a North America trade inventory reduction, and softer category growth. Adjusted operating profit and EPS beat expectations, helped by a $45M U.S. ta…"
+        "quarter": "Q3",
+        "summary": "Kimberly-Clark closed its acquisition of Kenvue during the quarter and framed Q3 as solid but impacted by discrete headwinds, including a ~130 bp retailer inventory drag in North America and a postponed major new product launch. Standalone FY2026 guidance was maintained; the c…"
       },
       "why": [
         "Early in its climb — 2 weeks up so far",
@@ -1799,6 +1427,54 @@
       "sata_change_1w": 0,
       "stage_detailed": "2X_fallback_bullish",
       "industry_percentile": 14.3
+    },
+    {
+      "ticker": "RYTM",
+      "company": "Rhythm Pharmaceuticals Inc",
+      "sector": "Healthcare",
+      "stage_source_asof": "2026-11-06",
+      "stage_week_end": "2026-11-06",
+      "stage_current": true,
+      "stage": 2,
+      "weeks_in_stage": 1,
+      "fresh": true,
+      "sga_score": 54,
+      "ma30_slope_pct5w": 1.718,
+      "pct_vs_ma30": 14.38,
+      "mansfield_rs": 10.88,
+      "vol_ratio": 2.01,
+      "event": "trendline_recapture",
+      "gate_tier": null,
+      "blackout": false,
+      "arc_pos": 0.2625,
+      "earnings": {
+        "present": true,
+        "sentiment": 0.8,
+        "performance": 8.0,
+        "tone_word": "confident",
+        "tags": [
+          "new_product",
+          "demand_acceleration",
+          "margin_expansion"
+        ],
+        "quarter": "Q2",
+        "summary": "Q2 2026 marked the first full quarter of the U.S. launch of IMCIVREE for acquired hypothalamic obesity, with strong early demand: over 400 start forms from ~300 unique prescribers in 14 weeks, and positive payer access. Management highlighted encouraging RM-718 phase II data s…"
+      },
+      "why": [
+        "Early in its climb — 1 weeks up so far",
+        "Trading above its 30-week line — the trend is with it"
+      ],
+      "why_zh": [
+        "上升初期 — 已上行 1 周",
+        "位于 30 周均线之上 — 趋势向好"
+      ],
+      "atr_14w": 10.1381,
+      "atr_ext": 1.392,
+      "atr_pct_price": 0.09029,
+      "sata_score": 7,
+      "sata_change_1w": 3,
+      "stage_detailed": "2X_fallback_bullish",
+      "industry_percentile": 72.5
     },
     {
       "ticker": "SHOP",
@@ -2398,21 +2074,16 @@
       "arc_pos": 0.3375,
       "earnings": {
         "present": true,
-        "sentiment": 0.5555555555555556,
-        "performance": 9.166666666666668,
+        "sentiment": 0.7,
+        "performance": 8.5,
         "tone_word": "confident",
         "tags": [
-          "genomic_testing",
-          "dermatology",
-          "gastroenterology",
-          "melanoma",
-          "barretts_esophagus",
-          "atopic_dermatitis",
-          "diagnostic_tests",
-          "revenue_guidance"
+          "guidance_raised",
+          "demand_acceleration",
+          "margin_expansion"
         ],
-        "quarter": "Q1",
-        "summary": "Our revenue growth...is approximately 42%...highlighted by double-digit year-over-year test report volume growth for both DecisionDx-Melanoma and TissueCypher."
+        "quarter": "Q3",
+        "summary": "Castle Biosciences reported Q3 FY2026 revenue of $102.9 million, up 24% YoY, driven by TissueCypher test report volume growth of 47% to 15,574 reports. Full-year 2026 revenue guidance was raised to $385-395 million from $365-375 million, a $20 million increase at the midpoint,…"
       },
       "why": [
         "Early in its climb — 7 weeks up so far",
@@ -2606,26 +2277,16 @@
       "arc_pos": 0.3,
       "earnings": {
         "present": true,
-        "sentiment": 0.6666666666666666,
-        "performance": 7.5,
-        "tone_word": "confident",
+        "sentiment": -0.5,
+        "performance": 2.5,
+        "tone_word": "cautious",
         "tags": [
-          "merger",
-          "data_centers",
-          "colstrip",
-          "cost_recovery",
-          "rate_case",
-          "guidance",
-          "regulation",
-          "electric_utility",
-          "regulated_utility",
-          "transmission",
-          "power_generation",
-          "data_center_power",
-          "merger_arbitrage"
+          "guidance_raised",
+          "demand_slowdown",
+          "margin_contraction"
         ],
-        "quarter": "Q2",
-        "summary": "...noting that was really driven off of improved base rate recovery versus last year."
+        "quarter": "Q3",
+        "summary": "NorthWestern Energy reported Q3 FY2026 GAAP diluted EPS of $0.50 versus $0.62 in the prior year quarter, while non-GAAP diluted EPS was $0.58 compared to $0.79 last year. Management reaffirmed its full-year 2026 adjusted EPS guidance range of $3.68-$3.83 with a bias toward the…"
       },
       "why": [
         "Early in its climb — 4 weeks up so far",
@@ -2664,17 +2325,16 @@
       "arc_pos": 0.2625,
       "earnings": {
         "present": true,
-        "sentiment": 0.3,
-        "performance": 6.5,
-        "tone_word": "steady",
+        "sentiment": -0.5,
+        "performance": 2.5,
+        "tone_word": "cautious",
         "tags": [
           "guidance_raised",
-          "margin_expansion",
-          "demand_slowdown",
+          "demand_acceleration",
           "buyback_or_dividend"
         ],
-        "quarter": "Q2",
-        "summary": "Orion reported Q2 2026 revenue of $34.3 million, down from $37.3 million a year ago, while net income of $24.6 million ($0.43/share) was inflated by a $28.8 million gain on two property sales. Core FFO was $11.8 million, or $0.20 per share, essentially flat YoY, and Adjusted E…"
+        "quarter": "Q3",
+        "summary": "Orion Properties reported Q3 FY2026 total revenues of $35.4 million, a decline from $37.1 million in the prior year quarter, alongside a net loss of $3.3 million compared to a profit of $69 million last year. Management raised the 2026 Core FFO guidance range to $0.75-$0.78 pe…"
       },
       "why": [
         "Early in its climb — 1 weeks up so far",
@@ -2739,6 +2399,56 @@
       "sata_change_1w": -1,
       "stage_detailed": "2X_fallback_bullish",
       "industry_percentile": null
+    },
+    {
+      "ticker": "PRG",
+      "company": "PROG Holdings, Inc.",
+      "sector": "Financials",
+      "stage_source_asof": "2026-11-06",
+      "stage_week_end": "2026-11-06",
+      "stage_current": true,
+      "stage": 2,
+      "weeks_in_stage": 1,
+      "fresh": true,
+      "sga_score": 52,
+      "ma30_slope_pct5w": 2.123,
+      "pct_vs_ma30": 0.97,
+      "mansfield_rs": 6.58,
+      "vol_ratio": 1.36,
+      "event": "trendline_recapture",
+      "gate_tier": null,
+      "blackout": false,
+      "arc_pos": 0.2625,
+      "earnings": {
+        "present": true,
+        "sentiment": -0.2,
+        "performance": 2.5,
+        "tone_word": "mixed",
+        "tags": [
+          "guidance_lowered",
+          "margin_contraction",
+          "buyback_or_dividend",
+          "demand_slowdown",
+          "macro_sensitivity"
+        ],
+        "quarter": "Q3",
+        "summary": "PROG delivered Q3 FY2026 revenue up ~26% to $725.8M and non-GAAP EPS of $1.06 (up 21.8%), with consolidated Adjusted EBITDA of $80M (11% margin) at the low end of the range, driven by leasing portfolio pressures. The company revised down its full-year 2026 outlook to revenue o…"
+      },
+      "why": [
+        "Early in its climb — 1 weeks up so far",
+        "Trading above its 30-week line — the trend is with it"
+      ],
+      "why_zh": [
+        "上升初期 — 已上行 1 周",
+        "位于 30 周均线之上 — 趋势向好"
+      ],
+      "atr_14w": 3.5534,
+      "atr_ext": 0.102,
+      "atr_pct_price": 0.09423,
+      "sata_score": 5,
+      "sata_change_1w": 1,
+      "stage_detailed": "2X_fallback_bullish",
+      "industry_percentile": 85.7
     },
     {
       "ticker": "PRGS",
@@ -2954,15 +2664,19 @@
       "arc_pos": 0.3125,
       "earnings": {
         "present": true,
-        "sentiment": -0.2,
-        "performance": 7.5,
-        "tone_word": "confident",
+        "sentiment": 0.1,
+        "performance": 2.5,
+        "tone_word": "reassuring",
         "tags": [
-          "beat_and_raise",
-          "demand_slowdown"
+          "margin_contraction",
+          "demand_slowdown",
+          "supply_constraint",
+          "new_product",
+          "regulatory_headwind",
+          "macro_sensitivity"
         ],
-        "quarter": "Q2",
-        "summary": "Mativ reported Q2 FY2026 net sales of $532 million (up nearly 2% organically) and adjusted EBITDA of $75 million, marking a quarterly record with margins expanding to 14.1%. Management raised the full-year inflation impact estimate for Middle East conflict costs but maintained…"
+        "quarter": "Q3",
+        "summary": "Q3 net sales were $500 million, down ~2% organically and ~3% as reported, with adjusted EBITDA of $62 million down 7% and margin contracting 50 bps to 12.5%. FAM delivered record organic growth of over 11% and EBITDA up 20% with 150 bps margin expansion to 18.1%, while SAS sal…"
       },
       "why": [
         "Early in its climb — 5 weeks up so far",
@@ -3037,14 +2751,254 @@
       "sata_change_1w": 1,
       "stage_detailed": "2X_fallback_bullish",
       "industry_percentile": 74.8
+    },
+    {
+      "ticker": "REAL",
+      "company": "Therealreal Inc",
+      "sector": "Consumer Cyclical",
+      "stage_source_asof": "2026-11-06",
+      "stage_week_end": "2026-11-06",
+      "stage_current": true,
+      "stage": 2,
+      "weeks_in_stage": 2,
+      "fresh": true,
+      "sga_score": 51,
+      "ma30_slope_pct5w": 3.27,
+      "pct_vs_ma30": 19.5,
+      "mansfield_rs": 6.36,
+      "vol_ratio": 1.37,
+      "event": null,
+      "gate_tier": null,
+      "blackout": false,
+      "arc_pos": 0.275,
+      "earnings": {
+        "present": true,
+        "sentiment": 0.8,
+        "performance": 9.5,
+        "tone_word": "confident",
+        "tags": [
+          "beat_and_raise",
+          "margin_expansion",
+          "demand_acceleration"
+        ],
+        "quarter": "Q3",
+        "summary": "The RealReal reported Q3 FY2026 results with record GMV of $642 million (up 23% YoY) and revenue of $206 million (up 19% YoY). Adjusted EBITDA margin expanded 290 bps to 8.3%, beating the top end of prior guidance. Management raised full-year GMV, revenue, and adjusted EBITDA …"
+      },
+      "why": [
+        "Early in its climb — 2 weeks up so far",
+        "Already stretched well above its 30-week line — may need a rest"
+      ],
+      "why_zh": [
+        "上升初期 — 已上行 2 周",
+        "已明显高于 30 周均线 — 可能需要回踩"
+      ],
+      "atr_14w": 1.3251,
+      "atr_ext": 1.585,
+      "atr_pct_price": 0.10296,
+      "sata_score": 7,
+      "sata_change_1w": 1,
+      "stage_detailed": "2X_fallback_bullish",
+      "industry_percentile": 69.6
+    },
+    {
+      "ticker": "USPH",
+      "company": "U.S. Physical Therapy, Inc.",
+      "sector": "Health Care",
+      "stage_source_asof": "2026-11-06",
+      "stage_week_end": "2026-11-06",
+      "stage_current": true,
+      "stage": 2,
+      "weeks_in_stage": 4,
+      "fresh": true,
+      "sga_score": 51,
+      "ma30_slope_pct5w": 3.355,
+      "pct_vs_ma30": 31.78,
+      "mansfield_rs": 26.22,
+      "vol_ratio": 0.9,
+      "event": "pullback_resume",
+      "gate_tier": "T1",
+      "blackout": false,
+      "arc_pos": 0.3,
+      "earnings": {
+        "present": true,
+        "sentiment": 0.5,
+        "performance": 7.5,
+        "tone_word": "confident",
+        "tags": [
+          "margin_expansion",
+          "demand_acceleration",
+          "buyback_or_dividend"
+        ],
+        "quarter": "Q3",
+        "summary": "Revenue rose 13% to $223 million with PT visits up 8%, adjusted EPS of $0.80 up $0.14, and EBITDA of $28 million up 16%, driven largely by hospital affiliations (revenue share from <5% in Q2 to >13% in Q3) pushing revenue per visit up $5 to $111. Adjusted PT margin expanded 60…"
+      },
+      "why": [
+        "Early in its climb — 4 weeks up so far",
+        "Already stretched well above its 30-week line — may need a rest",
+        "Also shows a strong confirmation from our other checks"
+      ],
+      "why_zh": [
+        "上升初期 — 已上行 4 周",
+        "已明显高于 30 周均线 — 可能需要回踩",
+        "其他多项验证同样给出强确认"
+      ],
+      "atr_14w": 6.0589,
+      "atr_ext": 3.96,
+      "atr_pct_price": 0.0609,
+      "sata_score": 9,
+      "sata_change_1w": 1,
+      "stage_detailed": "2A_strong_breakout",
+      "industry_percentile": null
+    },
+    {
+      "ticker": "VALU",
+      "company": "Value Line Inc",
+      "sector": "Financial",
+      "stage_source_asof": "2026-11-06",
+      "stage_week_end": "2026-11-06",
+      "stage_current": true,
+      "stage": 2,
+      "weeks_in_stage": 8,
+      "fresh": true,
+      "sga_score": 51,
+      "ma30_slope_pct5w": 3.705,
+      "pct_vs_ma30": 13.45,
+      "mansfield_rs": 12.25,
+      "vol_ratio": 1.11,
+      "event": "pullback_resume",
+      "gate_tier": null,
+      "blackout": false,
+      "arc_pos": 0.35,
+      "earnings": {
+        "present": false,
+        "sentiment": null,
+        "performance": null,
+        "tone_word": null,
+        "tags": [],
+        "quarter": null,
+        "summary": null
+      },
+      "why": [
+        "Early in its climb — 8 weeks up so far",
+        "Trading above its 30-week line — the trend is with it"
+      ],
+      "why_zh": [
+        "上升初期 — 已上行 8 周",
+        "位于 30 周均线之上 — 趋势向好"
+      ],
+      "atr_14w": 3.8776,
+      "atr_ext": 1.296,
+      "atr_pct_price": 0.09152,
+      "sata_score": 7,
+      "sata_change_1w": 0,
+      "stage_detailed": "2X_fallback_bullish",
+      "industry_percentile": null
+    },
+    {
+      "ticker": "WK",
+      "company": "Workiva Inc",
+      "sector": "Technology",
+      "stage_source_asof": "2026-11-06",
+      "stage_week_end": "2026-11-06",
+      "stage_current": true,
+      "stage": 2,
+      "weeks_in_stage": 8,
+      "fresh": true,
+      "sga_score": 51,
+      "ma30_slope_pct5w": 5.528,
+      "pct_vs_ma30": 16.43,
+      "mansfield_rs": 3.7,
+      "vol_ratio": 0.83,
+      "event": null,
+      "gate_tier": null,
+      "blackout": false,
+      "arc_pos": 0.35,
+      "earnings": {
+        "present": true,
+        "sentiment": 0.2,
+        "performance": 7.0,
+        "tone_word": "steady",
+        "tags": [
+          "beat_and_raise",
+          "margin_expansion",
+          "guidance_raised",
+          "macro_sensitivity"
+        ],
+        "quarter": "Q3",
+        "summary": "Q3 FY2026 total revenue was $263M, up 17% YoY and $1M above the high end of guidance, with subscription revenue also up 17% to $246M. Non-GAAP operating margin reached 18.3%, 85 bps above the high end of guidance and up 560 bps YoY, while non-GAAP EPS of $0.72 (up from $0.46) …"
+      },
+      "why": [
+        "Early in its climb — 8 weeks up so far",
+        "Already stretched well above its 30-week line — may need a rest"
+      ],
+      "why_zh": [
+        "上升初期 — 已上行 8 周",
+        "已明显高于 30 周均线 — 可能需要回踩"
+      ],
+      "atr_14w": 8.2181,
+      "atr_ext": 1.249,
+      "atr_pct_price": 0.11295,
+      "sata_score": 6,
+      "sata_change_1w": -2,
+      "stage_detailed": "2X_fallback_bullish",
+      "industry_percentile": 41.0
+    },
+    {
+      "ticker": "HCSG",
+      "company": "Healthcare Services Group, Inc.",
+      "sector": "Industrials",
+      "stage_source_asof": "2026-11-06",
+      "stage_week_end": "2026-11-06",
+      "stage_current": true,
+      "stage": 2,
+      "weeks_in_stage": 3,
+      "fresh": true,
+      "sga_score": 50,
+      "ma30_slope_pct5w": 3.23,
+      "pct_vs_ma30": 8.63,
+      "mansfield_rs": 12.46,
+      "vol_ratio": 1.15,
+      "event": null,
+      "gate_tier": null,
+      "blackout": false,
+      "arc_pos": 0.2875,
+      "earnings": {
+        "present": true,
+        "sentiment": 0.5,
+        "performance": 5.0,
+        "tone_word": "confident",
+        "tags": [
+          "guidance_raised",
+          "buyback_or_dividend",
+          "new_product",
+          "margin_expansion"
+        ],
+        "quarter": "Q3",
+        "summary": "HCSG reported Q3 FY2026 revenue of $479.6 million, net income of $24.9 million and diluted EPS of $0.36, with segment margins of 13.3% (Environmental) and 8.7% (Dietary). Cost of services came in at 83.2%, below the 86% target, helped by operational execution and a $6.1 millio…"
+      },
+      "why": [
+        "Early in its climb — 3 weeks up so far",
+        "Trading above its 30-week line — the trend is with it"
+      ],
+      "why_zh": [
+        "上升初期 — 已上行 3 周",
+        "位于 30 周均线之上 — 趋势向好"
+      ],
+      "atr_14w": 1.7457,
+      "atr_ext": 1.104,
+      "atr_pct_price": 0.0719,
+      "sata_score": 6,
+      "sata_change_1w": -1,
+      "stage_detailed": "2X_fallback_bullish",
+      "industry_percentile": 69.2
     }
   ],
   "warnings_stage3": [
     {
-      "ticker": "HTO",
-      "company": "H2O America",
-      "weeks_in_stage": 2,
-      "sga_score": 50
+      "ticker": "ATNI",
+      "company": "ATN International Inc",
+      "weeks_in_stage": 3,
+      "sga_score": 40
     },
     {
       "ticker": "BNL",
@@ -3053,16 +3007,22 @@
       "sga_score": 40
     },
     {
-      "ticker": "MHO",
-      "company": "M/I Homes, Inc.",
-      "weeks_in_stage": 8,
+      "ticker": "DNTH",
+      "company": "Dianthus Therapeutics Inc",
+      "weeks_in_stage": 2,
       "sga_score": 40
     },
     {
-      "ticker": "UE",
-      "company": "Urban Edge Properties",
-      "weeks_in_stage": 7,
+      "ticker": "EQIX",
+      "company": "Equinix",
+      "weeks_in_stage": 2,
       "sga_score": 40
+    },
+    {
+      "ticker": "CGON",
+      "company": "Cg Oncology Inc",
+      "weeks_in_stage": 3,
+      "sga_score": 39
     },
     {
       "ticker": "EFC",
@@ -3071,58 +3031,22 @@
       "sga_score": 37
     },
     {
-      "ticker": "HAPN",
-      "company": "Happen Inc",
-      "weeks_in_stage": 16,
-      "sga_score": 37
-    },
-    {
-      "ticker": "OVID",
-      "company": "Ovid Therapeutics Inc",
-      "weeks_in_stage": 1,
-      "sga_score": 37
-    },
-    {
-      "ticker": "PENN",
-      "company": "Penn Entertainment",
-      "weeks_in_stage": 3,
-      "sga_score": 37
-    },
-    {
-      "ticker": "SBRA",
-      "company": "Sabra Health Care REIT",
-      "weeks_in_stage": 6,
+      "ticker": "ARE",
+      "company": "Alexandria Real Estate Equities",
+      "weeks_in_stage": 13,
       "sga_score": 36
     },
     {
-      "ticker": "SNA",
-      "company": "Snap-on",
-      "weeks_in_stage": 8,
+      "ticker": "SWBI",
+      "company": "Smith & Wesson Brands Inc",
+      "weeks_in_stage": 2,
       "sga_score": 36
     },
     {
-      "ticker": "GTN",
-      "company": "Gray Media Inc",
-      "weeks_in_stage": 6,
-      "sga_score": 35
-    },
-    {
-      "ticker": "PRKS",
-      "company": "United Parks & Resorts",
-      "weeks_in_stage": 7,
-      "sga_score": 35
-    },
-    {
-      "ticker": "VTR",
-      "company": "Ventas",
-      "weeks_in_stage": 6,
-      "sga_score": 35
-    },
-    {
-      "ticker": "MC",
-      "company": "Moelis & Company",
-      "weeks_in_stage": 18,
-      "sga_score": 32
+      "ticker": "TDAY",
+      "company": "USA TODAY Co Inc",
+      "weeks_in_stage": 2,
+      "sga_score": 36
     },
     {
       "ticker": "SGHC",
@@ -3131,34 +3055,64 @@
       "sga_score": 32
     },
     {
-      "ticker": "OC",
-      "company": "Owens Corning",
+      "ticker": "SPHR",
+      "company": "Sphere Entertainment",
+      "weeks_in_stage": 2,
+      "sga_score": 32
+    },
+    {
+      "ticker": "VRTS",
+      "company": "Virtus Investment Partners, Inc.",
       "weeks_in_stage": 7,
+      "sga_score": 32
+    },
+    {
+      "ticker": "RUSHA",
+      "company": "Rush Enterprises",
+      "weeks_in_stage": 6,
       "sga_score": 31
     },
     {
-      "ticker": "DNLI",
-      "company": "Denali Therapeutics Inc",
-      "weeks_in_stage": 7,
-      "sga_score": 28
+      "ticker": "AURA",
+      "company": "Aura Biosciences Inc",
+      "weeks_in_stage": 3,
+      "sga_score": 30
     },
     {
-      "ticker": "PLD",
-      "company": "Prologis",
+      "ticker": "RIOT",
+      "company": "Riot Platforms Inc",
+      "weeks_in_stage": 1,
+      "sga_score": 29
+    },
+    {
+      "ticker": "ACEL",
+      "company": "Accel Entertainment Inc",
       "weeks_in_stage": 8,
-      "sga_score": 28
+      "sga_score": 25
     },
     {
-      "ticker": "F",
-      "company": "Ford Motor Company",
+      "ticker": "HTO",
+      "company": "H2O America",
+      "weeks_in_stage": 2,
+      "sga_score": 25
+    },
+    {
+      "ticker": "LXRX",
+      "company": "Lexicon Pharmaceuticals Inc",
+      "weeks_in_stage": 3,
+      "sga_score": 25
+    },
+    {
+      "ticker": "RNAC",
+      "company": "Cartesian Therapeutics Inc",
+      "weeks_in_stage": 4,
+      "sga_score": 25
+    },
+    {
+      "ticker": "SUPN",
+      "company": "Supernus, Inc.",
       "weeks_in_stage": 8,
-      "sga_score": 26
-    },
-    {
-      "ticker": "NNI",
-      "company": "Nelnet Inc",
-      "weeks_in_stage": 25,
-      "sga_score": 26
+      "sga_score": 20
     }
   ],
   "sectors": [
@@ -3205,6 +3159,12 @@
       "trend": "down"
     },
     {
+      "sector": "Consumer Discretionary",
+      "n": 162,
+      "pct_stage2": 42.6,
+      "trend": "down"
+    },
+    {
       "sector": "Materials",
       "n": 59,
       "pct_stage2": 42.4,
@@ -3220,12 +3180,6 @@
       "sector": "Communication Services",
       "n": 102,
       "pct_stage2": 42.2,
-      "trend": "down"
-    },
-    {
-      "sector": "Consumer Discretionary",
-      "n": 162,
-      "pct_stage2": 42.0,
       "trend": "down"
     },
     {
@@ -4732,7 +4686,7 @@
     ],
     "BMY": [
       2,
-      2
+      48
     ],
     "BNAI": [
       4,
@@ -10896,7 +10850,7 @@
     ],
     "PGR": [
       2,
-      2
+      3
     ],
     "PGY": [
       2,
@@ -12771,8 +12725,8 @@
       117
     ],
     "THRM": [
-      3,
-      1
+      2,
+      14
     ],
     "THRY": [
       4,
@@ -30156,7 +30110,7 @@
     },
     "BMY": {
       "stage": 2,
-      "fresh": true,
+      "fresh": false,
       "event": null
     },
     "BNAI": {
@@ -40320,7 +40274,7 @@
       "event": null
     },
     "THRM": {
-      "stage": 3,
+      "stage": 2,
       "fresh": false,
       "event": null
     },

@@ -1,0 +1,612 @@
+{
+  "scope": "D08B exposure / volatility / 3D / positioning presentation",
+  "counts": {
+    "IMPROVE": 25,
+    "RETAIN": 27,
+    "RELOCATE": 3,
+    "BLOCKED_DATA": 5,
+    "REMOVE": 0
+  },
+  "items": [
+    {
+      "id": "R01",
+      "capability": "Exact root and listing identity",
+      "baseline": "OptionsWorkspace; D08 listing object",
+      "disposition": "IMPROVE",
+      "successor": "B01/B03/B17; existing root validator",
+      "reason": "Keep root, namespace, venue/security where established; no ticker-only joins",
+      "dependency_owner": "D08 / incumbent identity",
+      "review_status": "Candidate specification; formal RIG draft. See REVIEW for bounded independent findings."
+    },
+    {
+      "id": "R02",
+      "capability": "PRISM and GEX query aliases",
+      "baseline": "OptionsWorkspace; GexDeskView",
+      "disposition": "RETAIN",
+      "successor": "Existing parser: prism→gex; strike/expiry/matrix/chart",
+      "reason": "Legacy links and Back/Forward survive; explicit valid view wins",
+      "dependency_owner": "D08 route owner",
+      "review_status": "Candidate specification; formal RIG draft. See REVIEW for bounded independent findings."
+    },
+    {
+      "id": "R03",
+      "capability": "GEX strike and expiry breakdowns",
+      "baseline": "GexDeskView; Exposure R2 1GO5-0",
+      "disposition": "RETAIN",
+      "successor": "B01 By strike / By expiry; B10 Research",
+      "reason": "Preserve detailed profiles behind explicit reachable controls",
+      "dependency_owner": "Incumbent GEX reader",
+      "review_status": "Candidate specification; formal RIG draft. See REVIEW for bounded independent findings."
+    },
+    {
+      "id": "R04",
+      "capability": "Strike × expiry heatmap",
+      "baseline": "ExposureMap; p-V-0 / 1GO5-0",
+      "disposition": "IMPROVE",
+      "successor": "B01/B02/B06/B11",
+      "reason": "Keep signed cells, exact ISO coordinates and density; readable selection",
+      "dependency_owner": "Qualified projection",
+      "review_status": "Candidate specification; formal RIG draft. See REVIEW for bounded independent findings."
+    },
+    {
+      "id": "R05",
+      "capability": "Spot marker and reference",
+      "baseline": "GEX/Exposure R2/Levels",
+      "disposition": "RETAIN",
+      "successor": "B01/B02/B14",
+      "reason": "Spot and its timestamp remain separate from source book time",
+      "dependency_owner": "Quote and book owners",
+      "review_status": "Candidate specification; formal RIG draft. See REVIEW for bounded independent findings."
+    },
+    {
+      "id": "R06",
+      "capability": "Strike/expiry marginal graphics",
+      "baseline": "Exposure R2 p-V-0",
+      "disposition": "RELOCATE",
+      "successor": "B01 numeric totals + By strike/By expiry; B10",
+      "reason": "Keep full analytical breakdown; quieter primary composition does not delete it",
+      "dependency_owner": "D08B incumbent breakdown components",
+      "review_status": "Candidate specification; formal RIG draft. See REVIEW for bounded independent findings."
+    },
+    {
+      "id": "R07",
+      "capability": "Node inspector",
+      "baseline": "ExposureMap; Exposure R2",
+      "disposition": "IMPROVE",
+      "successor": "B01/B03",
+      "reason": "Separate aggregate from contracts, selected expiry from strike subtotal",
+      "dependency_owner": "Source member resolver",
+      "review_status": "Candidate specification; formal RIG draft. See REVIEW for bounded independent findings."
+    },
+    {
+      "id": "R08",
+      "capability": "Exact contract resolution",
+      "baseline": "D08 pin interface; optionsContractShortlist.ts",
+      "disposition": "IMPROVE",
+      "successor": "B03→B17→C-owned Plan",
+      "reason": "Actual source row and C validation precede a pin; ambiguity is inspectable",
+      "dependency_owner": "D08C / incumbent resolver",
+      "review_status": "Candidate specification; formal RIG draft. See REVIEW for bounded independent findings."
+    },
+    {
+      "id": "R09",
+      "capability": "Source clock distinctions",
+      "baseline": "GEX/archive/matrix/vol adapters",
+      "disposition": "IMPROVE",
+      "successor": "B01/B02/B03/B13/B15",
+      "reason": "Keep spot/OI position/report/availability/build dates separate",
+      "dependency_owner": "Incumbent source producers",
+      "review_status": "Candidate specification; formal RIG draft. See REVIEW for bounded independent findings."
+    },
+    {
+      "id": "R10",
+      "capability": "Expiry/range/lens selection",
+      "baseline": "ExposureMap/ExposureSurface",
+      "disposition": "IMPROVE",
+      "successor": "B01/B02/B05/B06/B10/B11",
+      "reason": "Preserve selected identity across filters; no nearest-node substitution",
+      "dependency_owner": "D08 common state",
+      "review_status": "Candidate specification; formal RIG draft. See REVIEW for bounded independent findings."
+    },
+    {
+      "id": "R11",
+      "capability": "Matrix color normalization",
+      "baseline": "ExposureMap; served matrix",
+      "disposition": "RETAIN",
+      "successor": "B01 legend and source contract",
+      "reason": "Retain declared P95/square-root scope; not replaced by Surface tier scale",
+      "dependency_owner": "Existing matrix model",
+      "review_status": "Candidate specification; formal RIG draft. See REVIEW for bounded independent findings."
+    },
+    {
+      "id": "R12",
+      "capability": "Partial totals and finite zero",
+      "baseline": "ExposureMap; served matrix",
+      "disposition": "IMPROVE",
+      "successor": "B01/B02/B11/B15",
+      "reason": "Known subtotal distinct from complete total; zero distinct from null",
+      "dependency_owner": "Qualified projection",
+      "review_status": "Candidate specification; formal RIG draft. See REVIEW for bounded independent findings."
+    },
+    {
+      "id": "R13",
+      "capability": "Coverage denominators",
+      "baseline": "Exposure readers; source expected may be null",
+      "disposition": "IMPROVE",
+      "successor": "B01/B02/B03/B11/B15",
+      "reason": "Grid and reported-row completeness do not establish source collection coverage",
+      "dependency_owner": "Source coverage owner",
+      "review_status": "Candidate specification; formal RIG draft. See REVIEW for bounded independent findings."
+    },
+    {
+      "id": "R14",
+      "capability": "Matched observation comparison",
+      "baseline": "exposureReportedChange.ts; R2 compare 1I64-0",
+      "disposition": "IMPROVE",
+      "successor": "B07/B16",
+      "reason": "Global finite cohort, method/time gates; signed/gross/magnitude distinct",
+      "dependency_owner": "Incumbent comparison coordinator",
+      "review_status": "Candidate specification; formal RIG draft. See REVIEW for bounded independent findings."
+    },
+    {
+      "id": "R15",
+      "capability": "Reported and qualification differences",
+      "baseline": "exposureReportedChange.ts",
+      "disposition": "IMPROVE",
+      "successor": "B16",
+      "reason": "Show prior/current-only and gained/lost separately from matched change",
+      "dependency_owner": "Incumbent comparator",
+      "review_status": "Candidate specification; formal RIG draft. See REVIEW for bounded independent findings."
+    },
+    {
+      "id": "R16",
+      "capability": "Full-lens versus displayed totals",
+      "baseline": "exposureSurface.ts",
+      "disposition": "RETAIN",
+      "successor": "B01/B05/B06; Source & calculations",
+      "reason": "Crop does not silently redefine full-lens totals; unknown constituent keeps total unknown",
+      "dependency_owner": "Qualified projection",
+      "review_status": "Candidate specification; formal RIG draft. See REVIEW for bounded independent findings."
+    },
+    {
+      "id": "R17",
+      "capability": "Dated book archive and history",
+      "baseline": "gex_dates / gex_at; R2 1HWG-0",
+      "disposition": "RETAIN",
+      "successor": "B01 Book history; B10",
+      "reason": "Preserve source date and separate current quote/history context",
+      "dependency_owner": "Incumbent archive owner",
+      "review_status": "Candidate specification; formal RIG draft. See REVIEW for bounded independent findings."
+    },
+    {
+      "id": "R18",
+      "capability": "Replay reference",
+      "baseline": "R2 replay; D08 replay object",
+      "disposition": "RELOCATE",
+      "successor": "B01/B10→existing validated replay/archival destination",
+      "reason": "B presents exposure archive; D/incumbent owner handles temporal admission/cursor",
+      "dependency_owner": "D08D and incumbent archive",
+      "review_status": "Candidate specification; formal RIG draft. See REVIEW for bounded independent findings."
+    },
+    {
+      "id": "R19",
+      "capability": "Review/scenario and compare-plan access",
+      "baseline": "ExposureMap Review/Scenario; R2 1IIV-0/1IN4-0",
+      "disposition": "RELOCATE",
+      "successor": "Existing review/scenario owner; C Plan after qualification",
+      "reason": "No duplicated plan, payoff, saved-scenario or compare-plan screen",
+      "dependency_owner": "D08C; B presentation only",
+      "review_status": "Candidate specification; formal RIG draft. See REVIEW for bounded independent findings."
+    },
+    {
+      "id": "R20",
+      "capability": "Price context and GEX profile",
+      "baseline": "GexDeskView; R2 1H4T-0",
+      "disposition": "RETAIN",
+      "successor": "B01 Price context; B10 Research",
+      "reason": "Keep repriced curve, source parameters and sampled grid identity",
+      "dependency_owner": "Macro/Terminal GEX owner",
+      "review_status": "Candidate specification; formal RIG draft. See REVIEW for bounded independent findings."
+    },
+    {
+      "id": "R21",
+      "capability": "Walls, gamma flip and max pain",
+      "baseline": "gex_engine.py/gex_model.py; GEX/Levels",
+      "disposition": "RETAIN",
+      "successor": "B14 price map + existing detail controls",
+      "reason": "Exact price anchors and no-crossing null survive; keep method definitions",
+      "dependency_owner": "Incumbent producers",
+      "review_status": "Candidate specification; formal RIG draft. See REVIEW for bounded independent findings."
+    },
+    {
+      "id": "R22",
+      "capability": "Gamma regime assumption passport",
+      "baseline": "gex_engine.py",
+      "disposition": "IMPROVE",
+      "successor": "Source & calculations; B14 Unknown state",
+      "reason": "Model convention is not observed dealer inventory; null stays unknown",
+      "dependency_owner": "GEX/Levels producer",
+      "review_status": "Candidate specification; formal RIG draft. See REVIEW for bounded independent findings."
+    },
+    {
+      "id": "R23",
+      "capability": "Expected move and volatility bands",
+      "baseline": "gex_model.py; moves source",
+      "disposition": "RETAIN",
+      "successor": "Price/Positioning context via B10/B14",
+      "reason": "Retain IV-based model band definition and source date; no calibrated chance inferred",
+      "dependency_owner": "Moves/GEX producers",
+      "review_status": "Candidate specification; formal RIG draft. See REVIEW for bounded independent findings."
+    },
+    {
+      "id": "R24",
+      "capability": "Probability/hedging-flow interpretation",
+      "baseline": "Served Stability/Pin Target/hedging wording",
+      "disposition": "BLOCKED_DATA",
+      "successor": "Qualified source score/context detail; raw evidence retained",
+      "reason": "No audited calibration or observed dealer flow; interpretation withheld pending method proof",
+      "dependency_owner": "Incumbent measurement producer / D09",
+      "review_status": "Candidate specification; formal RIG draft. See REVIEW for bounded independent findings."
+    },
+    {
+      "id": "R25",
+      "capability": "Computed source GEX/VEX/CEX metrics",
+      "baseline": "gex_engine.py / GEX view",
+      "disposition": "RETAIN",
+      "successor": "Existing supported metric controls and source method panel",
+      "reason": "Each family retains its actual computation and unit; no cross-family enablement",
+      "dependency_owner": "Incumbent producer; VEX precise-unit gate",
+      "review_status": "Candidate specification; formal RIG draft. See REVIEW for bounded independent findings."
+    },
+    {
+      "id": "R26",
+      "capability": "Uncomputed matrix Vanna/Charm",
+      "baseline": "D08B handoff; source-specific availability",
+      "disposition": "BLOCKED_DATA",
+      "successor": "B09 unavailable control with supported Gamma path",
+      "reason": "Unavailable stays unavailable; no simulated zero or upgrade promise",
+      "dependency_owner": "Relevant Greek producer",
+      "review_status": "Candidate specification; formal RIG draft. See REVIEW for bounded independent findings."
+    },
+    {
+      "id": "R27",
+      "capability": "Flow Surface field snapshots",
+      "baseline": "SurfaceView; surface_dates",
+      "disposition": "RETAIN",
+      "successor": "B10 Surface / Flow context",
+      "reason": "Strike × session-time field object remains distinct from Gamma/IV surfaces",
+      "dependency_owner": "Existing field/replay owner; D09 consult",
+      "review_status": "Candidate specification; formal RIG draft. See REVIEW for bounded independent findings."
+    },
+    {
+      "id": "R28",
+      "capability": "Field snapshot/candle interval distinction",
+      "baseline": "SurfaceView temporal contract",
+      "disposition": "RETAIN",
+      "successor": "Existing Surface controls; source annotation",
+      "reason": "Changing candle interval must not imply field resampling",
+      "dependency_owner": "Incumbent temporal source",
+      "review_status": "Candidate specification; formal RIG draft. See REVIEW for bounded independent findings."
+    },
+    {
+      "id": "R29",
+      "capability": "Positioning source bands and controls",
+      "baseline": "PositioningView; p-U-0 boards",
+      "disposition": "RETAIN",
+      "successor": "B14 Positioning workspace; B10",
+      "reason": "Keep GEX/moves primary and optional aggregate/matrix/quad/grades context",
+      "dependency_owner": "Incumbent positioning components",
+      "review_status": "Candidate specification; formal RIG draft. See REVIEW for bounded independent findings."
+    },
+    {
+      "id": "R30",
+      "capability": "Levels roles, voids and confluence",
+      "baseline": "LevelsView levels.v1; p-U-0",
+      "disposition": "RETAIN",
+      "successor": "B14 + existing full detail controls",
+      "reason": "Anchor/walls/flip/cluster/launchpad/counter/trapdoor and all cluster marks remain",
+      "dependency_owner": "Levels producer",
+      "review_status": "Candidate specification; formal RIG draft. See REVIEW for bounded independent findings."
+    },
+    {
+      "id": "R31",
+      "capability": "Level label collision handling",
+      "baseline": "LevelsView",
+      "disposition": "IMPROVE",
+      "successor": "B14",
+      "reason": "Labels can move; exact-price ticks and leaders stay anchored",
+      "dependency_owner": "Existing Levels geometry",
+      "review_status": "Candidate specification; formal RIG draft. See REVIEW for bounded independent findings."
+    },
+    {
+      "id": "R32",
+      "capability": "Null Levels regime",
+      "baseline": "LevelsView nullable label ternary",
+      "disposition": "IMPROVE",
+      "successor": "B14 Unknown",
+      "reason": "Correct proposed display; null must not be relabeled Slippery",
+      "dependency_owner": "Levels consumer; future build",
+      "review_status": "Candidate specification; formal RIG draft. See REVIEW for bounded independent findings."
+    },
+    {
+      "id": "R33",
+      "capability": "Levels palettes and source notes",
+      "baseline": "LevelsView",
+      "disposition": "RETAIN",
+      "successor": "B14 Blue/orange; Source convention",
+      "reason": "Retain accessible palette and selectable source notes",
+      "dependency_owner": "F02 / Levels consumer",
+      "review_status": "Candidate specification; formal RIG draft. See REVIEW for bounded independent findings."
+    },
+    {
+      "id": "R34",
+      "capability": "Expiry-led term structure",
+      "baseline": "VolView; p-D-0 UM6-0",
+      "disposition": "IMPROVE",
+      "successor": "B04/B08",
+      "reason": "Proportional tenor axis, selected expiry, real missing-point gap",
+      "dependency_owner": "vol.v1 producer",
+      "review_status": "Candidate specification; formal RIG draft. See REVIEW for bounded independent findings."
+    },
+    {
+      "id": "R35",
+      "capability": "Call/put smile and skew",
+      "baseline": "VolView; p-D-0",
+      "disposition": "IMPROVE",
+      "successor": "B04",
+      "reason": "Exact expiry/strike, separate nullable series, distinct shapes and selected guide",
+      "dependency_owner": "Volatility source method",
+      "review_status": "Candidate specification; formal RIG draft. See REVIEW for bounded independent findings."
+    },
+    {
+      "id": "R36",
+      "capability": "Missing selected expiry",
+      "baseline": "p-D-0 XLX-0/XMP-0",
+      "disposition": "IMPROVE",
+      "successor": "B08",
+      "reason": "Preserve selection and offer explicit alternatives, never nearest substitution",
+      "dependency_owner": "Vol source availability",
+      "review_status": "Candidate specification; formal RIG draft. See REVIEW for bounded independent findings."
+    },
+    {
+      "id": "R37",
+      "capability": "ATM IV, RV and published VRP",
+      "baseline": "volTypes.ts/VolView",
+      "disposition": "RETAIN",
+      "successor": "B04 reference context + existing history controls",
+      "reason": "Percent units; published VRP verbatim; horizons visible",
+      "dependency_owner": "Existing vol.v1 producer",
+      "review_status": "Candidate specification; formal RIG draft. See REVIEW for bounded independent findings."
+    },
+    {
+      "id": "R38",
+      "capability": "IV history/rank/coverage/since",
+      "baseline": "VolView; volTypes.ts",
+      "disposition": "RETAIN",
+      "successor": "B04 History and Rank windows",
+      "reason": "Keep 252/all windows, coverage and nullable history fields",
+      "dependency_owner": "Published history/rank source",
+      "review_status": "Candidate specification; formal RIG draft. See REVIEW for bounded independent findings."
+    },
+    {
+      "id": "R39",
+      "capability": "RR25 and rank method identity",
+      "baseline": "gex_model.py / volTypes.ts",
+      "disposition": "IMPROVE",
+      "successor": "Source & method; documented sign/window contracts",
+      "reason": "Opposite RR signs and different rank windows cannot share an unlabeled field",
+      "dependency_owner": "Macro/Terminal measurement owners",
+      "review_status": "Candidate specification; formal RIG draft. See REVIEW for bounded independent findings."
+    },
+    {
+      "id": "R40",
+      "capability": "Deep-ITM wing handling",
+      "baseline": "volTypes.ts / VolView",
+      "disposition": "RETAIN",
+      "successor": "Smile controls; explicit reversible trim",
+      "reason": "Do not present unreliable default wings as interpolated trustworthy observations",
+      "dependency_owner": "Existing vol consumer",
+      "review_status": "Candidate specification; formal RIG draft. See REVIEW for bounded independent findings."
+    },
+    {
+      "id": "R41",
+      "capability": "Fitted/model-qualified IV terrain",
+      "baseline": "researchVolatility.ts fit:null; p-H-0 lineage",
+      "disposition": "BLOCKED_DATA",
+      "successor": "Reported smile/term and exact rows remain usable",
+      "reason": "No fitted surface/model/availability is supplied",
+      "dependency_owner": "Volatility model/source owner",
+      "review_status": "Candidate specification; formal RIG draft. See REVIEW for bounded independent findings."
+    },
+    {
+      "id": "R42",
+      "capability": "Qualified Gamma 3D columns",
+      "baseline": "ExposureSurface.tsx; R2 1IEM-0",
+      "disposition": "IMPROVE",
+      "successor": "B05",
+      "reason": "Keep discrete data; add calibrated ticks/linear height reference/selection leader",
+      "dependency_owner": "Qualified projection model",
+      "review_status": "Candidate specification; formal RIG draft. See REVIEW for bounded independent findings."
+    },
+    {
+      "id": "R43",
+      "capability": "3D modes, windows, cap, elevation",
+      "baseline": "exposureSurface.ts",
+      "disposition": "RETAIN",
+      "successor": "B05 Net/Scope/Camera menus; B10",
+      "reason": "Net/gross/absolute; 2/4/8%; 5/9/15 expiries; 20/30/45/60 degrees",
+      "dependency_owner": "Existing Surface component",
+      "review_status": "Candidate specification; formal RIG draft. See REVIEW for bounded independent findings."
+    },
+    {
+      "id": "R44",
+      "capability": "Full-lens magnitude tiers",
+      "baseline": "exposureSurface.ts",
+      "disposition": "RETAIN",
+      "successor": "B05/B06 exact alternative + legend/method",
+      "reason": "Cropping does not recolor retained cells; preserve actual tier thresholds",
+      "dependency_owner": "Existing Surface model",
+      "review_status": "Candidate specification; formal RIG draft. See REVIEW for bounded independent findings."
+    },
+    {
+      "id": "R45",
+      "capability": "Source-session DTE and population change",
+      "baseline": "exposureSurface.ts",
+      "disposition": "RETAIN",
+      "successor": "B05 inspector/source and comparison",
+      "reason": "DTE anchors to book session; prior delta needs same population and finite values",
+      "dependency_owner": "Qualified source coordinator",
+      "review_status": "Candidate specification; formal RIG draft. See REVIEW for bounded independent findings."
+    },
+    {
+      "id": "R46",
+      "capability": "Equivalent accessible 2D",
+      "baseline": "ExposureMap exact values; Lab table",
+      "disposition": "IMPROVE",
+      "successor": "B06/B11/B13",
+      "reason": "Same full dataset/selection/filter/mode; all controls and zero/null reachable",
+      "dependency_owner": "Existing projection and table owners",
+      "review_status": "Candidate specification; formal RIG draft. See REVIEW for bounded independent findings."
+    },
+    {
+      "id": "R47",
+      "capability": "Published chain point cloud",
+      "baseline": "ResearchScene/researchLabAdapter; p-H-0 18G0-0",
+      "disposition": "RETAIN",
+      "successor": "B13",
+      "reason": "Mirrored side, ordinal expiry, hollow negative ΔOI, volume/OI/ΔOI; no fitted terrain",
+      "dependency_owner": "Research Lab existing adapters",
+      "review_status": "Candidate specification; formal RIG draft. See REVIEW for bounded independent findings."
+    },
+    {
+      "id": "R48",
+      "capability": "Lab filters/camera/three-item comparison",
+      "baseline": "OptionsResearchLab",
+      "disposition": "RETAIN",
+      "successor": "B13 controls and inspector; exact table path",
+      "reason": "Side/expiry filters, reset/front/top/orbit/zoom, arrow selection and compare cap",
+      "dependency_owner": "Existing admitted Lab",
+      "review_status": "Candidate specification; formal RIG draft. See REVIEW for bounded independent findings."
+    },
+    {
+      "id": "R49",
+      "capability": "Lab draw cap and full exact rows",
+      "baseline": "ResearchScene/OptionsResearchLab",
+      "disposition": "RETAIN",
+      "successor": "B13 + B11 interaction pattern",
+      "reason": "20,000 nonzero mark cap; 50-row pages retain every admitted row and zero/null",
+      "dependency_owner": "Existing Lab renderer/table",
+      "review_status": "Candidate specification; formal RIG draft. See REVIEW for bounded independent findings."
+    },
+    {
+      "id": "R50",
+      "capability": "Source coordinate versus instrument",
+      "baseline": "researchLabAdapter; D08 node/pin",
+      "disposition": "IMPROVE",
+      "successor": "B13/B17",
+      "reason": "root|expiry|side|strike is a coordinate; invalid/duplicate exclusions visible",
+      "dependency_owner": "Source resolver / D08C",
+      "review_status": "Candidate specification; formal RIG draft. See REVIEW for bounded independent findings."
+    },
+    {
+      "id": "R51",
+      "capability": "Lab IV session join",
+      "baseline": "researchVolatility.ts",
+      "disposition": "RETAIN",
+      "successor": "B13 Volatility for matching session",
+      "reason": "One percent→ratio conversion; same source session/coordinate; availability remains null",
+      "dependency_owner": "Existing vol adapter",
+      "review_status": "Candidate specification; formal RIG draft. See REVIEW for bounded independent findings."
+    },
+    {
+      "id": "R52",
+      "capability": "Unadmitted Lab replay/flow lenses",
+      "baseline": "OptionsResearchLab unavailable evidence states",
+      "disposition": "BLOCKED_DATA",
+      "successor": "Existing reasoned lens + source/return path",
+      "reason": "Missing chain-time/package evidence cannot become a working replay or flow model",
+      "dependency_owner": "Incumbent evidence and replay owners",
+      "review_status": "Candidate specification; formal RIG draft. See REVIEW for bounded independent findings."
+    },
+    {
+      "id": "R53",
+      "capability": "Durable options investigation save",
+      "baseline": "AdmittedOptionsResearchLab; D08 saveIntent",
+      "disposition": "BLOCKED_DATA",
+      "successor": "C/D23/native Investigation only after admission",
+      "reason": "Retain unavailable reason; no fabricated saved receipt or new persistence plane",
+      "dependency_owner": "D08C / D23 / existing Save owner",
+      "review_status": "Candidate specification; formal RIG draft. See REVIEW for bounded independent findings."
+    },
+    {
+      "id": "R54",
+      "capability": "Research identity/entitlement gate",
+      "baseline": "AdmittedOptionsResearchLab",
+      "disposition": "RETAIN",
+      "successor": "B15 access states; all Lab/2D entry points",
+      "reason": "2D alternative does not bypass source identity/access/distribution",
+      "dependency_owner": "Existing admission owner / D08D where scoped",
+      "review_status": "Candidate specification; formal RIG draft. See REVIEW for bounded independent findings."
+    },
+    {
+      "id": "R55",
+      "capability": "Phone navigation/KPI access",
+      "baseline": "R2 phone 1HL2-0 clipping",
+      "disposition": "IMPROVE",
+      "successor": "B02/B03/B10/B11/B17",
+      "reason": "Complete menus, visible qualifications, stacked KPIs, precise selection before tiny-cell tap",
+      "dependency_owner": "D08B + released F01/F02",
+      "review_status": "Candidate specification; formal RIG draft. See REVIEW for bounded independent findings."
+    },
+    {
+      "id": "R56",
+      "capability": "EN/ZH and light/dark",
+      "baseline": "p-D-0 EN/ZH; p-H-0 light/tablet/phone",
+      "disposition": "IMPROVE",
+      "successor": "B03/B06 ZH light; B01/B02/B05 dark; B04/B08/B14 light",
+      "reason": "Wrap long labels while preserving ISO identity, units and source meaning",
+      "dependency_owner": "F02 localization/theme contract",
+      "review_status": "Candidate specification; formal RIG draft. See REVIEW for bounded independent findings."
+    },
+    {
+      "id": "R57",
+      "capability": "Keyboard/touch/reduced motion",
+      "baseline": "ExposureMap/Lab existing controls",
+      "disposition": "IMPROVE",
+      "successor": "B06/B11/B12; actual browser acceptance owed",
+      "reason": "Visible focus, full exact path, 44px controls/48px rows, no forced orbit/hover/WebGL",
+      "dependency_owner": "F02 primitives / existing components",
+      "review_status": "Candidate specification; formal RIG draft. See REVIEW for bounded independent findings."
+    },
+    {
+      "id": "R58",
+      "capability": "Loading/empty/partial/stale/error/access",
+      "baseline": "Existing readers and R2 recovery states",
+      "disposition": "IMPROVE",
+      "successor": "B08/B09/B15",
+      "reason": "Reasoned states isolate optional failure, root-fence stale evidence, no false plan-required",
+      "dependency_owner": "Existing reader/access owners",
+      "review_status": "Candidate specification; formal RIG draft. See REVIEW for bounded independent findings."
+    },
+    {
+      "id": "R59",
+      "capability": "Exact return and no implicit save",
+      "baseline": "D08 returnContext and existing history codecs",
+      "disposition": "IMPROVE",
+      "successor": "B03/B07/B10/B17; interaction contract",
+      "reason": "Restore identity, filters, node, focus and scroll; named fallback only",
+      "dependency_owner": "D08 / C / D existing codecs",
+      "review_status": "Candidate specification; formal RIG draft. See REVIEW for bounded independent findings."
+    },
+    {
+      "id": "R60",
+      "capability": "TerraShade study lineage",
+      "baseline": "p-T-0, nine incumbent boards",
+      "disposition": "RETAIN",
+      "successor": "Unmodified reference lineage only",
+      "reason": "Do not revive the unapproved study as a new product or duplicate source owner",
+      "dependency_owner": "Existing Paper custody / D08",
+      "review_status": "Candidate specification; formal RIG draft. See REVIEW for bounded independent findings."
+    }
+  ]
+}

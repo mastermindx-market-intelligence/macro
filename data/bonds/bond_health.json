@@ -41,7 +41,7 @@
       "tp_repriced_positive": true
     },
     "stress": {
-      "move": 92.77210235595703,
+      "move": 92.7699966430664,
       "move_band": "normal",
       "move_pctile": 0.8373015873015873,
       "move_leads_vix": false,
@@ -51,7 +51,7 @@
       "repo_stress": false
     },
     "cross_asset": {
-      "stock_bond_corr": 0.002882672364838223,
+      "stock_bond_corr": 0.0028826723648317175,
       "regime": "mixed",
       "hedge_working": false
     },
@@ -68,7 +68,7 @@
     "recession": 5.437095672077724,
     "drawdown": 40.77535707233594,
     "credit": 27.2,
-    "rates_vol": 41.1755895614624,
+    "rates_vol": 41.173747062683105,
     "plumbing": 32.000000000000014
   },
   "alarms": [],
@@ -94,12 +94,12 @@
       "note_en": "Discount-rate channel (real-10y, term premium) compresses long-duration multiples; HY OAS widening is associated with equity drawdowns in stress episodes; this snapshot does not establish a lead; the SPEED of yield moves (MOVE) matters more than the level.",
       "hy_oas": 3.48,
       "credit_canary": true,
-      "stock_bond_corr": 0.002882672364838223
+      "stock_bond_corr": 0.0028826723648317175
     }
   },
   "fed_path": {
     "asof": "2026-11-06",
-    "built": "2026-11-07T08:13:34.448095+00:00",
+    "built": "2026-11-09T09:17:16.038403+00:00",
     "policy_rate": 3.88,
     "target_low": 3.75,
     "target_high": 4.0,
@@ -107,20 +107,20 @@
     "implied": {
       "now": 3.88,
       "m1": 3.95,
-      "m3": 4.1,
-      "m6": 4.24,
-      "m12": 4.34
+      "m3": 4.11,
+      "m6": 4.26,
+      "m12": 4.38
     },
     "implied_source_en": "ZQ fed-funds futures",
     "implied_source_zh": "ZQ 联邦基金期货",
-    "implied_bp_12m": 46,
+    "implied_bp_12m": 50,
     "implied_cuts_12m": -2,
-    "implied_cuts_6m": -1,
+    "implied_cuts_6m": -2,
     "sofr_path": {
       "m1": null,
-      "m3": 4.17,
-      "m6": 4.29,
-      "m12": 4.39
+      "m3": 4.18,
+      "m6": 4.32,
+      "m12": 4.42
     },
     "dots": [
       {
@@ -152,8 +152,8 @@
     "ntfs": 0.52,
     "curve_tp_adj": 1.26,
     "rate_exp_proxy": 0.58,
-    "headline_en": "Market prices ~2 hikes over the next 12m (funds 3.88% → 4.34%)",
-    "headline_zh": "市场为未来12个月定价约加息2次（基金利率 3.88% → 4.34%）",
+    "headline_en": "Market prices ~2 hikes over the next 12m (funds 3.88% → 4.38%)",
+    "headline_zh": "市场为未来12个月定价约加息2次（基金利率 3.88% → 4.38%）",
     "read_en": "At end-2026 the market implies 3.95% vs the Fed's 4.10% median dot (-15bp — market more dovish than the Fed). The near-term forward spread is positive — no cuts priced near-term (+0.52pp).",
     "read_zh": "在end-2026，市场隐含 3.95% 对比美联储 4.10% 的中位点（-15基点 — 市场比美联储更鸽派）。近端远期利差为正——近端未为降息定价（+0.52个百分点）。",
     "note_en": "Display / LLM-context only. The implied path is a market PRICE (the futures-implied funds rate), not a forecast edge, and repricing is REACTIVE — it moves after data and the Fed, it does not lead. Never scored, never an MRS leg. ZQ/SR3 = keyless CME futures; dots = FRED FEDTARMD (FOMC SEP median). Cite the CME/FRED.",
@@ -173,7 +173,7 @@
           "basket_or_index": "EFFR",
           "vendor": "yfinance",
           "price_type": "vendor_daily_close",
-          "observation_time": "2026-11-06",
+          "observation_time": "2026-11-08",
           "observation_precision": "day",
           "vintage": null,
           "rights": "unknown",
@@ -321,7 +321,7 @@
           "basket_or_index": "SOFR",
           "vendor": "yfinance",
           "price_type": "vendor_daily_close",
-          "observation_time": "2026-11-06",
+          "observation_time": "2026-11-08",
           "observation_precision": "day",
           "vintage": null,
           "rights": "unknown",
@@ -567,10 +567,10 @@
           "effr_level_constant_between_effective_dates"
         ],
         "gap": {
-          "value_bp": 0.5,
-          "usable": true,
-          "source": "measured:fred:DFF@2026-11-05-midpoint@2026-11-06",
-          "reason": null
+          "value_bp": null,
+          "usable": false,
+          "source": null,
+          "reason": "gap_inputs_missing"
         },
         "months": [
           {
@@ -581,15 +581,15 @@
             "monthly_average": {
               "subject": "zq_month_average:ZQX26.CBT",
               "evidence_class": "market_implied_expectation",
-              "value": 3.87750244140625,
-              "value_state": "present",
+              "value": null,
+              "value_state": "refused",
               "unit": "pct_ann_rate",
               "target": "effr_monthly_average",
               "basket_or_index": "EFFR",
               "reference_start": "2026-11-01",
               "reference_end": "2026-11-30",
               "tenor": null,
-              "observation_time": "2026-11-06",
+              "observation_time": "2026-11-08",
               "observation_precision": "day",
               "seasonal_treatment": null,
               "rate_index": "EFFR",
@@ -598,7 +598,7 @@
               "source": "yfinance:ZQX26.CBT",
               "source_version": null,
               "content_ref": null,
-              "first_public_evidence": "2026-11-06",
+              "first_public_evidence": "2026-11-08",
               "first_public_precision": "day",
               "admitted_at": null,
               "cutoff": "2026-11-07",
@@ -608,55 +608,30 @@
               "rights": "unknown",
               "quality": [],
               "authority": "display_only",
-              "limitations": [],
-              "obs_id": "e3a688b706b9e4da"
+              "limitations": [
+                "after_cutoff"
+              ],
+              "obs_id": "f69083a34f77bfef"
             },
             "effective_dates_inside": [],
-            "status": "identified_conditional",
-            "reason": "no_intra_month_change",
+            "status": "unavailable",
+            "reason": "monthly_average_refused",
             "pre_change_rate": null,
             "pre_change_rate_source": null,
-            "identification": {
-              "status": "identified_conditional",
-              "identified": {
-                "segments": [
-                  [
-                    "2026-11-01",
-                    "2026-11-30",
-                    3.87750244140625
-                  ]
-                ],
-                "end_rate": 3.87750244140625
-              },
-              "alternatives": [],
-              "end_rate_range": [
-                3.87750243140625,
-                3.87750245140625
-              ],
-              "assumptions_used": [
-                "calendar_day_arithmetic",
-                "month_days=30",
-                "no_intra_month_change"
-              ],
-              "missing": [],
-              "residual_bp": null
-            },
+            "identification": null,
             "vs_target_midpoint": {
-              "status": "comparable_after_transformation",
-              "difference": -0.249755859375,
+              "status": "unavailable",
+              "difference": null,
               "range": null,
               "unit": "bp",
               "rule_id": "zq_month_vs_policy_midpoint.v1",
               "rule_version": "1",
-              "transform": "monthly_average_vs_level",
-              "assumptions": [
-                "effr_minus_midpoint_bp=0.5",
-                "effr_gap_applied_in=bp"
-              ],
+              "transform": null,
+              "assumptions": [],
               "limitations": [],
-              "reason": "transform:monthly_average_vs_level",
-              "left_ref": "e3a688b706b9e4da",
-              "right_ref": "ecee865cd350bf03",
+              "reason": "operand_refused:left",
+              "left_ref": "f69083a34f77bfef",
+              "right_ref": "5587116180c8c67f",
               "left_cutoff": "2026-11-07",
               "right_cutoff": "2026-11-07"
             },
@@ -666,7 +641,7 @@
               "realised_days": 5,
               "remaining_days": 25
             },
-            "post_rate_sensitivity": 1.0,
+            "post_rate_sensitivity": null,
             "limitations": []
           },
           {
@@ -677,15 +652,15 @@
             "monthly_average": {
               "subject": "zq_month_average:ZQZ26.CBT",
               "evidence_class": "market_implied_expectation",
-              "value": 4.0149993896484375,
-              "value_state": "present",
+              "value": null,
+              "value_state": "refused",
               "unit": "pct_ann_rate",
               "target": "effr_monthly_average",
               "basket_or_index": "EFFR",
               "reference_start": "2026-12-01",
               "reference_end": "2026-12-31",
               "tenor": null,
-              "observation_time": "2026-11-06",
+              "observation_time": "2026-11-08",
               "observation_precision": "day",
               "seasonal_treatment": null,
               "rate_index": "EFFR",
@@ -694,7 +669,7 @@
               "source": "yfinance:ZQZ26.CBT",
               "source_version": null,
               "content_ref": null,
-              "first_public_evidence": "2026-11-06",
+              "first_public_evidence": "2026-11-08",
               "first_public_precision": "day",
               "admitted_at": null,
               "cutoff": "2026-11-07",
@@ -704,73 +679,42 @@
               "rights": "unknown",
               "quality": [],
               "authority": "display_only",
-              "limitations": [],
-              "obs_id": "d01779fdcac32869"
+              "limitations": [
+                "after_cutoff"
+              ],
+              "obs_id": "de611a37bff8b547"
             },
             "effective_dates_inside": [
               "2026-12-10"
             ],
-            "status": "identified_conditional",
-            "reason": "pre_change_rate:observed_effr:fred:DFF@2026-11-05",
-            "pre_change_rate": 3.88,
-            "pre_change_rate_source": "observed_effr:fred:DFF@2026-11-05",
-            "identification": {
-              "status": "identified_conditional",
-              "identified": {
-                "segments": [
-                  [
-                    "2026-12-01",
-                    "2026-12-10",
-                    3.88
-                  ],
-                  [
-                    "2026-12-10",
-                    "2026-12-31",
-                    4.070226412686434
-                  ]
-                ],
-                "end_rate": 4.070226412686434
-              },
-              "alternatives": [],
-              "end_rate_range": [
-                4.070226402686434,
-                4.070226422686434
-              ],
-              "assumptions_used": [
-                "calendar_day_arithmetic",
-                "month_days=31",
-                "effective_date=2026-12-10",
-                "pre_change_rate=3.88"
-              ],
-              "missing": [],
-              "residual_bp": null
-            },
+            "status": "unavailable",
+            "reason": "monthly_average_refused",
+            "pre_change_rate": null,
+            "pre_change_rate_source": null,
+            "identification": null,
             "vs_target_midpoint": {
-              "status": "comparable_after_transformation",
-              "difference": 13.49993896484375,
+              "status": "unavailable",
+              "difference": null,
               "range": null,
               "unit": "bp",
               "rule_id": "zq_month_vs_policy_midpoint.v1",
               "rule_version": "1",
-              "transform": "monthly_average_vs_level",
-              "assumptions": [
-                "effr_minus_midpoint_bp=0.5",
-                "effr_gap_applied_in=bp"
-              ],
+              "transform": null,
+              "assumptions": [],
               "limitations": [],
-              "reason": "transform:monthly_average_vs_level",
-              "left_ref": "d01779fdcac32869",
-              "right_ref": "ecee865cd350bf03",
+              "reason": "operand_refused:left",
+              "left_ref": "de611a37bff8b547",
+              "right_ref": "5587116180c8c67f",
               "left_cutoff": "2026-11-07",
               "right_cutoff": "2026-11-07"
             },
             "weights": {
-              "days_pre": 9,
-              "days_post": 22,
+              "days_pre": null,
+              "days_post": null,
               "realised_days": 0,
               "remaining_days": 31
             },
-            "post_rate_sensitivity": 1.4091,
+            "post_rate_sensitivity": null,
             "limitations": []
           },
           {
@@ -781,15 +725,15 @@
             "monthly_average": {
               "subject": "zq_month_average:ZQF27.CBT",
               "evidence_class": "market_implied_expectation",
-              "value": 4.0800018310546875,
-              "value_state": "present",
+              "value": null,
+              "value_state": "refused",
               "unit": "pct_ann_rate",
               "target": "effr_monthly_average",
               "basket_or_index": "EFFR",
               "reference_start": "2027-01-01",
               "reference_end": "2027-01-31",
               "tenor": null,
-              "observation_time": "2026-11-06",
+              "observation_time": "2026-11-08",
               "observation_precision": "day",
               "seasonal_treatment": null,
               "rate_index": "EFFR",
@@ -798,7 +742,7 @@
               "source": "yfinance:ZQF27.CBT",
               "source_version": null,
               "content_ref": null,
-              "first_public_evidence": "2026-11-06",
+              "first_public_evidence": "2026-11-08",
               "first_public_precision": "day",
               "admitted_at": null,
               "cutoff": "2026-11-07",
@@ -808,76 +752,43 @@
               "rights": "unknown",
               "quality": [],
               "authority": "display_only",
-              "limitations": [],
-              "obs_id": "2c42a0157e096438"
+              "limitations": [
+                "after_cutoff"
+              ],
+              "obs_id": "95f11dc38e09687d"
             },
             "effective_dates_inside": [
               "2027-01-28"
             ],
-            "status": "identified_conditional",
-            "reason": "pre_change_rate:chained:2026-12",
-            "pre_change_rate": 4.070226412686434,
-            "pre_change_rate_source": "chained:2026-12",
-            "identification": {
-              "status": "identified_conditional",
-              "identified": {
-                "segments": [
-                  [
-                    "2027-01-01",
-                    "2027-01-28",
-                    4.070226412686434
-                  ],
-                  [
-                    "2027-01-28",
-                    "2027-01-31",
-                    4.145985905040398
-                  ]
-                ],
-                "end_rate": 4.145985905040398
-              },
-              "alternatives": [],
-              "end_rate_range": [
-                4.145985895040398,
-                4.145985915040398
-              ],
-              "assumptions_used": [
-                "calendar_day_arithmetic",
-                "month_days=31",
-                "effective_date=2027-01-28",
-                "pre_change_rate=4.07023"
-              ],
-              "missing": [],
-              "residual_bp": null
-            },
+            "status": "unavailable",
+            "reason": "monthly_average_refused",
+            "pre_change_rate": null,
+            "pre_change_rate_source": null,
+            "identification": null,
             "vs_target_midpoint": {
-              "status": "comparable_after_transformation",
-              "difference": 20.00018310546875,
+              "status": "unavailable",
+              "difference": null,
               "range": null,
               "unit": "bp",
               "rule_id": "zq_month_vs_policy_midpoint.v1",
               "rule_version": "1",
-              "transform": "monthly_average_vs_level",
-              "assumptions": [
-                "effr_minus_midpoint_bp=0.5",
-                "effr_gap_applied_in=bp"
-              ],
+              "transform": null,
+              "assumptions": [],
               "limitations": [],
-              "reason": "transform:monthly_average_vs_level",
-              "left_ref": "2c42a0157e096438",
-              "right_ref": "ecee865cd350bf03",
+              "reason": "operand_refused:left",
+              "left_ref": "95f11dc38e09687d",
+              "right_ref": "5587116180c8c67f",
               "left_cutoff": "2026-11-07",
               "right_cutoff": "2026-11-07"
             },
             "weights": {
-              "days_pre": 27,
-              "days_post": 4,
+              "days_pre": null,
+              "days_post": null,
               "realised_days": 0,
               "remaining_days": 31
             },
-            "post_rate_sensitivity": 7.75,
-            "limitations": [
-              "chained_identification"
-            ]
+            "post_rate_sensitivity": null,
+            "limitations": []
           },
           {
             "contract": "ZQG27.CBT",
@@ -887,15 +798,15 @@
             "monthly_average": {
               "subject": "zq_month_average:ZQG27.CBT",
               "evidence_class": "market_implied_expectation",
-              "value": 4.120002746582031,
-              "value_state": "present",
+              "value": null,
+              "value_state": "refused",
               "unit": "pct_ann_rate",
               "target": "effr_monthly_average",
               "basket_or_index": "EFFR",
               "reference_start": "2027-02-01",
               "reference_end": "2027-02-28",
               "tenor": null,
-              "observation_time": "2026-11-06",
+              "observation_time": "2026-11-08",
               "observation_precision": "day",
               "seasonal_treatment": null,
               "rate_index": "EFFR",
@@ -904,7 +815,7 @@
               "source": "yfinance:ZQG27.CBT",
               "source_version": null,
               "content_ref": null,
-              "first_public_evidence": "2026-11-06",
+              "first_public_evidence": "2026-11-08",
               "first_public_precision": "day",
               "admitted_at": null,
               "cutoff": "2026-11-07",
@@ -914,55 +825,30 @@
               "rights": "unknown",
               "quality": [],
               "authority": "display_only",
-              "limitations": [],
-              "obs_id": "119cf0405a4c934b"
+              "limitations": [
+                "after_cutoff"
+              ],
+              "obs_id": "ad44b20b22d49598"
             },
             "effective_dates_inside": [],
-            "status": "identified_conditional",
-            "reason": "no_intra_month_change",
+            "status": "unavailable",
+            "reason": "monthly_average_refused",
             "pre_change_rate": null,
             "pre_change_rate_source": null,
-            "identification": {
-              "status": "identified_conditional",
-              "identified": {
-                "segments": [
-                  [
-                    "2027-02-01",
-                    "2027-02-28",
-                    4.120002746582031
-                  ]
-                ],
-                "end_rate": 4.120002746582031
-              },
-              "alternatives": [],
-              "end_rate_range": [
-                4.120002736582031,
-                4.120002756582031
-              ],
-              "assumptions_used": [
-                "calendar_day_arithmetic",
-                "month_days=28",
-                "no_intra_month_change"
-              ],
-              "missing": [],
-              "residual_bp": null
-            },
+            "identification": null,
             "vs_target_midpoint": {
-              "status": "comparable_after_transformation",
-              "difference": 24.000274658203125,
+              "status": "unavailable",
+              "difference": null,
               "range": null,
               "unit": "bp",
               "rule_id": "zq_month_vs_policy_midpoint.v1",
               "rule_version": "1",
-              "transform": "monthly_average_vs_level",
-              "assumptions": [
-                "effr_minus_midpoint_bp=0.5",
-                "effr_gap_applied_in=bp"
-              ],
+              "transform": null,
+              "assumptions": [],
               "limitations": [],
-              "reason": "transform:monthly_average_vs_level",
-              "left_ref": "119cf0405a4c934b",
-              "right_ref": "ecee865cd350bf03",
+              "reason": "operand_refused:left",
+              "left_ref": "ad44b20b22d49598",
+              "right_ref": "5587116180c8c67f",
               "left_cutoff": "2026-11-07",
               "right_cutoff": "2026-11-07"
             },
@@ -972,7 +858,7 @@
               "realised_days": 0,
               "remaining_days": 28
             },
-            "post_rate_sensitivity": 1.0,
+            "post_rate_sensitivity": null,
             "limitations": []
           },
           {
@@ -983,15 +869,15 @@
             "monthly_average": {
               "subject": "zq_month_average:ZQH27.CBT",
               "evidence_class": "market_implied_expectation",
-              "value": 4.165000915527344,
-              "value_state": "present",
+              "value": null,
+              "value_state": "refused",
               "unit": "pct_ann_rate",
               "target": "effr_monthly_average",
               "basket_or_index": "EFFR",
               "reference_start": "2027-03-01",
               "reference_end": "2027-03-31",
               "tenor": null,
-              "observation_time": "2026-11-06",
+              "observation_time": "2026-11-08",
               "observation_precision": "day",
               "seasonal_treatment": null,
               "rate_index": "EFFR",
@@ -1000,7 +886,7 @@
               "source": "yfinance:ZQH27.CBT",
               "source_version": null,
               "content_ref": null,
-              "first_public_evidence": "2026-11-06",
+              "first_public_evidence": "2026-11-08",
               "first_public_precision": "day",
               "admitted_at": null,
               "cutoff": "2026-11-07",
@@ -1010,267 +896,32 @@
               "rights": "unknown",
               "quality": [],
               "authority": "display_only",
-              "limitations": [],
-              "obs_id": "e8aeec269f4a8b66"
+              "limitations": [
+                "after_cutoff"
+              ],
+              "obs_id": "330ae394f78c1f67"
             },
             "effective_dates_inside": [
               "2027-03-18"
             ],
-            "status": "identified_conditional",
-            "reason": "pre_change_rate:chained:2027-02",
-            "pre_change_rate": 4.120002746582031,
-            "pre_change_rate_source": "chained:2027-02",
-            "identification": {
-              "status": "identified_conditional",
-              "identified": {
-                "segments": [
-                  [
-                    "2027-03-01",
-                    "2027-03-18",
-                    4.120002746582031
-                  ],
-                  [
-                    "2027-03-18",
-                    "2027-03-31",
-                    4.219641549246652
-                  ]
-                ],
-                "end_rate": 4.219641549246652
-              },
-              "alternatives": [],
-              "end_rate_range": [
-                4.219641539246652,
-                4.219641559246652
-              ],
-              "assumptions_used": [
-                "calendar_day_arithmetic",
-                "month_days=31",
-                "effective_date=2027-03-18",
-                "pre_change_rate=4.12"
-              ],
-              "missing": [],
-              "residual_bp": null
-            },
-            "vs_target_midpoint": {
-              "status": "comparable_after_transformation",
-              "difference": 28.500091552734375,
-              "range": null,
-              "unit": "bp",
-              "rule_id": "zq_month_vs_policy_midpoint.v1",
-              "rule_version": "1",
-              "transform": "monthly_average_vs_level",
-              "assumptions": [
-                "effr_minus_midpoint_bp=0.5",
-                "effr_gap_applied_in=bp"
-              ],
-              "limitations": [],
-              "reason": "transform:monthly_average_vs_level",
-              "left_ref": "e8aeec269f4a8b66",
-              "right_ref": "ecee865cd350bf03",
-              "left_cutoff": "2026-11-07",
-              "right_cutoff": "2026-11-07"
-            },
-            "weights": {
-              "days_pre": 17,
-              "days_post": 14,
-              "realised_days": 0,
-              "remaining_days": 31
-            },
-            "post_rate_sensitivity": 2.2143,
-            "limitations": [
-              "chained_identification"
-            ]
-          },
-          {
-            "contract": "ZQJ27.CBT",
-            "reference_start": "2027-04-01",
-            "reference_end": "2027-04-30",
-            "month_days": 30,
-            "monthly_average": {
-              "subject": "zq_month_average:ZQJ27.CBT",
-              "evidence_class": "market_implied_expectation",
-              "value": 4.224998474121094,
-              "value_state": "present",
-              "unit": "pct_ann_rate",
-              "target": "effr_monthly_average",
-              "basket_or_index": "EFFR",
-              "reference_start": "2027-04-01",
-              "reference_end": "2027-04-30",
-              "tenor": null,
-              "observation_time": "2026-11-06",
-              "observation_precision": "day",
-              "seasonal_treatment": null,
-              "rate_index": "EFFR",
-              "averaging_law": "arithmetic_calendar_day",
-              "curve_convention": null,
-              "source": "yfinance:ZQJ27.CBT",
-              "source_version": null,
-              "content_ref": null,
-              "first_public_evidence": "2026-11-06",
-              "first_public_precision": "day",
-              "admitted_at": null,
-              "cutoff": "2026-11-07",
-              "model_id": null,
-              "target_epoch": null,
-              "vintage": null,
-              "rights": "unknown",
-              "quality": [],
-              "authority": "display_only",
-              "limitations": [],
-              "obs_id": "bbd7f7febb59d264"
-            },
-            "effective_dates_inside": [
-              "2027-04-29"
-            ],
-            "status": "identified_conditional",
-            "reason": "pre_change_rate:chained:2027-03",
-            "pre_change_rate": 4.219641549246652,
-            "pre_change_rate_source": "chained:2027-03",
-            "identification": {
-              "status": "identified_conditional",
-              "identified": {
-                "segments": [
-                  [
-                    "2027-04-01",
-                    "2027-04-29",
-                    4.219641549246652
-                  ],
-                  [
-                    "2027-04-29",
-                    "2027-04-30",
-                    4.299995422363281
-                  ]
-                ],
-                "end_rate": 4.299995422363281
-              },
-              "alternatives": [],
-              "end_rate_range": [
-                4.299995412363281,
-                4.299995432363281
-              ],
-              "assumptions_used": [
-                "calendar_day_arithmetic",
-                "month_days=30",
-                "effective_date=2027-04-29",
-                "pre_change_rate=4.21964"
-              ],
-              "missing": [],
-              "residual_bp": null
-            },
-            "vs_target_midpoint": {
-              "status": "comparable_after_transformation",
-              "difference": 34.499847412109375,
-              "range": null,
-              "unit": "bp",
-              "rule_id": "zq_month_vs_policy_midpoint.v1",
-              "rule_version": "1",
-              "transform": "monthly_average_vs_level",
-              "assumptions": [
-                "effr_minus_midpoint_bp=0.5",
-                "effr_gap_applied_in=bp"
-              ],
-              "limitations": [],
-              "reason": "transform:monthly_average_vs_level",
-              "left_ref": "bbd7f7febb59d264",
-              "right_ref": "ecee865cd350bf03",
-              "left_cutoff": "2026-11-07",
-              "right_cutoff": "2026-11-07"
-            },
-            "weights": {
-              "days_pre": 28,
-              "days_post": 2,
-              "realised_days": 0,
-              "remaining_days": 30
-            },
-            "post_rate_sensitivity": 15.0,
-            "limitations": [
-              "chained_identification"
-            ]
-          },
-          {
-            "contract": "ZQK27.CBT",
-            "reference_start": "2027-05-01",
-            "reference_end": "2027-05-31",
-            "month_days": 31,
-            "monthly_average": {
-              "subject": "zq_month_average:ZQK27.CBT",
-              "evidence_class": "market_implied_expectation",
-              "value": 4.260002136230469,
-              "value_state": "present",
-              "unit": "pct_ann_rate",
-              "target": "effr_monthly_average",
-              "basket_or_index": "EFFR",
-              "reference_start": "2027-05-01",
-              "reference_end": "2027-05-31",
-              "tenor": null,
-              "observation_time": "2026-11-06",
-              "observation_precision": "day",
-              "seasonal_treatment": null,
-              "rate_index": "EFFR",
-              "averaging_law": "arithmetic_calendar_day",
-              "curve_convention": null,
-              "source": "yfinance:ZQK27.CBT",
-              "source_version": null,
-              "content_ref": null,
-              "first_public_evidence": "2026-11-06",
-              "first_public_precision": "day",
-              "admitted_at": null,
-              "cutoff": "2026-11-07",
-              "model_id": null,
-              "target_epoch": null,
-              "vintage": null,
-              "rights": "unknown",
-              "quality": [],
-              "authority": "display_only",
-              "limitations": [],
-              "obs_id": "28e499095ce57d5d"
-            },
-            "effective_dates_inside": [],
-            "status": "identified_conditional",
-            "reason": "no_intra_month_change",
+            "status": "unavailable",
+            "reason": "monthly_average_refused",
             "pre_change_rate": null,
             "pre_change_rate_source": null,
-            "identification": {
-              "status": "identified_conditional",
-              "identified": {
-                "segments": [
-                  [
-                    "2027-05-01",
-                    "2027-05-31",
-                    4.260002136230469
-                  ]
-                ],
-                "end_rate": 4.260002136230469
-              },
-              "alternatives": [],
-              "end_rate_range": [
-                4.260002126230469,
-                4.260002146230469
-              ],
-              "assumptions_used": [
-                "calendar_day_arithmetic",
-                "month_days=31",
-                "no_intra_month_change"
-              ],
-              "missing": [],
-              "residual_bp": null
-            },
+            "identification": null,
             "vs_target_midpoint": {
-              "status": "comparable_after_transformation",
-              "difference": 38.000213623046875,
+              "status": "unavailable",
+              "difference": null,
               "range": null,
               "unit": "bp",
               "rule_id": "zq_month_vs_policy_midpoint.v1",
               "rule_version": "1",
-              "transform": "monthly_average_vs_level",
-              "assumptions": [
-                "effr_minus_midpoint_bp=0.5",
-                "effr_gap_applied_in=bp"
-              ],
+              "transform": null,
+              "assumptions": [],
               "limitations": [],
-              "reason": "transform:monthly_average_vs_level",
-              "left_ref": "28e499095ce57d5d",
-              "right_ref": "ecee865cd350bf03",
+              "reason": "operand_refused:left",
+              "left_ref": "330ae394f78c1f67",
+              "right_ref": "5587116180c8c67f",
               "left_cutoff": "2026-11-07",
               "right_cutoff": "2026-11-07"
             },
@@ -1280,7 +931,151 @@
               "realised_days": 0,
               "remaining_days": 31
             },
-            "post_rate_sensitivity": 1.0,
+            "post_rate_sensitivity": null,
+            "limitations": []
+          },
+          {
+            "contract": "ZQJ27.CBT",
+            "reference_start": "2027-04-01",
+            "reference_end": "2027-04-30",
+            "month_days": 30,
+            "monthly_average": {
+              "subject": "zq_month_average:ZQJ27.CBT",
+              "evidence_class": "market_implied_expectation",
+              "value": null,
+              "value_state": "refused",
+              "unit": "pct_ann_rate",
+              "target": "effr_monthly_average",
+              "basket_or_index": "EFFR",
+              "reference_start": "2027-04-01",
+              "reference_end": "2027-04-30",
+              "tenor": null,
+              "observation_time": "2026-11-08",
+              "observation_precision": "day",
+              "seasonal_treatment": null,
+              "rate_index": "EFFR",
+              "averaging_law": "arithmetic_calendar_day",
+              "curve_convention": null,
+              "source": "yfinance:ZQJ27.CBT",
+              "source_version": null,
+              "content_ref": null,
+              "first_public_evidence": "2026-11-08",
+              "first_public_precision": "day",
+              "admitted_at": null,
+              "cutoff": "2026-11-07",
+              "model_id": null,
+              "target_epoch": null,
+              "vintage": null,
+              "rights": "unknown",
+              "quality": [],
+              "authority": "display_only",
+              "limitations": [
+                "after_cutoff"
+              ],
+              "obs_id": "cf04d783c4c2819e"
+            },
+            "effective_dates_inside": [
+              "2027-04-29"
+            ],
+            "status": "unavailable",
+            "reason": "monthly_average_refused",
+            "pre_change_rate": null,
+            "pre_change_rate_source": null,
+            "identification": null,
+            "vs_target_midpoint": {
+              "status": "unavailable",
+              "difference": null,
+              "range": null,
+              "unit": "bp",
+              "rule_id": "zq_month_vs_policy_midpoint.v1",
+              "rule_version": "1",
+              "transform": null,
+              "assumptions": [],
+              "limitations": [],
+              "reason": "operand_refused:left",
+              "left_ref": "cf04d783c4c2819e",
+              "right_ref": "5587116180c8c67f",
+              "left_cutoff": "2026-11-07",
+              "right_cutoff": "2026-11-07"
+            },
+            "weights": {
+              "days_pre": null,
+              "days_post": null,
+              "realised_days": 0,
+              "remaining_days": 30
+            },
+            "post_rate_sensitivity": null,
+            "limitations": []
+          },
+          {
+            "contract": "ZQK27.CBT",
+            "reference_start": "2027-05-01",
+            "reference_end": "2027-05-31",
+            "month_days": 31,
+            "monthly_average": {
+              "subject": "zq_month_average:ZQK27.CBT",
+              "evidence_class": "market_implied_expectation",
+              "value": null,
+              "value_state": "refused",
+              "unit": "pct_ann_rate",
+              "target": "effr_monthly_average",
+              "basket_or_index": "EFFR",
+              "reference_start": "2027-05-01",
+              "reference_end": "2027-05-31",
+              "tenor": null,
+              "observation_time": "2026-11-08",
+              "observation_precision": "day",
+              "seasonal_treatment": null,
+              "rate_index": "EFFR",
+              "averaging_law": "arithmetic_calendar_day",
+              "curve_convention": null,
+              "source": "yfinance:ZQK27.CBT",
+              "source_version": null,
+              "content_ref": null,
+              "first_public_evidence": "2026-11-08",
+              "first_public_precision": "day",
+              "admitted_at": null,
+              "cutoff": "2026-11-07",
+              "model_id": null,
+              "target_epoch": null,
+              "vintage": null,
+              "rights": "unknown",
+              "quality": [],
+              "authority": "display_only",
+              "limitations": [
+                "after_cutoff"
+              ],
+              "obs_id": "fafda8321dc7ac6a"
+            },
+            "effective_dates_inside": [],
+            "status": "unavailable",
+            "reason": "monthly_average_refused",
+            "pre_change_rate": null,
+            "pre_change_rate_source": null,
+            "identification": null,
+            "vs_target_midpoint": {
+              "status": "unavailable",
+              "difference": null,
+              "range": null,
+              "unit": "bp",
+              "rule_id": "zq_month_vs_policy_midpoint.v1",
+              "rule_version": "1",
+              "transform": null,
+              "assumptions": [],
+              "limitations": [],
+              "reason": "operand_refused:left",
+              "left_ref": "fafda8321dc7ac6a",
+              "right_ref": "5587116180c8c67f",
+              "left_cutoff": "2026-11-07",
+              "right_cutoff": "2026-11-07"
+            },
+            "weights": {
+              "days_pre": null,
+              "days_post": null,
+              "realised_days": 0,
+              "remaining_days": 31
+            },
+            "post_rate_sensitivity": null,
             "limitations": []
           },
           {
@@ -1291,15 +1086,15 @@
             "monthly_average": {
               "subject": "zq_month_average:ZQM27.CBT",
               "evidence_class": "market_implied_expectation",
-              "value": 4.305000305175781,
-              "value_state": "present",
+              "value": null,
+              "value_state": "refused",
               "unit": "pct_ann_rate",
               "target": "effr_monthly_average",
               "basket_or_index": "EFFR",
               "reference_start": "2027-06-01",
               "reference_end": "2027-06-30",
               "tenor": null,
-              "observation_time": "2026-11-06",
+              "observation_time": "2026-11-08",
               "observation_precision": "day",
               "seasonal_treatment": null,
               "rate_index": "EFFR",
@@ -1308,7 +1103,7 @@
               "source": "yfinance:ZQM27.CBT",
               "source_version": null,
               "content_ref": null,
-              "first_public_evidence": "2026-11-06",
+              "first_public_evidence": "2026-11-08",
               "first_public_precision": "day",
               "admitted_at": null,
               "cutoff": "2026-11-07",
@@ -1318,76 +1113,43 @@
               "rights": "unknown",
               "quality": [],
               "authority": "display_only",
-              "limitations": [],
-              "obs_id": "a8a386f6aab43bf3"
+              "limitations": [
+                "after_cutoff"
+              ],
+              "obs_id": "118e1e02bce8ac1e"
             },
             "effective_dates_inside": [
               "2027-06-10"
             ],
-            "status": "identified_conditional",
-            "reason": "pre_change_rate:chained:2027-05",
-            "pre_change_rate": 4.260002136230469,
-            "pre_change_rate_source": "chained:2027-05",
-            "identification": {
-              "status": "identified_conditional",
-              "identified": {
-                "segments": [
-                  [
-                    "2027-06-01",
-                    "2027-06-10",
-                    4.260002136230469
-                  ],
-                  [
-                    "2027-06-10",
-                    "2027-06-30",
-                    4.324285234723773
-                  ]
-                ],
-                "end_rate": 4.324285234723773
-              },
-              "alternatives": [],
-              "end_rate_range": [
-                4.324285224723773,
-                4.3242852447237725
-              ],
-              "assumptions_used": [
-                "calendar_day_arithmetic",
-                "month_days=30",
-                "effective_date=2027-06-10",
-                "pre_change_rate=4.26"
-              ],
-              "missing": [],
-              "residual_bp": null
-            },
+            "status": "unavailable",
+            "reason": "monthly_average_refused",
+            "pre_change_rate": null,
+            "pre_change_rate_source": null,
+            "identification": null,
             "vs_target_midpoint": {
-              "status": "comparable_after_transformation",
-              "difference": 42.500030517578125,
+              "status": "unavailable",
+              "difference": null,
               "range": null,
               "unit": "bp",
               "rule_id": "zq_month_vs_policy_midpoint.v1",
               "rule_version": "1",
-              "transform": "monthly_average_vs_level",
-              "assumptions": [
-                "effr_minus_midpoint_bp=0.5",
-                "effr_gap_applied_in=bp"
-              ],
+              "transform": null,
+              "assumptions": [],
               "limitations": [],
-              "reason": "transform:monthly_average_vs_level",
-              "left_ref": "a8a386f6aab43bf3",
-              "right_ref": "ecee865cd350bf03",
+              "reason": "operand_refused:left",
+              "left_ref": "118e1e02bce8ac1e",
+              "right_ref": "5587116180c8c67f",
               "left_cutoff": "2026-11-07",
               "right_cutoff": "2026-11-07"
             },
             "weights": {
-              "days_pre": 9,
-              "days_post": 21,
+              "days_pre": null,
+              "days_post": null,
               "realised_days": 0,
               "remaining_days": 30
             },
-            "post_rate_sensitivity": 1.4286,
-            "limitations": [
-              "chained_identification"
-            ]
+            "post_rate_sensitivity": null,
+            "limitations": []
           },
           {
             "contract": "ZQN27.CBT",
@@ -1397,15 +1159,15 @@
             "monthly_average": {
               "subject": "zq_month_average:ZQN27.CBT",
               "evidence_class": "market_implied_expectation",
-              "value": 4.319999694824219,
-              "value_state": "present",
+              "value": null,
+              "value_state": "refused",
               "unit": "pct_ann_rate",
               "target": "effr_monthly_average",
               "basket_or_index": "EFFR",
               "reference_start": "2027-07-01",
               "reference_end": "2027-07-31",
               "tenor": null,
-              "observation_time": "2026-11-06",
+              "observation_time": "2026-11-08",
               "observation_precision": "day",
               "seasonal_treatment": null,
               "rate_index": "EFFR",
@@ -1414,7 +1176,7 @@
               "source": "yfinance:ZQN27.CBT",
               "source_version": null,
               "content_ref": null,
-              "first_public_evidence": "2026-11-06",
+              "first_public_evidence": "2026-11-08",
               "first_public_precision": "day",
               "admitted_at": null,
               "cutoff": "2026-11-07",
@@ -1424,161 +1186,32 @@
               "rights": "unknown",
               "quality": [],
               "authority": "display_only",
-              "limitations": [],
-              "obs_id": "89389f7d04b6dcc9"
+              "limitations": [
+                "after_cutoff"
+              ],
+              "obs_id": "0a3aa35c2c1a7a7e"
             },
             "effective_dates_inside": [
               "2027-07-29"
             ],
-            "status": "identified_conditional",
-            "reason": "pre_change_rate:chained:2027-06",
-            "pre_change_rate": 4.324285234723773,
-            "pre_change_rate_source": "chained:2027-06",
-            "identification": {
-              "status": "identified_conditional",
-              "identified": {
-                "segments": [
-                  [
-                    "2027-07-01",
-                    "2027-07-29",
-                    4.324285234723773
-                  ],
-                  [
-                    "2027-07-29",
-                    "2027-07-31",
-                    4.280001322428386
-                  ]
-                ],
-                "end_rate": 4.280001322428386
-              },
-              "alternatives": [],
-              "end_rate_range": [
-                4.280001312428386,
-                4.280001332428386
-              ],
-              "assumptions_used": [
-                "calendar_day_arithmetic",
-                "month_days=31",
-                "effective_date=2027-07-29",
-                "pre_change_rate=4.32429"
-              ],
-              "missing": [],
-              "residual_bp": null
-            },
-            "vs_target_midpoint": {
-              "status": "comparable_after_transformation",
-              "difference": 43.999969482421875,
-              "range": null,
-              "unit": "bp",
-              "rule_id": "zq_month_vs_policy_midpoint.v1",
-              "rule_version": "1",
-              "transform": "monthly_average_vs_level",
-              "assumptions": [
-                "effr_minus_midpoint_bp=0.5",
-                "effr_gap_applied_in=bp"
-              ],
-              "limitations": [],
-              "reason": "transform:monthly_average_vs_level",
-              "left_ref": "89389f7d04b6dcc9",
-              "right_ref": "ecee865cd350bf03",
-              "left_cutoff": "2026-11-07",
-              "right_cutoff": "2026-11-07"
-            },
-            "weights": {
-              "days_pre": 28,
-              "days_post": 3,
-              "realised_days": 0,
-              "remaining_days": 31
-            },
-            "post_rate_sensitivity": 10.3333,
-            "limitations": [
-              "chained_identification"
-            ]
-          },
-          {
-            "contract": "ZQQ27.CBT",
-            "reference_start": "2027-08-01",
-            "reference_end": "2027-08-31",
-            "month_days": 31,
-            "monthly_average": {
-              "subject": "zq_month_average:ZQQ27.CBT",
-              "evidence_class": "market_implied_expectation",
-              "value": 4.334999084472656,
-              "value_state": "present",
-              "unit": "pct_ann_rate",
-              "target": "effr_monthly_average",
-              "basket_or_index": "EFFR",
-              "reference_start": "2027-08-01",
-              "reference_end": "2027-08-31",
-              "tenor": null,
-              "observation_time": "2026-11-06",
-              "observation_precision": "day",
-              "seasonal_treatment": null,
-              "rate_index": "EFFR",
-              "averaging_law": "arithmetic_calendar_day",
-              "curve_convention": null,
-              "source": "yfinance:ZQQ27.CBT",
-              "source_version": null,
-              "content_ref": null,
-              "first_public_evidence": "2026-11-06",
-              "first_public_precision": "day",
-              "admitted_at": null,
-              "cutoff": "2026-11-07",
-              "model_id": null,
-              "target_epoch": null,
-              "vintage": null,
-              "rights": "unknown",
-              "quality": [],
-              "authority": "display_only",
-              "limitations": [],
-              "obs_id": "94af2c1aa4f5fe20"
-            },
-            "effective_dates_inside": [],
-            "status": "identified_conditional",
-            "reason": "no_intra_month_change",
+            "status": "unavailable",
+            "reason": "monthly_average_refused",
             "pre_change_rate": null,
             "pre_change_rate_source": null,
-            "identification": {
-              "status": "identified_conditional",
-              "identified": {
-                "segments": [
-                  [
-                    "2027-08-01",
-                    "2027-08-31",
-                    4.334999084472656
-                  ]
-                ],
-                "end_rate": 4.334999084472656
-              },
-              "alternatives": [],
-              "end_rate_range": [
-                4.334999074472656,
-                4.334999094472656
-              ],
-              "assumptions_used": [
-                "calendar_day_arithmetic",
-                "month_days=31",
-                "no_intra_month_change"
-              ],
-              "missing": [],
-              "residual_bp": null
-            },
+            "identification": null,
             "vs_target_midpoint": {
-              "status": "comparable_after_transformation",
-              "difference": 45.499908447265625,
+              "status": "unavailable",
+              "difference": null,
               "range": null,
               "unit": "bp",
               "rule_id": "zq_month_vs_policy_midpoint.v1",
               "rule_version": "1",
-              "transform": "monthly_average_vs_level",
-              "assumptions": [
-                "effr_minus_midpoint_bp=0.5",
-                "effr_gap_applied_in=bp"
-              ],
+              "transform": null,
+              "assumptions": [],
               "limitations": [],
-              "reason": "transform:monthly_average_vs_level",
-              "left_ref": "94af2c1aa4f5fe20",
-              "right_ref": "ecee865cd350bf03",
+              "reason": "operand_refused:left",
+              "left_ref": "0a3aa35c2c1a7a7e",
+              "right_ref": "5587116180c8c67f",
               "left_cutoff": "2026-11-07",
               "right_cutoff": "2026-11-07"
             },
@@ -1588,7 +1221,78 @@
               "realised_days": 0,
               "remaining_days": 31
             },
-            "post_rate_sensitivity": 1.0,
+            "post_rate_sensitivity": null,
+            "limitations": []
+          },
+          {
+            "contract": "ZQQ27.CBT",
+            "reference_start": "2027-08-01",
+            "reference_end": "2027-08-31",
+            "month_days": 31,
+            "monthly_average": {
+              "subject": "zq_month_average:ZQQ27.CBT",
+              "evidence_class": "market_implied_expectation",
+              "value": null,
+              "value_state": "refused",
+              "unit": "pct_ann_rate",
+              "target": "effr_monthly_average",
+              "basket_or_index": "EFFR",
+              "reference_start": "2027-08-01",
+              "reference_end": "2027-08-31",
+              "tenor": null,
+              "observation_time": "2026-11-08",
+              "observation_precision": "day",
+              "seasonal_treatment": null,
+              "rate_index": "EFFR",
+              "averaging_law": "arithmetic_calendar_day",
+              "curve_convention": null,
+              "source": "yfinance:ZQQ27.CBT",
+              "source_version": null,
+              "content_ref": null,
+              "first_public_evidence": "2026-11-08",
+              "first_public_precision": "day",
+              "admitted_at": null,
+              "cutoff": "2026-11-07",
+              "model_id": null,
+              "target_epoch": null,
+              "vintage": null,
+              "rights": "unknown",
+              "quality": [],
+              "authority": "display_only",
+              "limitations": [
+                "after_cutoff"
+              ],
+              "obs_id": "fa6730a5233930f1"
+            },
+            "effective_dates_inside": [],
+            "status": "unavailable",
+            "reason": "monthly_average_refused",
+            "pre_change_rate": null,
+            "pre_change_rate_source": null,
+            "identification": null,
+            "vs_target_midpoint": {
+              "status": "unavailable",
+              "difference": null,
+              "range": null,
+              "unit": "bp",
+              "rule_id": "zq_month_vs_policy_midpoint.v1",
+              "rule_version": "1",
+              "transform": null,
+              "assumptions": [],
+              "limitations": [],
+              "reason": "operand_refused:left",
+              "left_ref": "fa6730a5233930f1",
+              "right_ref": "5587116180c8c67f",
+              "left_cutoff": "2026-11-07",
+              "right_cutoff": "2026-11-07"
+            },
+            "weights": {
+              "days_pre": null,
+              "days_post": null,
+              "realised_days": 0,
+              "remaining_days": 31
+            },
+            "post_rate_sensitivity": null,
             "limitations": []
           },
           {
@@ -1599,15 +1303,15 @@
             "monthly_average": {
               "subject": "zq_month_average:ZQU27.CBT",
               "evidence_class": "market_implied_expectation",
-              "value": 4.345001220703125,
-              "value_state": "present",
+              "value": null,
+              "value_state": "refused",
               "unit": "pct_ann_rate",
               "target": "effr_monthly_average",
               "basket_or_index": "EFFR",
               "reference_start": "2027-09-01",
               "reference_end": "2027-09-30",
               "tenor": null,
-              "observation_time": "2026-11-06",
+              "observation_time": "2026-11-08",
               "observation_precision": "day",
               "seasonal_treatment": null,
               "rate_index": "EFFR",
@@ -1616,7 +1320,7 @@
               "source": "yfinance:ZQU27.CBT",
               "source_version": null,
               "content_ref": null,
-              "first_public_evidence": "2026-11-06",
+              "first_public_evidence": "2026-11-08",
               "first_public_precision": "day",
               "admitted_at": null,
               "cutoff": "2026-11-07",
@@ -1626,267 +1330,32 @@
               "rights": "unknown",
               "quality": [],
               "authority": "display_only",
-              "limitations": [],
-              "obs_id": "f0b92394167dca62"
+              "limitations": [
+                "after_cutoff"
+              ],
+              "obs_id": "00e8fcbf71e52268"
             },
             "effective_dates_inside": [
               "2027-09-16"
             ],
-            "status": "identified_conditional",
-            "reason": "pre_change_rate:chained:2027-08",
-            "pre_change_rate": 4.334999084472656,
-            "pre_change_rate_source": "chained:2027-08",
-            "identification": {
-              "status": "identified_conditional",
-              "identified": {
-                "segments": [
-                  [
-                    "2027-09-01",
-                    "2027-09-16",
-                    4.334999084472656
-                  ],
-                  [
-                    "2027-09-16",
-                    "2027-09-30",
-                    4.355003356933594
-                  ]
-                ],
-                "end_rate": 4.355003356933594
-              },
-              "alternatives": [],
-              "end_rate_range": [
-                4.355003346933594,
-                4.355003366933594
-              ],
-              "assumptions_used": [
-                "calendar_day_arithmetic",
-                "month_days=30",
-                "effective_date=2027-09-16",
-                "pre_change_rate=4.335"
-              ],
-              "missing": [],
-              "residual_bp": null
-            },
-            "vs_target_midpoint": {
-              "status": "comparable_after_transformation",
-              "difference": 46.5001220703125,
-              "range": null,
-              "unit": "bp",
-              "rule_id": "zq_month_vs_policy_midpoint.v1",
-              "rule_version": "1",
-              "transform": "monthly_average_vs_level",
-              "assumptions": [
-                "effr_minus_midpoint_bp=0.5",
-                "effr_gap_applied_in=bp"
-              ],
-              "limitations": [],
-              "reason": "transform:monthly_average_vs_level",
-              "left_ref": "f0b92394167dca62",
-              "right_ref": "ecee865cd350bf03",
-              "left_cutoff": "2026-11-07",
-              "right_cutoff": "2026-11-07"
-            },
-            "weights": {
-              "days_pre": 15,
-              "days_post": 15,
-              "realised_days": 0,
-              "remaining_days": 30
-            },
-            "post_rate_sensitivity": 2.0,
-            "limitations": [
-              "chained_identification"
-            ]
-          },
-          {
-            "contract": "ZQV27.CBT",
-            "reference_start": "2027-10-01",
-            "reference_end": "2027-10-31",
-            "month_days": 31,
-            "monthly_average": {
-              "subject": "zq_month_average:ZQV27.CBT",
-              "evidence_class": "market_implied_expectation",
-              "value": 4.345001220703125,
-              "value_state": "present",
-              "unit": "pct_ann_rate",
-              "target": "effr_monthly_average",
-              "basket_or_index": "EFFR",
-              "reference_start": "2027-10-01",
-              "reference_end": "2027-10-31",
-              "tenor": null,
-              "observation_time": "2026-11-06",
-              "observation_precision": "day",
-              "seasonal_treatment": null,
-              "rate_index": "EFFR",
-              "averaging_law": "arithmetic_calendar_day",
-              "curve_convention": null,
-              "source": "yfinance:ZQV27.CBT",
-              "source_version": null,
-              "content_ref": null,
-              "first_public_evidence": "2026-11-06",
-              "first_public_precision": "day",
-              "admitted_at": null,
-              "cutoff": "2026-11-07",
-              "model_id": null,
-              "target_epoch": null,
-              "vintage": null,
-              "rights": "unknown",
-              "quality": [],
-              "authority": "display_only",
-              "limitations": [],
-              "obs_id": "f5b3fdbef7832ee8"
-            },
-            "effective_dates_inside": [
-              "2027-10-28"
-            ],
-            "status": "identified_conditional",
-            "reason": "pre_change_rate:chained:2027-09",
-            "pre_change_rate": 4.355003356933594,
-            "pre_change_rate_source": "chained:2027-09",
-            "identification": {
-              "status": "identified_conditional",
-              "identified": {
-                "segments": [
-                  [
-                    "2027-10-01",
-                    "2027-10-28",
-                    4.355003356933594
-                  ],
-                  [
-                    "2027-10-28",
-                    "2027-10-31",
-                    4.277486801147461
-                  ]
-                ],
-                "end_rate": 4.277486801147461
-              },
-              "alternatives": [],
-              "end_rate_range": [
-                4.277486791147461,
-                4.277486811147461
-              ],
-              "assumptions_used": [
-                "calendar_day_arithmetic",
-                "month_days=31",
-                "effective_date=2027-10-28",
-                "pre_change_rate=4.355"
-              ],
-              "missing": [],
-              "residual_bp": null
-            },
-            "vs_target_midpoint": {
-              "status": "comparable_after_transformation",
-              "difference": 46.5001220703125,
-              "range": null,
-              "unit": "bp",
-              "rule_id": "zq_month_vs_policy_midpoint.v1",
-              "rule_version": "1",
-              "transform": "monthly_average_vs_level",
-              "assumptions": [
-                "effr_minus_midpoint_bp=0.5",
-                "effr_gap_applied_in=bp"
-              ],
-              "limitations": [],
-              "reason": "transform:monthly_average_vs_level",
-              "left_ref": "f5b3fdbef7832ee8",
-              "right_ref": "ecee865cd350bf03",
-              "left_cutoff": "2026-11-07",
-              "right_cutoff": "2026-11-07"
-            },
-            "weights": {
-              "days_pre": 27,
-              "days_post": 4,
-              "realised_days": 0,
-              "remaining_days": 31
-            },
-            "post_rate_sensitivity": 7.75,
-            "limitations": [
-              "chained_identification"
-            ]
-          },
-          {
-            "contract": "ZQX27.CBT",
-            "reference_start": "2027-11-01",
-            "reference_end": "2027-11-30",
-            "month_days": 30,
-            "monthly_average": {
-              "subject": "zq_month_average:ZQX27.CBT",
-              "evidence_class": "market_implied_expectation",
-              "value": 4.334999084472656,
-              "value_state": "present",
-              "unit": "pct_ann_rate",
-              "target": "effr_monthly_average",
-              "basket_or_index": "EFFR",
-              "reference_start": "2027-11-01",
-              "reference_end": "2027-11-30",
-              "tenor": null,
-              "observation_time": "2026-11-06",
-              "observation_precision": "day",
-              "seasonal_treatment": null,
-              "rate_index": "EFFR",
-              "averaging_law": "arithmetic_calendar_day",
-              "curve_convention": null,
-              "source": "yfinance:ZQX27.CBT",
-              "source_version": null,
-              "content_ref": null,
-              "first_public_evidence": "2026-11-06",
-              "first_public_precision": "day",
-              "admitted_at": null,
-              "cutoff": "2026-11-07",
-              "model_id": null,
-              "target_epoch": null,
-              "vintage": null,
-              "rights": "unknown",
-              "quality": [],
-              "authority": "display_only",
-              "limitations": [],
-              "obs_id": "636c32b33426413d"
-            },
-            "effective_dates_inside": [],
-            "status": "identified_conditional",
-            "reason": "no_intra_month_change",
+            "status": "unavailable",
+            "reason": "monthly_average_refused",
             "pre_change_rate": null,
             "pre_change_rate_source": null,
-            "identification": {
-              "status": "identified_conditional",
-              "identified": {
-                "segments": [
-                  [
-                    "2027-11-01",
-                    "2027-11-30",
-                    4.334999084472656
-                  ]
-                ],
-                "end_rate": 4.334999084472656
-              },
-              "alternatives": [],
-              "end_rate_range": [
-                4.334999074472656,
-                4.334999094472656
-              ],
-              "assumptions_used": [
-                "calendar_day_arithmetic",
-                "month_days=30",
-                "no_intra_month_change"
-              ],
-              "missing": [],
-              "residual_bp": null
-            },
+            "identification": null,
             "vs_target_midpoint": {
-              "status": "comparable_after_transformation",
-              "difference": 45.499908447265625,
+              "status": "unavailable",
+              "difference": null,
               "range": null,
               "unit": "bp",
               "rule_id": "zq_month_vs_policy_midpoint.v1",
               "rule_version": "1",
-              "transform": "monthly_average_vs_level",
-              "assumptions": [
-                "effr_minus_midpoint_bp=0.5",
-                "effr_gap_applied_in=bp"
-              ],
+              "transform": null,
+              "assumptions": [],
               "limitations": [],
-              "reason": "transform:monthly_average_vs_level",
-              "left_ref": "636c32b33426413d",
-              "right_ref": "ecee865cd350bf03",
+              "reason": "operand_refused:left",
+              "left_ref": "00e8fcbf71e52268",
+              "right_ref": "5587116180c8c67f",
               "left_cutoff": "2026-11-07",
               "right_cutoff": "2026-11-07"
             },
@@ -1896,7 +1365,151 @@
               "realised_days": 0,
               "remaining_days": 30
             },
-            "post_rate_sensitivity": 1.0,
+            "post_rate_sensitivity": null,
+            "limitations": []
+          },
+          {
+            "contract": "ZQV27.CBT",
+            "reference_start": "2027-10-01",
+            "reference_end": "2027-10-31",
+            "month_days": 31,
+            "monthly_average": {
+              "subject": "zq_month_average:ZQV27.CBT",
+              "evidence_class": "market_implied_expectation",
+              "value": null,
+              "value_state": "refused",
+              "unit": "pct_ann_rate",
+              "target": "effr_monthly_average",
+              "basket_or_index": "EFFR",
+              "reference_start": "2027-10-01",
+              "reference_end": "2027-10-31",
+              "tenor": null,
+              "observation_time": "2026-11-08",
+              "observation_precision": "day",
+              "seasonal_treatment": null,
+              "rate_index": "EFFR",
+              "averaging_law": "arithmetic_calendar_day",
+              "curve_convention": null,
+              "source": "yfinance:ZQV27.CBT",
+              "source_version": null,
+              "content_ref": null,
+              "first_public_evidence": "2026-11-08",
+              "first_public_precision": "day",
+              "admitted_at": null,
+              "cutoff": "2026-11-07",
+              "model_id": null,
+              "target_epoch": null,
+              "vintage": null,
+              "rights": "unknown",
+              "quality": [],
+              "authority": "display_only",
+              "limitations": [
+                "after_cutoff"
+              ],
+              "obs_id": "6c9df76ff40b105c"
+            },
+            "effective_dates_inside": [
+              "2027-10-28"
+            ],
+            "status": "unavailable",
+            "reason": "monthly_average_refused",
+            "pre_change_rate": null,
+            "pre_change_rate_source": null,
+            "identification": null,
+            "vs_target_midpoint": {
+              "status": "unavailable",
+              "difference": null,
+              "range": null,
+              "unit": "bp",
+              "rule_id": "zq_month_vs_policy_midpoint.v1",
+              "rule_version": "1",
+              "transform": null,
+              "assumptions": [],
+              "limitations": [],
+              "reason": "operand_refused:left",
+              "left_ref": "6c9df76ff40b105c",
+              "right_ref": "5587116180c8c67f",
+              "left_cutoff": "2026-11-07",
+              "right_cutoff": "2026-11-07"
+            },
+            "weights": {
+              "days_pre": null,
+              "days_post": null,
+              "realised_days": 0,
+              "remaining_days": 31
+            },
+            "post_rate_sensitivity": null,
+            "limitations": []
+          },
+          {
+            "contract": "ZQX27.CBT",
+            "reference_start": "2027-11-01",
+            "reference_end": "2027-11-30",
+            "month_days": 30,
+            "monthly_average": {
+              "subject": "zq_month_average:ZQX27.CBT",
+              "evidence_class": "market_implied_expectation",
+              "value": null,
+              "value_state": "refused",
+              "unit": "pct_ann_rate",
+              "target": "effr_monthly_average",
+              "basket_or_index": "EFFR",
+              "reference_start": "2027-11-01",
+              "reference_end": "2027-11-30",
+              "tenor": null,
+              "observation_time": "2026-11-08",
+              "observation_precision": "day",
+              "seasonal_treatment": null,
+              "rate_index": "EFFR",
+              "averaging_law": "arithmetic_calendar_day",
+              "curve_convention": null,
+              "source": "yfinance:ZQX27.CBT",
+              "source_version": null,
+              "content_ref": null,
+              "first_public_evidence": "2026-11-08",
+              "first_public_precision": "day",
+              "admitted_at": null,
+              "cutoff": "2026-11-07",
+              "model_id": null,
+              "target_epoch": null,
+              "vintage": null,
+              "rights": "unknown",
+              "quality": [],
+              "authority": "display_only",
+              "limitations": [
+                "after_cutoff"
+              ],
+              "obs_id": "58dd7b6967c36046"
+            },
+            "effective_dates_inside": [],
+            "status": "unavailable",
+            "reason": "monthly_average_refused",
+            "pre_change_rate": null,
+            "pre_change_rate_source": null,
+            "identification": null,
+            "vs_target_midpoint": {
+              "status": "unavailable",
+              "difference": null,
+              "range": null,
+              "unit": "bp",
+              "rule_id": "zq_month_vs_policy_midpoint.v1",
+              "rule_version": "1",
+              "transform": null,
+              "assumptions": [],
+              "limitations": [],
+              "reason": "operand_refused:left",
+              "left_ref": "58dd7b6967c36046",
+              "right_ref": "5587116180c8c67f",
+              "left_cutoff": "2026-11-07",
+              "right_cutoff": "2026-11-07"
+            },
+            "weights": {
+              "days_pre": null,
+              "days_post": null,
+              "realised_days": 0,
+              "remaining_days": 30
+            },
+            "post_rate_sensitivity": null,
             "limitations": []
           },
           {
@@ -1907,15 +1520,15 @@
             "monthly_average": {
               "subject": "zq_month_average:ZQZ27.CBT",
               "evidence_class": "market_implied_expectation",
-              "value": 4.319999694824219,
-              "value_state": "present",
+              "value": null,
+              "value_state": "refused",
               "unit": "pct_ann_rate",
               "target": "effr_monthly_average",
               "basket_or_index": "EFFR",
               "reference_start": "2027-12-01",
               "reference_end": "2027-12-31",
               "tenor": null,
-              "observation_time": "2026-11-06",
+              "observation_time": "2026-11-08",
               "observation_precision": "day",
               "seasonal_treatment": null,
               "rate_index": "EFFR",
@@ -1924,7 +1537,7 @@
               "source": "yfinance:ZQZ27.CBT",
               "source_version": null,
               "content_ref": null,
-              "first_public_evidence": "2026-11-06",
+              "first_public_evidence": "2026-11-08",
               "first_public_precision": "day",
               "admitted_at": null,
               "cutoff": "2026-11-07",
@@ -1934,82 +1547,47 @@
               "rights": "unknown",
               "quality": [],
               "authority": "display_only",
-              "limitations": [],
-              "obs_id": "66126691e044e5e7"
+              "limitations": [
+                "after_cutoff"
+              ],
+              "obs_id": "3c0ce9509b97b38d"
             },
             "effective_dates_inside": [
               "2027-12-09"
             ],
-            "status": "identified_conditional",
-            "reason": "pre_change_rate:chained:2027-11",
-            "pre_change_rate": 4.334999084472656,
-            "pre_change_rate_source": "chained:2027-11",
-            "identification": {
-              "status": "identified_conditional",
-              "identified": {
-                "segments": [
-                  [
-                    "2027-12-01",
-                    "2027-12-09",
-                    4.334999084472656
-                  ],
-                  [
-                    "2027-12-09",
-                    "2027-12-31",
-                    4.314782515816066
-                  ]
-                ],
-                "end_rate": 4.314782515816066
-              },
-              "alternatives": [],
-              "end_rate_range": [
-                4.3147825058160665,
-                4.314782525816066
-              ],
-              "assumptions_used": [
-                "calendar_day_arithmetic",
-                "month_days=31",
-                "effective_date=2027-12-09",
-                "pre_change_rate=4.335"
-              ],
-              "missing": [],
-              "residual_bp": null
-            },
+            "status": "unavailable",
+            "reason": "monthly_average_refused",
+            "pre_change_rate": null,
+            "pre_change_rate_source": null,
+            "identification": null,
             "vs_target_midpoint": {
-              "status": "comparable_after_transformation",
-              "difference": 43.999969482421875,
+              "status": "unavailable",
+              "difference": null,
               "range": null,
               "unit": "bp",
               "rule_id": "zq_month_vs_policy_midpoint.v1",
               "rule_version": "1",
-              "transform": "monthly_average_vs_level",
-              "assumptions": [
-                "effr_minus_midpoint_bp=0.5",
-                "effr_gap_applied_in=bp"
-              ],
+              "transform": null,
+              "assumptions": [],
               "limitations": [],
-              "reason": "transform:monthly_average_vs_level",
-              "left_ref": "66126691e044e5e7",
-              "right_ref": "ecee865cd350bf03",
+              "reason": "operand_refused:left",
+              "left_ref": "3c0ce9509b97b38d",
+              "right_ref": "5587116180c8c67f",
               "left_cutoff": "2026-11-07",
               "right_cutoff": "2026-11-07"
             },
             "weights": {
-              "days_pre": 8,
-              "days_post": 23,
+              "days_pre": null,
+              "days_post": null,
               "realised_days": 0,
               "remaining_days": 31
             },
-            "post_rate_sensitivity": 1.3478,
-            "limitations": [
-              "chained_identification"
-            ]
+            "post_rate_sensitivity": null,
+            "limitations": []
           }
         ],
         "refused_contracts": [],
-        "limitations": [
-          "single_day_gap"
-        ]
+        "limitations": []
       }
     }
   },
@@ -2269,7 +1847,7 @@
           "key": "macro",
           "label_en": "Macro impulse (reflation)",
           "label_zh": "宏观动能（再通胀）",
-          "value": -0.07,
+          "value": -0.05,
           "weight": 0.5,
           "state": "neutral",
           "note_en": "Rising copper/gold + breakevens = reflation = a duration headwind.",
@@ -2538,10 +2116,10 @@
         "asof": "2026-11-05"
       },
       "em_fx_basket": {
-        "value": -3.66,
+        "value": -3.72,
         "vel_5d_z": null,
-        "vel_20d_z": -1.283,
-        "asof": "2026-11-07"
+        "vel_20d_z": -1.134,
+        "asof": "2026-11-09"
       },
       "em_equity_breadth": {
         "value": 28.6,
@@ -2572,7 +2150,7 @@
     "display_only": true
   },
   "corporate_credit": {
-    "as_of": "2026-11-06",
+    "as_of": "2026-11-08",
     "authority": {
       "rank": false,
       "size": false,
@@ -2623,8 +2201,8 @@
       "source": "FINRA trade data"
     },
     "watch": {
-      "orcl_g_spread_bp": 247.0,
-      "orcl_premium_vs_ig_bp": 163.0
+      "orcl_g_spread_bp": 285.0,
+      "orcl_premium_vs_ig_bp": 177.0
     },
     "divergence_accruing": false,
     "display_only": true

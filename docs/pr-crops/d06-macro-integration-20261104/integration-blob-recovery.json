@@ -1,0 +1,300 @@
+{
+  "source": "Existing GitHub read connector, exact blob SHAs",
+  "base": "079ba10fe079ddf947cb446afeae65ff2908046e",
+  "count": 48,
+  "bytes": 6549478,
+  "all_git_blob_ids_verified": true,
+  "isolated_objects_only": true,
+  "publication_carrier_unchanged": true,
+  "records": [
+    {
+      "path": "site/oracledata/ratio_lens.json",
+      "git_blob": "a62f692ac28e2a3faf46d7ba6124b4426669a2e3",
+      "bytes": 71794,
+      "sha256": "29090aa0bebfe236ce4a82d074f5cc78f430be23b4acd135867e45ae84418b53"
+    },
+    {
+      "path": "site/oracledata/tm_episodes.json",
+      "git_blob": "97ba802faccfc0fcd57613bd07832d18d844ebb5",
+      "bytes": 2235550,
+      "sha256": "52629c4f1aa1fd169147047f3e546916982f2bc587461342e415f0f87a135ea7"
+    },
+    {
+      "path": "site/oracledata/tm_f_2026Q4.json",
+      "git_blob": "0d0dcfa9605353466cbe959c6159833d4f05b8dc",
+      "bytes": 2216,
+      "sha256": "930d074d28e858f6bf4cb35eb6dd8c0c8111440972256aa3d79f7c0b495284a1"
+    },
+    {
+      "path": "site/oracledata/tm_m_2023M05.json",
+      "git_blob": "596b5b5f0f2599fabfb209e8feee37aeac787a1f",
+      "bytes": 103334,
+      "sha256": "6f4726476f27406a4c30dd39bc4f8a6349509f19525a2948bf173a9e6ca7d818"
+    },
+    {
+      "path": "site/oracledata/tm_m_2023M06.json",
+      "git_blob": "61978ce96d9f3dbdf0c6cb37266de37cc41cf69d",
+      "bytes": 99343,
+      "sha256": "34018b6c177f46732dc70cbee1fbf02d7d4b7c2a2fa889eb1eb0e5069d4ad8f5"
+    },
+    {
+      "path": "site/oracledata/tm_m_2023M07.json",
+      "git_blob": "e1b5f4e442be23b92330265c95d6be613ff85592",
+      "bytes": 95493,
+      "sha256": "a72cce37709c5a8a6842953895d8fc4d4970e3fc2445bcf12ed42017006990c3"
+    },
+    {
+      "path": "site/oracledata/tm_m_2023M08.json",
+      "git_blob": "64426c0359329a47ec577fdf724fc370542b0120",
+      "bytes": 108546,
+      "sha256": "8b3c3a661db30f2406d317e934bc57f3430cda3808776ddd3c8edf6ecd512ede"
+    },
+    {
+      "path": "site/oracledata/tm_m_2023M09.json",
+      "git_blob": "75658d7b433938c385e25cd563612941c403a607",
+      "bytes": 95070,
+      "sha256": "7da9d4a4873e2d4b9a44bfad223ddd41c073d3b1d368b3981cc511bc2287236e"
+    },
+    {
+      "path": "site/oracledata/tm_m_2023M10.json",
+      "git_blob": "ca9a6400421c9494a2ab58394b38b838282ba9ce",
+      "bytes": 104487,
+      "sha256": "17aed417bc7f96026673ac47a008506ca6ad2a0e9f4f21415824afdef19e4389"
+    },
+    {
+      "path": "site/oracledata/tm_m_2023M11.json",
+      "git_blob": "97c7544f968a6c6a39468d7ef1f283845a9bdd86",
+      "bytes": 98623,
+      "sha256": "70248c5b63762ea51750b07ccb97de38aa86135ff9328c22ca40c70e7952b5bb"
+    },
+    {
+      "path": "site/oracledata/tm_m_2023M12.json",
+      "git_blob": "fbd065e198d7177c51a5edeba9e9e9226913322f",
+      "bytes": 95344,
+      "sha256": "21ab36f2f82f8227471e5f19115233b60059343a11cf08f7b027b6b987e5df61"
+    },
+    {
+      "path": "site/oracledata/tm_m_2024M01.json",
+      "git_blob": "d225b91cf1fcb8198880a78b2d654078dec0392e",
+      "bytes": 99226,
+      "sha256": "b84b75943dca5cc4f507f3c2a177fa4b529da585d05e493d29060ea38a7e3904"
+    },
+    {
+      "path": "site/oracledata/tm_m_2024M02.json",
+      "git_blob": "6d20ccf100fa83e6eeb294a927aaaf94a73349bf",
+      "bytes": 94656,
+      "sha256": "3fd3a32584c9b6a647a3aa403683e2f9abc5fc925c724ce549857cc987c694b3"
+    },
+    {
+      "path": "site/oracledata/tm_m_2024M03.json",
+      "git_blob": "c8a9e28c885fa36b694e7dbfa4d001f8963f2dfb",
+      "bytes": 94969,
+      "sha256": "11ac98a0b58785f08faeb3b052190a23bc53c19becb826ac83d33dc41e7b52a5"
+    },
+    {
+      "path": "site/oracledata/tm_m_2024M04.json",
+      "git_blob": "d80f275f22cb335674759368b25b41c5047a0588",
+      "bytes": 104188,
+      "sha256": "46d5fa743c6c2a2d0939885465d44afcdc5c800e811a31c40de579ba0a518be0"
+    },
+    {
+      "path": "site/oracledata/tm_m_2024M05.json",
+      "git_blob": "7042e4c8ac21e2a21a4f898927d6963a2f42f3f8",
+      "bytes": 104677,
+      "sha256": "9ff0613e9dce97ade05d2365dba918ba9a8db0f56af84fa3b7c7602577d7e90d"
+    },
+    {
+      "path": "site/oracledata/tm_m_2024M06.json",
+      "git_blob": "da0a544e48741b2c9bc4179affef46a1d7ee694b",
+      "bytes": 90776,
+      "sha256": "5039629f04de70448d90144a0e0e90b77f28bd112265c57c95cb116a347c5eca"
+    },
+    {
+      "path": "site/oracledata/tm_m_2024M07.json",
+      "git_blob": "0b27a7051da14734d898f76a7c1575376530c1a8",
+      "bytes": 105148,
+      "sha256": "54d9e735f2577b0989b1764f7f53c34912dc732137f6fe0ca32f2c4ae6836a67"
+    },
+    {
+      "path": "site/oracledata/tm_m_2024M08.json",
+      "git_blob": "2cfa603456698b16db9786109d75c6dc8fde47fd",
+      "bytes": 103563,
+      "sha256": "e791c70c07223159bd7e2e543db558e5876e1ee7330212052b24abce1106ae2b"
+    },
+    {
+      "path": "site/oracledata/tm_m_2024M09.json",
+      "git_blob": "52c4dfefeb182edb9c72cc50d208e25d2551d52a",
+      "bytes": 95636,
+      "sha256": "834abef1cb5b39fc60754787799fb41b24a8efa3782c4090f270e5b7729ede26"
+    },
+    {
+      "path": "site/oracledata/tm_m_2024M10.json",
+      "git_blob": "0b513e401b0e889afb80a1fce0b4864c286602f3",
+      "bytes": 109257,
+      "sha256": "8b0f0949bac9fb94bb0b701787069700b7609525276a9387f99b637f5095d1cf"
+    },
+    {
+      "path": "site/oracledata/tm_m_2024M11.json",
+      "git_blob": "e478a36b8bf01ba8020bcb13c4421ba7c892a514",
+      "bytes": 95012,
+      "sha256": "52dbe4b97726da1f5de3bb18c8b8af97743561c6f0578e30f9be6f3faa115f53"
+    },
+    {
+      "path": "site/oracledata/tm_m_2024M12.json",
+      "git_blob": "ef6ef709eb524892d2a7b3985191ef7c9134c5a3",
+      "bytes": 100231,
+      "sha256": "826f09523d0ff9ff295e42aa31cc30ae0bfba5d94b237c8cb697ef93a667af7a"
+    },
+    {
+      "path": "site/oracledata/tm_m_2025M01.json",
+      "git_blob": "2b03af5213debc28a654e6f1135e1f39f2b22084",
+      "bytes": 95142,
+      "sha256": "1536d5c1ea2210a339a00ecc94ac141abb610a6799e0ebdac93e6282b5d1615e"
+    },
+    {
+      "path": "site/oracledata/tm_m_2025M02.json",
+      "git_blob": "4637dba81e4e5c5a333cef81eb53c12f73235d3b",
+      "bytes": 90282,
+      "sha256": "2e3aca3896dda75defcd901bdef582912323fd4a6a906c8db51e255658d409ef"
+    },
+    {
+      "path": "site/oracledata/tm_m_2025M03.json",
+      "git_blob": "cf9fbfe1952506befdf3802c658d516cefc401d7",
+      "bytes": 99584,
+      "sha256": "7b9895042259018f42ea84dae316f5ffce96cfadd76e6f8c78df5272d9a823d2"
+    },
+    {
+      "path": "site/oracledata/tm_m_2025M04.json",
+      "git_blob": "9c808c617728cb0ac713a11a4242f0b5ca9e78aa",
+      "bytes": 99029,
+      "sha256": "07194d15fc2c1ea208928ebb74f0a7c19a7a02067c287f74ac2a7dc7c741c617"
+    },
+    {
+      "path": "site/oracledata/tm_m_2025M05.json",
+      "git_blob": "2caf78b2397e604dedd3f29d3a089856c51c15cb",
+      "bytes": 99154,
+      "sha256": "9d2ad41bd396ed99d2ed9823f2d8225e978d38ac736e4a220a09e2ee1b2c87db"
+    },
+    {
+      "path": "site/oracledata/tm_m_2025M06.json",
+      "git_blob": "4b7ea173d609484c403861b1e7325cfa4e37888c",
+      "bytes": 95025,
+      "sha256": "8aeb4701ece8e4e1e0f800f658e8e9083ac55c121b80beca5415af2c2a1bc1ce"
+    },
+    {
+      "path": "site/oracledata/tm_m_2025M07.json",
+      "git_blob": "96c2b6d58a90be796a2853ccdf5b5c7f30fb64ed",
+      "bytes": 104177,
+      "sha256": "45cd72ae552f4246e274a97e68aa60d9135c46bf1afcea72bb8d97468b6521fd"
+    },
+    {
+      "path": "site/oracledata/tm_m_2025M08.json",
+      "git_blob": "15c45024f3c69116fd38ca4fdc6f5615eee739a2",
+      "bytes": 100357,
+      "sha256": "402cc336e0c4e2728a3ec171e594df8c9004aeda713fc8443d130b26769d9441"
+    },
+    {
+      "path": "site/oracledata/tm_m_2025M09.json",
+      "git_blob": "7665ebb81e824584a56cdf90294aa3fbc0d9cae1",
+      "bytes": 100818,
+      "sha256": "d0c20223c2ea22d53a132c671ad2dd21622ffdf8d44eef19388b59cdaafd0099"
+    },
+    {
+      "path": "site/oracledata/tm_m_2025M10.json",
+      "git_blob": "50c34cd1d338a94d140c1339ff3564efc0a50442",
+      "bytes": 109234,
+      "sha256": "f3e7335e23f19f43279e462600349bece1585bc40f975e7dd570cdb99b2226c0"
+    },
+    {
+      "path": "site/oracledata/tm_m_2025M11.json",
+      "git_blob": "0392e126f8d97ee30a86733036f6e1b271f5cfc8",
+      "bytes": 89340,
+      "sha256": "107ec8ad493ed9664ddd68f8e8cb6daeba6aeff3027c567e8d6889fe08a78255"
+    },
+    {
+      "path": "site/oracledata/tm_m_2025M12.json",
+      "git_blob": "68bf85d0c8ff983b5e39066fefa7442b39f501c3",
+      "bytes": 104024,
+      "sha256": "670bac5886845ee83428705dcd6cfadb01d5750328a032699cd1c30467d34750"
+    },
+    {
+      "path": "site/oracledata/tm_m_2026M01.json",
+      "git_blob": "ba17c2ef8ae04364d0c20693dc763c3ab3f6f025",
+      "bytes": 95477,
+      "sha256": "dc7868375af054c0f49c934785cd13f9b812310b8d9d37454a15f33a3c3516e7"
+    },
+    {
+      "path": "site/oracledata/tm_m_2026M02.json",
+      "git_blob": "6179d0957977fd20d4f27b90c25107698e094324",
+      "bytes": 89323,
+      "sha256": "79984c1f5f1c4cec8277af27916238c94a125120573cd2671eb52f2018e74fc1"
+    },
+    {
+      "path": "site/oracledata/tm_m_2026M03.json",
+      "git_blob": "8cca0ff2cd4f3c6ba94a48dc6cfdb83149791b64",
+      "bytes": 103965,
+      "sha256": "0d66ee1b63d060d87dcb9fd2a61b53557a7aa8392e02b40420e771bbd39621a5"
+    },
+    {
+      "path": "site/oracledata/tm_m_2026M04.json",
+      "git_blob": "07f2241a48d08d31e00c099c7ff441743c772148",
+      "bytes": 99789,
+      "sha256": "ce3a3ca44e2dcf191741b8b67df0dbd9787a5e2621d95032fbaaf20a3257dfa7"
+    },
+    {
+      "path": "site/oracledata/tm_m_2026M05.json",
+      "git_blob": "dd01d2c12d286b7b3026d2d2bdbd2b7aafe86280",
+      "bytes": 95290,
+      "sha256": "5dcae16d1ffc6ff4ab2a44f0d4a91b109c3779a0107d4be002188a4dea7440d5"
+    },
+    {
+      "path": "site/oracledata/tm_m_2026M06.json",
+      "git_blob": "65b9900432c208c455c2a3c2565f9dc15e48086e",
+      "bytes": 99420,
+      "sha256": "1dc25663dc0afee9ad905a20b5d473ca943f75491006aa14d428be6e6d9db60a"
+    },
+    {
+      "path": "site/oracledata/tm_m_2026M07.json",
+      "git_blob": "58d8241007dd27b69e484378e72b2926155aa4c3",
+      "bytes": 103307,
+      "sha256": "a2b982a3d3bde4d91ad59a6e5975095311dcacc038bfe02da81b9a24d11a4c3a"
+    },
+    {
+      "path": "site/oracledata/tm_m_2026M08.json",
+      "git_blob": "ad8d4d91bc4ae3ddf1a19b59db45cad0c93af034",
+      "bytes": 100103,
+      "sha256": "d915142a5ed69807c873d2a46cdcedf28c9b052323f82371e6f675905e69d1d4"
+    },
+    {
+      "path": "site/oracledata/tm_m_2026M09.json",
+      "git_blob": "d6fdd76b0f01a8b24e8124520c5f41a125c69705",
+      "bytes": 99567,
+      "sha256": "c223ac058eee19b9992765c69b83d5288d5a5f925dde59973c3c01f134ca87bd"
+    },
+    {
+      "path": "site/oracledata/tm_m_2026M10.json",
+      "git_blob": "f982e742bdc4f8110ff9b1459010f03b3cb7509c",
+      "bytes": 103154,
+      "sha256": "d15d0175feda55003085f2601bde4006bb5d011a39b5eb24c9e98efb2e6822aa"
+    },
+    {
+      "path": "site/oracledata/tm_manifest.json",
+      "git_blob": "5c366e07b63771b0982787e3429627d1c36af867",
+      "bytes": 60777,
+      "sha256": "519827dc1babfddfc82572aaddb121bd964a9bfdc5028ef5880e21e4d383c465"
+    },
+    {
+      "path": "site/oracledata/tm_s_2026Q4.json",
+      "git_blob": "e678cceb95f0f5beaf887177a0745cae04f9d363",
+      "bytes": 3788,
+      "sha256": "9f59a5f8033e896860f242bcf9c53219fc5042a4c6588d5cf5932bfbe628495e"
+    },
+    {
+      "path": "site/oracledata/washout_counterread.json",
+      "git_blob": "27e493713ef5c904617637421c9c7dc496d9ceb8",
+      "bytes": 2213,
+      "sha256": "b42251878c7178e9ebd49d39a07aa002ac1437c099ee914652a708032f9426e1"
+    }
+  ],
+  "recovery": "Prior process-start transport timeout reconciled: no active sessions, no cache or receipt existed; resumed same scratch target."
+}

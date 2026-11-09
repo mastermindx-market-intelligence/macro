@@ -1,5 +1,5 @@
 {
-  "as_of": "2026-11-07",
+  "as_of": "2026-11-09",
   "authority": {
     "may_alert": false,
     "may_auto_promote": false,
@@ -38,10 +38,10 @@
   },
   "family": "pss_cd1_correlation_dispersion_prospective",
   "gate_open": true,
-  "generated_utc": "2026-11-07T06:41:24.321537+00:00",
+  "generated_utc": "2026-11-09T06:33:40.275010+00:00",
   "ledger": {
     "advanced_today": 0,
-    "appended_today": 2,
+    "appended_today": 0,
     "crowding_hazard": 3,
     "earliest_action": "2026-08-04",
     "events": 105,
@@ -60,11 +60,9 @@
   "program_id": "PSS-CD1",
   "registration_ok": true,
   "scan_census": {
-    "derived_events": 2,
-    "eligible_future_rh1_sources": 2,
-    "reasons": {
-      "group_mixed_diagnostic": 2
-    }
+    "derived_events": 0,
+    "eligible_future_rh1_sources": 0,
+    "reasons": {}
   },
   "schema": "personality_crowding_hazard.state/v1",
   "status": "prospective_accrual_only"

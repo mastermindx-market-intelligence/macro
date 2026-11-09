@@ -1,0 +1,1252 @@
+{
+  "schema_version": "1.0",
+  "research_lane": "Competitive mechanism deconstruction",
+  "research_cut": "2026-10-06",
+  "retrieved_at_precision": "date; sources were retrieved during the 2026-10-06 session",
+  "evidence_policy": "First-party documents establish public descriptions and vendor claims, not independently verified production behavior, complete dealer inventory, or predictive efficacy.",
+  "access_policy": "Public unauthenticated sources only; no trial enrollment, purchase, contact, credential use, or product/API execution.",
+  "source_count": 73,
+  "sources": [
+    {
+      "id": "C01",
+      "title": "What is the SpotGamma HIRO Indicator?",
+      "url": "https://support.spotgamma.com/hc/en-us/articles/4420646443539-What-is-the-SpotGamma-HIRO-Indicator",
+      "published_or_version_date": null,
+      "retrieved_at": "2026-10-06",
+      "claims": [
+        "HIRO aggregates estimated delta-notional hedging pressure from option trades."
+      ],
+      "limitations": [
+        "Product description; dealer executions and classifier accuracy not demonstrated."
+      ],
+      "tool_ref": "turn8view0",
+      "primary_source": true,
+      "source_type": "vendor_documentation",
+      "access_mode": "public_web_retrieval"
+    },
+    {
+      "id": "C02",
+      "title": "SpotGamma HIRO",
+      "url": "https://spotgamma.com/hiro-lp/",
+      "published_or_version_date": null,
+      "retrieved_at": "2026-10-06",
+      "claims": [
+        "Call/put and expiry filters; S&P basket includes SPX, SPY, ES, XSP."
+      ],
+      "limitations": [
+        "Aggregation weights, corrections and participant attribution undisclosed."
+      ],
+      "tool_ref": "turn8view3",
+      "primary_source": true,
+      "source_type": "vendor_documentation",
+      "access_mode": "public_web_retrieval"
+    },
+    {
+      "id": "C03",
+      "title": "What does the All Trades filter indicate?",
+      "url": "https://support.spotgamma.com/hc/en-us/articles/12284071347091-What-does-the-All-Trades-filter-indicate",
+      "published_or_version_date": null,
+      "retrieved_at": "2026-10-06",
+      "claims": [
+        "Proprietary logic filters trades considered already hedged."
+      ],
+      "limitations": [
+        "No replicable filter or error assessment."
+      ],
+      "tool_ref": "turn10view0",
+      "primary_source": true,
+      "source_type": "vendor_documentation",
+      "access_mode": "public_web_retrieval"
+    },
+    {
+      "id": "C04",
+      "title": "What is SpotGamma TRACE?",
+      "url": "https://support.spotgamma.com/hc/en-us/articles/33607907909011-What-is-SpotGamma-TRACE",
+      "published_or_version_date": null,
+      "retrieved_at": "2026-10-06",
+      "claims": [
+        "SPX inventory model; participant lenses; minute updates and forward surfaces."
+      ],
+      "limitations": [
+        "Feed coverage, inventory reconstruction and identity evidence undisclosed."
+      ],
+      "tool_ref": "turn8view1",
+      "primary_source": true,
+      "source_type": "vendor_documentation",
+      "access_mode": "public_web_retrieval"
+    },
+    {
+      "id": "C05",
+      "title": "What is the Gamma Heatmap?",
+      "url": "https://support.spotgamma.com/hc/en-us/articles/33608037264787-What-is-the-Gamma-Heatmap",
+      "published_or_version_date": null,
+      "retrieved_at": "2026-10-06",
+      "claims": [
+        "Gamma surface distinguishes modeled stabilization and amplification regions."
+      ],
+      "limitations": [
+        "Visual intensity is not outcome probability."
+      ],
+      "tool_ref": "turn10view2",
+      "primary_source": true,
+      "source_type": "vendor_documentation",
+      "access_mode": "public_web_retrieval"
+    },
+    {
+      "id": "C06",
+      "title": "What is the Delta Pressure Heatmap?",
+      "url": "https://support.spotgamma.com/hc/en-us/articles/33608084842643-What-is-the-Delta-Pressure-Heatmap",
+      "published_or_version_date": null,
+      "retrieved_at": "2026-10-06",
+      "claims": [
+        "Price-time pressure topology and buy/sell transitions."
+      ],
+      "limitations": [
+        "No executable liquidity or price-impact model disclosed."
+      ],
+      "tool_ref": "turn10view3",
+      "primary_source": true,
+      "source_type": "vendor_documentation",
+      "access_mode": "public_web_retrieval"
+    },
+    {
+      "id": "C07",
+      "title": "What is the Charm Pressure Heatmap?",
+      "url": "https://support.spotgamma.com/hc/en-us/articles/33608198289043-What-is-the-Charm-Pressure-Heatmap",
+      "published_or_version_date": null,
+      "retrieved_at": "2026-10-06",
+      "claims": [
+        "Closing pressure and possible pin regions from modeled time sensitivity."
+      ],
+      "limitations": [
+        "Directional empirical validation absent from this page."
+      ],
+      "tool_ref": "turn10view4",
+      "primary_source": true,
+      "source_type": "vendor_documentation",
+      "access_mode": "public_web_retrieval"
+    },
+    {
+      "id": "C08",
+      "title": "What is the TRACE Stability Gauge?",
+      "url": "https://support.spotgamma.com/hc/en-us/articles/50497959584787-What-is-the-TRACE-Stability-Gauge",
+      "published_or_version_date": null,
+      "retrieved_at": "2026-10-06",
+      "claims": [
+        "Next-ten-minute stability read; operational window ends 15:30 ET."
+      ],
+      "limitations": [
+        "Formula, large-move threshold and calibration undisclosed."
+      ],
+      "tool_ref": "turn13view0",
+      "primary_source": true,
+      "source_type": "vendor_documentation",
+      "access_mode": "public_web_retrieval"
+    },
+    {
+      "id": "C09",
+      "title": "SpotGamma SPX Key Levels Statistics",
+      "url": "https://support.spotgamma.com/hc/en-us/articles/31209900542867-SpotGamma-SPX-Key-Levels-Statistics",
+      "published_or_version_date": null,
+      "retrieved_at": "2026-10-06",
+      "claims": [
+        "Historical nonbreach and closing-side rates, May 2019–May 2024."
+      ],
+      "limitations": [
+        "Unconditional level coverage; conditional-touch and incremental tests missing."
+      ],
+      "tool_ref": "turn13view1",
+      "primary_source": true,
+      "source_type": "vendor_documentation",
+      "access_mode": "public_web_retrieval"
+    },
+    {
+      "id": "C10",
+      "title": "What is the Equity Hub Synthetic OI (Open Interest) Model?",
+      "url": "https://support.spotgamma.com/hc/en-us/articles/39946919887891-What-is-the-Equity-Hub-Synthetic-OI-Open-Interest-Model",
+      "published_or_version_date": null,
+      "retrieved_at": "2026-10-06",
+      "claims": [
+        "Transaction categorization; daily premarket update; volatility nodes."
+      ],
+      "limitations": [
+        "Cadence conflicts with landing-page wording."
+      ],
+      "tool_ref": "turn8view2",
+      "primary_source": true,
+      "source_type": "vendor_documentation",
+      "access_mode": "public_web_retrieval"
+    },
+    {
+      "id": "C11",
+      "title": "Equity Hub Synthetic OI",
+      "url": "https://spotgamma.com/equity-hub-synthetic-oi-lp/",
+      "published_or_version_date": null,
+      "retrieved_at": "2026-10-06",
+      "claims": [
+        "Equity inventory analytics; near-real-time marketing and historical comparison."
+      ],
+      "limitations": [
+        "No published reconciliation with daily-update support documentation."
+      ],
+      "tool_ref": "turn10view1",
+      "primary_source": true,
+      "source_type": "vendor_documentation",
+      "access_mode": "public_web_retrieval"
+    },
+    {
+      "id": "C12",
+      "title": "The Implied Order Book — GEX Edition",
+      "url": "https://squeezemetrics.com/download/The_Implied_Order_Book.pdf",
+      "published_or_version_date": "2020-07-06",
+      "retrieved_at": "2026-10-06",
+      "claims": [
+        "DDOI concept and nonlinear spot-volatility hedge-book scenarios."
+      ],
+      "limitations": [
+        "Historical practitioner paper; not current inventory validation."
+      ],
+      "tool_ref": "turn5search49",
+      "primary_source": true,
+      "source_type": "first_party_research",
+      "access_mode": "public_pdf_download_and_local_text_extraction"
+    },
+    {
+      "id": "C13",
+      "title": "SqueezeMetrics Spreadsheet Guide",
+      "url": "https://squeezemetrics.com/monitor/static/guide.pdf",
+      "published_or_version_date": null,
+      "retrieved_at": "2026-10-06",
+      "claims": [
+        "DDOI reconciliation; next-morning publication; GEX, VEX and GIV definitions."
+      ],
+      "limitations": [
+        "Undated guide; proprietary classification and current equivalence unresolved."
+      ],
+      "tool_ref": "turn16view1",
+      "primary_source": true,
+      "source_type": "vendor_documentation",
+      "access_mode": "public_web_retrieval"
+    },
+    {
+      "id": "C14",
+      "title": "SqueezeMetrics Monitor Documentation",
+      "url": "https://squeezemetrics.com/monitor/docs",
+      "published_or_version_date": null,
+      "retrieved_at": "2026-10-06",
+      "claims": [
+        "Four-axis analog framework; gamma ratio and dark ratio definitions."
+      ],
+      "limitations": [
+        "Analog performance does not establish an intraday dealer model."
+      ],
+      "tool_ref": "turn13view3",
+      "primary_source": true,
+      "source_type": "vendor_documentation",
+      "access_mode": "public_web_retrieval"
+    },
+    {
+      "id": "C15",
+      "title": "Gamma Exposure (GEX): Quantifying Hedge Rebalancing in SPX Options",
+      "url": "https://squeezemetrics.com/download/white_paper.pdf",
+      "published_or_version_date": "2017-12",
+      "retrieved_at": "2026-10-06",
+      "claims": [
+        "Historical fixed dealer-side assumptions for calls and puts."
+      ],
+      "limitations": [
+        "Original March 2016; revision December 2017; distinct from DDOI."
+      ],
+      "tool_ref": "turn102view0",
+      "primary_source": true,
+      "source_type": "first_party_research",
+      "access_mode": "public_web_retrieval"
+    },
+    {
+      "id": "C16",
+      "title": "SqueezeMetrics DIX",
+      "url": "https://squeezemetrics.com/monitor/dix",
+      "published_or_version_date": null,
+      "retrieved_at": "2026-10-06",
+      "claims": [
+        "DIX combines S&P-component dark-pool indicators with dollar weights."
+      ],
+      "limitations": [
+        "Participant identity, motive and auction demand not identified."
+      ],
+      "tool_ref": "turn16view2",
+      "primary_source": true,
+      "source_type": "vendor_documentation",
+      "access_mode": "public_web_retrieval"
+    },
+    {
+      "id": "C17",
+      "title": "Understanding Short Sale Volume Data on FINRA’s Website",
+      "url": "https://www.finra.org/rules-guidance/notices/information-notice-051019",
+      "published_or_version_date": "2019-05-10",
+      "retrieved_at": "2026-10-06",
+      "claims": [
+        "Short-volume coverage limitations and customer-sale facilitation example."
+      ],
+      "limitations": [
+        "Interpretive guidance; does not test a particular vendor predictor."
+      ],
+      "tool_ref": "turn75view2",
+      "primary_source": true,
+      "source_type": "regulator_guidance",
+      "access_mode": "public_web_retrieval"
+    },
+    {
+      "id": "C18",
+      "title": "Trade Futures with GammaEdge",
+      "url": "https://www.gammaedge.com/trade-futures",
+      "published_or_version_date": null,
+      "retrieved_at": "2026-10-06",
+      "claims": [
+        "Overnight OI structure paired with live volume and trend confirmation."
+      ],
+      "limitations": [
+        "Illustrative workflow; no systematic performance validation."
+      ],
+      "tool_ref": "turn21view0",
+      "primary_source": true,
+      "source_type": "vendor_documentation",
+      "access_mode": "public_web_retrieval"
+    },
+    {
+      "id": "C19",
+      "title": "Price Follows Speculation Part 1: How to Read SPX 0DTE Volume Patterns in Real Time",
+      "url": "https://www.gammaedge.com/blog/price-follows-speculation-spx-0dte-volume-patterns",
+      "published_or_version_date": "2026-04-24",
+      "retrieved_at": "2026-10-06",
+      "claims": [
+        "Five-minute call/put volume centroids and extrapolated trends."
+      ],
+      "limitations": [
+        "Volume does not identify opening or closing positions."
+      ],
+      "tool_ref": "turn52view0",
+      "primary_source": true,
+      "source_type": "vendor_documentation",
+      "access_mode": "public_web_retrieval"
+    },
+    {
+      "id": "C20",
+      "title": "Price Follows Speculation Part 2: SpecPA, SpecPS, and Your Complete Intraday Volume Workflow",
+      "url": "https://www.gammaedge.com/blog/price-follows-speculation-specpa-specps-part-2",
+      "published_or_version_date": "2026-05-01",
+      "retrieved_at": "2026-10-06",
+      "claims": [
+        "Distribution bands and changing trend slopes supplement volume centroids."
+      ],
+      "limitations": [
+        "Conviction and extrema narratives lack disclosed calibration."
+      ],
+      "tool_ref": "turn61view0",
+      "primary_source": true,
+      "source_type": "vendor_documentation",
+      "access_mode": "public_web_retrieval"
+    },
+    {
+      "id": "C21",
+      "title": "Master Market Structure Analysis: How To Use NetStat to Anticipate Price Moves Through Delta, Gamma, Charm, and Vanna",
+      "url": "https://www.gammaedge.com/blog/master-market-structure-analysis-how-to-use-netstat-to-anticipate-price-moves-through-delta-gamma-charm-and-vanna",
+      "published_or_version_date": "2025-12-12",
+      "retrieved_at": "2026-10-06",
+      "claims": [
+        "NetStat summarizes four Greek surfaces above and below spot."
+      ],
+      "limitations": [
+        "Interpretive moneyness narratives do not establish participant inventory."
+      ],
+      "tool_ref": "turn61view1",
+      "primary_source": true,
+      "source_type": "vendor_documentation",
+      "access_mode": "public_web_retrieval"
+    },
+    {
+      "id": "C22",
+      "title": "Options Market Positioning—Visualized",
+      "url": "https://www.gammaedge.com/web-app-sign-up",
+      "published_or_version_date": null,
+      "retrieved_at": "2026-10-06",
+      "claims": [
+        "Cross-ticker Greeks/OI, expiry filtering and spot-driven updates."
+      ],
+      "limitations": [
+        "No exact underlying feed or latency guarantee."
+      ],
+      "tool_ref": "turn81view0",
+      "primary_source": true,
+      "source_type": "vendor_documentation",
+      "access_mode": "public_web_retrieval"
+    },
+    {
+      "id": "C23",
+      "title": "Options Market Analysis: How Options Drive Stock Prices in Modern Markets",
+      "url": "https://www.gammaedge.com/blog/options-market-analysis-how-options-drive-stock-prices-in-modern-markets",
+      "published_or_version_date": "2025-12-12",
+      "retrieved_at": "2026-10-06",
+      "claims": [
+        "PTrans/NTrans, gamma nodes and separate structure/sentiment/trend workflow."
+      ],
+      "limitations": [
+        "Level formulas and predictive evidence remain proprietary or absent."
+      ],
+      "tool_ref": "turn81view1",
+      "primary_source": true,
+      "source_type": "vendor_documentation",
+      "access_mode": "public_web_retrieval"
+    },
+    {
+      "id": "C24",
+      "title": "MenthorQ Asset Coverage",
+      "url": "https://menthorq.com/guide/menthorq-asset-coverage/",
+      "published_or_version_date": null,
+      "retrieved_at": "2026-10-06",
+      "claims": [
+        "Stocks, indices, ETFs and native futures; five-minute update schedule."
+      ],
+      "limitations": [
+        "Coverage descriptions are vendor claims; some channels differ."
+      ],
+      "tool_ref": "turn41view1",
+      "primary_source": true,
+      "source_type": "vendor_documentation",
+      "access_mode": "public_web_retrieval"
+    },
+    {
+      "id": "C25",
+      "title": "Intraday Gamma Models",
+      "url": "https://menthorq.com/guide/intraday-gamma-models/",
+      "published_or_version_date": null,
+      "retrieved_at": "2026-10-06",
+      "claims": [
+        "Intraday exposure, expiry and volume comparisons; scheduled chart snapshots."
+      ],
+      "limitations": [
+        "Repricing versus new inventory attribution undisclosed."
+      ],
+      "tool_ref": "turn41view0",
+      "primary_source": true,
+      "source_type": "vendor_documentation",
+      "access_mode": "public_web_retrieval"
+    },
+    {
+      "id": "C26",
+      "title": "Options Menu",
+      "url": "https://menthorq.com/guide/options-menu/",
+      "published_or_version_date": null,
+      "retrieved_at": "2026-10-06",
+      "claims": [
+        "Strike-expiry GEX, DEX, OI, volume and volatility displays."
+      ],
+      "limitations": [
+        "Exposure changes alone do not identify transactions."
+      ],
+      "tool_ref": "turn28view5",
+      "primary_source": true,
+      "source_type": "vendor_documentation",
+      "access_mode": "public_web_retrieval"
+    },
+    {
+      "id": "C27",
+      "title": "Cboe Market-Maker Tagged Data Explained",
+      "url": "https://menthorq.com/guide/cboe-market-maker-tagged-data-explained/",
+      "published_or_version_date": null,
+      "retrieved_at": "2026-10-06",
+      "claims": [
+        "Origin-data limitations; tagged-data rollout planned for end 2026."
+      ],
+      "limitations": [
+        "Forward product statement, not evidence of current tagged-data production."
+      ],
+      "tool_ref": "turn48view0",
+      "primary_source": true,
+      "source_type": "vendor_documentation",
+      "access_mode": "public_web_retrieval"
+    },
+    {
+      "id": "C28",
+      "title": "Levels Backtesting: Add Historical Probability to Every Key Trading Level",
+      "url": "https://menthorq.com/guide/levels-backtesting-add-historical-probability-to-every-key-trading-level/",
+      "published_or_version_date": null,
+      "retrieved_at": "2026-10-06",
+      "claims": [
+        "Regime-matched hold, comeback, failed-close and excursion statistics."
+      ],
+      "limitations": [
+        "Hold means closing side; model selection and out-of-sample protocol undisclosed."
+      ],
+      "tool_ref": "turn48view1",
+      "primary_source": true,
+      "source_type": "vendor_documentation",
+      "access_mode": "public_web_retrieval"
+    },
+    {
+      "id": "C29",
+      "title": "Levels Conversion",
+      "url": "https://menthorq.com/guide/levels-conversion/",
+      "published_or_version_date": null,
+      "retrieved_at": "2026-10-06",
+      "claims": [
+        "Price-level mapping between ETFs, indices and futures."
+      ],
+      "limitations": [
+        "Coordinate conversion is not common dealer-book aggregation."
+      ],
+      "tool_ref": "turn48view2",
+      "primary_source": true,
+      "source_type": "vendor_documentation",
+      "access_mode": "public_web_retrieval"
+    },
+    {
+      "id": "C30",
+      "title": "Gamma Levels on Forex and Blind Spots",
+      "url": "https://menthorq.com/guide/gamma-levels-on-forex/",
+      "published_or_version_date": null,
+      "retrieved_at": "2026-10-06",
+      "claims": [
+        "FX-futures option levels; Blindspots combine flow, momentum and correlations."
+      ],
+      "limitations": [
+        "Weights, ownership inference and validation undisclosed."
+      ],
+      "tool_ref": "turn82view0",
+      "primary_source": true,
+      "source_type": "vendor_documentation",
+      "access_mode": "public_web_retrieval"
+    },
+    {
+      "id": "C31",
+      "title": "Tier 1 Alpha",
+      "url": "https://tier1alpha.com/",
+      "published_or_version_date": null,
+      "retrieved_at": "2026-10-06",
+      "claims": [
+        "Daily research and gamma/volatility framework distributed through Hedgeye."
+      ],
+      "limitations": [
+        "Homepage does not disclose detailed inventory method."
+      ],
+      "tool_ref": "turn30view0",
+      "primary_source": true,
+      "source_type": "vendor_documentation",
+      "access_mode": "public_web_retrieval"
+    },
+    {
+      "id": "C32",
+      "title": "Hedgeye Announces Partnership With Options Research Provider Tier 1 Alpha",
+      "url": "https://app.hedgeye.com/insights/136818-hedgeye-announces-partnership-with-options-research-provider-tier-1-al?type=macro,market-insights",
+      "published_or_version_date": "2023-07-27",
+      "retrieved_at": "2026-10-06",
+      "claims": [
+        "Daily newsletter and weekly discussion; dealer and systematic-flow context."
+      ],
+      "limitations": [
+        "Distribution announcement, not a current model audit."
+      ],
+      "tool_ref": "turn31view2",
+      "primary_source": true,
+      "source_type": "vendor_documentation",
+      "access_mode": "public_web_retrieval"
+    },
+    {
+      "id": "C33",
+      "title": "Market Impact of 0DTE Flows: Navigating Gamma Exposure and Delta Hedging in Short-Duration Markets",
+      "url": "https://tier1alpha.com/market-impact-of-0dte-flows-navigating-gamma-exposure-and-delta-hedging-in-short-duration-markets/",
+      "published_or_version_date": "2023-11-28",
+      "retrieved_at": "2026-10-06",
+      "claims": [
+        "Discusses option-versus-underlying hedge substitution in 0DTE."
+      ],
+      "limitations": [
+        "Percentage claim lacks disclosed supporting measurement."
+      ],
+      "tool_ref": "turn30view1",
+      "primary_source": true,
+      "source_type": "vendor_documentation",
+      "access_mode": "public_web_retrieval"
+    },
+    {
+      "id": "C34",
+      "title": "The Macro Show — March 6, 2026",
+      "url": "https://app.hedgeye.com/mu/he_tms_km_rr_3-6-2026?encoded_data=fC82%21uJh3J20JTd9mUtaFpVsGjn9C8z0%3D%2C",
+      "published_or_version_date": "2026-03-06",
+      "retrieved_at": "2026-10-06",
+      "claims": [
+        "Official public PDF attributes a chart section to Tier 1 Alpha."
+      ],
+      "limitations": [
+        "Chart raster inaccessible through tool; no chart-level numerical inference."
+      ],
+      "tool_ref": "turn82view2",
+      "primary_source": true,
+      "source_type": "official_distributor_pdf",
+      "access_mode": "public_web_retrieval"
+    },
+    {
+      "id": "C35",
+      "title": "How to understand dealer positioning: gamma, vanna, charm",
+      "url": "https://tradytics.com/support/how-to-understand-dealer-positioning-gamma-vanna-charm",
+      "published_or_version_date": null,
+      "retrieved_at": "2026-10-06",
+      "claims": [
+        "Separate dealer-positioning Greeks and educational explanation."
+      ],
+      "limitations": [
+        "Underlying reconstruction and inventory validation undisclosed."
+      ],
+      "tool_ref": "turn30view2",
+      "primary_source": true,
+      "source_type": "vendor_documentation",
+      "access_mode": "public_web_retrieval"
+    },
+    {
+      "id": "C36",
+      "title": "Where do you get data from?",
+      "url": "https://tradytics.com/support/where-do-you-get-data-from",
+      "published_or_version_date": null,
+      "retrieved_at": "2026-10-06",
+      "claims": [
+        "Equity/options sourcing and delayed dark-pool data description."
+      ],
+      "limitations": [
+        "Documentation may predate current suppliers; latency not independently measured."
+      ],
+      "tool_ref": "turn30view3",
+      "primary_source": true,
+      "source_type": "vendor_documentation",
+      "access_mode": "public_web_retrieval"
+    },
+    {
+      "id": "C37",
+      "title": "What is DEX?",
+      "url": "https://tradytics.com/support/what-is-dex",
+      "published_or_version_date": null,
+      "retrieved_at": "2026-10-06",
+      "claims": [
+        "Daily Options Deltas uses historical delta-price relationships and backtesting."
+      ],
+      "limitations": [
+        "Name differs from physical dollar-delta exposure convention."
+      ],
+      "tool_ref": "turn31view0",
+      "primary_source": true,
+      "source_type": "vendor_documentation",
+      "access_mode": "public_web_retrieval"
+    },
+    {
+      "id": "C38",
+      "title": "What is Algo and Net Flow?",
+      "url": "https://tradytics.com/support/what-is-algo-and-net-flow",
+      "published_or_version_date": null,
+      "retrieved_at": "2026-10-06",
+      "claims": [
+        "Minute cumulative options-flow summaries and call/put splits."
+      ],
+      "limitations": [
+        "Classifier details and predictive validation undisclosed."
+      ],
+      "tool_ref": "turn31view1",
+      "primary_source": true,
+      "source_type": "vendor_documentation",
+      "access_mode": "public_web_retrieval"
+    },
+    {
+      "id": "C39",
+      "title": "Live Options Flow — Unusual, Big, Smart Flow",
+      "url": "https://tradytics.com/live-options-flow",
+      "published_or_version_date": null,
+      "retrieved_at": "2026-10-06",
+      "claims": [
+        "Public UI fields, opening/complex filters, inference toggle and delay notice."
+      ],
+      "limitations": [
+        "Public page is delayed; filter labels do not establish ground truth."
+      ],
+      "tool_ref": "turn82view1",
+      "primary_source": true,
+      "source_type": "vendor_documentation",
+      "access_mode": "public_web_retrieval"
+    },
+    {
+      "id": "C40",
+      "title": "OptionsDepth FAQ",
+      "url": "https://optionsdepth.com/faq",
+      "published_or_version_date": null,
+      "retrieved_at": "2026-10-06",
+      "claims": [
+        "Cboe participant-tagged data claim; minute cadence; SPX/VIX and API coverage."
+      ],
+      "limitations": [
+        "Initial positions, correction policy and full-market coverage unverified."
+      ],
+      "tool_ref": "turn16view3",
+      "primary_source": true,
+      "source_type": "vendor_documentation",
+      "access_mode": "public_web_retrieval"
+    },
+    {
+      "id": "C41",
+      "title": "Market Makers’ Exposure",
+      "url": "https://optionsdepth.com/feature-market-makers-exposure",
+      "published_or_version_date": null,
+      "retrieved_at": "2026-10-06",
+      "claims": [
+        "Gamma/charm/vanna surfaces with price-time visualization."
+      ],
+      "limitations": [
+        "Surface is not calibrated price-distribution evidence."
+      ],
+      "tool_ref": "turn16view4",
+      "primary_source": true,
+      "source_type": "vendor_documentation",
+      "access_mode": "public_web_retrieval"
+    },
+    {
+      "id": "C42",
+      "title": "Positional Insights",
+      "url": "https://optionsdepth.com/feature-positional-insights",
+      "published_or_version_date": null,
+      "retrieved_at": "2026-10-06",
+      "claims": [
+        "Participant, strike/expiry, net and exposure-change views."
+      ],
+      "limitations": [
+        "Flow mode is exposure difference, not necessarily transaction-only flow."
+      ],
+      "tool_ref": "turn61view2",
+      "primary_source": true,
+      "source_type": "vendor_documentation",
+      "access_mode": "public_web_retrieval"
+    },
+    {
+      "id": "C43",
+      "title": "Market Makers' Gamma Exposure Projection",
+      "url": "https://www.optionsdepth.com/resouce/market-makers-gamma-exposure-projection",
+      "published_or_version_date": "2024-05-17",
+      "retrieved_at": "2026-10-06",
+      "claims": [
+        "Whole-portfolio projected gamma; peaks and troughs; 0DTE sensitivity."
+      ],
+      "limitations": [
+        "Modified date; surface mechanics do not prove price impact."
+      ],
+      "tool_ref": "turn84view1",
+      "primary_source": true,
+      "source_type": "vendor_documentation",
+      "access_mode": "public_web_retrieval"
+    },
+    {
+      "id": "C44",
+      "title": "Market Makers' Charm Exposure Projection",
+      "url": "https://www.optionsdepth.com/resouce/market-makers-charm-exposure-projection",
+      "published_or_version_date": "2024-05-17",
+      "retrieved_at": "2026-10-06",
+      "claims": [
+        "Calendar delta sensitivity and projected participant-book charm."
+      ],
+      "limitations": [
+        "Actual-position wording exceeds publicly audited reconstruction detail."
+      ],
+      "tool_ref": "turn84view2",
+      "primary_source": true,
+      "source_type": "vendor_documentation",
+      "access_mode": "public_web_retrieval"
+    },
+    {
+      "id": "C45",
+      "title": "OptionsDepth Data Shop",
+      "url": "https://optionsdepth.com/data-shop",
+      "published_or_version_date": null,
+      "retrieved_at": "2026-10-06",
+      "claims": [
+        "Historical Greek surfaces and positional datasets offered for research."
+      ],
+      "limitations": [
+        "Access does not establish replay provenance or validated predictions."
+      ],
+      "tool_ref": "turn84view0",
+      "primary_source": true,
+      "source_type": "vendor_documentation",
+      "access_mode": "public_web_retrieval"
+    },
+    {
+      "id": "C46",
+      "title": "Mastering the Exposure Forecast: Pin, Grind, and Volatile Market States",
+      "url": "https://help.quantdata.us/en/articles/16936089-mastering-the-exposure-forecast-pin-grind-and-volatile-market-states",
+      "published_or_version_date": null,
+      "retrieved_at": "2026-10-06",
+      "claims": [
+        "State-persistence probabilities, expected range, walls, replay and product mapping."
+      ],
+      "limitations": [
+        "Relative update date only; sample, band definition and calibration undisclosed."
+      ],
+      "tool_ref": "turn33view2",
+      "primary_source": true,
+      "source_type": "vendor_documentation",
+      "access_mode": "public_web_retrieval"
+    },
+    {
+      "id": "C47",
+      "title": "Mastering the Interval Map: Visualizing Greeks Exposure in Real Time",
+      "url": "https://help.quantdata.us/en/articles/11133167-mastering-the-interval-map-visualizing-greeks-exposure-in-real-time",
+      "published_or_version_date": "2025-04-25",
+      "retrieved_at": "2026-10-06",
+      "claims": [
+        "Strike-time exposure map; raw and difference modes; Greek filters."
+      ],
+      "limitations": [
+        "Conflicting short-gamma hedge directions within the article."
+      ],
+      "tool_ref": "turn33view3",
+      "primary_source": true,
+      "source_type": "vendor_documentation",
+      "access_mode": "public_web_retrieval"
+    },
+    {
+      "id": "C48",
+      "title": "What is Gamma Exposure (GEX)?",
+      "url": "https://help.quantdata.us/en/articles/7852449-what-is-gamma-exposure-gex",
+      "published_or_version_date": "2024-08-31",
+      "retrieved_at": "2026-10-06",
+      "claims": [
+        "About five-second exposure refresh; expiry filters; correct hedge-sign explanation."
+      ],
+      "limitations": [
+        "Selected examples; inventory methodology and causal pin claims unproven."
+      ],
+      "tool_ref": "turn64view0",
+      "primary_source": true,
+      "source_type": "vendor_documentation",
+      "access_mode": "public_web_retrieval"
+    },
+    {
+      "id": "C49",
+      "title": "Mastering the Net Drift Tool: Leveraging Order Flow Sentiment for Smarter Options Trading",
+      "url": "https://help.quantdata.us/en/articles/9900974-mastering-the-net-drift-tool-leveraging-order-flow-sentiment-for-smarter-options-trading",
+      "published_or_version_date": "2024-09-20",
+      "retrieved_at": "2026-10-06",
+      "claims": [
+        "Bid/ask-based premium sentiment, midpoint uncertainty bands and package filters."
+      ],
+      "limitations": [
+        "Ambiguity display is not calibrated outcome probability."
+      ],
+      "tool_ref": "turn66view2",
+      "primary_source": true,
+      "source_type": "vendor_documentation",
+      "access_mode": "public_web_retrieval"
+    },
+    {
+      "id": "C50",
+      "title": "Exposure By Strike — Quant Data API Docs",
+      "url": "https://quantdata.us/api/docs/endpoints/exposure-by-strike",
+      "published_or_version_date": null,
+      "retrieved_at": "2026-10-06",
+      "claims": [
+        "Greek/scale selections and timestamp-pinned strike-expiry exposure requests."
+      ],
+      "limitations": [
+        "Published API schema, not tested entitlement or inventory provenance."
+      ],
+      "tool_ref": "turn64view1",
+      "primary_source": true,
+      "source_type": "vendor_documentation",
+      "access_mode": "public_web_retrieval"
+    },
+    {
+      "id": "C51",
+      "title": "MomoEdge",
+      "url": "https://momoedge.ai/",
+      "published_or_version_date": null,
+      "retrieved_at": "2026-10-06",
+      "claims": [
+        "Pulse, PRISM, Flow and heatmap; scored-trade and V8 claims."
+      ],
+      "limitations": [
+        "Indexed official page only; robots blocked direct opening; demo/live ambiguity."
+      ],
+      "tool_ref": "turn35search0",
+      "primary_source": true,
+      "source_type": "vendor_documentation",
+      "access_mode": "search_indexed_official_content"
+    },
+    {
+      "id": "C52",
+      "title": "About MomoEdge",
+      "url": "https://momoedge.ai/about",
+      "published_or_version_date": null,
+      "retrieved_at": "2026-10-06",
+      "claims": [
+        "Oracle combines structure, options flow, macro and technical context."
+      ],
+      "limitations": [
+        "Indexed snippet only; no accessed product or formula."
+      ],
+      "tool_ref": "turn5search26",
+      "primary_source": true,
+      "source_type": "vendor_documentation",
+      "access_mode": "search_indexed_official_content"
+    },
+    {
+      "id": "C53",
+      "title": "How Fast Do Dealers Hedge?",
+      "url": "https://www.firmtape.com/research/how-fast-do-dealers-hedge",
+      "published_or_version_date": "2026-08-28",
+      "retrieved_at": "2026-10-06",
+      "claims": [
+        "Minute DEX-change regressions across 1,088 SPX sessions; small effects."
+      ],
+      "limitations": [
+        "Vendor study not reproduced; exposure changes can mix repricing with inventory."
+      ],
+      "tool_ref": "turn35view0",
+      "primary_source": true,
+      "source_type": "first_party_research",
+      "access_mode": "public_web_retrieval"
+    },
+    {
+      "id": "C54",
+      "title": "FirmTape Guide",
+      "url": "https://www.firmtape.com/guide",
+      "published_or_version_date": null,
+      "retrieved_at": "2026-10-06",
+      "claims": [
+        "Separate signed, OI-convention and volume books; cadence, basis and limits."
+      ],
+      "limitations": [
+        "Quote signing is inference; guide includes October 3, 2026 changes."
+      ],
+      "tool_ref": "turn49view1",
+      "primary_source": true,
+      "source_type": "vendor_documentation",
+      "access_mode": "public_web_retrieval"
+    },
+    {
+      "id": "C55",
+      "title": "Licensing: Redistribute FirmTape Levels and the Live Stream",
+      "url": "https://www.firmtape.com/licensing",
+      "published_or_version_date": null,
+      "retrieved_at": "2026-10-06",
+      "claims": [
+        "Derived-data redistribution tiers and competing-terminal exclusion."
+      ],
+      "limitations": [
+        "Marketing terms summary; actual contract and underlying rights unverified."
+      ],
+      "tool_ref": "turn66view0",
+      "primary_source": true,
+      "source_type": "vendor_documentation",
+      "access_mode": "public_web_retrieval"
+    },
+    {
+      "id": "C56",
+      "title": "The Tape’s Receipt, Session by Session",
+      "url": "https://www.firmtape.com/status",
+      "published_or_version_date": null,
+      "retrieved_at": "2026-10-06",
+      "claims": [
+        "Minute coverage, drop/restart logs and replay rebuilds."
+      ],
+      "limitations": [
+        "Coverage metric is not print completeness or original live-state provenance."
+      ],
+      "tool_ref": "turn66view1",
+      "primary_source": true,
+      "source_type": "vendor_documentation",
+      "access_mode": "public_web_retrieval"
+    },
+    {
+      "id": "C57",
+      "title": "quantedOptions Orderflow Plugin",
+      "url": "https://www.quantedoptions.com/orderflow-plugin",
+      "published_or_version_date": null,
+      "retrieved_at": "2026-10-06",
+      "claims": [
+        "Cboe C1 SPX minute data, futures-axis overlays and separate Greek ladders."
+      ],
+      "limitations": [
+        "Coverage/model differs by product; license and execution not independently verified."
+      ],
+      "tool_ref": "turn35view1",
+      "primary_source": true,
+      "source_type": "vendor_documentation",
+      "access_mode": "public_web_retrieval"
+    },
+    {
+      "id": "C58",
+      "title": "How It Works — quantedOptions",
+      "url": "https://www.quantedoptions.com/learn/how-it-works",
+      "published_or_version_date": null,
+      "retrieved_at": "2026-10-06",
+      "claims": [
+        "Tagged SPX/VIX book separated from OI/volume-based equity and ETF models."
+      ],
+      "limitations": [
+        "Tagged inventory initialization and reconciliation remain undisclosed."
+      ],
+      "tool_ref": "turn64view3",
+      "primary_source": true,
+      "source_type": "vendor_documentation",
+      "access_mode": "public_web_retrieval"
+    },
+    {
+      "id": "C59",
+      "title": "Methodology & Validation — ZeroGEX",
+      "url": "https://zerogex.io/methodology",
+      "published_or_version_date": null,
+      "retrieved_at": "2026-10-06",
+      "claims": [
+        "Explicit OI assumptions, spot-shift roots and unrun attribution research."
+      ],
+      "limitations": [
+        "Model transparency does not establish predictive value."
+      ],
+      "tool_ref": "turn49view0",
+      "primary_source": true,
+      "source_type": "vendor_documentation",
+      "access_mode": "public_web_retrieval"
+    },
+    {
+      "id": "C60",
+      "title": "Data Coverage & Refresh — ZeroGEX",
+      "url": "https://zerogex.io/help/platform/data-coverage",
+      "published_or_version_date": null,
+      "retrieved_at": "2026-10-06",
+      "claims": [
+        "Per-surface cadence, overnight OI, futures-axis conversion and historical coverage."
+      ],
+      "limitations": [
+        "Half-day EOD window remains inactive; history is short."
+      ],
+      "tool_ref": "turn69view1",
+      "primary_source": true,
+      "source_type": "vendor_documentation",
+      "access_mode": "public_web_retrieval"
+    },
+    {
+      "id": "C61",
+      "title": "How Often Do Gamma Walls Actually Break? We Measured It",
+      "url": "https://zerogex.io/education/how-often-do-gamma-walls-break",
+      "published_or_version_date": "2026-09-04",
+      "retrieved_at": "2026-10-06",
+      "claims": [
+        "737 conditional wall tests and unsuccessful candidate predictors."
+      ],
+      "limitations": [
+        "Updated September 29, 2026; ten-week vendor study, not independently reproduced."
+      ],
+      "tool_ref": "turn69view0",
+      "primary_source": true,
+      "source_type": "first_party_research",
+      "access_mode": "public_web_retrieval"
+    },
+    {
+      "id": "C62",
+      "title": "EOD Pressure Signal Explained: Reading the Close",
+      "url": "https://zerogex.io/education/eod-pressure-explained",
+      "published_or_version_date": "2026-06-12",
+      "retrieved_at": "2026-10-06",
+      "claims": [
+        "Charm/pin score, time window and calendar adjustment described as heuristics."
+      ],
+      "limitations": [
+        "No calibrated probability; no claimed validation of selected weights."
+      ],
+      "tool_ref": "turn74view0",
+      "primary_source": true,
+      "source_type": "vendor_documentation",
+      "access_mode": "public_web_retrieval"
+    },
+    {
+      "id": "C63",
+      "title": "Forced Flow and Zero Flow Explained: Where Dealer Hedging Nets to Zero",
+      "url": "https://zerogex.io/education/forced-flow-and-zero-flow-explained",
+      "published_or_version_date": "2026-10-05",
+      "retrieved_at": "2026-10-06",
+      "claims": [
+        "Full scenario repricing, zero-flow roots, slope classes and limited track record."
+      ],
+      "limitations": [
+        "Indexed official full text; direct opens fail; no multi-session root-target validation."
+      ],
+      "tool_ref": "turn77search0",
+      "primary_source": true,
+      "source_type": "vendor_documentation",
+      "access_mode": "search_indexed_official_content"
+    },
+    {
+      "id": "C64",
+      "title": "Hedging Flow — ZeroGEX Help",
+      "url": "https://zerogex.io/help/platform/hedging-flow",
+      "published_or_version_date": null,
+      "retrieved_at": "2026-10-06",
+      "claims": [
+        "Trade-derived hedge proxy, five-minute bars and passive-dealer assumption."
+      ],
+      "limitations": [
+        "Opening/closing and participant identity remain inferred or unobserved."
+      ],
+      "tool_ref": "turn77search1",
+      "primary_source": true,
+      "source_type": "vendor_documentation",
+      "access_mode": "search_indexed_official_content"
+    },
+    {
+      "id": "C65",
+      "title": "Dealer Positioning — ZeroGEX Help",
+      "url": "https://zerogex.io/help/platform/dealer-positioning",
+      "published_or_version_date": null,
+      "retrieved_at": "2026-10-06",
+      "claims": [
+        "Walls, spot-shift flip, charm/vanna and expiry-separated gamma displays."
+      ],
+      "limitations": [
+        "Above/below-flip interpretation requires root topology; no unconditional implication."
+      ],
+      "tool_ref": "turn75view1",
+      "primary_source": true,
+      "source_type": "vendor_documentation",
+      "access_mode": "public_web_retrieval"
+    },
+    {
+      "id": "C66",
+      "title": "Detecting a Gamma Squeeze in Real Time: The 0DTE Dealer Hedge-Flow API",
+      "url": "https://flashalpha.com/articles/detect-gamma-squeeze-real-time-dealer-hedge-flow-api",
+      "published_or_version_date": "2026-06-13",
+      "retrieved_at": "2026-10-06",
+      "claims": [
+        "Per-bar and cumulative inferred hedge flow, same-day expiry and side filters."
+      ],
+      "limitations": [
+        "No actual dealer book; illustrative API examples, not tested endpoint."
+      ],
+      "tool_ref": "turn116view0",
+      "primary_source": true,
+      "source_type": "vendor_documentation",
+      "access_mode": "public_web_retrieval"
+    },
+    {
+      "id": "C67",
+      "title": "FlashAlpha Methodology",
+      "url": "https://flashalpha.com/methodology",
+      "published_or_version_date": "2026-07-28",
+      "retrieved_at": "2026-10-06",
+      "claims": [
+        "Version 1.1; Greek conventions, exposure assumptions and admitted historical limitations."
+      ],
+      "limitations": [
+        "Some later companion documents state different controls; reconcile versions."
+      ],
+      "tool_ref": "turn118view0",
+      "primary_source": true,
+      "source_type": "vendor_documentation",
+      "access_mode": "public_web_retrieval"
+    },
+    {
+      "id": "C68",
+      "title": "Effective Open Interest: How FlashAlpha Estimates Live OI from Flow",
+      "url": "https://flashalpha.com/articles/effective-open-interest-methodology-live-gex-from-flow",
+      "published_or_version_date": "2026-05-20",
+      "retrieved_at": "2026-10-06",
+      "claims": [
+        "Quote-side OI estimation with residual-based fitting and separate official/simulated values."
+      ],
+      "limitations": [
+        "Opening status and dealer identity are not established by quote side."
+      ],
+      "tool_ref": "turn119view1",
+      "primary_source": true,
+      "source_type": "vendor_documentation",
+      "access_mode": "public_web_retrieval"
+    },
+    {
+      "id": "C69",
+      "title": "Live 0DTE Pin Risk: Flow-Adjusted Magnet Strikes Intraday",
+      "url": "https://flashalpha.com/articles/live-0dte-pin-risk-api-intraday-flow-adjusted-magnet",
+      "published_or_version_date": "2026-05-15",
+      "retrieved_at": "2026-10-06",
+      "claims": [
+        "Moving maximum-absolute-gamma strike and decomposable heuristic pin score."
+      ],
+      "limitations": [
+        "Magnitude-based magnet and score are not calibrated attraction probabilities."
+      ],
+      "tool_ref": "turn119view2",
+      "primary_source": true,
+      "source_type": "vendor_documentation",
+      "access_mode": "public_web_retrieval"
+    },
+    {
+      "id": "C70",
+      "title": "Data Quality & Monitoring — FlashAlpha",
+      "url": "https://flashalpha.com/methodology/data-quality",
+      "published_or_version_date": "2026-09-14",
+      "retrieved_at": "2026-10-06",
+      "claims": [
+        "Version 1.2; provenance, input validation, root stress checks and replay claims."
+      ],
+      "limitations": [
+        "Internal quality validation; not independent predictive evidence."
+      ],
+      "tool_ref": "turn119view0",
+      "primary_source": true,
+      "source_type": "vendor_documentation",
+      "access_mode": "public_web_retrieval"
+    },
+    {
+      "id": "C71",
+      "title": "Futures & Index Methodology — FlashAlpha",
+      "url": "https://flashalpha.com/methodology/futures",
+      "published_or_version_date": "2026-06-16",
+      "retrieved_at": "2026-10-06",
+      "claims": [
+        "Version 1.0; native CME option chains, Black-76, multipliers and parity anchoring."
+      ],
+      "limitations": [
+        "Common schema does not establish consolidated dealer inventory."
+      ],
+      "tool_ref": "turn120view0",
+      "primary_source": true,
+      "source_type": "vendor_documentation",
+      "access_mode": "public_web_retrieval"
+    },
+    {
+      "id": "C72",
+      "title": "Historical Data & Computation — FlashAlpha",
+      "url": "https://flashalpha.com/methodology/historical-data",
+      "published_or_version_date": "2026-08-04",
+      "retrieved_at": "2026-10-06",
+      "claims": [
+        "Version 1.0; claimed immutable inputs replayed through current engine."
+      ],
+      "limitations": [
+        "Current-engine replay differs from original published analytics; older core policy conflicts."
+      ],
+      "tool_ref": "turn120view1",
+      "primary_source": true,
+      "source_type": "vendor_documentation",
+      "access_mode": "public_web_retrieval"
+    },
+    {
+      "id": "C73",
+      "title": "DEX, Vanna and Charm on the 0DTE Chart: Dealer Hedging, Minute by Minute",
+      "url": "https://gammatape.com/blog/dex-vanna-charm-on-the-0dte-chart",
+      "published_or_version_date": "2026-09-06",
+      "retrieved_at": "2026-10-06",
+      "claims": [
+        "OI-derived Greek chart with claimed vanna-to-expiry interpretation."
+      ],
+      "limitations": [
+        "Conflates declining time to expiry with annualized IV necessarily reaching zero."
+      ],
+      "tool_ref": "turn116view1",
+      "primary_source": true,
+      "source_type": "vendor_documentation",
+      "access_mode": "public_web_retrieval"
+    }
+  ]
+}
