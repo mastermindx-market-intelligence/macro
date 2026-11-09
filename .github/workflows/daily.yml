@@ -6867,7 +6867,13 @@ jobs:
           echo "::warning::could not push active build map after $PUSH_ATTEMPT attempts ($PUSH_STOP) (non-fatal)"
       - name: timings ledger + 85% budget tripwire (W2)
         if: always()
-        run: bash scripts/ci/nightly_timings_finish.sh 10
+        # Cap raised 10 -> 30 for full PR coverage (open 100 -> 2000-row sentinel;
+        # merged window now a REST sweep — ~562 gh calls/night vs the old ~102).
+        # The budget stays at 20, far under the kill: the cap is survival headroom
+        # for the bigger sweep, and the tripwire must keep catching real creep —
+        # lower the second number only when the sweep genuinely gets faster,
+        # never to quiet it (same idiom as the collect job's 300 240).
+        run: bash scripts/ci/nightly_timings_finish.sh 30 20
 
   # The `publish` GitHub Pages deploy job (needs: [et_gate, engine], deploy-pages@v4)
   # was RETIRED pre-private-cutover (DEC:B1-MACRO-PRIVATE-CUTOVER) — the Pages mirror
