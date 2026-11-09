@@ -1060,3 +1060,66 @@ Eleven candidate header cases cover EN/ZH at 1440/390/320, three crowded stale s
 The Brain button and November 9/20 clocks are explicit fixtures. They exercise the existing docking event and seven-day stale condition without claiming the shared Brain's runtime or a changed public snapshot. No-JavaScript markup does not generate stale qualification, Brain docking or a contextual return; tests deliberately preserve that boundary.
 
 `INDEX_HEADER_VALIDATION_20261109.json` and `verify_index_header_component.py` retain commands, inputs, all measurements and source hashes. Anonymous component proof does not establish full shared shell/fonts, live accounts/public serving, spoken assistive-technology output or deployment. Original Draft/model01/release holds remain; no Tools, navigation or release owner was changed.
+
+## 11.29. Reach every category without a hidden horizontal search — 9 November 2026
+
+### A compact choice with an explicit action
+
+At parent `20179e319a3f5219488fda4f1642a49e77ed8b13`, the phone index presents ten category chips in a horizontally scrolling strip. Most destinations sit outside the first viewport. The index now enhances that strip at the existing **≤640 px** breakpoint with a native **Category / 类别** select and a separate **Go / 前往** button. Desktop retains the existing anchor track.
+
+The select chooses a **pending destination**. It does not assert the category currently in view, and changing it does not scroll, open a disclosure, rewrite the URL or add history. Go invokes the existing retained anchor's click path after revalidating its target. The destination remains selected so the same Go action can be used again. Native pointer click, Enter and Space each invoke that owner once.
+
+The explicit action is deliberate. Disposable native-Chrome probes showed that typing a category name can produce intermediate select changes: an instant-reset prototype fired eleven changes while typing Category 10; retaining the choice still produced two. The final product therefore keeps native selection/typeahead free of navigation effects. Real Energy typeahead is exercised against the product; OS-native popup arrow handling is not inferred from headless probes.
+
+The layout keeps a **44 px select**, **8 px gap**, **44 × 44 px Go**, and the existing **61 px sticky strip**. The select can shrink within the available width; Go remains a stable target. Existing shared tokens, focus treatment and reduced-motion behavior apply. The track's decorative fade is suppressed only for the enhanced picker so it cannot cover the native arrow. No instructional paragraph is added to the page.
+
+### Reuse the category, search and locale owners
+
+`syncIndexJump()` lives alongside the existing category-jump controller. It reads the current eligible anchor/group inventory and counts after `indexRender()`, and active-language labels after the existing locale `apply()`. It does not create another query model, current-category state, URL parameter, storage key, language observer or navigation controller.
+
+| Situation | Required behavior |
+| --- | --- |
+| Initial or cleared index | Show Choose category / 选择类别, disable Go, and include all ten available categories in canonical order. |
+| Unfiltered category with zero topics | Keep it available. Availability comes from group visibility/ownership, not a positive count. |
+| Valid choice during filtering or locale change | Retain its ID; update count and the single active-language label. Keep focused select/Go where it is. |
+| Pending category no longer matches but other categories do | Reset to the prompt. Move owned focus from Go to the select before disabling Go. Never choose the first result on the user's behalf. |
+| No categories match | The existing index hide owner returns owned focus to search before hiding the entire nav. |
+| Search is cleared | Existing query/disclosure owners restore the prior disclosure snapshot and category inventory. |
+| Hidden, disconnected or reparented target/link at activation | Reject navigation and refresh the pending choice. Do not fall through to a native hash or another category. |
+| Passive category intersection | Keep updating existing anchor aria-current behavior; do not rebuild options or overwrite the pending selection. |
+| Equivalent filter/locale refresh | Preserve option-node identities when their IDs and labels have not changed; skip redundant value/disabled writes. |
+
+The option labels derive from existing `.l-en`/`.l-zh` category spans and current count elements. The nav, select and Go aria labels use the existing bilingual data attributes. The visible Go label uses the existing translation macro. A prompt is disabled as a destination; Go is disabled until a current eligible ID is selected.
+
+The target validator checks that the retained link remains a connected direct child of the original track and that the destination remains a connected, visible direct child of the index. Go delegates only to that mapped link. The existing anchor handler remains the sole disclosure-open and scroll owner. Query, open=all, lens, qualified return, unrelated hash keys and history remain intact.
+
+### Responsive focus is part of the interaction
+
+The media listener reveals the incoming presentation before transferring focus, then hides the outgoing presentation. A valid focused desktop anchor carries its ID into the mobile pending choice. An unrelated focus owner is preserved, as is a previously pending choice when focus is elsewhere.
+
+When moving from mobile to desktop, owned focus goes to the valid pending anchor, then the current or first available anchor if needed; an entirely stale inventory falls back to the existing index search. Responsive transfers use `preventScroll`, avoiding a focus-induced jump back to the non-sticky desktop rail after the user has reached a distant category. This is presentation focus recovery, not category activation.
+
+Initialization happens before the optional IntersectionObserver branch, so category selection/filtering/navigation still work when that observer is unavailable. The authored select wrapper starts hidden. With JavaScript actually disabled, the original ten category links and all 371 topic links remain available, native anchor jumps and details disclosures work, and there is no inert custom Go action.
+
+### Source binding and focused proof
+
+| Artifact | Git blob |
+| --- | --- |
+| Paired JavaScript | **b6572ba96c76cf8ee2b1939d538027fe27dfd3e8** |
+| Paired stylesheet | **1869d4bb1dbcd3ee56756a98da77427dd732b03e** |
+| Index template | **4556d16e03e06375a314c7278c4936dea36fd0e9** |
+| Generated index | **d0cff23fec423c3480ea12ee200c272396fd53a0** |
+| Canonical browser verifier | **7c99a499f7e3508896175f47d74f3ddd6b294181** |
+| Extracting component harness | **0fcfae4962d4553d711bb00015ba45ee6d59b4f1** |
+
+The production renderer reproduces the exact parent explorer/index from 48 checked inputs and the same accepted **e644fa48…** model. Only index HTML and paired JS/CSS change among nine outputs; all six other generated HTML pages remain exact. The actual index adds a 488-byte nav-prefix span and is **262,285 bytes**, SHA256 **3e6e6f4846598bc6240f3aa69c5523a5500e7f79f7838e655ea7ecd7800536d4**. Its full SHA-256 and Git-blob identities were checked after transport.
+
+Self-check reconstructs every unrelated JavaScript byte by removing this category-controller change and two synchronization calls. Previous CSS is an exact prefix, and the index template differs only in the nav prefix. Thirty-nine existing top-level verification definitions are exact. The affected `index_filtered_shortcuts` test deliberately uses select+Go on mobile while retaining its count, target, history, stale-observer, focus and sticky-geometry assertions.
+
+Baseline PID81615 records two expected failures because the exact parent has no picker/Go. Final PID81814 passes **24 cases / 24 fresh anonymous contexts**, Chrome **157.0.8103.39**, zero page errors, exit0 in **37.83 seconds**. Six mobile cases cover EN/ZH at 390/320 px and two dark states. Two responsive cases cover 640/641 px, destination identity, unrelated focus, late-category focus-induced scrolling and all-stale recovery. Two observer-disabled and four actual JavaScript-disabled cases pass. Six existing filtered-index, two Clear and two persistent-index-status cases pass.
+
+The matrix also verifies three native Go activations, repeated destination use, the final empty category, all six stale link/group conditions, valid and invalid selection recovery, equivalent refresh identity, focus before hide/disable, 44 px targets, the 61 px strip, retained URL/history and no horizontal overflow. Six new viewport captures were inspected. Native popup interaction, spoken assistive-technology output and full shared-shell/live-account behavior remain separate.
+
+Two initial harness launches stopped at a missing newline between the module docstring and import, before any browser was launched. The harness was corrected and syntax-checked; product bytes did not change. Those exit1 receipts remain explicit in `CATEGORY_PICKER_VALIDATION_20261109.json`. Final browser and renderer hashes bind the accepted source and exact verifier.
+
+`verify_category_picker_component.py` extracts the named canonical verification definitions and owns no product behavior. Original Draft/model01/release holds remain. No fenced model result, Tools owner, shared admission, navigation publication or deployment boundary was changed.

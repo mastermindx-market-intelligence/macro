@@ -25,16 +25,75 @@ var h=new URLSearchParams(location.hash.slice(1));h.set('lens',v);history.replac
 
 /* Category jumps share the existing filtered groups. Suppress native fragment
    navigation even for unavailable targets, preserving search/lens/return context. */
+var syncIndexJump=function(){};
 (function(){var nav=document.querySelector('.gmi-jump'),idx=document.querySelector('[data-gmi-index]');if(!nav||!idx)return;
 var tr=nav.querySelector('.gmi-jump-track'),links=[].slice.call(nav.querySelectorAll('a'));
 function available(g){return g&&g.isConnected&&g.parentElement===idx&&!g.hidden;}
+function target(a){
+  if(!a||a.hidden||!a.isConnected||a.parentElement!==tr||nav.hidden)return null;
+  var g=document.getElementById(a.getAttribute('href').slice(1));return available(g)?g:null;
+}
 links.forEach(function(a){a.addEventListener('click',function(e){e.preventDefault();
-var g=document.getElementById(a.getAttribute('href').slice(1));
-if(a.hidden||!a.isConnected||nav.hidden||!available(g))return;
+var g=target(a);if(!g)return;
 g.setAttribute('open','');g.scrollIntoView({block:'start'});});});
+/* The mobile controls choose a pending destination; only Go invokes the link owner.
+   Keep native selection/typeahead free of scroll and URL effects. */
+var holder=nav.querySelector('[data-gmi-category-picker-control]');
+var picker=nav.querySelector('[data-gmi-category-picker]'),go=nav.querySelector('[data-gmi-category-go]');
+if(holder&&picker&&go&&tr){
+  var mobile=window.matchMedia('(max-width:640px)');
+  function selected(){return links.find(function(a){return a.getAttribute('href')==='#'+picker.value;});}
+  function updateGo(){
+    var disabled=!target(selected());
+    if(disabled&&document.activeElement===go&&!holder.hidden&&!nav.hidden)picker.focus();
+    if(go.disabled!==disabled)go.disabled=disabled;
+  }
+  syncIndexJump=function(){
+    var lang=root.getAttribute('data-lang')==='zh'?'zh':'en',value=picker.value;
+    var choices=[{value:'',label:lang==='zh'?'选择类别':'Choose category'}];
+    links.forEach(function(a){if(!target(a))return;
+      var label=a.querySelector('.l-'+lang),count=a.querySelector('[data-gmi-category-count]');
+      choices.push({value:a.getAttribute('href').slice(1),label:(label?label.textContent.trim():'')+(count?' · '+count.textContent:'')});
+    });
+    var valid=value&&choices.some(function(c){return c.value===value;});
+    if(!valid&&document.activeElement===go&&!holder.hidden&&!nav.hidden)picker.focus();
+    var same=picker.options.length===choices.length&&choices.every(function(c,i){
+      return picker.options[i].value===c.value&&picker.options[i].textContent===c.label;
+    });
+    if(!same){
+      var fragment=document.createDocumentFragment();
+      choices.forEach(function(c,i){var option=new Option(c.label,c.value);if(!i)option.disabled=true;fragment.append(option);});
+      picker.replaceChildren(fragment);
+    }
+    var next=valid?value:'';if(picker.value!==next)picker.value=next;updateGo();
+  };
+  picker.addEventListener('change',updateGo);
+  go.addEventListener('click',function(){var a=selected();if(!target(a)){syncIndexJump();return;}a.click();});
+  function present(){
+    var active=document.activeElement;
+    if(mobile.matches){
+      holder.hidden=false;
+      if(tr.contains(active)){
+        if(target(active)){picker.value=active.getAttribute('href').slice(1);updateGo();}
+        picker.focus({preventScroll:true});
+      }
+      tr.hidden=true;
+    }else{
+      tr.hidden=false;
+      if(holder.contains(active)){
+        var a=target(selected())?selected():links.find(function(a){return target(a)&&a.getAttribute('aria-current')==='true';})||links.find(function(a){return target(a);});
+        var destination=a||document.querySelector('[data-gmi-filter="index"]');
+        if(destination)destination.focus({preventScroll:true});
+      }
+      holder.hidden=true;
+    }
+    nav.classList.toggle('gmi-jump--picker',mobile.matches);
+  }
+  mobile.addEventListener('change',present);syncIndexJump();present();
+}
 if(!('IntersectionObserver' in window))return;
 var io=new IntersectionObserver(function(es){es.forEach(function(en){if(!en.isIntersecting||!available(en.target))return;
-var current=links.find(function(a){return !a.hidden&&a.isConnected&&a.getAttribute('href')==='#'+en.target.id;});if(!current)return;
+var current=links.find(function(a){return target(a)===en.target;});if(!current)return;
 var changed=current.getAttribute('aria-current')!=='true';
 links.forEach(function(a){if(a===current)a.setAttribute('aria-current','true');else a.removeAttribute('aria-current');});
 if(changed&&tr&&tr.scrollWidth>tr.clientWidth)tr.scrollLeft=current.offsetLeft-16;
@@ -168,6 +227,7 @@ function indexRender(){
     indexHidden(feedback.querySelector('[data-gmi-index-count]'),!iq||n===0);
     indexHidden(feedback,!iq);
   }
+  syncIndexJump();
 }
 
 /* ---- inputs ---- */
@@ -241,6 +301,7 @@ function apply(){
     var v=el.getAttribute('data-aria-'+lang);if(v!==null)el.setAttribute('aria-label',v);});
   [].slice.call(document.querySelectorAll('[data-ph-en],[data-ph-zh]')).forEach(function(el){
     var v=el.getAttribute('data-ph-'+lang);if(v!==null)el.setAttribute('placeholder',v);});
+  syncIndexJump();
 }
 apply();
 document.addEventListener('langchange',apply);

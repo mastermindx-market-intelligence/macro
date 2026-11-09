@@ -765,3 +765,11 @@ html[data-lang="zh"] .gmi-product-index-title{letter-spacing:0}
   .gmi-product-index-title{font-size:24px;line-height:1.2}
   .gmi-product-head--index .gmi-snapshot{margin-top:var(--sp-2,8px);align-items:flex-start;flex-direction:row;flex-wrap:wrap;gap:var(--sp-3,12px);white-space:normal}
 }
+
+/* Enhanced mobile category choice keeps the existing 61px sticky strip. */
+.gmi-jump-picker{display:flex;align-items:center;gap:8px;padding:0 16px}
+.gmi-jump-picker[hidden],.gmi-jump-track[hidden]{display:none}
+.gmi-category-picker{appearance:auto;box-sizing:border-box;flex:1;min-width:0;min-height:44px;height:44px;padding:var(--sp-2,8px) var(--sp-3,12px);border:1px solid var(--line);border-radius:var(--r-ctl,8px);background:var(--panel);color:var(--text);font:500 var(--fs-sm)/1.5 var(--font-ui)}
+.gmi-jump-go{box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;flex:none;width:44px;min-width:44px;min-height:44px;height:44px;padding:0;border:1px solid var(--line);border-radius:var(--r-ctl,8px);background:var(--panel);color:var(--text);font:600 var(--fs-sm)/1.5 var(--font-ui);cursor:pointer}
+.gmi-jump-go:disabled{opacity:.5;cursor:default}
+.gmi-jump--picker::after{display:none}

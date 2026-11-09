@@ -9,7 +9,7 @@
 {{ key() }}
 </section>
 <div class="gmi-indexwrap">
-<nav class="gmi-jump" aria-label="Categories"><div class="gmi-jump-track">{% for c in model.cats %}<a href="#{{ c.id.split(':')[1] }}">{{ t(c.en, c.zh) }}<small data-gmi-category-count data-gmi-total="{{ c.micros|length }}">{{ c.micros|length }}</small></a>{% endfor %}</div></nav>
+<nav class="gmi-jump" aria-label="Categories" data-aria-en="Categories" data-aria-zh="类别"><div class="gmi-jump-picker" data-gmi-category-picker-control hidden><select class="gmi-category-picker" data-gmi-category-picker aria-label="Category" data-aria-en="Category" data-aria-zh="类别"></select><button class="gmi-jump-go" type="button" data-gmi-category-go aria-label="Go to category" data-aria-en="Go to category" data-aria-zh="前往类别" disabled>{{ t("Go", "前往") }}</button></div><div class="gmi-jump-track">{% for c in model.cats %}<a href="#{{ c.id.split(':')[1] }}">{{ t(c.en, c.zh) }}<small data-gmi-category-count data-gmi-total="{{ c.micros|length }}">{{ c.micros|length }}</small></a>{% endfor %}</div></nav>
 <div class="gmi-index" data-gmi-index>
 {% for c in model.cats %}
 {% set nc_ns = namespace(nc=0) %}

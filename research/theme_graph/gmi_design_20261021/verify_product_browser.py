@@ -1023,14 +1023,21 @@ with sync_playwright() as pw:
             energy = p.locator('.gmi-jump a[href="#energy_power"]')
             semiconductor = p.locator('.gmi-jump a[href="#semiconductors_hardware"]')
             total = p.locator('.gmi-jump a').count()
+            picker=p.locator('[data-gmi-category-picker]');go=p.locator('[data-gmi-category-go]')
+            def jump(link):
+                if width<=640:
+                    picker.select_option(link.get_attribute('href')[1:]);go.click()
+                else:link.click()
+            def available_shortcuts():
+                return p.locator('.gmi-jump a:not([hidden])').count()
             totals = p.locator('[data-gmi-total]').evaluate_all('(nodes)=>nodes.map(n=>({value:n.textContent,total:n.getAttribute("data-gmi-total")}))')
             assert all(x['value']==x['total'] for x in totals)
             expect(p.locator('[data-gmi-index-feedback]')).not_to_be_visible()
             assert ('Full index: 371 micro-themes' if language=='en' else '完整索引：371 个细分主题') in p.locator('.gmi-foot').inner_text()
             # Real sticky geometry is exercised before filtering shortens the document.
-            energy.click()
+            jump(energy)
             p.evaluate('()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)))')
-            targets=p.locator('.gmi-jump a:visible').evaluate_all('(nodes)=>nodes.map(n=>n.getBoundingClientRect().height)')
+            targets=p.locator('[data-gmi-category-picker],[data-gmi-category-go]' if width<=640 else '.gmi-jump a:visible').evaluate_all('(nodes)=>nodes.map(n=>n.getBoundingClientRect().height)')
             assert min(targets)>=44
             if width<=640:
                 geometry=p.evaluate('''()=>{const nav=document.querySelector('.gmi-jump').getBoundingClientRect(),head=document.querySelector('#energy_power > summary').getBoundingClientRect();
@@ -1042,8 +1049,12 @@ with sync_playwright() as pw:
             search.fill('HBM')
             expect(energy).not_to_be_visible(timeout=1500)
             expect(energy).not_to_have_attribute('aria-current','true')
-            assert p.locator('.gmi-jump a:visible').count()==1
-            expect(semiconductor).to_be_visible()
+            assert available_shortcuts()==1
+            if width<=640:
+                expect(picker).to_be_visible();expect(go).to_be_visible()
+                assert picker.locator('option[value="semiconductors_hardware"]').count()==1
+                assert not semiconductor.evaluate('(n)=>n.hidden')
+            else:expect(semiconductor).to_be_visible()
             expect(search).to_be_focused()
             assert p.locator('[data-gmi-index] > details:visible').count()==1
             assert p.locator('a.gmi-irow-name:visible').count()==2
@@ -1056,7 +1067,7 @@ with sync_playwright() as pw:
             assert feedback.inner_text().strip()==('2 results' if language=='en' else '2 个结果')
             assert p.locator('[role="status"]:visible').count()==1
             before = p.url
-            semiconductor.click()
+            jump(semiconductor)
             assert p.url==before
             assert p.locator('#semiconductors_hardware').evaluate('(n)=>n.open')
             # Hidden or detached targets may not fall through to a destructive native fragment.
@@ -1086,7 +1097,7 @@ with sync_playwright() as pw:
             expect(search).to_be_focused()
             search.press('Escape')
             expect(nav).to_be_visible()
-            assert p.locator('.gmi-jump a:visible').count()==total
+            assert available_shortcuts()==total
             assert p.locator('a.gmi-irow-name:visible').count()==371
             expect(feedback).not_to_be_visible()
             assert p.locator('[data-gmi-total]').evaluate_all('(nodes)=>nodes.map(n=>({value:n.textContent,total:n.getAttribute("data-gmi-total")}))')==totals
@@ -1126,8 +1137,12 @@ with sync_playwright() as pw:
             hbm = p.locator('[data-gmi-id="theme:hbm_packaging"] a')
             hbm.focus();restore('HBM')
             expect(hbm).to_be_focused()
-            restore('');energy.focus();restore('HBM')
-            expect(search).to_be_focused()
+            restore('')
+            if width<=640:
+                picker.select_option('energy_power');go.focus();restore('HBM')
+                expect(picker).to_be_focused();expect(picker).to_have_value('');expect(go).to_be_disabled()
+            else:
+                energy.focus();restore('HBM');expect(search).to_be_focused()
             restore('');p.locator('#energy_power > summary').focus();restore('HBM')
             expect(search).to_be_focused()
             # An unrelated focus owner is not taken over by history restoration.
@@ -1139,12 +1154,12 @@ with sync_playwright() as pw:
             p.locator('#gmi-focus-fixture').evaluate('(n)=>n.remove()')
             restore('zz-gmi-no-match-fixture');p.go_back()
             expect(search).to_have_value('HBM')
-            assert p.locator('.gmi-jump a:visible').count()==1
+            assert available_shortcuts()==1
             p.go_forward();expect(search).to_have_value('zz-gmi-no-match-fixture')
             expect(nav).not_to_be_visible()
             restore('HBM')
             p.evaluate('(language)=>document.documentElement.setAttribute("data-lang",language)', 'zh' if language=='en' else 'en')
-            assert p.locator('.gmi-jump a:visible').count()==1
+            assert available_shortcuts()==1
             assert feedback.inner_text().strip()==('2 个结果' if language=='en' else '2 results')
             # Restoring the pre-search collapsed state also releases focus before closing it.
             restore('')
@@ -2114,6 +2129,262 @@ with sync_playwright() as pw:
     for width in (1440,320):
         for language in ('en','zh'):
             check(f'index-header-static-{width}-{language}',lambda w=width,l=language:index_header_static(w,l))
+
+    def index_category_picker_paths(width, language, theme='light'):
+        """Pending native choice, explicit navigation and filtered focus share existing owners."""
+        with context(width,theme,language,reduced_motion='reduce') as c:
+            c.add_init_script('''(()=>{
+              const Native=window.IntersectionObserver;window.__pickerObservers=[];
+              window.IntersectionObserver=class extends Native {
+                constructor(callback,options){super(callback,options);
+                  if(options&&options.rootMargin==='-60px 0px -70% 0px')window.__pickerObservers.push(callback);
+                }
+              };
+            })();''')
+            returned='gmi.html#theme=theme:hbm_packaging&q=Micron'
+            fragment={'open':'all','lens':'chain','gmi_return':returned,'fixture_key':'retained'}
+            p=page_for(c,'gmi-index.html?fixture=category-picker#'+urlencode(fragment))
+            picker=p.locator('[data-gmi-category-picker]');go=p.locator('[data-gmi-category-go]')
+            assert picker.count()==1 and go.count()==1,'Mobile index has no category select and Go action'
+            nav=p.locator('.gmi-jump');track=p.locator('.gmi-jump-track');search=p.locator('[data-gmi-filter="index"]')
+            expect(picker).to_be_visible();expect(go).to_be_visible();expect(track).not_to_be_visible()
+            expect(picker).to_have_accessible_name('Category' if language=='en' else '类别')
+            expect(go).to_have_accessible_name('Go to category' if language=='en' else '前往类别')
+            expect(nav).to_have_accessible_name('Categories' if language=='en' else '类别')
+            expect(picker).to_have_value('');expect(go).to_be_disabled()
+            ids=['technology_software','semiconductors_hardware','energy_power','materials_mining','industrials_defense','healthcare_lifesciences','financial_services','consumer_cyclical','consumer_defensive','crypto_digital_assets']
+            assert picker.locator('option').evaluate_all('(ns)=>ns.map(n=>n.value)')==['']+ids
+            assert picker.locator('option').first.inner_text()==('Choose category' if language=='en' else '选择类别')
+            assert picker.locator('option[value="crypto_digital_assets"]').inner_text()==('Crypto & digital assets · 0' if language=='en' else '加密与数字资产 · 0')
+            assert not picker.locator('option[value="crypto_digital_assets"]').is_disabled()
+            geometry=p.evaluate('''()=>{
+              const r=s=>{const n=document.querySelector(s),b=n.getBoundingClientRect();return {left:b.left,right:b.right,width:b.width,height:b.height};};
+              return {picker:r('[data-gmi-category-picker]'),go:r('[data-gmi-category-go]'),nav:r('.gmi-jump'),overflow:document.documentElement.scrollWidth>innerWidth};
+            }''')
+            assert geometry['picker']['height']==44 and geometry['go']['height']==44 and geometry['go']['width']==44,geometry
+            assert geometry['nav']['height']==61 and not geometry['overflow'],geometry
+            assert geometry['picker']['right']<=geometry['go']['left']-8 and geometry['go']['right']<=width,geometry
+            if (width,language,theme) in ((390,'en','light'),(320,'zh','dark')):
+                path=args.out/f'category-picker-empty-{width}-{language}-{theme}.png'
+                p.screenshot(path=str(path),full_page=False);report['screenshots'].append(path.name)
+            p.evaluate('''()=>{
+              const scroll=Element.prototype.scrollIntoView;window.__pickerJumps=[];window.__pickerUnsafe=[];
+              Element.prototype.scrollIntoView=function(options){if(this.matches('[data-gmi-index] > details'))window.__pickerJumps.push(this.id);return scroll.call(this,options);};
+              const hidden=Object.getOwnPropertyDescriptor(HTMLElement.prototype,'hidden');
+              Object.defineProperty(HTMLElement.prototype,'hidden',{...hidden,set(v){
+                if(v&&this.matches('.gmi-jump,.gmi-jump-track,[data-gmi-category-picker-control]')&&this.contains(document.activeElement))window.__pickerUnsafe.push('hide-focused-owner');
+                hidden.set.call(this,v);
+              }});
+              const disabled=Object.getOwnPropertyDescriptor(HTMLButtonElement.prototype,'disabled');
+              Object.defineProperty(HTMLButtonElement.prototype,'disabled',{...disabled,set(v){
+                if(v&&this.matches('[data-gmi-category-go]')&&this===document.activeElement)window.__pickerUnsafe.push('disable-focused-go');
+                disabled.set.call(this,v);
+              }});
+              document.querySelector('.gmi-jump a[href="#energy_power"]').addEventListener('click',()=>{window.__energyLinkClicks=(window.__energyLinkClicks||0)+1;});
+            }''')
+            original_url=p.url;history=p.evaluate('history.length')
+            opened=p.locator('[data-gmi-index] > details').evaluate_all('(ns)=>ns.map(n=>n.open)')
+            picker.focus();before_scroll=p.evaluate('scrollY')
+            if language=='en':
+                # Real typeahead is observed; OS popup key handling is not simulated or claimed.
+                p.keyboard.type('Energy',delay=15)
+                expect(picker).to_have_value('energy_power')
+            else:
+                picker.select_option('energy_power')
+            assert p.url==original_url and p.evaluate('history.length')==history
+            assert p.evaluate('scrollY')==before_scroll and p.evaluate('window.__pickerJumps')==[]
+            assert p.locator('[data-gmi-index] > details').evaluate_all('(ns)=>ns.map(n=>n.open)')==opened
+            expect(go).to_be_enabled()
+            energy=p.locator('#energy_power')
+            for action in ('Enter','Space','click'):
+                energy.evaluate('(n)=>{n.open=false;}');p.evaluate('scrollTo(0,0)')
+                go.focus();before=p.evaluate('window.__pickerJumps.length')
+                if action=='click':go.click()
+                else:go.press(action)
+                assert energy.evaluate('(n)=>n.open')
+                assert p.evaluate('window.__pickerJumps.length')==before+1
+                assert p.evaluate('window.__pickerJumps.at(-1)')=='energy_power'
+                expect(picker).to_have_value('energy_power');expect(go).to_be_focused()
+                assert p.url==original_url and p.evaluate('history.length')==history
+                sticky=p.evaluate('''()=>{const n=document.querySelector('.gmi-jump').getBoundingClientRect(),h=document.querySelector('#energy_power > summary').getBoundingClientRect();return {navTop:n.top,navBottom:n.bottom,headingTop:h.top};}''')
+                assert abs(sticky['navTop'])<1 and sticky['headingTop']>=sticky['navBottom']-0.5,sticky
+            assert p.evaluate('window.__energyLinkClicks')==3
+            # An available empty category is still a destination, including the final category.
+            picker.select_option('crypto_digital_assets');go.click()
+            expect(picker).to_have_value('crypto_digital_assets')
+            assert p.locator('#crypto_digital_assets').evaluate('(n)=>n.open')
+            last=p.evaluate('''()=>{const n=document.querySelector('.gmi-jump').getBoundingClientRect(),h=document.querySelector('#crypto_digital_assets > summary').getBoundingClientRect();return {navBottom:n.bottom,headingTop:h.top,viewport:innerHeight};}''')
+            assert last['navBottom']-0.5<=last['headingTop']<last['viewport'],last
+            # Passive current-category observation cannot replace a user's pending destination.
+            passive=p.evaluate('''()=>{
+              const s=document.querySelector('[data-gmi-category-picker]'),nodes=[...s.options],value=s.value;
+              window.__pickerObservers.forEach(cb=>cb([{target:document.getElementById('semiconductors_hardware'),isIntersecting:true}]));
+              return {value:s.value,before:value,same:nodes.every((n,i)=>s.options[i]===n)};
+            }''')
+            assert passive=={'value':'crypto_digital_assets','before':'crypto_digital_assets','same':True}
+
+            def restore(query):
+                p.evaluate('''q=>{const h=new URLSearchParams(location.hash.slice(1));if(q)h.set('q',q);else h.delete('q');
+                  history.replaceState(null,'',location.pathname+location.search+'#'+h);dispatchEvent(new PopStateEvent('popstate'));}''',query)
+                expect(search).to_have_value(query)
+
+            p.evaluate('scrollTo(0,0)')
+            disclosure_snapshot=p.locator('[data-gmi-index] > details').evaluate_all('(ns)=>ns.map(n=>n.open)')
+            search.fill('HBM')
+            assert picker.locator('option').evaluate_all('(ns)=>ns.map(n=>n.value)')==['','semiconductors_hardware']
+            expect(picker).to_have_value('');expect(go).to_be_disabled();expect(search).to_be_focused()
+            picker.select_option('semiconductors_hardware');go.focus()
+            restore('HBM & advanced packaging')
+            expect(picker).to_have_value('semiconductors_hardware');expect(go).to_be_focused();expect(go).to_be_enabled()
+            assert picker.locator('option').last.inner_text().endswith(' · 1')
+            other='zh' if language=='en' else 'en';locale_url=p.url
+            p.evaluate('(v)=>document.documentElement.setAttribute("data-lang",v)',other)
+            expect(picker).to_have_accessible_name('类别' if other=='zh' else 'Category')
+            expect(go).to_have_accessible_name('前往类别' if other=='zh' else 'Go to category')
+            expect(nav).to_have_accessible_name('类别' if other=='zh' else 'Categories')
+            assert picker.locator('option').last.inner_text()==('半导体与硬件 · 1' if other=='zh' else 'Semiconductors & hardware · 1')
+            expect(go).to_be_focused();expect(picker).to_have_value('semiconductors_hardware');assert p.url==locale_url
+            repeated=p.evaluate('''()=>{
+              const s=document.querySelector('[data-gmi-category-picker]'),nodes=[...s.options];
+              document.dispatchEvent(new Event('langchange'));document.dispatchEvent(new Event('langchange'));
+              return nodes.every((n,i)=>s.options[i]===n);
+            }''')
+            assert repeated
+            restore('zz-category-no-match');expect(nav).not_to_be_visible();expect(search).to_be_focused()
+            p.locator('[data-gmi-search-clear]').click();expect(search).to_be_focused()
+            expect(nav).to_be_visible();expect(picker).to_have_value('');expect(go).to_be_disabled()
+            assert picker.locator('option').count()==11
+            assert p.locator('[data-gmi-index] > details').evaluate_all('(ns)=>ns.map(n=>n.open)')==disclosure_snapshot
+            picker.select_option('energy_power');go.focus();restore('HBM')
+            expect(picker).to_be_focused();expect(picker).to_have_value('');expect(go).to_be_disabled()
+            assert picker.locator('option').count()==2
+            picker.select_option('semiconductors_hardware');picker.focus()
+            p.evaluate('window.__pendingPickerOptions=[...document.querySelector("[data-gmi-category-picker]").options]')
+            restore('  HBM  ')
+            expect(picker).to_be_focused();expect(picker).to_have_value('semiconductors_hardware')
+            assert p.evaluate('window.__pendingPickerOptions.every((n,i)=>document.querySelector("[data-gmi-category-picker]").options[i]===n)')
+            p.evaluate('(v)=>document.documentElement.setAttribute("data-lang",v)',language)
+            expect(picker).to_have_accessible_name('Category' if language=='en' else '类别')
+            if (width,language,theme) in ((390,'en','light'),(320,'zh','dark'),(320,'en','light'),(390,'zh','light')):
+                p.evaluate('scrollTo(0,0)')
+                path=args.out/f'category-picker-filtered-{width}-{language}-{theme}.png'
+                p.screenshot(path=str(path),full_page=False);report['screenshots'].append(path.name)
+            restore('')
+            # A destination can disappear between selection and activation. No stale jump or fallback is legal.
+            rejected=[]
+            for fault in ('group-hidden','group-detached','group-reparented','link-hidden','link-detached','link-reparented'):
+                picker.select_option('energy_power');go.focus()
+                result=p.evaluate('''fault=>{
+                  const link=document.querySelector('.gmi-jump a[href="#energy_power"]'),group=document.getElementById('energy_power');
+                  const node=fault.startsWith('group')?group:link,parent=node.parentNode,next=node.nextSibling,hidden=node.hidden;
+                  const url=location.href,scroll=scrollY,jumps=window.__pickerJumps.length,opened=group.open;
+                  if(fault.endsWith('hidden'))node.hidden=true;else if(fault.endsWith('detached'))node.remove();else document.body.append(node);
+                  document.querySelector('[data-gmi-category-go]').click();
+                  const result={fault,urlSame:location.href===url,scrollSame:scrollY===scroll,jumps:window.__pickerJumps.length-jumps,openedSame:group.open===opened,
+                    value:document.querySelector('[data-gmi-category-picker]').value,disabled:document.querySelector('[data-gmi-category-go]').disabled,
+                    focus:document.activeElement.matches('[data-gmi-category-picker]')};
+                  if(node.parentNode!==parent)parent.insertBefore(node,next);node.hidden=hidden;document.dispatchEvent(new Event('langchange'));return result;
+                }''',fault)
+                assert result=={'fault':fault,'urlSame':True,'scrollSame':True,'jumps':0,'openedSame':True,'value':'','disabled':True,'focus':True},result
+                rejected.append(result)
+            assert not p.evaluate('window.__pickerUnsafe'),p.evaluate('window.__pickerUnsafe')
+            assert p.evaluate('history.length')==history
+            assert parse_qs(urlsplit(p.url).fragment)=={k:[v] for k,v in fragment.items()}
+            assert not p.evaluate('document.documentElement.scrollWidth>innerWidth')
+            report.setdefault('category_picker',[]).append({'width':width,'language':language,'theme':theme,'geometry':geometry,'native_typeahead':language=='en','native_go_activations':['Enter','Space','click'],
+                'delegated_link_clicks':3,'empty_last_category':last,'passive_observer_preserved_pending_choice':True,'invalid_destinations':rejected,'unsafe_focus_transitions':0})
+
+    def index_category_picker_responsive(language):
+        """Only the outgoing responsive presentation may transfer focus at 640/641 pixels."""
+        with context(1440,'light',language,reduced_motion='reduce') as c:
+            p=page_for(c,'gmi-index.html#open=all&lens=chain')
+            picker=p.locator('[data-gmi-category-picker]');go=p.locator('[data-gmi-category-go]')
+            assert picker.count()==1
+            track=p.locator('.gmi-jump-track');holder=p.locator('[data-gmi-category-picker-control]')
+            energy=p.locator('.gmi-jump a[href="#energy_power"]');brand=p.locator('.gmi-product-name')
+            expect(track).to_be_visible();expect(holder).not_to_be_visible()
+            assert p.locator('.gmi-jump a:visible').count()==10
+            p.evaluate('''()=>{
+              window.__resizeUnsafe=[];const d=Object.getOwnPropertyDescriptor(HTMLElement.prototype,'hidden');
+              Object.defineProperty(HTMLElement.prototype,'hidden',{...d,set(v){
+                if(v&&this.matches('.gmi-jump-track,[data-gmi-category-picker-control]')&&this.contains(document.activeElement))window.__resizeUnsafe.push(true);
+                d.set.call(this,v);
+              }});
+            }''')
+            original=p.url;energy.focus();p.set_viewport_size({'width':640,'height':844})
+            expect(picker).to_be_visible();expect(picker).to_be_focused();expect(track).not_to_be_visible()
+            expect(picker).to_have_value('energy_power');expect(go).to_be_enabled()
+            go.focus();p.set_viewport_size({'width':641,'height':844})
+            expect(track).to_be_visible();expect(energy).to_be_focused();expect(holder).not_to_be_visible()
+            p.locator('.gmi-jump a[href="#semiconductors_hardware"]').focus()
+            p.set_viewport_size({'width':320,'height':844})
+            expect(picker).to_be_visible();expect(picker).to_be_focused();expect(picker).to_have_value('semiconductors_hardware')
+            brand.focus();p.set_viewport_size({'width':641,'height':844});expect(holder).not_to_be_visible();expect(brand).to_be_focused()
+            p.set_viewport_size({'width':640,'height':844});expect(picker).to_be_visible();expect(brand).to_be_focused()
+            expect(picker).to_have_value('semiconductors_hardware')
+            picker.select_option('energy_power');go.click();expect(go).to_be_focused()
+            assert p.evaluate('scrollY')>1000
+            p.evaluate('''()=>{
+              const focus=HTMLElement.prototype.focus;window.__responsiveFocusDeltas=[];
+              HTMLElement.prototype.focus=function(options){const before=scrollY;const result=focus.call(this,options);
+                window.__responsiveFocusDeltas.push({before,after:scrollY});return result;};
+            }''')
+            p.set_viewport_size({'width':641,'height':844});expect(energy).to_be_focused()
+            focus_moves=p.evaluate('window.__responsiveFocusDeltas')
+            assert focus_moves and all(abs(x['after']-x['before'])<1 for x in focus_moves),focus_moves
+            p.set_viewport_size({'width':640,'height':844});expect(picker).to_be_focused()
+            go.focus()
+            p.locator('[data-gmi-index] > details').evaluate_all('(ns)=>ns.forEach(n=>{n.hidden=true;})')
+            p.set_viewport_size({'width':641,'height':844})
+            expect(p.locator('[data-gmi-filter="index"]')).to_be_focused();expect(holder).not_to_be_visible()
+            assert p.url==original and not p.evaluate('window.__resizeUnsafe')
+            assert not p.evaluate('document.documentElement.scrollWidth>innerWidth')
+            report.setdefault('category_picker_responsive',[]).append({'language':language,'widths':[1440,640,641,320,641,640,641,640,641],'owned_focus_only':True,'focused_destination_preserved':True,'late_category_focus_moves':focus_moves,'all_stale_search_fallback':True,'unsafe_hides':0,'url_preserved':True})
+
+    def index_category_picker_no_observer(language):
+        """Progressive category navigation does not require current-category observation."""
+        with context(320,'light',language,reduced_motion='reduce') as c:
+            c.add_init_script('delete window.IntersectionObserver;')
+            p=page_for(c,'gmi-index.html#open=all&lens=chain')
+            picker=p.locator('[data-gmi-category-picker]');go=p.locator('[data-gmi-category-go]')
+            assert picker.count()==1;expect(picker).to_be_visible();expect(go).to_be_disabled()
+            original=p.url;picker.select_option('energy_power');go.click()
+            assert p.locator('#energy_power').evaluate('(n)=>n.open') and p.url==original
+            p.locator('[data-gmi-filter="index"]').fill('HBM')
+            assert picker.locator('option').evaluate_all('(ns)=>ns.map(n=>n.value)')==['','semiconductors_hardware']
+            picker.select_option('semiconductors_hardware');go.press('Enter')
+            assert p.locator('a.gmi-irow-name:visible').count()==2
+            assert parse_qs(urlsplit(p.url).fragment)=={'open':['all'],'lens':['chain'],'q':['HBM']}
+            report.setdefault('category_picker_no_observer',[]).append({'language':language,'filtered_navigation':True})
+
+    def index_category_picker_static(width, language):
+        """With scripts disabled, authored links and disclosures remain the useful controls."""
+        with context(width,'light',language,java_script_enabled=False,reduced_motion='reduce') as c:
+            p=page_for(c,'gmi-index.html')
+            expect(p.locator('[data-gmi-category-picker-control]')).not_to_be_visible()
+            expect(p.locator('[data-gmi-category-go]')).not_to_be_visible()
+            expect(p.locator('.gmi-jump-track')).to_be_visible()
+            assert p.locator('.gmi-jump a:visible').count()==10
+            assert p.locator('a.gmi-irow-name').count()==371
+            assert p.locator('a.gmi-irow-name').evaluate_all('(ns)=>ns.every(n=>n.getAttribute("href"))')
+            p.locator('.gmi-jump a[href="#energy_power"]').click()
+            assert urlsplit(p.url).fragment=='energy_power'
+            group=p.locator('#energy_power');assert group.evaluate('(n)=>n.open')
+            group.locator('summary').click();assert not group.evaluate('(n)=>n.open')
+            assert not p.evaluate('document.documentElement.scrollWidth>innerWidth')
+            report.setdefault('category_picker_static',[]).append({'width':width,'language':language,'native_categories':10,'native_topics':371,'no_inert_custom_action':True})
+
+    for width in (390,320):
+        for language in ('en','zh'):
+            check(f'category-picker-{width}-{language}',lambda w=width,l=language:index_category_picker_paths(w,l))
+    for width,language in ((390,'en'),(320,'zh')):
+        check(f'category-picker-dark-{width}-{language}',lambda w=width,l=language:index_category_picker_paths(w,l,'dark'))
+    for language in ('en','zh'):
+        check(f'category-picker-responsive-{language}',lambda l=language:index_category_picker_responsive(l))
+        check(f'category-picker-no-observer-{language}',lambda l=language:index_category_picker_no_observer(l))
+        for width in (1440,320):
+            check(f'category-picker-static-{width}-{language}',lambda w=width,l=language:index_category_picker_static(w,l))
+
 
     browser.close()
 server.shutdown()
