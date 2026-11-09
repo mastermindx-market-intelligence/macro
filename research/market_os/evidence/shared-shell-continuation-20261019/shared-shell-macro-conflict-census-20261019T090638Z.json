@@ -1,0 +1,14 @@
+{
+  "observed_at": "2026-10-19T09:06:38.428741+00:00",
+  "head": "3261331f95371b96187ccbfd3fc055067d4a6945",
+  "remote_head": "3261331f95371b96187ccbfd3fc055067d4a6945",
+  "origin_main_before": "69dd6e774cc48223005426765e74aed193d55954",
+  "incoming_main": "69dd6e774cc48223005426765e74aed193d55954",
+  "merge_base": "97261c2a319e62faec05690c04e6fae180540235",
+  "fetch_stdout": "",
+  "fetch_stderr": "From https://github.com/mastermindx-market-intelligence/macro\n * branch                        main       -> FETCH_HEAD\n",
+  "merge_tree_exit": 1,
+  "merge_tree_stdout": "0cc6c71e0eeb4e5cdf0d22540f2dc8cf4d36c3fa\napp/deploy/update.sh\nsite/etfs.html\nsite/us_stocks.html\n\nAuto-merging .github/ci/legacy-jobs.yml\nAuto-merging app/deploy/update.sh\nCONFLICT (content): Merge conflict in app/deploy/update.sh\nAuto-merging site/canada.html\nAuto-merging site/canada_stock.html\nAuto-merging site/china.html\nAuto-merging site/china_lookup.html\nwarning: Cannot merge binary files: site/etfs.html (3261331f95371b96187ccbfd3fc055067d4a6945 vs. 69dd6e774cc48223005426765e74aed193d55954)\nAuto-merging site/etfs.html\nCONFLICT (content): Merge conflict in site/etfs.html\nAuto-merging site/factors.html\nAuto-merging site/fundamental_forensics.js\nAuto-merging site/hk_stocks.html\nAuto-merging site/intl_stock.html\nAuto-merging site/macro.html\nAuto-merging site/news.html\nAuto-merging site/sector_central.html\nAuto-merging site/signal_lab.html\nAuto-merging site/stock.html\nAuto-merging site/stocks/index.html\nwarning: Cannot merge binary files: site/us_stocks.html (3261331f95371b96187ccbfd3fc055067d4a6945 vs. 69dd6e774cc48223005426765e74aed193d55954)\nAuto-merging site/us_stocks.html\nCONFLICT (content): Merge conflict in site/us_stocks.html\nAuto-merging templates/fundamental_forensics.js\n",
+  "merge_tree_stderr": "",
+  "working_tree_unchanged": true
+}

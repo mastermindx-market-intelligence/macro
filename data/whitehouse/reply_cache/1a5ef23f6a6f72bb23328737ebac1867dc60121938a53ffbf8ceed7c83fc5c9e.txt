@@ -1,0 +1,71 @@
+{
+  "activate": true,
+  "importance": 72,
+  "banner_days": 2,
+  "tone": "mixed",
+  "banner_title": "US manufacturing renaissance claims gain traction — reflation tailwind, tariff risk persists",
+  "banner_title_zh": "美国制造业复兴论据增强——再通胀利好，关税风险犹存",
+  "summary": "A strong October jobs report and record capital goods imports give the administration's reshoring narrative concrete footing, reinforcing the reflation regime and supporting industrial cyclicals, while keeping tariff-policy uncertainty in the foreground.",
+  "summary_zh": "强劲的10月就业报告和创纪录的资本品进口为政府产业回流叙事提供了实质支撑，强化再通胀格局并利好工业周期股，同时关税政策不确定性仍悬而未决。",
+  "analysis": "The October jobs report — 165,000 payrolls versus roughly 65,000 expected — combined with 19,000 manufacturing jobs added, the strongest since 2023, gives the administration's tariff-and-tax-cut playbook tangible validation. Upward revisions to August and September payrolls further reduce the odds of an imminent economic slowdown, supporting the prevailing reflation regime. The transmission to markets runs through two channels: first, stronger labor data raises the floor under rates and reinforces cyclical sector rotation into industrials, materials, and domestic manufacturers; second, the explicitly credited policy mix — tariffs plus tax cuts — keeps trade-policy risk embedded in forward earnings outlooks for companies with import-heavy supply chains.\n\nThe record 46% share of capital goods in total imports and 14% year-over-year growth in core capital goods orders signal a genuine domestic capex upcycle, which is structurally bullish for machinery, automation, and factory-construction names. A 10th straight month of manufacturing expansion and a 12% drop in the trade deficit suggest reshoring is moving from rhetoric to balance-sheet reality for some firms.\n\nThe key uncertainty is persistence. One strong jobs print does not guarantee the trend holds, and the same tariff regime credited for reshoring also raises input costs for manufacturers that rely on imported components. If wage growth continues to accelerate, margin pressure could offset the demand tailwind for labor-intensive industrial names. Markets will be watching whether capital goods strength translates into sustained order growth or reflects front-loaded purchasing ahead of further tariff escalation.",
+  "sectors": [
+    {
+      "name": "Industrial machinery & automation",
+      "impact": "tailwind",
+      "rationale": "Record capital goods orders and reshoring capex directly lift demand for production equipment."
+    },
+    {
+      "name": "Domestic steel & aluminum",
+      "impact": "tailwind",
+      "rationale": "Tariff-protected metals producers benefit from reshored manufacturing and factory construction."
+    },
+    {
+      "name": "Factory construction & engineering",
+      "impact": "tailwind",
+      "rationale": "120,000 factory construction jobs added since the policy shift signals multi-year buildout spending."
+    },
+    {
+      "name": "Import-dependent manufacturers",
+      "impact": "headwind",
+      "rationale": "Firms relying on foreign components face higher input costs under the tariff regime credited for the jobs gains."
+    },
+    {
+      "name": "Big-box retail & consumer importers",
+      "impact": "headwind",
+      "rationale": "Sustained tariff pressure keeps landed costs elevated for goods-heavy retailers."
+    }
+  ],
+  "tickers": [
+    {
+      "symbol": "CAT",
+      "direction": "benefit",
+      "rationale": "Direct beneficiary of factory construction and reshoring-driven equipment demand."
+    },
+    {
+      "symbol": "DE",
+      "direction": "benefit",
+      "rationale": "Industrial machinery exposure tied to domestic capex upcycle and capital goods orders."
+    },
+    {
+      "symbol": "EMR",
+      "direction": "benefit",
+      "rationale": "Automation and process-control equipment supplier leveraged to US manufacturing expansion."
+    },
+    {
+      "symbol": "NUE",
+      "direction": "benefit",
+      "rationale": "Domestic steel producer shielded by tariffs and lifted by manufacturing construction."
+    },
+    {
+      "symbol": "X",
+      "direction": "benefit",
+      "rationale": "Integrated US steelmaker with direct reshoring and tariff-protection exposure."
+    },
+    {
+      "symbol": "TGT",
+      "direction": "hurt",
+      "rationale": "Large importer of consumer goods facing elevated landed costs under tariff regime."
+    }
+  ],
+  "confidence": "medium"
+}

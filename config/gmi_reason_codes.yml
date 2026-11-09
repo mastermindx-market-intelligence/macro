@@ -1,0 +1,150 @@
+schema: gmi_explorer.reason_codes.v1
+# Plain EN/ZH words for every reason/state code the GMI coverage proof
+# (scripts/gmi_coverage_proof.py) can emit. Pages print these words, never the
+# code. tests/test_gmi_reason_codes.py pins every constant and every code found
+# in a live report to this file, so a new code fails the test until words land.
+# Register: plain, lower-case sentence fragment, no code, no underscore, no
+# vendor name, never "validated", no falsifier/refutation language.
+
+reasons:
+  IDENTITY_NOT_QUALIFIED:
+    en: company identity not confirmed
+    zh: 公司身份尚未确认
+  ADMITTED_SCOPE_STALE:
+    en: admitted scope is out of date
+    zh: 已纳入范围已过期
+  ACTIVITY_REJECTED_BY_CURATOR:
+    en: activity evidence was rejected on review
+    zh: 业务活动证据经审核未通过
+  PROPOSED_NOT_ADMITTED:
+    en: proposed, awaiting review
+    zh: 已提议，待审核
+  VENDOR_MEMBERSHIP_ONLY:
+    en: only on a third-party list
+    zh: 仅见于第三方名单
+  NO_ACTIVITY_EVIDENCE:
+    en: no activity evidence
+    zh: 无业务活动证据
+  ACTIVITY_EXPANSION_TIER_ONLY:
+    en: extended theme, no admitted activity yet
+    zh: 扩展主题，尚无获准的业务活动
+  CN_LISTED_COUNTS_NOT_AVAILABLE:
+    en: China-listed counts not available yet
+    zh: A股上市公司计数暂不可得
+  NOT_IN_GRAPH:
+    en: not yet linked to any theme
+    zh: 尚未关联任何主题
+  NOT_IN_MASTER:
+    en: not in the company directory
+    zh: 不在公司名录中
+  NO_ISSUER_EVIDENCE:
+    en: no issuer record found
+    zh: 未找到发行人记录
+  UNSUPPORTED_MARKET:
+    en: market not covered yet
+    zh: 该市场暂未覆盖
+  DEFERRED_IDENTITY_EXCEPTION:
+    en: company identity under review
+    zh: 公司身份审核中
+  DEFERRED:
+    en: company identity under review
+    zh: 公司身份审核中
+  ENTITY_TYPE_CONFLICT:
+    en: listing type conflicts across sources
+    zh: 各来源的证券类型不一致
+  EXCLUDED_ENTITY_TYPE_CONFLICT:
+    en: listing type conflicts across sources
+    zh: 各来源的证券类型不一致
+  EXCLUDED_ETF_KIND:
+    en: fund, not an operating company
+    zh: 基金，非经营性公司
+  EXCLUDED_NON_COMMON_INSTRUMENT:
+    en: not a common share
+    zh: 非普通股
+  EXCLUDED_SUPERSEDED_DUPLICATE_MINT:
+    en: duplicate listing record
+    zh: 重复的上市记录
+  ISSUER_EVIDENCE_CONFLICT:
+    en: sources disagree on company identity
+    zh: 各来源的公司身份信息不一致
+  EVIDENCE_CONFLICT:
+    en: sources disagree on company identity
+    zh: 各来源的公司身份信息不一致
+
+identity_states:
+  RESOLVED:
+    en: company identity confirmed
+    zh: 公司身份已确认
+  QUALIFIED:
+    en: company identity confirmed
+    zh: 公司身份已确认
+  NO_ISSUER_EVIDENCE:
+    en: no issuer record found
+    zh: 未找到发行人记录
+  DEFERRED_IDENTITY_EXCEPTION:
+    en: company identity under review
+    zh: 公司身份审核中
+  EVIDENCE_CONFLICT:
+    en: sources disagree on company identity
+    zh: 各来源的公司身份信息不一致
+  ISSUER_EVIDENCE_CONFLICT:
+    en: sources disagree on company identity
+    zh: 各来源的公司身份信息不一致
+  NOT_IN_GRAPH:
+    en: not yet linked to any theme
+    zh: 尚未关联任何主题
+  ENTITY_TYPE_CONFLICT:
+    en: listing type conflicts across sources
+    zh: 各来源的证券类型不一致
+  ELIGIBLE:
+    en: in the company count
+    zh: 计入公司总数
+  EXCLUDED_ENTITY_TYPE_CONFLICT:
+    en: listing type conflicts across sources
+    zh: 各来源的证券类型不一致
+  EXCLUDED_ETF_KIND:
+    en: fund, not an operating company
+    zh: 基金，非经营性公司
+  EXCLUDED_NON_COMMON_INSTRUMENT:
+    en: not a common share
+    zh: 非普通股
+  EXCLUDED_SUPERSEDED_DUPLICATE_MINT:
+    en: duplicate listing record
+    zh: 重复的上市记录
+
+ledger_states:
+  RESOLVED:
+    en: company identity confirmed
+    zh: 公司身份已确认
+  GRAPH_ONLY:
+    en: known to the theme graph only
+    zh: 仅见于主题图谱
+  NOT_IN_MASTER:
+    en: not in the company directory
+    zh: 不在公司名录中
+  UNSUPPORTED_MARKET:
+    en: market not covered yet
+    zh: 该市场暂未覆盖
+  DEFERRED:
+    en: company identity under review
+    zh: 公司身份审核中
+  ENTITY_TYPE_CONFLICT:
+    en: listing type conflicts across sources
+    zh: 各来源的证券类型不一致
+
+dispositions:
+  EMPTY:
+    en: no company linked yet
+    zh: 尚无关联公司
+  PROPOSED_ONLY:
+    en: a link is held for review
+    zh: 有待审核的关联
+  NATIVE_POPULATED:
+    en: has an admitted company
+    zh: 已有获准纳入的公司
+  RESEARCH_UNADMITTED:
+    en: research notes only, none admitted
+    zh: 仅有研究记录，尚无纳入
+  VENDOR_ONLY:
+    en: only on a third-party list
+    zh: 仅见于第三方名单

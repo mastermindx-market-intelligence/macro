@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-03-31T21:08:15Z",
+ "accession": "0001193125-26-134908",
+ "cik": "0001323404",
+ "doc_byte_length": 2017216,
+ "doc_sha256": "822fb43ef34e6a54b405c8ce42e572648a199b3a213508b5dbca7fff878e1460",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-31",
+ "form": "40-F",
+ "period_of_report": "2025-12-31",
+ "primary_document": "d56281dex991.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 317670,
+  "byte_start": 317251,
+  "normalized": "2 Wheaton International previously entered into a silver purchase agreement with Mercator Minerals Ltd. (“Mercator”) in respect of the Mineral Park mine. In 2014, Mercator was deemed to have filed an assignment in bankruptcy in Canada and certain Mercator’s subsidiaries (including Mineral Park Inc. the owner of the Mineral Park mine) filed Chapter 11 bankruptcy petitions in the United States.",
+  "normalized_sha256": "74287380dbafd7484167a6e325cae4af76cc50e1416a64d88318cbb514aafdc4",
+  "raw": "2</SUP> Wheaton International previously entered into a silver purchase agreement with Mercator\nMinerals Ltd. (&#8220;Mercator&#8221;) in respect of the Mineral Park mine. In 2014, Mercator was deemed to have filed an assignment in bankruptcy in Canada and certain Mercator&#8217;s subsidiaries (including Mineral Park Inc. the owner of the\nMineral Park mine) filed Chapter 11 bankruptcy petitions in the United States.",
+  "raw_sha256": "036e785452a8b72afd6daaeb24e60618682589148c4a7ecced4d56b0e6a68227"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1323404/000119312526134908/d56281dex991.htm",
+ "xbrl_contexts": []
+}

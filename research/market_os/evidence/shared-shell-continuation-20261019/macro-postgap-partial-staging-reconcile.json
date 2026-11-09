@@ -1,0 +1,213 @@
+{
+  "started_at": "2026-10-20T00:41:43.842262+00:00",
+  "scope": "Finish exact partial merge only; no repeated merge, renderer or host effect",
+  "expected_head": "e22e1c33c810da99f7389f5069dd2ee045270c85",
+  "expected_merge_head": "6397b97031640de2a0bdd850bfebc520e7458b41",
+  "prior_receipt_sha256": "f76c5f662eb31e02657966dcbadaf45dfc56edc9a04fc6fef2a9909f50221fcf",
+  "steps": [
+    {
+      "args": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit": 0,
+      "out": "e22e1c33c810da99f7389f5069dd2ee045270c85\n",
+      "err": ""
+    },
+    {
+      "args": [
+        "git",
+        "rev-parse",
+        "MERGE_HEAD"
+      ],
+      "exit": 0,
+      "out": "6397b97031640de2a0bdd850bfebc520e7458b41\n",
+      "err": ""
+    },
+    {
+      "args": [
+        "git",
+        "branch",
+        "--show-current"
+      ],
+      "exit": 0,
+      "out": "sol/market-os-shared-shell-design-20260924\n",
+      "err": ""
+    },
+    {
+      "args": [
+        "git",
+        "diff",
+        "--name-only",
+        "--diff-filter=U"
+      ],
+      "exit": 0,
+      "out": "site/etfs.html\nsite/us_stocks.html\n",
+      "err": ""
+    },
+    {
+      "args": [
+        "git",
+        "diff",
+        "--name-only"
+      ],
+      "exit": 0,
+      "out": "site/etfs.html\nsite/etfs.html\nsite/us_stocks.html\nsite/us_stocks.html\n",
+      "err": ""
+    },
+    {
+      "args": [
+        "git",
+        "rev-parse",
+        "--path-format=absolute",
+        "--git-dir"
+      ],
+      "exit": 0,
+      "out": "/Users/chriswong/Documents/Cluade/Macro Dashboard/.git/worktrees/shared-shell-r27\n",
+      "err": ""
+    },
+    {
+      "args": [
+        "git",
+        "add",
+        "--sparse",
+        "--",
+        "site/etfs.html",
+        "site/us_stocks.html"
+      ],
+      "exit": 0,
+      "out": "",
+      "err": ""
+    },
+    {
+      "args": [
+        "git",
+        "ls-files",
+        "-u"
+      ],
+      "exit": 0,
+      "out": "",
+      "err": ""
+    },
+    {
+      "args": [
+        "git",
+        "diff",
+        "--name-only"
+      ],
+      "exit": 0,
+      "out": "",
+      "err": ""
+    },
+    {
+      "args": [
+        "git",
+        "write-tree"
+      ],
+      "exit": 0,
+      "out": "586960f5b84d6d7a1e662d95f99941242ee7edaf\n",
+      "err": ""
+    },
+    {
+      "args": [
+        "git",
+        "diff",
+        "--name-only",
+        "a6b7594079171dcf76d0b6179da3e754a34d43b5",
+        "586960f5b84d6d7a1e662d95f99941242ee7edaf"
+      ],
+      "exit": 0,
+      "out": ".github/ci/legacy-jobs.yml\napp/deploy/Caddyfile\napp/deploy/update.sh\nsite/etfs.html\nsite/us_stocks.html\n",
+      "err": ""
+    },
+    {
+      "args": [
+        "python3",
+        "scripts/worktree_sparse.py",
+        "add",
+        "site"
+      ],
+      "exit": 0,
+      "out": "worktree-sparse: materialized site\n",
+      "err": ""
+    },
+    {
+      "args": [
+        "git",
+        "write-tree"
+      ],
+      "exit": 0,
+      "out": "586960f5b84d6d7a1e662d95f99941242ee7edaf\n",
+      "err": ""
+    },
+    {
+      "args": [
+        "git",
+        "ls-files",
+        "-u"
+      ],
+      "exit": 0,
+      "out": "",
+      "err": ""
+    },
+    {
+      "args": [
+        "git",
+        "diff",
+        "--name-only"
+      ],
+      "exit": 0,
+      "out": "",
+      "err": ""
+    },
+    {
+      "args": [
+        "git",
+        "sparse-checkout",
+        "list"
+      ],
+      "exit": 0,
+      "out": ".agents\n.claude\n.codex\n.cursor\n.github\n.grok\n.warp\nadmin\nagentos\napp\nbrowser\ncalibration\ncollectors\nconfig\ncontent\ncontracts\ndocs\nengine\nfinviz_themes\nknowledge\nlib\nops\norch\nplugins\nproperties\nreports\nrequirements\nresearch\nscripts\nsite\ntemplates\ntests\ntools\nux-evidence\nworker\n",
+      "err": ""
+    },
+    {
+      "args": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit": 0,
+      "out": "e22e1c33c810da99f7389f5069dd2ee045270c85\n",
+      "err": ""
+    },
+    {
+      "args": [
+        "git",
+        "rev-parse",
+        "MERGE_HEAD"
+      ],
+      "exit": 0,
+      "out": "6397b97031640de2a0bdd850bfebc520e7458b41\n",
+      "err": ""
+    }
+  ],
+  "file_hashes": {
+    "site/etfs.html": "f8b898079f7d2af5ab08a7877ef15f40202f70aad9d2a47dae2f371e07e5cf72",
+    "site/us_stocks.html": "eaf2cb07ef36f65baface2bf87da98d78845d0cf2a9d41e4d2c3b631aa907420",
+    "app/deploy/Caddyfile": "4ab43219e01a82a024f157bddac7e41dfd49a9424b3921907028a5ba46246f2c",
+    "app/deploy/update.sh": "eae12bef34a5dbba1a986846fb3c59992ba228ca472a0316c042ced6e0e48d88",
+    ".github/ci/legacy-jobs.yml": "bd03bb678da28c98549eee1adb2f97a9c6593fe17760295348db51a120a4b23c"
+  },
+  "index_tree_after_staging": "586960f5b84d6d7a1e662d95f99941242ee7edaf",
+  "preview_tree": "a6b7594079171dcf76d0b6179da3e754a34d43b5",
+  "only_five_resolutions_differ_from_preview": true,
+  "all_checks_pass": true,
+  "unmerged_after": [],
+  "unstaged_after": [],
+  "index_tree": "586960f5b84d6d7a1e662d95f99941242ee7edaf",
+  "committed": false,
+  "pushed": false,
+  "site_scope_enabled": true,
+  "finished_at": "2026-10-20T00:42:33.901057+00:00"
+}

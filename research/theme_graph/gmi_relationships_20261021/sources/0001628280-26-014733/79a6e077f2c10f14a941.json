@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-03-04T22:20:43Z",
+ "accession": "0001628280-26-014733",
+ "cik": "0001438423",
+ "doc_byte_length": 1326156,
+ "doc_sha256": "d1e239f43c04a857c00616b6a24a5e30b6a6b5b94eb3d640ec9b2de9e4aa1245",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-04",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "mram-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 146060,
+  "byte_start": 145748,
+  "normalized": "•We have licensed GLOBALFOUNDRIES to offer embedded MRAM in the solutions they manufacture for their customers providing high-performance non-volatile embedded memory.",
+  "normalized_sha256": "46d17b613d4690a8151cfa6b291a094dc3310c445a5d0fa7c92671880acb103a",
+  "raw": "&#8226;</span><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%;padding-left:14.5pt\">We have licensed GLOBALFOUNDRIES to offer embedded MRAM in the solutions they manufacture for their customers providing high-performance non-volatile embedded memory.",
+  "raw_sha256": "79a6e077f2c10f14a9414ccdc8338761b7f03337cba2a129784e6166d178f624"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1438423/000162828026014733/mram-20251231.htm",
+ "xbrl_contexts": []
+}
