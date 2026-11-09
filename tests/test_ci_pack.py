@@ -5703,9 +5703,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_948),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_969),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_706),
+    ("templates/index.html", 137, 5_951),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_972),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_709),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5713,6 +5713,34 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-09 (#8304, current-main dependency adoption): preserve the
+    original provenance-suite step and the complete accepted history below.
+    Existing unrun-scoring-engine on current main has 17 commands, 21 test
+    tokens and 1188 joined characters; the original step gives 18, 22 and
+    1236 respectively. The unchanged estimator stays in one 800-character
+    bucket, giving 60->63: only the original +3 contribution.
+    PR #10226 has actually landed its independent ledger +3; retain that
+    allowance and all its provenance. Compose 5948/5969/5706 ->
+    5951/5972/5709. Keep 137/138/131 jobs and ten packs; no selector,
+    assertion, timeout, runner or runtime-capacity change.
+    The original own contract was 0 introduced / 0 inherited and its
+    owning suite passed 47 cases. Those are historical results; this is
+    static source accounting, not a new planner or runtime measurement.
+    Current main also retains the actual #10735 Business Activity repair.
+    New-head owning, packing and aggregate proof remains required; the
+    historical commodity semantic UNKNOWN is not reclassified.
+
+    2026-11-07 (#8304): enroll tests/test_regime_v2_pit.py once in the
+    existing unrun-scoring-engine CODE owner. With run_ci_pack blob 3cbed589,
+    its fallback estimate changes 57->60: run commands 16->17, explicit
+    test paths 20->21, joined command text 1125->1173 characters (one
+    800-character unit in both). No observed-runtime override applies.
+    Fund exactly those three estimated-weight units on each existing
+    probe; keep job ceilings 137/138/131, ten-pack limits, selectors,
+    timeouts and admission bounds unchanged. This is source accounting,
+    not measured runtime; current-head hosted contract measurements
+    remain required. Other unmerged enrollments are not included here.
 
     2026-11-09 (PR #10226, reconcile the actual #10192 landing):
     #10192 merged as7bdfb249486d409ee8634501842c31f51af74c7c.
