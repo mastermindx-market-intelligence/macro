@@ -1,7 +1,10 @@
 {
   "operation_parent": "PR #10864 / continuing Paper estate audit",
-  "status": "RESPONSE_OBSERVED_WITH_SEPARATE_VISUAL_PROOF",
-  "source_pin": "b5674d8ef898e503d6164922654f5ff89be9981c",
+  "status": "RESPONSE_OBSERVED_WITH_SEPARATE_EFFECT_AND_VISUAL_PROOF",
+  "source_pins": [
+    "b5674d8ef898e503d6164922654f5ff89be9981c",
+    "aec7f387badcdf69c9a947fafbc73b4c68470c7d"
+  ],
   "receipts": [
     {
       "operation_id": "paper-estate-audit-20261108-sol-001-cont-077-breadth-entry",
@@ -1394,7 +1397,762 @@
           }
         ]
       }
+    },
+    {
+      "operation_id": "paper-audit-next-139-source-link",
+      "fileId": "01M6Q4WK0EMPV1G2KDGGRQBC1B",
+      "tool": "write_html",
+      "targets": [
+        "12K-0"
+      ],
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M6Q4WK0EMPV1G2KDGGRQBC1B\",\n    \"name\": \"Macro · Policy Monitor · Production Design\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"c8cafbb7\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"17E-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"17F-0\",\n      \"name\": \"SAVED DESIGN & BUILD…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"17G-0\",\n      \"name\": \"https://github.com/m…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "operation_id": "paper-audit-next-140-source-link",
+      "fileId": "01M6PXFEP1E1T59M2B3N673PMG",
+      "tool": "write_html",
+      "targets": [
+        "1JG-0"
+      ],
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M6PXFEP1E1T59M2B3N673PMG\",\n    \"name\": \"Market Memory · Revision evidence · R1 · 2026-11-05\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"ee9dbe57\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1O2-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1O3-0\",\n      \"name\": \"SAVED DESIGN & BUILD…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1O4-0\",\n      \"name\": \"https://github.com/m…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "operation_id": "paper-audit-next-141-bonds-context",
+      "fileId": "01M6Y3RNXNXP3YX0NFBT0YEXS4",
+      "tool": "set_text_content",
+      "targets": [
+        "H5-0",
+        "KB-0",
+        "HP-0",
+        "KV-0",
+        "Z7-0",
+        "101-0"
+      ],
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3RNXNXP3YX0NFBT0YEXS4\",\n    \"name\": \"Mastermind - Bonds - Decision Workspace R1\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"updates\": [\n    {\n      \"nodeId\": \"H5-0\"\n    },\n    {\n      \"nodeId\": \"KB-0\"\n    },\n    {\n      \"nodeId\": \"HP-0\"\n    },\n    {\n      \"nodeId\": \"KV-0\"\n    },\n    {\n      \"nodeId\": \"Z7-0\"\n    },\n    {\n      \"nodeId\": \"101-0\"\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "operation_id": "paper-audit-next-142-bonds-page",
+      "fileId": "01M6Y3RNXNXP3YX0NFBT0YEXS4",
+      "tool": "create_page",
+      "targets": [],
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3RNXNXP3YX0NFBT0YEXS4\",\n    \"name\": \"Mastermind - Bonds - Decision Workspace R1\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"pageId\": \"p-2-0\",\n  \"name\": \"Build · Source coverage & recovery\",\n  \"icon\": \"blueprint\"\n}"
+          }
+        ]
+      }
+    },
+    {
+      "operation_id": "paper-audit-next-143-bonds-variants",
+      "fileId": "01M6Y3RNXNXP3YX0NFBT0YEXS4",
+      "tool": "duplicate_nodes",
+      "targets": [
+        "GJ-0",
+        "Z3-0"
+      ],
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3RNXNXP3YX0NFBT0YEXS4\",\n    \"name\": \"Mastermind - Bonds - Decision Workspace R1\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"duplicatedNodes\": [\n    {\n      \"sourceId\": \"GJ-0\",\n      \"newId\": \"3C6-0\",\n      \"name\": \"91 · R10 · Bonds · Mobile Decision Journey\",\n      \"component\": \"Frame\",\n      \"worldX\": -2450,\n      \"worldY\": -5310,\n      \"x\": -2450,\n      \"y\": -5310,\n      \"descendantIdMap\": {\n        \"GK-0\": \"3F2-0\",\n        \"GU-0\": \"3EV-0\",\n        \"H1-0\": \"3C7-0\",\n        \"H2-0\": \"3ER-0\",\n        \"H6-0\": \"3EA-0\",\n        \"HN-0\": \"3E5-0\",\n        \"HS-0\": \"3DV-0\",\n        \"I2-0\": \"3C8-0\",\n        \"I3-0\": \"3DC-0\",\n        \"IM-0\": \"3D2-0\",\n        \"IW-0\": \"3CH-0\",\n        \"JH-0\": \"3CB-0\",\n        \"JN-0\": \"3C9-0\",\n        \"JO-0\": \"3CA-0\",\n        \"JI-0\": \"3CG-0\",\n        \"JJ-0\": \"3CF-0\",\n        \"JK-0\": \"3CE-0\",\n        \"JL-0\": \"3CC-0\",\n        \"JM-0\": \"3CD-0\",\n        \"IX-0\": \"3D1-0\",\n        \"IY-0\": \"3CJ-0\",\n        \"JG-0\": \"3CI-0\",\n        \"IZ-0\": \"3CW-0\",\n        \"J4-0\": \"3CT-0\",\n        \"J7-0\": \"3CQ-0\",\n        \"JA-0\": \"3CN-0\",\n        \"JD-0\": \"3CK-0\",\n        \"JE-0\": \"3CM-0\",\n        \"JF-0\": \"3CL-0\",\n        \"JB-0\": \"3CP-0\",\n        \"JC-0\": \"3CO-0\",\n        \"J8-0\": \"3CS-0\",\n        \"J9-0\": \"3CR-0\",\n        \"J5-0\": \"3CV-0\",\n        \"J6-0\": \"3CU-0\",\n        \"J0-0\": \"3CY-0\",\n        \"J3-0\": \"3CX-0\",\n        \"J1-0\": \"3D0-0\",\n        \"J2-0\": \"3CZ-0\",\n        \"IN-0\": \"3DB-0\",\n        \"IO-0\": \"3DA-0\",\n        \"IP-0\": \"3D7-0\",\n        \"IS-0\": \"3D4-0\",\n        \"IV-0\": \"3D3-0\",\n        \"IT-0\": \"3D6-0\",\n        \"IU-0\": \"3D5-0\",\n        \"IQ-0\": \"3D9-0\",\n        \"IR-0\": \"3D8-0\",\n        \"I4-0\": \"3DU-0\",\n        \"I5-0\": \"3DT-0\",\n        \"I6-0\": \"3DE-0\",\n        \"IL-0\": \"3DD-0\",\n        \"I7-0\": \"3DM-0\",\n        \"IE-0\": \"3DF-0\",\n        \"IF-0\": \"3DJ-0\",\n        \"II-0\": \"3DG-0\",\n        \"IJ-0\": \"3DI-0\",\n        \"IK-0\": \"3DH-0\",\n        \"IG-0\": \"3DL-0\",\n        \"IH-0\": \"3DK-0\",\n        \"I8-0\": \"3DQ-0\",\n        \"IB-0\": \"3DN-0\",\n        \"IC-0\": \"3DP-0\",\n        \"ID-0\": \"3DO-0\",\n        \"I9-0\": \"3DS-0\",\n        \"IA-0\": \"3DR-0\",\n        \"HT-0\": \"3E2-0\",\n        \"HW-0\": \"3DZ-0\",\n        \"HZ-0\": \"3DW-0\",\n        \"I0-0\": \"3DY-0\",\n        \"I1-0\": \"3DX-0\",\n        \"HX-0\": \"3E1-0\",\n        \"HY-0\": \"3E0-0\",\n        \"HU-0\": \"3E4-0\",\n        \"HV-0\": \"3E3-0\",\n        \"HO-0\": \"3E7-0\",\n        \"HR-0\": \"3E6-0\",\n        \"HP-0\": \"3E9-0\",\n        \"HQ-0\": \"3E8-0\",\n        \"H7-0\": \"3EM-0\",\n        \"HC-0\": \"3EJ-0\",\n        \"HF-0\": \"3EG-0\",\n        \"HI-0\": \"3ED-0\",\n        \"HL-0\": \"3EB-0\",\n        \"HM-0\": \"3EC-0\",\n        \"HJ-0\": \"3EF-0\",\n        \"HK-0\": \"3EE-0\",\n        \"HG-0\": \"3EI-0\",\n        \"HH-0\": \"3EH-0\",\n        \"HD-0\": \"3EL-0\",\n        \"HE-0\": \"3EK-0\",\n        \"H8-0\": \"3EP-0\",\n        \"HA-0\": \"3EO-0\",\n        \"HB-0\": \"3EN-0\",\n        \"H9-0\": \"3EQ-0\",\n        \"H3-0\": \"3EU-0\",\n        \"H4-0\": \"3ET-0\",\n        \"H5-0\": \"3ES-0\",\n        \"GV-0\": \"3F0-0\",\n        \"GX-0\": \"3EZ-0\",\n        \"GY-0\": \"3EY-0\",\n        \"GZ-0\": \"3EW-0\",\n        \"H0-0\": \"3EX-0\",\n        \"GW-0\": \"3F1-0\",\n        \"GL-0\": \"3FA-0\",\n        \"GN-0\": \"3F3-0\",\n        \"GO-0\": \"3F4-0\",\n        \"GP-0\": \"3F9-0\",\n        \"GQ-0\": \"3F8-0\",\n        \"GR-0\": \"3F7-0\",\n        \"GS-0\": \"3F6-0\",\n        \"GT-0\": \"3F5-0\",\n        \"GM-0\": \"3FB-0\"\n      }\n    },\n    {\n      \"sourceId\": \"Z3-0\",\n      \"newId\": \"3FC-0\",\n      \"name\": \"69 · R2 · Bonds · Implementation & Evidence Contract\",\n      \"component\": \"Frame\",\n      \"worldX\": 120,\n      \"worldY\": -10270,\n      \"x\": 120,\n      \"y\": -10270,\n      \"descendantIdMap\": {\n        \"Z4-0\": \"3GK-0\",\n        \"ZC-0\": \"3FD-0\",\n        \"ZD-0\": \"3G0-0\",\n        \"ZX-0\": \"3FE-0\",\n        \"ZY-0\": \"3FF-0\",\n        \"ZZ-0\": \"3FV-0\",\n        \"104-0\": \"3FQ-0\",\n        \"109-0\": \"3FM-0\",\n        \"10D-0\": \"3FI-0\",\n        \"10H-0\": \"3FG-0\",\n        \"10I-0\": \"3FH-0\",\n        \"10E-0\": \"3FL-0\",\n        \"10F-0\": \"3FK-0\",\n        \"10G-0\": \"3FJ-0\",\n        \"10A-0\": \"3FP-0\",\n        \"10B-0\": \"3FO-0\",\n        \"10C-0\": \"3FN-0\",\n        \"105-0\": \"3FU-0\",\n        \"106-0\": \"3FT-0\",\n        \"107-0\": \"3FS-0\",\n        \"108-0\": \"3FR-0\",\n        \"100-0\": \"3FZ-0\",\n        \"101-0\": \"3FY-0\",\n        \"102-0\": \"3FX-0\",\n        \"103-0\": \"3FW-0\",\n        \"ZE-0\": \"3G1-0\",\n        \"ZF-0\": \"3GG-0\",\n        \"ZJ-0\": \"3GC-0\",\n        \"ZN-0\": \"3G8-0\",\n        \"ZR-0\": \"3G4-0\",\n        \"ZV-0\": \"3G2-0\",\n        \"ZW-0\": \"3G3-0\",\n        \"ZS-0\": \"3G7-0\",\n        \"ZT-0\": \"3G6-0\",\n        \"ZU-0\": \"3G5-0\",\n        \"ZO-0\": \"3GB-0\",\n        \"ZP-0\": \"3GA-0\",\n        \"ZQ-0\": \"3G9-0\",\n        \"ZK-0\": \"3GF-0\",\n        \"ZL-0\": \"3GE-0\",\n        \"ZM-0\": \"3GD-0\",\n        \"ZG-0\": \"3GJ-0\",\n        \"ZH-0\": \"3GI-0\",\n        \"ZI-0\": \"3GH-0\",\n        \"Z5-0\": \"3GR-0\",\n        \"Z6-0\": \"3GQ-0\",\n        \"Z7-0\": \"3GP-0\",\n        \"Z8-0\": \"3GL-0\",\n        \"Z9-0\": \"3GO-0\",\n        \"ZA-0\": \"3GN-0\",\n        \"ZB-0\": \"3GM-0\"\n      }\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "operation_id": "paper-audit-next-144-bonds-names",
+      "fileId": "01M6Y3RNXNXP3YX0NFBT0YEXS4",
+      "tool": "rename_nodes",
+      "targets": [
+        "3C6-0",
+        "3FC-0"
+      ],
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3RNXNXP3YX0NFBT0YEXS4\",\n    \"name\": \"Mastermind - Bonds - Decision Workspace R1\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"updates\": [\n    {\n      \"nodeId\": \"3C6-0\",\n      \"name\": \"R12 Mobile coverage evidence - proposed\"\n    },\n    {\n      \"nodeId\": \"3FC-0\",\n      \"name\": \"R12 Source semantics and build acceptance\"\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "operation_id": "paper-audit-next-145-bonds-coverage",
+      "fileId": "01M6Y3RNXNXP3YX0NFBT0YEXS4",
+      "tool": "write_html",
+      "targets": [
+        "3C7-0"
+      ],
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3RNXNXP3YX0NFBT0YEXS4\",\n    \"name\": \"Mastermind - Bonds - Decision Workspace R1\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"3GS-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3GT-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3GU-0\",\n      \"name\": \"← Back to Bonds\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3GV-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3GW-0\",\n      \"name\": \"CONTROLLED FIXTURE ·…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3GX-0\",\n      \"name\": \"Coverage & sources\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3GY-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3GZ-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3H0-0\",\n      \"name\": \"Health composite\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3H1-0\",\n      \"name\": \"Partial coverage\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3H2-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3H3-0\",\n      \"name\": \"74\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3H4-0\",\n      \"name\": \"/ 100\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3H5-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3H6-0\",\n      \"name\": \"70% weight coverage\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3H7-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3H8-0\",\n      \"name\": \"Rectangle\",\n      \"component\": \"Rectangle\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3H9-0\",\n      \"name\": \"Rectangle\",\n      \"component\": \"Rectangle\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3HA-0\",\n      \"name\": \"3 of 5 inputs availa…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3HB-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3HC-0\",\n      \"name\": \"View weights & calcu…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3HD-0\",\n      \"name\": \"›\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3HE-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3HF-0\",\n      \"name\": \"Input coverage\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3HG-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3HH-0\",\n      \"name\": \"Recession\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3HI-0\",\n      \"name\": \"Available\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3HJ-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3HK-0\",\n      \"name\": \"Drawdown\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3HL-0\",\n      \"name\": \"Available\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3HM-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3HN-0\",\n      \"name\": \"Credit\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3HO-0\",\n      \"name\": \"Unavailable\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3HP-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3HQ-0\",\n      \"name\": \"Rates volatility\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3HR-0\",\n      \"name\": \"Available · 0 stress\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3HS-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3HT-0\",\n      \"name\": \"Plumbing\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3HU-0\",\n      \"name\": \"Unavailable\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3HV-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3HW-0\",\n      \"name\": \"Observation dates un…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3HX-0\",\n      \"name\": \"Dates were not suppl…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3HY-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3HZ-0\",\n      \"name\": \"Inspect source recor…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3I0-0\",\n      \"name\": \"›\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "operation_id": "paper-audit-next-146-bonds-build-heading",
+      "fileId": "01M6Y3RNXNXP3YX0NFBT0YEXS4",
+      "tool": "set_text_content",
+      "targets": [
+        "3GR-0",
+        "3GQ-0",
+        "3GP-0"
+      ],
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3RNXNXP3YX0NFBT0YEXS4\",\n    \"name\": \"Mastermind - Bonds - Decision Workspace R1\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"updates\": [\n    {\n      \"nodeId\": \"3GR-0\"\n    },\n    {\n      \"nodeId\": \"3GQ-0\"\n    },\n    {\n      \"nodeId\": \"3GP-0\"\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "operation_id": "paper-audit-next-147-bonds-observations",
+      "fileId": "01M6Y3RNXNXP3YX0NFBT0YEXS4",
+      "tool": "set_text_content",
+      "targets": [
+        "2JU-0",
+        "HA-0",
+        "KG-0",
+        "2JV-0",
+        "HB-0",
+        "KH-0",
+        "2P4-0",
+        "J3-0",
+        "M9-0",
+        "2P9-0",
+        "3HW-0",
+        "3HX-0"
+      ],
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3RNXNXP3YX0NFBT0YEXS4\",\n    \"name\": \"Mastermind - Bonds - Decision Workspace R1\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"updates\": [\n    {\n      \"nodeId\": \"2JU-0\"\n    },\n    {\n      \"nodeId\": \"HA-0\"\n    },\n    {\n      \"nodeId\": \"KG-0\"\n    },\n    {\n      \"nodeId\": \"2JV-0\"\n    },\n    {\n      \"nodeId\": \"HB-0\"\n    },\n    {\n      \"nodeId\": \"KH-0\"\n    },\n    {\n      \"nodeId\": \"2P4-0\"\n    },\n    {\n      \"nodeId\": \"J3-0\"\n    },\n    {\n      \"nodeId\": \"M9-0\"\n    },\n    {\n      \"nodeId\": \"2P9-0\"\n    },\n    {\n      \"nodeId\": \"3HW-0\"\n    },\n    {\n      \"nodeId\": \"3HX-0\"\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "operation_id": "paper-audit-next-148-bonds-explanations",
+      "fileId": "01M6Y3RNXNXP3YX0NFBT0YEXS4",
+      "tool": "set_text_content",
+      "targets": [
+        "2P3-0",
+        "2P8-0",
+        "J2-0",
+        "J6-0",
+        "M8-0",
+        "MC-0"
+      ],
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3RNXNXP3YX0NFBT0YEXS4\",\n    \"name\": \"Mastermind - Bonds - Decision Workspace R1\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"updates\": [\n    {\n      \"nodeId\": \"2P3-0\"\n    },\n    {\n      \"nodeId\": \"2P8-0\"\n    },\n    {\n      \"nodeId\": \"J2-0\"\n    },\n    {\n      \"nodeId\": \"J6-0\"\n    },\n    {\n      \"nodeId\": \"M8-0\"\n    },\n    {\n      \"nodeId\": \"MC-0\"\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "operation_id": "paper-audit-next-149-bonds-input-view",
+      "fileId": "01M6Y3RNXNXP3YX0NFBT0YEXS4",
+      "tool": "duplicate_nodes",
+      "targets": [
+        "3C6-0"
+      ],
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3RNXNXP3YX0NFBT0YEXS4\",\n    \"name\": \"Mastermind - Bonds - Decision Workspace R1\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"duplicatedNodes\": [\n    {\n      \"sourceId\": \"3C6-0\",\n      \"newId\": \"3I2-0\",\n      \"name\": \"R12 Mobile coverage evidence - proposed\",\n      \"component\": \"Frame\",\n      \"worldX\": -1980,\n      \"worldY\": -5310,\n      \"x\": -1980,\n      \"y\": -5310,\n      \"descendantIdMap\": {\n        \"3F2-0\": \"3JJ-0\",\n        \"3EV-0\": \"3JC-0\",\n        \"3GS-0\": \"3I3-0\",\n        \"3GT-0\": \"3JA-0\",\n        \"3GV-0\": \"3J7-0\",\n        \"3GY-0\": \"3IR-0\",\n        \"3HE-0\": \"3I7-0\",\n        \"3HY-0\": \"3I4-0\",\n        \"3HZ-0\": \"3I6-0\",\n        \"3I0-0\": \"3I5-0\",\n        \"3HF-0\": \"3IQ-0\",\n        \"3HG-0\": \"3IN-0\",\n        \"3HJ-0\": \"3IK-0\",\n        \"3HM-0\": \"3IH-0\",\n        \"3HP-0\": \"3IE-0\",\n        \"3HS-0\": \"3IB-0\",\n        \"3HV-0\": \"3I8-0\",\n        \"3HW-0\": \"3IA-0\",\n        \"3HX-0\": \"3I9-0\",\n        \"3HT-0\": \"3ID-0\",\n        \"3HU-0\": \"3IC-0\",\n        \"3HQ-0\": \"3IG-0\",\n        \"3HR-0\": \"3IF-0\",\n        \"3HN-0\": \"3IJ-0\",\n        \"3HO-0\": \"3II-0\",\n        \"3HK-0\": \"3IM-0\",\n        \"3HL-0\": \"3IL-0\",\n        \"3HH-0\": \"3IP-0\",\n        \"3HI-0\": \"3IO-0\",\n        \"3GZ-0\": \"3J4-0\",\n        \"3H2-0\": \"3J1-0\",\n        \"3H5-0\": \"3IV-0\",\n        \"3HB-0\": \"3IS-0\",\n        \"3HC-0\": \"3IU-0\",\n        \"3HD-0\": \"3IT-0\",\n        \"3H6-0\": \"3J0-0\",\n        \"3H7-0\": \"3IX-0\",\n        \"3HA-0\": \"3IW-0\",\n        \"3H8-0\": \"3IZ-0\",\n        \"3H9-0\": \"3IY-0\",\n        \"3H3-0\": \"3J3-0\",\n        \"3H4-0\": \"3J2-0\",\n        \"3H0-0\": \"3J6-0\",\n        \"3H1-0\": \"3J5-0\",\n        \"3GW-0\": \"3J9-0\",\n        \"3GX-0\": \"3J8-0\",\n        \"3GU-0\": \"3JB-0\",\n        \"3F0-0\": \"3JH-0\",\n        \"3EZ-0\": \"3JG-0\",\n        \"3EY-0\": \"3JF-0\",\n        \"3EW-0\": \"3JD-0\",\n        \"3EX-0\": \"3JE-0\",\n        \"3F1-0\": \"3JI-0\",\n        \"3FA-0\": \"3JR-0\",\n        \"3F3-0\": \"3JK-0\",\n        \"3F4-0\": \"3JL-0\",\n        \"3F9-0\": \"3JQ-0\",\n        \"3F8-0\": \"3JP-0\",\n        \"3F7-0\": \"3JO-0\",\n        \"3F6-0\": \"3JN-0\",\n        \"3F5-0\": \"3JM-0\",\n        \"3FB-0\": \"3JS-0\"\n      }\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "operation_id": "paper-audit-next-150-bonds-input-name",
+      "fileId": "01M6Y3RNXNXP3YX0NFBT0YEXS4",
+      "tool": "rename_nodes",
+      "targets": [
+        "3I2-0"
+      ],
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3RNXNXP3YX0NFBT0YEXS4\",\n    \"name\": \"Mastermind - Bonds - Decision Workspace R1\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"updates\": [\n    {\n      \"nodeId\": \"3I2-0\",\n      \"name\": \"R12 Read-input evidence - proposed\"\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "operation_id": "paper-audit-next-151-bonds-input-content",
+      "fileId": "01M6Y3RNXNXP3YX0NFBT0YEXS4",
+      "tool": "write_html",
+      "targets": [
+        "3I3-0"
+      ],
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3RNXNXP3YX0NFBT0YEXS4\",\n    \"name\": \"Mastermind - Bonds - Decision Workspace R1\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"3JT-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3JU-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3JV-0\",\n      \"name\": \"← Back to Bonds\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3JW-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3JX-0\",\n      \"name\": \"ILLUSTRATIVE · 18–25…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3JY-0\",\n      \"name\": \"Evidence behind the …\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3JZ-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3K0-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3K1-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3K2-0\",\n      \"name\": \"10Y nominal yield\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3K3-0\",\n      \"name\": \"+18 bp\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3K4-0\",\n      \"name\": \"4.28% → 4.46% · Sele…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3K5-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3K6-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3K7-0\",\n      \"name\": \"10Y real yield\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3K8-0\",\n      \"name\": \"+12 bp\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3K9-0\",\n      \"name\": \"Endpoint records not…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3KA-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3KB-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3KC-0\",\n      \"name\": \"High-yield spread\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3KD-0\",\n      \"name\": \"+6 bp\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3KE-0\",\n      \"name\": \"Endpoint records not…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3KF-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3KG-0\",\n      \"name\": \"10Y nominal par yiel…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3KH-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3KI-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3KJ-0\",\n      \"name\": \"18 SEP\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3KK-0\",\n      \"name\": \"4.28%\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3KL-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3KM-0\",\n      \"name\": \"25 SEP\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3KN-0\",\n      \"name\": \"4.46%\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3KO-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3KP-0\",\n      \"name\": \"+18 basis points\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3KQ-0\",\n      \"name\": \"(4.46 − 4.28) × 100\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3KR-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3KS-0\",\n      \"name\": \"Source cadence\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3KT-0\",\n      \"name\": \"Daily\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3KU-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3KV-0\",\n      \"name\": \"No live-data receipt\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3KW-0\",\n      \"name\": \"This example has no …\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3KX-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3KY-0\",\n      \"name\": \"Coverage & missing s…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3KZ-0\",\n      \"name\": \"›\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "operation_id": "paper-audit-next-152-bonds-build",
+      "fileId": "01M6Y3RNXNXP3YX0NFBT0YEXS4",
+      "tool": "write_html",
+      "targets": [
+        "3FD-0"
+      ],
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3RNXNXP3YX0NFBT0YEXS4\",\n    \"name\": \"Mastermind - Bonds - Decision Workspace R1\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"3L1-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3L2-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3L3-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3L4-0\",\n      \"name\": \"Keep the sign and de…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3L5-0\",\n      \"name\": \"52-WEEK NET HIGH–LOW\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3L6-0\",\n      \"name\": \"−20.0%\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3L7-0\",\n      \"name\": \"SVG\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3L8-0\",\n      \"name\": \"Line\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3L9-0\",\n      \"name\": \"Line\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3LA-0\",\n      \"name\": \"Line\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3LB-0\",\n      \"name\": \"Circle\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3LC-0\",\n      \"name\": \"−40%\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3LD-0\",\n      \"name\": \"0\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3LE-0\",\n      \"name\": \"+40%\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3LF-0\",\n      \"name\": \"Controlled fixture: …\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3LG-0\",\n      \"name\": \"The observed denomin…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3LH-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3LI-0\",\n      \"name\": \"Show what the score …\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3LJ-0\",\n      \"name\": \"HEALTH COMPOSITE · C…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3LK-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3LL-0\",\n      \"name\": \"74\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3LM-0\",\n      \"name\": \"/ 100\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3LN-0\",\n      \"name\": \"Partial coverage · 7…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3LO-0\",\n      \"name\": \"3 of 5 inputs are av…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3LP-0\",\n      \"name\": \"Keep the incumbent r…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3LQ-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3LR-0\",\n      \"name\": \"Date each sampled cu…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3LS-0\",\n      \"name\": \"CONTROLLED BUILD DAT…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3LT-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3LU-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3LV-0\",\n      \"name\": \"Latest · 14 Oct 2026\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3LW-0\",\n      \"name\": \"Row offset −1\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3LX-0\",\n      \"name\": \"9 tenors\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3LY-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3LZ-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3M0-0\",\n      \"name\": \"Approx. 3 months · 1…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3M1-0\",\n      \"name\": \"Row offset −64\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3M2-0\",\n      \"name\": \"7 tenors\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3M3-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3M4-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3M5-0\",\n      \"name\": \"Approx. 1 year · 30 …\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3M6-0\",\n      \"name\": \"Row offset −252\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3M7-0\",\n      \"name\": \"Unavailable · 3 teno…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3M8-0\",\n      \"name\": \"Render at four valid…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3M9-0\",\n      \"name\": \"One evidence owner, …\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3MA-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3MB-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3MC-0\",\n      \"name\": \"Read inputs\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3MD-0\",\n      \"name\": \"2JZ / HR / KX → read…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3ME-0\",\n      \"name\": \"The headline uses no…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3MF-0\",\n      \"name\": \"Selected-curve Data …\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3MG-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3MH-0\",\n      \"name\": \"Coverage\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3MI-0\",\n      \"name\": \"2NO / 2QF → coverage…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3MJ-0\",\n      \"name\": \"Use one view for ava…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3MK-0\",\n      \"name\": \"Older payloads witho…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3ML-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3MM-0\",\n      \"name\": \"Explanation evidence\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3MN-0\",\n      \"name\": \"JG / MM → explanatio…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3MO-0\",\n      \"name\": \"Show the hypotheses …\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3MP-0\",\n      \"name\": \"Close/Escape returns…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3MQ-0\",\n      \"name\": \"Implementation bound…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3MR-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3MS-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3MT-0\",\n      \"name\": \"FINRA projection\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3MU-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3MV-0\",\n      \"name\": \"Preserve the calcula…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3MW-0\",\n      \"name\": \"engine/credit_moment…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3MX-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3MY-0\",\n      \"name\": \"Migrate the legacy k…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3MZ-0\",\n      \"name\": \"Retain nullable finr…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3N0-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3N1-0\",\n      \"name\": \"Advance-share popula…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3N2-0\",\n      \"name\": \"The existing advance…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3N3-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3N4-0\",\n      \"name\": \"Health projection\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3N5-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3N6-0\",\n      \"name\": \"Expose the weights a…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3N7-0\",\n      \"name\": \"engine/bonds.py rema…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3N8-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3N9-0\",\n      \"name\": \"Preserve complete / …\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3NA-0\",\n      \"name\": \"Valid zero contribut…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3NB-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3NC-0\",\n      \"name\": \"Keep scenarios indep…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3ND-0\",\n      \"name\": \"A missing market inp…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3NE-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3NF-0\",\n      \"name\": \"Curve and explanatio…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3NG-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3NH-0\",\n      \"name\": \"Add sample identity\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3NI-0\",\n      \"name\": \"Keep current row-off…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3NJ-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3NK-0\",\n      \"name\": \"Qualify each explana…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3NL-0\",\n      \"name\": \"The five-session exa…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3NM-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3NN-0\",\n      \"name\": \"Keep window identiti…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3NO-0\",\n      \"name\": \"The 21-day and 63-da…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3NP-0\",\n      \"name\": \"Four acceptance fixt…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3NQ-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3NR-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3NS-0\",\n      \"name\": \"F01 · Opposite signs\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3NT-0\",\n      \"name\": \"Highs/lows/denominat…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3NU-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3NV-0\",\n      \"name\": \"F02 · Zero and unava…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3NW-0\",\n      \"name\": \"5/5/100 → present 0.…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3NX-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3NY-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3NZ-0\",\n      \"name\": \"F03 · Partial score\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3O0-0\",\n      \"name\": \"Weights: recession .…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3O1-0\",\n      \"name\": \"100 − (6 + 12 + 0) /…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3O2-0\",\n      \"name\": \"Expected: partial, 3…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3O3-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3O4-0\",\n      \"name\": \"F04 · Actual curve s…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3O5-0\",\n      \"name\": \"At the controlled 16…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3O6-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3O7-0\",\n      \"name\": \"Delivery order and p…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3O8-0\",\n      \"name\": \"Inventory current pa…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3O9-0\",\n      \"name\": \"Exact source pin · a…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3OA-0\",\n      \"name\": \"https://github.com/m…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "operation_id": "paper-audit-next-153-bonds-evidence-target",
+      "fileId": "01M6Y3RNXNXP3YX0NFBT0YEXS4",
+      "tool": "write_html",
+      "targets": [
+        "HN-0"
+      ],
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3RNXNXP3YX0NFBT0YEXS4\",\n    \"name\": \"Mastermind - Bonds - Decision Workspace R1\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"3OC-0\",\n      \"name\": \"Rectangle\",\n      \"component\": \"Rectangle\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "operation_id": "paper-audit-next-154-bonds-evidence-wrap",
+      "fileId": "01M6Y3RNXNXP3YX0NFBT0YEXS4",
+      "tool": "move_nodes",
+      "targets": [
+        "HR-0",
+        "3OC-0"
+      ],
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3RNXNXP3YX0NFBT0YEXS4\",\n    \"name\": \"Mastermind - Bonds - Decision Workspace R1\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"moves\": [],\n  \"errors\": [\n    {\n      \"nodeId\": \"HR-0\",\n      \"error\": \"Target parent \\\"Rectangle\\\" (Rectangle) cannot have children\"\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "upstream_errors": [
+        {
+          "nodeId": "HR-0",
+          "error": "Target parent \"Rectangle\" (Rectangle) cannot have children"
+        }
+      ],
+      "execution_outcome": "NO_MUTATION_RECONCILED",
+      "reconciliation": "Empty wrapper readback and original parent unchanged; supplied empty div was imported as Rectangle, which cannot have children. Repair requires a real Frame containing an SVG child before moving the original text."
+    },
+    {
+      "operation_id": "paper-audit-next-155-bonds-explanation-target",
+      "fileId": "01M6Y3RNXNXP3YX0NFBT0YEXS4",
+      "tool": "write_html",
+      "targets": [
+        "IW-0"
+      ],
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3RNXNXP3YX0NFBT0YEXS4\",\n    \"name\": \"Mastermind - Bonds - Decision Workspace R1\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"3OE-0\",\n      \"name\": \"Rectangle\",\n      \"component\": \"Rectangle\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "operation_id": "paper-audit-next-156-bonds-explanation-wrap",
+      "fileId": "01M6Y3RNXNXP3YX0NFBT0YEXS4",
+      "tool": "move_nodes",
+      "targets": [
+        "JG-0",
+        "3OE-0"
+      ],
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3RNXNXP3YX0NFBT0YEXS4\",\n    \"name\": \"Mastermind - Bonds - Decision Workspace R1\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"moves\": [],\n  \"errors\": [\n    {\n      \"nodeId\": \"JG-0\",\n      \"error\": \"Target parent \\\"Rectangle\\\" (Rectangle) cannot have children\"\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "upstream_errors": [
+        {
+          "nodeId": "JG-0",
+          "error": "Target parent \"Rectangle\" (Rectangle) cannot have children"
+        }
+      ],
+      "execution_outcome": "NO_MUTATION_RECONCILED",
+      "reconciliation": "Empty wrapper readback and original parent unchanged; supplied empty div was imported as Rectangle, which cannot have children. Repair requires a real Frame containing an SVG child before moving the original text."
+    },
+    {
+      "operation_id": "paper-audit-next-157-bonds-action-copy",
+      "fileId": "01M6Y3RNXNXP3YX0NFBT0YEXS4",
+      "tool": "set_text_content",
+      "targets": [
+        "HQ-0",
+        "HR-0",
+        "JG-0"
+      ],
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3RNXNXP3YX0NFBT0YEXS4\",\n    \"name\": \"Mastermind - Bonds - Decision Workspace R1\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"updates\": [\n    {\n      \"nodeId\": \"HQ-0\"\n    },\n    {\n      \"nodeId\": \"HR-0\"\n    },\n    {\n      \"nodeId\": \"JG-0\"\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "operation_id": "paper-audit-next-158-bonds-real-frame",
+      "fileId": "01M6Y3RNXNXP3YX0NFBT0YEXS4",
+      "tool": "write_html",
+      "targets": [
+        "3OC-0"
+      ],
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3RNXNXP3YX0NFBT0YEXS4\",\n    \"name\": \"Mastermind - Bonds - Decision Workspace R1\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"3OG-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3OH-0\",\n      \"name\": \"SVG\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3OI-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "operation_id": "paper-audit-next-159-bonds-real-frame",
+      "fileId": "01M6Y3RNXNXP3YX0NFBT0YEXS4",
+      "tool": "write_html",
+      "targets": [
+        "3OE-0"
+      ],
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3RNXNXP3YX0NFBT0YEXS4\",\n    \"name\": \"Mastermind - Bonds - Decision Workspace R1\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"3OK-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3OL-0\",\n      \"name\": \"SVG\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3OM-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "operation_id": "paper-audit-next-160-bonds-wrap-repaired",
+      "fileId": "01M6Y3RNXNXP3YX0NFBT0YEXS4",
+      "tool": "move_nodes",
+      "targets": [
+        "HR-0",
+        "JG-0",
+        "3OG-0",
+        "3OK-0"
+      ],
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3RNXNXP3YX0NFBT0YEXS4\",\n    \"name\": \"Mastermind - Bonds - Decision Workspace R1\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"moves\": [\n    {\n      \"nodeId\": \"HR-0\",\n      \"parentId\": \"3OG-0\",\n      \"index\": 0\n    },\n    {\n      \"nodeId\": \"JG-0\",\n      \"parentId\": \"3OK-0\",\n      \"index\": 0\n    }\n  ],\n  \"affectedParents\": [\n    {\n      \"parentId\": \"3OG-0\",\n      \"childIds\": [\n        \"HR-0\",\n        \"3OH-0\"\n      ]\n    },\n    {\n      \"parentId\": \"HN-0\",\n      \"childIds\": [\n        \"HO-0\",\n        \"3OG-0\"\n      ]\n    },\n    {\n      \"parentId\": \"3OK-0\",\n      \"childIds\": [\n        \"JG-0\",\n        \"3OL-0\"\n      ]\n    },\n    {\n      \"parentId\": \"IW-0\",\n      \"childIds\": [\n        \"IX-0\",\n        \"IY-0\",\n        \"3OK-0\"\n      ]\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "operation_id": "paper-audit-next-161-bonds-tablet-target",
+      "fileId": "01M6Y3RNXNXP3YX0NFBT0YEXS4",
+      "tool": "write_html",
+      "targets": [
+        "KT-0"
+      ],
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3RNXNXP3YX0NFBT0YEXS4\",\n    \"name\": \"Mastermind - Bonds - Decision Workspace R1\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"3OO-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3OP-0\",\n      \"name\": \"SVG\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3OQ-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "operation_id": "paper-audit-next-162-bonds-tablet-target",
+      "fileId": "01M6Y3RNXNXP3YX0NFBT0YEXS4",
+      "tool": "write_html",
+      "targets": [
+        "M2-0"
+      ],
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3RNXNXP3YX0NFBT0YEXS4\",\n    \"name\": \"Mastermind - Bonds - Decision Workspace R1\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"3OS-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3OT-0\",\n      \"name\": \"SVG\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3OU-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "operation_id": "paper-audit-next-163-bonds-tablet-wrap",
+      "fileId": "01M6Y3RNXNXP3YX0NFBT0YEXS4",
+      "tool": "move_nodes",
+      "targets": [
+        "KX-0",
+        "MM-0",
+        "3OO-0",
+        "3OS-0"
+      ],
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3RNXNXP3YX0NFBT0YEXS4\",\n    \"name\": \"Mastermind - Bonds - Decision Workspace R1\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"moves\": [\n    {\n      \"nodeId\": \"KX-0\",\n      \"parentId\": \"3OO-0\",\n      \"index\": 0\n    },\n    {\n      \"nodeId\": \"MM-0\",\n      \"parentId\": \"3OS-0\",\n      \"index\": 0\n    }\n  ],\n  \"affectedParents\": [\n    {\n      \"parentId\": \"3OO-0\",\n      \"childIds\": [\n        \"KX-0\",\n        \"3OP-0\"\n      ]\n    },\n    {\n      \"parentId\": \"KT-0\",\n      \"childIds\": [\n        \"KU-0\",\n        \"3OO-0\"\n      ]\n    },\n    {\n      \"parentId\": \"3OS-0\",\n      \"childIds\": [\n        \"MM-0\",\n        \"3OT-0\"\n      ]\n    },\n    {\n      \"parentId\": \"M2-0\",\n      \"childIds\": [\n        \"M3-0\",\n        \"M4-0\",\n        \"3OS-0\"\n      ]\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "operation_id": "paper-audit-next-164-bonds-target-labels",
+      "fileId": "01M6Y3RNXNXP3YX0NFBT0YEXS4",
+      "tool": "set_text_content",
+      "targets": [
+        "KW-0",
+        "HR-0",
+        "KX-0",
+        "JG-0",
+        "MM-0"
+      ],
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3RNXNXP3YX0NFBT0YEXS4\",\n    \"name\": \"Mastermind - Bonds - Decision Workspace R1\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"updates\": [\n    {\n      \"nodeId\": \"KW-0\"\n    },\n    {\n      \"nodeId\": \"HR-0\"\n    },\n    {\n      \"nodeId\": \"KX-0\"\n    },\n    {\n      \"nodeId\": \"JG-0\"\n    },\n    {\n      \"nodeId\": \"MM-0\"\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "operation_id": "paper-audit-next-165-bonds-addendum",
+      "fileId": "01M6Y3RNXNXP3YX0NFBT0YEXS4",
+      "tool": "write_html",
+      "targets": [
+        "Z3-0"
+      ],
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3RNXNXP3YX0NFBT0YEXS4\",\n    \"name\": \"Mastermind - Bonds - Decision Workspace R1\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"3OW-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3OX-0\",\n      \"name\": \"R12 source and recov…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3OY-0\",\n      \"name\": \"Build page: source c…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"3OZ-0\",\n      \"name\": \"https://app.paper.de…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "operation_id": "paper-audit-next-166-bonds-finish",
+      "fileId": "01M6Y3RNXNXP3YX0NFBT0YEXS4",
+      "tool": "finish_working_on_nodes",
+      "targets": [
+        "3C6-0",
+        "3I2-0",
+        "3FC-0",
+        "H5-0",
+        "KB-0",
+        "HP-0",
+        "KV-0",
+        "Z7-0",
+        "101-0",
+        "2JU-0",
+        "HA-0",
+        "KG-0",
+        "2JV-0",
+        "HB-0",
+        "KH-0",
+        "2P4-0",
+        "J3-0",
+        "M9-0",
+        "2P9-0",
+        "2P3-0",
+        "2P8-0",
+        "J2-0",
+        "J6-0",
+        "M8-0",
+        "MC-0",
+        "3OG-0",
+        "3OK-0",
+        "3OO-0",
+        "3OS-0",
+        "HQ-0",
+        "KW-0"
+      ],
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3RNXNXP3YX0NFBT0YEXS4\",\n    \"name\": \"Mastermind - Bonds - Decision Workspace R1\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "OK"
+          }
+        ]
+      }
+    },
+    {
+      "operation_id": "paper-audit-next-167-source-finish",
+      "fileId": "01M6Q4WK0EMPV1G2KDGGRQBC1B",
+      "tool": "finish_working_on_nodes",
+      "targets": [
+        "12K-0"
+      ],
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M6Q4WK0EMPV1G2KDGGRQBC1B\",\n    \"name\": \"Macro · Policy Monitor · Production Design\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"c8cafbb7\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "OK"
+          }
+        ]
+      }
+    },
+    {
+      "operation_id": "paper-audit-next-168-source-finish",
+      "fileId": "01M6PXFEP1E1T59M2B3N673PMG",
+      "tool": "finish_working_on_nodes",
+      "targets": [
+        "1JG-0"
+      ],
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M6PXFEP1E1T59M2B3N673PMG\",\n    \"name\": \"Market Memory · Revision evidence · R1 · 2026-11-05\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"ee9dbe57\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "OK"
+          }
+        ]
+      }
+    },
+    {
+      "operation_id": "paper-audit-next-169-source-finish",
+      "fileId": "01M6Y3CRMC345RTB3ZDP3XSYRP",
+      "tool": "finish_working_on_nodes",
+      "targets": [
+        "2KT-0"
+      ],
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3CRMC345RTB3ZDP3XSYRP\",\n    \"name\": \"Mastermind - Market Breadth - Command Center R1\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "OK"
+          }
+        ]
+      }
+    },
+    {
+      "operation_id": "paper-audit-next-170-source-finish",
+      "fileId": "01M6Y3RNXNXP3YX0NFBT0YEXS4",
+      "tool": "finish_working_on_nodes",
+      "targets": [
+        "3OW-0"
+      ],
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3RNXNXP3YX0NFBT0YEXS4\",\n    \"name\": \"Mastermind - Bonds - Decision Workspace R1\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "OK"
+          }
+        ]
+      }
     }
   ],
-  "concurrency_note": "Protect disjoint active writers: Breadth inspector right panel and new p1 variants; Policy historical compaction and expanded refs; Memory full-matrix/rule/page-path work. Snapshot guards are not collaboration leases."
+  "concurrency_note": "Other active writers' Breadth inspector, Policy compaction, Memory full-matrix/rule and Bonds navigation work were preserved. Outer APPLIED_RESPONSE_OBSERVED is not proof that every upstream sub-operation succeeded; two reconciled empty-wrapper move errors are recorded separately."
 }

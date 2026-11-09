@@ -3,7 +3,7 @@
 ## Current assignment and source
 The Chairman explicitly extended the estate mission: continue auditing, fixing, implementing and enhancing the existing Paper designs autonomously. This record continues PR #10864 and the wider #10617 programme. It does not create a second programme or claim a product release.
 
-Protected Mastermind procedure pin remains 5c3d3885234358aefb97ecdbc59be0864df14f8b. New source checks use Macro b5674d8ef898e503d6164922654f5ff89be9981c. The earlier audit's 338a1085 baseline and accepted results remain historical evidence and are not rewritten.
+Protected Mastermind procedure pin remains 5c3d3885234358aefb97ecdbc59be0864df14f8b. Breadth, Policy and CPI checks use Macro b5674d8ef898e503d6164922654f5ff89be9981c; the subsequent Bonds audit refreshes its affected files at aec7f387badcdf69c9a947fafbc73b4c68470c7d. The earlier audit's 338a1085 baseline and accepted results remain historical evidence and are not rewritten.
 
 The current census returned 82 resources, versus 37 in the first pass. MASTERMIND PAGES has been relabelled “MOVED - Navigation only” and separate family/reference files are present. Their presence is not a claim that every migration or copied journey has passed acceptance. ESTATE_INVENTORY_CONTINUATION.json preserves the observed inventory, including actual archived flags separately from names.
 
@@ -104,8 +104,66 @@ This continuation uses the existing PR #10864 branch. The preceding Breadth mile
 
 The attempted individual check-run REST read returned INVALID_ARGUMENT because that URL shape is unsupported by the connector. This is a connector schema limitation, not proof of a new CI failure or a permission denial. The earlier inactive-context result is historical and is not asserted as current-head evidence.
 
-## Next safe phase in progress
+## Verified phase: Bonds evidence, source semantics and touch workflows
 
-Bonds: compare the migrated current journeys and build boards with the exact source. A confirmed source mapping turns a signed FINRA net high–low measure into an absolute “lows share”; the current Paper analytical journeys are illustrative and need a precise source adapter contract. Also inspect per-component coverage/clocks, sampled curve dates and stale internal board references after the migration. Preserve other writers' current navigation and evidence work.
+Current journeys: https://app.paper.design/file/01M6Y3RNXNXP3YX0NFBT0YEXS4/p-1-0  
+New source/recovery page: https://app.paper.design/file/01M6Y3RNXNXP3YX0NFBT0YEXS4/p-2-0
+
+### Corrected the displayed story
+The selected five-session fixture has 3M and 2Y yields falling 2 bp, 10Y nominal yield rising 18 bp, 10Y real yield rising 12 bp and HY spread widening 6 bp. R10 had said the front end was rising and that recession evidence was not rising. Those claims exceeded or contradicted its displayed inputs.
+
+Desktop 2H1-0, phone GJ-0 and tablet JP-0 now lead with “Real yields rose. Credit spreads widened.” Their supporting copy states the actual changes. The policy/real-rate and growth/cut hypotheses use neutral UNCONFIRMED badges until their evidence rules are qualified; the disproved “front end is not rallying” explanation was removed. The 21-day and 63-day curve examples remain explicitly separate windows.
+
+The phone/tablet now identify the illustrative status before the conclusions and show 18–25 Sep / 5 sessions above the move table. Their Evidence and Inspect explanations actions have full 44px/48px targets. Original label-node IDs HR, KX, JG and MM were preserved. Recent navigation work by another writer was left intact.
+
+The migrated R2 build references now point to local Briefing NL-0 and Studio U8-0, with current R10 board IDs alongside them. A source/recovery addendum points to the new build page.
+
+### Added evidence views without duplicating ownership
+- 3I2-0: read-input overview. It lists nominal yield, real yield and credit separately, then expands the known 10Y nominal example (4.28% → 4.46%, +18 bp). It does not borrow nominal-yield evidence or cadence for the other inputs. The lack of a live source receipt stays visible.
+- 3C6-0: controlled partial-composite coverage. The score remains 74; 3/5 inputs and 70% configured weight are available. The valid zero-stress rates-volatility input remains available. Component observation dates are not invented.
+- 3FC-0: build contract with signed FINRA net evidence, coverage, curve sample dates, compatibility, four acceptance fixtures and exact source links.
+
+The generic headline / What changed Evidence action opens the read-input overview; a selected curve action can open that tenor directly. Coverage links share one coverage overview. Explanation links start from the hypotheses and pass a selected explanation only when the user chooses one. One incumbent inspector owns source snapshot, country, metric/tenor, endpoints, window, origin, scroll and focus return.
+
+The health-composite specimen is one coverage section, not a substitute for every input behind the current R10 read. Market-source failures and manual duration-input failures keep separate state families. The existing duration, shock and input-error specimens were preserved.
+
+### Current source findings and compatible build plan
+All four affected Bonds files were refreshed at current main aec7f387badcdf69c9a947fafbc73b4c68470c7d and were byte-identical to the earlier b567 baseline.
+
+**FINRA:** engine/credit_momentum.py computes (fiftyTwoWeekHigh − fiftyTwoWeekLow) / totalTrades. scripts/build_bonds.py applies abs, labels the magnitude as lows_pct, and exports it as finra_lows_share; the template says “touched 1-year lows.” Add the correctly signed observation and its metadata under the existing projection. Retain the legacy nullable key, stop manufacturing it from net share, supply an explicit unavailable reason, and verify every consumer handles null before rollout. Do not silently drop the key or rewrite retained historical payloads. The denominator field is observed; its universe meaning remains unverified.
+
+**Health:** engine/bonds.py renormalizes over available weighted legs. Preserve that calculation and expose active/expected positive-weight legs, available/expected weight, coverage fraction, calibration/prior basis and per-component source dates. Older payloads without coverage are unknown, not complete. Do not invent a new score threshold or collapse the three R10 questions into one composite.
+
+**Curves:** the current builder samples frame rows −1, −64 and −252 and suppresses a role with fewer than four valid tenors. Keep that behavior while adding actual sampled dates, roles, offsets, nullable tenor values and explicit insufficient-data states. Frame dates and original per-tenor observation dates are distinct.
+
+Exact sources:
+- https://github.com/mastermindx-market-intelligence/macro/blob/aec7f387badcdf69c9a947fafbc73b4c68470c7d/engine/credit_momentum.py
+- https://github.com/mastermindx-market-intelligence/macro/blob/aec7f387badcdf69c9a947fafbc73b4c68470c7d/engine/bonds.py
+- https://github.com/mastermindx-market-intelligence/macro/blob/aec7f387badcdf69c9a947fafbc73b4c68470c7d/scripts/build_bonds.py
+- https://github.com/mastermindx-market-intelligence/macro/blob/aec7f387badcdf69c9a947fafbc73b4c68470c7d/templates/bonds.html.j2
+
+### Executed source characterization
+verify_bonds_source_contract.py checks exact SHA-256 hashes, extracts only the named pure functions and the existing health-arithmetic AST block, and executes them with controlled inputs. It imports no repository module, runs no collector, and performs no browser work. The local run used pandas 2.2.3 and numpy 2.3.5.
+
+The run reproduced:
+- Net values −0.20 and +0.20 remain opposite in the raw view-model field but both become lows_pct=20 and machine finra_lows_share=0.20.
+- The current view model preserves valid numeric zero versus missing; the proposed correction must retain that distinction.
+- Available stresses 20, 40 and 0 at weights .30, .30 and .10 give 74.2857… → 74 with available weight .70. A denominator of 1.0 would incorrectly give 82.
+- A controlled build on 16 October with sampled rows 14 October / 10 July / 30 September 2025 produces “Today” / “3 mo ago”, omits sampled dates and silently suppresses the third role with only three tenors.
+
+BONDS_SOURCE_CHARACTERIZATION.json is evidence of current behavior, not a passing test of the proposed adapter. BONDS_SOURCE_FIXTURES.json states the desired producer-to-page-and-machine acceptance. Those integrations remain to be built and verified.
+
+### Visual and mutation verification
+Both new mobile views, the full source contract, the revised main phone view, neutral badges, and phone/tablet evidence actions were visually inspected.
+
+Two attempted moves returned an outer APPLIED_RESPONSE_OBSERVED envelope but contained upstream errors: Paper imported empty div wrappers as Rectangles, which cannot contain children. Original node parents and empty wrappers were read back, proving no move occurred. The wrappers were replaced with genuine Frames containing SVG chevrons, then the original labels were moved successfully. The final screenshots show the correct filled touch targets. Receipts retain the initial errors and their reconciliation; they are not counted as successful moves.
+
+Intermittent Paper read transport timeouts recovered after bounded diagnosis and independent source work. No uncertain write was replayed or moved to another carrier.
+
+## Source/CI status after the Policy and CPI milestone
+The branch was read back at 0e9ccf41a0bb62ba0c0b28fd716b39017afd468e before this save. Its check-run collection confirms ordinary_change / allowed=true for ci-authority, with the merge-queue-pilot context failing only because context_active=false / inactive_base_context. Most CI packs were successful; ci-pack-10 was still running at observation. This is not a claim that every check or acceptance gate was complete. No context/base change, merge or release hold was altered.
+
+## Next safe phase in progress
+Government Revenue: preserve the accepted signal-first design intent and compare it with the concrete existing investor, procurement, evaluation and shared My Alerts owners. Inspect migrated route references, visible fixture qualification, amount/unit scope, bounded coverage, saved-workflow promises and exact historical clock behavior. Existing canonical activation/reconciliation and funding-meaning specimens are accepted work to preserve.
 
 Phase completion is save-and-continue; this record does not terminate the continuing mission.
