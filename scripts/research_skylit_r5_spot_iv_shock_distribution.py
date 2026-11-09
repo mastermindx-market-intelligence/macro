@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 from datetime import date
 from pathlib import Path
 from typing import Any
@@ -9,7 +10,11 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
-from engine.options_hub import _atm_iv_for_expiry, _iv30_from_term
+# File-path invocation must resolve first-party imports from this repository.
+_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(_ROOT))
+
+from engine.options_hub import _atm_iv_for_expiry, _iv30_from_term  # noqa: E402
 
 SCHEMA = "skylit.r5.spot_iv_shock_distribution/v1"
 LOCAL_SPOT_BOUND_PCT = 3.0
