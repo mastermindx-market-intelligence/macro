@@ -479,7 +479,7 @@ try{
 var topics=data.topics,byId=new Map(topics.map(function(t){return[t.id,t];}));
 var defaults={theme:workspace.getAttribute('data-default-theme'),q:'',category:'',scope:'all',evidence:false};
 var state=Object.assign({},defaults),invalidTheme=false,lastHash=null;
-var search=document.querySelector('[data-topic-search]'),category=document.querySelector('[data-topic-category-filter]'),evidence=document.querySelector('[data-evidence-only]'),scopes=Array.from(document.querySelectorAll('input[name="gmi-scope"]'));
+var search=document.querySelector('[data-topic-search]'),searchClear=document.querySelector('[data-topic-search-clear]'),category=document.querySelector('[data-topic-category-filter]'),evidence=document.querySelector('[data-evidence-only]'),scopes=Array.from(document.querySelectorAll('input[name="gmi-scope"]'));
 var results=document.querySelector('[data-topic-results]'),rows=Array.from(results.querySelectorAll('[data-topic-select]'));
 var browse=document.querySelector('[data-gmi-browse]'),home=document.querySelector('[data-browse-home]'),dialog=document.querySelector('[data-browse-dialog]'),openButton=document.querySelector('[data-browse-open]');
 var mobile=window.matchMedia('(max-width:820px)');
@@ -527,6 +527,8 @@ function filters(){
   var empty=document.querySelector('[data-topic-no-results]');
   var retiring=projected.filter(function(item){return item.hidden;}).map(function(item){return item.row;});
   retiring.push(count>0?empty:results);
+  var clearHidden=search.value==='';
+  if(searchClear&&clearHidden)retiring.push(searchClear);
   function ownsRetiringFocus(){return retiring.some(function(node){return node.contains(document.activeElement);});}
   if(ownsRetiringFocus()){
     /* Release only this pass's disappearing focus. Native modal containment and
@@ -542,6 +544,7 @@ function filters(){
   }
   /* A synchronous focus handler may have projected newer filter state. */
   if(pass!==filterPass)return;
+  if(searchClear&&searchClear.hidden!==clearHidden)searchClear.hidden=clearHidden;
   projected.forEach(function(item){
     var row=item.row,t=item.topic;if(row.hidden!==item.hidden)row.hidden=item.hidden;row.tabIndex=-1;
     if(t.id===state.theme)row.setAttribute('aria-current','true');else row.removeAttribute('aria-current');
@@ -614,6 +617,17 @@ document.addEventListener('click',function(event){if(event.target.closest('[data
 results.addEventListener('keydown',function(event){var a=event.target.closest('[data-topic-select]');if(!a)return;var visible=rows.filter(function(r){return!r.hidden;}),i=visible.indexOf(a),target;if(event.key==='ArrowDown')target=visible[Math.min(i+1,visible.length-1)];else if(event.key==='ArrowUp')target=visible[Math.max(i-1,0)];else if(event.key==='Home')target=visible[0];else if(event.key==='End')target=visible[visible.length-1];if(target){event.preventDefault();rows.forEach(function(r){r.tabIndex=-1;});target.tabIndex=0;target.focus();}});
 function updateFilters(){state.q=search.value.slice(0,200);state.category=category.value;state.scope=scopes.find(function(s){return s.checked;}).value;state.evidence=evidence.checked;invalidTheme=false;writeURL('replace');filters();answer.querySelector('[data-topic-category]').textContent=label(data.categories[state.category&&byId.get(state.theme).paths.some(function(path){return path.length&&path[0].id===state.category;})?state.category:byId.get(state.theme).category]);}
 search.addEventListener('input',updateFilters);category.addEventListener('change',updateFilters);evidence.addEventListener('change',updateFilters);scopes.forEach(function(s){s.addEventListener('change',updateFilters);});
+if(searchClear){
+  searchClear.addEventListener('click',function(){
+    if(!search.value)return;
+    var pass=filterPass,view=location.href;
+    search.focus({preventScroll:true});
+    /* A focus callback may have restored newer query/filter context. */
+    if(pass!==filterPass||view!==location.href)return;
+    search.value='';updateFilters();
+  });
+  search.parentElement.classList.add('gmi-search--clearable');
+}
 document.querySelectorAll('[data-topic-reset]').forEach(function(b){b.addEventListener('click',function(){state=Object.assign({},defaults,{theme:state.theme});invalidTheme=false;writeURL('replace');if(b.hasAttribute('data-topic-notice-reset'))document.getElementById('gmi-topic-title').focus({preventScroll:true});else search.focus({preventScroll:true});filters();});});
 search.addEventListener('keydown',function(event){
   if(event.key!=='Escape')return;

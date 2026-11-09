@@ -1499,3 +1499,58 @@ The paired JS is blob **4f207215835bdfe41cada91f496d1c8956898b25**, SHA256 **f6e
 Extend existing Build module08 (`7NL-0`) with primary Browse's projection-before-hide, modal reachability, actual-focus and reentrant-pass contract. Extend module10 (`7SS-0`) with Reset's focus-before-filter ordering and the absence of a second focus assignment. Keep the existing eighteen modules and their source-bound proof module; no duplicate controller or explanatory product paragraph is added.
 
 The source remains in Draft PR10676 with original model01 `EFFECT_UNKNOWN/ROOT_UNVERIFIED` and all release holds unchanged. This component proof does not establish native OS IME, spoken assistive-technology output, full shared-shell/font runtime, live account/admission, current hosted CI or deployment. No held model result, independent lane, protected original style or production release is changed.
+
+
+## 11.36 · A visible query-only Clear action in primary Browse — 9 Nov 2026
+
+### User-visible change and ownership
+
+Primary Browse previously offered the browser's small cancel icon alongside a slash hint. Its visible Reset action clears the full filter set, so it is not a substitute for an easy query-only action. The primary field now uses the accepted **44 × 44 px** clear treatment with the accessible name **Clear search / 清空搜索**. The slash hint gives up that same trailing slot while the raw input is nonempty. Whitespace counts as nonempty even when the matcher normalizes it to an empty query. No explanatory paragraph is added to the product.
+
+The new native button delegates once to the existing primary `updateFilters()` owner. It clears only `q`, preserving the selected topic, category, Core/Extended scope, evidence-only state, lens, qualified return and unrelated fragment fields. The open drawer, answer/source-card nodes and open receipts remain. An empty stale/programmatic activation is inert. The separate Reset and Clear all filters actions retain their existing broader contract.
+
+Clearing the query does not guarantee a result. If other filters still exclude every topic, the existing no-match state and Clear all filters action remain available. In the checked ZH HBM fixture, query clearing retains Semiconductors & hardware + Core + company evidence and still shows **1** topic. Full Reset shows **371** topics. In the EN category/Core fixture, clearing HBM expands **3 → 10** results.
+
+### Implementation details a builder must preserve
+
+1. The source button starts hidden. Bind its click action before adding the enhancement class. No-JS and failed-payload paths keep the custom control hidden and unenhanced.
+2. The field wrapper becomes a plain `div`; the input retains its bilingual aria-label/data-aria attributes. [HTML's label content model](https://html.spec.whatwg.org/multipage/forms.html#the-label-element) does not permit a second labelable descendant besides the labeled control. The button therefore is not nested inside the former input label.
+3. Reuse the existing clear-button styles. Two scoped primary rules retain the 58 px suffix allowance despite the later primary padding shorthand and suppress the browser cancel icon only while this primary field is enhanced. The editable input area ends before the 44 px target.
+4. Include the button in `filters()`'s existing next-visibility and retiring-subtree projection. History restoring `q` to empty must release its focus before hiding it; a query-to-query update retains the same focused button. Do not introduce a separate post-render visibility helper.
+5. On explicit activation, capture the current filter pass and URL, focus search with preventScroll, then yield if either changed during a focus callback. Otherwise empty the input and invoke `updateFilters()` once. This protects both synchronous nested filtering and asynchronous hash restoration begun by the callback. Preserve a redirect to a surviving control; do not focus a second time.
+6. The accepted primary Escape handler stays byte-exact, including consumed/composing/code229 guards and native empty-query dismissal. No composition listener/state, pointerdown cancellation, timer, additional observer or query/history owner is added.
+
+### Render and browser evidence
+
+The isolated root is `/Volumes/Mastermind/agent-workspaces/verify/gmi-primary-clear-20261109-hzhiwlz2`. Its **48 pinned source inputs** and unchanged accepted-model SHA256 `e644fa48a2bb6e6affe8d1fda74556d9db5f82acadffdad839e1efe8f095359f` reproduce all **nine parent outputs byte-exactly** before patching. The candidate renderer changes only `gmi.html`, `gmi.css` and `gmi.js`; all six other HTML pages remain exact. Within generated Explorer HTML, only the primary field region changes. No model/renderer code or new public fact is introduced.
+
+| Candidate source | Git blob |
+|---|---|
+| Paired JS | `da28f4622372c072225b140cf59d61385570b364` |
+| Paired CSS | `fcfa6cf06646f0406ca366d5f015205c72176bce` |
+| Map template | `77b4e3ffdaeafbb60914639ee3018f1c483fb00e` |
+| Generated Explorer | `a7fcc7db25acbe1cf85dbf63807bbceedc3b4a8a` |
+
+Final PID **65978**, exit0, **30 cases / 34 fresh anonymous contexts**, Chrome **157.0.8103.39**, zero page errors, **60.72 s**. All **142 retained before-hide snapshots** contain **zero owned hides**.
+
+- Eight control cases exercise EN/ZH1440/390/320 and actual820/821 boundary widths. Pointer, Enter and Space clear only the query with one replaceState and no history growth. Exact source-card identity/open receipts, selected research and other filters remain.
+- Whitespace visibility, stale empty activation, retained zero-result filters and full Reset are checked separately. Geometry proves a 44 px square and no input/target overlap. The localized names and exclusive clear/slash slot are checked.
+- Four history cases cover actual Back/Forward, nonempty-to-nonempty button focus, locale/theme changes and closed mobile state.
+- Four edge cases cover a surviving focus redirect, nested new query, hash restoration started by focus, reentrant history projection and redirection into another retiring action.
+- Two unenhanced cases use four contexts for no-JS and malformed payload in EN/ZH; the button remains hidden, no enhancement class appears, native theme links/source recovery remain.
+- Six primary Escape, four existing Browse focus and two answer-recovery cases retain the accepted keyboard/native-dialog, filter focus, pending copy/fallback and receipt contracts. The two answer cases use four contexts.
+- Five final native captures were inspected: EN390/ZH320 query states, both query-cleared states, and ZH320 full Reset.
+
+The two baseline cases confirm the missing custom action at the parent; they are expected absence checks, not additional event/focus defects. All **105 prior qualified verifier definitions remain AST-exact**; six new top-level helpers and their canonical registrations are added. The isolated harness extracts the real definitions and owns no product behavior.
+
+[PRIMARY_CLEAR_VALIDATION_20261109.json](PRIMARY_CLEAR_VALIDATION_20261109.json) retains input/source/render hashes, commands, all case results, full new clear observations, screenshot hashes and limits. Repeated earlier-regression detailed snapshots remain in the exact hashed native report; their test definitions and every result row are retained. The focused export is a declared projection, not a claim that omitted snapshots were newly canonicalized.
+
+### Editable Paper workflow and boundaries
+
+[Browse · Search and filters](https://app.paper.design/file/01M5H6EARN9YHQV17JC6ZG9BRY/p-D-0) adds one editable group **A1F-0**: Q01 EN390 Noir (**A1N-0**) and Q02 ZH320 Day (**A3E-0**) use truthful 844 px viewports; Q03 query-cleared (**A53-0**) and Q04 Reset (**A66-0**) show the same ZH fixture's different filter/count outcomes. The existing product's original phone seeds remain untouched. The comparison uses actual controls and counts outside product chrome, with no extra in-product explanatory text.
+
+Extend existing Build module11 body **7YQ-0** with raw-value visibility, query-only ownership, pre-hide projection and focus-callback guards. Keep the eighteen-module guide. The new Browse page follows the current-product page; existing workflow/reference/history pages keep their relative order.
+
+A transient DESKTOP_BUSY preflight sent no Paper call and no mutation. A same-carrier read-only inspection subsequently proved CONNECTED with the same file and a fresh snapshot; only then was the never-issued page operation applied. No active writer was interrupted, no lock was cleared and no alternate carrier was used.
+
+PR10676 remains Draft with original model01 `EFFECT_UNKNOWN/ROOT_UNVERIFIED` and all release holds. Component proof excludes full shared shell/fonts, spoken AT, native OS IME, live account/admission, hosted current-head CI and deployment. This action adds no source-emission authority or release acceptance.

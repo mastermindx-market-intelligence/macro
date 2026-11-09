@@ -3571,6 +3571,222 @@ with sync_playwright() as pw:
     for width,language in ((820,'en'),(821,'zh')):
         check(f'primary-escape-breakpoint-{width}-{language}',lambda w=width,l=language:primary_escape_contract(w,l))
 
+    def primary_clear_page(c,open_browse=True):
+        p,f=browse_focus_page(c,open_browse=open_browse)
+        clear=p.locator('[data-topic-search-clear]')
+        assert clear.count()==1,'Primary query-only clear action is absent'
+        p.evaluate("""()=>{
+          const clear=document.querySelector('[data-topic-search-clear]'),field=document.querySelector('[data-topic-search]');
+          const s=window.__primaryClear={clear,field,ownedHides:[],hides:[],cards:[],receipt:null,title:null};
+          const desc=Object.getOwnPropertyDescriptor(HTMLElement.prototype,'hidden');
+          Object.defineProperty(HTMLElement.prototype,'hidden',{...desc,set(value){
+            if(this===clear){
+              const event={phase:window.__browseFocus.phase,value,focus:document.activeElement===clear?'query-clear':window.__browseFocus.key(document.activeElement)};
+              s.hides.push(event);if(value===true&&this.contains(document.activeElement))s.ownedHides.push(event);
+            }
+            desc.set.call(this,value);
+          }});
+          s.mark=()=>{
+            s.cards=[...document.querySelector('[data-topic-connections]').children];
+            s.receipt=document.querySelector('[data-topic-connections] details');if(s.receipt)s.receipt.open=true;
+            s.title=document.querySelector('#gmi-topic-title').textContent;
+          };
+          s.read=()=>{
+            const box=field.parentElement,b=clear.getBoundingClientRect(),i=field.getBoundingClientRect();
+            return {
+              query:field.value,clearHidden:clear.hidden,label:clear.getAttribute('aria-label'),
+              inputLabel:field.getAttribute('aria-label'),wrapperTag:box.tagName,enhanced:box.classList.contains('gmi-search--clearable'),
+              hintDisplay:getComputedStyle(box.querySelector('kbd')).display,
+              target:{x:b.x,y:b.y,width:b.width,height:b.height},inputRight:i.right,
+              category:document.querySelector('[data-topic-category-filter]').value,
+              scope:document.querySelector('input[name="gmi-scope"]:checked').value,evidence:document.querySelector('[data-evidence-only]').checked,
+              url:location.href,historyLength:history.length,dialogOpen:document.querySelector('[data-browse-dialog]').open,
+              focus:document.activeElement===clear?'query-clear':window.__browseFocus.key(document.activeElement),
+              visibleCount:[...document.querySelectorAll('.gmi-topic-option')].filter(n=>!n.hidden).length,
+              emptyHidden:document.querySelector('[data-topic-no-results]').hidden,
+              sameClear:clear===s.clear,sameField:field===s.field,
+              sameCards:s.cards.length>0&&s.cards.every((n,i)=>n===document.querySelector('[data-topic-connections]').children[i]),
+              receiptOpen:!!s.receipt?.open,sameTitle:s.title===document.querySelector('#gmi-topic-title').textContent,
+              ownedHides:[...window.__browseFocus.ownedHides,...s.ownedHides],writes:window.__browseFocus.writes.length
+            };
+          };
+        }""")
+        return p,f
+
+    def primary_clear_snapshot(p,phase,observed):
+        v=p.evaluate('window.__primaryClear.read()')
+        observed.append({'phase':phase,**v})
+        assert not v['ownedHides'],v['ownedHides']
+        assert v['sameClear'] and v['sameField'] and v['wrapperTag']=='DIV' and v['enhanced']
+        return v
+
+    def primary_clear_controls(width,language):
+        with context(width,'dark' if language=='en' else 'light',language,reduced_motion='reduce' if width==320 else 'no-preference') as c:
+            p,f=primary_clear_page(c);field=p.locator('[data-topic-search]');clear=p.locator('[data-topic-search-clear]')
+            topic=next(t for t in f['topics'] if t['id']==f['default'])
+            params={**f['params'],'category':topic['category'],'scope':'core'}
+            if language=='zh':params['evidence']='1'
+            browse_focus_hash(p,urlencode({**params,'q':'HBM'}))
+            observed=[];report.setdefault('primary_clear_controls',[]).append({'width':width,'language':language,'phases':observed})
+            p.evaluate('window.__primaryClear.mark()')
+            for activation in ('click','Enter','Space'):
+                field.fill('HBM')
+                v=primary_clear_snapshot(p,'before-'+activation,observed)
+                assert v['label']==('Clear search' if language=='en' else '清空搜索')
+                assert v['inputLabel']==('Search themes, companies or products' if language=='en' else '搜索主题、公司或产品')
+                assert v['target']['width']==44 and v['target']['height']==44
+                assert v['inputRight']<=v['target']['x'] and v['target']['x']+v['target']['width']<=width
+                assert v['hintDisplay']=='none' and not v['clearHidden']
+                assert v['visibleCount']==(1 if language=='zh' else 3)
+                assert not p.evaluate('document.documentElement.scrollWidth>innerWidth')
+                if activation=='click' and (width,language) in ((390,'en'),(320,'zh')):
+                    path=args.out/f'primary-clear-query-{width}-{language}.png';p.screenshot(path=str(path),full_page=False);report['screenshots'].append(path.name)
+                before=p.evaluate('window.__browseFocus.writes.length');length=p.evaluate('history.length')
+                p.evaluate("(phase)=>window.__browseFocus.phase=phase",'clear-'+activation)
+                if activation=='click':clear.click()
+                else:clear.focus();p.keyboard.press(activation)
+                expect(field).to_have_value('');expect(field).to_be_focused();expect(clear).not_to_be_visible()
+                v=primary_clear_snapshot(p,'after-'+activation,observed)
+                assert parse_qs(urlsplit(v['url']).fragment)=={k:[x] for k,x in params.items()}
+                assert v['sameCards'] and v['receiptOpen'] and v['sameTitle']
+                assert v['visibleCount']==(1 if language=='zh' else 10) and v['dialogOpen']==f['narrow']
+                assert v['hintDisplay']!='none' and v['historyLength']==length
+                assert p.evaluate('window.__browseFocus.writes.slice('+str(before)+').map(x=>x.method)')==['replaceState']
+                if activation=='click' and (width,language) in ((390,'en'),(320,'zh')):
+                    path=args.out/f'primary-clear-empty-{width}-{language}.png';p.screenshot(path=str(path),full_page=False);report['screenshots'].append(path.name)
+                # A stale/programmatic activation on an already empty action is inert.
+                clear.evaluate('(n)=>n.click()')
+                assert p.evaluate('window.__browseFocus.writes.length')==v['writes']
+                expect(field).to_be_focused()
+            field.fill('   ');expect(clear).to_be_visible()
+            v=primary_clear_snapshot(p,'whitespace-visible',observed);assert v['query']=='   '
+            clear.click();expect(field).to_have_value('')
+            v=primary_clear_snapshot(p,'whitespace-cleared',observed)
+            assert 'q' not in parse_qs(urlsplit(v['url']).fragment) and v['sameCards'] and v['receiptOpen']
+            # Query-only clearing can truthfully leave zero matches under other filters.
+            p.locator('input[name="gmi-scope"][value="extended"]').check()
+            p.locator('[data-evidence-only]').check();field.fill('HBM')
+            expect(p.locator('[data-topic-no-results]')).to_be_visible()
+            clear.click();expect(field).to_have_value('')
+            v=primary_clear_snapshot(p,'zero-after-query-clear',observed)
+            assert v['scope']=='extended' and v['evidence'] and v['category']==topic['category']
+            assert v['visibleCount']==0 and not v['emptyHidden'] and v['clearHidden']
+            assert v['sameCards'] and v['receiptOpen']
+            p.locator('[data-topic-no-results] [data-topic-reset]').click()
+            v=primary_clear_snapshot(p,'full-reset',observed)
+            assert v['scope']=='all' and not v['evidence'] and v['category']==''
+            assert v['visibleCount']==len(f['topics']) and v['sameCards'] and v['receiptOpen']
+            assert parse_qs(urlsplit(v['url']).fragment)=={k:[x] for k,x in f['params'].items()}
+            expect(field).to_be_focused()
+            if (width,language)==(320,'zh'):
+                path=args.out/'primary-clear-full-reset-320-zh.png';p.screenshot(path=str(path),full_page=False);report['screenshots'].append(path.name)
+
+    def primary_clear_history(width,language):
+        with context(width,'light',language) as c:
+            p,f=primary_clear_page(c);field=p.locator('[data-topic-search]');clear=p.locator('[data-topic-search-clear]')
+            observed=[];report.setdefault('primary_clear_history',[]).append({'width':width,'language':language,'phases':observed})
+            browse_focus_hash(p,urlencode({**f['params'],'q':'HBM'}));clear.focus()
+            writes=p.evaluate('window.__browseFocus.writes.length');length=p.evaluate('history.length')
+            p.evaluate("window.__browseFocus.phase='clear-back-to-empty'")
+            p.go_back();expect(field).to_have_value('');expect(field).to_be_focused()
+            v=primary_clear_snapshot(p,'back-empty',observed)
+            assert v['clearHidden'] and v['writes']==writes and v['historyLength']==length
+            p.locator('[data-topic-category-filter]').focus()
+            p.go_forward();expect(field).to_have_value('HBM')
+            v=primary_clear_snapshot(p,'forward-query',observed)
+            assert not v['clearHidden'] and v['focus']=='category' and v['writes']==writes
+            clear.focus();browse_focus_hash(p,urlencode({**f['params'],'q':'chip'}))
+            v=primary_clear_snapshot(p,'query-to-query',observed)
+            expect(clear).to_be_focused();assert not v['clearHidden'] and v['query']=='chip' and v['writes']==writes
+            other='zh' if language=='en' else 'en'
+            p.evaluate("(language)=>document.documentElement.setAttribute('data-lang',language)",other)
+            expect(clear).to_have_attribute('aria-label','清空搜索' if other=='zh' else 'Clear search')
+            v=primary_clear_snapshot(p,'locale',observed);expect(clear).to_be_focused()
+            assert v['query']=='chip' and v['writes']==writes
+            p.evaluate("document.documentElement.setAttribute('data-theme','dark')")
+            v=primary_clear_snapshot(p,'theme',observed);expect(clear).to_be_focused()
+            if f['narrow']:
+                p.locator('[data-browse-close]').click();expect(p.locator('[data-browse-dialog]')).not_to_be_visible()
+                p.locator('a.gmi-product-name').focus()
+                browse_focus_hash(p,f['a']);expect(field).to_have_value('')
+                v=primary_clear_snapshot(p,'closed-history',observed)
+                expect(p.locator('a.gmi-product-name')).to_be_focused()
+                assert not v['dialogOpen'] and v['clearHidden'] and v['writes']==writes
+
+    def primary_clear_edges(width,language):
+        with context(width,'dark',language) as c:
+            p,f=primary_clear_page(c);field=p.locator('[data-topic-search]');clear=p.locator('[data-topic-search-clear]')
+            observed=[];report.setdefault('primary_clear_edges',[]).append({'width':width,'language':language,'phases':observed})
+            field.fill('HBM');clear.focus()
+            field.evaluate("""n=>n.addEventListener('focus',()=>document.querySelector('[data-topic-category-filter]').focus(),{once:true})""")
+            clear.click();expect(field).to_have_value('')
+            v=primary_clear_snapshot(p,'surviving-focus-redirect',observed)
+            expect(p.locator('[data-topic-category-filter]')).to_be_focused()
+            assert v['clearHidden']
+            # A synchronous focus callback projects a newer query; the original click yields.
+            field.fill('HBM');clear.focus();before=p.evaluate('window.__browseFocus.writes.length')
+            field.evaluate("""n=>n.addEventListener('focus',()=>{
+              n.value='Micron';n.dispatchEvent(new Event('input',{bubbles:true}));
+            },{once:true})""")
+            clear.click();expect(field).to_have_value('Micron')
+            v=primary_clear_snapshot(p,'nested-query-wins',observed)
+            assert not v['clearHidden'] and v['writes']==before+1
+            assert parse_qs(urlsplit(v['url']).fragment)['q']==['Micron']
+            # Hash restoration is asynchronous: href must also protect the click's context.
+            field.fill('HBM');clear.focus();before=p.evaluate('window.__browseFocus.writes.length')
+            field.evaluate("""(n,fragment)=>n.addEventListener('focus',()=>{location.hash=fragment;},{once:true})""",f['b'])
+            clear.click();expect(field).to_have_value('zz-no-match-primary-focus')
+            v=primary_clear_snapshot(p,'focus-history-wins',observed)
+            assert not v['clearHidden'] and v['writes']==before
+            assert parse_qs(urlsplit(v['url']).fragment)==parse_qs(f['b'])
+            # The pre-hide projection itself can be reentered by recovery focus.
+            browse_focus_hash(p,f['a']);browse_focus_hash(p,urlencode({**f['params'],'q':'HBM'}));clear.focus()
+            before=p.evaluate('window.__browseFocus.writes.length')
+            field.evaluate("""n=>n.addEventListener('focus',()=>{
+              n.value='Micron';n.dispatchEvent(new Event('input',{bubbles:true}));
+            },{once:true})""")
+            p.go_back();expect(field).to_have_value('Micron')
+            v=primary_clear_snapshot(p,'history-projection-newer-pass',observed)
+            assert not v['clearHidden'] and v['writes']==before+1 and v['emptyHidden']
+            # Redirect into another retiring subtree continues to the existing fallback.
+            browse_focus_hash(p,f['b']);clear.focus()
+            field.evaluate("""n=>n.addEventListener('focus',()=>{
+              document.querySelector('[data-topic-no-results] [data-topic-reset]').focus();
+            },{once:true})""")
+            browse_focus_hash(p,f['a']);expect(field).to_have_value('')
+            v=primary_clear_snapshot(p,'redirect-to-retiring-action',observed)
+            expect(p.locator('[data-browse-close]') if f['narrow'] else p.locator('#gmi-topic-title')).to_be_focused()
+            assert v['clearHidden'] and v['emptyHidden'] and v['dialogOpen']==f['narrow']
+
+    def primary_clear_unenhanced(language):
+        width=390 if language=='en' else 320;observed=[]
+        report.setdefault('primary_clear_unenhanced',[]).append({'language':language,'phases':observed})
+        with context(width,'light',language,java_script_enabled=False) as c:
+            p=page_for(c,'gmi.html#q=HBM')
+            clear=p.locator('[data-topic-search-clear]');assert clear.count()==1
+            assert clear.get_attribute('hidden') is not None
+            assert 'gmi-search--clearable' not in p.locator('.gmi-topic-search').get_attribute('class')
+            assert p.locator('[data-gmi-ready]').count()==0 and p.locator('.gmi-topic-option').count()==371
+            assert p.locator('[data-topic-search]').get_attribute('aria-label')=='Search themes, companies or products'
+            observed.append({'phase':'no-js','clear_hidden':True,'enhanced':False,'native_theme_links':371})
+        with context(width,'dark',language) as c:
+            p,f=payload_failure_page(c,'malformed')
+            clear=p.locator('[data-topic-search-clear]');assert clear.count()==1
+            assert clear.get_attribute('hidden') is not None
+            assert 'gmi-search--clearable' not in p.locator('.gmi-topic-search').get_attribute('class')
+            expect(p.locator('[data-topic-notice-index]')).to_be_visible()
+            expect(p.locator('[data-browse-open]')).not_to_be_visible()
+            assert p.locator('[data-gmi-ready]').count()==0
+            observed.append({'phase':'failed-payload','clear_hidden':True,'enhanced':False,'native_index_visible':True})
+
+    for width,language in [(w,l) for w in (1440,390,320) for l in ('en','zh')]+[(820,'en'),(821,'zh')]:
+        check(f'primary-clear-controls-{width}-{language}',lambda w=width,l=language:primary_clear_controls(w,l))
+    for width,language in ((1440,'en'),(1440,'zh'),(390,'en'),(320,'zh')):
+        check(f'primary-clear-history-{width}-{language}',lambda w=width,l=language:primary_clear_history(w,l))
+        check(f'primary-clear-edges-{width}-{language}',lambda w=width,l=language:primary_clear_edges(w,l))
+    for language in ('en','zh'):
+        check(f'primary-clear-unenhanced-{language}',lambda l=language:primary_clear_unenhanced(l))
+
     browser.close()
 server.shutdown()
 report['pass'] = all(c['result']=='PASS' for c in report['cases']) and not report['page_errors']

@@ -571,6 +571,9 @@ html[data-theme="light"] .gmi-sheet{ background:var(--panel2); }
 .gmi-topic-search input{width:100%;min-width:0;border:0;background:transparent;color:var(--text);font:inherit;font-size:var(--fs-sm);padding:var(--sp-3,12px) 0;outline:none}
 .gmi-topic-search input:focus-visible{outline:none}
 .gmi-topic-search input::placeholder{color:var(--muted)}
+/* The primary wrapper's later shorthand must retain the enhanced 44px suffix. */
+.gmi-topic-search.gmi-search--clearable{padding-right:58px}
+.gmi-topic-search.gmi-search--clearable input::-webkit-search-cancel-button{-webkit-appearance:none;display:none}
 .gmi-topic-search kbd{font:inherit;border:1px solid var(--line);padding:0 var(--sp-1,4px);border-radius:var(--r-gmi-sm)}
 .gmi-filter-label{font-size:var(--fs-label);font-weight:600;color:var(--muted);margin-bottom:calc(-1 * var(--sp-2,8px))}
 .gmi-browse select{appearance:auto;min-height:44px;width:100%;padding:var(--sp-2,8px) var(--sp-3,12px);border:1px solid var(--line);border-radius:var(--r-ctl,8px);background:var(--panel);color:var(--text);font:500 var(--fs-sm)/1.5 var(--font-ui)}
