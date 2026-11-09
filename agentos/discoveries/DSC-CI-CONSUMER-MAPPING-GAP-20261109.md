@@ -1,3 +1,37 @@
+---
+key: CI-CONSUMER-MAPPING-GAP-20261109
+claim: >
+  Mastermind smoke-scoped PR and merge-group CI selects tests by changed
+  path (same-stem tests only; pytest shards skip unless mode is full), so a
+  change to a source pinned by the frozen identity-review registries can be
+  certified green without running the pin tests that consume it, and master
+  then fails those pins on its full push run.
+falsifier: >
+  Find a smoke-scoped Mastermind merge group for a change to a
+  REVIEWED_FILES source that executed the identity-review owner tests, e.g.
+  gh run view 42592403849 --repo mastermindx-market-intelligence/Mastermind
+  showing shard jobs executed; or show .github/workflows/ci.yml:152 running
+  pytest_shards for mode smoke.
+so_what: >
+  A scoped merge group is not full-suite proof. Scoped selection must add
+  the identity-pin owner tests whenever a changed path is a registry key
+  (Mastermind #2380); until then a pinned-source change can redden master.
+kind: landmine
+confidence: verified
+verified_at: 2026-11-09
+verified_by: >
+  Mastermind #2365 merge group run 42592403849 had the scoped 4-job shape
+  with shards skipped and passed; master push runs 42597437028 and
+  42611479873 then failed tests/test_executive_reviewed_site_identity_tokens.py
+  and tests/test_hermes_fabric_native_identity_review.py on
+  integrations/hermes_attended_fabric/native.py; shard gating at
+  .github/workflows/ci.yml:152 (Mastermind #1607 lane C analysis).
+scope:
+  - Mastermind
+  - .github/workflows/ci.yml
+  - scripts/ci_pr_smoke.py
+---
+
 # DSC: Scoped PR CI does not map identity-review test consumers to the files they pin
 
 **Record ID:** DSC-CI-CONSUMER-MAPPING-GAP-20261109
