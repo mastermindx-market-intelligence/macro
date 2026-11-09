@@ -3368,3 +3368,45 @@ Receipt: `PAPER_CRYPTO_ASSET_READING_20261109.json`. Captures: `PAPER_CRYPTO_ASS
 The Chinese mobile Markets specimen in `HX-0` still uses 30/90-calendar-day wording and ambiguous BTC-relative-zero language. The internal guide also still calls implemented candidate comparison/saved-case UI merely proposed. Correct those retained-reference and builder-navigation labels, while preserving actual paired-window receipt and qualified historical-review proposals.
 
 All prior Draft, model/H5, alert, hosted/independent acceptance, public-route cutover, admission/release and denied/unknown-effect boundaries remain. This is local historical/synthetic proof, not production acceptance or current-market freshness.
+
+
+## 72. Crypto references — Chinese comparison meaning and honest builder navigation (2026-11-09)
+
+**Applied and visually verified; continuing into the next evidenced workflow correction.** This is a Paper-only phase. Draft [PR #10901](https://github.com/mastermindx-market-intelligence/Macro/pull/10901) remains **`ce97e52d0cd131de2a1ca7e750574fcdc9482adb`**, tree `112421b363a35eac149234bcc7f44d685ced880a`, assets `bc279c50ec6b`. No product runtime, test, model or data change.
+
+### Product-reference clarity
+
+File `01M6Y3F0NXNDPAKJMJGCAD759Z`, page `p-1-0`:
+
+- Chinese mobile Markets inside `HX-0`: eight existing text nodes now use 浏览资产, 比值变化, 价格涨跌 and 资产/BTC比值变化. The existing comparison-basis block states 30 own observation intervals for price change and 90 shared observation intervals for ratio change, with the paired window not supplied.
+- Existing coverage qualification, ETH/SOL values, structure/risk, comparison action and return/filter promise remain. Bitcoin history and scenario-horizon selectors retain their distinct meanings.
+- Desktop Markets `8E-0`: the title becomes **Explore assets**, with **Choose an asset to inspect its readings.** This matches the candidate's task and removes an unsupported market-wide conclusion.
+
+### Builder navigation and implementation boundary
+
+The same page IDs, order, icons and active-page state remain. Only two names change:
+
+| Page | Current name |
+|---|---|
+| `p-3-0` | Asset readings · Candidate UI + receipt proposal |
+| `p-4-0` | Saved cases · Candidate UI + results proposal |
+
+Three rich-text nodes on guide `3L1-0` now direct builders to the current candidate and Build contracts. Asset comparison/quotes, saved-case storage/navigation/recovery and the historical-review unavailable state are implemented in Draft PR10901. Paired observation receipts and qualified historical comparison results remain proposed evidence work.
+
+The guide preserves the seven-R3-board replacement scope, retained behavior contracts Z1-0/251-0, the R2 contract's rejection of R1 visuals, archive navigation and the dated organizational snapshot. The guide is internal, excluded from product UI. No revived archive design or historical operational instruction becomes current authority.
+
+### Exact and visual verification
+
+**394 inspected nodes** remain: HX281, Markets102 and guide11. Thirteen text nodes change; no additions/removals or parent/order changes. Full JSX inverses recover the exact before-images after reversing the stated text edits and one known text-renderer normalization: removing the former multiline heading caused NC-0's obsolete `whiteSpace:'pre-wrap'` to be omitted. Every other style remains exact. No held style-tool operation or alternate carrier was used.
+
+All three roots finished with observed applied responses. Three full-artboard JPEGs and the Chinese Markets phone crop were inspected: headings, labels, explanatory lines and guide locators fit without clipping/overlap inside these inspected roots. This does not extend the earlier unreported canvas-coordinate qualification for quote companion3N8.
+
+Receipt: `PAPER_CRYPTO_REFERENCE_CLARITY_20261109.json`. Captures: `PAPER_CRYPTO_REFERENCE_RESPONSIVE_20261109.jpg`, `PAPER_CRYPTO_REFERENCE_MOBILE_20261109.jpg`, `PAPER_CRYPTO_REFERENCE_MARKETS_20261109.jpg`, `PAPER_CRYPTO_REFERENCE_GUIDE_20261109.jpg`.
+
+No runtime tests were rerun for these reference-copy/page-name edits. The prior21 affected checks, six native contexts/pages and eight captures remain attached to their unchanged exact source.
+
+### Continuation and boundaries
+
+Continue examining the candidate's remaining task affordances, navigation and deterministic state behavior. Implement the next evidenced defect through the existing owners with affected proof.
+
+All prior Draft, H5/model, alert, qualified historical result, hosted/independent acceptance, public-route cutover, admission/release and denied/unknown-effect boundaries remain. Paper reference alignment is not production acceptance.

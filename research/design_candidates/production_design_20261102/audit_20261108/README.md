@@ -1,7 +1,17 @@
 # Paper audit and upgrade — 8–9 November 2026
 
 
-## Latest applied work — asset identity and reading hierarchy
+## Latest applied work — source-aligned references and builder navigation
+
+The Chinese mobile Markets reference now names the actual price and asset/BTC ratio measures, states their observation-step basis and identifies the absent paired window. Desktop Markets leads with **Explore assets**.
+
+The internal guide and two page names distinguish implemented candidate UI from proposed paired receipts and historical results. Archive scope and retained behavior contracts stay explicit. **13 text nodes across394 conserved nodes**, plus two page names, change. Full JSX inverses are exact after those edits and one documented multiline-to-single-line text normalization; all other styles/structure remain exact. Three roots finished, three full captures and one phone crop inspected.
+
+Source [PR #10901](https://github.com/mastermindx-market-intelligence/Macro/pull/10901) remains `ce97e52d0cd131de2a1ca7e750574fcdc9482adb`. No runtime changes or new test result. See [§72](WORKFLOW_CONTINUATION_20261108.md), [receipt](PAPER_CRYPTO_REFERENCE_CLARITY_20261109.json), [mobile reference](PAPER_CRYPTO_REFERENCE_MOBILE_20261109.jpg) and [builder guide](PAPER_CRYPTO_REFERENCE_GUIDE_20261109.jpg).
+
+Continuing into the next evidenced workflow correction. Prior proof scopes and all holds remain.
+
+## Prior applied work — asset identity and reading hierarchy
 
 [PR #10901](https://github.com/mastermindx-market-intelligence/Macro/pull/10901) is now `ce97e52d0cd131de2a1ca7e750574fcdc9482adb`, assets `bc279c50ec6b`. Fallback identity appears once; the inspector emphasizes its quote and groups the explicitly labeled asset observation date beneath it.
 
