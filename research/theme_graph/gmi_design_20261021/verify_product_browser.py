@@ -2,7 +2,8 @@
 
 Usage: python verify_product_browser.py --site SITE --out PROOF --executable CHROME
 No signed-in profile, publication, source data mutation, or service stub is used.
-The clipboard-denied and malformed-payload cases are explicit fault injections.
+Clipboard outcome/timing, feedback-timer, receipt identity and malformed-payload
+cases are explicit fault injections; they do not change published source records.
 """
 import argparse
 from datetime import datetime, timezone
@@ -651,6 +652,278 @@ with sync_playwright() as pw:
     
     for width in (1440, 390):
         check(f'locale-receipt-state-{width}', lambda w=width: locale_receipts(w))
+
+    def clipboard_context_paths(width):
+        """Deferred browser callbacks must never publish feedback on another view.
+
+        The clipboard and its 2500 ms feedback timer are explicit fault injections.
+        No writes reach the operating system clipboard. Other timers remain native.
+        Selection, filtering, lens buttons and history use the existing page owners.
+        """
+        original = (args.site/'gmi.html').read_text()
+        pattern = r'(<script\b[^>]*id="gmi-topic-data"[^>]*>).*?(</script>)'
+        data = json.loads(re.search(pattern, original, flags=re.S)[0].split('>', 1)[1].rsplit('</script>', 1)[0])
+        selected = re.search(r'data-default-theme="([^"]+)"', original)[1]
+        other = next(t['id'] for t in data['topics'] if t['id'] != selected and t['tier'] == 'core')
+        names = {t['id']: t['en'] for t in data['topics']}
+
+        def open_page(c):
+            c.add_init_script('''(() => {
+              const f=window.__gmiCopyFixture={writes:[],timers:[]};
+              Object.defineProperty(navigator,'clipboard',{configurable:true,value:{
+                writeText(url){return new Promise((resolve,reject)=>f.writes.push({url,resolve,reject}));}
+              }});
+              const set=window.setTimeout.bind(window),clear=window.clearTimeout.bind(window);
+              window.setTimeout=(callback,delay,...rest)=>{
+                if(delay!==2500)return set(callback,delay,...rest);
+                const timer={id:-(f.timers.length+1),callback:()=>callback(...rest),cancelled:false};
+                f.timers.push(timer);return timer.id;
+              };
+              window.clearTimeout=(id)=>{
+                const timer=f.timers.find(t=>t.id===id);
+                if(timer)timer.cancelled=true;else clear(id);
+              };
+            })();''')
+            c.route('**/gmi.html*', lambda route: route.fulfill(status=200, content_type='text/html', body=original))
+            p = page_for(c, 'gmi.html?fixture=copy&return=one%20two')
+            expect(p.locator('[data-gmi-ready]')).to_have_count(1)
+            return p
+
+        def frame(p):
+            p.evaluate('() => new Promise(resolve => requestAnimationFrame(() => resolve()))')
+
+        def copy(p):
+            p.locator('[data-gmi-copy]').click()
+            return p.evaluate('window.__gmiCopyFixture.writes.at(-1).url')
+
+        def settle(p, index=0, success=True):
+            p.evaluate('''([i,success])=>{
+              const write=window.__gmiCopyFixture.writes[i];
+              success?write.resolve():write.reject(new Error('fixture clipboard denial'));
+            }''', [index, success])
+            frame(p)
+
+        def select(p, identifier):
+            if width <= 820:
+                p.locator('[data-browse-open]').click()
+            p.locator('[data-topic-results] [data-topic-select="'+identifier+'"]').click()
+            expect(p.locator('#gmi-topic-title')).to_have_text(names[identifier])
+            frame(p)
+
+        def search(p, query):
+            if width <= 820:
+                p.locator('[data-browse-open]').click()
+            p.locator('[data-topic-search]').fill(query)
+            if width <= 820:
+                p.locator('[data-browse-close]').click()
+            frame(p)
+
+        def idle(p):
+            expect(p.locator('[data-copy-label]')).to_have_text('Copy link')
+            expect(p.locator('[data-gmi-copy]')).to_be_enabled()
+            expect(p.locator('.gmi-copy-fallback')).not_to_be_visible()
+            expect(p.locator('#gmi-share-url')).to_have_value('')
+
+        def lens(p, value):
+            disclosure=p.locator('.gmi-advanced')
+            if disclosure.count() and not disclosure.get_attribute('open'):
+                # Native details.open distinguishes the empty open attribute from closed.
+                if not disclosure.evaluate('(node)=>node.open'):
+                    disclosure.locator(':scope > summary').click()
+            p.locator('[data-gmi-set-lens="'+value+'"]').click()
+            frame(p)
+
+        # Both outcomes of the old write are quarantined after an actual row selection.
+        for success in (True, False):
+            with context(width) as c:
+                p=open_page(c)
+                attempted=copy(p)
+                select(p,other)
+                p.locator('#gmi-topic-title').focus()
+                before=p.locator('[data-gmi-announcement]').text_content()
+                settle(p,success=success)
+                idle(p)
+                expect(p.locator('#gmi-topic-title')).to_be_focused()
+                assert p.locator('[data-gmi-announcement]').text_content()==before
+                assert p.evaluate('window.__gmiCopyFixture.writes[0].url')==attempted
+                assert attempted!=p.url
+
+        # A return to the same URL is a new visit; URL equality cannot revive the write.
+        with context(width) as c:
+            p=open_page(c)
+            attempted=copy(p)
+            select(p,other)
+            select(p,selected)
+            assert p.url==attempted
+            settle(p)
+            idle(p)
+
+        # An older finally must not enable the button owned by a newer pending action.
+        for success in (True, False):
+            with context(width) as c:
+                p=open_page(c)
+                copy(p)
+                select(p,other)
+                new_url=copy(p)
+                settle(p,success=success)
+                expect(p.locator('[data-gmi-copy]')).to_be_disabled()
+                expect(p.locator('[data-copy-label]')).to_have_text('Copying…')
+                expect(p.locator('.gmi-copy-fallback')).not_to_be_visible()
+                settle(p,1)
+                expect(p.locator('[data-copy-label]')).to_have_text('Link copied')
+                assert p.evaluate('window.__gmiCopyFixture.writes[1].url')==new_url==p.url
+
+        # Filter-only URL changes and an ABA filter sequence also retire the action.
+        for reverse in (False, True):
+            with context(width) as c:
+                p=open_page(c)
+                attempted=copy(p)
+                search(p,'Micron')
+                assert 'q=Micron' in p.url
+                if reverse:
+                    search(p,'')
+                    assert p.url==attempted
+                settle(p,success=reverse)
+                idle(p)
+
+        # Actual Back/Forward plus a same-URL history entry must retire pending work.
+        with context(width) as c:
+            p=open_page(c)
+            select(p,other)
+            copy(p)
+            p.go_back()
+            expect(p.locator('#gmi-topic-title')).to_have_text(names[selected])
+            settle(p)
+            idle(p)
+            p.go_forward()
+            expect(p.locator('#gmi-topic-title')).to_have_text(names[other])
+            idle(p)
+        with context(width) as c:
+            p=open_page(c)
+            copy(p)
+            p.evaluate('history.pushState({fixture:true},"",location.href)')
+            p.go_back()
+            frame(p)
+            settle(p,success=False)
+            idle(p)
+
+        # The lens owner uses replaceState, including changes batched with language.
+        with context(width) as c:
+            p=open_page(c)
+            lens(p,'coverage')
+            attempted=copy(p)
+            lens(p,'chain')
+            lens(p,'coverage')
+            assert p.url==attempted
+            settle(p)
+            idle(p)
+        for success in (True, False):
+            with context(width) as c:
+                p=open_page(c)
+                copy(p)
+                settle(p,success=success)
+                lens(p,'chain')
+                idle(p)
+        with context(width) as c:
+            p=open_page(c)
+            copy(p)
+            p.evaluate('''()=>{
+              document.querySelector('[data-gmi-set-lens="chain"]').click();
+              document.documentElement.setAttribute('data-lang','zh');
+            }''')
+            frame(p)
+            settle(p)
+            expect(p.locator('[data-copy-label]')).to_have_text('复制链接')
+            expect(p.locator('.gmi-copy-fallback')).not_to_be_visible()
+            expect(p.locator('[data-gmi-copy]')).to_be_enabled()
+
+        # Timers belong to the action that installed them, even if a stale callback runs.
+        with context(width) as c:
+            p=open_page(c)
+            copy(p)
+            settle(p)
+            copy(p)
+            assert p.evaluate('window.__gmiCopyFixture.timers[0].cancelled')
+            p.evaluate('window.__gmiCopyFixture.timers[0].callback()')
+            expect(p.locator('[data-copy-label]')).to_have_text('Copying…')
+            expect(p.locator('[data-gmi-copy]')).to_be_disabled()
+            settle(p,1)
+            p.evaluate('window.__gmiCopyFixture.timers[0].callback()')
+            expect(p.locator('[data-copy-label]')).to_have_text('Link copied')
+            # An unrelated existing announcement cannot be cleared by copy expiry.
+            p.locator('[data-gmi-announcement]').evaluate('(node)=>node.textContent="fixture other owner"')
+            p.evaluate('window.__gmiCopyFixture.timers[1].callback()')
+            idle(p)
+            expect(p.locator('[data-gmi-announcement]')).to_have_text('fixture other owner')
+
+        # Current failures expose the captured full URL; user focus wins over recovery.
+        for moved_focus in ('none', 'heading', 'body', 'pointer'):
+            with context(width) as c:
+                p=open_page(c)
+                attempted=copy(p)
+                if moved_focus in ('heading', 'body'):
+                    p.locator('#gmi-topic-title').focus()
+                if moved_focus == 'body':
+                    p.locator('#gmi-topic-title').evaluate('(node)=>node.blur()')
+                if moved_focus == 'pointer':
+                    p.locator('[data-topic-description]').click()
+                settle(p,success=False)
+                expect(p.locator('.gmi-copy-fallback')).to_be_visible()
+                expect(p.locator('#gmi-share-url')).to_have_value(attempted)
+                assert '?fixture=copy&return=one%20two#theme=' in attempted
+                if moved_focus == 'heading':
+                    expect(p.locator('#gmi-topic-title')).to_be_focused()
+                elif moved_focus in ('body', 'pointer'):
+                    assert p.evaluate('document.activeElement===document.body')
+                else:
+                    expect(p.locator('#gmi-share-url')).to_be_focused()
+                    assert p.locator('#gmi-share-url').evaluate('(n)=>n.selectionStart===0&&n.selectionEnd===n.value.length')
+                p.locator('[data-copy-close]').click()
+                idle(p)
+                expect(p.locator('[data-gmi-copy]')).to_be_focused()
+
+        # Locale-only changes preserve this URL's attempt and existing receipt state.
+        with context(width) as c:
+            p=open_page(c)
+            summary=p.locator('[data-topic-connections] .gmi-evidence-receipt summary').first
+            summary.click()
+            attempted=copy(p)
+            summary.focus()
+            p.evaluate('document.documentElement.setAttribute("data-lang","zh")')
+            frame(p)
+            expect(summary).to_be_focused()
+            assert summary.locator('..').evaluate('(n)=>n.open')
+            expect(p.locator('[data-copy-label]')).to_have_text('正在复制…')
+            settle(p)
+            expect(p.locator('[data-copy-label]')).to_have_text('链接已复制')
+            expect(p.locator('[data-gmi-announcement]')).to_have_text('链接已复制到剪贴板。')
+            assert attempted==p.url
+        with context(width) as c:
+            p=open_page(c)
+            attempted=copy(p)
+            settle(p,success=False)
+            p.evaluate('document.documentElement.setAttribute("data-lang","zh")')
+            frame(p)
+            expect(p.locator('#gmi-share-url')).to_be_focused()
+            expect(p.locator('#gmi-share-url')).to_have_value(attempted)
+            expect(p.locator('[data-gmi-announcement]')).to_have_text('暂无法自动复制。请选择并复制所显示的地址。')
+            # Context retirement moves focus off a fallback that is about to be hidden.
+            p.evaluate('(id)=>{location.hash="theme="+encodeURIComponent(id);}',other)
+            frame(p)
+            expect(p.locator('[data-gmi-copy]')).to_be_focused()
+            expect(p.locator('.gmi-copy-fallback')).not_to_be_visible()
+
+        # This injected lifecycle event verifies retirement, not actual BFCache support.
+        with context(width) as c:
+            p=open_page(c)
+            copy(p)
+            p.evaluate('window.dispatchEvent(new PageTransitionEvent("pagehide",{persisted:true}))')
+            settle(p)
+            idle(p)
+
+
+    for width in (1440, 390):
+        check(f'clipboard-context-races-{width}', lambda w=width: clipboard_context_paths(w))
 
     browser.close()
 server.shutdown()

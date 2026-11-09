@@ -615,7 +615,7 @@ html[data-theme="light"] .gmi-sheet{ background:var(--panel2); }
 .gmi-return-context{display:flex;margin-bottom:var(--sp-6,24px)}
 .gmi-return-context .gmi-action-secondary{font-weight:500;text-align:left}
 .gmi-evidence-receipt{border-top:1px solid var(--line-quiet);padding-top:var(--sp-3,12px)}
-.gmi-evidence-receipt summary,.gmi-topic-receipt summary{cursor:pointer;font-size:var(--fs-sm);font-weight:600;min-height:40px;padding-block:var(--sp-2,8px);line-height:1.6}
+.gmi-evidence-receipt summary,.gmi-topic-receipt summary{cursor:pointer;font-size:var(--fs-sm);font-weight:600;min-height:44px;padding-block:var(--sp-2,8px);line-height:1.6}
 .gmi-evidence-receipt summary>span:not(.l-en):not(.l-zh),.gmi-topic-receipt summary>span:not(.l-en):not(.l-zh){font-size:var(--fs-label);color:var(--muted);font-weight:400;margin-left:var(--sp-2,8px)}
 .gmi-evidence-receipt dl{margin:var(--sp-3,12px) 0 0;display:flex;flex-direction:column;gap:var(--sp-3,12px)}
 .gmi-evidence-receipt dl>div{display:grid;grid-template-columns:120px minmax(0,1fr);gap:var(--sp-4,16px);font-size:var(--fs-sm)}

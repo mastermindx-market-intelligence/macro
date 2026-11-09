@@ -1,0 +1,610 @@
+{
+  "schema": "mastermind.gmi.copy_context_validation.v1",
+  "verified_at": "2026-11-09",
+  "base_head": "cc47f34daf1850392521018c40380258e61b33a6",
+  "branch": "claude/gmi-product-upgrade-20261103",
+  "pr": 10676,
+  "source": {
+    "baseline_js_blob": "0a5a6b51f7c836e34523a476751fc3eca054302d",
+    "candidate_js": {
+      "git_blob": "387383b0e237162421dfebf5eb9d7ef85302cb1e",
+      "sha256": "ff4bc13c57df0ba6f098e67e866f6b5b4d4b6ad5b793985110eefdeeb42c797d",
+      "bytes": 43589
+    },
+    "baseline_css_blob": "877285792e8e994817497745b1de6d96befa2a6b",
+    "candidate_css": {
+      "git_blob": "23ce5f275ffc07a57278450b560d9d0c20f86632",
+      "sha256": "c146dbe254c4a2a31635e00d6f5c6fd29b4e96edcb18ddfa55e56cbde17c7703",
+      "bytes": 67724
+    },
+    "template_and_site_identical": true,
+    "baseline_browser_verifier_blob": "d880b4aabd7f203bcbcd24e045e393067571b122",
+    "candidate_browser_verifier": {
+      "git_blob": "3806d8ee5cf52d7da332b36c7c6348616b660d52",
+      "sha256": "69ae89f9b2c31bb1d41aebc5944cee48e5359e4a5e37583ab64230a825ba07f4",
+      "bytes": 51898
+    },
+    "committed_markup_blob": "317db9c58873d1b67bb10771bd19cbed4b51b400",
+    "shared_theme_css_blob": "619436f58d37a222d1db7021ba9d52bb3a05a7fa",
+    "extracted_fixture": {
+      "git_blob": "2446bc61b14b6832c3e45464a24afb164bd8c12c",
+      "sha256": "6894c7e1627a0e5e00d74e99d04194516e68b11e251ca3f3aa02c54d074d89d3",
+      "bytes": 27023
+    },
+    "added_case_function": {
+      "git_blob": "5049c4a64896c14eea0c9b79ea2f2141aa3f0ad1",
+      "sha256": "285b7e4c991d5758252ca0dcc7036de2448d90838ebc7f36f03b23b6c315298c",
+      "bytes": 11715
+    },
+    "extracted_shared_css": {
+      "git_blob": "69472e5c46e099ff81c13323fdd4efc55a85c898",
+      "sha256": "e5ccaefc05648390b9014264e31f7f7816c1c2c91645ddc5a85a698cc3dd64c0",
+      "bytes": 13135
+    }
+  },
+  "checks": {
+    "javascript_syntax": "PASS",
+    "python_verifier_syntax": "PASS",
+    "baseline": {
+      "widths": [
+        1440,
+        390
+      ],
+      "result": "FAIL_AS_EXPECTED",
+      "assertion": "After selecting another theme, the old successful clipboard operation must not display Link copied.",
+      "browser": "157.0.8103.39",
+      "page_errors": [],
+      "exit_code": 1,
+      "runtime_seconds": 14.72
+    },
+    "candidate": {
+      "browser": "157.0.8103.39",
+      "widths": [
+        1440,
+        390
+      ],
+      "clipboard_named_cases": 2,
+      "clipboard_isolated_contexts": 42,
+      "locale_named_cases": 2,
+      "locale_isolated_contexts": 32,
+      "result": "PASS",
+      "exit_code": 0,
+      "page_errors": [],
+      "runtime_seconds": 40.72
+    },
+    "geometry": {
+      "result": "PASS",
+      "exit_code": 0,
+      "browser": "157.0.8103.39",
+      "runtime_seconds": 5.2,
+      "page_errors": [],
+      "observations": [
+        {
+          "kind": "disclosure-geometry",
+          "viewport": 1440,
+          "language": "en",
+          "mode": "static",
+          "version": "before",
+          "targets": [
+            {
+              "kind": "gmi-evidence-receipt",
+              "height": 40,
+              "minHeight": "40px",
+              "width": 1326
+            },
+            {
+              "kind": "gmi-topic-receipt",
+              "height": 40,
+              "minHeight": "40px",
+              "width": 1376
+            }
+          ]
+        },
+        {
+          "kind": "disclosure-geometry",
+          "viewport": 1440,
+          "language": "en",
+          "mode": "static",
+          "version": "after",
+          "targets": [
+            {
+              "kind": "gmi-evidence-receipt",
+              "height": 44,
+              "minHeight": "44px",
+              "width": 1326
+            },
+            {
+              "kind": "gmi-topic-receipt",
+              "height": 44,
+              "minHeight": "44px",
+              "width": 1376
+            }
+          ]
+        },
+        {
+          "kind": "disclosure-geometry",
+          "viewport": 1440,
+          "language": "en",
+          "mode": "enhanced",
+          "version": "before",
+          "targets": [
+            {
+              "kind": "gmi-evidence-receipt",
+              "height": 40,
+              "minHeight": "40px",
+              "width": 1018
+            },
+            {
+              "kind": "gmi-topic-receipt",
+              "height": 40,
+              "minHeight": "40px",
+              "width": 1068
+            }
+          ]
+        },
+        {
+          "kind": "disclosure-geometry",
+          "viewport": 1440,
+          "language": "en",
+          "mode": "enhanced",
+          "version": "after",
+          "targets": [
+            {
+              "kind": "gmi-evidence-receipt",
+              "height": 44,
+              "minHeight": "44px",
+              "width": 1018
+            },
+            {
+              "kind": "gmi-topic-receipt",
+              "height": 44,
+              "minHeight": "44px",
+              "width": 1068
+            }
+          ]
+        },
+        {
+          "kind": "disclosure-geometry",
+          "viewport": 1440,
+          "language": "zh",
+          "mode": "static",
+          "version": "before",
+          "targets": [
+            {
+              "kind": "gmi-evidence-receipt",
+              "height": 40,
+              "minHeight": "40px",
+              "width": 1326
+            },
+            {
+              "kind": "gmi-topic-receipt",
+              "height": 40,
+              "minHeight": "40px",
+              "width": 1376
+            }
+          ]
+        },
+        {
+          "kind": "disclosure-geometry",
+          "viewport": 1440,
+          "language": "zh",
+          "mode": "static",
+          "version": "after",
+          "targets": [
+            {
+              "kind": "gmi-evidence-receipt",
+              "height": 44,
+              "minHeight": "44px",
+              "width": 1326
+            },
+            {
+              "kind": "gmi-topic-receipt",
+              "height": 44,
+              "minHeight": "44px",
+              "width": 1376
+            }
+          ]
+        },
+        {
+          "kind": "disclosure-geometry",
+          "viewport": 1440,
+          "language": "zh",
+          "mode": "enhanced",
+          "version": "before",
+          "targets": [
+            {
+              "kind": "gmi-evidence-receipt",
+              "height": 40,
+              "minHeight": "40px",
+              "width": 1018
+            },
+            {
+              "kind": "gmi-topic-receipt",
+              "height": 40,
+              "minHeight": "40px",
+              "width": 1068
+            }
+          ]
+        },
+        {
+          "kind": "disclosure-geometry",
+          "viewport": 1440,
+          "language": "zh",
+          "mode": "enhanced",
+          "version": "after",
+          "targets": [
+            {
+              "kind": "gmi-evidence-receipt",
+              "height": 44,
+              "minHeight": "44px",
+              "width": 1018
+            },
+            {
+              "kind": "gmi-topic-receipt",
+              "height": 44,
+              "minHeight": "44px",
+              "width": 1068
+            }
+          ]
+        },
+        {
+          "kind": "disclosure-geometry",
+          "viewport": 390,
+          "language": "en",
+          "mode": "static",
+          "version": "before",
+          "targets": [
+            {
+              "kind": "gmi-evidence-receipt",
+              "height": 53.59375,
+              "minHeight": "40px",
+              "width": 316
+            },
+            {
+              "kind": "gmi-topic-receipt",
+              "height": 53.59375,
+              "minHeight": "40px",
+              "width": 358
+            }
+          ]
+        },
+        {
+          "kind": "disclosure-geometry",
+          "viewport": 390,
+          "language": "en",
+          "mode": "static",
+          "version": "after",
+          "targets": [
+            {
+              "kind": "gmi-evidence-receipt",
+              "height": 53.59375,
+              "minHeight": "44px",
+              "width": 316
+            },
+            {
+              "kind": "gmi-topic-receipt",
+              "height": 53.59375,
+              "minHeight": "44px",
+              "width": 358
+            }
+          ]
+        },
+        {
+          "kind": "disclosure-geometry",
+          "viewport": 390,
+          "language": "en",
+          "mode": "enhanced",
+          "version": "before",
+          "targets": [
+            {
+              "kind": "gmi-evidence-receipt",
+              "height": 53.59375,
+              "minHeight": "40px",
+              "width": 316
+            },
+            {
+              "kind": "gmi-topic-receipt",
+              "height": 53.59375,
+              "minHeight": "40px",
+              "width": 358
+            }
+          ]
+        },
+        {
+          "kind": "disclosure-geometry",
+          "viewport": 390,
+          "language": "en",
+          "mode": "enhanced",
+          "version": "after",
+          "targets": [
+            {
+              "kind": "gmi-evidence-receipt",
+              "height": 53.59375,
+              "minHeight": "44px",
+              "width": 316
+            },
+            {
+              "kind": "gmi-topic-receipt",
+              "height": 53.59375,
+              "minHeight": "44px",
+              "width": 358
+            }
+          ]
+        },
+        {
+          "kind": "disclosure-geometry",
+          "viewport": 390,
+          "language": "zh",
+          "mode": "static",
+          "version": "before",
+          "targets": [
+            {
+              "kind": "gmi-evidence-receipt",
+              "height": 53.59375,
+              "minHeight": "40px",
+              "width": 316
+            },
+            {
+              "kind": "gmi-topic-receipt",
+              "height": 53.59375,
+              "minHeight": "40px",
+              "width": 358
+            }
+          ]
+        },
+        {
+          "kind": "disclosure-geometry",
+          "viewport": 390,
+          "language": "zh",
+          "mode": "static",
+          "version": "after",
+          "targets": [
+            {
+              "kind": "gmi-evidence-receipt",
+              "height": 53.59375,
+              "minHeight": "44px",
+              "width": 316
+            },
+            {
+              "kind": "gmi-topic-receipt",
+              "height": 53.59375,
+              "minHeight": "44px",
+              "width": 358
+            }
+          ]
+        },
+        {
+          "kind": "disclosure-geometry",
+          "viewport": 390,
+          "language": "zh",
+          "mode": "enhanced",
+          "version": "before",
+          "targets": [
+            {
+              "kind": "gmi-evidence-receipt",
+              "height": 53.59375,
+              "minHeight": "40px",
+              "width": 316
+            },
+            {
+              "kind": "gmi-topic-receipt",
+              "height": 53.59375,
+              "minHeight": "40px",
+              "width": 358
+            }
+          ]
+        },
+        {
+          "kind": "disclosure-geometry",
+          "viewport": 390,
+          "language": "zh",
+          "mode": "enhanced",
+          "version": "after",
+          "targets": [
+            {
+              "kind": "gmi-evidence-receipt",
+              "height": 53.59375,
+              "minHeight": "44px",
+              "width": 316
+            },
+            {
+              "kind": "gmi-topic-receipt",
+              "height": 53.59375,
+              "minHeight": "44px",
+              "width": 358
+            }
+          ]
+        },
+        {
+          "kind": "disclosure-geometry",
+          "viewport": 320,
+          "language": "en",
+          "mode": "static",
+          "version": "before",
+          "targets": [
+            {
+              "kind": "gmi-evidence-receipt",
+              "height": 53.59375,
+              "minHeight": "40px",
+              "width": 246
+            },
+            {
+              "kind": "gmi-topic-receipt",
+              "height": 53.59375,
+              "minHeight": "40px",
+              "width": 288
+            }
+          ]
+        },
+        {
+          "kind": "disclosure-geometry",
+          "viewport": 320,
+          "language": "en",
+          "mode": "static",
+          "version": "after",
+          "targets": [
+            {
+              "kind": "gmi-evidence-receipt",
+              "height": 53.59375,
+              "minHeight": "44px",
+              "width": 246
+            },
+            {
+              "kind": "gmi-topic-receipt",
+              "height": 53.59375,
+              "minHeight": "44px",
+              "width": 288
+            }
+          ]
+        },
+        {
+          "kind": "disclosure-geometry",
+          "viewport": 320,
+          "language": "en",
+          "mode": "enhanced",
+          "version": "before",
+          "targets": [
+            {
+              "kind": "gmi-evidence-receipt",
+              "height": 53.59375,
+              "minHeight": "40px",
+              "width": 246
+            },
+            {
+              "kind": "gmi-topic-receipt",
+              "height": 53.59375,
+              "minHeight": "40px",
+              "width": 288
+            }
+          ]
+        },
+        {
+          "kind": "disclosure-geometry",
+          "viewport": 320,
+          "language": "en",
+          "mode": "enhanced",
+          "version": "after",
+          "targets": [
+            {
+              "kind": "gmi-evidence-receipt",
+              "height": 53.59375,
+              "minHeight": "44px",
+              "width": 246
+            },
+            {
+              "kind": "gmi-topic-receipt",
+              "height": 53.59375,
+              "minHeight": "44px",
+              "width": 288
+            }
+          ]
+        },
+        {
+          "kind": "disclosure-geometry",
+          "viewport": 320,
+          "language": "zh",
+          "mode": "static",
+          "version": "before",
+          "targets": [
+            {
+              "kind": "gmi-evidence-receipt",
+              "height": 53.59375,
+              "minHeight": "40px",
+              "width": 246
+            },
+            {
+              "kind": "gmi-topic-receipt",
+              "height": 53.59375,
+              "minHeight": "40px",
+              "width": 288
+            }
+          ]
+        },
+        {
+          "kind": "disclosure-geometry",
+          "viewport": 320,
+          "language": "zh",
+          "mode": "static",
+          "version": "after",
+          "targets": [
+            {
+              "kind": "gmi-evidence-receipt",
+              "height": 53.59375,
+              "minHeight": "44px",
+              "width": 246
+            },
+            {
+              "kind": "gmi-topic-receipt",
+              "height": 53.59375,
+              "minHeight": "44px",
+              "width": 288
+            }
+          ]
+        },
+        {
+          "kind": "disclosure-geometry",
+          "viewport": 320,
+          "language": "zh",
+          "mode": "enhanced",
+          "version": "before",
+          "targets": [
+            {
+              "kind": "gmi-evidence-receipt",
+              "height": 53.59375,
+              "minHeight": "40px",
+              "width": 246
+            },
+            {
+              "kind": "gmi-topic-receipt",
+              "height": 53.59375,
+              "minHeight": "40px",
+              "width": 288
+            }
+          ]
+        },
+        {
+          "kind": "disclosure-geometry",
+          "viewport": 320,
+          "language": "zh",
+          "mode": "enhanced",
+          "version": "after",
+          "targets": [
+            {
+              "kind": "gmi-evidence-receipt",
+              "height": 53.59375,
+              "minHeight": "44px",
+              "width": 246
+            },
+            {
+              "kind": "gmi-topic-receipt",
+              "height": 53.59375,
+              "minHeight": "44px",
+              "width": 288
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "scenario_groups": [
+    "late success and rejection after actual theme selection",
+    "theme and filter A-to-B-to-A",
+    "old completion/finally during a newer pending operation",
+    "Back/Forward and same-URL history entry",
+    "lens replaceState, lens A-to-B-to-A, mixed lens/locale batch, and settled feedback invalidation",
+    "cleared old reset callback invoked during a newer pending action and newer success",
+    "unrelated live announcement preserved when current feedback expires",
+    "exact captured URL with query/hash in current manual fallback",
+    "current fallback focus, moved heading focus, focus then blur, and non-focusable pointer intent",
+    "locale-only pending/success/failed feedback and previously accepted receipt state",
+    "injected pagehide retirement (not an actual BFCache acceptance claim)"
+  ],
+  "execution_scope": "Exact candidate gmi.js plus exact committed test functions on extracted committed explorer DOM and the committed lens tab controls. Full GMI stylesheet and extracted shared :root/language rules are loaded. Clipboard outcomes and the 2500ms feedback timer are deliberately deferred; the system clipboard is not written by these race tests. Fresh anonymous Chrome on the existing authorized M2; all external network blocked. Locale cases also use their explicit test-only receipt identity faults.",
+  "limitations": [
+    "No full shared-shell, font, account, current market-data, public admission, production or deployment acceptance.",
+    "Static geometry means source markup before enhancement in an instrumented browser; not a separate JavaScript-disabled browser qualification.",
+    "Retiring a UI attempt cannot cancel or reverse a previously issued operating-system clipboard write; no replacement write or retry is issued.",
+    "Prior real-clipboard and full 92-case/91-image/ten-board evidence is preserved historical evidence, not rerun or promoted to this head."
+  ],
+  "release": "Original Draft PR10676 only; no auto-merge, relabel, Ready, un-draft, enqueue, merge or deployment. Model01 EFFECT_UNKNOWN/ROOT_UNVERIFIED and all original fences remain."
+}
