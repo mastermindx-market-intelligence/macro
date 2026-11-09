@@ -1,0 +1,876 @@
+{
+  "date": "2026-11-09",
+  "source": {
+    "pr": 10901,
+    "head": "7308f6d706777a49009437554dd35fe42ae163dd",
+    "tree": "6fb0a5d0012cd548b271eff9ddef103b65b1dbab",
+    "parent": "95ac76db194b8952aef0e63c4bcb30a220da78e0",
+    "source_readback": [
+      {
+        "path": "templates/crypto_intelligence_r4.js",
+        "sha": "37386b469d55d99f60f6a28a8858194247691d84",
+        "exact": true
+      },
+      {
+        "path": "site/crypto_intelligence_r4.js",
+        "sha": "37386b469d55d99f60f6a28a8858194247691d84",
+        "exact": true
+      },
+      {
+        "path": "templates/crypto_intelligence_r4.css",
+        "sha": "1edc12c5dcc3d7702b1ffd043bf65b5e19142559",
+        "exact": true
+      },
+      {
+        "path": "site/crypto_intelligence_r4.css",
+        "sha": "1edc12c5dcc3d7702b1ffd043bf65b5e19142559",
+        "exact": true
+      },
+      {
+        "path": "site/crypto-r4.html",
+        "sha": "e9e8f81d8d2ea0078bd50b2f0b7e1d81a876364b",
+        "exact": true
+      },
+      {
+        "path": "site/vector-r4.html",
+        "sha": "3a9107e9b45b81a75f111163206b92cab657eaa7",
+        "exact": true
+      },
+      {
+        "path": "tests/test_crypto_intelligence_r4_browser.py",
+        "sha": "910ed8140ecc83826db0b0b229a5f12aa890b443",
+        "exact": true
+      },
+      {
+        "path": "research/design_candidates/crypto_snapshot_safety_20261109/README.md",
+        "sha": "45dfb0c2d3552e4854f9e0cb734c2451236ee2f9",
+        "exact": true
+      },
+      {
+        "path": "research/design_candidates/crypto_snapshot_safety_20261109/FROZEN_LAYOUT.md",
+        "sha": "76083dd7120d32d637d93c536523b9712ce1c3c0",
+        "exact": true
+      },
+      {
+        "path": "research/design_candidates/crypto_snapshot_safety_20261109/FROZEN_LAYOUT_VALIDATION.json",
+        "sha": "7110a5b3408c459e19effb70879b1f3c013bbdea",
+        "exact": true
+      },
+      {
+        "path": "research/design_candidates/crypto_snapshot_safety_20261109/layout/BASELINE.txt",
+        "sha": "06498f5c49b54fbfd45ce37eed592bda5d8519a2",
+        "exact": true
+      },
+      {
+        "path": "research/design_candidates/crypto_snapshot_safety_20261109/layout/BASELINE_TEST_INPUT.py",
+        "sha": "f31428d5974e8981828ebb809cacd1e59d98da7a",
+        "exact": true
+      },
+      {
+        "path": "research/design_candidates/crypto_snapshot_safety_20261109/layout/CANDIDATE_RESULTS.xml",
+        "sha": "27372d19e601ce082e0c9d0bcaaaef0561520f2b",
+        "exact": true
+      },
+      {
+        "path": "research/design_candidates/crypto_snapshot_safety_20261109/layout/CURRENT_SCENARIO_PROJECTION.json",
+        "sha": "8655cd696cd329eb3c070d98b48c6a922c4b56dc",
+        "exact": true
+      },
+      {
+        "path": "research/design_candidates/crypto_snapshot_safety_20261109/layout/LIGHT_CAPTURE.py",
+        "sha": "acecfb7e21785b01a4328497c1619a7d1f9a154d",
+        "exact": true
+      },
+      {
+        "path": "research/design_candidates/crypto_snapshot_safety_20261109/layout/SOURCE_TRANSFORMS.json",
+        "sha": "8f0560e3ff3e30c79e77fb315b774c4919cee159",
+        "exact": true
+      }
+    ],
+    "binary_readback": [
+      {
+        "path": "research/design_candidates/crypto_snapshot_safety_20261109/layout/captures/layout-saved-en-1440-dark.png",
+        "sha": "e51b17842b9056d7c638d39f97705b6980088a87",
+        "exact": true
+      },
+      {
+        "path": "research/design_candidates/crypto_snapshot_safety_20261109/layout/captures/layout-saved-zh-390-dark.png",
+        "sha": "eee1ef0ab25e523f3324368d560a891003301bd9",
+        "exact": true
+      },
+      {
+        "path": "research/design_candidates/crypto_snapshot_safety_20261109/layout/captures/layout-saved-en-320-dark.png",
+        "sha": "e64f392b2ca5b7979479e2db103d605875848ef5",
+        "exact": true
+      },
+      {
+        "path": "research/design_candidates/crypto_snapshot_safety_20261109/layout/captures/layout-review-zh-390.png",
+        "sha": "228674ded2d22b219a11a8d62224f43ae47de366",
+        "exact": true
+      },
+      {
+        "path": "research/design_candidates/crypto_snapshot_safety_20261109/layout/captures/layout-recovery-missing-en-320.png",
+        "sha": "3602d05ba58f91057a17492f4087882ba8141a43",
+        "exact": true
+      },
+      {
+        "path": "research/design_candidates/crypto_snapshot_safety_20261109/layout/captures/layout-recovery-unreadable-zh-390.png",
+        "sha": "1eb21e96fe6b577ae078010518c71352d99575c0",
+        "exact": true
+      },
+      {
+        "path": "research/design_candidates/crypto_snapshot_safety_20261109/layout/captures/layout-evidence-en-1440-dark.png",
+        "sha": "0355e14b35de69f5b7637cfdace8371a31d9defe",
+        "exact": true
+      },
+      {
+        "path": "research/design_candidates/crypto_snapshot_safety_20261109/layout/captures/layout-evidence-zh-390-dark.png",
+        "sha": "ca8cd84fcf9a8d56074990e7b9f06a0927120287",
+        "exact": true
+      },
+      {
+        "path": "research/design_candidates/crypto_snapshot_safety_20261109/layout/captures/layout-legacy-en-320.png",
+        "sha": "74563a9b62fbda4f0edbb512875f0a561e4fefd5",
+        "exact": true
+      },
+      {
+        "path": "research/design_candidates/crypto_snapshot_safety_20261109/layout/captures/layout-saved-en-390-light.png",
+        "sha": "462f0c97027285dcc964f672b764e3ec3172d097",
+        "exact": true
+      },
+      {
+        "path": "research/design_candidates/crypto_snapshot_safety_20261109/layout/captures/layout-saved-zh-320-light.png",
+        "sha": "43f3cb5d622b4cb2f2aa258ec3ec13d5a718530f",
+        "exact": true
+      },
+      {
+        "path": "research/design_candidates/crypto_snapshot_safety_20261109/layout/captures/navigation-return-320-en.png",
+        "sha": "6cb2b988da1262043ffb8e5705e56c6518decd73",
+        "exact": true,
+        "read_only_transport_retry": true
+      }
+    ]
+  },
+  "paper": {
+    "file": "01M6Y3F0NXNDPAKJMJGCAD759Z",
+    "page": "p-4-0",
+    "new_states": [
+      {
+        "sourceId": "3BM-0",
+        "newId": "3LJ-0",
+        "name": "14 · Legacy snapshot · Expired 7D",
+        "component": "Frame",
+        "worldX": 0,
+        "worldY": 0,
+        "x": 0,
+        "y": 0,
+        "descendantIdMap": {
+          "3DE-0": "3M3-0",
+          "3DO-0": "3LK-0",
+          "3ET-0": "3LZ-0",
+          "3EY-0": "3LW-0",
+          "3FZ-0": "3LT-0",
+          "3G3-0": "3LQ-0",
+          "3IJ-0": "3LL-0",
+          "3IK-0": "3LO-0",
+          "3IM-0": "3LM-0",
+          "3IN-0": "3LN-0",
+          "3IL-0": "3LP-0",
+          "3G4-0": "3LS-0",
+          "3G5-0": "3LR-0",
+          "3G0-0": "3LV-0",
+          "3G1-0": "3LU-0",
+          "3EZ-0": "3LY-0",
+          "3F0-0": "3LX-0",
+          "3EU-0": "3M2-0",
+          "3EV-0": "3M0-0",
+          "3EW-0": "3M1-0",
+          "3DF-0": "3M7-0",
+          "3DK-0": "3M4-0",
+          "3DL-0": "3M6-0",
+          "3DM-0": "3M5-0",
+          "3DG-0": "3MA-0",
+          "3DI-0": "3M8-0",
+          "3DJ-0": "3M9-0",
+          "3DH-0": "3MB-0"
+        }
+      },
+      {
+        "sourceId": "3BC-0",
+        "newId": "3MC-0",
+        "name": "09 · Saved case · 30D · EN",
+        "component": "Frame",
+        "worldX": 470,
+        "worldY": 0,
+        "x": 470,
+        "y": 0,
+        "descendantIdMap": {
+          "3BQ-0": "3MZ-0",
+          "3C0-0": "3MD-0",
+          "3E2-0": "3MV-0",
+          "3E7-0": "3MS-0",
+          "3F2-0": "3MP-0",
+          "3F6-0": "3MJ-0",
+          "3I1-0": "3ME-0",
+          "3I2-0": "3MH-0",
+          "3I4-0": "3MF-0",
+          "3I5-0": "3MG-0",
+          "3I3-0": "3MI-0",
+          "3F7-0": "3MK-0",
+          "3F8-0": "3MM-0",
+          "3FB-0": "3ML-0",
+          "3F9-0": "3MO-0",
+          "3FA-0": "3MN-0",
+          "3F3-0": "3MR-0",
+          "3F4-0": "3MQ-0",
+          "3E8-0": "3MU-0",
+          "3E9-0": "3MT-0",
+          "3E3-0": "3MY-0",
+          "3E4-0": "3MW-0",
+          "3E5-0": "3MX-0",
+          "3BR-0": "3N3-0",
+          "3BW-0": "3N0-0",
+          "3BX-0": "3N2-0",
+          "3BY-0": "3N1-0",
+          "3BS-0": "3N6-0",
+          "3BU-0": "3N4-0",
+          "3BV-0": "3N5-0",
+          "3BT-0": "3N7-0"
+        }
+      }
+    ],
+    "state_texts": {
+      "3LS-0": "Original evidence",
+      "3LR-0": "The saved evidence digest is incomplete or unreadable. Original conditions and cutoff remain available.",
+      "3M1-0": "Expired · historical context only",
+      "3MX-0": "Original progress unavailable"
+    },
+    "state_checks": [
+      {
+        "source": "3BM-0",
+        "clone": "3LJ-0",
+        "nodes": 29,
+        "mapped_identity_parent_order_styles_exact": true,
+        "copy_exact": true,
+        "placement": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      {
+        "source": "3BC-0",
+        "clone": "3MC-0",
+        "nodes": 32,
+        "mapped_identity_parent_order_styles_exact": true,
+        "copy_exact": true,
+        "placement": {
+          "x": 470,
+          "y": 0
+        }
+      }
+    ],
+    "state_jsx": {
+      "3LJ-0": "(\n    <div id=\"3LJ-0\" style={{ backgroundColor: 'var(--mx-light-panel)', borderColor: 'var(--mx-light-line)', borderRadius: '14px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', fontSynthesis: 'none', height: 'fit-content', MozOsxFontSmoothing: 'grayscale', overflow: 'clip', overflowWrap: 'anywhere', WebkitFontSmoothing: 'antialiased', width: '390px' }}>\n      <div id=\"3M3-0\" style={{ backgroundColor: 'var(--mx-light-panel)', borderBottomColor: 'var(--mx-light-line)', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', paddingBottom: '20px', paddingInline: '20px', paddingTop: '16px', width: '100%' }}>\n        <div id=\"3M7-0\" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '12px', justifyContent: 'space-between', width: '100%' }}>\n          <div id=\"3MA-0\" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexGrow: '1', minHeight: '44px', minWidth: '0px' }}>\n            <div id=\"3MB-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-ink-link)', fontFamily: '\"Inter-Medium\", \"Inter\", system-ui, sans-serif', fontSize: '14px', fontWeight: 500, lineHeight: '22px' }}>\n              ← Saved snapshots\n            </div>\n          </div>\n          <div id=\"3M8-0\" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-panel)', borderColor: 'var(--mx-light-line)', borderRadius: '8px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexShrink: '0', height: '44px', justifyContent: 'center', width: '44px' }}>\n            <div id=\"3M9-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: 'var(--font-ui)', fontSize: '24px', lineHeight: '30px' }}>\n              ×\n            </div>\n          </div>\n        </div>\n        <div id=\"3M4-0\" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '10px', width: '100%' }}>\n          <div id=\"3M6-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: 'var(--font-ui)', fontSize: '11px', letterSpacing: '1px', lineHeight: '14px' }}>\n            SAVED SNAPSHOT\n          </div>\n          <div id=\"3M5-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', fontFamily: 'var(--font-ui)', fontSize: '28px', fontWeight: 700, lineHeight: '34px' }}>\n            Downside test\n          </div>\n        </div>\n      </div>\n      <div id=\"3LK-0\" style={{ backgroundColor: 'var(--mx-light-panel)', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '20px', padding: '20px', width: '100%' }}>\n        <div id=\"3LZ-0\" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', width: '100%' }}>\n          <div id=\"3M2-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '13px', lineHeight: '20px' }}>\n            BTC · 7 days · cutoff 17 Oct 2026\n          </div>\n          <div id=\"3M0-0\" style={{ backgroundColor: '#FFF4DF', borderRadius: '8px', boxSizing: 'border-box', padding: '12px' }}>\n            <div id=\"3M1-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-ink-warn)', fontFamily: '\"Inter-SemiBold\", \"Inter\", system-ui, sans-serif', fontSize: '13px', fontWeight: 600, lineHeight: '20px' }}>\n              Expired · historical context only\n            </div>\n          </div>\n        </div>\n        <div id=\"3LW-0\" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '8px' }}>\n          <div id=\"3LY-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', fontFamily: '\"Inter-SemiBold\", \"Inter\", system-ui, sans-serif', fontSize: '14px', fontWeight: 600, lineHeight: '22px' }}>\n            Original condition\n          </div>\n          <div id=\"3LX-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '15px', lineHeight: '24px' }}>\n            Daily close below $81,566, then weaker demand.\n          </div>\n        </div>\n        <div id=\"3LT-0\" style={{ alignItems: 'center', borderBottomColor: 'var(--mx-light-line)', borderBottomStyle: 'solid', borderBottomWidth: '1px', borderTopColor: 'var(--mx-light-line)', borderTopStyle: 'solid', borderTopWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '12px', justifyContent: 'space-between', minHeight: '48px', paddingBlock: '12px' }}>\n          <div id=\"3LV-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', fontFamily: '\"Inter-Medium\", \"Inter\", system-ui, sans-serif', fontSize: '14px', fontWeight: 500, lineHeight: '22px' }}>\n            Original case details\n          </div>\n          <div id=\"3LU-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '16px', lineHeight: '22px' }}>\n            ⌄\n          </div>\n        </div>\n        <div id=\"3LQ-0\" style={{ backgroundColor: 'var(--mx-light-panel2)', borderColor: 'var(--mx-light-line)', borderRadius: '10px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '8px', padding: '14px' }}>\n          <div id=\"3LS-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', fontFamily: '\"Inter-SemiBold\", \"Inter\", system-ui, sans-serif', fontSize: '14px', fontWeight: 600, lineHeight: '22px' }}>\n            Original evidence\n          </div>\n          <div id=\"3LR-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '14px', lineHeight: '22px' }}>\n            The saved evidence digest is incomplete or unreadable. Original conditions and cutoff remain available.\n          </div>\n        </div>\n        <div id=\"3LL-0\" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '8px', paddingTop: '4px' }}>\n          <div id=\"3LO-0\" style={{ alignItems: 'center', backgroundColor: '#2459D3', borderRadius: '8px', boxSizing: 'border-box', display: 'flex', justifyContent: 'center', minHeight: '48px', paddingBlock: '12px', paddingInline: '16px' }}>\n            <div id=\"3LP-0\" style={{ boxSizing: 'border-box', color: '#FFFFFF', fontFamily: '\"Inter-SemiBold\", \"Inter\", system-ui, sans-serif', fontSize: '14px', fontWeight: 600, lineHeight: '20px' }}>\n              Historical review\n            </div>\n          </div>\n          <div id=\"3LM-0\" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', justifyContent: 'center', minHeight: '44px', paddingBlock: '10px', paddingInline: '12px' }}>\n            <div id=\"3LN-0\" style={{ boxSizing: 'border-box', color: '#526074', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '13px', lineHeight: '20px' }}>\n              Remove from this device\n            </div>\n          </div>\n        </div>\n      </div>\n    </div>\n  )",
+      "3MC-0": "(\n    <div id=\"3MC-0\" style={{ backgroundColor: 'var(--mx-light-panel)', borderColor: 'var(--mx-light-line)', borderRadius: '14px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', fontSynthesis: 'none', height: 'fit-content', MozOsxFontSmoothing: 'grayscale', overflow: 'clip', overflowWrap: 'anywhere', WebkitFontSmoothing: 'antialiased', width: '390px' }}>\n      <div id=\"3MZ-0\" style={{ backgroundColor: 'var(--mx-light-panel)', borderBottomColor: 'var(--mx-light-line)', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', paddingBottom: '20px', paddingInline: '20px', paddingTop: '16px', width: '100%' }}>\n        <div id=\"3N3-0\" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '12px', justifyContent: 'space-between', width: '100%' }}>\n          <div id=\"3N6-0\" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexGrow: '1', minHeight: '44px', minWidth: '0px' }}>\n            <div id=\"3N7-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-ink-link)', fontFamily: '\"Inter-Medium\", \"Inter\", system-ui, sans-serif', fontSize: '14px', fontWeight: 500, lineHeight: '22px' }}>\n              ← Saved snapshots\n            </div>\n          </div>\n          <div id=\"3N4-0\" style={{ alignItems: 'center', backgroundColor: 'var(--mx-light-panel)', borderColor: 'var(--mx-light-line)', borderRadius: '8px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexShrink: '0', height: '44px', justifyContent: 'center', width: '44px' }}>\n            <div id=\"3N5-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: 'var(--font-ui)', fontSize: '24px', lineHeight: '30px' }}>\n              ×\n            </div>\n          </div>\n        </div>\n        <div id=\"3N0-0\" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '10px', width: '100%' }}>\n          <div id=\"3N2-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: 'var(--font-ui)', fontSize: '11px', letterSpacing: '1px', lineHeight: '14px' }}>\n            SAVED SNAPSHOT\n          </div>\n          <div id=\"3N1-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', fontFamily: 'var(--font-ui)', fontSize: '28px', fontWeight: 700, lineHeight: '34px' }}>\n            Upside test\n          </div>\n        </div>\n      </div>\n      <div id=\"3MD-0\" style={{ backgroundColor: 'var(--mx-light-panel)', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '20px', padding: '20px', width: '100%' }}>\n        <div id=\"3MV-0\" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', width: '100%' }}>\n          <div id=\"3MY-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '13px', lineHeight: '20px' }}>\n            BTC · 30 days · cutoff 17 Oct 2026\n          </div>\n          <div id=\"3MW-0\" style={{ backgroundColor: '#FFF4DF', borderRadius: '8px', boxSizing: 'border-box', padding: '12px' }}>\n            <div id=\"3MX-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-ink-warn)', fontFamily: '\"Inter-SemiBold\", \"Inter\", system-ui, sans-serif', fontSize: '13px', fontWeight: 600, lineHeight: '20px' }}>\n              Original progress unavailable\n            </div>\n          </div>\n        </div>\n        <div id=\"3MS-0\" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '8px' }}>\n          <div id=\"3MU-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', fontFamily: '\"Inter-SemiBold\", \"Inter\", system-ui, sans-serif', fontSize: '14px', fontWeight: 600, lineHeight: '22px' }}>\n            Original condition\n          </div>\n          <div id=\"3MT-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '15px', lineHeight: '24px' }}>\n            Daily close above $86,595, then stronger spot demand.\n          </div>\n        </div>\n        <div id=\"3MP-0\" style={{ alignItems: 'center', borderBottomColor: 'var(--mx-light-line)', borderBottomStyle: 'solid', borderBottomWidth: '1px', borderTopColor: 'var(--mx-light-line)', borderTopStyle: 'solid', borderTopWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '12px', justifyContent: 'space-between', minHeight: '48px', paddingBlock: '12px' }}>\n          <div id=\"3MR-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', fontFamily: '\"Inter-Medium\", \"Inter\", system-ui, sans-serif', fontSize: '14px', fontWeight: 500, lineHeight: '22px' }}>\n            Original case details\n          </div>\n          <div id=\"3MQ-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '16px', lineHeight: '22px' }}>\n            ⌄\n          </div>\n        </div>\n        <div id=\"3MJ-0\" style={{ backgroundColor: 'var(--mx-light-panel)', borderColor: 'var(--mx-light-line)', borderRadius: '10px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '14px', padding: '14px' }}>\n          <div id=\"3MK-0\" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '12px', justifyContent: 'space-between', minHeight: '44px', width: '100%' }}>\n            <div id=\"3MM-0\" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '4px' }}>\n              <div id=\"3MO-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-ink-link)', fontFamily: '\"Inter-SemiBold\", \"Inter\", system-ui, sans-serif', fontSize: '14px', fontWeight: 600, lineHeight: '22px' }}>\n                Original evidence\n              </div>\n              <div id=\"3MN-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '12px', lineHeight: '18px' }}>\n                6 captured readings\n              </div>\n            </div>\n            <div id=\"3ML-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '16px', lineHeight: '22px' }}>\n              ⌄\n            </div>\n          </div>\n        </div>\n        <div id=\"3ME-0\" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '8px', paddingTop: '4px' }}>\n          <div id=\"3MH-0\" style={{ alignItems: 'center', backgroundColor: '#2459D3', borderRadius: '8px', boxSizing: 'border-box', display: 'flex', justifyContent: 'center', minHeight: '48px', paddingBlock: '12px', paddingInline: '16px' }}>\n            <div id=\"3MI-0\" style={{ boxSizing: 'border-box', color: '#FFFFFF', fontFamily: '\"Inter-SemiBold\", \"Inter\", system-ui, sans-serif', fontSize: '14px', fontWeight: 600, lineHeight: '20px' }}>\n              Historical review\n            </div>\n          </div>\n          <div id=\"3MF-0\" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', justifyContent: 'center', minHeight: '44px', paddingBlock: '10px', paddingInline: '12px' }}>\n            <div id=\"3MG-0\" style={{ boxSizing: 'border-box', color: '#526074', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '13px', lineHeight: '20px' }}>\n              Remove from this device\n            </div>\n          </div>\n        </div>\n      </div>\n    </div>\n  )"
+    },
+    "source_frames_unchanged": {
+      "legacy": true,
+      "case": true
+    },
+    "build_before": "(\n    <div id=\"3IP-0\" style={{ backgroundColor: '#F7F9FC', borderColor: '#D9DFE8', borderRadius: '16px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', fontSynthesis: 'none', gap: '24px', MozOsxFontSmoothing: 'grayscale', overflowWrap: 'anywhere', padding: '40px', WebkitFontSmoothing: 'antialiased', width: '1440px' }}>\n      <div id=\"3IQ-0\" style={{ boxSizing: 'border-box', color: '#2459D3', fontFamily: '\"Inter-SemiBold\", \"Inter\", system-ui, sans-serif', fontSize: '12px', fontWeight: 600, letterSpacing: '1px', lineHeight: '18px' }}>\n        BUILDER HANDOFF · STORAGE + NAVIGATION VERIFIED · LAYOUT CONTINUES · 9 NOV 2026\n      </div>\n      <div id=\"3IR-0\" style={{ boxSizing: 'border-box', color: '#1F2937', fontFamily: '\"Inter-Bold\", \"Inter\", system-ui, sans-serif', fontSize: '32px', fontWeight: 700, lineHeight: '40px' }}>\n        Saved cases: preserve identity, return precisely.\n      </div>\n      <div id=\"3IS-0\" style={{ boxSizing: 'border-box', color: '#526074', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '15px', lineHeight: '24px' }}>\n        Paper states 09–16 extend the existing R4 candidate. Storage safety and saved-case navigation are implemented in Macro PR #10901 · head 95ac76db194b8952aef0e63c4bcb30a220da78e0 · dependent open Draft. The PR #9580 parent at 5e496c24c962e85a4f7f514dd43dc61443b95cab remains unchanged. Historical fixtures and synthetic local storage are used. The original-condition-first frozen layout and compact review are the next active phase.\n      </div>\n      <div id=\"3IU-0\" style={{ borderBottomColor: '#D9DFE8', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '32px', paddingBottom: '24px', width: '100%' }}>\n        <div id=\"3IV-0\" style={{ boxSizing: 'border-box', color: '#1F2937', flexShrink: '0', fontFamily: '\"Inter-SemiBold\", \"Inter\", system-ui, sans-serif', fontSize: '18px', fontWeight: 600, lineHeight: '26px', width: '250px' }}>\n          01 · Source &amp; fixtures\n        </div>\n        <div id=\"3IW-0\" style={{ boxSizing: 'border-box', color: '#1F2937', flexBasis: '0%', flexGrow: '1', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '15px', lineHeight: '24px', minWidth: '0px', whiteSpace: 'pre-wrap' }}>\n          Continue in templates/crypto_intelligence_r4.js and the existing drawer, hash-route and local-storage owners. Template and served JS/CSS are identical. The two saved pages change only asset-version references; HTML template, builder, source data and shared assets remain unchanged. The navigation phase adds a scoped 44px parent/Close treatment. Source and detailed contract: research/design_candidates/crypto_snapshot_safety_20261109/NAVIGATION.md.<br /><br />30-day fixture: revision r4-display:2026-10-17:30:continuation; BTC; cutoff 17 Oct 2026; expiry 16 Nov 2026; daily close above $86,595, then stronger spot demand. Its 60 prior closes run 18 Aug–16 Oct; low $64,681. The older 7-day failure fixture uses $81,566 and expires 24 Oct. Keep original horizons and ranges separate. Test time is 18 Oct 2026, 12:00 UTC; preservation cases also retain older save times and digests.\n        </div>\n      </div>\n      <div id=\"3IY-0\" style={{ borderBottomColor: '#D9DFE8', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '32px', paddingBottom: '24px', width: '100%' }}>\n        <div id=\"3IZ-0\" style={{ boxSizing: 'border-box', color: '#1F2937', flexShrink: '0', fontFamily: '\"Inter-SemiBold\", \"Inter\", system-ui, sans-serif', fontSize: '18px', fontWeight: 600, lineHeight: '26px', width: '250px' }}>\n          02 · Resolve the saved record\n        </div>\n        <div id=\"3J0-0\" style={{ boxSizing: 'border-box', color: '#1F2937', flexBasis: '0%', flexGrow: '1', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '15px', lineHeight: '24px', minWidth: '0px', whiteSpace: 'pre-wrap' }}>\n          Implemented: the existing mmx.crypto.r4.scenarios.v1 reader separates a ready full collection from unavailable storage. saved-item:&lt;revision&gt; and memory-saved:&lt;revision&gt; require one usable exact match, supported numeric horizon, real cutoff/expiry dates and original bilingual case fields. Duplicate, malformed, missing or unreadable requested versions cannot borrow current scenario data.<br /><br />Every storage-bearing panel now reads before replacing its subtree and yields to newer route, language or focus ownership. Requested saved context is checked again before parent movement and on arrival. The memory-saved fallback to horizon() and data.as_of is removed. State 16 is unreadable collection; state 11 is unavailable version. A missing legacy issue_evidence digest alone does not invalidate a usable original case.\n        </div>\n      </div>\n      <div id=\"3J2-0\" style={{ borderBottomColor: '#D9DFE8', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '32px', paddingBottom: '24px', width: '100%' }}>\n        <div id=\"3J3-0\" style={{ boxSizing: 'border-box', color: '#1F2937', flexShrink: '0', fontFamily: '\"Inter-SemiBold\", \"Inter\", system-ui, sans-serif', fontSize: '18px', fontWeight: 600, lineHeight: '26px', width: '250px' }}>\n          03 · Return is a parent action\n        </div>\n        <div id=\"3J4-0\" style={{ boxSizing: 'border-box', color: '#1F2937', flexBasis: '0%', flexGrow: '1', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '15px', lineHeight: '24px', minWidth: '0px', whiteSpace: 'pre-wrap' }}>\n          Implemented and verified: managed review with an exact immediate saved-item parent → “← Saved case” → one native history.back(). A review opened from a detached saved-item can still have this real parent. A truly detached review uses “Open saved case” and replaces the current entry with that exact version.<br /><br />A bounded pending return intent suppresses duplicate activation and matches only the expected arrival. Missing, duplicate or unreadable versions stay on the current entry with explicit recovery. Arrival re-reads before restoring any old content. Close remains the whole-drawer journey exit, never the parent action. No parallel router, history stack or saved-case store is added.\n        </div>\n      </div>\n      <div id=\"3J6-0\" style={{ borderBottomColor: '#D9DFE8', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '32px', paddingBottom: '24px', width: '100%' }}>\n        <div id=\"3J7-0\" style={{ boxSizing: 'border-box', color: '#1F2937', flexShrink: '0', fontFamily: '\"Inter-SemiBold\", \"Inter\", system-ui, sans-serif', fontSize: '18px', fontWeight: 600, lineHeight: '26px', width: '250px' }}>\n          04 · Keep horizons separate\n        </div>\n        <div id=\"3J8-0\" style={{ boxSizing: 'border-box', color: '#1F2937', flexBasis: '0%', flexGrow: '1', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '15px', lineHeight: '24px', minWidth: '0px', whiteSpace: 'pre-wrap' }}>\n          Implemented and verified: saved list items pass their validated original horizon. A 30-day saved case opened from the 7-day view stays 30-day through review, parent return and native Back/Forward. Close restores the original 7-day ancestor and its other route parameters. A legacy parent horizon is repaired through replaceState in the same entry, without a second parent or a changed outer origin.<br /><br />Original 7-day item H4-0 maps to state 14 / 3BM-0; the 30-day list item maps to state 09 / 3BC-0. Review is state 10 / 3BE-0; detached review is state 15 / 3BO-0; unavailable is state 11 / 3BG-0. State 12 / 3BI-0 is the same saved-item with evidence expanded, not another route.\n        </div>\n      </div>\n      <div id=\"3JA-0\" style={{ borderBottomColor: '#D9DFE8', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '32px', paddingBottom: '24px', width: '100%' }}>\n        <div id=\"3JB-0\" style={{ boxSizing: 'border-box', color: '#1F2937', flexShrink: '0', fontFamily: '\"Inter-SemiBold\", \"Inter\", system-ui, sans-serif', fontSize: '18px', fontWeight: 600, lineHeight: '26px', width: '250px' }}>\n          05 · Original condition first\n        </div>\n        <div id=\"3JC-0\" style={{ boxSizing: 'border-box', color: '#1F2937', flexBasis: '0%', flexGrow: '1', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '15px', lineHeight: '24px', minWidth: '0px', whiteSpace: 'pre-wrap' }}>\n          Next layout phase: for frozen cases show the saved title, asset, horizon, cutoff, original progress and complete condition first. Keep sequence, invalidation, counter-evidence, expiry and prior-close basis under native “Original case details”. Use one “Original evidence” disclosure from captured issue_evidence only; never reconstruct legacy evidence from current data.families.<br /><br />Temporal rule: status(s) evaluates expiry against today. Keep an expired lifecycle label distinct; only retained original progress may be prefixed “At cutoff”. State 12 has six saved families. Their dates are snapshot_as_of, not verified observation dates. Bitcoin cutoff is 17 Oct; broader market and Participation retain 15 Oct. Quality labels describe capture time. Cutoff, expiry and local save time are distinct. Conditional research is not probability or validated performance.\n        </div>\n      </div>\n      <div id=\"3JE-0\" style={{ borderBottomColor: '#D9DFE8', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '32px', paddingBottom: '24px', width: '100%' }}>\n        <div id=\"3JF-0\" style={{ boxSizing: 'border-box', color: '#1F2937', flexShrink: '0', fontFamily: '\"Inter-SemiBold\", \"Inter\", system-ui, sans-serif', fontSize: '18px', fontWeight: 600, lineHeight: '26px', width: '250px' }}>\n          06 · Focus, scroll &amp; motion\n        </div>\n        <div id=\"3JG-0\" style={{ boxSizing: 'border-box', color: '#1F2937', flexBasis: '0%', flexGrow: '1', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '15px', lineHeight: '24px', minWidth: '0px', whiteSpace: 'pre-wrap' }}>\n          Implemented: one optional history.state.reading object stores panel, revision, original horizon/cutoff, disclosure keys, semantic focus and scroll. It belongs to the rendered URL plus full history metadata, so distinct native entries with the same URL restore independently. Capture before owned actions and locale changes; never copy outgoing DOM into an incoming popstate entry. Native Back restores the last settled scrollend position; explicit actions capture current position.<br /><br />The existing dialog remains the scroll owner. Named parent returns focus Historical review; recovery that retires its focused control uses the unavailable heading. Outer Close keeps a valid visible opener in the active view or falls back to that view’s heading. Reentrant focus callbacks retain newer navigation. Keep ≥44px parent/Close and disclosure targets, 48px primary action, 320/390px fit, and reduced motion. Frozen body styling remains next.\n        </div>\n      </div>\n      <div id=\"3JI-0\" style={{ borderBottomColor: '#D9DFE8', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '32px', paddingBottom: '24px', width: '100%' }}>\n        <div id=\"3JJ-0\" style={{ boxSizing: 'border-box', color: '#1F2937', flexShrink: '0', fontFamily: '\"Inter-SemiBold\", \"Inter\", system-ui, sans-serif', fontSize: '18px', fontWeight: 600, lineHeight: '26px', width: '250px' }}>\n          07 · Explicit save &amp; remove\n        </div>\n        <div id=\"3JK-0\" style={{ boxSizing: 'border-box', color: '#1F2937', flexBasis: '0%', flexGrow: '1', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '15px', lineHeight: '24px', minWidth: '0px', whiteSpace: 'pre-wrap' }}>\n          Implemented in PR #10901: Save and Remove are explicit intents captured from the displayed action. Save when already present makes no write and preserves saved_at and issue_evidence. Remove deletes every exact revision match across the full collection and preserves unrelated parsed entries and their order. Already-absent Remove makes no write and never appends. Only an actual new Save applies the existing 50-snapshot retention policy; opaque entries survive.<br /><br />Read/parse/shape failures prevent mutation. One write is followed by exact serialized readback before success is announced. Throws, dropped writes, failed or mismatched readback are unconfirmed: no automatic retry or redirect. Completion cannot replace a newer focused control or steal focus after a callback opens another panel. Web Storage read/write/readback does not provide atomic cross-tab compare-and-swap.\n        </div>\n      </div>\n      <div id=\"3JM-0\" style={{ borderBottomColor: '#D9DFE8', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '32px', paddingBottom: '24px', width: '100%' }}>\n        <div id=\"3JN-0\" style={{ boxSizing: 'border-box', color: '#1F2937', flexShrink: '0', fontFamily: '\"Inter-SemiBold\", \"Inter\", system-ui, sans-serif', fontSize: '18px', fontWeight: 600, lineHeight: '26px', width: '250px' }}>\n          08 · Honest recovery &amp; copy\n        </div>\n        <div id=\"3JO-0\" style={{ boxSizing: 'border-box', color: '#1F2937', flexBasis: '0%', flexGrow: '1', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '15px', lineHeight: '24px', minWidth: '0px', whiteSpace: 'pre-wrap' }}>\n          Implemented state 11 has no borrowed asset, horizon, cutoff or condition and exposes “Open saved snapshots” plus deliberate “Open current outlook”. State 16 uses “Saved snapshots unavailable” / “Saved snapshots couldn’t be read.” “Try reading again” uses the existing reader; no background retry owner exists. Recovery spacing and primary treatment remain in the layout phase.<br /><br />“No changes were made” is only valid before a write. A confirmed removal followed by a failed list read must use neutral copy. Already-absent removal: “This snapshot is no longer saved on this device.” Unconfirmed write: “The change couldn’t be confirmed. Check Saved snapshots before trying again.” An unreadable collection is never called empty. Legacy state 14 keeps its original case and missing-digest explanation.\n        </div>\n      </div>\n      <div id=\"3JQ-0\" style={{ borderBottomColor: '#D9DFE8', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '32px', paddingBottom: '24px', width: '100%' }}>\n        <div id=\"3JR-0\" style={{ boxSizing: 'border-box', color: '#1F2937', flexShrink: '0', fontFamily: '\"Inter-SemiBold\", \"Inter\", system-ui, sans-serif', fontSize: '18px', fontWeight: 600, lineHeight: '26px', width: '250px' }}>\n          09 · Required browser proof\n        </div>\n        <div id=\"3JS-0\" style={{ boxSizing: 'border-box', color: '#1F2937', flexBasis: '0%', flexGrow: '1', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '15px', lineHeight: '24px', minWidth: '0px', whiteSpace: 'pre-wrap' }}>\n          Passing coverage now includes 39 contract + 61 browser cases. The initial navigation run returned 93 passed / 7 failed: six misplaced initial-entry focus assertions and one removal injection that ran after the destination render. The diagnostic and original failures are retained. After correcting only the harness, all 10 affected cases passed; three overlap earlier passes. Runtime JS/CSS stayed unchanged. This is not one 100-pass run.<br /><br />Chrome 157.0.8103.39: initial 62 contexts / 68 pages; correction 10 / 10; zero page errors or external/WebSocket requests. Verified managed/detached returns, native Back/Forward, same-URL distinct entries, locale reading state, original horizons, missing/duplicate/unreadable cases, disappearance before arrival, and newer focus ownership. Three new native navigation crops inspected at 1440 EN, 390 ZH and 320 EN. Next prove the changed frozen hierarchy, compact review and local action spacing.\n        </div>\n      </div>\n      <div id=\"3JU-0\" style={{ borderBottomColor: '#D9DFE8', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '32px', paddingBottom: '24px', width: '100%' }}>\n        <div id=\"3JV-0\" style={{ boxSizing: 'border-box', color: '#1F2937', flexShrink: '0', fontFamily: '\"Inter-SemiBold\", \"Inter\", system-ui, sans-serif', fontSize: '18px', fontWeight: 600, lineHeight: '26px', width: '250px' }}>\n          10 · Delivery &amp; acceptance\n        </div>\n        <div id=\"3JW-0\" style={{ boxSizing: 'border-box', color: '#1F2937', flexBasis: '0%', flexGrow: '1', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '15px', lineHeight: '24px', minWidth: '0px', whiteSpace: 'pre-wrap' }}>\n          Paper states 09–16 remain the full applied design amendment. Storage and navigation are locally verified at PR #10901 head 95ac76db194b8952aef0e63c4bcb30a220da78e0; the original-condition-first frozen layout and compact review remain active work. Nineteen source/evidence files and three new capture binaries have exact commit readback. No merge, deployment, hosted/independent visual acceptance or production replacement is claimed.<br /><br />Preserve R4 source drawer GB-0, scenario page BB-0, alert gate HE-0 and public-route cutover gate QQ-0. H5/model authority remains held. Historical/synthetic proof does not establish current freshness, personal activity, forecast skill, model allocation or alert delivery. Dialog crops alone do not establish full-viewport desktop toast placement.\n        </div>\n      </div>\n    </div>\n  )",
+    "build_after": "(\n    <div id=\"3IP-0\" style={{ backgroundColor: '#F7F9FC', borderColor: '#D9DFE8', borderRadius: '16px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', fontSynthesis: 'none', gap: '24px', MozOsxFontSmoothing: 'grayscale', overflowWrap: 'anywhere', padding: '40px', WebkitFontSmoothing: 'antialiased', width: '1440px' }}>\n      <div id=\"3IQ-0\" style={{ boxSizing: 'border-box', color: '#2459D3', fontFamily: '\"Inter-SemiBold\", \"Inter\", system-ui, sans-serif', fontSize: '12px', fontWeight: 600, letterSpacing: '1px', lineHeight: '18px' }}>\n        BUILDER HANDOFF · STORAGE, NAVIGATION + FROZEN LAYOUT VERIFIED · 9 NOV 2026\n      </div>\n      <div id=\"3IR-0\" style={{ boxSizing: 'border-box', color: '#1F2937', fontFamily: '\"Inter-Bold\", \"Inter\", system-ui, sans-serif', fontSize: '32px', fontWeight: 700, lineHeight: '40px' }}>\n        Saved cases: preserve identity, return precisely.\n      </div>\n      <div id=\"3IS-0\" style={{ boxSizing: 'border-box', color: '#526074', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '15px', lineHeight: '24px' }}>\n        Paper states 09–18 now cover the saved-case workflow and its optional-evidence edge states. Macro PR #10901 · head 7308f6d706777a49009437554dd35fe42ae163dd · dependent open Draft implements storage safety, exact saved navigation and the original-condition-first hierarchy. The PR #9580 parent at 5e496c24c962e85a4f7f514dd43dc61443b95cab remains unchanged. These are historical source fixtures and synthetic local storage, not personal saved records or current-market evidence.\n      </div>\n      <div id=\"3IU-0\" style={{ borderBottomColor: '#D9DFE8', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '32px', paddingBottom: '24px', width: '100%' }}>\n        <div id=\"3IV-0\" style={{ boxSizing: 'border-box', color: '#1F2937', flexShrink: '0', fontFamily: '\"Inter-SemiBold\", \"Inter\", system-ui, sans-serif', fontSize: '18px', fontWeight: 600, lineHeight: '26px', width: '250px' }}>\n          01 · Source &amp; fixtures\n        </div>\n        <div id=\"3IW-0\" style={{ boxSizing: 'border-box', color: '#1F2937', flexBasis: '0%', flexGrow: '1', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '15px', lineHeight: '24px', minWidth: '0px', whiteSpace: 'pre-wrap' }}>\n          Implementation stays in templates/crypto_intelligence_r4.js/.css and the existing drawer, route, history and local-storage owners. Template and served assets match; the two saved pages change only asset-version references. HTML template, builder, source data and shared assets are unchanged. See FROZEN_LAYOUT.md and NAVIGATION.md under research/design_candidates/crypto_snapshot_safety_20261109/.<br /><br />30-day fixture: revision r4-display:2026-10-17:30:continuation; BTC; cutoff 17 Oct 2026; expiry 16 Nov; daily close above $86,595, then stronger spot demand. Its 60 prior closes run 18 Aug–16 Oct, range $64,681–$86,595. The older 7-day failure case uses $81,566 and expires 24 Oct. Keep the original horizons/ranges separate. Tests use explicit historical time anchors.\n        </div>\n      </div>\n      <div id=\"3IY-0\" style={{ borderBottomColor: '#D9DFE8', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '32px', paddingBottom: '24px', width: '100%' }}>\n        <div id=\"3IZ-0\" style={{ boxSizing: 'border-box', color: '#1F2937', flexShrink: '0', fontFamily: '\"Inter-SemiBold\", \"Inter\", system-ui, sans-serif', fontSize: '18px', fontWeight: 600, lineHeight: '26px', width: '250px' }}>\n          02 · Resolve the saved record\n        </div>\n        <div id=\"3J0-0\" style={{ boxSizing: 'border-box', color: '#1F2937', flexBasis: '0%', flexGrow: '1', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '15px', lineHeight: '24px', minWidth: '0px', whiteSpace: 'pre-wrap' }}>\n          Implemented: the existing mmx.crypto.r4.scenarios.v1 reader separates the ready full collection from unavailable storage. Requested saved-item and memory-saved revisions need one usable exact match, supported horizon, real cutoff/expiry dates and original bilingual case fields. Duplicate/malformed/missing requested versions never borrow current context. Storage-bearing panels preflight before DOM replacement and yield to newer navigation/focus.<br /><br />Optional evidence has its own display qualification. Missing issue_evidence supports legacy state 14. A present unusable digest uses new state 17 / 3LJ-0. Displayed family names/states must be nonempty strings; snapshot dates pass savedDay(). Mixed entries retain readable values and identify unreadable entries. No original storage bytes are changed or current evidence substituted.\n        </div>\n      </div>\n      <div id=\"3J2-0\" style={{ borderBottomColor: '#D9DFE8', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '32px', paddingBottom: '24px', width: '100%' }}>\n        <div id=\"3J3-0\" style={{ boxSizing: 'border-box', color: '#1F2937', flexShrink: '0', fontFamily: '\"Inter-SemiBold\", \"Inter\", system-ui, sans-serif', fontSize: '18px', fontWeight: 600, lineHeight: '26px', width: '250px' }}>\n          03 · Return is a parent action\n        </div>\n        <div id=\"3J4-0\" style={{ boxSizing: 'border-box', color: '#1F2937', flexBasis: '0%', flexGrow: '1', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '15px', lineHeight: '24px', minWidth: '0px', whiteSpace: 'pre-wrap' }}>\n          Implemented and verified: managed review with an exact immediate saved-item parent → “← Saved case” → one native history.back(). A review opened from a detached saved-item can still have this real parent. A truly detached review uses “Open saved case” and replaces the current entry with that exact version.<br /><br />A bounded pending return intent suppresses duplicate activation and matches only the expected arrival. Missing, duplicate or unreadable versions stay on the current entry with explicit recovery. Arrival re-reads before restoring any old content. Close remains the whole-drawer journey exit, never the parent action. No parallel router, history stack or saved-case store is added.\n        </div>\n      </div>\n      <div id=\"3J6-0\" style={{ borderBottomColor: '#D9DFE8', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '32px', paddingBottom: '24px', width: '100%' }}>\n        <div id=\"3J7-0\" style={{ boxSizing: 'border-box', color: '#1F2937', flexShrink: '0', fontFamily: '\"Inter-SemiBold\", \"Inter\", system-ui, sans-serif', fontSize: '18px', fontWeight: 600, lineHeight: '26px', width: '250px' }}>\n          04 · Keep horizons separate\n        </div>\n        <div id=\"3J8-0\" style={{ boxSizing: 'border-box', color: '#1F2937', flexBasis: '0%', flexGrow: '1', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '15px', lineHeight: '24px', minWidth: '0px', whiteSpace: 'pre-wrap' }}>\n          Implemented and verified: saved list items pass their validated original horizon. A 30-day saved case opened from the 7-day view stays 30-day through review, parent return and native Back/Forward. Close restores the original 7-day ancestor and its other route parameters. A legacy parent horizon is repaired through replaceState in the same entry, without a second parent or a changed outer origin.<br /><br />Original 7-day item H4-0 maps to state 14 / 3BM-0; the 30-day list item maps to state 09 / 3BC-0. Review is state 10 / 3BE-0; detached review is state 15 / 3BO-0; unavailable is state 11 / 3BG-0. State 12 / 3BI-0 is the same saved-item with evidence expanded, not another route.\n        </div>\n      </div>\n      <div id=\"3JA-0\" style={{ borderBottomColor: '#D9DFE8', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '32px', paddingBottom: '24px', width: '100%' }}>\n        <div id=\"3JB-0\" style={{ boxSizing: 'border-box', color: '#1F2937', flexShrink: '0', fontFamily: '\"Inter-SemiBold\", \"Inter\", system-ui, sans-serif', fontSize: '18px', fontWeight: 600, lineHeight: '26px', width: '250px' }}>\n          05 · Original condition first\n        </div>\n        <div id=\"3JC-0\" style={{ boxSizing: 'border-box', color: '#1F2937', flexBasis: '0%', flexGrow: '1', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '15px', lineHeight: '24px', minWidth: '0px', whiteSpace: 'pre-wrap' }}>\n          Implemented: original title, asset, saved horizon, labeled cutoff and complete condition are immediately readable. Native “Original case details” retains sequence, invalidation, counterpoint, next check recorded then, expiry, prior-close window/range and the research qualification. “Original evidence” holds qualified captured readings and their snapshot dates. Historical review is the clear 48px primary action; Remove remains separate.<br /><br />Today's expiry stays distinct from original progress. Nonexpired retained progress says “At cutoff”; an expired case keeps its lifecycle warning and original progress inside details. Missing localized progress is unavailable, never inferred from levels or a generic conditional state: new state 18 / 3MC-0. Snapshot dates are not independent observation dates. None of these states creates forecast or model authority.\n        </div>\n      </div>\n      <div id=\"3JE-0\" style={{ borderBottomColor: '#D9DFE8', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '32px', paddingBottom: '24px', width: '100%' }}>\n        <div id=\"3JF-0\" style={{ boxSizing: 'border-box', color: '#1F2937', flexShrink: '0', fontFamily: '\"Inter-SemiBold\", \"Inter\", system-ui, sans-serif', fontSize: '18px', fontWeight: 600, lineHeight: '26px', width: '250px' }}>\n          06 · Focus, scroll &amp; motion\n        </div>\n        <div id=\"3JG-0\" style={{ boxSizing: 'border-box', color: '#1F2937', flexBasis: '0%', flexGrow: '1', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '15px', lineHeight: '24px', minWidth: '0px', whiteSpace: 'pre-wrap' }}>\n          The existing history.state.reading owner now also recognizes Remove and the review-requirements disclosure. Language changes preserve semantic focus, including Remove. Saved review exposes the original asset/horizon/cutoff, then “No qualified comparison yet”; its four existing qualification requirements remain in one native disclosure.<br /><br />No nested scroll owner or height animation is added. Native keyboard disclosure, explicit focus outlines, ≥44px controls, 48px primary actions and 8px recovery gaps are verified. The closed case and primary action fit tested 320/390/1440 widths across both languages/themes. Narrow review locale checks keep the focused summary below the sticky header. Native history retains last settled scrollend; explicit owned actions capture current position. Existing reduced motion remains intact.\n        </div>\n      </div>\n      <div id=\"3JI-0\" style={{ borderBottomColor: '#D9DFE8', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '32px', paddingBottom: '24px', width: '100%' }}>\n        <div id=\"3JJ-0\" style={{ boxSizing: 'border-box', color: '#1F2937', flexShrink: '0', fontFamily: '\"Inter-SemiBold\", \"Inter\", system-ui, sans-serif', fontSize: '18px', fontWeight: 600, lineHeight: '26px', width: '250px' }}>\n          07 · Explicit save &amp; remove\n        </div>\n        <div id=\"3JK-0\" style={{ boxSizing: 'border-box', color: '#1F2937', flexBasis: '0%', flexGrow: '1', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '15px', lineHeight: '24px', minWidth: '0px', whiteSpace: 'pre-wrap' }}>\n          Implemented in PR #10901: Save and Remove are explicit intents captured from the displayed action. Save when already present makes no write and preserves saved_at and issue_evidence. Remove deletes every exact revision match across the full collection and preserves unrelated parsed entries and their order. Already-absent Remove makes no write and never appends. Only an actual new Save applies the existing 50-snapshot retention policy; opaque entries survive.<br /><br />Read/parse/shape failures prevent mutation. One write is followed by exact serialized readback before success is announced. Throws, dropped writes, failed or mismatched readback are unconfirmed: no automatic retry or redirect. Completion cannot replace a newer focused control or steal focus after a callback opens another panel. Web Storage read/write/readback does not provide atomic cross-tab compare-and-swap.\n        </div>\n      </div>\n      <div id=\"3JM-0\" style={{ borderBottomColor: '#D9DFE8', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '32px', paddingBottom: '24px', width: '100%' }}>\n        <div id=\"3JN-0\" style={{ boxSizing: 'border-box', color: '#1F2937', flexShrink: '0', fontFamily: '\"Inter-SemiBold\", \"Inter\", system-ui, sans-serif', fontSize: '18px', fontWeight: 600, lineHeight: '26px', width: '250px' }}>\n          08 · Honest recovery &amp; copy\n        </div>\n        <div id=\"3JO-0\" style={{ boxSizing: 'border-box', color: '#1F2937', flexBasis: '0%', flexGrow: '1', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '15px', lineHeight: '24px', minWidth: '0px', whiteSpace: 'pre-wrap' }}>\n          State 11: the requested saved version is unavailable; offer Saved snapshots and current outlook without borrowing case fields. State 16: the collection cannot be read; offer Try reading again and current outlook. State 14: a legacy case has no evidence digest. State 17 / 3LJ-0: a retained digest is incomplete/unreadable while original conditions and cutoff remain usable. State 18 / 3MC-0: original progress was not retained; do not reconstruct it.<br /><br />“No changes were made” is reserved for pre-write failure. Confirmed removal followed by failed list reading uses neutral copy. Unconfirmed writes never auto-retry or redirect. The new evidence projection makes no writes and does not repair or delete malformed records. Recovery actions are visibly separated and keep their existing destinations.\n        </div>\n      </div>\n      <div id=\"3JQ-0\" style={{ borderBottomColor: '#D9DFE8', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '32px', paddingBottom: '24px', width: '100%' }}>\n        <div id=\"3JR-0\" style={{ boxSizing: 'border-box', color: '#1F2937', flexShrink: '0', fontFamily: '\"Inter-SemiBold\", \"Inter\", system-ui, sans-serif', fontSize: '18px', fontWeight: 600, lineHeight: '26px', width: '250px' }}>\n          09 · Required browser proof\n        </div>\n        <div id=\"3JS-0\" style={{ boxSizing: 'border-box', color: '#1F2937', flexBasis: '0%', flexGrow: '1', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '15px', lineHeight: '24px', minWidth: '0px', whiteSpace: 'pre-wrap' }}>\n          Latest source run: 86 browser cases passed in 80.36s; Chrome 157.0.8103.39; 87 contexts / 93 pages; zero page errors or outside-origin/WebSocket traffic. All previous 61 cases are retained, with 25 new hierarchy, temporal, evidence-shape, focus and recovery cases. Parent baseline: 19 failed / 2 passed / 61 deselected; the two current-scenario cases already passed.<br /><br />Current scenarios retain exact DOM and element geometry at 320 EN and 1440 ZH. Two additional light-theme capture cases passed with unchanged runtime/harness. Twelve final native dialog crops inspected. The 39 unchanged Python contract cases retain prior passing evidence; no new 125-case run is claimed. Twenty-two JS and one CSS transforms invert exactly to the navigation parent. Frozen layout, storage and navigation are locally verified together.\n        </div>\n      </div>\n      <div id=\"3JU-0\" style={{ borderBottomColor: '#D9DFE8', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '32px', paddingBottom: '24px', width: '100%' }}>\n        <div id=\"3JV-0\" style={{ boxSizing: 'border-box', color: '#1F2937', flexShrink: '0', fontFamily: '\"Inter-SemiBold\", \"Inter\", system-ui, sans-serif', fontSize: '18px', fontWeight: 600, lineHeight: '26px', width: '250px' }}>\n          10 · Delivery &amp; acceptance\n        </div>\n        <div id=\"3JW-0\" style={{ boxSizing: 'border-box', color: '#1F2937', flexBasis: '0%', flexGrow: '1', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '15px', lineHeight: '24px', minWidth: '0px', whiteSpace: 'pre-wrap' }}>\n          Source head 7308f6d706777a49009437554dd35fe42ae163dd is read back exactly: 16 source/evidence files plus 12 capture binaries. New Paper states 17 / 3LJ-0 and 18 / 3MC-0 clone existing frames, preserve 61 mapped nodes/styles and change four texts; their source frames remain unchanged. Build, native proof and source now describe the same saved-case behavior. Hosted/independent visual acceptance, merge/deployment and production replacement remain unclaimed.<br /><br />Next audit: compare the existing relative-comparison window/cohort/basis labels with Paper p-3-0 and the exact source. Preserve R4 source GB-0, scenario BB-0, alert gate HE-0 and route-cutover QQ-0. H5/model and all release/admission holds remain. No current freshness, personal activity, forecast skill, model allocation or alert delivery is inferred.\n        </div>\n      </div>\n    </div>\n  )",
+    "scope_before": "(\n    <div id=\"3B8-0\" style={{ backgroundColor: 'var(--mx-light-bg)', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', fontSynthesis: 'none', gap: '12px', height: 'fit-content', MozOsxFontSmoothing: 'grayscale', overflowWrap: 'anywhere', padding: '28px', WebkitFontSmoothing: 'antialiased', width: '1840px' }}>\n      <div id=\"3B9-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', fontFamily: '\"Inter-SemiBold\", \"Inter\", system-ui, sans-serif', fontSize: '28px', fontWeight: 600, lineHeight: '36px' }}>\n        Return to the same saved case.\n      </div>\n      <div id=\"3BA-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '16px', lineHeight: '24px' }}>\n        R4 amendment · source-backed historical fixtures, not personal saved data. The 30-day case keeps its 17 Oct 2026 cutoff when opened from a 7-day view. Close exits the drawer journey; Back returns to its parent.\n      </div>\n    </div>\n  )",
+    "scope_after": "(\n    <div id=\"3B8-0\" style={{ backgroundColor: 'var(--mx-light-bg)', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', fontSynthesis: 'none', gap: '12px', height: 'fit-content', MozOsxFontSmoothing: 'grayscale', overflowWrap: 'anywhere', padding: '28px', WebkitFontSmoothing: 'antialiased', width: '1840px' }}>\n      <div id=\"3B9-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', fontFamily: '\"Inter-SemiBold\", \"Inter\", system-ui, sans-serif', fontSize: '28px', fontWeight: 600, lineHeight: '36px' }}>\n        Return to the same saved case.\n      </div>\n      <div id=\"3BA-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '16px', lineHeight: '24px' }}>\n        R4 amendment · states 09–18 · historical/synthetic fixtures. Macro PR #10901 now implements storage safety, exact parent return and the original-condition-first saved case. A 30-day saved case keeps its original cutoff and horizon; Close exits the full journey. New states distinguish unreadable optional evidence and missing original progress. Hosted and production acceptance remain separate.\n      </div>\n    </div>\n  )",
+    "build_texts": {
+      "3IQ-0": "BUILDER HANDOFF · STORAGE, NAVIGATION + FROZEN LAYOUT VERIFIED · 9 NOV 2026",
+      "3IS-0": "Paper states 09–18 now cover the saved-case workflow and its optional-evidence edge states. Macro PR #10901 · head 7308f6d706777a49009437554dd35fe42ae163dd · dependent open Draft implements storage safety, exact saved navigation and the original-condition-first hierarchy. The PR #9580 parent at 5e496c24c962e85a4f7f514dd43dc61443b95cab remains unchanged. These are historical source fixtures and synthetic local storage, not personal saved records or current-market evidence.",
+      "3IW-0": "Implementation stays in templates/crypto_intelligence_r4.js/.css and the existing drawer, route, history and local-storage owners. Template and served assets match; the two saved pages change only asset-version references. HTML template, builder, source data and shared assets are unchanged. See FROZEN_LAYOUT.md and NAVIGATION.md under research/design_candidates/crypto_snapshot_safety_20261109/.<br /><br />30-day fixture: revision r4-display:2026-10-17:30:continuation; BTC; cutoff 17 Oct 2026; expiry 16 Nov; daily close above $86,595, then stronger spot demand. Its 60 prior closes run 18 Aug–16 Oct, range $64,681–$86,595. The older 7-day failure case uses $81,566 and expires 24 Oct. Keep the original horizons/ranges separate. Tests use explicit historical time anchors.",
+      "3J0-0": "Implemented: the existing mmx.crypto.r4.scenarios.v1 reader separates the ready full collection from unavailable storage. Requested saved-item and memory-saved revisions need one usable exact match, supported horizon, real cutoff/expiry dates and original bilingual case fields. Duplicate/malformed/missing requested versions never borrow current context. Storage-bearing panels preflight before DOM replacement and yield to newer navigation/focus.<br /><br />Optional evidence has its own display qualification. Missing issue_evidence supports legacy state 14. A present unusable digest uses new state 17 / 3LJ-0. Displayed family names/states must be nonempty strings; snapshot dates pass savedDay(). Mixed entries retain readable values and identify unreadable entries. No original storage bytes are changed or current evidence substituted.",
+      "3JC-0": "Implemented: original title, asset, saved horizon, labeled cutoff and complete condition are immediately readable. Native “Original case details” retains sequence, invalidation, counterpoint, next check recorded then, expiry, prior-close window/range and the research qualification. “Original evidence” holds qualified captured readings and their snapshot dates. Historical review is the clear 48px primary action; Remove remains separate.<br /><br />Today's expiry stays distinct from original progress. Nonexpired retained progress says “At cutoff”; an expired case keeps its lifecycle warning and original progress inside details. Missing localized progress is unavailable, never inferred from levels or a generic conditional state: new state 18 / 3MC-0. Snapshot dates are not independent observation dates. None of these states creates forecast or model authority.",
+      "3JG-0": "The existing history.state.reading owner now also recognizes Remove and the review-requirements disclosure. Language changes preserve semantic focus, including Remove. Saved review exposes the original asset/horizon/cutoff, then “No qualified comparison yet”; its four existing qualification requirements remain in one native disclosure.<br /><br />No nested scroll owner or height animation is added. Native keyboard disclosure, explicit focus outlines, ≥44px controls, 48px primary actions and 8px recovery gaps are verified. The closed case and primary action fit tested 320/390/1440 widths across both languages/themes. Narrow review locale checks keep the focused summary below the sticky header. Native history retains last settled scrollend; explicit owned actions capture current position. Existing reduced motion remains intact.",
+      "3JO-0": "State 11: the requested saved version is unavailable; offer Saved snapshots and current outlook without borrowing case fields. State 16: the collection cannot be read; offer Try reading again and current outlook. State 14: a legacy case has no evidence digest. State 17 / 3LJ-0: a retained digest is incomplete/unreadable while original conditions and cutoff remain usable. State 18 / 3MC-0: original progress was not retained; do not reconstruct it.<br /><br />“No changes were made” is reserved for pre-write failure. Confirmed removal followed by failed list reading uses neutral copy. Unconfirmed writes never auto-retry or redirect. The new evidence projection makes no writes and does not repair or delete malformed records. Recovery actions are visibly separated and keep their existing destinations.",
+      "3JS-0": "Latest source run: 86 browser cases passed in 80.36s; Chrome 157.0.8103.39; 87 contexts / 93 pages; zero page errors or outside-origin/WebSocket traffic. All previous 61 cases are retained, with 25 new hierarchy, temporal, evidence-shape, focus and recovery cases. Parent baseline: 19 failed / 2 passed / 61 deselected; the two current-scenario cases already passed.<br /><br />Current scenarios retain exact DOM and element geometry at 320 EN and 1440 ZH. Two additional light-theme capture cases passed with unchanged runtime/harness. Twelve final native dialog crops inspected. The 39 unchanged Python contract cases retain prior passing evidence; no new 125-case run is claimed. Twenty-two JS and one CSS transforms invert exactly to the navigation parent. Frozen layout, storage and navigation are locally verified together.",
+      "3JW-0": "Source head 7308f6d706777a49009437554dd35fe42ae163dd is read back exactly: 16 source/evidence files plus 12 capture binaries. New Paper states 17 / 3LJ-0 and 18 / 3MC-0 clone existing frames, preserve 61 mapped nodes/styles and change four texts; their source frames remain unchanged. Build, native proof and source now describe the same saved-case behavior. Hosted/independent visual acceptance, merge/deployment and production replacement remain unclaimed.<br /><br />Next audit: compare the existing relative-comparison window/cohort/basis labels with Paper p-3-0 and the exact source. Preserve R4 source GB-0, scenario BB-0, alert gate HE-0 and route-cutover QQ-0. H5/model and all release/admission holds remain. No current freshness, personal activity, forecast skill, model allocation or alert delivery is inferred.",
+      "3BA-0": "R4 amendment · states 09–18 · historical/synthetic fixtures. Macro PR #10901 now implements storage safety, exact parent return and the original-condition-first saved case. A 30-day saved case keeps its original cutoff and horizon; Close exits the full journey. New states distinguish unreadable optional evidence and missing original progress. Hosted and production acceptance remain separate."
+    },
+    "build_checks": [
+      {
+        "root": "3IP-0",
+        "nodes": 34,
+        "ids_parents_order_styles_exact": true,
+        "target_and_untargeted_texts_exact": true
+      },
+      {
+        "root": "3B8-0",
+        "nodes": 3,
+        "ids_parents_order_styles_exact": true,
+        "target_and_untargeted_texts_exact": true
+      }
+    ],
+    "final_page_order": [
+      {
+        "id": "3B8-0",
+        "name": "Saved case return · scope"
+      },
+      {
+        "id": "3BC-0",
+        "name": "09 · Saved case · 30D · EN"
+      },
+      {
+        "id": "3BE-0",
+        "name": "10 · Historical review · Same 30D case"
+      },
+      {
+        "id": "3BG-0",
+        "name": "11 · Saved revision unavailable"
+      },
+      {
+        "id": "3BI-0",
+        "name": "12 · Original evidence · 320px"
+      },
+      {
+        "id": "3BK-0",
+        "name": "13 · 已存情景 · 30天"
+      },
+      {
+        "id": "3BM-0",
+        "name": "14 · Legacy snapshot · Expired 7D"
+      },
+      {
+        "id": "3BO-0",
+        "name": "15 · Detached review · Open saved case"
+      },
+      {
+        "id": "3JY-0",
+        "name": "16 · Saved snapshots · Read unavailable"
+      },
+      {
+        "id": "3LJ-0",
+        "name": "17 · Saved case · Evidence unreadable"
+      },
+      {
+        "id": "3MC-0",
+        "name": "18 · Saved case · Original progress unavailable"
+      },
+      {
+        "id": "3IP-0",
+        "name": "Build · Verified saved-case workflow"
+      }
+    ],
+    "effects": {
+      "cryptoFrozenLayoutPaperDuplicate": {
+        "state": "APPLIED_RESPONSE_OBSERVED",
+        "operation_id": "paper-estate-cont-20261108-crypto-frozen-layout-states-20261109-v1",
+        "tool": "duplicate_nodes",
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3F0NXNDPAKJMJGCAD759Z\",\n    \"name\": \"Crypto Intelligence · R4 References and Archive\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+            },
+            {
+              "type": "text",
+              "text": "{\n  \"duplicatedNodes\": [\n    {\n      \"sourceId\": \"3BM-0\",\n      \"newId\": \"3LJ-0\",\n      \"name\": \"14 · Legacy snapshot · Expired 7D\",\n      \"component\": \"Frame\",\n      \"worldX\": 0,\n      \"worldY\": 0,\n      \"x\": 0,\n      \"y\": 0,\n      \"descendantIdMap\": {\n        \"3DE-0\": \"3M3-0\",\n        \"3DO-0\": \"3LK-0\",\n        \"3ET-0\": \"3LZ-0\",\n        \"3EY-0\": \"3LW-0\",\n        \"3FZ-0\": \"3LT-0\",\n        \"3G3-0\": \"3LQ-0\",\n        \"3IJ-0\": \"3LL-0\",\n        \"3IK-0\": \"3LO-0\",\n        \"3IM-0\": \"3LM-0\",\n        \"3IN-0\": \"3LN-0\",\n        \"3IL-0\": \"3LP-0\",\n        \"3G4-0\": \"3LS-0\",\n        \"3G5-0\": \"3LR-0\",\n        \"3G0-0\": \"3LV-0\",\n        \"3G1-0\": \"3LU-0\",\n        \"3EZ-0\": \"3LY-0\",\n        \"3F0-0\": \"3LX-0\",\n        \"3EU-0\": \"3M2-0\",\n        \"3EV-0\": \"3M0-0\",\n        \"3EW-0\": \"3M1-0\",\n        \"3DF-0\": \"3M7-0\",\n        \"3DK-0\": \"3M4-0\",\n        \"3DL-0\": \"3M6-0\",\n        \"3DM-0\": \"3M5-0\",\n        \"3DG-0\": \"3MA-0\",\n        \"3DI-0\": \"3M8-0\",\n        \"3DJ-0\": \"3M9-0\",\n        \"3DH-0\": \"3MB-0\"\n      }\n    },\n    {\n      \"sourceId\": \"3BC-0\",\n      \"newId\": \"3MC-0\",\n      \"name\": \"09 · Saved case · 30D · EN\",\n      \"component\": \"Frame\",\n      \"worldX\": 470,\n      \"worldY\": 0,\n      \"x\": 470,\n      \"y\": 0,\n      \"descendantIdMap\": {\n        \"3BQ-0\": \"3MZ-0\",\n        \"3C0-0\": \"3MD-0\",\n        \"3E2-0\": \"3MV-0\",\n        \"3E7-0\": \"3MS-0\",\n        \"3F2-0\": \"3MP-0\",\n        \"3F6-0\": \"3MJ-0\",\n        \"3I1-0\": \"3ME-0\",\n        \"3I2-0\": \"3MH-0\",\n        \"3I4-0\": \"3MF-0\",\n        \"3I5-0\": \"3MG-0\",\n        \"3I3-0\": \"3MI-0\",\n        \"3F7-0\": \"3MK-0\",\n        \"3F8-0\": \"3MM-0\",\n        \"3FB-0\": \"3ML-0\",\n        \"3F9-0\": \"3MO-0\",\n        \"3FA-0\": \"3MN-0\",\n        \"3F3-0\": \"3MR-0\",\n        \"3F4-0\": \"3MQ-0\",\n        \"3E8-0\": \"3MU-0\",\n        \"3E9-0\": \"3MT-0\",\n        \"3E3-0\": \"3MY-0\",\n        \"3E4-0\": \"3MW-0\",\n        \"3E5-0\": \"3MX-0\",\n        \"3BR-0\": \"3N3-0\",\n        \"3BW-0\": \"3N0-0\",\n        \"3BX-0\": \"3N2-0\",\n        \"3BY-0\": \"3N1-0\",\n        \"3BS-0\": \"3N6-0\",\n        \"3BU-0\": \"3N4-0\",\n        \"3BV-0\": \"3N5-0\",\n        \"3BT-0\": \"3N7-0\"\n      }\n    }\n  ]\n}"
+            }
+          ]
+        },
+        "before_snapshot": "26a597de6effa7028e0e0f44c71ab5b59b60b8547ae7871cbfa1a6415bd8b493",
+        "after_snapshot": "26a597de6effa7028e0e0f44c71ab5b59b60b8547ae7871cbfa1a6415bd8b493",
+        "retry_allowed": false,
+        "production_acceptance": false
+      },
+      "cryptoFrozenLayoutPaperStateCopy": {
+        "state": "APPLIED_RESPONSE_OBSERVED",
+        "operation_id": "paper-estate-cont-20261108-crypto-frozen-layout-state-copy-20261109-v1",
+        "tool": "set_text_content",
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3F0NXNDPAKJMJGCAD759Z\",\n    \"name\": \"Crypto Intelligence · R4 References and Archive\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+            },
+            {
+              "type": "text",
+              "text": "{\n  \"updates\": [\n    {\n      \"nodeId\": \"3LS-0\"\n    },\n    {\n      \"nodeId\": \"3LR-0\"\n    },\n    {\n      \"nodeId\": \"3M1-0\"\n    },\n    {\n      \"nodeId\": \"3MX-0\"\n    }\n  ]\n}"
+            }
+          ]
+        },
+        "before_snapshot": "26a597de6effa7028e0e0f44c71ab5b59b60b8547ae7871cbfa1a6415bd8b493",
+        "after_snapshot": "26a597de6effa7028e0e0f44c71ab5b59b60b8547ae7871cbfa1a6415bd8b493",
+        "retry_allowed": false,
+        "production_acceptance": false
+      },
+      "cryptoFrozenLayoutPaperStateNames": {
+        "state": "APPLIED_RESPONSE_OBSERVED",
+        "operation_id": "paper-estate-cont-20261108-crypto-frozen-layout-state-names-20261109-v1",
+        "tool": "rename_nodes",
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3F0NXNDPAKJMJGCAD759Z\",\n    \"name\": \"Crypto Intelligence · R4 References and Archive\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+            },
+            {
+              "type": "text",
+              "text": "{\n  \"updates\": [\n    {\n      \"nodeId\": \"3LJ-0\",\n      \"name\": \"17 · Saved case · Evidence unreadable\"\n    },\n    {\n      \"nodeId\": \"3MC-0\",\n      \"name\": \"18 · Saved case · Original progress unavailable\"\n    }\n  ]\n}"
+            }
+          ]
+        },
+        "before_snapshot": "26a597de6effa7028e0e0f44c71ab5b59b60b8547ae7871cbfa1a6415bd8b493",
+        "after_snapshot": "26a597de6effa7028e0e0f44c71ab5b59b60b8547ae7871cbfa1a6415bd8b493",
+        "retry_allowed": false,
+        "production_acceptance": false
+      },
+      "cryptoFrozenLayoutPaperStateFinish": {
+        "state": "APPLIED_RESPONSE_OBSERVED",
+        "operation_id": "paper-estate-cont-20261108-crypto-frozen-layout-state-finish-20261109-v1",
+        "tool": "finish_working_on_nodes",
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3F0NXNDPAKJMJGCAD759Z\",\n    \"name\": \"Crypto Intelligence · R4 References and Archive\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+            },
+            {
+              "type": "text",
+              "text": "OK"
+            }
+          ]
+        },
+        "before_snapshot": "26a597de6effa7028e0e0f44c71ab5b59b60b8547ae7871cbfa1a6415bd8b493",
+        "after_snapshot": "26a597de6effa7028e0e0f44c71ab5b59b60b8547ae7871cbfa1a6415bd8b493",
+        "retry_allowed": false,
+        "production_acceptance": false
+      },
+      "cryptoFrozenLayoutPaperBuildEdit": {
+        "state": "APPLIED_RESPONSE_OBSERVED",
+        "operation_id": "paper-estate-cont-20261108-crypto-frozen-layout-build-20261109-v1",
+        "tool": "set_text_content",
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3F0NXNDPAKJMJGCAD759Z\",\n    \"name\": \"Crypto Intelligence · R4 References and Archive\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+            },
+            {
+              "type": "text",
+              "text": "{\n  \"updates\": [\n    {\n      \"nodeId\": \"3IQ-0\"\n    },\n    {\n      \"nodeId\": \"3IS-0\"\n    },\n    {\n      \"nodeId\": \"3IW-0\"\n    },\n    {\n      \"nodeId\": \"3J0-0\"\n    },\n    {\n      \"nodeId\": \"3JC-0\"\n    },\n    {\n      \"nodeId\": \"3JG-0\"\n    },\n    {\n      \"nodeId\": \"3JO-0\"\n    },\n    {\n      \"nodeId\": \"3JS-0\"\n    },\n    {\n      \"nodeId\": \"3JW-0\"\n    },\n    {\n      \"nodeId\": \"3BA-0\"\n    }\n  ]\n}"
+            }
+          ]
+        },
+        "before_snapshot": "26a597de6effa7028e0e0f44c71ab5b59b60b8547ae7871cbfa1a6415bd8b493",
+        "after_snapshot": "26a597de6effa7028e0e0f44c71ab5b59b60b8547ae7871cbfa1a6415bd8b493",
+        "retry_allowed": false,
+        "production_acceptance": false
+      },
+      "cryptoFrozenLayoutPaperOrder": {
+        "state": "APPLIED_RESPONSE_OBSERVED",
+        "operation_id": "paper-estate-cont-20261108-crypto-frozen-layout-order-20261109-v1",
+        "tool": "move_nodes",
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3F0NXNDPAKJMJGCAD759Z\",\n    \"name\": \"Crypto Intelligence · R4 References and Archive\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+            },
+            {
+              "type": "text",
+              "text": "{\n  \"moves\": [\n    {\n      \"nodeId\": \"3LJ-0\",\n      \"parentId\": \"root_node_p-4-0\",\n      \"index\": 11\n    },\n    {\n      \"nodeId\": \"3MC-0\",\n      \"parentId\": \"root_node_p-4-0\",\n      \"index\": 11\n    },\n    {\n      \"nodeId\": \"3IP-0\",\n      \"parentId\": \"root_node_p-4-0\",\n      \"index\": 11\n    }\n  ],\n  \"affectedParents\": [\n    {\n      \"parentId\": \"root_node_p-4-0\",\n      \"childIds\": [\n        \"3B8-0\",\n        \"3BC-0\",\n        \"3BE-0\",\n        \"3BG-0\",\n        \"3BI-0\",\n        \"3BK-0\",\n        \"3BM-0\",\n        \"3BO-0\",\n        \"3JY-0\",\n        \"3LJ-0\",\n        \"3MC-0\",\n        \"3IP-0\"\n      ]\n    }\n  ]\n}"
+            }
+          ]
+        },
+        "before_snapshot": "26a597de6effa7028e0e0f44c71ab5b59b60b8547ae7871cbfa1a6415bd8b493",
+        "after_snapshot": "26a597de6effa7028e0e0f44c71ab5b59b60b8547ae7871cbfa1a6415bd8b493",
+        "retry_allowed": false,
+        "production_acceptance": false
+      },
+      "cryptoFrozenLayoutPaperBuildName": {
+        "state": "APPLIED_RESPONSE_OBSERVED",
+        "operation_id": "paper-estate-cont-20261108-crypto-frozen-layout-build-name-20261109-v1",
+        "tool": "rename_nodes",
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3F0NXNDPAKJMJGCAD759Z\",\n    \"name\": \"Crypto Intelligence · R4 References and Archive\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+            },
+            {
+              "type": "text",
+              "text": "{\n  \"updates\": [\n    {\n      \"nodeId\": \"3IP-0\",\n      \"name\": \"Build · Verified saved-case workflow\"\n    }\n  ]\n}"
+            }
+          ]
+        },
+        "before_snapshot": "26a597de6effa7028e0e0f44c71ab5b59b60b8547ae7871cbfa1a6415bd8b493",
+        "after_snapshot": "26a597de6effa7028e0e0f44c71ab5b59b60b8547ae7871cbfa1a6415bd8b493",
+        "retry_allowed": false,
+        "production_acceptance": false
+      },
+      "cryptoFrozenLayoutPaperBuildFinish": {
+        "state": "APPLIED_RESPONSE_OBSERVED",
+        "operation_id": "paper-estate-cont-20261108-crypto-frozen-layout-build-finish-20261109-v1",
+        "tool": "finish_working_on_nodes",
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3F0NXNDPAKJMJGCAD759Z\",\n    \"name\": \"Crypto Intelligence · R4 References and Archive\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+            },
+            {
+              "type": "text",
+              "text": "OK"
+            }
+          ]
+        },
+        "before_snapshot": "26a597de6effa7028e0e0f44c71ab5b59b60b8547ae7871cbfa1a6415bd8b493",
+        "after_snapshot": "26a597de6effa7028e0e0f44c71ab5b59b60b8547ae7871cbfa1a6415bd8b493",
+        "retry_allowed": false,
+        "production_acceptance": false
+      }
+    },
+    "inspected_state_crops": [
+      "3LJ-0",
+      "3MC-0"
+    ],
+    "inspected_build_crops": [
+      "3JC-0",
+      "3JS-0"
+    ]
+  },
+  "validation": {
+    "source": {
+      "source_parent": "95ac76db194b8952aef0e63c4bcb30a220da78e0",
+      "version": "e38da6bba4dd",
+      "js_transforms": 22,
+      "css_transforms": 1,
+      "js_css_inverse_exact": true,
+      "template_site_assets_exact": true,
+      "saved_html_version_references_only": true,
+      "unchanged_inputs": [
+        "site/crypto_intelligence_r4.json",
+        "templates/crypto_intelligence_r4.html.j2",
+        "scripts/build_crypto_intelligence_r4.py",
+        "tests/test_crypto_intelligence_r4.py",
+        "lib/crypto_intelligence_view.py",
+        "site/theme.js",
+        "site/theme.css",
+        "site/illus.js",
+        "site/illus.css",
+        "site/navigation-refresh.css",
+        "site/logo_config.js",
+        "site/stock-logos.js",
+        "site/live_config.js",
+        "site/live.js"
+      ],
+      "candidate_files": {
+        "templates/crypto_intelligence_r4.js": {
+          "bytes": 60408,
+          "sha256": "07038c0fa0c89d1c05640221d49f95082cc15c41376eb7b4c83edc58022a28ae",
+          "blob": "37386b469d55d99f60f6a28a8858194247691d84"
+        },
+        "site/crypto_intelligence_r4.js": {
+          "bytes": 60408,
+          "sha256": "07038c0fa0c89d1c05640221d49f95082cc15c41376eb7b4c83edc58022a28ae",
+          "blob": "37386b469d55d99f60f6a28a8858194247691d84"
+        },
+        "templates/crypto_intelligence_r4.css": {
+          "bytes": 19602,
+          "sha256": "d39fca22e0dfb94f786576cf8102fc36ccaba53d4cc37ffd57dec61cc18ee2ef",
+          "blob": "1edc12c5dcc3d7702b1ffd043bf65b5e19142559"
+        },
+        "site/crypto_intelligence_r4.css": {
+          "bytes": 19602,
+          "sha256": "d39fca22e0dfb94f786576cf8102fc36ccaba53d4cc37ffd57dec61cc18ee2ef",
+          "blob": "1edc12c5dcc3d7702b1ffd043bf65b5e19142559"
+        },
+        "site/crypto-r4.html": {
+          "bytes": 117388,
+          "sha256": "d1b1ff0480eeade13dfdc30592aeb8bb5261874f9b79faef99868a106f3346a2",
+          "blob": "e9e8f81d8d2ea0078bd50b2f0b7e1d81a876364b"
+        },
+        "site/vector-r4.html": {
+          "bytes": 117387,
+          "sha256": "99d01edf84059207714c8f1cc5fe2ee69dfb8fec6489a2ffd9693fbad4323f0f",
+          "blob": "3a9107e9b45b81a75f111163206b92cab657eaa7"
+        },
+        "tests/test_crypto_intelligence_r4_browser.py": {
+          "bytes": 67708,
+          "sha256": "9e6f295e6a0988abb05a3e03c634241ce81ec81f600f7d11383251157c3f1cba",
+          "blob": "910ed8140ecc83826db0b0b229a5f12aa890b443"
+        }
+      },
+      "node_check": {
+        "exit_code": 0,
+        "stderr": ""
+      },
+      "model_refresh": false,
+      "public_route_cutover": false
+    },
+    "baseline": {
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "-m",
+        "pytest",
+        "-q",
+        "tests/test_crypto_intelligence_r4_browser.py",
+        "-k",
+        "frozen_layout_frontloads or frozen_expiry_is_distinct or frozen_legacy_layout or saved_review_disclosure or saved_recovery_actions or current_scenario_retains or frozen_missing_progress or frozen_remove_keeps",
+        "--tb=short",
+        "--junitxml=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/layout-baseline/junit.xml",
+        "--basetemp=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/layout-baseline/pytest-temp"
+      ],
+      "exit_code": 1,
+      "seconds": 40.291,
+      "source_parent": "95ac76db194b8952aef0e63c4bcb30a220da78e0",
+      "runtime_version": "7d9cb01e7600",
+      "test_sha256": "cf5a6fedcc428289044ff995aa37b2bb950ef07061a7799ca2bfc39f0a1cd0f6"
+    },
+    "baseline_observations": {
+      "contexts": 21,
+      "pages": 21,
+      "page_errors": [],
+      "blocked_external_requests": 0,
+      "blocked_websockets": 0,
+      "browser": "157.0.8103.39"
+    },
+    "candidate": {
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "-m",
+        "pytest",
+        "-q",
+        "tests/test_crypto_intelligence_r4_browser.py",
+        "--tb=short",
+        "--junitxml=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/layout-final/junit.xml",
+        "--basetemp=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/layout-final/pytest-temp"
+      ],
+      "exit_code": 0,
+      "seconds": 80.858,
+      "source_parent": "95ac76db194b8952aef0e63c4bcb30a220da78e0",
+      "candidate_version": "e38da6bba4dd",
+      "candidate_files": {
+        "templates/crypto_intelligence_r4.js": {
+          "bytes": 60408,
+          "sha256": "07038c0fa0c89d1c05640221d49f95082cc15c41376eb7b4c83edc58022a28ae",
+          "blob": "37386b469d55d99f60f6a28a8858194247691d84"
+        },
+        "site/crypto_intelligence_r4.js": {
+          "bytes": 60408,
+          "sha256": "07038c0fa0c89d1c05640221d49f95082cc15c41376eb7b4c83edc58022a28ae",
+          "blob": "37386b469d55d99f60f6a28a8858194247691d84"
+        },
+        "templates/crypto_intelligence_r4.css": {
+          "bytes": 19602,
+          "sha256": "d39fca22e0dfb94f786576cf8102fc36ccaba53d4cc37ffd57dec61cc18ee2ef",
+          "blob": "1edc12c5dcc3d7702b1ffd043bf65b5e19142559"
+        },
+        "site/crypto_intelligence_r4.css": {
+          "bytes": 19602,
+          "sha256": "d39fca22e0dfb94f786576cf8102fc36ccaba53d4cc37ffd57dec61cc18ee2ef",
+          "blob": "1edc12c5dcc3d7702b1ffd043bf65b5e19142559"
+        },
+        "site/crypto-r4.html": {
+          "bytes": 117388,
+          "sha256": "d1b1ff0480eeade13dfdc30592aeb8bb5261874f9b79faef99868a106f3346a2",
+          "blob": "e9e8f81d8d2ea0078bd50b2f0b7e1d81a876364b"
+        },
+        "site/vector-r4.html": {
+          "bytes": 117387,
+          "sha256": "99d01edf84059207714c8f1cc5fe2ee69dfb8fec6489a2ffd9693fbad4323f0f",
+          "blob": "3a9107e9b45b81a75f111163206b92cab657eaa7"
+        },
+        "tests/test_crypto_intelligence_r4_browser.py": {
+          "bytes": 67708,
+          "sha256": "9e6f295e6a0988abb05a3e03c634241ce81ec81f600f7d11383251157c3f1cba",
+          "blob": "910ed8140ecc83826db0b0b229a5f12aa890b443"
+        }
+      }
+    },
+    "candidate_observations": {
+      "contexts": 87,
+      "pages": 93,
+      "page_errors": [],
+      "blocked_external_requests": 0,
+      "blocked_websockets": 0,
+      "browser": "157.0.8103.39"
+    },
+    "current_scenario_projection": [
+      {
+        "case": "current-en-320.json",
+        "html_exact": true,
+        "geometry_exact": true
+      },
+      {
+        "case": "current-zh-1440.json",
+        "html_exact": true,
+        "geometry_exact": true
+      }
+    ],
+    "light_capture": {
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "-m",
+        "pytest",
+        "-q",
+        "tests/layout_light_capture.py",
+        "--tb=short",
+        "--basetemp=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/layout-light-captures/pytest-temp"
+      ],
+      "exit_code": 0,
+      "seconds": 6.93,
+      "candidate_version": "e38da6bba4dd",
+      "purpose": "Inspect light-theme closed saved cases at390EN and320ZH without changing the verified runtime or primary browser harness."
+    },
+    "light_capture_observations": {
+      "contexts": 2,
+      "pages": 2,
+      "page_errors": [],
+      "blocked_external_requests": 0,
+      "blocked_websockets": 0,
+      "browser": "157.0.8103.39"
+    },
+    "counts": {
+      "baseline": {
+        "failed": 19,
+        "passed": 2,
+        "deselected": 61
+      },
+      "candidate_browser_passed": 86,
+      "previous_browser_cases_retained": 61,
+      "added_browser_cases": 25,
+      "prior_unchanged_contract_cases": 39,
+      "contract_rerun": false,
+      "additional_light_capture_cases": 2
+    },
+    "captures": [
+      {
+        "path": "layout-final/captures/layout-saved-en-1440-dark.png",
+        "name": "layout-saved-en-1440-dark.png",
+        "bytes": 40310,
+        "sha256": "dd29b0bbc649f3f4440290271bf7f55fd62fb8d23b08d0af59b221e8da2bead8",
+        "blob": "e51b17842b9056d7c638d39f97705b6980088a87"
+      },
+      {
+        "path": "layout-final/captures/layout-saved-zh-390-dark.png",
+        "name": "layout-saved-zh-390-dark.png",
+        "bytes": 35891,
+        "sha256": "f55eb4bf52bf9a30dd0a968aafeb937d1a9ef906614c27acbc8c051a17adeceb",
+        "blob": "eee1ef0ab25e523f3324368d560a891003301bd9"
+      },
+      {
+        "path": "layout-final/captures/layout-saved-en-320-dark.png",
+        "name": "layout-saved-en-320-dark.png",
+        "bytes": 37905,
+        "sha256": "e56a3a0428699b353e24a1a7e9e60a22cd7b03874ea02ad0a8279ed2277d330b",
+        "blob": "e64f392b2ca5b7979479e2db103d605875848ef5"
+      },
+      {
+        "path": "layout-final/captures/layout-review-zh-390.png",
+        "name": "layout-review-zh-390.png",
+        "bytes": 28084,
+        "sha256": "37f42a88df6133fb496f114831a09b2a32667abff41393edda9579191a3a2dd7",
+        "blob": "228674ded2d22b219a11a8d62224f43ae47de366"
+      },
+      {
+        "path": "layout-final/captures/layout-recovery-missing-en-320.png",
+        "name": "layout-recovery-missing-en-320.png",
+        "bytes": 22257,
+        "sha256": "4b449de1dbc9a5d103ee99bd34a84d857a24f7ca25042689797ad2d1160785c4",
+        "blob": "3602d05ba58f91057a17492f4087882ba8141a43"
+      },
+      {
+        "path": "layout-final/captures/layout-recovery-unreadable-zh-390.png",
+        "name": "layout-recovery-unreadable-zh-390.png",
+        "bytes": 17548,
+        "sha256": "40949ee0e8620daad4467433fac5674a5b738d0beaa668a2c1e42f02ed1e2ad7",
+        "blob": "1eb21e96fe6b577ae078010518c71352d99575c0"
+      },
+      {
+        "path": "layout-final/captures/navigation-return-320-en.png",
+        "name": "navigation-return-320-en.png",
+        "bytes": 53763,
+        "sha256": "978673f42c0027f8a5516f4d1ea265e6fbbb824421d40dd0428511bdbdc3ee1b",
+        "blob": "6cb2b988da1262043ffb8e5705e56c6518decd73"
+      },
+      {
+        "path": "layout-final/captures/layout-evidence-en-1440-dark.png",
+        "name": "layout-evidence-en-1440-dark.png",
+        "bytes": 59006,
+        "sha256": "7783d02f2239afab4b2a8d6d589f200f80b0ce9598fdda17f62c050a9c1bf564",
+        "blob": "0355e14b35de69f5b7637cfdace8371a31d9defe"
+      },
+      {
+        "path": "layout-final/captures/layout-evidence-zh-390-dark.png",
+        "name": "layout-evidence-zh-390-dark.png",
+        "bytes": 54549,
+        "sha256": "f8462e1e68da35b28d9579754888325d0dc2efe3ab5d3043f58851c3ecc385dd",
+        "blob": "ca8cd84fcf9a8d56074990e7b9f06a0927120287"
+      },
+      {
+        "path": "layout-final/captures/layout-legacy-en-320.png",
+        "name": "layout-legacy-en-320.png",
+        "bytes": 46753,
+        "sha256": "3212cd57d96e717faa26cae341536e7d0e178829ad1fa2ede793eac5cfda678e",
+        "blob": "74563a9b62fbda4f0edbb512875f0a561e4fefd5"
+      },
+      {
+        "path": "layout-light-captures/captures/layout-saved-en-390-light.png",
+        "name": "layout-saved-en-390-light.png",
+        "bytes": 37653,
+        "sha256": "7d7bfd3118ab65b74b334b6d9838151cf3970147bf6caf0567ea9f9aea19e2c1",
+        "blob": "462f0c97027285dcc964f672b764e3ec3172d097"
+      },
+      {
+        "path": "layout-light-captures/captures/layout-saved-zh-320-light.png",
+        "name": "layout-saved-zh-320-light.png",
+        "bytes": 34633,
+        "sha256": "cd1ea8f6b2f59ec30bdfd6741067a9d97c7f0992f31374182fcc555eaf179b76",
+        "blob": "43f3cb5d622b4cb2f2aa258ec3ec13d5a718530f"
+      }
+    ],
+    "inspected_capture_count": 12,
+    "paper_new_states": [
+      {
+        "source": "3BM-0",
+        "clone": "3LJ-0",
+        "nodes": 29,
+        "mapped_identity_parent_order_styles_exact": true,
+        "copy_exact": true,
+        "placement": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      {
+        "source": "3BC-0",
+        "clone": "3MC-0",
+        "nodes": 32,
+        "mapped_identity_parent_order_styles_exact": true,
+        "copy_exact": true,
+        "placement": {
+          "x": 470,
+          "y": 0
+        }
+      }
+    ],
+    "limitations": [
+      "No hosted/independent visual acceptance",
+      "No current-market freshness/model promotion/release",
+      "No full-viewport toast placement proof",
+      "Web Storage is not atomic cross-tab CAS"
+    ],
+    "next": "Audit existing relative-comparison window/cohort/evidence-basis workflow against accepted Paper."
+  },
+  "next": {
+    "scope": "Relative-comparison window/cohort/basis labels and missing-state clarity",
+    "limits": "Existing R4 presentation owners; no producer/model/data refresh or proposed receipt promotion"
+  },
+  "holds": [
+    "Draft/unmerged",
+    "H5/model",
+    "alerts",
+    "hosted/independent visual acceptance",
+    "public-route cutover",
+    "release/admission",
+    "all existing denied/unknown-effect fences"
+  ]
+}

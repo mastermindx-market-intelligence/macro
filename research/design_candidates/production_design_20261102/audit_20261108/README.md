@@ -1,6 +1,16 @@
 # Paper audit and upgrade — 8–9 November 2026
 
-## Current implementation — Crypto saved-case navigation (§63)
+## Current implementation — Crypto frozen-case reading workflow (§64)
+
+[Dependent Draft PR #10901](https://github.com/mastermindx-market-intelligence/Macro/pull/10901), head `7308f6d706777a49009437554dd35fe42ae163dd`, now presents the original condition first, two native disclosures, compact saved review, clear primary/removal actions and spaced recovery. Original progress remains distinct from today's expiry. Optional saved evidence is typed and calendar-qualified without mutation or borrowed current data.
+
+**86 browser cases passed** in 87 contexts / 93 pages with zero page errors or external/WebSocket traffic. Two current-scenario views preserve exact parent DOM and geometry. Two additional light-theme capture cases passed with unchanged runtime; twelve final crops inspected. The 39 unchanged contract cases retain prior passing evidence.
+
+Paper adds **state 17 / 3LJ-0** for unreadable evidence and **state 18 / 3MC-0** for missing original progress. 61 mapped clone nodes/styles retained; four texts changed; source frames exact. Ten Build/scope texts updated across 37 preserved nodes/styles, with twelve roots ordered scope → states 09–18 → Build. Applied effects/readback: [PAPER_CRYPTO_FROZEN_LAYOUT_20261109.json](PAPER_CRYPTO_FROZEN_LAYOUT_20261109.json).
+
+Sixteen source/evidence files and twelve capture binaries have exact commit readback. **Next:** repair the existing relative-comparison window/cohort/basis presentation after exact source verification. Producer/model/data refresh and all existing release/H5/alert/visual/route holds remain outside this slice.
+
+## Previous implementation — Crypto saved-case navigation (§63)
 
 Dependent Draft [PR #10901](https://github.com/mastermindx-market-intelligence/Macro/pull/10901), head `95ac76db194b8952aef0e63c4bcb30a220da78e0`, now preserves original saved horizons, named parent returns, native Back/Forward, same-URL history entries, locale reading state and outer Close focus. The existing owners re-read the exact case before movement and arrival and yield to newer navigation/focus.
 
@@ -8,7 +18,7 @@ Dependent Draft [PR #10901](https://github.com/mastermindx-market-intelligence/M
 
 Paper Build `3IP-0` has 11 applied text changes; all 34 node IDs/parents/order/styles conserved, exact readback and finished ownership. [PAPER_CRYPTO_NAVIGATION_20261109.json](PAPER_CRYPTO_NAVIGATION_20261109.json) records the source, raw verification and Paper evidence. Nineteen source/text files and three capture binaries have exact commit readback.
 
-**Active next work:** original-condition-first frozen-case layout, compact review and recovery action spacing. Keep today's expiry distinct from original-cutoff progress. Existing release, H5/model, alerts, hosted/independent visual and route-cutover holds remain. The mission continues autonomously.
+**Next work recorded at §63:** original-condition-first frozen-case layout, compact review and recovery action spacing. Keep today's expiry distinct from original-cutoff progress. Existing release, H5/model, alerts, hosted/independent visual and route-cutover holds remain. The mission continues autonomously.
 
 ## Previous implementation — Crypto saved-snapshot safety (§62)
 

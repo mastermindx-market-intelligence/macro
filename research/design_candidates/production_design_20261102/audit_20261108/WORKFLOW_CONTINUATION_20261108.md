@@ -3038,3 +3038,52 @@ File `01M6Y3F0NXNDPAKJMJGCAD759Z`, page `p-4-0`, Build `3IP-0`: **11 text nodes 
 Implement the accepted frozen-case hierarchy: original condition first; native Original case details and Original evidence disclosures; compact review qualifications; separated recovery actions. Keep original sequence, invalidation, counter-evidence, expiry, prior-close basis and captured source clocks/quality. Today's computed expiry must remain distinct from progress at the original cutoff. Keep the existing current-scenario layout and proven saved navigation/storage intact.
 
 H5/model, alert, hosted/independent visual acceptance, route-cutover, release/admission and all earlier denied/unknown-effect fences remain unchanged. This is **verify → save/readback → continue**, not mission finalization.
+
+
+## 64. Crypto frozen-case hierarchy, optional-evidence integrity and two applied Paper states (9 November 2026)
+
+### Implemented result
+
+Dependent Draft [PR #10901](https://github.com/mastermindx-market-intelligence/Macro/pull/10901) advances from `95ac76db194b8952aef0e63c4bcb30a220da78e0` to **`7308f6d706777a49009437554dd35fe42ae163dd`**, tree `6fb0a5d0012cd548b271eff9ddef103b65b1dbab`, asset version `e38da6bba4dd`. The complete original condition is visible before the two native disclosures. Original case details preserve sequence, invalidation, counterpoint, next check recorded then, expiry, prior-close window/range and qualification. Captured evidence retains its own quality and snapshot clocks. Historical review is the 48px primary action, with a separate 44px Remove action. Recovery choices have an actual 8px gap.
+
+Saved review retains original asset/horizon/cutoff rather than hardcoding BTC, shows the absence of a qualified comparison and moves all four existing methodological requirements into one native disclosure. The existing reading-state owner now preserves Remove and review-requirements focus through language changes. No additional state owner, router, storage key, nested scroller or animation was added.
+
+### Temporal and optional-data corrections
+
+Original progress is read only from a retained nonempty localized string. Missing progress is explicitly unavailable. Today's expiry is shown as a present lifecycle condition; expired cases expose original progress or Not preserved inside details. No generic conditional state or level-based fallback is relabeled as historical progress. Current-scenario behavior remains unchanged.
+
+Optional saved evidence is projected without altering storage. A missing digest remains a supported legacy case. A present but unusable digest has a distinct explanation. A counted family has a displayable name/ID and localized state string; partial entries are identified, not certified. Calendar validation rejects impossible/malformed snapshot dates. Unknown quality remains unknown. No objects are stringified as readings and no current evidence is substituted.
+
+### Actual native proof
+
+Parent baseline PID 45282: **19 failed / 2 passed / 61 deselected**, 39.56s pytest / 40.291s subprocess, 21 contexts/pages. The two unchanged-current-scenario cases passed; shared new layout/focus/state requirements failed. This is not 19 independent bugs.
+
+Candidate PID 61590: **86 browser cases passed**, 80.36s pytest / 80.858s subprocess, **87 contexts / 93 pages**, Chrome 157.0.8103.39. Zero page errors, outside-origin requests or WebSockets. This retains all 61 previous browser cases and adds 25. Four optional-digest cases were added after baseline and before the candidate. Normal closed cases fit the primary action at tested 320/390/1440 widths in EN/ZH and light/dark; controls satisfy 44/48px targets; reduced motion and horizontal fit pass.
+
+Two actual current-scenario projections, 320 EN and 1440 ZH, match parent **DOM and element geometry exactly**. Narrow review locale cases keep focus below the sticky header; long-evidence return capture keeps Historical review visible.
+
+PID 82354 supplies a bounded additional light-theme visual run: **2 passed**, 6.25s pytest / 6.930s subprocess, two contexts/pages, unchanged product runtime and primary test harness. **Twelve final native dialog crops inspected**, including five normal saved cases, expanded evidence, compact review, legacy absence, unavailable recovery and native parent return. Hosted/independent visual acceptance and full-viewport toast placement are not inferred from these crops.
+
+All 39 unchanged Python contract cases retain their prior passing results. The builder/data/projection were unchanged and were not rerun unnecessarily. No 125-case new-run claim.
+
+Twenty-two JS transformations and one CSS transformation invert to the exact navigation parent. Template/served assets match; two saved pages change only their version references; fourteen other inputs remain byte-identical. Node syntax passed. **Sixteen source/evidence files and twelve capture binaries read back exactly** at `7308f6d706777a49009437554dd35fe42ae163dd`. One image GET had a transport disconnect; the same-head read was repeated and verified, with no mutation replay.
+
+Detailed contract: [FROZEN_LAYOUT.md](https://github.com/mastermindx-market-intelligence/Macro/blob/7308f6d706777a49009437554dd35fe42ae163dd/research/design_candidates/crypto_snapshot_safety_20261109/FROZEN_LAYOUT.md). Raw proof: [FROZEN_LAYOUT_VALIDATION.json](https://github.com/mastermindx-market-intelligence/Macro/blob/7308f6d706777a49009437554dd35fe42ae163dd/research/design_candidates/crypto_snapshot_safety_20261109/FROZEN_LAYOUT_VALIDATION.json).
+
+### Actual Paper additions and builder alignment
+
+File `01M6Y3F0NXNDPAKJMJGCAD759Z`, page `p-4-0`:
+
+- New **state 17 / `3LJ-0`**, Saved case · Evidence unreadable, cloned from legacy `3BM-0`.
+- New **state 18 / `3MC-0`**, Saved case · Original progress unavailable, cloned from normal `3BC-0`.
+- The two clones preserve **61 mapped nodes, parents, internal order and styles**; four text values change. Original source frames read back byte-identical. Vendor duplication places the new roots in blank space; no held style/artboard API was used.
+- Ten Build/scope text updates preserve **37 existing nodes/parents/internal order/styles**, with all intended and untouched texts checked. Build renamed to **Verified saved-case workflow**.
+- The page layer order is scope → states 09–18 → Build. Twelve root IDs and the final name/order are read back. All four owned roots finished. New state crops and two changed builder-note crops inspected.
+
+Exact applied responses, descendant maps, before/after JSX, final order and verification are preserved in [PAPER_CRYPTO_FROZEN_LAYOUT_20261109.json](PAPER_CRYPTO_FROZEN_LAYOUT_20261109.json).
+
+### Immediate continuation
+
+The next source/design discrepancy is the relative-comparison basis: “90-day” and “same published horizon” labels require comparison with the exact producer's paired-observation window and the proposed Paper receipt contract. Bound the next implementation to honest window/cohort/basis presentation and missing-state distinctions in existing R4 owners. Do not fabricate paired dates/counts, promote a proposed receipt or refresh producer/model/data.
+
+All H5/model, alerts, hosted/independent visual acceptance, public-route cutover, release/admission, denied capture and unknown-effect worker boundaries remain. This phase is saved and read back; the wider mission continues.
