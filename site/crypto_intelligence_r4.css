@@ -203,6 +203,14 @@ html[data-lang=zh] .cri :is(h1,h2,h3,.cri-kicker,.cri-case-label){letter-spacing
 /* Non-scaling strokes must not retain a viewBox-length reveal dash after stretching. */
 .cri-chart .ilx-path{stroke-dasharray:none;stroke-dashoffset:0;animation:none}
 .cri-condition-state{display:block;color:var(--ink-warn,var(--warn));font-size:var(--fs-sm);font-weight:600;line-height:1.5;margin-top:8px}
+.cri-card-dates{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:var(--fs-label);line-height:1.5;color:var(--muted);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.cri-card-dates>span{display:inline-flex;align-items:baseline;flex-wrap:wrap;gap:0 4px;max-width:100%}
+.cri-path .cri-card-dates,.cri-path .cri-card-status{margin-top:8px}
+.cri-card-status{display:flex;flex-direction:column;gap:4px}
+.cri-card-window{display:block;color:var(--text);font-size:var(--fs-sm);font-weight:600;line-height:1.5}
+[data-scenario-card] .cri-condition-state{margin-top:0}
+[data-scenario-card][data-card-recorded=true] .cri-condition-state{color:var(--muted);font-weight:400}
+.cri-card-check-label{display:block;font-size:var(--fs-label);font-weight:600;line-height:1.5;margin-bottom:4px}
 .cri-horizon-label{font-size:var(--fs-label);color:var(--muted);margin:0 0 6px}
 .cri-evidence-index{display:flex;width:100%;justify-content:space-between;text-align:left;margin-bottom:10px}
 .cri-dialog.cri-dialog-wide{width:min(960px,calc(100vw - 32px));max-width:960px}

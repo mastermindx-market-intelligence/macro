@@ -2,6 +2,14 @@
 {% macro arrow() -%}<svg class="cri-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>{%- endmacro %}
 {% macro inspect_button(target,en='Inspect view',zh='查看依据') -%}<button class="cri-btn" data-open="{{ target }}">{{ t(en,zh) }}{{ arrow() }}</button>{%- endmacro %}
 {% macro asset_identity(asset,stacked=false) -%}{% set name = asset.name if asset.name is string else '' %}{% if name|trim and name|trim|lower != asset.symbol|trim|lower %}{{ name }}{% if stacked %}<small>{{ asset.symbol }}</small>{% else %} <span class="cri-subtle">{{ asset.symbol }}</span>{% endif %}{% else %}{{ asset.symbol }}{% endif %}{%- endmacro %}
+{% macro scenario_text(en,zh,missing_en='Not supplied',missing_zh='未提供') -%}{{ t(en if en is string and en|trim else missing_en,zh if zh is string and zh|trim else missing_zh) }}{%- endmacro %}
+{% macro scenario_dates(scenario) -%}
+<span class="cri-card-dates"><span>{{ t('Observed','观测') }} {{ scenario_text(scenario.as_of,scenario.as_of) }}</span><span>{{ t('Expires','到期') }} {{ scenario_text(scenario.expires,scenario.expires) }}</span></span>
+{%- endmacro %}
+{% macro scenario_status(scenario) -%}
+{% set usable = scenario.state != 'insufficient' and scenario.progress_state != 'unavailable' %}
+<span class="cri-card-status"><span class="cri-card-window" data-card-window hidden></span><span class="cri-condition-state"><span data-card-progress-label>{{ t('Recorded status · ' if usable and scenario.progress_en is string and scenario.progress_en|trim else '', '记录状态 · ' if usable and scenario.progress_zh is string and scenario.progress_zh|trim else '') }}</span><span data-card-progress-value>{% if usable %}{{ scenario_text(scenario.progress_en,scenario.progress_zh,'Recorded status unavailable','记录状态暂无') }}{% else %}{{ t('Price evidence unavailable','价格证据暂无') }}{% endif %}</span></span></span>
+{%- endmacro %}
 {% macro scenario_paths() -%}
 <aside class="cri-panel cri-next">
   <div class="cri-section-head"><div><h3>{{ t('What could follow','接下来关注什么') }}</h3><p>{{ t('Bitcoin · conditional outlook','比特币 · 条件展望') }}</p></div>
@@ -10,10 +18,11 @@
   {% for horizon,scenarios in view.scenarios.items() %}
   <div data-case-horizon="{{ horizon }}" {% if horizon!='7' %}hidden{% endif %}>
     {% for scenario in scenarios|sort(attribute='progress_state') if scenario.id in ['continuation','failure'] %}
-    <button class="cri-path" data-open="scenario:{{ scenario.id }}">
+    <button class="cri-path" data-open="scenario:{{ scenario.id }}" data-scenario-card="{{ scenario.id }}" data-card-recorded="true">
       <span class="cri-path-head">{{ t(scenario.title_en,scenario.title_zh) }}{{ arrow() }}</span>
-      <span class="cri-condition-state">{{ t(scenario.progress_en,scenario.progress_zh) }}</span>
-      <p>{{ t(scenario.next_check_en,scenario.next_check_zh) }}</p>
+      {{ scenario_dates(scenario) }}
+      {{ scenario_status(scenario) }}
+      <p><span class="cri-card-check-label" data-card-next-label>{{ t('Recorded next check','当时的下一步检查') }}</span><span data-card-next>{{ scenario_text(scenario.next_check_en,scenario.next_check_zh) }}</span></p>
     </button>
     {% else %}<div class="cri-empty"><h3>{{ t('Price conditions unavailable','价格条件暂不可用') }}</h3><p class="cri-note">{{ t('More continuous daily history is needed.','需要更多连续日频历史。') }}</p></div>{% endfor %}
   </div>{% endfor %}
@@ -133,9 +142,9 @@
     {% for horizon,scenarios in view.scenarios.items() %}
     <div class="cri-cases" data-case-horizon="{{ horizon }}" {% if horizon!='7' %}hidden{% endif %}>
       {% for scenario in scenarios %}
-      <article class="cri-panel cri-case"><div class="cri-case-number">{{ t('PRICE OBSERVATION','价格观测') }} · {{ scenario.as_of }}</div><h3>{{ t(scenario.title_en,scenario.title_zh) }}</h3>
-        <span class="cri-condition-state">{{ t(scenario.progress_en,scenario.progress_zh) }}</span>
-        <div><div class="cri-case-label">{{ t('Next check','下一步检查') }}</div><p>{{ t(scenario.next_check_en,scenario.next_check_zh) }}</p></div>
+      <article class="cri-panel cri-case" data-scenario-card="{{ scenario.id }}" data-card-recorded="true"><div class="cri-case-number">{{ scenario_dates(scenario) }}</div><h3>{{ t(scenario.title_en,scenario.title_zh) }}</h3>
+        {{ scenario_status(scenario) }}
+        <div><div class="cri-case-label" data-card-next-label>{{ t('Recorded next check','当时的下一步检查') }}</div><p data-card-next>{{ scenario_text(scenario.next_check_en,scenario.next_check_zh) }}</p></div>
         {{ inspect_button('scenario:'+scenario.id,'Inspect scenario','查看情景') }}
       </article>{% else %}<div class="cri-panel cri-empty"><h3>{{ t('Not enough price history','价格历史不足') }}</h3><p class="cri-note">{{ t('This horizon needs a longer uninterrupted history.','此周期需要更长的连续历史。') }}</p></div>{% endfor %}
     </div>{% endfor %}

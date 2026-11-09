@@ -1,0 +1,76 @@
+......F..F........F...............F.F........                            [100%]
+=================================== FAILURES ===================================
+__ test_r4_card_instances_keep_their_own_horizon_and_readable_layout[en-390] ___
+tests/test_crypto_intelligence_r4_browser.py:2326: in test_r4_card_instances_keep_their_own_horizon_and_readable_layout
+    assert page.locator('[data-view="scenarios"] [data-card-next-label]:visible').first.inner_text() == (
+E   AssertionError: assert 'NEXT CHECK' == 'Next check'
+E     
+E     - Next check
+E     + NEXT CHECK
+_ test_r4_card_unqualified_dates_keep_recorded_instructions[missing-expiry-zh-320] _
+tests/test_crypto_intelligence_r4_browser.py:2354: in test_r4_card_unqualified_dates_keep_recorded_instructions
+    _capture_card_region(page, f"card-lifecycle-{variant}-{lang}-{width}",
+tests/test_crypto_intelligence_r4_browser.py:2253: in _capture_card_region
+    page.locator(selector).screenshot(path=str(out / (name + ".png")))
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/sync_api/_generated.py:19850: in screenshot
+    self._sync(
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_locator.py:583: in screenshot
+    return await self._with_element(
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_locator.py:114: in _with_element
+    handle = await self.element_handle(timeout=timeout)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_locator.py:325: in element_handle
+    handle = await self._frame.wait_for_selector(
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_frame.py:394: in wait_for_selector
+    await self._channel.send(
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_connection.py:76: in send
+    return await self._connection.wrap_api_call(
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_connection.py:632: in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+E   playwright._impl._errors.Error: Locator.screenshot: Error: strict mode violation: locator("[data-view=\"scenarios\"] .cri-case:first-child") resolved to 2 elements:
+E       1) <article data-card-recorded="true" class="cri-panel cri-case" data-scenario-card="continuation">…</article> aka get_by_text("Observed观测 2026-10-172026-10-17Expires到期 Not supplied未提供Upside test")
+E       2) <article class="cri-panel cri-case" data-card-recorded="false" data-scenario-card="continuation">…</article> aka get_by_text("Observed观测 2026-10-172026-10-17Expires到期 2026-11-162026-11-16Upside test")
+E   
+E   Call log:
+E     - waiting for locator("[data-view=\"scenarios\"] .cri-case:first-child")
+___ test_r4_card_unqualified_dates_keep_recorded_instructions[future-en-390] ___
+tests/test_crypto_intelligence_r4_browser.py:2354: in test_r4_card_unqualified_dates_keep_recorded_instructions
+    _capture_card_region(page, f"card-lifecycle-{variant}-{lang}-{width}",
+tests/test_crypto_intelligence_r4_browser.py:2253: in _capture_card_region
+    page.locator(selector).screenshot(path=str(out / (name + ".png")))
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/sync_api/_generated.py:19850: in screenshot
+    self._sync(
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_locator.py:583: in screenshot
+    return await self._with_element(
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_locator.py:114: in _with_element
+    handle = await self.element_handle(timeout=timeout)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_locator.py:325: in element_handle
+    handle = await self._frame.wait_for_selector(
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_frame.py:394: in wait_for_selector
+    await self._channel.send(
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_connection.py:76: in send
+    return await self._connection.wrap_api_call(
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_connection.py:632: in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+E   playwright._impl._errors.Error: Locator.screenshot: Error: strict mode violation: locator("[data-view=\"scenarios\"] .cri-case:first-child") resolved to 2 elements:
+E       1) <article data-card-recorded="true" class="cri-panel cri-case" data-scenario-card="continuation">…</article> aka get_by_text("Observed观测 2026-11-012026-11-01Expires到期 2026-11-082026-11-08Upside test上行检验")
+E       2) <article class="cri-panel cri-case" data-card-recorded="false" data-scenario-card="continuation">…</article> aka get_by_text("Observed观测 2026-10-172026-10-17Expires到期 2026-11-162026-11-16Upside test上行检验")
+E   
+E   Call log:
+E     - waiting for locator("[data-view=\"scenarios\"] .cri-case:first-child")
+____ test_r4_card_static_reading_is_time_neutral_and_typed[retained-en-390] ____
+tests/test_crypto_intelligence_r4_browser.py:2405: in test_r4_card_static_reading_is_time_neutral_and_typed
+    assert ("Recorded next check" if lang == "en" else "当时的下一步检查") in text
+E   AssertionError: assert 'Recorded next check' in 'Observed\n2026-10-17\nExpires\n2026-10-24\nUpside test\nRecorded status · Price condition pending\nRECORDED NEXT CHECK\n\nFirst watch for a daily close above $86,507.00.\n\nInspect scenario'
+_ test_r4_card_static_reading_is_time_neutral_and_typed[progress-object-en-390] _
+tests/test_crypto_intelligence_r4_browser.py:2405: in test_r4_card_static_reading_is_time_neutral_and_typed
+    assert ("Recorded next check" if lang == "en" else "当时的下一步检查") in text
+E   AssertionError: assert 'Recorded next check' in 'Observed\n2026-10-17\nExpires\n2026-10-24\nUpside test\nRecorded status unavailable\nRECORDED NEXT CHECK\n\nFirst watch for a daily close above $86,507.00.\n\nInspect scenario'
+=========================== short test summary info ============================
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_card_instances_keep_their_own_horizon_and_readable_layout[en-390]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_card_unqualified_dates_keep_recorded_instructions[missing-expiry-zh-320]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_card_unqualified_dates_keep_recorded_instructions[future-en-390]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_card_static_reading_is_time_neutral_and_typed[retained-en-390]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_card_static_reading_is_time_neutral_and_typed[progress-object-en-390]
+5 failed, 40 passed in 25.49s

@@ -333,6 +333,45 @@
     var restoredAction = body.querySelector("[data-snapshot-action]") || document.getElementById("cri-dialog-close");
     if (restoredAction && restoredAction.isConnected) restoredAction.focus();
   }
+  function scenarioCardState(s, today, language) {
+    var windowState = "unknown", progress = null, nextCheck = null, insufficient = false;
+    if (s && typeof s === "object" && !Array.isArray(s)) {
+      if (savedDay(s.as_of) && savedDay(s.expires) && s.expires >= s.as_of && savedDay(today)) {
+        windowState = s.as_of > today ? "future" : s.expires < today ? "expired" : "open";
+      }
+      progress = savedText(s["progress_" + language]);
+      nextCheck = savedText(s["next_check_" + language]);
+      insufficient = s.state === "insufficient" || s.progress_state === "unavailable";
+    }
+    return { window: windowState, progress: progress, nextCheck: nextCheck, insufficient: insufficient };
+  }
+  function renderScenarioCards(today, language) {
+    var labels = language === "zh" ? {
+      expired: "已到期 · 仅供历史参考", unknown: "到期状态暂无", future: "观测日期超前",
+      cutoff: "原始时点 · ", recorded: "记录状态 · ", missing: "记录状态暂无",
+      insufficient: "价格证据暂无", next: "下一步检查", recordedNext: "当时的下一步检查", absent: "未提供"
+    } : {
+      expired: "Expired · historical context only", unknown: "Expiry status unavailable", future: "Future-dated observation",
+      cutoff: "At cutoff · ", recorded: "Recorded status · ", missing: "Recorded status unavailable",
+      insufficient: "Price evidence unavailable", next: "Next check", recordedNext: "Recorded next check", absent: "Not supplied"
+    };
+    root.querySelectorAll("[data-scenario-card]").forEach(function (card) {
+      var group = card.closest("[data-case-horizon]");
+      var scenarios = group && data.scenarios && data.scenarios[group.dataset.caseHorizon];
+      var scenario = Array.isArray(scenarios) ? scenarios.find(function (s) { return s && s.id === card.dataset.scenarioCard; }) : null;
+      var reading = scenarioCardState(scenario, today, language);
+      var recorded = reading.window !== "open" || reading.insufficient || !reading.progress;
+      var windowLabel = card.querySelector("[data-card-window]"), progressLabel = card.querySelector("[data-card-progress-label]");
+      card.dataset.cardRecorded = String(recorded);
+      windowLabel.hidden = reading.window === "open";
+      windowLabel.textContent = labels[reading.window] || "";
+      progressLabel.hidden = !recorded || reading.insufficient || !reading.progress;
+      progressLabel.textContent = progressLabel.hidden ? "" : reading.window === "expired" ? labels.cutoff : labels.recorded;
+      card.querySelector("[data-card-progress-value]").textContent = reading.insufficient ? labels.insufficient : reading.progress || labels.missing;
+      card.querySelector("[data-card-next-label]").textContent = recorded ? labels.recordedNext : labels.next;
+      card.querySelector("[data-card-next]").textContent = reading.nextCheck || labels.absent;
+    });
+  }
   function progressStatus(s) {
     if (s.state === "insufficient") return t("Insufficient price history", "价格历史不足");
     if (s.progress_en) return field(s, "progress");
@@ -791,6 +830,7 @@
       root.querySelectorAll("[data-chart-panel]").forEach(function (p) { p.hidden = p.dataset.chartPanel !== windowSize; });
       root.querySelectorAll("[data-horizon]").forEach(function (b) { b.setAttribute("aria-pressed", String(b.dataset.horizon === h)); });
       root.querySelectorAll("[data-case-horizon]").forEach(function (p) { p.hidden = p.dataset.caseHorizon !== h; });
+      renderScenarioCards(new Date().toISOString().slice(0, 10), requestLanguage ? "zh" : "en");
       filterMarkets(); renderShock();
       var focusWasInside = dialog.contains(document.activeElement);
       var priorBasis = body.querySelector("[data-comparison-basis]"), basisReading = null;

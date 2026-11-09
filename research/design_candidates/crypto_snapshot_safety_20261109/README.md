@@ -2,7 +2,7 @@
 
 This is the dependent candidate for reliable saved cases, asset readings and navigation in [Macro PR #10901](https://github.com/mastermindx-market-intelligence/Macro/pull/10901). Start with the workflow below, then open its contract and exact proof.
 
-**Last audited runtime: 9 November 2026, source `e70fc60183c83565497c431c433b0594423cc7cb`, assets `f15feec04ead`.** The candidate remains Draft, unmerged and unarmed. Its incumbent base is [PR #9580](https://github.com/mastermindx-market-intelligence/Macro/pull/9580) at `5e496c24c962e85a4f7f514dd43dc61443b95cab`. These are recorded checkpoints, not live-head assertions.
+**Latest recorded runtime proof: 9 November 2026, assets `7fc541a886d1`; [scenario-card lifecycle receipt](card-lifecycle/PUBLICATION_RECEIPT.json).** The candidate remains Draft, unmerged and unarmed. Its incumbent base is [PR #9580](https://github.com/mastermindx-market-intelligence/Macro/pull/9580) at `5e496c24c962e85a4f7f514dd43dc61443b95cab`. These are recorded checkpoints, not live-head assertions.
 
 ## Find the workflow
 
@@ -11,6 +11,7 @@ This is the dependent candidate for reliable saved cases, asset readings and nav
 | Save or remove a specific snapshot; handle unreadable storage or uncertain completion | [Storage and snapshot safety](SNAPSHOT_SAFETY.md) | [Validation and limits](SNAPSHOT_VALIDATION.json) |
 | Reopen the original saved horizon; return to the same version and reading position | [Saved navigation](NAVIGATION.md) | [Navigation validation](NAVIGATION_VALIDATION.json) |
 | Read a frozen case, its condition and retained evidence; distinguish unavailable historical results | [Frozen-case hierarchy](FROZEN_LAYOUT.md) | [Layout validation](FROZEN_LAYOUT_VALIDATION.json) |
+| Distinguish an open, expired, future-dated or unverifiable case before inspection | [Scenario-card lifecycle](SCENARIO_CARD_LIFECYCLE.md) | [Native proof and exact scope](card-lifecycle/PUBLICATION_RECEIPT.json) |
 | Recover from a missing current scenario or named review | [Current-case recovery](SCENARIO_RECOVERY.md) | [Native proof](scenario-recovery/PUBLICATION_RECEIPT.json) |
 | Copy/open route links with their context; navigate without hiding the focused control | [Native navigation](NATIVE_NAVIGATION.md) | [Native proof](route-context/PUBLICATION_RECEIPT.json) · [Captures](route-context/CAPTURE_REFERENCES.json) |
 | Understand price change versus Asset/BTC ratio change; compare the complete cohort | [Comparison meaning and ownership](COMPARISON_BASIS.md) | [Comparison validation](COMPARISON_VALIDATION.json) |
@@ -21,7 +22,7 @@ This is the dependent candidate for reliable saved cases, asset readings and nav
 | Scan Overview labels and aligned headings | [Overview clarity](OVERVIEW_CLARITY.md) | [Overview proof](overview/PUBLICATION_RECEIPT.json) |
 | Reach the final methods control above the shared launcher | [Footer clearance](FOOTER_CLEARANCE.md) | [Footer proof](footer/PUBLICATION_RECEIPT.json) |
 
-Each receipt defines its own inputs, cases, corrections, captures and limitations. Counts from different phases overlap; do not add them into a new complete-suite claim. The original storage proof is **76 initial passes plus three affected dependency-recovery passes**, not one 79-pass run. The native-navigation phase has 23 affected passing cases; it is not a rerun of every prior browser case.
+Each receipt defines its own inputs, cases, corrections, captures and limitations. Counts from different phases overlap; do not add them into a new complete-suite claim. The original storage proof is **76 initial passes plus three affected dependency-recovery passes**, not one 79-pass run. The native-navigation phase has 23 affected passing cases. Scenario-card lifecycle has 45 unique affected passing cases across an initial 40-pass run and five corrected affected passes; its runtime remained unchanged during that correction. Neither is a complete browser-suite rerun.
 
 ## Existing implementation owners
 
@@ -47,7 +48,7 @@ The full portfolio audit remains in [PR #10617](https://github.com/mastermindx-m
 
 ## Next bounded work
 
-**Recorded on 9 November 2026:** qualify current-scenario cards before inspection so expired, future-dated and unverifiable windows cannot present recorded instructions as current. Preserve supplied progress, the original case/horizon, empty inputs and existing drawer/save behavior. Then add a same-case return from a valid current review through the existing history owner.
+**Recorded on 9 November 2026:** scenario-card lifecycle qualification is implemented and locally verified. Next, add a same-case return from a valid current review through the existing history owner. Preserve whole-drawer Close, saved-case return/reading state, missing-case recovery and newer-choice safeguards.
 
 Model/H5 authority, alert integration, paired receipts, qualified historical results, hosted/independent visual acceptance, public-route cutover and admission/release remain with their existing owners. Historical or synthetic local fixtures do not establish current-market freshness or production acceptance.
 

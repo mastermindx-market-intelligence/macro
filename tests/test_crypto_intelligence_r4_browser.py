@@ -2148,3 +2148,310 @@ def test_r4_consumed_or_modified_route_click_is_not_replayed_by_app(snapshot_pag
     assert origin.evaluate("n=>document.activeElement===n")
     assert len(page.context.pages) == 1
     assert _writes(page) == 0
+
+
+
+# Card lifecycle is a visit-time presentation of supplied scenario fields.
+# Fixtures keep server markup and embedded JSON bound through render_view().
+_CARD_OPAQUE = '[{"authority":"unrecognized-fixture","id":"untouched","payload":{"keep":true}}]'
+
+
+@pytest.fixture
+def scenario_card_page(browser, page_url, request, tmp_path):
+    created = 0
+    def create(lang="en", width=390, *, at="2026-10-25T12:00:00Z",
+               variant="retained", javascript=True, start="#scenarios?h=7"):
+        nonlocal created
+        view = json.loads((SITE / "crypto_intelligence_r4.json").read_text())
+        item = view["scenarios"]["7"][0]
+        if variant == "missing-expiry":
+            item.pop("expires", None)
+        elif variant == "impossible-expiry":
+            item["expires"] = "2026-02-30"
+        elif variant == "impossible-cutoff":
+            item["as_of"] = "2026-02-30"
+        elif variant == "missing-cutoff":
+            item.pop("as_of", None)
+        elif variant == "reversed":
+            item["expires"] = "2026-10-16"
+        elif variant == "future":
+            item["as_of"], item["expires"] = "2026-11-01", "2026-11-08"
+        elif variant in ("progress-missing", "progress-blank", "progress-object"):
+            item["levels"]["position"] = "above"
+            item["progress_state"] = "price_met"
+            item["progress_" + ("zh" if lang == "en" else "en")] = (
+                "另一语言保留的原记录" if lang == "en" else "Original record in the other language"
+            )
+            key = "progress_" + lang
+            if variant == "progress-missing":
+                item.pop(key, None)
+            else:
+                item[key] = "   " if variant == "progress-blank" else {"not": "display text"}
+        elif variant in ("next-missing", "next-object"):
+            key = "next_check_" + lang
+            if variant == "next-missing":
+                item.pop(key, None)
+            else:
+                item[key] = {"not": "an instruction"}
+        elif variant in ("insufficient", "unavailable"):
+            item["state"] = "insufficient" if variant == "insufficient" else "conditional"
+            item["progress_state"] = "price_met" if variant == "insufficient" else "unavailable"
+            item["progress_en"] = "Price condition met · demand unconfirmed"
+            item["progress_zh"] = "价格条件已满足 · 需求尚未确认"
+        elif variant == "empty":
+            view["scenarios"] = {"7": [], "30": []}
+        elif variant != "retained":
+            raise AssertionError(variant)
+        from scripts.build_crypto_intelligence_r4 import render_view
+        created += 1
+        rendered = tmp_path / ("scenario-cards-" + str(created))
+        render_view(view, rendered)
+        markup = (rendered / "crypto-r4.html").read_text()
+        if not javascript:
+            markup = markup.replace('data-view="overview"', 'data-view="overview" hidden')
+            markup = markup.replace('data-view="scenarios" hidden', 'data-view="scenarios"')
+            markup = markup.replace('<html lang="en"', '<html lang="en" data-lang="' + lang + '"')
+        context = _context(browser, page_url, viewport={"width": width, "height": 844},
+                           java_script_enabled=javascript)
+        request.addfinalizer(context.close)
+        page = context.new_page()
+        page.set_default_timeout(4500)
+        _freeze_time(page, at)
+        page.add_init_script(
+            "localStorage.setItem('lang'," + json.dumps(lang) + ");"
+            "localStorage.setItem('theme'," + json.dumps("dark" if lang == "en" else "light") + ");"
+            "localStorage.setItem(" + json.dumps(KEY) + "," + json.dumps(_CARD_OPAQUE) + ");"
+            "window.__cardWrites=0;const originalSet=Storage.prototype.setItem;"
+            "Storage.prototype.setItem=function(k,v){if(k===" + json.dumps(KEY) +
+            ")window.__cardWrites++;return originalSet.call(this,k,v);};"
+        )
+        page.route("**/crypto-r4.html?*", lambda route: route.fulfill(
+            status=200, content_type="text/html; charset=utf-8", body=markup))
+        page.goto(page_url + "?lang=" + lang + start, wait_until="load")
+        if javascript:
+            page.wait_for_function("document.getElementById('crypto-intelligence').dataset.renderedAddress===location.href")
+        return page, view
+    return create
+
+
+def _scenario_cards(page, horizon, case_id):
+    group = '[data-case-horizon="' + str(horizon) + '"]'
+    target = '[data-open="scenario:' + case_id + '"]'
+    return page.locator(group + ' .cri-path' + target + ', ' + group + ' .cri-case:has(' + target + ')')
+
+
+def _card_storage_untouched(page, view):
+    assert page.evaluate("window.__cardWrites") == 0
+    assert page.evaluate("key=>localStorage.getItem(key)", KEY) == _CARD_OPAQUE
+    assert page.evaluate("JSON.parse(document.getElementById('cri-data').textContent)") == view
+
+
+def _capture_card_region(page, name, selector):
+    if os.environ.get("MMX_CRYPTO_SNAPSHOT_CAPTURE_DIR"):
+        out = Path(os.environ["MMX_CRYPTO_SNAPSHOT_CAPTURE_DIR"])
+        out.mkdir(parents=True, exist_ok=True)
+        page.locator(selector).screenshot(path=str(out / (name + ".png")))
+
+
+@pytest.mark.parametrize("lang,width", [("en", 390), ("zh", 320)])
+@pytest.mark.parametrize("at,is_expired", [
+    ("2026-10-23T23:59:59.999Z", False),
+    ("2026-10-24T23:59:59.999Z", False),
+    ("2026-10-25T00:00:00Z", True),
+])
+def test_r4_card_expiry_uses_the_complete_utc_expiry_day(scenario_card_page, lang, width, at, is_expired):
+    page, view = scenario_card_page(lang, width, at=at)
+    item = view["scenarios"]["7"][0]
+    cards = _scenario_cards(page, 7, "continuation")
+    assert cards.count() == 3
+    visible = page.locator('[data-view="scenarios"] .cri-case').first
+    if is_expired:
+        assert ("Expired · historical context only" if lang == "en" else "已到期 · 仅供历史参考") in visible.inner_text()
+    for card in cards.all():
+        assert card.locator("[data-card-window]").count() == 1
+        assert card.locator("[data-card-window]").evaluate("node=>!node.hidden") == is_expired
+        assert card.locator("[data-card-progress-value]").text_content() == item["progress_" + lang]
+        assert card.locator("[data-card-next]").text_content() == item["next_check_" + lang]
+        assert card.locator("[data-card-next-label]").text_content() == (
+            ("Recorded next check" if is_expired else "Next check") if lang == "en" else
+            ("当时的下一步检查" if is_expired else "下一步检查")
+        )
+        assert item["as_of"] in card.locator(".cri-card-dates").text_content()
+        assert item["expires"] in card.locator(".cri-card-dates").text_content()
+        assert card.locator("[data-card-progress-label]").evaluate("node=>!node.hidden") == is_expired
+        if is_expired:
+            assert card.locator("[data-card-progress-label]").text_content() == (
+                "At cutoff · " if lang == "en" else "原始时点 · "
+            )
+    _card_storage_untouched(page, view)
+
+
+@pytest.mark.parametrize("lang,width", [("en", 390), ("zh", 320)])
+def test_r4_card_instances_keep_their_own_horizon_and_readable_layout(scenario_card_page, lang, width):
+    page, view = scenario_card_page(lang, width)
+    for horizon in ("7", "30"):
+        for item in view["scenarios"][horizon]:
+            cards = _scenario_cards(page, horizon, item["id"])
+            assert cards.count() == (1 if item["id"] == "range" else 3)
+            for card in cards.all():
+                assert card.locator("[data-card-window]").count() == 1
+                assert card.locator("[data-card-window]").evaluate("node=>!node.hidden") == (horizon == "7")
+                assert card.locator("[data-card-progress-value]").text_content() == item["progress_" + lang]
+                assert card.locator("[data-card-next]").text_content() == item["next_check_" + lang]
+    for view_name in ("scenarios", "overview", "bitcoin"):
+        page.locator('.cri-tabs [data-route="' + view_name + '"]').click()
+        current = page.locator('[data-view="' + view_name + '"]')
+        region = current.locator('.cri-cases[data-case-horizon="7"]' if view_name == "scenarios" else ".cri-next")
+        assert region.is_visible()
+        bounds = region.evaluate("""node => {
+          const r=node.getBoundingClientRect();
+          return {width:r.width,scroll:node.scrollWidth,client:node.clientWidth,
+            viewport:innerWidth,document:document.documentElement.scrollWidth,
+            dates:[...node.querySelectorAll('.cri-card-dates')].map(el=>({
+              client:el.clientWidth,scroll:el.scrollWidth,
+              font:parseFloat(getComputedStyle(el).fontSize)
+            }))};
+        }""")
+        assert bounds["document"] <= bounds["viewport"]
+        assert bounds["scroll"] <= bounds["client"] + 1
+        assert all(d["scroll"] <= d["client"] + 1 and d["font"] >= 10 for d in bounds["dates"])
+        if view_name != "bitcoin":
+            _capture_card_region(page, f"card-lifecycle-{view_name}-{lang}-{width}",
+                                 '[data-view="' + view_name + '"] ' +
+                                 ('.cri-cases[data-case-horizon="7"]' if view_name == "scenarios" else ".cri-next"))
+    page.locator('.cri-tabs [data-route="scenarios"]').click()
+    page.locator('[data-view="scenarios"] [data-horizon="30"]').click()
+    assert page.locator('[data-view="scenarios"] .cri-cases[data-case-horizon="30"]').is_visible()
+    assert page.locator('[data-view="scenarios"] [data-card-window]:visible').count() == 0
+    assert page.locator('[data-view="scenarios"] [data-card-next-label]:visible').first.text_content() == (
+        "Next check" if lang == "en" else "下一步检查"
+    )
+    _card_storage_untouched(page, view)
+
+
+@pytest.mark.parametrize("lang,width", [("en", 390), ("zh", 320)])
+@pytest.mark.parametrize("variant", [
+    "missing-expiry", "impossible-expiry", "impossible-cutoff", "missing-cutoff", "reversed", "future",
+])
+def test_r4_card_unqualified_dates_keep_recorded_instructions(scenario_card_page, lang, width, variant):
+    page, view = scenario_card_page(lang, width, variant=variant)
+    item = view["scenarios"]["7"][0]
+    expected = (
+        ("Future-dated observation" if lang == "en" else "观测日期超前") if variant == "future" else
+        ("Expiry status unavailable" if lang == "en" else "到期状态暂无")
+    )
+    visible = page.locator('[data-view="scenarios"] .cri-case').first
+    assert expected in visible.inner_text()
+    for card in _scenario_cards(page, 7, "continuation").all():
+        assert card.locator("[data-card-window]").text_content() == expected
+        assert card.locator("[data-card-progress-value]").text_content() == item["progress_" + lang]
+        assert card.locator("[data-card-progress-label]").text_content() == ("Recorded status · " if lang == "en" else "记录状态 · ")
+        assert card.locator("[data-card-next-label]").text_content() == ("Recorded next check" if lang == "en" else "当时的下一步检查")
+        assert card.locator("[data-card-next]").text_content() == item["next_check_" + lang]
+        assert "Expired" not in card.locator("[data-card-window]").text_content()
+        assert "已到期" not in card.locator("[data-card-window]").text_content()
+    if (variant, lang) in (("future", "en"), ("missing-expiry", "zh")):
+        _capture_card_region(page, f"card-lifecycle-{variant}-{lang}-{width}",
+                             '[data-view="scenarios"] [data-case-horizon="7"] .cri-case:first-child')
+    _card_storage_untouched(page, view)
+
+
+@pytest.mark.parametrize("lang,width", [("en", 390), ("zh", 320)])
+@pytest.mark.parametrize("variant", [
+    "progress-missing", "progress-blank", "progress-object", "next-missing", "next-object", "insufficient", "unavailable",
+])
+def test_r4_card_supplied_text_and_evidence_are_qualified_independently(scenario_card_page, lang, width, variant):
+    deficient = variant in ("insufficient", "unavailable")
+    page, view = scenario_card_page(lang, width, variant=variant,
+                                   at="2026-10-25T12:00:00Z" if deficient else "2026-10-18T12:00:00Z")
+    cards = _scenario_cards(page, 7, "continuation")
+    assert cards.count() == 3
+    expected_progress = (
+        ("Price evidence unavailable" if lang == "en" else "价格证据暂无") if deficient else
+        ("Recorded status unavailable" if lang == "en" else "记录状态暂无")
+    )
+    for card in cards.all():
+        assert card.locator("[data-card-progress-value]").count() == 1
+        if variant.startswith("progress") or deficient:
+            assert card.locator("[data-card-progress-value]").text_content() == expected_progress
+            assert card.locator("[data-card-next-label]").text_content() == (
+                "Recorded next check" if lang == "en" else "当时的下一步检查"
+            )
+            assert card.locator("[data-card-progress-label]").evaluate("node=>node.hidden")
+        else:
+            assert card.locator("[data-card-progress-value]").text_content() == view["scenarios"]["7"][0]["progress_" + lang]
+            assert card.locator("[data-card-next]").text_content() == ("Not supplied" if lang == "en" else "未提供")
+        if deficient:
+            assert card.locator("[data-card-window]").text_content() == (
+                "Expired · historical context only" if lang == "en" else "已到期 · 仅供历史参考"
+            )
+        assert "[object Object]" not in card.text_content()
+    if variant.startswith("progress"):
+        other = "zh" if lang == "en" else "en"
+        page.evaluate("lang=>document.documentElement.dataset.lang=lang", other)
+        page.wait_for_function("lang=>document.getElementById('crypto-intelligence').dataset.renderedLanguage===String(lang==='zh')", arg=other)
+        for card in cards.all():
+            assert card.locator("[data-card-progress-value]").text_content() == view["scenarios"]["7"][0]["progress_" + other]
+            assert card.locator("[data-card-next-label]").text_content() == ("下一步检查" if other == "zh" else "Next check")
+    _card_storage_untouched(page, view)
+
+
+@pytest.mark.parametrize("lang,width", [("en", 390), ("zh", 320)])
+@pytest.mark.parametrize("variant", ["retained", "progress-object"])
+def test_r4_card_static_reading_is_time_neutral_and_typed(scenario_card_page, lang, width, variant):
+    page, view = scenario_card_page(lang, width, variant=variant, javascript=False)
+    card = page.locator('[data-view="scenarios"] .cri-case').first
+    text = card.inner_text()
+    assert ("RECORDED NEXT CHECK" if lang == "en" else "当时的下一步检查") in text
+    assert "Expired" not in text and "已到期" not in text
+    assert view["scenarios"]["7"][0]["as_of"] in text and view["scenarios"]["7"][0]["expires"] in text
+    if variant == "retained":
+        assert view["scenarios"]["7"][0]["progress_" + lang] in text
+        assert ("Recorded status" if lang == "en" else "记录状态") in text
+    else:
+        assert ("Recorded status unavailable" if lang == "en" else "记录状态暂无") in text
+        assert "{'not':" not in text and "[object Object]" not in text
+
+
+@pytest.mark.parametrize("lang,width", [("en", 390), ("zh", 320)])
+def test_r4_card_refresh_keeps_focus_and_inspects_the_original_case(scenario_card_page, lang, width):
+    page, view = scenario_card_page(lang, width, start="#overview?h=7&window=30&keep=proof")
+    opener = page.locator('[data-view="overview"] [data-case-horizon="7"] [data-open="scenario:failure"]')
+    assert ("Expired" if lang == "en" else "已到期") in opener.inner_text()
+    opener.focus()
+    opener.evaluate("node=>{window.__cardOpener=node;window.__cardInner=node.querySelector('[data-card-progress-value]');}")
+    other = "zh" if lang == "en" else "en"
+    page.evaluate("lang=>document.documentElement.dataset.lang=lang", other)
+    page.wait_for_function("lang=>document.getElementById('crypto-intelligence').dataset.renderedLanguage===String(lang==='zh')", arg=other)
+    assert page.evaluate("document.activeElement===window.__cardOpener && window.__cardOpener.isConnected && window.__cardInner===window.__cardOpener.querySelector('[data-card-progress-value]')")
+    page.keyboard.press("Enter")
+    assert "#overview?h=7&window=30&keep=proof&panel=scenario%3Afailure" in page.url
+    assert page.locator("#cri-dialog-title").inner_text() == view["scenarios"]["7"][2]["title_" + other]
+    page.keyboard.press("Escape")
+    assert not page.locator("#cri-dialog").is_visible()
+    assert opener.evaluate("node=>document.activeElement===node")
+    page.locator('.cri-tabs [data-route="scenarios"]').click()
+    page.locator('[data-view="scenarios"] [data-horizon="30"]').click()
+    full = page.locator('[data-view="scenarios"] [data-case-horizon="30"] [data-open="scenario:failure"]')
+    full.focus()
+    page.keyboard.press("Enter")
+    assert "h=30" in page.url and "panel=scenario%3Afailure" in page.url
+    assert page.locator("#cri-dialog-body").get_by_text(view["scenarios"]["30"][2]["sequence_" + other], exact=True).is_visible()
+    assert page.locator("#cri-dialog-body").get_by_role("heading", name="下一步检查" if other == "zh" else "Next check", exact=True).count() == 1
+    page.keyboard.press("Escape")
+    assert full.evaluate("node=>document.activeElement===node")
+    _card_storage_untouched(page, view)
+
+
+@pytest.mark.parametrize("lang,width", [("en", 390), ("zh", 320)])
+def test_r4_card_empty_input_preserves_the_existing_empty_branch(scenario_card_page, lang, width):
+    page, view = scenario_card_page(lang, width, variant="empty")
+    assert page.locator(".cri-case, .cri-path").count() == 0
+    assert page.locator('[data-view="scenarios"]').get_by_role(
+        "heading", name="Not enough price history" if lang == "en" else "价格历史不足", exact=True
+    ).first.is_visible()
+    page.locator('.cri-tabs [data-route="overview"]').click()
+    assert page.locator('[data-view="overview"]').get_by_role(
+        "heading", name="Price conditions unavailable" if lang == "en" else "价格条件暂不可用", exact=True
+    ).first.is_visible()
+    _card_storage_untouched(page, view)

@@ -1,0 +1,46 @@
+{
+  "command": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_card_expiry_uses_the_complete_utc_expiry_day",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_card_instances_keep_their_own_horizon_and_readable_layout",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_card_unqualified_dates_keep_recorded_instructions",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_card_supplied_text_and_evidence_are_qualified_independently",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_card_static_reading_is_time_neutral_and_typed",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_card_refresh_keeps_focus_and_inspects_the_original_case",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_card_empty_input_preserves_the_existing_empty_branch",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_scenario_retains_its_existing_reading_order",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_frozen_expiry_is_distinct_from_original_progress",
+    "--tb=short",
+    "--junitxml=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/card-lifecycle-final/junit.xml",
+    "--basetemp=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/card-lifecycle-final/pytest-temp"
+  ],
+  "exit_code": 1,
+  "seconds": 25.764,
+  "source_parent": "2c9d619dfdc2e21a0cc0839094c6fa2be84a6260",
+  "runtime_asset_version": "7fc541a886d1",
+  "candidate_inputs": {
+    "templates/crypto_intelligence_r4.html.j2": {
+      "bytes": 23230,
+      "sha256": "76c6a23231e5c9b97ccef4964a04af2d70869a7e93a560adeee27d7cab67c38c",
+      "blob": "6938792268784fca2d19bc0c8eddb634dad2ca88"
+    },
+    "templates/crypto_intelligence_r4.css": {
+      "bytes": 23199,
+      "sha256": "ecbe6e8b1e4e10042877dd2c372b8f6aa7b75f6ea013b4bb01ac94465eef7370",
+      "blob": "0ff8227746d546facac1d1f073a9cf9ae20c2b53"
+    },
+    "templates/crypto_intelligence_r4.js": {
+      "bytes": 70220,
+      "sha256": "a670cd3e4af072eaac164ca83c3edb570b157554f723e027e5fa72eadbe616e7",
+      "blob": "b0c2f59d881757c0981713fe85a785757408a72a"
+    },
+    "tests/test_crypto_intelligence_r4_browser.py": {
+      "bytes": 139148,
+      "sha256": "5f274464ff6e3bb91a8a18ce903f6939f22c38ede63f74141df788edb96a1608",
+      "blob": "75166216d02881b2188e9cf0955715cf4ab4e2d8"
+    }
+  }
+}
