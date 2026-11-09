@@ -1,6 +1,16 @@
 # Paper audit and upgrade — 8–9 November 2026
 
-## Latest implementation — primary empty-state heading and source-faithful heroes
+## Latest implementation — metadata truth and heading navigation
+
+[Dependent Draft PR10893](https://github.com/mastermindx-market-intelligence/Macro/pull/10893) at `05699e5fa2e307266d49245cf2fc7a619087f7b4` removes the right-now claim from all three descriptions, uses existing generic image metadata for empty/unavailable source, and exposes every combination name as an H3 without changing geometry. The image condition adopts historical 143dded8's retained template work; image generation/cleanup and its original unfulfilled visual request remain separate.
+
+**92 existing page cases pass**, including enhanced checks in the nine real renderer/page-writer cases. Four bounded DOM/geometry contexts compare eight pages and 24 cards, zero errors; all active-language combination headings resolve. Exact inverses preserve body content, scripts, methods, actions, data and all CSS except the intended zero title margin. Eight source/text files read back exactly. The original inspection's null method fields are explicitly qualified and do not become runtime method proof.
+
+Paper adds a three-node Search and share metadata module and eight Build refinements, preserving all 241 prior identities/parents/styles. All eight R2 roots, four R3 states and method/access, recovery and R4 examples read back unchanged. [§61](WORKFLOW_CONTINUATION_20261108.md), [full receipt](PAPER_CONFLUENCE_METADATA_HEADINGS_20261109.json) and [source contract](https://github.com/mastermindx-market-intelligence/Macro/blob/05699e5fa2e307266d49245cf2fc7a619087f7b4/research/design_candidates/confluence_compatibility_20261109/METADATA_AND_HEADINGS.md) retain exact proof and limits.
+
+Next: implement Crypto's already-designed explicit Save/Remove and unreadable-storage contract on a separate dependent source branch. Fresh incumbent PR9580 remains Draft at 5e496c24; its original branch, model/alert/public-cutover/release boundaries and accepted Paper compositions remain.
+
+## Previous implementation — primary empty-state heading and source-faithful heroes
 
 [Dependent Draft PR10893](https://github.com/mastermindx-market-intelligence/Macro/pull/10893) at `26e0b8ba9ad322dc7c47a1dc1e0bead789589173` gives a qualified empty result one visible H1 using the existing 26px/32px primary scale. Its words, state, source clock and Open Mastermind action stay exact. **92 existing page tests** pass; four bounded native inspection contexts compare eight page observations in EN/ZH 320/1440, with zero errors. Eight original captures and six source/text files read back exactly. The positive saved body/scripts, unavailable body/H1, builder and protected JSON remain exact.
 

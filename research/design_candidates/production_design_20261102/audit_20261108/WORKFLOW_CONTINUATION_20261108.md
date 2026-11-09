@@ -2910,3 +2910,44 @@ Read-only review identified two emitted metadata gaps: the universal description
 A narrowly adopted HTML predicate and neutral existing seo_desc are the next candidates. Preserve the shared metadata helper, renderer, historical image-cleanup effect, old unfulfilled/blocked visual request and existing publication/release owners. Positive image-generation failure remains a separate publication risk. No held action is retried by this record.
 
 Source and audit remain Draft/unmerged. Incumbent PR10705's admission/calendar refusal, known 960px shared-navigation issue and all wider model, source, programme, browser and release boundaries remain.
+
+
+## 61. Snapshot-faithful metadata and navigable combination headings — 9 November 2026
+
+[Dependent Draft PR10893](https://github.com/mastermindx-market-intelligence/Macro/pull/10893) is at `05699e5fa2e307266d49245cf2fc7a619087f7b4`. Its ordinary, Open Graph and Twitter descriptions now describe historical signal research without claiming combinations are firing right now. Qualified-zero and unavailable pages use the existing generic icon/summary metadata; positive pages retain the current Confluence image and large-image card type.
+
+The conditional adopts the retained page-local predicate from historical 143dded8a0a0f4f0a7e24396e8d169292135d9e0. It leaves seo_image/seo_card undefined when there are no qualified displayed combinations, reusing the shared helper's defaults. An empty string is not equivalent. Builder, shared metadata helper and image lifecycle remain unchanged.
+
+Each combination name also becomes an H3 below the evidence-list H2, retaining its bilingual text, order and existing 16px/700/1.35 type. Local margin:0 preserves its previous geometry. This creates a meaningful heading destination without an extra control or keyboard stop.
+
+### Current source proof
+
+Four template substitutions—description, image predicate, local title margin and title wrapper—reverse exactly. The saved positive page changes three descriptions, three DIV→H3 tags and one CSS rule. It retains its prior positive image metadata. Its complete body reverses by restoring only those three title tags; all scripts, methods, actions/hrefs, source clocks, counts, ranking and protected data remain exact. The CSS inverse restores all styles. Current emitted metadata and headings match the actual current-input Jinja render; this is a bounded saved-component projection, not a newly qualified full-site build.
+
+Three existing test functions now assert actual emitted image/card tags through an HTMLParser helper that also detects duplicates. The nine existing actual renderer/page-writer cases verify generic metadata for their empty/unavailable outcomes. Their empty combinations do not enter image generation. No image is seeded, generated, deleted or replaced.
+
+**92 existing page cases pass**, PID 96506, 20.36 seconds pytest /24.55 seconds process. The parent baseline with those new assertions passed the positive case and failed ten existing source-state expectations, 81 deselected (PID 86357, 2.29 seconds pytest /4.75 seconds process). These expose one retained-image metadata behavior across states, not ten independent bugs. Original baseline output is retained.
+
+Pure before/after Jinja projections cover actual current positive input, existing synthetic qualified zero and unavailable input. All three description fields use the replacement; image/card fields follow the state contract; other metadata tags stay exact. Qualified-zero time remains 2026-07-19T04:00:00Z, explicitly synthetic. Current positive source stays 2026-11-08T11:31:29Z with full receipt `4f8c3dcd8508a55978f4b27d7c4d34828bc1044881ed404120cb353b1d4dc7c1`. Protected JSON still matches the producer.
+
+Four bounded native DOM/geometry contexts compare EN dark/ZH light at 320/1440: eight page observations and 24 card observations, zero errors, Chrome 157.0.8103.39 (PID 96707, 26.73 seconds). Each page gains three active-language combination headings; role locators resolve each exactly once. H1/H2 remain unchanged. Title/card geometry, computed type, actions and document width compare exactly. Zero screenshots were taken; no spoken-AT or new functional regression suite is claimed.
+
+The original inspection report retains a diagnostic mistake: the method selector used .methods instead of .lc-method, producing 24 null method fields. Its combined methods/actions check qualifies action equality only. Method content is independently conserved by exact source/body inverses; those null fields are not runtime method proof. No unnecessary rerun was used to relabel that observation.
+
+Eight source/text files read back exactly. [Implementation and bounded reproduction receipts](https://github.com/mastermindx-market-intelligence/Macro/blob/05699e5fa2e307266d49245cf2fc7a619087f7b4/research/design_candidates/confluence_compatibility_20261109/METADATA_AND_HEADINGS.md) retain the original report and baseline.
+
+### Paper builder contract
+
+The existing Build guide adds module 10, Search and share metadata, as three editable nodes 2V0-0/2V1-0/2V2-0 before its existing source links. It identifies the existing description/helper owners, undefined-value fallback, retained predicate, current proof and positive-image publication limit. Eight existing guide text nodes bind source, heading semantics, proof and exact links.
+
+All 241 prior Build div identities/parents/styles and prior relative order remain exact; the current Build has 244 div nodes. Every other text is unchanged. Full method/access, recovery and R4 subtrees remain byte-exact. All eight R2 roots and all four R3 states were freshly read back unchanged, including the accepted Chinese sentence breaks. Tokens remain 6234666b. The new module was visually inspected and only owned Build/module roots finished.
+
+[Full Paper/source receipt](PAPER_CONFLUENCE_METADATA_HEADINGS_20261109.json) includes the before/after Build, all conserved current customer/example JSX, operations and exact checks.
+
+### Historical effect boundary and next source gap
+
+The root read historical 143dded8 directly and the operative PR8332 paragraph. The fresh PR8428 lookup returned 404, so its current status remains unresolved. PR8332 says visual request 5985261197 was unfulfilled and offline fixture/asset preparation was blocked before dispatch; its original reason/category was not verified. This record preserves that block without replay, asset preparation, source-image cleanup or historical visual acceptance. A failed positive-image render can still leave a retained PNG; that separate publication risk remains open. External preview caches were not refreshed.
+
+The next bounded implementation is the existing Crypto saved-case contract from §13. Fresh PR9580 remains Draft/unmerged at 5e496c24c962e85a4f7f514dd43dc61443b95cab. Its visible Remove action still calls a toggle that can append the case if it disappeared after the drawer opened; its reader also collapses unreadable storage to an empty list. Carry explicit Save/Remove intent into the existing owner, preserve unrelated full collection content and verify outcomes. Keep personal storage untouched, use synthetic consumer proof, and work in a separately owned dependent source branch. Existing Paper states/compositions, H5/model authority, alerts, hosted/visual acceptance, public-route cutover and release holds remain.
+
+Confluence source/audit remain Draft and unmerged; incumbent PR10705 admission/calendar and all wider source, model, browser, programme and release boundaries remain.
