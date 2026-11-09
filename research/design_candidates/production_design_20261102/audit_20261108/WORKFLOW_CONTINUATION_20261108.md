@@ -1552,3 +1552,71 @@ A seventh release module was cloned from the existing style: frame **38K-0**, he
 At **04:37:59 UTC**, the original PR1354 run42556255347 is fully **SUCCESS**, attempt1, all **19 jobs passed**, final aggregate completed04:33:25 and run concluded04:33:26. Actual queue entry **MQE_lQDOTOzwKM8AAAABNwehYc4ABTs-zgPTFFw** was observed: enqueued04:34:32, **AWAITING_CHECKS**, position2, generated head **9f13ad1226d785524e56a5e03bf5236b231242a6**, queue base **f57c6c7f4b601999a7e1c3dde29d6687bb473f10**. Candidate head stays **45472fcedad31292d660d54731d4da472ca04f1e**.
 
 The native auto-merge request is now null alongside that real queue entry; it must not be rearmed. The PR is still unmerged. The queue's generated integration, actual merge SHA and applicable deployment/live-account proof remain distinct obligations. The principal continues other authorized frontend work while the existing queue owns its checks.
+
+
+## 31. GMI keyboard selection, filtered-index clarity and narrow navigation — 9 November 2026
+
+### Applied implementation and existing owners
+
+The original GMI [Draft PR10676](https://github.com/mastermindx-market-intelligence/Macro/pull/10676) now contains commit **386937ff4b3b689be5bd4a42a1b6e17a7f3dc6eb**, parent **696f370a3b47c2abc893a7c111b5669cce66d654**, tree **ff4bf497f0948fa9f4cd01f05fc5febf8d9b38ff**. Ten published files were read back exactly. It remains Draft with the original model, admission and release holds; no Ready, relabel, auto-merge, enqueue, merge or deployment action occurred.
+
+The new work closes source-proven workflow gaps:
+
+- **Tree leaves work from the keyboard.** Arrow-key focus can now activate an eligible theme leaf with plain Enter or Space. The existing link and selection owner still update the URL, answer, copy context and heading focus. Parent expansion, modifiers/IME and native nested-anchor activation are preserved; repeats cannot select again or reinstate Space scrolling; empty categories have no fabricated action.
+- **Search shortcuts remain available only for matching categories.** Hidden, detached or unowned targets cannot overwrite the query/lens/return fragment. A queued hidden observer entry cannot clear a valid current category. Current-link state comes from the existing ARIA attribute rather than a second cached identity.
+- **Focus survives filtering and history.** Before this owner hides an active result, category or shortcut, or restores a previously collapsed group, it moves focus to the existing search input. This covers a hidden row inside a still-visible category. Surviving and unrelated focus remain unchanged.
+- **Counts describe the visible results.** HBM previously showed two rows under a category count of 64. The same filtering pass now supplies one compact EN/ZH result status, category counts and subgroup counts. The two HBM matches yield two at the category level and one in each visible subgroup. Zero uses the existing no-match sentence. Clear restores generated totals; the footer says Full index / 完整索引. The static core/extended breakdown is hidden during search because tier and held/admitted review status are different dimensions.
+- **Small screens retain every destination.** The full generated main content exposed 351 px of width in a 320 px English viewport. Existing primary-navigation labels now wrap with 44 px targets. Category shortcuts increase from 40 to 44 px; mobile sticky-header and destination offsets increase together to 61 px. No overflow clipping or smaller type was used.
+
+No new selection, filter, URL, observer, data-admission, retry or persistence owner was introduced. The complete answer-first controller—including the accepted copy and locale owners—remains byte-identical to the parent.
+
+### Source and qualified rendering
+
+| Published source | Exact Git blob |
+| --- | --- |
+| Paired `templates/gmi.js` / `site/gmi.js` | **6231f3aeacffa0ea1645772633ee2362ab375e0d** |
+| Paired `templates/gmi.css` / `site/gmi.css` | **8bdb7f167e2524ce37da863251181362be495e57** |
+| `templates/_gmi_macros.html.j2` | **101dea0d4a6c3dbf8b6a30b46413be1119b83000** |
+| `templates/gmi_index.html.j2` | **de23d434e99adac9665b36a50992b653b72e8c14** |
+| Production-rendered `site/gmi-index.html` | **7426afdcddd4b8bca944725b23d8234ab6815c2f** |
+| Existing `verify_product_browser.py` | **6c6b57c1c20a9966602b6a68a20c67df430a1c21** |
+| `DESIGN_RECORD.md` through §11.22 | **b4a196a213fc0bad3691075b69a436c7845ddcf4** |
+| `KEYBOARD_INDEX_VALIDATION_20261109.json` | **30cc7e4a41a891f146560412304949e0852d433a** |
+
+[The complete source-linked record](https://github.com/mastermindx-market-intelligence/Macro/tree/386937ff4b3b689be5bd4a42a1b6e17a7f3dc6eb/research/theme_graph/gmi_design_20261021) contains the readable implementation decisions, exact inputs, native receipts and bounded harness.
+
+The existing builder `900253d42a7b1d43ad41aa493e8032444c4570de` used the unchanged accepted model with SHA256 **e644fa48a2bb6e6affe8d1fda74556d9db5f82acadffdad839e1efe8f095359f**, in a new isolated verification root with **48 bound inputs**. It did not generate a model or consume the fenced model01 result. Before changes, it reproduced the committed explorer and index byte-for-byte. The candidate changed only **gmi-index.html, gmi.js and gmi.css** among nine outputs. All other generated HTML remained identical between those runs; the historical coverage render was not published. The generated index was transported with its complete SHA256 verified. The page was not independently edited by hand.
+
+### Executed proof and an explicit test-data correction
+
+Four original-source keyboard/shortcut cases reproduced the two failures at desktop and phone sizes, exit 1. Two additional baseline observations, desktop EN and 320 px ZH, found two displayed HBM results with a shortcut count of 64. The intermediate full-page check exposed the separate narrow-English overflow; its repaired 12-case/18-context matrix passed before the count amendment.
+
+The **current product assets** are qualified by **12 named cases in 18 fresh anonymous contexts**, across 1440, 390 and 320 px in EN/ZH, with zero page errors in accepted cases:
+
+- PID73914 passed six taxonomy cases using 12 contexts on the final JS/CSS.
+- Its six initial index cases stopped at a new singular-count assertion. The query “advanced packaging” actually matches three canonical rows. Source inspection found all three exact labels; the test was corrected to the unique full HBM label. Product behavior and assertions were not weakened.
+- PID81809 then passed all six index cases in six contexts, exit 0, 13.24 s. The earlier taxonomy/helper functions were verified byte-identical, and their successful evidence was reused rather than rerun.
+
+The index checks cover zero/one/multiple counts, original totals and open-state restoration, EN/ZH status, focus retention/recovery, history, invalid jumps, stale observer callbacks, missing/detached groups, 44 px shortcuts, narrow navigation and sticky geometry. Mobile measurements put the rail bottom at **61 px** and group-header tops at **61.69–62.44 px**, without overlap. Two native mobile captures were inspected; numbers consistently show the filtered population, while the footer explicitly describes the full index.
+
+The canonical verifier owns the tests. The bounded harness extracts its exact three named AST definitions rather than maintaining another test implementation. Full JavaScript and Python-verifier syntax pass. Browser **157.0.8103.39** ran the actual generated main DOM with complete GMI and shared theme CSS, reduced motion and all external requests blocked. Modifier/repeat/empty-row/queued-observer faults are explicit. This does not establish full shared-shell/fonts/account/live serving, OS clipboard, assistive-technology or release acceptance. Earlier 42-copy/32-locale/twelve-label evidence remains historical; the unaffected owner bytes were checked, not those entire suites rerun.
+
+### Applied Paper Build
+
+File **01M5H6EARN9YHQV17JC6ZG9BRY**, p7, Build **7M9-0** now reads **RECEIPTS, KEYBOARD & SEARCH IMPLEMENTED**. It contains ten coherent modules, including:
+
+- **08 · Keyboard and filtered navigation share state** — cloned frame **7NK-0**, heading **7NM-0**, body **7NL-0**.
+- **09 · Count the results the user can see** — cloned frame **7NN-0**, heading **7NP-0**, body **7NO-0**.
+- Original proof frame **7ND-0** now forms module 10; its identity is retained.
+
+All **27 original IDs, parent relationships, relative order and style declarations** remain exact. The root now has 33 nodes. Existing receipt focus guidance was explicitly scoped to locale redraws, avoiding a conflict with the new pre-hide index-focus rule. The current head and source blob, responsive contract and proof limits are reflected in the original modules. The full native screenshot was inspected, readable and unclipped. Historical index specimens and current product boards were preserved.
+
+A finishing request used the nonexistent shorthand tool name `finish` and returned INVALID_ARGUMENT / TOOL_NOT_ALLOWED without changing the root. A fresh catalog showed the original schema-qualified `finish_working_on_nodes` action still available. The unchanged root was read back, then that declared action released only **7M9-0** on the same carrier with APPLIED_RESPONSE_OBSERVED. No unknown effect, blocked design operation or cross-carrier replay was used.
+
+### Parallel delivery remains distinct
+
+At **05:04:31 UTC**, Catalyst PR1354 remains first in the same queue entry, AWAITING_CHECKS, generated head **9f13ad1226d785524e56a5e03bf5236b231242a6**. Its actual merge-group run **42562605657** has four successful jobs, two skipped jobs and one running job. Ingest succeeded at 04:51:40; Terminal unit/typecheck is capturing and validating evidence on that checkout. No failed step or merge commit was observed. The original candidate's 19/19 success is accepted; no queue rearming or rerun occurred. Actual merge, exact-SHA release and live proof remain owed.
+
+Shared Tools head **3ce2e6090bc1e754f3201d13806b638c14f59bab** remains Draft. Natural fences run **42563123354** is successful; CI run **42563123452** remains queued at the current run-level read. The known loader-key/payload failure and four P0B receipt findings remain separate release blocks. No denied capture or gate weakening occurred.
+
+The next bounded frontend assessment concerns the existing tree's multiple Tab stops. It is diagnosis, not a claim that the new tree is already a complete roving-tab implementation. The principal continues the authorized mission with the protected queue and release holds intact.
