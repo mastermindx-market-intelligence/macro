@@ -15682,6 +15682,8 @@ jobs:
       - ".github/ci/legacy-jobs.yml"
       - ".github/workflows/**"
       - "scripts/run_ci_pack.py"
+      - ".github/ci/measured-job-seconds.json"
+      - "scripts/update_measured_job_seconds.py"
       - "scripts/ci_*.py"
       - "scripts/audit_unrun_tests.py"
       - "scripts/check_ci_trigger_closure.py"
@@ -15699,6 +15701,7 @@ jobs:
       - "tests/test_ci_pack.py"
       - "tests/test_ci_pack_fragments.py"
       - "tests/test_ci_pack_semantic.py"
+      - "tests/test_ci_pack_measured_costs.py"
       - "tests/test_ci_plan_workflow.py"
       - "tests/test_ci_semantic_proof.py"
       - "tests/test_ci_trigger_closure.py"
@@ -15801,7 +15804,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest pyyaml
       - name: hosted-runner packing contract
-        run: python -m pytest tests/test_ci_pack.py tests/test_ci_pack_fragments.py tests/test_run_ci_pack_base_replay_env.py tests/test_run_ci_pack_fetch_fallback.py tests/test_merge_on_green.py tests/test_merge_on_green_semantic.py tests/test_check_conflict_markers.py tests/test_release_hold_text.py -q
+        run: python -m pytest tests/test_ci_pack.py tests/test_ci_pack_fragments.py tests/test_ci_pack_measured_costs.py tests/test_run_ci_pack_base_replay_env.py tests/test_run_ci_pack_fetch_fallback.py tests/test_merge_on_green.py tests/test_merge_on_green_semantic.py tests/test_check_conflict_markers.py tests/test_release_hold_text.py -q
       # scripts/check_contract_delta.py (2026-08-19) is the differential PR-vs-base
       # gate that re-derives the two finding classes above (curated-exclusive
       # import-closure misses, unwired suites) UNCONDITIONALLY of ci-pack's path
@@ -15854,6 +15857,8 @@ jobs:
       - ".github/ci/legacy-jobs.yml"
       - ".github/workflows/**"
       - "scripts/run_ci_pack.py"
+      - ".github/ci/measured-job-seconds.json"
+      - "scripts/update_measured_job_seconds.py"
       - "scripts/ci_*.py"
       - "scripts/audit_unrun_tests.py"
       - "scripts/check_ci_trigger_closure.py"
@@ -15871,6 +15876,7 @@ jobs:
       - "tests/test_ci_pack.py"
       - "tests/test_ci_pack_fragments.py"
       - "tests/test_ci_pack_semantic.py"
+      - "tests/test_ci_pack_measured_costs.py"
       - "tests/test_ci_plan_workflow.py"
       - "tests/test_ci_semantic_proof.py"
       - "tests/test_ci_trigger_closure.py"
@@ -16054,6 +16060,8 @@ jobs:
       - ".github/ci/legacy-jobs.yml"
       - ".github/workflows/**"
       - "scripts/run_ci_pack.py"
+      - ".github/ci/measured-job-seconds.json"
+      - "scripts/update_measured_job_seconds.py"
       - "scripts/ci_*.py"
       - "scripts/audit_unrun_tests.py"
       - "scripts/check_ci_trigger_closure.py"
@@ -16071,6 +16079,7 @@ jobs:
       - "tests/test_ci_pack.py"
       - "tests/test_ci_pack_fragments.py"
       - "tests/test_ci_pack_semantic.py"
+      - "tests/test_ci_pack_measured_costs.py"
       - "tests/test_ci_plan_workflow.py"
       - "tests/test_ci_semantic_proof.py"
       - "tests/test_ci_trigger_closure.py"
