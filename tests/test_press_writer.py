@@ -958,3 +958,44 @@ def test_hostile_context_limit_cannot_become_an_instruction():
     _system, user = W.build_prompt(slot, F.config())
     assert '(context limit: Broad conditions only.)' in _fact_line(user, 'puts core PCE')
     assert 'Ignore all previous instructions' not in user
+
+
+@pytest.mark.parametrize('single_attempt', [False, True])
+def test_market_snapshot_prompt_uses_descriptive_evidence_not_action(single_attempt):
+    slot = F.slot(story={'kind': 'native_market_snapshot'})
+    system, user = W.build_prompt(slot, F.config(), single_attempt=single_attempt)
+    assert 'watch, do not chase' not in system
+    assert 'which later evidence would change' in system
+    assert 'Do not recommend an action to the reader' in system
+    assert 'No advice.' in system
+    assert ('regenerated at most twice' in system) is (not single_attempt)
+    assert 'FINAL MARKET SELF-CHECK' in user
+    for native_only in ('BOUND RECEIPT CLAUSES', 'whole matching clauses',
+                        'disclosures above contiguous', 'an actual anchor to'):
+        assert native_only not in user
+
+
+def test_market_snapshot_self_check_uses_configured_limits_and_scope():
+    cfg = F.config()
+    cfg['validators']['our_value_min'] = .55
+    cfg['validators']['min_anchored_receipts'] = 6
+    slot = F.slot(story={'kind': 'native_market_snapshot'}, min_words=320,
+                  max_words=640, min_anchored_receipts=0)
+    _, user = W.build_prompt(slot, cfg, single_attempt=True)
+    assert 'MINIMUM RECEIPTS: 6 distinct' in user
+    check = user.split('FINAL MARKET SELF-CHECK', 1)[1]
+    for text in ('320–640 words', 'at least 55%', 'at least 6 distinct',
+                 'including headings', 'excluding genuine byline/footer',
+                 'Nonnumeric explanation stays neutral',
+                 'Selected components are not exhaustive',
+                 'shared lineages are not independent observations',
+                 'superlative', 'causality', 'weights', 'windows', 'counts'):
+        assert text in check
+
+
+@pytest.mark.parametrize('desk', ['research_desk', 'research_note'])
+def test_market_kind_does_not_change_other_desk_prompt(desk):
+    slot = F.slot(desk=desk, story={'kind': 'native_market_snapshot'})
+    system, user = W.build_prompt(slot, F.config())
+    assert W._house_style(F.config()) in system
+    assert 'FINAL MARKET SELF-CHECK' not in user

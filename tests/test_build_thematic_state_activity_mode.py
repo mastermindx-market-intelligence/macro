@@ -19,6 +19,7 @@ from pathlib import Path
 
 import pytest
 
+from engine.neuralweb import envelope
 from engine.neuralweb import theme_state_generation as g
 from lib import config
 from scripts import build_thematic_state as builder
@@ -67,7 +68,7 @@ def _forbid(monkeypatch, calls, owner, *names):
         monkeypatch.setattr(owner, name, make(name))
 
 
-def _seed_graph(root, monkeypatch, *, edges=None):
+def _seed_graph(root, monkeypatch, *, edges=None, target_tier="micro_theme"):
     """A tiny strict-readable graph in the world's own store (nodes MU + target)."""
     from engine.theme_graph import store
 
@@ -75,7 +76,9 @@ def _seed_graph(root, monkeypatch, *, edges=None):
     nodes = [
         {"node_id": MU_NODE, "kind": "company", "name_en": "Fixture Micro",
          "computed_at": ACT_STAMP, "engine_version": "theme_graph.v1"},
+        # An activity membership targets a micro/sub theme, never a tier=theme node.
         {"node_id": TARGET, "kind": "theme", "name_en": "Fixture Theme",
+         "tier": target_tier,
          "computed_at": ACT_STAMP, "engine_version": "theme_graph.v1"},
     ]
     assert store.write_nodes(nodes, lane="nightly") == 2
@@ -87,14 +90,81 @@ def _events_bytes(events):
     return b"".join(json.dumps(e, sort_keys=True).encode("utf-8") + b"\n" for e in events)
 
 
-def _seed_events(root, events):
+FIXTURE_RULING_DIR = Path("research/theme_graph/fixture_ruling")
+
+
+def _fixture_ruling_bytes(event) -> bytes:
+    """A hermetic stand-in for the ruling REVISION the bridge cites. It GRANTS exactly
+    this event's own membership (subject, target, species, scope, proposal) for the
+    evidence edition the event carries, so the loader's read-time grant binding
+    (ACTIVITY_USE_GRANT_MISMATCH) passes and the FOLD is what decides the event."""
+    from engine.theme_graph import activity_history_bridge as bridge
+
+    lineage, scope = event["evidence_lineage"], event["scope"]
+    grant = dict(bridge._GRANT_REQUIRED,
+                 subject_node_id=event["endpoints"]["source_node_id"],
+                 target_node_id=event["endpoints"]["target_node_id"],
+                 species=event["species"],
+                 membership_scope={k: scope.get(k) for k in (
+                     "counterparty_issuer_id", "platform", "product")},
+                 proposal_ids=[lineage["proposal_id"]])
+    ruling = {"schema": bridge._SOURCE_PURPOSE_RULING_SCHEMA,
+              "fixture": "graph membership use ruling",
+              "revises_ruling_sha256": lineage["owner_bindings"]["purpose"],
+              "source": {"sha256": lineage["source_sha256"]},
+              "graph_membership_use_grant": grant}
+    return json.dumps(ruling, sort_keys=True).encode("utf-8") + b"\n"
+
+
+def _bind_events(root, events):
+    """What scripts/bridge_activity_history.py leaves beside each event it writes: one
+    bridge receipt row (outcome = the event's action, identical event_id/event_sha256),
+    the curation receipt bytes the event's ``curation.receipt_sha256`` names, and a real
+    ruling file the row's ``use_ruling_sha256`` content-addresses whose grant names the
+    event's own membership. The rows copy the event's own claims, so a tampered digest
+    still reaches the fold and is refused there (the fold-refusal case below)."""
+    import hashlib
+
+    from engine.theme_graph import activity_history_bridge as bridge
+
+    rows = []
+    for index, event in enumerate(events, start=1):
+        rel = FIXTURE_RULING_DIR / f"F{index:02d}_GRAPH_MEMBERSHIP_USE_RULING.json"
+        ruling = root / rel
+        ruling.parent.mkdir(parents=True, exist_ok=True)
+        ruling.write_bytes(_fixture_ruling_bytes(event))
+        ruling_sha = hashlib.sha256(ruling.read_bytes()).hexdigest()
+        pid = event["evidence_lineage"]["proposal_id"]
+        curation = event["curation"]["receipt_sha256"]
+        # tests/test_theme_graph_activity_membership_history.py::_curation hashes these.
+        receipt = bridge.curation_receipt_path(root / bridge.DEFAULT_RECEIPTS_DIR, pid)
+        receipt.parent.mkdir(parents=True, exist_ok=True)
+        receipt.write_bytes(b"curation-receipt:c01")
+        assert hashlib.sha256(receipt.read_bytes()).hexdigest() == curation
+        rows.append({
+            "schema": bridge.BRIDGE_RECEIPT_SCHEMA, "proposal_id": pid,
+            "proposal_sha256": hashlib.sha256(pid.encode("utf-8")).hexdigest(),
+            "outcome": event["action"], "reason_code": None,
+            "graph_membership_use": event["use_qualification"]["graph_membership_use"],
+            "event_id": event["event_id"], "event_sha256": event["event_sha256"],
+            "curation_receipt_sha256": curation,
+            "use_ruling_path": rel.as_posix(), "use_ruling_sha256": ruling_sha,
+            "ruling_refusals": [], "recorded_at": ACT_STAMP})
+    path = root / bridge.DEFAULT_BRIDGE_RECEIPTS_PATH
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_bytes(_events_bytes(rows))
+
+
+def _seed_events(root, events, *, bind=True):
     path = root / EVENTS
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_bytes(_events_bytes(events))
+    if bind:
+        _bind_events(root, events)
 
 
-def _seed(root, monkeypatch, *, events=(), edges=None):
-    _seed_graph(root, monkeypatch, edges=edges)
+def _seed(root, monkeypatch, *, events=(), edges=None, target_tier="micro_theme"):
+    _seed_graph(root, monkeypatch, edges=edges, target_tier=target_tier)
     if events:
         _seed_events(root, events)
 
@@ -270,6 +340,66 @@ def test_fail_open_single_warning_and_prior_bytes_preserved(
     assert (production_world / ARTIFACT).read_bytes() == prior
 
 
+
+def test_forged_unbound_append_refuses_the_whole_ledger(production_world, monkeypatch, capsys):
+    """An honestly digested NVDA APPEND written straight into the ledger (no bridge
+    receipt row) passes the pure fold, so the load-side binding must refuse it — and
+    with it the whole ledger, so a partial history never looks honest."""
+    legit = _append()
+    _seed(production_world, monkeypatch, events=[legit])
+    assert builder.build(production_world, mode=MODE, generated_at=ACT_STAMP) == 0
+    prior = (production_world / ARTIFACT).read_bytes()
+    capsys.readouterr()
+    forged = _append(source="co:us:NVDA")
+    assert forged["event_sha256"] != legit["event_sha256"]
+    (production_world / EVENTS).write_bytes(_events_bytes([legit, forged]))
+    assert builder._write_activity_membership_state(production_world, ACT_STAMP) is False
+    capsys.readouterr()
+    assert builder.build(production_world, mode=MODE, generated_at=ACT_STAMP) == 0
+    out = capsys.readouterr().out
+    warnings = [line for line in out.splitlines() if line.startswith("::")]
+    assert len(warnings) == 1 and warnings[0].startswith(WARN)
+    assert "ACTIVITY_EVENT_UNBOUND: line 2" in warnings[0]
+    assert "activity_membership_state=skipped" in out
+    assert (production_world / ARTIFACT).read_bytes() == prior
+
+
+@pytest.mark.parametrize("tier", ["theme", "macro_category", None])
+def test_target_outside_micro_and_sub_theme_is_refused(production_world, monkeypatch, capsys,
+                                                       tier):
+    _seed(production_world, monkeypatch, events=[_append()], target_tier=tier)
+    assert builder._write_activity_membership_state(production_world, ACT_STAMP) is False
+    out = capsys.readouterr().out
+    warnings = [line for line in out.splitlines() if line.startswith("::")]
+    assert len(warnings) == 1 and "ACTIVITY_TARGET_TIER_NOT_ADMITTED" in warnings[0]
+    assert not (production_world / ARTIFACT).exists()
+
+
+def test_sub_theme_target_is_admitted(production_world, monkeypatch):
+    _seed(production_world, monkeypatch, events=[_append()], target_tier="sub_theme")
+    assert builder.build(production_world, mode=MODE, generated_at=ACT_STAMP) == 0
+    assert len(_artifact(production_world)["projected_edges"]) == 1
+
+
+def test_writer_reads_events_only_through_the_shared_binding_helper(
+        production_world, monkeypatch):
+    from engine.theme_graph import activity_history_bridge as bridge
+
+    calls = []
+    real = bridge.load_bound_activity_events
+
+    def spy(**kwargs):
+        calls.append(kwargs)
+        return real(**kwargs)
+
+    monkeypatch.setattr(bridge, "load_bound_activity_events", spy)
+    _seed(production_world, monkeypatch, events=[_append()])
+    assert builder.build(production_world, mode=MODE, generated_at=ACT_STAMP) == 0
+    assert len(calls) == 1
+    assert Path(calls[0]["events_path"]) == production_world / EVENTS
+    assert Path(calls[0]["ruling_root"]) == Path(production_world)
+
+
 # ------------------------------------------------------------------ isolation + LEGACY
 
 
@@ -312,15 +442,22 @@ def test_legacy_outputs_are_byte_identical_with_and_without_a_prior_activity_run
     class Pinned(dt.datetime):
         @classmethod
         def now(cls, tz=None):
-            instant = dt.datetime(2026, 10, 4, 12, 0, 0)
+            instant = dt.datetime(2026, 10, 4, 12, 0, 0, tzinfo=dt.timezone.utc)
             return instant.astimezone(tz) if tz is not None else instant.replace(tzinfo=None)
 
     monkeypatch.setattr(dt, "datetime", Pinned)
+    monkeypatch.setattr(envelope, "datetime", Pinned)
 
     assert builder.build(world_a, mode=MODE, generated_at=ACT_STAMP) == 0
     assert (world_a / ARTIFACT).is_file() and not (world_b / ARTIFACT).exists()
     assert _legacy_build(world_a, monkeypatch) == 0
     assert _legacy_build(world_b, monkeypatch) == 0
+
+    for world in (world_a, world_b):
+        for legacy_path in ("data/neuralweb/theme_state.json",
+                            "site/neuralwebdata/theme_state.json"):
+            payload = json.loads((world / legacy_path).read_text(encoding="utf-8"))
+            assert payload["produced_at"] == "2026-10-04T12:00:00Z", (world, legacy_path)
 
     for legacy_path in ("data/neuralweb/theme_state.json",
                         "site/neuralwebdata/theme_state.json",

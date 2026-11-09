@@ -98,6 +98,7 @@ def _write_shadow_graph_state(root: Path, generated_at: str | None) -> bool:
     from engine.neuralweb import theme_state_adapter as adapter
     from engine.neuralweb import theme_state_generation as generation
     from engine.theme_graph import theme_state
+    from engine.theme_graph.theme_state_owner_readers import StateQualificationReader
 
     capture_s = compose_s = serialize_s = None
     raw = None
@@ -105,7 +106,8 @@ def _write_shadow_graph_state(root: Path, generated_at: str | None) -> bool:
         phase_started = time.perf_counter()
         known_at = generated_at or datetime.now(timezone.utc).isoformat()
         bundle = adapter.capture_owner_bundle(
-            root, effective_at=known_at[:10], known_at=generated_at,
+            root, owner_readers=StateQualificationReader(root),
+            effective_at=known_at[:10], known_at=generated_at,
         )
         capture_s = time.perf_counter() - phase_started
 
@@ -157,8 +159,6 @@ def _write_activity_membership_state(root: Path, generated_at: str | None) -> bo
     """
     from datetime import datetime, timezone
 
-    import hashlib
-
     from engine.neuralweb import theme_state_generation as generation
     from engine.theme_graph import materialize, store
 
@@ -172,29 +172,39 @@ def _write_activity_membership_state(root: Path, generated_at: str | None) -> bo
             raise RuntimeError(
                 "GRAPH_STORE_ROOT_MISMATCH: "
                 f"store_dir={store.store_dir()} root={Path(root)}")
-        events_path = Path(root) / _ACTIVITY_HISTORY_EVENTS_PATH
+        # Read the events ONLY through the binding helper scripts/build_theme_graph.py
+        # shares: every event bound to its bridge receipt row, the curation receipt
+        # bytes and a real ruling file, and targeting a micro/sub theme of THIS
+        # store's node taxonomy. Any refusal refuses the run with its named code.
+        from engine.theme_graph import activity_history_bridge as bridge
+
+        nodes_memo: dict = {}
+
+        def read_nodes():
+            if "nodes" not in nodes_memo:
+                nodes_memo["nodes"] = store.read_nodes(strict=True)
+            return nodes_memo["nodes"]
+
+        def node_tiers() -> dict:
+            frame = read_nodes()
+            return {str(node_id): (tier if isinstance(tier, str) else None)
+                    for node_id, tier in zip(frame["node_id"], frame["tier"])}
+
         try:
-            events_bytes = events_path.read_bytes()
-        except FileNotFoundError:
-            events_bytes = None
-        if events_bytes is None:
+            loaded = bridge.load_bound_activity_events(
+                events_path=Path(root) / _ACTIVITY_HISTORY_EVENTS_PATH,
+                bridge_receipts_path=Path(root) / bridge.DEFAULT_BRIDGE_RECEIPTS_PATH,
+                receipts_dir=Path(root) / bridge.DEFAULT_RECEIPTS_DIR,
+                ruling_root=Path(root),
+                target_tiers=node_tiers)
+        except bridge.BridgeRefusal as exc:
+            raise ValueError(str(exc)) from None
+        if loaded is None:
             events, events_sha256 = [], None
         else:
-            events_sha256 = hashlib.sha256(events_bytes).hexdigest()
-            events = []
-            for lineno, line in enumerate(events_bytes.decode("utf-8").splitlines(), start=1):
-                if not line.strip():
-                    continue
-                try:
-                    event = json.loads(line)
-                except ValueError as exc:
-                    raise ValueError(
-                        f"ACTIVITY_EVENTS_FILE_INVALID: line {lineno}: {exc}") from exc
-                if not isinstance(event, dict):
-                    raise ValueError(f"ACTIVITY_EVENTS_FILE_INVALID: line {lineno}")
-                events.append(event)
+            events, events_sha256 = loaded["events"], loaded["events_sha256"]
         edges_df = store.read_edges(latest_belief=True, strict=True)
-        nodes_df = store.read_nodes(strict=True)
+        nodes_df = read_nodes()
         read_s = time.perf_counter() - phase_started
 
         phase_started = time.perf_counter()

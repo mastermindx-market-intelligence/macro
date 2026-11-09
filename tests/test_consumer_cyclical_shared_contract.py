@@ -1,9 +1,9 @@
 """Cyclical shared-contract review gate.
 
-The live arm on main is the typed refusal: ``engine.theme_graph.curation_assertion``
-is not on this tree. The strict xfail is the positive round-trip through that
-owner's real module and becomes an unexpected pass only when the module is
-importable and the pinned synthetic payload still validates.
+The live arm is the positive round-trip through the shared owner's real
+``engine.theme_graph.curation_assertion`` module, delivered with the shared
+source. The typed refusal stays covered: those tests mask the module in
+``sys.modules`` so the import fails the same way it does on a tree without it.
 """
 
 from __future__ import annotations
@@ -12,6 +12,7 @@ import ast
 import importlib
 import json
 import re
+import sys
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -41,10 +42,9 @@ FIXTURE_PATH = (
     / "consumer_cyclical_intelligence_read_model.v1.valid.json"
 )
 
-# Stamp of the synthetic payload below under the shared owner at
-# refs/grok/pr/7870@52b741c5082 (curation_assertion.py blob b7e42fd8, the
-# same blob as tip c46dbebb). Strict xfail: the suite goes red on an
-# unexpected pass. A hash mismatch stays an expected failure.
+# Stamp of the synthetic payload below under the shared owner, first pinned at
+# refs/grok/pr/7870@52b741c5082 (curation_assertion.py blob b7e42fd8). A hash
+# mismatch fails the round-trip: the shared revision changed under this consumer.
 PINNED_REVISION = "gmirca_63ffb5449d20456a8d2405cc16e66b37"
 
 
@@ -109,6 +109,15 @@ def _static_imports(tree: ast.AST) -> set[str]:
             imported.add(node.module)
             imported.update(f"{node.module}.{alias.name}" for alias in node.names)
     return imported
+
+
+def _mask_shared_module(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Make the shared module unimportable for one test.
+
+    ``import_module`` raises ImportError for a ``None`` entry in ``sys.modules``,
+    the same exception class as a tree that does not carry the module.
+    """
+    monkeypatch.setitem(sys.modules, SHARED_CONTRACT_MODULE, None)
 
 
 def _install_contract(monkeypatch: pytest.MonkeyPatch) -> dict[str, SimpleNamespace]:
@@ -202,7 +211,10 @@ def _synthetic_assertion() -> dict:
     }
 
 
-def test_absent_shared_contract_raises_shared_contract_unavailable() -> None:
+def test_absent_shared_contract_raises_shared_contract_unavailable(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _mask_shared_module(monkeypatch)
     with pytest.raises(ConsumerCyclicalResearchRefusal) as raised:
         shared_contract()
     assert raised.value.code == "shared_contract_unavailable"
@@ -267,8 +279,9 @@ def test_import_is_a_string_literal_and_names_no_semiconductor_module() -> None:
     ), test_imported
 
 
-def test_projection_document_is_unchanged() -> None:
+def test_projection_document_is_unchanged(monkeypatch: pytest.MonkeyPatch) -> None:
     before = project_economic_change(_committed_synthetic_case())
+    _mask_shared_module(monkeypatch)
     with pytest.raises(ConsumerCyclicalResearchRefusal) as raised:
         shared_contract()
     assert raised.value.code == "shared_contract_unavailable"
@@ -279,14 +292,6 @@ def test_projection_document_is_unchanged() -> None:
     assert emitted["advertising_net_change"] == "-4"
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason=(
-        "shared theme_graph.curation_assertion.v1 is not on main; "
-        "positive round-trip pinned to refs/grok/pr/7870@52b741c5082; "
-        "strict xfail goes red on an unexpected pass"
-    ),
-)
 def test_shared_assertion_roundtrip_through_pinned_contract() -> None:
     module = importlib.import_module("engine.theme_graph.curation_assertion")
     assert shared_contract() is module.validate_assertion

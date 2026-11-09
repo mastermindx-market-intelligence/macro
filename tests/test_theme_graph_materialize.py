@@ -1812,6 +1812,30 @@ def test_supplied_action_without_resolved_authority_refuses_actual_build(tree, m
     assert _file_hashes(root) == before
 
 
+def test_native_tracks_emitter_feeds_selected_house_display_without_etf_identity(tree):
+    from types import SimpleNamespace
+    from engine.theme_graph.security_navigation import compose_security_hierarchy
+    from tests.test_theme_graph_hierarchy_paths import _selected_security_row
+    document = yaml.safe_load(tree[1].read_text())
+    document['hierarchy'] = {'categories': [{'id':'theme:energy','name_en':'Energy',
+        'name_zh':'能源','asserted_on':materialize.HIERARCHY_EPOCH}], 'micro_themes': [],
+        'parents': [{'parent':'theme:energy','child':'theme:solar','asserted_on':materialize.HIERARCHY_EPOCH}]}
+    tree[1].write_text(yaml.safe_dump(document))
+    native = _build(tree, belief_time='2026-10-08', computed_at='2026-10-08T00:00:00Z')
+    view = SimpleNamespace(read_nodes=lambda: native.nodes, read_edges=lambda: native.edges,
+        read_evidence=lambda: native.evidence, read_node_lifecycle=lambda: [])
+    result = compose_security_hierarchy(view, [_selected_security_row()],
+        identity_kind='security', identity_id='SEC:US-XNAS-AAA',
+        asof='2026-10-09', knowledge_cutoff='2026-10-09T12:00:00Z')
+    references = result['etf_tracking']['references']
+    assert [(r['symbol'],r['basket_node_id']) for r in references] == [('TAN','basket:baskets:solar_us')], result
+    ref = references[0]
+    native_edge = next(e for e in native.edges if e['edge_id'] == ref['edge_id'])
+    assert ref['clocks'] == {k:native_edge[k] for k in ref['clocks']}
+    assert ref['era'] == 'reconstruction' and ref['date_provenance'] == 'seed_constant'
+    assert ref['evidence'][0]['published_at'] == US_DOC_DATE
+    assert result['etf_tracking']['security_identity']['status'] == 'unavailable'
+    assert all(not n.get('name_en') for n in native.nodes if n['node_id'] == ref['etf_node_id'])
 # ---------------------------------------------------------------------------
 # 11. Activity-history fold wiring (ORCH-PIPE 2026-10-21, lane B1)
 # ---------------------------------------------------------------------------
@@ -2039,24 +2063,37 @@ def test_activity_history_reader_absent_blank_and_malformed_lines(
 
     monkeypatch.setattr(bake.store, "probation_path",
                         lambda: tmp_path / "probation" / "proposals.jsonl")
+    monkeypatch.setattr(bake, "_ACTIVITY_BINDING_ROOT", tmp_path)
+
+    def one_warning():
+        warning = [ln for ln in capsys.readouterr().out.splitlines()
+                   if ln.startswith("::")]
+        assert len(warning) == 1
+        assert warning[0].startswith(
+            "::warning title=theme graph activity history refused::")
+        return warning[0]
+
     # Absent ledger -> None, no output (today's production state).
     assert bake._activity_history_events() is None
     assert capsys.readouterr().out == ""
     ledger = tmp_path / "probation" / "activity_history_events.jsonl"
     ledger.parent.mkdir(parents=True, exist_ok=True)
+    # Blank lines are not events: an all-blank ledger is an honest empty history.
+    ledger.write_text("\n\n", encoding="utf-8")
+    assert bake._activity_history_events() == []
+    assert capsys.readouterr().out == ""
+    # Events no bridge receipt row binds refuse the WHOLE ledger (load-side binding:
+    # engine/theme_graph/activity_history_bridge.load_bound_activity_events).
     ledger.write_text(json.dumps({"schema": "x"}) + "\n\n"
                       + json.dumps({"schema": "y"}) + "\n", encoding="utf-8")
-    assert bake._activity_history_events() == [{"schema": "x"}, {"schema": "y"}]
-    assert capsys.readouterr().out == ""
+    assert bake._activity_history_events() is None
+    assert f"{ledger}: ACTIVITY_EVENT_UNBOUND: line 1" in one_warning()
     # ANY malformed line refuses the WHOLE ledger, with a line-start ::warning.
     ledger.write_text(json.dumps({"schema": "x"}) + "\n\nnot json\n",
                       encoding="utf-8")
     assert bake._activity_history_events() is None
-    warning = [ln for ln in capsys.readouterr().out.splitlines()
-               if ln.startswith("::")]
-    assert len(warning) == 1
-    assert warning[0].startswith("::warning title=theme graph activity history refused::")
-    assert f"{ledger}:3" in warning[0]
+    assert f"{ledger}: ACTIVITY_EVENTS_FILE_INVALID: line 3" in one_warning()
     # A line that parses but is not a JSON object is malformed too.
     ledger.write_text("[1, 2]\n", encoding="utf-8")
     assert bake._activity_history_events() is None
+    assert "ACTIVITY_EVENTS_FILE_INVALID: line 1: not a JSON object" in one_warning()

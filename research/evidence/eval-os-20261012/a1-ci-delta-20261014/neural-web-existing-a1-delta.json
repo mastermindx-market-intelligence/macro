@@ -1,0 +1,23 @@
+{
+  "job": "neural-web",
+  "base_weight": 37,
+  "head_weight": 37,
+  "changed_fields": [
+    "paths",
+    "steps"
+  ],
+  "base_commands": [
+    "pip install pytest pandas numpy pyarrow pyyaml",
+    "python -m pytest tests/test_synapse_registry.py tests/test_neuralweb_envelope.py tests/test_signal_bus_doc.py tests/test_admin_neural_web.py tests/test_admin_intelligence_os.py tests/test_admin_metabolism.py tests/test_admin_metabolism_history.py tests/test_entity_thesis_registry.py tests/test_check_entity_thesis_registry.py tests/test_nw_lobe_descriptions.py tests/test_synapse_registry_contract.py -q",
+    "python -m pytest tests/test_constitution.py -q",
+    "python -m pytest tests/test_mastermind_system_map.py -q",
+    "python3 -m scripts.check_entity_thesis_registry --selftest\npython3 -m scripts.check_entity_thesis_registry\n"
+  ],
+  "head_commands": [
+    "pip install pytest pandas numpy pyarrow pyyaml",
+    "python -m pytest tests/test_synapse_registry.py tests/test_neuralweb_envelope.py tests/test_signal_bus_doc.py tests/test_admin_neural_web.py tests/test_admin_intelligence_os.py tests/test_evidence_findings.py tests/test_evidence_findings_ui.py tests/test_admin_intelligence_os_ui.py tests/test_admin_theme_tokens.py tests/test_eval_os_adversarial_acceptance.py tests/test_admin_metabolism.py tests/test_admin_metabolism_history.py tests/test_entity_thesis_registry.py tests/test_check_entity_thesis_registry.py tests/test_nw_lobe_descriptions.py tests/test_synapse_registry_contract.py -q",
+    "python -m pytest tests/test_constitution.py -q",
+    "python -m pytest tests/test_mastermind_system_map.py -q",
+    "python3 -m scripts.check_entity_thesis_registry --selftest\npython3 -m scripts.check_entity_thesis_registry\n"
+  ]
+}

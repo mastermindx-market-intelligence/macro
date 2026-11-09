@@ -1,0 +1,24 @@
+{
+  "source_hashes": {
+    "scripts/build_market_structure_page.py": "cfa85811989449f509f69e90a350e0da371dad2897def85dddea5dbe23354f84",
+    "templates/market_structure.html.j2": "300c1b6865e9f519ca0fbd0fc3a95a17c96e0f1bce06c9ee59013350a7f8f056",
+    "tests/test_d06_market_structure.py": "0fc6cd890c23d236a0fe3cf383a715971955259159195fbd43a6931599f41408",
+    "tests/test_build_market_structure_page.py": "c89e940abe89a2d90e3c54b456a9124844363e77d354f362e383f213fa4073d7",
+    "tests/test_market_structure_glance_copy.py": "2fef74c23d30d487eb23bcb14f44d2188b75dac702aa8c608ef9d0702abd9cd5",
+    "scripts/verify_d06_macro.py": "1c7e7dc72f9a58e22418d4a193934e670746a0276dc34d290834b8bc6088379f",
+    "site/market_structure.html": "6a4fde46eda4da10bd9b660322b3a28bc964e8c008fe5ea4c31aa3491933072f",
+    "data/market_structure/latest.json": "e949dfb47087919f714fba594328b789544227d76e3cd94fdffc50ec0c4490b1"
+  },
+  "tests": "105 passed; market-tests-2.log",
+  "browser": "10 matrix cells and 2 edge scenarios passed; browser-3/market-browser.json",
+  "visual_review": [
+    "desktop light English",
+    "phone dark Chinese"
+  ],
+  "live_baseline": {
+    "url": "https://www.mastermind-x.com/market_structure.html",
+    "title": "Market Structure",
+    "observed_header": "How the market is built right now",
+    "candidate_deployed": false
+  }
+}
