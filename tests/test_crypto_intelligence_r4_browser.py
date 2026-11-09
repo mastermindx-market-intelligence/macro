@@ -1941,3 +1941,69 @@ def test_r4_asset_identity_is_clear_without_changing_search_routes_or_context(co
     assert page.evaluate("JSON.parse(document.getElementById('cri-data').textContent).assets") == view["assets"]
     assert page.evaluate("document.documentElement.scrollWidth<=innerWidth")
     _comparison_storage_untouched(page)
+
+
+# A requested current case must never become an unbound historical review.
+@pytest.mark.parametrize("lang,width", [("en", 390), ("zh", 320)])
+@pytest.mark.parametrize("panel", ["scenario:absent", "memory:absent", "memory:"])
+def test_r4_missing_current_case_recovers_without_borrowing_review_context(snapshot_page, lang, width, panel):
+    suffix = "?h=30&window=30&q=eth&filter=leaders&sort=return&panel=" + quote(panel)
+    page = snapshot_page(lang=lang, width=width, start="#markets" + suffix)
+    expected = "Scenario unavailable" if lang == "en" else "情景暂不可用"
+    _wait_drawer(page, panel, expected)
+    opaque = {"future": {"keep": [0, False, None]}}
+    _seed(page, [opaque])
+    before_raw, before_history = _raw(page), page.evaluate("history.length")
+    content = page.locator("#cri-dialog-body")
+    message = ("This scenario is not in the current snapshot for this horizon." if lang == "en"
+               else "当前快照在此周期内没有这个情景。")
+    assert content.get_by_text(message, exact=True).is_visible()
+    text = content.inner_text()
+    assert ("No qualified comparison yet" if lang == "en" else "暂无合格的历史比较") not in text
+    assert ("Required before results" if lang == "en" else "结果发布前需要") not in text
+    source = _scenario(page)
+    assert source["as_of"] not in text and source["title_" + lang] not in text
+    assert content.locator("[data-snapshot-action]").count() == 0
+    recover = content.get_by_role("button", name="Browse scenarios" if lang == "en" else "浏览情景", exact=True)
+    assert recover.is_enabled()
+    assert recover.evaluate("n=>{const b=n.getBoundingClientRect();return b.left>=0&&b.right<=innerWidth&&b.bottom<=innerHeight}")
+    if panel != "memory:":
+        _capture(page, "scenario-recovery-" + panel.split(":")[0] + "-" + lang + "-" + str(width))
+    recover.focus()
+    recover.press("Enter")
+    _wait_closed(page)
+    assert page.evaluate("history.length") == before_history
+    assert page.evaluate("location.hash.split('?')[0]") == "#scenarios"
+    assert page.evaluate("Object.fromEntries(new URLSearchParams(location.hash.split('?')[1]))") == {
+        "h": "30", "window": "30", "q": "eth", "filter": "leaders", "sort": "return"
+    }
+    assert page.locator('.cri-tabs [data-route="scenarios"][aria-current="page"]').is_visible()
+    assert page.locator("#scenarios-title").evaluate("n=>document.activeElement===n")
+    opener = page.locator('[data-view="scenarios"] [data-case-horizon="30"] [data-open="scenario:continuation"]')
+    opener.click()
+    _wait_drawer(page, "scenario:continuation", source["title_" + lang])
+    assert "30" + (" days" if lang == "en" else "天") in content.inner_text()
+    page.keyboard.press("Escape")
+    _wait_closed(page)
+    assert opener.evaluate("n=>document.activeElement===n")
+    assert "absent" not in page.evaluate("location.hash")
+    assert _raw(page) == before_raw and _writes(page) == 0
+
+
+@pytest.mark.parametrize("lang,width", [("en", 390), ("zh", 320)])
+@pytest.mark.parametrize("panel", ["memory", "memory:continuation"])
+def test_r4_generic_and_valid_current_reviews_remain_distinct(snapshot_page, lang, width, panel):
+    page = snapshot_page(lang=lang, width=width, start="#scenarios?h=30&panel=" + quote(panel))
+    _wait_drawer(page, panel, "Historical review" if lang == "en" else "历史检验")
+    source = _scenario(page)
+    content = page.locator("#cri-dialog-body")
+    text = content.inner_text()
+    assert ("No qualified comparison yet" if lang == "en" else "暂无合格的历史比较") in text
+    assert source["as_of"] in text and ("30 days" if lang == "en" else "30天") in text
+    assert (source["title_" + lang] in text) == (panel == "memory:continuation")
+    assert content.get_by_role("button", name="Browse scenarios" if lang == "en" else "浏览情景", exact=True).count() == 0
+    assert content.locator("[data-snapshot-action]").count() == 0
+    page.keyboard.press("Escape")
+    _wait_closed(page)
+    assert page.locator("#scenarios-title").evaluate("n=>document.activeElement===n")
+    assert _writes(page) == 0

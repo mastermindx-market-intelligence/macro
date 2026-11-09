@@ -1,0 +1,94 @@
+FFFFFF...........                                                        [100%]
+=================================== FAILURES ===================================
+_ test_r4_missing_current_case_recovers_without_borrowing_review_context[scenario:absent-en-390] _
+tests/test_crypto_intelligence_r4_browser.py:1960: in test_r4_missing_current_case_recovers_without_borrowing_review_context
+    assert content.get_by_text(message, exact=True).is_visible()
+E   assert False
+E    +  where False = is_visible()
+E    +    where is_visible = <Locator frame=<Frame name= url='http://127.0.0.1:58580/crypto-r4.html?lang=en#markets?h=30&window=30&q=eth&filter=lea...bsent'> selector='#cri-dialog-body >> internal:text="This scenario is not in the current snapshot for this horizon."s'>.is_visible
+E    +      where <Locator frame=<Frame name= url='http://127.0.0.1:58580/crypto-r4.html?lang=en#markets?h=30&window=30&q=eth&filter=lea...bsent'> selector='#cri-dialog-body >> internal:text="This scenario is not in the current snapshot for this horizon."s'> = get_by_text('This scenario is not in the current snapshot for this horizon.', exact=True)
+E    +        where get_by_text = <Locator frame=<Frame name= url='http://127.0.0.1:58580/crypto-r4.html?lang=en#markets?h=30&window=30&q=eth&filter=leaders&sort=return&panel=scenario%3Aabsent'> selector='#cri-dialog-body'>.get_by_text
+_ test_r4_missing_current_case_recovers_without_borrowing_review_context[scenario:absent-zh-320] _
+tests/test_crypto_intelligence_r4_browser.py:1960: in test_r4_missing_current_case_recovers_without_borrowing_review_context
+    assert content.get_by_text(message, exact=True).is_visible()
+E   assert False
+E    +  where False = is_visible()
+E    +    where is_visible = <Locator frame=<Frame name= url='http://127.0.0.1:58580/crypto-r4.html?lang=zh#markets?h=30&window=30&q=eth&filter=lea...t="\\u5f53\\u524d\\u5feb\\u7167\\u5728\\u6b64\\u5468\\u671f\\u5185\\u6ca1\\u6709\\u8fd9\\u4e2a\\u60c5\\u666f\\u3002"s'>.is_visible
+E    +      where <Locator frame=<Frame name= url='http://127.0.0.1:58580/crypto-r4.html?lang=zh#markets?h=30&window=30&q=eth&filter=lea...t="\\u5f53\\u524d\\u5feb\\u7167\\u5728\\u6b64\\u5468\\u671f\\u5185\\u6ca1\\u6709\\u8fd9\\u4e2a\\u60c5\\u666f\\u3002"s'> = get_by_text('当前快照在此周期内没有这个情景。', exact=True)
+E    +        where get_by_text = <Locator frame=<Frame name= url='http://127.0.0.1:58580/crypto-r4.html?lang=zh#markets?h=30&window=30&q=eth&filter=leaders&sort=return&panel=scenario%3Aabsent'> selector='#cri-dialog-body'>.get_by_text
+_ test_r4_missing_current_case_recovers_without_borrowing_review_context[memory:absent-en-390] _
+tests/test_crypto_intelligence_r4_browser.py:1953: in test_r4_missing_current_case_recovers_without_borrowing_review_context
+    _wait_drawer(page, panel, expected)
+tests/test_crypto_intelligence_r4_browser.py:602: in _wait_drawer
+    page.wait_for_function(
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/sync_api/_generated.py:12761: in wait_for_function
+    self._sync(
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_page.py:1151: in wait_for_function
+    return await self._main_frame.wait_for_function(**locals_to_params(locals()))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_frame.py:940: in wait_for_function
+    await self._channel.send("waitForFunction", self._timeout, params)
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_connection.py:76: in send
+    return await self._connection.wrap_api_call(
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_connection.py:632: in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+E   playwright._impl._errors.TimeoutError: Page.wait_for_function: Timeout 4500ms exceeded.
+_ test_r4_missing_current_case_recovers_without_borrowing_review_context[memory:absent-zh-320] _
+tests/test_crypto_intelligence_r4_browser.py:1953: in test_r4_missing_current_case_recovers_without_borrowing_review_context
+    _wait_drawer(page, panel, expected)
+tests/test_crypto_intelligence_r4_browser.py:602: in _wait_drawer
+    page.wait_for_function(
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/sync_api/_generated.py:12761: in wait_for_function
+    self._sync(
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_page.py:1151: in wait_for_function
+    return await self._main_frame.wait_for_function(**locals_to_params(locals()))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_frame.py:940: in wait_for_function
+    await self._channel.send("waitForFunction", self._timeout, params)
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_connection.py:76: in send
+    return await self._connection.wrap_api_call(
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_connection.py:632: in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+E   playwright._impl._errors.TimeoutError: Page.wait_for_function: Timeout 4500ms exceeded.
+_ test_r4_missing_current_case_recovers_without_borrowing_review_context[memory:-en-390] _
+tests/test_crypto_intelligence_r4_browser.py:1953: in test_r4_missing_current_case_recovers_without_borrowing_review_context
+    _wait_drawer(page, panel, expected)
+tests/test_crypto_intelligence_r4_browser.py:602: in _wait_drawer
+    page.wait_for_function(
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/sync_api/_generated.py:12761: in wait_for_function
+    self._sync(
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_page.py:1151: in wait_for_function
+    return await self._main_frame.wait_for_function(**locals_to_params(locals()))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_frame.py:940: in wait_for_function
+    await self._channel.send("waitForFunction", self._timeout, params)
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_connection.py:76: in send
+    return await self._connection.wrap_api_call(
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_connection.py:632: in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+E   playwright._impl._errors.TimeoutError: Page.wait_for_function: Timeout 4500ms exceeded.
+_ test_r4_missing_current_case_recovers_without_borrowing_review_context[memory:-zh-320] _
+tests/test_crypto_intelligence_r4_browser.py:1953: in test_r4_missing_current_case_recovers_without_borrowing_review_context
+    _wait_drawer(page, panel, expected)
+tests/test_crypto_intelligence_r4_browser.py:602: in _wait_drawer
+    page.wait_for_function(
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/sync_api/_generated.py:12761: in wait_for_function
+    self._sync(
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_page.py:1151: in wait_for_function
+    return await self._main_frame.wait_for_function(**locals_to_params(locals()))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_frame.py:940: in wait_for_function
+    await self._channel.send("waitForFunction", self._timeout, params)
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_connection.py:76: in send
+    return await self._connection.wrap_api_call(
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_connection.py:632: in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+E   playwright._impl._errors.TimeoutError: Page.wait_for_function: Timeout 4500ms exceeded.
+=========================== short test summary info ============================
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_missing_current_case_recovers_without_borrowing_review_context[scenario:absent-en-390]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_missing_current_case_recovers_without_borrowing_review_context[scenario:absent-zh-320]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_missing_current_case_recovers_without_borrowing_review_context[memory:absent-en-390]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_missing_current_case_recovers_without_borrowing_review_context[memory:absent-zh-320]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_missing_current_case_recovers_without_borrowing_review_context[memory:-en-390]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_missing_current_case_recovers_without_borrowing_review_context[memory:-zh-320]
+6 failed, 11 passed in 30.86s

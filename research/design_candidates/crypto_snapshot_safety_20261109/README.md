@@ -1,6 +1,18 @@
 # Crypto R4: safe saved cases and clear asset comparisons
 
-## Current phase — clear asset identity and quote hierarchy
+## Current phase — honest missing-case recovery
+
+Missing current-scenario and named-review links now show an explicit unavailable state. One **Browse scenarios** action retains the selected horizon and route context. Generic review remains generic; valid cases retain their identity; saved-case lookup and storage remain unchanged.
+
+**17 affected browser cases pass**, across 17 contexts/pages with zero errors or outside traffic. The parent reproduced six targeted failures. Four English/Chinese narrow captures were inspected. Five source/served/test paths change; 16 inputs remain exact, and both candidate pages change only two asset-version references.
+
+- [Recovery and build contract](SCENARIO_RECOVERY.md)
+- [Exact native proof and source conservation](scenario-recovery/PUBLICATION_RECEIPT.json)
+- [Inspected recovery captures](scenario-recovery/captures)
+
+Paper reference/guide alignment is recorded in audit §72. Continue into native-link context parity and in-section keyboard navigation.
+
+## Prior phase — clear asset identity and quote hierarchy
 
 Fallback tickers now appear once across Overview, Markets and the inspector. Distinct names remain visible, and decorative initials no longer enter the accessible button name.
 

@@ -466,12 +466,16 @@
   function scenario(s, frozen, collection) {
     if (!s) {
       title.textContent = t("Scenario unavailable", "情景暂不可用");
-      paragraph(t("This scenario is unavailable. The source may have changed or the saved item was removed.", "该情景不可用，原始来源可能已经变化或快照已经移除。"));
+      paragraph(frozen ? t("This scenario is unavailable. The source may have changed or the saved item was removed.", "该情景不可用，原始来源可能已经变化或快照已经移除。") :
+        t("This scenario is not in the current snapshot for this horizon.", "当前快照在此周期内没有这个情景。"));
       if (frozen) {
         var actions = node("div", null, "cri-drawer-actions"); body.appendChild(actions);
         var recover = button(t("Open saved snapshots", "查看已存快照"), function () { update(null, { panel: "saved" }, true); }, actions);
         recover.classList.add("cri-btn-primary"); recover.dataset.drawerFocus = "saved-recovery";
         button(t("Open current outlook", "查看当前展望"), function () { update("overview", { panel: null }, true); }, actions);
+      } else {
+        var currentActions = node("div", null, "cri-drawer-actions"); body.appendChild(currentActions);
+        button(t("Browse scenarios", "浏览情景"), function () { update("scenarios", { panel: null }, true); }, currentActions).classList.add("cri-btn-primary");
       }
       return;
     }
@@ -647,7 +651,10 @@
         savedIdentity(historicalContext);
         drawerParent(hasDrawerParent("saved-item:" + id) ? t("← Saved case", "← 已存情景") : t("Open saved case", "打开已存情景"), function () { returnToSavedCase(id); });
         savedReview(historicalContext); return;
-      } else historicalContext = id ? activeScenario(id) : null;
+      } else {
+        historicalContext = id ? activeScenario(id) : null;
+        if (key !== "memory" && !historicalContext) { scenario(null, false); return; }
+      }
       paragraph(historicalContext ? field(historicalContext, "title") + " · BTC · " + historicalContext.horizon_days + t(" days · evidence at ", "天 · 证据日期 ") + historicalContext.as_of : "BTC · " + horizon() + t(" days · evidence at ", "天 · 证据日期 ") + (data.as_of || t("Unavailable", "暂无")));
       paragraph(t("No qualified comparison yet", "暂无合格的历史比较")).className = "cri-warning";
       paragraph(t("A historical match must preserve the scenario's issue-time evidence, horizon and eligible universe. Similar-looking charts alone do not establish predictive value.", "历史匹配必须保留情景发布时的证据、周期与合格样本。图形相似本身不能证明预测价值。"));
