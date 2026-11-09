@@ -515,9 +515,98 @@ Implementation proof still needs the whole mismatch → source → explicit repa
 
 This is a **provisional Paper assembly and source-matched build amendment**. It does not qualify final F01/F02 composition, resolve other writers’ unknown native effects, implement runtime owners or establish deployment/acceptance. Existing source and release holds remain intact.
 
-## Active next phase: Confluence Screener public-snapshot clarity
+## 12. Confluence Screener: smaller controls, explicit public-source states and a concrete producer repair
 
-A bounded read-only frontier check found a possible mismatch between the migrated mobile result-card presentation and its not-loaded public fields. Inspect its exact current source, existing protected-list recovery states and builder contract before selecting any amendment. Reuse existing unavailable states where they already cover the same condition.
+**Existing migrated file:** [Confluence Screener R2](https://app.paper.design/file/01M6Y3DCDDW541ZR38J1V52A9Y/p-2-0). The original MASTERMIND PAGES relocation reference identifies this working file. New [public-snapshot states and Build](https://app.paper.design/file/01M6Y3DCDDW541ZR38J1V52A9Y/p-3-0) and [retained filter studies](https://app.paper.design/file/01M6Y3DCDDW541ZR38J1V52A9Y/p-4-0) extend it.
+
+### Decision: simplify the actual published list
+
+The inspected public owner publishes at most three combinations and contains no filter implementation. Adding a filter journey would introduce hidden state and ambiguous Weekly eligibility to a very small list. The primary design now follows the actual source scope.
+
+All eight active-looking filter bars were moved intact to clearly labeled study wrappers. Four mobile filter sheets moved with them. Their original node identities and descendants remain; they were not deleted or recreated.
+
+| R2 anatomy root | Original filter bar | Retained study root | Mobile filter sheet |
+|---|---|---|---|
+| `UM-0` · Desktop dark EN | `VS-0` | `260-0` | — |
+| `100-0` · Desktop light EN | `116-0` | `264-0` | — |
+| `1F2-0` · Desktop dark ZH | `1G5-0` | `268-0` | — |
+| `1JV-0` · Desktop light ZH | `1KY-0` | `26C-0` | — |
+| `15E-0` · Mobile dark EN | `15Z-0` | `26G-0` | `19J-0` |
+| `1TI-0` · Mobile light EN | `1U3-0` | `26K-0` | `1XN-0` |
+| `1OO-0` · Mobile dark ZH | `1P9-0` | `26O-0` | `1ST-0` |
+| `1A8-0` · Mobile light ZH | `1AT-0` | `26S-0` | `1ED-0` |
+
+The eight boards now identify themselves as **Data anatomy**, preserving original 10–23 ordinals for the authority map. Counts are labeled **Published combinations / 已发布信号组合**; the unsupported today/current wording is removed from their headline. Desktop list headings state the cap and original ranking. Existing placeholder cards remain explicit anatomy references, not a proposed unavailable-input screen.
+
+The smaller error/loading/filtered-empty reference copy now describes the actual build-time public input and labels filtering as a future study. A study must not be interpreted as an implemented client loader, manual Retry or exhaustive universe search.
+
+### New public-snapshot states
+
+| Root on p-3-0 | Applied state |
+|---|---|
+| `26Y-0` | Scope header distinguishing state fixtures from live signal data |
+| `272-0` | 390px EN dark: Setup snapshot unavailable |
+| `274-0` | 390px ZH light: 组合快照暂不可用 |
+| `276-0` | 320px EN dark: unavailable input with method disclosure expanded |
+| `278-0` | 390px EN dark: qualified zero, separately missing snapshot date |
+| `2AG-0` | Nine-module source-matched Build amendment |
+
+The unavailable state shows one explanation, a clear **Open Mastermind** destination and a short optional method disclosure. It shows no invented count, rank, trial recovery or Retry. A neutral document illustration supports the snapshot meaning without implying live signal activity.
+
+The qualified-zero specimen shows zero published combinations and **No qualifying setups**, with the separate **Snapshot date unavailable** condition. Its meaning is limited to combinations meeting the publication rules in that snapshot; it does not claim that every signal is inactive.
+
+The expanded 320px explanation states that the shortlist contains up to three published combinations in source order, that historical evidence explains them, and that a missing snapshot does not reveal whether any setups qualified. Locale review replaced a literal Chinese shortlist translation with **信号组合说明** and removed opaque stock-access wording from the English explanation.
+
+Existing global-zero specimen `1YC-0` now says **No qualifying setups in this snapshot**, removes unsupported rarity/current-activity claims, and replaces **Get notified when setups fire** with **Open Mastermind**. A new 44px action wrapper `26W-0` retains original CTA nodes; the label uses readable dark ink on its blue fill. New state buttons are 48px, with 44px method summaries.
+
+### Exact source comparison and concrete defect
+
+Root directly read these files at retained Macro **`338a10852dcefa5d2bd07e5c6be0955c2b1e83fd`**:
+
+| Source | Blob | Relevant evidence |
+|---|---|---|
+| [scripts/build_confluence_screener.py](https://github.com/mastermindx-market-intelligence/macro/blob/338a10852dcefa5d2bd07e5c6be0955c2b1e83fd/scripts/build_confluence_screener.py) | `118c23550f5d0bf41e39a6a3c2198e9890f534f8` | Input read/fail-soft path, shared eligible selection, top-three projection, optional defaults, public/protected output |
+| [templates/confluence_screener.html.j2](https://github.com/mastermindx-market-intelligence/macro/blob/338a10852dcefa5d2bd07e5c6be0955c2b1e83fd/templates/confluence_screener.html.j2) | `8e18461db98d7141d573cd047aa8637189ad4250` | Static public render, count/card branches, historical-method copy, generic CTA and exact-ID protected hydration |
+| [tests/test_confluence_screener_page.py](https://github.com/mastermindx-market-intelligence/macro/blob/338a10852dcefa5d2bd07e5c6be0955c2b1e83fd/tests/test_confluence_screener_page.py) | `cfc2c0ba08162f4515e62b8b0607317ea746257d` | Existing None-input, ranking/free/gated, public exclusion, protected pairing and genuine-zero-edge assertions |
+
+The producer reads `site/factordata/tech_confluence.json`. Missing files, unreadable JSON and non-object roots become `raw=None`. Its current None context supplies empty combinations, no source date and zero counts. The template consequently renders the same **Nothing lining up today** branch as an empty eligible result. Missing `combos.long` structure also collapses toward an empty collection. **Unknown public input therefore becomes a false empty claim.**
+
+The public page is generated HTML. Its only runtime data fetch is for separately protected ticker hydration; this inspection found no public loading, refresh, retry or filter owner. The repair belongs in the existing builder/context/template, not a new browser data lifecycle.
+
+### Viable repair contract
+
+1. Add a small explicit public-source availability distinction to the existing context. Validate required artifact structure before selection. Missing/unreadable/invalid required input renders unavailable; a genuinely present empty collection can produce qualified zero. Preserve existing model selection and eligibility.
+2. Keep the published count `len(combos)`, eligible count `n_active_total` before the cap, and covered-company count `universe_n` distinct. Eligible combinations require active names plus supplied recent/older win rates. Zero published setups is not proof that every signal is inactive.
+3. Preserve absent optional sample/edge/history fields before defaults erase missingness. Keep legitimate numeric zero and false distinct from absence. A missing edge or consistency value must not become a negative historical conclusion. Continue excluding missing required recent/older win rates under the existing selection rule.
+4. Treat artifact `generated_utc` as snapshot metadata; the current `asof` is a date slice from it, not a latest market-bar clock. Validate source-date presentation and show a missing-clock message independently of otherwise usable content. Never substitute the current page-build clock.
+5. Preserve supplied rank, `combo_id`, `is_free`, public match counts and original card order. One or two cards must not imply two additional published combinations. No synthetic rows are added to fill the design.
+6. Retain the existing protected payload and MDXAuth controller, including its in-flight guard and exact-ID hydration. Keep the producer’s empty protected-payload overwrite when source input is missing so old paid rows are not left on disk. Public-source availability grants no identity access and proves neither lock nor entitlement.
+7. The existing `cta_url` uses the Mastermind application destination through the marketing link owner. It contains no notification registration handler here. Use destination copy, not a subscription or save promise.
+8. Implement the short method explanation as a native local disclosure with static text. Preserve summary focus and state across locale changes; expansion is immediate, with optional ≤120ms chevron/opacity motion and none under reduced motion. No loading shimmer for build-time public input.
+
+The original protected-list failure specimens `23C-0` / `250-0` retain their full structure, source/access boundary and absence of manual Retry. Removing filters from the primary view required exactly three copy alignments per language: the preserved context now names the published shortlist and open guidance, rather than retired controls. No alternate protected-error state or loader was added.
+
+If filtering is revisited for a broader future product, the retained study must define Weekly eligibility, use known supplied consistency, filter only its admitted published collection, and preserve source rank/free status. The first visible paid card must not become free. A hide/show integration would need to preserve the existing hydrator’s DOM identity; rebuilding already-hydrated cards can invalidate its current lifecycle.
+
+### Existing tests and required proof
+
+The current `test_build_context_none_raw` expects empty arrays/zero/no date. `test_render_html_empty_context_no_exception` checks only nonempty HTML, so it does not catch the false-empty wording. The suite’s explicit `edge_wr_test=0` case establishes a genuine zero edge; it is not missing-source or zero-combination coverage.
+
+Extend that same suite with EN/ZH unavailable versus valid-empty copy; missing required structure versus an empty array; missing source clock versus available cards; absent optional metrics versus supplied zero/false; and one/two/three-card output. Preserve existing ranking, free/gated identity, public ticker exclusion, protected combo pairing and hydration-owner assertions.
+
+The current protected None-input test checks the **function result**, despite its overwrite-oriented name. An isolated `render(tmp_path)` test should seed old protected data, use missing/invalid source, and read back both the unavailable public page and overwritten empty protected payload. It must prove that old identities were removed without running the miner, changing gates or altering access policy. Tests were inspected, not executed in this design pass.
+
+### Native verification and preservation
+
+Across all eight anatomy boards plus their retained-study destinations, final JSX found **no lost original IDs**, exactly **66 intended text changes**, and exactly the **12 planned parent moves**. Four desktop bars received only the expected layout adjustment from reparenting. All other original node styles/parents remained unchanged. Each protected failure board retained all nodes and changed only its three specified text nodes.
+
+Native screenshots checked the four new state compositions, final Chinese and 320px wording, corrected zero specimen, representative desktop/mobile anatomy views, desktop/mobile retained controls, both protected-failure variants, authority map and Build sheet. No clipping was observed in the inspected 320px and Chinese views. Twenty-eight exact affected roots were released. The original governed-reference page was not edited.
+
+This is applied Paper consolidation and a precise source repair/build plan. No runtime source patch, test execution, model run, auth change, merge, release or deployment was performed.
+
+## Active next phase: next demonstrated workflow gap
+
+The next bounded review is looking for a navigation, comparison or recovery gap in an existing Paper family, while preserving the completed work and other writers’ fenced or accepted surfaces. Choose from observed current nodes and exact source ownership rather than adding generic states.
 
 ## Verification boundary and next actions
 
