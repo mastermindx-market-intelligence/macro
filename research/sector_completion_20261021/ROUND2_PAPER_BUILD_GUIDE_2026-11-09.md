@@ -1,7 +1,7 @@
 # Sector Intelligence — Round 2 Paper build guide
 
-Status: IN_PROGRESS — editable product design, not implemented or production accepted.
-Parent: research/sector_completion_20261021/SHARED_SHELL_MASTERPLAN_2026-11-09.md, revision 0.1.
+Status: ROUND_2_COMPLETE — editable Paper design baseline reviewed; application capability remains SPEC_ONLY / incumbent implementation state unchanged. This is not production acceptance.
+Parent: research/sector_completion_20261021/SHARED_SHELL_MASTERPLAN_2026-11-09.md, revision 0.2.
 Program: Macro #7646 / WS:SECTOR-INTELLIGENCE-COMPLETION.
 Commission: Chairman's four-turn round. This is Round 2; architecture hardening and final Fable-led T3 packet remain Rounds 3–4.
 
@@ -72,48 +72,222 @@ No older customer/build frame is deleted or rewritten in this milestone. Origina
 13. Light uses white panel structure on a deeper cool canvas, crisp borders and restrained shadow. Dark uses Noir luminance depth. Direction signs/text remain visible; ZH directional inks flip, health does not.
 14. Mobile becomes a deliberate reading/detail path; inspector becomes full-screen depth. No horizontal page overflow; wide exact-value tables scroll within a named region.
 
-## Initial milestone
 
-- Created p-B-0 and editable Brief HDT-0.
-- Parent inspected actual screenshot. Core hierarchy, chart scale, measured values and semantic color are visible. Further targeted fit/copy review is in progress.
-- Technical readback of mutation responses observed; this is not implemented interaction/browser proof.
-- Next: refine first frame, construct Explore/dossier/research/watches/Cycles, complete mobile and state stories, verify screenshots, then update this guide and masterplan.
+## Completed Round 2 package
 
-## Implementation and acceptance boundary
+Before: useful Sector Central, native Sector, GMI and sleeve designs existed across several files, with competing navigation and unevenly connected state stories. After: one reviewed Shared Shell composition, exact extraction targets and a source-mapped design contract now connect the daily brief, sector investigation, economic evidence, exact company, saved research and analytical depth.
 
-Existing B01–B12 / P01–P23 / J01–J15 / 134 capability rows remain binding. Paper buttons represent designed interactions, not wired capabilities. Round 3 resolves current PR heads, typed research registration, query/state contracts, access and consumer proofs. Round 4 freezes exact implementation/extraction targets and the Fable-led T3 packet. No dispatch, production deployment, destructive retirement or release is performed in Round 2.
+The package contains **42 new editable top-level Frames**:
 
-## Core desktop milestone
+- Product p-B-0: 26 compositions — eleven desktop journeys, ten mobile journeys, four Chinese/theme variants and one 768px tablet composition.
+- States/help p-C-0: eight atlases plus five full regional/recovery/mobile-analysis compositions.
+- Build p-D-0: design map, source/interaction contracts, and extraction/acceptance guidance.
 
-Six unified core frames have been composed and visually inspected: Brief HDT-0, Explore HLG-0, dossier HTT-0, Research HZR-0, Watches I5T-0, Cycles IC8-0, all on p-B-0. These are editable root Frames (artboardId null); retain exact IDs rather than relying on get_basic_info.artboards. Frame names identify source snapshots or interaction specimens. States page p-C-0 and Build page p-D-0 are created for the remaining package.
+Page reading order is Scope → new Product → new States/help → new Build → preserved incumbent pages. No original design was deleted, replaced or relabeled as accepted.
 
-The first visual critique corrected unsupported concentration wording, made both Energy horizons explicit, clarified 5 displayed versus 11 measured sectors, and made the deeper-destination strip full width. Cycles reuses the existing historical SVG from H03-0 under BV-0, with the historical view explicitly pinned to 30 October 2026; no new series is fabricated. Its old fixture remains a design specimen, not current market evidence. Phase age (23 sessions) and open leg length (150) are distinct. Matching timing history and current model estimate are unavailable; no old parity-failed model cell is presented as current.
+### Direct Paper entrypoints
 
-Watches entries, saved research, and control outcomes are interaction specimens, not observations of the Chairman's personal account. Industry directory entries express the target design; only the semiconductor registration is connected in the pinned source. Builder must complete real registrations and access/consumer proof before exposing promised content.
+- [Product](https://app.paper.design/file/01M6FAXA774QT1VRDMAG7DFQ2W/p-B-0)
+- [States and help](https://app.paper.design/file/01M6FAXA774QT1VRDMAG7DFQ2W/p-C-0)
+- [Build and design map](https://app.paper.design/file/01M6FAXA774QT1VRDMAG7DFQ2W/p-D-0)
 
-Next: responsive and locale/theme compositions; comparison/source/snapshot depth; complete material state atlas and accessible help destinations; exact node manifest and Round 2 closeout in the existing masterplan.
+Use the exact root IDs below. These are ordinary editable Frames with artboardId null because the admitted adapter supports write_html while create_artboard/update_styles are schema-incompatible. They render and support get_jsx; the artboards list alone is not an inventory.
 
+| Key | Editable root | Page | Composition |
+|---|---|---|---|
+| S01 | HDT-0 | p-B-0 | S01 · Brief · 1440 · Dark EN · source snapshot |
+| S02 | HLG-0 | p-B-0 | S02 · Explore · 1440 · Dark EN · source snapshot |
+| S03 | HTT-0 | p-B-0 | S03 · Health Care dossier · 1440 · Dark EN |
+| S04 | HZR-0 | p-B-0 | S04 · Research · GMI evidence · 1440 · Dark EN |
+| S05 | I5T-0 | p-B-0 | S05 · Watches & saved research · 1440 · Dark EN · interaction specimen |
+| S06 | IC8-0 | p-B-0 | S06 · Cycles · historical specimen · 1440 · Dark EN |
+| S07 | IK4-0 | p-B-0 | S07 · Compare · exact common basis · 1440 · Dark EN |
+| S08 | IQ2-0 | p-B-0 | S08 · Source reader · 1440 · Light EN |
+| M01 | IUW-0 | p-B-0 | M01 · Brief · 390 · Dark EN |
+| M02 | IZM-0 | p-B-0 | M02 · Explore · 390 · Dark EN |
+| M03 | J36-0 | p-B-0 | M03 · Dossier · 390 · Dark EN |
+| M04 | J82-0 | p-B-0 | M04 · Research · 390 · Dark EN |
+| M05 | JBX-0 | p-B-0 | M05 · Watches · 390 · Dark EN · interaction specimen |
+| M06 | JGM-0 | p-B-0 | M06 · Cycles · 390 · Dark EN · historical specimen |
+| M07 | JL2-0 | p-B-0 | M07 · Compare · 390 · Dark EN |
+| M08 | JPE-0 | p-B-0 | M08 · Source reader · 390 · Light EN |
+| S09 | JSF-0 | p-B-0 | S09 · Saved research · 1440 · Dark EN · interaction specimen |
+| M09 | JY2-0 | p-B-0 | M09 · Saved research · 390 · Dark EN · interaction specimen |
+| A01 | K4E-0 | p-C-0 | A01 · Save & recovery |
+| A02 | K6Q-0 | p-C-0 | A02 · Availability & selected context |
+| A03 | K8V-0 | p-C-0 | A03 · Access & comparison boundaries · Light |
+| A04 | KAP-0 | p-C-0 | A04 · Basis, breadth & exact values |
+| A05 | KDO-0 | p-C-0 | A05 · Cycle qualification & timing states |
+| A06 | KFZ-0 | p-C-0 | A06 · Revisions, conflicts & unresolved saves |
+| A07 | KJE-0 | p-C-0 | A07 · Navigation to full analytical depth |
+| L01 | KNO-0 | p-B-0 | L01 · Brief · 1440 · Light ZH |
+| L02 | KU2-0 | p-B-0 | L02 · Brief · 390 · Light ZH |
+| L03 | KYQ-0 | p-B-0 | L03 · Research · 1440 · Dark ZH |
+| L04 | L4R-0 | p-B-0 | L04 · Research · 390 · Dark ZH |
+| S10 | L8B-0 | p-B-0 | S10 · Sector map · 1440 · Dark EN |
+| T01 | LFF-0 | p-B-0 | T01 · Brief · 768 · Dark EN |
+| R01 | LKL-0 | p-C-0 | R01 · China scope & incompatibility · 1440 · Dark ZH · state specimen |
+| MS01 | LP1-0 | p-C-0 | MS01 · Save status unknown · 390 · Dark EN |
+| MS02 | LRA-0 | p-C-0 | MS02 · Account changed · 390 · Light EN |
+| MC01 | LT3-0 | p-C-0 | MC01 · Mobile cycle chart & exact values · 390 · Dark EN · historical specimen |
+| R02 | LWX-0 | p-C-0 | R02 · China scope & incompatibility · 390 · Light ZH · state specimen |
+| S11 | LZM-0 | p-B-0 | S11 · Company evidence · 1440 · Dark EN |
+| M10 | M54-0 | p-B-0 | M10 · Company evidence · 390 · Dark EN |
+| A08 | M9O-0 | p-C-0 | A08 · Research coverage, search & alert availability |
+| B01 | MBQ-0 | p-D-0 | B01 · Round 2 design map · Build only |
+| B02 | MHA-0 | p-D-0 | B02 · Source & interaction contracts · Build only |
+| B03 | MIV-0 | p-D-0 | B03 · Extraction, behavior & Round 3 gates · Build only |
 
-## Desktop and mobile core milestone
+## Product decisions and why they matter
 
-Nine full-width and nine 390px compositions now exist on Product p-B-0: Brief, Explore, dossier, Research, Watches, Cycles, comparison, source reader and saved research. Every composition was inspected through its actual Paper screenshot. Mobile dossier and Cycles navigation uses a section selector to avoid squeezed or broken tab labels. Comparison color legends are explicit. The source-reader pair demonstrates Light EN, including readable status bar and neutral hierarchy. Saved views distinguish capture date from observation date and preserve the original question/basis; latest observation in this specimen remains 6 November rather than inventing a newer record.
+1. **Four primary workspaces:** Brief, Explore, Research and Watches. Dossier and Cycles retain full depth within Explore. The simpler entrance is a navigation decision, not a reduction of the inherited analytical contract.
+2. **Brief begins with a measurable observation.** The source snapshot shows leadership, breadth of sector participation and the next investigation. The headline describes the observed comparison; it is not an opportunity score or a forecast.
+3. **Explore gives both scan and precision.** The ranked list supports exact comparisons; the equal-area sector map provides scanning and selection. The map explicitly states equal tiles rather than implying market-cap weighting. An inspector holds one selected subject and a named path to its dossier.
+4. **Research preserves the economic chain.** Theme → exact company/listing → product/platform assertion → dated source → research question. Planned relationships stay planned. Shipment and revenue claims need their own evidence.
+5. **Watches retains context.** Watch membership, research snapshots, authored notes and condition alerts have separate actions and outcomes. A watch does not silently activate an alert.
+6. **Saved views preserve the earlier reasoning.** Capture date differs from observation date. Original question, source identity, population and basis remain fixed; latest observation and source revision are different comparison paths.
+7. **Cycles remains an analytical workspace.** Price/cycle chart, confirmed turns, phase age, open-leg length, legs/history, Cycle DNA, exact values, timing and qualification remain reachable. Mobile has a leg-first reading view plus an actual readable chart/exact-value destination.
+8. **Regional scope is explicit.** China uses its own classification, session and membership. Shenwan industries and THS themes are distinct choices. Missing taxonomy bridges refuse the dependent ranking while preserving separate investigations.
+9. **Explanation sits at the point of need.** Basis, coverage, methods and exact values have named disclosures. Compiler/runtime/CI/fixture/extraction prose stays on Build.
+10. **One Shell owner.** Global navigation, search, account, theme and locale stay in Shared Shell. This work does not introduce another Shell, auth store, watch service, publication layer or analytical scorer.
 
-Current node manifest (further states and variants follow):
-- S01 | HDT-0 | S01 · Brief · 1440 · Dark EN · source snapshot
-- S02 | HLG-0 | S02 · Explore · 1440 · Dark EN · source snapshot
-- S03 | HTT-0 | S03 · Health Care dossier · 1440 · Dark EN
-- S04 | HZR-0 | S04 · Research · GMI evidence · 1440 · Dark EN
-- S05 | I5T-0 | S05 · Watches & saved research · 1440 · Dark EN · interaction specimen
-- S06 | IC8-0 | S06 · Cycles · historical specimen · 1440 · Dark EN
-- S07 | IK4-0 | S07 · Compare · exact common basis · 1440 · Dark EN
-- S08 | IQ2-0 | S08 · Source reader · 1440 · Light EN
-- M01 | IUW-0 | M01 · Brief · 390 · Dark EN
-- M02 | IZM-0 | M02 · Explore · 390 · Dark EN
-- M03 | J36-0 | M03 · Dossier · 390 · Dark EN
-- M04 | J82-0 | M04 · Research · 390 · Dark EN
-- M05 | JBX-0 | M05 · Watches · 390 · Dark EN · interaction specimen
-- M06 | JGM-0 | M06 · Cycles · 390 · Dark EN · historical specimen
-- M07 | JL2-0 | M07 · Compare · 390 · Dark EN
-- M08 | JPE-0 | M08 · Source reader · 390 · Light EN
-- S09 | JSF-0 | S09 · Saved research · 1440 · Dark EN · interaction specimen
-- M09 | JY2-0 | M09 · Saved research · 390 · Dark EN · interaction specimen
+## Source-to-field contract
+
+All fields must remain bound to the incumbent producer and generation; these are UI mappings, not a new DTO authority. The pinned file establishes the specimen only.
+
+| Surface / field | Inspected source or retained specimen | Consumer contract |
+|---|---|---|
+| Market observation label | sector_central.json as_of; measured_read.generation.session_end | Display the observation session, not build time or page-load time. |
+| Generation and comparison basis | measured_read.generation.id / cohort_id / benchmark / price_basis / history_as_of | Bind identity, cohort, benchmark and return basis together; no mixed generation. |
+| Sector identity | sectors[].id / ticker / kind / name / name_zh; research_handoff.subject | Use canonical kind/region/universe identity. Ticker and display name alone are not a join key. |
+| 63-session and 21-session return | sectors[].momentum.rs_63d / rs_21d; measured_read.groups[].current | Display signed percentage relative wealth on its own horizon. Do not imply rolling acceleration, absolute return or arithmetic percentage-point excess. |
+| Descriptive order | Existing sectors[].momentum.rs_rank for the displayed 63-session comparison | Present the producer-supplied descriptive ordering. Do not create a strategy rank or raise authority. Round 3 must reconcile this display use with measured_read.authority.may_rank=false before wiring a consumer. |
+| Eight of eleven positive | measured_read.cohort and measured current group values; complete 11/11 specimen | Count qualified positive observations over the declared cohort. Partial cohorts show measured/expected coverage; never fill a missing group with zero. |
+| Breadth percentage | sectors[].heat.breadth_pct; engine/sector_central.py aggregator | adv / (adv + dec), excluding unchanged. Whole-population missingness bounds are not confidence intervals. |
+| Rising / priced count | heat.adv and heat.n_priced_1M | The count denominator is priced membership, including unchanged if present. It is not always adv + dec. The inspected specimen has no unchanged observations. |
+| Missing/flat observations | heat.n_tiles / n_priced_1M / n_unchanged_1M | Keep missing, unchanged, declining and advancing separate. Financials: 75 members, 73 priced, two missing. |
+| Rotation availability | meta.rotation_alignment; measured_read.early_context / confirmed_events | The alignment companion is generation-incompatible; independent early context and confirmed events can be available. Do not mark all rotation or all market data stale. |
+| Source-specific clocks | publication / source receipts; native capability timestamps | A global market close does not update a 2024 source or a historical cycle specimen. Local clocks remain visible. |
+| GMI relationship | Preserved GMI 61M-0 record, source date 26 Feb 2024 | Micron planned 24GB 8H HBM3E for NVIDIA H200. Preserve source receipt, assertion lifecycle and exact entities. Current shipments/revenue remain unconfirmed. |
+| Company evidence | Same native relationship and company/listing identity | MU/NASDAQ/US is displayed context; resolve through incumbent company identity, not a ticker-only lookup. Return to the original theme context. |
+| Research directory | Existing shared registry at pinned source | Only ai_semiconductors is connected. Other directory entries express target design and require actual typed registration/owner bundles. A08 supplies the unavailable state; no fake theme anchor. |
+| Historical price/cycle chart | Preserved R4 BV-0 / H03-0 SVG, 30 Oct 2026 specimen | Reuse its geometry as a historical design specimen only. Mobile applies a coordinate transform to the same two series, not new prices. Real current-series binding remains implementation work. |
+| Phase age and open leg | Preserved 30 Oct specimen: 23 sessions and 150 sessions since 27 Mar | Separate measures, labels and clocks. The open leg has no confirmed end. |
+| Historical priors | Preserved Cycles historical example: 33% within 3 months, 52% within 6 months | A05 labels them historical priors with qualification disclosure. No inference of current prediction; no resurrection of old parity-failed 14% model cell. |
+| Typical timing | Existing qualified anchor/cohort/timing owner to be reconciled | Fixed confirmed anchor, matching cohort, historical half-cycle quartiles/median. Withhold when unverified; elapsed time never slides the range or creates a forecast. |
+| Saved view | Existing research persistence owner to be proven | Capture immutable observation, basis, source identity, question and authored version. No claim that the Paper specimen is real user account data. |
+| Watch/note/alert result | Existing separate owners and receipts | Distinct outcomes. Unknown effect reads original request. A known note failure cannot replay a successful watch. |
+
+The exact central source is [sector_central.json](https://github.com/mastermindx-market-intelligence/macro/blob/36ff39c98dfee8190d0a3f7aaaef9df86921226e/site/sectordata/sector_central.json). The aggregator is [engine/sector_central.py](https://github.com/mastermindx-market-intelligence/macro/blob/36ff39c98dfee8190d0a3f7aaaef9df86921226e/engine/sector_central.py). The historical cycle and GMI specimens are preserved Paper lineage, not proof of a currently served producer. sector_cycles.json was too large for the available bounded fetch; no current forecast is inferred from that failed read.
+
+### Authority clarification for Round 3
+
+The measured context explicitly carries display authority and false may_rank/may_gate/may_size/may_trade/may_escalate flags. Its record includes descriptive rank fields, while the incumbent Central momentum object provides the ordering used in this design. Do not treat the screen as permission to elevate those flags. Round 3 must verify the current owner-approved display ordering, semantics and consumer before it enters implementation. The design does not authorize trades, sizes, gates or strategy ranking.
+
+## Action and return map
+
+| User action | Designed destination | Required existing boundary |
+|---|---|---|
+| Brief → Explore sectors | S02 / M02 | Preserve region, cohort and observation context. |
+| Ranked row / map tile → selected detail | S02 inspector → S03 / M03 | One selected identity; retire earlier response; exact return. |
+| More views | A07 | Full map, participation, rotation, flows, Cycles and history remain reachable. |
+| Compare selected subjects | S07 / M07 | Same qualified comparison basis or A03 refusal. A new common basis is offered only if an existing owner can produce it. |
+| Dossier Companies / Drivers / History | Incumbent full-depth destinations, retained lineage | Round 3 maps exact current component and capability rows; no unproved contribution or overlap calculation. |
+| Open Cycles | S06 / M06 | Full Cycles owner; local historical/live context. |
+| Mobile chart / exact values | MC01 | Readable chart and tabular alternative; confirmed-turn history is a named destination. |
+| Theme → company | S11 / M10 | Company and listing identity plus originating theme context. |
+| Read source evidence | S08 / M08 | Native receipt, rights and source date; public metadata is shown only when independently authorized. |
+| Original source | Incumbent native receipt URL | Do not invent a new URL from the displayed issuer/product text. |
+| Save question | MS01 + A01/A06 → S09 / M09 | Current actor, original request identity, version, stable evidence and uncertain-effect lookup. |
+| Revisit saved view | S09 / M09 | Original is immutable; newer observation and correction stay distinct. |
+| Watch / supported condition | S05 / M05 + A08 | Existing watch owner and separately supported alert owner; no false aggregate success. |
+| Region/classification change | R01 / R02 + A07 | Retire old regional state; no copied US values; actual regional source rights. |
+
+These destinations are designed interactions. Paper does not prove that the controls are wired.
+
+## State semantics and recovery rules
+
+A01 covers pending, confirmed, uncertain and known-failed save; watch/note partial success; and version conflict. A02 covers a real zero, unavailable data, selected-entity loading, last available observation, genuine empty state and unreadable storage. A03 covers account change, rights loss, source access and incompatible regional/return/cycle bases. A04 supplies formula, denominator, coverage and exact values. A05 separates current-model refusal, whole-curve refusal, historical prior, insufficient timing, passed fixed window and timing explanation. A06 distinguishes ordinary newer observations, revisions, version conflict and status-check failures. A07 exposes retained depth. A08 covers unavailable research registration, partial evidence, empty/failed search and unsupported conditions.
+
+Additional implementation rules:
+
+- An uncertain save keeps the original pending payload separate from subsequent draft edits. A later receipt must identify which version was saved.
+- Check save status uses the original request/record/actor/version. Failure to read status is still unknown, not known failed. No replacement save request or Retry save while unknown.
+- Retry note operates on the failed note only; do not repeat membership or imply synchronization.
+- Device-local notes must say Saved on this device. They cannot masquerade as account-wide persistence.
+- Account or rights changes clear private title, source excerpt, chart, note and cached thumbnail before recovery UI. Drafts never cross actor boundaries.
+- Source-access copy may preserve public metadata only when independently authorized; otherwise redact it. A missing entitlement is not an empty library.
+- Source revision and newer market observation have distinct events and views. Decompose market, membership and correction changes only when the owner supplies that evidence.
+- A passed timing window is a state of the original anchored range. It is not overdue-trade advice, an imminent-turn countdown or an excuse to move the range.
+- Negative comparison states affect the dependent comparison only. Independently valid price/evidence remains accessible.
+- The first meaningful mobile recovery control appears before the retained draft; MS01 was reordered after visual review to achieve this.
+
+## Visual, responsive and accessibility specification
+
+The suite reuses the Shared Shell composition and existing Noir doctrine. Desktop navigation remains persistent; the tablet/mobile Shell is compact. Customer screens use neutral surface depth, one clear selected state, restrained direction ink, explicit units and a small hierarchy of type. Technical content is in Build.
+
+Reviewed rendered sizes are 1440, 768 and 390. Dark EN covers the core product. Light EN covers source and access views; Light ZH covers Brief and regional mobile; Dark ZH covers research and regional desktop. This is meaningful language/theme coverage, not a claim that every Cartesian combination has been rendered.
+
+At implementation, use the incumbent semantic tokens and components. Paper contains explicit values because this file has no token definitions and token mutation is held by the adapter; do not turn this into a second runtime token owner.
+
+- Core buttons are 40px minimum and primary tabs 44px. Interactive inline-link/checkbox hit regions, focus indication and keyboard reach require actual browser verification.
+- Mobile uses deliberate full-screen detail, a section menu for deeper dossier/Cycles navigation and an exact return. No essential action relies on hover.
+- Exact-value tables may scroll inside their own labeled region; the page must not overflow horizontally.
+- Screen-reader order follows the visual reading sequence; charts need the equivalent values and local basis in text.
+- Locale direction colors flip independently of health/status colors. Sign and unit remain readable without color.
+- Reduced-motion mode removes chart draw, entrance and pulse; it preserves the same final information.
+- Final implementation must exercise smaller/larger breakpoints, long names and translation expansion, empty/error/rights cases and all required inherited journey coverage. Paper inspection is not automated accessibility or browser acceptance.
+
+## Verification performed
+
+Every new composition was inspected through its actual rendered Paper screenshot. The final page-root readback confirmed 26 Product, 13 States/help and three Build roots matching the manifest. A representative exact-root JSX extraction succeeded for KAP-0 with node IDs and formula text intact. Exact owned-node working indicators were released via finish_working_on_nodes; the result was APPLIED_RESPONSE_OBSERVED.
+
+Corrections made during review included:
+
+- Unsupported concentration wording was replaced by the actual measured leadership statement.
+- Both Energy horizons and the five-shown/eleven-measured distinction were made explicit.
+- Financials missing observations were shown locally.
+- Mobile dossier/Cycles tabs became clear section menus instead of broken labels.
+- Research mobile controls were shortened without losing destinations.
+- Comparison bars gained explicit series association and a common scale.
+- Saved capture date and source-observation date were separated.
+- Save recovery moved above the mobile draft.
+- A mobile cycle value label was moved out of the series path.
+- Tablet active navigation was corrected to Brief; mobile Explore now says View sector.
+- An unnecessary generic portfolio-allocation disclaimer was removed from the customer source screen; the actual evidence limits remain next to their claim.
+
+A bounded visual critic freshly inspected J36-0, IZM-0, JL2-0, K4E-0 and KAP-0 and found no material fit, clipping, sign or comparison-basis defect. A separate bounded interaction critique informed unknown-save, account, revision, mismatch and fixed-window states. Both were reasoning-only assignments; neither edited source or Paper, and both received explicit terminal closure. They do not constitute formal source approval or production acceptance.
+
+No implementation tests, CI, authenticated browser paths, production deployment or natural-time producer proof were performed or claimed in this design round.
+
+## Round 3 evidence agenda
+
+| ID | Contract to resolve | Why this design depends on it | Falsifier / next proof |
+|---|---|---|---|
+| R3-01 | Existing Beta sectors route, exporter and source generations | One entrance, one selected read | Refresh Terminal #1244/#1339 and Macro #10777 plus relevant supersession/custody; bind exact producer-to-served consumer. |
+| R3-02 | Typed industry/company/theme research registry | Ten directory destinations cannot be promises without owners | Real entry kind, composer, source selector, schema and owner bundle for each; no fabricated theme anchor. |
+| R3-03 | Watch, save, note and alert persistence | A01/A06/MS01 require exact recovery | Identify incumbent writer, idempotency/request lookup, CAS/version behavior and readback; prove independent partial outcomes. |
+| R3-04 | Correction/supersession and saved snapshot contract | S09/A06 must distinguish revised source from market change | Native correction identity and immutable saved side; explicitly withhold richer decomposition if unsupported. |
+| R3-05 | Point-in-time membership and available-at history | Breadth and historical claims must use their stated population | Native effective membership/source availability witness; label reconstructed history honestly. |
+| R3-06 | Cycles timing/model qualification | Timing, prior and current estimate are separate | Exact confirmed anchor, cohort, model parity and monotone-curve qualification; no old fixture as a live forecast. |
+| R3-07 | Region, taxonomy, rights and account invalidation | R01/R02/A03 must preserve identity without leaking data | Real regional population/session/basis and negative cross-market proof; account-change cache clearance. |
+| R3-08 | Display sorting versus analytical authority | The measured context has may_rank=false | Confirm owner-approved descriptive ordering and retain all authority caps; no new strategy rank. |
+| R3-09 | Dossier, constituent/overlap/contribution and deep menus | Named destinations must be real full-depth consumers | Map every action and all inherited rows to existing components, source and capability evidence; local unavailable state when absent. |
+| R3-10 | Exact return, query bounds, performance and accessibility | Cohesive investigation depends on continuity | Preserve existing serializers and bounds, cancellation/generation behavior, concrete performance population and user-path proof. |
+
+The current assigned session owns Round 3 recovery; old authors/chats are provenance, not human gates. Reconcile live implementation writers and unknown effects before touching their carriers. Retain all real release/review holds.
+
+## Round completion and continuity
+
+FINALIZATION_CLASSIFICATION: PROVEN_OUTCOME for the expressly bounded Round 2 Paper commission.
+ROUND_2_COMPLETE: true.
+FOUR_ROUND_MISSION_COMPLETE: false.
+APPLICATION_PRODUCTION_ACCEPTED: false.
+
+The current user explicitly requested four separate conversational rounds. The next intended turn is Round 3 architecture hardening, followed by Round 4 finalization. This is the chosen round boundary, not a claim that a design milestone completes the implementation program.
+
+The canonical research masterplan is revision 0.2 on the same existing plan branch. This unmerged planning amendment is not an adopted runtime/organizational status change. No Executive, Agent OS lifecycle, Linear completion or Slack dispatch has been advanced.
+
+DO_NOT_REDO: retain the source census, accepted existing code, prior design lineage, the new 42 exact frames, all 134 capability rows, all B/P/J obligations, the G4P-0 review-only canary and existing release holds. Do not delete competing Terminal UX before complete Shared Shell parity/redirect/return proof. Do not start the Fable-led T3 implementation before the requested final packet.
+
+Primary next action: in Round 3, consume this guide and masterplan 0.2; refresh the affected route/generation/registry/persistence contracts and exact current candidate heads, then harden the implementation dependency graph and falsifiable acceptance. Preserve the rest of the census instead of restarting it.
