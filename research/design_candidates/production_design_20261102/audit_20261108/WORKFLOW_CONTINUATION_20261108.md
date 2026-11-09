@@ -1362,3 +1362,44 @@ File **01M5H6EARN9YHQV17JC6ZG9BRY**, p7, existing Build **7M9-0** now names this
 ### Original-carrier boundary
 
 The current PR source and §11.8 expressly permit disjoint frontend continuation while original model run **gmi-product-upgrade-20261103-model01** remains **EFFECT_UNKNOWN / ROOT_UNVERIFIED**. The model/presentation/worker paths and result were not read as a recovery workaround, edited, consumed or reissued. All Draft/no-merge/no-Ready/no-un-draft/no-enqueue/no-relabel/no-deploy and public-purpose restrictions remain. This is implemented candidate behavior with bounded proof, not production delivery.
+
+
+## 27. Implemented GMI copy ownership and disclosure minimum — 9 November 2026
+
+The source follow-up advances the **same original Draft PR10676** from **cc47f34daf1850392521018c40380258e61b33a6** to **83f05e360844da4b28d9bbb2d82079908809ba5f**. The Git-data update used the existing original carrier, an immutable tree/commit and exact expected parent; it was not a new branch, PR, worker, release or model retry. All seven published files were read back byte-for-byte. The comparison contains one commit and exactly the seven intended frontend/test/evidence paths.
+
+### Corrected workflow
+
+A delayed GMI copy previously reported success on a different theme, or read a later URL on rejection and stole focus. Each action now captures its exact normalized URL and selected theme in an in-memory attempt. Success, failure, reset and final button state must still belong to that object and current URL/theme. Selection, filter URL changes, history, lens actions and page exit retire it; an A→B→A visit does not restore the old operation. The existing lens lifecycle covers its replaceState path and a combined language/lens observer batch.
+
+A current denial exposes only the captured URL in the existing manual fallback. Automatic URL focus requires retained action intent; later control focus, pointer intent or window blur relinquishes it. Current-language feedback survives a locale-only redraw together with the accepted source-receipt behavior. Timers cannot clear newer feedback, and cleanup does not erase an unrelated live-region message. This does not cancel a system clipboard write already issued, and no corrective write, new queue, retry or persistence was introduced.
+
+The existing summary rule now provides a **44 px minimum** for source receipts and theme context in both paired GMI CSS files. Native geometry at 1440 px changed 40→44 px. The wrapped 390/320 px targets already measured 53.59375 px and remain that height. Static/enhanced and EN/ZH variants were measured; the change is a minimum correction, not a claim of previously undersized wrapped mobile targets.
+
+### Exact source and executed proof
+
+| Path | Published blob |
+| --- | --- |
+| `templates/gmi.js` and identical `site/gmi.js` | **387383b0e237162421dfebf5eb9d7ef85302cb1e** |
+| `templates/gmi.css` and identical `site/gmi.css` | **23ce5f275ffc07a57278450b560d9d0c20f86632** |
+| `research/theme_graph/gmi_design_20261021/verify_product_browser.py` | **3806d8ee5cf52d7da332b36c7c6348616b660d52** |
+| `research/theme_graph/gmi_design_20261021/DESIGN_RECORD.md` (§11.20) | **2a490410525f4e1451458e29fee1c48549f1e046** |
+| `research/theme_graph/gmi_design_20261021/COPY_CONTEXT_VALIDATION_20261109.json` | **f9a391fbb473949886382b3c8be88e35e7f9cbb0** |
+
+The exact previous JS blob **0a5a6b51f7c836e34523a476751fc3eca054302d** reproduced stale “Link copied” feedback after a real row selection at 1440 and 390 px. The final new source passed **42 deferred-copy contexts and 32 existing locale contexts**, zero page errors, exit 0, Chrome **157.0.8103.39**, 40.72 s. The additional native geometry read recorded 24 before/after observations over three widths, two languages and static/enhanced DOM; all new targets exceed or equal 44 px. JavaScript and complete verifier syntax pass.
+
+The committed verifier adds two named `clipboard-context-races-*` cases through its existing selector. It exercises late success/rejection, newer pending ownership, selection/filter/history/lens A→B→A, same-URL history, mixed locale/lens changes, expired timers forcibly invoked after cancellation, current denial, focus→blur and nonfocusable pointer intent, exact full URLs, locale feedback and injected pagehide. The locale functions remain unchanged and passed on the new JS.
+
+Execution uses exact candidate JS and test functions, extracted committed explorer DOM plus original lens controls, the complete GMI stylesheet and extracted shared root/language CSS, with all external networking blocked. The clipboard and 2500 ms feedback timer are controlled fault injections; these race tests do not write the system clipboard. Static geometry means markup before enhancement in an instrumented browser. This is not a full shared-shell/font/no-JavaScript-profile/account/data/admission/deployment acceptance claim. Older full-product evidence is preserved as historical evidence.
+
+### Applied Paper builder contract
+
+File **01M5H6EARN9YHQV17JC6ZG9BRY**, p7, existing root **7M9-0** now has eight coherent modules. Seven existing text nodes were updated: **7MA-0, 7MB-0, 7MV-0, 7MZ-0, 7NB-0, 7NE-0, 7NF-0**. The new copy module **7NH-0** was cloned from the existing module style, with heading **7NJ-0** and body **7NI-0**, and moved before the existing proof module. All **24 original node IDs, parents and style declarations** remain exact; the root has 27 nodes after the additive module. Full native screenshot inspection found a readable, unclipped eight-module layout. The exact owned root was finished. Accepted product boards and all other writers were preserved.
+
+The Build now names the implemented copy contract, current JS head, measured summary sizes and exact bounded proof. Its remaining static/no-JS Theme details label alignment is explicit and proceeds as the next qualified frontend question, not as a false completion claim.
+
+### Preserved boundaries and continuing delivery
+
+The original model01 **EFFECT_UNKNOWN / ROOT_UNVERIFIED** and no-consume/no-retry/no-replacement fences remain untouched. PR10676 stays Draft with no native auto-merge or labels and every no-Ready/no-un-draft/no-enqueue/no-relabel/no-merge/no-deploy hold. The bounded natural-CI query on the preceding cc47 head still returned no PR-triggered runs; no run was manually issued.
+
+Terminal PR1354 remains a separate protected delivery: at **03:59:50 UTC**, exact head **45472fcedad31292d660d54731d4da472ca04f1e** was Ready, open and behind an advancing base, with its existing auto-merge present, eleven browser shards still running, and no completed failed job. Raw PR data reported mergeable true; the normalized false did not demonstrate a conflict. Existing protected checks, the qualified merge SHA, exact-sha deployment owner and eventual live browser/account proof remain necessary. Chrome's separate extension-UI user-presence boundary is not bypassed by these anonymous component tests.
