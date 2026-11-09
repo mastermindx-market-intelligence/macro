@@ -206,6 +206,24 @@ def _refuse_schema(detail: str, remedy: str) -> AdmissionRefused:
     return AdmissionRefused("slot", "schema_unsupported", detail, remedy)
 
 
+def _finite_number(value: object) -> bool:
+    """A real finite numeric operand; booleans and coercible strings are not clocks."""
+    if type(value) not in (int, float):
+        return False
+    try:
+        return math.isfinite(value)
+    except OverflowError:
+        return False
+
+
+def _require_clock(now: object) -> None:
+    if not _finite_number(now):
+        raise AdmissionRefused(
+            "chain", "clock_invalid", f"gate clock is not a finite moment: {now!r}",
+            "supply a finite clock before evaluating expiry or freshness",
+        )
+
+
 def _parse_taken_at(raw: object) -> float:
     """The moment the census was taken, as epoch seconds. Refuses anything else."""
     if raw is None or isinstance(raw, bool):
@@ -262,6 +280,29 @@ class Enumeration:
     collection_status: str
     observed_ports: frozenset[int]
     tool_sha256: str = ""
+
+    def validate(self) -> None:
+        """Record invariants also bind callers that construct this dataclass directly."""
+        if type(self.schema_version) is not int or self.schema_version not in SUPPORTED_SNAPSHOT_SCHEMA:
+            raise _refuse_schema(
+                f"snapshot schema_version is {self.schema_version!r}; this gate parses "
+                f"{list(SUPPORTED_SNAPSHOT_SCHEMA)} only", "use a supported observer schema",
+            )
+        if not isinstance(self.host, str) or not self.host:
+            raise _refuse_schema("enumeration must name its host", "supply the observed host")
+        if self.collection_status != "complete":
+            raise AdmissionRefused(
+                "slot", "enumeration_incomplete",
+                f"collection_status is {self.collection_status!r}, not 'complete'",
+                "re-run the sweep; an incomplete count cannot admit a box",
+            )
+        if not isinstance(self.observed_ports, frozenset) or any(
+            type(port) is not int or not 1 <= port <= 65535 for port in self.observed_ports
+        ):
+            raise _refuse_schema(
+                "observed_ports must be a frozen set of integer ports in 1..65535",
+                "preserve the complete typed observer port set",
+            )
 
     @classmethod
     def from_snapshot(cls, snapshot: Mapping) -> "Enumeration":
@@ -355,7 +396,7 @@ class Enumeration:
         tool_sha256 = provenance.get("script_sha256", "") if isinstance(provenance, Mapping) else ""
         if not isinstance(tool_sha256, str):
             tool_sha256 = ""
-        return cls(
+        result = cls(
             schema_version=version,
             host=host,
             taken_at=taken_at,
@@ -363,6 +404,8 @@ class Enumeration:
             observed_ports=frozenset(ports),
             tool_sha256=tool_sha256,
         )
+        result.validate()
+        return result
 
 
 @dataclass(frozen=True)
@@ -466,8 +509,18 @@ class Box:
     declared_ports: frozenset[int] = frozenset()
     baseline_ports: frozenset[int] = frozenset()
 
+    def _validate_freshness(self, now: float) -> None:
+        _require_clock(now)
+        if not _finite_number(self.max_age_seconds) or self.max_age_seconds <= 0:
+            raise AdmissionRefused(
+                "slot", "measurement_incoherent",
+                f"{self.box}: max_age_seconds must be finite and positive",
+                "supply a bounded positive freshness limit",
+            )
+
     def effective_ceiling(self, now: float) -> Ceiling:
         """The measured ceiling. Never the declared number on its own."""
+        self._validate_freshness(now)
         if self.headroom is None:
             raise AdmissionRefused(
                 "slot", "ceiling_unmeasured",
@@ -480,7 +533,7 @@ class Box:
         # False, so a NaN measurement would have sailed through as fresh. A
         # stamp the gate cannot date is not a measurement, and a stamp minutes
         # ahead of this clock measured a box that does not exist yet.
-        if not math.isfinite(measured_at):
+        if not _finite_number(measured_at):
             raise AdmissionRefused(
                 "slot", "measurement_unstated",
                 f"{self.box}: the headroom measurement is stamped {measured_at!r}, "
@@ -503,10 +556,10 @@ class Box:
                 f"{self.max_age_seconds:.0f}s limit",
                 "re-read the box; a stale measurement describes a box that may no longer exist",
             )
-        if self.ceiling < 0:
+        if type(self.ceiling) is not int or self.ceiling < 0:
             raise AdmissionRefused(
                 "slot", "measurement_incoherent",
-                f"{self.box}: declared ceiling is negative ({self.ceiling})",
+                f"{self.box}: declared ceiling is not a nonnegative integer ({self.ceiling!r})",
                 "fix the box descriptor",
             )
         # A reading that contradicts itself is not a reading of any box.
@@ -515,6 +568,16 @@ class Box:
         # zero measured nothing — computing a ceiling from a contradiction is
         # how a gate reports a number it invented.
         head = self.headroom
+        positive = ("memory_total_bytes", "browser_resident_bytes", "process_limit", "browser_processes")
+        nonnegative = ("memory_available_bytes", "reserve_bytes", "process_in_use", "compressor_bytes", "pageouts")
+        for name in positive + nonnegative:
+            value = getattr(head, name)
+            if type(value) is not int or value < (1 if name in positive else 0):
+                raise AdmissionRefused(
+                    "slot", "measurement_incoherent",
+                    f"{self.box}: {name} is not a valid integer counter ({value!r})",
+                    "measure nonnegative usage/reserve and positive totals/per-instance costs",
+                )
         if head.memory_total_bytes <= 0:
             raise AdmissionRefused(
                 "slot", "measurement_incoherent",
@@ -745,6 +808,7 @@ def preflight(
     Raises ``AdmissionRefused``; there is no partial-success return.
     """
     now = time.time() if now is None else now
+    _require_clock(now)
     cohort = list(handles)
     subject = box.box
     artifacts: list[Artifact] = []
@@ -782,11 +846,11 @@ def preflight(
         # The refusing default. `expires_at=0.0` is the dataclass default, so it
         # is what a half-built record carries — and "never stated" is not
         # "never expires"; it is a field nobody filled in.
-        if record.expires_at <= 0:
+        if not _finite_number(record.expires_at) or record.expires_at <= 0:
             raise AdmissionRefused(
                 "domain", "domain_expiry_unstated",
-                f"{handle}: domain {record.domain} states no expiry",
-                "state when the registration expires; a default of 0 is not a date",
+                f"{handle}: domain {record.domain} states no finite positive expiry",
+                "state when the registration expires; an invalid number is not a date",
             )
         if record.expires_at <= now:
             raise AdmissionRefused(
@@ -966,6 +1030,8 @@ def preflight(
             "inject an observer snapshot; an unobserved box is not admissible, "
             "whatever its descriptor claims",
         )
+    enum.validate()
+    box._validate_freshness(now)
     if enum.host != box.box:
         raise AdmissionRefused(
             "slot", "enumeration_wrong_box",
@@ -976,7 +1042,7 @@ def preflight(
     # A census the gate cannot date, or one dated after the moment it is used,
     # is not a census of the box now — and the staleness comparison below is
     # fail-open on a bad stamp (`nan > limit` is False), so these refuse first.
-    if not math.isfinite(enum.taken_at):
+    if not _finite_number(enum.taken_at):
         raise AdmissionRefused(
             "slot", "measurement_unstated",
             f"{box.box}: the enumeration is stamped {enum.taken_at!r}, which is "

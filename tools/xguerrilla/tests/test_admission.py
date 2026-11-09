@@ -167,6 +167,79 @@ def test_clean_cohort_admits_all_six_stages():
     assert admitted.grant.chain_digest == admitted.artifacts[-1].digest
 
 
+@pytest.mark.parametrize("fields,code", [
+    ({"schema_version": 2}, "schema_unsupported"),
+    ({"schema_version": 1.0}, "schema_unsupported"),
+    ({"schema_version": True}, "schema_unsupported"),
+    ({"collection_status": "incomplete"}, "enumeration_incomplete"),
+    ({"observed_ports": frozenset({0})}, "schema_unsupported"),
+    ({"observed_ports": frozenset({65536})}, "schema_unsupported"),
+    ({"observed_ports": frozenset({True})}, "schema_unsupported"),
+    ({"observed_ports": frozenset({9223.0})}, "schema_unsupported"),
+])
+def test_direct_enumeration_objects_obey_the_snapshot_contract(fields, code):
+    census = enumeration(**fields)
+    # Even a declared invalid port must fail schema validation, not be waived.
+    descriptor = box_with(headroom(), census=census, declared_ports=census.observed_ports)
+    assert refuse(Rig(descriptor=descriptor)).code == code
+
+
+@pytest.mark.parametrize("stamp", [float("nan"), float("inf"), float("-inf"), True, "now"])
+def test_invalid_clock_cannot_admit_stale_records(stamp):
+    rig = Rig(descriptor=box_with(headroom(measured_at=NOW - 3600),
+                                  census=enumeration(taken_at=NOW - 3600)))
+    assert refuse(rig, now=stamp).code == "clock_invalid"
+    with pytest.raises(admission.AdmissionRefused) as caught:
+        rig.box.effective_ceiling(stamp)
+    assert caught.value.code == "clock_invalid"
+
+
+@pytest.mark.parametrize("expiry", [float("nan"), float("inf"), float("-inf"), True, "later"])
+def test_domain_expiry_must_be_a_finite_positive_moment(expiry):
+    from dataclasses import replace
+    rig = Rig()
+    rig.domains[0] = replace(rig.domains[0], expires_at=expiry)
+    assert refuse(rig).code == "domain_expiry_unstated"
+
+
+@pytest.mark.parametrize("max_age", [float("nan"), float("inf"), float("-inf"), 0, -1, True])
+def test_age_limit_must_be_finite_and_positive(max_age):
+    descriptor = box_with(headroom(), max_age=max_age)
+    assert refuse(Rig(descriptor=descriptor)).code == "measurement_incoherent"
+    with pytest.raises(admission.AdmissionRefused) as caught:
+        descriptor.effective_ceiling(NOW)
+    assert caught.value.code == "measurement_incoherent"
+
+
+@pytest.mark.parametrize("fields", [
+    {"memory_available_bytes": 0, "reserve_bytes": -6 * GB},
+    {"memory_available_bytes": float("nan")},
+    {"memory_available_bytes": -1},
+    {"memory_total_bytes": float("inf")},
+    {"browser_resident_bytes": True},
+    {"reserve_bytes": float("nan")},
+    {"process_in_use": float("nan")},
+    {"process_limit": float("inf")},
+    {"browser_processes": 1.5},
+    {"compressor_bytes": -1},
+    {"pageouts": float("nan")},
+])
+def test_invalid_resource_counters_cannot_create_capacity(fields):
+    descriptor = box_with(headroom(**fields))
+    assert refuse(Rig(descriptor=descriptor)).code == "measurement_incoherent"
+
+
+@pytest.mark.parametrize("declared", [float("nan"), float("inf"), 6.0, True])
+def test_declared_ceiling_is_an_integer_count(declared):
+    assert refuse(Rig(descriptor=box_with(headroom(), declared=declared))).code == "measurement_incoherent"
+
+
+def test_valid_reserve_larger_than_available_memory_leaves_zero_capacity():
+    descriptor = box_with(headroom(memory_available_bytes=GB, reserve_bytes=2 * GB))
+    assert descriptor.effective_ceiling(NOW).memory == 0
+    assert refuse(Rig(descriptor=descriptor)).code == "ceiling_exhausted"
+
+
 def test_the_chain_verifies_and_every_link_names_its_parent():
     admitted = Rig().preflight()
     admission.verify_chain(admitted.artifacts)

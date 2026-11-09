@@ -73,6 +73,14 @@ part of, a process count cannot be negative or run past its own limit, and a
 total of zero measured nothing. Any of those refuses `measurement_incoherent`
 instead of computing a ceiling from a contradiction.
 
+The declared ceiling and all resource counters must be integers, with positive
+totals/per-instance costs and nonnegative usage, reserve and diagnostics. A
+negative reserve cannot manufacture capacity. The gate clock and domain expiry
+must be finite numbers, and the freshness limit must be finite and positive.
+Directly constructed `Enumeration` records obey the same supported-schema,
+complete-collection and integer-port contract as parsed observer snapshots.
+These checks consume injected records only; they enable no runtime operation.
+
 **Do not hard-code a box's number in this repository.** The descriptor value is
 the output of a readback, recorded with its timestamp. For reference, assurance
 measured mini1 at **1 live browser instance** on 2026-11-08T05:32Z (299 MiB
