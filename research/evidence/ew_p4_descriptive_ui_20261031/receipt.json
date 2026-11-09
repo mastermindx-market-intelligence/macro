@@ -1,7 +1,7 @@
 {
   "scope": "EW-P4.T1 descriptive early-warning observation UI (consumer-only), two hosts, synthetic fixtures",
   "production_authenticated": false,
-  "source_revision": "92cb5e1babdf45f7ecb5bdb104f810e2b6aed84a",
+  "source_revision": "530a11df95e2ed619b0a98e233bcd971c47ffd78",
   "base": "1d253e1d25f22c61d1bcf8126b13b0229f26ccbd",
   "capture_mode": "dialog_unclipped_static_harness",
   "capture_mode_note": "#dlg-risk rendered in normal flow with its max-height/overflow removed so the whole band is captured; live dialog scrolls",
@@ -1992,9 +1992,9 @@
     "radar-states": "contact-radar-states.html"
   },
   "pr_source_equivalence": {
-    "note": "Actual full 68-case isolated Chromium recapture from integrated source commit 92cb5e1babdf45f7ecb5bdb104f810e2b6aed84a; all 31 render inputs verified byte-for-byte against the Git tree before evidence publication; 2 screenshot PNGs and 1 contact-sheet artifacts genuinely changed. This is source evidence only, not signed-in production acceptance.",
-    "pr_branch": "claude/ssd-sector-intelligence-macro-7646-82cb8b-35c697a089b670b0",
-    "pr_parent_of_evidence_commit": "92cb5e1babdf45f7ecb5bdb104f810e2b6aed84a",
+    "note": "The unchanged existing probe actually recaptured all 68 static cases at source_revision after the one-line bilingual Risk Radar disclaimer repair. The probe records the exact capture source; all 31 render/fixture paths were compared to both that commit and the current workspace. This static evidence does not replace the separately retained original 175-check workspace and 32-cell visual evidence, or either live-site acceptance.",
+    "pr_branch": "sol/web-risk-radar-paper-live-20261104-c3",
+    "pr_parent_of_evidence_commit": "530a11df95e2ed619b0a98e233bcd971c47ffd78",
     "render_files": [
       {
         "path": "site/rotation_events.js",
@@ -2148,14 +2148,14 @@
       },
       {
         "path": "templates/dashboard.html.j2",
-        "blob_at_source_revision": "4a890c3224898639f680d6b0cefe836a0238d269",
-        "blob_on_pr_branch": "4a890c3224898639f680d6b0cefe836a0238d269",
+        "blob_at_source_revision": "1e5d6fbdcbced80b0f966759012d93f59e4133f8",
+        "blob_on_pr_branch": "1e5d6fbdcbced80b0f966759012d93f59e4133f8",
         "equal": true
       },
       {
         "path": "templates/_risk_radar_workspace.html.j2",
-        "blob_at_source_revision": "59599c343078e786ccd45657e15b2dd8fef40ee9",
-        "blob_on_pr_branch": "59599c343078e786ccd45657e15b2dd8fef40ee9",
+        "blob_at_source_revision": "7fc267f500e3f4f85a4685420f07a42228caecb9",
+        "blob_on_pr_branch": "7fc267f500e3f4f85a4685420f07a42228caecb9",
         "equal": true
       },
       {
