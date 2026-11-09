@@ -69,6 +69,7 @@ function makeGd({ layout = {}, data = [] } = {}) {
   const handlers = {};
   layout.xaxis = layout.xaxis || {};
   const gd = {
+    isConnected: true,
     layout,
     data,
     _fullData: data,
@@ -102,6 +103,7 @@ function loadModule(gds) {
   const context = vm.createContext({
     window: windowObj,
     document,
+    requestAnimationFrame(fn) { return setImmediate(() => fn(0)); },
     Object,
     Math,
     Array,
