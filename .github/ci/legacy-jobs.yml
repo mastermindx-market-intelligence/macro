@@ -40218,6 +40218,29 @@ jobs:
     # exact uncovered file — add it here.
     scope: exclusive
     paths:
+      - "collectors/fred.py"
+      - "engine/axes.py"
+      - "engine/bar_derive.py"
+      - "engine/base_effect.py"
+      - "engine/cn_ai_semis_confirmer.py"
+      - "engine/election_cycle.py"
+      - "engine/i18n.py"
+      - "engine/inputs.py"
+      - "engine/marker_integrity.py"
+      - "engine/oracle/__init__.py"
+      - "engine/oracle/washout_counterread.py"
+      - "engine/pit.py"
+      - "engine/pit_lag_recorder.py"
+      - "engine/rates_command_basis.py"
+      - "engine/regime.py"
+      - "engine/regime_one.py"
+      - "engine/risk_radar.py"
+      - "engine/risk_radar_backtest.py"
+      - "engine/risk_radar_intl.py"
+      - "engine/yield_momentum.py"
+      - "scripts/build_subsector_confluence.py"
+      - "scripts/validate_regime_fwd.py"
+      - "templates/subsectors.js"
       - "collectors/yahoo.py"
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
