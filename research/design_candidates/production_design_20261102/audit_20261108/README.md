@@ -103,6 +103,8 @@ The existing Market Memory inspection Build now also names its actual Macro cons
 
 The reusable Catalyst owner finding is preserved in [DSC-CATALYST-COPY-CONTEXT-USES-EXISTING-READ-OWNER](../../../../agentos/discoveries/DSC-CATALYST-COPY-CONTEXT-USES-EXISTING-READ-OWNER.md), with source-bound proof and limits.
 
+**9 November · Topic descriptions by identity:** [GMI source fa09ffaf](https://github.com/mastermindx-market-intelligence/Macro/commit/fa09ffaf0b97a970a649185753579d2510863bc0) repairs the Conventional DRAM/non-HBM collision in both existing renderers. All **371 topics / 742 server language checks** pass; **7 browser cases / 7 contexts** cover selection, related topics, history, locale and retained evidence, with 63 layout/identity observations and four inspected phone captures. Eight source files read back exactly. Paper Build module02 now explains stable identity alongside public-field and clock rules; its 18 modules / 57 nodes and Browse Q01–Q06 remain coherent. See [continuation §49](WORKFLOW_CONTINUATION_20261108.md#49-gmi-topic-descriptions-follow-stable-identity--9-november-2026) and [exact Paper/source receipt](PAPER_DESCRIPTION_20261109.json). Original Draft/model/release holds remain. Continue with existing keyboard-owner guards and a separate empty-topic readability improvement.
+
 ## Assignment and source
 
 Chairman assignment: audit and improve Paper designs, architecture fit, feature logic, navigation, clarity, illustration/motion and builder guidance, including justified consolidation.

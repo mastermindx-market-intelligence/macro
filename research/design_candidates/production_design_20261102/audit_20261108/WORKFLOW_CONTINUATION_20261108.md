@@ -2408,3 +2408,44 @@ The desktop visual exposed an existing semantic error: **Conventional DRAM (non-
 Continue by binding that sentence to the exact topic ID in both renderers. Keep each existing bilingual generic fallback and the default HBM output unchanged; prove client selection and server rendering for HBM and conventional DRAM. No new sector prose, model field or public observation is needed.
 
 Original model01, release and independent-lane holds remain. This feature explains an exact public-field subset of existing matches; it does not claim all search causes or current commercial exposure. Full shared shell/fonts, native OS IME, spoken AT, live account/admission, current hosted CI and deployment remain outside this proof.
+
+
+## 49. GMI topic descriptions follow stable identity — 9 November 2026
+
+### Applied correction and evidence
+
+The previous visual pass exposed **Conventional DRAM (non-HBM)** using the specialized HBM description. Both existing renderers matched the English name as a substring. [Source PR10676](https://github.com/mastermindx-market-intelligence/Macro/pull/10676) now advances from **ba8a81b6470f88f71bc7c2ec90cede39aba8a9b0** to [**fa09ffaf0b97a970a649185753579d2510863bc0**](https://github.com/mastermindx-market-intelligence/Macro/commit/fa09ffaf0b97a970a649185753579d2510863bc0), still Draft/unmerged.
+
+Only **theme:hbm_packaging** now selects the specialized explanation in paired JavaScript and the production Jinja macro. Conventional DRAM and every other topic retain their existing generic branch. Both languages and the existing server/client wording remain intact. This changes presentation identity; it admits no new description or market fact to the model.
+
+| Proof | Observed result |
+|---|---|
+| Baseline production macro | 371 topics / 742 language checks; exactly two failures, Conventional DRAM EN and ZH; PID7753 exit1 in 2.81 s |
+| Baseline browser | EN390 and ZH320 both reproduce the wrong HBM description; PID7845 exit1 in 16.49 s |
+| Candidate production macro | **742/742**, only Conventional DRAM markup changes; all 371 outside-description hashes remain exact; PID25300 exit0 in 3.40 s |
+| Candidate consumer journey | **7 cases / 7 fresh anonymous contexts**, Chrome157.0.8103.39, zero page errors; PID25199 exit0 in 19.61 s |
+| Actual actions | HBM result, related DRAM, Back/Forward, locale change and return, NAND negative control, NVIDIA H200 result into dated HBM evidence |
+| Layout | **63 description/title/count/URL/viewport observations**; four EN390/ZH320 final captures inspected |
+| Source containment | Reverse the two conditions to recover their exact parent blobs; all **126 prior verifier definitions** are AST-exact |
+| Builder containment | Same accepted model, 46 other source inputs, seven HTML outputs and CSS unchanged; only generated JS differs |
+| Publication | **Eight changed source/evidence files** read back exactly at the new head |
+
+The complete source record is [DESIGN_RECORD §11.40](https://github.com/mastermindx-market-intelligence/Macro/blob/fa09ffaf0b97a970a649185753579d2510863bc0/research/theme_graph/gmi_design_20261021/DESIGN_RECORD.md). [Description validation](https://github.com/mastermindx-market-intelligence/Macro/blob/fa09ffaf0b97a970a649185753579d2510863bc0/research/theme_graph/gmi_design_20261021/DESCRIPTION_VALIDATION_20261109.json) retains commands, process results, exact hashes, baseline/final browser reports, every server before/after markup comparison and the changed topic's full descriptions. The server export explicitly omits repeated unchanged prose; complete native report hashes are retained.
+
+### Applied Paper guidance
+
+The current [Build page](https://app.paper.design/file/01M5H6EARN9YHQV17JC6ZG9BRY/p-7-0), root **7M9-0**, remains **18 modules / 57 div nodes**.
+
+- Module02 title **7MU-0** now reads “Stable identity; exact public fields.” Body **7MV-0** identifies both renderer functions and the one specialized ID, explains why names/translations/search hints cannot choose identity, and retains its existing public-field/clock guidance.
+- Module03 **7MZ-0** points to current paired JS blob **2f609523fe0ca15d96bf82d0a7fd0afe71297c3b** and source head.
+- Module18 **7NF-0** records the latest proof while keeping the accepted earlier search, copy, fallback and Clear proofs separate.
+- All node IDs, parents and depth remain exact. Paper's text operation adds **whiteSpace: pre-wrap** to **7MV-0** when adding paragraph breaks; all its other style fields and every other node's styles remain unchanged. This observed normalization is not reported as global style equality.
+- The existing Browse flow **A1F-0**, including Q01–Q06, is byte-exact at **78,302 characters**. No extra product control or duplicate specimen was needed. The HBM views remain accurate.
+
+Two Paper operations—one guarded text update and one finish of **7M9-0**—returned **APPLIED_RESPONSE_OBSERVED**. Module02 and module18 screenshots were inspected. The final JSX after finish exactly matches the earlier readback. [PAPER_DESCRIPTION_20261109.json](PAPER_DESCRIPTION_20261109.json) retains pre/post editable JSX, preserved Browse JSX, both operation receipts, structural comparisons and exact source readback.
+
+### Next bounded work and continuing holds
+
+Read-only source judgment found that primary Browse's Arrow/Home/End handler consumes already-handled and modified keys, while both existing slash handlers omit consumed/composition guards. Continue with baseline consumer reproduction and the same existing owners. The empty-topic phone review also shows its company-evidence action below the EN390 fold after repeated generic and absence prose; a distinct copy/layout consolidation can make that next action visible without changing navigation or evidence limits.
+
+Original model01 **EFFECT_UNKNOWN / ROOT_UNVERIFIED** remains fenced. PR10676 stays Draft/unmerged with original no-Ready/no-merge/no-relabel/no-enqueue/release holds. Catalyst's original service-hook boundary, Shared Tools' receipt/browser boundary, protected Paper style/token/archive rules and other independent writer holds are unchanged. This phase proves neither full shared shell/fonts nor native OS IME, spoken AT, live account/admission, current hosted CI or deployment acceptance.
