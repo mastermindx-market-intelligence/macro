@@ -1,0 +1,183 @@
+{
+  "cell": "v4-china-cycles__dark__zh__1440__l4-nojs",
+  "view": "v4",
+  "url": "/sector_cycles_china.html",
+  "theme": "dark",
+  "lang": "zh",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "variant": null,
+  "js": false,
+  "steps": [],
+  "head": "b601c02749a34fd83877393d59ee88e6045207cd",
+  "pins": {
+    "chromium": "149.0.7827.55",
+    "playwright": "1.61.1",
+    "host": "darwin/arm64",
+    "executable": {
+      "name": "chrome-headless-shell",
+      "sha256": "11e393326c7d20a7c56641a7c65def33ea9c280da3b0b74cf8563b07989a0ee3"
+    },
+    "launch_args": [
+      "--disable-skia-runtime-opts",
+      "--disable-partial-raster",
+      "--disable-gpu",
+      "--force-color-profile=srgb",
+      "--disable-font-subpixel-positioning",
+      "--font-render-hinting=none",
+      "--disable-lcd-text"
+    ],
+    "font_pin": "/p0b-font-pin/pin.css",
+    "clock": "2026-11-05T12:00:00Z",
+    "locale": "en-US",
+    "timezone": "UTC",
+    "dpr": 1
+  },
+  "http_status": 200,
+  "notes": [],
+  "scrollWidth": 1440,
+  "scrollHeight": 1907,
+  "data_theme": null,
+  "data_lang": null,
+  "html_lang": "en",
+  "computed_bg": "rgb(15, 17, 21)",
+  "boxes": {
+    "heading": {
+      "selector": "#sc-hero-title",
+      "x": 79,
+      "y": 633,
+      "w": 186,
+      "h": 22,
+      "visible": true,
+      "text": "Sector rotation overlay"
+    },
+    "asof": {
+      "selector": "#sc-asof",
+      "x": 1288,
+      "y": 375,
+      "w": 78,
+      "h": 15,
+      "visible": true,
+      "text": "2026-11-04"
+    },
+    "generation": null,
+    "stale_guard": null,
+    "chips": {
+      "selector": "#sc-chips",
+      "x": 79,
+      "y": 684,
+      "w": 1282,
+      "h": 14,
+      "visible": true,
+      "text": ""
+    },
+    "chart": {
+      "selector": "#sc-chart",
+      "x": 79,
+      "y": 710,
+      "w": 1282,
+      "h": 660,
+      "visible": true,
+      "text": ""
+    },
+    "inspector": {
+      "selector": "#sc-detail",
+      "x": 60,
+      "y": 1401,
+      "w": 1320,
+      "h": 368,
+      "visible": true,
+      "text": ""
+    },
+    "compare_tray": null,
+    "fixture_label": null,
+    "tape_asof": null,
+    "strip_asof": null,
+    "basket_on": null,
+    "members": null,
+    "companies_unavailable": null,
+    "stance_unavailable": null
+  },
+  "fixture_labels": {
+    "count": 0,
+    "visible": 0,
+    "texts": []
+  },
+  "fixture_text": [],
+  "size_mult_text": [],
+  "stripe_audit": {
+    "scope": "body",
+    "flagged": []
+  },
+  "next_turn_labels": [],
+  "cycles_ctx": null,
+  "assertions": {
+    "scroll_width_within_viewport": true,
+    "console_errors": 0,
+    "console_errors_unexpected": 0,
+    "size_mult_visible": false,
+    "page_errors": 0,
+    "fixture_label_visible": false,
+    "theme_applied": null,
+    "lang_applied": null,
+    "zh_latin": 4,
+    "expect_visible_any": null
+  },
+  "console_errors": [],
+  "console_errors_expected": [],
+  "page_errors": [],
+  "failed_requests": [
+    {
+      "url": "http://127.0.0.1:8741/sector_cycles_china_data.js",
+      "failure": "csp"
+    },
+    {
+      "url": "http://127.0.0.1:8741/mm_charts.js",
+      "failure": "csp"
+    },
+    {
+      "url": "http://127.0.0.1:8741/sector_cycles.js",
+      "failure": "csp"
+    },
+    {
+      "url": "http://127.0.0.1:8741/sector_cycles_states.js",
+      "failure": "csp"
+    },
+    {
+      "url": "http://127.0.0.1:8741/sector_cycles_face.js",
+      "failure": "csp"
+    },
+    {
+      "url": "http://127.0.0.1:8741/sector_cycles_compare.js",
+      "failure": "csp"
+    },
+    {
+      "url": "http://127.0.0.1:8741/sector_cycles_platform.js",
+      "failure": "csp"
+    }
+  ],
+  "interceptions": [],
+  "serve": {
+    "counts": {
+      "out": 23,
+      "head-fallback": 2
+    },
+    "head_fallback": [
+      "/macro-desk.css",
+      "/navigation-refresh.css"
+    ],
+    "missing": []
+  },
+  "zh_latin": {
+    "scope": "document",
+    "count": 4,
+    "rc": 1,
+    "line": "zh-latin=4 A GS X Y skip=details(wholesale),nav,script,style,svg,title,head,[hidden],.l-en code-on-face=counts allow=XL?,FIX,SPY,MODEL,PRIOR"
+  },
+  "png": {
+    "file": "cells/v4-china-cycles__dark__zh__1440__l4-nojs.png",
+    "sha256": "25da2a3d6dc9b60454ca3c5bc541946f357cad751104ef6c0a78094e8758b861"
+  }
+}

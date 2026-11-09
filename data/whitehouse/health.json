@@ -1,16 +1,16 @@
 {
   "schema": "wh_health.v1",
-  "as_of": "2026-11-05T21:59:15.395166+00:00",
-  "posts_seen": 13,
-  "seen_total": 322,
+  "as_of": "2026-11-08T23:42:07.806982+00:00",
+  "posts_seen": 11,
+  "seen_total": 331,
   "evaluated": 1,
-  "activated": 1,
+  "activated": 0,
   "provider": "Claude claude-opus-4-8 (subscription)",
   "gate_scores": [
     {
-      "id": "wh-2026-11-05-first-lady-melania-trump-unites-russia-and-ukraine-at-the-white-house-following-",
-      "importance": 72,
-      "activated": true,
+      "id": "wh-2026-11-07-presidential-message-on-honoring-the-american-flag",
+      "importance": 5,
+      "activated": false,
       "degraded_reason": "served_by:deepseek"
     }
   ]
