@@ -1,0 +1,15 @@
+{
+  "schema": "cot_browser_verification.v1",
+  "scope": "local_preview_real_cftc_data",
+  "source_snapshot": "dd39e7ebc7b7b7988c7142e65c5b5e86a9943680ff630eca2362ef2c7b8eca31",
+  "checks": [
+    "21 markets",
+    "Nasdaq TFF reconciliation",
+    "cohort chart",
+    "gold search",
+    "commodity detail",
+    "empty filter"
+  ],
+  "page_errors": [],
+  "production_verified": false
+}

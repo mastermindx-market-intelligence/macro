@@ -38,6 +38,8 @@ import numpy as np
 import pandas as pd
 
 from lib import config, store
+from lib.cot_data import read_legacy_frame
+from lib.cot_publication import legacy_series
 from engine import commodity_mtf
 
 log = logging.getLogger(__name__)
@@ -49,9 +51,11 @@ CALIB_PATH = "commodity/conviction_calibration.json"
 # orthogonal dimensions: forward rate path / carry, risk-off, liquidity.
 # ---------------------------------------------------------------------------- #
 def _series(group: str, name: str, col: str | None = None) -> pd.Series | None:
-    df = store.read(group, name)
+    df = read_legacy_frame(name) if group == "cot" else store.read(group, name)
     if df is None or getattr(df, "empty", True):
         return None
+    if group == "cot":
+        return legacy_series(df, col or "net_spec_pct_oi")
     s = df[col] if (col and col in df.columns) else df.iloc[:, 0]
     s = pd.to_numeric(s, errors="coerce")
     s.index = pd.to_datetime(s.index)

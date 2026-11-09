@@ -32,6 +32,9 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "lib/cot_contracts.py"
+      - "lib/cot_data.py"
+      - "lib/cot_publication.py"
       - collectors/base.py
       - collectors/yahoo.py
       - config/delisted_symbols.yml
@@ -94,6 +97,9 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "lib/cot_contracts.py"
+      - "lib/cot_data.py"
+      - "lib/cot_publication.py"
       - "scripts/calibrate_rate_inflation.py"
       - "collectors/__init__.py"
       - "collectors/_drip.py"
@@ -331,6 +337,9 @@ jobs:
     # Keep generated-site identities even when absent from a local sparse checkout.
     # Canonical closure and ancestor tests enforce this exact curated scope.
     paths:
+      - "lib/cot_contracts.py"
+      - "lib/cot_data.py"
+      - "lib/cot_publication.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
@@ -2502,6 +2511,9 @@ jobs:
     # C19 WP32 P5/P6: generation-correction identity coherence + warm-cache denial silence on a synthetic ticker (offline).
     timeout-minutes: 10
     paths:
+      - "lib/cot_contracts.py"
+      - "lib/cot_data.py"
+      - "lib/cot_publication.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
@@ -3579,6 +3591,9 @@ jobs:
     # C19 WP22: DHI non-AAPL integrated-answer traversal on the published event workspace (offline).
     timeout-minutes: 10
     paths:
+      - "lib/cot_contracts.py"
+      - "lib/cot_data.py"
+      - "lib/cot_publication.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "scripts/company_intelligence_publication_evidence.py"
@@ -6241,6 +6256,9 @@ jobs:
     # suites read can still start this job.
     scope: exclusive
     paths:
+      - "lib/cot_contracts.py"
+      - "lib/cot_data.py"
+      - "lib/cot_publication.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "engine/entry_radar/__init__.py"
@@ -7451,6 +7469,9 @@ jobs:
     # One test runs the page's date scripts under the node the runner ships.
     scope: exclusive
     paths:
+      - "lib/cot_contracts.py"
+      - "lib/cot_data.py"
+      - "lib/cot_publication.py"
       - "collectors/__init__.py"
       - "collectors/base.py"
       - "collectors/fred.py"
@@ -8180,6 +8201,9 @@ jobs:
     # opaque fallback patterns to this hermetic job.
     scope: exclusive
     paths:
+      - "lib/cot_contracts.py"
+      - "lib/cot_data.py"
+      - "lib/cot_publication.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "engine/neuralweb/options_selection_context.py"
@@ -10695,6 +10719,9 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "lib/cot_contracts.py"
+      - "lib/cot_data.py"
+      - "lib/cot_publication.py"
       - "tests/test_intl_gs_dislocations_view.py"
       - "tests/intl_gs_dislocations_browser.test.cjs"
       - "tests/intl_gs_dislocations_fixture.py"
@@ -11047,6 +11074,9 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "lib/cot_contracts.py"
+      - "lib/cot_data.py"
+      - "lib/cot_publication.py"
       - app/__init__.py
       - app/deploy/ohlc_origin_known_hosts
       - scripts/publish_ohlc.py
@@ -11418,6 +11448,9 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "lib/cot_contracts.py"
+      - "lib/cot_data.py"
+      - "lib/cot_publication.py"
       - app/__init__.py
       - app/deploy/ohlc_origin_known_hosts
       - scripts/publish_ohlc.py
@@ -12433,6 +12466,9 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      - "lib/cot_contracts.py"
+      - "lib/cot_data.py"
+      - "lib/cot_publication.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
@@ -14622,6 +14658,9 @@ jobs:
     # fails if a future import is not covered by this declaration.
     scope: exclusive
     paths:
+      - "lib/cot_contracts.py"
+      - "lib/cot_data.py"
+      - "lib/cot_publication.py"
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
       # SIC-D-B12 2026-10-21 (#7646): hazard-parity import closure (engine/hazard_parity -> scripts/build_hazard_panel + scripts/fit_cycle_hazard, their engine/W41 census reads).
@@ -14959,6 +14998,10 @@ jobs:
     # narrow those.
     scope: exclusive
     paths:
+      - "lib/cot_contracts.py"
+      - "lib/cot_data.py"
+      - "lib/cot_publication.py"
+      - "scripts/build_cot.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - app/deploy/ohlc_origin_known_hosts
       - scripts/publish_ohlc.py
@@ -15545,6 +15588,9 @@ jobs:
     runs-on: ubuntu-latest
     scope: exclusive
     paths:
+      - "lib/cot_contracts.py"
+      - "lib/cot_data.py"
+      - "lib/cot_publication.py"
       - app/__init__.py
       - app/deploy/ohlc_origin_known_hosts
       - "lib/us_cash_calendar.py"
@@ -16811,6 +16857,9 @@ jobs:
     # dynamic resource families; never fund unrelated matches by raising caps.
     scope: exclusive
     paths:
+      - "lib/cot_contracts.py"
+      - "lib/cot_data.py"
+      - "lib/cot_publication.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "engine/entry_radar/__init__.py"
@@ -17023,6 +17072,9 @@ jobs:
     # Dynamic Ontology assets and canonical navigation are included explicitly.
     scope: exclusive
     paths:
+      - "lib/cot_contracts.py"
+      - "lib/cot_data.py"
+      - "lib/cot_publication.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       # TTI-D1: bind the existing synthetic minute reader/resolver suite to
@@ -19501,6 +19553,11 @@ jobs:
     # ticker-cluster time-confound law and the altdata_brain.py article3 convention.
     scope: exclusive
     paths:
+      - "lib/cot_contracts.py"
+      - "lib/cot_data.py"
+      - "lib/cot_publication.py"
+      - "engine/cot_positioning.py"
+      - "scripts/build_cot.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - engine/entry_radar/replay/identity_observation_snapshot.py
@@ -20711,6 +20768,9 @@ jobs:
     # (5,825 > 5,822) and build_free_content (5,700 > 5,697) packing probes. scope: exclusive
     # pins it to its static import closure plus ancestor inits; the probe ceilings stay fixed.
     paths:
+      - "lib/cot_contracts.py"
+      - "lib/cot_data.py"
+      - "lib/cot_publication.py"
       - "templates/china_sector_desk.html.j2"
       - "tests/test_china_sector_desk.py"
       - "collectors/__init__.py"
@@ -21062,6 +21122,9 @@ jobs:
     # sparse tree). Packing ceilings unchanged.
     runs-on: ubuntu-latest
     paths:
+      - "lib/cot_contracts.py"
+      - "lib/cot_data.py"
+      - "lib/cot_publication.py"
       - "collectors/__init__.py"
       - "collectors/base.py"
       - "collectors/yahoo.py"
@@ -21310,6 +21373,9 @@ jobs:
     # they read by name — not templates/** or engine/** wholesale, whose PRs
     # validated-claims-source already grades.
     paths:
+      - "lib/cot_contracts.py"
+      - "lib/cot_data.py"
+      - "lib/cot_publication.py"
       - "engine/entry_radar/replay/identity_observation_snapshot.py"
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
@@ -21957,6 +22023,9 @@ jobs:
     # builder-shim job added unrelated selection weight to every page builder.
     # The incumbent context-bus suite keeps its existing owner above.
     paths:
+      - "lib/cot_contracts.py"
+      - "lib/cot_data.py"
+      - "lib/cot_publication.py"
       - "collectors/__init__.py"
       - "collectors/base.py"
       - "collectors/yahoo.py"
@@ -22830,6 +22899,9 @@ jobs:
     # Static closure plus observed runtime config/test-support reads and package
     # initializers; AST/render fallbacks do not make the packing probes inputs.
     paths:
+      - "lib/cot_contracts.py"
+      - "lib/cot_data.py"
+      - "lib/cot_publication.py"
       # SIC-D-B12 2026-10-21 (#7646): hazard-parity import closure (engine/hazard_parity -> scripts/build_hazard_panel + scripts/fit_cycle_hazard, their engine/W41 census reads).
       - "engine/grading_stats.py"
       - "engine/hazard_parity.py"
@@ -22940,6 +23012,9 @@ jobs:
     # over the five suites (computed 2026-10-14 at base c1c7f625; no import delta to origin/main 69693a5e).
     scope: exclusive
     paths:
+      - "lib/cot_contracts.py"
+      - "lib/cot_data.py"
+      - "lib/cot_publication.py"
       # SIC-D-B12 2026-10-21 (#7646): hazard-parity import closure (engine/hazard_parity -> scripts/build_hazard_panel + scripts/fit_cycle_hazard, their engine/W41 census reads).
       - "engine/grading_stats.py"
       - "engine/hazard_parity.py"
@@ -23041,6 +23116,9 @@ jobs:
     # the observed runtime test-support reads; widen it, never narrow it.
     scope: exclusive
     paths:
+      - "lib/cot_contracts.py"
+      - "lib/cot_data.py"
+      - "lib/cot_publication.py"
       # SIC-D-B12 2026-10-21 (#7646): hazard-parity import closure (engine/hazard_parity -> scripts/build_hazard_panel + scripts/fit_cycle_hazard, their engine/W41 census reads).
       - "engine/grading_stats.py"
       - "engine/hazard_parity.py"
@@ -23629,6 +23707,9 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "lib/cot_contracts.py"
+      - "lib/cot_data.py"
+      - "lib/cot_publication.py"
       - "app/__init__.py"
       - "app/deploy/ohlc_origin_known_hosts"
       - "collectors/__init__.py"
@@ -24068,6 +24149,9 @@ jobs:
     # Explicit measured closure: avoid unrelated opaque fallback selection.
     scope: exclusive
     paths:
+      - "lib/cot_contracts.py"
+      - "lib/cot_data.py"
+      - "lib/cot_publication.py"
       - app/__init__.py
       - app/deploy/ohlc_origin_known_hosts
       - scripts/publish_ohlc.py
@@ -24403,6 +24487,11 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
+      - "lib/cot_contracts.py"
+      - "lib/cot_data.py"
+      - "lib/cot_publication.py"
+      - "engine/cot_positioning.py"
+      - "scripts/build_cot.py"
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
       - engine/entry_radar/replay/identity_observation_snapshot.py
@@ -25651,6 +25740,9 @@ jobs:
     # Static closure plus observed runtime config/test-support reads and package
     # initializers; AST/render fallbacks do not make the packing probes inputs.
     paths:
+      - "lib/cot_contracts.py"
+      - "lib/cot_data.py"
+      - "lib/cot_publication.py"
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
       # SIC-D-B12 2026-10-21 (#7646): hazard-parity import closure (engine/hazard_parity -> scripts/build_hazard_panel + scripts/fit_cycle_hazard, their engine/W41 census reads).
@@ -27168,6 +27260,9 @@ jobs:
     # hence the pandas-family install below.
     scope: exclusive
     paths:
+      - "lib/cot_contracts.py"
+      - "lib/cot_data.py"
+      - "lib/cot_publication.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - engine/rate_futures_repricing.py
@@ -28077,6 +28172,8 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      - "engine/cot_positioning.py"
+      - "scripts/build_cot.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "engine/intraday_greeks.py"
       - "engine/options_nbbo_cohort.py"
@@ -31306,6 +31403,9 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "lib/cot_contracts.py"
+      - "lib/cot_data.py"
+      - "lib/cot_publication.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
@@ -32384,6 +32484,9 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "lib/cot_contracts.py"
+      - "lib/cot_data.py"
+      - "lib/cot_publication.py"
       - app/__init__.py
       - app/deploy/ohlc_origin_known_hosts
       - scripts/publish_ohlc.py
@@ -35305,6 +35408,9 @@ jobs:
     # it); the ceilings stay fixed.
     # The ancestor inits are declared so this job adds no census rows.
     paths:
+      - "lib/cot_contracts.py"
+      - "lib/cot_data.py"
+      - "lib/cot_publication.py"
       - "app/__init__.py"
       - "app/deploy/ohlc_origin_known_hosts"
       - "collectors/__init__.py"
@@ -35911,6 +36017,11 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "lib/cot_contracts.py"
+      - "lib/cot_data.py"
+      - "lib/cot_publication.py"
+      - "engine/cot_positioning.py"
+      - "scripts/build_cot.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "engine/prophet_early_leadership_evidence.py"
@@ -37267,6 +37378,9 @@ jobs:
     runs-on: ubuntu-latest
     scope: exclusive
     paths:
+      - "lib/cot_contracts.py"
+      - "lib/cot_data.py"
+      - "lib/cot_publication.py"
       - app/__init__.py
       - app/deploy/ohlc_origin_known_hosts
       - scripts/publish_ohlc.py
@@ -37419,6 +37533,8 @@ jobs:
     # the declared-scope coverage audit re-checks them on every load.
     scope: exclusive
     paths:
+      - "engine/cot_positioning.py"
+      - "scripts/build_cot.py"
       - "engine/theme_graph/activity_history_bridge.py"
       - "engine/prophet_early_leadership_evidence.py"
       - "contracts/theme_graph/theme_state.v1.schema.json"
@@ -41107,6 +41223,9 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "lib/cot_contracts.py"
+      - "lib/cot_data.py"
+      - "lib/cot_publication.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
@@ -42811,6 +42930,9 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "lib/cot_contracts.py"
+      - "lib/cot_data.py"
+      - "lib/cot_publication.py"
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
       # SIC-D-B12 2026-10-21 (#7646): hazard-parity import closure (engine/hazard_parity -> scripts/build_hazard_panel + scripts/fit_cycle_hazard, their engine/W41 census reads).
@@ -43122,6 +43244,9 @@ jobs:
     # Pin the measured import closure; unrelated template changes do not select GR3.
     scope: exclusive
     paths:
+      - "lib/cot_contracts.py"
+      - "lib/cot_data.py"
+      - "lib/cot_publication.py"
       - "collectors/yahoo.py"
       - "config/delisted_symbols.yml"
       - "lib/delisted_symbols.py"
@@ -43926,6 +44051,9 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "lib/cot_contracts.py"
+      - "lib/cot_data.py"
+      - "lib/cot_publication.py"
       - "collectors/base.py"
       - "collectors/yahoo.py"
       - "config/delisted_symbols.yml"
@@ -44064,6 +44192,9 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "lib/cot_contracts.py"
+      - "lib/cot_data.py"
+      - "lib/cot_publication.py"
       - "collectors/base.py"
       - "collectors/yahoo.py"
       - "config/delisted_symbols.yml"
@@ -44214,6 +44345,9 @@ jobs:
     if: ${{ false }}  # executed inside ci-pack — NOT a disabled gate.
     gate: code
     paths:
+      - "lib/cot_contracts.py"
+      - "lib/cot_data.py"
+      - "lib/cot_publication.py"
       - "collectors/base.py"
       - "collectors/yahoo.py"
       - "lib/cn_calendar.py"
@@ -44501,6 +44635,9 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "lib/cot_contracts.py"
+      - "lib/cot_data.py"
+      - "lib/cot_publication.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
@@ -45777,6 +45914,9 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "lib/cot_contracts.py"
+      - "lib/cot_data.py"
+      - "lib/cot_publication.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "contracts/capital_structure_projection.schema.json"
@@ -47480,6 +47620,9 @@ jobs:
     # An unlisted closure file is an uncovered path. No tests/** catch-all.
     scope: exclusive
     paths:
+      - "lib/cot_contracts.py"
+      - "lib/cot_data.py"
+      - "lib/cot_publication.py"
       - "lib/shared_shell.py"
       - "lib/us_cash_calendar.py"
       - "lib/cn_calendar.py"
@@ -47617,6 +47760,7 @@ jobs:
     # An unlisted closure file is an uncovered path. No tests/** catch-all.
     scope: exclusive
     paths:
+      - "scripts/build_cot.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
@@ -47924,6 +48068,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "scripts/build_cot.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
@@ -48190,6 +48335,9 @@ jobs:
     # the nightly engine shell). No data/** fallback.
     scope: exclusive
     paths:
+      - "lib/cot_contracts.py"
+      - "lib/cot_data.py"
+      - "lib/cot_publication.py"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
       - "lib/us_cash_calendar.py"
@@ -50496,6 +50644,28 @@ jobs:
     # Retain the complete named import/read closure and ancestor initializers.
     # This scope adds no packing exception or global-selection threshold.
     paths:
+      - "collectors/cot.py"
+      - "engine/cot_positioning.py"
+      - "lib/cot_contracts.py"
+      - "lib/cot_data.py"
+      - "lib/cot_publication.py"
+      - "scripts/build_cot.py"
+      - "tests/test_cot_collector.py"
+      - "tests/test_cot_data.py"
+      - "tests/test_cot_positioning.py"
+      - "tests/test_cot_publication.py"
+      - "tests/test_cot_publication_output.py"
+      - "tests/fixtures/cot_source_20261006.json"
+      - "engine/btc_inputs.py"
+      - "engine/forex_inputs.py"
+      - "engine/commodity_strategies.py"
+      - "engine/equity_alloc.py"
+      - "engine/cross_asset_trend.py"
+      - "engine/strategies.py"
+      - "engine/total_return.py"
+      - "engine/dislocation.py"
+      - "engine/cross_asset.py"
+      - "engine/ledger_lane.py"
       - "engine/entry_radar/replay/identity_observation_snapshot.py"
       # SIC-D-B12 2026-10-21 (#7646): hazard-parity import closure (engine/hazard_parity -> scripts/build_hazard_panel + scripts/fit_cycle_hazard, their engine/W41 census reads).
       - "engine/grading_stats.py"
@@ -50655,7 +50825,7 @@ jobs:
       - name: install pinned DOM test dependency
         run: npm install --no-save --package-lock=false --prefix "${RUNNER_TEMP:?}/commodity-dom" jsdom@26.1.0
       - name: commodity research projection and physical-balance contracts
-        run: python -m pytest tests/test_commodity_supply_context.py tests/test_commodity_decision_workspace.py tests/test_commodity_publication.py tests/test_commodity_presentation_render.py -q -p no:cacheprovider
+        run: python -m pytest tests/test_commodity_supply_context.py tests/test_commodity_decision_workspace.py tests/test_commodity_publication.py tests/test_commodity_presentation_render.py tests/test_cot_collector.py tests/test_cot_data.py tests/test_cot_positioning.py tests/test_cot_publication.py tests/test_cot_publication_output.py -q -p no:cacheprovider
       - name: workspace state, import and company-return contracts
         run: node tests/test_commodity_workspace_contracts.js
       - name: rendered workspace and signed presentation journeys
@@ -50672,6 +50842,9 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "lib/cot_contracts.py"
+      - "lib/cot_data.py"
+      - "lib/cot_publication.py"
       - "scripts/calibrate_rate_inflation.py"
       - "collectors/__init__.py"
       - "collectors/_drip.py"
@@ -50966,6 +51139,9 @@ jobs:
     # Exclude only opaque whole-root inference from the builder's dormant I/O;
     # packing ceilings, all named dependencies and test assertions stay intact.
     paths:
+      - "lib/cot_contracts.py"
+      - "lib/cot_data.py"
+      - "lib/cot_publication.py"
       - "engine/entry_radar/replay/identity_observation_snapshot.py"
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
@@ -51102,6 +51278,11 @@ jobs:
     # The qledger-cluster-honest-ci code owner retains grader/readiness suites.
     scope: exclusive
     paths:
+      - "lib/cot_contracts.py"
+      - "lib/cot_data.py"
+      - "lib/cot_publication.py"
+      - "engine/cot_positioning.py"
+      - "scripts/build_cot.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "admin/press_audience.py"
@@ -53024,6 +53205,9 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "lib/cot_contracts.py"
+      - "lib/cot_data.py"
+      - "lib/cot_publication.py"
       - "app/__init__.py"
       - "app/deploy/ohlc_origin_known_hosts"
       - "collectors/__init__.py"

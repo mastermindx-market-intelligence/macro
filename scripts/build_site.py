@@ -8666,6 +8666,14 @@ def main() -> int:
     except Exception as _plnt_e:  # noqa: BLE001 — additive; never break main build
         log.warning("consumer_cyclical_plnt.html render failed (%s); page skipped", _plnt_e)
 
+    # COT source-owned weekly board: exact 21-market snapshot and history.
+    try:
+        from scripts.build_cot import build as _build_cot
+        _cot_page = _build_cot(site=site)
+        log.info("wrote %s", _cot_page)
+    except Exception as _cot_error:  # additive surface; no invented data on failure
+        log.warning("COT board build failed: %s", type(_cot_error).__name__)
+
     # F01 Macro & Monetary suite — server-rendered workspace pages over the
     # validated mastermind.macro_workspace_snapshot.v1 artifacts. The builder
     # fails CLOSED on its own (a refused snapshot renders the typed refusal page,
