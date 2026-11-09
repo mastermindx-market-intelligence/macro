@@ -1711,6 +1711,52 @@ def test_manifest_original_semantic_base_positive_preserves_current_head_fences(
     assert runs[-1]["pull_requests"][0]["base"]["sha"] == BASE
 
 
+@pytest.mark.parametrize("skipped_standard", [False, True])
+def test_fork_fences_can_pass_without_qualifying_sparse_projection(monkeypatch, skipped_standard):
+    fresh, runs, loaded = _manifest_identity_case(monkeypatch)
+    standard = runs.pop()
+    if skipped_standard:
+        runs.append(dict(standard, conclusion="skipped"))
+    for i, name in enumerate(sorted(MOG.REQUIRED_FORK_FENCE_ANCHORS), 10):
+        runs.append(dict(standard, name=name, id=i))
+    assert MOG.proof_anchor_verdict(runs)[0] == "clean"
+    before = fresh.stale_for(_pull(), runs)
+    assert before[0] is True
+    answer = MOG._reconcile_original_proof_base(
+        "acme/widgets", _pull(), runs, "read", fresh, before, semantic_evidence=loaded,
+    )
+    assert answer[0] is None
+
+
+@pytest.mark.parametrize("flag, expected", [
+    ({}, None),
+    ({"truncated": None}, None),
+    ({"truncated": "false"}, None),
+    ({"truncated": 0}, None),
+    ({"truncated": True}, None),
+    ({"truncated": False}, False),
+])
+def test_original_sparse_projection_requires_complete_nonrecursive_tree(monkeypatch, flag, expected):
+    fresh, runs, loaded = _manifest_identity_case(monkeypatch)
+    fresh._root_tree = MOG.ProofFreshness._root_tree.__get__(fresh)
+    reads = []
+
+    def request(method, url, *_args):
+        assert method == "GET" and "/git/trees/" in url and "?" not in url
+        reads.append(url)
+        return 200, {
+            "tree": [{"path": "sentinel", "type": "blob", "mode": "100644", "sha": "1" * 40}],
+            **flag,
+        }
+
+    monkeypatch.setattr(MOG, "_request", request)
+    answer = MOG._reconcile_original_proof_base(
+        "acme/widgets", _pull(), runs, "read", fresh, (True, "definition"), semantic_evidence=loaded,
+    )
+    assert answer[0] is expected
+    assert len(reads) == (4 if expected is False else 1)
+
+
 @pytest.mark.parametrize("kind", ["missing-fence", "mixed", "wrong-head", "foreign-app", "foreign-ci", "wrong-run", "malformed", "missing-associations", "unowned", "other-owner", "base-outside-window"])
 def test_manifest_original_identity_missing_mixed_or_inapplicable_refuses(monkeypatch, kind):
     fresh, runs, loaded = _manifest_identity_case(monkeypatch)

@@ -2761,10 +2761,9 @@ def _semantic_manifest_input_is_current(
     linked = re.fullmatch(re.escape(f"https://github.com/{repo}/actions/runs/") + r"([1-9][0-9]*)(?:/job/[1-9][0-9]*)?/?", str(gate.get("details_url") or ""))
     if linked is None or linked.group(1) != str(evidence.get("workflow_run_id") or ""):
         return False
-    fence_names = ({REQUIRED_FENCE_ANCHOR} if REQUIRED_FENCE_ANCHOR in anchors
-                   and anchors[REQUIRED_FENCE_ANCHOR].get("conclusion") != "skipped"
-                   else set(REQUIRED_FORK_FENCE_ANCHORS))
-    required = fence_names | {REQUIRED_CI_GATE}
+    # Fork fences can pass the ordinary gate, but their full checkout does not
+    # have the input boundary qualified for the sparse fence-pack.
+    required = {REQUIRED_FENCE_ANCHOR, REQUIRED_CI_GATE}
     if not required <= anchors.keys():
         return False
     bases = set()
@@ -3113,10 +3112,8 @@ class ProofFreshness:
         )
         if status >= 400 or not isinstance(payload, dict):
             raise _read_failed(status, payload, f"root tree {tree_sha[:12]} unreadable")
-        if payload.get("truncated") is True:
-            raise RuntimeError(f"root tree {tree_sha[:12]} was truncated")
         rows = payload.get("tree")
-        if not isinstance(rows, list):
+        if payload.get("truncated") is not False or not isinstance(rows, list):
             raise RuntimeError(f"root tree {tree_sha[:12]} is incomplete")
         entries: dict[str, tuple[str, str, str]] = {}
         for entry in rows:
