@@ -4,7 +4,7 @@
 
 This is the canonical continuation of the [first audit and build plan](AUDIT_AND_BUILD_PLAN.md), on the existing [Macro programme PR #10617](https://github.com/mastermindx-market-intelligence/macro/pull/10617). The Chairman requested further autonomous implementation, correction and enhancement across Paper. The work continues in the foreground; this saved milestone is not a completion claim or a request to resume.
 
-Eleven additional files have received applied changes with native visual checks: Guide, Prophet, Market Memory, Policy Monitor, Market Ontology, Sector Intelligence, the Options W3 mobile companion, Risk Radar, Confluence Screener, Crypto Intelligence and T47 ranked search. The existing GMI and Terminal files also received deeper source-matched receipt and Company R3 amendments. Crypto now includes eight saved-case, historical-return and recovery states with an explicit storage/navigation build contract. The seven-file first pass remains accepted work for this mission and is not repeated here.
+Twelve additional files have received applied changes with native visual checks: Guide, Prophet, Market Memory, Policy Monitor, Market Ontology, Sector Intelligence, the Options W3 mobile companion, Risk Radar, Confluence Screener, Crypto Intelligence, T47 ranked search and BioCatalyst’s current builder navigation. The existing GMI and Terminal files also received deeper source-matched receipt and Company R3 amendments. Crypto now includes eight saved-case, historical-return and recovery states with an explicit storage/navigation build contract. The seven-file first pass remains accepted work for this mission and is not repeated here.
 
 The root session is the only canvas writer among this session’s agents; independent live writers retain their own targets. Read-only design, international-language and architecture advisers contributed bounded judgments. Mutations use fresh snapshot guards and distinct operation identities beginning `paper-estate-cont-20261108-`. Initial changes used the Mastermind Paper connector; after its transport repeatedly timed out on reads, new operations continued through the authorized Studio Direct Paper owner. Completed operations were read back, never replayed; the detailed transport ruling below preserves that boundary. No runtime release, merge, hold change, message to another person, or live-model qualification has been performed.
 
@@ -784,6 +784,58 @@ Seventeen exact roots were released: eight amended original boards, eight retain
 ### Frontier reassessment
 
 A fresh native resource listing returned 81 resources, including open archived files; it is not a count of active products. The migrated families are now individually discoverable. Bounded reviews found substantial newer source/interaction work in Government Revenue R13, Bonds R12, Returns R4 and Intraday Flow R4, so those existing amendments were preserved. Shared Market Search/Comparison and the inspected illustrative long-read also already supplied the relevant context and limitations. The next phase should follow a demonstrated gap rather than duplicate these completed states.
+
+
+## 15. BioCatalyst: repair the current builder navigation after migration
+
+**Applied in the existing file:** [Current journey map, product page](https://app.paper.design/file/01M6Y34XE4JKS3A40GMMZ954JE/p-2-0) and [Builder contracts](https://app.paper.design/file/01M6Y34XE4JKS3A40GMMZ954JE/p-1-0), file `01M6Y34XE4JKS3A40GMMZ954JE`.
+
+The operative journey map **`FQ-0`** still directed builders to predecessor pages `p-1M-0 / p-1K-0 / p-1L-0` and predecessor board IDs. Fresh file metadata showed that the current BioCatalyst file contains only **p-1-0 (Builder)** and **p-2-0 (Product)**. These directions were broken as current navigation, even though the corresponding product designs existed.
+
+The accepted R9 product work was preserved. Bounded adviser review found the inspected Explore and Compare Studies screens coherent, including their timing-basis, population/endpoint, private-draft and export distinctions. The root-inspected review brief was also retained. This phase repairs builder locations; it adds no clinical, efficacy, forecast or runtime claim.
+
+### Current destinations now named in the map
+
+| Journey | Current page | Current node |
+|---|---|---|
+| Start / prepared briefing | p-2-0 | `H3-0` |
+| EX-201 review brief, desktop / mobile | p-2-0 | `U8-0` / `Y3-0` |
+| Explore, desktop / mobile | p-2-0 | `145-0` / `18Q-0` |
+| Review source changes, desktop / mobile | p-2-0 | `1QQ-0` / `1UZ-0` |
+| Saved research, desktop / mobile | p-2-0 | `1KW-0` / `1P0-0` |
+| Compare studies, desktop / mobile | p-2-0 | `24W-0` / `27O-0` |
+| Coverage/source inspection, desktop / mobile | p-2-0 | `1WL-0` / `20O-0` |
+| Company disclosure | p-2-0 | `223-0` |
+| Prepare watch / shared My Alerts | p-2-0 | `ZH-0` / `23I-0` |
+| Explore: tablet dark EN / desktop light EN / 320px light ZH | p-2-0 | `1ET-0` / `1A8-0` / `1JE-0` |
+| Access, evidence and save states | p-1-0 | `2K-0` |
+| Product/journey/acceptance contract | p-1-0 | `1-0` |
+| Research, versions and export components | p-1-0 | `40-0` |
+
+All **22 unique referenced current artboard IDs** were checked against the two current page inventories. These are native Paper locations, not runtime application routes or claimed executable prototype links.
+
+The map now supplies copyable locations for the two related files, both verified through their current native metadata:
+
+- [MedTech current R14 specimens](https://app.paper.design/file/01M6Y36EQAT1J5B6Q7AVYKV2DW/p-1-0). The resource/page name still includes R13, while its current board titles are R14; no rename or product edit was made to that file.
+- [Synthetic catalyst cases archive](https://app.paper.design/file/01M6Y37BWE719DWW5Z0DQS6DS9/p-1-0), explicitly **Not for Build**.
+
+These references are contained in new seven-node group `2BC-0`; they replace the map’s implication that the external references remain local pages.
+
+### Preserve historical provenance and accepted behavior
+
+The main Builder contract `1-0` already has current BioCatalyst and Government Revenue URLs and explicitly classifies the original page/node IDs as historical provenance. Those IDs and its accepted R9 comparison, private-note, version, save, export and return semantics were not rewritten.
+
+Only the provenance guidance at **`2B8-0`** now points concretely to **this file’s product page p-2-0, journey map FQ-0**, instead of requiring builders to find an unspecified migration receipt. It keeps the pre-migration pages and board IDs meaningful as history; it does not promote a historical checkpoint into a new task instruction.
+
+### Verification and exact scope
+
+The map changed **11 existing text nodes**: `FS-0, FU-0, G1-0, G6-0, GB-0, GG-0, GM-0, GP-0, GV-0, GY-0, H1-0`. The Builder contract changed **one text node**, `2B8-0`. A deliberate line break keeps the `24W-0` comparison destination from splitting across lines; its generated pre-wrap style is the only original style adjustment.
+
+Native screenshots checked the full updated map, the current-location guidance and the final saved-research destination card. The added related-file row fits within the existing map-to-next-board gap.
+
+Final JSX retains all **49 original map nodes** and all **96 original Builder nodes**, with exactly the listed text changes, the one line-wrap style change and the seven added related-reference nodes. The inspected product review brief **`Y3-0` is byte-identical**. The operative destinations resolve to current native metadata; historical provenance remains labeled.
+
+Exact roots `FQ-0` and `1-0` were released. No product data, clinical content, private research behavior, runtime source, archive status, external file, permission, test execution, approval or deployment was changed.
 
 ## Active next phase: next demonstrated workflow gap
 
