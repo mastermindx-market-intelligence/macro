@@ -2,10 +2,13 @@
 
 ## Current four-round amendment — 9 November 2026
 
-Read [Sector Intelligence in Shared Shell — four-round masterplan](SHARED_SHELL_MASTERPLAN_2026-11-09.md) before using the historical frontier below. The Chairman has requested census/architecture, Paper design, architecture hardening, then a final Fable-led T3 implementation packet. Revision 0.1 records Round 1; it is not a dispatch or release instruction.
+Read [Sector Intelligence in Shared Shell — four-round masterplan](SHARED_SHELL_MASTERPLAN_2026-11-09.md) before using the historical frontier below. The Chairman has requested census/architecture, Paper design, architecture hardening, then a final Fable-led T3 implementation packet. **Revision 0.2 records completed Rounds 1–2. The next requested turn is Round 3 architecture hardening.** This amendment is not a dispatch or release instruction.
 
-The amendment preserves B01–B12, P01–P23, J01–J15 and the 134-row capability contract. It updates the final product destination to Beta Shared Shell, maps useful Terminal components as donors, reconciles merged and pending work, and identifies current Paper files and source-generation gaps. The original 21 October source, publication and Paper observations below are historical and must not be treated as today's launch state.
+Round 2 produced **47 editable Paper Frames** in the existing R4 working file: 31 Product, 13 States/help and three Build compositions. The [Round 2 build guide](ROUND2_PAPER_BUILD_GUIDE_2026-11-09.md) contains exact node IDs, preservation ledger, source-to-field mapping, interaction/recovery contracts and remaining proof. Start with [Product](https://app.paper.design/file/01M6FAXA774QT1VRDMAG7DFQ2W/p-B-0), [States/help](https://app.paper.design/file/01M6FAXA774QT1VRDMAG7DFQ2W/p-C-0), then [Build](https://app.paper.design/file/01M6FAXA774QT1VRDMAG7DFQ2W/p-D-0). Rendered coverage includes 1440, 768, 390 and five critical 320px views, plus deliberate English/Chinese and light/dark specimens. Design review does not establish implemented or production acceptance.
 
+The amendment preserves B01–B12, P01–P23, J01–J15 and the 134-row capability contract. The destination is one Sector Intelligence experience in Beta Shared Shell, retaining useful Terminal components and Macro analytical ownership. Round 3 must refresh affected route/generation candidates and live custody, bind research/save/revision/rights contracts, resolve scientific and descriptive-order authority, and reconcile every retained action/capability against evidence. Retirement of competing Terminal UX remains conditional on complete parity and compatibility proof.
+
+The original 21 October source, publication, task-routing and Paper observations below are historical. They are not today's launch state and do not authorize early Fable/T3 pickup. The final source-linked implementation packet remains Round 4.
 
 Prepared 21 October 2026 UTC. Pass this brief together with:
 
