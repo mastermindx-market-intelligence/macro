@@ -4533,6 +4533,7 @@ def test_workspace_runtime_contracts_can_start_the_ci_that_validates_them() -> N
 CURATED_EXCLUSIVE = {
     # China Paper renderer: complete import/read closure; ordinary probes excluded.
     "china-intel-paper-vnext",
+    "xguerrilla-identity-registry",
     "public-site-figma-baseline-contracts",
     "press-account-claim-consumer",
     # GDELT leaf suites own their exact import/read closure.
@@ -5427,6 +5428,46 @@ def test_xguerrilla_admission_scope_does_not_select_packing_probes(probe: str) -
     """Conservative package ownership preserves the three packing shapes."""
     job = next(job for job in PACK.load_legacy_jobs(MANIFEST, gate="code")
                if job.job_id == "xguerrilla-admission")
+    scoped, _ = PACK.infer_job_scopes([job])
+    selected, reason = PACK.select_jobs(scoped, [probe])
+    assert not selected, reason
+
+
+def test_xguerrilla_registry_scope_keeps_collection_and_future_dependencies() -> None:
+    """Collection's tools/ alias cannot silently omit package dependencies."""
+    job = next(job for job in PACK.load_legacy_jobs(MANIFEST, gate="code")
+               if job.job_id == "xguerrilla-identity-registry")
+    assert job.exclusive
+    scoped, _ = PACK.infer_job_scopes([job])
+    for dependency in (
+        "tools/xguerrilla/registry.py",  # ci-trigger-closure: data
+        "tools/xguerrilla/cli.py",  # ci-trigger-closure: data
+        "tools/xguerrilla/tests/test_registry.py",  # ci-trigger-closure: data
+        "tools/xguerrilla/tests/conftest.py",  # ci-trigger-closure: data
+        "tools/xguerrilla/profiles.py",  # ci-trigger-closure: data
+        "tools/xguerrilla/runtime_boundary.py",  # ci-trigger-closure: data
+        "tools/xguerrilla/validators.py",  # ci-trigger-closure: data
+        "tools/xguerrilla/drivers/base.py",  # ci-trigger-closure: data
+        "tools/xguerrilla/future_dependency.py",  # ci-trigger-closure: data
+        "tools/__init__.py",  # ci-trigger-closure: data
+        "research/agentic_media/handoffs/XG_IDENTITY_REGISTRY_V1.md",  # ci-trigger-closure: data
+    ):
+        selected, reason = PACK.select_jobs(scoped, [dependency])
+        assert [item.job_id for item in selected] == [job.job_id], (dependency, reason)
+        assert PACK._job_diff_match(scoped[0], [dependency]) == (dependency, "declared")
+    commands = "\n".join(step["run"] for step in job.definition["steps"] if "run" in step)
+    assert "python -m pytest tools/xguerrilla/tests/test_registry.py -q" in commands
+
+
+@pytest.mark.parametrize("probe", [
+    "templates/index.html",  # ci-trigger-closure: data
+    "scripts/build_free_content.py",  # ci-trigger-closure: data
+    "engine/prophet/plan_book.py",  # ci-trigger-closure: data
+])
+def test_xguerrilla_registry_scope_does_not_select_packing_probes(probe: str) -> None:
+    """The dedicated code owner adds no unrelated ordinary-probe weight."""
+    job = next(job for job in PACK.load_legacy_jobs(MANIFEST, gate="code")
+               if job.job_id == "xguerrilla-identity-registry")
     scoped, _ = PACK.infer_job_scopes([job])
     selected, reason = PACK.select_jobs(scoped, [probe])
     assert not selected, reason
