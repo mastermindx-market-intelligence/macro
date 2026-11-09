@@ -15,7 +15,7 @@ import sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "app/deploy"))
 
-from macro_caddy_overlay import ReconcileRefusal, plan_routes
+from macro_caddy_overlay import ReconcileRefusal, plan_routes, plan_www_automatic_tls
 
 MMX_NOT = {
     "header": {"Referer": ["https://beta.mastermind-x.com/*"]},
@@ -750,3 +750,93 @@ def test_shared_group_can_be_consistently_renumbered_without_losing_active_ids(c
     inner = body['handle'][0]['routes']
     assert [route['group'] for route in inner] == ['group81', 'group81', 'group93']
     assert inner[-1]['match'][0]['not'] == [MMX_NOT]
+
+
+@pytest.fixture
+def www_tls_transition():
+    www = WWW_HOST[0]
+    before = _previous_source()
+    policies = [{"subjects": ["other.example", www, "same.example"], "issuers": [{"module": "internal"}]},
+                {"subjects": ["admin.mastermind-x.com"]}]
+    before["apps"]["tls"] = {"automation": {"policies": policies}}
+    before["apps"]["http"]["servers"]["srv0"]["automatic_https"] = {"disable_redirects": True}
+    after = copy.deepcopy(before)
+    after_policies = _tls_policies(after)
+    after_policies[0]["subjects"].remove(www)
+    after_policies[1]["subjects"].append(www)
+    active = copy.deepcopy(before)
+    _tls_policies(active)[0]["subjects"].insert(2, "active-only.example")
+    _tls_policies(active)[0]["on_demand"] = False
+    _tls_policies(active)[1]["subjects"].append("active-public.example")
+    active["apps"]["http"]["servers"]["srv1"]["routes"].append(
+        {"match": [{"host": ["active-only.example"]}], "terminal": True})
+    return before, after, active
+
+
+def _tls_policies(config):
+    return config["apps"]["tls"]["automation"]["policies"]
+
+
+def test_www_automatic_tls_preserves_active_only_subjects_and_native_fields(www_tls_transition):
+    before, after, active = www_tls_transition
+    originals = copy.deepcopy(www_tls_transition)
+    expected = copy.deepcopy(active)
+    expected_policies = _tls_policies(expected)
+    expected_policies[0]["subjects"].remove(WWW_HOST[0])
+    expected_policies[1]["subjects"].append(WWW_HOST[0])
+    candidate = plan_www_automatic_tls(before, after, active)
+    assert candidate == expected
+    assert next(policy for policy in _tls_policies(candidate) if WWW_HOST[0] in policy["subjects"]) == {
+        "subjects": ["admin.mastermind-x.com", "active-public.example", WWW_HOST[0]]}
+    assert www_tls_transition == originals
+    with pytest.raises(ReconcileRefusal, match="non-route/TLS/global"):
+        plan_routes(before, after, active)
+
+
+@pytest.mark.parametrize("internal,automatic", [
+    (["other.example", "active-only.example", "same.example"], ["admin.mastermind-x.com", WWW_HOST[0]]),
+    (["same.example", WWW_HOST[0], "other.example"], ["admin.mastermind-x.com"]),
+    (["other.example", WWW_HOST[0], WWW_HOST[0], "same.example"], ["admin.mastermind-x.com"]),
+    (["other.example", WWW_HOST[0], "same.example"], ["admin.mastermind-x.com", WWW_HOST[0]]),
+    (["other.example", "*.mastermind-x.com", WWW_HOST[0], "same.example"], ["admin.mastermind-x.com"]),
+    (["other.example", WWW_HOST[0], "same.example"], []),
+])
+def test_www_automatic_tls_refuses_wrong_group_order_or_overlap(www_tls_transition, internal, automatic):
+    before, after, active = www_tls_transition
+    first, second = _tls_policies(active)
+    first["subjects"], second["subjects"] = internal, automatic
+    with pytest.raises(ReconcileRefusal):
+        plan_www_automatic_tls(before, after, active)
+
+
+@pytest.mark.parametrize("mutate", [
+    lambda cfg: _tls_policies(cfg).reverse(),
+    lambda cfg: _tls_policies(cfg)[0].update(issuers=[{"module": "acme"}]),
+    lambda cfg: _tls_policies(cfg)[1].update(issuers=[{"module": "internal"}]),
+    lambda cfg: _tls_policies(cfg)[1].update(on_demand=True),
+    lambda cfg: cfg["apps"]["tls"]["automation"].update(unqualified_global=True),
+    lambda cfg: cfg["apps"]["tls"].update(certificates={"load_files": [{"certificate": "/unknown"}]}),
+    lambda cfg: cfg["apps"]["http"].update(https_port=8443),
+    lambda cfg: cfg["apps"]["http"]["servers"]["srv0"].update(automatic_https={"disable_certificates": True}),
+    lambda cfg: cfg["apps"]["http"]["servers"]["srv0"].update(tls_connection_policies=[{"default_sni": "other.example"}]),
+    lambda cfg: cfg["apps"]["http"]["servers"]["srv0"]["routes"].append(_www_host_route([])),
+])
+def test_www_automatic_tls_refuses_unqualified_active_policy(www_tls_transition, mutate):
+    before, after, active = www_tls_transition
+    mutate(active)
+    with pytest.raises(ReconcileRefusal):
+        plan_www_automatic_tls(before, after, active)
+
+
+@pytest.mark.parametrize("mutate", [
+    lambda cfg: _tls_policies(cfg)[1]["subjects"].reverse(),
+    lambda cfg: _tls_policies(cfg)[1]["subjects"].append("unexpected.example"),
+    lambda cfg: cfg["apps"]["http"]["servers"]["srv0"]["routes"].append({"terminal": True}),
+    lambda cfg: cfg["apps"]["http"]["servers"]["srv0"]["automatic_https"].update(disable_redirects=1),
+    lambda cfg: cfg.update(admin={"disabled": True}),
+])
+def test_www_automatic_tls_refuses_mixed_source(www_tls_transition, mutate):
+    before, after, active = www_tls_transition
+    mutate(after)
+    with pytest.raises(ReconcileRefusal, match="outside the exact www"):
+        plan_www_automatic_tls(before, after, active)

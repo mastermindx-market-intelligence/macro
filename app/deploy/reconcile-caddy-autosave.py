@@ -200,6 +200,21 @@ def previous_source(revision: str | None, installed: bytes) -> bytes:
     return raw
 
 
+def qualified_www_tls_source(revision: str, active_digest: str, source: bytes, active: dict):
+    if (not re.fullmatch(r"[0-9a-f]{40}", revision)
+            or not re.fullmatch(r"[0-9a-f]{64}", active_digest)):
+        raise ValueError("exact protected revision and active SHA-256 required for www TLS")
+    if hashlib.sha256(canonical(active)).hexdigest() != active_digest:
+        raise ValueError("www TLS active preimage digest changed")
+    git = ("/usr/bin/env", "GIT_NO_LAZY_FETCH=1", "GIT_OPTIONAL_LOCKS=0",
+           "GIT_TERMINAL_PROMPT=0", "/usr/bin/git", "-C", str(APP))
+    for ref in ("HEAD", "origin/main"):
+        if run(*git, "rev-parse", "--verify", ref).decode().strip() != revision:
+            raise ValueError("www TLS source is not the exact current protected revision")
+    if run(*git, "show", f"{revision}:app/deploy/Caddyfile") != source:
+        raise ValueError("www TLS checkout differs from the protected Caddyfile")
+
+
 def read_autosave() -> dict:
     if AUTOSAVE.lstat().st_uid != pwd.getpwnam("caddy").pw_uid:
         raise ValueError("autosave owner differs from the Caddy service")
@@ -209,9 +224,12 @@ def read_autosave() -> dict:
 def main():
     from macro_caddy_publication import publish, journal_status
 
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--source-baseline", help="attended prior protected source revision")
-    parser.add_argument("--pending-check", action="store_true",
+    parser = argparse.ArgumentParser(description=__doc__, allow_abbrev=False)
+    scope = parser.add_mutually_exclusive_group()
+    scope.add_argument("--source-baseline", help="attended prior protected source revision")
+    scope.add_argument("--www-automatic-tls", nargs=2, metavar=("PROTECTED_SHA", "ACTIVE_SHA256"),
+                       help="attended literal www internal-to-automatic transition only")
+    scope.add_argument("--pending-check", action="store_true",
                         help="read-only updater gate: zero for pending/invalid journal, one for clean")
     args = parser.parse_args()
     if os.geteuid() != 0:
@@ -231,13 +249,16 @@ def main():
     if "FLOCK  ADVISORY  WRITE" not in Path("/proc/self/fdinfo/9").read_text():
         raise ValueError("incumbent updater flock is not held")
     require_autosave_mode()
-    STATE.mkdir(mode=0o700, exist_ok=True)
+    if not args.www_automatic_tls:
+        STATE.mkdir(mode=0o700, exist_ok=True)
     info = STATE.lstat()
     if not stat.S_ISDIR(info.st_mode) or info.st_uid != 0 or info.st_mode & 0o077:
         raise ValueError("unsafe publication journal directory")
     status = journal_status(STATE)
     if not status.get("ok"):
         raise ValueError("publication journal custody is unresolved")
+    if args.www_automatic_tls and status.get("pending_op_ids"):
+        raise ValueError("www TLS transition requires a clean existing publication journal")
     installed = read_regular(INSTALLED)
     api = NativeAPI()
     active, _ = api.read()
@@ -253,10 +274,15 @@ def main():
         print(json.dumps({"result": "pending_reconciled", "op_id": receipt["op_id"],
                           "source_sha256": hashlib.sha256(read_regular(INSTALLED)).hexdigest()}))
         return receipt
-    from macro_caddy_overlay import plan_routes
+    from macro_caddy_overlay import plan_routes, plan_www_automatic_tls
     source = read_regular(APP / "app/deploy/Caddyfile")
-    prior = previous_source(args.source_baseline, installed)
-    candidate = plan_routes(adapt(prior), adapt(source), active)
+    if args.www_automatic_tls:
+        revision, active_digest = args.www_automatic_tls
+        qualified_www_tls_source(revision, active_digest, source, active)
+        candidate = plan_www_automatic_tls(adapt(installed), adapt(source), active)
+    else:
+        prior = previous_source(args.source_baseline, installed)
+        candidate = plan_routes(adapt(prior), adapt(source), active)
     if canonical(candidate) == canonical(active) and installed == source:
         if canonical(read_autosave()) != canonical(candidate):
             raise ValueError("current source lacks matching autosave")
@@ -276,6 +302,8 @@ def main():
               "source_sha256": hashlib.sha256(read_regular(INSTALLED)).hexdigest()}
     if receipt["status"] != "reconciled_prior":
         result["native_sha256"] = hashlib.sha256(canonical(candidate)).hexdigest()
+        if args.www_automatic_tls:
+            result["www_tls_policy"] = "automatic_default_issuer"
     print(json.dumps(result))
     return receipt
 

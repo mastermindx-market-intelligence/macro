@@ -108,3 +108,102 @@ def test_adapter_generated_filename_is_only_logical_source_translation(driver, m
     value["hide"][0] = "unexpected"
     with pytest.raises(ValueError, match="hide topology"):
         driver.adapt(b"public source")
+
+
+def test_www_tls_source_binds_complete_active_and_current_protected_bytes(driver, monkeypatch):
+    import hashlib
+
+    active = {"apps": {"tls": {"automation": {"policies": []}}}, "admin": {"listen": "localhost:2019"}}
+    digest = hashlib.sha256(driver.canonical(active)).hexdigest()
+    revision = "a" * 40
+    source = b"exact current Caddyfile"
+    calls = []
+    refs = {"HEAD": revision, "origin/main": revision}
+
+    def fake_run(*args):
+        calls.append(args)
+        if "rev-parse" in args:
+            return refs[args[-1]].encode()
+        assert args[-1] == f"{revision}:app/deploy/Caddyfile"
+        return source
+
+    monkeypatch.setattr(driver, "run", fake_run)
+    driver.qualified_www_tls_source(revision, digest, source, active)
+    assert [args[-1] for args in calls] == ["HEAD", "origin/main", f"{revision}:app/deploy/Caddyfile"]
+
+    calls.clear()
+    active["admin"]["listen"] = "localhost:2020"
+    with pytest.raises(ValueError, match="active preimage digest changed"):
+        driver.qualified_www_tls_source(revision, digest, source, active)
+    assert calls == []
+
+    digest = hashlib.sha256(driver.canonical(active)).hexdigest()
+    with pytest.raises(ValueError, match="checkout differs"):
+        driver.qualified_www_tls_source(revision, digest, b"different source", active)
+    refs["origin/main"] = "b" * 40
+    with pytest.raises(ValueError, match="exact current protected revision"):
+        driver.qualified_www_tls_source(revision, digest, source, active)
+
+
+@pytest.mark.parametrize("case", ["qualified", "pending", "stale"])
+def test_www_tls_driver_keeps_existing_native_transaction_boundary(driver, monkeypatch, case):
+    import hashlib
+    import stat
+    import sys
+    from types import SimpleNamespace
+
+    import macro_caddy_overlay as overlay
+    import macro_caddy_publication as publication
+
+    events = []
+    revision = "a" * 40
+    active = {"native": "reviewed"}
+    candidate = {"native": "qualified www"}
+    old, source = b"installed source", b"protected source"
+    installed = [old]
+    digest = hashlib.sha256(driver.canonical(active)).hexdigest()
+    if case == "stale":
+        digest = "0" * 64
+    monkeypatch.setattr(sys, "argv", ["driver", "--www-automatic-tls", revision, digest])
+    lock = SimpleNamespace(st_dev=1, st_ino=2)
+    monkeypatch.setattr(driver, "os", SimpleNamespace(geteuid=lambda: 0, fstat=lambda fd: lock, stat=lambda *a, **kw: lock))
+    monkeypatch.setattr(driver, "Path", lambda p: SimpleNamespace(read_text=lambda: "FLOCK  ADVISORY  WRITE"))
+    state = SimpleNamespace(lstat=lambda: SimpleNamespace(st_uid=0, st_mode=stat.S_IFDIR | 0o700))
+    monkeypatch.setattr(driver, "STATE", state)
+    monkeypatch.setattr(driver, "require_autosave_mode", lambda: events.append("autosave"))
+    monkeypatch.setattr(publication, "journal_status",
+                        lambda directory: {"ok": directory is state, "pending_op_ids": ["held"] if case == "pending" else []})
+    monkeypatch.setattr(driver, "read_regular", lambda path: installed[0] if path == driver.INSTALLED else source)
+    monkeypatch.setattr(driver, "NativeAPI",
+                        lambda: SimpleNamespace(read=lambda: (events.append("active") or active, '"etag"')))
+    monkeypatch.setattr(driver, "run", lambda *a: revision.encode() if "rev-parse" in a else source)
+    monkeypatch.setattr(driver, "adapt", lambda raw: {"source": raw})
+
+    def plan(previous, protected, actual):
+        events.append("www-only plan")
+        assert (previous, protected, actual) == ({"source": old}, {"source": source}, active)
+        return candidate
+
+    def publish(**kwargs):
+        events.append("existing publish")
+        assert kwargs["expected_preimage"] == active and kwargs["candidate"] == candidate
+        assert kwargs["source_before"] == old and kwargs["source_after"] == source
+        assert kwargs["state_dir"] is state and kwargs["install_source"] is driver.install_source
+        installed[0] = source
+        return {"status": "published", "op_id": "receipt", "published": True,
+                "installed_source": True, "receipt_written": True}
+
+    monkeypatch.setattr(overlay, "plan_www_automatic_tls", plan)
+    monkeypatch.setattr(driver, "validate", lambda cfg: events.append("validate"))
+    monkeypatch.setattr(publication, "publish", publish)
+    if case == "pending":
+        with pytest.raises(ValueError, match="clean existing publication journal"):
+            driver.main()
+        assert events == ["autosave"]
+    elif case == "stale":
+        with pytest.raises(ValueError, match="active preimage digest changed"):
+            driver.main()
+        assert events == ["autosave", "active"]
+    else:
+        assert driver.main()["status"] == "published"
+        assert events == ["autosave", "active", "www-only plan", "validate", "existing publish"]

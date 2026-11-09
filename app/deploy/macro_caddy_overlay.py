@@ -43,9 +43,10 @@ Intentionally unsupported (ReconcileRefusal, never guessed around):
 from __future__ import annotations
 
 import copy
+import json
 import re
 
-__all__ = ["ReconcileRefusal", "plan_routes"]
+__all__ = ["ReconcileRefusal", "plan_routes", "plan_www_automatic_tls"]
 
 # Adapter-generated group names that may be renumbered between generations.
 _GENERATED_GROUP_RE = re.compile(r"^group[0-9]+$")
@@ -617,3 +618,91 @@ def _assert_only_planned_edits(original, result, edits):
             )
 
     walk(original, result, ())
+
+
+
+_WWW_TLS_SUBJECT = "www.mastermind-x.com"
+_TLS_LITERAL_SUBJECT = re.compile(r"[a-z0-9](?:[a-z0-9.-]*[a-z0-9])?")
+
+
+def _www_tls_subject_groups(config, label):
+    """Qualify the adapter's ordered internal and default-issuer policies."""
+    _http_servers(config, label)
+    tls = config["apps"].get("tls")
+    automation = tls.get("automation") if isinstance(tls, dict) else None
+    if (not isinstance(automation, dict) or set(automation) != {"policies"}
+            or tls.get("certificates")):
+        raise ReconcileRefusal(f"{label}: unsupported www TLS automation settings")
+    policies = automation["policies"]
+    if not isinstance(policies, list) or len(policies) != 2:
+        raise ReconcileRefusal(f"{label}: expected ordered internal and automatic policies")
+
+    groups = []
+    for policy, issuers in zip(policies, ([{"module": "internal"}], None)):
+        if not isinstance(policy, dict):
+            raise ReconcileRefusal(f"{label}: invalid www TLS policy")
+        options = {k: v for k, v in policy.items() if k != "subjects"}
+        if "on_demand" in options and options.pop("on_demand") is not False:
+            raise ReconcileRefusal(f"{label}: on-demand policy is outside www TLS scope")
+        expected = {"issuers": issuers} if issuers is not None else {}
+        if options != expected:
+            raise ReconcileRefusal(f"{label}: unexpected www TLS issuer or policy order")
+        subjects = policy.get("subjects")
+        if (not isinstance(subjects, list) or not subjects
+                or any(not isinstance(name, str) or not _TLS_LITERAL_SUBJECT.fullmatch(name)
+                       for name in subjects)):
+            raise ReconcileRefusal(f"{label}: expected literal, nonempty TLS subjects")
+        groups.append(subjects)
+    subjects = groups[0] + groups[1]
+    if len(subjects) != len(set(subjects)):
+        raise ReconcileRefusal(f"{label}: duplicate TLS subject")
+    return groups
+
+
+def _require_www_automatic_https(config, label):
+    servers = _listen_index(_http_servers(config, label), label)
+    entry = servers.get((":443",))
+    https_port = config["apps"]["http"].get("https_port", 443)
+    if entry is None or type(https_port) is not int or https_port != 443:
+        raise ReconcileRefusal(f"{label}: qualified www HTTPS listener absent")
+    _, server = entry
+    settings = server.get("automatic_https", {})
+    if (not isinstance(settings, dict) or set(settings) - {"disable_redirects"}
+            or ("disable_redirects" in settings and type(settings["disable_redirects"]) is not bool)
+            or server.get("tls_connection_policies") not in (None, [])):
+        raise ReconcileRefusal(f"{label}: www automatic certificate management is not qualified")
+    matches = _active_route_indices_for_host(server, (_WWW_TLS_SUBJECT,))
+    if len(matches) != 1 or _simple_host_match(server["routes"][matches[0]]) != [_WWW_TLS_SUBJECT]:
+        raise ReconcileRefusal(f"{label}: expected one exact www HTTPS host route")
+
+
+def _move_www_to_automatic(groups, label):
+    internal, automatic = groups
+    if _WWW_TLS_SUBJECT not in internal or len(internal) == 1:
+        raise ReconcileRefusal(f"{label}: exact www internal subject required")
+    internal.remove(_WWW_TLS_SUBJECT)
+    automatic.append(_WWW_TLS_SUBJECT)
+
+
+def plan_www_automatic_tls(previous_source, candidate_source, active):
+    """Adopt only the protected transfer of literal www to the default issuer.
+
+    The caller binds the full active native preimage and protected revision.
+    The actual source transition must be exactly the adapter's subject move.
+    Active-only literal subjects remain in their own policy and original order.
+    """
+    source_groups = _www_tls_subject_groups(previous_source, "previous source")
+    expected_source = copy.deepcopy(previous_source)
+    _move_www_to_automatic(_www_tls_subject_groups(expected_source, "previous source"), "previous source")
+    if json.dumps(expected_source, sort_keys=True) != json.dumps(candidate_source, sort_keys=True):
+        raise ReconcileRefusal("source contains changes outside the exact www automatic TLS transition")
+
+    _require_www_automatic_https(candidate_source, "candidate source")
+    _require_www_automatic_https(active, "active")
+    result = copy.deepcopy(active)
+    groups = _www_tls_subject_groups(result, "active")
+    for expected, observed in zip(source_groups, groups):
+        if [name for name in observed if name in expected] != expected:
+            raise ReconcileRefusal("active TLS subject group or order diverged from the source")
+    _move_www_to_automatic(groups, "active")
+    return result
