@@ -1,0 +1,7 @@
+{
+  "material_paths": [
+    "templates/expectation_surface.html.j2"
+  ],
+  "findings": [],
+  "exit_code": 0
+}

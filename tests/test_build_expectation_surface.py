@@ -17,6 +17,8 @@ from __future__ import annotations
 
 import json
 import re
+import shutil
+import subprocess
 import sys
 import time
 from pathlib import Path
@@ -331,6 +333,165 @@ def test_movers_exclude_missingness_zero_prior_and_count_rollover(tmp_path: Path
     assert s["breadth"] == [
         {"session_id": S3, "at": AT[S3], "metric": "EPS", "up": 1, "down": 0, "flat": 0},
     ]
+
+
+def _explorer_readouts(root: Path, ticker: str, actions: list[dict], *, wire_count=1) -> list[dict]:
+    """Execute the rendered consumer's real readout and keyboard handlers in Node.
+
+    Only DOM primitives and chart drawing/announcements are stubbed. Comparison,
+    formatting, translation, selection and class reset come from the rendered
+    page; points come from its actual builder-emitted ticker JSON. This is a DOM
+    contract test, not browser layout, fetch/navigation or chart-rendering proof.
+    """
+    if shutil.which("node") is None:
+        pytest.skip("node not on PATH")
+    html = (root / "site/expectation_surface.html").read_text(encoding="utf-8")
+    strings = re.search(r'<script type="application/json" id="es-strings">(.*?)</script>', html, re.S)
+    assert strings
+    script = next(body for body in re.findall(r"<script[^>]*>(.*?)</script>", html, re.S)
+                  if "function updateReadout()" in body)
+
+    def section(start: str, end: str) -> str:
+        first = script.index(start)
+        return script[first:script.index(end, first)]
+
+    consumer = "\n".join([
+        section("function lang()", "function hzKey("),
+        section("function fmtInt(", "/* ---- 1. language attributes ---- */"),
+        section("function points()", "function updateCap()"),
+        section("function wireChart()", "var ro = null;"),
+    ])
+    doc = _read_json(root / f"site/expectation_surface/tickers/{ticker}.json")
+    payload = {"source": consumer, "strings": json.loads(strings.group(1)),
+               "ids": re.findall(r'id="(es-ro-[^"]+|es-chart)"', html),
+               "points": doc["series"]["EPS"]["0q"], "actions": actions, "wire_count": wire_count}
+    harness = r"""
+const fs = require('node:fs'), vm = require('node:vm');
+const input = JSON.parse(fs.readFileSync(0, 'utf8'));
+class Element {
+  constructor() { this.children = []; this.className = ''; this.text = ''; this.events = {}; }
+  set textContent(value) { this.text = String(value); this.children = []; }
+  get textContent() { return this.text + this.children.map(n => n.textContent).join(''); }
+  appendChild(node) { this.children.push(node); return node; }
+  get classList() { return { add: name => { this.className += ' ' + name; } }; }
+  addEventListener(name, fn) { (this.events[name] ||= []).push(fn); }
+}
+const nodes = Object.fromEntries(input.ids.map(id => [id, new Element()]));
+let locale = 'en';
+function textFor(node, withSR = false) {
+  if ((!withSR && node.className === 'es-sr') ||
+      node.className === (locale === 'zh' ? 'l-en' : 'l-zh')) return '';
+  return node.text + node.children.map(n => textFor(n, withSR)).join('');
+}
+const ctx = {
+  STR: input.strings,
+  cur: { pts: input.points, metric: 'EPS', sel: input.points.length - 1,
+         committed: input.points.length - 1 },
+  docEl: { getAttribute: () => locale },
+  d: { createElement: () => new Element() },
+  $: id => nodes[id],
+  drawChart: () => {}, announceSel: () => {}
+};
+vm.createContext(ctx);
+vm.runInContext(input.source, ctx, { timeout: 1000 });
+for (let i = 0; i < input.wire_count; i++) ctx.wireChart();
+ctx.updateReadout();
+const results = input.actions.map(action => {
+  if (action.lang) locale = action.lang;
+  if (action.key) {
+    let prevented = false;
+    for (const handler of nodes['es-chart'].events.keydown) {
+      handler({ key: action.key, preventDefault: () => { prevented = true; } });
+    }
+    if (!prevented) throw new Error('Chart did not handle ' + action.key);
+  }
+  const change = nodes['es-ro-chg'];
+  return { average: textFor(nodes['es-ro-avg']), change: textFor(change),
+           accessibleChange: textFor(change, true), classes: change.className,
+           selected: ctx.cur.sel };
+});
+process.stdout.write(JSON.stringify(results));
+"""
+    result = subprocess.run(["node", "-e", harness], input=json.dumps(payload),
+                            capture_output=True, text=True, timeout=15, check=True)
+    return json.loads(result.stdout)
+
+
+@pytest.mark.parametrize("values,periods,expected,expected_zh,tone", [
+    ([100.0, 110.0], ["2026-12-31", "2027-03-31"], "Period changed", "财期已变", None),
+    ([100.0, 110.0], ["2027-03-31", "2027-03-31"], "+10.0%", "+10.0%", "is-up"),
+    ([100.0, 110.0], [None, "2027-03-31"], "Period unknown", "财期未知", None),
+    ([100.0, 110.0], ["2027-03-31", None], "Period unknown", "财期未知", None),
+    ([100.0, 110.0], [None, None], "Period unknown", "财期未知", None),
+    ([0.0, 5.0], ["2027-03-31", "2027-03-31"], "Zero prior", "上期为零", None),
+    ([-100.0, -90.0], ["2027-03-31", "2027-03-31"], "+10.0%", "+10.0%", "is-up"),
+    ([100.0, 90.0], ["2027-03-31", "2027-03-31"], "−10.0%", "−10.0%", "is-down"),
+    ([100.0, 100.0], ["2027-03-31", "2027-03-31"], "0.0%", "0.0%", None),
+    ([100.0, 105.0, 110.0], ["2027-03-31", "2026-12-31", "2027-03-31"], "Period changed", "财期已变", None),
+    ([100.0, None, 110.0], ["2027-03-31"] * 3, "+10.0%", "+10.0%", "is-up"),
+    ([110.0], ["2027-03-31"], "—", "—", None),
+    ([100.0, None], ["2027-03-31"] * 2, "No average", "本期无平均值", None),
+], ids=["rollover", "same-period", "prior-period-unknown", "selected-period-unknown",
+        "both-periods-unknown", "zero-prior", "negative-prior", "decline", "flat",
+        "no-jump-to-older-period", "skip-missing-average", "first-point", "missing-average"])
+def test_explorer_readout_comparison_rules(tmp_path: Path, values, periods, expected, expected_zh, tone):
+    root = tmp_path / "repo"
+    (root / "site").mkdir(parents=True)
+    rows = []
+    for sid, value, period in zip((S1, S2, S3)[-len(values):], values, periods):
+        rows.append(_obs(sid, "RO", value=value, period_end=period,
+                         missing="UNESTIMABLE" if value is None else None))
+        if value is None:
+            # Keep this session in the emitted series without inventing an average.
+            rows.append(_obs(sid, "RO", otype="median", value=105.0, period_end=period))
+    _write_fixture(root, rows)
+    _build(root)
+    en, zh = _explorer_readouts(root, "RO", [{"lang": "en"}, {"lang": "zh"}])
+    assert en["change"] == expected
+    assert zh["change"] == expected_zh  # Language changes without rerunning the readout.
+    want_average = "—" if values[-1] is None else f"{values[-1]:.2f}".replace("-", "−")
+    assert en["average"] == zh["average"] == want_average
+    for state in (en, zh):
+        assert ("is-up" in state["classes"].split()) == (tone == "is-up")
+        assert ("is-down" in state["classes"].split()) == (tone == "is-down")
+    if expected == "—":
+        assert en["accessibleChange"] == "—No prior session"
+        assert zh["accessibleChange"] == "—无上一期"
+
+
+def test_explorer_keyboard_readout_clears_previous_comparison_tone(tmp_path: Path):
+    root = tmp_path / "repo"
+    (root / "site").mkdir(parents=True)
+    _write_fixture(root, [
+        _obs(S1, "RO", value=100.0, period_end="2026-12-31"),
+        _obs(S2, "RO", value=110.0, period_end="2026-12-31"),
+        _obs(S3, "RO", value=121.0, period_end="2027-03-31"),
+    ])
+    _build(root)
+    states = _explorer_readouts(root, "RO", [{}, {"key": "Home"},
+                               {"key": "ArrowRight"}, {"key": "End"}, {"lang": "zh"}])
+    assert [s["selected"] for s in states] == [2, 0, 1, 2, 2]
+    assert [s["change"] for s in states] == ["Period changed", "—", "+10.0%", "Period changed", "财期已变"]
+    assert [s["average"] for s in states] == ["121.00", "100.00", "110.00", "121.00", "121.00"]
+    assert "is-up" in states[2]["classes"].split()
+    for i in (0, 1, 3, 4):
+        assert "is-up" not in states[i]["classes"].split()
+        assert "is-down" not in states[i]["classes"].split()
+    assert "is-unavailable" not in states[1]["classes"].split()
+    assert "is-unavailable" not in states[2]["classes"].split()
+
+
+def test_explorer_restored_chart_binds_keyboard_once(tmp_path: Path):
+    root = tmp_path / "repo"
+    (root / "site").mkdir(parents=True)
+    _write_fixture(root, [_obs(S1, "RO", value=100.0),
+                          _obs(S2, "RO", value=110.0),
+                          _obs(S3, "RO", value=121.0)])
+    _build(root)
+    # A loading placeholder restores the same chart and calls wireChart again.
+    states = _explorer_readouts(root, "RO", [{"key": "Home"}, {"key": "ArrowRight"}], wire_count=2)
+    assert [s["selected"] for s in states] == [0, 1]
+    assert [s["average"] for s in states] == ["100.00", "110.00"]
 
 
 # ---------------------------------------------------------------------------

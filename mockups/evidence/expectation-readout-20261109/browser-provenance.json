@@ -1,0 +1,10 @@
+{
+  "scope": "synthetic Expectations readout fixture; no production acceptance",
+  "browser": "149.0.7827.0",
+  "binary_sha256": "434d2607c55941dcaa7fdd19b0800ee90488922fd9744a6642ef527ba8fabf63",
+  "package": "@sparticuz/chromium@149.0.0",
+  "python_playwright": "1.61.0",
+  "cjk_fallback": "@fontsource/noto-sans-sc@5.2.8, Chinese-simplified WOFF to TrueType via fontTools; private fontconfig; no glyph edits",
+  "capture_module_git_blob": "78ba651d2996a64231c738a133ed465d73dd8caf",
+  "capture_module_sha256": "9b6e643c1c784eb81b584be4cb063092ae71c4a16fe01498130891e84cd0de42"
+}

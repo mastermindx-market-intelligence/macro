@@ -1,0 +1,34 @@
+{
+  "package": "@fontsource/noto-sans-sc@5.2.8",
+  "conversion": "fontTools TTFont WOFF container to TrueType, no glyph edits",
+  "fonts": [
+    {
+      "weight": 400,
+      "source": "noto-sans-sc-chinese-simplified-400-normal.woff",
+      "source_sha256": "1aac13a9ba6d1fd92f8a7294c3119dc4fed54c517bb6bbf021a75850b568d3ea",
+      "ttf_sha256": "6af6d33f774f4fe196e195769c87089e0f32e07e0140de4dc6ae81a22af9affb",
+      "required_glyphs_present": true
+    },
+    {
+      "weight": 500,
+      "source": "noto-sans-sc-chinese-simplified-500-normal.woff",
+      "source_sha256": "c50fda53ec1d6c5b25828f9865d626806693e062d5359a5d443228f207460499",
+      "ttf_sha256": "68f0f40e9ed843847bc24f604a2af4d97c817b77c3906f8f9b088b6f8976d955",
+      "required_glyphs_present": true
+    },
+    {
+      "weight": 600,
+      "source": "noto-sans-sc-chinese-simplified-600-normal.woff",
+      "source_sha256": "c19cafde620dd9a74920a7c81f98a237d442f26203fc742d19b5d8df54d854ac",
+      "ttf_sha256": "b306329332d5a2d98ba1f1acd701547c9cd3a5098d6bc4f7e0e1722d2247e817",
+      "required_glyphs_present": true
+    },
+    {
+      "weight": 700,
+      "source": "noto-sans-sc-chinese-simplified-700-normal.woff",
+      "source_sha256": "a96a7069bae9b15d61dfce5821c68174cd70956c5db0ae450458ab94251067be",
+      "ttf_sha256": "c17e9b8238337d6fb23e337bdc895d4c614ed394bfe6b15bf9a175d8cd3b5263",
+      "required_glyphs_present": true
+    }
+  ]
+}

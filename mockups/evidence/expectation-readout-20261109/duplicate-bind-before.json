@@ -1,0 +1,7 @@
+{
+  "keydown_bindings": 2,
+  "after_Home": "100.00",
+  "after_one_ArrowRight": "121.00",
+  "expected_after_one_ArrowRight": "110.00",
+  "production_template_blob": "75397a13b4416b417173c82f839bbefe4d160ca6"
+}

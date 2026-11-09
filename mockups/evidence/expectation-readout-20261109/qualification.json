@@ -1,0 +1,113 @@
+{
+  "base_commit": "071ed19f5ce87927f078f94f3e126c24d8a0307e",
+  "governance_pin": "5c3d3885234358aefb97ecdbc59be0864df14f8b",
+  "source_blobs": {
+    "templates/expectation_surface.html.j2": "ec0909bf01e0e4740f1feaaec23ad7576c0a5d59",
+    "tests/test_build_expectation_surface.py": "d3478ea0d5e0f716d6ee5f2e8ee6cb73ad6c48a4",
+    "scripts/build_expectation_surface.py": "1b39e3a519a548d2187130498dd05b58a256ccdd",
+    "scripts/capture_page_evidence.py": "78ba651d2996a64231c738a133ed465d73dd8caf"
+  },
+  "product_changes": [
+    "templates/expectation_surface.html.j2",
+    "tests/test_build_expectation_surface.py"
+  ],
+  "fixture_kind": "synthetic RO only, actual incumbent builder output",
+  "fixture_data": {
+    "ticker": "RO",
+    "identity_status": "unresolved",
+    "company_page": null,
+    "financial_influence": false,
+    "k3e_admissible": false,
+    "series": {
+      "EPS": {
+        "0q": [
+          {
+            "at": "2026-01-01T00:00:00Z",
+            "period_end": "2026-12-31",
+            "average": 100.0,
+            "median": null,
+            "high": null,
+            "low": null,
+            "analysts": null
+          },
+          {
+            "at": "2026-01-02T00:00:00Z",
+            "period_end": "2026-12-31",
+            "average": 110.0,
+            "median": null,
+            "high": null,
+            "low": null,
+            "analysts": null
+          },
+          {
+            "at": "2026-01-03T00:00:00Z",
+            "period_end": "2027-03-31",
+            "average": 121.0,
+            "median": null,
+            "high": null,
+            "low": null,
+            "analysts": null
+          }
+        ]
+      },
+      "revenue": {}
+    }
+  },
+  "rendered_html_sha256": "55d548107ab3d5b644f216be85a8791887aea44970d6851385597be17bdedd90",
+  "unit_tests": {
+    "passed": 40,
+    "failed": 0,
+    "skipped": 0
+  },
+  "negative_original_template": {
+    "passed": 5,
+    "failed": 10,
+    "deselected_existing": 25
+  },
+  "browser_cells_passed": 8,
+  "slow_restore": {
+    "delay_ms": 300,
+    "cycles": [
+      {
+        "cycle": 1,
+        "bindings": {
+          "keydown": 1,
+          "pointermove": 1,
+          "click": 1,
+          "pointerleave": 1
+        },
+        "removals": 1,
+        "same_node": true,
+        "after_one_ArrowRight": "110.00",
+        "comparison": "+10.0%"
+      },
+      {
+        "cycle": 2,
+        "bindings": {
+          "keydown": 1,
+          "pointermove": 1,
+          "click": 1,
+          "pointerleave": 1
+        },
+        "removals": 2,
+        "same_node": true,
+        "after_one_ArrowRight": "110.00",
+        "comparison": "+10.0%"
+      }
+    ]
+  },
+  "visual_adjudication": "All eight readout crops inspected: readable glyphs, no overlap or clipped reason, neutral unavailable tone; full page captures are context, not whole-page acceptance.",
+  "gate": {
+    "material_paths": [
+      "templates/expectation_surface.html.j2"
+    ],
+    "findings": [],
+    "exit_code": 0
+  },
+  "capture_scope_limits": [
+    "Fixture omits global account.js and terminal_overlay.js; their 404s remain in the canonical manifest.",
+    "No live account, real market ledger, deployed route, merged source, full page or auth-shell acceptance.",
+    "No fiscal-period line segmentation, exact mover binding or obsolete-response protection claim."
+  ],
+  "capture_manifest_sha256": "510b5aef32780636ad3c295993f34cdc5a6933fc455ff62cd72ac3c24b2067c9"
+}
