@@ -2208,3 +2208,65 @@ All 57 node IDs/styles/parents and unaffected text remain exact outside **7MV, 7
 This is component proof, not native OS IME, full shared shell/fonts, spoken AT, live account/admission, hosted current-head CI or deployment. Original model01 and independent shared Tools/Catalyst/protected-style holds remain untouched.
 
 The next authorized improvement is the primary field's query-only Clear action: replace its small native cancel/slash competition with one 44 px target, distinguish it from full Reset, integrate visibility in this same pre-hide owner, and preserve research/filter context. Source review also identified the required non-label wrapper, specific primary spacing/native-cancel styles and synchronous focus-callback guard.
+
+
+## 45 · Primary query Clear and full Reset are visibly distinct — 9 November 2026
+
+### Applied source and user outcome
+
+[GMI Draft PR10676](https://github.com/mastermindx-market-intelligence/Macro/pull/10676) advances from `b5b56537d49099c3dc5dd0534267c80576f51ced` to **`1015aa9501ad9cb4d6519b9c89b791c8f7bcf167`**, tree **`4070d7792c9b19ffa4a55cc863fc1c938460893a`**. All ten changed files and the updated PR body read back exactly. Draft/unmerged status and the original model/release holds remain.
+
+Primary Browse now has the existing system's **44 × 44 px Clear search / 清空搜索** action. It replaces the slash hint when raw text exists, including whitespace, and removes only the query. Category, scope, evidence-only, selected topic, lens, qualified return, unrelated fragment fields, open drawer, source-card nodes and open receipts remain. The separate Reset still clears the full filter set. Query Clear can leave zero results when the other filters still exclude everything.
+
+The native button uses the existing `updateFilters()` owner once. Its visibility joins the pre-hide projection just accepted in §44. A click captures the filter pass and URL before focus; a callback starting newer filter state or hash restoration supersedes it. Surviving redirects remain. There is no post-filter focus override. The primary Escape handler remains byte-exact.
+
+The input retains its bilingual accessible name inside a non-label wrapper so the new button is not another labelable descendant of an input label. Two scoped primary CSS rules preserve the suffix space against a later padding shorthand and suppress the browser cancel only after enhancement binds. No-JS and malformed-payload states leave the new action hidden and unenhanced. No new query/history, composition, observer or timer owner is introduced.
+
+### Source-bound proof
+
+[DESIGN_RECORD §11.36](https://github.com/mastermindx-market-intelligence/Macro/blob/1015aa9501ad9cb4d6519b9c89b791c8f7bcf167/research/theme_graph/gmi_design_20261021/DESIGN_RECORD.md) and [PRIMARY_CLEAR_VALIDATION_20261109.json](https://github.com/mastermindx-market-intelligence/Macro/blob/1015aa9501ad9cb4d6519b9c89b791c8f7bcf167/research/theme_graph/gmi_design_20261021/PRIMARY_CLEAR_VALIDATION_20261109.json) retain exact inputs, commands, render/source hashes, case results, new observations and limits.
+
+| Evidence | Result |
+|---|---|
+| Final PID65978 | Exit0; **30 cases / 34 contexts**, Chrome157.0.8103.39, zero page errors; **60.72 s** |
+| Mutation-time focus | **142 retained snapshots; zero owned hides** |
+| Control geometry | 44 px square, no editable-input overlap, exclusive clear/slash slot |
+| Primary paths | Click/Enter/Space; whitespace; empty stale activation; no-match filters; query-only versus full Reset |
+| History and callbacks | Back/Forward, nonempty-to-nonempty focus, locale/theme, closed mobile, surviving redirects and newer filter/hash context |
+| Unenhanced | EN/ZH no-JS and malformed payload; four contexts, hidden/unbound custom action |
+| Existing regressions | Six primary Escape, four Browse focus and two answer/copy/receipt cases |
+| Native visuals | Five captures inspected: both query and query-cleared phones plus ZH full Reset |
+
+All **48 pinned source inputs** and the unchanged accepted model reproduce **all nine parent outputs byte-exactly**. Candidate rendering changes only Explorer HTML and paired CSS/JS; all six other HTML pages remain exact. Within Explorer HTML, only the primary field region changes. All **105 prior qualified verifier definitions remain AST-exact**; six new helpers are added. The two baseline failures identify the missing custom affordance, not a new event/focus defect.
+
+| Source | Exact blob |
+|---|---|
+| Paired JS | `da28f4622372c072225b140cf59d61385570b364` |
+| Paired CSS | `fcfa6cf06646f0406ca366d5f015205c72176bce` |
+| Map template | `77b4e3ffdaeafbb60914639ee3018f1c483fb00e` |
+| Generated Explorer | `a7fcc7db25acbe1cf85dbf63807bbceedc3b4a8a` |
+
+The compact native export retains every case result and full new Clear observations. Repeated earlier-regression detailed snapshots remain in the exact hashed native report; the source retains their canonical test definitions. This declared projection does not misrepresent omitted snapshots as newly committed full evidence.
+
+### Editable Paper workflow
+
+[Browse · Search and filters](https://app.paper.design/file/01M5H6EARN9YHQV17JC6ZG9BRY/p-D-0) follows the current-product page. Its single editable group **A1F-0** contains **206 created nodes**, including 174 div nodes and SVG icon geometry:
+
+| State | Node | Purpose |
+|---|---|---|
+| Q01 EN390 Noir | `A1N-0` | HBM query, category/Core, three results, 844 px viewport |
+| Q02 ZH320 Day | `A3E-0` | HBM query, category/Core/company evidence, one result, 844 px viewport |
+| Q03 query cleared | `A53-0` | Same ZH filters retained, query empty, one result |
+| Q04 full Reset | `A66-0` | Query/category/scope/evidence reset, 371 topics, same selected HBM topic |
+
+The outcomes are shown through actual control states and counts, outside product chrome. No instructional product paragraph is added. The original EN phone seed **6DR-0** reads back byte-exact; no original product/reference root is mutated.
+
+Existing Build module11 **7YQ-0** carries query-only behavior, raw-input visibility, scoped enhancement, pre-hide focus and synchronous/asynchronous callback protection. The guide remains **18 modules / 57 nodes**. All IDs/styles/parents and unaffected text are exact outside **7MV, 7MZ, 7YQ, 7NF**. Tokens remain **ac191fd9**. Existing pages retain relative order. The new flow and amended modules were captured and inspected; the exact two working roots were released.
+
+One read-only preflight returned DESKTOP_BUSY with no Paper call sent. A subsequent same-carrier availability inspection proved CONNECTED on the same file with a fresh guard. The page operation had never been issued; it was applied only after this capacity recovery. No live writer was interrupted or carrier changed. [PAPER_PRIMARY_CLEAR_20261109.json](PAPER_PRIMARY_CLEAR_20261109.json) preserves the exact source readbacks, new editable flow, before/after guide and original seed, six observed Paper operations and recovery classification.
+
+### Next safe source defect
+
+The existing unsupported-native-dialog branch still navigates to bare `gmi-index.html`, discarding the qualified return to the current research. The same initialized page already has a full-index link maintained by `refreshJourney()`. Continue by using that incumbent qualified destination in the existing fallback, and prove an actual opener → index → return journey under an explicitly injected dialog-capability fault. This is separate from malformed-payload recovery and does not require a new modal or URL owner.
+
+Original model01, release, shared Tools, Catalyst and protected-style holds remain. Current component proof does not establish full shared shell/fonts, OS-native IME, spoken AT, live account/admission, current hosted CI or deployment.
