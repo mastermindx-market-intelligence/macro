@@ -4485,6 +4485,22 @@ def _selected_python_loader_environment() -> dict[str, str]:
     """
     if platform.system() != "Linux":
         return {}
+
+    checks = {
+        "base_prefix": "not_checked",
+        "libdir": "not_checked",
+        "containment": "not_checked",
+        "soname": "not_checked",
+        "runner_contract": RUNNER_CONTRACT,
+        "python_version": ".".join(map(str, sys.version_info[:3])),
+    }
+
+    def refusal(message: str) -> ExecutionProfileError:
+        # This detail enters the existing bounded base_replay result.
+        # Emit only stage outcomes and the versioned runner identity.
+        diagnostic = json.dumps(checks, separators=(",", ":"))
+        return ExecutionProfileError(f"{message}; python_loader={diagnostic}")
+
     raw_library_dir = sysconfig.get_config_var("LIBDIR")
     raw_library_names = [
         sysconfig.get_config_var("LDLIBRARY"),
@@ -4494,19 +4510,27 @@ def _selected_python_loader_environment() -> dict[str, str]:
         name for name in raw_library_names if isinstance(name, str) and name
     ]
     if not isinstance(raw_library_dir, str) or not raw_library_dir:
-        raise ExecutionProfileError("selected Python does not declare LIBDIR")
+        checks["libdir"] = "undeclared"
+        raise refusal("selected Python does not declare LIBDIR")
     if not library_names:
-        raise ExecutionProfileError(
-            "selected Python does not declare LDLIBRARY or INSTSONAME"
-        )
+        checks["soname"] = "undeclared"
+        raise refusal("selected Python does not declare LDLIBRARY or INSTSONAME")
+
+    checking = "base_prefix"
     try:
         prefix = Path(sys.base_prefix).resolve(strict=True)
+        checks["base_prefix"] = "resolved"
+        checking = "libdir"
         declared_library_dir = Path(raw_library_dir).resolve(strict=True)
+        checks["libdir"] = "resolved"
+        checking = "containment"
         declared_library_dir.relative_to(prefix)
-    except (OSError, ValueError) as exc:
-        raise ExecutionProfileError(
+    except (OSError, ValueError):
+        checks[checking] = "outside" if checking == "containment" else "unresolved"
+        raise refusal(
             "selected Python library directory is outside selected interpreter prefix"
-        ) from exc
+        ) from None
+    checks["containment"] = "within"
 
     candidates: list[Path] = []
     for entry in os.environ.get("LD_LIBRARY_PATH", "").split(os.pathsep):
@@ -4522,10 +4546,8 @@ def _selected_python_loader_environment() -> dict[str, str]:
     for candidate in candidates:
         if any((candidate / name).is_file() for name in library_names):
             return {"LD_LIBRARY_PATH": str(candidate)}
-    raise ExecutionProfileError(
-        "selected Python shared library is absent: "
-        f"{declared_library_dir} ({', '.join(library_names)})"
-    )
+    checks["soname"] = "absent"
+    raise refusal("selected Python shared library is absent")
 
 
 def _node_major_version() -> int | None:
