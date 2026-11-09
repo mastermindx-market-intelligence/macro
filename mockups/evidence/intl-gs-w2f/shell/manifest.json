@@ -1,0 +1,802 @@
+{
+  "axes": {
+    "access": [
+      "anonymous"
+    ],
+    "force_states": [
+      {
+        "attribute": null,
+        "kind": "focus",
+        "name": "gs-market-focus",
+        "spec": "gs-market-focus:focus(a[data-gs-select-market])",
+        "value": "a[data-gs-select-market]"
+      },
+      {
+        "attribute": null,
+        "kind": "hover",
+        "name": "gs-market-hover",
+        "spec": "gs-market-hover:hover(a[data-gs-select-market])",
+        "value": "a[data-gs-select-market]"
+      }
+    ],
+    "locales": [
+      "en",
+      "zh"
+    ],
+    "themes": [
+      "dark",
+      "light"
+    ],
+    "viewports": {
+      "desktop": [
+        1440,
+        900
+      ],
+      "mobile": [
+        390,
+        844
+      ]
+    }
+  },
+  "excluded": [],
+  "generated_at": "2026-10-21T20:00:00Z",
+  "honesty": {
+    "access": "anonymous only; no credential is entered, stored, or synthesized, so no premium payload can enter these artifacts",
+    "authority": "this tool measures and screenshots; it scores, ranks, and judges nothing",
+    "force_states": "a forced state is either a class/attribute toggled on <body> or a real browser hover/focus applied to a selector before the shot; it shows that state's presentation, not data the page returned; metrics are measured on the rest cells only, and a state that did not take is recorded as a gap",
+    "gaps": "states that were not captured are recorded with a reason; nothing is inferred for them"
+  },
+  "outcome": "captured",
+  "pages": [
+    {
+      "console_errors": [],
+      "failed_responses": [],
+      "gaps": [
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "free"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "essential"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "pro"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "loading"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "empty"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "stale"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "error"
+        }
+      ],
+      "metrics": {
+        "asof_present": false,
+        "by_viewport": {
+          "desktop": {
+            "document_height_px": 1356,
+            "elements_wider_than_viewport": 0,
+            "horizontal_overflow": false
+          },
+          "mobile": {
+            "document_height_px": 1816,
+            "elements_wider_than_viewport": 7,
+            "horizontal_overflow": false
+          }
+        },
+        "console_error_count": 0,
+        "document_height_px": 1356,
+        "duplicate_heading_texts": [],
+        "elements_wider_than_viewport": 0,
+        "heading_counts": {
+          "h1": 1,
+          "h2": 6,
+          "h3": 7,
+          "h4": 35,
+          "h5": 21,
+          "h6": 0
+        },
+        "horizontal_overflow": false,
+        "long_paragraph_count": 0,
+        "measured_in": {
+          "access": "anonymous",
+          "locale": "en",
+          "theme": "dark",
+          "viewport": "desktop"
+        },
+        "panel_count": 3,
+        "payload_bytes_total": 435557,
+        "raw_slug_hit_count": 0,
+        "raw_slug_hits": [],
+        "request_count": 29,
+        "screenshot_completion": 1.0,
+        "section_count": 2,
+        "source_present": true,
+        "todo_placeholder_hit_count": 0,
+        "todo_placeholder_hits": [],
+        "visible_word_count": 205
+      },
+      "page_id": "intl.html?view=coverage",
+      "registry_route": "/intl.html?view=coverage",
+      "route": "/intl.html?view=coverage",
+      "route_kind": "explicit_override",
+      "states": [
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 339663,
+          "captured": true,
+          "file": "2154fad91ea88bed.png",
+          "force_state": null,
+          "height": 1356,
+          "locale": "en",
+          "sha256": "2154fad91ea88bed334aac2abd19b9a581487cf510965c5dd5402d6eb87816b5",
+          "theme": "dark",
+          "timing": {
+            "cls": 1.1278282908331052,
+            "inp_proxy_ms": null,
+            "lcp_ms": 144,
+            "resource_count": 28,
+            "server_timing": [],
+            "transfer_bytes": 1448788
+          },
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "gs-market-focus",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 341351,
+          "captured": true,
+          "file": "f2a1ce3eb7a05bff--gs-market-focus.png",
+          "force_state": "gs-market-focus",
+          "height": 1356,
+          "locale": "en",
+          "sha256": "f2a1ce3eb7a05bff36ad60bca385bc0dcb8f88b2dd290e544f5a707f641e6a4b",
+          "theme": "dark",
+          "timing": {
+            "cls": 1.127829269823615,
+            "inp_proxy_ms": null,
+            "lcp_ms": 120,
+            "resource_count": 28,
+            "server_timing": [],
+            "transfer_bytes": 1448788
+          },
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "gs-market-hover",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 340652,
+          "captured": true,
+          "file": "468e65e2245c0000--gs-market-hover.png",
+          "force_state": "gs-market-hover",
+          "height": 1356,
+          "locale": "en",
+          "sha256": "468e65e2245c00007bb06f7acaa6565491f0cd9284491d5bb456e241d0a18cd1",
+          "theme": "dark",
+          "timing": {
+            "cls": 1.127829269823615,
+            "inp_proxy_ms": null,
+            "lcp_ms": 124,
+            "resource_count": 28,
+            "server_timing": [],
+            "transfer_bytes": 1448788
+          },
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 346134,
+          "captured": true,
+          "file": "09dfd15bfd4002ab.png",
+          "force_state": null,
+          "height": 1356,
+          "locale": "en",
+          "sha256": "09dfd15bfd4002abfb75199f0a249197641d91a9324805e3318d8272afd4f8cd",
+          "theme": "light",
+          "timing": {
+            "cls": 1.1375084156428832,
+            "inp_proxy_ms": null,
+            "lcp_ms": 128,
+            "resource_count": 28,
+            "server_timing": [],
+            "transfer_bytes": 1448788
+          },
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "gs-market-focus",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 347321,
+          "captured": true,
+          "file": "03497f602a054a36--gs-market-focus.png",
+          "force_state": "gs-market-focus",
+          "height": 1356,
+          "locale": "en",
+          "sha256": "03497f602a054a369ce2b14526119204733b20d744c7d21588b0c2830e8cd223",
+          "theme": "light",
+          "timing": {
+            "cls": 1.137509394633393,
+            "inp_proxy_ms": null,
+            "lcp_ms": 124,
+            "resource_count": 28,
+            "server_timing": [],
+            "transfer_bytes": 1448788
+          },
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "gs-market-hover",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 347069,
+          "captured": true,
+          "file": "f8975c428b567e51--gs-market-hover.png",
+          "force_state": "gs-market-hover",
+          "height": 1356,
+          "locale": "en",
+          "sha256": "f8975c428b567e5139ba071277db8f9eeb8822abf500869ac8ff581a4d49856f",
+          "theme": "light",
+          "timing": {
+            "cls": 1.137509394633393,
+            "inp_proxy_ms": null,
+            "lcp_ms": 120,
+            "resource_count": 28,
+            "server_timing": [],
+            "transfer_bytes": 1448788
+          },
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 361863,
+          "captured": true,
+          "file": "08b7b391f9931422.png",
+          "force_state": null,
+          "height": 1270,
+          "locale": "zh",
+          "sha256": "08b7b391f993142268ac16fead4e9251d3a770d45cf5aecead200d1b5261f4b5",
+          "theme": "dark",
+          "timing": {
+            "cls": 1.2259652867781605,
+            "inp_proxy_ms": null,
+            "lcp_ms": 132,
+            "resource_count": 28,
+            "server_timing": [],
+            "transfer_bytes": 1448788
+          },
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "gs-market-focus",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 363763,
+          "captured": true,
+          "file": "23c800ac05e9f5dc--gs-market-focus.png",
+          "force_state": "gs-market-focus",
+          "height": 1270,
+          "locale": "zh",
+          "sha256": "23c800ac05e9f5dc44be82d52f326bc8a94341204f5b05a9db58dc5060eeef29",
+          "theme": "dark",
+          "timing": {
+            "cls": 1.2259662657686703,
+            "inp_proxy_ms": null,
+            "lcp_ms": 116,
+            "resource_count": 28,
+            "server_timing": [],
+            "transfer_bytes": 1448788
+          },
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "gs-market-hover",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 362769,
+          "captured": true,
+          "file": "04a7e4ade2dc5dc2--gs-market-hover.png",
+          "force_state": "gs-market-hover",
+          "height": 1270,
+          "locale": "zh",
+          "sha256": "04a7e4ade2dc5dc2c121a9a29e3868855fd8a9bee483039d53091e93b3b53fcd",
+          "theme": "dark",
+          "timing": {
+            "cls": 1.2259662657686703,
+            "inp_proxy_ms": null,
+            "lcp_ms": 120,
+            "resource_count": 28,
+            "server_timing": [],
+            "transfer_bytes": 1448788
+          },
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 365306,
+          "captured": true,
+          "file": "8c2d10221e4db6c7.png",
+          "force_state": null,
+          "height": 1270,
+          "locale": "zh",
+          "sha256": "8c2d10221e4db6c7a4f097179bd5b1db89319b6d3f7f5738cd927eeaf9766607",
+          "theme": "light",
+          "timing": {
+            "cls": 1.2358679073045933,
+            "inp_proxy_ms": null,
+            "lcp_ms": 116,
+            "resource_count": 28,
+            "server_timing": [],
+            "transfer_bytes": 1448788
+          },
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "gs-market-focus",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 367048,
+          "captured": true,
+          "file": "21d0fa1eb0f8132f--gs-market-focus.png",
+          "force_state": "gs-market-focus",
+          "height": 1270,
+          "locale": "zh",
+          "sha256": "21d0fa1eb0f8132f7ead99018cd87192049b254f9db70ad33370b25b3802fcdd",
+          "theme": "light",
+          "timing": {
+            "cls": 1.235868886295103,
+            "inp_proxy_ms": null,
+            "lcp_ms": 124,
+            "resource_count": 28,
+            "server_timing": [],
+            "transfer_bytes": 1448788
+          },
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "gs-market-hover",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 366461,
+          "captured": true,
+          "file": "8dc08d5669b83858--gs-market-hover.png",
+          "force_state": "gs-market-hover",
+          "height": 1270,
+          "locale": "zh",
+          "sha256": "8dc08d5669b8385872a144ecd027be4b3ce293de6946dc041fe5a9ed9de62410",
+          "theme": "light",
+          "timing": {
+            "cls": 1.2457630776236568,
+            "inp_proxy_ms": null,
+            "lcp_ms": 144,
+            "resource_count": 28,
+            "server_timing": [],
+            "transfer_bytes": 1448788
+          },
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 191688,
+          "captured": true,
+          "file": "c8f26078b9d3a62e.png",
+          "force_state": null,
+          "height": 1816,
+          "locale": "en",
+          "sha256": "c8f26078b9d3a62eb59509d8be16a25f4f3a91a053cd7ff17ae6da517262aaa6",
+          "theme": "dark",
+          "timing": {
+            "cls": 1.0700850649464833,
+            "inp_proxy_ms": null,
+            "lcp_ms": 100,
+            "resource_count": 27,
+            "server_timing": [],
+            "transfer_bytes": 1424588
+          },
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "gs-market-focus",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 170563,
+          "captured": true,
+          "file": "ce1f7bb27a34aece--gs-market-focus.png",
+          "force_state": "gs-market-focus",
+          "height": 1816,
+          "locale": "en",
+          "sha256": "ce1f7bb27a34aece70c0a87466a0caeb65b8df5ad2cdb39d1a786b534d6f8c5d",
+          "theme": "dark",
+          "timing": {
+            "cls": 1.0700850649464833,
+            "inp_proxy_ms": null,
+            "lcp_ms": 104,
+            "resource_count": 27,
+            "server_timing": [],
+            "transfer_bytes": 1424588
+          },
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "gs-market-hover",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 169646,
+          "captured": true,
+          "file": "940d777cacc0fdb2--gs-market-hover.png",
+          "force_state": "gs-market-hover",
+          "height": 1816,
+          "locale": "en",
+          "sha256": "940d777cacc0fdb22f0b1c99b0fc7a354bd33508211e064da3b4c80d14563132",
+          "theme": "dark",
+          "timing": {
+            "cls": 1.0700856415524382,
+            "inp_proxy_ms": null,
+            "lcp_ms": 104,
+            "resource_count": 27,
+            "server_timing": [],
+            "transfer_bytes": 1424588
+          },
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 199789,
+          "captured": true,
+          "file": "2c16b2f58f10fde6.png",
+          "force_state": null,
+          "height": 1816,
+          "locale": "en",
+          "sha256": "2c16b2f58f10fde61c1f4ffc313614a9df134de086ad13b7aa59464b675b51c6",
+          "theme": "light",
+          "timing": {
+            "cls": 1.181025267997809,
+            "inp_proxy_ms": null,
+            "lcp_ms": 104,
+            "resource_count": 27,
+            "server_timing": [],
+            "transfer_bytes": 1424588
+          },
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "gs-market-focus",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 180014,
+          "captured": true,
+          "file": "0101aebf9c89fc54--gs-market-focus.png",
+          "force_state": "gs-market-focus",
+          "height": 1816,
+          "locale": "en",
+          "sha256": "0101aebf9c89fc54bea7c0c707e58dd18c6f7c44127344ab8d5de1de2fa79c34",
+          "theme": "light",
+          "timing": {
+            "cls": 1.181024691391854,
+            "inp_proxy_ms": null,
+            "lcp_ms": 104,
+            "resource_count": 27,
+            "server_timing": [],
+            "transfer_bytes": 1424588
+          },
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "gs-market-hover",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 179182,
+          "captured": true,
+          "file": "57b736d721b69f3f--gs-market-hover.png",
+          "force_state": "gs-market-hover",
+          "height": 1816,
+          "locale": "en",
+          "sha256": "57b736d721b69f3ff2264fa9491c0f102ff20cae82193197e31ed57e63279461",
+          "theme": "light",
+          "timing": {
+            "cls": 1.181025267997809,
+            "inp_proxy_ms": null,
+            "lcp_ms": 104,
+            "resource_count": 27,
+            "server_timing": [],
+            "transfer_bytes": 1424588
+          },
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 190573,
+          "captured": true,
+          "file": "cb398d5864932b3b.png",
+          "force_state": null,
+          "height": 1699,
+          "locale": "zh",
+          "sha256": "cb398d5864932b3bbde8041f7ccff0bc5bcdc6891d1e6f2d3b5eba5a1d92469b",
+          "theme": "dark",
+          "timing": {
+            "cls": 1.0963481303019853,
+            "inp_proxy_ms": null,
+            "lcp_ms": 224,
+            "resource_count": 27,
+            "server_timing": [],
+            "transfer_bytes": 1424588
+          },
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "gs-market-focus",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 179014,
+          "captured": true,
+          "file": "02f704cf665e011d--gs-market-focus.png",
+          "force_state": "gs-market-focus",
+          "height": 1699,
+          "locale": "zh",
+          "sha256": "02f704cf665e011d2f4e812080ed21d6b0d0f48ce7dfd3e685a895caef2a3f84",
+          "theme": "dark",
+          "timing": {
+            "cls": 1.0963481303019853,
+            "inp_proxy_ms": null,
+            "lcp_ms": 236,
+            "resource_count": 27,
+            "server_timing": [],
+            "transfer_bytes": 1424588
+          },
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "gs-market-hover",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 178002,
+          "captured": true,
+          "file": "9df54248fafcccb7--gs-market-hover.png",
+          "force_state": "gs-market-hover",
+          "height": 1699,
+          "locale": "zh",
+          "sha256": "9df54248fafcccb72c53b40c01f3d3623b772a5d02db89723f0c4f3fa46b14eb",
+          "theme": "dark",
+          "timing": {
+            "cls": 1.0963487069079403,
+            "inp_proxy_ms": null,
+            "lcp_ms": 224,
+            "resource_count": 27,
+            "server_timing": [],
+            "transfer_bytes": 1424588
+          },
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 199130,
+          "captured": true,
+          "file": "d138facbe3e15b6f.png",
+          "force_state": null,
+          "height": 1699,
+          "locale": "zh",
+          "sha256": "d138facbe3e15b6f997b9e74de2131591e06067608b3353248fe176293cd24c9",
+          "theme": "light",
+          "timing": {
+            "cls": 1.209952943307257,
+            "inp_proxy_ms": null,
+            "lcp_ms": 228,
+            "resource_count": 27,
+            "server_timing": [],
+            "transfer_bytes": 1424588
+          },
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "gs-market-focus",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 188629,
+          "captured": true,
+          "file": "97805999b4eb0992--gs-market-focus.png",
+          "force_state": "gs-market-focus",
+          "height": 1699,
+          "locale": "zh",
+          "sha256": "97805999b4eb0992b7c27fb9d722f5da533ccfa92613e23d144631fe9e2218be",
+          "theme": "light",
+          "timing": {
+            "cls": 1.209952943307257,
+            "inp_proxy_ms": null,
+            "lcp_ms": 228,
+            "resource_count": 27,
+            "server_timing": [],
+            "transfer_bytes": 1424588
+          },
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "gs-market-hover",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 187772,
+          "captured": true,
+          "file": "800be859ba3e12dc--gs-market-hover.png",
+          "force_state": "gs-market-hover",
+          "height": 1699,
+          "locale": "zh",
+          "sha256": "800be859ba3e12dcab37ecd1f432f80ae06713ed7ce45544d2d77796521f8bbb",
+          "theme": "light",
+          "timing": {
+            "cls": 1.2093822345712038,
+            "inp_proxy_ms": null,
+            "lcp_ms": 224,
+            "resource_count": 27,
+            "server_timing": [],
+            "transfer_bytes": 1424588
+          },
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        }
+      ]
+    }
+  ],
+  "schema": "mastermind.p0_evidence.v2",
+  "selection": {
+    "explicit_routes": [
+      "/intl.html?view=coverage"
+    ],
+    "max_pages": 30,
+    "mode": "explicit_routes",
+    "note": "--routes overrode registry selection; the --priority and --repo filters were not applied",
+    "priority": null,
+    "registry": "data/product_experience/page_registry.json",
+    "registry_rows": 349,
+    "repo": null,
+    "selected": 1
+  },
+  "target": {
+    "base_url": null,
+    "kind": "site_dir",
+    "resolved_gitdir_or_none": null,
+    "resolved_sha_or_none": null,
+    "resolved_sha_source": "no git directory was found at or above --site-dir; nothing resolved",
+    "site_dir": "/tmp/intl-gs-w2f-fx-site"
+  },
+  "timing_basis": "lab",
+  "tool": {
+    "module_ref": "scripts/capture_page_evidence.py",
+    "module_sha256": "9b6e643c1c784eb81b584be4cb063092ae71c4a16fe01498130891e84cd0de42",
+    "user_agent": "mastermind-page-census/1.0 (internal product observability)",
+    "version": "1.4.0"
+  },
+  "totals": {
+    "pages": 1,
+    "states_attempted": 24,
+    "states_captured": 24
+  }
+}

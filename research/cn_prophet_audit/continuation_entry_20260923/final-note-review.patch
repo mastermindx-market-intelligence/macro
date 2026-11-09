@@ -1,0 +1,64 @@
+diff --git a/engine/china_act_now.py b/engine/china_act_now.py
+index 6dc269581355..1d842c897246 100644
+--- a/engine/china_act_now.py
++++ b/engine/china_act_now.py
+@@ -604,2 +604,2 @@ def assemble_act_now(
+-            en = "Some theme inputs are unavailable; use only cards with current data."
+-            zh = "部分主题输入暂缺；仅参考数据有效的卡片。"
++            en = "Some theme inputs are unavailable; affected theme recommendations are not confirmed."
++            zh = "部分主题输入暂缺；相关主题的当前建议尚未确认。"
+@@ -607,2 +607,2 @@ def assemble_act_now(
+-            en = "Theme session data is settling; lane labels are not current recommendations."
+-            zh = "主题交易日数据待确认；分栏标签不代表当前建议。"
++            en = "Theme session data is settling; current theme recommendations are not confirmed."
++            zh = "主题交易日数据待确认；当前主题建议尚未确认。"
+@@ -610,2 +610,2 @@ def assemble_act_now(
+-            en = "Theme inputs are unavailable; lane labels are not current recommendations."
+-            zh = "主题输入暂缺；分栏标签不代表当前建议。"
++            en = "Theme inputs are unavailable; current theme recommendations are not confirmed."
++            zh = "主题输入暂缺；当前主题建议尚未确认。"
+diff --git a/research/cn_prophet_audit/continuation_entry_20260923/browser_proof.py b/research/cn_prophet_audit/continuation_entry_20260923/browser_proof.py
+index d89e3f143de1..0a892b3f8e2f 100644
+--- a/research/cn_prophet_audit/continuation_entry_20260923/browser_proof.py
++++ b/research/cn_prophet_audit/continuation_entry_20260923/browser_proof.py
+@@ -91,0 +92,5 @@ for td in missing['themes']:
++partial = deepcopy(intel)
++partial_tid = next(row['id'] for row in after['display_lanes']['buy_now'] if row.get('kind') == 'THEME')
++for td in partial['themes']:
++    if td['id'] == partial_tid:
++        td['observation']['aggregate_eligible'] = False
+@@ -100,0 +106 @@ scenarios = [('current', intel, clock, []), ('missing-members', missing, clock,
++             ('partial-members', partial, clock, []),
+@@ -141,0 +148,6 @@ with sync_playwright() as pw:
++                        note = view.get('theme_data_note')
++                        note_el = page.locator('[data-theme-data-status]')
++                        assert note_el.count() == (1 if note else 0)
++                        note_text = note_el.inner_text() if note else None
++                        assert note_text == (note['zh' if lang == 'zh' else 'en'] if note else None)
++                        result['themeDataNote'] = note_text
+@@ -146 +158 @@ with sync_playwright() as pw:
+-                        if scenario in ('current', 'missing-members', 'settling'):
++                        if scenario in ('current', 'missing-members', 'partial-members', 'settling'):
+@@ -148 +160,3 @@ with sync_playwright() as pw:
+-                            page.locator(lane + ' .anv2-row a').first.focus()
++                            selector = (lane + f' .anv2-row a[href="basket_china/{partial_tid}.html"]'
++                                        if scenario == 'partial-members' else lane + ' .anv2-row a')
++                            page.locator(selector).first.focus()
+diff --git a/templates/_china_act_now_board.html.j2 b/templates/_china_act_now_board.html.j2
+index ef693cda26b7..3853e0942b8d 100644
+--- a/templates/_china_act_now_board.html.j2
++++ b/templates/_china_act_now_board.html.j2
+@@ -62 +62 @@
+-    <div class="anv2-notes" data-theme-data-status>{{ t(_anv2.theme_data_note.en, _anv2.theme_data_note.zh) }}</div>
++    <div class="anv2-notes" data-theme-data-status><span class="muted" style="font-size:11px">{{ t(_anv2.theme_data_note.en, _anv2.theme_data_note.zh) }}</span></div>
+diff --git a/tests/test_china_act_now.py b/tests/test_china_act_now.py
+index 30ca8766338e..b1e3e43bbb79 100644
+--- a/tests/test_china_act_now.py
++++ b/tests/test_china_act_now.py
+@@ -1060,0 +1061 @@ def test_conflicting_action_sources_are_visible_and_not_promoted():
++    assert "Conflicting actions" in render(result)
+@@ -1419,0 +1421,2 @@ def test_all_unavailable_theme_cards_have_one_visible_board_disclosure(clock):
++    assert 'theme recommendations' in note['en']
++    assert 'lane labels' not in note['en'] and 'cards' not in note['en']
+@@ -1450,0 +1454 @@ def test_current_defensive_dual_read_is_preserved():
++    assert 'may be bottoming' in render(_continuation_board(ti, cycles=cycles)).lower()

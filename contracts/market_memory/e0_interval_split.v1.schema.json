@@ -1,0 +1,278 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mastermind-x.com/contracts/market_memory/e0_interval_split.v1.schema.json",
+  "title": "Market Memory E0 temporal interval split (display-only declarations)",
+  "description": "Declared metadata only for the market-memory E0 temporal interval split. Declarations only: the parent verifies exact tasks and membership agreement, provenance, chronological ordering, same cluster/session/revision sibling consistency, and half-open interval overlaps. This schema executes no split and carries no numbers of episodes, no effective N, and no operational admission fields. Null means undeclared; no dates are chosen and no defaults are supplied.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "object_id",
+    "authority",
+    "study_id",
+    "protocol_sha256",
+    "membership_sha256",
+    "tasks_ref",
+    "source_coverage_ref",
+    "boundaries",
+    "embargo_seconds",
+    "tasks"
+  ],
+  "properties": {
+    "schema": {
+      "const": "research_factory.market_memory_e0_interval_split.v1"
+    },
+    "object_id": {
+      "$ref": "#/$defs/id_string"
+    },
+    "authority": {
+      "const": "display_only"
+    },
+    "study_id": {
+      "$ref": "#/$defs/id_string"
+    },
+    "protocol_sha256": {
+      "const": "5821074f0ad1564780759a7e5d7ca6595cd8d411f119629f31ee431f2a481ca6"
+    },
+    "membership_sha256": {
+      "const": "76de9522d40c65c33de0dcde59f581a5c493f4be218df3221adb9c3af1495c8f"
+    },
+    "tasks_ref": {
+      "$ref": "#/$defs/immutable_ref",
+      "description": "Exact immutable reference to the declared tasks artifact."
+    },
+    "source_coverage_ref": {
+      "$ref": "#/$defs/immutable_ref",
+      "description": "Exact immutable reference to the source coverage object this split declares against."
+    },
+    "boundaries": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "development_end_exclusive",
+            "tuning_end_exclusive",
+            "test_start_inclusive"
+          ],
+          "properties": {
+            "development_end_exclusive": {
+              "$ref": "#/$defs/clock"
+            },
+            "tuning_end_exclusive": {
+              "$ref": "#/$defs/clock"
+            },
+            "test_start_inclusive": {
+              "$ref": "#/$defs/clock"
+            }
+          }
+        }
+      ],
+      "description": "Null when undeclared; otherwise the declared half-open temporal boundaries. No dates are chosen or defaulted here; the parent verifies chronological ordering."
+    },
+    "embargo_seconds": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000000
+        }
+      ],
+      "description": "Declared duration after each included tuning/test partition lower boundary; null is undeclared. No duration or actual assignment is inferred."
+    },
+    "tasks": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 512,
+      "description": "Declared per-task disposition metadata only. The parent checks exact task and membership agreement, provenance, chronological ordering, sibling cluster/session/revision consistency, and half-open interval overlaps; no split execution is implied.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "task_id",
+          "analysis_cutoff",
+          "disposition",
+          "session_block",
+          "economic_episode"
+        ],
+        "properties": {
+          "task_id": {
+            "$ref": "#/$defs/id_string"
+          },
+          "analysis_cutoff": {
+            "$ref": "#/$defs/clock"
+          },
+          "disposition": {
+            "enum": [
+              "unknown",
+              "development",
+              "tuning",
+              "test",
+              "purged",
+              "embargoed",
+              "excluded"
+            ]
+          },
+          "session_block": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/$defs/session_block"
+              }
+            ],
+            "description": "Null when unresolved; otherwise an explicitly declared half-open block. Never infer a session interval from capture clocks."
+          },
+          "economic_episode": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/$defs/named_provenance"
+              }
+            ],
+            "description": "Null when unresolved; otherwise a declared economic-episode identifier with a provenance reference."
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "id_string": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+      "maxLength": 128
+    },
+    "lowerhex64": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "SHA-256 digest rendered as exactly 64 lowercase hexadecimal characters."
+    },
+    "clock": {
+      "type": "string",
+      "format": "date-time",
+      "minLength": 20,
+      "maxLength": 27,
+      "description": "UTC RFC 3339 date-time clock string of at most 27 characters; the parent enforces the canonical microsecond UTC form."
+    },
+    "immutable_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "object_id",
+        "sha256",
+        "bytes"
+      ],
+      "properties": {
+        "schema": {
+          "$ref": "#/$defs/id_string"
+        },
+        "object_id": {
+          "$ref": "#/$defs/id_string"
+        },
+        "sha256": {
+          "$ref": "#/$defs/lowerhex64"
+        },
+        "bytes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 4194304
+        }
+      }
+    },
+    "provenance_ref": {
+      "$ref": "#/$defs/immutable_ref",
+      "description": "Exact immutable evidence reference; byte closure does not authenticate source/session/episode truth."
+    },
+    "named_provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "provenance_ref"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id_string"
+        },
+        "provenance_ref": {
+          "$ref": "#/$defs/provenance_ref"
+        }
+      }
+    },
+    "support_interval": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "start_inclusive",
+        "end_exclusive",
+        "provenance_ref"
+      ],
+      "properties": {
+        "start_inclusive": {
+          "$ref": "#/$defs/clock"
+        },
+        "end_exclusive": {
+          "$ref": "#/$defs/clock"
+        },
+        "provenance_ref": {
+          "$ref": "#/$defs/provenance_ref"
+        }
+      }
+    },
+    "label_not_applicable": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "not_applicable",
+        "reason",
+        "provenance_ref"
+      ],
+      "properties": {
+        "not_applicable": {
+          "const": true
+        },
+        "reason": {
+          "const": "registered_no_outcome_labels"
+        },
+        "provenance_ref": {
+          "$ref": "#/$defs/provenance_ref"
+        }
+      }
+    },
+    "session_block": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "provenance_ref",
+        "start_inclusive",
+        "end_exclusive"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id_string"
+        },
+        "provenance_ref": {
+          "$ref": "#/$defs/provenance_ref"
+        },
+        "start_inclusive": {
+          "$ref": "#/$defs/clock"
+        },
+        "end_exclusive": {
+          "$ref": "#/$defs/clock"
+        }
+      },
+      "description": "Declared half-open session block; byte-bound provenance does not authenticate actual market sessions."
+    }
+  }
+}

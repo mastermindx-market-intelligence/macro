@@ -1,0 +1,66 @@
+{
+  "schema": "rates_aware_opportunity.prereg_freeze_receipt/v1",
+  "operation": "rates-entry-context-20260919-sol-006",
+  "procedure_commit": "32a354c3dd77751e206a80b2abc4e497efdbe5e6",
+  "source_base": "961d1d495328d98df64a5e1ca698b8ec4e954da9",
+  "frozen_files": {
+    "engine/entry_radar/replay/rates_context.py": "453bc3f33cbe68b01ff7b2221bce61e4087edff664c97e6d559b5dad6453aa46",
+    "tests/test_entry_radar_w5_data.py": "61b06706ee831fbd8adf7984fbc18cb339afa20c8af6c90b175e258dcdf37efc",
+    "research/rates_aware_opportunity/leader_reset_rates_context_v1.json": "1a90fb843ab8634d3fd0657a62f504594d84a11161278f0c4fb636ab5272a7ea",
+    "research/rates_aware_opportunity/LEADER_RESET_RATES_CONTEXT_PREREG_2026-09-19.md": "01236007e89a5f5d9a7b0694ae9d01f2e5862a5212230981f2e80bb6f823f73e"
+  },
+  "verification": {
+    "execution_kind": "Direct execution of actual selected test-function bodies against the real pure adapter; not pytest; repository package initializers not executed.",
+    "expanded_cases_against_original": {
+      "PASS": 12,
+      "FAIL": 8
+    },
+    "expanded_cases_against_repair": {
+      "PASS": 20,
+      "FAIL": 0
+    },
+    "preserved_current_w5_definitions": 81,
+    "current_w5_exact_prefix_preserved": true,
+    "full_pytest_and_repository_import": "NOT_RUN in this repair; historical results are recorded under prior_freeze only.",
+    "ci_owner": "Existing DATA signal-contract owner; ordinary CODE CI is not claimed to execute W5 data cases.",
+    "target_study_outcomes_opened": false,
+    "trial_rows_registered": false,
+    "target_study_outcome_files_read": false,
+    "trial_ledger_accessed": false
+  },
+  "authority": {
+    "rank": false,
+    "score": false,
+    "gate": false,
+    "size": false,
+    "trade": false
+  },
+  "next_gate": "Current source acceptance and upstream source/availability qualification; existing scientific-owner registration before any target outcome read. This repair does not register or execute the study.",
+  "repair_operation": "macro-pr7418-canonical-source-repair-20261106-c3",
+  "prior_freeze": {
+    "source_head": "7bf867327c3da97736d2ad85548dc496c0ea2de8",
+    "receipt_blob": "531f42398644fa2c81b3929f2ad37349d66c9bd7",
+    "procedure_commit": "ac6180d0ca9107daae54f9eea6bd4b8aef92d630",
+    "source_base": "af6fda723c1f5e5997748bb0992bb2ddcce51f93",
+    "frozen_files": {
+      "engine/entry_radar/replay/rates_context.py": "607dfffd277e63340f13bc7672e8d5237e88723481721bf02fb559a5ef75c64c",
+      "tests/test_entry_radar_w5_data.py": "06b74b758b044c72ee3dff31d54a4d18206202ff9d80e730a6741a1e37dcc27f",
+      "research/rates_aware_opportunity/leader_reset_rates_context_v1.json": "1a90fb843ab8634d3fd0657a62f504594d84a11161278f0c4fb636ab5272a7ea",
+      "research/rates_aware_opportunity/LEADER_RESET_RATES_CONTEXT_PREREG_2026-09-19.md": "55f621c68af77466d273a1f3dda2a94bdb7464ceff027231cc7d48cbf29bb993"
+    },
+    "historical_trial_ledger_before": {
+      "sha256": "beb20607f5757d3a7dd169f0e88e274e8fa3e2dd952dd9bfad76c02edde6d03d",
+      "rows": 1676,
+      "changed_by_this_operation": false
+    },
+    "historical_verification": {
+      "focused_rates_context": "11 passed, 75 deselected",
+      "w5_data": "84 passed, 2 skipped",
+      "w5_data_gates_battery": "200 passed, 2 skipped",
+      "target_study_outcomes_opened": false,
+      "trial_rows_registered": false,
+      "target_study_outcome_files_read": false
+    },
+    "qualification": "September evidence only; historical tests and ledger observations were not rerun or re-observed during this source repair."
+  }
+}
