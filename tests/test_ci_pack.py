@@ -5703,9 +5703,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_947),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_968),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_705),
+    ("templates/index.html", 137, 5_950),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_971),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_708),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5713,6 +5713,17 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-09 (PR #7292, retain landed ledger and original CI contribution):
+    Receiving main75e018ac includes the independent data-base-shim ledger.
+    Preserve every original subject history region and current46-line history.
+    The subject owner preimages remain unchanged; original marginal+2
+    composes current5948/5969/5706 as5950/5971/5708.
+    Keep all400 owners, all197 curated owners and every existing assertion.
+    Retain job ceilings137/138/131, ten packs and current selection rules.
+    Only source-accounting limits are composed; no runtime/admission change.
+    Prior actual product/research and paired-probe evidence stays attached
+    to its recorded generation; fresh successor hosted qualification is owed.
 
     2026-11-09 (PR #7292, measured persona cross-host coverage):
     the canonical paired planner ran on the complete candidate product tree
@@ -5729,6 +5740,52 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     landed F09 and other accounting/history below, without double funding.
     The four affected marketing suites plus deterministic fixture test
     passed236 tests using exact tracked fixtures and temporary test roots.
+
+    2026-11-09 (PR #10226, reconcile the actual #10192 landing):
+    #10192 merged as7bdfb249486d409ee8634501842c31f51af74c7c.
+    Receiving main9a13c64 already contains both accepted filer postimages,
+    its single test enrollment and its +2 allowance. Retain them unchanged.
+    Only the accepted ledger step remains: commands5->6, test paths10->11,
+    joined characters576->627, owner weight25->28. Add only ledger+3:
+    5945/5966/5703->5948/5969/5706. Preserve400 owners,399 other blocks,
+    jobs137/138/131,ten packs and all current controls/history. The two
+    original #10226 paragraphs below remain historical, not new funding.
+    This is source accounting, not a new planner or timing measurement;
+    the successor still requires its own natural CI qualification.
+
+    2026-11-08 (PR #10226, second current-main conflict composition):
+    retain the accepted four filer/ledger objects and the original two
+    data-base-shim command enrollments. This owner is still byte-identical
+    to its prior base on main8251e41; PR10192 remains unmerged, so its own
+    filer+2 and ledger+3 union is still +5, counted once. Current main has
+    separately landed #10180 B17 coverage and its measured +3 contribution.
+    Preserve that accepted source and complete dated note; compose +5 onto
+    current5923/5944/5681 to yield5928/5949/5686. Keep jobs137/138/131,
+    ten packs, all commands/selectors/timeouts and runtime/admission limits.
+    The prior H6b52c699 had own CLEAR120 jobs/380 semantic proof steps;
+    that proof does not certify this new combined source. Natural new-head
+    CI must qualify it. This is exact source arithmetic, not a new full-tree
+    planner or timing measurement. Both historical paragraphs remain below.
+    Recheck actual10192 settlement before publication; do not double fund it.
+
+    2026-11-08 (PR #10226, filer/ledger current-owner accounting):
+    retain all four accepted filer/ledger source and test postimages.
+    Current main16b9445 has neither component command enrollment;
+    PR10192 is still unmerged at the composition's dependency read.
+    Removing the two accepted command additions from H's data-base-shim
+    reproduces the entire current owner. Preserve395 owners and394
+    other blocks. The existing estimator counts5->6 run commands,
+    9->11 test paths,541->627 joined command characters, weight23->28:
+    ledger+3 and filer+2, total+5 for the same selected owner.
+    Compose only this carrier's union onto5920/5941/5678, yielding
+    5925/5946/5683. Keep jobs137/138/131,ten packs and every current
+    selector, dependency, runtime and admission control. Original H
+    packing is outside its five-path diff, so no H note is transplanted.
+    All current history and landed7352/10735 accounting remain.
+    This is static source arithmetic, not a new paired planner or
+    current-tree failure claim. Natural own CI must qualify the result.
+    If10192 actually lands before publication, retain that new baseline
+    and add only ledger+3; do not enroll or fund the filer twice.
 
     F09 C3 current-main conflict repair (2026-11-09): retain the complete
     historical paired measurement below and current main's independent history.
