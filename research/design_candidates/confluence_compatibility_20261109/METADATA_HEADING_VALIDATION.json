@@ -1,0 +1,362 @@
+{
+  "scope": "Current page metadata and combination heading semantics; no image-asset effect",
+  "parent": "26e0b8ba9ad322dc7c47a1dc1e0bead789589173",
+  "source": {
+    "parent": "26e0b8ba9ad322dc7c47a1dc1e0bead789589173",
+    "template_inverse_exact": true,
+    "saved_html_inverse_exact": true,
+    "test_inverse_exact": true,
+    "body_exact_except_three_combination_title_tags": true,
+    "styles_exact_except_local_zero_margin": true,
+    "scripts_hrefs_method_controls_exact": true,
+    "unchanged_files": [
+      "scripts/build_confluence_screener.py",
+      "site/premiumdata/confluence_screener.json",
+      "templates/_seo_head.html.j2"
+    ],
+    "protected_payload_matches_actual_producer": true,
+    "current_saved_metadata_matches_actual_renderer": true,
+    "rendered_states": [
+      {
+        "state": "current-positive",
+        "source_status": "available",
+        "eligible_count": 11,
+        "source_generation": {
+          "schema": "confluence_source.v1",
+          "generated_utc": "2026-11-08T11:31:29Z",
+          "sha256": "4f8c3dcd8508a55978f4b27d7c4d34828bc1044881ed404120cb353b1d4dc7c1"
+        },
+        "before_meta": {
+          "og:image": "https://www.mastermind-x.com/og/confluence_screener.png",
+          "twitter:image": "https://www.mastermind-x.com/og/confluence_screener.png",
+          "twitter:card": "summary_large_image"
+        },
+        "after_meta": {
+          "og:image": "https://www.mastermind-x.com/og/confluence_screener.png",
+          "twitter:image": "https://www.mastermind-x.com/og/confluence_screener.png",
+          "twitter:card": "summary_large_image"
+        },
+        "descriptions_after": [
+          "Compare historical evidence for technical signal combinations across large US stocks, including recent and older periods.",
+          "Compare historical evidence for technical signal combinations across large US stocks, including recent and older periods.",
+          "Compare historical evidence for technical signal combinations across large US stocks, including recent and older periods."
+        ],
+        "combination_heading_count_before": 0,
+        "combination_heading_count_after": 3,
+        "combination_names": [
+          {
+            "en": "Weekly reclaims 21-day line + weekly RSI-21 washed out + RSI-21 washed out + ribbon flips up",
+            "zh": "周线站上21日线 + 周线RSI-21超卖 + RSI-21超卖 + 均线带翻多"
+          },
+          {
+            "en": "Weekly reclaims 7-day line + weekly RSI-21 washed out + RSI-14 washed out + ribbon flips up",
+            "zh": "周线站上7日线 + 周线RSI-21超卖 + RSI-14超卖 + 均线带翻多"
+          },
+          {
+            "en": "Weekly RSI-14 washed out + reclaims 100-day line + RSI-14 washed out + ribbon flips up",
+            "zh": "周线RSI-14超卖 + 站上100日线 + RSI-14超卖 + 均线带翻多"
+          }
+        ],
+        "h1_count": 1,
+        "body_exact_except_title_tags": true,
+        "styles_exact_except_zero_title_margin": true,
+        "scripts_exact": true,
+        "other_metadata_tags_exact": true
+      },
+      {
+        "state": "qualified-zero",
+        "source_status": "available",
+        "eligible_count": 0,
+        "source_generation": {
+          "schema": "confluence_source.v1",
+          "generated_utc": "2026-07-19T04:00:00Z",
+          "sha256": "2a6b527d7b44cad06372e6f4700f21ccc0c7fd8e560b2c01ec934cc13c6153b6"
+        },
+        "before_meta": {
+          "og:image": "https://www.mastermind-x.com/og/confluence_screener.png",
+          "twitter:image": "https://www.mastermind-x.com/og/confluence_screener.png",
+          "twitter:card": "summary_large_image"
+        },
+        "after_meta": {
+          "og:image": "https://www.mastermind-x.com/apple-touch-icon.png",
+          "twitter:image": "https://www.mastermind-x.com/apple-touch-icon.png",
+          "twitter:card": "summary"
+        },
+        "descriptions_after": [
+          "Compare historical evidence for technical signal combinations across large US stocks, including recent and older periods.",
+          "Compare historical evidence for technical signal combinations across large US stocks, including recent and older periods.",
+          "Compare historical evidence for technical signal combinations across large US stocks, including recent and older periods."
+        ],
+        "combination_heading_count_before": 0,
+        "combination_heading_count_after": 0,
+        "combination_names": [],
+        "h1_count": 1,
+        "body_exact_except_title_tags": true,
+        "styles_exact_except_zero_title_margin": true,
+        "scripts_exact": true,
+        "other_metadata_tags_exact": true
+      },
+      {
+        "state": "unavailable",
+        "source_status": "unavailable",
+        "eligible_count": null,
+        "source_generation": null,
+        "before_meta": {
+          "og:image": "https://www.mastermind-x.com/og/confluence_screener.png",
+          "twitter:image": "https://www.mastermind-x.com/og/confluence_screener.png",
+          "twitter:card": "summary_large_image"
+        },
+        "after_meta": {
+          "og:image": "https://www.mastermind-x.com/apple-touch-icon.png",
+          "twitter:image": "https://www.mastermind-x.com/apple-touch-icon.png",
+          "twitter:card": "summary"
+        },
+        "descriptions_after": [
+          "Compare historical evidence for technical signal combinations across large US stocks, including recent and older periods.",
+          "Compare historical evidence for technical signal combinations across large US stocks, including recent and older periods.",
+          "Compare historical evidence for technical signal combinations across large US stocks, including recent and older periods."
+        ],
+        "combination_heading_count_before": 0,
+        "combination_heading_count_after": 0,
+        "combination_names": [],
+        "h1_count": 1,
+        "body_exact_except_title_tags": true,
+        "styles_exact_except_zero_title_margin": true,
+        "scripts_exact": true,
+        "other_metadata_tags_exact": true
+      }
+    ],
+    "tests": {
+      "changed_existing_functions": [
+        "test_render_html_og_meta_present",
+        "test_verified_zero_and_unavailable_are_different_states",
+        "test_actual_render_overwrites_stale_protected_rows"
+      ],
+      "added_helper": [
+        "_social_image_metadata"
+      ],
+      "unchanged_existing_functions": 41,
+      "original_function_count": 44
+    },
+    "files": {
+      "templates/confluence_screener.html.j2": {
+        "bytes": 53027,
+        "sha256": "c66770eb834b65a3b5751d51745dd513f52b5e937362aa8891922f9549babe5b",
+        "blob": "92cfb5d33a989ea9ae2584c38e0406fc752ed373"
+      },
+      "site/confluence_screener.html": {
+        "bytes": 123001,
+        "sha256": "a25c79c82dd609bf67023bbdce2fb5b8f75b4797aad7069a43abd51b8a8441b6",
+        "blob": "6df7a1f970ecb88f3832bd687c5bc27e2b0fb61e"
+      },
+      "tests/test_confluence_screener_page.py": {
+        "bytes": 40665,
+        "sha256": "1cee6cf27fc3cafdb5467f0f5083c823d10ebd858bce886afd46d147640a097b",
+        "blob": "1d8cac28574aa73041ea5e99547b9c3a27e4f1bc"
+      },
+      "scripts/build_confluence_screener.py": {
+        "bytes": 19003,
+        "sha256": "b5aa86624a18a17fd985870d9baaaa8cb745b0baffa6d4c17b6e198b6668d50a",
+        "blob": "b3db0ced7bc46607f728764c6f9f00dd851f9012"
+      },
+      "site/premiumdata/confluence_screener.json": {
+        "bytes": 542,
+        "sha256": "11a76bb62e26bd344ef29c198b7791df95b4140d18328f46f54b343f78aa4e7d",
+        "blob": "ed039512de9bf2fe3c838b6d562d0ef5da72658f"
+      },
+      "templates/_seo_head.html.j2": {
+        "bytes": 2335,
+        "sha256": "eda59eeb5f7cf0fb83a1a6430ff523939ee43cd214fe2b4aebba7ca4561bbbee",
+        "blob": "1a0f1a7cd3a8499e9d873171171d374424f9ddd8"
+      }
+    },
+    "tagged_cta_exact": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+    "historical_adoption": {
+      "sha": "143dded8a0a0f4f0a7e24396e8d169292135d9e0",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/commit/143dded8a0a0f4f0a7e24396e8d169292135d9e0",
+      "template_patch": "@@ -45,8 +45,10 @@\n {% set seo_title = 'Signals Lining Up — Free Daily Setup Screener | MastermindX' %}\n {% set seo_desc = 'Free daily screener: the technical buy-signal combinations firing across large US stocks right now, with honest recent and older-era win rates printed side by side.' %}\n {% set seo_path = 'confluence_screener.html' %}\n+{% if combos %}\n {% set seo_image = 'og/confluence_screener.png' %}\n {% set seo_card = 'summary_large_image' %}\n+{% endif %}\n {% include \"_seo_head.html.j2\" %}\n <link rel=\"stylesheet\" href=\"theme.css\">\n <style>",
+      "builder_cleanup_not_adopted": true,
+      "old_asset_and_visual_effects_not_replayed": true,
+      "pr8428_current_status": "unresolved; one fresh read returned404",
+      "scope": "Reuse existing combos predicate in owned Draft; no image lifecycle or shared SEO owner change"
+    },
+    "historical_boundary": {
+      "source": "https://github.com/mastermindx-market-intelligence/Macro/pull/8332",
+      "visual_request": "5985261197",
+      "wording": "Offline fixture/asset preparation was explicitly blocked before dispatch, with no PID, generated page or screenshot",
+      "classification": "Reported block preserved; original reason/category not verified.",
+      "current_distinct_effect": "Page-local template adoption and existing emitted-HTML/page-writer tests only. Empty combos prevent image-generator branch entry.",
+      "excluded": [
+        "old visual request",
+        "image preparation",
+        "PNG seeding",
+        "image generation",
+        "asset cleanup",
+        "screenshots",
+        "dispatch",
+        "deployment"
+      ]
+    },
+    "scope": "Pure current Jinja projections and existing current page tests; no image preparation/generation/cleanup or screenshots."
+  },
+  "template_changes": [
+    [
+      "Free daily screener: the technical buy-signal combinations firing across large US stocks right now, with honest recent and older-era win rates printed side by side.",
+      "Compare historical evidence for technical signal combinations across large US stocks, including recent and older periods."
+    ],
+    [
+      "{% set seo_image = 'og/confluence_screener.png' %}\n{% set seo_card = 'summary_large_image' %}",
+      "{% if combos %}\n{% set seo_image = 'og/confluence_screener.png' %}\n{% set seo_card = 'summary_large_image' %}\n{% endif %}"
+    ],
+    [
+      ".lc-title{font-size:16px;font-weight:700;color:var(--text);line-height:1.35;letter-spacing:-.01em}",
+      ".lc-title{margin:0;font-size:16px;font-weight:700;color:var(--text);line-height:1.35;letter-spacing:-.01em}"
+    ],
+    [
+      "<div class=\"lc-title\"><span class=\"l-en\">{{ c.name_en }}</span><span class=\"l-zh\">{{ c.name_zh }}</span></div>",
+      "<h3 class=\"lc-title\"><span class=\"l-en\">{{ c.name_en }}</span><span class=\"l-zh\">{{ c.name_zh }}</span></h3>"
+    ]
+  ],
+  "test_changes": [
+    [
+      "def test_render_html_free_ticker_present():",
+      "def _social_image_metadata(html):\n    \"\"\"Read emitted image/card tags, including duplicates, without image I/O.\"\"\"\n    class Metadata(HTMLParser):\n        def __init__(self):\n            super().__init__()\n            self.values = {}\n\n        def handle_starttag(self, tag, attrs):\n            if tag != \"meta\":\n                return\n            attrs = dict(attrs)\n            key = attrs.get(\"property\") or attrs.get(\"name\")\n            if key in (\"og:image\", \"twitter:image\", \"twitter:card\"):\n                self.values.setdefault(key, []).append(attrs.get(\"content\"))\n\n    parser = Metadata()\n    parser.feed(html)\n    return parser.values\n\n\ndef test_render_html_free_ticker_present():"
+    ],
+    [
+      "def test_render_html_og_meta_present():\n    html = _rendered_html()\n    assert \"og/confluence_screener.png\" in html\n    assert \"summary_large_image\" in html",
+      "def test_render_html_og_meta_present():\n    html = _rendered_html()\n    assert _social_image_metadata(html) == {\n        \"og:image\": [\"https://www.mastermind-x.com/og/confluence_screener.png\"],\n        \"twitter:image\": [\"https://www.mastermind-x.com/og/confluence_screener.png\"],\n        \"twitter:card\": [\"summary_large_image\"],\n    }"
+    ],
+    [
+      "    assert \"No eligible line-ups\" not in missing\n\n",
+      "    assert \"No eligible line-ups\" not in missing\n    for page in (html, missing):\n        assert _social_image_metadata(page) == {\n            \"og:image\": [\"https://www.mastermind-x.com/apple-touch-icon.png\"],\n            \"twitter:image\": [\"https://www.mastermind-x.com/apple-touch-icon.png\"],\n            \"twitter:card\": [\"summary\"],\n        }\n\n"
+    ],
+    [
+      "    assert \"OLD_PUBLIC_SHELL\" not in html\n    assert \"STALE_PRIVATE\" not in html + payload_text",
+      "    assert \"OLD_PUBLIC_SHELL\" not in html\n    assert _social_image_metadata(html) == {\n        \"og:image\": [\"https://www.mastermind-x.com/apple-touch-icon.png\"],\n        \"twitter:image\": [\"https://www.mastermind-x.com/apple-touch-icon.png\"],\n        \"twitter:card\": [\"summary\"],\n    }\n    assert \"STALE_PRIVATE\" not in html + payload_text"
+    ]
+  ],
+  "historical_adoption": {
+    "sha": "143dded8a0a0f4f0a7e24396e8d169292135d9e0",
+    "url": "https://github.com/mastermindx-market-intelligence/macro/commit/143dded8a0a0f4f0a7e24396e8d169292135d9e0",
+    "template_patch": "@@ -45,8 +45,10 @@\n {% set seo_title = 'Signals Lining Up — Free Daily Setup Screener | MastermindX' %}\n {% set seo_desc = 'Free daily screener: the technical buy-signal combinations firing across large US stocks right now, with honest recent and older-era win rates printed side by side.' %}\n {% set seo_path = 'confluence_screener.html' %}\n+{% if combos %}\n {% set seo_image = 'og/confluence_screener.png' %}\n {% set seo_card = 'summary_large_image' %}\n+{% endif %}\n {% include \"_seo_head.html.j2\" %}\n <link rel=\"stylesheet\" href=\"theme.css\">\n <style>",
+    "builder_cleanup_not_adopted": true,
+    "old_asset_and_visual_effects_not_replayed": true,
+    "pr8428_current_status": "unresolved; one fresh read returned404",
+    "scope": "Reuse existing combos predicate in owned Draft; no image lifecycle or shared SEO owner change"
+  },
+  "historical_boundary": {
+    "source": "https://github.com/mastermindx-market-intelligence/Macro/pull/8332",
+    "visual_request": "5985261197",
+    "wording": "Offline fixture/asset preparation was explicitly blocked before dispatch, with no PID, generated page or screenshot",
+    "classification": "Reported block preserved; original reason/category not verified.",
+    "current_distinct_effect": "Page-local template adoption and existing emitted-HTML/page-writer tests only. Empty combos prevent image-generator branch entry.",
+    "excluded": [
+      "old visual request",
+      "image preparation",
+      "PNG seeding",
+      "image generation",
+      "asset cleanup",
+      "screenshots",
+      "dispatch",
+      "deployment"
+    ]
+  },
+  "processes": {
+    "projection": {
+      "pid": 92293,
+      "exit": 0,
+      "process_seconds": 4.96,
+      "command": "python3 - <<'PY'\nfrom pathlib import Path\nimport ast,copy,hashlib,html,importlib.util,json,re,sys\nfrom bs4 import BeautifulSoup\nr=Path(\"/Volumes/Mastermind/agent-workspaces/verify/confluence-compat-20261109-klbmhv4a\");p=r/'metadata-heading-parent';sys.path.insert(0,str(r))\nm=json.loads((r/'metadata-heading-manifest.json').read_text())\nold_template=(p/'templates/confluence_screener.html.j2').read_text();new_template=(r/'templates/confluence_screener.html.j2').read_text()\ninverse=new_template\nfor a,b in reversed(m['changes']):\n assert inverse.count(b)==1;inverse=inverse.replace(b,a,1)\nassert inverse==old_template\nold_tests=(p/'tests/test_confluence_screener_page.py').read_text();new_tests=(r/'tests/test_confluence_screener_page.py').read_text();inverse_tests=new_tests\nfor a,b in reversed(m['test_changes']):\n assert inverse_tests.count(b)==1;inverse_tests=inverse_tests.replace(b,a,1)\nassert inverse_tests==old_tests\nold=(p/'site/confluence_screener.html').read_text();old_desc,new_desc=m['changes'][0]\nassert old.count(old_desc)==3\nnew=old.replace(old_desc,new_desc)\na,b=m['changes'][2];assert new.count(a)==1;new=new.replace(a,b,1)\nnew,n=re.subn(r'<div class=\"lc-title\">([\\s\\S]*?)</div>',r'<h3 class=\"lc-title\">\\1</h3>',new);assert n==3\ninverse,n=re.subn(r'<h3 class=\"lc-title\">([\\s\\S]*?)</h3>',r'<div class=\"lc-title\">\\1</div>',new);assert n==3\nassert inverse.replace(new_desc,old_desc).replace(b,a,1)==old\ndef soup(s):return BeautifulSoup(s,'html.parser')\ndef tags(s):return [(x.name,dict(x.attrs)) for x in s.head.select('meta,link')]\ndef descriptions(s):return [s.select_one(q)['content'] for q in ['meta[name=\"description\"]','meta[property=\"og:description\"]','meta[name=\"twitter:description\"]']]\ndef image_meta(s):return {key:s.select_one(selector)['content'] for key,selector in [('og:image','meta[property=\"og:image\"]'),('twitter:image','meta[name=\"twitter:image\"]'),('twitter:card','meta[name=\"twitter:card\"]')]}\ndef conserved_body(before,after):\n bs,ns=soup(before),soup(after)\n assert [str(x) for x in bs.find_all('script')]==[str(x) for x in ns.find_all('script')]\n old_titles=bs.select('.lc-title');new_titles=ns.select('.lc-title');assert len(old_titles)==len(new_titles)\n for x,y in zip(old_titles,new_titles):\n  assert x.name=='div' and y.name=='h3' and x.get_text()==y.get_text();y.name='div'\n assert str(bs.body)==str(ns.body)\n assert [str(x) for x in bs.find_all('style')]==[str(x).replace(m['changes'][2][1],m['changes'][2][0],1) for x in ns.find_all('style')]\n return True\nassert conserved_body(old,new)\nbs,ns=soup(old),soup(new)\nassert descriptions(bs)==[old_desc]*3 and descriptions(ns)==[new_desc]*3\nassert image_meta(bs)==image_meta(ns)\nfrom scripts.build_confluence_screener import build_context,render_html,build_premium_payload\nraw=json.loads((r/'site/factordata/tech_confluence.json').read_text())\nheatmap=json.loads((r/'site/marketdata/sp500_heatmap.json').read_text());names={x['t']:x['name'] for x in heatmap.get('tiles',[]) if x.get('t') and x.get('name')}\nspec=importlib.util.spec_from_file_location('metadata_fixture',r/'tests/test_confluence_screener_page.py');fixture=importlib.util.module_from_spec(spec);spec.loader.exec_module(fixture)\nzero_raw=copy.deepcopy(fixture._make_raw());zero_raw['combos']['long']=[]\ncta=html.unescape(re.search(r'<a class=\"btn\" href=\"([^\"]+)\"><span class=\"l-en\">Start free trial',old).group(1))\ncontexts=[('current-positive',build_context(raw,names)),('qualified-zero',build_context(zero_raw,{})),('unavailable',build_context(None,{}))]\nrows=[]\nfor label,ctx in contexts:\n ctx['generated_utc']='FIXED_METADATA_HEADING_CLOCK';ctx['cta_url']=cta\n before,after=render_html(p,ctx),render_html(r,ctx);bs,ns=soup(before),soup(after)\n assert conserved_body(before,after)\n assert descriptions(bs)==[old_desc]*3 and descriptions(ns)==[new_desc]*3\n expected_image='https://www.mastermind-x.com/'+('og/confluence_screener.png' if ctx['combos'] else 'apple-touch-icon.png')\n expected_card='summary_large_image' if ctx['combos'] else 'summary'\n assert image_meta(ns)=={'og:image':expected_image,'twitter:image':expected_image,'twitter:card':expected_card}\n before_tags=tags(bs);after_tags=tags(ns)\n for rows_tags in (before_tags,after_tags):\n  for tag,attrs in rows_tags:\n   key=attrs.get('property') or attrs.get('name')\n   if key in ['description','og:description','twitter:description','og:image','twitter:image','twitter:card']:attrs['content']='COMPARED_SEPARATELY'\n assert before_tags==after_tags\n headings=ns.select('h3.lc-title')\n assert len(headings)==len(ctx['combos'])\n for heading,combo in zip(headings,ctx['combos']):\n  assert heading.select_one('.l-en').get_text()==combo['name_en'];assert heading.select_one('.l-zh').get_text()==combo['name_zh']\n assert len(ns.select('.wrap h1'))==1\n rows.append({'state':label,'source_status':ctx['source_status'],'eligible_count':ctx['n_active_total'],'source_generation':ctx['source_generation'],'before_meta':image_meta(bs),'after_meta':image_meta(ns),'descriptions_after':descriptions(ns),'combination_heading_count_before':len(bs.select('h3.lc-title')),'combination_heading_count_after':len(headings),'combination_names':[{'en':x.select_one('.l-en').get_text(),'zh':x.select_one('.l-zh').get_text()} for x in headings],'h1_count':len(ns.select('.wrap h1')),'body_exact_except_title_tags':True,'styles_exact_except_zero_title_margin':True,'scripts_exact':True,'other_metadata_tags_exact':True})\n if label=='current-positive':\n  assert image_meta(ns)==image_meta(soup(new));assert descriptions(ns)==descriptions(soup(new))\n  assert [str(x) for x in ns.select('h3.lc-title')]==[str(x) for x in soup(new).select('h3.lc-title')]\nunchanged=['scripts/build_confluence_screener.py','site/premiumdata/confluence_screener.json','templates/_seo_head.html.j2']\nfor path in unchanged:assert (r/path).read_bytes()==(p/path).read_bytes(),path\nassert json.loads((r/'site/premiumdata/confluence_screener.json').read_text())==build_premium_payload(raw,names)\n(r/'site/confluence_screener.html').write_text(new)\nfiles={}\nfor path in ['templates/confluence_screener.html.j2','site/confluence_screener.html','tests/test_confluence_screener_page.py']+unchanged:\n data=(r/path).read_bytes();blob=hashlib.sha1(b'blob '+str(len(data)).encode()+b'\\0'+data).hexdigest();files[path]={'bytes':len(data),'sha256':hashlib.sha256(data).hexdigest(),'blob':blob}\n if path in m['expected_blobs']:assert blob==m['expected_blobs'][path],(path,blob)\ndef functions(source):return {n.name:ast.dump(n,include_attributes=False) for n in ast.parse(source).body if isinstance(n,(ast.FunctionDef,ast.AsyncFunctionDef))}\nold_funcs,new_funcs=functions(old_tests),functions(new_tests)\nchanged=[name for name in old_funcs if old_funcs[name]!=new_funcs.get(name)]\nadded=[name for name in new_funcs if name not in old_funcs]\nassert changed==['test_render_html_og_meta_present','test_verified_zero_and_unavailable_are_different_states','test_actual_render_overwrites_stale_protected_rows'],changed\nassert added==['_social_image_metadata']\nreceipt={'parent':m['parent'],'template_inverse_exact':True,'saved_html_inverse_exact':True,'test_inverse_exact':True,'body_exact_except_three_combination_title_tags':True,'styles_exact_except_local_zero_margin':True,'scripts_hrefs_method_controls_exact':True,'unchanged_files':unchanged,'protected_payload_matches_actual_producer':True,'current_saved_metadata_matches_actual_renderer':True,'rendered_states':rows,'tests':{'changed_existing_functions':changed,'added_helper':added,'unchanged_existing_functions':len(old_funcs)-len(changed),'original_function_count':len(old_funcs)},'files':files,'tagged_cta_exact':cta,'historical_adoption':m['historical_adoption'],'historical_boundary':m['historical_boundary'],'scope':'Pure current Jinja projections and existing current page tests; no image preparation/generation/cleanup or screenshots.'}\n(r/'metadata-heading-source-receipt.json').write_text(json.dumps(receipt,ensure_ascii=False,indent=2)+'\\n')\nprint(json.dumps({'states':[{'state':x['state'],'after_meta':x['after_meta'],'headings':x['combination_heading_count_after']} for x in rows],'files':files,'changed_existing_test_functions':changed,'added_test_helper':added}))\nPY"
+    },
+    "baseline": {
+      "pid": 86357,
+      "exit": 1,
+      "passed": 1,
+      "failed": 10,
+      "deselected": 81,
+      "pytest_seconds": 2.29,
+      "process_seconds": 4.75,
+      "command": "python3 - <<'PY'\nfrom pathlib import Path\nimport json,subprocess,sys\nr=Path('/Volumes/Mastermind/agent-workspaces/verify/confluence-compat-20261109-klbmhv4a')\np=subprocess.run([sys.executable,'-B','-m','pytest','-q','tests/test_confluence_screener_page.py','-k','og_meta_present or verified_zero_and_unavailable_are_different_states or actual_render_overwrites_stale_protected_rows','--disable-warnings','--basetemp',str(r/'pytest-metadata-heading-baseline')],cwd=r,text=True,capture_output=True)\n(r/'metadata-heading-baseline-output.txt').write_text(p.stdout+p.stderr)\nprint('\\n'.join((p.stdout+p.stderr).splitlines()[-14:]));print(json.dumps({'exit':p.returncode,'qualification':'current HTML metadata baseline; no image preparation/generation/capture'}));raise SystemExit(p.returncode)\nPY",
+      "receipt": {
+        "content": [
+          {
+            "type": "text",
+            "text": "[Reading 16 new lines (total: 16 lines)]\n\n----------------------------- Captured stdout call -----------------------------\n[confluence_screener] page+premium-payload+card in 0.1s (combos=0)\n=========================== short test summary info ============================\nFAILED tests/test_confluence_screener_page.py::test_verified_zero_and_unavailable_are_different_states\nFAILED tests/test_confluence_screener_page.py::test_actual_render_overwrites_stale_protected_rows[missing]\nFAILED tests/test_confluence_screener_page.py::test_actual_render_overwrites_stale_protected_rows[malformed_json]\nFAILED tests/test_confluence_screener_page.py::test_actual_render_overwrites_stale_protected_rows[non_object]\nFAILED tests/test_confluence_screener_page.py::test_actual_render_overwrites_stale_protected_rows[read_error]\nFAILED tests/test_confluence_screener_page.py::test_actual_render_overwrites_stale_protected_rows[missing_collection]\nFAILED tests/test_confluence_screener_page.py::test_actual_render_overwrites_stale_protected_rows[missing_clock]\nFAILED tests/test_confluence_screener_page.py::test_actual_render_overwrites_stale_protected_rows[invalid_clock]\nFAILED tests/test_confluence_screener_page.py::test_actual_render_overwrites_stale_protected_rows[mixed_malformed_row]\nFAILED tests/test_confluence_screener_page.py::test_actual_render_overwrites_stale_protected_rows[qualified_zero]\n10 failed, 1 passed, 81 deselected in 2.29s\n{\"exit\": 1, \"qualification\": \"current HTML metadata baseline; no image preparation/generation/capture\"}\n\n✅ Process completed with exit code 1 (runtime: 4.75s)"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      },
+      "qualification": "Ten failed expectations for one retained-image metadata behavior, not ten independent product defects."
+    },
+    "page_tests": {
+      "pid": 96506,
+      "exit": 0,
+      "passed": 92,
+      "pytest_seconds": 20.36,
+      "process_seconds": 24.55,
+      "command": "python3 - <<'PY'\nfrom pathlib import Path\nimport json,subprocess,sys\nr=Path('/Volumes/Mastermind/agent-workspaces/verify/confluence-compat-20261109-klbmhv4a')\np=subprocess.run([sys.executable,'-B','-m','pytest','-q','tests/test_confluence_screener_page.py','--disable-warnings','--basetemp',str(r/'pytest-metadata-heading-final')],cwd=r,text=True,capture_output=True)\n(r/'metadata-heading-page-tests-output.txt').write_text(p.stdout+p.stderr);print(p.stdout);print(p.stderr);print(json.dumps({'exit':p.returncode}));raise SystemExit(p.returncode)\nPY",
+      "receipt": {
+        "content": [
+          {
+            "type": "text",
+            "text": "[Reading 7 new lines (total: 7 lines)]\n\n........................................................................ [ 78%]\n....................                                                     [100%]\n92 passed in 20.36s\n\n\n{\"exit\": 0}\n\n✅ Process completed with exit code 0 (runtime: 24.55s)"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      },
+      "original_output": {
+        "content": "........................................................................ [ 78%]\n....................                                                     [100%]\n92 passed in 20.36s\n",
+        "bytes": 180,
+        "sha256": "642f72c8d15b1b468e8700bbef59656b32217c133d7960537df6a499f9023ef3",
+        "blob": "29b6ef9235ca7155054977b261eccfc15c9485ca"
+      }
+    },
+    "heading_inspection": {
+      "pid": 96707,
+      "exit": 0,
+      "contexts": 4,
+      "page_observations": 8,
+      "card_observations": 24,
+      "process_seconds": 26.73,
+      "command": "python3 - <<'PY'\nfrom pathlib import Path\nimport http.server,json,socketserver,threading\nfrom urllib.parse import parse_qs,urlsplit\nfrom playwright.sync_api import sync_playwright\nr=Path(\"/Volumes/Mastermind/agent-workspaces/verify/confluence-compat-20261109-klbmhv4a\");out=r/'metadata-heading-inspection';out.mkdir(exist_ok=True)\npages={'before':(r/'metadata-heading-parent/site/confluence_screener.html').read_bytes(),'after':(r/'site/confluence_screener.html').read_bytes()}\nclass Handler(http.server.SimpleHTTPRequestHandler):\n def __init__(self,*a,**kw):super().__init__(*a,directory=str(r/'site'),**kw)\n def do_GET(self):\n  p=urlsplit(self.path)\n  if p.path=='/confluence_screener.html':\n   state=parse_qs(p.query)['source_version'][0];b=pages[state];self.send_response(200);self.send_header('Content-Type','text/html; charset=utf-8');self.send_header('Content-Length',str(len(b)));self.end_headers();self.wfile.write(b);return\n  if p.path.startswith('/premiumdata/'):self.send_response(403);self.end_headers();return\n  super().do_GET()\n def log_message(self,*_):pass\nserver=socketserver.ThreadingTCPServer(('127.0.0.1',0),Handler);threading.Thread(target=server.serve_forever,daemon=True).start();origin='http://127.0.0.1:'+str(server.server_address[1])\nrows=[];errors=[]\ntry:\n with sync_playwright() as pw:\n  browser=pw.chromium.launch(headless=True,executable_path='/Applications/Google Chrome.app/Contents/MacOS/Google Chrome');version=browser.version\n  for width,lang,theme in [(320,'en','dark'),(320,'zh','light'),(1440,'en','dark'),(1440,'zh','light')]:\n   context=browser.new_context(viewport={'width':width,'height':900},device_scale_factor=1,reduced_motion='reduce')\n   context.route('**/*',lambda route:route.continue_() if urlsplit(route.request.url).hostname=='127.0.0.1' else route.abort())\n   context.add_init_script(\"localStorage.setItem('lang',\"+json.dumps(lang)+\");localStorage.setItem('theme',\"+json.dumps(theme)+\");\")\n   page=context.new_page();page.on('pageerror',lambda e:errors.append(str(e)));item={'width':width,'lang':lang,'theme':theme}\n   for state in ['before','after']:\n    page.goto(origin+'/confluence_screener.html?source_version='+state,wait_until='load');page.evaluate('document.fonts.ready')\n    item[state]=page.evaluate(\"\"\"() => {\n      const box=n=>{const b=n.getBoundingClientRect();return{x:b.x,y:b.y,width:b.width,height:b.height,right:b.right,bottom:b.bottom}};\n      const props=['fontFamily','fontSize','fontWeight','lineHeight','letterSpacing','color','display','marginTop','marginRight','marginBottom','marginLeft','paddingTop','paddingBottom'];\n      return {cards:[...document.querySelectorAll('.lc')].map(n=>{const h=n.querySelector('.lc-title'),style=getComputedStyle(h);return{\n        tag:h.tagName,title:h.innerText,titleBox:box(h),cardBox:box(n),style:Object.fromEntries(props.map(k=>[k,style[k]])),\n        method:n.querySelector('.methods')?.outerHTML??null,\n        links:[...n.querySelectorAll('a')].map(a=>({text:a.innerText,href:a.getAttribute('href'),target:a.getAttribute('target'),rel:a.getAttribute('rel'),box:box(a)}))\n      }}),h1Count:document.querySelectorAll('.wrap h1').length,h2:[...document.querySelectorAll('.wrap h2')].map(n=>n.innerText),cardHeadingCount:document.querySelectorAll('.lc h3.lc-title').length,documentWidth:document.documentElement.scrollWidth};\n    }\"\"\")\n    if state=='after':item['active_language_heading_matches']=[page.get_by_role('heading',level=3,name=c['title'],exact=True).count() for c in item[state]['cards']]\n   a,b=item['before'],item['after']\n   item['checks']={'three_card_headings':a['cardHeadingCount']==0 and b['cardHeadingCount']==3,'same_titles':all(x['title']==y['title'] for x,y in zip(a['cards'],b['cards'])),'same_geometry_styles':all(x['titleBox']==y['titleBox'] and x['cardBox']==y['cardBox'] and x['style']==y['style'] for x,y in zip(a['cards'],b['cards'])),'methods_actions_exact':all(x['method']==y['method'] and x['links']==y['links'] for x,y in zip(a['cards'],b['cards'])),'zero_title_margins':all(all(c['style'][k]=='0px' for k in ['marginTop','marginRight','marginBottom','marginLeft']) for c in b['cards']),'active_language_accessible_heading':item['active_language_heading_matches']==[1,1,1],'page_list_hierarchy_preserved':a['h1Count']==b['h1Count']==1 and a['h2']==b['h2'],'document_width_exact':a['documentWidth']==b['documentWidth'],'card_titles_contained':all(c['titleBox']['right']<=c['cardBox']['right']+1 for c in b['cards'])}\n   rows.append(item);context.close()\n  browser.close()\nfinally:server.shutdown();server.server_close()\nreport={'kind':'bounded DOM/geometry inspection of newly changed combination heading semantics; not historical share-card visual proof or a new functional suite','contexts':len(rows),'page_observations':len(rows)*2,'card_observations':len(rows)*6,'browser':version,'observations':rows,'page_errors':errors,'screenshots_taken':0,'input':'Actual parent/current saved positive HTML, identical local resources. No image preparation/generation/cleanup, account action or historical visual replay.'}\n(out/'inspection.json').write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\\n')\nprint(json.dumps({'report':str(out/'inspection.json'),'contexts':len(rows),'page_observations':len(rows)*2,'page_errors':len(errors),'checks':[{'width':x['width'],'lang':x['lang'],'checks':x['checks']} for x in rows]},ensure_ascii=False))\nassert not errors and all(all(x['checks'].values()) for x in rows),'Inspect retained observations; do not replay unchanged'\nPY",
+      "receipt": {
+        "content": [
+          {
+            "type": "text",
+            "text": "[Reading 2 new lines (total: 2 lines)]\n\n{\"report\": \"/Volumes/Mastermind/agent-workspaces/verify/confluence-compat-20261109-klbmhv4a/metadata-heading-inspection/inspection.json\", \"contexts\": 4, \"page_observations\": 8, \"page_errors\": 0, \"checks\": [{\"width\": 320, \"lang\": \"en\", \"checks\": {\"three_card_headings\": true, \"same_titles\": true, \"same_geometry_styles\": true, \"methods_actions_exact\": true, \"zero_title_margins\": true, \"active_language_accessible_heading\": true, \"page_list_hierarchy_preserved\": true, \"document_width_exact\": true, \"card_titles_contained\": true}}, {\"width\": 320, \"lang\": \"zh\", \"checks\": {\"three_card_headings\": true, \"same_titles\": true, \"same_geometry_styles\": true, \"methods_actions_exact\": true, \"zero_title_margins\": true, \"active_language_accessible_heading\": true, \"page_list_hierarchy_preserved\": true, \"document_width_exact\": true, \"card_titles_contained\": true}}, {\"width\": 1440, \"lang\": \"en\", \"checks\": {\"three_card_headings\": true, \"same_titles\": true, \"same_geometry_styles\": true, \"methods_actions_exact\": true, \"zero_title_margins\": true, \"active_language_accessible_heading\": true, \"page_list_hierarchy_preserved\": true, \"document_width_exact\": true, \"card_titles_contained\": true}}, {\"width\": 1440, \"lang\": \"zh\", \"checks\": {\"three_card_headings\": true, \"same_titles\": true, \"same_geometry_styles\": true, \"methods_actions_exact\": true, \"zero_title_margins\": true, \"active_language_accessible_heading\": true, \"page_list_hierarchy_preserved\": true, \"document_width_exact\": true, \"card_titles_contained\": true}}]}\n\n✅ Process completed with exit code 0 (runtime: 26.73s)"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      }
+    }
+  },
+  "inspection_qualification": {
+    "selector": ".methods",
+    "actual_method_class": ".lc-method",
+    "null_method_observations": 24,
+    "claim": "Combined methods_actions_exact establishes actions only; exact source/body inverses independently prove unchanged method content. No runtime method proof from null fields.",
+    "screenshots": 0,
+    "spoken_assistive_technology": false,
+    "historical_visual_request_fulfilled": false
+  },
+  "original_retained_files": {
+    "inspection": {
+      "bytes": 47943,
+      "sha256": "9f1a669125645e6421701061341de7d8c6a94556776d28c543f356fb779968d5",
+      "blob": "f339f1e8caad78a18f04b7653290100fceafff72"
+    },
+    "baseline": {
+      "bytes": 44118,
+      "sha256": "35fe989ff9e6ee81b6f11c1ffa2cb674b974db6412361ae65548e07f2e81abf0",
+      "blob": "d9405b991c759bb7fabd0f825c897ac8738853af"
+    }
+  },
+  "limits": [
+    "No image generation, cleanup, new PNG seeding or historical visual replay.",
+    "Positive image-generation failure can still leave a retained image; separate publication risk.",
+    "No external preview-cache refresh, hosted render, deployment, live entitlement or release claim."
+  ]
+}

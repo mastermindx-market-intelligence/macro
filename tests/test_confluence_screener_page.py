@@ -285,6 +285,26 @@ def _rendered_html():
     return render_html(_ROOT, ctx)
 
 
+def _social_image_metadata(html):
+    """Read emitted image/card tags, including duplicates, without image I/O."""
+    class Metadata(HTMLParser):
+        def __init__(self):
+            super().__init__()
+            self.values = {}
+
+        def handle_starttag(self, tag, attrs):
+            if tag != "meta":
+                return
+            attrs = dict(attrs)
+            key = attrs.get("property") or attrs.get("name")
+            if key in ("og:image", "twitter:image", "twitter:card"):
+                self.values.setdefault(key, []).append(attrs.get("content"))
+
+    parser = Metadata()
+    parser.feed(html)
+    return parser.values
+
+
 def test_render_html_free_ticker_present():
     html = _rendered_html()
     assert "FREEAA" in html
@@ -311,8 +331,11 @@ def test_render_html_has_protected_payload_hydration_contract():
 
 def test_render_html_og_meta_present():
     html = _rendered_html()
-    assert "og/confluence_screener.png" in html
-    assert "summary_large_image" in html
+    assert _social_image_metadata(html) == {
+        "og:image": ["https://www.mastermind-x.com/og/confluence_screener.png"],
+        "twitter:image": ["https://www.mastermind-x.com/og/confluence_screener.png"],
+        "twitter:card": ["summary_large_image"],
+    }
 
 
 def test_render_html_empty_context_no_exception():
@@ -579,6 +602,12 @@ def test_verified_zero_and_unavailable_are_different_states():
     assert 'data-source-state="unavailable"' in missing
     assert "number of matching line-ups is unknown" in missing
     assert "No eligible line-ups" not in missing
+    for page in (html, missing):
+        assert _social_image_metadata(page) == {
+            "og:image": ["https://www.mastermind-x.com/apple-touch-icon.png"],
+            "twitter:image": ["https://www.mastermind-x.com/apple-touch-icon.png"],
+            "twitter:card": ["summary"],
+        }
 
 
 @pytest.mark.parametrize("mutation", [
@@ -834,6 +863,11 @@ def test_actual_render_overwrites_stale_protected_rows(tmp_path, monkeypatch, in
     payload_text = protected.read_text(encoding="utf-8")
     payload = json.loads(payload_text)
     assert "OLD_PUBLIC_SHELL" not in html
+    assert _social_image_metadata(html) == {
+        "og:image": ["https://www.mastermind-x.com/apple-touch-icon.png"],
+        "twitter:image": ["https://www.mastermind-x.com/apple-touch-icon.png"],
+        "twitter:card": ["summary"],
+    }
     assert "STALE_PRIVATE" not in html + payload_text
     assert "Old protected fixture" not in html + payload_text
     assert payload["schema"] == PAYLOAD_SCHEMA

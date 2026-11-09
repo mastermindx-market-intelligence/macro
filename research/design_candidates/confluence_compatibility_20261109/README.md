@@ -1,10 +1,14 @@
 # Confluence compatibility and truthful actions
 
-## Current continuation: qualified-zero primary heading
+## Current continuation: snapshot-faithful metadata and navigable card headings
+
+Search/share descriptions now match snapshot research, and zero/unavailable pages use the existing generic image metadata. The page-local image predicate adopts retained work from historical 143dded8; image generation/cleanup and its original blocked visual request remain separate. Combination titles become H3 headings with identical geometry and copy. [METADATA_AND_HEADINGS.md](METADATA_AND_HEADINGS.md) records **92 existing page cases**, current actual-writer metadata checks, four bounded DOM/geometry contexts and exact source inverses. No new image or permanent browser harness is introduced.
+
+## Previous continuation: qualified-zero primary heading
 
 A qualified empty result now has one visible H1 using the existing primary-heading scale: 26px narrow /32px desktop. Its words, count, source clock and Open Mastermind destination remain exact. [EMPTY_HEADING.md](EMPTY_HEADING.md) records the two template substitutions, **92 existing page tests**, four bounded before/after inspection contexts and eight original captures. The current positive saved page changes only one local CSS rule; its body/scripts, builder and protected data remain exact.
 
-## Previous continuation: focus-safe reload recovery
+## Earlier continuation: focus-safe reload recovery
 
 When a keyboard retry receives a different source generation, focus now moves to the existing Reload action before the retry hides. Newer user focus and synchronous existing-owner callbacks are preserved. A Chinese survivorship phrase also drops an unsupported winner implication. [FOCUS_RECOVERY.md](FOCUS_RECOVERY.md) contains the exact same-controller contract, 10 focused recovery cases, 14 compatibility regressions, 92 existing page tests and original before/after captures. All card markup, layout, method/motion code, builder and protected data remain exact.
 

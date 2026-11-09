@@ -1,0 +1,1424 @@
+{
+  "kind": "bounded DOM/geometry inspection of newly changed combination heading semantics; not historical share-card visual proof or a new functional suite",
+  "contexts": 4,
+  "page_observations": 8,
+  "card_observations": 24,
+  "browser": "157.0.8103.39",
+  "observations": [
+    {
+      "width": 320,
+      "lang": "en",
+      "theme": "dark",
+      "before": {
+        "cards": [
+          {
+            "tag": "DIV",
+            "title": "Weekly reclaims 21-day line + weekly RSI-21 washed out + RSI-21 washed out + ribbon flips up",
+            "titleBox": {
+              "x": 89.1875,
+              "y": 1006.9375,
+              "width": 193.8125,
+              "height": 107.96875,
+              "right": 283,
+              "bottom": 1114.90625
+            },
+            "cardBox": {
+              "x": 20,
+              "y": 989.9375,
+              "width": 280,
+              "height": 739.828125,
+              "right": 300,
+              "bottom": 1729.765625
+            },
+            "style": {
+              "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+              "fontSize": "16px",
+              "fontWeight": "700",
+              "lineHeight": "21.6px",
+              "letterSpacing": "-0.16px",
+              "color": "rgb(200, 208, 220)",
+              "display": "block",
+              "marginTop": "0px",
+              "marginRight": "0px",
+              "marginBottom": "0px",
+              "marginLeft": "0px",
+              "paddingTop": "0px",
+              "paddingBottom": "0px"
+            },
+            "method": null,
+            "links": [
+              {
+                "text": "WMB\nWilliams Companies",
+                "href": "stocks/WMB.html",
+                "target": null,
+                "rel": null,
+                "box": {
+                  "x": 37,
+                  "y": 1668.765625,
+                  "width": 171.859375,
+                  "height": 44,
+                  "right": 208.859375,
+                  "bottom": 1712.765625
+                }
+              }
+            ]
+          },
+          {
+            "tag": "DIV",
+            "title": "Weekly reclaims 7-day line + weekly RSI-21 washed out + RSI-14 washed out + ribbon flips up",
+            "titleBox": {
+              "x": 89.1875,
+              "y": 1762.765625,
+              "width": 193.8125,
+              "height": 107.96875,
+              "right": 283,
+              "bottom": 1870.734375
+            },
+            "cardBox": {
+              "x": 20,
+              "y": 1745.765625,
+              "width": 280,
+              "height": 830.328125,
+              "right": 300,
+              "bottom": 2576.09375
+            },
+            "style": {
+              "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+              "fontSize": "16px",
+              "fontWeight": "700",
+              "lineHeight": "21.6px",
+              "letterSpacing": "-0.16px",
+              "color": "rgb(200, 208, 220)",
+              "display": "block",
+              "marginTop": "0px",
+              "marginRight": "0px",
+              "marginBottom": "0px",
+              "marginLeft": "0px",
+              "paddingTop": "0px",
+              "paddingBottom": "0px"
+            },
+            "method": null,
+            "links": [
+              {
+                "text": "Start free trial",
+                "href": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+                "target": null,
+                "rel": null,
+                "box": {
+                  "x": 54,
+                  "y": 2500.09375,
+                  "width": 123.171875,
+                  "height": 44,
+                  "right": 177.171875,
+                  "bottom": 2544.09375
+                }
+              }
+            ]
+          },
+          {
+            "tag": "DIV",
+            "title": "Weekly RSI-14 washed out + reclaims 100-day line + RSI-14 washed out + ribbon flips up",
+            "titleBox": {
+              "x": 89.1875,
+              "y": 2609.09375,
+              "width": 193.8125,
+              "height": 86.375,
+              "right": 283,
+              "bottom": 2695.46875
+            },
+            "cardBox": {
+              "x": 20,
+              "y": 2592.09375,
+              "width": 280,
+              "height": 808.734375,
+              "right": 300,
+              "bottom": 3400.828125
+            },
+            "style": {
+              "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+              "fontSize": "16px",
+              "fontWeight": "700",
+              "lineHeight": "21.6px",
+              "letterSpacing": "-0.16px",
+              "color": "rgb(200, 208, 220)",
+              "display": "block",
+              "marginTop": "0px",
+              "marginRight": "0px",
+              "marginBottom": "0px",
+              "marginLeft": "0px",
+              "paddingTop": "0px",
+              "paddingBottom": "0px"
+            },
+            "method": null,
+            "links": [
+              {
+                "text": "Start free trial",
+                "href": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+                "target": null,
+                "rel": null,
+                "box": {
+                  "x": 54,
+                  "y": 3324.828125,
+                  "width": 123.171875,
+                  "height": 44,
+                  "right": 177.171875,
+                  "bottom": 3368.828125
+                }
+              }
+            ]
+          }
+        ],
+        "h1Count": 1,
+        "h2": [
+          "Compare the evidence"
+        ],
+        "cardHeadingCount": 0,
+        "documentWidth": 320
+      },
+      "after": {
+        "cards": [
+          {
+            "tag": "H3",
+            "title": "Weekly reclaims 21-day line + weekly RSI-21 washed out + RSI-21 washed out + ribbon flips up",
+            "titleBox": {
+              "x": 89.1875,
+              "y": 1006.9375,
+              "width": 193.8125,
+              "height": 107.96875,
+              "right": 283,
+              "bottom": 1114.90625
+            },
+            "cardBox": {
+              "x": 20,
+              "y": 989.9375,
+              "width": 280,
+              "height": 739.828125,
+              "right": 300,
+              "bottom": 1729.765625
+            },
+            "style": {
+              "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+              "fontSize": "16px",
+              "fontWeight": "700",
+              "lineHeight": "21.6px",
+              "letterSpacing": "-0.16px",
+              "color": "rgb(200, 208, 220)",
+              "display": "block",
+              "marginTop": "0px",
+              "marginRight": "0px",
+              "marginBottom": "0px",
+              "marginLeft": "0px",
+              "paddingTop": "0px",
+              "paddingBottom": "0px"
+            },
+            "method": null,
+            "links": [
+              {
+                "text": "WMB\nWilliams Companies",
+                "href": "stocks/WMB.html",
+                "target": null,
+                "rel": null,
+                "box": {
+                  "x": 37,
+                  "y": 1668.765625,
+                  "width": 171.859375,
+                  "height": 44,
+                  "right": 208.859375,
+                  "bottom": 1712.765625
+                }
+              }
+            ]
+          },
+          {
+            "tag": "H3",
+            "title": "Weekly reclaims 7-day line + weekly RSI-21 washed out + RSI-14 washed out + ribbon flips up",
+            "titleBox": {
+              "x": 89.1875,
+              "y": 1762.765625,
+              "width": 193.8125,
+              "height": 107.96875,
+              "right": 283,
+              "bottom": 1870.734375
+            },
+            "cardBox": {
+              "x": 20,
+              "y": 1745.765625,
+              "width": 280,
+              "height": 830.328125,
+              "right": 300,
+              "bottom": 2576.09375
+            },
+            "style": {
+              "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+              "fontSize": "16px",
+              "fontWeight": "700",
+              "lineHeight": "21.6px",
+              "letterSpacing": "-0.16px",
+              "color": "rgb(200, 208, 220)",
+              "display": "block",
+              "marginTop": "0px",
+              "marginRight": "0px",
+              "marginBottom": "0px",
+              "marginLeft": "0px",
+              "paddingTop": "0px",
+              "paddingBottom": "0px"
+            },
+            "method": null,
+            "links": [
+              {
+                "text": "Start free trial",
+                "href": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+                "target": null,
+                "rel": null,
+                "box": {
+                  "x": 54,
+                  "y": 2500.09375,
+                  "width": 123.171875,
+                  "height": 44,
+                  "right": 177.171875,
+                  "bottom": 2544.09375
+                }
+              }
+            ]
+          },
+          {
+            "tag": "H3",
+            "title": "Weekly RSI-14 washed out + reclaims 100-day line + RSI-14 washed out + ribbon flips up",
+            "titleBox": {
+              "x": 89.1875,
+              "y": 2609.09375,
+              "width": 193.8125,
+              "height": 86.375,
+              "right": 283,
+              "bottom": 2695.46875
+            },
+            "cardBox": {
+              "x": 20,
+              "y": 2592.09375,
+              "width": 280,
+              "height": 808.734375,
+              "right": 300,
+              "bottom": 3400.828125
+            },
+            "style": {
+              "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+              "fontSize": "16px",
+              "fontWeight": "700",
+              "lineHeight": "21.6px",
+              "letterSpacing": "-0.16px",
+              "color": "rgb(200, 208, 220)",
+              "display": "block",
+              "marginTop": "0px",
+              "marginRight": "0px",
+              "marginBottom": "0px",
+              "marginLeft": "0px",
+              "paddingTop": "0px",
+              "paddingBottom": "0px"
+            },
+            "method": null,
+            "links": [
+              {
+                "text": "Start free trial",
+                "href": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+                "target": null,
+                "rel": null,
+                "box": {
+                  "x": 54,
+                  "y": 3324.828125,
+                  "width": 123.171875,
+                  "height": 44,
+                  "right": 177.171875,
+                  "bottom": 3368.828125
+                }
+              }
+            ]
+          }
+        ],
+        "h1Count": 1,
+        "h2": [
+          "Compare the evidence"
+        ],
+        "cardHeadingCount": 3,
+        "documentWidth": 320
+      },
+      "active_language_heading_matches": [
+        1,
+        1,
+        1
+      ],
+      "checks": {
+        "three_card_headings": true,
+        "same_titles": true,
+        "same_geometry_styles": true,
+        "methods_actions_exact": true,
+        "zero_title_margins": true,
+        "active_language_accessible_heading": true,
+        "page_list_hierarchy_preserved": true,
+        "document_width_exact": true,
+        "card_titles_contained": true
+      }
+    },
+    {
+      "width": 320,
+      "lang": "zh",
+      "theme": "light",
+      "before": {
+        "cards": [
+          {
+            "tag": "DIV",
+            "title": "周线站上21日线 + 周线RSI-21超卖 + RSI-21超卖 + 均线带翻多",
+            "titleBox": {
+              "x": 89.1875,
+              "y": 919.5,
+              "width": 193.8125,
+              "height": 64.78125,
+              "right": 283,
+              "bottom": 984.28125
+            },
+            "cardBox": {
+              "x": 20,
+              "y": 902.5,
+              "width": 280,
+              "height": 659.765625,
+              "right": 300,
+              "bottom": 1562.265625
+            },
+            "style": {
+              "fontFamily": "\"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", Inter, sans-serif",
+              "fontSize": "16px",
+              "fontWeight": "700",
+              "lineHeight": "21.6px",
+              "letterSpacing": "-0.16px",
+              "color": "rgb(46, 57, 80)",
+              "display": "block",
+              "marginTop": "0px",
+              "marginRight": "0px",
+              "marginBottom": "0px",
+              "marginLeft": "0px",
+              "paddingTop": "0px",
+              "paddingBottom": "0px"
+            },
+            "method": null,
+            "links": [
+              {
+                "text": "WMB\nWilliams Companies",
+                "href": "stocks/WMB.html",
+                "target": null,
+                "rel": null,
+                "box": {
+                  "x": 37,
+                  "y": 1501.265625,
+                  "width": 171.859375,
+                  "height": 44,
+                  "right": 208.859375,
+                  "bottom": 1545.265625
+                }
+              }
+            ]
+          },
+          {
+            "tag": "DIV",
+            "title": "周线站上7日线 + 周线RSI-21超卖 + RSI-14超卖 + 均线带翻多",
+            "titleBox": {
+              "x": 89.1875,
+              "y": 1595.265625,
+              "width": 193.8125,
+              "height": 64.78125,
+              "right": 283,
+              "bottom": 1660.046875
+            },
+            "cardBox": {
+              "x": 20,
+              "y": 1578.265625,
+              "width": 280,
+              "height": 750.265625,
+              "right": 300,
+              "bottom": 2328.53125
+            },
+            "style": {
+              "fontFamily": "\"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", Inter, sans-serif",
+              "fontSize": "16px",
+              "fontWeight": "700",
+              "lineHeight": "21.6px",
+              "letterSpacing": "-0.16px",
+              "color": "rgb(46, 57, 80)",
+              "display": "block",
+              "marginTop": "0px",
+              "marginRight": "0px",
+              "marginBottom": "0px",
+              "marginLeft": "0px",
+              "paddingTop": "0px",
+              "paddingBottom": "0px"
+            },
+            "method": null,
+            "links": [
+              {
+                "text": "开始免费试用",
+                "href": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+                "target": null,
+                "rel": null,
+                "box": {
+                  "x": 54,
+                  "y": 2252.53125,
+                  "width": 110,
+                  "height": 44,
+                  "right": 164,
+                  "bottom": 2296.53125
+                }
+              }
+            ]
+          },
+          {
+            "tag": "DIV",
+            "title": "周线RSI-14超卖 + 站上100日线 + RSI-14超卖 + 均线带翻多",
+            "titleBox": {
+              "x": 89.1875,
+              "y": 2361.53125,
+              "width": 193.8125,
+              "height": 64.78125,
+              "right": 283,
+              "bottom": 2426.3125
+            },
+            "cardBox": {
+              "x": 20,
+              "y": 2344.53125,
+              "width": 280,
+              "height": 750.265625,
+              "right": 300,
+              "bottom": 3094.796875
+            },
+            "style": {
+              "fontFamily": "\"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", Inter, sans-serif",
+              "fontSize": "16px",
+              "fontWeight": "700",
+              "lineHeight": "21.6px",
+              "letterSpacing": "-0.16px",
+              "color": "rgb(46, 57, 80)",
+              "display": "block",
+              "marginTop": "0px",
+              "marginRight": "0px",
+              "marginBottom": "0px",
+              "marginLeft": "0px",
+              "paddingTop": "0px",
+              "paddingBottom": "0px"
+            },
+            "method": null,
+            "links": [
+              {
+                "text": "开始免费试用",
+                "href": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+                "target": null,
+                "rel": null,
+                "box": {
+                  "x": 54,
+                  "y": 3018.796875,
+                  "width": 110,
+                  "height": 44,
+                  "right": 164,
+                  "bottom": 3062.796875
+                }
+              }
+            ]
+          }
+        ],
+        "h1Count": 1,
+        "h2": [
+          "比较历史依据"
+        ],
+        "cardHeadingCount": 0,
+        "documentWidth": 320
+      },
+      "after": {
+        "cards": [
+          {
+            "tag": "H3",
+            "title": "周线站上21日线 + 周线RSI-21超卖 + RSI-21超卖 + 均线带翻多",
+            "titleBox": {
+              "x": 89.1875,
+              "y": 919.5,
+              "width": 193.8125,
+              "height": 64.78125,
+              "right": 283,
+              "bottom": 984.28125
+            },
+            "cardBox": {
+              "x": 20,
+              "y": 902.5,
+              "width": 280,
+              "height": 659.765625,
+              "right": 300,
+              "bottom": 1562.265625
+            },
+            "style": {
+              "fontFamily": "\"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", Inter, sans-serif",
+              "fontSize": "16px",
+              "fontWeight": "700",
+              "lineHeight": "21.6px",
+              "letterSpacing": "-0.16px",
+              "color": "rgb(46, 57, 80)",
+              "display": "block",
+              "marginTop": "0px",
+              "marginRight": "0px",
+              "marginBottom": "0px",
+              "marginLeft": "0px",
+              "paddingTop": "0px",
+              "paddingBottom": "0px"
+            },
+            "method": null,
+            "links": [
+              {
+                "text": "WMB\nWilliams Companies",
+                "href": "stocks/WMB.html",
+                "target": null,
+                "rel": null,
+                "box": {
+                  "x": 37,
+                  "y": 1501.265625,
+                  "width": 171.859375,
+                  "height": 44,
+                  "right": 208.859375,
+                  "bottom": 1545.265625
+                }
+              }
+            ]
+          },
+          {
+            "tag": "H3",
+            "title": "周线站上7日线 + 周线RSI-21超卖 + RSI-14超卖 + 均线带翻多",
+            "titleBox": {
+              "x": 89.1875,
+              "y": 1595.265625,
+              "width": 193.8125,
+              "height": 64.78125,
+              "right": 283,
+              "bottom": 1660.046875
+            },
+            "cardBox": {
+              "x": 20,
+              "y": 1578.265625,
+              "width": 280,
+              "height": 750.265625,
+              "right": 300,
+              "bottom": 2328.53125
+            },
+            "style": {
+              "fontFamily": "\"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", Inter, sans-serif",
+              "fontSize": "16px",
+              "fontWeight": "700",
+              "lineHeight": "21.6px",
+              "letterSpacing": "-0.16px",
+              "color": "rgb(46, 57, 80)",
+              "display": "block",
+              "marginTop": "0px",
+              "marginRight": "0px",
+              "marginBottom": "0px",
+              "marginLeft": "0px",
+              "paddingTop": "0px",
+              "paddingBottom": "0px"
+            },
+            "method": null,
+            "links": [
+              {
+                "text": "开始免费试用",
+                "href": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+                "target": null,
+                "rel": null,
+                "box": {
+                  "x": 54,
+                  "y": 2252.53125,
+                  "width": 110,
+                  "height": 44,
+                  "right": 164,
+                  "bottom": 2296.53125
+                }
+              }
+            ]
+          },
+          {
+            "tag": "H3",
+            "title": "周线RSI-14超卖 + 站上100日线 + RSI-14超卖 + 均线带翻多",
+            "titleBox": {
+              "x": 89.1875,
+              "y": 2361.53125,
+              "width": 193.8125,
+              "height": 64.78125,
+              "right": 283,
+              "bottom": 2426.3125
+            },
+            "cardBox": {
+              "x": 20,
+              "y": 2344.53125,
+              "width": 280,
+              "height": 750.265625,
+              "right": 300,
+              "bottom": 3094.796875
+            },
+            "style": {
+              "fontFamily": "\"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", Inter, sans-serif",
+              "fontSize": "16px",
+              "fontWeight": "700",
+              "lineHeight": "21.6px",
+              "letterSpacing": "-0.16px",
+              "color": "rgb(46, 57, 80)",
+              "display": "block",
+              "marginTop": "0px",
+              "marginRight": "0px",
+              "marginBottom": "0px",
+              "marginLeft": "0px",
+              "paddingTop": "0px",
+              "paddingBottom": "0px"
+            },
+            "method": null,
+            "links": [
+              {
+                "text": "开始免费试用",
+                "href": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+                "target": null,
+                "rel": null,
+                "box": {
+                  "x": 54,
+                  "y": 3018.796875,
+                  "width": 110,
+                  "height": 44,
+                  "right": 164,
+                  "bottom": 3062.796875
+                }
+              }
+            ]
+          }
+        ],
+        "h1Count": 1,
+        "h2": [
+          "比较历史依据"
+        ],
+        "cardHeadingCount": 3,
+        "documentWidth": 320
+      },
+      "active_language_heading_matches": [
+        1,
+        1,
+        1
+      ],
+      "checks": {
+        "three_card_headings": true,
+        "same_titles": true,
+        "same_geometry_styles": true,
+        "methods_actions_exact": true,
+        "zero_title_margins": true,
+        "active_language_accessible_heading": true,
+        "page_list_hierarchy_preserved": true,
+        "document_width_exact": true,
+        "card_titles_contained": true
+      }
+    },
+    {
+      "width": 1440,
+      "lang": "en",
+      "theme": "dark",
+      "before": {
+        "cards": [
+          {
+            "tag": "DIV",
+            "title": "Weekly reclaims 21-day line + weekly RSI-21 washed out + RSI-21 washed out + ribbon flips up",
+            "titleBox": {
+              "x": 275.1875,
+              "y": 1075.71875,
+              "width": 615.8125,
+              "height": 43.1875,
+              "right": 891,
+              "bottom": 1118.90625
+            },
+            "cardBox": {
+              "x": 200,
+              "y": 1054.71875,
+              "width": 1040,
+              "height": 390.296875,
+              "right": 1240,
+              "bottom": 1445.015625
+            },
+            "style": {
+              "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+              "fontSize": "16px",
+              "fontWeight": "700",
+              "lineHeight": "21.6px",
+              "letterSpacing": "-0.16px",
+              "color": "rgb(200, 208, 220)",
+              "display": "block",
+              "marginTop": "0px",
+              "marginRight": "0px",
+              "marginBottom": "0px",
+              "marginLeft": "0px",
+              "paddingTop": "0px",
+              "paddingBottom": "0px"
+            },
+            "method": null,
+            "links": [
+              {
+                "text": "WMB\nWilliams Companies",
+                "href": "stocks/WMB.html",
+                "target": null,
+                "rel": null,
+                "box": {
+                  "x": 410.421875,
+                  "y": 1382.015625,
+                  "width": 171.859375,
+                  "height": 44,
+                  "right": 582.28125,
+                  "bottom": 1426.015625
+                }
+              }
+            ]
+          },
+          {
+            "tag": "DIV",
+            "title": "Weekly reclaims 7-day line + weekly RSI-21 washed out + RSI-14 washed out + ribbon flips up",
+            "titleBox": {
+              "x": 275.1875,
+              "y": 1482.015625,
+              "width": 615.8125,
+              "height": 43.1875,
+              "right": 891,
+              "bottom": 1525.203125
+            },
+            "cardBox": {
+              "x": 200,
+              "y": 1461.015625,
+              "width": 1040,
+              "height": 422.296875,
+              "right": 1240,
+              "bottom": 1883.3125
+            },
+            "style": {
+              "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+              "fontSize": "16px",
+              "fontWeight": "700",
+              "lineHeight": "21.6px",
+              "letterSpacing": "-0.16px",
+              "color": "rgb(200, 208, 220)",
+              "display": "block",
+              "marginTop": "0px",
+              "marginRight": "0px",
+              "marginBottom": "0px",
+              "marginLeft": "0px",
+              "paddingTop": "0px",
+              "paddingBottom": "0px"
+            },
+            "method": null,
+            "links": [
+              {
+                "text": "Start free trial",
+                "href": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+                "target": null,
+                "rel": null,
+                "box": {
+                  "x": 1076.828125,
+                  "y": 1805.3125,
+                  "width": 123.171875,
+                  "height": 44,
+                  "right": 1200,
+                  "bottom": 1849.3125
+                }
+              }
+            ]
+          },
+          {
+            "tag": "DIV",
+            "title": "Weekly RSI-14 washed out + reclaims 100-day line + RSI-14 washed out + ribbon flips up",
+            "titleBox": {
+              "x": 275.1875,
+              "y": 1920.3125,
+              "width": 615.8125,
+              "height": 43.1875,
+              "right": 891,
+              "bottom": 1963.5
+            },
+            "cardBox": {
+              "x": 200,
+              "y": 1899.3125,
+              "width": 1040,
+              "height": 422.296875,
+              "right": 1240,
+              "bottom": 2321.609375
+            },
+            "style": {
+              "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+              "fontSize": "16px",
+              "fontWeight": "700",
+              "lineHeight": "21.6px",
+              "letterSpacing": "-0.16px",
+              "color": "rgb(200, 208, 220)",
+              "display": "block",
+              "marginTop": "0px",
+              "marginRight": "0px",
+              "marginBottom": "0px",
+              "marginLeft": "0px",
+              "paddingTop": "0px",
+              "paddingBottom": "0px"
+            },
+            "method": null,
+            "links": [
+              {
+                "text": "Start free trial",
+                "href": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+                "target": null,
+                "rel": null,
+                "box": {
+                  "x": 1076.828125,
+                  "y": 2243.609375,
+                  "width": 123.171875,
+                  "height": 44,
+                  "right": 1200,
+                  "bottom": 2287.609375
+                }
+              }
+            ]
+          }
+        ],
+        "h1Count": 1,
+        "h2": [
+          "Compare the evidence"
+        ],
+        "cardHeadingCount": 0,
+        "documentWidth": 1440
+      },
+      "after": {
+        "cards": [
+          {
+            "tag": "H3",
+            "title": "Weekly reclaims 21-day line + weekly RSI-21 washed out + RSI-21 washed out + ribbon flips up",
+            "titleBox": {
+              "x": 275.1875,
+              "y": 1075.71875,
+              "width": 615.8125,
+              "height": 43.1875,
+              "right": 891,
+              "bottom": 1118.90625
+            },
+            "cardBox": {
+              "x": 200,
+              "y": 1054.71875,
+              "width": 1040,
+              "height": 390.296875,
+              "right": 1240,
+              "bottom": 1445.015625
+            },
+            "style": {
+              "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+              "fontSize": "16px",
+              "fontWeight": "700",
+              "lineHeight": "21.6px",
+              "letterSpacing": "-0.16px",
+              "color": "rgb(200, 208, 220)",
+              "display": "block",
+              "marginTop": "0px",
+              "marginRight": "0px",
+              "marginBottom": "0px",
+              "marginLeft": "0px",
+              "paddingTop": "0px",
+              "paddingBottom": "0px"
+            },
+            "method": null,
+            "links": [
+              {
+                "text": "WMB\nWilliams Companies",
+                "href": "stocks/WMB.html",
+                "target": null,
+                "rel": null,
+                "box": {
+                  "x": 410.421875,
+                  "y": 1382.015625,
+                  "width": 171.859375,
+                  "height": 44,
+                  "right": 582.28125,
+                  "bottom": 1426.015625
+                }
+              }
+            ]
+          },
+          {
+            "tag": "H3",
+            "title": "Weekly reclaims 7-day line + weekly RSI-21 washed out + RSI-14 washed out + ribbon flips up",
+            "titleBox": {
+              "x": 275.1875,
+              "y": 1482.015625,
+              "width": 615.8125,
+              "height": 43.1875,
+              "right": 891,
+              "bottom": 1525.203125
+            },
+            "cardBox": {
+              "x": 200,
+              "y": 1461.015625,
+              "width": 1040,
+              "height": 422.296875,
+              "right": 1240,
+              "bottom": 1883.3125
+            },
+            "style": {
+              "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+              "fontSize": "16px",
+              "fontWeight": "700",
+              "lineHeight": "21.6px",
+              "letterSpacing": "-0.16px",
+              "color": "rgb(200, 208, 220)",
+              "display": "block",
+              "marginTop": "0px",
+              "marginRight": "0px",
+              "marginBottom": "0px",
+              "marginLeft": "0px",
+              "paddingTop": "0px",
+              "paddingBottom": "0px"
+            },
+            "method": null,
+            "links": [
+              {
+                "text": "Start free trial",
+                "href": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+                "target": null,
+                "rel": null,
+                "box": {
+                  "x": 1076.828125,
+                  "y": 1805.3125,
+                  "width": 123.171875,
+                  "height": 44,
+                  "right": 1200,
+                  "bottom": 1849.3125
+                }
+              }
+            ]
+          },
+          {
+            "tag": "H3",
+            "title": "Weekly RSI-14 washed out + reclaims 100-day line + RSI-14 washed out + ribbon flips up",
+            "titleBox": {
+              "x": 275.1875,
+              "y": 1920.3125,
+              "width": 615.8125,
+              "height": 43.1875,
+              "right": 891,
+              "bottom": 1963.5
+            },
+            "cardBox": {
+              "x": 200,
+              "y": 1899.3125,
+              "width": 1040,
+              "height": 422.296875,
+              "right": 1240,
+              "bottom": 2321.609375
+            },
+            "style": {
+              "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+              "fontSize": "16px",
+              "fontWeight": "700",
+              "lineHeight": "21.6px",
+              "letterSpacing": "-0.16px",
+              "color": "rgb(200, 208, 220)",
+              "display": "block",
+              "marginTop": "0px",
+              "marginRight": "0px",
+              "marginBottom": "0px",
+              "marginLeft": "0px",
+              "paddingTop": "0px",
+              "paddingBottom": "0px"
+            },
+            "method": null,
+            "links": [
+              {
+                "text": "Start free trial",
+                "href": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+                "target": null,
+                "rel": null,
+                "box": {
+                  "x": 1076.828125,
+                  "y": 2243.609375,
+                  "width": 123.171875,
+                  "height": 44,
+                  "right": 1200,
+                  "bottom": 2287.609375
+                }
+              }
+            ]
+          }
+        ],
+        "h1Count": 1,
+        "h2": [
+          "Compare the evidence"
+        ],
+        "cardHeadingCount": 3,
+        "documentWidth": 1440
+      },
+      "active_language_heading_matches": [
+        1,
+        1,
+        1
+      ],
+      "checks": {
+        "three_card_headings": true,
+        "same_titles": true,
+        "same_geometry_styles": true,
+        "methods_actions_exact": true,
+        "zero_title_margins": true,
+        "active_language_accessible_heading": true,
+        "page_list_hierarchy_preserved": true,
+        "document_width_exact": true,
+        "card_titles_contained": true
+      }
+    },
+    {
+      "width": 1440,
+      "lang": "zh",
+      "theme": "light",
+      "before": {
+        "cards": [
+          {
+            "tag": "DIV",
+            "title": "周线站上21日线 + 周线RSI-21超卖 + RSI-21超卖 + 均线带翻多",
+            "titleBox": {
+              "x": 275.1875,
+              "y": 1036.53125,
+              "width": 615.8125,
+              "height": 21.59375,
+              "right": 891,
+              "bottom": 1058.125
+            },
+            "cardBox": {
+              "x": 200,
+              "y": 1015.53125,
+              "width": 1040,
+              "height": 390.296875,
+              "right": 1240,
+              "bottom": 1405.828125
+            },
+            "style": {
+              "fontFamily": "\"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", Inter, sans-serif",
+              "fontSize": "16px",
+              "fontWeight": "700",
+              "lineHeight": "21.6px",
+              "letterSpacing": "-0.16px",
+              "color": "rgb(46, 57, 80)",
+              "display": "block",
+              "marginTop": "0px",
+              "marginRight": "0px",
+              "marginBottom": "0px",
+              "marginLeft": "0px",
+              "paddingTop": "0px",
+              "paddingBottom": "0px"
+            },
+            "method": null,
+            "links": [
+              {
+                "text": "WMB\nWilliams Companies",
+                "href": "stocks/WMB.html",
+                "target": null,
+                "rel": null,
+                "box": {
+                  "x": 321,
+                  "y": 1342.828125,
+                  "width": 171.859375,
+                  "height": 44,
+                  "right": 492.859375,
+                  "bottom": 1386.828125
+                }
+              }
+            ]
+          },
+          {
+            "tag": "DIV",
+            "title": "周线站上7日线 + 周线RSI-21超卖 + RSI-14超卖 + 均线带翻多",
+            "titleBox": {
+              "x": 275.1875,
+              "y": 1442.828125,
+              "width": 615.8125,
+              "height": 21.59375,
+              "right": 891,
+              "bottom": 1464.421875
+            },
+            "cardBox": {
+              "x": 200,
+              "y": 1421.828125,
+              "width": 1040,
+              "height": 422.296875,
+              "right": 1240,
+              "bottom": 1844.125
+            },
+            "style": {
+              "fontFamily": "\"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", Inter, sans-serif",
+              "fontSize": "16px",
+              "fontWeight": "700",
+              "lineHeight": "21.6px",
+              "letterSpacing": "-0.16px",
+              "color": "rgb(46, 57, 80)",
+              "display": "block",
+              "marginTop": "0px",
+              "marginRight": "0px",
+              "marginBottom": "0px",
+              "marginLeft": "0px",
+              "paddingTop": "0px",
+              "paddingBottom": "0px"
+            },
+            "method": null,
+            "links": [
+              {
+                "text": "开始免费试用",
+                "href": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+                "target": null,
+                "rel": null,
+                "box": {
+                  "x": 1090,
+                  "y": 1766.125,
+                  "width": 110,
+                  "height": 44,
+                  "right": 1200,
+                  "bottom": 1810.125
+                }
+              }
+            ]
+          },
+          {
+            "tag": "DIV",
+            "title": "周线RSI-14超卖 + 站上100日线 + RSI-14超卖 + 均线带翻多",
+            "titleBox": {
+              "x": 275.1875,
+              "y": 1881.125,
+              "width": 615.8125,
+              "height": 21.59375,
+              "right": 891,
+              "bottom": 1902.71875
+            },
+            "cardBox": {
+              "x": 200,
+              "y": 1860.125,
+              "width": 1040,
+              "height": 422.296875,
+              "right": 1240,
+              "bottom": 2282.421875
+            },
+            "style": {
+              "fontFamily": "\"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", Inter, sans-serif",
+              "fontSize": "16px",
+              "fontWeight": "700",
+              "lineHeight": "21.6px",
+              "letterSpacing": "-0.16px",
+              "color": "rgb(46, 57, 80)",
+              "display": "block",
+              "marginTop": "0px",
+              "marginRight": "0px",
+              "marginBottom": "0px",
+              "marginLeft": "0px",
+              "paddingTop": "0px",
+              "paddingBottom": "0px"
+            },
+            "method": null,
+            "links": [
+              {
+                "text": "开始免费试用",
+                "href": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+                "target": null,
+                "rel": null,
+                "box": {
+                  "x": 1090,
+                  "y": 2204.421875,
+                  "width": 110,
+                  "height": 44,
+                  "right": 1200,
+                  "bottom": 2248.421875
+                }
+              }
+            ]
+          }
+        ],
+        "h1Count": 1,
+        "h2": [
+          "比较历史依据"
+        ],
+        "cardHeadingCount": 0,
+        "documentWidth": 1440
+      },
+      "after": {
+        "cards": [
+          {
+            "tag": "H3",
+            "title": "周线站上21日线 + 周线RSI-21超卖 + RSI-21超卖 + 均线带翻多",
+            "titleBox": {
+              "x": 275.1875,
+              "y": 1036.53125,
+              "width": 615.8125,
+              "height": 21.59375,
+              "right": 891,
+              "bottom": 1058.125
+            },
+            "cardBox": {
+              "x": 200,
+              "y": 1015.53125,
+              "width": 1040,
+              "height": 390.296875,
+              "right": 1240,
+              "bottom": 1405.828125
+            },
+            "style": {
+              "fontFamily": "\"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", Inter, sans-serif",
+              "fontSize": "16px",
+              "fontWeight": "700",
+              "lineHeight": "21.6px",
+              "letterSpacing": "-0.16px",
+              "color": "rgb(46, 57, 80)",
+              "display": "block",
+              "marginTop": "0px",
+              "marginRight": "0px",
+              "marginBottom": "0px",
+              "marginLeft": "0px",
+              "paddingTop": "0px",
+              "paddingBottom": "0px"
+            },
+            "method": null,
+            "links": [
+              {
+                "text": "WMB\nWilliams Companies",
+                "href": "stocks/WMB.html",
+                "target": null,
+                "rel": null,
+                "box": {
+                  "x": 321,
+                  "y": 1342.828125,
+                  "width": 171.859375,
+                  "height": 44,
+                  "right": 492.859375,
+                  "bottom": 1386.828125
+                }
+              }
+            ]
+          },
+          {
+            "tag": "H3",
+            "title": "周线站上7日线 + 周线RSI-21超卖 + RSI-14超卖 + 均线带翻多",
+            "titleBox": {
+              "x": 275.1875,
+              "y": 1442.828125,
+              "width": 615.8125,
+              "height": 21.59375,
+              "right": 891,
+              "bottom": 1464.421875
+            },
+            "cardBox": {
+              "x": 200,
+              "y": 1421.828125,
+              "width": 1040,
+              "height": 422.296875,
+              "right": 1240,
+              "bottom": 1844.125
+            },
+            "style": {
+              "fontFamily": "\"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", Inter, sans-serif",
+              "fontSize": "16px",
+              "fontWeight": "700",
+              "lineHeight": "21.6px",
+              "letterSpacing": "-0.16px",
+              "color": "rgb(46, 57, 80)",
+              "display": "block",
+              "marginTop": "0px",
+              "marginRight": "0px",
+              "marginBottom": "0px",
+              "marginLeft": "0px",
+              "paddingTop": "0px",
+              "paddingBottom": "0px"
+            },
+            "method": null,
+            "links": [
+              {
+                "text": "开始免费试用",
+                "href": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+                "target": null,
+                "rel": null,
+                "box": {
+                  "x": 1090,
+                  "y": 1766.125,
+                  "width": 110,
+                  "height": 44,
+                  "right": 1200,
+                  "bottom": 1810.125
+                }
+              }
+            ]
+          },
+          {
+            "tag": "H3",
+            "title": "周线RSI-14超卖 + 站上100日线 + RSI-14超卖 + 均线带翻多",
+            "titleBox": {
+              "x": 275.1875,
+              "y": 1881.125,
+              "width": 615.8125,
+              "height": 21.59375,
+              "right": 891,
+              "bottom": 1902.71875
+            },
+            "cardBox": {
+              "x": 200,
+              "y": 1860.125,
+              "width": 1040,
+              "height": 422.296875,
+              "right": 1240,
+              "bottom": 2282.421875
+            },
+            "style": {
+              "fontFamily": "\"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", Inter, sans-serif",
+              "fontSize": "16px",
+              "fontWeight": "700",
+              "lineHeight": "21.6px",
+              "letterSpacing": "-0.16px",
+              "color": "rgb(46, 57, 80)",
+              "display": "block",
+              "marginTop": "0px",
+              "marginRight": "0px",
+              "marginBottom": "0px",
+              "marginLeft": "0px",
+              "paddingTop": "0px",
+              "paddingBottom": "0px"
+            },
+            "method": null,
+            "links": [
+              {
+                "text": "开始免费试用",
+                "href": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+                "target": null,
+                "rel": null,
+                "box": {
+                  "x": 1090,
+                  "y": 2204.421875,
+                  "width": 110,
+                  "height": 44,
+                  "right": 1200,
+                  "bottom": 2248.421875
+                }
+              }
+            ]
+          }
+        ],
+        "h1Count": 1,
+        "h2": [
+          "比较历史依据"
+        ],
+        "cardHeadingCount": 3,
+        "documentWidth": 1440
+      },
+      "active_language_heading_matches": [
+        1,
+        1,
+        1
+      ],
+      "checks": {
+        "three_card_headings": true,
+        "same_titles": true,
+        "same_geometry_styles": true,
+        "methods_actions_exact": true,
+        "zero_title_margins": true,
+        "active_language_accessible_heading": true,
+        "page_list_hierarchy_preserved": true,
+        "document_width_exact": true,
+        "card_titles_contained": true
+      }
+    }
+  ],
+  "page_errors": [],
+  "screenshots_taken": 0,
+  "input": "Actual parent/current saved positive HTML, identical local resources. No image preparation/generation/cleanup, account action or historical visual replay."
+}
