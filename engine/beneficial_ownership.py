@@ -15,7 +15,7 @@ escalation. So we grade:
 
 Filer identity comes from a lightweight SGML-header enrichment
 (collectors/beneficial_ownership.py); the engine degrades gracefully to a
-form-type-only read (13D vs 13G + flip) when that enrichment is absent.
+form-type-only read (13D vs 13G, no same-filer flip) when enrichment is absent.
 DISPLAY-ONLY CONTEXT — never a scored alpha (the case study: "very few events,
 not statistically validated").
 """
@@ -48,7 +48,7 @@ _PASSIVE_GIANTS = (
 def classify_filer_type(name: str | None) -> str:
     """'passive_giant' for custodian/index/broker complexes (13G = aggregation),
     else 'other' (could be an activist or a concentrated fund). PURE."""
-    if not name:
+    if not isinstance(name, str) or not name.strip():
         return "unknown"
     n = str(name).upper()
     return "passive_giant" if any(g in n for g in _PASSIVE_GIANTS) else "other"
@@ -82,19 +82,18 @@ def regime_for(rows: pd.DataFrame) -> dict | None:
     df = df.assign(_isd=is_d.values, _isg=is_g.values, _ftype=list(ftype))
 
     # 13G→13D flip: a passive 13G strictly before an activist 13D by the SAME filer
-    # (subject-level when the filer is unknown) — the highest-signal escalation.
+    # Missing identity cannot establish a change by the same filer.
     flip = False
     if is_d.any() and is_g.any():
         d_df, g_df = df[df["_isd"]], df[df["_isg"]]
-        if "filer" in df.columns and d_df["filer"].notna().any():
-            for f in set(d_df["filer"].dropna()):
+        if "filer" in df.columns:
+            filers = {f for f in d_df["filer"] if isinstance(f, str) and f.strip()}
+            for f in filers:
                 gd = g_df[g_df["filer"] == f]["_d"]
                 dd = d_df[d_df["filer"] == f]["_d"]
                 if len(gd) and len(dd) and gd.min() < dd.max():
                     flip = True
                     break
-        elif len(g_df) and len(d_df) and g_df["_d"].min() < d_df["_d"].max():
-            flip = True                       # filer unknown -> subject-level sequence
 
     last = df.iloc[-1]
     n_13d = int(is_d.sum())
