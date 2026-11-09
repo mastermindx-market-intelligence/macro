@@ -13313,3 +13313,6 @@
 {"id":"ob-2026-11-08-cf079af12f","from":"queued","to":"quarantined","at":"2026-11-09T08:37:30Z","actor":"approval-desk","note":"approval-desk: session_language: stale_session:2026-11-06!=2026-11-09 (move phrase 'closed'; the Monday session has opened)","receipt":null}
 {"id":"ob-2026-11-08-8afa421539","from":"queued","to":"quarantined","at":"2026-11-09T08:37:30Z","actor":"approval-desk","note":"approval-desk: session_language: stale_session:2026-11-06!=2026-11-09 (kind 'chart' is a tape read; the Monday session has opened)","receipt":null}
 {"id":"ob-2026-11-07-1a944eec87","from":"queued","to":"quarantined","at":"2026-11-09T10:41:11Z","actor":"press_wire_reap","note":"expired: superseded by tonight's plan","receipt":null}
+{"id":"ob-2026-11-09-c6f95ad73b","from":"queued","to":"approved","at":"2026-11-09T10:42:16Z","actor":"publisher-autoapprove","note":"auto-approved (all gates passed)","receipt":null}
+{"id":"ob-2026-11-09-c6f95ad73b","from":"approved","to":"posting","at":"2026-11-09T10:42:21Z","actor":"publisher","note":"in-flight (pre-publish)","receipt":null}
+{"id":"ob-2026-11-09-c6f95ad73b","from":"posting","to":"posted","at":"2026-11-09T10:42:22Z","actor":"publisher","note":"published","receipt":{"backend":"buffer","external_id":"6af1a38e72554a06de3d24e4","external_url":null,"at":"2026-11-09T10:42:14Z","booked_at":"2026-11-09T10:42:14Z"}}
