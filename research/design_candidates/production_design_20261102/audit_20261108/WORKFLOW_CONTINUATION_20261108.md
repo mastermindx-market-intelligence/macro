@@ -4,7 +4,7 @@
 
 This is the canonical continuation of the [first audit and build plan](AUDIT_AND_BUILD_PLAN.md), on the existing [Macro programme PR #10617](https://github.com/mastermindx-market-intelligence/macro/pull/10617). The Chairman requested further autonomous implementation, correction and enhancement across Paper. The work continues in the foreground; this saved milestone is not a completion claim or a request to resume.
 
-Seven additional files have received applied changes with native visual checks: Guide, Prophet, Market Memory, Policy Monitor, Market Ontology, Sector Intelligence and the Options W3 mobile companion. Options now has a six-state Watch/review amendment plus eleven source-matched Flow/Volatility screen and recovery states, with exact builder contracts. Bounded review is continuing on Risk Radar and GMI source-detail workflows. The seven-file first pass remains accepted work for this mission and is not repeated here.
+Eight additional files have received applied changes with native visual checks: Guide, Prophet, Market Memory, Policy Monitor, Market Ontology, Sector Intelligence, the Options W3 mobile companion and Risk Radar. Options now has a six-state Watch/review amendment plus eleven source-matched Flow/Volatility screen and recovery states, with exact builder contracts. Risk Radar now gives calibration qualification priority across ten variants. Bounded review is continuing on GMI public source disclosure and the Company R3 mobile composition. The seven-file first pass remains accepted work for this mission and is not repeated here.
 
 The root session is the only canvas writer among this session’s agents; independent live writers retain their own targets. Read-only design, international-language and architecture advisers contributed bounded judgments. Mutations use fresh snapshot guards and distinct operation identities beginning `paper-estate-cont-20261108-`. Initial changes used the Mastermind Paper connector; after its transport repeatedly timed out on reads, new operations continued through the authorized Studio Direct Paper owner. Completed operations were read back, never replayed; the detailed transport ruling below preserves that boundary. No runtime release, merge, hold change, message to another person, or live-model qualification has been performed.
 
@@ -342,12 +342,52 @@ Native checks covered all eleven screen/state roots and the full Build sheet. An
 
 The Build contract specifies 160 ms opacity/≤4px translation, instant reduced motion, ≥44px actions, actual-opener focus restoration and one outcome announcement. Required runtime proof covers exact selection return, changing feeds, wrong-root responses, missing expiry, unknown side, zero/missing OI, mismatched arithmetic, retained failed reads, absence versus filtering, source/view clocks, holiday horizons, duplicate identities and optional-input outcomes at 390/820/1440 px in EN/ZH and both themes. These are future implementation gates; no runtime wiring, browser execution or release acceptance is claimed.
 
-## Active next phase: Risk Radar and GMI evidence workflows
+## 9. Risk Radar: qualification before retained probability
 
-Source-backed identities and current native boards are being inspected for Dashboard Popups / Risk Radar and GMI source-detail expansion. The Mastermind OS review found substantial newer owner maps, recovery and acceptance work; preserve it rather than recreating historical gaps. Continue only demonstrated, disjoint design improvements and retain all active/held work.
+**Native file:** [Market Dashboard Popups / Risk Radar](https://app.paper.design/file/01M38EVF74SJWG1GANN5VP380Z/p-1-0). This is a hierarchy correction to the existing main/evidence journey, not a new model, data source or inspector.
+
+### Applied design changes
+
+| Variant | Main | Evidence |
+|---|---|---|
+| Desktop dark EN | `1-0` | `8PS-0` |
+| Mobile dark EN | `8R6-0` | `8SH-0` |
+| Mobile light EN | `97F-0` | `98K-0` |
+| Mobile light ZH | `8YA-0` | `8ZF-0` |
+| Mobile dark ZH | `99D-0` | `9AI-0` |
+
+The four mobile main views now show a compact **Drop-model evidence / Calibration unverified** entry (ZH: 下跌模型证据 / 校准尚未核实), instead of making the unverified 13% the row's visual headline. It targets the existing model section in evidence. The entire row should be one accessible action, named with its status; the arrow is decorative. The general evidence, seven-driver and leadership routes remain intact.
+
+All five evidence cards lead with a retained-model label and **Calibration unverified**, followed by the unchanged 13% versus retained normal reference of 18% and the existing event definition. On desktop main, `8TE-0` was moved ahead of the probability table, keeping its ID; 13% now uses neutral text so the qualification owns the warning color.
+
+The retained desktop table remains **5D 2%, 10D 6%, 21D 13%, normal reference 18%, model/base-rate 0.73×**. The 36/100 risk index, 57.5 driver, 94/48 gauges, all seven drivers, leadership, historical evidence and return controls were preserved. No source value was recalculated or promoted to current/live status.
+
+### Verified source fit
+
+The source was read directly at Macro `338a10852dcefa5d2bd07e5c6be0955c2b1e83fd`:
+
+- [engine/risk_radar.py](https://github.com/mastermindx-market-intelligence/macro/blob/338a10852dcefa5d2bd07e5c6be0955c2b1e83fd/engine/risk_radar.py), L228–240 and L1306–1347: calm/watch probabilities are 0.02/0.06/0.13; the unrounded 21-observation baseline is **0.178**. The model lift is `round(0.13 / 0.178, 2) = 0.73`. Never recompute it from the rounded displayed 13/18, which would produce 0.72. Keep displayed-model lift distinct from state-only lift, which excludes the conjunction adjustment.
+- The same owner, L367–425, matches the complete effective probability surface and conjunction bumps, then the exact horizon/probability cell. Evidence is display provenance, not another confidence rule or model input.
+- [engine/risk_radar_audit.py](https://github.com/mastermindx-market-intelligence/macro/blob/338a10852dcefa5d2bd07e5c6be0955c2b1e83fd/engine/risk_radar_audit.py), L269–284, uses the first closing observation strictly after as-of, the prior available close as base, and the minimum of the next H closes for the drawdown event.
+
+This source consistency does **not** bind the retained 23 September snapshot to an accepted calibration cell. The separate **300-observation / observed 1%** history remains unbound and must not be presented as validation of the 13% model. “Unverified” qualifies that missing match; it does not declare the model invalid.
+
+### Builder and verification contract
+
+The existing pickup map `10V-0` was amended at `199-0`, `19C-0`, `19D-0` with the model-section target, retained-value requirements, unrounded ratio, calibration binding and return rules. Preserve US, 21D, opened snapshot, scrolling and invoking focus. Back/Escape closes detail. Source-detail retry remains conditional on an existing permitted read owner for that same snapshot; otherwise preserve available values and Back with an unavailable state. New data requires explicit review before replacing the opened snapshot.
+
+Native screenshots reviewed all ten affected product variants and the pickup map. Light-mode status text uses the existing `--mx-light-ink-warn` token: calculated contrast is **5.95:1** on the light background and **6.32:1** on white; dark status is **7.59:1** on the dark panel. Final JSX readback found **no added or lost node IDs** across the eleven roots and only the 27 intended text/style changes plus the one ordering change. Existing return controls, event definitions, references, drivers and historical values were unchanged. All eleven exact working indicators were released.
+
+The newer Follow-save and generic popup interaction/future-state work on `p-9-0` and `p-8-0`, Pullback studies, other popup redesigns and historical references were preserved. Native visual QA is not browser proof: 320px, 200% text, keyboard, focus, actual disclosure/return and source-read behavior remain implementation checks.
+
+## Active next phase: GMI public source disclosure and Company mobile composition
+
+GMI has newer proposed S05/public-receipt work tied to Draft PR #10676. Reconcile that exact candidate before designing its expanded disclosure; do not import private clock or ledger fields from a broader internal model. Preserve current public return ownership and all release holds. The empty Company R3 mobile successor can reuse existing historical comparison fragments, subject to fresh target inspection and the current Company navigation/source boundary.
+
+Mastermind OS has substantial newer owner maps, recovery and acceptance work. Preserve it and continue only demonstrated, disjoint improvements.
 
 ## Verification boundary and next actions
 
 This record proves applied native design changes, source inspection and scoped native visual checks. It does not establish functional browser navigation, runtime disclosure/keyboard behavior, real-account access, live data, model qualification, CI, merge or deployment.
 
-Continue the Risk Radar and GMI evidence workflow reviews, implementing only demonstrated gaps with exact owner and acceptance mapping. Save/read back useful milestones and continue the parent Paper improvement mission; a phase completion is not DONE_WHEN.
+Continue GMI public source disclosure and the Company mobile composition, implementing only demonstrated gaps with exact owner and acceptance mapping. Save/read back useful milestones and continue the parent Paper improvement mission; a phase completion is not DONE_WHEN.
