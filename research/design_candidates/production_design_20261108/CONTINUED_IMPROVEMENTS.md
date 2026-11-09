@@ -163,7 +163,110 @@ Intermittent Paper read transport timeouts recovered after bounded diagnosis and
 ## Source/CI status after the Policy and CPI milestone
 The branch was read back at 0e9ccf41a0bb62ba0c0b28fd716b39017afd468e before this save. Its check-run collection confirms ordinary_change / allowed=true for ci-authority, with the merge-queue-pilot context failing only because context_active=false / inactive_base_context. Most CI packs were successful; ci-pack-10 was still running at observation. This is not a claim that every check or acceptance gate was complete. No context/base change, merge or release hold was altered.
 
+## Verified phase: Government Revenue signal joins, watch viability and clock precision
+
+Paper: https://app.paper.design/file/01M6Y3397SE03G626MJ72N90PF/p-1-0  
+Signal Desk: https://app.paper.design/file/01M6Y3397SE03G626MJ72N90PF/p-2-0
+
+### Native changes and clarity
+
+The four phone entries now qualify their signal recommendations before the focus lanes. VM-0, Y8-0 and 10U-0 read “Design preview · simulated signals”; 13G-0 reads “设计预览 · 模拟信号”. The existing desktop/tablet qualifiers and simulated quote-change labels remain consistent. Screenshots verify the 320px and Chinese mobile views.
+
+Route map FA-0 now points to local, verified destinations:
+
+| Purpose | Current destination |
+|---|---|
+| Blueprint and shared states | Builder p-1-0; blueprint 1-0; components 2G-0 |
+| Unmatched AVAV funding preview | 95-0 |
+| Desktop price-watch review | 2B8-0, panel 2H5-0 |
+| Mobile price-watch review | A1-0 |
+| Blocked / no request sent | B4-0 |
+| Existing matching watch | BE-0 |
+| Confirmed / unknown activation | AI-0 / AT-0 |
+| Funding draft / confirmed / unknown | 3P-0 / 4J-0 / 4U-0 |
+
+The R5 signal-first ambition, existing receipts, crossing behavior, funding semantics and recovery specimens remain the product reference. The route repair changes identifiers, not their meaning. Recent separate-writer navigation nodes 3SP/3SS/3SV/3SY and their containers were untouched.
+
+New builder board **40P-0 — R13 Source joins and build acceptance** makes the current implementation boundaries explicit. It contains the product journey, canonical source joins, an exact clock illustration, the threshold-versus-crossing distinction and four build stages. Blueprint 6-0 and route-map FO-0 now point to it. The initial duplicated frame inherited a fixed 1180px height; screenshot review caught clipped lower sections. An authorized write_html clone replacement changed it to content height. Final screenshot shows all six sections at approximately 1440 × 2082, with no clipped acceptance/footer content. The temporary 3UC-0 board was replaced by 40P-0 and is not a current destination.
+
+### Existing source architecture and the intended join
+
+Sources are Macro **aec7f387badcdf69c9a947fafbc73b4c68470c7d** and Terminal **5107f4d84e26aefc540c8c99e0ea3803770f1bb3**.
+
+| Responsibility | Existing owner | Required R5 integration |
+|---|---|---|
+| Eligibility and validity | [signal_gate.py](https://github.com/mastermindx-market-intelligence/macro/blob/aec7f387badcdf69c9a947fafbc73b4c68470c7d/engine/signal_gate.py), emitted with the paired board by [build_stock_library.py](https://github.com/mastermindx-market-intelligence/macro/blob/aec7f387badcdf69c9a947fafbc73b4c68470c7d/scripts/build_stock_library.py) | Consume the same gate emission, source session, settled state, allowed decision session and expiry. |
+| Action and stock presentation | [stock_view.py](https://github.com/mastermindx-market-intelligence/macro/blob/aec7f387badcdf69c9a947fafbc73b4c68470c7d/engine/stock_view.py), [stock_dossier.py](https://github.com/mastermindx-market-intelligence/macro/blob/aec7f387badcdf69c9a947fafbc73b4c68470c7d/engine/stock_dossier.py), stockdata view projection | Preserve the owner-supplied action and missing/stale reasons. Government context does not promote a wait state or reorder the signal. |
+| Selected price level | [entry_signal.py](https://github.com/mastermindx-market-intelligence/macro/blob/aec7f387badcdf69c9a947fafbc73b4c68470c7d/engine/entry_signal.py), assess | Retain selected level, price basis, timing, horizon and source validity. Dealer-gamma levels have different semantics. |
+| Signal evaluation | [track_record.py](https://github.com/mastermindx-market-intelligence/macro/blob/aec7f387badcdf69c9a947fafbc73b4c68470c7d/engine/track_record.py), [qledger.py](https://github.com/mastermindx-market-intelligence/macro/blob/aec7f387badcdf69c9a947fafbc73b4c68470c7d/engine/qledger.py) | Bind the same family, era and horizon; preserve immature outcomes. A separate Government Revenue research grader cannot stand in for Stock-signal evaluation. |
+| Reviewed Government context | [federation.py](https://github.com/mastermindx-market-intelligence/macro/blob/aec7f387badcdf69c9a947fafbc73b4c68470c7d/engine/government_revenue/federation.py), reviewed_award_change_context; [prophet_annotation.py](https://github.com/mastermindx-market-intelligence/macro/blob/aec7f387badcdf69c9a947fafbc73b4c68470c7d/engine/government_revenue/prophet_annotation.py) | Require reviewed issuer linkage, receipt identity and known-at visibility. Preserve selected-plan membership, ordering, levels, triggers and gates. |
+| Existing plan attachment | [prophet_bridge.py](https://github.com/mastermindx-market-intelligence/macro/blob/aec7f387badcdf69c9a947fafbc73b4c68470c7d/engine/prophet_bridge.py), originate_plans → annotation | Call path exists. A current nonempty annotation and real R5 consumer journey remain unverified. |
+| Watch lifecycle and receipts | [alerts API](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/5107f4d84e26aefc540c8c99e0ea3803770f1bb3/terminal/app/api/alerts/route.ts), [alerts_engine.py](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/5107f4d84e26aefc540c8c99e0ea3803770f1bb3/ingest/alerts_engine.py), [receipts API](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/5107f4d84e26aefc540c8c99e0ea3803770f1bb3/terminal/app/api/alerts/receipts/route.ts) | Extend this shared owner for the exact predicate; retain its account ownership, lifecycle, evaluation, outbox and reconciliation. |
+
+The current implemented Government Revenue investor consumer is built from persisted issuer-event generations for LMT, RTX, NOC and LHX. Its [defense_economics_producer.py](https://github.com/mastermindx-market-intelligence/macro/blob/aec7f387badcdf69c9a947fafbc73b4c68470c7d/engine/government_revenue/defense_economics_producer.py) checks evidence identity, hashes, source spans, period, unit and accounting basis, and separates participation, demand, issuer economics and recognition. It is a concrete source baseline; it does not prove the R5 signal-first consumer is installed.
+
+The minimal R5 projection joins references to the existing Stock record, paired gate/board emission, validity, selected level and basis, evaluation family/era/horizon, reviewed government event/issuer and the eventual shared condition/watch identity. Missing qualified signal data must remain explicit. The design does not authorize a new signal, lifecycle or receipt owner.
+
+### Exact alert viability
+
+The current legacy price condition in [alerts_engine.py](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/5107f4d84e26aefc540c8c99e0ea3803770f1bb3/ingest/alerts_engine.py) compares last > value or last < value. It returns no previous-side state for this type. Data.last selects a quote last when present, otherwise a manifest EOD last. A controlled first observation of 303 against a below-304 condition returns true; that is threshold satisfaction, not proof of a newly observed regular-session close crossing.
+
+Legacy signal alerts read the Terminal symbol slice’s indicator.signals. They do not automatically identify the same event as Macro’s signal_gate output. An R5 adapter must verify the actual source identity rather than equate matching BUY labels.
+
+The bounded suite review covered [suiteAlerts.ts](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/5107f4d84e26aefc540c8c99e0ea3803770f1bb3/terminal/lib/suiteAlerts.ts), its referenced registry, [smartSR.ts](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/5107f4d84e26aefc540c8c99e0ea3803770f1bb3/terminal/lib/suites/structure/smartSR.ts), the alert API allowlist and adjacent options/Forex contracts. No condition in those inspected paths binds R5’s exact selected fixed level and regular-session crossing. suite_event / structure / sr_break is meaningful for module-generated pivot-cluster support/resistance; its condition cannot select one externally owned level. The suite timing contract does not itself prove a live bar closed. Adding unused threshold or source fields would not establish a new predicate.
+
+The build target is an explicitly registered, versioned close-cross condition inside shared My Alerts. Its final discriminator is an implementation choice, not an existing contract invented by this design. It must:
+
+- Resolve the selected Stock/gate/level source server-side and retain the threshold, price basis and condition revision the user confirmed.
+- Consume qualified, finalized regular-session closes under the existing exchange-calendar owner.
+- Fire only when previous >= threshold and current < threshold. The first below-threshold observation establishes a baseline without replaying history.
+- Retain evaluated close identity and condition revision under the existing alert owner. Missing inputs do not advance state; retries, resume and corrections do not create another event for the same transition.
+- Keep persisted row, activation confirmation, evaluation, fire and delivery distinct, using the existing canonical receipts and reconciliation path.
+
+Acceptance examples include 304 → 303.99 and 304 → 293 as crossings; 303.99 → 303.90 and 305 → 304 as non-crossings; a first 303.99 observation as baseline only; live quotes/unfinished bars as insufficient; duplicate close pairs and changed bindings as explicit state cases. Existing AI-0/AT-0/B4-0/BE-0 specimens cover the user-visible outcomes.
+
+The adjacent options gamma-flip evaluator has a useful first-observation arming pattern, but its data and semantics remain options-specific. The Forex close condition is pair/4H constrained and not an available activation shortcut. These are owner implementation references, not interchangeable R5 conditions.
+
+### Clock defect, reachability and repair boundary
+
+The exact request 2026-11-09T12:00:00Z produces:
+
+| Helper | Returned cutoff |
+|---|---|
+| [point_in_time.analysis_clock](https://github.com/mastermindx-market-intelligence/macro/blob/aec7f387badcdf69c9a947fafbc73b4c68470c7d/engine/government_revenue/point_in_time.py) | 2026-11-09T12:00:00Z |
+| [metrics._analysis_clock](https://github.com/mastermindx-market-intelligence/macro/blob/aec7f387badcdf69c9a947fafbc73b4c68470c7d/engine/government_revenue/metrics.py) | 2026-11-09T23:59:59.999999Z |
+
+This is reachable through the ordinary offline/programmatic publisher: [build_government_revenue.py](https://github.com/mastermindx-market-intelligence/macro/blob/aec7f387badcdf69c9a947fafbc73b4c68470c7d/scripts/build_government_revenue.py) accepts an unrestricted --as-of string, passes it to build_payload and can write latest.json, its site twin and HTML. The widened cutoff reaches award/action filtering and the award-event projection. The inspected [HTTP router](https://github.com/mastermindx-market-intelligence/macro/blob/aec7f387badcdf69c9a947fafbc73b4c68470c7d/app/government_revenue.py) does not expose an as_of request parameter; it reads precomputed artifacts. No observed deployed generation or live request-time leakage is claimed.
+
+The payload then publishes only as_of_day.date().isoformat(), and the builder forwards that date to downstream dossier/projector calls. Opportunities also reconstruct an end-of-day cutoff. Replacing only the metrics helper would therefore leave inconsistent precision elsewhere.
+
+For the present daily publisher, the smallest coherent containment is an explicit date-only contract at build/build_payload, rejecting time-bearing input before any publication. Callers and existing timestamp tests must be inventoried before that intentional restriction. A genuine intraday feature instead needs separate analysis_day and exact cutoff values throughout child projections and published metadata. Reuse the strict existing helper; do not create another clock convention.
+
+Calendar dates have separate meaning: an already-known notice may have a future deadline, and a known award can have a future expiry. Filter the underlying fact/revision by its required knowledge/effective clocks, then preserve legitimate future scheduled dates. Do not indiscriminately filter every calendar item by its display date.
+
+### Executed characterization and remaining acceptance
+
+[verify_government_revenue_source_contract.py](verify_government_revenue_source_contract.py) verifies three exact source-content hashes and extracts only the necessary AST definitions. It imports neither application package and performs no collectors, API calls, alert run, lifecycle mutation or publication.
+
+Four controlled rows on 9 November 2026:
+
+| Row | Known | Effective | Exact noon, both clocks | Rounded end-of-day, both clocks |
+|---|---|---|---|---|
+| A | 10:00 | 09:00 | Included | Included |
+| B | 15:00 | 11:00 | Excluded | Included |
+| C | Missing | 11:00 | Excluded | Excluded |
+| D | 11:00 | 16:00 | Excluded | Included |
+
+The executed source helpers return strict [A] versus metrics [A, B, D]. Knowledge-only filtering at noon returns [A, D], preserving the distinction for known future context. Date-only input includes A/B/D in both paths; strict nanosecond and legacy microsecond endpoints remain different.
+
+Five exact legacy-price cases also ran: first below, equality, gap below the lower example level, live-quote precedence and no price. Every evaluated legacy case returns next_state=None. A helper’s true return is not a claim that installed software fired or delivered an alert; downstream admission, vintage checks, disarming, receipts and outbox were not executed.
+
+GOV_REVENUE_SOURCE_CHARACTERIZATION.json therefore records **CURRENT_HELPER_BEHAVIOR_REPRODUCED_NOT_FIX_ACCEPTANCE**. GOV_REVENUE_SOURCE_FIXTURES.json separately retains intended R5 crossing examples. Source snapshots remain temporary inputs rather than a copied canonical codebase.
+
+Remaining product proof is a real source-bound card, the exact qualified shared condition, canonical watch/evaluation/fire evidence, and the return path. Builder acceptance also includes payload-level clock filtering, rejection before publication if daily-only, child-projector cutoff propagation if intraday, timezone/boundary precision and preservation of known future calendar facts.
+
 ## Next safe phase in progress
-Government Revenue: preserve the accepted signal-first design intent and compare it with the concrete existing investor, procurement, evaluation and shared My Alerts owners. Inspect migrated route references, visible fixture qualification, amount/unit scope, bounded coverage, saved-workflow promises and exact historical clock behavior. Existing canonical activation/reconciliation and funding-meaning specimens are accepted work to preserve.
+
+Returns Calendar: move fixture qualification before mobile conclusions, close continuous-path/calendar navigation, separate month movement from date selection, repair local migration references, and bind selected-date evidence to existing source owners. Preserve the current-member reconstruction disclosure and useful recovery specimens.
 
 Phase completion is save-and-continue; this record does not terminate the continuing mission.
