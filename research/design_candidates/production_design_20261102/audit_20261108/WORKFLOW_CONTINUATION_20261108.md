@@ -2009,3 +2009,61 @@ After page creation, one exact-file read returned UPSTREAM_UNAVAILABLE. Read-onl
 `PAPER_RETURN_RECOVERY_20261109.json` binds editable JSX, observed operations, preservation checks, connection recovery and source readback. The PR description points to **ed2a0d178b459a8bdb1cc233f257ee82d946f71a**, current 28-case proof and sixteen-module Build, while keeping the original release/model hold section verbatim and earlier results tied to dated heads. Exact readback confirms Draft/unmerged status and the intended body.
 
 The phase is saved and the parent mission continues. The next bounded review examines the existing coverage/methodology page for source-grounded denominator, date, navigation or clarity defects. Original model01, release, capture, protected-style and active-writer fences remain; this phase neither consumes a new relationship model nor settles an independent blocked lane.
+
+
+## 41 · GMI coverage separates companies, listings, core themes and clocks
+
+The next bounded audit found a semantic defect beneath the former coverage legend. The existing producer deduplicates resolved issuer IDs but adds each unmatched security to the same identity-reason bucket. The interface presented that mixed bucket as companies. The global “any theme” hero also implied a globally unique population from summed market counts, while its theme summary mixed core and extended scopes. The footer called model generation a review-ledger date. These were corrected in the existing frontend without changing the producer, accepted model, identity/admission decisions or public projection.
+
+### Applied source and accounting
+
+The original [Draft PR10676](https://github.com/mastermindx-market-intelligence/Macro/pull/10676) advances from **ed2a0d178b459a8bdb1cc233f257ee82d946f71a** to **e0d7550087c564529270c12049ae62782d5b0101**, tree **52a6ac8392df0d7543712bb60b427a466b4853c7**, through the same GitHub authoring carrier with an exact-head compare-and-swap. All **ten changed files** read back exactly. Draft/unmerged status and the original release-hold section were read back unchanged.
+
+The compact **Coverage & methodology / 覆盖与方法** header retains one H1, the existing snapshot, stale-state owner, navigation, qualified return and Brain reservation. Separate US and China cards now display admitted companies, company-count bounds, matched companies and unmatched listings. Reasons are a native disclosure with explicit company units; method and source detail remains available in a second native disclosure.
+
+| Accepted input | Displayed company population | Separate unresolved listings |
+|---|---|---:|
+| US | 1 admitted; 1,927 matched; bounds 1,928–1,931. Reasons: 722 identity-unconfirmed + 1,200 vendor-only + 4 without activity = **1,926 companies**. | **4** |
+| China | 0 admitted and 0 matched; bounds 1–1,019. No resolved-company reason population or complete-coverage assertion. | **1,019** |
+
+The template subtracts unresolved listings only from the mixed `IDENTITY_NOT_QUALIFIED` reason. It does not clamp mismatches, manufacture percentages or claim the two market populations are globally unique. Matching a company record and passing identity checks remain distinct. Company reasons must sum to matched companies minus the admitted numerator.
+
+The 68-cell theme strip and its two totals now use acceptance-tier themes only: **1 core theme with admitted activity, 67 without**. The **303 extended** themes stay separate and excluded. A proposed-only note is a subset without admitted activity, not every theme containing a proposal. Theme counts measure themes and need not reconcile to distinct market-company counts.
+
+**Snapshot as of** means `model.asof`; **Coverage model generated** means `provenance.built_at_utc`, retaining exact datetime and UTC. Source types remain undated. The accepted model uses 3 Nov 2026 as-of and was built on 4 Nov at 02:29:26 UTC. The interface does not infer a source review event from model creation or assume an overridable as-of equals the symbol-directory snapshot.
+
+### Focused proof and reconciliation
+
+[DESIGN_RECORD §11.32](https://github.com/mastermindx-market-intelligence/Macro/blob/e0d7550087c564529270c12049ae62782d5b0101/research/theme_graph/gmi_design_20261021/DESIGN_RECORD.md) and [COVERAGE_CLARITY_VALIDATION_20261109.json](https://github.com/mastermindx-market-intelligence/Macro/blob/e0d7550087c564529270c12049ae62782d5b0101/research/theme_graph/gmi_design_20261021/COVERAGE_CLARITY_VALIDATION_20261109.json) bind the source, accepted model, exact final bytes, browser cases, fixture boundaries and retained diagnostics.
+
+- Final native renderer **12941**, exit 0, changes only coverage HTML/CSS against the bound prior rendering. Six other HTML pages and JS stay exact; CSS source/output are paired. Coverage HTML SHA256 is **893408143f6c0cb1db08084ad9c7c57b56386421f3a3958f1879a87f9035b745**, Git blob **5df5c79f27a467894d125da61d3cf88b3969edf9**.
+- Native render tests **15231**, exit 0: **28 passed**, 4.82 s pytest. The committed canonical fixture stays exact; only the isolated local fixture loads the retained accepted model. Tests cover public withholding, units/reason accounting, mixed and empty populations, all matched companies counted with and without unresolved listings, core/extended separation and independent clocks.
+- Final browser **15311**, exit 0: **24 cases / 24 fresh anonymous contexts**, Chrome **157.0.8103.39**, zero page errors. Header, native disclosures, normal/reduced motion, actual no-JS, locale, upstream returns, focus, Clear search and mobile category navigation are covered.
+- **16 matched layout pairs** bring the first market card **194.9375–254.09375 px** higher. Seven final coverage captures were inspected.
+- Both unchanged design-asset gate functions pass. Two equivalent `:is()` selector wrappers avoid the existing scanner's BEM false positives without weakening it. All **79 prior named browser functions, including nested helpers**, remain AST-exact; three coverage functions were added.
+
+The frontend regression path `tests/test_gmi_explorer_s3_s4.py` was confirmed from principal integration commit **2a9d6d6d0ce1d0cd8234acfaa9e0ddf0bd8d726f**, where its blob **4860c8af14d5eaf65a5ef88b4ca2e8bc4b918998** exactly matches this phase's parent. Its existing publication assertions remain; four obsolete title expectations are aligned with the already accepted relationships change. Producer/model/presenter/variants and the original model test are untouched. No retained model01 worker result or private root was consumed.
+
+Diagnostic failures remain explicit. The initial isolated test write had no file effect before its directory existed. Initial tests lacked exact canonical historical variant inputs; copying those hash-bound inputs read-only resolved the environment gap. Initial and pre-copy browser reports are retained separately from the final 24-case acceptance.
+
+A final canonical reconciliation found a pre-existing difference between the old committed coverage HTML (**3c0f21129b1a799e4406998ad1a69b373b339071**) and the retained accepted-model render (**167364ad1bae490799e853743943c89bc93c5fe7**): reason order and the old mislabeled review-ledger date. The baseline's “all nine outputs exact” means exact to the **prior phase's rendering**, not every committed site file. The candidate reconstructed to its verified native SHA/blob and is the coverage HTML now published. The detailed receipt preserves that qualification rather than overstating reproduction.
+
+### Editable Paper and builder contract
+
+[Coverage · Companies and listings](https://app.paper.design/file/01M5H6EARN9YHQV17JC6ZG9BRY/p-B-0) is now the next page after Relationships. It contains one editable flow group **9K8-0** with five specimens:
+
+| Specimen | Root | Purpose |
+|---|---|---|
+| CV01 | 912-0 | EN390 Day market overview |
+| CV02 | 92F-0 | ZH320 Noir market overview |
+| CV03 | 9K9-0 | Complete expanded US company reasons |
+| CV04 | 9L1-0 | Complete method, source clocks, corrections and accuracy status |
+| CV05 | 9M1-0 | ZH core-theme activity and 68-cell strip |
+
+Both phones preserve truthful **844 px** viewports; complete components sit alongside them. Final visual inspection shows all five in flow without overlap. A temporary position-based component arrangement was replaced within newly owned content by the final single flex group. Original relationship roots **8T0-0 / 8V9-0** remain byte-exact in JSX; tokens remain **ac191fd9**.
+
+Build **7M9-0** now has **17 modules / 54 div nodes**. New module **9O4-0**, title **9O5-0**, body **9O7-0**, supplies the count formulas, zero-population behavior, core/extended scope, clock mapping and native disclosure process. The original **51 IDs, styles and parent relationships** and unaffected text remain exact; only the four intended source/proof text nodes change. The new build/proof modules and the final design group were captured and inspected, and all exact working indicators were released.
+
+[PAPER_COVERAGE_CLARITY_20261109.json](PAPER_COVERAGE_CLARITY_20261109.json) retains final editable JSX, observed operation identities, exact source readbacks and preservation checks. PR10676's current description now leads with **e0d75500**, the 28 render/24 browser checks and seventeen-module Build. Its historical evidence stays dated and its release/model holds stay verbatim.
+
+The parent mission continues in the same foreground session. The next source-proven defect is failed topic-payload recovery: the old error branch wires a button that unready-state CSS hides, and it leaves the starting answer without clearly identifying that fallback. The next phase will use a visible native index action and the existing journey owner, including failed-page hash/history/lens/locale refresh. No held capture, protected-style, model01 or release lane is reopened.
