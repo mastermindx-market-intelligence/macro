@@ -2312,3 +2312,49 @@ All node IDs/parents, unaffected text and other styles remain exact. The text ed
 The existing manual-copy retirement path still renders the fallback hidden before its late focus call. Earlier copy assertions check final focus after Close/context changes; they do not observe the hiding setter. Continue with a bounded pre-hide probe for the address/Close controls, then preserve the incumbent attempt, timer, promise and locale ownership while ordering focus before visibility. Do not repeat accepted copy proof without this new falsifier or add a parallel clipboard lifecycle.
 
 Original model01, release and all independent lane holds remain.
+
+
+## 47 · Manual-copy recovery preserves focus and newer intent — 9 November 2026
+
+### Applied source and actual failure
+
+[GMI Draft PR10676](https://github.com/mastermindx-market-intelligence/Macro/pull/10676) advances from `c19d6185f0d06b9ef8af3fb8979d121d32e36c39` to **`60f131e086e614487d86ebf089aa52b1af2630f0`**, tree **`e9658ebaa39a1b9222ff0cb5148000702082bba5`**. Six source files and the PR body read back exactly; Draft/unmerged status and original model/release holds remain.
+
+The original manual-copy panel hid its focused address or Close control before the later recovery call. Baseline PID **73607**, exit1, **5.26 s**, records two actual hiding-setter failures through EN390 Close and ZH320 Back. Final-focus-only assertions had not exposed that order.
+
+The existing feedback renderer now prepares the current button state and recovers owned focus **before** hiding. It tries reachable Copy then the existing topic heading, rechecks actual focus and retains a surviving redirect. Retirement invalidates the old attempt/timer/owned announcement first; Close has no late focus override.
+
+A local render pass prevents an old synchronous projection from clearing a newer pending or failed attempt started by recovery. The asynchronous owner remains the existing attempt object/full URL/theme. Copy checks invocation context before normalization, protecting navigation assigned by a focus callback before hashchange runs. It checks attempt identity again before issuing writeText, after completion rendering and before selecting a failure address. Pagehide explicitly suppresses recovery. Already-issued system writes cannot be cancelled.
+
+### Source-bound proof
+
+[DESIGN_RECORD §11.38](https://github.com/mastermindx-market-intelligence/Macro/blob/60f131e086e614487d86ebf089aa52b1af2630f0/research/theme_graph/gmi_design_20261021/DESIGN_RECORD.md) and [COPY_FOCUS_VALIDATION_20261109.json](https://github.com/mastermindx-market-intelligence/Macro/blob/60f131e086e614487d86ebf089aa52b1af2630f0/research/theme_graph/gmi_design_20261021/COPY_FOCUS_VALIDATION_20261109.json) retain full baseline, diagnostic and final reports, exact inputs/outputs and commands.
+
+| Evidence | Observed result |
+|---|---|
+| Final PID 99607 | Exit0, **28 cases / 50 contexts**, Chrome157.0.8103.39, zero page errors; **54.32 s** |
+| Interactive ordering | **32 snapshots / zero owned hides**; Close, Enter/Space, actual Back/Forward, unavailable Copy and focus redirects |
+| New intent | New pending/immediate-failure copy survives recovery; an outer action neither adds an extra write nor overwrites navigation |
+| Existing clipboard regression | 21 contexts cover late success/failure, ABA, timers, history, locale, focus intent and injected lifecycle |
+| Existing answer recovery | Two cases / four contexts retain filters, source-card identity and open receipts |
+| Lifecycle distinction | One injected pagehide snapshot intentionally hides with **zero recovery focus calls**; no BFCache claim |
+| Visual inspection | Four final EN390/ZH320 manual-fallback/answer-recovery captures |
+| Source preservation | Seven HTML pages/CSS byte-exact; all **112 prior verifier definitions AST-exact**; paired JS is the only product-output change |
+
+Diagnostic PID **95180** passed 21 cases then disproved a fixture assumption: this Chrome retained focus on the disabled Copy button and emitted no blur. The corrected pending-render case uses an explicit synchronous setter callback to exercise attempt replacement before write issuance. This is qualified fault injection, not a claim about automatic browser blur. The retained diagnostic report is not erased or counted as a passing run.
+
+Paired JS blob **c5d32d689ffae6caedf72a8afef317c9900c4428**, SHA256 **4ca7c46fd9a9720819ce8153c54998114cee3dc9cf9fc305bf92bc7be165152e**. The isolated harness changes only the accepted clipboard regression's HTML acquisition to the same generated main/payload/inline assets; its behavior assertions remain unchanged. No model, renderer, public-data or navigation-owner replacement is involved.
+
+### Paper applied and checked
+
+[Build · Interaction & receipts](https://app.paper.design/file/01M5H6EARN9YHQV17JC6ZG9BRY/p-7-0) extends existing copy body **7NI-0**, with references/proof in **7MV, 7MZ, 7NF**. The contract explains pre-hide recovery, local projection versus attempt identity, effect-time guards, locale continuity and pagehide suppression.
+
+The guide stays **18 modules / 57 nodes**. All IDs, parents and styles remain exact; only the four intended text nodes change. Q01–Q04 Browse flow remains exact; tokens remain **ac191fd9**. No duplicate product specimen or added product description is created. Both amended modules were captured and inspected; the exact Build working indicator was released. Three observed Paper operations cover the text amendment, a small proof-spacing correction and finish.
+
+A screenshot-output forwarding error occurred after the actual Copy module image had displayed; nested image metadata was mistakenly treated as image bytes. This was a read-result projection error, not a design mutation failure. The existing source/flow readbacks were retained, the same proof screenshot was reread, and no mutation was replayed. [PAPER_COPY_FOCUS_20261109.json](PAPER_COPY_FOCUS_20261109.json) retains source readbacks, before/after guide, operations and this classification.
+
+### Next visible improvement
+
+The primary search promises company/product matching, but the result row shows only taxonomy and a count. At this source, **NVIDIA H200** and **24GB** each find the existing HBM topic through a public connection field, yet neither match appears in its row. Continue by using the existing secondary text slot for one exact Company/Product/Platform match hint when the visible topic/parent does not already explain the query. Restore the parent on Clear; keep ranking, counts, selected research and public-data admission unchanged. The **Micron** substring query also matches a taxonomy name, so field explanations must be attached only to the individually matching field.
+
+Original model01 and all release/independent-lane holds remain. This is component/controlled-clipboard proof, without system clipboard, full shared shell/fonts, native OS IME, spoken AT, actual BFCache, live account/admission, current hosted CI or deployment acceptance.
