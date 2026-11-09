@@ -265,8 +265,130 @@ GOV_REVENUE_SOURCE_CHARACTERIZATION.json therefore records **CURRENT_HELPER_BEHA
 
 Remaining product proof is a real source-bound card, the exact qualified shared condition, canonical watch/evaluation/fire evidence, and the return path. Builder acceptance also includes payload-level clock filtering, rejection before publication if daily-only, child-projector cutoff propagation if intraday, timezone/boundary precision and preservation of known future calendar facts.
 
+## Verified phase: Returns Calendar navigation, readable charts and exact-session build contracts
+
+Paper studies: https://app.paper.design/file/01M6Y39WH7QVTH07RTWHTSRP65/p-1-0  
+Builder page: https://app.paper.design/file/01M6Y39WH7QVTH07RTWHTSRP65/p-2-0  
+Terminal design home: https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-Q-0
+
+### Native interface changes
+
+The R3 continuous stock, basket and calendar studies are preserved and refined; their illustrative return values were not changed.
+
+| Surface | Changes |
+|---|---|
+| Mobile WG-0 | The header now says “Illustrative example · not live” and “Through 16 Oct 2026” before the first return card. Removed the duplicated horizontal inset, made the status bar adapt to width, and gave both lens tabs, the range selector and the calendar action full 44px targets. The calendar action uses a forward chevron. Vertical spacing keeps the footer visible. |
+| New 320px proof 140-0 | The same workflow is reflowed at 320px. A screenshot caught +19.25% wrapping its percent sign; the three values now remain on one line at 16px. The fixture qualifier, endpoint, chart and primary action remain readable. |
+| Stock N5-0 | Added Calendar & evidence action 107-0. Diagnostics now have a shared 21-session scope in 13G-0; volatility and drawdown subtitles name that window. “Largest session” became “Largest session’s share,” with its 9.1% explicitly described as a share of absolute movement. |
+| Calendar S2-0 | Replaced the single text string “‹ Latest session ›” with three separate controls in 10C-0: previous month, latest session and a next-month control unavailable beyond the example endpoint. The options action is a distinct 32px control, 18X-0; the model disclosure is a 44px row, 192-0. |
+| Calendar source meaning | S7-0 now says “review each session with its dated evidence.” A dated archive does not by itself establish that the evidence was available during the original session. The price, options and forecast qualification states remain separate. |
+| Basket PW-0 | Its single-series chart now says “Absolute returns.” The named SPY benchmark was removed from this particular view because no benchmark series or comparison was supplied there. Existing current-member reconstruction, daily equal weighting and membership-date disclosures remain. |
+
+The calendar’s view and observation are separate: changing the visible month does not change the selected session. Latest session resolves the completed exchange session within the retained endpoint, not the wall clock or merely the latest available price row. A missing observation remains an unavailable state. Returning from calendar/options must preserve instrument, benchmark, lens, range, endpoint, selected session and focus.
+
+### Illustration fidelity and chart reflow
+
+The original stock desktop and mobile SVGs each contain 127 points per series: one baseline plus 126 intervals. Basket contains 127 points. Approximate inverse-geometry checks found the displayed returns, pace, volatility and drawdown broadly compatible with the rounded paths. They do not justify changing the illustrative metrics.
+
+Notable interpretations:
+- The final 21-interval lens needs 22 closes. The prior comparison contains its own 21 intervals and shares the boundary close.
+- Fitted log-price pace is not simply the endpoint return divided by 21.
+- The 6M chart overview and 21-session diagnostics describe different windows.
+- A daily-rebalanced equal-weight basket does not equal the arithmetic mean of members’ cumulative returns.
+- The three displayed member returns support 3/3 advancing and the displayed median, but Paper alone does not supply the constituent histories required to prove the basket’s full construction or coverage.
+
+Uniformly shrinking the original 320-wide SVG at a 320px screen would make 9px axis labels roughly 7px. build_returns_chart.py instead reflows the same supplied rounded coordinates to actual chart widths of 320 and 250 pixels. Both retain 127 points, their common scale, zero baseline and endpoints; axis text remains 11px and the final date is end-anchored.
+
+RETURNS_CHART_FIXTURE.json preserves the supplied illustration geometry. RETURNS_CHART_REFLOW_VERIFICATION.json records the point counts, native widths, readable labels and an inverse-transform scale error below 1e-10 percentage points. This verifies a geometric reflow, not historical price data, exchange-calendar coverage, corporate-action treatment or a new canonical market fixture.
+
+### Discovery, retained references and ownership
+
+Source Start Here 1-0 repairs the stale v2 Desktop reference to **AD-0** and indexes stock N5-0, basket PW-0, calendar S2-0, phone WG-0 and narrow proof 140-0.
+
+Terminal Start Here **1BBQ-0** still distinguishes its six preserved migration fixtures from current references 07–09. Its retained-source text now identifies Returns source p-1-0 / AD-0, while preserving the historical 613W-0 provenance and the held, empty Terminal pointer **1B5H-0**. The original migration-source URL node **1BCV-0** retains its identity and content.
+
+A new footer row **28T5-0** contains that original source link and a visible R3/R4 studies link to the enhanced Returns file. This makes the later studies discoverable from the existing Terminal home without representing them as a completed migration or installed product.
+
+Recent separate-writer improvements remain intact:
+- Current early-close reference **28BZ-0**.
+- Current phone **28FS-0**.
+- Current pending/closed/loading/unavailable outcomes **28LZ-0**.
+- Their index pointers and source note remain unchanged.
+
+The new build contract explicitly directs builders to those current session states. **LV-0 is retained as a historical recovery study**, not promoted over the newer Terminal references.
+
+### Native build contract
+
+**197-0 — R4 source and interaction contract** lives on the new **p-2-0 — R4 · Build contracts** page. It contains:
+- A single selection/read contract across continuous path, calendar and dated evidence.
+- Existing route, daily-price, intraday, calendar, archived-options and basket owners.
+- The exact historical-endpoint reuse hazard and compounding identity.
+- Concise state specimens for last observed / close unverified, missing dated options and an expanded unavailable-forecast disclosure.
+- Route, calculation, evidence and real-consumer acceptance stages.
+
+The initially appended builder content and Terminal crosslink were clipped by fixed legacy artboard dimensions. Screenshot review caught this before acceptance. The complete builder frame was moved, retaining ID 197-0 and its children, to its own builder page. The Terminal crosslink was refactored into the existing footer; the original source-link text node was moved into the compact row without changing its identity. Final screenshots show the full contract and both source links. No held migration was replayed, no native delete/archive action was used, and no uncertain write was retried.
+
+### Existing implementation and the missing consumer adapter
+
+Source pins remain Macro **aec7f387badcdf69c9a947fafbc73b4c68470c7d** and Terminal **5107f4d84e26aefc540c8c99e0ea3803770f1bb3**.
+
+| Responsibility | Existing source | Integration requirement |
+|---|---|---|
+| Analysis routing | [analysisRoute.ts](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/5107f4d84e26aefc540c8c99e0ea3803770f1bb3/terminal/lib/analysisRoute.ts), [finPages.ts](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/5107f4d84e26aefc540c8c99e0ea3803770f1bb3/terminal/components/fin/finPages.ts), [AnalysisWorkspace.tsx](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/5107f4d84e26aefc540c8c99e0ea3803770f1bb3/terminal/components/workspaces/AnalysisWorkspace.tsx) | Register the proposed Market/Returns view in the existing parser and mount. The current closed vocabulary is company / theses / investigations; unknown company pages fall back to Overview. Reuse its URL and Back/Forward ownership. |
+| Daily OHLC | [dataCache.ts](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/5107f4d84e26aefc540c8c99e0ea3803770f1bb3/terminal/lib/dataCache.ts), [fund.ts](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/5107f4d84e26aefc540c8c99e0ea3803770f1bb3/terminal/lib/fund.ts) | Reuse getOhlc/getBars, retaining or adding the relevant evidence projection. Normalized rows alone do not establish adjustment, finality or historical availability. |
+| Dated price | [intraday route](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/5107f4d84e26aefc540c8c99e0ea3803770f1bb3/terminal/app/api/intraday/route.ts), [intradayShared.ts](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/5107f4d84e26aefc540c8c99e0ea3803770f1bb3/terminal/lib/intradayShared.ts), [intradayEvidence.ts](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/5107f4d84e26aefc540c8c99e0ea3803770f1bb3/terminal/lib/intradayEvidence.ts) | Reuse selected-session slicing and evidence. The supported request shape includes sym, tf, ext and date. Source evidence currently marks completeness as not_assessed, adjustment and PIT availability as not_verified. |
+| Exchange session | [usEquitySessionClock.ts](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/5107f4d84e26aefc540c8c99e0ea3803770f1bb3/terminal/lib/usEquitySessionClock.ts), [usEquitySessionProjection.json](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/5107f4d84e26aefc540c8c99e0ea3803770f1bb3/terminal/lib/usEquitySessionProjection.json) | Resolve expected regular close, closures, early closes and coverage. The bundled projection declares 2016–2028 and Macro source revision 112eba2036fd1186e67b914e194f4fa541cfc4df. Preserve its actual lineage. Expected close time does not prove returned price finality. |
+| Historical options | [GexDeskView.tsx](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/5107f4d84e26aefc540c8c99e0ea3803770f1bb3/terminal/components/gexdesk/GexDeskView.tsx), [gexSessions.ts](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/5107f4d84e26aefc540c8c99e0ea3803770f1bb3/terminal/lib/gexSessions.ts), [exposureChartLink.ts](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/5107f4d84e26aefc540c8c99e0ea3803770f1bb3/terminal/lib/exposureChartLink.ts) | Existing loadSession reads gex_at:ROOT:YYYY-MM-DD and checks root/session. Add a validated generic date entry through that owner; a normal root entry currently opens live, while the existing exposure hash requires a real strike/lens/metric/shock/fingerprint. Do not fabricate those fields for a calendar link. |
+| Dated options publication | [build_options_hub_nightly.py](https://github.com/mastermindx-market-intelligence/macro/blob/aec7f387badcdf69c9a947fafbc73b4c68470c7d/scripts/build_options_hub_nightly.py) | Preserve dated-key/index ownership and reconstruction qualifiers. A self_healed or late reconstructed payload cannot gain original-session availability merely from its date key. |
+| Basket construction | [basket_index.py](https://github.com/mastermindx-market-intelligence/macro/blob/aec7f387badcdf69c9a947fafbc73b4c68470c7d/engine/basket_index.py), [basket_membership_pit.py](https://github.com/mastermindx-market-intelligence/macro/blob/aec7f387badcdf69c9a947fafbc73b4c68470c7d/engine/basket_membership_pit.py) | Retain reconstruction versus dated-membership basis, evidence/fallback reasons and weighting. Synthetic high/low values are not synchronous observed basket trades. |
+
+The existing basket coverage_pct is a latest-row positive-volume member fraction, not a 0–100 number or full-window price-completeness measure. The adapter must name and format that measurement accurately and derive any stronger range-coverage claim from the relevant observations.
+
+Terminal intraday timestamps also have a display-clock convention; market-local display epochs must not be relabelled as actual UTC observation instants. A last returned bar remains “Last observed” until the required finality and expected-close conditions qualify. Continuous-path mode should retain actual observation gaps and source qualifications.
+
+### Historical-return characterization: executed, bounded
+
+[sp500_heatmap.py](https://github.com/mastermindx-market-intelligence/macro/blob/aec7f387badcdf69c9a947fafbc73b4c68470c7d/engine/sp500_heatmap.py)::daily_returns uses its asof as a reference-window anchor. It still chooses the final available close for now, and its 1D value uses the prior available row. That is appropriate to characterize before reuse; it is not a historical-session selector.
+
+verify_returns_source_contract.py verifies source SHA-256 **94607542cae6a31485bd7116a5af4cbe12a5d21d8fb36f33e8e86289f0853682**, extracts only the four required AST definitions and runs five controlled cases:
+
+| Controlled input | Existing helper 1D | Required selected-session behavior |
+|---|---:|---|
+| Closes 100, 110, 132 on 14–16 Oct; asof 15 Oct | 20% | 10% for the selected middle session |
+| Same input pre-sliced through 15 Oct | 10% | 10% |
+| 14 Oct = 100; 15 Oct missing; 16 Oct = 132 | 32% | Unavailable for one-session return because the expected prior observation is missing |
+| Two flat closes at 100 | 0% | Preserve valid zero |
+| Prior close zero | Unavailable | Preserve unavailability |
+
+The calendar session keys in this harness are controlled fixture inputs, not verified market observations. The production adapter should use existing [nyse_calendar.py](https://github.com/mastermindx-market-intelligence/macro/blob/aec7f387badcdf69c9a947fafbc73b4c68470c7d/lib/nyse_calendar.py) endpoint discipline, including session_n_back / is_prior_session / row_n_sessions_back, and select the exact observations before measurement.
+
+RETURNS_SOURCE_CHARACTERIZATION.json records **CURRENT_HELPER_REUSE_HAZARD_REPRODUCED_NOT_PRODUCT_ACCEPTANCE**. Only pure source definitions ran. No API, collector, route, publisher or installed Returns view was executed. The heatmap owner was not changed, and no claim is made that a deployed calendar currently misuses it.
+
+### Arithmetic, selection and evidence acceptance
+
+For previous close P, regular open O and selected endpoint C:
+- Simple gap = O/P − 1.
+- Simple regular return = C/O − 1.
+- Total = C/P − 1 = (1 + gap)(1 + regular) − 1.
+- Log components add.
+
+The executed 100 → 105 → 102 example gives +5.00% gap, −2.8571% regular and +2.00% total. Adding the simple component percentages yields a different answer. The existing [measurement-controls research witness](https://github.com/mastermindx-market-intelligence/macro/blob/aec7f387badcdf69c9a947fafbc73b4c68470c7d/research/rotation_intelligence/intraday_sessions_20261013/measurement_controls.py) uses additive log decomposition; it remains a research witness, not evidence that a production Returns adapter exists.
+
+The consumer must retain distinct requested/resolved endpoints, price basis, unit, benchmark basis, lens and calendar selection. Define percentage-point excess, relative wealth return and log-relative units explicitly. Unverified prices cannot be labelled total return.
+
+Focused acceptance:
+1. Copy/reload/Back/Forward preserves the selection tuple. Month navigation changes visibleMonth only; latest session stays inside the retained endpoint.
+2. Selected-session price and options results retain the same symbol/date/basis. A late A result cannot appear under B. Missing archives, wrong-root/date payloads and transport failure remain distinct.
+3. When a date changes, show that selected date with pending dated content; qualify price and evidence independently. Keep useful price context when evidence is missing, and scope retries to the failed read.
+4. Native controls become actual buttons in implementation, with accessible names, disabled semantics, keyboard day selection and focus restoration. Paper hit regions are visual proof, not keyboard/runtime proof.
+5. Test closure, early close, DST offsets, incomplete final bar and out-of-coverage calendar dates. Expected session close and verified price close remain distinct.
+6. Preserve current-member reconstruction and unreadable-membership evidence; require matched endpoints/basis before benchmark comparison.
+7. Reuse the current Terminal outcome references and existing URL/request-counter owners. Do not introduce another history, session, retry or options-data store.
+
+The native layouts, source bindings, helper behavior and geometric reflow are verified at their stated boundaries. Full route integration, live price/archived evidence availability, model qualification and production browser acceptance remain open.
+
 ## Next safe phase in progress
 
-Returns Calendar: move fixture qualification before mobile conclusions, close continuous-path/calendar navigation, separate month movement from date selection, repair local migration references, and bind selected-date evidence to existing source owners. Preserve the current-member reconstruction disclosure and useful recovery specimens.
+Confluence Screener: inspect remaining R2 clarity and layout gaps against the recent R3 public-availability and builder amendments. Preserve source ordering, the explicit absence of current filtering, governed filter studies and separately owned native Terminal screener behavior. Focus on stale CTA promises, snapshot clocks and the cramped mobile card header.
 
 Phase completion is save-and-continue; this record does not terminate the continuing mission.

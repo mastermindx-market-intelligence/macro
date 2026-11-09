@@ -2433,5 +2433,955 @@
         }
       ]
     }
+  },
+  {
+    "operation_id": "paper-audit-next-184-revenue-evidence-link",
+    "fileId": "01M6Y3397SE03G626MJ72N90PF",
+    "tool": "set_text_content",
+    "targets": [
+      "44G-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3397SE03G626MJ72N90PF\",\n    \"name\": \"Mastermind - Government Revenue - R5 and Builder Contracts\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"updates\": [\n    {\n      \"nodeId\": \"44G-0\"\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-185-returns-index-copy",
+    "fileId": "01M6Y39WH7QVTH07RTWHTSRP65",
+    "tool": "set_text_content",
+    "targets": [
+      "E-0",
+      "G-0",
+      "YC-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y39WH7QVTH07RTWHTSRP65\",\n    \"name\": \"Mastermind - Returns Calendar - Terminal and Dossier\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"updates\": [\n    {\n      \"nodeId\": \"E-0\"\n    },\n    {\n      \"nodeId\": \"G-0\"\n    },\n    {\n      \"nodeId\": \"YC-0\"\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-186-returns-mobile-status",
+    "fileId": "01M6Y39WH7QVTH07RTWHTSRP65",
+    "tool": "write_html",
+    "targets": [
+      "WS-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y39WH7QVTH07RTWHTSRP65\",\n    \"name\": \"Mastermind - Returns Calendar - Terminal and Dossier\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"YD-0\",\n      \"name\": \"Preview status and endpoint\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"YE-0\",\n      \"name\": \"Illustrative example…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"YF-0\",\n      \"name\": \"Through 16 Oct 2026\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-187-returns-mobile-inset",
+    "fileId": "01M6Y39WH7QVTH07RTWHTSRP65",
+    "tool": "write_html",
+    "targets": [
+      "WR-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y39WH7QVTH07RTWHTSRP65\",\n    \"name\": \"Mastermind - Returns Calendar - Terminal and Dossier\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"YH-0\",\n      \"name\": \"Mobile returns content\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"YI-0\",\n      \"name\": \"Mobile subject header\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"YJ-0\",\n      \"name\": \"ANALYSIS / MARKET\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"YK-0\",\n      \"name\": \"Returns intelligence\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"YL-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"YM-0\",\n      \"name\": \"NVDA · NVIDIA ⌄\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"YN-0\",\n      \"name\": \"Benchmark · SPY\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"YO-0\",\n      \"name\": \"Preview status and endpoint\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"YP-0\",\n      \"name\": \"Illustrative example…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"YQ-0\",\n      \"name\": \"Through 16 Oct 2026\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"YR-0\",\n      \"name\": \"Mobile scope\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"YS-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"YT-0\",\n      \"name\": \"Stock\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"YU-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"YV-0\",\n      \"name\": \"Sector / theme\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"YW-0\",\n      \"name\": \"Mobile comparable horizons\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"YX-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"YY-0\",\n      \"name\": \"5 sessions\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"YZ-0\",\n      \"name\": \"+0.77%\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"Z0-0\",\n      \"name\": \"Rising\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"Z1-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"Z2-0\",\n      \"name\": \"21 sessions\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"Z3-0\",\n      \"name\": \"+3.16%\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"Z4-0\",\n      \"name\": \"Rising\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"Z5-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"Z6-0\",\n      \"name\": \"63 sessions\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"Z7-0\",\n      \"name\": \"+19.25%\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"Z8-0\",\n      \"name\": \"Rising\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"Z9-0\",\n      \"name\": \"Mobile continuous chart\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"ZA-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"ZB-0\",\n      \"name\": \"Continuous path\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"ZC-0\",\n      \"name\": \"6M ⌄\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"ZD-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"ZE-0\",\n      \"name\": \"● NVDA +34.22%\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"ZF-0\",\n      \"name\": \"– SPY +10.20%\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"ZG-0\",\n      \"name\": \"SVG\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"ZH-0\",\n      \"name\": \"Line\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"ZI-0\",\n      \"name\": \"0%\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"ZJ-0\",\n      \"name\": \"Line\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"ZK-0\",\n      \"name\": \"+20%\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"ZL-0\",\n      \"name\": \"Line\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"ZM-0\",\n      \"name\": \"+40%\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"ZN-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"ZO-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"ZP-0\",\n      \"name\": \"126 sessions ago\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"ZQ-0\",\n      \"name\": \"Oct 16\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"ZR-0\",\n      \"name\": \"Mobile path reading\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"ZS-0\",\n      \"name\": \"Rising · ascent slow…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"ZT-0\",\n      \"name\": \"The 21-session path …\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"ZU-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"ZV-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"ZW-0\",\n      \"name\": \"Pace / session\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"ZX-0\",\n      \"name\": \"+0.155%\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"ZY-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"ZZ-0\",\n      \"name\": \"Path character\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"100-0\",\n      \"name\": \"Choppy\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"101-0\",\n      \"name\": \"Mobile continuation\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"102-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"103-0\",\n      \"name\": \"Session calendar & e…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"104-0\",\n      \"name\": \"↓\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"105-0\",\n      \"name\": \"Forecasts withheld\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-188-returns-calendar-route",
+    "fileId": "01M6Y39WH7QVTH07RTWHTSRP65",
+    "tool": "write_html",
+    "targets": [
+      "NK-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y39WH7QVTH07RTWHTSRP65\",\n    \"name\": \"Mastermind - Returns Calendar - Terminal and Dossier\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"107-0\",\n      \"name\": \"Open calendar and evidence\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"108-0\",\n      \"name\": \"Calendar & evidence\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"109-0\",\n      \"name\": \"SVG\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"10A-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-189-returns-month-controls",
+    "fileId": "01M6Y39WH7QVTH07RTWHTSRP65",
+    "tool": "write_html",
+    "targets": [
+      "SN-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y39WH7QVTH07RTWHTSRP65\",\n    \"name\": \"Mastermind - Returns Calendar - Terminal and Dossier\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"10C-0\",\n      \"name\": \"Calendar month navigation\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"10D-0\",\n      \"name\": \"Previous month\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"10E-0\",\n      \"name\": \"SVG\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"10F-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"10G-0\",\n      \"name\": \"Latest completed session\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"10H-0\",\n      \"name\": \"Latest session\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"10I-0\",\n      \"name\": \"Next month unavailable after endpoint\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"10J-0\",\n      \"name\": \"SVG\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"10K-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-190-returns-mobile-route-icon",
+    "fileId": "01M6Y39WH7QVTH07RTWHTSRP65",
+    "tool": "write_html",
+    "targets": [
+      "104-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y39WH7QVTH07RTWHTSRP65\",\n    \"name\": \"Mastermind - Returns Calendar - Terminal and Dossier\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"10M-0\",\n      \"name\": \"SVG\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"10N-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-191-returns-stock-tab",
+    "fileId": "01M6Y39WH7QVTH07RTWHTSRP65",
+    "tool": "write_html",
+    "targets": [
+      "YS-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y39WH7QVTH07RTWHTSRP65\",\n    \"name\": \"Mastermind - Returns Calendar - Terminal and Dossier\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"10P-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"10Q-0\",\n      \"name\": \"Stock\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-192-returns-basket-tab",
+    "fileId": "01M6Y39WH7QVTH07RTWHTSRP65",
+    "tool": "write_html",
+    "targets": [
+      "YU-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y39WH7QVTH07RTWHTSRP65\",\n    \"name\": \"Mastermind - Returns Calendar - Terminal and Dossier\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"10S-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"10T-0\",\n      \"name\": \"Sector / theme\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-193-returns-range-control",
+    "fileId": "01M6Y39WH7QVTH07RTWHTSRP65",
+    "tool": "write_html",
+    "targets": [
+      "ZC-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y39WH7QVTH07RTWHTSRP65\",\n    \"name\": \"Mastermind - Returns Calendar - Terminal and Dossier\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"10V-0\",\n      \"name\": \"Chart range selector\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"10W-0\",\n      \"name\": \"6M\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"10X-0\",\n      \"name\": \"SVG\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"10Y-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-194-returns-calendar-touch",
+    "fileId": "01M6Y39WH7QVTH07RTWHTSRP65",
+    "tool": "write_html",
+    "targets": [
+      "102-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y39WH7QVTH07RTWHTSRP65\",\n    \"name\": \"Mastermind - Returns Calendar - Terminal and Dossier\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"110-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"111-0\",\n      \"name\": \"Session calendar & e…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"112-0\",\n      \"name\": \"SVG\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"113-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-195-returns-quant-labels",
+    "fileId": "01M6Y39WH7QVTH07RTWHTSRP65",
+    "tool": "set_text_content",
+    "targets": [
+      "PJ-0",
+      "PN-0",
+      "PT-0",
+      "PV-0",
+      "QB-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y39WH7QVTH07RTWHTSRP65\",\n    \"name\": \"Mastermind - Returns Calendar - Terminal and Dossier\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"updates\": [\n    {\n      \"nodeId\": \"PJ-0\"\n    },\n    {\n      \"nodeId\": \"PN-0\"\n    },\n    {\n      \"nodeId\": \"PT-0\"\n    },\n    {\n      \"nodeId\": \"PV-0\"\n    },\n    {\n      \"nodeId\": \"QB-0\"\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-196-returns-status-layout",
+    "fileId": "01M6Y39WH7QVTH07RTWHTSRP65",
+    "tool": "write_html",
+    "targets": [
+      "WH-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y39WH7QVTH07RTWHTSRP65\",\n    \"name\": \"Mastermind - Returns Calendar - Terminal and Dossier\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"115-0\",\n      \"name\": \"Mobile status bar\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"116-0\",\n      \"name\": \"9:41\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"117-0\",\n      \"name\": \"SVG\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"118-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"119-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"11A-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"11B-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"11C-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-197-returns-320-proof",
+    "fileId": "01M6Y39WH7QVTH07RTWHTSRP65",
+    "tool": "duplicate_nodes",
+    "targets": [
+      "WG-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y39WH7QVTH07RTWHTSRP65\",\n    \"name\": \"Mastermind - Returns Calendar - Terminal and Dossier\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"duplicatedNodes\": [\n    {\n      \"sourceId\": \"WG-0\",\n      \"newId\": \"11E-0\",\n      \"name\": \"R3 · Returns · Mobile Continuous Path\",\n      \"component\": \"Frame\",\n      \"worldX\": 3500,\n      \"worldY\": 44,\n      \"x\": 3500,\n      \"y\": 44,\n      \"descendantIdMap\": {\n        \"115-0\": \"138-0\",\n        \"YH-0\": \"11F-0\",\n        \"YI-0\": \"12Z-0\",\n        \"YR-0\": \"12U-0\",\n        \"YW-0\": \"12H-0\",\n        \"Z9-0\": \"11W-0\",\n        \"ZR-0\": \"11M-0\",\n        \"101-0\": \"11G-0\",\n        \"110-0\": \"11I-0\",\n        \"105-0\": \"11H-0\",\n        \"111-0\": \"11L-0\",\n        \"112-0\": \"11J-0\",\n        \"113-0\": \"11K-0\",\n        \"ZS-0\": \"11V-0\",\n        \"ZT-0\": \"11U-0\",\n        \"ZU-0\": \"11N-0\",\n        \"ZV-0\": \"11R-0\",\n        \"ZY-0\": \"11O-0\",\n        \"ZZ-0\": \"11Q-0\",\n        \"100-0\": \"11P-0\",\n        \"ZW-0\": \"11T-0\",\n        \"ZX-0\": \"11S-0\",\n        \"ZA-0\": \"12B-0\",\n        \"ZD-0\": \"128-0\",\n        \"ZG-0\": \"11X-0\",\n        \"ZH-0\": \"127-0\",\n        \"ZI-0\": \"126-0\",\n        \"ZJ-0\": \"125-0\",\n        \"ZK-0\": \"124-0\",\n        \"ZL-0\": \"123-0\",\n        \"ZM-0\": \"122-0\",\n        \"ZN-0\": \"121-0\",\n        \"ZO-0\": \"120-0\",\n        \"ZP-0\": \"11Z-0\",\n        \"ZQ-0\": \"11Y-0\",\n        \"ZE-0\": \"12A-0\",\n        \"ZF-0\": \"129-0\",\n        \"ZB-0\": \"12G-0\",\n        \"10V-0\": \"12C-0\",\n        \"10W-0\": \"12F-0\",\n        \"10X-0\": \"12D-0\",\n        \"10Y-0\": \"12E-0\",\n        \"YX-0\": \"12Q-0\",\n        \"Z1-0\": \"12M-0\",\n        \"Z5-0\": \"12I-0\",\n        \"Z6-0\": \"12L-0\",\n        \"Z7-0\": \"12K-0\",\n        \"Z8-0\": \"12J-0\",\n        \"Z2-0\": \"12P-0\",\n        \"Z3-0\": \"12O-0\",\n        \"Z4-0\": \"12N-0\",\n        \"YY-0\": \"12T-0\",\n        \"YZ-0\": \"12S-0\",\n        \"Z0-0\": \"12R-0\",\n        \"10P-0\": \"12X-0\",\n        \"10S-0\": \"12V-0\",\n        \"10T-0\": \"12W-0\",\n        \"10Q-0\": \"12Y-0\",\n        \"YJ-0\": \"137-0\",\n        \"YK-0\": \"136-0\",\n        \"YL-0\": \"133-0\",\n        \"YO-0\": \"130-0\",\n        \"YP-0\": \"132-0\",\n        \"YQ-0\": \"131-0\",\n        \"YM-0\": \"135-0\",\n        \"YN-0\": \"134-0\",\n        \"116-0\": \"13F-0\",\n        \"117-0\": \"139-0\",\n        \"118-0\": \"13E-0\",\n        \"119-0\": \"13D-0\",\n        \"11A-0\": \"13C-0\",\n        \"11B-0\": \"13B-0\",\n        \"11C-0\": \"13A-0\"\n      }\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-198-returns-diagnostic-scope",
+    "fileId": "01M6Y39WH7QVTH07RTWHTSRP65",
+    "tool": "write_html",
+    "targets": [
+      "PF-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y39WH7QVTH07RTWHTSRP65\",\n    \"name\": \"Mastermind - Returns Calendar - Terminal and Dossier\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"13G-0\",\n      \"name\": \"21-session diagnostics\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"13H-0\",\n      \"name\": \"21-SESSION DIAGNOSTI…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"13I-0\",\n      \"name\": \"Risk and path quality\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"13J-0\",\n      \"name\": \"Realized volatility\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"13K-0\",\n      \"name\": \"Realized volatility\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"13L-0\",\n      \"name\": \"7.0%\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"13M-0\",\n      \"name\": \"Annualized · 21 sess…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"13N-0\",\n      \"name\": \"Maximum drawdown\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"13O-0\",\n      \"name\": \"Maximum drawdown\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"13P-0\",\n      \"name\": \"−0.7%\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"13Q-0\",\n      \"name\": \"Peak to trough · 21 …\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"13R-0\",\n      \"name\": \"Path efficiency\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"13S-0\",\n      \"name\": \"Path efficiency\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"13T-0\",\n      \"name\": \"37.4%\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"13U-0\",\n      \"name\": \"Net move / absolute …\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"13V-0\",\n      \"name\": \"Largest session\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"13W-0\",\n      \"name\": \"Largest session’s sh…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"13X-0\",\n      \"name\": \"9.1%\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"13Y-0\",\n      \"name\": \"Of total absolute mo…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-199-returns-narrow-size",
+    "fileId": "01M6Y39WH7QVTH07RTWHTSRP65",
+    "tool": "write_html",
+    "targets": [
+      "11E-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y39WH7QVTH07RTWHTSRP65\",\n    \"name\": \"Mastermind - Returns Calendar - Terminal and Dossier\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"140-0\",\n      \"name\": \"R3 · Returns · Mobile Continuous Path\",\n      \"component\": \"Frame\",\n      \"worldX\": 3500,\n      \"worldY\": 44,\n      \"x\": 3500,\n      \"y\": 44\n    },\n    {\n      \"id\": \"141-0\",\n      \"name\": \"Mobile status bar\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"142-0\",\n      \"name\": \"9:41\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"143-0\",\n      \"name\": \"SVG\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"144-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"145-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"146-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"147-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"148-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"149-0\",\n      \"name\": \"Mobile returns content\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"14A-0\",\n      \"name\": \"Mobile subject header\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"14B-0\",\n      \"name\": \"ANALYSIS / MARKET\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"14C-0\",\n      \"name\": \"Returns intelligence\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"14D-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"14E-0\",\n      \"name\": \"NVDA · NVIDIA ⌄\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"14F-0\",\n      \"name\": \"Benchmark · SPY\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"14G-0\",\n      \"name\": \"Preview status and endpoint\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"14H-0\",\n      \"name\": \"Illustrative example…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"14I-0\",\n      \"name\": \"Through 16 Oct 2026\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"14J-0\",\n      \"name\": \"Mobile scope\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"14K-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"14L-0\",\n      \"name\": \"Stock\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"14M-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"14N-0\",\n      \"name\": \"Sector / theme\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"14O-0\",\n      \"name\": \"Mobile comparable horizons\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"14P-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"14Q-0\",\n      \"name\": \"5 sessions\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"14R-0\",\n      \"name\": \"+0.77%\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"14S-0\",\n      \"name\": \"Rising\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"14T-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"14U-0\",\n      \"name\": \"21 sessions\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"14V-0\",\n      \"name\": \"+3.16%\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"14W-0\",\n      \"name\": \"Rising\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"14X-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"14Y-0\",\n      \"name\": \"63 sessions\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"14Z-0\",\n      \"name\": \"+19.25%\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"150-0\",\n      \"name\": \"Rising\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"151-0\",\n      \"name\": \"Mobile continuous chart\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"152-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"153-0\",\n      \"name\": \"Continuous path\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"154-0\",\n      \"name\": \"Chart range selector\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"155-0\",\n      \"name\": \"6M\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"156-0\",\n      \"name\": \"SVG\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"157-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"158-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"159-0\",\n      \"name\": \"● NVDA +34.22%\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"15A-0\",\n      \"name\": \"– SPY +10.20%\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"15B-0\",\n      \"name\": \"SVG\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"15C-0\",\n      \"name\": \"Line\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"15D-0\",\n      \"name\": \"0%\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"15E-0\",\n      \"name\": \"Line\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"15F-0\",\n      \"name\": \"+20%\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"15G-0\",\n      \"name\": \"Line\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"15H-0\",\n      \"name\": \"+40%\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"15I-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"15J-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"15K-0\",\n      \"name\": \"126 sessions ago\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"15L-0\",\n      \"name\": \"Oct 16\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"15M-0\",\n      \"name\": \"Mobile path reading\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"15N-0\",\n      \"name\": \"Rising · ascent slow…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"15O-0\",\n      \"name\": \"The 21-session path …\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"15P-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"15Q-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"15R-0\",\n      \"name\": \"Pace / session\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"15S-0\",\n      \"name\": \"+0.155%\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"15T-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"15U-0\",\n      \"name\": \"Path character\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"15V-0\",\n      \"name\": \"Choppy\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"15W-0\",\n      \"name\": \"Mobile continuation\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"15X-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"15Y-0\",\n      \"name\": \"Session calendar & e…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"15Z-0\",\n      \"name\": \"SVG\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"160-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"161-0\",\n      \"name\": \"Forecasts withheld\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-200-returns-narrow-name",
+    "fileId": "01M6Y39WH7QVTH07RTWHTSRP65",
+    "tool": "rename_nodes",
+    "targets": [
+      "140-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y39WH7QVTH07RTWHTSRP65\",\n    \"name\": \"Mastermind - Returns Calendar - Terminal and Dossier\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"updates\": [\n    {\n      \"nodeId\": \"140-0\",\n      \"name\": \"R4 Returns mobile - 320px reflow proof\"\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-201-returns-chart-reflow",
+    "fileId": "01M6Y39WH7QVTH07RTWHTSRP65",
+    "tool": "write_html",
+    "targets": [
+      "ZG-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y39WH7QVTH07RTWHTSRP65\",\n    \"name\": \"Mastermind - Returns Calendar - Terminal and Dossier\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"163-0\",\n      \"name\": \"SVG\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"164-0\",\n      \"name\": \"Line\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"165-0\",\n      \"name\": \"0%\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"166-0\",\n      \"name\": \"Line\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"167-0\",\n      \"name\": \"+20%\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"168-0\",\n      \"name\": \"Line\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"169-0\",\n      \"name\": \"+40%\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"16A-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"16B-0\",\n      \"name\": \"Circle\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"16C-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"16D-0\",\n      \"name\": \"Circle\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"16E-0\",\n      \"name\": \"126 sessions ago\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"16F-0\",\n      \"name\": \"Oct 16\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-202-returns-chart-reflow",
+    "fileId": "01M6Y39WH7QVTH07RTWHTSRP65",
+    "tool": "write_html",
+    "targets": [
+      "15B-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y39WH7QVTH07RTWHTSRP65\",\n    \"name\": \"Mastermind - Returns Calendar - Terminal and Dossier\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"16H-0\",\n      \"name\": \"SVG\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"16I-0\",\n      \"name\": \"Line\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"16J-0\",\n      \"name\": \"0%\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"16K-0\",\n      \"name\": \"Line\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"16L-0\",\n      \"name\": \"+20%\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"16M-0\",\n      \"name\": \"Line\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"16N-0\",\n      \"name\": \"+40%\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"16O-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"16P-0\",\n      \"name\": \"Circle\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"16Q-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"16R-0\",\n      \"name\": \"Circle\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"16S-0\",\n      \"name\": \"126 sessions ago\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"16T-0\",\n      \"name\": \"Oct 16\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-203-returns-narrow-value",
+    "fileId": "01M6Y39WH7QVTH07RTWHTSRP65",
+    "tool": "write_html",
+    "targets": [
+      "14R-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y39WH7QVTH07RTWHTSRP65\",\n    \"name\": \"Mastermind - Returns Calendar - Terminal and Dossier\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"16V-0\",\n      \"name\": \"+0.77%\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-204-returns-narrow-value",
+    "fileId": "01M6Y39WH7QVTH07RTWHTSRP65",
+    "tool": "write_html",
+    "targets": [
+      "14V-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y39WH7QVTH07RTWHTSRP65\",\n    \"name\": \"Mastermind - Returns Calendar - Terminal and Dossier\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"16X-0\",\n      \"name\": \"+3.16%\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-205-returns-narrow-value",
+    "fileId": "01M6Y39WH7QVTH07RTWHTSRP65",
+    "tool": "write_html",
+    "targets": [
+      "14Z-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y39WH7QVTH07RTWHTSRP65\",\n    \"name\": \"Mastermind - Returns Calendar - Terminal and Dossier\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"16Z-0\",\n      \"name\": \"+19.25%\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-206-returns-mobile-spacing",
+    "fileId": "01M6Y39WH7QVTH07RTWHTSRP65",
+    "tool": "write_html",
+    "targets": [
+      "YH-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y39WH7QVTH07RTWHTSRP65\",\n    \"name\": \"Mastermind - Returns Calendar - Terminal and Dossier\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"171-0\",\n      \"name\": \"Mobile returns content\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"172-0\",\n      \"name\": \"Mobile subject header\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"173-0\",\n      \"name\": \"ANALYSIS / MARKET\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"174-0\",\n      \"name\": \"Returns intelligence\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"175-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"176-0\",\n      \"name\": \"NVDA · NVIDIA ⌄\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"177-0\",\n      \"name\": \"Benchmark · SPY\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"178-0\",\n      \"name\": \"Preview status and endpoint\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"179-0\",\n      \"name\": \"Illustrative example…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"17A-0\",\n      \"name\": \"Through 16 Oct 2026\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"17B-0\",\n      \"name\": \"Mobile scope\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"17C-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"17D-0\",\n      \"name\": \"Stock\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"17E-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"17F-0\",\n      \"name\": \"Sector / theme\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"17G-0\",\n      \"name\": \"Mobile comparable horizons\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"17H-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"17I-0\",\n      \"name\": \"5 sessions\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"17J-0\",\n      \"name\": \"+0.77%\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"17K-0\",\n      \"name\": \"Rising\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"17L-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"17M-0\",\n      \"name\": \"21 sessions\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"17N-0\",\n      \"name\": \"+3.16%\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"17O-0\",\n      \"name\": \"Rising\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"17P-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"17Q-0\",\n      \"name\": \"63 sessions\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"17R-0\",\n      \"name\": \"+19.25%\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"17S-0\",\n      \"name\": \"Rising\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"17T-0\",\n      \"name\": \"Mobile continuous chart\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"17U-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"17V-0\",\n      \"name\": \"Continuous path\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"17W-0\",\n      \"name\": \"Chart range selector\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"17X-0\",\n      \"name\": \"6M\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"17Y-0\",\n      \"name\": \"SVG\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"17Z-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"180-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"181-0\",\n      \"name\": \"● NVDA +34.22%\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"182-0\",\n      \"name\": \"– SPY +10.20%\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"183-0\",\n      \"name\": \"SVG\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"184-0\",\n      \"name\": \"Line\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"185-0\",\n      \"name\": \"0%\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"186-0\",\n      \"name\": \"Line\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"187-0\",\n      \"name\": \"+20%\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"188-0\",\n      \"name\": \"Line\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"189-0\",\n      \"name\": \"+40%\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"18A-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"18B-0\",\n      \"name\": \"Circle\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"18C-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"18D-0\",\n      \"name\": \"Circle\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"18E-0\",\n      \"name\": \"126 sessions ago\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"18F-0\",\n      \"name\": \"Oct 16\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"18G-0\",\n      \"name\": \"Mobile path reading\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"18H-0\",\n      \"name\": \"Rising · ascent slow…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"18I-0\",\n      \"name\": \"The 21-session path …\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"18J-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"18K-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"18L-0\",\n      \"name\": \"Pace / session\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"18M-0\",\n      \"name\": \"+0.155%\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"18N-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"18O-0\",\n      \"name\": \"Path character\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"18P-0\",\n      \"name\": \"Choppy\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"18Q-0\",\n      \"name\": \"Mobile continuation\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"18R-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"18S-0\",\n      \"name\": \"Session calendar & e…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"18T-0\",\n      \"name\": \"SVG\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"18U-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"18V-0\",\n      \"name\": \"Forecasts withheld\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-207-returns-terminal-retained",
+    "fileId": "01M3NSZGE8JWN2EZCSF0DT05RM",
+    "tool": "set_text_content",
+    "targets": [
+      "1BCK-0",
+      "1BCN-0",
+      "1BCO-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M3NSZGE8JWN2EZCSF0DT05RM\",\n    \"name\": \"Terminal\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"55dd37b7\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"updates\": [\n    {\n      \"nodeId\": \"1BCK-0\"\n    },\n    {\n      \"nodeId\": \"1BCN-0\"\n    },\n    {\n      \"nodeId\": \"1BCO-0\"\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-208-returns-terminal-crosslink",
+    "fileId": "01M3NSZGE8JWN2EZCSF0DT05RM",
+    "tool": "write_html",
+    "targets": [
+      "1BBQ-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M3NSZGE8JWN2EZCSF0DT05RM\",\n    \"name\": \"Terminal\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"55dd37b7\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"28SZ-0\",\n      \"name\": \"Returns R3 and R4 design studies\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"28T0-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"28T1-0\",\n      \"name\": \"R3 / R4 design studi…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"28T2-0\",\n      \"name\": \"Stock N5-0 · Basket …\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"28T3-0\",\n      \"name\": \"https://app.paper.de…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-209-returns-evidence-clock-copy",
+    "fileId": "01M6Y39WH7QVTH07RTWHTSRP65",
+    "tool": "set_text_content",
+    "targets": [
+      "S7-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y39WH7QVTH07RTWHTSRP65\",\n    \"name\": \"Mastermind - Returns Calendar - Terminal and Dossier\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"updates\": [\n    {\n      \"nodeId\": \"S7-0\"\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-210-returns-evidence-control",
+    "fileId": "01M6Y39WH7QVTH07RTWHTSRP65",
+    "tool": "write_html",
+    "targets": [
+      "VW-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y39WH7QVTH07RTWHTSRP65\",\n    \"name\": \"Mastermind - Returns Calendar - Terminal and Dossier\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"18X-0\",\n      \"name\": \"Open selected-session options\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"18Y-0\",\n      \"name\": \"Open options\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"18Z-0\",\n      \"name\": \"SVG\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"190-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-211-returns-evidence-control",
+    "fileId": "01M6Y39WH7QVTH07RTWHTSRP65",
+    "tool": "write_html",
+    "targets": [
+      "WE-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y39WH7QVTH07RTWHTSRP65\",\n    \"name\": \"Mastermind - Returns Calendar - Terminal and Dossier\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"192-0\",\n      \"name\": \"Model and validation disclosure\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"193-0\",\n      \"name\": \"Model & validation\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"194-0\",\n      \"name\": \"SVG\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"195-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-212-returns-index-r4",
+    "fileId": "01M6Y39WH7QVTH07RTWHTSRP65",
+    "tool": "set_text_content",
+    "targets": [
+      "G-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y39WH7QVTH07RTWHTSRP65\",\n    \"name\": \"Mastermind - Returns Calendar - Terminal and Dossier\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"updates\": [\n    {\n      \"nodeId\": \"G-0\"\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-213-returns-build-header",
+    "fileId": "01M6Y39WH7QVTH07RTWHTSRP65",
+    "tool": "write_html",
+    "targets": [
+      "1-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y39WH7QVTH07RTWHTSRP65\",\n    \"name\": \"Mastermind - Returns Calendar - Terminal and Dossier\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"197-0\",\n      \"name\": \"R4 source and interaction contract\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"198-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"199-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"19A-0\",\n      \"name\": \"R4 / SOURCE + INTERA…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"19B-0\",\n      \"name\": \"Keep the session att…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"19C-0\",\n      \"name\": \"Build the continuous…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"19D-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"19E-0\",\n      \"name\": \"Integration required\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-214-returns-build-selection",
+    "fileId": "01M6Y39WH7QVTH07RTWHTSRP65",
+    "tool": "write_html",
+    "targets": [
+      "197-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y39WH7QVTH07RTWHTSRP65\",\n    \"name\": \"Mastermind - Returns Calendar - Terminal and Dossier\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"19G-0\",\n      \"name\": \"Selection and navigation contract\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"19H-0\",\n      \"name\": \"One selection across…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"19I-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"19J-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"19K-0\",\n      \"name\": \"IDENTITY\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"19L-0\",\n      \"name\": \"Stock or basket\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"19M-0\",\n      \"name\": \"Instrument / basket …\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"19N-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"19O-0\",\n      \"name\": \"ANALYSIS\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"19P-0\",\n      \"name\": \"Lens and chart\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"19Q-0\",\n      \"name\": \"Return lens and unit…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"19R-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"19S-0\",\n      \"name\": \"CLOCK\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"19T-0\",\n      \"name\": \"Requested + resolved\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"19U-0\",\n      \"name\": \"Requested endpoint, …\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"19V-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"19W-0\",\n      \"name\": \"NAVIGATION\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"19X-0\",\n      \"name\": \"Month and return\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"19Y-0\",\n      \"name\": \"Visible month, selec…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"19Z-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1A0-0\",\n      \"name\": \"Register the route i…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1A1-0\",\n      \"name\": \"analysisRoute curren…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1A2-0\",\n      \"name\": \"Reuse AnalysisWorksp…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-215-returns-build-owners",
+    "fileId": "01M6Y39WH7QVTH07RTWHTSRP65",
+    "tool": "write_html",
+    "targets": [
+      "197-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y39WH7QVTH07RTWHTSRP65\",\n    \"name\": \"Mastermind - Returns Calendar - Terminal and Dossier\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1A4-0\",\n      \"name\": \"Canonical data bindings\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1A5-0\",\n      \"name\": \"Read the existing so…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1A6-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1A7-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1A8-0\",\n      \"name\": \"DAILY + SESSION PRIC…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1A9-0\",\n      \"name\": \"Qualify the endpoint\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1AA-0\",\n      \"name\": \"dataCache.getOhlc · …\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1AB-0\",\n      \"name\": \"Daily bars are avail…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1AC-0\",\n      \"name\": \"/api/intraday · intr…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1AD-0\",\n      \"name\": \"The existing dated r…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1AE-0\",\n      \"name\": \"usEquitySessionClock\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1AF-0\",\n      \"name\": \"Use the expected exc…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1AG-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1AH-0\",\n      \"name\": \"DATED OPTIONS\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1AI-0\",\n      \"name\": \"Reuse the archived r…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1AJ-0\",\n      \"name\": \"gex_at:ROOT:YYYY-MM-…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1AK-0\",\n      \"name\": \"GexDeskView.loadSess…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1AL-0\",\n      \"name\": \"Date-entry integrati…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1AM-0\",\n      \"name\": \"Add a validated cale…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1AN-0\",\n      \"name\": \"A late reconstructed…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1AO-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1AP-0\",\n      \"name\": \"BASKET + FIXTURES\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1AQ-0\",\n      \"name\": \"Preserve the measure…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1AR-0\",\n      \"name\": \"basket_index · baske…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1AS-0\",\n      \"name\": \"Keep current-member …\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1AT-0\",\n      \"name\": \"One versioned series…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1AU-0\",\n      \"name\": \"Require session keys…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1AV-0\",\n      \"name\": \"The current basket c…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-216-returns-build-arithmetic",
+    "fileId": "01M6Y39WH7QVTH07RTWHTSRP65",
+    "tool": "write_html",
+    "targets": [
+      "197-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y39WH7QVTH07RTWHTSRP65\",\n    \"name\": \"Mastermind - Returns Calendar - Terminal and Dossier\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1AX-0\",\n      \"name\": \"Endpoint and arithmetic acceptance\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1AY-0\",\n      \"name\": \"Resolve the session …\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1AZ-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1B0-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1B1-0\",\n      \"name\": \"CONTROLLED SOURCE CH…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1B2-0\",\n      \"name\": \"Select 15 Oct: 100 →…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1B3-0\",\n      \"name\": \"+10% required\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1B4-0\",\n      \"name\": \"Given closes 100, 11…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1B5-0\",\n      \"name\": \"Resolve the selected…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1B6-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1B7-0\",\n      \"name\": \"DECOMPOSITION + WIND…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1B8-0\",\n      \"name\": \"Use units that recon…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1B9-0\",\n      \"name\": \"100 → 105 → 102\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1BA-0\",\n      \"name\": \"Gap +5.00% · regular…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1BB-0\",\n      \"name\": \"21 intervals require…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1BC-0\",\n      \"name\": \"The preceding 21-int…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-217-returns-build-states",
+    "fileId": "01M6Y39WH7QVTH07RTWHTSRP65",
+    "tool": "write_html",
+    "targets": [
+      "197-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y39WH7QVTH07RTWHTSRP65\",\n    \"name\": \"Mastermind - Returns Calendar - Terminal and Dossier\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1BE-0\",\n      \"name\": \"Qualified endpoint and evidence states\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1BF-0\",\n      \"name\": \"Keep useful price co…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1BG-0\",\n      \"name\": \"STATE EXAMPLES · SIM…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1BH-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1BI-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1BJ-0\",\n      \"name\": \"16 OCT 2026 · PRICE\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1BK-0\",\n      \"name\": \"Last observed\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1BL-0\",\n      \"name\": \"$190.35\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1BM-0\",\n      \"name\": \"Regular close not ve…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1BN-0\",\n      \"name\": \"Keep this observatio…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1BO-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1BP-0\",\n      \"name\": \"Read price evidence\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1BQ-0\",\n      \"name\": \"SVG\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1BR-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1BS-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1BT-0\",\n      \"name\": \"16 OCT 2026 · OPTION…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1BU-0\",\n      \"name\": \"No archived snapshot\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1BV-0\",\n      \"name\": \"This date stays sele…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1BW-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1BX-0\",\n      \"name\": \"View available dates\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1BY-0\",\n      \"name\": \"SVG\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1BZ-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1C0-0\",\n      \"name\": \"A failed read instea…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1C1-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1C2-0\",\n      \"name\": \"MODEL & VALIDATION ·…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1C3-0\",\n      \"name\": \"Probability unavaila…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1C4-0\",\n      \"name\": \"No qualified result …\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1C5-0\",\n      \"name\": \"Source timing, metho…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1C6-0\",\n      \"name\": \"Open this disclosure…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1C7-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1C8-0\",\n      \"name\": \"Commit the date; qua…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1C9-0\",\n      \"name\": \"On a new selected se…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1CA-0\",\n      \"name\": \"Draw actual observat…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-218-returns-build-acceptance",
+    "fileId": "01M6Y39WH7QVTH07RTWHTSRP65",
+    "tool": "write_html",
+    "targets": [
+      "197-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y39WH7QVTH07RTWHTSRP65\",\n    \"name\": \"Mastermind - Returns Calendar - Terminal and Dossier\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1CC-0\",\n      \"name\": \"Implementation steps and source references\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1CD-0\",\n      \"name\": \"Build and prove the …\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1CE-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1CF-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1CG-0\",\n      \"name\": \"01\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1CH-0\",\n      \"name\": \"Route + selection\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1CI-0\",\n      \"name\": \"Register the view un…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1CJ-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1CK-0\",\n      \"name\": \"02\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1CL-0\",\n      \"name\": \"Price + calculation\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1CM-0\",\n      \"name\": \"Test exact endpoints…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1CN-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1CO-0\",\n      \"name\": \"03\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1CP-0\",\n      \"name\": \"Dated evidence\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1CQ-0\",\n      \"name\": \"Reuse price/archive …\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1CR-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1CS-0\",\n      \"name\": \"04\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1CT-0\",\n      \"name\": \"Consumer proof\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1CU-0\",\n      \"name\": \"Check 320/390px, rea…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1CV-0\",\n      \"name\": \"Current references ·…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1CW-0\",\n      \"name\": \"Macro aec7f387badcdf…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1CX-0\",\n      \"name\": \"Terminal’s bundled s…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1CY-0\",\n      \"name\": \"Evidence packet · PR…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1CZ-0\",\n      \"name\": \"Pure helper and char…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-219-returns-build-page",
+    "fileId": "01M6Y39WH7QVTH07RTWHTSRP65",
+    "tool": "create_page",
+    "targets": [
+      "new build page"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y39WH7QVTH07RTWHTSRP65\",\n    \"name\": \"Mastermind - Returns Calendar - Terminal and Dossier\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"pageId\": \"p-2-0\",\n  \"name\": \"R4 · Build contracts\",\n  \"icon\": \"blueprint\"\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-220-returns-build-move",
+    "fileId": "01M6Y39WH7QVTH07RTWHTSRP65",
+    "tool": "move_nodes",
+    "targets": [
+      "197-0",
+      "root_node_p-2-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y39WH7QVTH07RTWHTSRP65\",\n    \"name\": \"Mastermind - Returns Calendar - Terminal and Dossier\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"moves\": [\n    {\n      \"nodeId\": \"197-0\",\n      \"parentId\": \"root_node_p-2-0\",\n      \"index\": 0\n    }\n  ],\n  \"affectedParents\": [\n    {\n      \"parentId\": \"root_node_p-2-0\",\n      \"childIds\": [\n        \"197-0\"\n      ]\n    },\n    {\n      \"parentId\": \"1-0\",\n      \"childIds\": [\n        \"2-0\"\n      ]\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-221-returns-build-pointer",
+    "fileId": "01M6Y39WH7QVTH07RTWHTSRP65",
+    "tool": "set_text_content",
+    "targets": [
+      "G-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y39WH7QVTH07RTWHTSRP65\",\n    \"name\": \"Mastermind - Returns Calendar - Terminal and Dossier\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"updates\": [\n    {\n      \"nodeId\": \"G-0\"\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-222-returns-compact-crosslink",
+    "fileId": "01M3NSZGE8JWN2EZCSF0DT05RM",
+    "tool": "write_html",
+    "targets": [
+      "28SZ-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M3NSZGE8JWN2EZCSF0DT05RM\",\n    \"name\": \"Terminal\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"55dd37b7\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"28T5-0\",\n      \"name\": \"Returns source and study links\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"28T6-0\",\n      \"name\": \"R3 / R4 studies: app…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-223-returns-crosslink-place",
+    "fileId": "01M3NSZGE8JWN2EZCSF0DT05RM",
+    "tool": "move_nodes",
+    "targets": [
+      "1BCV-0",
+      "28T5-0",
+      "1BCQ-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M3NSZGE8JWN2EZCSF0DT05RM\",\n    \"name\": \"Terminal\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"55dd37b7\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"moves\": [\n    {\n      \"nodeId\": \"1BCV-0\",\n      \"parentId\": \"28T5-0\",\n      \"index\": 0\n    },\n    {\n      \"nodeId\": \"28T5-0\",\n      \"parentId\": \"1BCQ-0\",\n      \"index\": 2\n    }\n  ],\n  \"affectedParents\": [\n    {\n      \"parentId\": \"28T5-0\",\n      \"childIds\": [\n        \"1BCV-0\",\n        \"28T6-0\"\n      ]\n    },\n    {\n      \"parentId\": \"1BCQ-0\",\n      \"childIds\": [\n        \"1BCR-0\",\n        \"1BCS-0\",\n        \"28T5-0\"\n      ]\n    },\n    {\n      \"parentId\": \"1BBQ-0\",\n      \"childIds\": [\n        \"1BBR-0\",\n        \"1BBY-0\",\n        \"1BCF-0\",\n        \"1BCQ-0\"\n      ]\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-224-finish-owned-nodes",
+    "fileId": "01M6Y39WH7QVTH07RTWHTSRP65",
+    "tool": "finish_working_on_nodes",
+    "targets": [
+      "E-0",
+      "G-0",
+      "107-0",
+      "10C-0",
+      "13G-0",
+      "QB-0",
+      "S7-0",
+      "18X-0",
+      "192-0",
+      "115-0",
+      "171-0",
+      "140-0",
+      "197-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y39WH7QVTH07RTWHTSRP65\",\n    \"name\": \"Mastermind - Returns Calendar - Terminal and Dossier\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "OK"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-225-finish-owned-nodes",
+    "fileId": "01M3NSZGE8JWN2EZCSF0DT05RM",
+    "tool": "finish_working_on_nodes",
+    "targets": [
+      "1BCK-0",
+      "1BCN-0",
+      "1BCO-0",
+      "28T5-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M3NSZGE8JWN2EZCSF0DT05RM\",\n    \"name\": \"Terminal\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"55dd37b7\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "OK"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-226-finish-owned-nodes",
+    "fileId": "01M6Y3397SE03G626MJ72N90PF",
+    "tool": "finish_working_on_nodes",
+    "targets": [
+      "44G-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3397SE03G626MJ72N90PF\",\n    \"name\": \"Mastermind - Government Revenue - R5 and Builder Contracts\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "OK"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-227-returns-current-state-owner",
+    "fileId": "01M6Y39WH7QVTH07RTWHTSRP65",
+    "tool": "set_text_content",
+    "targets": [
+      "1CV-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y39WH7QVTH07RTWHTSRP65\",\n    \"name\": \"Mastermind - Returns Calendar - Terminal and Dossier\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"updates\": [\n    {\n      \"nodeId\": \"1CV-0\"\n    }\n  ]\n}"
+        }
+      ]
+    }
   }
 ]
