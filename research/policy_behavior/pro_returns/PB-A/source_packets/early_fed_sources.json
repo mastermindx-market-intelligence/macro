@@ -1,0 +1,2283 @@
+{
+  "scope": "Research-only source reconstruction for exactly eight early Fed episodes; root freezes model forecasts/scorer.",
+  "extracted_on_utc": "2026-10-07",
+  "coding_warning": "Proposed feature codes are semantic inputs, not M0/M1/M2 forecasts/probabilities. HOLD is never naively inverted to a cut. Goal statements are not forecasts. Current rate action and future guidance must share horizon before divergence is scored.",
+  "pit_warning": "Certification proposal covers policy-source clocks/content, not original immutable web bytes, execution receipts, pre-event pricing, or market outcome data. All official sources were opened; no search snippet alone used.",
+  "sources": [
+    {
+      "source_id": "statement_2018-12-19",
+      "title": "Federal Reserve issues FOMC statement",
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20181219a.htm",
+      "native_document_identity": "monetary20181219a.htm",
+      "web_open_ref": "turn3view0",
+      "publisher": "Board of Governors of the Federal Reserve System",
+      "originator": "FOMC / Federal Reserve Board",
+      "classification": "primary",
+      "source_family": "FED_POLICY_2018-12-19",
+      "publication_date": "2018-12-19",
+      "publication_clock_local": "14:00",
+      "timezone": "EST",
+      "time_precision": "minute",
+      "role": "decision_input",
+      "opened": true,
+      "correction_supersession_state": "Dated official release; no correction disclosed on retrieved page.",
+      "publication_timestamp_utc": "2018-12-19T19:00:00Z",
+      "clock_basis": "Explicit original release header, not URL date."
+    },
+    {
+      "source_id": "statement_2019-01-30",
+      "title": "Federal Reserve issues FOMC statement",
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20190130a.htm",
+      "native_document_identity": "monetary20190130a.htm",
+      "web_open_ref": "turn3view1",
+      "publisher": "Board of Governors of the Federal Reserve System",
+      "originator": "FOMC / Federal Reserve Board",
+      "classification": "primary",
+      "source_family": "FED_POLICY_2019-01-30",
+      "publication_date": "2019-01-30",
+      "publication_clock_local": "14:00",
+      "timezone": "EST",
+      "time_precision": "minute",
+      "role": "decision_input",
+      "opened": true,
+      "correction_supersession_state": "Dated official release; no correction disclosed on retrieved page.",
+      "publication_timestamp_utc": "2019-01-30T19:00:00Z",
+      "clock_basis": "Explicit original release header, not URL date."
+    },
+    {
+      "source_id": "statement_2019-07-31",
+      "title": "Federal Reserve issues FOMC statement",
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20190731a.htm",
+      "native_document_identity": "monetary20190731a.htm",
+      "web_open_ref": "turn3view2",
+      "publisher": "Board of Governors of the Federal Reserve System",
+      "originator": "FOMC / Federal Reserve Board",
+      "classification": "primary",
+      "source_family": "FED_POLICY_2019-07-31",
+      "publication_date": "2019-07-31",
+      "publication_clock_local": "14:00",
+      "timezone": "EDT",
+      "time_precision": "minute",
+      "role": "decision_input",
+      "opened": true,
+      "correction_supersession_state": "Dated official release; no correction disclosed on retrieved page.",
+      "publication_timestamp_utc": "2019-07-31T18:00:00Z",
+      "clock_basis": "Explicit original release header, not URL date."
+    },
+    {
+      "source_id": "statement_2020-03-03",
+      "title": "Federal Reserve issues FOMC statement",
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20200303a.htm",
+      "native_document_identity": "monetary20200303a.htm",
+      "web_open_ref": "turn3view4",
+      "publisher": "Board of Governors of the Federal Reserve System",
+      "originator": "FOMC / Federal Reserve Board",
+      "classification": "primary",
+      "source_family": "FED_POLICY_2020-03-03",
+      "publication_date": "2020-03-03",
+      "publication_clock_local": "10:00",
+      "timezone": "EST",
+      "time_precision": "minute",
+      "role": "decision_input",
+      "opened": true,
+      "correction_supersession_state": "Dated official release; no correction disclosed on retrieved page.",
+      "publication_timestamp_utc": "2020-03-03T15:00:00Z",
+      "clock_basis": "Explicit original release header, not URL date."
+    },
+    {
+      "source_id": "statement_2020-03-15",
+      "title": "Federal Reserve issues FOMC statement",
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20200315a.htm",
+      "native_document_identity": "monetary20200315a.htm",
+      "web_open_ref": "turn3view5",
+      "publisher": "Board of Governors of the Federal Reserve System",
+      "originator": "FOMC / Federal Reserve Board",
+      "classification": "primary",
+      "source_family": "FED_POLICY_2020-03-15",
+      "publication_date": "2020-03-15",
+      "publication_clock_local": "17:00",
+      "timezone": "EDT",
+      "time_precision": "minute",
+      "role": "decision_input",
+      "opened": true,
+      "correction_supersession_state": "Dated official release; no correction disclosed on retrieved page.",
+      "publication_timestamp_utc": "2020-03-15T21:00:00Z",
+      "clock_basis": "Explicit original release header, not URL date."
+    },
+    {
+      "source_id": "implementation_2018-12-19",
+      "title": "Implementation Note issued December 19, 2018",
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20181219a1.htm",
+      "native_document_identity": "monetary20181219a1.htm",
+      "web_open_ref": "turn8view0",
+      "publisher": "Board of Governors of the Federal Reserve System",
+      "originator": "FOMC / Federal Reserve Board",
+      "classification": "primary",
+      "source_family": "FED_POLICY_2018-12-19",
+      "publication_date": "2018-12-19",
+      "publication_clock_local": "14:00",
+      "timezone": "EST",
+      "time_precision": "minute",
+      "role": "decision_input",
+      "opened": true,
+      "correction_supersession_state": "Implementation HTML has no clock; simultaneous release certified by opened official meeting page and timezone from statement.",
+      "publication_timestamp_utc": "2018-12-19T19:00:00Z",
+      "clock_basis": "Explicit original release header, not URL date."
+    },
+    {
+      "source_id": "implementation_2019-01-30",
+      "title": "Implementation Note issued January 30, 2019",
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20190130a1.htm",
+      "native_document_identity": "monetary20190130a1.htm",
+      "web_open_ref": "turn8view1",
+      "publisher": "Board of Governors of the Federal Reserve System",
+      "originator": "FOMC / Federal Reserve Board",
+      "classification": "primary",
+      "source_family": "FED_POLICY_2019-01-30",
+      "publication_date": "2019-01-30",
+      "publication_clock_local": "14:00",
+      "timezone": "EST",
+      "time_precision": "minute",
+      "role": "decision_input",
+      "opened": true,
+      "correction_supersession_state": "Implementation HTML has no clock; simultaneous release certified by opened official meeting page and timezone from statement.",
+      "publication_timestamp_utc": "2019-01-30T19:00:00Z",
+      "clock_basis": "Explicit original release header, not URL date."
+    },
+    {
+      "source_id": "implementation_2019-07-31",
+      "title": "Implementation Note issued July 31, 2019",
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20190731a1.htm",
+      "native_document_identity": "monetary20190731a1.htm",
+      "web_open_ref": "turn8view2",
+      "publisher": "Board of Governors of the Federal Reserve System",
+      "originator": "FOMC / Federal Reserve Board",
+      "classification": "primary",
+      "source_family": "FED_POLICY_2019-07-31",
+      "publication_date": "2019-07-31",
+      "publication_clock_local": "14:00",
+      "timezone": "EDT",
+      "time_precision": "minute",
+      "role": "decision_input",
+      "opened": true,
+      "correction_supersession_state": "Implementation HTML has no clock; simultaneous release certified by opened official meeting page and timezone from statement.",
+      "publication_timestamp_utc": "2019-07-31T18:00:00Z",
+      "clock_basis": "Explicit original release header, not URL date."
+    },
+    {
+      "source_id": "implementation_2020-03-03",
+      "title": "Implementation Note issued March 3, 2020",
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20200303a1.htm",
+      "native_document_identity": "monetary20200303a1.htm",
+      "web_open_ref": "turn8view3",
+      "publisher": "Board of Governors of the Federal Reserve System",
+      "originator": "FOMC / Federal Reserve Board",
+      "classification": "primary",
+      "source_family": "FED_POLICY_2020-03-03",
+      "publication_date": "2020-03-03",
+      "publication_clock_local": null,
+      "timezone": null,
+      "time_precision": "date",
+      "role": "date_only_supplement_not_intraday_input",
+      "opened": true,
+      "correction_supersession_state": "Implementation HTML has only date. Meeting page incorrectly says Released March 02, 2020 at 10:00 a.m.; discrepancy unresolved. Do not infer intraday availability or use March 2 as first evidence.",
+      "publication_time_interval_utc": [
+        "2020-03-03T05:00:00Z",
+        "2020-03-04T05:00:00Z"
+      ],
+      "conservative_available_utc": "2020-03-04T05:00:00Z",
+      "clock_basis": "Date only; interval assumes America/New_York civil date with actual DST offset. No intraday certification. Next-local-day midnight UTC conversion is conservative."
+    },
+    {
+      "source_id": "implementation_2020-03-15",
+      "title": "Implementation Note issued March 15, 2020",
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20200315a1.htm",
+      "native_document_identity": "monetary20200315a1.htm",
+      "web_open_ref": "turn8view4",
+      "publisher": "Board of Governors of the Federal Reserve System",
+      "originator": "FOMC / Federal Reserve Board",
+      "classification": "primary",
+      "source_family": "FED_POLICY_2020-03-15",
+      "publication_date": "2020-03-15",
+      "publication_clock_local": "17:00",
+      "timezone": "EDT",
+      "time_precision": "minute",
+      "role": "decision_input",
+      "opened": true,
+      "correction_supersession_state": "Implementation HTML has no clock; simultaneous release certified by opened official meeting page and timezone from statement.",
+      "publication_timestamp_utc": "2020-03-15T21:00:00Z",
+      "clock_basis": "Explicit original release header, not URL date."
+    },
+    {
+      "source_id": "meeting_index_2018-12-19",
+      "title": "FOMC Meeting 2018-12-19",
+      "url": "https://www.federalreserve.gov/monetarypolicy/fomcpresconf20181219.htm",
+      "native_document_identity": "fomcpresconf20181219.htm",
+      "web_open_ref": "turn17view0",
+      "publisher": "Board of Governors of the Federal Reserve System",
+      "originator": "FOMC / Federal Reserve Board",
+      "classification": "primary",
+      "source_family": "FED_POLICY_2018-12-19",
+      "publication_date": "2018-12-19",
+      "publication_clock_local": null,
+      "timezone": null,
+      "time_precision": "date",
+      "role": "clock_archaeology_only",
+      "opened": true,
+      "correction_supersession_state": "Meeting index explicitly states release dates/times of linked releases. Index is corroborating lineage, not independent policy observation. March3 implementation date has apparent typo if applicable.",
+      "publication_time_interval_utc": [
+        "2018-12-19T05:00:00Z",
+        "2018-12-20T05:00:00Z"
+      ],
+      "conservative_available_utc": "2018-12-20T05:00:00Z",
+      "clock_basis": "Date only; interval assumes America/New_York civil date with actual DST offset. No intraday certification. Next-local-day midnight UTC conversion is conservative."
+    },
+    {
+      "source_id": "meeting_index_2019-01-30",
+      "title": "FOMC Meeting 2019-01-30",
+      "url": "https://www.federalreserve.gov/monetarypolicy/fomcpresconf20190130.htm",
+      "native_document_identity": "fomcpresconf20190130.htm",
+      "web_open_ref": "turn17view1",
+      "publisher": "Board of Governors of the Federal Reserve System",
+      "originator": "FOMC / Federal Reserve Board",
+      "classification": "primary",
+      "source_family": "FED_POLICY_2019-01-30",
+      "publication_date": "2019-01-30",
+      "publication_clock_local": null,
+      "timezone": null,
+      "time_precision": "date",
+      "role": "clock_archaeology_only",
+      "opened": true,
+      "correction_supersession_state": "Meeting index explicitly states release dates/times of linked releases. Index is corroborating lineage, not independent policy observation. March3 implementation date has apparent typo if applicable.",
+      "publication_time_interval_utc": [
+        "2019-01-30T05:00:00Z",
+        "2019-01-31T05:00:00Z"
+      ],
+      "conservative_available_utc": "2019-01-31T05:00:00Z",
+      "clock_basis": "Date only; interval assumes America/New_York civil date with actual DST offset. No intraday certification. Next-local-day midnight UTC conversion is conservative."
+    },
+    {
+      "source_id": "meeting_index_2019-07-31",
+      "title": "FOMC Meeting 2019-07-31",
+      "url": "https://www.federalreserve.gov/monetarypolicy/fomcpresconf20190731.htm",
+      "native_document_identity": "fomcpresconf20190731.htm",
+      "web_open_ref": "turn17view2",
+      "publisher": "Board of Governors of the Federal Reserve System",
+      "originator": "FOMC / Federal Reserve Board",
+      "classification": "primary",
+      "source_family": "FED_POLICY_2019-07-31",
+      "publication_date": "2019-07-31",
+      "publication_clock_local": null,
+      "timezone": null,
+      "time_precision": "date",
+      "role": "clock_archaeology_only",
+      "opened": true,
+      "correction_supersession_state": "Meeting index explicitly states release dates/times of linked releases. Index is corroborating lineage, not independent policy observation. March3 implementation date has apparent typo if applicable.",
+      "publication_time_interval_utc": [
+        "2019-07-31T04:00:00Z",
+        "2019-08-01T04:00:00Z"
+      ],
+      "conservative_available_utc": "2019-08-01T04:00:00Z",
+      "clock_basis": "Date only; interval assumes America/New_York civil date with actual DST offset. No intraday certification. Next-local-day midnight UTC conversion is conservative."
+    },
+    {
+      "source_id": "meeting_index_2020-03-03",
+      "title": "FOMC Meeting 2020-03-03",
+      "url": "https://www.federalreserve.gov/monetarypolicy/fomcpresconf20200303.htm",
+      "native_document_identity": "fomcpresconf20200303.htm",
+      "web_open_ref": "turn25view0",
+      "publisher": "Board of Governors of the Federal Reserve System",
+      "originator": "FOMC / Federal Reserve Board",
+      "classification": "primary",
+      "source_family": "FED_POLICY_2020-03-03",
+      "publication_date": "2020-03-03",
+      "publication_clock_local": null,
+      "timezone": null,
+      "time_precision": "date",
+      "role": "clock_archaeology_only",
+      "opened": true,
+      "correction_supersession_state": "Meeting index explicitly states release dates/times of linked releases. Index is corroborating lineage, not independent policy observation. March3 implementation date has apparent typo if applicable.",
+      "publication_time_interval_utc": [
+        "2020-03-03T05:00:00Z",
+        "2020-03-04T05:00:00Z"
+      ],
+      "conservative_available_utc": "2020-03-04T05:00:00Z",
+      "clock_basis": "Date only; interval assumes America/New_York civil date with actual DST offset. No intraday certification. Next-local-day midnight UTC conversion is conservative."
+    },
+    {
+      "source_id": "meeting_index_2020-03-15",
+      "title": "FOMC Meeting 2020-03-15",
+      "url": "https://www.federalreserve.gov/monetarypolicy/fomcpresconf20200315.htm",
+      "native_document_identity": "fomcpresconf20200315.htm",
+      "web_open_ref": "turn25view1",
+      "publisher": "Board of Governors of the Federal Reserve System",
+      "originator": "FOMC / Federal Reserve Board",
+      "classification": "primary",
+      "source_family": "FED_POLICY_2020-03-15",
+      "publication_date": "2020-03-15",
+      "publication_clock_local": null,
+      "timezone": null,
+      "time_precision": "date",
+      "role": "clock_archaeology_only",
+      "opened": true,
+      "correction_supersession_state": "Meeting index explicitly states release dates/times of linked releases. Index is corroborating lineage, not independent policy observation. March3 implementation date has apparent typo if applicable.",
+      "publication_time_interval_utc": [
+        "2020-03-15T04:00:00Z",
+        "2020-03-16T04:00:00Z"
+      ],
+      "conservative_available_utc": "2020-03-16T04:00:00Z",
+      "clock_basis": "Date only; interval assumes America/New_York civil date with actual DST offset. No intraday certification. Next-local-day midnight UTC conversion is conservative."
+    },
+    {
+      "source_id": "normalization_2019-01-30",
+      "title": "Statement Regarding Monetary Policy Implementation and Balance Sheet Normalization",
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20190130c.htm",
+      "native_document_identity": "monetary20190130c.htm",
+      "web_open_ref": "turn5view2",
+      "publisher": "Board of Governors of the Federal Reserve System",
+      "originator": "FOMC / Federal Reserve Board",
+      "classification": "primary",
+      "source_family": "FED_POLICY_2019-01-30",
+      "publication_date": "2019-01-30",
+      "publication_clock_local": "14:00",
+      "timezone": "EST",
+      "time_precision": "minute",
+      "role": "decision_input",
+      "opened": true,
+      "correction_supersession_state": "Dated official release; no correction disclosed on retrieved page.",
+      "publication_timestamp_utc": "2019-01-30T19:00:00Z",
+      "clock_basis": "Explicit original release header, not URL date."
+    },
+    {
+      "source_id": "reserve_2019-10-11",
+      "title": "Statement Regarding Monetary Policy Implementation",
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20191011a.htm",
+      "native_document_identity": "monetary20191011a.htm",
+      "web_open_ref": "turn3view3",
+      "publisher": "Board of Governors of the Federal Reserve System",
+      "originator": "FOMC / Federal Reserve Board",
+      "classification": "primary",
+      "source_family": "FED_POLICY_2019-10-11",
+      "publication_date": "2019-10-11",
+      "publication_clock_local": "11:00",
+      "timezone": "EDT",
+      "time_precision": "minute",
+      "role": "decision_input",
+      "opened": true,
+      "correction_supersession_state": "HTML Last Update October 15, 2019. Input wording cross-checked against dated original PDF, which contains identical release clock and directives.",
+      "publication_timestamp_utc": "2019-10-11T15:00:00Z",
+      "clock_basis": "Explicit original release header, not URL date."
+    },
+    {
+      "source_id": "reserve_pdf_2019-10-11",
+      "title": "Statement Regarding Monetary Policy Implementation",
+      "url": "https://www.federalreserve.gov/monetarypolicy/files/monetary20191011a1.pdf",
+      "native_document_identity": "monetary20191011a1.pdf",
+      "web_open_ref": "turn13view0",
+      "publisher": "Board of Governors of the Federal Reserve System",
+      "originator": "FOMC / Federal Reserve Board",
+      "classification": "primary",
+      "source_family": "FED_POLICY_2019-10-11",
+      "publication_date": "2019-10-11",
+      "publication_clock_local": "11:00",
+      "timezone": "EDT",
+      "time_precision": "minute",
+      "role": "decision_input",
+      "opened": true,
+      "correction_supersession_state": "Dated official release; no correction disclosed on retrieved page.",
+      "publication_timestamp_utc": "2019-10-11T15:00:00Z",
+      "clock_basis": "Explicit original release header, not URL date."
+    },
+    {
+      "source_id": "nyfed_2019-10-11",
+      "title": "Statement Regarding Treasury Bill Purchases and Repurchase Operations",
+      "url": "https://www.newyorkfed.org/markets/opolicy/operating_policy_191011",
+      "native_document_identity": "operating_policy_191011",
+      "web_open_ref": "turn8view5",
+      "publisher": "Federal Reserve Bank of New York",
+      "originator": "Federal Reserve Bank of New York Open Market Desk",
+      "classification": "primary",
+      "source_family": "FED_POLICY_2019-10-11",
+      "publication_date": "2019-10-11",
+      "publication_clock_local": null,
+      "timezone": null,
+      "time_precision": "date",
+      "role": "date_only_supplement_not_intraday_input",
+      "opened": true,
+      "correction_supersession_state": "Date only. Operational detail originates with Desk implementing same FOMC directive, not independent policy corroboration. $60bn/month and repo sizes excluded from 15:05Z cut.",
+      "publication_time_interval_utc": [
+        "2019-10-11T04:00:00Z",
+        "2019-10-12T04:00:00Z"
+      ],
+      "conservative_available_utc": "2019-10-12T04:00:00Z",
+      "clock_basis": "Date only; interval assumes America/New_York civil date with actual DST offset. No intraday certification. Next-local-day midnight UTC conversion is conservative."
+    },
+    {
+      "source_id": "credit_2020-03-15",
+      "title": "Federal Reserve Actions to Support the Flow of Credit to Households and Businesses",
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20200315b.htm",
+      "native_document_identity": "monetary20200315b.htm",
+      "web_open_ref": "turn17view5",
+      "publisher": "Board of Governors of the Federal Reserve System",
+      "originator": "Federal Reserve Board",
+      "classification": "primary",
+      "source_family": "FED_POLICY_2020-03-15",
+      "publication_date": "2020-03-15",
+      "publication_clock_local": "17:00",
+      "timezone": "EDT",
+      "time_precision": "minute",
+      "role": "decision_input",
+      "opened": true,
+      "correction_supersession_state": "Dated official release; no correction disclosed on retrieved page.",
+      "publication_timestamp_utc": "2020-03-15T21:00:00Z",
+      "clock_basis": "Explicit original release header, not URL date."
+    },
+    {
+      "source_id": "swaps_2020-03-15",
+      "title": "Coordinated Central Bank Action to Enhance the Provision of U.S. Dollar Liquidity",
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20200315c.htm",
+      "native_document_identity": "monetary20200315c.htm",
+      "web_open_ref": "turn17view6",
+      "publisher": "Board of Governors of the Federal Reserve System",
+      "originator": "Federal Reserve and Bank of Canada, Bank of England, Bank of Japan, ECB, Swiss National Bank",
+      "classification": "primary",
+      "source_family": "JOINT_CENTRAL_BANK_SWAP_2020-03-15",
+      "publication_date": "2020-03-15",
+      "publication_clock_local": "17:00",
+      "timezone": "EDT",
+      "time_precision": "minute",
+      "role": "decision_input",
+      "opened": true,
+      "correction_supersession_state": "Dated official release; no correction disclosed on retrieved page.",
+      "publication_timestamp_utc": "2020-03-15T21:00:00Z",
+      "clock_basis": "Explicit original release header, not URL date."
+    },
+    {
+      "source_id": "statement_2020-03-23",
+      "title": "Federal Reserve issues FOMC statement",
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20200323a.htm",
+      "native_document_identity": "monetary20200323a.htm",
+      "web_open_ref": "turn13view1",
+      "publisher": "Board of Governors of the Federal Reserve System",
+      "originator": "FOMC / Federal Reserve Board",
+      "classification": "primary",
+      "source_family": "FED_POLICY_2020-03-23",
+      "publication_date": "2020-03-23",
+      "publication_clock_local": "08:00",
+      "timezone": "EDT",
+      "time_precision": "minute",
+      "role": "decision_input",
+      "opened": true,
+      "correction_supersession_state": "Dated official release; no correction disclosed on retrieved page.",
+      "publication_timestamp_utc": "2020-03-23T12:00:00Z",
+      "clock_basis": "Explicit original release header, not URL date."
+    },
+    {
+      "source_id": "facilities_2020-03-23",
+      "title": "Federal Reserve announces extensive new measures to support the economy",
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20200323b.htm",
+      "native_document_identity": "monetary20200323b.htm",
+      "web_open_ref": "turn5view0",
+      "publisher": "Board of Governors of the Federal Reserve System",
+      "originator": "Federal Reserve Board / FOMC, Treasury equity approval",
+      "classification": "primary",
+      "source_family": "FED_POLICY_2020-03-23",
+      "publication_date": "2020-03-23",
+      "publication_clock_local": "08:00",
+      "timezone": "EDT",
+      "time_precision": "minute",
+      "role": "decision_input",
+      "opened": true,
+      "correction_supersession_state": "HTML Last Update July 28, 2020. Later updated-term-sheet links excluded. Original initial terms corroborate headline content; do not use later eligibility expansions.",
+      "publication_timestamp_utc": "2020-03-23T12:00:00Z",
+      "clock_basis": "Explicit original release header, not URL date."
+    },
+    {
+      "source_id": "initial_b1_2020-03-23",
+      "title": "Term Sheet - Primary Market Corporate Credit Facility",
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/files/monetary20200323b1.pdf",
+      "native_document_identity": "monetary20200323b1.pdf",
+      "web_open_ref": "turn13view2",
+      "publisher": "Board of Governors of the Federal Reserve System",
+      "originator": "Federal Reserve Board / New York Fed facility design",
+      "classification": "primary",
+      "source_family": "FED_POLICY_2020-03-23",
+      "publication_date": "2020-03-23",
+      "publication_clock_local": "08:00",
+      "timezone": "EDT",
+      "time_precision": "minute",
+      "role": "decision_input",
+      "opened": true,
+      "correction_supersession_state": "Initial term-sheet attachment authenticated by link from 08:00 EDT release; PDF itself has no publication clock. Do not use separate updated-term-sheet links. Treat clock as parent-release attachment association, not independent timestamp.",
+      "publication_timestamp_utc": "2020-03-23T12:00:00Z",
+      "clock_basis": "Explicit original release header, not URL date."
+    },
+    {
+      "source_id": "initial_b2_2020-03-23",
+      "title": "Term Sheet - Secondary Market Corporate Credit Facility",
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/files/monetary20200323b2.pdf",
+      "native_document_identity": "monetary20200323b2.pdf",
+      "web_open_ref": "turn13view3",
+      "publisher": "Board of Governors of the Federal Reserve System",
+      "originator": "Federal Reserve Board / New York Fed facility design",
+      "classification": "primary",
+      "source_family": "FED_POLICY_2020-03-23",
+      "publication_date": "2020-03-23",
+      "publication_clock_local": "08:00",
+      "timezone": "EDT",
+      "time_precision": "minute",
+      "role": "decision_input",
+      "opened": true,
+      "correction_supersession_state": "Initial term-sheet attachment authenticated by link from 08:00 EDT release; PDF itself has no publication clock. Do not use separate updated-term-sheet links. Treat clock as parent-release attachment association, not independent timestamp.",
+      "publication_timestamp_utc": "2020-03-23T12:00:00Z",
+      "clock_basis": "Explicit original release header, not URL date."
+    },
+    {
+      "source_id": "initial_b3_2020-03-23",
+      "title": "Term Sheet - Term Asset-Backed Securities Loan Facility",
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/files/monetary20200323b3.pdf",
+      "native_document_identity": "monetary20200323b3.pdf",
+      "web_open_ref": "turn13view4",
+      "publisher": "Board of Governors of the Federal Reserve System",
+      "originator": "Federal Reserve Board / New York Fed facility design",
+      "classification": "primary",
+      "source_family": "FED_POLICY_2020-03-23",
+      "publication_date": "2020-03-23",
+      "publication_clock_local": "08:00",
+      "timezone": "EDT",
+      "time_precision": "minute",
+      "role": "decision_input",
+      "opened": true,
+      "correction_supersession_state": "Initial term-sheet attachment authenticated by link from 08:00 EDT release; PDF itself has no publication clock. Do not use separate updated-term-sheet links. Treat clock as parent-release attachment association, not independent timestamp.",
+      "publication_timestamp_utc": "2020-03-23T12:00:00Z",
+      "clock_basis": "Explicit original release header, not URL date."
+    },
+    {
+      "source_id": "strategy_2020-08-27",
+      "title": "Federal Open Market Committee announces approval of updates to its Statement on Longer-Run Goals and Monetary Policy Strategy",
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20200827a.htm",
+      "native_document_identity": "monetary20200827a.htm",
+      "web_open_ref": "turn5view1",
+      "publisher": "Board of Governors of the Federal Reserve System",
+      "originator": "FOMC / Federal Reserve Board",
+      "classification": "primary",
+      "source_family": "FED_POLICY_2020-08-27",
+      "publication_date": "2020-08-27",
+      "publication_clock_local": "09:10",
+      "timezone": "EDT",
+      "time_precision": "minute",
+      "role": "decision_input",
+      "opened": true,
+      "correction_supersession_state": "Dated official release; no correction disclosed on retrieved page.",
+      "publication_timestamp_utc": "2020-08-27T13:10:00Z",
+      "clock_basis": "Explicit original release header, not URL date."
+    },
+    {
+      "source_id": "strategy_pdf_2020-08-27",
+      "title": "Statement on Longer-Run Goals and Monetary Policy Strategy -- as of August 27, 2020",
+      "url": "https://www.federalreserve.gov/monetarypolicy/files/FOMC_LongerRunGoals_202008.pdf",
+      "native_document_identity": "FOMC_LongerRunGoals_202008.pdf",
+      "web_open_ref": "turn23view0",
+      "publisher": "Board of Governors of the Federal Reserve System",
+      "originator": "FOMC / Federal Reserve Board",
+      "classification": "primary",
+      "source_family": "FED_POLICY_2020-08-27",
+      "publication_date": "2020-08-27",
+      "publication_clock_local": "09:10",
+      "timezone": "EDT",
+      "time_precision": "minute",
+      "role": "decision_input",
+      "opened": true,
+      "correction_supersession_state": "Historical PDF names amended effective August 27, 2020. Publication clock inherited from contemporaneous release announcing approved statement; historical index itself archaeology-only. Avoid mutable FOMC_LongerRunGoals.pdf, which is now 2026.",
+      "publication_timestamp_utc": "2020-08-27T13:10:00Z",
+      "clock_basis": "Explicit original release header, not URL date."
+    },
+    {
+      "source_id": "strategy_historical_html",
+      "title": "2020 Statement on Longer-Run Goals and Monetary Policy Strategy",
+      "url": "https://www.federalreserve.gov/monetarypolicy/monetary-policy-strategy-tools-and-communications-statement-on-longer-run-goals-monetary-policy-strategy-2019-2020.htm",
+      "native_document_identity": "monetary-policy-strategy-tools-and-communications-statement-on-longer-run-goals-monetary-policy-strategy-2019-2020.htm",
+      "web_open_ref": "turn13view5",
+      "publisher": "Board of Governors of the Federal Reserve System",
+      "originator": "FOMC / Federal Reserve Board",
+      "classification": "primary",
+      "source_family": "FED_POLICY_2020-08-27",
+      "publication_date": "2020-08-27",
+      "publication_clock_local": null,
+      "timezone": null,
+      "time_precision": "date",
+      "role": "version_archaeology_only",
+      "opened": true,
+      "correction_supersession_state": "Historical HTML labeled amended effective Aug27,2020; Last Update Jan14,2021. Its PDF link resolves to current 2026 statement. Use dated historical PDF instead.",
+      "publication_time_interval_utc": [
+        "2020-08-27T04:00:00Z",
+        "2020-08-28T04:00:00Z"
+      ],
+      "conservative_available_utc": "2020-08-28T04:00:00Z",
+      "clock_basis": "Date only; interval assumes America/New_York civil date with actual DST offset. No intraday certification. Next-local-day midnight UTC conversion is conservative."
+    },
+    {
+      "source_id": "strategy_historical_index",
+      "title": "Historical Statements on Longer-Run Goals and Monetary Policy Strategy",
+      "url": "https://www.federalreserve.gov/monetarypolicy/historical-statements-on-longer-run-goals-and-monetary-policy-strategy.htm",
+      "native_document_identity": "historical-statements-on-longer-run-goals-and-monetary-policy-strategy.htm",
+      "web_open_ref": "turn21view0",
+      "publisher": "Board of Governors of the Federal Reserve System",
+      "originator": "FOMC / Federal Reserve Board",
+      "classification": "primary",
+      "source_family": "FED_POLICY_2026-01-28",
+      "publication_date": "2026-01-28",
+      "publication_clock_local": null,
+      "timezone": null,
+      "time_precision": "date",
+      "role": "post_cut_version_archaeology_only",
+      "opened": true,
+      "correction_supersession_state": "Post-cut locator for dated 2020 PDF. No current policy content is admitted to 2020 inputs.",
+      "publication_time_interval_utc": [
+        "2026-01-28T05:00:00Z",
+        "2026-01-29T05:00:00Z"
+      ],
+      "conservative_available_utc": "2026-01-29T05:00:00Z",
+      "clock_basis": "Date only; interval assumes America/New_York civil date with actual DST offset. No intraday certification. Next-local-day midnight UTC conversion is conservative."
+    },
+    {
+      "source_id": "powell_2020-08-27",
+      "title": "New Economic Challenges and the Fed's Monetary Policy Review",
+      "url": "https://www.federalreserve.gov/newsevents/speech/powell20200827a.htm",
+      "native_document_identity": "powell20200827a.htm",
+      "web_open_ref": "turn5view3",
+      "publisher": "Board of Governors of the Federal Reserve System",
+      "originator": "Chair Jerome H. Powell",
+      "classification": "primary",
+      "source_family": "FED_POLICY_2020-08-27",
+      "publication_date": "2020-08-27",
+      "publication_clock_local": null,
+      "timezone": null,
+      "time_precision": "date",
+      "role": "date_only_supplement_not_intraday_input",
+      "opened": true,
+      "correction_supersession_state": "Speech page lacks release clock; speech text not admitted before 13:15Z cut. Key strategy contents available through timed press release regardless.",
+      "publication_time_interval_utc": [
+        "2020-08-27T04:00:00Z",
+        "2020-08-28T04:00:00Z"
+      ],
+      "conservative_available_utc": "2020-08-28T04:00:00Z",
+      "clock_basis": "Date only; interval assumes America/New_York civil date with actual DST offset. No intraday certification. Next-local-day midnight UTC conversion is conservative."
+    },
+    {
+      "source_id": "statement_2020-07-29",
+      "title": "Federal Reserve issues FOMC statement",
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20200729a.htm",
+      "native_document_identity": "monetary20200729a.htm",
+      "web_open_ref": "turn17view3",
+      "publisher": "Board of Governors of the Federal Reserve System",
+      "originator": "FOMC / Federal Reserve Board",
+      "classification": "primary",
+      "source_family": "FED_POLICY_2020-07-29",
+      "publication_date": "2020-07-29",
+      "publication_clock_local": "14:00",
+      "timezone": "EDT",
+      "time_precision": "minute",
+      "role": "decision_input",
+      "opened": true,
+      "correction_supersession_state": "Dated official release; no correction disclosed on retrieved page.",
+      "publication_timestamp_utc": "2020-07-29T18:00:00Z",
+      "clock_basis": "Explicit original release header, not URL date."
+    }
+  ],
+  "episodes": [
+    {
+      "episode_id": "FED_20181219_FOMC",
+      "episode_family": "US_FED_POLICY",
+      "actor_ids": [
+        "FOMC",
+        "JEROME_POWELL"
+      ],
+      "institution_ids": [
+        "FEDERAL_RESERVE",
+        "NYFED"
+      ],
+      "event_time_precision": "minute; official original release header",
+      "first_public_evidence_utc": "2018-12-19T19:00:00Z",
+      "decision_cut_utc": "2018-12-19T19:05:00Z",
+      "cut_rule": "Original release plus five minutes; evidence is release and authenticated simultaneous attachments only. No later press conference, market move or minutes. Five-minute buffer is operational convention, not observed web latency.",
+      "pit_certified_proposal": true,
+      "source_ids": [
+        "statement_2018-12-19",
+        "implementation_2018-12-19"
+      ],
+      "decision_time": {
+        "rhetoric": [
+          {
+            "faithful_paraphrase": "Some further gradual target-range increases were judged consistent with continued expansion and inflation around the symmetric objective.",
+            "statement_type": "CONDITIONAL_COMMITMENT",
+            "source_ids": [
+              "statement_2018-12-19"
+            ],
+            "actor": "FOMC",
+            "timestamp_utc": "2018-12-19T19:00:00Z",
+            "explicit_horizon": "medium term; no date or number of increases",
+            "directional_implication": "UP",
+            "ambiguity_conditionality": "Judgment about appropriate policy, conditioned on realized and expected data; not an unconditional forecast.",
+            "not_a_probability_forecast": true
+          },
+          {
+            "faithful_paraphrase": "Economic growth and labor conditions were strong; outlook risks were roughly balanced, with global developments monitored.",
+            "statement_type": "JUSTIFICATION",
+            "source_ids": [
+              "statement_2018-12-19"
+            ],
+            "actor": "FOMC",
+            "timestamp_utc": "2018-12-19T19:00:00Z",
+            "explicit_horizon": null,
+            "directional_implication": null,
+            "ambiguity_conditionality": null,
+            "not_a_probability_forecast": true
+          }
+        ],
+        "actions": [
+          {
+            "action_type": "TARGET_RATE_CHANGE",
+            "instrument": "federal funds target range",
+            "status": "announced_and_authorized",
+            "description": "Raised target range from 2.00–2.25% to 2.25–2.50%.",
+            "magnitude": "+25 bp",
+            "announced_effective_date": "2018-12-20",
+            "source_ids": [
+              "statement_2018-12-19",
+              "implementation_2018-12-19"
+            ],
+            "institutional_owner": "FOMC; New York Fed Desk implements",
+            "reversibility": "Policy terms reversible by subsequent decision; realized asset/credit exposure harder to reverse than authorization.",
+            "execution_receipt_at_cut": false
+          },
+          {
+            "action_type": "BALANCE_SHEET_NORMALIZATION",
+            "instrument": "Treasury / agency reinvestment limits",
+            "status": "authorized_continuation",
+            "description": "Continue rollover/reinvestment above $30bn monthly Treasury and $20bn agency principal caps. These are runoff caps, not guaranteed realized runoff.",
+            "magnitude": null,
+            "announced_effective_date": null,
+            "source_ids": [
+              "implementation_2018-12-19"
+            ],
+            "institutional_owner": "FOMC; New York Fed Desk implements",
+            "reversibility": "Policy terms reversible by subsequent decision; realized asset/credit exposure harder to reverse than authorization.",
+            "execution_receipt_at_cut": false
+          }
+        ],
+        "constraints": [
+          "Dual mandate and inflation near 2%; global financial risks monitored. Source does not establish recession, binding legal need to hike, or exact neutral rate."
+        ],
+        "feasible_alternatives": [
+          {
+            "alternative": "Hold target range or alter runoff details",
+            "evidence": "Operationally feasible as adjustable policy instruments; no dissent or disclosed consideration in timed release.",
+            "consideration_status": "NOT_EVIDENCED_AT_CUT"
+          }
+        ],
+        "distribution": {
+          "direct_beneficiaries": [
+            "Reserve-balance holders receive administered interest 2.40% after effective date."
+          ],
+          "indirect_beneficiaries": [
+            "Potential price-stability benefits if inflation risk requires restraint (mechanical hypothesis)."
+          ],
+          "burden_bearers": [
+            "Floating-rate borrowers and marginal investment subject to higher financing cost (mechanical exposure, not measured outcome)."
+          ],
+          "selective_relief_present": "NO",
+          "selectivity_rationale": "Broad aggregate instruments; operational reserve-rate setting not a targeted sector rescue.",
+          "changes": [
+            "Higher effective short-term financing cost intended."
+          ]
+        },
+        "competing_hypotheses": [
+          {
+            "claim": "Gradual normalization consistent with mandate and then-strong activity.",
+            "evidence_for": [
+              "Strong activity, near-target inflation, gradual-increase guidance."
+            ],
+            "evidence_against": [
+              "Monitored financial/global developments could justify patience instead."
+            ],
+            "assumptions": [
+              "Published assessments reflect committee judgment."
+            ],
+            "falsifiers": [
+              "Future policy abandons normalization despite comparable conditions."
+            ],
+            "material_re_rank_observation": "Then-new activity/inflation deterioration or continued hikes.",
+            "private_motive_status": "UNRESOLVED; qualitative research hypothesis, not a known input"
+          },
+          {
+            "claim": "Institutional persistence in a prior normalization path despite emerging financial risks.",
+            "evidence_for": [
+              "Runoff continuation and rate hike."
+            ],
+            "evidence_against": [
+              "Risks described balanced; no demonstrated cost or abandoned alternative in release."
+            ],
+            "assumptions": [
+              "Meaningful emerging risk existed beyond statement, currently unmeasured."
+            ],
+            "falsifiers": [
+              "Prompt policy adjustment after costs become documented."
+            ],
+            "material_re_rank_observation": "Contemporaneous pricing and prior financial-stress evidence, before any new cut.",
+            "private_motive_status": "UNRESOLVED; qualitative research hypothesis, not a known input"
+          }
+        ],
+        "proposed_feature_codes": {
+          "rhetoric_direction": "UP",
+          "rhetoric_horizon": "Medium term unspecified; rate-path rather than 1m promise.",
+          "rhetoric_rationale": "Explicit further gradual increases; cannot mechanically assert timing.",
+          "action_rate_direction": "UP",
+          "explicit_action_constraint_path": "UP",
+          "constraint_path_rationale": "Same contemporaneous explicitly announced gradual-increase path; no invented private intent.",
+          "constraint_path_horizon": "Medium term conditional; ABSTAIN for exact 1m if scorer requires timed commitment."
+        },
+        "rhetoric_action_direction_relation": "ALIGNED",
+        "pre_event_market_pricing": "MISSING. No futures/OIS snapshot reconstructed; no policy-surprise label permitted.",
+        "prior_public_sources": []
+      },
+      "later_outcomes": {
+        "status": "NOT_EXTRACTED_BY_THIS_HELPER; root separates labels and scorer"
+      },
+      "limitations": [],
+      "source_lineage": [
+        {
+          "source_id": "statement_2018-12-19",
+          "source_family": "FED_POLICY_2018-12-19",
+          "public_before_cut": true,
+          "clock_basis": "Explicit original release header, not URL date.",
+          "publication_timestamp_utc": "2018-12-19T19:00:00Z",
+          "classification": "primary",
+          "correction_supersession_state": "Dated official release; no correction disclosed on retrieved page."
+        },
+        {
+          "source_id": "implementation_2018-12-19",
+          "source_family": "FED_POLICY_2018-12-19",
+          "public_before_cut": true,
+          "clock_basis": "Explicit original release header, not URL date.",
+          "publication_timestamp_utc": "2018-12-19T19:00:00Z",
+          "classification": "primary",
+          "correction_supersession_state": "Implementation HTML has no clock; simultaneous release certified by opened official meeting page and timezone from statement."
+        }
+      ]
+    },
+    {
+      "episode_id": "FED_20190130_FOMC",
+      "episode_family": "US_FED_POLICY",
+      "actor_ids": [
+        "FOMC",
+        "JEROME_POWELL"
+      ],
+      "institution_ids": [
+        "FEDERAL_RESERVE",
+        "NYFED"
+      ],
+      "event_time_precision": "minute; official original release header",
+      "first_public_evidence_utc": "2019-01-30T19:00:00Z",
+      "decision_cut_utc": "2019-01-30T19:05:00Z",
+      "cut_rule": "Original release plus five minutes; evidence is release and authenticated simultaneous attachments only. No later press conference, market move or minutes. Five-minute buffer is operational convention, not observed web latency.",
+      "pit_certified_proposal": true,
+      "source_ids": [
+        "statement_2019-01-30",
+        "normalization_2019-01-30",
+        "implementation_2019-01-30"
+      ],
+      "decision_time": {
+        "rhetoric": [
+          {
+            "faithful_paraphrase": "Committee would be patient while assessing appropriate future rate adjustments amid global financial developments and muted inflation.",
+            "statement_type": "CONDITIONAL_COMMITMENT",
+            "source_ids": [
+              "statement_2019-01-30"
+            ],
+            "actor": "FOMC",
+            "timestamp_utc": "2019-01-30T19:00:00Z",
+            "explicit_horizon": "future adjustments; no duration",
+            "directional_implication": "HOLD",
+            "ambiguity_conditionality": "Patient supports near-term pause; neither cut promise nor guaranteed 3m/6m hold.",
+            "not_a_probability_forecast": true
+          },
+          {
+            "faithful_paraphrase": "Sustained expansion, strong labor market and near-2% inflation were described as most likely outcomes.",
+            "statement_type": "FORECAST",
+            "source_ids": [
+              "statement_2019-01-30"
+            ],
+            "actor": "FOMC",
+            "timestamp_utc": "2019-01-30T19:00:00Z",
+            "explicit_horizon": "unspecified",
+            "directional_implication": "ABSTAIN",
+            "ambiguity_conditionality": "Economic outlook forecast, not a rate forecast.",
+            "not_a_probability_forecast": false
+          },
+          {
+            "faithful_paraphrase": "An ample-reserves operating regime was adopted; policy rate primary, balance-sheet details adjustable and full tools available if rate cuts alone insufficient.",
+            "statement_type": "OPERATIONAL_GUIDANCE",
+            "source_ids": [
+              "normalization_2019-01-30"
+            ],
+            "actor": "FOMC",
+            "timestamp_utc": "2019-01-30T19:00:00Z",
+            "explicit_horizon": "longer run",
+            "directional_implication": "ABSTAIN",
+            "ambiguity_conditionality": "Contingency authorization does not execute easing.",
+            "not_a_probability_forecast": true
+          }
+        ],
+        "actions": [
+          {
+            "action_type": "TARGET_RATE_HOLD",
+            "instrument": "federal funds target range",
+            "status": "announced_and_authorized",
+            "description": "Maintain 2.25–2.50%.",
+            "magnitude": "0 bp",
+            "announced_effective_date": "2019-01-31",
+            "source_ids": [
+              "statement_2019-01-30"
+            ],
+            "institutional_owner": "FOMC; New York Fed Desk implements",
+            "reversibility": "Policy terms reversible by subsequent decision; realized asset/credit exposure harder to reverse than authorization.",
+            "execution_receipt_at_cut": false
+          },
+          {
+            "action_type": "BALANCE_SHEET_NORMALIZATION",
+            "instrument": "reinvestment/runoff caps",
+            "status": "authorized_continuation",
+            "description": "Existing Treasury/agency runoff caps continue while future guidance becomes more flexible.",
+            "magnitude": null,
+            "announced_effective_date": null,
+            "source_ids": [
+              "implementation_2019-01-30"
+            ],
+            "institutional_owner": "FOMC; New York Fed Desk implements",
+            "reversibility": "Policy terms reversible by subsequent decision; realized asset/credit exposure harder to reverse than authorization.",
+            "execution_receipt_at_cut": false
+          },
+          {
+            "action_type": "OPERATING_FRAMEWORK",
+            "instrument": "ample reserves / administered rates",
+            "status": "adopted_strategy",
+            "description": "All participants endorsed ample reserves and flexible balance-sheet normalization guidance.",
+            "magnitude": null,
+            "announced_effective_date": null,
+            "source_ids": [
+              "normalization_2019-01-30"
+            ],
+            "institutional_owner": "FOMC; New York Fed Desk implements",
+            "reversibility": "Policy terms reversible by subsequent decision; realized asset/credit exposure harder to reverse than authorization.",
+            "execution_receipt_at_cut": false
+          }
+        ],
+        "constraints": [
+          "Muted inflation, lower market inflation compensation, global economic/financial developments; flexible mandate response instead of a fixed normalization schedule."
+        ],
+        "feasible_alternatives": [
+          {
+            "alternative": "Continue further hikes",
+            "evidence": "Prior Dec2018 gradual-increase path was public; replaced by patient language.",
+            "consideration_status": "Prior visible path; not evidence of private discussion."
+          },
+          {
+            "alternative": "Change runoff immediately",
+            "evidence": "Normalization guidance now permits changes, but implementation note keeps caps.",
+            "consideration_status": "Feasible flexibility explicitly authorized."
+          }
+        ],
+        "distribution": {
+          "direct_beneficiaries": [
+            "Interest-rate-sensitive borrowers avoid an additional hike; not an actual cut."
+          ],
+          "indirect_beneficiaries": [
+            "Potential stability from flexible balance-sheet contingency."
+          ],
+          "burden_bearers": [
+            "Continued runoff may reduce reserve supply; not measured economic loss."
+          ],
+          "selective_relief_present": "NO",
+          "selectivity_rationale": "No sector eligibility or rescue in this release.",
+          "changes": [
+            "Less certainty of continuing rate normalization; runoff still authorized."
+          ]
+        },
+        "competing_hypotheses": [
+          {
+            "claim": "Data-dependent pause under mandate and global uncertainty.",
+            "evidence_for": [
+              "Patient language; muted inflation; unchanged range."
+            ],
+            "evidence_against": [
+              "Strong labor market and solid activity could support further normalization."
+            ],
+            "assumptions": [
+              "Published uncertainty is sufficient reason to pause."
+            ],
+            "falsifiers": [
+              "Immediate hike absent improved conditions or inflation pressure."
+            ],
+            "material_re_rank_observation": "Incoming inflation/global conditions and next timed decision.",
+            "private_motive_status": "UNRESOLVED; qualitative research hypothesis, not a known input"
+          },
+          {
+            "claim": "Protect financing conditions while allowing normalization to persist through balance sheet.",
+            "evidence_for": [
+              "Rate pause with runoff continuing."
+            ],
+            "evidence_against": [
+              "Explicit willingness to change normalization; not evidence of hidden tightening purpose."
+            ],
+            "assumptions": [
+              "Rate and reserve-supply instruments have distinct channels."
+            ],
+            "falsifiers": [
+              "Runoff promptly adjusted when economically needed."
+            ],
+            "material_re_rank_observation": "Then-public reserve scarcity evidence and subsequent authorized runoff change.",
+            "private_motive_status": "UNRESOLVED; qualitative research hypothesis, not a known input"
+          }
+        ],
+        "proposed_feature_codes": {
+          "rhetoric_direction": "HOLD",
+          "rhetoric_horizon": "Near term / next adjustment; no exact 3m/6m promise.",
+          "rhetoric_rationale": "Patient language replaces further-increase bias.",
+          "action_rate_direction": "HOLD",
+          "explicit_action_constraint_path": "HOLD",
+          "constraint_path_rationale": "Patient stance + maintained target; exact extended hold is conditional.",
+          "constraint_path_horizon": "Near term"
+        },
+        "rhetoric_action_direction_relation": "MIXED",
+        "pre_event_market_pricing": "MISSING. No futures/OIS snapshot reconstructed; no policy-surprise label permitted.",
+        "prior_public_sources": []
+      },
+      "later_outcomes": {
+        "status": "NOT_EXTRACTED_BY_THIS_HELPER; root separates labels and scorer"
+      },
+      "limitations": [
+        "Cross-instrument tension: patient rate rhetoric while authorized runoff persists. This is not rate-direction divergence or deception."
+      ],
+      "source_lineage": [
+        {
+          "source_id": "statement_2019-01-30",
+          "source_family": "FED_POLICY_2019-01-30",
+          "public_before_cut": true,
+          "clock_basis": "Explicit original release header, not URL date.",
+          "publication_timestamp_utc": "2019-01-30T19:00:00Z",
+          "classification": "primary",
+          "correction_supersession_state": "Dated official release; no correction disclosed on retrieved page."
+        },
+        {
+          "source_id": "normalization_2019-01-30",
+          "source_family": "FED_POLICY_2019-01-30",
+          "public_before_cut": true,
+          "clock_basis": "Explicit original release header, not URL date.",
+          "publication_timestamp_utc": "2019-01-30T19:00:00Z",
+          "classification": "primary",
+          "correction_supersession_state": "Dated official release; no correction disclosed on retrieved page."
+        },
+        {
+          "source_id": "implementation_2019-01-30",
+          "source_family": "FED_POLICY_2019-01-30",
+          "public_before_cut": true,
+          "clock_basis": "Explicit original release header, not URL date.",
+          "publication_timestamp_utc": "2019-01-30T19:00:00Z",
+          "classification": "primary",
+          "correction_supersession_state": "Implementation HTML has no clock; simultaneous release certified by opened official meeting page and timezone from statement."
+        }
+      ]
+    },
+    {
+      "episode_id": "FED_20190731_FOMC",
+      "episode_family": "US_FED_POLICY",
+      "actor_ids": [
+        "FOMC",
+        "JEROME_POWELL"
+      ],
+      "institution_ids": [
+        "FEDERAL_RESERVE",
+        "NYFED"
+      ],
+      "event_time_precision": "minute; official original release header",
+      "first_public_evidence_utc": "2019-07-31T18:00:00Z",
+      "decision_cut_utc": "2019-07-31T18:05:00Z",
+      "cut_rule": "Original release plus five minutes; evidence is release and authenticated simultaneous attachments only. No later press conference, market move or minutes. Five-minute buffer is operational convention, not observed web latency.",
+      "pit_certified_proposal": true,
+      "source_ids": [
+        "statement_2019-07-31",
+        "implementation_2019-07-31"
+      ],
+      "decision_time": {
+        "rhetoric": [
+          {
+            "faithful_paraphrase": "Cut justified by global developments and muted inflation; committee would monitor information and act appropriately to sustain expansion.",
+            "statement_type": "JUSTIFICATION",
+            "source_ids": [
+              "statement_2019-07-31"
+            ],
+            "actor": "FOMC",
+            "timestamp_utc": "2019-07-31T18:00:00Z",
+            "explicit_horizon": "future path unspecified",
+            "directional_implication": "ABSTAIN",
+            "ambiguity_conditionality": "This decision cuts; next-decision direction unspecified.",
+            "not_a_probability_forecast": true
+          },
+          {
+            "faithful_paraphrase": "Expansion, strong labor and near-target inflation remained most likely, but uncertainty continued.",
+            "statement_type": "FORECAST",
+            "source_ids": [
+              "statement_2019-07-31"
+            ],
+            "actor": "FOMC",
+            "timestamp_utc": "2019-07-31T18:00:00Z",
+            "explicit_horizon": "unspecified",
+            "directional_implication": "ABSTAIN",
+            "ambiguity_conditionality": "Forecast of macro conditions is not forecast of subsequent rate cuts.",
+            "not_a_probability_forecast": false
+          }
+        ],
+        "actions": [
+          {
+            "action_type": "TARGET_RATE_CHANGE",
+            "instrument": "federal funds target range",
+            "status": "announced_and_authorized",
+            "description": "Reduce 2.25–2.50% to 2.00–2.25%.",
+            "magnitude": "-25 bp",
+            "announced_effective_date": "2019-08-01",
+            "source_ids": [
+              "statement_2019-07-31"
+            ],
+            "institutional_owner": "FOMC; New York Fed Desk implements",
+            "reversibility": "Policy terms reversible by subsequent decision; realized asset/credit exposure harder to reverse than authorization.",
+            "execution_receipt_at_cut": false
+          },
+          {
+            "action_type": "END_BALANCE_SHEET_RUNOFF",
+            "instrument": "Treasury / agency principal reinvestment",
+            "status": "announced_and_authorized",
+            "description": "End aggregate securities reduction in August, two months earlier than previously indicated; full principal reinvestment prescribed, with agency principal allocated partly to Treasuries.",
+            "magnitude": null,
+            "announced_effective_date": "2019-08-01",
+            "source_ids": [
+              "statement_2019-07-31",
+              "implementation_2019-07-31"
+            ],
+            "institutional_owner": "FOMC; New York Fed Desk implements",
+            "reversibility": "Policy terms reversible by subsequent decision; realized asset/credit exposure harder to reverse than authorization.",
+            "execution_receipt_at_cut": false
+          }
+        ],
+        "constraints": [
+          "Inflation below target, low market inflation compensation, global outlook uncertainty, soft business investment; labor market strong."
+        ],
+        "feasible_alternatives": [
+          {
+            "alternative": "Hold 2.25–2.50%",
+            "evidence": "George and Rosengren dissented and explicitly preferred hold.",
+            "consideration_status": "EXPLICITLY_PREFERRED_BY_TWO_VOTERS"
+          },
+          {
+            "alternative": "Retain previously indicated runoff end date",
+            "evidence": "Statement says new end two months earlier.",
+            "consideration_status": "Prior announced path changed."
+          }
+        ],
+        "distribution": {
+          "direct_beneficiaries": [
+            "Borrowers exposed to overnight rates; securities-market participants through reduced runoff."
+          ],
+          "indirect_beneficiaries": [
+            "Workers and businesses if insurance easing sustains expansion."
+          ],
+          "burden_bearers": [
+            "Reserve/deposit savers receive lower administered rates (pass-through not measured)."
+          ],
+          "selective_relief_present": "NO",
+          "selectivity_rationale": "Aggregate easing and reinvestment policy, no corporate eligibility rescue.",
+          "changes": [
+            "Lower financing cost; less scheduled reserve contraction."
+          ]
+        },
+        "competing_hypotheses": [
+          {
+            "claim": "Insurance easing in face of external risks and inflation undershoot.",
+            "evidence_for": [
+              "Global uncertainty, muted inflation, rate cut and earlier runoff end."
+            ],
+            "evidence_against": [
+              "Strong labor and hold dissents make necessity debatable."
+            ],
+            "assumptions": [
+              "Risk insurance can be warranted before contraction."
+            ],
+            "falsifiers": [
+              "Tightening despite unchanged risks/undershoot or statement rejects rationale."
+            ],
+            "material_re_rank_observation": "Fresh risk/inflation data and next decision.",
+            "private_motive_status": "UNRESOLVED; qualitative research hypothesis, not a known input"
+          },
+          {
+            "claim": "Opening of an extended easing sequence.",
+            "evidence_for": [
+              "Cut and runoff termination are two easing instruments."
+            ],
+            "evidence_against": [
+              "No explicit future cut commitment; healthy labor and dissents."
+            ],
+            "assumptions": [
+              "Risks persist long enough to require repeated easing."
+            ],
+            "falsifiers": [
+              "Subsequent hold after stable data or explicitly one-off communication."
+            ],
+            "material_re_rank_observation": "New timed forward guidance or material worsening conditions.",
+            "private_motive_status": "UNRESOLVED; qualitative research hypothesis, not a known input"
+          }
+        ],
+        "proposed_feature_codes": {
+          "rhetoric_direction": "ABSTAIN",
+          "rhetoric_horizon": "Next decision / 1m,3m,6m unspecified",
+          "rhetoric_rationale": "Act as appropriate is not a clean directional next-rate commitment.",
+          "action_rate_direction": "DOWN",
+          "explicit_action_constraint_path": "ABSTAIN",
+          "constraint_path_rationale": "Current cut and runoff end substantiate easing now, not a known future rate direction.",
+          "constraint_path_horizon": "Unspecified"
+        },
+        "rhetoric_action_direction_relation": "NOT_COMPARABLE",
+        "pre_event_market_pricing": "MISSING. No futures/OIS snapshot reconstructed; no policy-surprise label permitted.",
+        "prior_public_sources": []
+      },
+      "later_outcomes": {
+        "status": "NOT_EXTRACTED_BY_THIS_HELPER; root separates labels and scorer"
+      },
+      "limitations": [
+        "Cut rhetoric and announced actions align for current stance; next-rate forecast abstains. Later press-conference midcycle language is not inside 18:05Z cut."
+      ],
+      "source_lineage": [
+        {
+          "source_id": "statement_2019-07-31",
+          "source_family": "FED_POLICY_2019-07-31",
+          "public_before_cut": true,
+          "clock_basis": "Explicit original release header, not URL date.",
+          "publication_timestamp_utc": "2019-07-31T18:00:00Z",
+          "classification": "primary",
+          "correction_supersession_state": "Dated official release; no correction disclosed on retrieved page."
+        },
+        {
+          "source_id": "implementation_2019-07-31",
+          "source_family": "FED_POLICY_2019-07-31",
+          "public_before_cut": true,
+          "clock_basis": "Explicit original release header, not URL date.",
+          "publication_timestamp_utc": "2019-07-31T18:00:00Z",
+          "classification": "primary",
+          "correction_supersession_state": "Implementation HTML has no clock; simultaneous release certified by opened official meeting page and timezone from statement."
+        }
+      ]
+    },
+    {
+      "episode_id": "FED_20191011_RESERVE_MANAGEMENT",
+      "episode_family": "US_FED_POLICY",
+      "actor_ids": [
+        "FOMC",
+        "JEROME_POWELL"
+      ],
+      "institution_ids": [
+        "FEDERAL_RESERVE",
+        "NYFED"
+      ],
+      "event_time_precision": "minute; official original release header",
+      "first_public_evidence_utc": "2019-10-11T15:00:00Z",
+      "decision_cut_utc": "2019-10-11T15:05:00Z",
+      "cut_rule": "Original release plus five minutes; evidence is release and authenticated simultaneous attachments only. No later press conference, market move or minutes. Five-minute buffer is operational convention, not observed web latency.",
+      "pit_certified_proposal": true,
+      "source_ids": [
+        "reserve_pdf_2019-10-11",
+        "reserve_2019-10-11"
+      ],
+      "decision_time": {
+        "rhetoric": [
+          {
+            "faithful_paraphrase": "Bill purchases and repos were described as technical support for policy implementation without changing the monetary stance.",
+            "statement_type": "JUSTIFICATION",
+            "source_ids": [
+              "reserve_pdf_2019-10-11"
+            ],
+            "actor": "FOMC",
+            "timestamp_utc": "2019-10-11T15:00:00Z",
+            "explicit_horizon": "purchases at least Q2 2020; repos at least Jan2020",
+            "directional_implication": "HOLD",
+            "ambiguity_conditionality": "Stance-neutrality assertion refers to rate stance; not claim of zero market-price impact.",
+            "not_a_probability_forecast": true
+          },
+          {
+            "faithful_paraphrase": "Reserve balances would be kept ample, at or above early-September levels, accommodating non-reserve liability growth.",
+            "statement_type": "OPERATIONAL_GUIDANCE",
+            "source_ids": [
+              "reserve_pdf_2019-10-11"
+            ],
+            "actor": "FOMC",
+            "timestamp_utc": "2019-10-11T15:00:00Z",
+            "explicit_horizon": "at least Q2 2020",
+            "directional_implication": "ABSTAIN",
+            "ambiguity_conditionality": "Reserve quantity direction is not rate-path direction.",
+            "not_a_probability_forecast": true
+          }
+        ],
+        "actions": [
+          {
+            "action_type": "RESERVE_MANAGEMENT_PURCHASES",
+            "instrument": "Treasury bills",
+            "status": "announced_and_authorized",
+            "description": "Buy bills at least into Q2 2020 to restore/maintain ample reserves, and continue term/overnight repos at least through Jan2020. No executed purchases receipt at cut.",
+            "magnitude": null,
+            "announced_effective_date": "2019-10-15",
+            "source_ids": [
+              "reserve_pdf_2019-10-11"
+            ],
+            "institutional_owner": "FOMC; New York Fed Desk implements",
+            "reversibility": "Policy terms reversible by subsequent decision; realized asset/credit exposure harder to reverse than authorization.",
+            "execution_receipt_at_cut": false
+          },
+          {
+            "action_type": "TARGET_RATE_MAINTENANCE_DIRECTIVE",
+            "instrument": "federal funds operating target",
+            "status": "authorized_continuation",
+            "description": "Directive retains existing 1.75–2.00% target. No new policy-rate decision.",
+            "magnitude": null,
+            "announced_effective_date": "2019-10-15",
+            "source_ids": [
+              "reserve_pdf_2019-10-11"
+            ],
+            "institutional_owner": "FOMC; New York Fed Desk implements",
+            "reversibility": "Policy terms reversible by subsequent decision; realized asset/credit exposure harder to reverse than authorization.",
+            "execution_receipt_at_cut": false
+          }
+        ],
+        "constraints": [
+          "Recent and expected growth of non-reserve liabilities; reserve adequacy; money-market pressures could impair policy implementation. These are expressly stated implementation constraints."
+        ],
+        "feasible_alternatives": [
+          {
+            "alternative": "Continue temporary repos without bill purchases, or adjust administered rates",
+            "evidence": "Repos and administered rates explicitly present, but relative sufficiency or considered alternative not disclosed.",
+            "consideration_status": "Instrument set visible; not evidence committee considered a substitution."
+          }
+        ],
+        "distribution": {
+          "direct_beneficiaries": [
+            "Money-market intermediaries and counterparties receive expanded reserve/liquidity provision."
+          ],
+          "indirect_beneficiaries": [
+            "Borrowers via stable implementation of target overnight rate."
+          ],
+          "burden_bearers": [
+            "Potential reduction in availability of bills to private portfolios; theoretical mechanical exposure."
+          ],
+          "selective_relief_present": "YES",
+          "selectivity_rationale": "Funding-market intervention via bill and repo instruments; not company-specific bailout. Exact counterparties require separate then-public operations terms.",
+          "changes": [
+            "Reserve supply and funding downside risk; policy target unchanged."
+          ]
+        },
+        "competing_hypotheses": [
+          {
+            "claim": "Technical repair of ample-reserves implementation.",
+            "evidence_for": [
+              "Explicit reserve floor, non-reserve liability growth, maintained target, bill focus."
+            ],
+            "evidence_against": [
+              "Balance sheet expands and may affect funding/asset pricing."
+            ],
+            "assumptions": [
+              "Reserve demand/implementation risk is relevant and distinct from duration QE."
+            ],
+            "falsifiers": [
+              "Purchases scale or instrument choice predominantly track macro easing goals despite ample reserves."
+            ],
+            "material_re_rank_observation": "Then-public reserve/funding rates and authorized changes to instrument/maturity.",
+            "private_motive_status": "UNRESOLVED; qualitative research hypothesis, not a known input"
+          },
+          {
+            "claim": "Liquidity support also eases effective financing conditions despite stance-neutral wording.",
+            "evidence_for": [
+              "Bill purchases and repos expand liquidity provision."
+            ],
+            "evidence_against": [
+              "No change in target; operational goals and short maturity limit inference of macro stimulus."
+            ],
+            "assumptions": [
+              "Collateral/reserve scarcity meaningfully restricts funding."
+            ],
+            "falsifiers": [
+              "No funding constraint existed or liquidity provision had no transmission outside operational rate control."
+            ],
+            "material_re_rank_observation": "Contemporaneous money-market spreads and reserve demand; no post-cut return fitted motive.",
+            "private_motive_status": "UNRESOLVED; qualitative research hypothesis, not a known input"
+          }
+        ],
+        "proposed_feature_codes": {
+          "rhetoric_direction": "HOLD",
+          "rhetoric_horizon": "Current policy stance; no timed next-rate promise",
+          "rhetoric_rationale": "Explicit no change in stance.",
+          "action_rate_direction": "NOT_RATE",
+          "explicit_action_constraint_path": "HOLD",
+          "constraint_path_rationale": "Existing target expressly preserved; only operating mechanism expands.",
+          "constraint_path_horizon": "Current operating mandate; ABSTAIN for later change"
+        },
+        "rhetoric_action_direction_relation": "MIXED",
+        "pre_event_market_pricing": "MISSING. No futures/OIS snapshot reconstructed; no policy-surprise label permitted.",
+        "prior_public_sources": []
+      },
+      "later_outcomes": {
+        "status": "NOT_EXTRACTED_BY_THIS_HELPER; root separates labels and scorer"
+      },
+      "limitations": [
+        "NYFed $60bn/month and $35bn/$75bn repo sizes have only date clock and are excluded from intraday features. Add only using conservative availability bound 2019-10-12T04:00:00Z or verified clock.",
+        "Cross-instrument tension is descriptive: stance-neutral communication and balance-sheet expansion. Does not establish deception; quantity easing is not mechanically comparable to next policy-rate cut."
+      ],
+      "source_lineage": [
+        {
+          "source_id": "reserve_pdf_2019-10-11",
+          "source_family": "FED_POLICY_2019-10-11",
+          "public_before_cut": true,
+          "clock_basis": "Explicit original release header, not URL date.",
+          "publication_timestamp_utc": "2019-10-11T15:00:00Z",
+          "classification": "primary",
+          "correction_supersession_state": "Dated official release; no correction disclosed on retrieved page."
+        },
+        {
+          "source_id": "reserve_2019-10-11",
+          "source_family": "FED_POLICY_2019-10-11",
+          "public_before_cut": true,
+          "clock_basis": "Explicit original release header, not URL date.",
+          "publication_timestamp_utc": "2019-10-11T15:00:00Z",
+          "classification": "primary",
+          "correction_supersession_state": "HTML Last Update October 15, 2019. Input wording cross-checked against dated original PDF, which contains identical release clock and directives."
+        }
+      ]
+    },
+    {
+      "episode_id": "FED_20200303_EMERGENCY_CUT",
+      "episode_family": "US_FED_POLICY",
+      "actor_ids": [
+        "FOMC",
+        "JEROME_POWELL"
+      ],
+      "institution_ids": [
+        "FEDERAL_RESERVE",
+        "NYFED"
+      ],
+      "event_time_precision": "minute; official original release header",
+      "first_public_evidence_utc": "2020-03-03T15:00:00Z",
+      "decision_cut_utc": "2020-03-03T15:05:00Z",
+      "cut_rule": "Original release plus five minutes; evidence is release and authenticated simultaneous attachments only. No later press conference, market move or minutes. Five-minute buffer is operational convention, not observed web latency.",
+      "pit_certified_proposal": true,
+      "source_ids": [
+        "statement_2020-03-03"
+      ],
+      "decision_time": {
+        "rhetoric": [
+          {
+            "faithful_paraphrase": "US fundamentals remained strong but coronavirus posed evolving activity risks; committee would use tools and act as appropriate to support economy.",
+            "statement_type": "JUSTIFICATION",
+            "source_ids": [
+              "statement_2020-03-03"
+            ],
+            "actor": "FOMC",
+            "timestamp_utc": "2020-03-03T15:00:00Z",
+            "explicit_horizon": "evolving risk; horizon unspecified",
+            "directional_implication": "ABSTAIN",
+            "ambiguity_conditionality": "Strong fundamentals concerns starting state, not forecast virus harmless or commitment no further cuts.",
+            "not_a_probability_forecast": true
+          }
+        ],
+        "actions": [
+          {
+            "action_type": "TARGET_RATE_CHANGE",
+            "instrument": "federal funds target range",
+            "status": "announced_and_authorized",
+            "description": "Emergency unanimous 50bp cut from 1.50–1.75% to 1.00–1.25%.",
+            "magnitude": "-50 bp",
+            "announced_effective_date": null,
+            "source_ids": [
+              "statement_2020-03-03"
+            ],
+            "institutional_owner": "FOMC; New York Fed Desk implements",
+            "reversibility": "Policy terms reversible by subsequent decision; realized asset/credit exposure harder to reverse than authorization.",
+            "execution_receipt_at_cut": false
+          }
+        ],
+        "constraints": [
+          "Evolving coronavirus risk; dual mandate. No binding lower-bound or quantified pre-event probabilities substantiated in this source."
+        ],
+        "feasible_alternatives": [
+          {
+            "alternative": "Hold or smaller/later cut",
+            "evidence": "Discretionary policy alternatives mechanically feasible; no dissent or disclosed considered alternative.",
+            "consideration_status": "NOT_EVIDENCED_AT_CUT"
+          }
+        ],
+        "distribution": {
+          "direct_beneficiaries": [
+            "Rate-sensitive borrowers."
+          ],
+          "indirect_beneficiaries": [
+            "Households/businesses if monetary support offsets pandemic demand risk."
+          ],
+          "burden_bearers": [
+            "Savers exposed to lower short-term rates; contagion risk itself not solved by rate cut."
+          ],
+          "selective_relief_present": "NO",
+          "selectivity_rationale": "Aggregate rate action.",
+          "changes": [
+            "Lower target financing cost; emergency option exercised."
+          ]
+        },
+        "competing_hypotheses": [
+          {
+            "claim": "Insurance against evolving health/economic risk despite strong prior fundamentals.",
+            "evidence_for": [
+              "Risk explicitly motivates cut; unanimous vote."
+            ],
+            "evidence_against": [
+              "No quantified size justification or evidence rates directly cure health shock."
+            ],
+            "assumptions": [
+              "Insurance works through financial conditions, not virus treatment."
+            ],
+            "falsifiers": [
+              "Comparable risks disappear but easing accelerates without another rationale."
+            ],
+            "material_re_rank_observation": "New public-health/economic deterioration or explicit additional guidance.",
+            "private_motive_status": "UNRESOLVED; qualitative research hypothesis, not a known input"
+          },
+          {
+            "claim": "Officials already expect material macro weakness but retain reassuring baseline language.",
+            "evidence_for": [
+              "Large unscheduled cut."
+            ],
+            "evidence_against": [
+              "Fundamentals statement can accurately describe pre-shock economy; not contradiction."
+            ],
+            "assumptions": [
+              "Cut magnitude reveals concern beyond published qualitative risk."
+            ],
+            "falsifiers": [
+              "Risk containment followed by stable activity and pause."
+            ],
+            "material_re_rank_observation": "New forecasts or uncertainty disclosures available at a later cut, segregated from this one.",
+            "private_motive_status": "UNRESOLVED; qualitative research hypothesis, not a known input"
+          }
+        ],
+        "proposed_feature_codes": {
+          "rhetoric_direction": "ABSTAIN",
+          "rhetoric_horizon": "Next policy decision unspecified",
+          "rhetoric_rationale": "Support economy / act appropriate does not unambiguously choose additional cut versus hold.",
+          "action_rate_direction": "DOWN",
+          "explicit_action_constraint_path": "ABSTAIN",
+          "constraint_path_rationale": "Current 50bp cut is observed announcement, no explicit subsequent rate path.",
+          "constraint_path_horizon": "Unspecified"
+        },
+        "rhetoric_action_direction_relation": "MIXED",
+        "pre_event_market_pricing": "MISSING. No futures/OIS snapshot reconstructed; no policy-surprise label permitted.",
+        "prior_public_sources": []
+      },
+      "later_outcomes": {
+        "status": "NOT_EXTRACTED_BY_THIS_HELPER; root separates labels and scorer"
+      },
+      "limitations": [
+        "Strong-fundamentals rhetoric versus emergency easing is state/risk tension, not clean opposite rate guidance.",
+        "Implementation note March3 has date-only clock and official meeting index says March2 (apparent error). Effective March4/IOER/discount detail is archaeology-only until clock resolved; main rate-cut announcement remains clock-certified."
+      ],
+      "source_lineage": [
+        {
+          "source_id": "statement_2020-03-03",
+          "source_family": "FED_POLICY_2020-03-03",
+          "public_before_cut": true,
+          "clock_basis": "Explicit original release header, not URL date.",
+          "publication_timestamp_utc": "2020-03-03T15:00:00Z",
+          "classification": "primary",
+          "correction_supersession_state": "Dated official release; no correction disclosed on retrieved page."
+        }
+      ]
+    },
+    {
+      "episode_id": "FED_20200315_EMERGENCY_EASING",
+      "episode_family": "US_FED_POLICY",
+      "actor_ids": [
+        "FOMC",
+        "JEROME_POWELL"
+      ],
+      "institution_ids": [
+        "FEDERAL_RESERVE",
+        "NYFED"
+      ],
+      "event_time_precision": "minute; official original release header",
+      "first_public_evidence_utc": "2020-03-15T21:00:00Z",
+      "decision_cut_utc": "2020-03-15T21:05:00Z",
+      "cut_rule": "Original release plus five minutes; evidence is release and authenticated simultaneous attachments only. No later press conference, market move or minutes. Five-minute buffer is operational convention, not observed web latency.",
+      "pit_certified_proposal": true,
+      "source_ids": [
+        "statement_2020-03-15",
+        "implementation_2020-03-15",
+        "credit_2020-03-15",
+        "swaps_2020-03-15"
+      ],
+      "decision_time": {
+        "rhetoric": [
+          {
+            "faithful_paraphrase": "Committee expected the zero-range policy to last until confident economy weathered events and was on track for employment/price goals.",
+            "statement_type": "CONDITIONAL_COMMITMENT",
+            "source_ids": [
+              "statement_2020-03-15"
+            ],
+            "actor": "FOMC",
+            "timestamp_utc": "2020-03-15T21:00:00Z",
+            "explicit_horizon": "until state-based recovery confidence",
+            "directional_implication": "HOLD",
+            "ambiguity_conditionality": "No calendar deadline; commitment concerns future holding of new range, not today's 100bp cut.",
+            "not_a_probability_forecast": true
+          },
+          {
+            "faithful_paraphrase": "Coronavirus will weigh on near-term activity; monetary tools will support credit and market functioning.",
+            "statement_type": "FORECAST",
+            "source_ids": [
+              "statement_2020-03-15"
+            ],
+            "actor": "FOMC",
+            "timestamp_utc": "2020-03-15T21:00:00Z",
+            "explicit_horizon": "near term",
+            "directional_implication": "ABSTAIN",
+            "ambiguity_conditionality": "Activity forecast separate from policy-rate target.",
+            "not_a_probability_forecast": false
+          }
+        ],
+        "actions": [
+          {
+            "action_type": "TARGET_RATE_CHANGE",
+            "instrument": "federal funds target range",
+            "status": "announced_and_authorized",
+            "description": "Cut from 1.00–1.25% to 0.00–0.25%.",
+            "magnitude": "-100 bp",
+            "announced_effective_date": "2020-03-16",
+            "source_ids": [
+              "statement_2020-03-15"
+            ],
+            "institutional_owner": "FOMC; New York Fed Desk implements",
+            "reversibility": "Policy terms reversible by subsequent decision; realized asset/credit exposure harder to reverse than authorization.",
+            "execution_receipt_at_cut": false
+          },
+          {
+            "action_type": "ASSET_PURCHASE_PLAN",
+            "instrument": "Treasuries and agency MBS",
+            "status": "announced_and_authorized",
+            "description": "Increase holdings at least $500bn Treasury and $200bn agency MBS over coming months; reinvest agency principal in agency MBS.",
+            "magnitude": "at least $700bn total planned",
+            "announced_effective_date": "2020-03-16",
+            "source_ids": [
+              "statement_2020-03-15",
+              "implementation_2020-03-15"
+            ],
+            "institutional_owner": "FOMC; New York Fed Desk implements",
+            "reversibility": "Policy terms reversible by subsequent decision; realized asset/credit exposure harder to reverse than authorization.",
+            "execution_receipt_at_cut": false
+          },
+          {
+            "action_type": "BANK_LIQUIDITY_RELIEF",
+            "instrument": "discount window / capital and liquidity buffers / reserve requirements",
+            "status": "announced_and_authorized",
+            "description": "Primary credit 0.25%, 90-day borrowing; encourage buffer use; reserve ratios set zero effective March26.",
+            "magnitude": "discount rate -150bp",
+            "announced_effective_date": "2020-03-16; reserve ratios 2020-03-26",
+            "source_ids": [
+              "credit_2020-03-15"
+            ],
+            "institutional_owner": "Federal Reserve Board",
+            "reversibility": "Policy terms reversible by subsequent decision; realized asset/credit exposure harder to reverse than authorization.",
+            "execution_receipt_at_cut": false
+          },
+          {
+            "action_type": "DOLLAR_LIQUIDITY_RELIEF",
+            "instrument": "standing central-bank swap lines",
+            "status": "announced_and_agreed",
+            "description": "Swap price OIS+25bp; add weekly 84-day operations alongside one-week, effective next operations week March16. No drawing receipt.",
+            "magnitude": "price -25bp",
+            "announced_effective_date": "week of 2020-03-16",
+            "source_ids": [
+              "swaps_2020-03-15"
+            ],
+            "institutional_owner": "Fed and standing foreign central-bank counterparties",
+            "reversibility": "Policy terms reversible by subsequent decision; realized asset/credit exposure harder to reverse than authorization.",
+            "execution_receipt_at_cut": false
+          }
+        ],
+        "constraints": [
+          "Pandemic activity disruption and affected financial conditions; weak investment/exports, energy stress, below-target inflation, falling inflation compensation. New target reaches practical near-zero range, while statement does not legally prohibit negative rates.",
+          "Market functioning and dollar-funding strain explicitly motivate non-rate tools."
+        ],
+        "feasible_alternatives": [
+          {
+            "alternative": "Smaller cut to 0.50–0.75%",
+            "evidence": "Mester explicitly preferred this range while supporting market/credit actions.",
+            "consideration_status": "EXPLICIT_DISSENT"
+          },
+          {
+            "alternative": "Different asset-purchase pace or plans",
+            "evidence": "Statement and directive permit pace/plan adjustments for market functioning.",
+            "consideration_status": "EXPLICIT_FLEXIBILITY"
+          }
+        ],
+        "distribution": {
+          "direct_beneficiaries": [
+            "Depository institutions with discount-window access; standing swap counterpart central banks; Treasury/agency MBS markets."
+          ],
+          "indirect_beneficiaries": [
+            "Households/businesses through funding, mortgage and credit channels."
+          ],
+          "burden_bearers": [
+            "Lower yields for rate savers; public balance sheet carries expanded asset/credit exposures when executed."
+          ],
+          "selective_relief_present": "YES",
+          "selectivity_rationale": "Bank/eligible collateral and standing swap-counterparty channels are selective institutional access; broad macro objective.",
+          "changes": [
+            "Lower financing costs; expanded funding backstops; bank buffer constraints relaxed."
+          ]
+        },
+        "competing_hypotheses": [
+          {
+            "claim": "Mandate and market-functioning stabilization against pandemic shock.",
+            "evidence_for": [
+              "Negative activity forecast, cut, purchases, bank liquidity and swaps."
+            ],
+            "evidence_against": [
+              "Cut cannot directly remedy public-health constraint; smaller-cut dissent."
+            ],
+            "assumptions": [
+              "Financial transmission is meaningful amid shock."
+            ],
+            "falsifiers": [
+              "Support remains unchanged after constraints fully normalize without macro justification."
+            ],
+            "material_re_rank_observation": "Then-new market-functioning indicators and public health/activity evidence.",
+            "private_motive_status": "UNRESOLVED; qualitative research hypothesis, not a known input"
+          },
+          {
+            "claim": "Selective intermediaries protected to preserve aggregate credit rather than direct household transfers.",
+            "evidence_for": [
+              "Banks, agency MBS and standing foreign central banks are operational recipients."
+            ],
+            "evidence_against": [
+              "Broad credit objective and institutional tool set can fully explain selectivity; private favoritism unevidenced."
+            ],
+            "assumptions": [
+              "Intermediary channel faster/legally feasible relative to direct support."
+            ],
+            "falsifiers": [
+              "Comparable legally eligible excluded intermediaries receive systematically different treatment without functional rationale."
+            ],
+            "material_re_rank_observation": "Detailed eligibility, take-up and alternative powers; later execution stored outside decision time.",
+            "private_motive_status": "UNRESOLVED; qualitative research hypothesis, not a known input"
+          }
+        ],
+        "proposed_feature_codes": {
+          "rhetoric_direction": "HOLD",
+          "rhetoric_horizon": "Until state-based recovery; plausible 1m/3m/6m but no calendar guarantee",
+          "rhetoric_rationale": "Explicit expect maintain new target range.",
+          "action_rate_direction": "DOWN",
+          "explicit_action_constraint_path": "HOLD",
+          "constraint_path_rationale": "New zero-range target + explicit conditional hold; not extrapolated further cuts.",
+          "constraint_path_horizon": "State based"
+        },
+        "rhetoric_action_direction_relation": "ALIGNED",
+        "pre_event_market_pricing": "MISSING. No futures/OIS snapshot reconstructed; no policy-surprise label permitted.",
+        "prior_public_sources": []
+      },
+      "later_outcomes": {
+        "status": "NOT_EXTRACTED_BY_THIS_HELPER; root separates labels and scorer"
+      },
+      "limitations": [
+        "HOLD rhetoric refers to future at new range while DOWN action refers current adjustment; do not mark this temporal mismatch divergent.",
+        "All facilities/purchases remain authorizations/plans at cut, not executed amounts."
+      ],
+      "source_lineage": [
+        {
+          "source_id": "statement_2020-03-15",
+          "source_family": "FED_POLICY_2020-03-15",
+          "public_before_cut": true,
+          "clock_basis": "Explicit original release header, not URL date.",
+          "publication_timestamp_utc": "2020-03-15T21:00:00Z",
+          "classification": "primary",
+          "correction_supersession_state": "Dated official release; no correction disclosed on retrieved page."
+        },
+        {
+          "source_id": "implementation_2020-03-15",
+          "source_family": "FED_POLICY_2020-03-15",
+          "public_before_cut": true,
+          "clock_basis": "Explicit original release header, not URL date.",
+          "publication_timestamp_utc": "2020-03-15T21:00:00Z",
+          "classification": "primary",
+          "correction_supersession_state": "Implementation HTML has no clock; simultaneous release certified by opened official meeting page and timezone from statement."
+        },
+        {
+          "source_id": "credit_2020-03-15",
+          "source_family": "FED_POLICY_2020-03-15",
+          "public_before_cut": true,
+          "clock_basis": "Explicit original release header, not URL date.",
+          "publication_timestamp_utc": "2020-03-15T21:00:00Z",
+          "classification": "primary",
+          "correction_supersession_state": "Dated official release; no correction disclosed on retrieved page."
+        },
+        {
+          "source_id": "swaps_2020-03-15",
+          "source_family": "JOINT_CENTRAL_BANK_SWAP_2020-03-15",
+          "public_before_cut": true,
+          "clock_basis": "Explicit original release header, not URL date.",
+          "publication_timestamp_utc": "2020-03-15T21:00:00Z",
+          "classification": "primary",
+          "correction_supersession_state": "Dated official release; no correction disclosed on retrieved page."
+        }
+      ]
+    },
+    {
+      "episode_id": "FED_20200323_FACILITIES_AND_PURCHASES",
+      "episode_family": "US_FED_POLICY",
+      "actor_ids": [
+        "FOMC",
+        "JEROME_POWELL"
+      ],
+      "institution_ids": [
+        "FEDERAL_RESERVE",
+        "NYFED"
+      ],
+      "event_time_precision": "minute; official original release header",
+      "first_public_evidence_utc": "2020-03-23T12:00:00Z",
+      "decision_cut_utc": "2020-03-23T12:05:00Z",
+      "cut_rule": "Original release plus five minutes; evidence is release and authenticated simultaneous attachments only. No later press conference, market move or minutes. Five-minute buffer is operational convention, not observed web latency.",
+      "pit_certified_proposal": true,
+      "source_ids": [
+        "statement_2020-03-23",
+        "facilities_2020-03-23",
+        "initial_b1_2020-03-23",
+        "initial_b2_2020-03-23",
+        "initial_b3_2020-03-23"
+      ],
+      "decision_time": {
+        "rhetoric": [
+          {
+            "faithful_paraphrase": "Fed would use its full tools to support economy and credit; severe disruptions expected, aggressive effort needed to reduce job/income losses.",
+            "statement_type": "PREFERENCE",
+            "source_ids": [
+              "facilities_2020-03-23"
+            ],
+            "actor": "FOMC",
+            "timestamp_utc": "2020-03-23T12:00:00Z",
+            "explicit_horizon": "recovery after disruptions abate",
+            "directional_implication": "ABSTAIN",
+            "ambiguity_conditionality": "Support goal does not forecast positive returns or define next rate direction.",
+            "not_a_probability_forecast": true
+          },
+          {
+            "faithful_paraphrase": "Treasury/agency MBS purchases would occur in amounts needed for market functioning and policy transmission.",
+            "statement_type": "CONDITIONAL_COMMITMENT",
+            "source_ids": [
+              "statement_2020-03-23"
+            ],
+            "actor": "FOMC",
+            "timestamp_utc": "2020-03-23T12:00:00Z",
+            "explicit_horizon": "as needed, reviewed future meetings",
+            "directional_implication": "ABSTAIN",
+            "ambiguity_conditionality": "Open-ended quantity commitment conditional on function, not infinite purchases or guaranteed prices.",
+            "not_a_probability_forecast": true
+          }
+        ],
+        "actions": [
+          {
+            "action_type": "ASSET_PURCHASE_AUTHORIZATION",
+            "instrument": "Treasury / agency residential and commercial MBS",
+            "status": "announced_and_authorized",
+            "description": "Replace stated purchase minimum framing with amounts needed; include agency commercial MBS; directive effective same date maintains 0–0.25% target.",
+            "magnitude": null,
+            "announced_effective_date": "2020-03-23",
+            "source_ids": [
+              "statement_2020-03-23"
+            ],
+            "institutional_owner": "FOMC; New York Fed Desk implements",
+            "reversibility": "Policy terms reversible by subsequent decision; realized asset/credit exposure harder to reverse than authorization.",
+            "execution_receipt_at_cut": false
+          },
+          {
+            "action_type": "EMERGENCY_CREDIT_FACILITIES",
+            "instrument": "PMCCF / SMCCF / TALF",
+            "status": "established_and_authorized_not_executed",
+            "description": "New financing capacity up to $300bn with Treasury $30bn equity commitment; PMCCF/SMCCF corporate credit and TALF ABS support approved under section13(3) with Treasury Secretary approval.",
+            "magnitude": "up to $300bn planned financing; $30bn planned Treasury equity",
+            "announced_effective_date": null,
+            "source_ids": [
+              "facilities_2020-03-23"
+            ],
+            "institutional_owner": "Federal Reserve Board; NYFed SPVs; Treasury ESF equity",
+            "reversibility": "Policy terms reversible by subsequent decision; realized asset/credit exposure harder to reverse than authorization.",
+            "execution_receipt_at_cut": false
+          },
+          {
+            "action_type": "TARGETED_FACILITY_EXPANSION",
+            "instrument": "MMLF / CPFF",
+            "status": "announced_and_authorized",
+            "description": "Expand eligible municipal-related securities and reduce CPFF pricing. Main Street lending program only expected soon, not established here.",
+            "magnitude": null,
+            "announced_effective_date": null,
+            "source_ids": [
+              "facilities_2020-03-23"
+            ],
+            "institutional_owner": "FOMC; New York Fed Desk implements",
+            "reversibility": "Policy terms reversible by subsequent decision; realized asset/credit exposure harder to reverse than authorization.",
+            "execution_receipt_at_cut": false
+          }
+        ],
+        "constraints": [
+          "Severe pandemic disruption and financial-system/market-functioning responsibilities; 0–0.25% rate directive leaves non-rate tools central. Section13(3) authorization and Treasury Secretary approval stated.",
+          "Initial corporate facilities restricted to investment-grade US issuers; term/maturity/issuer limits and Treasury equity protect facility credit exposure. TALF restricted eligible high-rated ABS with haircuts."
+        ],
+        "feasible_alternatives": [
+          {
+            "alternative": "Keep March15 specified purchase minimums and existing facilities",
+            "evidence": "Prior $500bn/$200bn minimum announcement expressly referenced and now superseded in quantity guidance.",
+            "consideration_status": "PRIOR_VISIBLE_PATH"
+          },
+          {
+            "alternative": "Include lower-rated corporate borrowers or provide direct support for smaller firms",
+            "evidence": "Initial facilities say scope may expand; Main Street program expected later, not yet available. Legal/operational sufficiency of wider eligibility not established.",
+            "consideration_status": "FUTURE_SCOPE_OPTION; no evidence rejected viable equivalent."
+          }
+        ],
+        "distribution": {
+          "direct_beneficiaries": [
+            "Eligible investment-grade US corporate issuers and their bond/ETF markets; eligible ABS holders; qualifying money-fund/municipal funding channels."
+          ],
+          "indirect_beneficiaries": [
+            "Employees/suppliers, consumers and small businesses via qualifying credit origination."
+          ],
+          "burden_bearers": [
+            "Ineligible below-investment-grade issuers and firms lacking market access receive no same immediate facility; Treasury/Fed exposed to realized credit risks once execution occurs."
+          ],
+          "selective_relief_present": "YES",
+          "selectivity_rationale": "Initial credit ratings, US operations, asset type, maturity and issuer caps. PMCCF payment-in-kind election forbids dividends/buybacks during deferred interest.",
+          "changes": [
+            "Funding backstop/downside risk and financing access; announcement capacity distinct from flows."
+          ]
+        },
+        "competing_hypotheses": [
+          {
+            "claim": "Mandate-consistent credit/market-function repair with legal and credit-risk safeguards.",
+            "evidence_for": [
+              "Treasury/agency strains; Section13(3), Treasury approval/equity; high-grade collateral and haircut limits."
+            ],
+            "evidence_against": [
+              "Broad support rhetoric covers actors initially without immediate eligible facilities."
+            ],
+            "assumptions": [
+              "Credit eligibility follows risk/tool constraints."
+            ],
+            "falsifiers": [
+              "Equally feasible broad collateral support deliberately withheld without risk/legal rationale."
+            ],
+            "material_re_rank_observation": "Then-public implementation/eligibility rationale and alternatives, not fitted later equity gains.",
+            "private_motive_status": "UNRESOLVED; qualitative research hypothesis, not a known input"
+          },
+          {
+            "claim": "Protect market-financed large firms first while smaller/riskier borrowers wait.",
+            "evidence_for": [
+              "Investment-grade corporate facilities immediately established; Main Street only expected."
+            ],
+            "evidence_against": [
+              "TALF, CPFF/MMLF and broad credit objective support wider indirect transmission; no hidden-intent evidence."
+            ],
+            "assumptions": [
+              "Timing gives material differential financing access."
+            ],
+            "falsifiers": [
+              "Comparable prompt support reaches excluded borrowers or eligibility mostly follows unavoidable legal constraints."
+            ],
+            "material_re_rank_observation": "Contemporaneous program readiness and legal scope; later uptake/outcomes outside features.",
+            "private_motive_status": "UNRESOLVED; qualitative research hypothesis, not a known input"
+          }
+        ],
+        "proposed_feature_codes": {
+          "rhetoric_direction": "ABSTAIN",
+          "rhetoric_horizon": "Next policy-rate decision; support commitment itself not a rate path",
+          "rhetoric_rationale": "Full tools / as-needed purchases concerns credit and quantity, not an extra rate cut.",
+          "action_rate_direction": "NOT_RATE",
+          "explicit_action_constraint_path": "HOLD",
+          "constraint_path_rationale": "Maintained 0–0.25% directive plus pre-existing Mar15 state-contingent hold, available before cut.",
+          "constraint_path_horizon": "State based"
+        },
+        "rhetoric_action_direction_relation": "MIXED",
+        "pre_event_market_pricing": "MISSING. No futures/OIS snapshot reconstructed; no policy-surprise label permitted.",
+        "prior_public_sources": [
+          "statement_2020-03-15"
+        ]
+      },
+      "later_outcomes": {
+        "status": "NOT_EXTRACTED_BY_THIS_HELPER; root separates labels and scorer"
+      },
+      "limitations": [
+        "Broad household/business rhetoric vs investment-grade corporate eligibility is distributional tension, not deception.",
+        "Headline press release has July28 update; only original initial term-sheet PDFs and historical body, not updated attachments, used.",
+        "Initial PDF clocks inherited from dated parent-release association, so strict timestamp proof beyond association could quarantine detailed term-sheet features."
+      ],
+      "source_lineage": [
+        {
+          "source_id": "statement_2020-03-23",
+          "source_family": "FED_POLICY_2020-03-23",
+          "public_before_cut": true,
+          "clock_basis": "Explicit original release header, not URL date.",
+          "publication_timestamp_utc": "2020-03-23T12:00:00Z",
+          "classification": "primary",
+          "correction_supersession_state": "Dated official release; no correction disclosed on retrieved page."
+        },
+        {
+          "source_id": "facilities_2020-03-23",
+          "source_family": "FED_POLICY_2020-03-23",
+          "public_before_cut": true,
+          "clock_basis": "Explicit original release header, not URL date.",
+          "publication_timestamp_utc": "2020-03-23T12:00:00Z",
+          "classification": "primary",
+          "correction_supersession_state": "HTML Last Update July 28, 2020. Later updated-term-sheet links excluded. Original initial terms corroborate headline content; do not use later eligibility expansions."
+        },
+        {
+          "source_id": "initial_b1_2020-03-23",
+          "source_family": "FED_POLICY_2020-03-23",
+          "public_before_cut": true,
+          "clock_basis": "Explicit original release header, not URL date.",
+          "publication_timestamp_utc": "2020-03-23T12:00:00Z",
+          "classification": "primary",
+          "correction_supersession_state": "Initial term-sheet attachment authenticated by link from 08:00 EDT release; PDF itself has no publication clock. Do not use separate updated-term-sheet links. Treat clock as parent-release attachment association, not independent timestamp."
+        },
+        {
+          "source_id": "initial_b2_2020-03-23",
+          "source_family": "FED_POLICY_2020-03-23",
+          "public_before_cut": true,
+          "clock_basis": "Explicit original release header, not URL date.",
+          "publication_timestamp_utc": "2020-03-23T12:00:00Z",
+          "classification": "primary",
+          "correction_supersession_state": "Initial term-sheet attachment authenticated by link from 08:00 EDT release; PDF itself has no publication clock. Do not use separate updated-term-sheet links. Treat clock as parent-release attachment association, not independent timestamp."
+        },
+        {
+          "source_id": "initial_b3_2020-03-23",
+          "source_family": "FED_POLICY_2020-03-23",
+          "public_before_cut": true,
+          "clock_basis": "Explicit original release header, not URL date.",
+          "publication_timestamp_utc": "2020-03-23T12:00:00Z",
+          "classification": "primary",
+          "correction_supersession_state": "Initial term-sheet attachment authenticated by link from 08:00 EDT release; PDF itself has no publication clock. Do not use separate updated-term-sheet links. Treat clock as parent-release attachment association, not independent timestamp."
+        },
+        {
+          "source_id": "statement_2020-03-15",
+          "source_family": "FED_POLICY_2020-03-15",
+          "public_before_cut": true,
+          "clock_basis": "Explicit original release header, not URL date.",
+          "publication_timestamp_utc": "2020-03-15T21:00:00Z",
+          "classification": "primary",
+          "correction_supersession_state": "Dated official release; no correction disclosed on retrieved page."
+        }
+      ]
+    },
+    {
+      "episode_id": "FED_20200827_AIT_STRATEGY",
+      "episode_family": "US_FED_POLICY",
+      "actor_ids": [
+        "FOMC",
+        "JEROME_POWELL"
+      ],
+      "institution_ids": [
+        "FEDERAL_RESERVE",
+        "NYFED"
+      ],
+      "event_time_precision": "minute; official original release header",
+      "first_public_evidence_utc": "2020-08-27T13:10:00Z",
+      "decision_cut_utc": "2020-08-27T13:15:00Z",
+      "cut_rule": "Original release plus five minutes; evidence is release and authenticated simultaneous attachments only. No later press conference, market move or minutes. Five-minute buffer is operational convention, not observed web latency.",
+      "pit_certified_proposal": true,
+      "source_ids": [
+        "strategy_2020-08-27",
+        "strategy_pdf_2020-08-27",
+        "statement_2020-07-29"
+      ],
+      "decision_time": {
+        "rhetoric": [
+          {
+            "faithful_paraphrase": "Long-run inflation remains 2%; after persistent undershoots, appropriate policy likely aims moderately above 2% for some time to achieve average 2%.",
+            "statement_type": "CONDITIONAL_COMMITMENT",
+            "source_ids": [
+              "strategy_2020-08-27"
+            ],
+            "actor": "FOMC",
+            "timestamp_utc": "2020-08-27T13:10:00Z",
+            "explicit_horizon": "over time / some time; no window or numeric overshoot",
+            "directional_implication": "ABSTAIN",
+            "ambiguity_conditionality": "Inflation policy objective is not inflation forecast, numeric average rule, immediate rate cut or 1m/3m/6m promise.",
+            "not_a_probability_forecast": true
+          },
+          {
+            "faithful_paraphrase": "Maximum employment is broad and inclusive; decisions address shortfalls rather than deviations, recognizing low-rate lower-bound constraints.",
+            "statement_type": "PREFERENCE",
+            "source_ids": [
+              "strategy_2020-08-27"
+            ],
+            "actor": "FOMC",
+            "timestamp_utc": "2020-08-27T13:10:00Z",
+            "explicit_horizon": "longer run",
+            "directional_implication": "ABSTAIN",
+            "ambiguity_conditionality": "Asymmetric employment assessment changes framework, not current target range.",
+            "not_a_probability_forecast": true
+          }
+        ],
+        "actions": [
+          {
+            "action_type": "STRATEGY_ADOPTION",
+            "instrument": "longer-run goals and monetary policy strategy",
+            "status": "approved_effective_framework",
+            "description": "Unanimous adoption of average-inflation and employment-shortfalls framework. No new policy-rate target or realized purchase flow.",
+            "magnitude": null,
+            "announced_effective_date": "2020-08-27",
+            "source_ids": [
+              "strategy_2020-08-27",
+              "strategy_pdf_2020-08-27"
+            ],
+            "institutional_owner": "FOMC; New York Fed Desk implements",
+            "reversibility": "Policy terms reversible by subsequent decision; realized asset/credit exposure harder to reverse than authorization.",
+            "execution_receipt_at_cut": false
+          }
+        ],
+        "constraints": [
+          "Persistently low interest-rate environment increases effective-lower-bound incidence and downside employment/inflation risk. Maximum employment uncertain, non-numeric; 2% PCE inflation objective retained.",
+          "Pre-existing July29 public statement: activity/employment remain far below start-year levels; rate 0–0.25% expected maintained until recovery confidence."
+        ],
+        "feasible_alternatives": [
+          {
+            "alternative": "Retain earlier symmetric deviation / annual inflation-target framework",
+            "evidence": "Timed press release explicitly compares changed text to original.",
+            "consideration_status": "PRIOR_FRAMEWORK_VISIBLE"
+          },
+          {
+            "alternative": "Specify numerical inflation averaging window or overshoot promise",
+            "evidence": "New text leaves over time / some time undefined. Not evidence numeric rule was considered or feasible.",
+            "consideration_status": "NOT_EVIDENCED_AT_CUT"
+          }
+        ],
+        "distribution": {
+          "direct_beneficiaries": [
+            "No facility cash recipient; framework adoption."
+          ],
+          "indirect_beneficiaries": [
+            "Workers at employment margins, including low/moderate-income communities as explicitly emphasized."
+          ],
+          "burden_bearers": [
+            "Potential purchasing-power burden of moderate overshoot (conditional mechanical exposure, not realized inflation)."
+          ],
+          "selective_relief_present": "NO",
+          "selectivity_rationale": "Inclusive objective and aggregate framework, no immediate selective credit transfer.",
+          "changes": [
+            "Conditional future tolerance of inflation overshoot; financing conditions depend on future implementation."
+          ]
+        },
+        "competing_hypotheses": [
+          {
+            "claim": "Framework response to low neutral rates, lower-bound risk and persistent inflation undershoot.",
+            "evidence_for": [
+              "Low-rate constraints and revised averaging strategy explicitly stated."
+            ],
+            "evidence_against": [
+              "No quantified averaging window; implementation still discretionary."
+            ],
+            "assumptions": [
+              "Lower-bound/expectation dynamic motivates rule change."
+            ],
+            "falsifiers": [
+              "Policy systematically ignores persistent undershoots without changed constraints."
+            ],
+            "material_re_rank_observation": "Future published state-contingent operational guidance, kept out of this cut.",
+            "private_motive_status": "UNRESOLVED; qualitative research hypothesis, not a known input"
+          },
+          {
+            "claim": "Greater tolerance of tight labor market and delayed preemptive tightening.",
+            "evidence_for": [
+              "Shortfalls replaces deviations; inclusive employment and moderate overshoot intent."
+            ],
+            "evidence_against": [
+              "2% long-run target retained; financial stability and balanced tradeoffs remain."
+            ],
+            "assumptions": [
+              "Asymmetric language changes operational reaction function."
+            ],
+            "falsifiers": [
+              "Preemptive tightening solely because employment exceeds estimated maximum absent inflation concern."
+            ],
+            "material_re_rank_observation": "Then-new operational thresholds and action when inflation/employment conflict.",
+            "private_motive_status": "UNRESOLVED; qualitative research hypothesis, not a known input"
+          }
+        ],
+        "proposed_feature_codes": {
+          "rhetoric_direction": "ABSTAIN",
+          "rhetoric_horizon": "Strategy long run, no fixed next-rate direction",
+          "rhetoric_rationale": "Do not turn preference for inflation overshoot into forecast of a cut.",
+          "action_rate_direction": "NOT_RATE",
+          "explicit_action_constraint_path": "HOLD",
+          "constraint_path_rationale": "Prior July29 explicit zero-range recovery-contingent hold remains public; AIT does not announce rate change.",
+          "constraint_path_horizon": "State based"
+        },
+        "rhetoric_action_direction_relation": "ALIGNED",
+        "pre_event_market_pricing": "MISSING. No futures/OIS snapshot reconstructed; no policy-surprise label permitted.",
+        "prior_public_sources": [
+          "statement_2020-07-29"
+        ]
+      },
+      "later_outcomes": {
+        "status": "NOT_EXTRACTED_BY_THIS_HELPER; root separates labels and scorer"
+      },
+      "limitations": [
+        "Use dated FOMC_LongerRunGoals_202008.pdf. Mutable FOMC_LongerRunGoals.pdf currently contains Jan27,2026 framework and is excluded.",
+        "Powell Aug27 speech date-only; its text is excluded from 13:15Z cut.",
+        "Calling strategy mechanically dovish relative to prior framework is a reaction-function interpretation, not a clean policy-rate prediction."
+      ],
+      "source_lineage": [
+        {
+          "source_id": "strategy_2020-08-27",
+          "source_family": "FED_POLICY_2020-08-27",
+          "public_before_cut": true,
+          "clock_basis": "Explicit original release header, not URL date.",
+          "publication_timestamp_utc": "2020-08-27T13:10:00Z",
+          "classification": "primary",
+          "correction_supersession_state": "Dated official release; no correction disclosed on retrieved page."
+        },
+        {
+          "source_id": "strategy_pdf_2020-08-27",
+          "source_family": "FED_POLICY_2020-08-27",
+          "public_before_cut": true,
+          "clock_basis": "Explicit original release header, not URL date.",
+          "publication_timestamp_utc": "2020-08-27T13:10:00Z",
+          "classification": "primary",
+          "correction_supersession_state": "Historical PDF names amended effective August 27, 2020. Publication clock inherited from contemporaneous release announcing approved statement; historical index itself archaeology-only. Avoid mutable FOMC_LongerRunGoals.pdf, which is now 2026."
+        },
+        {
+          "source_id": "statement_2020-07-29",
+          "source_family": "FED_POLICY_2020-07-29",
+          "public_before_cut": true,
+          "clock_basis": "Explicit original release header, not URL date.",
+          "publication_timestamp_utc": "2020-07-29T18:00:00Z",
+          "classification": "primary",
+          "correction_supersession_state": "Dated official release; no correction disclosed on retrieved page."
+        }
+      ]
+    }
+  ],
+  "global_unresolveds": [
+    "Pre-event futures/OIS expected-rate probabilities missing for all rows.",
+    "No executed trades/loan take-up reconstructed; scheduled effective dates are announcements, not execution receipts.",
+    "Source families combine FOMC decision, Board implementation and NYFed execution design for same underlying event; mirrors/attachments are not independent evidence.",
+    "Minutes, confidential Tealbooks and meeting transcripts released later are excluded.",
+    "Exact 1m/3m/6m mapping of unspecified guidance requires frozen scorer rule, not episode-wise hindsight."
+  ]
+}
