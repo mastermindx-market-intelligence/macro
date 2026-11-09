@@ -1332,19 +1332,18 @@ def _locally_missing_blobs(work: Path, sha: str) -> list[str]:
         for line in _git(work, "ls-tree", "-r", sha).splitlines()
         if line.split()[1] == "blob"
     ]
-    probe = subprocess.run(
-        ["git", "cat-file", "--batch-check"],
-        cwd=work,
-        input="".join(f"{oid}\n" for oid in oids),
-        capture_output=True,
-        text=True,
-        env={**os.environ, "GIT_NO_LAZY_FETCH": "1"},
+    # Enumerate only objects already present, including alternates. Looking up
+    # a missing OID can fetch it in a partial clone, invalidating this probe.
+    # Do not depend on a Git version honoring GIT_NO_LAZY_FETCH.
+    present = set(
+        _git(
+            work,
+            "cat-file",
+            "--batch-all-objects",
+            "--batch-check=%(objectname)",
+        ).splitlines()
     )
-    return [
-        line.split(" ", 1)[0]
-        for line in probe.stdout.splitlines()
-        if line.endswith(" missing")
-    ]
+    return [oid for oid in oids if oid not in present]
 
 
 def test_base_replay_checks_out_a_base_sha_inside_a_partial_clone(
@@ -1369,6 +1368,10 @@ def test_base_replay_checks_out_a_base_sha_inside_a_partial_clone(
         "fixture is not a partial clone — no blob at the base commit is "
         "missing locally, so this test could not observe the defect"
     )
+
+    # The checked-out head is present, and observing it must not hydrate base.
+    assert _locally_missing_blobs(work, head) == []
+    assert _locally_missing_blobs(work, base) == missing
 
     monkeypatch.setenv("RUNNER_TEMP", str(tmp_path / "runner-temp"))
     (tmp_path / "runner-temp").mkdir()
