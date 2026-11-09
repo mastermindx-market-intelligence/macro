@@ -22,7 +22,7 @@
     "Denied local-file browser preview; no carrier/scheme replay."
   ],
   "effects": {
-    "observed": 156,
+    "observed": 169,
     "reconciled_validation_rejections": 2,
     "unresolved": []
   },
@@ -33,16 +33,18 @@
     "PROPHET ZE5 uncertain effect and D03 Phase 2A",
     "Risk Radar #8186/#7647 and parent integration",
     "Hub held AXON shell43",
-    "MASTERMIND PAGES data-loss warning"
+    "MASTERMIND PAGES data-loss warning",
+    "Shared F01/F02 provenance and freeze/consumer acceptance; historical G15 uncertainty is not replayed"
   ],
   "next_actions": [
     "Read this branch's exact PR/head/checks and source-delivery receipt; consume an existing merge rather than republishing.",
     "Use followup/BUILD_PLAN.md F01–F12 under the existing producers, consumers and effect owners.",
     "Do not treat this artifact, an armed label or merged documentation as runtime implementation or production proof."
   ],
-  "children": "Read-only advisory children completed; Ontology sample preserved, Guide and shared-clock advice implemented. No watcher was commissioned.",
+  "children": "Read-only advisers completed. Guide, material clock and exact Options diagram advice implemented; current Ontology overview and four detail destinations preserved.",
   "automatic_continuation": "No background runner, observer or automatic wake was created.",
   "source_status_owner": "GitHub PR and commit receipts, not this static file.",
   "current_pr": 10872,
-  "source_repair_head": "7e8382d695b3568aa0c0c82c7245f80cb5c78fd5"
+  "source_repair_head": "7e8382d695b3568aa0c0c82c7245f80cb5c78fd5",
+  "source_parent_before_visual_extension": "bbfe49afa54e33f0e842c2ff45f15d1b54adec19"
 }

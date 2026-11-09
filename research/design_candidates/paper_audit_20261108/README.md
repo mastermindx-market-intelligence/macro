@@ -21,7 +21,7 @@ The original wave accompanies actual edits in five Paper product files. It recor
 
 ## 9 November continuation
 
-A further ten Paper files now have source-aligned logic, clearer workflows, preserved originals and implementation contracts. Start with [the continuation results](followup/RESULTS.md), [builder plan](followup/BUILD_PLAN.md) and [source rulings](followup/SOURCE_RULINGS.md). Current post-edit JSX, 26 rendered captures, exact text verification and the mutation ledger are in [followup/](followup/). The original five-file acceptance and runtime limitations below remain applicable.
+A further ten Paper files now have source-aligned logic, clearer workflows, preserved originals and implementation contracts. Start with [the continuation results](followup/RESULTS.md), [builder plan](followup/BUILD_PLAN.md) and [source rulings](followup/SOURCE_RULINGS.md). Current post-edit JSX, 28 rendered captures, exact text verification and the mutation ledger are in [followup/](followup/). The original five-file acceptance and runtime limitations below remain applicable.
 
 ## Important distinctions
 

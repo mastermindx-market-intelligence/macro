@@ -108,7 +108,10 @@
       "17G-0",
       "17O-0",
       "17V-0"
-    ]
+    ],
+    "clockDiagram": "17X-0",
+    "clockCaption": "15A-0",
+    "clockBuild": "18C-0"
   },
   "optionsMobile": {
     "file": "01M5FNCKAND6CBSJNYM5FZWR8Y",
@@ -244,6 +247,12 @@
       "2WI-0"
     ],
     "change": "Material second clock stays beside the verdict or action; other source times remain in LENS.",
-    "owner": "Existing MX/Freshness and evidence components"
+    "owner": "Existing MX/Freshness and evidence components",
+    "builderCompanion": {
+      "node": "ANH-0",
+      "parent": "9ZS-0",
+      "page": "p-B-0",
+      "sourceNode": "AO8-0"
+    }
   }
 }

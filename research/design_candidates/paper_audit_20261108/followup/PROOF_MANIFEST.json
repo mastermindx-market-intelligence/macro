@@ -284,5 +284,27 @@
     "paper_node_id": "2UE-0",
     "mime_type": "image/jpeg",
     "evidence": "Static Paper rendering; no runtime behavior inferred."
+  },
+  {
+    "key": "options-clock-explanation",
+    "path": "proof/options-clock-explanation.jpg",
+    "bytes": 78048,
+    "sha256": "a81629b2d9a3a9a132d4a192741314146a3f86ff36dacd5107bc4305f82f3c5a",
+    "git_blob_sha": "f41945e3b6718f1e72abf6e20a138886cf041a45",
+    "paper_file_id": "01M5EPQ16VBT7SBW2NQVX2RJG4",
+    "paper_node_id": "14Z-0",
+    "mime_type": "image/jpeg",
+    "evidence": "Static Paper rendering; no runtime behavior inferred."
+  },
+  {
+    "key": "shared-build-companion",
+    "path": "proof/shared-build-companion.jpg",
+    "bytes": 105017,
+    "sha256": "5f9524597b752ddd94239ef91c51287422e90b38ed549dcb12dab038364e7ef8",
+    "git_blob_sha": "8d2004d64d51781b1e49b239d3995307013dc7c5",
+    "paper_file_id": "01M312VSDSZFVT45674GDVJVZN",
+    "paper_node_id": "ANH-0",
+    "mime_type": "image/jpeg",
+    "evidence": "Static Paper rendering; no runtime behavior inferred."
   }
 ]

@@ -81,6 +81,8 @@ In Flow, the $216,000 print is related context outside a ≥$250K filter. The di
 
 **Completion evidence:** selected-expiry switches, missing/partial smiles, source-date mismatch, reference-vs-spot distinction, exact formatting and filter membership through the existing consumer. Event weekday corrections are calendar arithmetic only, not validation of real earnings/FOMC schedules.
 
+**Expected-move illustration:** Help 17X-0 is a static dependency figure: IV plus trading-day horizon → percentage estimate; percentage plus qualifying spot → dollar price range. Reuse expectedMoveFromIv at terminal/lib/volTenorComparison.ts:134. A qualifying spot is finite, positive and has a non-empty observation time. Preserve its own clock and admitted source context; this figure does not authorize arbitrary source pairing. The expected-move horizon uses trading days/252, independently of the calendar-DTE total-variance interpolation described above. Keep return 150-0 and supply a meaningful accessible figure name. No animation or new control is required.
+
 ## F04 — News touch access with explicit review effects
 
 Implement 44px coarse-pointer targets in TickerNewsPanel, NewsLadder and NewsCatchup, retaining existing DOM hooks, story identity and keyboard semantics. Fine-pointer compact controls remain a valid separate treatment.
@@ -168,6 +170,10 @@ The existing MX/Freshness component names a panel’s primary clock. A second cl
 Do not choose the latest timestamp merely because it is latest. Preserve the source owner and semantic role of every clock. The shared rule changes presentation, not freshness computation, eligibility, assessment status or action admission. The source doctrine at Macro b5674d8ef898e503d6164922654f5ff89be9981c, docs/DESIGN_DOCTRINE.md:263, keeps freshness at its truthful scope and consequential limitations visible.
 
 **Acceptance:** current quote/older assessment, distinct observation/receipt times, missing one clock, same-generation times, source change and narrow/localized layouts. A recent quote must not make a stale assessment appear current; a receipt time must not become the market observation time.
+
+## Builder navigation in Paper
+
+The shared system’s Build page p-B-0 begins with ANH-0, a compact companion linking PR #10872 and this F01–F12 sequence. It precedes the preserved 9ZT-0 reference row. This directory adds no owner, runtime state or acceptance decision. In particular, F01/F02 provenance holds, historical G15 uncertainty, required consumer journeys and the existing freeze boundary remain unchanged.
 
 ## Visual and interaction completion
 

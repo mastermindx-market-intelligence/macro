@@ -10027,5 +10027,835 @@
       },
       "result": "OK"
     }
+  },
+  {
+    "operation_id": "paper-audit-20261109-builder-companion-header-v1",
+    "tool": "write_html",
+    "arguments": {
+      "fileId": "01M312VSDSZFVT45674GDVJVZN",
+      "targetNodeId": "9ZS-0",
+      "mode": "insert-children",
+      "html": "<div layer-name=\"BUILD · 9 Nov implementation companion\" style=\"display:flex;flex-direction:column;gap:24px;width:1040px;height:fit-content;padding:32px;background:#0F1115;border:1px solid #3A4150;border-radius:14px;\"><div style=\"display:flex;flex-direction:column;gap:10px;\"><div style=\"font-family:Inter;font-size:12px;font-weight:600;line-height:18px;letter-spacing:1px;color:#7AA7E0;\">9 NOV 2026 · IMPLEMENTATION COMPANION</div><div style=\"font-family:Inter;font-size:28px;font-weight:600;line-height:36px;color:#D7DCE3;\">Build the improved journeys.</div><div style=\"font-family:Inter;font-size:16px;line-height:24px;color:#A5ADBA;\">Ten Paper files. Twelve scoped build slices. Start with the source-backed behavior and reuse each product’s existing owners.</div></div></div>"
+    },
+    "receipt": {
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false,
+      "before": {
+        "identity": {
+          "kind": "file-id",
+          "id": "01M312VSDSZFVT45674GDVJVZN"
+        },
+        "snapshot_sha256": "46680903782075e56ffc5bab0cdfeb618ddbc420e9e65670b979981b88b128f4"
+      },
+      "after": {
+        "identity": {
+          "kind": "file-id",
+          "id": "01M312VSDSZFVT45674GDVJVZN"
+        },
+        "snapshot_sha256": "46680903782075e56ffc5bab0cdfeb618ddbc420e9e65670b979981b88b128f4"
+      },
+      "result": {
+        "createdNodes": [
+          {
+            "id": "ANH-0",
+            "name": "BUILD · 9 Nov implementation companion",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "ANI-0",
+            "name": "Frame",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "ANJ-0",
+            "name": "9 NOV 2026 · IMPLEME…",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "ANK-0",
+            "name": "Build the improved j…",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "ANL-0",
+            "name": "Ten Paper files. Twe…",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          }
+        ]
+      }
+    }
+  },
+  {
+    "operation_id": "paper-audit-20261109-builder-companion-order-v1",
+    "tool": "move_nodes",
+    "arguments": {
+      "fileId": "01M312VSDSZFVT45674GDVJVZN",
+      "moves": [
+        {
+          "nodeId": "ANH-0",
+          "before": "9ZT-0"
+        }
+      ]
+    },
+    "receipt": {
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false,
+      "before": {
+        "identity": {
+          "kind": "file-id",
+          "id": "01M312VSDSZFVT45674GDVJVZN"
+        },
+        "snapshot_sha256": "46680903782075e56ffc5bab0cdfeb618ddbc420e9e65670b979981b88b128f4"
+      },
+      "after": {
+        "identity": {
+          "kind": "file-id",
+          "id": "01M312VSDSZFVT45674GDVJVZN"
+        },
+        "snapshot_sha256": "46680903782075e56ffc5bab0cdfeb618ddbc420e9e65670b979981b88b128f4"
+      },
+      "result": {
+        "moves": [
+          {
+            "nodeId": "ANH-0",
+            "parentId": "9ZS-0",
+            "index": 0
+          }
+        ],
+        "affectedParents": [
+          {
+            "parentId": "9ZS-0",
+            "childIds": [
+              "ANH-0",
+              "9ZT-0"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "operation_id": "paper-audit-20261109-builder-companion-row01-v1",
+    "tool": "write_html",
+    "arguments": {
+      "fileId": "01M312VSDSZFVT45674GDVJVZN",
+      "targetNodeId": "ANH-0",
+      "mode": "insert-children",
+      "html": "<div layer-name=\"Build sequence 01\" style=\"display:flex;align-items:flex-start;gap:20px;padding:20px;background:#181B21;border:1px solid #3A4150;border-radius:12px;width:100%;\"><div style=\"font-family:Inter;font-size:22px;font-weight:600;line-height:30px;color:#7AA7E0;width:40px;flex-shrink:0;\">01</div><div style=\"display:flex;flex-direction:column;gap:6px;flex:1;min-width:0;\"><div style=\"font-family:Inter;font-size:17px;font-weight:600;line-height:24px;color:#D7DCE3;\">Correct the meaning</div><div style=\"font-family:Inter;font-size:15px;line-height:23px;color:#A5ADBA;\">F01–F03 · Comparable periods, atomic loading, reduced motion and selected-expiry evidence.</div></div></div>"
+    },
+    "receipt": {
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false,
+      "before": {
+        "identity": {
+          "kind": "file-id",
+          "id": "01M312VSDSZFVT45674GDVJVZN"
+        },
+        "snapshot_sha256": "46680903782075e56ffc5bab0cdfeb618ddbc420e9e65670b979981b88b128f4"
+      },
+      "after": {
+        "identity": {
+          "kind": "file-id",
+          "id": "01M312VSDSZFVT45674GDVJVZN"
+        },
+        "snapshot_sha256": "46680903782075e56ffc5bab0cdfeb618ddbc420e9e65670b979981b88b128f4"
+      },
+      "result": {
+        "createdNodes": [
+          {
+            "id": "ANN-0",
+            "name": "Build sequence 01",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "ANO-0",
+            "name": "01",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "ANP-0",
+            "name": "Frame",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "ANQ-0",
+            "name": "Correct the meaning",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "ANR-0",
+            "name": "F01–F03 · Comparable…",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          }
+        ]
+      }
+    }
+  },
+  {
+    "operation_id": "paper-audit-20261109-builder-companion-row02-v1",
+    "tool": "write_html",
+    "arguments": {
+      "fileId": "01M312VSDSZFVT45674GDVJVZN",
+      "targetNodeId": "ANH-0",
+      "mode": "insert-children",
+      "html": "<div layer-name=\"Build sequence 02\" style=\"display:flex;align-items:flex-start;gap:20px;padding:20px;background:#181B21;border:1px solid #3A4150;border-radius:12px;width:100%;\"><div style=\"font-family:Inter;font-size:22px;font-weight:600;line-height:30px;color:#7AA7E0;width:40px;flex-shrink:0;\">02</div><div style=\"display:flex;flex-direction:column;gap:6px;flex:1;min-width:0;\"><div style=\"font-family:Inter;font-size:17px;font-weight:600;line-height:24px;color:#D7DCE3;\">Keep the journey coherent</div><div style=\"font-family:Inter;font-size:15px;line-height:23px;color:#A5ADBA;\">F04–F08 + F11 · Touch review, Risk horizons, Sector and Hub return, subject-specific evidence and Guide navigation.</div></div></div>"
+    },
+    "receipt": {
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false,
+      "before": {
+        "identity": {
+          "kind": "file-id",
+          "id": "01M312VSDSZFVT45674GDVJVZN"
+        },
+        "snapshot_sha256": "46680903782075e56ffc5bab0cdfeb618ddbc420e9e65670b979981b88b128f4"
+      },
+      "after": {
+        "identity": {
+          "kind": "file-id",
+          "id": "01M312VSDSZFVT45674GDVJVZN"
+        },
+        "snapshot_sha256": "46680903782075e56ffc5bab0cdfeb618ddbc420e9e65670b979981b88b128f4"
+      },
+      "result": {
+        "createdNodes": [
+          {
+            "id": "ANT-0",
+            "name": "Build sequence 02",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "ANU-0",
+            "name": "02",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "ANV-0",
+            "name": "Frame",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "ANW-0",
+            "name": "Keep the journey coh…",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "ANX-0",
+            "name": "F04–F08 + F11 · Touc…",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          }
+        ]
+      }
+    }
+  },
+  {
+    "operation_id": "paper-audit-20261109-builder-companion-row03-v1",
+    "tool": "write_html",
+    "arguments": {
+      "fileId": "01M312VSDSZFVT45674GDVJVZN",
+      "targetNodeId": "ANH-0",
+      "mode": "insert-children",
+      "html": "<div layer-name=\"Build sequence 03\" style=\"display:flex;align-items:flex-start;gap:20px;padding:20px;background:#181B21;border:1px solid #3A4150;border-radius:12px;width:100%;\"><div style=\"font-family:Inter;font-size:22px;font-weight:600;line-height:30px;color:#7AA7E0;width:40px;flex-shrink:0;\">03</div><div style=\"display:flex;flex-direction:column;gap:6px;flex:1;min-width:0;\"><div style=\"font-family:Inter;font-size:17px;font-weight:600;line-height:24px;color:#D7DCE3;\">Confirm effects and time</div><div style=\"font-family:Inter;font-size:15px;line-height:23px;color:#A5ADBA;\">F09–F10 + F12 · Save and re-arm use their current owners. Keep the clock that governs the verdict or action visible.</div></div></div>"
+    },
+    "receipt": {
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false,
+      "before": {
+        "identity": {
+          "kind": "file-id",
+          "id": "01M312VSDSZFVT45674GDVJVZN"
+        },
+        "snapshot_sha256": "46680903782075e56ffc5bab0cdfeb618ddbc420e9e65670b979981b88b128f4"
+      },
+      "after": {
+        "identity": {
+          "kind": "file-id",
+          "id": "01M312VSDSZFVT45674GDVJVZN"
+        },
+        "snapshot_sha256": "46680903782075e56ffc5bab0cdfeb618ddbc420e9e65670b979981b88b128f4"
+      },
+      "result": {
+        "createdNodes": [
+          {
+            "id": "ANZ-0",
+            "name": "Build sequence 03",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "AO0-0",
+            "name": "03",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "AO1-0",
+            "name": "Frame",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "AO2-0",
+            "name": "Confirm effects and …",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "AO3-0",
+            "name": "F09–F10 + F12 · Save…",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          }
+        ]
+      }
+    }
+  },
+  {
+    "operation_id": "paper-audit-20261109-builder-companion-source-v1",
+    "tool": "write_html",
+    "arguments": {
+      "fileId": "01M312VSDSZFVT45674GDVJVZN",
+      "targetNodeId": "ANH-0",
+      "mode": "insert-children",
+      "html": "<div layer-name=\"Source package\" style=\"display:flex;flex-direction:column;gap:6px;padding-top:4px;width:100%;\"><div style=\"font-family:Inter;font-size:16px;font-weight:600;line-height:24px;color:#D7DCE3;\">Implementation plan and proof</div><div style=\"font-family:Inter;font-size:14px;line-height:22px;color:#A5ADBA;\">RESULTS · BUILD_PLAN · SOURCE_RULINGS · exact Paper node and capture records</div><div style=\"font-family:Inter;font-size:14px;line-height:22px;color:#7AA7E0;\">https://github.com/mastermindx-market-intelligence/macro/pull/10872</div></div>"
+    },
+    "receipt": {
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false,
+      "before": {
+        "identity": {
+          "kind": "file-id",
+          "id": "01M312VSDSZFVT45674GDVJVZN"
+        },
+        "snapshot_sha256": "46680903782075e56ffc5bab0cdfeb618ddbc420e9e65670b979981b88b128f4"
+      },
+      "after": {
+        "identity": {
+          "kind": "file-id",
+          "id": "01M312VSDSZFVT45674GDVJVZN"
+        },
+        "snapshot_sha256": "46680903782075e56ffc5bab0cdfeb618ddbc420e9e65670b979981b88b128f4"
+      },
+      "result": {
+        "createdNodes": [
+          {
+            "id": "AO5-0",
+            "name": "Source package",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "AO6-0",
+            "name": "Implementation plan …",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "AO7-0",
+            "name": "RESULTS · BUILD_PLAN…",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "AO8-0",
+            "name": "https://github.com/m…",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          }
+        ]
+      }
+    }
+  },
+  {
+    "operation_id": "paper-audit-20261109-builder-companion-scope-v1",
+    "tool": "write_html",
+    "arguments": {
+      "fileId": "01M312VSDSZFVT45674GDVJVZN",
+      "targetNodeId": "ANH-0",
+      "mode": "insert-children",
+      "html": "<div layer-name=\"Acceptance scope\" style=\"font-family:Inter;font-size:13px;line-height:20px;color:#A5ADBA;width:100%;\">Design verification is separate from product implementation. Existing source, navigation, state and effect owners remain authoritative. F01/F02 provenance and acceptance holds remain in force; this companion does not freeze or promote the shared system.</div>"
+    },
+    "receipt": {
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false,
+      "before": {
+        "identity": {
+          "kind": "file-id",
+          "id": "01M312VSDSZFVT45674GDVJVZN"
+        },
+        "snapshot_sha256": "46680903782075e56ffc5bab0cdfeb618ddbc420e9e65670b979981b88b128f4"
+      },
+      "after": {
+        "identity": {
+          "kind": "file-id",
+          "id": "01M312VSDSZFVT45674GDVJVZN"
+        },
+        "snapshot_sha256": "46680903782075e56ffc5bab0cdfeb618ddbc420e9e65670b979981b88b128f4"
+      },
+      "result": {
+        "createdNodes": [
+          {
+            "id": "AOA-0",
+            "name": "Acceptance scope",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          }
+        ]
+      }
+    }
+  },
+  {
+    "operation_id": "paper-audit-20261109-builder-companion-finish-v1",
+    "tool": "finish_working_on_nodes",
+    "arguments": {
+      "fileId": "01M312VSDSZFVT45674GDVJVZN",
+      "nodeIds": [
+        "ANH-0"
+      ]
+    },
+    "receipt": {
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false,
+      "before": {
+        "identity": {
+          "kind": "file-id",
+          "id": "01M312VSDSZFVT45674GDVJVZN"
+        },
+        "snapshot_sha256": "46680903782075e56ffc5bab0cdfeb618ddbc420e9e65670b979981b88b128f4"
+      },
+      "after": {
+        "identity": {
+          "kind": "file-id",
+          "id": "01M312VSDSZFVT45674GDVJVZN"
+        },
+        "snapshot_sha256": "46680903782075e56ffc5bab0cdfeb618ddbc420e9e65670b979981b88b128f4"
+      },
+      "result": "OK"
+    }
+  },
+  {
+    "operation_id": "paper-audit-20261109-options-two-clock-diagram-v1",
+    "tool": "write_html",
+    "arguments": {
+      "fileId": "01M5EPQ16VBT7SBW2NQVX2RJG4",
+      "targetNodeId": "158-0",
+      "mode": "insert-children",
+      "html": "<svg layer-name=\"Expected move · two source clocks\" xmlns=\"http://www.w3.org/2000/svg\" width=\"340\" height=\"108\" viewBox=\"0 0 340 108\" role=\"img\" aria-label=\"IV and a trading-day horizon produce a percent estimate. A dollar price range also requires a qualifying spot. IV and spot keep separate observation times.\"><rect x=\"0.5\" y=\"0.5\" width=\"145\" height=\"41\" rx=\"8\" fill=\"#1E222A\" stroke=\"#3A4150\"/><rect x=\"230.5\" y=\"0.5\" width=\"109\" height=\"41\" rx=\"8\" fill=\"#1E222A\" stroke=\"#3A4150\"/><rect x=\"0.5\" y=\"66.5\" width=\"145\" height=\"41\" rx=\"8\" fill=\"#1E222A\" stroke=\"#3A4150\"/><rect x=\"230.5\" y=\"66.5\" width=\"109\" height=\"41\" rx=\"8\" fill=\"#1E222A\" stroke=\"#3A4150\"/><path d=\"M158 21H218M213 17L218 21L213 25M158 87H218M213 83L218 87L213 91M285 47V60M281 55L285 60L289 55\" fill=\"none\" stroke=\"#8B93A1\" stroke-width=\"1.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><text x=\"12\" y=\"17\" fill=\"#D7DCE3\" font-family=\"Inter\" font-size=\"12.5\" font-weight=\"600\">IV + trading days</text><text x=\"12\" y=\"32\" fill=\"#A5ADBA\" font-family=\"Inter\" font-size=\"10.5\">IV observation time</text><text x=\"242\" y=\"17\" fill=\"#D7DCE3\" font-family=\"Inter\" font-size=\"13\" font-weight=\"600\">Move %</text><text x=\"242\" y=\"32\" fill=\"#A5ADBA\" font-family=\"Inter\" font-size=\"10.5\">Estimate</text><text x=\"12\" y=\"83\" fill=\"#D7DCE3\" font-family=\"Inter\" font-size=\"12.5\" font-weight=\"600\">Spot price</text><text x=\"12\" y=\"98\" fill=\"#A5ADBA\" font-family=\"Inter\" font-size=\"10.5\">Spot observation time</text><text x=\"242\" y=\"83\" fill=\"#D7DCE3\" font-family=\"Inter\" font-size=\"13\" font-weight=\"600\">Price range</text><text x=\"242\" y=\"98\" fill=\"#A5ADBA\" font-family=\"Inter\" font-size=\"10.5\">Dollars</text></svg>"
+    },
+    "receipt": {
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false,
+      "before": {
+        "identity": {
+          "kind": "file-id",
+          "id": "01M5EPQ16VBT7SBW2NQVX2RJG4"
+        },
+        "snapshot_sha256": "babe9ca009b9c8be8f46a5261a333f652947bafb08d28e41dbdb5c21078e8536"
+      },
+      "after": {
+        "identity": {
+          "kind": "file-id",
+          "id": "01M5EPQ16VBT7SBW2NQVX2RJG4"
+        },
+        "snapshot_sha256": "babe9ca009b9c8be8f46a5261a333f652947bafb08d28e41dbdb5c21078e8536"
+      },
+      "result": {
+        "createdNodes": [
+          {
+            "id": "17X-0",
+            "name": "Expected move · two source clocks",
+            "component": "SVG",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "17Y-0",
+            "name": "Rect",
+            "component": "SVGVisualElement",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "17Z-0",
+            "name": "Rect",
+            "component": "SVGVisualElement",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "180-0",
+            "name": "Rect",
+            "component": "SVGVisualElement",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "181-0",
+            "name": "Rect",
+            "component": "SVGVisualElement",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "182-0",
+            "name": "Path",
+            "component": "SVGVisualElement",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "183-0",
+            "name": "IV + trading days",
+            "component": "SVGVisualElement",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "184-0",
+            "name": "IV observation time",
+            "component": "SVGVisualElement",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "185-0",
+            "name": "Move %",
+            "component": "SVGVisualElement",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "186-0",
+            "name": "Estimate",
+            "component": "SVGVisualElement",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "187-0",
+            "name": "Spot price",
+            "component": "SVGVisualElement",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "188-0",
+            "name": "Spot observation tim…",
+            "component": "SVGVisualElement",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "189-0",
+            "name": "Price range",
+            "component": "SVGVisualElement",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "18A-0",
+            "name": "Dollars",
+            "component": "SVGVisualElement",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          }
+        ]
+      }
+    }
+  },
+  {
+    "operation_id": "paper-audit-20261109-options-two-clock-order-v1",
+    "tool": "move_nodes",
+    "arguments": {
+      "fileId": "01M5EPQ16VBT7SBW2NQVX2RJG4",
+      "moves": [
+        {
+          "nodeId": "17X-0",
+          "after": "159-0"
+        }
+      ]
+    },
+    "receipt": {
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false,
+      "before": {
+        "identity": {
+          "kind": "file-id",
+          "id": "01M5EPQ16VBT7SBW2NQVX2RJG4"
+        },
+        "snapshot_sha256": "babe9ca009b9c8be8f46a5261a333f652947bafb08d28e41dbdb5c21078e8536"
+      },
+      "after": {
+        "identity": {
+          "kind": "file-id",
+          "id": "01M5EPQ16VBT7SBW2NQVX2RJG4"
+        },
+        "snapshot_sha256": "babe9ca009b9c8be8f46a5261a333f652947bafb08d28e41dbdb5c21078e8536"
+      },
+      "result": {
+        "moves": [
+          {
+            "nodeId": "17X-0",
+            "parentId": "158-0",
+            "index": 1
+          }
+        ],
+        "affectedParents": [
+          {
+            "parentId": "158-0",
+            "childIds": [
+              "159-0",
+              "17X-0",
+              "15A-0"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "operation_id": "paper-audit-20261109-options-two-clock-caption-v1",
+    "tool": "set_text_content",
+    "arguments": {
+      "fileId": "01M5EPQ16VBT7SBW2NQVX2RJG4",
+      "updates": [
+        {
+          "nodeId": "15A-0",
+          "html": "Each source keeps its own observation time. No qualifying spot → percent only."
+        }
+      ]
+    },
+    "receipt": {
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false,
+      "before": {
+        "identity": {
+          "kind": "file-id",
+          "id": "01M5EPQ16VBT7SBW2NQVX2RJG4"
+        },
+        "snapshot_sha256": "babe9ca009b9c8be8f46a5261a333f652947bafb08d28e41dbdb5c21078e8536"
+      },
+      "after": {
+        "identity": {
+          "kind": "file-id",
+          "id": "01M5EPQ16VBT7SBW2NQVX2RJG4"
+        },
+        "snapshot_sha256": "babe9ca009b9c8be8f46a5261a333f652947bafb08d28e41dbdb5c21078e8536"
+      },
+      "result": {
+        "updates": [
+          {
+            "nodeId": "15A-0"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "operation_id": "paper-audit-20261109-options-two-clock-build-v1",
+    "tool": "write_html",
+    "arguments": {
+      "fileId": "01M5EPQ16VBT7SBW2NQVX2RJG4",
+      "targetNodeId": "16M-0",
+      "mode": "insert-children",
+      "html": "<div layer-name=\"Clock dependency illustration · build binding\" style=\"display:flex;flex-direction:column;gap:6px;padding-top:12px;width:100%;\"><div style=\"font-family:Inter;font-size:16px;font-weight:600;line-height:24px;color:#D7DCE3;\">Clock dependency illustration</div><div style=\"font-family:Inter;font-size:14px;line-height:22px;color:#A5ADBA;\">Help 17X-0 explains expectedMoveFromIv; it adds no calculation or interaction. Reuse terminal/lib/volTenorComparison.ts:134 at d7a83d3348a4fcb762d93221f19c4e94cbe4505e. The percent estimate uses a trading-day horizon/252; a price range additionally requires a finite positive spot with its own non-empty observation time. Keep IV and spot in the admitted source context. Preserve the selected view and its existing return through 150-0. Provide a figure name that states both inputs and the percent-only fallback; this static diagram needs no animation.</div></div>"
+    },
+    "receipt": {
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false,
+      "before": {
+        "identity": {
+          "kind": "file-id",
+          "id": "01M5EPQ16VBT7SBW2NQVX2RJG4"
+        },
+        "snapshot_sha256": "babe9ca009b9c8be8f46a5261a333f652947bafb08d28e41dbdb5c21078e8536"
+      },
+      "after": {
+        "identity": {
+          "kind": "file-id",
+          "id": "01M5EPQ16VBT7SBW2NQVX2RJG4"
+        },
+        "snapshot_sha256": "babe9ca009b9c8be8f46a5261a333f652947bafb08d28e41dbdb5c21078e8536"
+      },
+      "result": {
+        "createdNodes": [
+          {
+            "id": "18C-0",
+            "name": "Clock dependency illustration · build binding",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "18D-0",
+            "name": "Clock dependency ill…",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "18E-0",
+            "name": "Help 17X-0 explains …",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          }
+        ]
+      }
+    }
+  },
+  {
+    "operation_id": "paper-audit-20261109-options-two-clock-finish-v1",
+    "tool": "finish_working_on_nodes",
+    "arguments": {
+      "fileId": "01M5EPQ16VBT7SBW2NQVX2RJG4",
+      "nodeIds": [
+        "16E-0",
+        "16M-0"
+      ]
+    },
+    "receipt": {
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false,
+      "before": {
+        "identity": {
+          "kind": "file-id",
+          "id": "01M5EPQ16VBT7SBW2NQVX2RJG4"
+        },
+        "snapshot_sha256": "babe9ca009b9c8be8f46a5261a333f652947bafb08d28e41dbdb5c21078e8536"
+      },
+      "after": {
+        "identity": {
+          "kind": "file-id",
+          "id": "01M5EPQ16VBT7SBW2NQVX2RJG4"
+        },
+        "snapshot_sha256": "babe9ca009b9c8be8f46a5261a333f652947bafb08d28e41dbdb5c21078e8536"
+      },
+      "result": "OK"
+    }
   }
 ]

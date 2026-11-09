@@ -1,5 +1,5 @@
 (
-    <div id="16E-0" style={{ alignItems: 'start', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', fontSynthesis: 'none', gap: '80px', height: 'fit-content', MozOsxFontSmoothing: 'grayscale', overflowWrap: 'anywhere', WebkitFontSmoothing: 'antialiased', width: '1800px' }}>
+    <div id="16E-0" style={{ alignItems: 'start', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', fontSize: '12px', fontSynthesis: 'none', gap: '80px', height: 'fit-content', lineHeight: '16px', MozOsxFontSmoothing: 'grayscale', overflowWrap: 'anywhere', WebkitFontSmoothing: 'antialiased', width: '1800px' }}>
       <div id="16F-0" style={{ alignItems: 'start', boxSizing: 'border-box', display: 'flex', gap: '80px', height: 'fit-content', width: '100%' }}>
         <div id="14J-0" style={{ backgroundColor: '#181B21', borderColor: '#3A4150', borderRadius: '12px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: 0, gap: '24px', padding: '24px', width: '390px' }}>
           <div id="14K-0" style={{ boxSizing: 'border-box', color: '#7AA7E0', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '14px', lineHeight: '20px' }}>
@@ -68,8 +68,23 @@
             <div id="159-0" style={{ boxSizing: 'border-box', color: '#D7DCE3', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '15px', fontWeight: 600, lineHeight: '22px' }}>
               Separate timestamps
             </div>
+            <svg xmlns="http://www.w3.org/2000/svg" width="340" height="108" viewBox="0 0 340 108" aria-label="IV and a trading-day horizon produce a percent estimate. A dollar price range also requires a qualifying spot. IV and spot keep separate observation times." id="17X-0" style={{ display: 'inline-block', flexShrink: 0 }}>
+              <rect x="0.5" y="0.5" width="145" height="41" rx="8" fill="#1E222A" stroke="#3A4150" />
+              <rect x="230.5" y="0.5" width="109" height="41" rx="8" fill="#1E222A" stroke="#3A4150" />
+              <rect x="0.5" y="66.5" width="145" height="41" rx="8" fill="#1E222A" stroke="#3A4150" />
+              <rect x="230.5" y="66.5" width="109" height="41" rx="8" fill="#1E222A" stroke="#3A4150" />
+              <path d="M158 21H218M213 17L218 21L213 25M158 87H218M213 83L218 87L213 91M285 47V60M281 55L285 60L289 55" fill="none" stroke="#8B93A1" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+              <text x="12" y="17" fontFamily="Inter" fontSize="12.5" fontWeight="600" fill="#D7DCE3">{"IV + trading days"}</text>
+              <text x="12" y="32" fontFamily="Inter" fontSize="10.5" fill="#A5ADBA">{"IV observation time"}</text>
+              <text x="242" y="17" fontFamily="Inter" fontSize="13" fontWeight="600" fill="#D7DCE3">{"Move %"}</text>
+              <text x="242" y="32" fontFamily="Inter" fontSize="10.5" fill="#A5ADBA">{"Estimate"}</text>
+              <text x="12" y="83" fontFamily="Inter" fontSize="12.5" fontWeight="600" fill="#D7DCE3">{"Spot price"}</text>
+              <text x="12" y="98" fontFamily="Inter" fontSize="10.5" fill="#A5ADBA">{"Spot observation time"}</text>
+              <text x="242" y="83" fontFamily="Inter" fontSize="13" fontWeight="600" fill="#D7DCE3">{"Price range"}</text>
+              <text x="242" y="98" fontFamily="Inter" fontSize="10.5" fill="#A5ADBA">{"Dollars"}</text>
+            </svg>
             <div id="15A-0" style={{ boxSizing: 'border-box', color: '#A5ADBA', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '14px', lineHeight: '22px' }}>
-              IV and spot can have different observation times. With no spot, the expected move is shown in percent only.
+              Each source keeps its own observation time. No qualifying spot → percent only.
             </div>
           </div>
           <div id="15B-0" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '8px' }}>

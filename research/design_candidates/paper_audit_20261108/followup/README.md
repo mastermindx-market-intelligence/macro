@@ -8,9 +8,9 @@ Start with [RESULTS.md](RESULTS.md) for the ten edited files and what changed. [
 | [BUILD_PLAN.md](BUILD_PLAN.md) | F01–F12 task tree for the existing producers, consumers and effect owners |
 | [SOURCE_RULINGS.md](SOURCE_RULINGS.md) | Exact source behavior, required extensions and illustration boundaries |
 | [NODE_MIGRATION.json](NODE_MIGRATION.json) | Current and retained node identities |
-| [VERIFICATION.json](VERIFICATION.json) | 120 text readbacks, surface snapshots, numeric check and proof limits |
-| [EFFECTS_CURRENT.json](EFFECTS_CURRENT.json) | 156 observed operations and two reconciled validation rejections |
-| [PROOF_MANIFEST.json](PROOF_MANIFEST.json) | 26 screenshot hashes and exact Paper targets |
+| [VERIFICATION.json](VERIFICATION.json) | 139 text readbacks, surface snapshots, numeric check and proof limits |
+| [EFFECTS_CURRENT.json](EFFECTS_CURRENT.json) | 169 observed operations and two reconciled validation rejections |
+| [PROOF_MANIFEST.json](PROOF_MANIFEST.json) | 28 screenshot hashes and exact Paper targets |
 | [before/](before/) | Committed complete semantic preimages |
 | [post/](post/) | Final JSX snapshots, including pre-existing and concurrent context |
 | [proof/](proof/) | Rendered Paper captures |

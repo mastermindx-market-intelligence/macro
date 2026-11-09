@@ -8,15 +8,15 @@
     "terminal": "d7a83d3348a4fcb762d93221f19c4e94cbe4505e"
   },
   "effects": {
-    "total": 158,
-    "applied_response_observed": 156,
+    "total": 171,
+    "applied_response_observed": 169,
     "invalid_argument_reconciled": 2,
     "partial_frame_target_errors_reconciled": 3,
     "unresolved": []
   },
   "text_readback": {
-    "count": 120,
-    "passed": 120,
+    "count": 139,
+    "passed": 139,
     "checks": [
       {
         "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
@@ -1056,44 +1056,215 @@
         "op": "paper-audit-c3-prophet-compare-build-contrast-20261109-v1"
       },
       {
-        "file_id": "01M32XYWDYSFTNDZVJKQ5QHT33",
-        "artboard_id": "244-1",
-        "node_id": "26E-1",
+        "fileId": "01M32XYWDYSFTNDZVJKQ5QHT33",
+        "nodeId": "26E-1",
         "expected": "Open Macro dashboard",
         "actual": "Open Macro dashboard",
-        "passed": true
+        "surface": "244-1",
+        "status": "PASS"
       },
       {
-        "file_id": "01M32XYWDYSFTNDZVJKQ5QHT33",
-        "artboard_id": "26W-1",
-        "node_id": "294-1",
+        "fileId": "01M32XYWDYSFTNDZVJKQ5QHT33",
+        "nodeId": "294-1",
         "expected": "Open Macro dashboard",
         "actual": "Open Macro dashboard",
-        "passed": true
+        "surface": "26W-1",
+        "status": "PASS"
       },
       {
-        "file_id": "01M32XYWDYSFTNDZVJKQ5QHT33",
-        "artboard_id": "2AP-1",
-        "node_id": "2BP-1",
+        "fileId": "01M32XYWDYSFTNDZVJKQ5QHT33",
+        "nodeId": "2BP-1",
         "expected": "Open Macro dashboard",
         "actual": "Open Macro dashboard",
-        "passed": true
+        "surface": "2AP-1",
+        "status": "PASS"
       },
       {
-        "file_id": "01M312VSDSZFVT45674GDVJVZN",
-        "artboard_id": "2S4-0",
-        "node_id": "2U8-0",
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "nodeId": "2U8-0",
         "expected": "Use producer-specific score names. Plan conviction, management score and priority are different measures, never profit odds. Each panel names its primary clock. Keep a second clock beside the verdict or action when it changes meaning; other source times stay in LENS. Keep a material age or coverage caveat beside the verdict. Preserve the actual stance; UI copy creates no new gate.",
         "actual": "Use producer-specific score names. Plan conviction, management score and priority are different measures, never profit odds. Each panel names its primary clock. Keep a second clock beside the verdict or action when it changes meaning; other source times stay in LENS. Keep a material age or coverage caveat beside the verdict. Preserve the actual stance; UI copy creates no new gate.",
-        "passed": true
+        "surface": "2S4-0",
+        "status": "PASS"
       },
       {
-        "file_id": "01M312VSDSZFVT45674GDVJVZN",
-        "artboard_id": "2UE-0",
-        "node_id": "2WI-0",
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "nodeId": "2WI-0",
         "expected": "Use producer-specific score names. Plan conviction, management score and priority are different measures, never profit odds. Each panel names its primary clock. Keep a second clock beside the verdict or action when it changes meaning; other source times stay in LENS. Keep a material age or coverage caveat beside the verdict. Preserve the actual stance; UI copy creates no new gate.",
         "actual": "Use producer-specific score names. Plan conviction, management score and priority are different measures, never profit odds. Each panel names its primary clock. Keep a second clock beside the verdict or action when it changes meaning; other source times stay in LENS. Keep a material age or coverage caveat beside the verdict. Preserve the actual stance; UI copy creates no new gate.",
-        "passed": true
+        "surface": "2UE-0",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "nodeId": "ANJ-0",
+        "expected": "9 NOV 2026 · IMPLEMENTATION COMPANION",
+        "op": "paper-audit-20261109-builder-companion-header-v1",
+        "actual": "9 NOV 2026 · IMPLEMENTATION COMPANION",
+        "surface": "shared_build_companion",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "nodeId": "ANK-0",
+        "expected": "Build the improved journeys.",
+        "op": "paper-audit-20261109-builder-companion-header-v1",
+        "actual": "Build the improved journeys.",
+        "surface": "shared_build_companion",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "nodeId": "ANL-0",
+        "expected": "Ten Paper files. Twelve scoped build slices. Start with the source-backed behavior and reuse each product’s existing owners.",
+        "op": "paper-audit-20261109-builder-companion-header-v1",
+        "actual": "Ten Paper files. Twelve scoped build slices. Start with the source-backed behavior and reuse each product’s existing owners.",
+        "surface": "shared_build_companion",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "nodeId": "ANO-0",
+        "expected": "01",
+        "op": "paper-audit-20261109-builder-companion-row01-v1",
+        "actual": "01",
+        "surface": "shared_build_companion",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "nodeId": "ANQ-0",
+        "expected": "Correct the meaning",
+        "op": "paper-audit-20261109-builder-companion-row01-v1",
+        "actual": "Correct the meaning",
+        "surface": "shared_build_companion",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "nodeId": "ANR-0",
+        "expected": "F01–F03 · Comparable periods, atomic loading, reduced motion and selected-expiry evidence.",
+        "op": "paper-audit-20261109-builder-companion-row01-v1",
+        "actual": "F01–F03 · Comparable periods, atomic loading, reduced motion and selected-expiry evidence.",
+        "surface": "shared_build_companion",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "nodeId": "ANU-0",
+        "expected": "02",
+        "op": "paper-audit-20261109-builder-companion-row02-v1",
+        "actual": "02",
+        "surface": "shared_build_companion",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "nodeId": "ANW-0",
+        "expected": "Keep the journey coherent",
+        "op": "paper-audit-20261109-builder-companion-row02-v1",
+        "actual": "Keep the journey coherent",
+        "surface": "shared_build_companion",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "nodeId": "ANX-0",
+        "expected": "F04–F08 + F11 · Touch review, Risk horizons, Sector and Hub return, subject-specific evidence and Guide navigation.",
+        "op": "paper-audit-20261109-builder-companion-row02-v1",
+        "actual": "F04–F08 + F11 · Touch review, Risk horizons, Sector and Hub return, subject-specific evidence and Guide navigation.",
+        "surface": "shared_build_companion",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "nodeId": "AO0-0",
+        "expected": "03",
+        "op": "paper-audit-20261109-builder-companion-row03-v1",
+        "actual": "03",
+        "surface": "shared_build_companion",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "nodeId": "AO2-0",
+        "expected": "Confirm effects and time",
+        "op": "paper-audit-20261109-builder-companion-row03-v1",
+        "actual": "Confirm effects and time",
+        "surface": "shared_build_companion",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "nodeId": "AO3-0",
+        "expected": "F09–F10 + F12 · Save and re-arm use their current owners. Keep the clock that governs the verdict or action visible.",
+        "op": "paper-audit-20261109-builder-companion-row03-v1",
+        "actual": "F09–F10 + F12 · Save and re-arm use their current owners. Keep the clock that governs the verdict or action visible.",
+        "surface": "shared_build_companion",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "nodeId": "AO6-0",
+        "expected": "Implementation plan and proof",
+        "op": "paper-audit-20261109-builder-companion-source-v1",
+        "actual": "Implementation plan and proof",
+        "surface": "shared_build_companion",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "nodeId": "AO7-0",
+        "expected": "RESULTS · BUILD_PLAN · SOURCE_RULINGS · exact Paper node and capture records",
+        "op": "paper-audit-20261109-builder-companion-source-v1",
+        "actual": "RESULTS · BUILD_PLAN · SOURCE_RULINGS · exact Paper node and capture records",
+        "surface": "shared_build_companion",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "nodeId": "AO8-0",
+        "expected": "https://github.com/mastermindx-market-intelligence/macro/pull/10872",
+        "op": "paper-audit-20261109-builder-companion-source-v1",
+        "actual": "https://github.com/mastermindx-market-intelligence/macro/pull/10872",
+        "surface": "shared_build_companion",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "nodeId": "AOA-0",
+        "expected": "Design verification is separate from product implementation. Existing source, navigation, state and effect owners remain authoritative. F01/F02 provenance and acceptance holds remain in force; this companion does not freeze or promote the shared system.",
+        "op": "paper-audit-20261109-builder-companion-scope-v1",
+        "actual": "Design verification is separate from product implementation. Existing source, navigation, state and effect owners remain authoritative. F01/F02 provenance and acceptance holds remain in force; this companion does not freeze or promote the shared system.",
+        "surface": "shared_build_companion",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M5EPQ16VBT7SBW2NQVX2RJG4",
+        "nodeId": "15A-0",
+        "expected": "Each source keeps its own observation time. No qualifying spot → percent only.",
+        "op": "paper-audit-20261109-options-two-clock-caption-v1",
+        "actual": "Each source keeps its own observation time. No qualifying spot → percent only.",
+        "surface": "options_help",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M5EPQ16VBT7SBW2NQVX2RJG4",
+        "nodeId": "18D-0",
+        "expected": "Clock dependency illustration",
+        "op": "paper-audit-20261109-options-two-clock-build-v1",
+        "actual": "Clock dependency illustration",
+        "surface": "options_build",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M5EPQ16VBT7SBW2NQVX2RJG4",
+        "nodeId": "18E-0",
+        "expected": "Help 17X-0 explains expectedMoveFromIv; it adds no calculation or interaction. Reuse terminal/lib/volTenorComparison.ts:134 at d7a83d3348a4fcb762d93221f19c4e94cbe4505e. The percent estimate uses a trading-day horizon/252; a price range additionally requires a finite positive spot with its own non-empty observation time. Keep IV and spot in the admitted source context. Preserve the selected view and its existing return through 150-0. Provide a figure name that states both inputs and the percent-only fallback; this static diagram needs no animation.",
+        "op": "paper-audit-20261109-options-two-clock-build-v1",
+        "actual": "Help 17X-0 explains expectedMoveFromIv; it adds no calculation or interaction. Reuse terminal/lib/volTenorComparison.ts:134 at d7a83d3348a4fcb762d93221f19c4e94cbe4505e. The percent estimate uses a trading-day horizon/252; a price range additionally requires a finite positive spot with its own non-empty observation time. Keep IV and spot in the admitted source context. Preserve the selected view and its existing return through 150-0. Provide a figure name that states both inputs and the percent-only fallback; this static diagram needs no animation.",
+        "surface": "options_build",
+        "status": "PASS"
       }
     ]
   },
@@ -1207,14 +1378,14 @@
       "key": "options_build",
       "fileId": "01M5EPQ16VBT7SBW2NQVX2RJG4",
       "nodeId": "16B-0",
-      "chars": 36760,
+      "chars": 37981,
       "state": "OBSERVED"
     },
     {
       "key": "options_help",
       "fileId": "01M5EPQ16VBT7SBW2NQVX2RJG4",
       "nodeId": "16E-0",
-      "chars": 15624,
+      "chars": 17547,
       "state": "OBSERVED"
     },
     {
@@ -1334,6 +1505,20 @@
       "fileId": "01M312VSDSZFVT45674GDVJVZN",
       "nodeId": "2UE-0",
       "chars": 23168,
+      "state": "OBSERVED"
+    },
+    {
+      "key": "shared_build_companion",
+      "fileId": "01M312VSDSZFVT45674GDVJVZN",
+      "nodeId": "ANH-0",
+      "chars": 6687,
+      "state": "OBSERVED"
+    },
+    {
+      "key": "shared_build_directory",
+      "fileId": "01M312VSDSZFVT45674GDVJVZN",
+      "nodeId": "9ZS-0",
+      "chars": 61383,
       "state": "OBSERVED"
     }
   ],
@@ -1553,7 +1738,8 @@
     "be18d26cd2471ac5d27869bf9dc1537a3ec54cee",
     "69570f33c31168c1c93f19c035591b805ff4bc09",
     "a11cf1790bd921811a7242464483e27c5fa88510",
-    "7e8382d695b3568aa0c0c82c7245f80cb5c78fd5"
+    "7e8382d695b3568aa0c0c82c7245f80cb5c78fd5",
+    "bbfe49afa54e33f0e842c2ff45f15d1b54adec19"
   ],
   "reconciliation": {
     "binding": [
@@ -2090,6 +2276,18 @@
       "path": "proof/pattern_material_light.jpg",
       "paper_file_id": "01M312VSDSZFVT45674GDVJVZN",
       "paper_node_id": "2UE-0"
+    },
+    {
+      "key": "options-clock-explanation",
+      "path": "proof/options-clock-explanation.jpg",
+      "paper_file_id": "01M5EPQ16VBT7SBW2NQVX2RJG4",
+      "paper_node_id": "14Z-0"
+    },
+    {
+      "key": "shared-build-companion",
+      "path": "proof/shared-build-companion.jpg",
+      "paper_file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "paper_node_id": "ANH-0"
     }
   ],
   "local_artifact_check": {
@@ -2109,5 +2307,56 @@
       "grader_manifest": "success"
     },
     "release": "Other required checks remain governed by the exact current PR head; this is not a merge receipt."
+  },
+  "clock_diagram": {
+    "nodeId": "17X-0",
+    "sourceFunction": "terminal/lib/volTenorComparison.ts:134",
+    "pin": "d7a83d3348a4fcb762d93221f19c4e94cbe4505e",
+    "labels": [
+      {
+        "label": "IV + trading days",
+        "present": true
+      },
+      {
+        "label": "IV observation time",
+        "present": true
+      },
+      {
+        "label": "Move %",
+        "present": true
+      },
+      {
+        "label": "Estimate",
+        "present": true
+      },
+      {
+        "label": "Spot price",
+        "present": true
+      },
+      {
+        "label": "Spot observation time",
+        "present": true
+      },
+      {
+        "label": "Price range",
+        "present": true
+      },
+      {
+        "label": "Dollars",
+        "present": true
+      }
+    ],
+    "ariaLabelPresent": true,
+    "order": true,
+    "proof": "Static Paper screenshot inspected; no browser or calculation execution inferred."
+  },
+  "builder_companion": {
+    "fileId": "01M312VSDSZFVT45674GDVJVZN",
+    "nodeId": "ANH-0",
+    "parentId": "9ZS-0",
+    "firstChild": true,
+    "originalSibling": "9ZT-0",
+    "source": "https://github.com/mastermindx-market-intelligence/macro/pull/10872",
+    "qualified": "Static source navigation, not runtime or programme acceptance."
   }
 }

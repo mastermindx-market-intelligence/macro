@@ -23,7 +23,7 @@ After this continuation, ten Paper files contain concrete improvements to their 
 | PROPHET | [Open design](https://app.paper.design/file/01M3NT5Y3G5HTJHVR0K5W2MDJM/p-D-0) | 10TD-0 explains unavailable assessment in direct language. Comparison 133D-0 names unavailable evidence beside each INTC/MSFT read, without inventing a destination. |
 | Intelligence Hub | [Open design](https://app.paper.design/file/01M2VWK62FA5S4VVF6G7SBPE5J/p-3-0) | Alert activation and draft saving remain unavailable. Healthy-empty returns to published research. New section 854-0 explains ordering in English and Chinese with a clear return action. |
 | Market Guide | [Open design](https://app.paper.design/file/01M32XYWDYSFTNDZVJKQ5QHT33/p-4-0) | Three search/recovery headers name “Open Macro dashboard”; existing saved-search return and direct-entry rules remain intact. |
-| Product Design System | [Open design](https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-5-0) | Dark/light material-state rules keep a consequential second clock beside the verdict or action, with other source times in LENS. |
+| Product Design System | [Open design](https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-5-0) | Dark/light material-state rules keep a consequential second clock beside the verdict or action. Build companion ANH-0 at p-B-0 links the implementation sequence to this source package. |
 
 ## What changed and why
 
@@ -81,7 +81,13 @@ Guide search and no-match recovery now say “Open Macro dashboard” at 26E-1, 
 
 The shared material-state contract at 2U8-0 and 2WI-0 now names each panel’s primary clock and keeps a second clock beside the verdict or action when that time changes its meaning. Other source times stay in LENS. This clarifies the existing MX/Freshness treatment and the source doctrine’s requirement to keep consequential limitations visible. It preserves progressive disclosure without making a newer quote appear to refresh an older assessment.
 
-The bounded MarketOntology sample was coherent. Current WTI conditions, retained thesis/company scope and unavailable comparison were preserved. Four newer destinations were not assessed because the adviser used an unsupported read argument; no defect or mutation was inferred from that adapter result.
+The bounded MarketOntology sample was coherent. Current WTI conditions, retained thesis/company scope and unavailable comparison were preserved. A corrected bounded read also covered destinations AT4-0, AT6-0, AT8-0 and ATA-0. Their precise oil threshold, selected-context question, unavailable previous comparison and separate source observation sequences are coherent; no change was justified.
+
+### A compact visual explanation and a reachable builder package
+
+Options help now shows the input dependency instead of making the user reconstruct it from prose: IV plus a trading-day horizon produces the percentage estimate; a dollar price range also needs a qualifying spot price. Diagram 17X-0 keeps IV and spot observation times separate. Its caption is shorter, its existing Volatility return remains, and Build 18C-0 binds it to expectedMoveFromIv. No extra chart, calculation, route or animation was introduced. The source helper requires finite positive spot and a non-empty spot timestamp before producing price bounds; calendar-DTE interpolation remains a different calculation.
+
+The shared Build page now starts with companion ANH-0, before preserved directory row 9ZT-0. It groups the twelve slices by meaning, journey, and supported effects/time, and points to PR #10872 for the exact plan and proof. Existing F01/F02 provenance and acceptance holds remain intact.
 
 ## Preservation and supersession
 
@@ -91,12 +97,12 @@ Original motion, compact News controls, Options controls and selected former com
 
 ## Verification and limits
 
-- 156 edit operations returned APPLIED_RESPONSE_OBSERVED, including targeted release calls.
+- 169 edit operations returned APPLIED_RESPONSE_OBSERVED, including targeted release calls.
 - Two Options calls returned INVALID_ARGUMENT without an applied receipt. Exact original-target readback established unchanged text/children before a corrected same-carrier attempt. They are not unresolved effects.
 - One batch returned three per-node errors because the requested nodes were Frames. The successful nodes were retained; the actual Chinese Text nodes were read and corrected separately.
-- All 120 final edited Text nodes matched exact readback. Two hidden locale nodes required get_node_info because get_jsx omits hidden content.
-- 34 final JSX surface snapshots and 15 supplemental node captures are retained.
-- 26 rendered Paper screenshots show the inspected layouts. News's 44px styles are verified; actual hit testing remains a consumer proof obligation.
+- All 139 final edited Text nodes matched exact readback. Two hidden locale nodes required get_node_info because get_jsx omits hidden content.
+- 36 final JSX surface snapshots and 15 supplemental node captures are retained.
+- 28 rendered Paper screenshots show the inspected layouts. News's 44px styles are verified; actual hit testing remains a consumer proof obligation.
 - The old local file browser-preview attempt was security-policy denied. It was not replayed through another scheme or carrier. No browser, keyboard, screen-reader, animation-runtime, network, persistence, alert execution or production proof is claimed.
 - No new service, queue, retry owner, ranking owner, watcher, runtime state, trade or deployment was created.
 

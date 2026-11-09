@@ -114,3 +114,9 @@ Post JSX snapshots can contain pre-existing and concurrent product content. Only
 At Macro b5674d8ef898e503d6164922654f5ff89be9981c, docs/DESIGN_DOCTRINE.md:263 places freshness at its truthful scope and :267 requires consequential limitations at the relevant decision. Paper’s shared Material UI State Contract was narrower than this: its blanket second-clock-in-LENS rule could conceal a time that changes the verdict or action. Nodes 2U8-0/2WI-0 now retain a consequential second clock beside that decision, reusing MX/Freshness and LENS.
 
 Guide D25 44J-0 distinguishes a named dashboard destination from history Back and qualified context return. Three search/recovery headers now inherit “Open Macro dashboard”. R20’s local saved-search return remains unchanged. These are source/design clarifications, not proof of an implemented route or timestamp policy.
+
+## R12 — Expected move has a second input for price bounds
+
+At Terminal d7a83d3348a4fcb762d93221f19c4e94cbe4505e, terminal/lib/volTenorComparison.ts:134 defines expectedMoveFromIv. The percentage estimate uses ivPct × sqrt(horizonDays/252). The guard at :143 requires a finite positive spot and a non-empty spot.asOf before :157–158 returns price bounds; otherwise percent can remain available while bounds are null. ivAsOf and spotAsOf remain separate fields. This trading-day horizon is not the calendar-DTE interpolation input.
+
+The native Paper dependency figure 17X-0 and Build binding 18C-0 explain this existing source behavior. Their labels and accessible figure name were read back and the 390px help card was rendered. This is neither a new calculator nor proof that arbitrary source contexts may be combined. The existing Volatility return is retained.

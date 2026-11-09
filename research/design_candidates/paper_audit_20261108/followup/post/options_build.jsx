@@ -157,6 +157,14 @@
             <div id="17V-0" style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '14px', lineHeight: '22px' }}>
               Answer and clock binding: the hero shows Draft assessment: Inconclusive while saved revision 3 remains unchanged. Only a successful existing assessment write and revision readback may promote the draft. The stated 230.12 at 15:40:01Z is a quote observation, not proof of the exact crossing time or a dated rotation turn. Current 231.40 uses its own illustrated 21 Oct 16:30:04 ET clock and 5-minute cadence; never borrow the firing receipt’s vintage. Expected move uses 36.9 × √(2/252) = 3.2873132755%; spot 236.14 gives 228.3773384312 and 243.9026615688, displayed by the existing two-decimal formatter as $228.38–$243.90. No estimator changed.
             </div>
+            <div id="18C-0" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '6px', paddingTop: '12px', width: '100%' }}>
+              <div id="18D-0" style={{ boxSizing: 'border-box', color: '#D7DCE3', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '16px', fontWeight: 600, lineHeight: '24px' }}>
+                Clock dependency illustration
+              </div>
+              <div id="18E-0" style={{ boxSizing: 'border-box', color: '#A5ADBA', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '14px', lineHeight: '22px' }}>
+                Help 17X-0 explains expectedMoveFromIv; it adds no calculation or interaction. Reuse terminal/lib/volTenorComparison.ts:134 at d7a83d3348a4fcb762d93221f19c4e94cbe4505e. The percent estimate uses a trading-day horizon/252; a price range additionally requires a finite positive spot with its own non-empty observation time. Keep IV and spot in the admitted source context. Preserve the selected view and its existing return through 150-0. Provide a figure name that states both inputs and the percent-only fallback; this static diagram needs no animation.
+              </div>
+            </div>
           </div>
         </div>
         <div id="14E-0" style={{ backgroundColor: '#0F1115', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: 0, gap: '28px', padding: '40px', width: '1440px' }}>
