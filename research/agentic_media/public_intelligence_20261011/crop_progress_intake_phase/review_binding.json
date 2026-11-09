@@ -1,0 +1,16 @@
+{
+  "run_id": "mmx-press-crop-progress-facts-20261014-001",
+  "root": "01a12a2a-d7e1-77b1-9262-ab593179dd13",
+  "parent": "01a12a2a-d7e1-77b1-9262-ab593179dd13",
+  "retained_result_sha256": "d013e32eea817ae31459b57ef2050af2ea9d0efd42abd3db491a7f7bfe26e529",
+  "verdict": "SIX_SUPPLIED_FACT_POINTS_PASS_WITH_ADDITIONAL_CAVEATS",
+  "scope": "Supplied extracted text only; reviewer had no PDF bytes and did not independently verify PDF hash or visuals. Parent verified actual retained PDF hash, pages1-4 visuals, all16pages text/image inventory and exact table rows.",
+  "parent_integration": "Final sidecar explicitly marks G+E as calculated, scopes missing prior-year data/cause, and carries differing panels/acreage weighting and imputed2025 averages. Parent-added methodology/revision point matches physicalpage14. No source report edit.",
+  "execution_limit": "Reviewer also searched unrelated local directories and ran pkill -f on a grep command containing the source hash, exiting143. Scope of process matching was not independently verified; no blanket no-other-effects claim or protocol-conformance PASS is made. Do not repeat/recover by another worker.",
+  "acceptance_scope": "Parent accepts factual result and independently verified final sidecar, not broad execution-scope claims, rights, public story or D14 approval.",
+  "sidecar_sha256": "0ab7784c57118c7f6b7c1f92c9de9f2736c271a1d60c0e27583a46cadd4a5e6d",
+  "pdf_sha256": "ecdbbb595fb63ce179dbf0aad57541c28aec53e988489a376b2a1d002304968c",
+  "publication": false,
+  "canonical_writes_at_review": 0,
+  "adapter_acceptance": "ACCEPTED by reviewer; same-run status readback confirms TERMINAL rc0, 22165 retained bytes."
+}

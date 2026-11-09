@@ -63,6 +63,32 @@ FIGURE_SCALE: dict[str, dict[str, str]] = {
 }
 FIGURE_SCALE_FALLBACK = _pair("index reading", "指数读数")
 
+def prior_claims_note(day: Mapping[str, str],
+                      value: Mapping[str, str]) -> dict[str, str]:
+    """What the page's previous version showed on one claims card."""
+    return _pair(
+        f"This page's previous version, dated {day['en']}, showed {value['en']} persons.",
+        f"本页上一版（{day['zh']}）显示 {value['zh']} 人。",
+    )
+
+
+# Leave-one-recession-out catch rate. The view shows this only when the
+# producer recorded ~3 and a tiny sample on that one metric.
+CATCH_RATE_SAMPLE_NOTE = _pair(
+    "About 3 modern recessions, leave-one-out. The sample is small.",
+    "约 3 次现代衰退，留一法。样本很小。",
+)
+
+# Treasury cash balance. Shown only when that metric's transformation
+# records both DRAINS and INJECTS.
+TGA_RESERVES_NOTE = _pair(
+    "When this balance rises, Treasury is pulling cash into its own "
+    "account and bank reserves fall. When it falls, Treasury is "
+    "spending it down and reserves rise.",
+    "余额上升时，财政部把现金抽入自有账户，银行准备金随之减少；"
+    "余额下降时，财政部花出这笔现金，银行准备金随之增加。",
+)
+
 
 # --- section 7.6 freshness vocabulary ---------------------------------------
 FRESHNESS: dict[str, dict[str, str]] = {
@@ -286,6 +312,19 @@ DIRECTION: dict[str, dict[str, str]] = {
     "weak_to_strong": _pair("Weak to strong", "从弱到强"),
     "higher_more_inflationary": _pair("Higher more inflationary", "数值越高＝通胀压力越大"),
     "higher_more_persistent_broad": _pair("Higher more persistent broad", "数值越高＝越持久、越广泛"),
+    # GLT T21 (reviewed): per-leg / coverage direction tokens (used by the
+    # Liquidity & Central Banks workspace). The reviewed strings ship; the
+    # T11 byte-identity goldens froze BASE's deslug fallback, so
+    # tests/test_macro_rates_curves_route.py collapses exactly these
+    # strings back to the BASE text for that comparison only.
+    "higher_more_expansionary": _pair(
+        "Higher = more expansionary", "数值越高＝越扩张"),
+    "higher_easier_funding": _pair(
+        "Higher = easier dollar funding", "数值越高＝美元融资越宽松"),
+    "higher_more_accommodative": _pair(
+        "Higher = more accommodative", "数值越高＝越宽松"),
+    "higher_more_coverage": _pair(
+        "Higher = more coverage", "数值越高＝覆盖越全"),
 }
 
 # --- units -------------------------------------------------------------------
@@ -302,6 +341,16 @@ UNIT: dict[str, dict[str, str]] = {
     "index": _pair("index", "指数"),
     "count": _pair("count", "数量"),
     "ratio": _pair("ratio", "比率"),
+    # GLT T21 (reviewed): producer-native unit tokens used by the Liquidity
+    # & Central Banks workspace. The reviewed strings ship; the T11
+    # byte-identity goldens froze BASE's deslug fallback, so
+    # tests/test_macro_rates_curves_route.py collapses exactly these
+    # strings back to the BASE text for that comparison only.
+    "USD billions": _pair("USD bn", "十亿美元"),
+    "EUR billions": _pair("EUR bn", "十亿欧元"),
+    "JPY billions": _pair("JPY bn", "十亿日元"),
+    "ratio_0_1": _pair("share (0–1)", "占比（0–1）"),
+    "local currency": _pair("local currency", "本币"),
 }
 
 # --- basis -------------------------------------------------------------------
@@ -313,10 +362,33 @@ BASIS: dict[str, dict[str, str]] = {
         "Constant-maturity investment basis",
         "固定期限投资基准",
     ),
+    # GLT T21 (reviewed): per-leg contribution / impulse / translation
+    # basis tokens. The reviewed strings ship; the T11 byte-identity goldens
+    # froze BASE's deslug fallback, so tests/test_macro_rates_curves_route.py
+    # collapses exactly these strings back to the BASE text for that
+    # comparison only.
+    "fx_translation_not_fresh_money": _pair(
+        "Currency translation — not new central-bank money",
+        "汇率折算——非央行新增资金"),
+    "standardized_monetary_contribution": _pair(
+        "Standardized contribution to the central-bank money reading",
+        "对央行货币读数的标准化贡献"),
+    "standardized_funding_contribution": _pair(
+        "Standardized contribution to the dollar-funding reading",
+        "对美元融资读数的标准化贡献"),
+    "trailing_13w_pct_change": _pair(
+        "Change over the last 13 weeks", "近13周变化"),
+    "trailing_52w_pct_change": _pair(
+        "Change over the last 52 weeks", "近52周变化"),
 }
 
 # --- owner categorical readings ---------------------------------------------
 OWNER_VALUE: dict[str, dict[str, str]] = {
+    # Existing business-cycle owner's four closed phase labels; no reclassification.
+    "expansion": _pair("Expansion", "扩张"),
+    "slowdown": _pair("Slowdown", "放缓"),
+    "contraction": _pair("Contraction", "收缩"),
+    "recovery": _pair("Recovery", "复苏"),
     "contracting": _pair("Contracting", "收缩"),
     "expanding": _pair("Expanding", "扩张"),
     "benign_expansion": _pair("Benign expansion", "良性扩张"),
@@ -346,6 +418,27 @@ OWNER_VALUE: dict[str, dict[str, str]] = {
     "Note": _pair("Note", "中期国债"),
     "Bill": _pair("Bill", "短期国债"),
     "Bond": _pair("Bond", "长期国债"),
+    # Policy-lever state (`scripts/build_policy_lever.py`, frozen v1 PS-R9:
+    # QUIET | ELEVATED | ARMED), republished by the monetary_policy workspace as
+    # the categorical `policy_uncertainty_state`. The producer's tokens are
+    # UPPER-CASE and `label()` matches exactly, so the 2026-09-23 bake deslugged
+    # `QUIET` into an untranslated "Quiet" ZH span on macro_monetary_policy.html
+    # (copy-law red). Same pairs the dashboard / allocation cards already use.
+    "QUIET": _pair("Quiet", "平静"),
+    "ELEVATED": _pair("Elevated", "警戒"),
+    "ARMED": _pair("Armed", "已触发"),
+    # Bond desk cycle phase (`scripts/build_bonds.py` `PHASE`, the owner's closed
+    # vocabulary {recession, early, mid, late}), republished by the national_debt
+    # workspace as the categorical `bond_desk_cycle_phase` (pass-through, never
+    # re-derived). The 2026-10-02 regime bake deslugged `recession` into an
+    # untranslated "Recession" ZH span on macro_national_debt_liabilities.html
+    # (copy-law red, ci-pack-10 on main). Same EN/ZH pairs the bond desk page
+    # itself renders; pinned by tests/test_macro_suite_pages.py::
+    # test_bond_desk_cycle_phase_tokens_have_reviewed_pairs.
+    "recession": _pair("Recession", "衰退"),
+    "early": _pair("Early-cycle recovery", "周期早段复苏"),
+    "mid": _pair("Mid-cycle", "周期中段"),
+    "late": _pair("Late-cycle", "周期晚段"),
 }
 
 # --- metric identities -------------------------------------------------------
@@ -469,6 +562,78 @@ METRIC: dict[str, dict[str, str]] = {
     "iorb": _pair("Interest on reserves", "准备金利息"),
     "production_utilization": _pair("Production utilization", "产能利用率"),
     "inventory_cycle_phase": _pair("Inventory cycle phase", "库存周期阶段"),
+    # GLT T21 (reviewed): per-leg / translation / level metric ids emitted
+    # by the Liquidity & Central Banks workspace composer. The reviewed
+    # strings ship; the T11 byte-identity goldens froze BASE's deslug
+    # fallback, so tests/test_macro_rates_curves_route.py collapses exactly
+    # these strings back to the BASE text for that comparison only.
+    # cb_fed_balance_sheet_impulse_13w is pre-existing (F01, unchanged).
+    "glt_fed_monetary_contribution_z": _pair(
+        "Fed balance sheet, against its own history",
+        "美联储资产负债表（对比自身历史）"),
+    "glt_ecb_monetary_contribution_z": _pair(
+        "ECB balance sheet, against its own history",
+        "欧洲央行资产负债表（对比自身历史）"),
+    "glt_boj_monetary_contribution_z": _pair(
+        "BoJ balance sheet, against its own history",
+        "日本央行资产负债表（对比自身历史）"),
+    "glt_broad_dollar_contribution_z": _pair(
+        "Broad dollar, against its own history",
+        "广义美元（对比自身历史）"),
+    "glt_high_yield_oas_contribution_z": _pair(
+        "High-yield spread, against its own history",
+        "高收益利差（对比自身历史）"),
+    "glt_real_yield_10y_contribution_z": _pair(
+        "10-year real yield, against its own history",
+        "10年期实际收益率（对比自身历史）"),
+    "glt_ecb_usd_translation": _pair(
+        "ECB balance sheet in US dollars",
+        "欧洲央行资产负债表（美元折算）"),
+    "glt_boj_usd_translation": _pair(
+        "BoJ balance sheet in US dollars",
+        "日本央行资产负债表（美元折算）"),
+    "cb_fed_balance_sheet_level": _pair(
+        "Fed balance sheet, local currency", "美联储资产负债表（本币）"),
+    "cb_ecb_balance_sheet_level": _pair(
+        "ECB balance sheet, local currency", "欧洲央行资产负债表（本币）"),
+    "cb_boj_balance_sheet_level": _pair(
+        "BoJ balance sheet, local currency", "日本央行资产负债表（本币）"),
+    "cb_ecb_balance_sheet_impulse_13w": _pair(
+        "ECB balance sheet, change over 13 weeks", "欧洲央行资产负债表（13周变化）"),
+    "cb_boj_balance_sheet_impulse_13w": _pair(
+        "BoJ balance sheet, change over 13 weeks", "日本央行资产负债表（13周变化）"),
+    "cb_fed_balance_sheet_impulse_52w": _pair(
+        "Fed balance sheet, change over 52 weeks", "美联储资产负债表（52周变化）"),
+    "cb_ecb_balance_sheet_impulse_52w": _pair(
+        "ECB balance sheet, change over 52 weeks", "欧洲央行资产负债表（52周变化）"),
+    "cb_boj_balance_sheet_impulse_52w": _pair(
+        "BoJ balance sheet, change over 52 weeks", "日本央行资产负债表（52周变化）"),
+    "glt_monetary_coverage_ratio": _pair(
+        "Central-bank coverage", "央行数据覆盖率"),
+    "glt_funding_coverage_ratio": _pair(
+        "Dollar-funding coverage", "美元融资数据覆盖率"),
+    # GLT T21: pre-existing metric ids the LCB composer has always emitted
+    # but whose reviewed labels live only in lib.macro_suite_zh_parity (the
+    # ZH text below matches what the parity table produces). Adding them
+    # here so that L.unknown_tokens() (T21 test (h)) is empty after
+    # presenting the composed snapshot — without them, the metric label
+    # lookup would deslug and record the token as unknown. The EN text
+    # matches the T11 byte-identity goldens (deslug form) so test_11 still
+    # passes.
+    "glt_monetary_stance": _pair(
+        "Glt monetary stance", "全球流动性货币立场"),
+    "glt_orthogonalised_impulse": _pair(
+        "Glt orthogonalised impulse", "全球流动性正交脉冲"),
+    "glt_policy_liquidity_impulse": _pair(
+        "Glt policy liquidity impulse", "全球政策流动性脉冲"),
+    "glt_credit_impulse_global": _pair(
+        "Glt credit impulse global", "全球信贷脉冲"),
+    "glt_state_label": _pair(
+        "Glt state label", "全球流动性状态标签"),
+    "glt_state_quality_label": _pair(
+        "Glt state quality label", "全球流动性质量标签"),
+    "glt_confidence": _pair(
+        "Glt confidence", "全球流动性置信度"),
 }
 
 # F01 Macro Command P3 — reviewed panel copy. Keyed (section_id, state_key).
@@ -1680,6 +1845,38 @@ def producer_trips_copy_guard(text: str) -> bool:
 
 PLAIN_PRODUCER: tuple[tuple[str, dict[str, str]], ...] = (
     (
+        "The leading tier's 6-month momentum has crossed the calibrated recession-risk DEPTH",
+        _pair(
+            "The six-month momentum of leading indicators has crossed the model's calibrated "
+            "recession-risk threshold, but the share of indicators confirming weakness has not. "
+            "Deterioration is concentrated rather than widespread. Both conditions are required "
+            "before this model can flag recession risk.",
+            "领先指标的六个月动量已越过模型校准的衰退风险阈值，但确认走弱的指标占比尚未达标。"
+            "走弱集中，并未广泛扩散。这两项条件须同时满足，模型才会发出衰退风险信号。",
+        ),
+    ),
+    (
+        "BREADTH (the share of leading legs weakening) has crossed the calibrated recession-risk",
+        _pair(
+            "The share of leading indicators that are weakening has crossed the model's calibrated "
+            "recession-risk threshold, but their six-month momentum has not. Weakness is widespread "
+            "but shallow. Both conditions are required before this model can flag recession risk.",
+            "走弱的领先指标占比已越过模型校准的衰退风险阈值，但领先指标的六个月动量尚未达标。"
+            "走弱范围广，但程度较浅。这两项条件须同时满足，模型才会发出衰退风险信号。",
+        ),
+    ),
+    (
+        "US labor-market state cannot be classified: axis coverage is below the "
+        "disclosed floor. No quadrant is asserted rather than defaulting to a "
+        "neutral state.",
+        _pair(
+            "Labor-market data coverage is below the required minimum, so no "
+            "overall reading is shown. Missing data is not treated as a neutral reading.",
+            "劳动力市场数据覆盖未达到所需下限，因此不展示总体读数。"
+            "缺失数据不会被当作中性读数。",
+        ),
+    ),
+    (
         "This page publishes no dual-axis state and no headline quadrant: the "
         "frozen Market Ontology architecture document defines twelve macro "
         "workspaces, each with its own headline blueprint (or an explicit note "
@@ -2081,3 +2278,322 @@ def copy_probe_row_ok(row: Mapping[str, Any]) -> bool:
 def copy_probe_ok(rows: Iterable[Mapping[str, Any]]) -> bool:
     rows = list(rows)
     return bool(rows) and all(copy_probe_row_ok(row) for row in rows)
+
+
+# --- T22 M2: global-liquidity display-views labels (additive projection) -----
+#
+# Reviewed EN/ZH strings for the Liquidity & Central Banks views projection.
+# Copy law: no underscores, no slug or state tokens, no ISO stamps, no set
+# literals, no probability wording outside the reviewed "not probability"
+# phrasing. Loop variables stay generic (name / key / fund / weeks).
+
+GLT_VIEW_HORIZONS: tuple[int, ...] = (4, 8, 13)
+GLT_VIEW_REPLAY_MAX = 8
+
+GLT_VIEW_COMPONENTS: dict[str, dict[str, str]] = {
+    "total_assets": _pair("Fed total assets", "美联储总资产"),
+    "treasury_general_account": _pair(
+        "Treasury cash account", "财政部一般账户"),
+    "reverse_repo_others": _pair(
+        "Reverse repo, domestic counterparties", "逆回购（国内交易对手）"),
+    "reverse_repo_foreign_official": _pair(
+        "Reverse repo, foreign official accounts", "逆回购（外国官方账户）"),
+    "federal_reserve_notes": _pair(
+        "Federal Reserve notes in circulation", "流通中的美联储券"),
+    "other_nonreserve_and_capital": _pair(
+        "Other liabilities and capital", "其他负债与资本"),
+    "reserves": _pair("Bank reserves", "银行准备金"),
+}
+
+GLT_VIEW_REPLAY_NAMES: dict[str, dict[str, str]] = {
+    "reserves": _pair("Bank reserves", "银行准备金"),
+    "tga": _pair("Treasury cash account", "财政部一般账户"),
+    "rrp": _pair("Reverse repo", "逆回购"),
+}
+
+GLT_VIEW_FAMILY_NAMES: dict[str, dict[str, str]] = {
+    "glt_view_outlook": _pair("Conditional outlook", "条件前瞻"),
+    "glt_view_transmission": _pair("Transmission evidence", "传导证据"),
+    "glt_view_repricing": _pair("Repricing evidence", "重新定价证据"),
+    "glt_view_replay": _pair("Source-known replay", "按当时已知回放"),
+}
+
+GLT_VIEW_REGIONS: dict[str, dict[str, str]] = {
+    "us": _pair("United States", "美国"),
+    "euro_area": _pair("Euro area", "欧元区"),
+    "japan": _pair("Japan", "日本"),
+    "china": _pair("China", "中国"),
+    "hong_kong": _pair("Hong Kong", "香港"),
+}
+
+GLT_VIEW_FUNDS: dict[str, dict[str, str]] = {
+    "efa": _pair("Developed markets outside the US fund", "美国以外发达市场基金"),
+    "eem": _pair("Emerging markets fund", "新兴市场基金"),
+    "gld": _pair("Gold fund", "黄金基金"),
+    "slv": _pair("Silver fund", "白银基金"),
+    "dbc": _pair("Commodity basket fund", "大宗商品篮子基金"),
+    "uso": _pair("Oil fund", "原油基金"),
+    "cper": _pair("Copper fund", "铜基金"),
+}
+
+
+def _glt_view_metric_entries() -> dict[str, dict[str, str]]:
+    """One reviewed metric label for every id the projection can emit."""
+    entries: dict[str, dict[str, str]] = {}
+    for key, name in GLT_VIEW_COMPONENTS.items():
+        entries[f"glt_view_outlook_{key}"] = _pair(name["en"], name["zh"])
+        for weeks in GLT_VIEW_HORIZONS:
+            entries[f"glt_view_outlook_{key}_h{weeks}"] = _pair(
+                f"{name['en']}, {weeks} weeks ahead",
+                f"{name['zh']}（{weeks} 周后）")
+            if key != "reserves":
+                entries[f"glt_view_outlook_{key}_h{weeks}_low"] = _pair(
+                    f"{name['en']}, {weeks} weeks ahead: low scenario bound",
+                    f"{name['zh']}（{weeks} 周后）：情景下限")
+                entries[f"glt_view_outlook_{key}_h{weeks}_high"] = _pair(
+                    f"{name['en']}, {weeks} weeks ahead: high scenario bound",
+                    f"{name['zh']}（{weeks} 周后）：情景上限")
+    entries["glt_view_outlook_residual"] = _pair(
+        "Unexplained part of the reserves path", "准备金路径中的未解释部分")
+    entries["glt_view_forecast"] = _pair(
+        "Statistical forecast for bank reserves, Treasury cash and reverse repo",
+        "银行准备金、财政部现金与逆回购的统计预测")
+    for key, name in GLT_VIEW_REPLAY_NAMES.items():
+        for weeks in GLT_VIEW_HORIZONS:
+            entries[f"glt_view_forecast_{key}_h{weeks}"] = _pair(
+                f"Forecast: {name['en']}, {weeks} weeks ahead",
+                f"预测：{name['zh']}（{weeks} 周后）")
+        for entry_no in range(1, GLT_VIEW_REPLAY_MAX + 1):
+            entries[f"glt_view_replay_{entry_no}_{key}"] = _pair(
+                f"{name['en']} as known then, entry {entry_no}",
+                f"当时已知的{name['zh']}，第 {entry_no} 条")
+    entries.update(GLT_VIEW_FAMILY_NAMES)
+    for family_id, family in GLT_VIEW_FAMILY_NAMES.items():
+        if family_id not in ("glt_view_transmission", "glt_view_repricing"):
+            continue
+        for key, name in GLT_VIEW_REGIONS.items():
+            entries[f"{family_id}_region_{key}"] = _pair(
+                f"{family['en']}: {name['en']}", f"{family['zh']}：{name['zh']}")
+        for key, name in GLT_VIEW_FUNDS.items():
+            entries[f"{family_id}_fund_{key}"] = _pair(
+                f"{family['en']}: {name['en']}", f"{family['zh']}：{name['zh']}")
+    return entries
+
+
+METRIC.update(_glt_view_metric_entries())
+
+GLT_VIEW_BASES: dict[str, dict[str, str]] = {
+    "glt_est_observed": _pair("Observed, as published then", "观察值（按当时发布）"),
+    "glt_est_announced_scenario": _pair(
+        "Announced scenario: follows a published schedule",
+        "已公布情景：依据已发布的计划"),
+    "glt_est_conditional_accounting": _pair(
+        "Conditional accounting: follows a stated assumption",
+        "条件核算：依据所设假设"),
+    "glt_est_scenario_bounds": _pair(
+        "Scenario bounds, not probability", "情景边界，并非概率"),
+    "glt_est_unavailable": _pair("Unavailable: no value", "不可用：无数值"),
+    "glt_forecast_rejected": _pair("Forecast rejected", "预测已否决"),
+    "glt_forecast_insufficient": _pair(
+        "Too little history to test", "历史不足，无法检验"),
+    "glt_forecast_unavailable": _pair("No forecast result", "无预测结果"),
+    "glt_forecast_not_cleared": _pair("Not cleared for display", "未获准展示"),
+    "glt_evidence_supported": _pair(
+        "Supported, numbers not cleared for display", "有支持，但数值未获准展示"),
+    "glt_evidence_rejected": _pair("Rejected", "已否决"),
+    "glt_evidence_insufficient": _pair("Insufficient evidence", "证据不足"),
+    "glt_evidence_narrowed": _pair("Narrowed", "已收窄"),
+    "glt_evidence_not_identified": _pair("Not identified", "未识别"),
+    "glt_evidence_unavailable": _pair("Unavailable", "不可用"),
+    "glt_region_missing_input": _pair("Missing input", "缺少输入"),
+    "glt_region_available": _pair(
+        "Inputs on file, no value shown", "输入已存档，不显示数值"),
+    "glt_fund_missing": _pair(
+        "Missing: no regional study design on file", "缺失：无区域研究设计存档"),
+}
+BASIS.update(GLT_VIEW_BASES)
+
+_GLT_VIEW_OWNER_EN = " Owner: the global-liquidity desk."
+_GLT_VIEW_OWNER_ZH = "所有者：全球流动性小组。"
+
+GLT_VIEW_DISPOSITION_TEXT: dict[str, dict[str, str]] = {
+    "supported": _pair(
+        "Supported by the study, but its numbers are not cleared for display.",
+        "研究予以支持，但其数值未获准展示。"),
+    "rejected": _pair(
+        "Rejected by the study; no number is shown.", "研究予以否决；不显示数值。"),
+    "insufficient": _pair(
+        "Too little evidence; no number is shown.", "证据不足；不显示数值。"),
+    "narrowed": _pair(
+        "Narrowed by newer evidence; no number is shown.", "新证据已将其收窄；不显示数值。"),
+    "not_identified": _pair(
+        "Not identified; no number is shown.", "未能识别；不显示数值。"),
+}
+
+GLT_VIEW_NOTES: dict[str, dict[str, str]] = {
+    "glt_view_note.outlook.announced_schedule": _pair(
+        "Announced scenario: follows the published schedule. Not a forecast.",
+        "已公布情景：依据已发布的计划。并非预测。"),
+    "glt_view_note.outlook.hold_level": _pair(
+        "Conditional accounting: assumes this line holds its level. Not a forecast.",
+        "条件核算：假设此项维持当前水平。并非预测。"),
+    "glt_view_note.outlook.weekly_change": _pair(
+        "Conditional accounting: assumes this line keeps its stated weekly "
+        "change. Not a forecast.",
+        "条件核算：假设此项按设定的每周变动延续。并非预测。"),
+    "glt_view_note.outlook.reserves": _pair(
+        "Bank reserves follow from the lines above, each under its own stated "
+        "basis. Not a forecast.",
+        "银行准备金由上述各项推得，各项依据各自的设定基础。并非预测。"),
+    "glt_view_note.outlook.reserves_unavailable": _pair(
+        "Bank reserves are not shown because at least one line has no path.",
+        "由于至少一项没有路径，不显示银行准备金。"),
+    "glt_view_note.outlook.bounds": _pair(
+        "Scenario bounds, not probability. Copied from the stated scenario; "
+        "never added together.",
+        "情景边界，并非概率。照录所设情景，从不相加。"),
+    "glt_view_note.outlook.residual": _pair(
+        "Unexplained part: no statistical estimate is published, so none is shown.",
+        "未解释部分：未发布统计估计，因此不显示。"),
+    "glt_view_note.outlook.component_unavailable": _pair(
+        "No announced schedule or stated assumption covers this line, so no "
+        "path is shown.",
+        "此项没有已公布的计划或所设假设可依，因此不显示路径。"),
+    "glt_view_note.reason.outlook_inputs_not_supplied": _pair(
+        "Unavailable: the outlook inputs — the balance-sheet anchor, announced "
+        "schedules and stated assumptions — are not supplied to this page yet."
+        + _GLT_VIEW_OWNER_EN,
+        "不可用：前瞻所需输入（资产负债表锚点、已公布的计划与所设假设）尚未提供给本页。"
+        + _GLT_VIEW_OWNER_ZH),
+    "glt_view_note.reason.outlook_unit_not_declared": _pair(
+        "Unavailable: the outlook inputs did not declare their unit, so no "
+        "level is shown." + _GLT_VIEW_OWNER_EN,
+        "不可用：前瞻输入未声明单位，因此不显示水平值。" + _GLT_VIEW_OWNER_ZH),
+    "glt_view_note.reason.outlook_anchor_after_as_of": _pair(
+        "Unavailable: the balance-sheet anchor was published after this page's "
+        "cutoff." + _GLT_VIEW_OWNER_EN,
+        "不可用：资产负债表锚点在本页截止时间之后才发布。" + _GLT_VIEW_OWNER_ZH),
+    "glt_view_note.reason.h41_table5_owner_loader_missing": _pair(
+        "Data degraded: the weekly Fed balance-sheet table this outlook starts "
+        "from has no accepted loader yet, so no path is shown." + _GLT_VIEW_OWNER_EN,
+        "数据降级：本前瞻所依据的美联储每周资产负债表尚无经验收的加载程序，"
+        "因此不显示路径。" + _GLT_VIEW_OWNER_ZH),
+    "glt_view_note.reason.component_unavailable": _pair(
+        "Unavailable: no announced schedule or stated assumption covers any "
+        "balance-sheet line, so no path is shown.",
+        "不可用：没有任何资产负债表项目有已公布的计划或所设假设可依，"
+        "因此不显示路径。"),
+    "glt_view_note.reason.forecast_package_missing": _pair(
+        "Unavailable: the forecast study result is not on file." + _GLT_VIEW_OWNER_EN,
+        "不可用：预测研究结果未存档。" + _GLT_VIEW_OWNER_ZH),
+    "glt_view_note.reason.forecast_package_unreadable": _pair(
+        "Unavailable: the forecast study result could not be read."
+        + _GLT_VIEW_OWNER_EN,
+        "不可用：无法读取预测研究结果。" + _GLT_VIEW_OWNER_ZH),
+    "glt_view_note.reason.forecast_package_after_as_of": _pair(
+        "Unavailable: the forecast study is dated after this page's cutoff.",
+        "不可用：预测研究的日期晚于本页截止时间。"),
+    "glt_view_note.reason.issue_history_not_recorded": _pair(
+        "No history: past issues of these views are not recorded yet, so there "
+        "is nothing to replay.",
+        "暂无历史：这些视图的过往版本尚未记录，因此无可回放。"),
+    "glt_view_note.reason.issue_history_warming_up": _pair(
+        "Warm-up: the issue record has started but holds no entries yet.",
+        "预热期：版本记录已启动，但尚无条目。"),
+    "glt_view_note.reason.views_compose_failed": _pair(
+        "Unavailable: these views could not be assembled for this run."
+        + _GLT_VIEW_OWNER_EN,
+        "不可用：本次运行未能组装这些视图。" + _GLT_VIEW_OWNER_ZH),
+    "glt_view_note.reason.views_contract_refused": _pair(
+        "Unavailable: these views failed their display checks, so nothing from "
+        "them is shown." + _GLT_VIEW_OWNER_EN,
+        "不可用：这些视图未通过展示检查，因此不显示其中任何内容。"
+        + _GLT_VIEW_OWNER_ZH),
+    "glt_view_note.reason.as_of_mismatch": _pair(
+        "Unavailable: these views are dated differently from the rest of this "
+        "page, so none of them is shown.",
+        "不可用：这些视图的日期与本页其余部分不一致，因此均不显示。"),
+    "glt_view_note.reason.science_results_not_published_to_product_plane.transmission": _pair(
+        "Unavailable: the transmission study results are held by the liquidity "
+        "research lab and are not yet published to this site.",
+        "不可用：传导研究结果由流动性研究实验室持有，尚未发布到本站。"),
+    "glt_view_note.reason.science_results_not_published_to_product_plane.repricing": _pair(
+        "Unavailable: the repricing evidence is held by the liquidity research "
+        "lab and is not yet published to this site.",
+        "不可用：重新定价证据由流动性研究实验室持有，尚未发布到本站。"),
+    "glt_view_note.forecast.rejected": _pair(
+        "Unavailable: rejected — no forecast model beat the simple baselines.",
+        "不可用：已否决——没有任何预测模型优于简单基准。"),
+    "glt_view_note.forecast.insufficient": _pair(
+        "Unavailable: too little history to test a forecast.",
+        "不可用：历史数据不足，无法检验预测。"),
+    "glt_view_note.forecast.unavailable": _pair(
+        "Unavailable: the forecast study returned no result here.",
+        "不可用：预测研究在此未给出结果。"),
+    "glt_view_note.forecast.not_cleared": _pair(
+        "Unavailable on this page: forecast numbers are not cleared for display.",
+        "本页不可用：预测数值尚未获准展示。"),
+    "glt_view_note.forecast.all.rejected": _pair(
+        "Unavailable: rejected at every tested horizon — no forecast model beat "
+        "the simple baselines.",
+        "不可用：在所有检验期限上均已否决——没有任何预测模型优于简单基准。"),
+    "glt_view_note.forecast.all.insufficient": _pair(
+        "Unavailable: too little history to test a forecast at every tested "
+        "horizon.",
+        "不可用：在所有检验期限上历史数据均不足，无法检验预测。"),
+    "glt_view_note.forecast.all.unavailable": _pair(
+        "Unavailable: the forecast study returned no result at every tested "
+        "horizon.",
+        "不可用：预测研究在所有检验期限上均未给出结果。"),
+    "glt_view_note.forecast.all.not_cleared": _pair(
+        "Unavailable on this page: forecast numbers are not cleared for display "
+        "at any tested horizon.",
+        "本页不可用：所有检验期限上的预测数值均未获准展示。"),
+    "glt_view_note.region.missing_input_lab": _pair(
+        "Missing input: this region's local inputs are not supplied. "
+        "Owner: the liquidity research lab.",
+        "缺少输入：该地区的本地输入尚未提供。所有者：流动性研究实验室。"),
+    "glt_view_note.region.missing_input_named": _pair(
+        "Missing input: this region's local inputs are not supplied. "
+        "The owner is named in the research record.",
+        "缺少输入：该地区的本地输入尚未提供。所有者记录在研究档案中。"),
+    "glt_view_note.region.available": _pair(
+        "Inputs on file; no regional value is shown on this page.",
+        "输入已存档；本页不显示地区数值。"),
+    "glt_view_note.fund.missing": _pair(
+        "Missing: no regional study design on file for this fund, so nothing "
+        "is shown.",
+        "缺失：该基金没有区域研究设计存档，因此不显示任何内容。"),
+}
+
+# Partial-outlook variants: the same conditioning note plus the reviewed
+# sentence about lines without a path.
+for _conditioning in ("announced_schedule", "hold_level", "weekly_change"):
+    _conditioning_note = GLT_VIEW_NOTES[f"glt_view_note.outlook.{_conditioning}"]
+    GLT_VIEW_NOTES[f"glt_view_note.outlook.{_conditioning}.partial"] = _pair(
+        _conditioning_note["en"]
+        + " Some lines have no path, so bank reserves are not shown.",
+        _conditioning_note["zh"] + "部分项目没有路径，因此不显示银行准备金。")
+
+# Evidence notes pair each reviewed label with each disposition word the
+# composer vocabulary admits for it.
+for _disposition, _text in GLT_VIEW_DISPOSITION_TEXT.items():
+    GLT_VIEW_NOTES[f"glt_view_note.evidence.observed_association.{_disposition}"] = _pair(
+        "Observed association, not a causal effect. " + _text["en"],
+        "观察到的关联，并非因果效应。" + _text["zh"])
+GLT_VIEW_NOTES["glt_view_note.evidence.identified_effect.supported"] = _pair(
+    "Identification study. " + GLT_VIEW_DISPOSITION_TEXT["supported"]["en"],
+    "识别研究。" + GLT_VIEW_DISPOSITION_TEXT["supported"]["zh"])
+
+
+def glt_view_replay_note(asof: Mapping[str, str],
+                         corrected: Mapping[str, str] | None = None) -> dict[str, str]:
+    """The replay row's as-known note, naming any later correction."""
+    if corrected is None:
+        return _pair(
+            f"As known on {asof['en']}.",
+            f"截至 {asof['zh']} 的已知值。")
+    return _pair(
+        f"As known on {asof['en']}. Corrected on {corrected['en']} after a "
+        "source revision.",
+        f"截至 {asof['zh']} 的已知值。数据源修订后于 {corrected['zh']} 更正。")

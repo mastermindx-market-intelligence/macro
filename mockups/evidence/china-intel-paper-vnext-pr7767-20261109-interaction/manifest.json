@@ -1,0 +1,252 @@
+{
+  "axes": {
+    "access": [
+      "anonymous"
+    ],
+    "force_states": [
+      {
+        "attribute": null,
+        "kind": "focus",
+        "name": "catalysts_focus",
+        "spec": "catalysts_focus:focus(.ci-vnext-tab[href=\"#ci-upcoming-catalysts\"])",
+        "value": ".ci-vnext-tab[href=\"#ci-upcoming-catalysts\"]"
+      },
+      {
+        "attribute": null,
+        "kind": "hover",
+        "name": "last_signal_hover",
+        "spec": "last_signal_hover:hover(.ci-vnext-signal:last-child)",
+        "value": ".ci-vnext-signal:last-child"
+      }
+    ],
+    "locales": [
+      "en"
+    ],
+    "themes": [
+      "light"
+    ],
+    "viewports": {
+      "mobile": [
+        390,
+        844
+      ]
+    }
+  },
+  "excluded": [],
+  "generated_at": "2026-11-09T05:22:33Z",
+  "honesty": {
+    "access": "anonymous only; no credential is entered, stored, or synthesized, so no premium payload can enter these artifacts",
+    "authority": "this tool measures and screenshots; it scores, ranks, and judges nothing",
+    "force_states": "a forced state is either a class/attribute toggled on <body> or a real browser hover/focus applied to a selector before the shot; it shows that state's presentation, not data the page returned; metrics are measured on the rest cells only, and a state that did not take is recorded as a gap",
+    "gaps": "states that were not captured are recorded with a reason; nothing is inferred for them"
+  },
+  "outcome": "captured",
+  "pages": [
+    {
+      "console_errors": [],
+      "failed_responses": [],
+      "gaps": [
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "free"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "essential"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "pro"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "loading"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "empty"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "stale"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "error"
+        }
+      ],
+      "metrics": {
+        "asof_present": true,
+        "by_viewport": {
+          "mobile": {
+            "document_height_px": 17581,
+            "elements_wider_than_viewport": 48,
+            "horizontal_overflow": false
+          }
+        },
+        "console_error_count": 0,
+        "document_height_px": 17581,
+        "duplicate_heading_texts": [],
+        "elements_wider_than_viewport": 48,
+        "heading_counts": {
+          "h1": 0,
+          "h2": 14,
+          "h3": 0,
+          "h4": 0,
+          "h5": 0,
+          "h6": 0
+        },
+        "horizontal_overflow": false,
+        "long_paragraph_count": 0,
+        "measured_in": {
+          "access": "anonymous",
+          "locale": "en",
+          "theme": "light",
+          "viewport": "mobile"
+        },
+        "panel_count": 36,
+        "payload_bytes_total": 289519,
+        "raw_slug_hit_count": 0,
+        "raw_slug_hits": [],
+        "request_count": 16,
+        "screenshot_completion": 1.0,
+        "section_count": 0,
+        "source_present": false,
+        "todo_placeholder_hit_count": 0,
+        "todo_placeholder_hits": [],
+        "visible_word_count": 2640
+      },
+      "page_id": "macro:china_intel",
+      "registry_route": "/china_intel.html",
+      "route": "/china_intel.html",
+      "route_kind": "page",
+      "states": [
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 1333326,
+          "captured": true,
+          "file": "images/c4d50947f6a0f17d.png",
+          "force_state": null,
+          "height": 17581,
+          "locale": "en",
+          "sha256": "c4d50947f6a0f17d77d33ce4afe8e7f3199baae29fb32fda601e509c0676a91b",
+          "theme": "light",
+          "timing": {
+            "cls": 0.04329537050165464,
+            "inp_proxy_ms": null,
+            "lcp_ms": 140,
+            "resource_count": 15,
+            "server_timing": [],
+            "transfer_bytes": 1023373
+          },
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "catalysts_focus",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 1333757,
+          "captured": true,
+          "file": "images/e39e0b9185077db7--catalysts_focus.png",
+          "force_state": "catalysts_focus",
+          "height": 17581,
+          "locale": "en",
+          "sha256": "e39e0b9185077db72b1f9d0685a2a1ea703f51c4e756fdee4509971a77730f00",
+          "theme": "light",
+          "timing": {
+            "cls": 0.04330300125041827,
+            "inp_proxy_ms": null,
+            "lcp_ms": 120,
+            "resource_count": 15,
+            "server_timing": [],
+            "transfer_bytes": 1023373
+          },
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "last_signal_hover",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 1305096,
+          "captured": true,
+          "file": "images/335f833a3384b645--last_signal_hover.png",
+          "force_state": "last_signal_hover",
+          "height": 17581,
+          "locale": "en",
+          "sha256": "335f833a3384b6456132e3c8bc09aa6815d2e413e3bec396224acb3ced20b3c6",
+          "theme": "light",
+          "timing": {
+            "cls": 0.04329537050165464,
+            "inp_proxy_ms": null,
+            "lcp_ms": 132,
+            "resource_count": 15,
+            "server_timing": [],
+            "transfer_bytes": 1023373
+          },
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        }
+      ]
+    }
+  ],
+  "schema": "mastermind.p0_evidence.v2",
+  "selection": {
+    "explicit_routes": [
+      "/china_intel.html"
+    ],
+    "max_pages": 1,
+    "mode": "explicit_routes",
+    "note": "--routes overrode registry selection; the --priority and --repo filters were not applied",
+    "priority": null,
+    "registry": "data/product_experience/page_registry.json",
+    "registry_rows": 353,
+    "repo": null,
+    "selected": 1
+  },
+  "target": {
+    "base_url": null,
+    "kind": "site_dir",
+    "resolved_gitdir_or_none": "/Users/chriswong/Documents/Cluade/Macro Dashboard/.git/worktrees/pr7767-proof-01a1a7fb-m149",
+    "resolved_sha_or_none": "071ed19f5ce87927f078f94f3e126c24d8a0307e",
+    "resolved_sha_source": "HEAD of the nearest git directory at or above --site-dir: /Users/chriswong/Documents/Cluade/Macro Dashboard/.git/worktrees/pr7767-proof-01a1a7fb-m149 (nearest-above is git's own rule; that this checkout produced --site-dir is not verified)",
+    "site_dir": "/Volumes/Mastermind/agent-workspaces/macro/web/pr7767-proof-01a1a7fb-m149/site"
+  },
+  "timing_basis": "lab",
+  "tool": {
+    "module_ref": "scripts/capture_page_evidence.py",
+    "module_sha256": "9b6e643c1c784eb81b584be4cb063092ae71c4a16fe01498130891e84cd0de42",
+    "user_agent": "mastermind-page-census/1.0 (internal product observability)",
+    "version": "1.4.0"
+  },
+  "totals": {
+    "pages": 1,
+    "states_attempted": 3,
+    "states_captured": 3
+  }
+}

@@ -223,7 +223,8 @@
     }
 
     if (typeof fetch !== 'function') { fail(); return; }
-    fetch('macro/fragments/' + sectionId + '.html')
+    var requestUrl = 'macro/fragments/' + sectionId + '.html';
+    fetch(requestUrl)
       .then(function (resp) {
         if (settled) return;
         if (!resp.ok) { fail(); return; }
@@ -232,9 +233,19 @@
         return resp.text().then(function (text) {
           if (settled) return;
           if (text.indexOf('data-mc-fragment') === -1) { fail(); return; }
+          // Preserve the fetched document's navigation base when its contents
+          // move into the hub, including sites mounted below a URL prefix.
+          var fragment = document.createElement('template');
+          fragment.innerHTML = text;
+          var fragmentUrl = new URL(resp.url || requestUrl, document.baseURI).href;
+          fragment.content.querySelectorAll('a[href]').forEach(function (link) {
+            var href = link.getAttribute('href');
+            if (!href || /^[#?/]|^[A-Za-z][A-Za-z0-9+.-]*:/.test(href)) return;
+            link.setAttribute('href', new URL(href, fragmentUrl).href);
+          });
           settled = true;
           clearTimeout(timer);
-          figure.innerHTML = text;
+          figure.innerHTML = fragment.innerHTML;
           /* The assignment above destroys the [data-mc-tabbody] wrappers this
              panel's roving tab state lives on, so re-apply the selection that
              was resolved from the hash before the fetch started (P3, A13). */
@@ -254,7 +265,7 @@
     });
   });
 
-  window.addEventListener('hashchange', function () {
+  function mcApplyLocation() {
     /* A hash that names a real non-panel id (e.g. the skip link's
        `#mc-content`) is a native anchor jump, not section routing --
        let the browser's own scroll-and-focus stand instead of
@@ -272,7 +283,9 @@
     }
     var parsed = parseHash();
     activateSection(parsed.section, parsed.subtab);
-  });
+  }
+  window.addEventListener('hashchange', mcApplyLocation);
+  window.addEventListener('mmx:shell-location', mcApplyLocation);
 
   panels.forEach(wireSubtabKeyboard);
 

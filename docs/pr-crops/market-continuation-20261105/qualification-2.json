@@ -1,0 +1,30 @@
+{
+  "artifact_sha256_before": "e949dfb47087919f714fba594328b789544227d76e3cd94fdffc50ec0c4490b1",
+  "steps": [
+    {
+      "name": "render-2",
+      "returncode": 0,
+      "log": "docs/pr-crops/market-continuation-20261105/render-2.log"
+    },
+    {
+      "name": "market-tests-2",
+      "returncode": 0,
+      "log": "docs/pr-crops/market-continuation-20261105/market-tests-2.log"
+    },
+    {
+      "name": "market-browser",
+      "returncode": 1,
+      "log": "docs/pr-crops/market-continuation-20261105/market-browser.log"
+    }
+  ],
+  "artifact_sha256_after": "e949dfb47087919f714fba594328b789544227d76e3cd94fdffc50ec0c4490b1",
+  "source_hashes": {
+    "scripts/build_market_structure_page.py": "cfa85811989449f509f69e90a350e0da371dad2897def85dddea5dbe23354f84",
+    "templates/market_structure.html.j2": "300c1b6865e9f519ca0fbd0fc3a95a17c96e0f1bce06c9ee59013350a7f8f056",
+    "tests/test_d06_market_structure.py": "0fc6cd890c23d236a0fe3cf383a715971955259159195fbd43a6931599f41408",
+    "tests/test_build_market_structure_page.py": "c89e940abe89a2d90e3c54b456a9124844363e77d354f362e383f213fa4073d7",
+    "tests/test_market_structure_glance_copy.py": "2fef74c23d30d487eb23bcb14f44d2188b75dac702aa8c608ef9d0702abd9cd5",
+    "scripts/verify_d06_macro.py": "b01268b63198b44e2a48882a1c146df6d7e620ea6ddee9a812aa03f110fe8f48",
+    "site/market_structure.html": "6a4fde46eda4da10bd9b660322b3a28bc964e8c008fe5ea4c31aa3491933072f"
+  }
+}

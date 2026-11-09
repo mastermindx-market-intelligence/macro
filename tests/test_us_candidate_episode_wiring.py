@@ -224,11 +224,32 @@ def test_existing_turn_watch_ci_owner_remains_separate() -> None:
     assert turn_watch_owners[0] != "prophet-us-context-and-grades"
 
 
-def test_prophet_context_ci_job_runs_all_four_b1_suites() -> None:
-    job = _load(LEGACY_JOBS)["jobs"]["prophet-us-context-and-grades"]
+def test_prophet_code_ci_job_runs_all_four_b1_suites_once() -> None:
+    jobs = _load(LEGACY_JOBS)["jobs"]
+    job = jobs["prophet-lab"]
+    assert job["gate"] == "code"
+    assert jobs["prophet-us-context-and-grades"]["gate"] == "data"
     commands = "\n".join(_run(step) for step in job["steps"])
+    all_commands = "\n".join(_run(step) for owner in jobs.values()
+                             for step in owner.get("steps", []))
     for test_file in B1_TESTS:
         assert commands.count(test_file) == 1, test_file
+        assert all_commands.count(test_file) == 1, test_file
+
+
+@pytest.mark.parametrize("changed_path", (
+    "engine/us_candidate_episode.py",
+    "engine/us_candidate_episode_intake.py",
+    "scripts/reconcile_us_candidate_episodes.py",
+    *B1_TESTS,
+    "tests/fixtures/us_candidate_episode/all_candidates.json",
+))
+def test_b1_source_and_regressions_select_the_executing_code_gate(changed_path: str) -> None:
+    from scripts.run_ci_pack import load_legacy_jobs, select_jobs
+
+    jobs = load_legacy_jobs(LEGACY_JOBS, gate="code")
+    selected, reason = select_jobs(jobs, [changed_path])
+    assert "prophet-lab" in {job.job_id for job in selected}, reason
 
 
 def test_registry_declares_all_six_b1_contracts_and_clocks() -> None:

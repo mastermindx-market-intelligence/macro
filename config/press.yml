@@ -225,6 +225,14 @@ desks:
 public_link_prefixes:
   - "/research/"
   - "/blog/"
+  # Logged-out TTWO dossier verified 200 with this exact canonical URL (2026-10-11).
+  - "/stocks/"
+  # Identity chain (bio policy BL-2/BL-7, t_4f2e5457): every child's X bio links
+  # to https://www.mastermind-x.com/x/<child-id>, and the edge 301s that path
+  # onto the public home shell with the id carried as ?ref= (app/deploy/Caddyfile
+  # @x_ref). The prefix is public BY CONSTRUCTION — the only thing it can ever
+  # resolve to is that one hop and the page it lands on.
+  - "/x/"
 
 # Full-name aliases for EXTERNAL primary sources (used by check_primary_source).
 # The naming check requires the source's FULL name, not a token from it: token

@@ -1,0 +1,200 @@
+{
+  "schema": "mastermind.p0_evidence.v2",
+  "generated_at": "2026-10-11T08:29:46.925Z",
+  "tool": {
+    "module_ref": "mockups/evidence/credit-source-unavailable/capture.cjs",
+    "module_sha256": "5d99a99fb731c52fbf7017c829ef26b0559c46b710a6d93b6c1d9cdf8f8df18b"
+  },
+  "head": "91e3a379a0f1ca22cfb3df9186705a59fb3681a6",
+  "target": "bonds.html#corpcredit",
+  "outcome": "captured",
+  "totals": {
+    "rest_cells": 8,
+    "rest_required": 8,
+    "pages": 1
+  },
+  "axes": {
+    "viewports": {
+      "desktop": [
+        1440,
+        900
+      ],
+      "mobile": [
+        390,
+        844
+      ]
+    },
+    "themes": [
+      "dark",
+      "light"
+    ],
+    "locales": [
+      "en",
+      "zh"
+    ],
+    "access": [
+      "anonymous"
+    ],
+    "subjects": [
+      "unavailable_credit_source"
+    ]
+  },
+  "source": {
+    "scripts/build_bonds.py": "6b23a5397d78fcc41da7187ff2d0dff1d5bcb341cbec5f274aff07638ddfe8eb",
+    "templates/bonds.html.j2": "af2df9fc185662703171c979b8e24058922e3e888a13878d81ea490150f5efcb",
+    "tests/test_bonds_corp_credit_vm.py": "99d49d1b51bc0adaede2a7b1d348db33df6b998e96d67105d10af59b4ce66cc5"
+  },
+  "honesty": {
+    "page": "Actual Corporate Credit Jinja region rendered in isolation with unchanged Bonds style blocks, canonical scripts.build_bonds.C and theme assets. Fixture has an unreadable/missing source. Each case also navigates to a valid-snapshot fixture and checks four gauges; no full-page or served proof.",
+    "source_pin": "head is base commit; candidate source was uncommitted at capture and its exact SHA256 hashes are recorded.",
+    "render": "Render tests.test_bonds_corp_credit_vm._render_credit_section(build_corp_credit_vm(empty_data_path)) and a _cm_with_live_roster control. Include all existing style blocks from templates/bonds.html.j2 rendered with canonical C; wrap in existing main.wrap, copy theme.css/js to sibling site, run capture.cjs.",
+    "authority": "Valid snapshot semantics/source dates/authority unchanged; no source refresh or dedicated credit page."
+  },
+  "pages": [
+    {
+      "page_id": "macro:bonds:credit-source",
+      "route": "/bonds.html",
+      "route_kind": "bonds",
+      "subject": "unavailable_credit_source",
+      "selector": "#corpcredit + [data-card=\"credit-source-unavailable\"]",
+      "states": [
+        {
+          "theme": "dark",
+          "locale": "en",
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "applied_theme": "dark",
+          "applied_locale": "en",
+          "captured": true,
+          "file": "unavailable-dark-en-desktop.png",
+          "sha256": "1e79344e089fe404f9cbb088bd600634b5e689d03589f21fd72e5d6bb26136a8",
+          "bytes": 50999,
+          "width": 1200,
+          "height": 205,
+          "access": "anonymous",
+          "subject": "unavailable_credit_source"
+        },
+        {
+          "theme": "dark",
+          "locale": "zh",
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "applied_theme": "dark",
+          "applied_locale": "zh",
+          "captured": true,
+          "file": "unavailable-dark-zh-desktop.png",
+          "sha256": "cc0c0d22aefe50c9062a36ca59a7e7274ba245ce488a8833982197748804982d",
+          "bytes": 51885,
+          "width": 1200,
+          "height": 205,
+          "access": "anonymous",
+          "subject": "unavailable_credit_source"
+        },
+        {
+          "theme": "light",
+          "locale": "en",
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "applied_theme": "light",
+          "applied_locale": "en",
+          "captured": true,
+          "file": "unavailable-light-en-desktop.png",
+          "sha256": "8cbb14d1d9e975fd028e3c2d553c819d2afa0fa541a60d0a915027ce3cdb9156",
+          "bytes": 45608,
+          "width": 1200,
+          "height": 205,
+          "access": "anonymous",
+          "subject": "unavailable_credit_source"
+        },
+        {
+          "theme": "light",
+          "locale": "zh",
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "applied_theme": "light",
+          "applied_locale": "zh",
+          "captured": true,
+          "file": "unavailable-light-zh-desktop.png",
+          "sha256": "c174ad5fba2d9a85c34477191447dba2c93a7aa831be8665c2e77861a60eeade",
+          "bytes": 46084,
+          "width": 1200,
+          "height": 205,
+          "access": "anonymous",
+          "subject": "unavailable_credit_source"
+        },
+        {
+          "theme": "dark",
+          "locale": "en",
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "applied_theme": "dark",
+          "applied_locale": "en",
+          "captured": true,
+          "file": "unavailable-dark-en-mobile.png",
+          "sha256": "c950ff33313c738213504cba0272b88bc175731c6aa37731ea9dcdfd22475bee",
+          "bytes": 41215,
+          "width": 390,
+          "height": 200,
+          "access": "anonymous",
+          "subject": "unavailable_credit_source"
+        },
+        {
+          "theme": "dark",
+          "locale": "zh",
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "applied_theme": "dark",
+          "applied_locale": "zh",
+          "captured": true,
+          "file": "unavailable-dark-zh-mobile.png",
+          "sha256": "bea4fe4bd483403c26eb673a7a0786e38f7ecf465be97988a6c91f76c95c9506",
+          "bytes": 42098,
+          "width": 390,
+          "height": 200,
+          "access": "anonymous",
+          "subject": "unavailable_credit_source"
+        },
+        {
+          "theme": "light",
+          "locale": "en",
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "applied_theme": "light",
+          "applied_locale": "en",
+          "captured": true,
+          "file": "unavailable-light-en-mobile.png",
+          "sha256": "aa6d4db882a3129c44c564a5728938350658349b4dbaf92dea1917c97ede78e4",
+          "bytes": 38461,
+          "width": 390,
+          "height": 200,
+          "access": "anonymous",
+          "subject": "unavailable_credit_source"
+        },
+        {
+          "theme": "light",
+          "locale": "zh",
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "applied_theme": "light",
+          "applied_locale": "zh",
+          "captured": true,
+          "file": "unavailable-light-zh-mobile.png",
+          "sha256": "cc883083a31723b637748660b60d72a06069c9ed0796b081feeb6b4002b09413",
+          "bytes": 39175,
+          "width": 390,
+          "height": 200,
+          "access": "anonymous",
+          "subject": "unavailable_credit_source"
+        }
+      ]
+    }
+  ]
+}

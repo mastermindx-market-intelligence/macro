@@ -184,3 +184,109 @@ def test_no_page_local_duplicate_global_header():
     src = _src()
     assert '<header' not in src.lower()
     assert 'class="ci-sidebar"' not in src
+
+
+# Current-source regressions for dated, bilingual, null-safe workspace readouts.
+import pytest
+
+
+def _workspace_soup(b: dict, cmd_full: dict | None = None):
+    from bs4 import BeautifulSoup
+
+    src = _src()
+    start = src.index('<div class="ci-vnext"')
+    end = src.index('<div class="ci-vnext-evidence-divider"', start)
+    macro_start = src.index("{% macro t(")
+    macro_end = src.index("{% block title", macro_start)
+    prefix = src[macro_start:macro_end] + """
+{% set STANCE_ZH = {'easing':'宽松','neutral':'中性','tightening':'收紧'} %}
+"""
+    rendered = _env().from_string(prefix + src[start:end]).render(
+        b=b, cmd_full=cmd_full
+    )
+    return BeautifulSoup(rendered, "html.parser")
+
+
+def test_workspace_date_is_context_asof_without_live_assertion():
+    b = _minimal_b()
+    soup = _workspace_soup(b)
+    readout = soup.select_one(".ci-vnext-asof").get_text(" ", strip=True)
+    assert "AS OF" in readout and "截至" in readout
+    assert b["asof"] in readout
+    assert "LIVE" not in readout and "实时" not in readout
+
+    b["asof"] = None
+    missing = _workspace_soup(b).select_one(".ci-vnext-asof").get_text(" ", strip=True)
+    assert "Unavailable" in missing and "暂无" in missing
+    assert "None" not in missing
+
+
+@pytest.mark.parametrize(
+    ("surfaces", "expected_count"),
+    [(None, None), ([], 0), (["news", "policy"], 2)],
+)
+def test_workspace_coverage_distinguishes_missing_from_measured_zero(
+    surfaces, expected_count
+):
+    b = _minimal_b()
+    b["surfaces_present"] = surfaces
+    soup = _workspace_soup(b)
+    cards = soup.select(".ci-vnext-kpi")
+    coverage = next(
+        card for card in cards
+        if "Surface coverage" in card.select_one(".ci-vnext-kpi-label").get_text()
+    )
+    label = coverage.select_one(".ci-vnext-kpi-label").get_text(" ", strip=True)
+    value = coverage.select_one(".ci-vnext-kpi-value").get_text(" ", strip=True)
+    assert "来源覆盖" in label and "Market breadth" not in label
+    if expected_count is None:
+        assert "Unavailable" in value and "暂无" in value
+        assert "0" not in value
+    else:
+        assert value.startswith(str(expected_count))
+        assert "surfaces" in value and "面板" in value
+        assert "Unavailable" not in value
+
+    evidence = next(
+        card for card in cards
+        if "Evidence" in card.select_one(".ci-vnext-kpi-label").get_text()
+    )
+    assert "Unavailable" in evidence.select_one(".ci-vnext-kpi-value").get_text()
+
+
+def test_workspace_visible_sections_and_map_have_chinese_copy():
+    soup = _workspace_soup(_minimal_b())
+    headings = [node.get_text(" ", strip=True) for node in soup.select(".ci-vnext-head b")]
+    for en, zh in [
+        ("WHAT MATTERS NOW", "当下要点"),
+        ("FRESHNESS & SOURCES", "时效与来源"),
+        ("SURFACE SIGNALS", "面板信号"),
+        ("PRIORITY THREADS", "优先主题"),
+        ("SECTOR / TICKER FOCUS", "板块与个股焦点"),
+        ("UPCOMING CATALYSTS", "即将到来的催化"),
+    ]:
+        assert any(en in heading and zh in heading for heading in headings)
+    assert [node.get_text() for node in soup.select(".ci-map svg text.l-en")] == [
+        "Beijing", "Shanghai", "Shenzhen"
+    ]
+    assert [node.get_text() for node in soup.select(".ci-map svg text.l-zh")] == [
+        "北京", "上海", "深圳"
+    ]
+    caption = soup.select_one(".ci-map-kicker").get_text(" ", strip=True)
+    assert "PEOPLE" in caption and "人物" in caption
+
+
+def test_map_accessible_label_is_plain_text_without_leaked_markup():
+    graphic = _workspace_soup(_minimal_b()).select_one(".ci-map")
+    assert graphic.attrs == {
+        "class": ["ci-map"],
+        "role": "img",
+        "aria-label": (
+            "China intelligence map: Beijing, Shanghai and Shenzhen; "
+            "中国情报地图：北京、上海与深圳"
+        ),
+    }
+    assert not [
+        node for node in graphic.find_all(string=True, recursive=False)
+        if node.strip()
+    ]
