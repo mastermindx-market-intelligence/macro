@@ -7461,6 +7461,7 @@ jobs:
       - "tests/__init__.py"
       - "tests/conftest.py"
       - "tests/test_site_access_boundary.py"
+      - "tools/xguerrilla/validators.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -17054,6 +17055,7 @@ jobs:
     # Dynamic Ontology assets and canonical navigation are included explicitly.
     scope: exclusive
     paths:
+      - templates/_pressure_watch.html.j2
       - "engine/price_pressure/freshness.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
