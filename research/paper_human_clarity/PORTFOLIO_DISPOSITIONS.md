@@ -4,7 +4,7 @@ Updated: 9 November 2026.
 
 ## Outcome
 
-The Chairman-directed clarity pass is applied in the actual Paper designs. **16 product/design files have now been edited across the 18 audited product/system files.** The first pass edited15; the continued pass also relocated the OS readiness architecture note and deepened six previously edited files. The initial inventory contained 39 resources, including folders, archives, migration/recovery copies, unrelated design work and technical canaries. Those categories are recorded below and are not counted as production screens.
+The Chairman-directed clarity pass is applied in the actual Paper designs. **16 product/design files have now been edited across the 18 audited product/system files.** The first pass edited 15; the continued pass also relocated the OS readiness architecture note and deepened previously edited product, help, source and shared-law surfaces. The initial inventory contained 39 resources, including folders, archives, migration/recovery copies, unrelated design work and technical canaries. Those categories are recorded below and are not counted as production screens.
 
 News Intelligence now separates its readable activity view, optional source/count explanation, and full architecture references. The same placement rule is applied across the eligible current portfolio. This is a design outcome. Application implementation, live navigation, backend qualification and production delivery are separate acceptance.
 
@@ -29,18 +29,18 @@ Unknown, stale, partial, unconfirmed, unavailable and permission-limited states 
 | File | Applied change | Preservation/help |
 |---|---|---|
 | [News Intelligence](https://app.paper.design/file/01M5EXPMQTSBFBAM8KKG83FTZH/p-5-0) |20 current EN/ZH contextual states; coherent shared chart fixture, degraded/return examples; independent rail remains p-2. | Current help within p-5; earlier count/help references p-4; Build p-3 |
-| [Options R1](https://app.paper.design/file/01M5EPQ16VBT7SBW2NQVX2RJG4/p-1-0) | Shorter flow/volatility/watch copy; four help states; unsupported 105% IV is unavailable. | Help `p-4-0`; Build `p-3-0` |
-| [Options mobile](https://app.paper.design/file/01M5FNCKAND6CBSJNYM5FZWR8Y/p-1-0) | One observed-condition statement; no trade execution implication. | Shared Options guide |
-| [Expectation Surface](https://app.paper.design/file/01M5EX8RTPR7YEZD2A144XED2S/p-1-0) | EN/ZH revision copy shortened; existing Study retains formula, rollover and missing-data meaning. | Help `p-3-0`; Build `p-2-0` |
+| [Options R1](https://app.paper.design/file/01M5EPQ16VBT7SBW2NQVX2RJG4/p-1-0) | Shorter flow/volatility/watch copy; four help states; unsupported 105% IV is unavailable; source-type jargon removed from the trend label. | Help `p-4-0`; Build `p-3-0` |
+| [Options mobile](https://app.paper.design/file/01M5FNCKAND6CBSJNYM5FZWR8Y/p-1-0) | One observed-condition statement; “3 saved revisions” replaces storage terminology; no trade execution implication. | Shared Options guide |
+| [Expectation Surface](https://app.paper.design/file/01M5EX8RTPR7YEZD2A144XED2S/p-1-0) | EN/ZH revision copy shortened; five integration captions moved to Build; existing Study retains formula, rollover and missing-data meaning. | Help `p-3-0`; Build `p-2-0` |
 | [Canonical Design System](https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-B-0) | Law 9X3-0 on p-9-0; EPS contract and 40 product-example subtrees separated. | Build `p-B-0` |
 | [Terminal](https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-1-0) | 55 Company build sections separated; complete product frames preserved; six layout replacements. | Build `p-1B-0` |
 | [MarketOntology](https://app.paper.design/file/01M3P1X4FR6BRTB13KA736Y1HT/p-2-0) | Answer/receipt separation plus one exact-value presentation of oil/MA50 evidence; human source labels. | AXF-0/ASY-0 on p-6 preserve duplicate tables, raw mappings and measurement contract; earlier preservation p-8 |
-| [Market Dashboard Popups](https://app.paper.design/file/01M38EVF74SJWG1GANN5VP380Z/p-6-0) | Concise gated outcomes; current observed-only US A5I/A7G; unqualified forecast studies no longer mixed into product. | Earlier9TH/9ZG preserved in AZR-0 on Build p-8; future-state references p-9 |
+| [Market Dashboard Popups](https://app.paper.design/file/01M38EVF74SJWG1GANN5VP380Z/p-6-0) | Concise gated outcomes; current observed-only US A5I/A7G; unqualified forecast studies no longer mixed into product. | Earlier 9TH/9ZG preserved in AZR-0; AZZ-0 organizes Build p-8; future-state references p-9 |
 | [Policy Monitor](https://app.paper.design/file/01M6Q4WK0EMPV1G2KDGGRQBC1B/p-1-0) | Repeated meta-explanation removed; meaningful unavailable and source conditions retained. | Build `p-2-0` |
 | [Market Memory](https://app.paper.design/file/01M6PXFEP1E1T59M2B3N673PMG/p-2-0) | Record/build contract separated; original, successor, missing and proposed states retained. | Build `p-3-0` |
-| [Intelligence Hub](https://app.paper.design/file/01M2VWK62FA5S4VVF6G7SBPE5J/p-3-0) | Current portfolio copy simplified; US Command 73Q-0 fits content; original 86-0 preserved. | Build `p-C-0` |
+| [Intelligence Hub](https://app.paper.design/file/01M2VWK62FA5S4VVF6G7SBPE5J/p-3-0) | Current portfolio copy simplified; recorded setup checks distinguished from missing review criteria; China coverage stated directly; 73Q-0 fits content and original 86-0 is preserved. | Build `p-C-0` |
 | [GMI Explorer](https://app.paper.design/file/01M5H6EARN9YHQV17JC6ZG9BRY/p-6-0) | Current product explanations condensed; methods, source and implementation detail preserved. | Build `p-6-0` |
-| [Sector Intelligence](https://app.paper.design/file/01M6FAXA774QT1VRDMAG7DFQ2W/p-4-0) | Current and journey copy simplified; unqualified ≤1-month probabilities unavailable; historical priors retained. | Build `p-5-0` |
+| [Sector Intelligence](https://app.paper.design/file/01M6FAXA774QT1VRDMAG7DFQ2W/p-4-0) | Current and journey copy simplified; plain entry-assessment labels; unqualified ≤1-month probabilities unavailable; historical priors retained. | Build `p-5-0` |
 | [International Markets](https://app.paper.design/file/01M3P1TW5Y3XWQC37ADDS8K5AG/p-O-0) |84 calculation/result/tool-help frames; eight origin bindings; concise current tool scopes and distinct qualification states. | Calculation p-N; tool help p-P; earlier saved/source help p-J; Build p-M |
 | [PROPHET](https://app.paper.design/file/01M3NT5Y3G5HTJHVR0K5W2MDJM/p-1-0) | Prior separation retained; Y1G save states now promise only supported membership/outcome facts. |1CBX-0 on Build p-E preserves original assurances and 13L8 contract pointer |
 | [Mastermind OS](https://app.paper.design/file/01M3NRCX55B452A12819WNE1RH/p-J-0) | Readiness architecture sentence moved; operational evidence/access/unknown-effect limits remain. | ZMN-0 under PBR-0 on Build p-E |
@@ -53,7 +53,7 @@ The work used resource/page inventories, targeted copy searches, complete JSX fo
 
 The initial variant pass is supplemented by the original Hub, International, Terminal, Design System, Sector and Prophet registers, and then WORKFLOW_ENHANCEMENT_REGISTER.json. Earlier proposed/uninspected fields describe their original audit snapshot. This directory and the latest scoped applied record identify subsequent changes.
 
-The continuation natively verified104 current frames in the named News/International workflow families, including four existing help roots moved intact. It also checked selected current OS, AI, Ontology, Popup and Prophet states and applied the concrete findings. Exact36 result-to-method bindings, eight Library origins and 24 calculation-index actions are recorded. This count is not a count of every estate frame.
+The continuation natively verified 104 current frames in the named News/International workflow families, including four existing help roots moved intact. It also checked selected current OS, AI, Ontology, Popup and Prophet states and applied the concrete findings. Exact 36 result-to-method bindings, eight Library origins and 24 calculation-index actions are recorded. This count is not a count of every estate frame. A final bounded residual pass separately verified 11 rewritten text nodes and six intact moves across Options, Expectation, Hub and Sector, with 16 product-context screenshots and separate Build preservation checks. Popup Build organization was also read back and rendered.
 
 The initial canvas pass verified all 20 then-new gallery/placement parents and 21 row memberships. New placement carriers have no overlap with other roots whose bounds were measurable; inactive-page unmeasured bounds are explicitly retained in FINAL_QA.json. The admitted Paper duplication operation placed those carriers in available canvas space.
 
@@ -73,7 +73,7 @@ These were not solved by shrinking copy:
 2. Two illustrative source-record controls lack a verified provider URL. The builder must bind the selected source record; no URL was invented.
 3. R14 desktop/mobile fixture chronology and thesis resolution fields already differ. Their nine recorded fields were preserved, not arbitrarily reconciled. Do not claim device fixtures represent one identical snapshot.
 4. News source/spec gaps remain in its guide, including baseline zeros/pre-history, indirect stream refresh, and the new disclosure focus behavior.
-5. All six calculation topics and the four selected tool methods now have native EN/ZH light/dark bodies. The broader17-tool contextual definitions remain in the source contract; native help does not establish runtime routing or unrendered tool-specific content.
+5. All six calculation topics and the four selected tool methods now have native EN/ZH light/dark bodies. The broader 17-tool contextual definitions remain in the source contract; native help does not establish runtime routing or unrendered tool-specific content.
 6. Held, draft, migration and release states remain in force. In particular, Terminal 189S-0, Ontology p-5-0, AI p-6-0, Prophet ZE5-0 and Hub's unattributed 6Z2-0 were not rewritten.
 
 ## Retained and excluded inventory
@@ -106,7 +106,7 @@ These were not solved by shrinking copy:
 
 ## Continued semantic and authority corrections
 
-The AAPL Paper chart fixture was reconciled across locales without claiming it was the different backend thin fixture. News’s current journey, independent rail and earlier state references have distinct homes. International distinguishes absent/malformed primary recovery from qualified not-applicable, and pending warning outcomes from no recorded warnings. Ontology preserves raw-unit MA50 meaning while removing repeated test presentations. Prophet removes unsupported save assurances. Popup forecasts remain withheld, with their old proposed ranges preserved in Build. The canonical rule now requires current-variant and claim consistency.
+The AAPL Paper chart fixture was reconciled across locales without claiming it was the different backend thin fixture. News’s current journey, independent rail and earlier state references have distinct homes. International distinguishes absent/malformed primary recovery from qualified not-applicable, and pending warning outcomes from no recorded warnings. Ontology preserves raw-unit MA50 meaning while removing repeated test presentations. Prophet removes unsupported save assurances. Popup forecasts remain withheld, with their old proposed ranges preserved in Build. The canonical rule now requires current-variant and claim consistency. The final residual pass removes integration/storage/engine vocabulary from product labels and restores Hub’s distinction between recorded passed checks and absent review-criteria text; full before/after wording remains in finalResidualPass.
 
 ## Evidence and source ownership
 

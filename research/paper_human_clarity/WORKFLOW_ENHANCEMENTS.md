@@ -1,12 +1,12 @@
 # Paper workflow enhancements — builder and architecture guide
 
-Status: native Paper design work verified through 9 November 2026. News has 20 contextual product states; International has 32 calculation-help states, 36 result/qualification states and 16 tool-method states. A second portfolio pass corrected current Ontology, Prophet, OS and Popup surfaces. The shared law includes current-variant and claim consistency. These are design deliverables; runtime navigation, deployment and production acceptance are not claimed.
+Status: native Paper design work verified through 9 November 2026. News has 20 contextual product states; International has 32 calculation-help states, 36 result/qualification states and 16 tool-method states. A second portfolio pass corrected current Ontology, Prophet, OS and Popup surfaces. A final bounded pass repaired 17 product-copy placements in Options, Expectation, Hub and Sector, with the original contracts preserved. The shared law includes current-variant and claim consistency. These are design deliverables; runtime navigation, deployment and production acceptance are not claimed.
 
 ## Design authority and separation
 
 Use the human-clarity law in [DESIGN_DOCTRINE](../../docs/DESIGN_DOCTRINE.md) and the existing [portfolio build guide](PORTFOLIO_BUILD_GUIDE.md). Product frames contain the answer, action, necessary qualification and recovery. Requested help explains one question. Formulas, source schemas, architecture, lifecycle behavior and acceptance evidence live in this guide and the preservation registers.
 
-The new News product page p-5 owns the Activity and return layout. The independent full News rail27L remains on product p-2. Earlier compact count views2G9/2JL and count-help studies2NG/2OM are explicitly marked references on p-4, under 3H4/40Y; preserve their other fixtures and edge cases without treating them as another current layout. The older reading-layout proposal is now a Build reference; its publisher-return, missing-story, rights and review conditions remain useful requirements, but its expanded count layout is superseded.
+The new News product page p-5 owns the Activity and return layout. The independent full News rail 27L remains on product p-2. Earlier compact count views 2G9/2JL and count-help studies 2NG/2OM are explicitly marked references on p-4, under 3H4/40Y; preserve their other fixtures and edge cases without treating them as another current layout. The older reading-layout proposal is now a Build reference; its publisher-return, missing-story, rights and review conditions remain useful requirements, but its expanded count layout is superseded.
 
 | Surface | Paper file / page | Current design roots |
 |---|---|---|
@@ -28,7 +28,7 @@ These five topics preserve the R14 method family. They do not redefine R10 analy
 
 Reuse the incumbent workspace/help owner. Topic → Methods restores focus to the selected index row. Index → Sources and method restores its invoking control. Exiting help restores the originating research screen and valid scroll/reading anchor. Preserve market/issuer, tool/question, period and local-session date, currency/return basis, reference snapshot/vintage, locale, theme, source selection and scroll.
 
-The exact index rows, body destinations and native theme/context variants are recorded in INTERNATIONAL_METHOD_BINDINGS.json. Native designs are not executable routing proof. The32 calculation-help frames cover the index, six topic bodies and the two return-calculation entry contexts in EN/ZH and light/dark. Do not send an index-launched topic back to a comparison screen. View source dates must use the invoking source/date context, not an unrelated fixed Japan specimen.
+The exact index rows, body destinations and native theme/context variants are recorded in INTERNATIONAL_METHOD_BINDINGS.json. Native designs are not executable routing proof. The 32 calculation-help frames cover the index, six topic bodies and the two return-calculation entry contexts in EN/ZH and light/dark. Do not send an index-launched topic back to a comparison screen. View source dates must use the invoking source/date context, not an unrelated fixed Japan specimen.
 
 ### Preserved calculation and qualification rules
 
@@ -78,17 +78,17 @@ The compact degraded states and partial Activity view are part of the current de
 
 ### Shared design fixture and chart repair
 
-The journey preserves the established Paper AAPL fixture: 13 reports in rolling24h, 9 stories, 91 reports in rolling7d, 9 days on record, 13 reports dated by publication time, Benzinga and GlobeNewswire, and the original displayed count time.
+The journey preserves the established Paper AAPL fixture: 13 reports in rolling 24h, 9 stories, 91 reports in rolling 7d, 9 days on record, 13 reports dated by publication time, Benzinga and GlobeNewswire, and the original displayed count time.
 
 The English chart inherited from 35X-0/39J-0 was inconsistent with the seven-day total. Both were repaired, and every new locale uses the coherent existing vector series from 1CX-0:
 
 19 unrecorded slots, then [11, 14, 9, 12, 16, 10, 13, 15, 12].
 
-This is an explicitly preserved Paper design fixture derived from vector geometry, not a recovered production response. Original SVGs and the correction are retained in WORKFLOW_ENHANCEMENT_REGISTER.json. All bars and the outlined13 mark use one linear5px/report scale. The unrecorded run is not drawn as recorded-zero dots. A dashed outline is reserved for incomplete rolling24h counts.
+This is an explicitly preserved Paper design fixture derived from vector geometry, not a recovered production response. Original SVGs and the correction are retained in WORKFLOW_ENHANCEMENT_REGISTER.json. All bars and the outlined 13 mark use one linear 5px/report scale. The unrecorded run is not drawn as recorded-zero dots. A dashed outline is reserved for incomplete rolling 24h counts.
 
-The windows differ: daily bars are 28 UTC dates ending yesterday; reports24h and reports7d are rolling inclusive windows ending at the count time. The final seven daily bins sum87; boundary-day portions can make rolling7d91. Do not force equality between those different windows.
+The windows differ: daily bars are 28 UTC dates ending yesterday; reports24h and reports7d are rolling inclusive windows ending at the count time. The final seven daily bins sum to 87; boundary-day portions can make rolling 7d total of 91. Do not force equality between those different windows.
 
-The pinned Terminal source-backed thin fixture is separately 2 reports / 2 stories / 7d3 / history6 with THIN_DAILY in news-flow-responsive.spec.ts. Do not describe the Paper13/91 series as that backend fixture. Real implementation tests must consume explicit timestamped fixtures and the owner payload.
+The pinned Terminal source-backed thin fixture is separately 2 reports / 2 stories / 7d total of 3 / 6 days on record with THIN_DAILY in news-flow-responsive.spec.ts. Do not describe the Paper 13/91 series as that backend fixture. Real implementation tests must consume explicit timestamped fixtures and the owner payload.
 
 ### News source anchors
 
@@ -138,9 +138,9 @@ Preserve the primary price state. assess_recovery is a qualifier and returns an 
 
 ### Risk track record
 
-Use a read-only published projection of the incumbent per-market forward log. Never append logs or invoke nightly governance effects from the UI. n_graded/n_alerts count logged daily observations with overlapping horizons, not independent warning episodes. Grading waits until the longest21-session horizon matures. The adverse outcome is minimum subsequent close versus the warning-date base close; label it “Worst close vs warning date,” not generic peak-to-trough drawdown.
+Use a read-only published projection of the incumbent per-market forward log. Never append logs or invoke nightly governance effects from the UI. n_graded/n_alerts count logged daily observations with overlapping horizons, not independent warning episodes. Grading waits until the longest 21-session horizon matures. The adverse outcome is minimum subsequent close versus the warning-date base close; label it “Worst close vs warning date,” not generic peak-to-trough drawdown.
 
-Keep recent_mistakes separate from a full ledger, avoid reconstructing exact false alarms from rounded precision, and preserve logged_at/source provenance. asof alone does not prove user availability at that time. Separate accruing, successfully queried no-warning periods, pending warning outcomes, unavailable/timing-unqualified records and recomputed history. The incumbent reader returns an empty list for an absent ledger, and scorecard fallback can report accruing after read failure or when no rows have matured. That label alone cannot establish a valid collecting state. Accruing requires a successful qualified ledger read with recorded observations and no mature outcomes. No recorded warnings requires successful selected-period coverage qualification and absence of all warning rows, including immature rows; n_alerts counts only graded alerts. A valid empty ledger does not prove the period was monitored. Mature calm rows can coexist with recorded warnings whose21-session windows remain unfinished: use the distinct No warning outcomes yet state. Internal can_force is not a trading recommendation or UI authorization.
+Keep recent_mistakes separate from a full ledger, avoid reconstructing exact false alarms from rounded precision, and preserve logged_at/source provenance. asof alone does not prove user availability at that time. Separate accruing, successfully queried no-warning periods, pending warning outcomes, unavailable/timing-unqualified records and recomputed history. The incumbent reader returns an empty list for an absent ledger, and scorecard fallback can report accruing after read failure or when no rows have matured. That label alone cannot establish a valid collecting state. Accruing requires a successful qualified ledger read with recorded observations and no mature outcomes. No recorded warnings requires successful selected-period coverage qualification and absence of all warning rows, including immature rows; n_alerts counts only graded alerts. A valid empty ledger does not prove the period was monitored. Mature calm rows can coexist with recorded warnings whose 21-session windows remain unfinished: use the distinct No warning outcomes yet state. Internal can_force is not a trading recommendation or UI authorization.
 
 ### Economic links
 
@@ -159,12 +159,34 @@ All inspected at Macro b5674d8ef898e503d6164922654f5ff89be9981c:
 
 ## 4. Portfolio second pass and preservation
 
-- **Ontology:** AT4 and the selected-oil-evidence section of 44L now show each metric once. Exact17.783% is promoted from the original table; +0.769 remains a raw-unit MA50 change, with strict >25% and >0 thresholds and the both-required condition. Duplicate tables4KR/49W and Required tests cards 4MC/4AJ moved intact to AXF-0 under ASY-0 on p-6. Mechanism/5–60 calendar-day lag, source dates, page-comparison limits and carried-forward-data qualifications remain. Source details use human labels; raw field mappings and the governing Macro 338a1085 observation/MA50 contract remain in AUR-0 and AXF-0. This is a design-contract refinement, not a fresh runtime numeric audit.
-- **Prophet:** Y1G-0 now distinguishes pending confirmation, confirmed security membership, refusal and unresolved result without promises of background continuation, once-only writes or durable decision notes. Original copy and removed footers are in1CBX-0 under 15E0-0 on p-E. The governing 13L8/13QZ/13RA/13RE contract supplies no durable operation or Prophet object ID. A membership read does not resolve an outstanding write or authorize retry. Preserve the original account, list, securities, attempt time and the distinction between confirmed readBackAt and membership observedAt. Closing a pane must not be presented as proof that work continues; any persistence/continuation gap remains an implementation requirement of the incumbent owner.
+- **Ontology:** AT4 and the selected-oil-evidence section of 44L now show each metric once. Exact 17.783% is promoted from the original table; +0.769 remains a raw-unit MA50 change, with strict >25% and >0 thresholds and the both-required condition. Duplicate tables 4KR/49W and Required tests cards 4MC/4AJ moved intact to AXF-0 under ASY-0 on p-6. Mechanism/5–60 calendar-day lag, source dates, page-comparison limits and carried-forward-data qualifications remain. Source details use human labels; raw field mappings and the governing Macro 338a1085 observation/MA50 contract remain in AUR-0 and AXF-0. This is a design-contract refinement, not a fresh runtime numeric audit.
+- **Prophet:** Y1G-0 now distinguishes pending confirmation, confirmed security membership, refusal and unresolved result without promises of background continuation, once-only writes or durable decision notes. Original copy and removed footers are in 1CBX-0 under 15E0-0 on p-E. The governing 13L8/13QZ/13RA/13RE contract supplies no durable operation or Prophet object ID. A membership read does not resolve an outstanding write or authorize retry. Preserve the original account, list, securities, attempt time and the distinction between confirmed readBackAt and membership observedAt. Closing a pane must not be presented as proof that work continues; any persistence/continuation gap remains an implementation requirement of the incumbent owner.
 - **OS:** exact architecture note TWB-0 moved from TR7’s readiness detail into ZMN-0 under existing PBR-0 on p-E. The actual operational evidence, permissions and uncertain-effect restrictions remain.
-- **Popups:** original 9TH/9ZG forecast studies moved intact from product p-6 to AZR/AZV on Build p-8. Current observed-only US designs are A5I/A7G. Their sample labels remain; construction/release instructions moved into the same Build reference. The proposed2.4–5.6%/9–12% ranges and stress-chart semantics are preserved, not accepted as outputs. Existing rights, validation, original-observer and #8186 hold requirements remain; no hold was cleared.
-- **International entry screens:** redundant slogans and the owning-engine footer moved intact into SDT-0 under SDM-0 on Build p-M. Correlation entries now state weekly USD scope; recorded warning outcomes replace unsupported benefit framing. Future currency/window/regime comparisons, sample/false-alarm analysis and adverse-outcome features remain specified in Build. The390px, 320px and 320px/200%-text pressure variants were inspected; no text was shrunk to fit.
+- **Popups:** original 9TH/9ZG forecast studies moved intact from product p-6 to AZR/AZV on Build p-8. Current observed-only US designs are A5I/A7G. Their sample labels remain; construction/release instructions moved into the same Build reference. The proposed 2.4–5.6%/9–12% ranges and stress-chart semantics are preserved, not accepted as outputs. Existing rights, validation, original-observer and #8186 hold requirements remain; no hold was cleared.
+- **International entry screens:** redundant slogans and the owning-engine footer moved intact into SDT-0 under SDM-0 on Build p-M. Correlation entries now state weekly USD scope; recorded warning outcomes replace unsupported benefit framing. Future currency/window/regime comparisons, sample/false-alarm analysis and adverse-outcome features remain specified in Build. The 390px, 320px and 320px/200%-text pressure variants were inspected; no text was shrunk to fit.
 - **Mastermind AI:** the bounded second pass inspected context handover, reopened-case and partial-answer states without finding a new confirmed defect. This does not claim a fresh full-file audit.
+
+### Bounded residual copy and source-scope repairs
+
+The final residual pass changed 11 text nodes and moved six original text nodes into Build across five product files. It adds no new state family to the 104-frame workflow count.
+
+| Product | Current change | Preserved builder destination |
+|---|---|---|
+| Options R1 | ZC-0 uses plain relative-trend wording; the source date, direction and unchanged status remain. | 18G-0 under 14A-0 / 16B-0 on p-3 |
+| Options Mobile | 2L-0 reads “3 saved revisions”. | Same Options Build section; the mobile file and original node are identified there |
+| Expectation Surface | Five EN/ZH, desktop/mobile, light/dark headers no longer display the integration caption “Shared site navigation” / “共享站点导航”. Brand, search and actual menu controls remain. | 4D3-0 under 3UR-0 on p-2; original nodes A-0, 2O3-0, 2NV-0 are in 4D8-0, and 1S0-0 / 396-0 in 4DB-0 |
+| Hub | Coal copy states sparse coverage directly. Footer distinguishes separate US/China ranks and missing readings; the preservation note moves out. US setup checks are qualified as recorded outcomes, while missing review criteria are scoped to the six research rows. | 856-0 under 73A-0 on p-C; 10I-0 moved intact |
+| Sector | DW4-0 uses “Entry assessment”; EDY-0, EGQ-0 and ET4-0 use “入场判断”. | HBG-0 under GOI-0 on p-5 |
+
+Keep the Options `sector_origin` type, append-only revisions and immutable evidence in their incumbent owners. A shorter revision label does not change persistence behavior. Expectation must reuse the existing shared shell and its authorized destinations: removing a placeholder is not implementation proof, and no replacement route is invented.
+
+Hub’s preserved source contract is precise: PORTFOLIO_COPY_REGISTER.json at 6ac8c200, entries 70 and 83, records captured passed checks for LRCX and ANET. Entry 75 says review-condition text was not supplied for the six research rows. Retain recorded check outcomes, Early/Emerging states, source dates, numeric readings, price-risk review and evidence actions. Missing explanatory criteria do not negate the captured result or supply trading authority. China’s conviction 4.8 and radar-led qualification remain unchanged.
+
+Sector still receives stance from the existing entry engine. The unmet condition, “Watch — don’t chase” / “观察 —— 别追”, unavailable current model values and separate historical priors remain. The protected G4P-0 / GI8-0 canary is excluded.
+
+Popup Build p-8 now uses AZZ-0 as an explicit vertical-flow carrier for existing AHN-0 contracts and AZR-0 unqualified forecast references. Their IDs, complete content and hold #8186 remain. Earlier inactive-page coordinates were unmeasured; this records the verified current organization, not an assertion of an observed prior overlap.
+
+The exact preimages, 17 text/parent readbacks, 16 product-context screenshots, four preservation-section checks, Popup gallery check and six scoped releases are in the register’s `finalResidualPass`. New or unattributed Hub 854, GMI S06, mobile amendment roots and all existing held targets remain outside the mutation scope.
 
 The current directory remains PORTFOLIO_DISPOSITIONS.md. This phase extends its evidence; it does not create a second lifecycle or design system. Original source wording, exact moves and current node bindings are in WORKFLOW_ENHANCEMENT_REGISTER.json.
 
@@ -177,6 +199,6 @@ The current directory remains PORTFOLIO_DISPOSITIONS.md. This phase extends its 
 5. Verify source-reference mismatch, absent risk, immature forward outcomes, empty documented relationships and insufficient matched observations. Assert that no fabricated value or method-only destination satisfies a result route.
 6. Perform native browser/runtime proof against the exact implementation head. Paper screenshots prove the design composition, not runtime execution.
 
-Before accepting a touched family, apply DESIGN_DOCTRINE §8’s current-variant check: identify the current target, reconcile shared fixture values across views, and ensure shorter assurances do not exceed the governing behavior contract. The canonical Paper law remains9X3-0; its content-fit carrier is now ANF-0 and the added acceptance text is AND-0. The installed Paper skill already points builders to the doctrine and separation/preservation workflow; do not duplicate this rule in another control plane.
+Before accepting a touched family, apply DESIGN_DOCTRINE §8’s current-variant check: identify the current target, reconcile shared fixture values across views, and ensure shorter assurances do not exceed the governing behavior contract. The canonical Paper law remains 9X3-0; its content-fit carrier is now ANF-0 and the added acceptance text is AND-0. The installed Paper skill already points builders to the doctrine and separation/preservation workflow; do not duplicate this rule in another control plane.
 
 Native Paper changes, source preservation, visual checks and their limits are recorded in WORKFLOW_ENHANCEMENT_REGISTER.json. All owned edited roots were released after native review. Keep implementation/source details here; do not paste this guide into product frames.

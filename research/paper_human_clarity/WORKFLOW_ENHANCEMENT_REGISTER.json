@@ -25901,6 +25901,786 @@
         },
         "OK"
       ]
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M5EPQ16VBT7SBW2NQVX2RJG4",
+      "operationId": "clarity-final-options-preservation-container",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": [
+        {
+          "file": {
+            "id": "01M5EPQ16VBT7SBW2NQVX2RJG4",
+            "name": "Terminal · Options R1 · Design Upgrade · 2026-10-21"
+          },
+          "contentHash": {
+            "tokens": "acef2e0d"
+          }
+        },
+        {
+          "createdNodes": [
+            {
+              "id": "18G-0",
+              "name": "BUILD · Product wording and original types",
+              "component": "Frame"
+            },
+            {
+              "id": "18H-0",
+              "name": "Product wording · Or…",
+              "component": "Text"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M5EPQ16VBT7SBW2NQVX2RJG4",
+      "operationId": "clarity-final-options-preserve-original-contracts",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": [
+        {
+          "file": {
+            "id": "01M5EPQ16VBT7SBW2NQVX2RJG4",
+            "name": "Terminal · Options R1 · Design Upgrade · 2026-10-21"
+          },
+          "contentHash": {
+            "tokens": "acef2e0d"
+          }
+        },
+        {
+          "createdNodes": [
+            {
+              "id": "18J-0",
+              "name": "ZC-0 original: secto…",
+              "component": "Text"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tool": "set_text_content",
+      "fileId": "01M5EPQ16VBT7SBW2NQVX2RJG4",
+      "operationId": "clarity-final-options-human-origin-label",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": [
+        {
+          "file": {
+            "id": "01M5EPQ16VBT7SBW2NQVX2RJG4",
+            "name": "Terminal · Options R1 · Design Upgrade · 2026-10-21"
+          },
+          "contentHash": {
+            "tokens": "acef2e0d"
+          }
+        },
+        {
+          "updates": [
+            {
+              "nodeId": "ZC-0"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tool": "set_text_content",
+      "fileId": "01M5FNCKAND6CBSJNYM5FZWR8Y",
+      "operationId": "clarity-final-options-mobile-revision-label",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": [
+        {
+          "file": {
+            "id": "01M5FNCKAND6CBSJNYM5FZWR8Y",
+            "name": "Terminal · Options R1 · Design Upgrade · W3 mobile · 2026-10-21"
+          },
+          "contentHash": {
+            "tokens": "811c9dc5"
+          }
+        },
+        {
+          "updates": [
+            {
+              "nodeId": "2L-0"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+      "operationId": "clarity-final-expectation-preservation-container",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": [
+        {
+          "file": {
+            "id": "01M5EX8RTPR7YEZD2A144XED2S",
+            "name": "Expectation Surface · R1 · 2026-10-21"
+          },
+          "contentHash": {
+            "tokens": "d776b76d"
+          }
+        },
+        {
+          "createdNodes": [
+            {
+              "id": "4D3-0",
+              "name": "BUILD · Incumbent navigation integration",
+              "component": "Frame"
+            },
+            {
+              "id": "4D4-0",
+              "name": "Shared navigation · …",
+              "component": "Text"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+      "operationId": "clarity-final-expectation-navigation-contract",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": [
+        {
+          "file": {
+            "id": "01M5EX8RTPR7YEZD2A144XED2S",
+            "name": "Expectation Surface · R1 · 2026-10-21"
+          },
+          "contentHash": {
+            "tokens": "d776b76d"
+          }
+        },
+        {
+          "createdNodes": [
+            {
+              "id": "4D6-0",
+              "name": "Reuse the incumbent …",
+              "component": "Text"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+      "operationId": "clarity-final-expectation-dark-captions-container",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": [
+        {
+          "file": {
+            "id": "01M5EX8RTPR7YEZD2A144XED2S",
+            "name": "Expectation Surface · R1 · 2026-10-21"
+          },
+          "contentHash": {
+            "tokens": "d776b76d"
+          }
+        },
+        {
+          "createdNodes": [
+            {
+              "id": "4D8-0",
+              "name": "REFERENCE · Original dark captions",
+              "component": "Frame"
+            },
+            {
+              "id": "4D9-0",
+              "name": "Original dark captio…",
+              "component": "Text"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+      "operationId": "clarity-final-expectation-light-captions-container",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": [
+        {
+          "file": {
+            "id": "01M5EX8RTPR7YEZD2A144XED2S",
+            "name": "Expectation Surface · R1 · 2026-10-21"
+          },
+          "contentHash": {
+            "tokens": "d776b76d"
+          }
+        },
+        {
+          "createdNodes": [
+            {
+              "id": "4DB-0",
+              "name": "REFERENCE · Original light captions",
+              "component": "Frame"
+            },
+            {
+              "id": "4DC-0",
+              "name": "Original light capti…",
+              "component": "Text"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tool": "move_nodes",
+      "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+      "operationId": "clarity-final-expectation-move-five-placeholders",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": [
+        {
+          "file": {
+            "id": "01M5EX8RTPR7YEZD2A144XED2S",
+            "name": "Expectation Surface · R1 · 2026-10-21"
+          },
+          "contentHash": {
+            "tokens": "d776b76d"
+          }
+        },
+        {
+          "moves": [
+            {
+              "nodeId": "A-0",
+              "parentId": "4D8-0",
+              "index": 1
+            },
+            {
+              "nodeId": "1S0-0",
+              "parentId": "4DB-0",
+              "index": 1
+            },
+            {
+              "nodeId": "2O3-0",
+              "parentId": "4D8-0",
+              "index": 2
+            },
+            {
+              "nodeId": "2NV-0",
+              "parentId": "4D8-0",
+              "index": 3
+            },
+            {
+              "nodeId": "396-0",
+              "parentId": "4DB-0",
+              "index": 2
+            }
+          ],
+          "affectedParents": [
+            {
+              "parentId": "4D8-0",
+              "childIds": [
+                "4D9-0",
+                "A-0",
+                "2O3-0",
+                "2NV-0"
+              ]
+            },
+            {
+              "parentId": "8-0",
+              "childIds": [
+                "9-0",
+                "B-0"
+              ]
+            },
+            {
+              "parentId": "4DB-0",
+              "childIds": [
+                "4DC-0",
+                "1S0-0",
+                "396-0"
+              ]
+            },
+            {
+              "parentId": "1RY-0",
+              "childIds": [
+                "1S1-0",
+                "1RZ-0"
+              ]
+            },
+            {
+              "parentId": "2O1-0",
+              "childIds": [
+                "2O2-0"
+              ]
+            },
+            {
+              "parentId": "2NT-0",
+              "childIds": [
+                "2NW-0"
+              ]
+            },
+            {
+              "parentId": "394-0",
+              "childIds": [
+                "395-0"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M2VWK62FA5S4VVF6G7SBPE5J",
+      "operationId": "clarity-final-hub-preservation-container",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": [
+        {
+          "file": {
+            "id": "01M2VWK62FA5S4VVF6G7SBPE5J",
+            "name": "Intelligence Hub · R4 Workspace"
+          },
+          "contentHash": {
+            "tokens": "55dd37b7"
+          }
+        },
+        {
+          "createdNodes": [
+            {
+              "id": "856-0",
+              "name": "BUILD · Hub source qualification and preserved copy",
+              "component": "Frame"
+            },
+            {
+              "id": "857-0",
+              "name": "Source qualification…",
+              "component": "Text"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M2VWK62FA5S4VVF6G7SBPE5J",
+      "operationId": "clarity-final-hub-preserve-five-preimages",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": [
+        {
+          "file": {
+            "id": "01M2VWK62FA5S4VVF6G7SBPE5J",
+            "name": "Intelligence Hub · R4 Workspace"
+          },
+          "contentHash": {
+            "tokens": "55dd37b7"
+          }
+        },
+        {
+          "createdNodes": [
+            {
+              "id": "859-0",
+              "name": "VD-0 · original\nThe …",
+              "component": "Text"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M2VWK62FA5S4VVF6G7SBPE5J",
+      "operationId": "clarity-final-hub-preserve-source-contract",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": [
+        {
+          "file": {
+            "id": "01M2VWK62FA5S4VVF6G7SBPE5J",
+            "name": "Intelligence Hub · R4 Workspace"
+          },
+          "contentHash": {
+            "tokens": "55dd37b7"
+          }
+        },
+        {
+          "createdNodes": [
+            {
+              "id": "85B-0",
+              "name": "Keep local listings,…",
+              "component": "Text"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tool": "move_nodes",
+      "fileId": "01M2VWK62FA5S4VVF6G7SBPE5J",
+      "operationId": "clarity-final-hub-move-preservation-note",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": [
+        {
+          "file": {
+            "id": "01M2VWK62FA5S4VVF6G7SBPE5J",
+            "name": "Intelligence Hub · R4 Workspace"
+          },
+          "contentHash": {
+            "tokens": "55dd37b7"
+          }
+        },
+        {
+          "moves": [
+            {
+              "nodeId": "10I-0",
+              "parentId": "856-0",
+              "index": 3
+            }
+          ],
+          "affectedParents": [
+            {
+              "parentId": "856-0",
+              "childIds": [
+                "857-0",
+                "859-0",
+                "85B-0",
+                "10I-0"
+              ]
+            },
+            {
+              "parentId": "10H-0",
+              "childIds": [
+                "10J-0",
+                "10K-0"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tool": "set_text_content",
+      "fileId": "01M2VWK62FA5S4VVF6G7SBPE5J",
+      "operationId": "clarity-final-hub-scope-qualification-and-clean-copy",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": [
+        {
+          "file": {
+            "id": "01M2VWK62FA5S4VVF6G7SBPE5J",
+            "name": "Intelligence Hub · R4 Workspace"
+          },
+          "contentHash": {
+            "tokens": "55dd37b7"
+          }
+        },
+        {
+          "updates": [
+            {
+              "nodeId": "VD-0"
+            },
+            {
+              "nodeId": "10G-0"
+            },
+            {
+              "nodeId": "75B-0"
+            },
+            {
+              "nodeId": "7B9-0"
+            },
+            {
+              "nodeId": "6XN-0"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M6FAXA774QT1VRDMAG7DFQ2W",
+      "operationId": "clarity-final-sector-preservation-container",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": [
+        {
+          "file": {
+            "id": "01M6FAXA774QT1VRDMAG7DFQ2W",
+            "name": "Sector Intelligence · R4 · Astra Pro · 2026-11-02"
+          },
+          "contentHash": {
+            "tokens": "811c9dc5"
+          }
+        },
+        {
+          "createdNodes": [
+            {
+              "id": "HBG-0",
+              "name": "BUILD · Entry assessment ownership",
+              "component": "Frame"
+            },
+            {
+              "id": "HBH-0",
+              "name": "Entry assessment · E…",
+              "component": "Text"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M6FAXA774QT1VRDMAG7DFQ2W",
+      "operationId": "clarity-final-sector-preserve-owner-and-labels",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": [
+        {
+          "file": {
+            "id": "01M6FAXA774QT1VRDMAG7DFQ2W",
+            "name": "Sector Intelligence · R4 · Astra Pro · 2026-11-02"
+          },
+          "contentHash": {
+            "tokens": "811c9dc5"
+          }
+        },
+        {
+          "createdNodes": [
+            {
+              "id": "HBJ-0",
+              "name": "Original labels: DW4…",
+              "component": "Text"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tool": "set_text_content",
+      "fileId": "01M6FAXA774QT1VRDMAG7DFQ2W",
+      "operationId": "clarity-final-sector-human-assessment-labels",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": [
+        {
+          "file": {
+            "id": "01M6FAXA774QT1VRDMAG7DFQ2W",
+            "name": "Sector Intelligence · R4 · Astra Pro · 2026-11-02"
+          },
+          "contentHash": {
+            "tokens": "811c9dc5"
+          }
+        },
+        {
+          "updates": [
+            {
+              "nodeId": "DW4-0"
+            },
+            {
+              "nodeId": "EDY-0"
+            },
+            {
+              "nodeId": "EGQ-0"
+            },
+            {
+              "nodeId": "ET4-0"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M38EVF74SJWG1GANN5VP380Z",
+      "operationId": "clarity-final-popups-build-flow-carrier",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": [
+        {
+          "file": {
+            "id": "01M38EVF74SJWG1GANN5VP380Z",
+            "name": "Mastermind · Market Dashboard Popups · Redesign"
+          },
+          "contentHash": {
+            "tokens": "53e14498"
+          }
+        },
+        {
+          "createdNodes": []
+        }
+      ]
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M38EVF74SJWG1GANN5VP380Z",
+      "operationId": "clarity-final-popups-populated-build-flow-carrier",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": [
+        {
+          "file": {
+            "id": "01M38EVF74SJWG1GANN5VP380Z",
+            "name": "Mastermind · Market Dashboard Popups · Redesign"
+          },
+          "contentHash": {
+            "tokens": "53e14498"
+          }
+        },
+        {
+          "createdNodes": [
+            {
+              "id": "AZZ-0",
+              "name": "BUILD · Popup contracts and forecast references",
+              "component": "Frame"
+            },
+            {
+              "id": "B00-0",
+              "name": "Build · Contracts an…",
+              "component": "Text"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tool": "move_nodes",
+      "fileId": "01M38EVF74SJWG1GANN5VP380Z",
+      "operationId": "clarity-final-popups-build-references-in-flow",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": [
+        {
+          "file": {
+            "id": "01M38EVF74SJWG1GANN5VP380Z",
+            "name": "Mastermind · Market Dashboard Popups · Redesign"
+          },
+          "contentHash": {
+            "tokens": "53e14498"
+          }
+        },
+        {
+          "moves": [
+            {
+              "nodeId": "AHN-0",
+              "parentId": "AZZ-0",
+              "index": 1
+            },
+            {
+              "nodeId": "AZR-0",
+              "parentId": "AZZ-0",
+              "index": 2
+            }
+          ],
+          "affectedParents": [
+            {
+              "parentId": "AZZ-0",
+              "childIds": [
+                "B00-0",
+                "AHN-0",
+                "AZR-0"
+              ]
+            },
+            {
+              "parentId": "root_node_p-8-0",
+              "childIds": [
+                "AZZ-0"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tool": "finish_working_on_nodes",
+      "fileId": "01M5EPQ16VBT7SBW2NQVX2RJG4",
+      "operationId": "clarity-final-release-options",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": [
+        {
+          "file": {
+            "id": "01M5EPQ16VBT7SBW2NQVX2RJG4",
+            "name": "Terminal · Options R1 · Design Upgrade · 2026-10-21"
+          },
+          "contentHash": {
+            "tokens": "acef2e0d"
+          }
+        },
+        "OK"
+      ]
+    },
+    {
+      "tool": "finish_working_on_nodes",
+      "fileId": "01M5FNCKAND6CBSJNYM5FZWR8Y",
+      "operationId": "clarity-final-release-options-mobile",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": [
+        {
+          "file": {
+            "id": "01M5FNCKAND6CBSJNYM5FZWR8Y",
+            "name": "Terminal · Options R1 · Design Upgrade · W3 mobile · 2026-10-21"
+          },
+          "contentHash": {
+            "tokens": "811c9dc5"
+          }
+        },
+        "OK"
+      ]
+    },
+    {
+      "tool": "finish_working_on_nodes",
+      "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+      "operationId": "clarity-final-release-expectation",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": [
+        {
+          "file": {
+            "id": "01M5EX8RTPR7YEZD2A144XED2S",
+            "name": "Expectation Surface · R1 · 2026-10-21"
+          },
+          "contentHash": {
+            "tokens": "d776b76d"
+          }
+        },
+        "OK"
+      ]
+    },
+    {
+      "tool": "finish_working_on_nodes",
+      "fileId": "01M2VWK62FA5S4VVF6G7SBPE5J",
+      "operationId": "clarity-final-release-hub",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": [
+        {
+          "file": {
+            "id": "01M2VWK62FA5S4VVF6G7SBPE5J",
+            "name": "Intelligence Hub · R4 Workspace"
+          },
+          "contentHash": {
+            "tokens": "55dd37b7"
+          }
+        },
+        "OK"
+      ]
+    },
+    {
+      "tool": "finish_working_on_nodes",
+      "fileId": "01M6FAXA774QT1VRDMAG7DFQ2W",
+      "operationId": "clarity-final-release-sector",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": [
+        {
+          "file": {
+            "id": "01M6FAXA774QT1VRDMAG7DFQ2W",
+            "name": "Sector Intelligence · R4 · Astra Pro · 2026-11-02"
+          },
+          "contentHash": {
+            "tokens": "811c9dc5"
+          }
+        },
+        "OK"
+      ]
+    },
+    {
+      "tool": "finish_working_on_nodes",
+      "fileId": "01M38EVF74SJWG1GANN5VP380Z",
+      "operationId": "clarity-final-release-popups",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": [
+        {
+          "file": {
+            "id": "01M38EVF74SJWG1GANN5VP380Z",
+            "name": "Mastermind · Market Dashboard Popups · Redesign"
+          },
+          "contentHash": {
+            "tokens": "53e14498"
+          }
+        },
+        "OK"
+      ]
     }
   ],
   "residualEntryScreenTriage": {
@@ -26500,6 +27280,36 @@
       "operationId": "clarity-depth-release-news-reference-label",
       "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
       "state": "APPLIED_RESPONSE_OBSERVED"
+    },
+    {
+      "operationId": "clarity-final-release-options",
+      "fileId": "01M5EPQ16VBT7SBW2NQVX2RJG4",
+      "state": "APPLIED_RESPONSE_OBSERVED"
+    },
+    {
+      "operationId": "clarity-final-release-options-mobile",
+      "fileId": "01M5FNCKAND6CBSJNYM5FZWR8Y",
+      "state": "APPLIED_RESPONSE_OBSERVED"
+    },
+    {
+      "operationId": "clarity-final-release-expectation",
+      "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+      "state": "APPLIED_RESPONSE_OBSERVED"
+    },
+    {
+      "operationId": "clarity-final-release-hub",
+      "fileId": "01M2VWK62FA5S4VVF6G7SBPE5J",
+      "state": "APPLIED_RESPONSE_OBSERVED"
+    },
+    {
+      "operationId": "clarity-final-release-sector",
+      "fileId": "01M6FAXA774QT1VRDMAG7DFQ2W",
+      "state": "APPLIED_RESPONSE_OBSERVED"
+    },
+    {
+      "operationId": "clarity-final-release-popups",
+      "fileId": "01M38EVF74SJWG1GANN5VP380Z",
+      "state": "APPLIED_RESPONSE_OBSERVED"
     }
   ],
   "sourceDelivery": {
@@ -26555,8 +27365,16 @@
       "Eight origin bindings include the actual EN/dark result and immediate return",
       "News initial and continuation guides reconciled for failure/focus/fixture semantics",
       "Current directory updated; historical maps retained as historical",
-      "No pending Paper effect; all recorded mutations observed applied"
-    ]
+      "No pending Paper effect; all recorded mutations observed applied",
+      "Final residual pass: 11 exact copy readbacks, six exact relocation parents, native visual checks and scoped releases"
+    ],
+    "pullRequest": {
+      "number": 10874,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/10874",
+      "stateAtEvidenceSave": "OPEN_READY_UNARMED",
+      "headBeforeFinalResidualAmendment": "6ac8c20013dbea575f7007d51ba37d952056f927",
+      "acceptance": "Final source receipt and merge readback govern delivery; this register does not self-assert a future merge."
+    }
   },
   "finalConsistency": {
     "frameMembership": {
@@ -26586,7 +27404,520 @@
     "resultOrigins": 8,
     "allEffectStatesObserved": true,
     "pendingPaperEffect": null,
-    "runtimeNavigationVerified": false
+    "runtimeNavigationVerified": false,
+    "finalResidualCopyReadbacks": 11,
+    "finalResidualMoves": 6,
+    "finalResidualVerified": true
   },
-  "recordFormatNote": "Redundant null worldX/worldY/x/y fields are omitted only from captured native-node summaries. Native IDs, names, types, source content and meaningful data nulls remain unchanged."
+  "recordFormatNote": "Redundant null worldX/worldY/x/y fields are omitted only from captured native-node summaries. Native IDs, names, types, source content and meaningful data nulls remain unchanged.",
+  "finalResidualPass": {
+    "status": "VERIFIED_NATIVE",
+    "date": "2026-11-09",
+    "scope": "Final bounded residual copy and preservation pass; no new product state family or runtime change",
+    "files": {
+      "options": "01M5EPQ16VBT7SBW2NQVX2RJG4",
+      "optionsMobile": "01M5FNCKAND6CBSJNYM5FZWR8Y",
+      "expectation": "01M5EX8RTPR7YEZD2A144XED2S",
+      "hub": "01M2VWK62FA5S4VVF6G7SBPE5J",
+      "sector": "01M6FAXA774QT1VRDMAG7DFQ2W"
+    },
+    "edits": [
+      {
+        "family": "options",
+        "node": "ZC-0",
+        "root": "TP-0",
+        "before": "sector_origin · relative trend leadership → fading · unchanged on the 21 Oct read",
+        "after": "Relative trend leadership → fading · Unchanged on 21 Oct",
+        "beforeJsx": "(\n    <div id=\"Z8-0\" className=\"[font-synthesis:none] wrap-anywhere flex flex-col py-[12px] gap-[4px] border-b border-b-solid border-b-[#2A303B] antialiased\">\n      <div id=\"Z9-0\" className=\"flex justify-between items-center\">\n        <div id=\"ZA-0\" className=\"text-[14px] font-['Inter-Regular','Inter',system-ui,sans-serif] leading-[18px] text-[#D7DCE3]\">\n          Sector origin · Semiconductors\n        </div>\n        <div id=\"ZB-0\" className=\"text-[12px] font-['IBM_Plex_Mono',system-ui,sans-serif] leading-[16px] text-[#3DA564]\">\n          STILL SUPPORTED\n        </div>\n      </div>\n      <div id=\"ZC-0\" className=\"text-[12px] leading-[18px] font-['Inter-Regular','Inter',system-ui,sans-serif] text-[#8B93A1]\">\n        sector_origin · relative trend leadership → fading · unchanged on the 21 Oct read\n      </div>\n    </div>\n  )"
+      },
+      {
+        "family": "optionsMobile",
+        "node": "2L-0",
+        "root": "1-0",
+        "before": "3 saved · append-only",
+        "after": "3 saved revisions",
+        "beforeJsx": "(\n    <div id=\"2J-0\" className=\"[font-synthesis:none] wrap-anywhere flex flex-col gap-0.5 antialiased\">\n      <div id=\"2K-0\" className=\"font-['Inter-Regular','Inter',system-ui,sans-serif] text-[#D7DCE3] text-sm/4.5\">\n        Revisions\n      </div>\n      <div id=\"2L-0\" className=\"font-['Inter-Regular','Inter',system-ui,sans-serif] text-[#8B93A1] text-xs/4\">\n        3 saved · append-only\n      </div>\n    </div>\n  )"
+      },
+      {
+        "family": "hub",
+        "node": "VD-0",
+        "root": "KE-0",
+        "before": "The PPI-reflation radar points to a weaker sector read. Keep the sparse source coverage visible rather than implying broad agreement.",
+        "after": "The PPI-reflation radar points to a weaker sector read. Source coverage is sparse.",
+        "beforeJsx": "(\n    <div id=\"V9-0\" className=\"[font-synthesis:none] wrap-anywhere flex flex-col font-ui w-[614px] pt-[16px] gap-[12px] border-t border-t-solid border-t-(--mx-light-line) antialiased\">\n      <div id=\"VA-0\" className=\"items-center flex justify-between\">\n        <div id=\"VB-0\" className=\"font-ui text-[20px] leading-[24px] wrap-anywhere font-[700] text-(--mx-light-text)\">\n          Coal\n        </div>\n        <div id=\"VC-0\" className=\"font-ui text-[12px] leading-[16px] wrap-anywhere font-[600] text-(--mx-light-ink-down)\">\n          Negative divergence\n        </div>\n      </div>\n      <div id=\"VD-0\" className=\"font-ui text-[14px] leading-[22px] wrap-anywhere text-(--mx-light-muted)\">\n        The PPI-reflation radar points to a weaker sector read. Keep the sparse source coverage visible rather than implying broad agreement.\n      </div>\n      <div id=\"VE-0\" className=\"items-center flex justify-between\">\n        <div id=\"VF-0\" className=\"font-ui text-[12px] leading-[16px] wrap-anywhere text-(--mx-light-muted)\">\n          Source conviction 4.8 · Radar-led context\n        </div>\n        <div id=\"VG-0\" className=\"font-ui text-[13px] leading-[16px] wrap-anywhere font-[600] text-(--mx-light-ink-link)\">\n          Inspect sector →\n        </div>\n      </div>\n    </div>\n  )"
+      },
+      {
+        "family": "hub",
+        "node": "10G-0",
+        "root": "KE-0",
+        "before": "Dated source excerpts · Local listings and benchmarks retained · No merged US/China rank\nMissing result fixtures are not zero, no events, or proof a capability is unbuilt.",
+        "after": "Dated source excerpts · US and China ranks are separate.\nMissing readings do not mean zero or no events.",
+        "beforeJsx": "(\n    <div id=\"10F-0\" className=\"[font-synthesis:none] wrap-anywhere text-[12px] leading-[16px] items-center flex font-ui justify-between w-[1344px] pt-[18px] border-t border-t-solid border-t-(--mx-light-line) antialiased\">\n      <div id=\"10G-0\" className=\"font-ui text-[12px] leading-[20px] wrap-anywhere whitespace-pre-wrap text-(--mx-light-muted)\">\n        Dated source excerpts · Local listings and benchmarks retained · No merged US/China rank<br />Missing result fixtures are not zero, no events, or proof a capability is unbuilt.\n      </div>\n      <div id=\"10H-0\" className=\"flex flex-wrap font-ui justify-end\">\n        <div id=\"10I-0\" className=\"inline-block font-ui text-[12px] leading-[20px] wrap-anywhere text-right text-(--mx-light-muted)\">\n          Original briefing and machine-readable digest retained\n        </div>\n        <div id=\"10J-0\" />\n        <div id=\"10K-0\" className=\"inline-block font-ui text-[12px] leading-[20px] wrap-anywhere text-right text-(--mx-light-muted)\">\n          Full source coverage, timestamps and methods ↗\n        </div>\n      </div>\n    </div>\n  )"
+      },
+      {
+        "family": "hub",
+        "node": "75B-0",
+        "root": "73Q-0",
+        "before": "Checks passed · Review price risk",
+        "after": "Recorded checks passed · Review price risk",
+        "beforeJsx": "(\n    <div id=\"759-0\" className=\"[font-synthesis:none] wrap-anywhere flex flex-col gap-[7px] w-fit antialiased\">\n      <div id=\"75A-0\" className=\"text-[24px] leading-[30px] tracking-[-0.5px] font-ui font-[700] text-(--mx-light-text)\">\n        Review LRCX and ANET\n      </div>\n      <div id=\"75B-0\" className=\"text-[13px] leading-[20px] font-ui text-(--mx-light-muted)\">\n        Checks passed · Review price risk\n      </div>\n      <div id=\"75C-0\" className=\"text-[13px] leading-[20px] font-ui text-(--mx-light-muted)\">\n        AXON remains research only · weaker price action · source unavailable\n      </div>\n    </div>\n  )"
+      },
+      {
+        "family": "hub",
+        "node": "7B9-0",
+        "root": "73Q-0",
+        "before": "Model indices, not returns · Review conditions unavailable",
+        "after": "Model indices, not returns · Review criteria not supplied for these 6 rows.",
+        "beforeJsx": "(\n    <div id=\"7B4-0\" className=\"[font-synthesis:none] wrap-anywhere flex flex-col font-ui w-[1342px] py-[16px] px-[18px] gap-[10px] border-t border-t-solid border-t-(--mx-light-line) antialiased\">\n      <div id=\"7B5-0\" className=\"items-center flex justify-between\">\n        <div id=\"7B6-0\" className=\"font-ui text-[12px] leading-[16px] wrap-anywhere text-(--mx-light-muted)\">\n          6 of 30 published rows shown · Exact source order retained\n        </div>\n        <div id=\"7B7-0\" className=\"font-ui text-[13px] leading-[16px] wrap-anywhere font-[600] text-(--mx-light-ink-link)\">\n          View full command →\n        </div>\n      </div>\n      <div id=\"7B8-0\" className=\"font-ui text-[12px] leading-[16px] wrap-anywhere text-(--mx-light-muted)\">\n        N News · A Alt-data · R Radar · B Buy-board · P* Policy context only. ↑ Constructive ↓ Bearish – Neutral · No directional reading\n      </div>\n      <div id=\"7B9-0\" className=\"font-ui text-[12px] leading-[16px] wrap-anywhere text-(--mx-light-muted)\">\n        Model indices, not returns · Review conditions unavailable\n      </div>\n    </div>\n  )"
+      },
+      {
+        "family": "hub",
+        "node": "6XN-0",
+        "root": "1DO-0",
+        "before": "LRCX and ANET: checks passed. Review price risk.",
+        "after": "LRCX and ANET: recorded checks passed. Review price risk.",
+        "beforeJsx": "(\n    <div id=\"6XL-0\" className=\"[font-synthesis:none] wrap-anywhere flex flex-col w-[350px] p-[18px] rounded-(--r-card) gap-[12px] bg-(--mx-light-panel) border border-solid border-(--mx-light-line) antialiased\">\n      <div id=\"6XM-0\" className=\"font-ui text-[18px] leading-[22px] wrap-anywhere font-[700] text-(--mx-light-text)\">\n        Review setups\n      </div>\n      <div id=\"6XN-0\" className=\"font-ui text-[14px] leading-[22px] wrap-anywhere text-(--mx-light-text)\">\n        LRCX and ANET: checks passed. Review price risk.\n      </div>\n      <div id=\"6XO-0\" className=\"items-center flex shrink-0 h-[44px] justify-between\">\n        <div id=\"6XP-0\" className=\"font-ui text-[13px] leading-[16px] wrap-anywhere font-[600] text-(--mx-light-ink-link)\">\n          LRCX setup ↗\n        </div>\n        <div id=\"6XQ-0\" className=\"font-ui text-[13px] leading-[16px] wrap-anywhere font-[600] text-(--mx-light-ink-link)\">\n          ANET setup ↗\n        </div>\n      </div>\n    </div>\n  )"
+      },
+      {
+        "family": "sector",
+        "node": "DW4-0",
+        "root": "DSJ-0",
+        "before": "Stance from the entry engine",
+        "after": "Entry assessment",
+        "beforeJsx": "(\n    <div id=\"DVX-0\" className=\"[font-synthesis:none] wrap-anywhere flex items-center w-195 py-3 px-4 rounded-xl gap-3.5 bg-[#181B21] border border-solid border-[#2A303B] antialiased text-xs/4\">\n      <div id=\"DVY-0\" className=\"flex items-center shrink-0 py-0.75 px-2.5 rounded-[999px] gap-1.5 border border-solid border-[#E0A0308C]\">\n        <svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\" id=\"DVZ-0\" style={{ display: 'inline-block', flexShrink: 0 }}>\n          <path d=\"M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z\" fill=\"none\" stroke=\"#E0A030\" strokeWidth=\"2\" strokeLinecap=\"round\" strokeLinejoin=\"round\" />\n          <circle cx=\"12\" cy=\"12\" r=\"3\" fill=\"none\" stroke=\"#E0A030\" strokeWidth=\"2\" strokeLinecap=\"round\" strokeLinejoin=\"round\" />\n        </svg>\n        <div id=\"DW2-0\" className=\"inline-block font-['Inter-SemiBold','Inter',system-ui,sans-serif] font-semibold text-[#E0A030] text-[12.5px]/4\">\n          Watch — don't chase\n        </div>\n      </div>\n      <div id=\"DW3-0\" className=\"grow basis-0 inline-block font-['Inter-Regular','Inter',system-ui,sans-serif] text-[#D7DCE3] text-sm/5\">\n        Energy’s strength is broad but stretched; the entry condition is not met yet.\n      </div>\n      <div id=\"DW4-0\" className=\"shrink-0 inline-block w-max font-['Inter-SemiBold','Inter',system-ui,sans-serif] font-semibold text-[#8B93A1] text-[11px]/3.5\">\n        Stance from the entry engine\n      </div>\n    </div>\n  )"
+      },
+      {
+        "family": "sector",
+        "node": "EDY-0",
+        "root": "EAG-0",
+        "before": "立场来自入场引擎",
+        "after": "入场判断",
+        "beforeJsx": "(\n    <div id=\"EDT-0\" className=\"[font-synthesis:none] wrap-anywhere flex items-center flex-wrap pt-0.5 gap-3 antialiased text-xs/4\">\n      <div id=\"EDU-0\" className=\"flex items-center shrink-0 py-0.75 px-2.5 rounded-[999px] gap-1.5 bg-white border border-solid border-[#B9791A]\">\n        <div id=\"EDV-0\" className=\"rounded-[999px] shrink-0 bg-[#B9791A] size-1.5\" />\n        <div id=\"EDW-0\" className=\"inline-block font-['PingFangSC-Semibold','PingFang_SC',system-ui,sans-serif] font-semibold text-[#946115] text-[12.5px]/4\">\n          观察 —— 别追\n        </div>\n      </div>\n      <div id=\"EDX-0\" className=\"inline-block font-['PingFangSC-Regular','PingFang_SC',system-ui,sans-serif] text-[#1C2430] text-sm/5\">\n        能源普涨但涨幅已偏大；入场条件尚未满足。\n      </div>\n      <div id=\"EDY-0\" className=\"inline-block font-['PingFangSC-Regular','PingFang_SC',system-ui,sans-serif] text-[#5D6B7E] text-[12.5px]/4\">\n        立场来自入场引擎\n      </div>\n    </div>\n  )"
+      },
+      {
+        "family": "sector",
+        "node": "EGQ-0",
+        "root": "EAG-0",
+        "before": "来自入场引擎",
+        "after": "入场判断",
+        "beforeJsx": "(\n    <div id=\"EGM-0\" className=\"[font-synthesis:none] wrap-anywhere flex flex-col w-31 shrink-0 gap-1 antialiased text-xs/4\">\n      <div id=\"EGN-0\" className=\"flex items-center gap-1\">\n        <div id=\"EGO-0\" className=\"inline-block font-['PingFangSC-Semibold','PingFang_SC',system-ui,sans-serif] font-semibold text-[#3A4656] text-xs/4\">\n          立场\n        </div>\n        <div id=\"EGP-0\" className=\"inline-block font-['IBM_Plex_Mono',system-ui,sans-serif] text-[#9AA3B0] text-[11px]/3.5\">\n          ↕\n        </div>\n      </div>\n      <div id=\"EGQ-0\" className=\"inline-block font-['PingFangSC-Regular','PingFang_SC',system-ui,sans-serif] text-[#5D6B7E] text-[10px]/3\">\n        来自入场引擎\n      </div>\n    </div>\n  )"
+      },
+      {
+        "family": "sector",
+        "node": "ET4-0",
+        "root": "EQJ-0",
+        "before": "立场来自入场引擎",
+        "after": "入场判断",
+        "beforeJsx": "(\n    <div id=\"ET0-0\" className=\"[font-synthesis:none] wrap-anywhere flex items-center justify-between antialiased\">\n      <div id=\"ET1-0\" className=\"flex items-center py-0.75 px-2.5 rounded-[999px] gap-1.5 border border-solid border-[#E0A0308C]\">\n        <div id=\"ET2-0\" className=\"rounded-[999px] shrink-0 bg-[#E0A030] size-1.5\" />\n        <div id=\"ET3-0\" className=\"font-['PingFangSC-Semibold','PingFang_SC',system-ui,sans-serif] font-semibold text-[#E0A030] text-[12.5px]/4\">\n          观察 —— 别追\n        </div>\n      </div>\n      <div id=\"ET4-0\" className=\"font-['PingFangSC-Regular','PingFang_SC',system-ui,sans-serif] text-[#8B93A1] text-[11px]/3.5\">\n        立场来自入场引擎\n      </div>\n    </div>\n  )"
+      }
+    ],
+    "relocations": [
+      {
+        "family": "expectation",
+        "node": "A-0",
+        "from": "8-0",
+        "root": "6-0",
+        "theme": "dark",
+        "beforeJsx": "(\n    <div id=\"8-0\" className=\"[font-synthesis:none] wrap-anywhere text-[12px] leading-4 flex items-center gap-5 antialiased\">\n      <div id=\"9-0\" className=\"text-[15px] leading-5 tracking-[-0.01em] inline-block font-['Inter-ExtraBold','Inter',system-ui,sans-serif] font-[800] text-(--dk-text)\">\n        Mastermind\n      </div>\n      <div id=\"A-0\" className=\"text-[12.5px] leading-4 inline-block font-['Inter-Regular','Inter',system-ui,sans-serif] text-(--dk-muted)\">\n        Shared site navigation\n      </div>\n    </div>\n  )",
+        "to": "4D8-0"
+      },
+      {
+        "family": "expectation",
+        "node": "1S0-0",
+        "from": "1RY-0",
+        "root": "WI-0",
+        "theme": "light",
+        "beforeJsx": "(\n    <div id=\"1RY-0\" className=\"[font-synthesis:none] wrap-anywhere text-[12px] leading-4 flex items-center gap-5 antialiased\">\n      <div id=\"1S1-0\" className=\"text-[15px] leading-5 tracking-[-0.01em] inline-block font-['Inter-ExtraBold','Inter',system-ui,sans-serif] font-[800] text-(--lt-text)\">\n        Mastermind\n      </div>\n      <div id=\"1S0-0\" className=\"text-[12.5px] leading-4 inline-block font-['Inter-Regular','Inter',system-ui,sans-serif] text-(--lt-muted)\">\n        Shared site navigation\n      </div>\n    </div>\n  )",
+        "to": "4DB-0"
+      },
+      {
+        "family": "expectation",
+        "node": "2O3-0",
+        "from": "2O1-0",
+        "root": "2NZ-0",
+        "theme": "dark",
+        "beforeJsx": "(\n    <div id=\"2O1-0\" className=\"[font-synthesis:none] wrap-anywhere text-[12px] leading-4 flex items-center gap-2.5 antialiased\">\n      <div id=\"2O2-0\" className=\"text-[15px] leading-5 tracking-[-0.01em] inline-block font-['Inter-ExtraBold','Inter',system-ui,sans-serif] font-[800] text-(--dk-text)\">\n        Mastermind\n      </div>\n      <div id=\"2O3-0\" className=\"text-[11.5px] leading-4 inline-block font-['Inter-Regular','Inter',system-ui,sans-serif] text-(--dk-muted)\">\n        Shared site navigation\n      </div>\n    </div>\n  )",
+        "to": "4D8-0"
+      },
+      {
+        "family": "expectation",
+        "node": "2NV-0",
+        "from": "2NT-0",
+        "root": "1SD-0",
+        "theme": "dark",
+        "beforeJsx": "(\n    <div id=\"2NT-0\" className=\"[font-synthesis:none] wrap-anywhere text-[12px] leading-4 flex items-center gap-5 antialiased\">\n      <div id=\"2NW-0\" className=\"text-[15px] leading-5 tracking-[-0.01em] inline-block font-['Inter-ExtraBold','Inter',system-ui,sans-serif] font-[800] text-(--dk-text)\">\n        Mastermind\n      </div>\n      <div id=\"2NV-0\" className=\"text-[12.5px] leading-4 inline-block font-['PingFangSC-Regular','PingFang_SC',system-ui,sans-serif] text-(--dk-muted)\">\n        共享站点导航\n      </div>\n    </div>\n  )",
+        "to": "4D8-0"
+      },
+      {
+        "family": "expectation",
+        "node": "396-0",
+        "from": "394-0",
+        "root": "392-0",
+        "theme": "light",
+        "beforeJsx": "(\n    <div id=\"394-0\" className=\"[font-synthesis:none] wrap-anywhere text-[12px] leading-4 items-center flex gap-2.5 antialiased\">\n      <div id=\"395-0\" className=\"inline-block text-[15px] tracking-[-0.01em] leading-5 font-['Inter-ExtraBold','Inter',system-ui,sans-serif] font-[800] text-(--lt-text)\">\n        Mastermind\n      </div>\n      <div id=\"396-0\" className=\"inline-block text-[11.5px] leading-4 font-['PingFangSC-Regular','PingFang_SC',system-ui,sans-serif] text-(--lt-muted)\">\n        共享站点导航\n      </div>\n    </div>\n  )",
+        "to": "4DB-0"
+      },
+      {
+        "family": "hub",
+        "node": "10I-0",
+        "from": "10H-0",
+        "root": "KE-0",
+        "before": "Original briefing and machine-readable digest retained",
+        "beforeJsx": "(\n    <div id=\"10H-0\" className=\"[font-synthesis:none] wrap-anywhere text-[12px] leading-[16px] flex flex-wrap font-ui justify-end antialiased\">\n      <div id=\"10I-0\" className=\"inline-block font-ui text-[12px] leading-[20px] wrap-anywhere text-right text-(--mx-light-muted)\">\n        Original briefing and machine-readable digest retained\n      </div>\n      <div id=\"10J-0\" />\n      <div id=\"10K-0\" className=\"inline-block font-ui text-[12px] leading-[20px] wrap-anywhere text-right text-(--mx-light-muted)\">\n        Full source coverage, timestamps and methods ↗\n      </div>\n    </div>\n  )",
+        "to": "856-0"
+      }
+    ],
+    "sourceEvidence": {
+      "hub": [
+        {
+          "index": 70,
+          "entry": {
+            "family": "hub",
+            "file": "01M2VWK62FA5S4VVF6G7SBPE5J",
+            "page": "p-3-0",
+            "pageName": "01 · Hub · Desktop Commands + Evidence",
+            "board": "86-0",
+            "boardName": "40 · R4 CURRENT · US Command · Desktop EN",
+            "locale": "EN",
+            "surface": "desktop",
+            "theme": "unspecified",
+            "id": "6ZB-0",
+            "parent": "6Z9-0",
+            "old": "Captured checks passed · inspect price risk in each setup",
+            "oldJsx": "Captured checks passed · inspect price risk in each setup",
+            "next": "Checks passed · Review price risk",
+            "group": "hub-check-status",
+            "fontSize": "13px",
+            "action": "set_text",
+            "preserve": [
+              "Preserve source dates, original score semantics, review conditions/coverage and entry-status separation in the source guide. Rank skill is correlation, not accuracy/win rate."
+            ],
+            "nextHtml": "Checks passed · Review price risk",
+            "precondition": "Fresh-compare node text and ancestry with old/parent; skip and reconcile if changed. Verify after write and render affected board."
+          }
+        },
+        {
+          "index": 83,
+          "entry": {
+            "family": "hub",
+            "file": "01M2VWK62FA5S4VVF6G7SBPE5J",
+            "page": "p-4-0",
+            "pageName": "02 · Hub · Mobile Commands + Evidence",
+            "board": "1DO-0",
+            "boardName": "45 · R4 CURRENT · US Command · Mobile EN",
+            "locale": "EN",
+            "surface": "mobile",
+            "theme": "unspecified",
+            "id": "6XN-0",
+            "parent": "6XL-0",
+            "old": "LRCX and ANET passed captured checks. Review each setup’s price risk.",
+            "oldJsx": "LRCX and ANET passed captured checks. Review each setup’s price risk.",
+            "next": "LRCX and ANET: checks passed. Review price risk.",
+            "group": "hub-check-status",
+            "fontSize": "14px",
+            "action": "set_text",
+            "preserve": [],
+            "nextHtml": "LRCX and ANET: checks passed. Review price risk.",
+            "precondition": "Fresh-compare node text and ancestry with old/parent; skip and reconcile if changed. Verify after write and render affected board."
+          }
+        },
+        {
+          "index": 75,
+          "entry": {
+            "family": "hub",
+            "file": "01M2VWK62FA5S4VVF6G7SBPE5J",
+            "page": "p-3-0",
+            "pageName": "01 · Hub · Desktop Commands + Evidence",
+            "board": "86-0",
+            "boardName": "40 · R4 CURRENT · US Command · Desktop EN",
+            "locale": "EN",
+            "surface": "desktop",
+            "theme": "unspecified",
+            "id": "G5-0",
+            "parent": "G0-0",
+            "old": "Opportunity and edge readings are model indices, not expected returns. No explicit review-condition text was supplied for these six rows.",
+            "oldJsx": "Opportunity and edge readings are model indices, not expected returns. No explicit review-condition text was supplied for these six rows.",
+            "next": "Model indices, not returns · Review conditions unavailable",
+            "group": "hub-model-index",
+            "fontSize": "12px",
+            "action": "set_text",
+            "preserve": [
+              "Preserve source dates, original score semantics, review conditions/coverage and entry-status separation in the source guide. Rank skill is correlation, not accuracy/win rate."
+            ],
+            "nextHtml": "Model indices, not returns · Review conditions unavailable",
+            "precondition": "Fresh-compare node text and ancestry with old/parent; skip and reconcile if changed. Verify after write and render affected board."
+          }
+        }
+      ],
+      "ref": "6ac8c20013dbea575f7007d51ba37d952056f927"
+    },
+    "protected": [
+      "Hub 6Z2-0 / 854-0",
+      "GMI S06-0",
+      "Sector canary G4P-0 / GI8-0",
+      "unattributed Options mobile amendment roots",
+      "all previously recorded held roots"
+    ],
+    "preservation": {
+      "options": "18G-0",
+      "expectation": "4D3-0",
+      "expectation_dark": "4D8-0",
+      "expectation_light": "4DB-0",
+      "hub": "856-0",
+      "sector": "HBG-0"
+    },
+    "qa": [
+      {
+        "kind": "native_readback",
+        "result": "PASS",
+        "copyNodes": 11,
+        "movedTextNodes": 6,
+        "description": "Exact text and destination-parent readback matched all 17 planned product changes."
+      },
+      {
+        "kind": "native_screenshots",
+        "result": "PASS",
+        "productContexts": [
+          "Z8-0",
+          "2J-0",
+          "V9-0",
+          "10F-0",
+          "759-0",
+          "7B4-0",
+          "6XL-0",
+          "7-0",
+          "1RP-0",
+          "2O0-0",
+          "2NK-0",
+          "393-0",
+          "DVX-0",
+          "EDT-0",
+          "EGM-0",
+          "ET0-0"
+        ],
+        "buildSections": [
+          "18G-0",
+          "4D3-0",
+          "856-0",
+          "HBG-0"
+        ],
+        "description": "Labels, dates, limitations and controls fit; EN/ZH and dark/light navigation retain actual brand, search and menu controls; original copy remains legible in separate Build sections."
+      },
+      {
+        "kind": "canvas_layout",
+        "result": "PASS",
+        "node": "AZZ-0",
+        "description": "Native screenshot and tree prove complete vertical separation of AHN-0 implementation contracts and AZR-0 unqualified forecast references. No prior overlap is asserted."
+      }
+    ],
+    "readback": [
+      {
+        "family": "options",
+        "node": "ZC-0",
+        "kind": "copy",
+        "ok": true,
+        "text": "Relative trend leadership → fading · Unchanged on 21 Oct",
+        "parent": "Z8-0"
+      },
+      {
+        "family": "optionsMobile",
+        "node": "2L-0",
+        "kind": "copy",
+        "ok": true,
+        "text": "3 saved revisions",
+        "parent": "2J-0"
+      },
+      {
+        "family": "hub",
+        "node": "VD-0",
+        "kind": "copy",
+        "ok": true,
+        "text": "The PPI-reflation radar points to a weaker sector read. Source coverage is sparse.",
+        "parent": "V9-0"
+      },
+      {
+        "family": "hub",
+        "node": "10G-0",
+        "kind": "copy",
+        "ok": true,
+        "text": "Dated source excerpts · US and China ranks are separate.\nMissing readings do not mean zero or no events.",
+        "parent": "10F-0"
+      },
+      {
+        "family": "hub",
+        "node": "75B-0",
+        "kind": "copy",
+        "ok": true,
+        "text": "Recorded checks passed · Review price risk",
+        "parent": "759-0"
+      },
+      {
+        "family": "hub",
+        "node": "7B9-0",
+        "kind": "copy",
+        "ok": true,
+        "text": "Model indices, not returns · Review criteria not supplied for these 6 rows.",
+        "parent": "7B4-0"
+      },
+      {
+        "family": "hub",
+        "node": "6XN-0",
+        "kind": "copy",
+        "ok": true,
+        "text": "LRCX and ANET: recorded checks passed. Review price risk.",
+        "parent": "6XL-0"
+      },
+      {
+        "family": "sector",
+        "node": "DW4-0",
+        "kind": "copy",
+        "ok": true,
+        "text": "Entry assessment",
+        "parent": "DVX-0"
+      },
+      {
+        "family": "sector",
+        "node": "EDY-0",
+        "kind": "copy",
+        "ok": true,
+        "text": "入场判断",
+        "parent": "EDT-0"
+      },
+      {
+        "family": "sector",
+        "node": "EGQ-0",
+        "kind": "copy",
+        "ok": true,
+        "text": "入场判断",
+        "parent": "EGM-0"
+      },
+      {
+        "family": "sector",
+        "node": "ET4-0",
+        "kind": "copy",
+        "ok": true,
+        "text": "入场判断",
+        "parent": "ET0-0"
+      },
+      {
+        "family": "expectation",
+        "node": "A-0",
+        "kind": "move",
+        "ok": true,
+        "text": "Shared site navigation",
+        "parent": "4D8-0"
+      },
+      {
+        "family": "expectation",
+        "node": "1S0-0",
+        "kind": "move",
+        "ok": true,
+        "text": "Shared site navigation",
+        "parent": "4DB-0"
+      },
+      {
+        "family": "expectation",
+        "node": "2O3-0",
+        "kind": "move",
+        "ok": true,
+        "text": "Shared site navigation",
+        "parent": "4D8-0"
+      },
+      {
+        "family": "expectation",
+        "node": "2NV-0",
+        "kind": "move",
+        "ok": true,
+        "text": "共享站点导航",
+        "parent": "4D8-0"
+      },
+      {
+        "family": "expectation",
+        "node": "396-0",
+        "kind": "move",
+        "ok": true,
+        "text": "共享站点导航",
+        "parent": "4DB-0"
+      },
+      {
+        "family": "hub",
+        "node": "10I-0",
+        "kind": "move",
+        "ok": true,
+        "text": "Original briefing and machine-readable digest retained",
+        "parent": "856-0"
+      }
+    ],
+    "canvasOrganization": {
+      "file": "01M38EVF74SJWG1GANN5VP380Z",
+      "page": "p-8-0",
+      "carrier": "AZZ-0",
+      "children": [
+        "AHN-0",
+        "AZR-0"
+      ],
+      "intent": "Explicit vertical flow for existing implementation contracts and unqualified forecast references; original IDs, full content and hold #8186 preserved.",
+      "priorPositionQualification": "Inactive-page coordinates were unmeasured. No claim that a prior overlap was observed.",
+      "noOpReconciled": "First empty carrier produced createdNodes=[]; fresh tree proved no new node. Populated carrier created with distinct operation ID.",
+      "state": "APPLIED_RESPONSE_OBSERVED"
+    },
+    "releases": [
+      {
+        "fileId": "01M5EPQ16VBT7SBW2NQVX2RJG4",
+        "nodeIds": [
+          "TP-0",
+          "16B-0"
+        ],
+        "state": "APPLIED_RESPONSE_OBSERVED"
+      },
+      {
+        "fileId": "01M5FNCKAND6CBSJNYM5FZWR8Y",
+        "nodeIds": [
+          "1-0"
+        ],
+        "state": "APPLIED_RESPONSE_OBSERVED"
+      },
+      {
+        "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+        "nodeIds": [
+          "6-0",
+          "WI-0",
+          "2NZ-0",
+          "1SD-0",
+          "392-0",
+          "3UR-0"
+        ],
+        "state": "APPLIED_RESPONSE_OBSERVED"
+      },
+      {
+        "fileId": "01M2VWK62FA5S4VVF6G7SBPE5J",
+        "nodeIds": [
+          "KE-0",
+          "73Q-0",
+          "1DO-0",
+          "7FE-0"
+        ],
+        "state": "APPLIED_RESPONSE_OBSERVED"
+      },
+      {
+        "fileId": "01M6FAXA774QT1VRDMAG7DFQ2W",
+        "nodeIds": [
+          "DSJ-0",
+          "EAG-0",
+          "EQJ-0",
+          "GOI-0"
+        ],
+        "state": "APPLIED_RESPONSE_OBSERVED"
+      },
+      {
+        "fileId": "01M38EVF74SJWG1GANN5VP380Z",
+        "nodeIds": [
+          "AZZ-0",
+          "AHN-0",
+          "AZR-0"
+        ],
+        "state": "APPLIED_RESPONSE_OBSERVED"
+      }
+    ]
+  }
 }
