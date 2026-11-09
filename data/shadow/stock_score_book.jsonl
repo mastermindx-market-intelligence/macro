@@ -8438,3 +8438,8 @@
 {"date": "2026-11-06", "ticker": "ADMA", "score": 52.0, "percentile": 0.9487179487179487, "regime": "mixed", "horizons": [21, 63, 126], "pct_basis": "xs_rank"}
 {"date": "2026-11-06", "ticker": "FLO", "score": 8.0, "percentile": 0.4188034188034188, "regime": "mixed", "horizons": [21, 63, 126], "pct_basis": "xs_rank"}
 {"date": "2026-11-06", "ticker": "PLNT", "score": 4.0, "percentile": 0.20512820512820512, "regime": "mixed", "horizons": [21, 63, 126], "pct_basis": "xs_rank"}
+{"date": "2026-11-06", "ticker": "MRTN", "score": 0.0, "percentile": 0.07692307692307693, "regime": "mixed", "horizons": [21, 63, 126], "pct_basis": "xs_rank"}
+{"date": "2026-11-06", "ticker": "AVT", "score": 0.0, "percentile": 0.07692307692307693, "regime": "mixed", "horizons": [21, 63, 126], "pct_basis": "xs_rank"}
+{"date": "2026-11-06", "ticker": "AMD", "score": 0.0, "percentile": 0.07692307692307693, "regime": "mixed", "horizons": [21, 63, 126], "pct_basis": "xs_rank"}
+{"date": "2026-11-06", "ticker": "ANET", "score": 31.0, "percentile": 0.8162393162393162, "regime": "mixed", "horizons": [21, 63, 126], "pct_basis": "xs_rank"}
+{"date": "2026-11-06", "ticker": "MSCI", "score": 35.0, "percentile": 0.8547008547008547, "regime": "mixed", "horizons": [21, 63, 126], "pct_basis": "xs_rank"}
