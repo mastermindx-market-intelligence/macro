@@ -1,33 +1,37 @@
 ---
 key: CI-CONSUMER-MAPPING-GAP-20261109
 claim: >-
-  Changed-file-only CI selection can omit hash-pinned identity-review test
-  consumers after a production-file edit.
+  A reported changed-path CI consumer-mapping gap may omit SHA-pinning
+  identity-review consumers; the historical incident-resolution claim remains
+  unverified.
 falsifier: >-
-  Compare Mastermind PR #2365's selected tests with
-  tests/executive_fabric_release_identity_review.py and
-  tests/test_hermes_fabric_native_identity_review.py. The cited incident is
-  disproved if those consumers ran and passed against merge 6696153d, or if
-  run 42626302968 failed for an unrelated source change.
+  Read https://github.com/mastermindx-market-intelligence/Mastermind/pull/2365
+  and https://github.com/mastermindx-market-intelligence/Mastermind/actions/runs/42626302968:
+  evidence that the exact changed production-file bytes selected and passed
+  all affected identity-review consumers would contradict the reported gap.
 so_what: >-
-  Before editing a file named by an identity-review registry, enumerate its
-  existing test consumers and qualify their source dependencies. The mapping
-  remedy in this record remains a candidate, not an implemented CI guarantee.
-kind: landmine
+  Verify consumer coverage and exact-source full-suite evidence before
+  adopting the candidate CI direction or treating the incident as resolved;
+  preserve the existing Mastermind pin-repair and release holds.
+kind: architecture
 verified_at: 2026-11-09
 verified_by: >-
-  Original source observation:
-  https://github.com/mastermindx-market-intelligence/macro/blob/d59a58ac73855075cef41a25fbeb870a5a9da5fc/agentos/discoveries/DSC-CI-CONSUMER-MAPPING-GAP-20261109.md
-  cites Mastermind PR #2365, PR #2377 and CI run 42626302968.
-  This format repair preserves that report; it does not re-execute the incident.
+  Source-only inspection of Macro commit d59a58ac73855075cef41a25fbeb870a5a9da5fc,
+  this original record, and scripts/agentos.py:1748-1791;
+  https://github.com/mastermindx-market-intelligence/Mastermind/issues/917#issuecomment-6747773590
+  records a source disagreement. A native read of Mastermind PR #2377 during
+  this inspection found it OPEN and unmerged at
+  34cf357d3f9ea99ed4d092c5c98a7eaf4dc55259. The preserved body's claim that
+  #2377 cleared the incident is not independently verified; no incident test
+  execution or resolution acceptance is added by this metadata repair.
 scope:
   - mastermindx-market-intelligence/Mastermind
-  - .github/workflows/ci.yml
+  - mastermindx-market-intelligence/macro/agentos/discoveries
+  - integrations/hermes_attended_fabric/native.py
   - tests/executive_fabric_release_identity_review.py
   - tests/test_hermes_fabric_native_identity_review.py
 confidence: suspected
 ---
-
 # DSC: Scoped PR CI does not map identity-review test consumers to the files they pin
 
 **Record ID:** DSC-CI-CONSUMER-MAPPING-GAP-20261109
