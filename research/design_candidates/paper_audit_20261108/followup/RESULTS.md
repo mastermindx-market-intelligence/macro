@@ -22,7 +22,7 @@ After this continuation, ten Paper files contain concrete improvements to their 
 | Risk Radar Popups | [Open design](https://app.paper.design/file/01M38EVF74SJWG1GANN5VP380Z) | Twenty EN/ZH nodes use trading-day labels and the native closing-observation definition. Dated probabilities and unmatched history retain their limits. |
 | PROPHET | [Open design](https://app.paper.design/file/01M3NT5Y3G5HTJHVR0K5W2MDJM/p-D-0) | 10TD-0 explains unavailable assessment in direct language. Comparison 133D-0 names unavailable evidence beside each INTC/MSFT read, without inventing a destination. |
 | Intelligence Hub | [Open design](https://app.paper.design/file/01M2VWK62FA5S4VVF6G7SBPE5J/p-3-0) | Alert activation and draft saving remain unavailable. Healthy-empty returns to published research. New section 854-0 explains ordering in English and Chinese with a clear return action. |
-| Market Guide | [Open design](https://app.paper.design/file/01M32XYWDYSFTNDZVJKQ5QHT33/p-4-0) | Three search/recovery headers name “Open Macro dashboard”; existing saved-search return and direct-entry rules remain intact. |
+| Market Guide | [Open design](https://app.paper.design/file/01M32XYWDYSFTNDZVJKQ5QHT33/p-4-0) | Three search/recovery headers name “Open Macro dashboard”; proposed search-return behavior is mapped to the actual Reference template, registry builder and shell bridge. |
 | Product Design System | [Open design](https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-5-0) | Dark/light material-state rules keep a consequential second clock beside the verdict or action. Build companion ANH-0 at p-B-0 links the implementation sequence to this source package. |
 
 ## What changed and why
@@ -81,7 +81,7 @@ PROPHET's unavailable state names the missing checks without repeating implement
 
 ### Guide and shared patterns: navigation and time semantics agree
 
-Guide search and no-match recovery now say “Open Macro dashboard” at 26E-1, 294-1 and 2BP-1. This is a named destination, while the existing local search journey retains its explicit saved query/filter/scroll/focus restoration. D25 and R20 remain the navigation owners; no new return mechanism was introduced.
+Guide search and no-match recovery now say “Open Macro dashboard” at 26E-1, 294-1 and 2BP-1. This names a destination; D25 and R20 retain their distinct proposed return contracts. Source comparison confirms that the existing Reference template owns local filtering and canonical lesson expansion, the registry builder owns search/alias data, and the shell bridge owns admitted navigation and positional restoration. Complete query/filter/scroll/opener return is still proposed integration behavior. F11 now names these exact seams and the concrete gap in which a hash-selected lesson can remain hidden by active filters. No new return mechanism was introduced or claimed as implemented.
 
 The shared material-state contract at 2U8-0 and 2WI-0 now names each panel’s primary clock and keeps a second clock beside the verdict or action when that time changes its meaning. Other source times stay in LENS. This clarifies the existing MX/Freshness treatment and the source doctrine’s requirement to keep consequential limitations visible. It preserves progressive disclosure without making a newer quote appear to refresh an older assessment.
 

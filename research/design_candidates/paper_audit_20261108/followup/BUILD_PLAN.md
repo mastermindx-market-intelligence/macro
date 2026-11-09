@@ -159,13 +159,21 @@ Re-arm retains 230.00 until an explicit supported edit changes it. Show the late
 
 **Acceptance:** no fresh quote, stale or missing quote, threshold still met, threshold no longer met, explicit threshold edit, manual re-arm, immutable receipt, correction as a new receipt, unsaved assessment, conflicting revision and uncertain effect reconciliation. Use the existing watch owner; no timer in the view, duplicate watch service or foreground polling loop.
 
-## F11 — Guide destination names and exact local return
+## F11 — Guide destination names, selected-lesson visibility and qualified return
 
 Use “Open Macro dashboard” for the three search/recovery headers. It is a named destination, not a promise to restore a prior Macro view. Preserve D25’s distinct Back one step and qualified Return to your view actions.
 
-Within a Guide search journey, R20 already owns query, filter, result scroll and opener-focus restoration. Open the same lesson, including when it lies outside the active filter. With no prior search, show Market Guide as the return destination and omit the saved-search message. Reuse that incumbent navigation state; add no global context store or parallel history service.
+R20 specifies preserved query, filters, result position and opener focus; those are proposed integration behaviors, not a complete implemented return owner. The source route remains Market Reference at `site/reference.html`. At the Macro comparison pin, the current page keeps local filter state while its document survives, reads `?q=` once without writing it, opens canonical entry hashes and uses `history.back()` for its qualified Back control. This does not establish restored search state after document recreation or a dedicated direct-entry fallback.
 
-**Acceptance:** direct entry, query→lesson→results, active filter excludes the opened lesson, browser Back, changed/missing origin and keyboard focus. Copy changes are verified in desktop and 390px Paper layouts; real route behavior remains a consumer proof obligation.
+| Existing source owner | Current behavior and concrete extension seam |
+| --- | --- |
+| `templates/reference.html.j2` — `state`, `applyFilters()`, `handleHash()`, `setOpenEntry()` | Owns page-local `{mode, family, letter, q}` substring filtering and canonical lesson expansion. A selected hash can still be hidden by `.is-off` on the lesson or its group. Extend this boundary to reveal the selected canonical lesson without clearing browse filters or counting a revealed nonmatch as a search match. |
+| `scripts/build_market_reference.py` — `search_key()`, `validate()`, `build_view_model()` | Owns registry-derived EN/ZH labels, IDs and aliases in `data-search`; duplicate normalized aliases are rejected. Alias search is implemented, while alias-to-canonical route resolution and dominant exact-match ranking remain proposed work through this same registry. |
+| `templates/shared_shell_bridge.js` — `sendViewState()`, `currentFocusId()`, `applyRestore()`, `handleLocationAccepted()` | Owns admitted shell navigation and positional restoration using `x`, `y` and optional `focusId`. The actual result and related-link anchors currently have no IDs. Give relevant openers stable unique IDs to make the incumbent focus field usable; generic coordinates alone do not restore analytical or search context. |
+
+**Build order:** first repair filtered canonical-lesson visibility and define stable opener IDs within the existing Reference page. Preserve canonical entry IDs, the current route, actual match counts and the shared-shell acknowledgment path. Then implement R20's exact search return and direct-entry “Market Guide” fallback only as explicit extensions of the incumbent routing/filter contract. State any intended change to the current read-only `?q=` policy or `history.back()` semantics. No new global navigation store, parallel history service or replacement return owner is specified.
+
+**Acceptance:** a filtered-out related lesson and its hidden parent group become visible; original query, filters and true match count remain intact; closing the lesson restores the filtered browse view. Result and related openers have stable unique IDs. Separately prove direct entry, query→lesson→results, browser Back, document recreation, changed/missing origin, scrolling and keyboard focus for the proposed return contract. The existing `test_reference_acknowledged_fragment_expansion_tracks_url_not_native_target()` verifies acknowledged fragment expansion and malformed/unknown hashes, not these added outcomes. Copy changes are verified in desktop and 390px Paper layouts; real route behavior remains a consumer proof obligation. Source findings and current-main refresh are recorded in R13.
 
 ## F12 — Primary clock and material second clock
 

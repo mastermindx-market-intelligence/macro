@@ -2393,5 +2393,29 @@
     "preserved_baseline_checks": 9,
     "new_behavior_checks": 5,
     "limitations": "Source/DOM harness; browser layout, accessibility tree, rendered animation and production integration remain unverified."
+  },
+  "guide_source_map": {
+    "comparison_pin": "b5674d8ef898e503d6164922654f5ff89be9981c",
+    "template_current_main_refresh": "0997d488f73ebe76773ce4d534fa97749a0c1674",
+    "template_unchanged_at_refresh": true,
+    "committed_reference_inline_script_matches_template": true,
+    "existing_owners": [
+      "templates/reference.html.j2",
+      "scripts/build_market_reference.py",
+      "templates/shared_shell_bridge.js"
+    ],
+    "concrete_gaps": [
+      "Canonical selected lesson and its parent group can remain hidden by active filters.",
+      "Result and related-link openers lack stable IDs for existing shell focusId."
+    ],
+    "proposed_not_implemented": [
+      "Exact query/filter/results/scroll/opener return after document recreation.",
+      "Dedicated direct-entry fallback.",
+      "Alias-to-canonical route resolution and dominant exact-match ranking."
+    ],
+    "paper_contract": "D25 44J-0 inspected and preserved; R20 remains a proposed integration contract.",
+    "production_source_changed": false,
+    "ruling": "SOURCE_RULINGS.md R13",
+    "builder_slice": "BUILD_PLAN.md F11"
   }
 }

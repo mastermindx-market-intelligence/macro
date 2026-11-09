@@ -3,9 +3,9 @@
   "artifacts": [
     {
       "path": "research/design_candidates/paper_audit_20261108/followup/SOURCE_RULINGS.md",
-      "bytes": 11699,
-      "git_blob_sha": "739384881c06655220dcad5a71d564bf0a74afdd",
-      "sha256": "56ce14cabb0bd371ccafa39a6379620a860600863be9ffc911cbd64c37cd86f2"
+      "bytes": 15366,
+      "git_blob_sha": "799a62b35324a962dc781751762080aa3042dc51",
+      "sha256": "06f7f556ec97b36127422d64e3711858f52c925ad4baf7b5a0466e14bf142ce3"
     },
     {
       "path": "agentos/discoveries/DSC-EXPECTATIONS-EXPLORER-PERIOD-BINDING-GAP-20261109.md",
@@ -27,15 +27,15 @@
     },
     {
       "path": "research/design_candidates/paper_audit_20261108/followup/RESULTS.md",
-      "bytes": 17901,
-      "sha256": "b5e5fe7fb286bd30ab4006c00832d88d951a235a5109b1f8cd09df874216c653",
-      "git_blob_sha": "b902099d8b774abc0a5ee9285fe52628d245f830"
+      "bytes": 18322,
+      "sha256": "27fbff362cc7cc1b37e2813143bd96549cae82961a961541acae4365475cdb1b",
+      "git_blob_sha": "366c906b36bcef00aadae1e0055de7f9853436ee"
     },
     {
       "path": "research/design_candidates/paper_audit_20261108/followup/BUILD_PLAN.md",
-      "bytes": 21879,
-      "sha256": "0274419d3b27d963c2b420700646c36f00a189c56025cd4a52686ec944c0e02b",
-      "git_blob_sha": "081da20155ffbd1c844bb29c9295df2352d65d98"
+      "bytes": 24526,
+      "sha256": "a3881659a54808ab1175076b50b629bb12653bcf01ee8a03f91c8f63ed5a0f26",
+      "git_blob_sha": "a6e4bd6c28dfb5500dfaf84c23c56c4a2e05faab"
     },
     {
       "path": "research/design_candidates/paper_audit_20261108/followup/EFFECTS_CURRENT.json",
@@ -51,9 +51,9 @@
     },
     {
       "path": "research/design_candidates/paper_audit_20261108/followup/VERIFICATION.json",
-      "bytes": 91773,
-      "sha256": "e60eb8d11bc0b828b1ebc15df92ee4bb7fb22431a7cd4571fe023fa8909cd6e6",
-      "git_blob_sha": "fbb8f83635a7809c3103cb216d1dfa44d499b424"
+      "bytes": 92886,
+      "sha256": "7a2bf142c756553b47d4e12f3d09ba99db00dea2240c82c83450aa2b25b95b07",
+      "git_blob_sha": "e77b107714028879e474ff6591e7257d119176ef"
     },
     {
       "path": "research/design_candidates/paper_audit_20261108/followup/CONTINUITY.json",
