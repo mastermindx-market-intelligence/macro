@@ -21,7 +21,7 @@
   </aside></div>
   <div class="gmi-answer-column">
     <button type="button" class="gmi-mobile-browse" data-browse-open aria-haspopup="dialog">{{ ic('search', 18) }}<span>{{ t('Find a theme, company or product', '查找主题、公司或产品') }}</span>{{ ic('chev', 16) }}</button>
-    <p class="gmi-selection-notice" data-topic-notice hidden role="status"></p>
+    <div class="gmi-selection-notice" data-topic-notice-region hidden><p data-topic-notice hidden role="status"></p><button type="button" class="gmi-action-secondary" data-topic-reset data-topic-notice-reset hidden>{{ t("Clear filters", "清除筛选") }}</button></div>
     <section class="gmi-topic-answer" data-topic-answer aria-labelledby="gmi-topic-title">{{ topic_answer(default_topic.value) }}</section>
     <noscript><p class="gmi-noscript">{{ t('Enable JavaScript to search and switch topics here. The full index, company pages and sources remain available.', '启用 JavaScript 即可在此搜索与切换主题。完整索引、公司页面及来源仍可使用。') }} <a href="{{ nav_prefix }}gmi-index.html">{{ t('Open index', '打开索引') }}</a></p></noscript>
   </div>

@@ -1354,6 +1354,175 @@ with sync_playwright() as pw:
         for language in ('en', 'zh'):
             check(f'tree-roving-{width}-{language}', lambda w=width,l=language: tree_roving_paths(w,l))
 
+    def answer_filter_recovery_paths(width, language):
+        """Clear answer-side filters without replacing evidence or reviving old copy UI."""
+        for success in (True, False):
+            with context(width,'light',language,reduced_motion='reduce') as c:
+                c.add_init_script('''(()=>{
+                  window.__gmiRecoveryCopy={writes:[]};
+                  Object.defineProperty(navigator,'clipboard',{configurable:true,value:{
+                    writeText(url){return new Promise((resolve,reject)=>window.__gmiRecoveryCopy.writes.push({url,resolve,reject}));}
+                  }});
+                })();''')
+                returned='gmi-companies.html#q=memory'
+                fragment=urlencode({'theme':'theme:hbm_packaging','lens':'chain','gmi_return':returned,'fixture_key':'retained'})
+                p=page_for(c,'gmi.html?fixture=answer-recovery#'+fragment)
+                title=p.locator('#gmi-topic-title')
+                original_title=title.inner_text()
+                opener=p.locator('[data-browse-open]')
+                dialog=p.locator('[data-browse-dialog]')
+                search=p.locator('[data-topic-search]')
+                notice=p.locator('[data-topic-notice]')
+                recovery=p.locator('[data-topic-notice-reset]')
+                if width<=820:
+                    opener.click()
+                    expect(dialog).to_be_visible()
+                search.fill('zz-no-matching-research-topic')
+                options=p.locator('[data-topic-category-filter] option').evaluate_all('(nodes)=>nodes.map(n=>n.value).filter(Boolean)')
+                p.locator('[data-topic-category-filter]').select_option(options[0])
+                p.locator('input[name="gmi-scope"][value="extended"]').check()
+                p.locator('[data-evidence-only]').check()
+                expect(p.locator('[data-topic-no-results]')).to_be_visible()
+                if width<=820:
+                    p.locator('[data-browse-close]').click()
+                    expect(dialog).not_to_be_visible()
+                assert recovery.count()==1,'Selected answer has no directly available filter reset'
+                expect(recovery).to_be_visible()
+                expect(notice).to_have_text('This topic is outside your filters.' if language=='en' else '当前主题不在筛选范围内。')
+                expect(recovery).to_have_accessible_name('Clear filters' if language=='en' else '清除筛选')
+                expect(title).to_have_text(original_title)
+                bounds=recovery.bounding_box()
+                assert bounds and bounds['height']>=44 and bounds['width']>=44
+                gmi_navigation_fit(p,width,language)
+                filtered_url=p.url
+                recovery.focus()
+                other='zh' if language=='en' else 'en'
+                p.evaluate('(v)=>document.documentElement.setAttribute("data-lang",v)',other)
+                expect(recovery).to_have_accessible_name('清除筛选' if other=='zh' else 'Clear filters')
+                expect(recovery).to_be_focused()
+                assert p.url==filtered_url
+                p.evaluate('(v)=>document.documentElement.setAttribute("data-lang",v)',language)
+                expect(notice).to_have_text('This topic is outside your filters.' if language=='en' else '当前主题不在筛选范围内。')
+                expect(title).to_have_text(original_title)
+                expect(recovery).to_be_focused()
+                p.evaluate('''()=>{
+                  const cards=document.querySelector('[data-topic-connections]');
+                  window.__gmiRecoveryNodes=Array.from(cards.children);
+                  const receipt=cards.querySelector('details');
+                  if(receipt)receipt.open=true;
+                }''')
+                identities=p.locator('.gmi-evidence-receipt dd').all_text_contents()
+                if success and (width,language) in ((390,'en'),(320,'zh')):
+                    path=args.out/f'answer-recovery-{width}-{language}.png'
+                    p.locator('.gmi-answer-column').screenshot(path=str(path))
+                    report['screenshots'].append(path.name)
+                p.locator('[data-gmi-copy]').click()
+                expect(p.locator('[data-gmi-copy]')).to_be_disabled()
+                assert p.evaluate('window.__gmiRecoveryCopy.writes.length')==1
+                assert p.evaluate('window.__gmiRecoveryCopy.writes[0].url')==filtered_url
+                history_before=p.evaluate('history.length')
+                recovery.click()
+                expect(recovery).not_to_be_visible()
+                expect(notice).not_to_be_visible()
+                expect(p.locator('[data-topic-notice-region]')).not_to_be_visible()
+                expect(title).to_be_focused()
+                expect(title).to_have_text(original_title)
+                expect(dialog).not_to_be_visible()
+                expect(search).to_have_value('')
+                expect(p.locator('[data-topic-category-filter]')).to_have_value('')
+                expect(p.locator('input[name="gmi-scope"][value="all"]')).to_be_checked()
+                expect(p.locator('[data-evidence-only]')).not_to_be_checked()
+                expected={'theme':['theme:hbm_packaging'],'lens':['chain'],'gmi_return':[returned],'fixture_key':['retained']}
+                assert parse_qs(urlsplit(p.url).fragment)==expected
+                assert urlsplit(p.url).query=='fixture=answer-recovery'
+                assert p.evaluate('history.length')==history_before
+                assert p.locator('.gmi-evidence-receipt dd').all_text_contents()==identities
+                assert p.evaluate('''()=>window.__gmiRecoveryNodes.every((n,i)=>n.isConnected&&n===document.querySelector('[data-topic-connections]').children[i])''')
+                assert p.locator('.gmi-evidence-receipt').evaluate('(n)=>n.open')
+                p.evaluate('''(success)=>{
+                  const write=window.__gmiRecoveryCopy.writes[0];
+                  success?write.resolve():write.reject(new Error('explicit fixture denial'));
+                }''',success)
+                p.evaluate('()=>new Promise(requestAnimationFrame)')
+                expect(p.locator('[data-gmi-copy]')).to_be_enabled()
+                expect(p.locator('[data-copy-label]')).to_have_text('Copy link' if language=='en' else '复制链接')
+                expect(p.locator('.gmi-copy-fallback')).not_to_be_visible()
+                expect(p.locator('[data-gmi-announcement]')).to_have_text('')
+                expect(title).to_be_focused()
+
+                # Existing sidebar/drawer reset remains a search-local action.
+                if width<=820:
+                    opener.click()
+                search.fill('another-query-with-no-results')
+                p.locator('[data-topic-no-results] [data-topic-reset]').click()
+                expect(search).to_be_focused()
+                expect(search).to_have_value('')
+                if width<=820:
+                    expect(dialog).to_be_visible()
+                    p.locator('[data-browse-close]').click()
+                expect(recovery).not_to_be_visible()
+
+                # A visible manual fallback retires through the same URL-change owner.
+                if width<=820:
+                    opener.click()
+                search.fill('manual-copy-filter-context')
+                if width<=820:
+                    p.locator('[data-browse-close]').click()
+                p.locator('[data-gmi-copy]').click()
+                p.evaluate('window.__gmiRecoveryCopy.writes.at(-1).reject(new Error("explicit fixture denial"))')
+                expect(p.locator('.gmi-copy-fallback')).to_be_visible()
+                recovery.click()
+                expect(p.locator('.gmi-copy-fallback')).not_to_be_visible()
+                expect(title).to_be_focused()
+                expect(recovery).not_to_be_visible()
+                assert p.locator('.gmi-evidence-receipt dd').all_text_contents()==identities
+                assert p.evaluate('''()=>window.__gmiRecoveryNodes.every((n,i)=>n===document.querySelector('[data-topic-connections]').children[i])''')
+                gmi_navigation_fit(p,width,language)
+
+
+    def answer_filter_recovery_guards(language):
+        """Missing data/topics and static markup must not promise filter recovery."""
+        with context(390,'light',language,reduced_motion='reduce') as c:
+            p=page_for(c,'gmi.html#theme=theme%3Amissing-recovery-fixture&q=no-match')
+            notice=p.locator('[data-topic-notice]')
+            expect(notice).to_contain_text('That topic is not available' if language=='en' else '此快照中找不到该主题')
+            expect(p.locator('[data-topic-notice-region]')).to_be_visible()
+            expect(p.locator('[data-topic-notice-reset]')).not_to_be_visible()
+            other='zh' if language=='en' else 'en'
+            p.evaluate('(v)=>document.documentElement.setAttribute("data-lang",v)',other)
+            expect(notice).to_contain_text('此快照中找不到该主题' if other=='zh' else 'That topic is not available')
+            expect(p.locator('[data-topic-notice-reset]')).not_to_be_visible()
+        with context(390,'light',language,reduced_motion='reduce') as c:
+            def damage(route):
+                response=route.fetch()
+                original=response.text()
+                damaged=re.sub(r'(<script\b[^>]*id="gmi-topic-data"[^>]*>).*?(</script>)',
+                               lambda m:m[1]+'{"topics":]'+m[2],original,flags=re.S)
+                assert damaged!=original
+                route.fulfill(response=response,body=damaged)
+            c.route('**/gmi.html*',damage)
+            p=page_for(c)
+            expect(p.locator('[data-topic-notice]')).to_contain_text('Interactive research could not load' if language=='en' else '交互研究未能加载')
+            expect(p.locator('[data-topic-notice-region]')).to_be_visible()
+            expect(p.locator('[data-topic-notice-reset]')).not_to_be_visible()
+            expect(p.locator('[data-topic-answer]')).to_be_visible()
+            other='zh' if language=='en' else 'en'
+            p.evaluate('(v)=>document.documentElement.setAttribute("data-lang",v)',other)
+            expect(p.locator('[data-topic-notice]')).to_contain_text('交互研究未能加载' if other=='zh' else 'Interactive research could not load')
+            expect(p.locator('[data-topic-notice-reset]')).not_to_be_visible()
+        with context(390,'light',language,java_script_enabled=False,reduced_motion='reduce') as c:
+            p=page_for(c)
+            expect(p.locator('[data-topic-notice-region]')).not_to_be_visible()
+            expect(p.locator('[data-topic-notice-reset]')).not_to_be_visible()
+            expect(p.locator('#gmi-topic-title')).to_be_visible()
+
+
+    for width in (1440,390,320):
+        for language in ('en','zh'):
+            check(f'answer-filter-recovery-{width}-{language}',lambda w=width,l=language:answer_filter_recovery_paths(w,l))
+    for language in ('en','zh'):
+        check(f'answer-filter-recovery-guards-{language}',lambda l=language:answer_filter_recovery_guards(l))
+
     browser.close()
 server.shutdown()
 report['pass'] = all(c['result']=='PASS' for c in report['cases']) and not report['page_errors']

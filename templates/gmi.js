@@ -314,6 +314,14 @@ restoreCompanies();
 var workspace=document.querySelector('[data-gmi-explorer]');
 if(!workspace){window.addEventListener('hashchange',restoreCompanies);window.addEventListener('popstate',restoreCompanies);new MutationObserver(function(){languageOptions();companies();refreshJourney();}).observe(root,{attributes:true,attributeFilter:['data-lang']});return;}
 var answer=document.querySelector('[data-topic-answer]'),notice=document.querySelector('[data-topic-notice]'),announcement=document.querySelector('[data-gmi-announcement]');
+var noticeRegion=document.querySelector('[data-topic-notice-region]'),noticeReset=document.querySelector('[data-topic-notice-reset]');
+function noticeMessage(message,recoverable){
+  if(noticeReset&&!recoverable&&noticeReset.contains(document.activeElement))document.getElementById('gmi-topic-title').focus({preventScroll:true});
+  if(noticeRegion)noticeRegion.hidden=!message;
+  notice.hidden=!message;
+  if(notice.textContent!==message)notice.textContent=message;
+  if(noticeReset)noticeReset.hidden=!recoverable;
+}
 var data;
 /* Validate the complete presentation shape before replacing the server answer.
    This is a rendering guard, not a publication/permission decision. */
@@ -334,7 +342,7 @@ function usableData(value){
   }))return false;
   return ids.has(workspace.getAttribute('data-default-theme'))&&Array.from(document.querySelectorAll('[data-topic-results] [data-topic-select]')).every(function(row){return ids.has(row.getAttribute('data-topic-select'));});
 }
-function loadFailure(){notice.hidden=false;notice.textContent=tr('Interactive research could not load. The answer below and the full index remain available.','交互研究未能加载。下方答案与完整索引仍可使用。');}
+function loadFailure(){noticeMessage(tr('Interactive research could not load. The answer below and the full index remain available.','交互研究未能加载。下方答案与完整索引仍可使用。'),false);}
 try{data=JSON.parse(document.getElementById('gmi-topic-data').textContent);if(!usableData(data))throw new Error('incomplete presentation data');}catch(error){loadFailure();document.querySelector('[data-browse-home]').hidden=true;var fallback=document.querySelector('[data-browse-open]');fallback.addEventListener('click',function(){location.href='gmi-index.html';});answer.querySelector('[data-gmi-copy]').hidden=true;new MutationObserver(function(){languageOptions();loadFailure();refreshJourney();}).observe(root,{attributes:true,attributeFilter:['data-lang']});return;}
 var topics=data.topics,byId=new Map(topics.map(function(t){return[t.id,t];}));
 var defaults={theme:workspace.getAttribute('data-default-theme'),q:'',category:'',scope:'all',evidence:false};
@@ -374,7 +382,21 @@ function retireCopy(recoverFocus){
 }
 function writeURL(mode){var p=new URLSearchParams(location.hash.slice(1));p.set('theme',state.theme);[['q',state.q],['category',state.category],['scope',state.scope==='all'?'':state.scope],['evidence',state.evidence?'1':'']].forEach(function(pair){if(pair[1])p.set(pair[0],pair[1]);else p.delete(pair[0]);});var next='#'+p.toString();if(next!==location.hash){retireCopy(true);history[mode==='push'?'pushState':'replaceState'](null,'',next);}lastHash=location.hash;refreshJourney();}
 function matches(t){return(!state.category||t.paths.some(function(path){return path.length&&path[0].id===state.category;}))&&(state.scope==='all'||t.tier===state.scope)&&(!state.evidence||t.connections.length>0)&&(!norm(state.q)||searchText.get(t.id).includes(norm(state.q)));}
-function filters(){search.value=state.q;category.value=state.category;evidence.checked=state.evidence;scopes.forEach(function(s){s.checked=s.value===state.scope;});var count=0,firstVisible=null,selectedVisible=null;rows.forEach(function(row){var t=byId.get(row.getAttribute('data-topic-select'));row.hidden=!matches(t);row.tabIndex=-1;if(!row.hidden){count++;if(!firstVisible)firstVisible=row;if(t.id===state.theme)selectedVisible=row;}if(t.id===state.theme)row.setAttribute('aria-current','true');else row.removeAttribute('aria-current');});if(selectedVisible||firstVisible)(selectedVisible||firstVisible).tabIndex=0;document.querySelector('[data-topic-count]').textContent=tr(count+' of '+topics.length+' topics',topics.length+' 个主题中显示 '+count+' 个');document.querySelector('[data-topic-no-results]').hidden=count>0;results.hidden=count===0;var selected=byId.get(state.theme);notice.hidden=!invalidTheme&&matches(selected);answer.querySelector('[data-topic-category]').textContent=label(data.categories[state.category&&selected.paths.some(function(path){return path.length&&path[0].id===state.category;})?state.category:selected.category]);notice.textContent=invalidTheme?tr('That topic is not available in this snapshot. Showing the available starting topic.','此快照中找不到该主题，现显示可用的起始主题。'):tr('Your selected topic is outside these filters. Clear filters to include it.','当前所选主题不在筛选范围内。清除筛选即可显示。');}
+function filters(){
+  search.value=state.q;category.value=state.category;evidence.checked=state.evidence;scopes.forEach(function(s){s.checked=s.value===state.scope;});
+  var count=0,firstVisible=null,selectedVisible=null;
+  rows.forEach(function(row){
+    var t=byId.get(row.getAttribute('data-topic-select'));row.hidden=!matches(t);row.tabIndex=-1;
+    if(!row.hidden){count++;if(!firstVisible)firstVisible=row;if(t.id===state.theme)selectedVisible=row;}
+    if(t.id===state.theme)row.setAttribute('aria-current','true');else row.removeAttribute('aria-current');
+  });
+  if(selectedVisible||firstVisible)(selectedVisible||firstVisible).tabIndex=0;
+  document.querySelector('[data-topic-count]').textContent=tr(count+' of '+topics.length+' topics',topics.length+' 个主题中显示 '+count+' 个');
+  document.querySelector('[data-topic-no-results]').hidden=count>0;results.hidden=count===0;
+  var selected=byId.get(state.theme),outside=!matches(selected);
+  answer.querySelector('[data-topic-category]').textContent=label(data.categories[state.category&&selected.paths.some(function(path){return path.length&&path[0].id===state.category;})?state.category:selected.category]);
+  noticeMessage(invalidTheme?tr('That topic is not available in this snapshot. Showing the available starting topic.','此快照中找不到该主题，现显示可用的起始主题。'):outside?tr('This topic is outside your filters.','当前主题不在筛选范围内。'):'',!invalidTheme&&outside);
+}
 /* A locale redraw may carry native disclosure/focus state only across the same
    unique public receipt. This is one-render DOM state, never stored research data. */
 var renderedReceiptCards=new WeakMap();
@@ -435,7 +457,7 @@ document.addEventListener('click',function(event){if(event.target.closest('[data
 results.addEventListener('keydown',function(event){var a=event.target.closest('[data-topic-select]');if(!a)return;var visible=rows.filter(function(r){return!r.hidden;}),i=visible.indexOf(a),target;if(event.key==='ArrowDown')target=visible[Math.min(i+1,visible.length-1)];else if(event.key==='ArrowUp')target=visible[Math.max(i-1,0)];else if(event.key==='Home')target=visible[0];else if(event.key==='End')target=visible[visible.length-1];if(target){event.preventDefault();rows.forEach(function(r){r.tabIndex=-1;});target.tabIndex=0;target.focus();}});
 function updateFilters(){state.q=search.value.slice(0,200);state.category=category.value;state.scope=scopes.find(function(s){return s.checked;}).value;state.evidence=evidence.checked;invalidTheme=false;writeURL('replace');filters();answer.querySelector('[data-topic-category]').textContent=label(data.categories[state.category&&byId.get(state.theme).paths.some(function(path){return path.length&&path[0].id===state.category;})?state.category:byId.get(state.theme).category]);}
 search.addEventListener('input',updateFilters);category.addEventListener('change',updateFilters);evidence.addEventListener('change',updateFilters);scopes.forEach(function(s){s.addEventListener('change',updateFilters);});
-document.querySelectorAll('[data-topic-reset]').forEach(function(b){b.addEventListener('click',function(){state=Object.assign({},defaults,{theme:state.theme});invalidTheme=false;writeURL('replace');filters();search.focus();});});
+document.querySelectorAll('[data-topic-reset]').forEach(function(b){b.addEventListener('click',function(){state=Object.assign({},defaults,{theme:state.theme});invalidTheme=false;writeURL('replace');filters();if(b.hasAttribute('data-topic-notice-reset'))document.getElementById('gmi-topic-title').focus({preventScroll:true});else search.focus();});});
 search.addEventListener('keydown',function(event){if(event.key==='Escape'&&search.value){event.preventDefault();event.stopPropagation();search.value='';updateFilters();}});
 openButton.addEventListener('click',function(){if(typeof dialog.showModal!=='function'){location.href='gmi-index.html';return;}document.querySelector('[data-browse-slot]').append(browse);dialog.showModal();search.focus();});
 document.querySelector('[data-browse-close]').addEventListener('click',function(){dialog.close();});dialog.addEventListener('close',function(){home.append(browse);(mobile.matches?openButton:search).focus({preventScroll:true});});mobile.addEventListener('change',function(e){if(!e.matches&&dialog.open)dialog.close();});

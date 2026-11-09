@@ -875,3 +875,43 @@ The canonical verifier adds `tree-roving-<width>-<language>` cases and retains t
 [TREE_ROVING_VALIDATION_20261109.json](TREE_ROVING_VALIDATION_20261109.json) binds baseline observations, exact source/test/harness inputs, the interrupted attempt, native-link diagnosis, final results and capture hashes. The harness executes named definitions from the one canonical verifier rather than duplicating behavioral test logic. These are generated-component proofs with complete GMI/shared theme CSS; full shared shell, fonts, account, live serving, screen-reader speech and release acceptance remain separate. The existing no-match paragraph's announcement lifecycle is not claimed by this phase.
 
 Original model01 **EFFECT_UNKNOWN / ROOT_UNVERIFIED**, Draft, admission and release holds remain. No model generation, fenced result consumption, new route, registry, persisted state or lifecycle owner was introduced.
+
+
+### 11.24 Recover from filters without leaving the answer — 2026-11-09
+
+This continuation uses original Draft PR10676 parent **340cff37388b2567366d61985f610c7dfe654350**. The existing answer survives Browse filters, including zero results, but the old notice told a phone reader to clear filters while both reset controls were inside the closed Browse region. The exact committed generated page failed the new directly available action assertion at 1440 px EN and 390 px ZH. No new research state is needed to close that gap.
+
+**Visible recovery.** A short **This topic is outside your filters. / 当前主题不在筛选范围内。** notice now contains **Clear filters / 清除筛选** beside the retained answer. The existing panel/button tokens provide a quiet single surface, a wrapping layout and a 44 px action. At 390 px EN the sentence and action share a row; at 320 px ZH the action wraps below the sentence without overflow or smaller targets. The message remains separate from the button's accessible name.
+
+The existing notice owner derives text, region visibility and recovery eligibility together. It exposes a nonempty region before changing its status text and avoids rewriting unchanged text. This preserves the previous visibility-before-text order; it is not screen-reader speech acceptance. If a visibility change is about to hide the focused answer-side action, focus returns to the existing topic heading first.
+
+| Situation | Answer-side behavior |
+| --- | --- |
+| Valid selected topic excluded by Browse filters | Show the short notice and Clear filters action. |
+| Selected topic matches | Hide the notice and action. |
+| Invalid saved topic | Keep the unavailable-topic/fallback explanation; no unrelated filter-recovery action. |
+| Presentation data cannot load | Keep the existing available answer and index fallback; the new action stays hidden. |
+| JavaScript disabled | The generated recovery region starts hidden; no inert reset action is exposed. |
+| Mobile Browse is open | Native modal behavior keeps the background answer unavailable; its own reset continues to operate within Browse. |
+
+**Use the current reset path.** The new button joins `[data-topic-reset]`, clearing the existing query, category, scope and evidence filters while retaining `state.theme`. The current `writeURL('replace')` preserves lens, qualified return context and other retained keys without adding a history entry. It also retires a pending or visible manual-copy attempt. The new caller finishes on the visible `#gmi-topic-title`; existing sidebar/drawer callers keep their original `search.focus()` behavior.
+
+Reset does not call `select()`, `sync()` or `renderAnswer()`. Existing evidence nodes, their exact record/source identifiers and an open source receipt remain intact. Returning from a category filter may restore the theme's primary category label under the current filter renderer; this is not a theme or evidence change. A late clipboard success or rejection cannot publish feedback, expose the old fallback or steal focus after this URL change. No second copy, filter, modal, URL, storage or announcement lifecycle was added.
+
+**Exact production rendering.** The unchanged accepted model, SHA256 **e644fa48a2bb6e6affe8d1fda74556d9db5f82acadffdad839e1efe8f095359f**, was read through a new isolated root with 48 source-bound inputs and existing builder **900253d42a7b1d43ad41aa493e8032444c4570de**. The baseline reproduced both committed explorer and index byte-for-byte. The candidate changes only **gmi.html, gmi.js and gmi.css** among nine outputs. Its entire HTML delta is one generated notice line. The other six HTML outputs remain identical between renders; the historical coverage output is excluded from publication. Actual generated explorer bytes were transported and verified by complete SHA256 and Git-blob identity.
+
+| Current artifact | Git blob |
+| --- | --- |
+| Paired GMI JavaScript | **812c1374f9d65a2675f5d73696de212c62fe0717** |
+| Paired GMI stylesheet | **dbd070549d2ea64d692774508a34e9a7a3ac8928** |
+| `templates/gmi_map.html.j2` | **b4f2a69ce7588d1b51296329d54d38cbcbeab4a5** |
+| Generated `site/gmi.html` | **64e049b6a17e09e0ef8dd71c3cabe30b826ab484** |
+| Canonical browser verifier | **f484804e107a11fc16e94fd3065073e5cff529bc** |
+
+**Focused native proof.** The final run passes **eight named cases / 18 fresh anonymous contexts**, Chrome **157.0.8103.39**, zero page errors, exit 0 in 26.34 seconds. The recovery journey runs at 1440/390/320 px in EN/ZH with both late clipboard outcomes, then checks existing drawer/sidebar reset focus and retirement of a visible manual fallback. It verifies retained URL/history, selected topic, evidence-node identity, open receipts, language changes, 44 px targets and no overflow. EN/ZH negative controls cover invalid topics, explicitly damaged presentation JSON and actually disabled JavaScript.
+
+The earlier candidate also passed all eight cases in 18 contexts. A source-only review then restored the original visibility-before-text order for the live notice; the final exact JS was rendered and the affected matrix run again. Both runs and the two reproduced original failures are retained. No system clipboard write is issued by these fault-injection cases.
+
+[ANSWER_FILTER_RECOVERY_VALIDATION_20261109.json](ANSWER_FILTER_RECOVERY_VALIDATION_20261109.json) binds source/render hashes, actual generated diff, canonical test definitions, bounded harness, native receipts and two inspected phone captures. The tree/index code, receipt renderer, selection owner, copy/URL owner and copy event handlers are byte-identical to the parent. Their accepted historical suites are not claimed as rerun. Complete JavaScript and canonical Python syntax pass.
+
+The browser fixture uses actual generated main content and complete GMI/shared theme CSS in light mode with reduced motion, a dedicated loopback origin and blocked external requests. Full shared shell, fonts, live account, public admission, operating-system clipboard and assistive-technology speech remain separate qualifications. Original model01 **EFFECT_UNKNOWN / ROOT_UNVERIFIED**, Draft and release holds remain.
