@@ -4537,6 +4537,7 @@ CURATED_EXCLUSIVE = {
     'unrun-brain-gateway',
     # The Fabric consumer join retains this desk job's complete named closure.
     "unrun-brain-desks",
+    "public-site-figma-baseline-contracts",
     "press-account-claim-consumer",
     # GDELT leaf suites own their exact import/read closure.
     "gdelt-news-leaves",

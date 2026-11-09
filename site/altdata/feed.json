@@ -1,6 +1,6 @@
 {
-  "generated_utc": "2026-11-08T21:47:31.673148+00:00",
-  "as_of": "2026-11-08",
+  "generated_utc": "2026-11-09T02:07:52.359151+00:00",
+  "as_of": "2026-11-09",
   "schema": "altdata.feed.v1",
   "source": "Quiver Quantitative (Trader plan)",
   "note": "Deterministic alt-data signals + normalized event feed for the reasoning brain. Display/context-only \u2014 not a scored axis.",
@@ -5974,6 +5974,15 @@
           "parties": "D"
         },
         {
+          "ticker": "NFLX",
+          "net": 4,
+          "buys": 4,
+          "sells": 0,
+          "members": 2,
+          "est_usd": 32002.0,
+          "parties": "D/R"
+        },
+        {
           "ticker": "ESE",
           "net": 4,
           "buys": 6,
@@ -6046,25 +6055,7 @@
           "parties": "R"
         },
         {
-          "ticker": "PG",
-          "net": 2,
-          "buys": 8,
-          "sells": 6,
-          "members": 5,
-          "est_usd": 64004.0,
-          "parties": "D/R"
-        },
-        {
           "ticker": "GS",
-          "net": 2,
-          "buys": 4,
-          "sells": 2,
-          "members": 3,
-          "est_usd": 32002.0,
-          "parties": "D/R"
-        },
-        {
-          "ticker": "NFLX",
           "net": 2,
           "buys": 4,
           "sells": 2,
@@ -6080,6 +6071,15 @@
           "members": 2,
           "est_usd": 32002.0,
           "parties": "R"
+        },
+        {
+          "ticker": "ACN",
+          "net": 2,
+          "buys": 2,
+          "sells": 0,
+          "members": 1,
+          "est_usd": 16001.0,
+          "parties": "R"
         }
       ],
       "sells": [
@@ -6090,15 +6090,6 @@
           "sells": 20,
           "members": 5,
           "est_usd": 32002.0,
-          "parties": "D/R"
-        },
-        {
-          "ticker": "MSFT",
-          "net": -12,
-          "buys": 8,
-          "sells": 20,
-          "members": 12,
-          "est_usd": 1222004.0,
           "parties": "D/R"
         },
         {
@@ -6118,6 +6109,15 @@
           "members": 1,
           "est_usd": 0.0,
           "parties": "R"
+        },
+        {
+          "ticker": "MSFT",
+          "net": -10,
+          "buys": 8,
+          "sells": 18,
+          "members": 12,
+          "est_usd": 1222004.0,
+          "parties": "D/R"
         },
         {
           "ticker": "TJX",
@@ -6145,15 +6145,6 @@
           "members": 1,
           "est_usd": 0.0,
           "parties": "D"
-        },
-        {
-          "ticker": "NVDA",
-          "net": -8,
-          "buys": 6,
-          "sells": 14,
-          "members": 8,
-          "est_usd": 48003.0,
-          "parties": "D/R"
         },
         {
           "ticker": "LOW",
@@ -6201,13 +6192,22 @@
           "parties": "D/R"
         },
         {
-          "ticker": "MCD",
+          "ticker": "NVDA",
           "net": -6,
-          "buys": 2,
-          "sells": 8,
-          "members": 4,
-          "est_usd": 16001.0,
+          "buys": 6,
+          "sells": 12,
+          "members": 7,
+          "est_usd": 48003.0,
           "parties": "D/R"
+        },
+        {
+          "ticker": "GOOGL",
+          "net": -6,
+          "buys": 0,
+          "sells": 6,
+          "members": 3,
+          "est_usd": 0.0,
+          "parties": "R"
         },
         {
           "ticker": "HON",
@@ -6435,12 +6435,6 @@
         "kind": "label_expansion",
         "drug": "CAMZYOS",
         "date": "2026-09-30"
-      },
-      {
-        "ticker": "ABBV",
-        "kind": "approval",
-        "drug": "JUVMO",
-        "date": "2026-09-25"
       },
       {
         "ticker": "AZN",
@@ -21672,20 +21666,20 @@
           "sellers": 26
         },
         {
-          "ticker": "CHYM",
-          "buy_usd": 0.0,
-          "sell_usd": 1761382354.0,
-          "net_usd": -1761382354.0,
-          "buyers": 0,
-          "sellers": 458
-        },
-        {
           "ticker": "AVAH",
           "buy_usd": 0.0,
           "sell_usd": 1668169794.0,
           "net_usd": -1668169794.0,
           "buyers": 0,
           "sellers": 51
+        },
+        {
+          "ticker": "CHYM",
+          "buy_usd": 0.0,
+          "sell_usd": 1617138887.0,
+          "net_usd": -1617138887.0,
+          "buyers": 0,
+          "sellers": 419
         },
         {
           "ticker": "DELL",
@@ -21710,14 +21704,6 @@
           "net_usd": -1074693625.0,
           "buyers": 0,
           "sellers": 9
-        },
-        {
-          "ticker": "PRMB",
-          "buy_usd": 0.0,
-          "sell_usd": 994799972.0,
-          "net_usd": -994799972.0,
-          "buyers": 0,
-          "sellers": 2
         },
         {
           "ticker": "NVDA",
@@ -21758,6 +21744,14 @@
           "net_usd": -715460400.0,
           "buyers": 10,
           "sellers": 2
+        },
+        {
+          "ticker": "AUR",
+          "buy_usd": 0.0,
+          "sell_usd": 684093992.0,
+          "net_usd": -684093992.0,
+          "buyers": 0,
+          "sellers": 10
         }
       ]
     },
@@ -24485,322 +24479,322 @@
       {
         "ticker": "CEG",
         "next_date": "2026-11-09",
-        "days_to": 1,
+        "days_to": 0,
         "eps_forecast": 3.9,
         "last_surprise_pct": 8.1
       },
       {
         "ticker": "HIMS",
         "next_date": "2026-11-09",
-        "days_to": 1,
+        "days_to": 0,
         "eps_forecast": 0.07,
         "last_surprise_pct": -42.9
       },
       {
         "ticker": "NRG",
         "next_date": "2026-11-09",
-        "days_to": 1,
+        "days_to": 0,
         "eps_forecast": 3.44,
         "last_surprise_pct": -10.2
       },
       {
         "ticker": "ONTO",
         "next_date": "2026-11-09",
-        "days_to": 1,
+        "days_to": 0,
         "eps_forecast": 2.27,
         "last_surprise_pct": 14.9
       },
       {
         "ticker": "RDNT",
         "next_date": "2026-11-09",
-        "days_to": 1,
+        "days_to": 0,
         "eps_forecast": 0.21,
         "last_surprise_pct": 61.1
       },
       {
         "ticker": "TGTX",
         "next_date": "2026-11-09",
-        "days_to": 1,
+        "days_to": 0,
         "eps_forecast": 0.37,
         "last_surprise_pct": -87.8
       },
       {
         "ticker": "TTD",
         "next_date": "2026-11-09",
-        "days_to": 1,
+        "days_to": 0,
         "eps_forecast": 0.08,
         "last_surprise_pct": -36.4
       },
       {
         "ticker": "TTWO",
         "next_date": "2026-11-09",
-        "days_to": 1,
+        "days_to": 0,
         "eps_forecast": 0.49,
         "last_surprise_pct": -112.5
       },
       {
         "ticker": "LIF",
         "next_date": "2026-11-09",
-        "days_to": 1,
+        "days_to": 0,
         "eps_forecast": null,
         "last_surprise_pct": null
       },
       {
         "ticker": "MARA",
         "next_date": "2026-11-09",
-        "days_to": 1,
+        "days_to": 0,
         "eps_forecast": null,
         "last_surprise_pct": -25.0
       },
       {
         "ticker": "PLUG",
         "next_date": "2026-11-09",
-        "days_to": 1,
+        "days_to": 0,
         "eps_forecast": null,
         "last_surprise_pct": 12.5
       },
       {
         "ticker": "RKLB",
         "next_date": "2026-11-09",
-        "days_to": 1,
+        "days_to": 0,
         "eps_forecast": null,
         "last_surprise_pct": 14.3
       },
       {
         "ticker": "REZI",
         "next_date": "2026-11-10",
-        "days_to": 2,
+        "days_to": 1,
         "eps_forecast": 0.4,
         "last_surprise_pct": 22.9
       },
       {
         "ticker": "CRWV",
         "next_date": "2026-11-10",
-        "days_to": 2,
+        "days_to": 1,
         "eps_forecast": null,
         "last_surprise_pct": 13.2
       },
       {
         "ticker": "IBRX",
         "next_date": "2026-11-10",
-        "days_to": 2,
+        "days_to": 1,
         "eps_forecast": null,
         "last_surprise_pct": 11.1
       },
       {
         "ticker": "JBGS",
         "next_date": "2026-11-10",
-        "days_to": 2,
+        "days_to": 1,
         "eps_forecast": null,
         "last_surprise_pct": null
       },
       {
         "ticker": "SHFS",
         "next_date": "2026-11-11",
-        "days_to": 3,
+        "days_to": 2,
         "eps_forecast": null,
         "last_surprise_pct": null
       },
       {
         "ticker": "TR",
         "next_date": "2026-11-11",
-        "days_to": 3,
+        "days_to": 2,
         "eps_forecast": null,
         "last_surprise_pct": null
       },
       {
         "ticker": "AMAT",
         "next_date": "2026-11-12",
-        "days_to": 4,
+        "days_to": 3,
         "eps_forecast": 4.06,
         "last_surprise_pct": 3.5
       },
       {
         "ticker": "AVAH",
         "next_date": "2026-11-12",
-        "days_to": 4,
+        "days_to": 3,
         "eps_forecast": 0.19,
         "last_surprise_pct": 31.2
       },
       {
         "ticker": "CSCO",
         "next_date": "2026-11-12",
-        "days_to": 4,
+        "days_to": 3,
         "eps_forecast": 1.15,
         "last_surprise_pct": 9.1
       },
       {
         "ticker": "EZPW",
         "next_date": "2026-11-12",
-        "days_to": 4,
+        "days_to": 3,
         "eps_forecast": 0.4,
         "last_surprise_pct": 20.5
       },
       {
         "ticker": "CBRS",
         "next_date": "2026-11-12",
-        "days_to": 4,
+        "days_to": 3,
         "eps_forecast": null,
         "last_surprise_pct": 81.0
       },
       {
         "ticker": "LUNR",
         "next_date": "2026-11-12",
-        "days_to": 4,
+        "days_to": 3,
         "eps_forecast": null,
         "last_surprise_pct": -128.6
       },
       {
         "ticker": "NBIS",
         "next_date": "2026-11-12",
-        "days_to": 4,
+        "days_to": 3,
         "eps_forecast": null,
         "last_surprise_pct": 82.1
       },
       {
         "ticker": "ACM",
         "next_date": "2026-11-16",
-        "days_to": 8,
+        "days_to": 7,
         "eps_forecast": 1.57,
         "last_surprise_pct": -133.6
       },
       {
         "ticker": "BIDU",
         "next_date": "2026-11-16",
-        "days_to": 8,
+        "days_to": 7,
         "eps_forecast": 0.57,
         "last_surprise_pct": -35.3
       },
       {
         "ticker": "INFQ",
         "next_date": "2026-11-16",
-        "days_to": 8,
+        "days_to": 7,
         "eps_forecast": null,
         "last_surprise_pct": 14.3
       },
       {
         "ticker": "DIS",
         "next_date": "2026-11-17",
-        "days_to": 9,
+        "days_to": 8,
         "eps_forecast": 1.67,
         "last_surprise_pct": 9.6
       },
       {
         "ticker": "HD",
         "next_date": "2026-11-17",
-        "days_to": 9,
+        "days_to": 8,
         "eps_forecast": 3.86,
         "last_surprise_pct": 4.5
       },
       {
         "ticker": "NVDA",
         "next_date": "2026-11-17",
-        "days_to": 9,
+        "days_to": 8,
         "eps_forecast": 2.49,
         "last_surprise_pct": 6.2
       },
       {
         "ticker": "LOW",
         "next_date": "2026-11-18",
-        "days_to": 10,
+        "days_to": 9,
         "eps_forecast": 2.86,
         "last_surprise_pct": 4.3
       },
       {
         "ticker": "P",
         "next_date": "2026-11-18",
-        "days_to": 10,
+        "days_to": 9,
         "eps_forecast": 0.27,
         "last_surprise_pct": 21.1
       },
       {
         "ticker": "TJX",
         "next_date": "2026-11-18",
-        "days_to": 10,
+        "days_to": 9,
         "eps_forecast": 1.33,
         "last_surprise_pct": 3.4
       },
       {
         "ticker": "ESE",
         "next_date": "2026-11-19",
-        "days_to": 11,
+        "days_to": 10,
         "eps_forecast": 2.59,
         "last_surprise_pct": 3.8
       },
       {
         "ticker": "ESTC",
         "next_date": "2026-11-19",
-        "days_to": 11,
+        "days_to": 10,
         "eps_forecast": 0.14,
         "last_surprise_pct": 140.0
       },
       {
         "ticker": "KEYS",
         "next_date": "2026-11-19",
-        "days_to": 11,
+        "days_to": 10,
         "eps_forecast": 3.09,
         "last_surprise_pct": 30.6
       },
       {
         "ticker": "VEEV",
         "next_date": "2026-11-19",
-        "days_to": 11,
+        "days_to": 10,
         "eps_forecast": 1.68,
         "last_surprise_pct": 3.7
       },
       {
         "ticker": "WMT",
         "next_date": "2026-11-19",
-        "days_to": 11,
+        "days_to": 10,
         "eps_forecast": 0.64,
         "last_surprise_pct": 11.0
       },
       {
         "ticker": "A",
         "next_date": "2026-11-23",
-        "days_to": 15,
+        "days_to": 14,
         "eps_forecast": 1.72,
         "last_surprise_pct": 9.5
       },
       {
         "ticker": "HPE",
         "next_date": "2026-11-23",
-        "days_to": 15,
+        "days_to": 14,
         "eps_forecast": 1.17,
         "last_surprise_pct": 24.4
       },
       {
         "ticker": "BABA",
         "next_date": "2026-11-24",
-        "days_to": 16,
+        "days_to": 15,
         "eps_forecast": 1.31,
         "last_surprise_pct": -43.3
       },
       {
         "ticker": "DELL",
         "next_date": "2026-11-24",
-        "days_to": 16,
+        "days_to": 15,
         "eps_forecast": 6.41,
         "last_surprise_pct": 43.2
       },
       {
         "ticker": "WDAY",
         "next_date": "2026-11-24",
-        "days_to": 16,
+        "days_to": 15,
         "eps_forecast": 1.28,
         "last_surprise_pct": 104.8
       },
       {
         "ticker": "CLSK",
         "next_date": "2026-11-24",
-        "days_to": 16,
+        "days_to": 15,
         "eps_forecast": null,
         "last_surprise_pct": -33.3
       },
       {
         "ticker": "DE",
         "next_date": "2026-11-25",
-        "days_to": 17,
+        "days_to": 16,
         "eps_forecast": 4.07,
         "last_surprise_pct": 6.5
       }
@@ -24953,17 +24947,6 @@
         "why": "github_momentum: +0.26% stars \u00b7 gov_contract: $31,958,970 awarded \u00b7 insider_mspr: MSPR 100.0 \u00b7 patent_cluster: 770 grants, 62 IPC classes \u00b7 special_situation: Delistings"
       },
       {
-        "ticker": "PG",
-        "score": 3,
-        "weighted_score": 1.85,
-        "channel_list": [
-          "congress_cluster",
-          "material_8k",
-          "trump"
-        ],
-        "why": "congress_cluster: 5 members net +2 \u00b7 material_8k: 5 material 8-Ks (items 7.01, 8.01) \u00b7 trump: PROCTER & GAMBLE COMPANY"
-      },
-      {
         "ticker": "INTC",
         "score": 3,
         "weighted_score": 1.8,
@@ -25008,17 +24991,6 @@
           "trump"
         ],
         "why": "github_momentum: +0.29% stars \u00b7 patent_cluster: 309 grants, 34 IPC classes \u00b7 retail_buzz: 207 WSB mentions \u00b7 trump: Nvidia Corp"
-      },
-      {
-        "ticker": "NFLX",
-        "score": 3,
-        "weighted_score": 1.35,
-        "channel_list": [
-          "app_demand",
-          "congress_cluster",
-          "stocktwits_bull"
-        ],
-        "why": "app_demand: 4.75\u2605 \u00d7 7,568,616 reviews \u00b7 congress_cluster: 3 members net +2 \u00b7 stocktwits_bull: 89% bull \u00b7 523,485 watching"
       },
       {
         "ticker": "META",
@@ -25181,6 +25153,27 @@
           "insider_mspr"
         ],
         "why": "gov_grant: $6,756,531 federal grant/loan \u00b7 insider_mspr: MSPR 100.0"
+      },
+      {
+        "ticker": "PG",
+        "score": 2,
+        "weighted_score": 1.05,
+        "channel_list": [
+          "material_8k",
+          "trump"
+        ],
+        "why": "material_8k: 5 material 8-Ks (items 7.01, 8.01) \u00b7 trump: PROCTER & GAMBLE COMPANY"
+      },
+      {
+        "ticker": "NFLX",
+        "score": 3,
+        "weighted_score": 1.0,
+        "channel_list": [
+          "app_demand",
+          "congress_buy",
+          "stocktwits_bull"
+        ],
+        "why": "app_demand: 4.75\u2605 \u00d7 7,568,616 reviews \u00b7 congress_buy: 2 member(s) net +4 \u00b7 stocktwits_bull: 89% bull \u00b7 523,485 watching"
       }
     ]
   }
