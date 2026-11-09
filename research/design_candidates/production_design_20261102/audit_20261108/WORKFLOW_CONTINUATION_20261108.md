@@ -837,6 +837,74 @@ Final JSX retains all **49 original map nodes** and all **96 original Builder no
 
 Exact roots `FQ-0` and `1-0` were released. No product data, clinical content, private research behavior, runtime source, archive status, external file, permission, test execution, approval or deployment was changed.
 
+
+## 16. T47: an executable transition reference with narrowly scoped proof
+
+The corrected draft interaction now has an original, self-contained implementation reference in this programme:
+
+- [ranked-search-state-reference.mjs](https://github.com/mastermindx-market-intelligence/macro/blob/7dba2998498498ffcaa8609deb44759c79289809/research/design_candidates/production_design_20261102/audit_20261108/ranked-search-state-reference.mjs)
+- [ranked-search-state-reference.test.mjs](https://github.com/mastermindx-market-intelligence/macro/blob/7dba2998498498ffcaa8609deb44759c79289809/research/design_candidates/production_design_20261102/audit_20261108/ranked-search-state-reference.test.mjs)
+
+Both files were saved and read back exactly. The module was also read at the test-file commit to verify that **`7dba2998498498ffcaa8609deb44759c79289809` contains the exact tested pair**.
+
+This is **pure transition/projection reference code**, not a patch to an installed application or a new state service. It has no DOM operations, network calls, persistence, routes, timers or background work. The existing host remains responsible for its supplied population, disclosure element, status announcement, source availability, rendering and focus.
+
+### API and data contract
+
+| Function | Purpose |
+|---|---|
+| `createRankedSearchState({ inventoryKey, expanded })` | Initialize from the caller’s current supplied-list identity and existing disclosure choice. |
+| `transitionRankedSearch({ rows, state, inventoryKey, event })` | Return the next immutable state, projection and an optional one-time Clear focus request. |
+| `projectRankedSearch({ rows, state, inventoryKey })` | Derive matching and visible rows without effects or repeated focus requests. |
+
+Rows carry stable caller-owned IDs and the host’s existing `primary`/`secondary` grouping. Symbol and name may be absent; other source fields, rank and missing values remain unchanged. The reference does not infer grouping from rank, row position or the number 20. Returned rows retain their original object identities and order.
+
+Events are query change, Clear and disclosure choice. The pre-search open/closed value is captured once. Nonempty query edits and temporary disclosure changes do not replace it. A lower-group match temporarily opens the existing disclosure. Zero-match suppression changes visibility, not the remembered baseline. Clear and input-empty restore the same list state; only explicit Clear requests the established search-input focus target.
+
+Matching is literal and case-insensitive within **symbol OR name**. It adds no trimming, fuzzy matching, tokenization, punctuation normalization or regular-expression interpretation. Empty input exits search; literal whitespace is not automatically treated as empty.
+
+Invalid identities, groups, state and query types fail explicitly rather than being silently converted into zero results. A changed caller-supplied inventory key requires explicit reinitialization. The reference does not establish whether an empty supplied array means ready-empty, loading, unavailable or partial data; the host must classify that source state.
+
+**Additional declared design decision:** a positive query matching only primary rows also withholds the empty secondary disclosure. A secondary-group match retains its existing disclosure. The original T47 matrix had no primary-only specimen; this is an explicit reference extension, not a claim about existing runtime behavior or a silent replacement of its compact-match design.
+
+### Offline verification
+
+The exact final files were executed locally with **Node v24.22.1**:
+
+```sh
+node --test ranked-search-state-reference.test.mjs
+```
+
+The runner reported **16 tests, 16 passed, 0 failed, 0 skipped**. That count includes the two originally-open/originally-closed subcases.
+
+The checks cover:
+
+- Zero matches → rank-21 match → Clear from both original disclosure choices.
+- Input-empty restoration versus Clear’s one-time focus request.
+- Several query changes, temporary toggles, repeated query and a later search with a new resting choice.
+- Literal punctuation, spaces, case-insensitive symbol/name matching and no cross-field combined match.
+- Primary-only results, empty supplied inventory and missing names/values.
+- Supplied object identity, nonconsecutive ranks, source order and caller-assigned grouping.
+- Hidden-control stale events, explicit inventory rebinding and invalid IDs/groups/query/state.
+- No mutation of frozen source rows or prior state.
+
+This is offline reference logic proof. It does **not** prove DOM visibility, native disclosure events, screen-reader announcement, focus, scrolling, keyboard integration, no-JavaScript fallback, source readiness, application fit, CI, release or deployment. Those remain host integration checks. In particular, programmatic disclosure opening must not be mistaken for a new user baseline, and a focused control must be handled before the host hides it.
+
+Exact file identities:
+
+| File | Git blob | SHA-256 of the local tested UTF-8 file |
+|---|---|---|
+| Module | `5d184009b8359f11af6eb7121626bc63144ef037` | `8b229121710fc1fabb1b19f6b70c7563768bd0af2d22a7d4a8c6a829390561a0` |
+| Tests | `45abf4b4e8db022748150c04978fd7a7ce3ab27c` | `cd1eddf151c1af4ab37ae1effc764d5920eb4801cfbfa04cf1350041ab63720d` |
+
+### Linked back into Paper
+
+The existing [T47 Build sheet](https://app.paper.design/file/01M6Y2SGKNTEESDJX96ZSJJGPF/p-2-0), root **`10H-0`**, now includes module **06 / `124-0`**, linking the exact reference commit, API, test command, proof and remaining integration limits.
+
+Only two existing Build text nodes changed (`11K-0` and `120-0`), to distinguish the applied native scope from the separate reference proof. Three nodes were added for module 06. Final JSX confirmed no other original Build changes, the new module was visually checked, and only `10H-0` was reopened and released for this extension.
+
+The eight native search specimens and the P9/UV Clear-return companions were not edited in this phase. Original R4, RIG, baseline/current-source and runtime qualifications remain. This adds executable builder evidence within the existing programme without claiming a shipped search feature.
+
 ## Active next phase: next demonstrated workflow gap
 
 The next bounded review is looking for a navigation, comparison or recovery gap in an existing Paper family, while preserving the completed work and other writers’ fenced or accepted surfaces. Choose from observed current nodes and exact source ownership rather than adding generic states.
