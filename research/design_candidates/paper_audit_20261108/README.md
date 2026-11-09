@@ -1,6 +1,6 @@
 # Paper architecture, workflow and clarity audit
 
-This package accompanies actual edits in five Paper product files. It records the workspace inventory, what changed, the current source owners, concrete implementation gaps, a focused motion reference, and proof limits.
+The original wave accompanies actual edits in five Paper product files. It records the workspace inventory, what changed, the current source owners, concrete implementation gaps, a focused motion reference, and proof limits.
 
 **Start with [AUDIT.md](AUDIT.md)** for findings and Paper links. Use [BUILD_PLAN.md](BUILD_PLAN.md) for input/action/result contracts and implementation order.
 
@@ -18,6 +18,10 @@ This package accompanies actual edits in five Paper product files. It records th
 | [VERIFICATION.json](VERIFICATION.json) | Exact reference hashes, nine test results and the limits of the local checks |
 | [EFFECTS.json](EFFECTS.json) | Observed guarded Paper edits, superseded intermediate edits and non-dispatched reconciliation notes |
 | [INVENTORY.json](INVENTORY.json) | Original resource inventory and the later International-name observation |
+
+## 9 November continuation
+
+A further eight Paper files now have source-aligned logic, clearer workflows, preserved originals and implementation contracts. Start with [the continuation results](followup/RESULTS.md), [builder plan](followup/BUILD_PLAN.md) and [source rulings](followup/SOURCE_RULINGS.md). Current post-edit JSX, 21 rendered captures, exact text verification and the mutation ledger are in [followup/](followup/). The original five-file acceptance and runtime limitations below remain applicable.
 
 ## Important distinctions
 

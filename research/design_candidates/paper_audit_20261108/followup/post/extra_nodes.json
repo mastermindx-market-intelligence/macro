@@ -1,0 +1,92 @@
+[
+  {
+    "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+    "nodeId": "R6-0",
+    "state": "OBSERVED",
+    "jsx": ""
+  },
+  {
+    "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+    "nodeId": "V2-0",
+    "state": "OBSERVED",
+    "jsx": ""
+  },
+  {
+    "fileId": "01M38EVF74SJWG1GANN5VP380Z",
+    "nodeId": "8Q7-0",
+    "state": "OBSERVED",
+    "jsx": "(\n    <div id=\"8Q7-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '12px', lineHeight: '16px' }}>\n      21-TRADING-DAY MODEL\n    </div>\n  )"
+  },
+  {
+    "fileId": "01M38EVF74SJWG1GANN5VP380Z",
+    "nodeId": "8QB-0",
+    "state": "OBSERVED",
+    "jsx": "(\n    <div id=\"8QB-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '14px', lineHeight: '22px' }}>\n      US model: SPY falls ≥5% within the next 21 closing observations. Snapshot-matched calibration is unverified; this is not the 36/100 risk index.\n    </div>\n  )"
+  },
+  {
+    "fileId": "01M38EVF74SJWG1GANN5VP380Z",
+    "nodeId": "8RV-0",
+    "state": "OBSERVED",
+    "jsx": "(\n    <div id=\"8RV-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '12px', lineHeight: '18px', whiteSpace: 'pre-wrap' }}>\n      Within 21 trading days<br />Retained · normal reference 18%<br />Calibration receipt unverified.\n    </div>\n  )"
+  },
+  {
+    "fileId": "01M38EVF74SJWG1GANN5VP380Z",
+    "nodeId": "980-0",
+    "state": "OBSERVED",
+    "jsx": "(\n    <div id=\"980-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '12px', lineHeight: '18px', whiteSpace: 'pre-wrap' }}>\n      Within 21 trading days<br />Retained · normal reference 18%<br />Calibration receipt unverified.\n    </div>\n  )"
+  },
+  {
+    "fileId": "01M38EVF74SJWG1GANN5VP380Z",
+    "nodeId": "997-0",
+    "state": "OBSERVED",
+    "jsx": "(\n    <div id=\"997-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '12px', lineHeight: '16px' }}>\n      21-TRADING-DAY MODEL\n    </div>\n  )"
+  },
+  {
+    "fileId": "01M38EVF74SJWG1GANN5VP380Z",
+    "nodeId": "993-0",
+    "state": "OBSERVED",
+    "jsx": "(\n    <div id=\"993-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '14px', lineHeight: '22px' }}>\n      US model: SPY falls ≥5% within the next 21 closing observations. Snapshot-matched calibration is unverified; this is not the 36/100 risk index.\n    </div>\n  )"
+  },
+  {
+    "fileId": "01M38EVF74SJWG1GANN5VP380Z",
+    "nodeId": "8YV-0",
+    "state": "OBSERVED",
+    "jsx": "(\n    <div id=\"8YV-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: 'system-ui, sans-serif', fontSize: '12px', lineHeight: '18px', whiteSpace: 'pre-wrap' }}>\n      21个交易日内<br />留存值 · 常态参考为18%<br />校准证据尚未核验。\n    </div>\n  )"
+  },
+  {
+    "fileId": "01M38EVF74SJWG1GANN5VP380Z",
+    "nodeId": "99Y-0",
+    "state": "OBSERVED",
+    "jsx": "(\n    <div id=\"99Y-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: '12px', lineHeight: '18px', whiteSpace: 'pre-wrap' }}>\n      21个交易日内<br />留存值 · 常态参考为18%<br />校准证据尚未核验。\n    </div>\n  )"
+  },
+  {
+    "fileId": "01M38EVF74SJWG1GANN5VP380Z",
+    "nodeId": "9B5-0",
+    "state": "OBSERVED",
+    "jsx": "(\n    <div id=\"9B5-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: '12px', lineHeight: '16px' }}>\n      21个交易日模型\n    </div>\n  )"
+  },
+  {
+    "fileId": "01M38EVF74SJWG1GANN5VP380Z",
+    "nodeId": "9B1-0",
+    "state": "OBSERVED",
+    "jsx": "(\n    <div id=\"9B1-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: '14px', lineHeight: '22px' }}>\n      美国模型：SPY在接下来21次收盘观测内下跌至少5%。与快照匹配的校准证据尚未核验；此值并非36/100风险指数。\n    </div>\n  )"
+  },
+  {
+    "fileId": "01M38EVF74SJWG1GANN5VP380Z",
+    "nodeId": "9B9-0",
+    "state": "OBSERVED",
+    "jsx": "(\n    <div id=\"9B9-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: '12px', lineHeight: '16px' }}>\n      美国 · 21个交易日 · 2026年9月23日快照\n    </div>\n  )"
+  },
+  {
+    "fileId": "01M38EVF74SJWG1GANN5VP380Z",
+    "nodeId": "9AK-0",
+    "state": "OBSERVED",
+    "jsx": "(\n    <div id=\"9AK-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: '12px', lineHeight: '18px' }}>\n      美国 · 21个交易日 · 保留滚动位置与焦点\n    </div>\n  )"
+  },
+  {
+    "fileId": "01M38EVF74SJWG1GANN5VP380Z",
+    "nodeId": "9AP-0",
+    "state": "OBSERVED",
+    "jsx": "(\n    <div id=\"9AP-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: '13px', lineHeight: '20px' }}>\n      留存历史（原标记：21D）· 300条观测 · 实测1%。与13%模型的匹配关系尚未核验。\n    </div>\n  )"
+  }
+]

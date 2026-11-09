@@ -1,0 +1,216 @@
+{
+  "expectations": {
+    "file": "01M5EX8RTPR7YEZD2A144XED2S",
+    "currentReadouts": {
+      "dark": "4B2-0",
+      "light": "4BZ-0"
+    },
+    "preservedGeometry": [
+      "KF-0",
+      "KE-0",
+      "17G-0"
+    ],
+    "preservedParent": "47N-0",
+    "supersededMotion": "3YK-0",
+    "currentMotion": "48A-0",
+    "rolloverSection": "499-0",
+    "contracts": [
+      "3XS-0",
+      "3Y0-0",
+      "47W-0",
+      "480-0",
+      "4CW-0"
+    ]
+  },
+  "news": {
+    "file": "01M5EXPMQTSBFBAM8KKG83FTZH",
+    "currentRail": "27L-0",
+    "preservedParent": "3H7-0",
+    "replacements": [
+      {
+        "old": "27Q-0",
+        "new": "3HB-0"
+      },
+      {
+        "old": "28R-0",
+        "new": "3HE-0"
+      },
+      {
+        "old": "28T-0",
+        "new": "3HM-0"
+      },
+      {
+        "old": "2B3-0",
+        "new": "3IS-0"
+      },
+      {
+        "old": "2BU-0",
+        "new": "3IV-0"
+      },
+      {
+        "old": "2CZ-0",
+        "new": "3IY-0"
+      },
+      {
+        "old": "29D-0",
+        "new": "3JD-0"
+      },
+      {
+        "old": "29Y-0",
+        "new": "3JR-0"
+      },
+      {
+        "old": "2BI-0",
+        "new": "3KI-0"
+      },
+      {
+        "old": "2CQ-0",
+        "new": "3KX-0"
+      },
+      {
+        "old": "2AQ-0",
+        "new": "3MG-0"
+      }
+    ],
+    "staticSingleReport": "2C6-0",
+    "filterButtons": [
+      "3HN-0",
+      "3HP-0",
+      "3HR-0",
+      "3HT-0"
+    ]
+  },
+  "options": {
+    "file": "01M5EPQ16VBT7SBW2NQVX2RJG4",
+    "preservedParent": "16M-0",
+    "assessment": {
+      "old": "X8-0",
+      "current": "16Q-0"
+    },
+    "saves": [
+      {
+        "old": "FK-0",
+        "new": "17I-0"
+      },
+      {
+        "old": "LV-0",
+        "new": "17L-0"
+      }
+    ],
+    "draftAnswer": "17T-0",
+    "rearmEvidence": "17Q-0",
+    "movedAnswer": "PU-0",
+    "contracts": [
+      "170-0",
+      "174-0",
+      "178-0",
+      "17C-0",
+      "17G-0",
+      "17O-0",
+      "17V-0"
+    ]
+  },
+  "optionsMobile": {
+    "file": "01M5FNCKAND6CBSJNYM5FZWR8Y",
+    "evidenceMovedBeforeActions": {
+      "node": "2D-0",
+      "before": "10-0"
+    },
+    "draftAnswer": "6H-0",
+    "currentQuoteClock": "6J-0"
+  },
+  "sector": {
+    "file": "01M6FAXA774QT1VRDMAG7DFQ2W",
+    "current": [
+      "FB7-0",
+      "FO0-0"
+    ],
+    "historical": "8M0-0",
+    "build": "GYT-0",
+    "movedAnswers": [
+      {
+        "node": "FEG-0",
+        "after": "FDS-0"
+      },
+      {
+        "node": "FQD-0",
+        "after": "FPS-0"
+      }
+    ],
+    "desktopGroups": {
+      "energy": {
+        "parent": "HB6-0",
+        "stance": "FJ9-0",
+        "action": "FKV-0"
+      },
+      "technology": {
+        "parent": "HB8-0",
+        "stance": "FJD-0",
+        "action": "FKX-0"
+      }
+    },
+    "mobileGroups": {
+      "energy": {
+        "parent": "HBA-0",
+        "stance": "FVN-0",
+        "action": "FXD-0"
+      },
+      "technology": {
+        "parent": "HBC-0",
+        "stance": "FVR-0",
+        "action": "FXH-0"
+      }
+    },
+    "retainedFormerRows": [
+      "FJ4-0",
+      "FVF-0"
+    ],
+    "answerBasis": "HB4-0",
+    "contract": "HBE-0",
+    "preservedFences": [
+      "G4P-0",
+      "BML-0",
+      "GPL-0"
+    ]
+  },
+  "riskRadar": {
+    "file": "01M38EVF74SJWG1GANN5VP380Z",
+    "build": "AZL-0",
+    "originals": "before/popups_horizons.json",
+    "count": 20
+  },
+  "prophet": {
+    "file": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+    "unavailable": "10TD-0",
+    "compare": "133D-0",
+    "subjectAvailability": {
+      "INTC": "1CBP-0",
+      "MSFT": "1CBR-0"
+    },
+    "compareContract": "1CBT-0",
+    "footer": "10WB-0",
+    "footerPreserved": "1CBV-0",
+    "build": "1CBL-0",
+    "uncertainEffectFence": "ZE5-0"
+  },
+  "hub": {
+    "file": "01M2VWK62FA5S4VVF6G7SBPE5J",
+    "operating": "1AP-0",
+    "oldQueueAction": "1B5-0",
+    "preservedParent": "83A-0",
+    "helpSection": "854-0",
+    "helpContent": "83G-0",
+    "helpTrigger": "75X-0",
+    "helpEN": "83M-0",
+    "helpZH": "83Q-0",
+    "returnControls": [
+      "84C-0",
+      "84X-0"
+    ],
+    "contracts": [
+      "850-0",
+      "852-0"
+    ],
+    "heldShell": "43"
+  }
+}

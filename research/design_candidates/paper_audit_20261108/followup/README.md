@@ -1,0 +1,21 @@
+# Paper continuation package
+
+Start with [RESULTS.md](RESULTS.md) for the eight edited files and what changed. [BUILD_PLAN.md](BUILD_PLAN.md) contains ten implementation slices, their existing owners, dependencies and acceptance cases. [SOURCE_RULINGS.md](SOURCE_RULINGS.md) binds the important distinctions to exact source commits.
+
+| Artifact | Purpose |
+|---|---|
+| [RESULTS.md](RESULTS.md) | Implemented design delta, Paper links, preservation, verification and limits |
+| [BUILD_PLAN.md](BUILD_PLAN.md) | F01–F10 task tree for the existing producers, consumers and effect owners |
+| [SOURCE_RULINGS.md](SOURCE_RULINGS.md) | Exact source behavior, required extensions and illustration boundaries |
+| [NODE_MIGRATION.json](NODE_MIGRATION.json) | Current and retained node identities |
+| [VERIFICATION.json](VERIFICATION.json) | 115 text readbacks, surface snapshots, numeric check and proof limits |
+| [EFFECTS_CURRENT.json](EFFECTS_CURRENT.json) | 152 observed operations and two reconciled validation rejections |
+| [PROOF_MANIFEST.json](PROOF_MANIFEST.json) | 21 screenshot hashes and exact Paper targets |
+| [before/](before/) | Committed complete semantic preimages |
+| [post/](post/) | Final JSX snapshots, including pre-existing and concurrent context |
+| [proof/](proof/) | Rendered Paper captures |
+| [CONTINUITY.json](CONTINUITY.json) | Scope, source custody, boundaries and exact continuation actions |
+
+The effect ledger defines this session's authorship. A full subtree capture is not a claim to have authored every element. The initial staged records remain as history; RESULTS.md records the final disposition.
+
+GitHub owns source publication, exact head, CI and merge status. Paper/source verification is not production, browser, save/watch or model acceptance. The prior five-file audit and existing programme requirements remain applicable.

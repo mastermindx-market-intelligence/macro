@@ -1,0 +1,110 @@
+# Source rulings and implementation status
+
+These rulings bind to inspected commits, not to a moving “current” branch or a claimed live deployment.
+
+| Repository | Inspected reference | Role |
+|---|---|---|
+| Mastermind | 5c3d3885234358aefb97ecdbc59be0864df14f8b | Governing procedure and authority |
+| Macro | b5674d8ef898e503d6164922654f5ff89be9981c | Product doctrine, producer and consumer comparison |
+| mastermind-terminal | d7a83d3348a4fcb762d93221f19c4e94cbe4505e | Options implementation and fixture |
+| Macro | 07977b85ab171ee9aad3e4a04bb80566642878a9 | Delivery-controller and Agent OS schema refresh; does not retroactively refresh every product claim |
+
+## R1 — Expectations breadth and explorer are not the same comparison path
+
+[Builder](https://github.com/mastermindx-market-intelligence/macro/blob/b5674d8ef898e503d6164922654f5ff89be9981c/scripts/build_expectation_surface.py) and [explorer template](https://github.com/mastermindx-market-intelligence/macro/blob/b5674d8ef898e503d6164922654f5ff89be9981c/templates/expectation_surface.html.j2).
+
+The builder's _comparable_pairs requires equal known period_end for the same security/metric/raw horizon. The explorer's previous-value/history selection does not establish the complete same-period/context guarantee. Its mover binding and horizon fallback require integration work as recorded in Paper 480-0.
+
+The leading-class predicate uses down > up ×1.2, the converse for raises, otherwise balanced. Consequently a four-capture cut-led streak and five visible captures with more cuts than raises need not conflict. The new glance text states only the latest simple comparison. No source classification was changed.
+
+**State:** source rule exists; explorer/navigation/request-generation extension is specified in Paper, not implemented by this audit.
+
+## R2 — Options interpolation already has an owner
+
+[volTenorComparison.ts](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/d7a83d3348a4fcb762d93221f19c4e94cbe4505e/terminal/lib/volTenorComparison.ts), blob da5b3aafc658ede5cfa67d5ec53fdb43e771b189.
+
+Constant-tenor comparison interpolates total variance with calendar DTE. Skew interpolates IV in actual strike. Auto uses puts at/below the reference and calls above. A supplied-strike match has <0.5 percentage-point tolerance. Missing legs are not bridged.
+
+For 14D 32.2% and 30D 29.4%, 21D is 30.48015748%, displayed 30.5%. The expected-move helper separately uses its declared trading-day annualization; it is not the tenor convention.
+
+**State:** implemented at the inspected Terminal pin. Historical Macro build-pending prose does not supersede that source.
+
+## R3 — The selected-expiry smile governs the current specimen
+
+[Fixture](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/d7a83d3348a4fcb762d93221f19c4e94cbe4505e/terminal/e2e/fixtures/options-r1-w3b-vol.json), blob c9c99492fbe3393906061823d7a3ec5c11b2a3aa; [VolComparePanel](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/d7a83d3348a4fcb762d93221f19c4e94cbe4505e/terminal/components/vol/VolComparePanel.tsx), blob c08bc6e61c4cd97f81018bc9634ac06f355350dc.
+
+The component first chooses a supplied selected-expiry smile, falling back near 30D only when absent. At the fixture's 21 October source date, selected 23 October points include:
+
+| Strike | Call IV | Put IV | Used in the selected Auto read |
+|---|---:|---:|---|
+| 224.5 | 41.2 | 40.8 | 95% supplied put IV 40.8 |
+| 236.5 | 37.1 | 36.9 | ATM supplied put IV 36.9 |
+| 248 | 34.0 | 34.6 | 105% supplied call IV 34.0 |
+
+The 236.5 reference is an ATM proxy, not spot. Missing 90%/110% points remain unavailable. The old 30D 32.4% entry was unsupported by either the selected 2D path or the inspected 30D fixture. A deliberately selected 30D specimen would need its own supported values, including 95% 33.8187234→33.8 and 105% 28.1 with supplied strike255.
+
+Expected move for IV36.9, T2/252 and spot236.14 is 3.2873132755%; endpoints 228.3773384312 and 243.9026615688 become $228.38 and $243.90 via the component's two-decimal formatter. ±3.3% remains correct.
+
+**State:** Paper fixture and wording repaired; no new calculator, live market-data proof or event-calendar verification.
+
+## R4 — Standalone Flow/Volatility Save is not established by chart Save
+
+[VolView mount](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/d7a83d3348a4fcb762d93221f19c4e94cbe4505e/terminal/components/vol/VolView.tsx) and [R1 freeze](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/d7a83d3348a4fcb762d93221f19c4e94cbe4505e/docs/OPTIONS_R1_W2_FREEZE.md).
+
+VolView does not pass the optional onOpenResearch callback. The existing accepted Investigation chart entry creates a ready exposure-chart object and matching sector origin. The separately admitted matrix-selection path does not imply arbitrary Flow-print or Volatility-snapshot admission.
+
+Reuse applyInvestigationRevision / apply_investigation_revision_v2, operation_id, expected_revision, readInvestigation and readInvestigationOperation, with terminal.options_exposure as the existing owner. Future adapters must supply an already admitted exact object or extend the incumbent contract through its proper source work.
+
+**State:** current Paper Flow/Volatility Save controls unavailable. No save request was executed by this audit.
+
+## R5 — Watch firing does not answer the timing thesis
+
+The retained Paper inputs and current post snapshots show quote observation 15:40:01Z, firing/receipt15:40:03Z, a saved230.00 threshold and later230→232.5 call-wall evidence. They do not establish the claimed exact relative-trend turn date behind “two sessions after.”
+
+The replacement sentence states the observed quote, and the broader question remains inconclusive while rotation fade is undefined. The current quote retains a separate illustrated21Oct16:30:04ET clock. Re-arm preserves230.00 and requires a fresh qualifying future observation.
+
+**State:** reconciled illustrative presentation and builder contract. No watch, alert or assessment effect was performed.
+
+## R6 — Risk horizon means native closing observations
+
+[Probability evidence builder](https://github.com/mastermindx-market-intelligence/macro/blob/b5674d8ef898e503d6164922654f5ff89be9981c/scripts/build_risk_radar_probability_evidence.py) and [workspace](https://github.com/mastermindx-market-intelligence/macro/blob/b5674d8ef898e503d6164922654f5ff89be9981c/templates/risk_radar_workspace.js).
+
+The selected model target uses native SPY closing observations; the workspace labels trading days / 交易日. The separate onset-lift convention uses business-day handling and is not this model's definition. The retained historical cohort's21D designation is not newly matched or calibrated by a wording change.
+
+**State:** twenty Paper text corrections; model, cohort and integration qualification unchanged.
+
+## R7 — Hub rank, edge, stage and coverage are separate
+
+[engine/intel_hub.py](https://github.com/mastermindx-market-intelligence/macro/blob/b5674d8ef898e503d6164922654f5ff89be9981c/engine/intel_hub.py).
+
+Published command order is descending opportunity_score then composite_conviction. Opportunity incorporates signal magnitude, falsification, remaining edge and relative timing, with admitted de-escalation applied by the producer. Policy is context, not a voting desk. Stage is categorical; edge_remaining×100 is separate.
+
+The no-component branch returns score0.4, n_components0, n_base0, drivers[], despite an older neutral0.5 comment. Full command records carry edge_components; _compact omits it. A default qualifier needs that field from the matching generation. A displayed40 is not proof of missing components.
+
+**State:** bilingual help and a source-specific Build contract added; source scoring and ordering unchanged. Alert activation and draft persistence remain unavailable.
+
+## R8 — Current Sector measurements, priors and model estimates retain distinct meaning
+
+Complete preimages are in before/sector_old.jsx, before/sector_current_desktop.jsx and before/sector_current_mobile.jsx. Current mapping is post/sector_build_mapping.jsx.
+
+The 21-session ETF return comparison is usable. Its stance and cycle interpretation are separate readings. The current unqualified model estimate stays unavailable. Retained14%/33%/52% examples are historical, with their original event definitions and limits. G4P is review-only, BML held, GPL a proposed return extension.
+
+**State:** hierarchy and source mapping repaired in Paper. No model or return-path acceptance.
+
+## R9 — PROPHET verification is per exact subject record
+
+Preserved comparison and contracts: before/prophet_compare.jsx and before/prophet_compare_contract.jsx at a11cf1790bd921811a7242464483e27c5fa88510. Current contracts are in post/prophet_compare_contract.jsx.
+
+Existing13R6 requires candidate occurrence and source generation;10PC owes stable identity across generations;10PE requires an exact candidate-to-Plan link. INTC/MSFT's exact records and Plan links are absent. VBF is explicitly NVDA and cannot serve either.
+
+**State:** per-subject unavailable cues and conditional integration contract. ZE5 and D03/Phase2A fences unchanged.
+
+## R10 — News geometry must not redefine review
+
+The existing R3 contract already requires44px coarse-pointer controls. Current27L implements that design reference; original compact controls are retained in3H7. TickerNewsPanel, NewsLadder and NewsCatchup remain the owners.
+
+**State:** styles and static layout inspected. Actual hit testing, keyboard/accessibility and review persistence are future consumer proof.
+
+## Evidence use
+
+Post JSX snapshots can contain pre-existing and concurrent product content. Only EFFECTS_CURRENT.json identifies this session's actual mutations. A screenshot is evidence of what rendered at capture, not ownership of every visible element or a functioning runtime.

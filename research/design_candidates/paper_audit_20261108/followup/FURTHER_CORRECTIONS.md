@@ -1,5 +1,7 @@
 # Further product corrections — preserved input and source ruling
 
+This is the staged source-reconciliation record. [RESULTS.md](RESULTS.md) gives the implemented final disposition, including later review fixes and the exact proof limits.
+
 ## Continuity
 This extends the existing Paper audit under the same user mission, pins and branch. The initial preservation commit is 81a03478b2787fab20723316512370de6f62d3da. Stage 1 Paper edits cover Expectations, Sector historical mapping and the News touch reference. Actual rendering is checked; no browser or production acceptance is asserted. Concurrent Memory/Policy work remains untouched.
 
@@ -12,7 +14,7 @@ W3/Z/160 promise next-check firing unconditionally. Keep the five-minute cadence
 Preserve original full text, layout and source references in the input JSX. The original input is historical; it is not the current build contract after reconciliation.
 
 ### Flow population
-The $216,000 related print (HP/HS) sits in a table filtered ≥$250K. Retain it as related context below that filter, not a filtered match. Caption GV should distinguish five displayed filtered rows plus one contextual print. Keep the source's 23 count in Build until its canceled-row population is qualified. Grouping remains possible, not confirmed.
+The $216,000 related print (HP/HS) sits in a table filtered ≥$250K. Retain it as related context below that filter, not a filtered match. Caption GV should distinguish five displayed filtered rows plus one contextual print. The initial plan proposed moving the source's 23 count to Build. Final disposition: retain that existing producer-defined total under its original meaning, without equating it with the displayed five filtered rows or newly qualifying canceled-record membership. Grouping remains possible, not confirmed.
 
 ### Volatility — exact incumbent source, not invented arithmetic
 Terminal pin: d7a83d3348a4fcb762d93221f19c4e94cbe4505e; canonical repository mastermindx-market-intelligence/mastermind-terminal.
