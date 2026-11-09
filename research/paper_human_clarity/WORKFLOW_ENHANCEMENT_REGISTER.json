@@ -8883,46 +8883,86 @@
       "after": "714181077cd1086d0f5d4b9ae93a0679074db9a62c3d98a3114ba2da5b68f8c5"
     }
   ],
-  "residualEntryScreenTriage": [
-    {
-      "nodeId": "P8-0",
-      "text": "Research status follows the owning engine",
-      "reason": "Builder ownership instruction in product footer"
-    },
-    {
-      "nodeId": "38R-0",
-      "text": "Three tools. Three different questions.",
-      "reason": "Describes the page structure rather than the research task"
-    },
-    {
-      "nodeId": "3KG-0",
-      "text": "A rebound is a start—not a verdict.",
-      "reason": "Redundant slogan alongside specific subgroup scope"
-    },
-    {
-      "nodeId": "3OG-0",
-      "text": "Look for the evidence that could change your mind.",
-      "reason": "Redundant motivational context alongside concrete subgroup scope"
-    },
-    {
-      "nodeId": "3OP-0",
-      "text": "Does the relationship hold across regimes?",
-      "reason": "Current destination supports pooled weekly USD correlation; preserve regime ambition in Build and align default user promise with the supported analysis"
-    },
-    {
-      "nodeId": "3OQ-0",
-      "text": "Co-movement across currencies, windows and regimes",
-      "reason": "Unsupported currency/regime promise belongs in the future implementation plan"
-    },
-    {
-      "nodeId": "3OW-0",
-      "text": "Did the warning help when it mattered?",
-      "reason": "Observed forward outcomes do not establish counterfactual user benefit"
-    },
-    {
-      "nodeId": "3OX-0",
-      "text": null,
-      "reason": "Review forward-result scope and preserve deeper sample/false-alarm/drawdown details in the guide"
-    }
-  ]
+  "residualEntryScreenTriage": {
+    "status": "PLANNED_WITH_ORIGINAL_COPY_PRESERVED",
+    "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+    "originals": [
+      {
+        "id": "P4-0",
+        "text": "Did the warning actually help?",
+        "sourceRead": "intl_history_residual"
+      },
+      {
+        "id": "P5-0",
+        "text": "Review forward outcomes, sample size, false alarms and drawdowns.",
+        "sourceRead": "intl_history_residual"
+      },
+      {
+        "id": "P8-0",
+        "text": "Research status follows the owning engine",
+        "sourceRead": "intl_history_residual"
+      },
+      {
+        "id": "2YZ-0",
+        "text": "Did the warning\nactually help?",
+        "sourceRead": "intl_history_responsive_residual"
+      },
+      {
+        "id": "2Z0-0",
+        "text": "Review forward outcomes, sample size, false alarms and drawdowns.",
+        "sourceRead": "intl_history_responsive_residual"
+      },
+      {
+        "id": "3OG-0",
+        "text": "Look for the evidence that could change your mind.",
+        "sourceRead": "intl_challenge_residual"
+      },
+      {
+        "id": "3OP-0",
+        "text": "Does the relationship hold across regimes?",
+        "sourceRead": "intl_challenge_residual"
+      },
+      {
+        "id": "3OQ-0",
+        "text": "Co-movement across currencies, windows and regimes",
+        "sourceRead": "intl_challenge_residual"
+      },
+      {
+        "id": "3OV-0",
+        "text": "Risk-radar track record",
+        "sourceRead": "intl_challenge_residual"
+      },
+      {
+        "id": "3OW-0",
+        "text": "Did the warning help when it mattered?",
+        "sourceRead": "intl_challenge_residual"
+      },
+      {
+        "id": "3OX-0",
+        "text": "Forward results, sample size, false alarms and drawdowns",
+        "sourceRead": "intl_challenge_residual"
+      },
+      {
+        "id": "38R-0",
+        "text": "Three tools. Three different questions.",
+        "sourceRead": "intl_trace_desktop_residual"
+      },
+      {
+        "id": "3DY-0",
+        "text": "Three tools. Three different questions.",
+        "sourceRead": "intl_trace_tablet_residual"
+      },
+      {
+        "id": "3HS-0",
+        "text": "Three tools. Three different questions.",
+        "sourceRead": "intl_trace_mobile_residual"
+      },
+      {
+        "id": "3KG-0",
+        "text": "A rebound is a start—not a verdict.",
+        "sourceRead": "intl_recovery_mobile_residual"
+      }
+    ],
+    "intent": "Remove redundant slogans and builder ownership note from product; preserve advanced currency/window/regime and forward-evaluation ambitions in Build; present current weekly USD and recorded-outcome scope without counterfactual-benefit claims."
+  }
 }
