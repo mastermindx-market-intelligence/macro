@@ -13,10 +13,10 @@ Design decisions (final, card t_da720ee4):
 - **List-of-strings refusals**, house style (``validators.py``): every failure
   is a human-readable string; empty list means pass. No exceptions except the
   one TypeError guard for wrong argument types.
-- **Lock as the mutation check.** ``registry.lock.yml`` holds each entry's
-  canonical sha and revision as of the last re-lock; a document that moved
-  without a revision bump, or bumped without moving, refuses (see
-  ``check_lock``). ``write_lock`` is the only lock writer.
+- **Lock as the mutation check.** ``check_lock`` requires an exact complete
+  snapshot. ``check_relock`` checks the prior snapshot before replacement,
+  including revisions, immutable attribution and legal transitions.
+  ``write_lock`` is the only formatter; the existing CLI writes its result.
 - **Launch is a read.** ``launchable`` never mutates the document; a refused
   launch writes nothing.
 """
@@ -25,6 +25,7 @@ from __future__ import annotations
 import hashlib
 import json
 import re
+from datetime import datetime
 from typing import Any, Iterable, Mapping
 from urllib.parse import urlsplit
 
@@ -79,6 +80,8 @@ def _load_yaml(path: str, kind: str) -> tuple[Any, list[str]]:
         return None, [f"{kind} file not found: {path}"]
     except yaml.YAMLError as exc:
         return None, [f"{kind} file is not parseable YAML: {path}: {exc}"]
+    except OSError as exc:
+        return None, [f"{kind} file is unreadable: {path}: {exc}"]
     if not isinstance(doc, dict):
         return None, [f"{kind} file must be a mapping of keys, got "
                       f"{type(doc).__name__}: {path}"]
@@ -104,17 +107,17 @@ def _validate_receipt(where: str, value: Any, errors: list[str]) -> None:
     if not isinstance(value, dict):
         errors.append(f"{where} must be a mapping {{path, sha256}} or null")
         return
-    extra = sorted(set(value) - RECEIPT_KEYS)
+    extra = sorted(set(value) - RECEIPT_KEYS, key=repr)
     missing = sorted(RECEIPT_KEYS - set(value))
     for key in extra:
         errors.append(f"{where} has unknown key: {key!r}")
     for key in missing:
         errors.append(f"{where} is missing required key: {key!r}")
     path = value.get("path")
-    if path is not None and not (isinstance(path, str) and path.strip()):
+    if not (isinstance(path, str) and path.strip()):
         errors.append(f"{where}.path must be a non-empty string")
     sha = value.get("sha256")
-    if sha is not None and not (isinstance(sha, str) and SHA256_RE.match(sha)):
+    if not (isinstance(sha, str) and SHA256_RE.fullmatch(sha)):
         errors.append(f"{where}.sha256 must be 64 lowercase hex characters")
 
 
@@ -158,12 +161,12 @@ def validate_document(doc: dict) -> list[str]:
     if not isinstance(doc, dict):
         _refuse_type("doc", doc, "dict")
     version = doc.get("schema_version")
-    if version != SCHEMA_VERSION:
+    if type(version) is not int or version != SCHEMA_VERSION:
         return [f"unknown schema_version {version!r}: this validator only knows "
                 f"{SCHEMA_VERSION!r}; refusing to parse the rest of the document"]
 
     errors: list[str] = []
-    for key in sorted(set(doc) - TOP_KEYS):
+    for key in sorted(set(doc) - TOP_KEYS, key=repr):
         errors.append(f"unknown top-level key: {key!r}")
 
     revision = doc.get("registry_revision")
@@ -189,7 +192,7 @@ def validate_document(doc: dict) -> list[str]:
             errors.append(f"domain record must be a mapping, got {type(rec).__name__}")
             continue
         extra = sorted(set(rec) - {"domain", "state", "recovery_owner",
-                                   "bio_link_policy", "admission_receipt"})
+                                   "bio_link_policy", "admission_receipt"}, key=repr)
         for key in extra:
             errors.append(f"unknown key in domain record: {key!r}")
         host = rec.get("domain")
@@ -253,7 +256,7 @@ def _validate_entry(entry: dict, domain_records: dict, allowed_mail: list,
                       "persona file); refusing to process it further")
         return
     where = f"entry {handle!r}"
-    for key in sorted(set(entry) - ENTRY_KEYS):
+    for key in sorted(set(entry) - ENTRY_KEYS, key=repr):
         errors.append(f"{where} has unknown key: {key!r}")
 
     state = entry.get("state")
@@ -265,7 +268,7 @@ def _validate_entry(entry: dict, domain_records: dict, allowed_mail: list,
         errors.append(f"{where} revision must be an int >= 1, got {revision!r}")
 
     child_id = entry.get("child_id")
-    if not (isinstance(child_id, str) and CHILD_ID_RE.match(child_id)):
+    if not (isinstance(child_id, str) and CHILD_ID_RE.fullmatch(child_id)):
         errors.append(f"{where} child_id {child_id!r} must match "
                       f"{CHILD_ID_RE.pattern} (immutable attribution key)")
     elif child_id in seen_child_ids:
@@ -279,7 +282,8 @@ def _validate_entry(entry: dict, domain_records: dict, allowed_mail: list,
         seen_handles.add(handle)
 
     domain = entry.get("domain")
-    if domain not in domain_records:
+    domain_known = isinstance(domain, str) and domain in domain_records
+    if not domain_known:
         errors.append(f"{where} names domain {domain!r}, which is not declared in "
                       "`domains` — a binding may only point at a declared record")
 
@@ -292,7 +296,7 @@ def _validate_entry(entry: dict, domain_records: dict, allowed_mail: list,
     if policy not in BIO_LINK_POLICIES:
         errors.append(f"{where} bio_link_policy {policy!r} is not one of "
                       f"{', '.join(BIO_LINK_POLICIES)}")
-    if policy == "single_canonical" and domain in domain_records:
+    if policy == "single_canonical" and domain_known:
         if domain_records[domain].get("bio_link_policy") != "single_canonical":
             errors.append(f"{where} bio_link_policy is single_canonical but domain "
                           f"{domain!r} does not allow one")
@@ -303,12 +307,12 @@ def _validate_entry(entry: dict, domain_records: dict, allowed_mail: list,
                       f"proxy_slot, cdp_port, totp_custodian}}, got "
                       f"{type(binding).__name__}")
         binding = {}
-    for key in sorted(set(binding) - BINDING_KEYS):
+    for key in sorted(set(binding) - BINDING_KEYS, key=repr):
         errors.append(f"{where} binding has unknown key: {key!r}")
     for key in sorted(BINDING_KEYS - set(binding)):
         errors.append(f"{where} binding is missing required key: {key!r}")
 
-    costed = state in COSTED_STATES
+    costed = isinstance(state, str) and state in COSTED_STATES
     # proposed: nothing is provisioned yet; retired: the historic binding may
     # remain as the audit trail (it also leaves cdp uniqueness at retirement).
     unprovisioned = (state == "proposed")
@@ -372,10 +376,19 @@ def _validate_entry(entry: dict, domain_records: dict, allowed_mail: list,
                 errors.append(f"{where} is suspended but {key} is null — drift "
                               "is the only writer of `suspended` and it leaves evidence")
         iso = entry.get("drift_observed_at")
-        if iso is not None and not re.match(
-                r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}", str(iso)):
-            errors.append(f"{where} drift_observed_at {iso!r} is not an ISO-8601 "
-                          "timestamp")
+        if iso is not None:
+            try:
+                if not isinstance(iso, str) or not re.match(
+                        r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}", iso):
+                    raise ValueError("timestamp must be an ISO-8601 string")
+                datetime.fromisoformat(iso)
+            except ValueError:
+                errors.append(f"{where} drift_observed_at {iso!r} is not an ISO-8601 "
+                              "timestamp")
+        for key in ("drift_evidence_ref", "suspended_by"):
+            value = entry.get(key)
+            if value is not None and not (isinstance(value, str) and value.strip()):
+                errors.append(f"{where} {key} must be a non-empty string")
     else:
         for key in drift_keys:
             if entry.get(key) is not None:
@@ -464,7 +477,8 @@ def validate_bindings(doc: dict, personas: Mapping[str, Any],
                           "entry — retire the voice with the identity")
 
     for entry in entries:
-        if not isinstance(entry, dict) or entry.get("state") not in COSTED_STATES:
+        if (not isinstance(entry, dict) or not isinstance(entry.get("state"), str)
+                or entry["state"] not in COSTED_STATES):
             continue
         binding = entry.get("binding")
         slot = binding.get("proxy_slot") if isinstance(binding, dict) else None
@@ -490,19 +504,92 @@ _LEGAL_TRANSITIONS = {
 }
 
 
-def check_lock(doc: dict, lock: dict) -> list[str]:
-    """The mutation-without-bump check: compare the live document to the lock."""
+def _lock_shape_errors(lock: dict) -> list[str]:
+    """A malformed prior snapshot is a refusal, never a bootstrap request."""
+    version = lock.get("schema_version")
+    if type(version) is not int or version != SCHEMA_VERSION:
+        return [f"unknown lock schema_version {version!r}; refusing to parse the lock"]
+    errors: list[str] = []
+    allowed = {"schema_version", "registry_revision", "document_sha256", "entries", "domains"}
+    for key in sorted(set(lock) - allowed, key=repr):
+        errors.append(f"lock has unknown key: {key!r}")
+    revision = lock.get("registry_revision")
+    if type(revision) is not int or revision < 1:
+        errors.append("lock registry_revision must be an int >= 1")
+    digest = lock.get("document_sha256")
+    if not isinstance(digest, str) or not SHA256_RE.fullmatch(digest):
+        errors.append("lock document_sha256 must be exactly 64 lowercase hex characters")
+
+    child_ids: set[str] = set()
+    for collection in ("entries", "domains"):
+        records = lock.get(collection)
+        if not isinstance(records, dict):
+            errors.append(f"lock {collection} must be a keyed mapping")
+            continue
+        for key, record in records.items():
+            where = f"lock {collection} {key!r}"
+            if not isinstance(key, str) or not key.strip() or not isinstance(record, dict):
+                errors.append(f"{where} must be a non-empty key and mapping")
+                continue
+            fields = ({"revision", "state", "sha256", "receipt_sha256", "child_id"}
+                      if collection == "entries" else {"state", "sha256"})
+            if set(record) != fields:
+                errors.append(f"{where} must contain exactly {sorted(fields)!r}")
+            if record.get("state") not in STATES:
+                errors.append(f"{where} has an invalid state")
+            sha = record.get("sha256")
+            if not isinstance(sha, str) or not SHA256_RE.fullmatch(sha):
+                errors.append(f"{where}.sha256 must be exactly 64 lowercase hex characters")
+            if collection == "entries":
+                entry_revision = record.get("revision")
+                if type(entry_revision) is not int or entry_revision < 1:
+                    errors.append(f"{where}.revision must be an int >= 1")
+                child = record.get("child_id")
+                if not isinstance(child, str) or not CHILD_ID_RE.fullmatch(child):
+                    errors.append(f"{where}.child_id must be a valid immutable attribution key")
+                elif child in child_ids:
+                    errors.append(f"{where}.child_id duplicates another locked identity")
+                else:
+                    child_ids.add(child)
+                receipt = record.get("receipt_sha256")
+                if isinstance(record.get("state"), str) and record["state"] in COSTED_STATES:
+                    if not isinstance(receipt, str) or not SHA256_RE.fullmatch(receipt):
+                        errors.append(f"{where}.receipt_sha256 must pin the admission evidence")
+                elif receipt is not None:
+                    errors.append(f"{where}.receipt_sha256 must be null outside costed states")
+    return errors
+
+
+def _check_lock(doc: dict, lock: dict, *, prospective: bool) -> list[str]:
+    """Shared exact-snapshot and pre-overwrite revision/transition evaluator."""
     if not isinstance(doc, dict):
         _refuse_type("doc", doc, "dict")
     if not isinstance(lock, dict):
         _refuse_type("lock", lock, "dict")
-    errors: list[str] = []
+    errors = validate_document(doc)
+    if errors:
+        return errors
+    errors = _lock_shape_errors(lock)
+    if errors:
+        return errors
 
-    for key in ("schema_version", "registry_revision"):
-        if lock.get(key) != doc.get(key):
-            errors.append(f"registry_revision drift: {key} is {doc.get(key)!r} in "
-                          f"the document but {lock.get(key)!r} in the lock — the "
-                          "document was edited without the re-lock ceremony")
+    revision = doc["registry_revision"]
+    previous_revision = lock["registry_revision"]
+    document_sha = canonical_sha(doc)
+    # Exact snapshots and reconstructible prior snapshots must agree with every
+    # row pin. A no-op or global-only checkpoint cannot launder a corrupt lock.
+    prior_document = {**doc, "registry_revision": previous_revision}
+    exact_rows = not prospective or canonical_sha(prior_document) == lock["document_sha256"]
+    if prospective:
+        if revision < previous_revision:
+            errors.append("registry_revision went backwards; revisions are monotonic")
+        if revision == previous_revision and document_sha != lock["document_sha256"]:
+            errors.append("registry_revision drift: document mutated without a global revision bump")
+    else:
+        if revision != previous_revision:
+            errors.append("registry_revision drift: document and lock revisions must agree")
+        if document_sha != lock["document_sha256"]:
+            errors.append("registry_revision drift: document digest does not match its exact lock snapshot")
 
     lock_entries = lock.get("entries")
     doc_entries = doc.get("entries")
@@ -522,12 +609,13 @@ def check_lock(doc: dict, lock: dict) -> list[str]:
         else:
             errors.append(f"document entry is not a mapping with a handle: {entry!r}")
 
-    for handle in sorted(set(doc_states) - set(lock_entries)):
-        errors.append(f"entry {handle!r} is not in the lock — new identities "
-                      "need the re-lock ceremony, not a silent addition")
-    for handle in sorted(set(lock_entries) - set(doc_states)):
-        errors.append(f"lock entry {handle!r} is not in the document — identities "
-                      "are removed by a re-lock, never from the lock alone")
+    if exact_rows:
+        for handle in sorted(set(doc_states) - set(lock_entries)):
+            errors.append(f"entry {handle!r} is not in the lock — new identities "
+                          "need the re-lock ceremony, not a silent addition")
+        for handle in sorted(set(lock_entries) - set(doc_states)):
+            errors.append(f"lock entry {handle!r} is not in the document — identities "
+                          "are removed by a re-lock, never from the lock alone")
 
     for handle in sorted(set(doc_states) & set(lock_entries)):
         entry = doc_states[handle]
@@ -545,6 +633,17 @@ def check_lock(doc: dict, lock: dict) -> list[str]:
         doc_sha = canonical_sha(entry, drop=("revision",))
         lock_sha = locked.get("sha256")
         lock_rev = locked.get("revision")
+
+        if exact_rows and (doc_sha != lock_sha or revision != lock_rev):
+            errors.append(f"entry {handle!r} revision/digest does not match its exact lock snapshot")
+        if entry["child_id"] != locked["child_id"]:
+            errors.append(f"entry {handle!r} child_id is immutable across re-locks")
+        if doc_sha == lock_sha:
+            receipt = entry.get("admission_receipt")
+            receipt_sha = receipt.get("sha256") if isinstance(receipt, dict) else None
+            if state != locked["state"] or receipt_sha != locked["receipt_sha256"]:
+                errors.append(f"lock entry {handle!r} state/receipt pin contradicts its unchanged digest")
+
 
         if doc_sha != lock_sha and revision == lock_rev:
             errors.append(f"entry {handle!r} mutated without a revision bump "
@@ -593,7 +692,38 @@ def check_lock(doc: dict, lock: dict) -> list[str]:
                     errors.append(f"entry {handle!r} re-admission reuses the old "
                                   "receipt — re-admission is a NEW event with its "
                                   "own receipt")
+    doc_domains = {record["domain"]: record for record in doc["domains"]}
+    lock_domains = lock["domains"]
+    if exact_rows:
+        for host in sorted(set(doc_domains) - set(lock_domains)):
+            errors.append(f"domain {host!r} is not in the lock — re-lock required")
+        for host in sorted(set(lock_domains) - set(doc_domains)):
+            errors.append(f"lock domain {host!r} is not in the document — re-lock required")
+    for host in sorted(set(doc_domains) & set(lock_domains)):
+        record, locked = doc_domains[host], lock_domains[host]
+        unchanged = canonical_sha(record) == locked["sha256"]
+        if exact_rows and not unchanged:
+            errors.append(f"domain {host!r} digest does not match its exact lock snapshot")
+        if (unchanged or exact_rows) and record["state"] != locked["state"]:
+            errors.append(f"domain {host!r} state does not match its lock snapshot")
     return errors
+
+
+
+def check_lock(doc: dict, lock: dict) -> list[str]:
+    """Read-only gate: require the exact complete snapshot, never a prospective edit."""
+    return _check_lock(doc, lock, prospective=False)
+
+
+def check_relock(doc: dict, previous_lock: dict) -> list[str]:
+    """Validate an explicit update before the existing CLI writer replaces its lock.
+
+    Membership changes require a global revision advance. No-op re-locks and
+    global-only checkpoints remain valid; retained identities keep their own
+    revision, attribution and transition laws. This compares the prior snapshot,
+    not a permanent identity-history ledger.
+    """
+    return _check_lock(doc, previous_lock, prospective=True)
 
 
 def check_revision(doc: dict, expected_revision: int) -> list[str]:
@@ -723,7 +853,7 @@ def validate_all(doc, lock, personas, credential_slots,
                       "check cannot run; refusing (fail-closed). Run the "
                       "re-lock ceremony (registry-lock) and pass --lock")
     else:
-        errors.extend(check_lock(doc, lock))
+        errors.extend(error for error in check_lock(doc, lock) if error not in errors)
     if personas is not None:
         errors.extend(validate_bindings(doc, personas, credential_slots))
     if expected_revision is not None:
@@ -738,6 +868,7 @@ def write_lock(doc: dict) -> dict:
     lock: dict[str, Any] = {
         "schema_version": doc.get("schema_version"),
         "registry_revision": doc.get("registry_revision"),
+        "document_sha256": canonical_sha(doc),
         "entries": {},
         "domains": {},
     }
@@ -749,6 +880,7 @@ def write_lock(doc: dict) -> dict:
             continue
         receipt = entry.get("admission_receipt")
         lock["entries"][handle] = {
+            "child_id": entry.get("child_id"),
             "revision": entry.get("revision"),
             "state": entry.get("state"),
             "sha256": canonical_sha(entry, drop=("revision",)),

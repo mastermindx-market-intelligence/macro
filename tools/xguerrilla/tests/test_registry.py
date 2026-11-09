@@ -9,7 +9,9 @@ from __future__ import annotations
 import copy
 import sys
 from pathlib import Path
+from types import SimpleNamespace
 
+import pytest
 import yaml
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -419,11 +421,11 @@ def test_new_entry_without_relock_refused():
 
 def test_transition_proposed_to_admitted_ok():
     doc = base_doc()
+    doc["registry_revision"] = 2
     doc["entries"][0] = base_entry(state="admitted", receipt=base_receipt(),
                                    binding=base_binding("admitted"),
                                    revision=2)
-    errors = registry.check_lock(doc, lock_for(base_doc()))
-    assert errors == [], errors
+    _assert_legal_relock_then_exact(doc, lock_for(base_doc()))
 
 
 def test_transition_admitted_to_suspended_ok():
@@ -436,8 +438,8 @@ def test_transition_admitted_to_suspended_ok():
         state="suspended", receipt=base_receipt(),
         binding=base_binding("admitted"), **suspended_fields())
     doc["entries"][0]["revision"] = 2
-    errors = registry.check_lock(doc, lock)
-    assert errors == [], errors
+    doc["registry_revision"] = 2
+    _assert_legal_relock_then_exact(doc, lock)
 
 
 def test_transition_suspended_to_admitted_requires_new_receipt():
@@ -454,14 +456,14 @@ def test_transition_suspended_to_admitted_requires_new_receipt():
     doc["entries"][0] = base_entry(state="admitted", receipt=base_receipt(),
                                    binding=base_binding("admitted"))
     doc["entries"][0]["revision"] = 3
-    errors = registry.check_lock(doc, lock)
+    doc["registry_revision"] = 2
+    errors = registry.check_relock(doc, lock)
     assert_mention(errors, "reuses the old receipt")
 
     # a NEW receipt → the legal transition
     doc["entries"][0]["admission_receipt"] = {
         "path": "research/admissions/re-admission.md", "sha256": SHA3}
-    errors = registry.check_lock(doc, lock)
-    assert errors == [], errors
+    _assert_legal_relock_then_exact(doc, lock)
 
 
 def test_transition_suspended_to_proposed_refused():
@@ -474,7 +476,8 @@ def test_transition_suspended_to_proposed_refused():
     doc = base_doc()
     doc["entries"][0] = base_entry(state="proposed")
     doc["entries"][0]["revision"] = 3
-    errors = registry.check_lock(doc, lock)
+    doc["registry_revision"] = 2
+    errors = registry.check_relock(doc, lock)
     assert_mention(errors, "suspension is sticky")
 
     # repairing the binding does not auto-clear suspended: suspended -> proposed
@@ -489,11 +492,13 @@ def test_transition_retired_terminal():
 
     for resurrect in ("proposed", "admitted", "suspended"):
         doc = base_doc()
+        doc["registry_revision"] = 2
         doc["entries"][0] = base_entry(
-            state=resurrect,
+            state=resurrect, revision=2,
             **({"binding": base_binding("admitted"),
-                "receipt": base_receipt()} if resurrect in ("admitted", "suspended") else {}))
-        errors = registry.check_lock(doc, lock)
+                "receipt": base_receipt()} if resurrect in ("admitted", "suspended") else {}),
+            **(suspended_fields() if resurrect == "suspended" else {}))
+        errors = registry.check_relock(doc, lock)
         assert_mention(errors, "retired is terminal")
 
 
@@ -715,3 +720,334 @@ def test_cli_registry_lock_writes_matching_lock(tmp_path):
     assert cli.main(["registry-lock", "--registry", str(reg2),
                      "--lock", str(fresh)]) == 2
     assert not fresh.exists()
+
+
+# Focused regression laws for exact lock coverage and the existing CLI writer.
+
+def _assert_legal_relock_then_exact(doc, previous):
+    assert registry.check_relock(doc, previous) == []
+    assert registry.check_lock(doc, previous), "prospective edits are not locked snapshots"
+    assert registry.check_lock(doc, registry.write_lock(doc)) == []
+
+
+def _healing_admitted_entry(**overrides):
+    return base_entry(
+        state="admitted", binding=base_binding("admitted", port=9333), **overrides
+    )
+
+
+def _healing_transition():
+    before = base_doc(base_entry(
+        state="suspended", revision=2,
+        binding=base_binding("suspended", port=9333), **suspended_fields()
+    ))
+    before["registry_revision"] = 7
+    after = copy.deepcopy(before)
+    after["registry_revision"] = 8
+    after["entries"][0].update(
+        state="admitted", revision=3, admission_receipt={"path": "new-receipt.md", "sha256": SHA2},
+        drift_observed_at=None, drift_evidence_ref=None, suspended_by=None,
+    )
+    assert registry.validate_document(before) == []
+    assert registry.validate_document(after) == []
+    return before, after
+
+
+@pytest.mark.parametrize("version", [True, 1.0])
+@pytest.mark.parametrize("broken_rest", [False, True])
+def test_registry_healing_schema_version_is_strict_and_singular(version, broken_rest):
+    doc = base_doc()
+    doc["schema_version"] = version
+    if broken_rest:
+        doc["entries"] = "not-a-list"
+    errors = registry.validate_document(doc)
+    assert len(errors) == 1
+    assert_mention(errors, "refusing to parse")
+
+
+@pytest.mark.parametrize("owner", ["entry", "domain"])
+@pytest.mark.parametrize("field,value", [
+    ("path", None), ("path", ""), ("sha256", None), ("sha256", SHA + "\n"),
+])
+def test_registry_healing_receipt_requires_usable_exact_evidence(owner, field, value):
+    doc = base_doc(_healing_admitted_entry())
+    record = doc["entries"][0] if owner == "entry" else doc["domains"][0]
+    record["admission_receipt"][field] = value
+    assert_mention(registry.validate_document(doc), "admission_receipt")
+
+
+@pytest.mark.parametrize("mutation", ["domain_owner", "mail_allowlist", "entry_owner"])
+def test_registry_healing_exact_lock_covers_the_complete_document(mutation):
+    before = base_doc()
+    lock = registry.write_lock(before)
+    after = copy.deepcopy(before)
+    if mutation == "domain_owner":
+        after["domains"][0]["recovery_owner"] = "seat:replacement"
+    elif mutation == "mail_allowlist":
+        after["mail_domains"].append("second.mail.invalid")
+    else:
+        after["entries"][0].update(recovery_owner="seat:replacement", revision=2)
+    assert registry.validate_document(after) == []
+    assert registry.check_lock(after, lock), "a same-revision document mutation must refuse"
+
+
+@pytest.mark.parametrize("corruption", [
+    "version_bool", "version_float", "revision_bool", "missing_document_pin",
+    "domains_missing", "domains_not_mapping", "domain_missing",
+    "domain_digest_null", "entry_revision_null", "entry_revision_bool",
+])
+def test_registry_healing_incomplete_existing_lock_never_passes(corruption):
+    doc = base_doc()
+    lock = registry.write_lock(doc)
+    if corruption == "version_bool":
+        lock["schema_version"] = True
+    elif corruption == "version_float":
+        lock["schema_version"] = 1.0
+    elif corruption == "revision_bool":
+        lock["registry_revision"] = True
+    elif corruption == "missing_document_pin":
+        lock.pop("document_sha256", None)
+    elif corruption == "domains_missing":
+        lock.pop("domains")
+    elif corruption == "domains_not_mapping":
+        lock["domains"] = None
+    elif corruption == "domain_missing":
+        del lock["domains"][DOMAIN]
+    elif corruption == "domain_digest_null":
+        lock["domains"][DOMAIN]["sha256"] = None
+    elif corruption == "entry_revision_null":
+        lock["entries"]["example.persona"]["revision"] = None
+    else:
+        lock["entries"]["example.persona"]["revision"] = True
+    assert registry.check_lock(doc, lock), corruption
+
+
+@pytest.mark.parametrize("violation", [
+    "same_receipt_readmission", "retired_resurrection", "child_id_change", "global_not_advanced",
+])
+def test_registry_healing_relock_refuses_and_preserves_previous_bytes(tmp_path, violation):
+    if violation == "same_receipt_readmission":
+        before, after = _healing_transition()
+        after["entries"][0]["admission_receipt"]["sha256"] = SHA
+    elif violation == "retired_resurrection":
+        before = base_doc(base_entry(state="retired", binding=base_binding("proposed")))
+        after = base_doc(_healing_admitted_entry(revision=2))
+        after["registry_revision"] = 2
+    else:
+        before = base_doc()
+        after = copy.deepcopy(before)
+        after["entries"][0]["revision"] = 2
+        if violation == "child_id_change":
+            after["entries"][0]["child_id"] = "xg0002"
+            after["registry_revision"] = 2
+        else:
+            after["entries"][0]["recovery_owner"] = "seat:replacement"
+    assert registry.validate_document(before) == []
+    assert registry.validate_document(after) == []
+    target = write_yaml(tmp_path, "registry.lock.yml", registry.write_lock(before))
+    original = target.read_bytes()
+    path = write_yaml(tmp_path, "registry.yml", after)
+    assert cli.cmd_registry_lock(SimpleNamespace(registry=str(path), lock=str(target))) == 2
+    assert target.read_bytes() == original
+
+
+@pytest.mark.parametrize("old_bytes", [b"{}\n", b"[invalid\n"])
+def test_registry_healing_malformed_existing_lock_is_not_bootstrap(tmp_path, old_bytes):
+    path = write_yaml(tmp_path, "registry.yml", base_doc())
+    target = tmp_path / "registry.lock.yml"
+    target.write_bytes(old_bytes)
+    assert cli.cmd_registry_lock(SimpleNamespace(registry=str(path), lock=str(target))) == 2
+    assert target.read_bytes() == old_bytes
+
+
+@pytest.mark.parametrize("change", [
+    "no_op", "global_checkpoint", "entry_owner", "domain_owner",
+    "mail_allowlist", "entry_addition", "entry_removal", "new_receipt_readmission",
+    "domain_addition", "domain_removal",
+])
+def test_registry_healing_legal_relock_and_exact_snapshot_remain_usable(tmp_path, change):
+    before = base_doc()
+    after = copy.deepcopy(before)
+    if change != "no_op":
+        after["registry_revision"] = 2
+    if change == "entry_owner":
+        after["entries"][0].update(recovery_owner="seat:replacement", revision=2)
+    elif change == "domain_owner":
+        after["domains"][0]["recovery_owner"] = "seat:replacement"
+    elif change == "mail_allowlist":
+        after["mail_domains"].append("second.mail.invalid")
+    elif change == "entry_addition":
+        after["entries"].append(base_entry("second.persona", child_id="xg0002"))
+    elif change == "entry_removal":
+        before["entries"].append(base_entry("second.persona", child_id="xg0002"))
+        after = copy.deepcopy(before)
+        after["registry_revision"] = 2
+        after["entries"].pop()
+    elif change == "new_receipt_readmission":
+        before, after = _healing_transition()
+    elif change in {"domain_addition", "domain_removal"}:
+        extra = {**base_domain(), "domain": "second.example.invalid"}
+        if change == "domain_addition":
+            after["domains"].append(extra)
+        else:
+            before["domains"].append(extra)
+    assert registry.validate_document(before) == []
+    assert registry.validate_document(after) == []
+    target = write_yaml(tmp_path, "registry.lock.yml", registry.write_lock(before))
+    path = write_yaml(tmp_path, "registry.yml", after)
+    assert cli.cmd_registry_lock(SimpleNamespace(registry=str(path), lock=str(target))) == 0
+    locked, errors = registry.load_lock(str(target))
+    assert errors == []
+    assert registry.check_lock(after, locked) == []
+
+
+@pytest.mark.parametrize("field,value", [
+    ("drift_evidence_ref", ""), ("drift_evidence_ref", False),
+    ("suspended_by", ""), ("suspended_by", False),
+    ("drift_observed_at", "2026-13-44T99:99:00"),
+    ("drift_observed_at", "2026-11-09T00:00:00trailing"),
+])
+def test_registry_healing_suspension_requires_valid_evidence(field, value):
+    entry = base_entry(state="suspended", binding=base_binding("suspended", port=9333),
+                       **suspended_fields())
+    entry[field] = value
+    assert_mention(registry.validate_document(base_doc(entry)), field)
+
+
+def test_registry_healing_child_id_cannot_end_in_a_newline():
+    assert_mention(registry.validate_document(base_doc(base_entry(child_id="xg0001\n"))),
+                   "child_id")
+
+
+@pytest.mark.parametrize("corruption", ["entry_pin", "missing_entry", "missing_domain"])
+@pytest.mark.parametrize("mode,advance", [
+    ("exact", False), ("prospective", False), ("prospective", True),
+    ("cli", False), ("cli", True),
+])
+def test_registry_healing_matching_whole_pin_requires_consistent_rows(
+    tmp_path, corruption, mode, advance
+):
+    doc = base_doc(base_entry(revision=2))
+    locked = registry.write_lock(doc)
+    if corruption == "entry_pin":
+        locked["entries"]["example.persona"].update(revision=1, sha256="d" * 64)
+    elif corruption == "missing_entry":
+        del locked["entries"]["example.persona"]
+    else:
+        del locked["domains"][DOMAIN]
+    if advance:
+        doc["registry_revision"] += 1
+    if mode == "exact":
+        assert registry.check_lock(doc, locked)
+    elif mode == "prospective":
+        assert registry.check_relock(doc, locked)
+    else:
+        target = write_yaml(tmp_path, "registry.lock.yml", locked)
+        original = target.read_bytes()
+        path = write_yaml(tmp_path, "registry.yml", doc)
+        assert cli.cmd_registry_lock(SimpleNamespace(registry=str(path), lock=str(target))) == 2
+        assert target.read_bytes() == original
+
+
+@pytest.mark.parametrize("where", ["document", "lock"])
+@pytest.mark.parametrize("state", [[], {}])
+def test_registry_healing_malformed_nested_state_returns_refusal(tmp_path, where, state):
+    doc = base_doc()
+    locked = registry.write_lock(doc)
+    if where == "document":
+        doc["entries"][0]["state"] = state
+        errors = registry.validate_document(doc)
+    else:
+        locked["entries"]["example.persona"]["state"] = state
+        errors = registry.check_relock(doc, locked)
+    assert errors and all(isinstance(error, str) for error in errors)
+    target = write_yaml(tmp_path, "registry.lock.yml", locked)
+    original = target.read_bytes()
+    path = write_yaml(tmp_path, "registry.yml", doc)
+    assert cli.cmd_registry_lock(SimpleNamespace(registry=str(path), lock=str(target))) == 2
+    assert target.read_bytes() == original
+
+
+@pytest.mark.parametrize("violation", ["global_rollback", "entry_rollback", "entry_bump_only"])
+def test_registry_healing_revision_refusals_survive_the_cli_writer(tmp_path, violation):
+    before = base_doc(base_entry(revision=3))
+    before["registry_revision"] = 7
+    after = copy.deepcopy(before)
+    after["registry_revision"] = 8
+    if violation == "global_rollback":
+        after["registry_revision"] = 6
+    elif violation == "entry_rollback":
+        after["entries"][0].update(revision=2, recovery_owner="seat:replacement")
+    else:
+        after["entries"][0]["revision"] = 4
+    assert registry.validate_document(after) == []
+    previous = registry.write_lock(before)
+    assert registry.check_relock(after, previous)
+    path = write_yaml(tmp_path, "registry.yml", after)
+    target = write_yaml(tmp_path, "registry.lock.yml", previous)
+    original = target.read_bytes()
+    assert cli.cmd_registry_lock(SimpleNamespace(registry=str(path), lock=str(target))) == 2
+    assert target.read_bytes() == original
+
+
+def test_registry_healing_malformed_prior_receipt_cannot_be_replaced(tmp_path):
+    before, after = _healing_transition()
+    previous = registry.write_lock(before)
+    previous["entries"]["example.persona"]["receipt_sha256"] = None
+    path = write_yaml(tmp_path, "registry.yml", after)
+    target = write_yaml(tmp_path, "registry.lock.yml", previous)
+    original = target.read_bytes()
+    assert cli.cmd_registry_lock(SimpleNamespace(registry=str(path), lock=str(target))) == 2
+    assert target.read_bytes() == original
+
+
+def test_registry_healing_read_only_check_requires_completed_relock(tmp_path):
+    before = base_doc()
+    after = copy.deepcopy(before)
+    after["registry_revision"] = 2
+    after["mail_domains"].append("second.mail.invalid")
+    path = write_yaml(tmp_path, "registry.yml", after)
+    target = write_yaml(tmp_path, "registry.lock.yml", registry.write_lock(before))
+    original = target.read_bytes()
+    args = ["registry-check", "--registry", str(path), "--lock", str(target)]
+    assert cli.main(args) == 2
+    assert target.read_bytes() == original
+    assert cli.main(["registry-lock", "--registry", str(path), "--lock", str(target)]) == 0
+    committed = target.read_bytes()
+    assert cli.main(args) == 0
+    assert target.read_bytes() == committed
+
+
+@pytest.mark.parametrize("domain", [[], {}])
+@pytest.mark.parametrize("policy", ["none", "single_canonical"])
+def test_registry_healing_malformed_domain_returns_refusal(tmp_path, domain, policy):
+    before = base_doc()
+    after = copy.deepcopy(before)
+    after["entries"][0].update(domain=domain, bio_link_policy=policy)
+    errors = registry.validate_document(after)
+    assert errors and all(isinstance(error, str) for error in errors)
+    path = write_yaml(tmp_path, "registry.yml", after)
+    target = write_yaml(tmp_path, "registry.lock.yml", registry.write_lock(before))
+    original = target.read_bytes()
+    assert cli.cmd_registry_lock(SimpleNamespace(registry=str(path), lock=str(target))) == 2
+    assert target.read_bytes() == original
+
+
+@pytest.mark.parametrize("where", ["document", "domain", "entry", "binding", "receipt"])
+def test_registry_healing_mixed_unknown_keys_return_refusals(tmp_path, where):
+    before = base_doc(_healing_admitted_entry())
+    after = copy.deepcopy(before)
+    entry = after["entries"][0]
+    target_mapping = {
+        "document": after, "domain": after["domains"][0], "entry": entry,
+        "binding": entry["binding"], "receipt": entry["admission_receipt"],
+    }[where]
+    target_mapping.update({1: None, "unexpected": None})
+    errors = registry.validate_document(after)
+    assert errors and all(isinstance(error, str) for error in errors)
+    assert_mention(errors, "unknown")
+    path = write_yaml(tmp_path, "registry.yml", after)
+    target = write_yaml(tmp_path, "registry.lock.yml", registry.write_lock(before))
+    original = target.read_bytes()
+    assert cli.cmd_registry_lock(SimpleNamespace(registry=str(path), lock=str(target))) == 2
+    assert target.read_bytes() == original

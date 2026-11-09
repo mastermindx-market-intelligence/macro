@@ -46,7 +46,7 @@ any --> retired
 ## Document shape (`registry.yml`)
 
 ```yaml
-schema_version: 1            # int; validator knows exactly {1}; anything else → refuse (fail-closed)
+schema_version: 1            # exact int 1; booleans, floats and unknown versions refuse before other fields
 registry_revision: 7         # int ≥ 1, monotonic for the whole document
 mail_domains:                # allowlist for binding.email_mailbox host
   - mail.mastermind-x.com
@@ -70,9 +70,9 @@ entries:
       cdp_port: null                 # int 1024..65535; unique across non-retired entries; required iff admitted/suspended
       totp_custodian: null           # seat id string; required iff admitted/suspended
     admission_receipt: null          # {path, sha256} required iff state in {admitted, suspended}; must be null when proposed
-    drift_observed_at: null          # ISO-8601 string; required non-null iff suspended, must be null otherwise
-    drift_evidence_ref: null         # string; same rule
-    suspended_by: null               # seat id; same rule
+    drift_observed_at: null          # valid ISO-8601 timestamp string iff suspended; null otherwise
+    drift_evidence_ref: null         # non-empty string; same rule
+    suspended_by: null               # non-empty seat id string; same rule
     retired_from: null               # handle of the predecessor identity this one replaces; if set, predecessor must exist in entries with state retired
 ```
 
@@ -99,40 +99,51 @@ Rules that come with the fields, and are the point of them:
    refuse. An unknown `schema_version` is exactly ONE refusal ("unknown schema_version …
    refusing to parse") and no field validation runs.
 
-## Lock file (`registry.lock.yml`) — the mutation-without-bump check
+## Lock file (`registry.lock.yml`) — exact snapshots and explicit updates
 
 ```yaml
 schema_version: 1
 registry_revision: 7
+document_sha256: <64 lowercase hex>
 entries:
-  desk.and.dusk: {revision: 1, state: proposed, sha256: <hex>, receipt_sha256: null}
+  desk.and.dusk: {revision: 1, state: proposed, child_id: dsk7q2, sha256: <hex>, receipt_sha256: null}
 domains:
   www.mastermind-x.com: {state: admitted, sha256: <hex>}
 ```
 
-`sha256` = `hashlib.sha256(json.dumps(entry_minus_revision, sort_keys=True,
-separators=(",",":")).encode()).hexdigest()` where `entry_minus_revision` is the entry mapping
-without the `revision` key (domains: the whole record). `registry.canonical_sha(mapping,
-drop=("revision",))` is the one public helper and the lock writer uses it.
+`document_sha256` pins the whole canonical document, including its global revision, mail
+allowlist, domains and entries. Each entry `sha256` pins the entry minus `revision`; each
+domain digest pins the whole domain record. `registry.canonical_sha(mapping, drop=())` hashes
+the sorted-key, compact JSON representation with SHA-256. Receipt paths must be non-empty
+strings and receipt digests must be exactly 64 lowercase hexadecimal characters. These are
+shape checks: the validator does not open the cited evidence or grant account authority.
 
-`registry.write_lock(doc) -> dict` produces the lock mapping (pure; caller writes it). The CLI
-gets `registry-lock` that writes the lock — the explicit bump ceremony. This is the ONLY writer.
+`registry.write_lock(doc) -> dict` is the pure formatter. The existing `registry-lock` CLI is
+the writer. It validates the document, then validates any existing prior lock **before**
+replacing it. A genuinely absent target permits bootstrap. A malformed, incomplete or
+unreadable existing target refuses with exit 2 and leaves its bytes unchanged; it is never
+silently treated as bootstrap. The examples in this PR carry the complete v1 lock shape.
 
-`registry.check_lock(doc, lock) -> list[str]` refuses when:
+`registry.check_lock(doc, lock) -> list[str]` is the read-only exact-snapshot check. Global
+revision and complete-document digest must match, entry/domain memberships must agree, and
+all row pins (including entry revision, child ID, state and receipt digest) must match. A
+valid prospective edit remains a refusal until its explicit re-lock has completed.
 
-- lock `schema_version`/`registry_revision` ≠ doc's → "registry_revision drift" (document edited
-  without bump, or lock stale).
-- entry in doc not in lock, or in lock not in doc → refuse (new/removed identity without re-lock).
-- entry sha ≠ lock sha AND revision == lock revision → "entry mutated without revision bump".
-- entry revision < lock revision → refuse (revision went backwards).
-- entry sha == lock sha AND revision ≠ lock revision → refuse (bump without mutation is a forged
-  ceremony).
-- state transition from lock.state → doc.state not in the legal set:
-  - proposed→admitted (needs receipt), admitted→suspended (needs drift fields), suspended→admitted
-    (needs receipt whose sha256 ≠ lock.receipt_sha256 — re-admission is a NEW event), any→retired,
-    X→X (no change).
-  - everything else (admitted→proposed, suspended→proposed, retired→anything, proposed→suspended)
-    → refuse with "suspension is sticky" / "retired is terminal" / etc.
+`registry.check_relock(doc, previous_lock) -> list[str]` validates a prospective update:
+
+- Global revision cannot decrease. Every document mutation advances it. An identical no-op
+  re-lock and a global-only checkpoint are allowed. When the prior payload can be reconstructed
+  by restoring its global revision, all prior row pins must also agree with that payload.
+- Explicit valid entry/domain additions and removals are allowed after a global revision
+  advance. For retained handles, `child_id` is immutable, entry revisions cannot decrease,
+  mutations require an entry revision advance, and a revision-only entry bump refuses.
+- Legal retained-entry transitions are proposed→admitted (with a receipt), admitted→suspended
+  (with valid drift evidence), suspended→admitted (with a **new receipt digest** and cleared
+  suspension fields), any→retired, and unchanged state. Binding repair alone cannot clear
+  suspension. Retired entries cannot transition back to a live state.
+- The lock records the last snapshot, not permanent identity history. It does not invent
+  tombstones for explicitly removed records or verify an external admission grant. The prior
+  lock produced by the existing writer remains the transition baseline.
 
 ## Validator behaviour
 
@@ -146,6 +157,7 @@ def load_lock(path: str) -> tuple[dict | None, list[str]]
 def validate_document(doc: dict) -> list[str]
 def validate_bindings(doc: dict, personas: Mapping[str, Any], credential_slots: Iterable[str]) -> list[str]
 def check_lock(doc: dict, lock: dict) -> list[str]
+def check_relock(doc: dict, previous_lock: dict) -> list[str]
 def check_revision(doc: dict, expected_revision: int) -> list[str]
 def launchable(doc: dict, handle: str) -> list[str]
 def links_outside_domain(text: str, entry: dict) -> list[str]
@@ -179,8 +191,9 @@ Operator CLI (read-only side): `python -m tools.xguerrilla.cli registry-check --
 registry, lock (default: `<stem>.lock.<rest>` beside the registry, e.g. `registry.lock.yml`; a
 missing lock file is a refusal, exit 2), personas and credential slots, runs `validate_all`, prints one refusal per line,
 and exits 0 on pass / 2 on any refusal (including a missing registry file). The write side is
-`registry-lock --registry <path> --lock <path>`: `validate_document` must return `[]` first, then
-the lock is written, else it exits 2 and writes nothing.
+`registry-lock --registry <path> --lock <path>`: `validate_document` must return `[]` first;
+if a prior target exists, loading it and `check_relock` must also succeed. Only then is the
+new exact snapshot written. Refusals exit 2 without replacing the previous lock.
 
 ## Schema amendments vs the 2026-11-07 draft
 
@@ -197,10 +210,10 @@ document is the binding version on main. Deltas:
   link (`none` refuses every link; `single_canonical` gates on an ADMITTED domain record).
 - **`domains` and `mail_domains` records added**: a binding may only point at a declared record;
   the admissibility of a bio link is now a registry fact, not an opinion.
-- **The lock file is the mutation-without-bump mechanism.** The draft said "revision bumps on any
-  mutation" but had nothing that could detect a bump skipped; the lock carries each entry's
-  canonical sha and receipts by handle/domain, and `check_lock` refuses edited-but-not-bumped and
-  bumped-but-not-edited alike.
+- **The lock file pins the complete document and per-record identity.** `check_lock` requires
+  the completed exact snapshot; `check_relock` enforces revision and transition rules before
+  the existing CLI writer replaces the prior snapshot. A per-entry revision-only bump refuses;
+  an explicit global-only checkpoint remains valid.
 - **Unknown `schema_version` refuses to parse (fail-closed)**: exactly one refusal, no partial
   field validation.
 - **The observer contract's `baseline_allowlist` provenance fields** (`added_by`, `added_at`,

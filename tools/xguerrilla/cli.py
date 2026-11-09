@@ -144,7 +144,7 @@ def cmd_registry_check(args) -> int:
 
 
 def cmd_registry_lock(args) -> int:
-    """The re-lock ceremony: refuse a broken document, then snapshot the lock."""
+    """Validate the document and prior snapshot before the explicit re-lock."""
     doc, errors = registry.load_registry(args.registry)
     if doc is None:
         for line in errors:
@@ -155,8 +155,17 @@ def cmd_registry_lock(args) -> int:
         for line in refusals:
             print(line)
         return 2
+    target = Path(args.lock)
+    # An existing malformed/unreadable target is never treated as bootstrap.
+    if target.exists() or target.is_symlink():
+        previous, errors = registry.load_lock(str(target))
+        refusals = errors if previous is None else registry.check_relock(doc, previous)
+        if refusals:
+            for line in refusals:
+                print(line)
+            return 2
     lock = registry.write_lock(doc)
-    Path(args.lock).write_text(
+    target.write_text(
         yaml.safe_dump(lock, sort_keys=True), encoding="utf-8")
     _emit({"ok": True, "lock": args.lock, "revision": doc["registry_revision"],
            "entries": len(lock["entries"]), "domains": len(lock["domains"])})
