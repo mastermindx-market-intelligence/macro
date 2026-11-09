@@ -20,6 +20,13 @@ Modes
     Additionally allows counted 63d oracle screens (off by default per RF-13).
     Implies --execute.
 
+--market-memory-only
+    Bounded contextual-evidence-only mode.  Requires --market-memory-binding;
+    emits exactly one installed market-memory evidence attachment as a
+    citation.  Skips candidate loading/filtering and all routing entirely;
+    dry-run only (--execute/--count are rejected before any binding or
+    private read).
+
 Usage
 -----
   python scripts/research_factory_run.py --dry-run
@@ -105,6 +112,16 @@ def _route_candidate(
         "action": "no_action",
         "reason": "",
     }
+
+    # Inspect before the broad source/domain/type OR routes. Persisted records
+    # may predate ingest validation; neither --execute nor --count admits code.
+    from engine.research_factory.codegen_boundary import codegen_refusal
+
+    refusal = codegen_refusal(candidate)
+    if refusal:
+        result["action"] = "error"
+        result["reason"] = refusal
+        return result
 
     # --- Oracle domain ---
     if source == "oracle_brainstorm" or domain == "oracle" or ctype == "oracle_compound":
@@ -481,12 +498,22 @@ def run(
     data_dir: Path,
     dry_run: bool = True,
     count: bool = False,
+    market_memory_inputs: tuple = (),
+    market_memory_only: bool = False,
 ) -> dict:
     """Main runner.  Returns a summary dict.
 
     Invariant: dry_run=True ALWAYS produces zero disk writes.
     count is silently suppressed when dry_run=True so the public API call
     run(dry_run=True, count=True) is safe (blocker fix).
+
+    market_memory_only=True is the bounded contextual-evidence-only mode: it
+    requires exactly one market_memory_input, dry_run=True and count=False,
+    and skips candidate loading, registered filtering and all unrelated
+    routing entirely (genuine evidence construction, current policy
+    rechecks, final disclosure and the existing summary are kept).  Invalid
+    modes are rejected before any private read.  Default (False) behavior
+    and output are unchanged.
     """
     from engine.research_factory.state import _HUMAN_GATE_TARGETS  # noqa: PLC0415
 
@@ -494,12 +521,38 @@ def run(
     # Enforce: counted writes require both count=True AND dry_run=False
     effective_count = count and not dry_run
 
-    candidates = load_candidates(rf_dir)
-    registered = filter_registered(candidates)
-    log.info(
-        "Loaded %d candidates; %d in 'registered' state",
-        len(candidates), len(registered),
-    )
+    if type(market_memory_only) is not bool:
+        raise ValueError("market_memory_only_requires_exact_bool")
+    if type(market_memory_inputs) is not tuple or len(market_memory_inputs) > 1:
+        raise ValueError("at_most_one_typed_market_memory_evidence_input")
+    # Validate the bounded contextual-only mode BEFORE any private read
+    # (evidence build, binding/policy recheck, candidate load).
+    if market_memory_only and (
+        len(market_memory_inputs) != 1 or dry_run is not True or count is not False
+    ):
+        raise ValueError(
+            "market_memory_only_requires_exactly_one_input_dry_run_true_count_false"
+        )
+    evidence_caps = []
+    if market_memory_inputs:
+        from engine.research_factory import adapter_market_memory_evidence as mm_evidence
+        evidence_caps = [mm_evidence.build_market_memory_evidence_attachment(item)
+                         for item in market_memory_inputs]
+
+    candidates: list[dict] = []
+    registered: list[dict] = []
+    if market_memory_only:
+        log.info(
+            "Mode: MARKET_MEMORY_ONLY — contextual evidence attachment only; "
+            "skipping candidate load, registered filter and all unrelated routing"
+        )
+    else:
+        candidates = load_candidates(rf_dir)
+        registered = filter_registered(candidates)
+        log.info(
+            "Loaded %d candidates; %d in 'registered' state",
+            len(candidates), len(registered),
+        )
 
     if dry_run:
         log.info("Mode: DRY-RUN — no writes to disk%s",
@@ -519,6 +572,19 @@ def run(
         "transitions_attempted": 0,
         "transitions_ok": 0,
     }
+    if market_memory_only:
+        summary["mode"] = "market_memory_only"
+
+    if evidence_caps:
+        summary["contextual_evidence"] = []
+        for capability in evidence_caps:
+            value = mm_evidence.disclose_market_memory_evidence_attachment(capability)
+            summary["contextual_evidence"].append(value)
+            summary["routes"].append({
+                "candidate_id": value["candidate"]["candidate_id"], "source": "market_memory",
+                "domain": "market_memory", "action": "no_action",
+                "projected_state": "proposed", "transition_ok": None,
+                "reason": "contextual_evidence_only", "attachment_id": value["attachment_id"]})
 
     # Shared cache for alpha_grammar route_all (one parquet load per run)
     _alpha_cache: dict = {}
@@ -670,6 +736,9 @@ def run(
         summary["transitions_attempted"],
         summary["transitions_ok"],
     )
+    if evidence_caps:
+        summary["contextual_evidence"] = [
+            mm_evidence.disclose_market_memory_evidence_attachment(cap) for cap in evidence_caps]
     return summary
 
 
@@ -713,7 +782,23 @@ def main(argv: list[str] | None = None) -> int:
         default=None,
         help="Research factory data dir (default: <data-dir>/research_factory/)",
     )
+    ap.add_argument("--market-memory-binding", default=None,
+                    help="Consume one installed current contextual evidence binding; grants no lifecycle")
+    ap.add_argument("--market-memory-only", action="store_true", default=False,
+                    help=(
+                        "Contextual-evidence-only mode: emit the one installed market-memory "
+                        "evidence attachment; skip candidate loading/filtering and routing "
+                        "entirely.  Requires --market-memory-binding; rejects --execute/--count."
+                    ))
     args = ap.parse_args(argv)
+
+    # Validate the bounded contextual-only mode BEFORE loading the binding or
+    # any private read.
+    if args.market_memory_only:
+        if not args.market_memory_binding:
+            ap.error("--market-memory-only requires --market-memory-binding")
+        if args.execute or args.count:
+            ap.error("--market-memory-only rejects --execute/--count (dry-run only)")
 
     data_dir = Path(args.data_dir)
     rf_dir = Path(args.rf_dir) if args.rf_dir else data_dir / "research_factory"
@@ -721,12 +806,26 @@ def main(argv: list[str] | None = None) -> int:
     # --count implies --execute
     dry_run = not (args.execute or args.count)
 
+    memory_inputs = ()
+    if args.market_memory_binding:
+        from engine.research_factory import adapter_market_memory_evidence as mm_evidence
+        memory_inputs = (mm_evidence.load_registered_factory_evidence(ROOT,
+            binding_id=args.market_memory_binding,
+            attached_at=datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="microseconds").replace("+00:00", "Z")),)
+
     summary = run(
         rf_dir=rf_dir,
         data_dir=data_dir,
         dry_run=dry_run,
         count=args.count,
+        market_memory_inputs=memory_inputs,
+        market_memory_only=args.market_memory_only,
     )
+
+    if memory_inputs:
+        print(json.dumps({"contextual_evidence": summary["contextual_evidence"],
+                          "transitions_attempted": summary["transitions_attempted"],
+                          "transitions_ok": summary["transitions_ok"]}, sort_keys=True))
 
     if dry_run:
         print("\n[DRY-RUN] No writes performed.")

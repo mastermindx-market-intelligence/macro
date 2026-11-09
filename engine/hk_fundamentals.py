@@ -7,8 +7,9 @@ records and computes, per name:
   - financials   : multi-year trend (revenue, margins, EPS) + CAGRs
   - quality      : ROE / ROA / margins / leverage / current ratio (currency-neutral)
   - piotroski    : fundamental-health F-score from the precomputed ratios
-  - valuation    : PE / PB when financials are HKD-reported (else omitted — many HK
-                   names report in CNY, so a CNY EPS over an HKD price is wrong)
+  - valuation    : PE / PB only when the statements are CONFIRMED HKD (same unit as
+                   the price). This feed never is (see STATEMENT_CURRENCY), so it is
+                   empty for every name — a CNY EPS over an HKD price is wrong
   - consensus    : the HK-UNIQUE analyst read — median target (vs price), upside %,
                    buy/hold/sell mix, coverage count
   - archetype    : a descriptive style bucket
@@ -31,6 +32,19 @@ from lib import config
 log = logging.getLogger("hk_fundamentals")
 
 CACHE = config.data_dir() / "hk_fundamentals" / "fundamentals.parquet"
+
+# The unit the cached statements are ACTUALLY in. The source behind
+# collectors/hk_fundamentals.py (eastmoney HK F10 RPT_HKF10_FN_MAININDICATOR, via
+# akshare stock_financial_hk_analysis_indicator_em) serves every issuer's figures
+# converted to CNY at the period-end central parity, whatever the reporting currency:
+# HKEX (an HKD reporter) FY2023/FY2024 net income sits at 0.9062 / 0.9260 of its
+# HK$ figure, and AIA / HSBC (USD reporters) FY2024 at 7.1884 x US$ — the year-end
+# HKD/CNY and USD/CNY parities. Its per-row CURRENCY field is a constant "HKD" (the
+# listing currency) and IS_CNY_CODE a constant 0, and the endpoint serves no native-
+# currency series (verified live 2026-10-11). So the vendor label is NEVER the
+# statement currency and is ignored here; HKD statements cannot be confirmed from
+# this feed, so PE/PB stay suppressed rather than mixing an HKD price with CNY EPS.
+STATEMENT_CURRENCY = "CNY"
 
 ARCHETYPES = {
     "quality_compounder": ("Quality compounder", "优质复利股"),
@@ -105,7 +119,7 @@ def _financials(rows: list[dict]) -> dict | None:
         "gross_margin": [_num(r.get("gross_margin")) for r in rows],
         "eps": [_num(r.get("eps")) for r in rows],
         "rev_cagr": _cagr(rev), "eps_cagr": _cagr([_num(r.get("eps")) for r in rows]),
-        "currency": rows[-1].get("currency"),
+        "currency": STATEMENT_CURRENCY,     # never the vendor's constant "HKD" label
     }
 
 
@@ -152,12 +166,14 @@ def build_all(price_by_ticker: dict[str, float]) -> dict[str, dict]:
         rows = rec.get("financials") or []
         latest = rows[-1] if rows else {}
         price = price_by_ticker.get(t)
-        cur = latest.get("currency")
+        # the row's own `currency` is the vendor's constant listing label, not the
+        # statement unit — trusting it priced HKD over CNY EPS (see STATEMENT_CURRENCY)
+        cur = STATEMENT_CURRENCY if rows else None
         q = {k: _num(latest.get(k)) for k in
              ("roe", "roa", "gross_margin", "net_margin", "debt_ratio", "current_ratio")}
         q["ni"] = _num(latest.get("ni"))
         val: dict = {}
-        # PE/PB only when the statements are HKD (same unit as price)
+        # PE/PB only when the statements are confirmed HKD (same unit as price)
         if cur == "HKD" and price is not None:
             eps, bvps = _num(latest.get("eps")), _num(latest.get("bvps"))
             if eps not in (None, 0):

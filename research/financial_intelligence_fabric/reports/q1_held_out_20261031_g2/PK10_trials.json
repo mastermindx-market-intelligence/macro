@@ -1,0 +1,15 @@
+{
+  "accessions": [],
+  "exclusions": [],
+  "label_count": 0,
+  "labels_status": "no_held_out_labels",
+  "pack_id": "PK10",
+  "sic_binding": {
+    "contract_id": "fif-held-out-v1",
+    "order": [
+      "held_out_contract",
+      "sec_submissions_witness"
+    ]
+  },
+  "trial_field_map": {}
+}

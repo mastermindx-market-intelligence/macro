@@ -47,7 +47,15 @@ SCAN_DIRS = ("scripts", "engine", "collectors", "app", "admin", "lib", "tools", 
 
 # relpath -> reason.  For modules whose ``__all__`` names are bound only at
 # runtime and thus invisible to a static scan.
-EXEMPT: dict[str, str] = {}
+EXEMPT: dict[str, str] = {
+    # PEP 562 lazy exports (wire-5, #9555): the price_views / read_contract / basket_read
+    # names bind on first attribute access through the module ``__getattr__`` and are
+    # cached into ``globals()`` — invisible to this static scan by construction. The
+    # runtime pin tests/test_dataos_read_contract.py::
+    # test_W5_every_export_resolves_and_star_import_is_complete proves every ``__all__``
+    # name resolves and that ``from lib.dataos import *`` is complete.
+    "lib/dataos/__init__.py": "PEP 562 lazy exports; runtime pin W5 in tests/test_dataos_read_contract.py",
+}
 
 _TRY_STAR = getattr(ast, "TryStar", ())
 
