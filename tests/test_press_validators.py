@@ -554,6 +554,38 @@ def test_a_public_first_party_link_passes():
     assert row["metrics"]["internal_links"] == 1
 
 
+def test_the_identity_bio_prefix_is_admitted():
+    """Bio policy BL-2 (t_4f2e5457): every child bio links to /x/<child-id>.
+
+    The press gate already classifies our host as internal; the ONLY thing that
+    had to change for this URL to be a legal press citation is the prefix entry
+    in config/press.yml. `engine/press/validators.py:1339` needs no edit.
+    """
+    d = F.draft("A paragraph.", fold=False)
+    d["body_html"] += (
+        '<p>Our <a href="https://www.mastermind-x.com/x/ab12cd34">editorial '
+        'account</a> is the other surface.</p>'
+    )
+    row = V.check_link_allowlist(d, F.slot(), F.config())
+    assert row["ok"] is True
+    assert row["metrics"]["internal_links"] == 1
+    assert "/x/" in row["metrics"]["prefixes"]
+
+
+def test_the_press_prefix_gate_is_not_the_bio_shape_gate():
+    """A prefix admits a FAMILY; the bio validator judges the one shape.
+
+    /x/AB12CD34 (uppercase, no canonical id check) is inside the allowlisted
+    family, so the press gate admits it — that is correct and deliberate. The
+    shape rules (lowercase, 4..32 chars, https, one link) belong to
+    `tools/xguerrilla/validators.validate_bio`, and the two gates must not be
+    confused for one another.
+    """
+    d = F.draft("A paragraph.", fold=False)
+    d["body_html"] += '<p><a href="/x/AB12CD34">x</a></p>'
+    assert V.check_link_allowlist(d, F.slot(), F.config())["ok"] is True
+
+
 @pytest.mark.parametrize("href", [
     "/stocks/TTWO.html", "https://www.mastermind-x.com/stocks/TTWO.html",
 ])

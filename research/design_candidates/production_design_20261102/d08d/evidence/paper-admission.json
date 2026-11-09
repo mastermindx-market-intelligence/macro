@@ -1,0 +1,71 @@
+{
+  "observationWindow": "2026-11-03–04 UTC; individual upstream read timestamps not exposed",
+  "mastermindPin": "910803421beca53ca25145392725ab2d84c7a8e9",
+  "sourcePackagePin": "b0d827361e7adc266079fa0501789fd005d0794c",
+  "terminalPin": "2ded360882b9c721e690907ff363b553781fb920",
+  "catalogSha": "03cb81e960dab705b21b0695f3886d39c4792df629a6419163efef52338182e4",
+  "writeSchema": {
+    "server_name": "paper-desktop",
+    "server_version": "0.5.18",
+    "catalog_sha256": "03cb81e960dab705b21b0695f3886d39c4792df629a6419163efef52338182e4",
+    "accepted_for_write": true,
+    "expected_server": [
+      "paper-desktop",
+      null
+    ],
+    "server_name_compatible": true,
+    "server_version_compatible": true,
+    "server_version_policy": "OBSERVED_NOT_PINNED",
+    "catalog_compatible": true,
+    "catalog_policy": "TOOL_SCOPED_CONTRACT_V1",
+    "full_catalog_known": false,
+    "expected_catalog_sha256": "1b9afff4c9bcf6f11f5ca2db301bf25ccdc442025344e2ec402459cedcd6a2db",
+    "additional_reviewed_catalog_sha256": [
+      "16e6b93f0c51a1574ba8acee4df732052898707a04731d3817530971a88fdefd",
+      "955e92cd0477027dcc5fe666810e49393f42f453c1c362e64cd0f3b3ab9f10cf",
+      "f3483e001d4f07f5a49144ca52a4f9e14ba046e35546dda05d6cd37c9d2b4728"
+    ],
+    "snapshot_tool_compatible": true,
+    "compatible_write_tools": [
+      "arrange_pages",
+      "create_artboard",
+      "create_file",
+      "create_page",
+      "create_tokens",
+      "duplicate_nodes",
+      "finish_working_on_nodes",
+      "move_nodes",
+      "rename_nodes",
+      "rename_resource",
+      "set_comment_thread_status",
+      "set_text_content",
+      "set_tokens",
+      "update_pages",
+      "update_styles",
+      "write_html"
+    ],
+    "incompatible_write_tools": [],
+    "optional_vendor_inputs_ignored": []
+  },
+  "paperMutationAttempted": false,
+  "proposedDestination": {
+    "name": "MM · Futures & Replay",
+    "fileId": null,
+    "pageId": null,
+    "artboardIds": []
+  },
+  "gate": "DIRECT_TOOL_PUBLICATION_DRIFT / EFFECT_NONE: published direct app description still prohibits create_file; required focused-file creation not dispatched. F01/F02 joint v1 also unreleased. No alternate Paper mutation.",
+  "existingTargetsExcluded": [
+    "01M3NSZGE8JWN2EZCSF0DT05RM/p-2-0/1N2L-0",
+    "01M3NSZGE8JWN2EZCSF0DT05RM/p-12-0",
+    "01M3NSZGE8JWN2EZCSF0DT05RM/p-13-0",
+    "01M5H6EARN9YHQV17JC6ZG9BRY"
+  ],
+  "readReference": {
+    "fileId": "01M3NSZGE8JWN2EZCSF0DT05RM",
+    "pageId": "p-2-0",
+    "artboardId": "FG2-0",
+    "screenshot": "evidence/reference-options-investigate-FG2-0.jpg",
+    "approval": "not asserted"
+  }
+}
