@@ -1,0 +1,124 @@
+{
+  "head": "ede62cbbc69441aca64973ee638c55be544cfc4d",
+  "old_base": "079ba10fe079ddf947cb446afeae65ff2908046e",
+  "base": "a8a5d3523614777d88eb2579d6efab52cd862e33",
+  "current_tree": "3618d3452178cedfef4707814bde87e4f5938922",
+  "rows": [
+    [
+      ".github/ci/legacy-jobs.yml",
+      "f341504b07621c94a905fae7f88146b510bfbce8"
+    ],
+    [
+      "agentos/decisions/DEC-EXECUTIVE-ECOSYSTEM-CURRENT-DIRECTION-20261104.md",
+      "bbd5257bf2cecbd4039fa1a696cef83eda604cc7"
+    ],
+    [
+      "agentos/schema/decision.schema.yml",
+      "b48336c879a56c52fa7a43fccc2b0a2c0242c3c8"
+    ],
+    [
+      "agentos/schema/workstream.schema.yml",
+      "02113980feb434a137498b548eeb442156f534ac"
+    ],
+    [
+      "agentos/workstreams/WS-EXECUTIVE-ECOSYSTEM-COMPLETION.md",
+      "b5f1eff71218f8e4f586be6344a4ab0e0a733456"
+    ],
+    [
+      "docs/agentos-plan-adoption.md",
+      "642849dcd4499595eb237564c60e6aea96930128"
+    ],
+    [
+      "docs/agentos-project-proposal.md",
+      "f2ee697ad2e692f4180c8ea7db2ec7d7315b2434"
+    ],
+    [
+      "research/MASTERMIND_AGENT_OS_STATE_SCHEMA.md",
+      "08c2587d328c0b568af869247dd26c0ed745cee7"
+    ],
+    [
+      "scripts/agentos.py",
+      "2b1032c0bfe9a64b41d9a78ae0eee57fc9a12f85"
+    ],
+    [
+      "scripts/agentos_direction.py",
+      "2e1fd4893194f477405ad1f6ec5e140f6e29c669"
+    ],
+    [
+      "scripts/agentos_direction_acceptance.py",
+      "109b8a93107ca76b4d5c1086e908398bdd99fb7f"
+    ],
+    [
+      "scripts/agentos_plan_adoption.py",
+      "8900537ca1a84ef6502f478f14a222afdb390e2a"
+    ],
+    [
+      "scripts/agentos_project_archive.py",
+      "800a358c4c8d4606d7ab8e844d64da5551be1f32"
+    ],
+    [
+      "scripts/agentos_project_plan_contract.py",
+      "84ff653fe948a138efb1ad0e0e3b7e44c9058e89"
+    ],
+    [
+      "scripts/agentos_project_proposal.py",
+      "d7be0f1a9e98ee55e3ae62dc2a4f4caf05ebe090"
+    ],
+    [
+      "scripts/agentos_standing_instructions.py",
+      "9e3990192bd7176ee24fcfb4783a048e6ee414fe"
+    ],
+    [
+      "scripts/project_knowledge_recipes.py",
+      "0d7961ac3703e91990536fe71c61970ee0d3f565"
+    ],
+    [
+      "tests/test_agentos_direction.py",
+      "fee8e34b8703a70762a6871612a39f38753ce2cd"
+    ],
+    [
+      "tests/test_agentos_direction_acceptance.py",
+      "7c43b3641eaf2f4a4bd92ccaf19d001352791e09"
+    ],
+    [
+      "tests/test_agentos_direction_owner.py",
+      "a7657889de9020b011c0803ddea8903d2b291469"
+    ],
+    [
+      "tests/test_agentos_plan_adoption.py",
+      "a5d7babf25d0102d4c715ded4494c5c38052878d"
+    ],
+    [
+      "tests/test_agentos_project_archive.py",
+      "82af9029e3172a1ddf482c0de745b45897f62139"
+    ],
+    [
+      "tests/test_agentos_project_knowledge_owner.py",
+      "7387121db08d05c346f4111e03921d0e6c1c17c2"
+    ],
+    [
+      "tests/test_agentos_project_plan_contract.py",
+      "7c9ec1ff2aca34b86cd665f438c6ef8b2964801d"
+    ],
+    [
+      "tests/test_agentos_project_plan_owner.py",
+      "ca39ae0391f431a5588e24bfd35e043586fb997e"
+    ],
+    [
+      "tests/test_agentos_project_proposal.py",
+      "c0f9cb04ad225fe29ca95598e0e6798b2c461680"
+    ],
+    [
+      "tests/test_agentos_standing_instructions.py",
+      "fddb3f5142c85e2d9c205fbdd314cd4ef47ddc7b"
+    ],
+    [
+      "tests/test_project_knowledge_recipes.py",
+      "494175b6251ad350fd00d7a191a55b59ee6ecb12"
+    ]
+  ],
+  "count": 28,
+  "inputs_unchanged": true,
+  "registry_3way_base_blob": "d109553016d33c6c94ae83cf63f48a00b96b7a85",
+  "registry_ours_blob": "2727218b6615d04b72491886db5ad67e9de9fcb5"
+}
