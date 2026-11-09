@@ -4,7 +4,7 @@
 
 This is the canonical continuation of the [first audit and build plan](AUDIT_AND_BUILD_PLAN.md), on the existing [Macro programme PR #10617](https://github.com/mastermindx-market-intelligence/macro/pull/10617). The Chairman requested further autonomous implementation, correction and enhancement across Paper. The work continues in the foreground; this saved milestone is not a completion claim or a request to resume.
 
-Ten additional files have received applied changes with native visual checks: Guide, Prophet, Market Memory, Policy Monitor, Market Ontology, Sector Intelligence, the Options W3 mobile companion, Risk Radar, Confluence Screener and Crypto Intelligence. The existing GMI and Terminal files also received deeper source-matched receipt and Company R3 amendments. Crypto now includes eight saved-case, historical-return and recovery states with an explicit storage/navigation build contract. The seven-file first pass remains accepted work for this mission and is not repeated here.
+Eleven additional files have received applied changes with native visual checks: Guide, Prophet, Market Memory, Policy Monitor, Market Ontology, Sector Intelligence, the Options W3 mobile companion, Risk Radar, Confluence Screener, Crypto Intelligence and T47 ranked search. The existing GMI and Terminal files also received deeper source-matched receipt and Company R3 amendments. Crypto now includes eight saved-case, historical-return and recovery states with an explicit storage/navigation build contract. The seven-file first pass remains accepted work for this mission and is not repeated here.
 
 The root session is the only canvas writer among this session’s agents; independent live writers retain their own targets. Read-only design, international-language and architecture advisers contributed bounded judgments. Mutations use fresh snapshot guards and distinct operation identities beginning `paper-estate-cont-20261108-`. Initial changes used the Mastermind Paper connector; after its transport repeatedly timed out on reads, new operations continued through the authorized Studio Direct Paper owner. Completed operations were read back, never replayed; the detailed transport ruling below preserves that boundary. No runtime release, merge, hold change, message to another person, or live-model qualification has been performed.
 
@@ -721,6 +721,69 @@ Final JSX preserves **all 64 original interaction-board IDs** with only `G9-0` c
 The newer relative-comparison page `p-3-0` was not targeted. Its original basic-info fields and artboard metadata were unchanged; the only basic-info difference was the addition of this session’s new page to the file’s page list. The archive was not edited.
 
 Twelve exact affected roots were released: `3B8-0, 3BC-0, 3BE-0, 3BG-0, 3BI-0, 3BK-0, 3BM-0, 3BO-0, 3JY-0, 3IP-0, G5-0, QI-0`. All issued mutations returned observed applied responses. No runtime source patch, personal storage mutation, model run, message, auth change, merge, release or deployment occurred.
+
+
+## 14. T47 ranked search: truthful zero matches and one recovery action
+
+**Applied in the existing draft:** [T47 search specimens](https://app.paper.design/file/01M6Y2SGKNTEESDJX96ZSJJGPF/p-1-0) and [No-match visibility Build references](https://app.paper.design/file/01M6Y2SGKNTEESDJX96ZSJJGPF/p-2-0), file `01M6Y2SGKNTEESDJX96ZSJJGPF`.
+
+The mobile no-match example reported **50 assets in the ranked snapshot / 0 matching**, followed by **Expand ranks 21–50**. The count covered all supplied rows, so that affordance suggested hidden matching results that did not exist. Root inspection confirmed the same contradiction in all eight EN/ZH, light/dark, desktop/mobile variants. Each also repeated Clear search inside the no-match body, in addition to the existing query-area action.
+
+### Applied changes
+
+All eight zero-match specimens now retain the query, exact count, one existing query-area Clear action, no-match message and source/date/provider/coverage strip. Their redundant body Clear and lower-rank disclosure were moved to labeled retained references on the Build page, preserving their IDs. No delete or archive operation was used.
+
+| Treatment | Original board | No-match section | Clear retained in product | Moved body Clear / disclosure | Retained reference |
+|---|---|---|---|---|---|
+| Desktop · Light · EN | `1-0` | `1R-0` | `21-0` | `26-0` / `28-0` | `10M-0` |
+| Desktop · Light · ZH | `35-0` | `4V-0` | `55-0` | `5A-0` / `5C-0` | `10Q-0` |
+| Desktop · Dark · EN | `69-0` | `7Z-0` | `89-0` | `8E-0` / `8G-0` | `10U-0` |
+| Desktop · Dark · ZH | `9D-0` | `B3-0` | `BD-0` | `BI-0` / `BK-0` | `10Y-0` |
+| 390 · Light · EN | `CH-0` | `E9-0` | `EL-0` | `EP-0` / `ER-0` | `112-0` |
+| 390 · Light · ZH | `FO-0` | `HG-0` | `HS-0` | `HW-0` / `HY-0` | `116-0` |
+| 390 · Dark · EN | `IV-0` | `KN-0` | `KZ-0` | `L3-0` / `L5-0` | `11A-0` |
+| 390 · Dark · ZH | `M2-0` | `NU-0` | `O6-0` | `OA-0` / `OC-0` | `11E-0` |
+
+One existing contract text node per variant was updated: `2U-0, 5Y-0, 92-0, C6-0, FD-0, IK-0, LR-0, OY-0`. The revised wording makes zero-match suppression explicit while preserving the original compact-match behavior: a rank-21 match opens the existing disclosure, and Clear restores the exact pre-search choice.
+
+The existing rest, matching-result and no-emitted-row specimens were preserved. The newer paired Clear-return boards **`P9-0` and `UV-0` are byte-identical in final JSX**. Their prior work already correctly distinguishes originally closed and originally open cases; this amendment extends that contract.
+
+Build root **`10H-0`** has five modules covering scope, supplied-row search, captured disclosure choice, focus/progressive enhancement and focused proof. Its retained-control references are builder material, not additional user interface.
+
+### Exact transition contract
+
+Capture the pre-search open/closed value once when the query transitions from empty to nonempty. Editing one nonempty query into another must not overwrite it. Apply the same empty/nonempty interpretation consistently with the host’s query semantics.
+
+The required sequence is:
+
+1. Start from either an originally collapsed or originally expanded supplied list.
+2. Enter a nonempty zero-match query. Withhold the lower-rank disclosure, keep one Clear action and keep the source strip.
+3. Change to a query matching rank 21. Preserve the existing compact-match specimen: the original lower-rank disclosure opens and exposes that matching row. The row remains rank 21.
+4. Clear, nonempty-query Escape, or manually empty the field. Restore the original expansion choice and the original ranked list. The next search starts from the reader’s then-current choice.
+
+This pass intentionally **does not remove the disclosure throughout all nonempty searches**. That broader alternative would alter the accepted compact-match examples and is unnecessary to fix the observed zero-result contradiction.
+
+Keep focus in the search input during typing; do not scroll or move focus automatically when a result appears. Announce the changed count through the existing polite status. If a control being withheld owns focus, transfer focus to the named search input before or with the visibility change. Clear returns to that same input. Preserve full focus outlines and the existing targets of at least 44px.
+
+The enhancement remains local. No provider request, reranking, persistent store, history entry or new route is added. Initialize only after the owner has its row inventory and handlers. With JavaScript unavailable or initialization failed, hide enhancement controls and preserve every original ranked row, source receipt and disclosure.
+
+### Source fit and qualification
+
+This is a synthetic T47 component draft, not an observed runtime search. Its **RIG approval, genuine baseline/current-source captures and runtime fit remain unqualified**, and its original R4/application-source/data-contract exclusions are preserved.
+
+For comparison, the root-read [Crypto R4 candidate browser owner](https://github.com/mastermindx-market-intelligence/macro/blob/5e496c24c962e85a4f7f514dd43dc61443b95cab/templates/crypto_intelligence_r4.js) has an existing `filterMarkets()` function with URL query/filter/sort state, supplied asset rows, a result count and an empty-result element. It has **no ranks-21–50 disclosure**. That source is not evidence that the T47 prototype is implemented or directly compatible. A future integration must first identify the accepted host and reuse that owner; this design amendment does not introduce a competing search implementation.
+
+### Verification
+
+Native screenshots checked all eight corrected no-match sections, a retained mobile-control reference, the mobile contract and the five-module Build sheet. The narrowed mobile views fit without clipping.
+
+The JSX comparison accounted for **908 original nodes across the eight boards**, all retained across the original and Build pages. It found exactly **16 intended parent moves** and **8 contract text changes**. Four relocated desktop Clear buttons lost only their now-unneeded `flexShrink: 0` during reparenting; no other original styles changed. All zero-match sections contain exactly one Clear action and no lower-rank expansion action. Both Clear-return companions remained byte-identical.
+
+Seventeen exact roots were released: eight amended original boards, eight retained references and Build `10H-0`. All mutations returned observed applied responses. No runtime code, automated tests, browser behavior, source data, approvals, release holds or deployment was changed or claimed.
+
+### Frontier reassessment
+
+A fresh native resource listing returned 81 resources, including open archived files; it is not a count of active products. The migrated families are now individually discoverable. Bounded reviews found substantial newer source/interaction work in Government Revenue R13, Bonds R12, Returns R4 and Intraday Flow R4, so those existing amendments were preserved. Shared Market Search/Comparison and the inspected illustrative long-read also already supplied the relevant context and limitations. The next phase should follow a demonstrated gap rather than duplicate these completed states.
 
 ## Active next phase: next demonstrated workflow gap
 
