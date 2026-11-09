@@ -1416,3 +1416,50 @@ The [Research · Load recovery](https://app.paper.design/file/01M5H6EARN9YHQV17J
 Build root `7M9-0` gains module 17, **Recover failed topic research** (`A1B-0`, title `A1C-0`, body `A1D-0`); the proof module becomes 18. It records the failure/no-JS distinction, starting-answer semantics, native anchor, incumbent projection owner, lens/history event behavior, empty-section condition and available evidence. It explicitly excludes retries and new URL/state owners.
 
 PR10676 stays Draft. The original model01 `EFFECT_UNKNOWN/ROOT_UNVERIFIED`, result-consumption/retry/replacement restrictions and every release hold remain. This local proof does not establish full shared-shell/font runtime, live account/public admission, current hosted CI, deployment or release acceptance. No fenced model result, shared Tools writer, original protected Paper style, release control or production environment is changed.
+
+
+## 11.34 · Primary search respects consumed and composing Escape — 9 Nov 2026
+
+### Source defect and event ownership
+
+At parent `60cd0e21fd5f8d08f19248198780efc5cf12937d`, the primary Browse input cleared every nonempty Escape, including `defaultPrevented`, `isComposing` and legacy `keyCode == 229` events. Three baseline cases at PID56742 reproduce the authored defect: the query becomes empty, its URL field disappears and `replaceState` runs even when another interaction owns that key.
+
+GMI's only authored Browse Escape branch is this input handler. Its dialog has native `showModal`/close cleanup, no second Escape or cancel controller. The GMI document shortcuts handle slash. Separately, the exact shared `theme.js` blob `21a1fb1627ac34badc6078cff486f98486e9b773` contains document-bubble Escape handlers for navigation/settings; several do not inspect composition or consumed-event flags. Therefore simply returning would still allow a guarded key to reach those handlers. The shared-shell source remains unchanged.
+
+The paired GMI JS change stays in the existing input handler:
+
+1. Non-Escape keys return unchanged.
+2. Escape already consumed, composing or carrying code229 stops propagation and returns. It does not clear, invoke `updateFilters` or add `preventDefault`.
+3. Ordinary nonempty Escape keeps the existing preventDefault, stopPropagation, query clear and `updateFilters` call.
+4. Ordinary empty Escape remains available to the browser and the existing dialog close/focus lifecycle.
+
+Stopping propagation is not default-action cancellation. [UI Events composition guidance](https://www.w3.org/TR/uievents/#events-composition-key-events) allows the exiting key to remain composing, and canceling keydown can suppress composition events. [HTML close requests](https://html.spec.whatwg.org/multipage/interaction.html#close-requests) separately depend on whether the relevant keydown was canceled. The guard leaves the input method's default intact; it does not claim to control every native IME/browser combination.
+
+No composition state, delay, dialog cancel blocker, ignore-next-close flag, new clear control, history owner or shared-shell change is added. The ordinary clear path preserves category, scope, evidence, lens and selected answer through the incumbent update owner.
+
+### Focused actual-browser proof
+
+Final PID **57258**, exit0, **6 named cases / 6 fresh anonymous contexts**, Chrome **157.0.8103.39**, zero page errors, **13.24 s**. Cases cover EN/ZH at 1440, 390 and 320 px; EN390/ZH320 use dark mode and 320 px cases use reduced motion. All use the actual generated research main content, paired product JS and shared theme/GMI CSS.
+
+- **36 synthetic guarded events** exercise composing, code229 and already-consumed Escape on both nonempty and empty input. Query, selection range, URL/history, category/scope/evidence/lens, visible result IDs, selected title, answer/input node identity, focus and dialog state remain exact. A document bubble observer receives none. The guard leaves each event's existing default-prevention flag unchanged.
+- **12 trusted already-consumed Escape keys** use a capture listener that prevents the real key before the production input bubble handler. Both nonempty and empty states stay exact. These are actual browser key presses, distinct from the synthetic composition checks.
+- Ordinary nonempty Escape clears the query exactly once through `replaceState`, with no history growth or cancel/close event. Other filters and the selected answer remain. The EN fixture expands from three HBM-related results to ten category/core results; ZH retains the active evidence filter.
+- The next ordinary empty Escape on mobile produces native **cancel → close**, reparents Browse home once and focuses the existing opener. Desktop empty Escape passes through without extra writes.
+- A one-use test-only cancel listener independently prevents one native dismissal. Browse remains in the modal. The next Escape dismisses normally after that listener is gone, proving no retained suppression state.
+- The two final mobile captures were inspected; the focused field, selected text, filters and resulting rows remain legible at EN390/ZH320.
+
+The composition cases are **authored-event contract proof, not native OS IME proof**. Synthetic events do not establish native dialog dismissal behavior. The trusted ordinary/consumed cases and native cancel observations are recorded separately. No blanket cancellation policy was introduced to make synthetic tests pass.
+
+The source pair is Git blob **d7d9107dbb08c8098ea8be168a4378aef30c0338**, SHA256 **e3d444b31192b272eca62d1e97e671b074f1acfac0a6ffdbc399c9669e459373**. All seven generated HTML pages and CSS remain byte-exact to the preceding accepted source; no renderer/model regeneration is needed for this paired-JS-only product change. All **92 existing verifier function definitions**, keyed by lexical path/occurrence, remain AST-exact. One new test function and two nested helpers are added and six canonical cases registered.
+
+[PRIMARY_ESCAPE_VALIDATION_20261109.json](PRIMARY_ESCAPE_VALIDATION_20261109.json) retains input/source hashes, the three expected baseline failures, final cases, commands and limits. The isolated `verify_primary_escape_component.py` harness extracts the canonical test definition and owns no product behavior. It excludes shared-shell/font runtime and external requests; the document bubble probe establishes propagation, not full-shell acceptance.
+
+### Paper guidance and correct builder destination
+
+Existing Build module11, **Clear the search; keep the research**, body `7YQ-0`, gains the primary-input contract. Its old tree/index paragraph now explicitly says those actions do not clear primary Browse filters. This avoids conflating separately owned controls. No additional module or duplicate product specimen is created; Build remains 18 modules.
+
+A native parent read confirms that current Build root **7M9-0 belongs to p-7-0**, alongside the receipt specimens. Page **p-6-0** contains the earlier preservation reference root **73U-0**. The immediately preceding PR/README Build link pointed to that reference page, so it is corrected to the current guide.
+
+Paper navigation is now **Build · Interaction & receipts** (`p-7-0`) and **Reference · Preservation rules** (`p-6-0`). The reference remains available and its content is preserved; only page names/icons change. This clarifies where future builders find current interaction contracts without archiving useful rules. Current source/proof references are updated in place.
+
+Original model01 `EFFECT_UNKNOWN/ROOT_UNVERIFIED` and all release holds remain. These checks do not establish native OS IME interaction, full shared shell/fonts, spoken assistive technology, live account/admission, current hosted CI, deployment or public release. The existing Draft stays unmerged.

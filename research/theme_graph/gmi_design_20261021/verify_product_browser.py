@@ -3172,6 +3172,148 @@ with sync_playwright() as pw:
         check(f'payload-journey-{language}',lambda l=language:payload_failure_journey(l))
         check(f'payload-boundaries-{language}',lambda l=language:payload_failure_boundaries(l))
 
+
+    def primary_escape_contract(width,language,theme='light',only_guard=None):
+        """Guard authored Escape effects; synthetic composition is not native IME proof."""
+        with context(width,theme,language,reduced_motion='reduce' if width==320 else 'no-preference') as c:
+            p=page_for(c,'gmi.html#scope=core&lens=chain')
+            field=p.locator('[data-topic-search]');dialog=p.locator('[data-browse-dialog]');opener=p.locator('[data-browse-open]')
+            narrow=width<=900
+            if narrow:opener.click();expect(dialog).to_be_visible()
+            data=json.loads(p.locator('#gmi-topic-data').text_content())
+            default_id=p.locator('[data-gmi-explorer]').get_attribute('data-default-theme')
+            topic=next(t for t in data['topics'] if t['id']==default_id)
+            p.locator('[data-topic-category-filter]').select_option(topic['category'])
+            if language=='zh':p.locator('[data-evidence-only]').check()
+            field.fill('HBM');expect(field).to_be_focused()
+            assert p.locator('.gmi-topic-option:visible').count()>0
+            field.evaluate('(n)=>n.setSelectionRange(1,2)')
+            p.evaluate("""()=>{
+              const s=window.__primaryEscape={writes:[],cancel:0,close:0,bubble:0,sequence:[],
+                field:document.querySelector('[data-topic-search]'),answer:document.querySelector('[data-topic-answer]')};
+              for(const method of ['pushState','replaceState']){
+                const original=history[method].bind(history);history[method]=function(...args){s.writes.push(method);return original(...args);};
+              }
+              const d=document.querySelector('[data-browse-dialog]');
+              d.addEventListener('cancel',()=>{s.cancel++;s.sequence.push('cancel');});
+              d.addEventListener('close',()=>{s.close++;s.sequence.push('close');});
+              document.addEventListener('keydown',e=>{if(e.key==='Escape')s.bubble++;});
+            }""")
+            def snapshot():
+                return p.evaluate("""()=>{
+                  const s=window.__primaryEscape,f=document.querySelector('[data-topic-search]');
+                  return {value:f.value,selection:[f.selectionStart,f.selectionEnd],url:location.href,history_length:history.length,
+                    category:document.querySelector('[data-topic-category-filter]').value,
+                    scope:document.querySelector('input[name="gmi-scope"]:checked').value,
+                    evidence:document.querySelector('[data-evidence-only]').checked,lens:document.documentElement.getAttribute('data-gmi-lens'),
+                    visible:[...document.querySelectorAll('.gmi-topic-option')].filter(n=>!n.hidden).map(n=>n.getAttribute('data-topic-select')),
+                    title:document.querySelector('#gmi-topic-title').textContent,
+                    focus_is_field:document.activeElement===f,dialog_open:document.querySelector('[data-browse-dialog]').open,
+                    same_nodes:s.field===f&&s.answer===document.querySelector('[data-topic-answer]'),
+                    browse_at_home:document.querySelector('[data-browse-home]').contains(document.querySelector('[data-gmi-browse]')),
+                    writes:[...s.writes],cancel:s.cancel,close:s.close,bubble:s.bubble,sequence:[...s.sequence]};
+                }""")
+            observed={'width':width,'language':language,'theme':theme,'narrow':narrow,
+                      'composition_proof':'synthetic KeyboardEvent contract; no OS-native IME claim','guards':[]}
+            report.setdefault('primary_escape_observations',[]).append(observed)
+            def guarded(kind,stage):
+                before=snapshot()
+                flags=field.evaluate("""(n,kind)=>{
+                  const e=new KeyboardEvent('keydown',{key:'Escape',code:'Escape',keyCode:kind==='legacy229'?229:27,
+                    bubbles:true,cancelable:true,isComposing:kind==='composing'});
+                  if(kind==='consumed')e.preventDefault();
+                  const initial=e.defaultPrevented,accepted=n.dispatchEvent(e);
+                  return {isTrusted:e.isTrusted,isComposing:e.isComposing,keyCode:e.keyCode,
+                    initially_prevented:initial,finally_prevented:e.defaultPrevented,dispatch_accepted:accepted};
+                }""",kind)
+                after=snapshot()
+                item={'kind':kind,'stage':stage,'flags':flags,'state_unchanged':before==after}
+                observed['guards'].append(item)
+                if before!=after:item.update({'before':before,'after':after})
+                assert not flags['isTrusted']
+                assert flags['isComposing']==(kind=='composing')
+                assert flags['keyCode']==(229 if kind=='legacy229' else 27)
+                assert flags['initially_prevented']==(kind=='consumed')
+                assert flags['finally_prevented']==flags['initially_prevented'],item
+                assert before==after,item
+                expect(field).to_be_focused()
+            if only_guard:
+                guarded(only_guard,'nonempty');return
+            for kind in ('composing','legacy229','consumed'):guarded(kind,'nonempty')
+            before=snapshot()
+            # A real key is consumed at capture; the production bubble handler must respect it.
+            field.evaluate("""n=>n.addEventListener('keydown',e=>{
+              if(e.key==='Escape'){e.preventDefault();window.__primaryConsumedTrusted=e.isTrusted;}
+            },{capture:true,once:true})""")
+            p.keyboard.press('Escape')
+            assert p.evaluate('window.__primaryConsumedTrusted===true')
+            assert snapshot()==before
+            if narrow:expect(dialog).to_be_visible()
+            observed['real_consumed_nonempty_unchanged']=True
+            observed['before_clear']=before
+            if (width,language) in ((390,'en'),(320,'zh')):
+                path=args.out/f'primary-search-{width}-{language}.png';p.screenshot(path=str(path),full_page=False)
+                report['screenshots'].append(path.name)
+            # Ordinary Escape still clears only the query through the incumbent owner.
+            p.keyboard.press('Escape');expect(field).to_have_value('');expect(field).to_be_focused()
+            after=snapshot();observed['after_clear']=after
+            assert after['writes']==['replaceState']
+            assert after['history_length']==before['history_length']
+            assert after['cancel']==after['close']==after['bubble']==0
+            assert after['title']==before['title'] and after['same_nodes']
+            for name in ('category','scope','evidence','lens'):assert after[name]==before[name]
+            old_query=parse_qs(urlsplit(before['url']).fragment);new_query=parse_qs(urlsplit(after['url']).fragment)
+            assert new_query=={k:v for k,v in old_query.items() if k!='q'}
+            assert len(after['visible'])>=len(before['visible'])
+            if language=='en':assert len(after['visible'])>len(before['visible'])
+            assert after['dialog_open']==narrow
+            for kind in ('composing','legacy229','consumed'):guarded(kind,'empty')
+            empty=snapshot()
+            field.evaluate("""n=>n.addEventListener('keydown',e=>{
+              if(e.key==='Escape'){e.preventDefault();window.__primaryConsumedTrusted=e.isTrusted;}
+            },{capture:true,once:true})""")
+            p.keyboard.press('Escape')
+            assert p.evaluate('window.__primaryConsumedTrusted===true')
+            assert snapshot()==empty
+            observed['real_consumed_empty_unchanged']=True
+            # Empty ordinary Escape is left to the browser, including native dialog cancel.
+            p.keyboard.press('Escape')
+            if narrow:
+                expect(dialog).not_to_be_visible();expect(opener).to_be_focused()
+                p.wait_for_function('window.__primaryEscape.close===1')
+                closed=snapshot()
+                assert closed['cancel']==closed['close']==1 and closed['bubble']==1
+                assert closed['sequence']==['cancel','close'] and closed['browse_at_home']
+                assert closed['writes']==['replaceState']
+                observed['native_clear_then_cancel']=True
+                # Independently canceled native close remains the browser's boundary.
+                opener.click();expect(dialog).to_be_visible();expect(field).to_be_focused()
+                dialog.evaluate("n=>n.addEventListener('cancel',e=>e.preventDefault(),{once:true})")
+                p.keyboard.press('Escape')
+                expect(dialog).to_be_visible();expect(field).to_be_focused()
+                blocked=snapshot()
+                assert blocked['cancel']==2 and blocked['close']==1 and not blocked['browse_at_home']
+                p.keyboard.press('Escape')
+                expect(dialog).not_to_be_visible();expect(opener).to_be_focused()
+                p.wait_for_function('window.__primaryEscape.close===2')
+                final=snapshot()
+                assert final['cancel']==3 and final['close']==2 and final['browse_at_home']
+                assert final['writes']==['replaceState']
+                observed['native_cancel_prevention_then_recovery']=True
+                observed['final_native_sequence']=final['sequence']
+            else:
+                expect(field).to_be_focused()
+                final=snapshot()
+                assert final['cancel']==final['close']==0 and final['bubble']==1
+                assert final['writes']==['replaceState'] and final['browse_at_home']
+                observed['desktop_empty_escape_passed_through']=True
+            observed['pass']=True
+
+    for width in (1440,390,320):
+        for language in ('en','zh'):
+            theme='dark' if (width,language) in ((390,'en'),(320,'zh')) else 'light'
+            check(f'primary-escape-{width}-{language}',lambda w=width,l=language,t=theme:primary_escape_contract(w,l,t))
+
     browser.close()
 server.shutdown()
 report['pass'] = all(c['result']=='PASS' for c in report['cases']) and not report['page_errors']

@@ -1,0 +1,1696 @@
+{
+  "phase": "Primary GMI search Escape event ownership",
+  "date": "2026-11-09",
+  "repository": "mastermindx-market-intelligence/Macro",
+  "branch": "claude/gmi-product-upgrade-20261103",
+  "pr": 10676,
+  "parent": "60cd0e21fd5f8d08f19248198780efc5cf12937d",
+  "status": "source-bound component proof; Draft and original release holds unchanged",
+  "behavior": {
+    "single_existing_handler_changed": true,
+    "guarded_escape": [
+      "defaultPrevented",
+      "isComposing",
+      "keyCode229"
+    ],
+    "guard_stops_propagation": true,
+    "guard_adds_prevent_default": false,
+    "ordinary_nonempty_clear_unchanged": true,
+    "ordinary_empty_native_behavior_preserved": true,
+    "new_composition_state": false,
+    "new_cancel_policy": false,
+    "other_keyboard_owners_changed": false
+  },
+  "boundary": {
+    "synthetic_composition_event_contract_only": true,
+    "native_os_ime_proven": false,
+    "real_consumed_ordinary_keys": true,
+    "document_bubble_probe": true,
+    "full_shared_shell_runtime": false
+  },
+  "native_root": "/Volumes/Mastermind/agent-workspaces/verify/gmi-primary-escape-20261109-odggopgu",
+  "processes": {
+    "prepare": {
+      "pid": 44774,
+      "exit_code": 0,
+      "runtime_seconds": 0.46
+    },
+    "single_patch": {
+      "pid": 55554,
+      "exit_code": 0,
+      "runtime_seconds": 0.12
+    },
+    "baseline": {
+      "pid": 56742,
+      "exit_code": 1,
+      "runtime_seconds": 8.32,
+      "cases": 3,
+      "contexts": 3,
+      "expected_reproductions": 3
+    },
+    "candidate": {
+      "pid": 57258,
+      "exit_code": 0,
+      "runtime_seconds": 13.24,
+      "cases": 6,
+      "contexts": 6,
+      "page_errors": 0,
+      "browser": "157.0.8103.39",
+      "guarded_synthetic_events": 36,
+      "trusted_consumed_keys": 12,
+      "composition_native_ime_proven": false
+    },
+    "export": {
+      "pid": 58765,
+      "bytes": 41567,
+      "sha256": "83ffea491dd51b8df7f662744729ef0655c59c8cb165132add87587e05c513fd",
+      "blob": "382455add1ba19fc7f0028266c22bedd780eb1a8"
+    }
+  },
+  "commands": {
+    "prepare": "python3 - <<'PY'\nfrom pathlib import Path\nimport tempfile,shutil,json,hashlib\nprevious=Path('/Volumes/Mastermind/agent-workspaces/verify/gmi-payload-recovery-20261109-bt0yvuue')\nroot=Path(tempfile.mkdtemp(prefix='gmi-primary-escape-20261109-',dir='/Volumes/Mastermind/agent-workspaces/verify'))\n(root/'templates').mkdir()\nfor name in ('theme.css','gmi.js'):\n shutil.copy2(previous/'templates'/name,root/'templates'/name)\nfor lane in ('baseline','candidate'):\n shutil.copytree(previous/'candidate',root/lane)\nshutil.copy2(previous/'verify_product_browser.py',root/'baseline-verify_product_browser.py')\nshutil.copy2(previous/'verify_product_browser.py',root/'verify_product_browser.py')\ndef meta(p):\n b=p.read_bytes()\n return {'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest(),'blob':hashlib.sha1(b'blob '+str(len(b)).encode()+b'\\0'+b).hexdigest()}\nbinding={'source_head':'60cd0e21fd5f8d08f19248198780efc5cf12937d','source_root':str(previous),'retained_model_sha256':'e644fa48a2bb6e6affe8d1fda74556d9db5f82acadffdad839e1efe8f095359f','inputs':{p.name:meta(p) for p in sorted((root/'baseline').iterdir()) if p.is_file()},'theme_css':meta(root/'templates/theme.css'),'canonical_verifier':meta(root/'verify_product_browser.py')}\nassert binding['inputs']['gmi.js']['blob']=='34b2ad1110ace6a667e87e7164ff74bde701eb85'\nassert binding['inputs']['gmi.html']['blob']=='9c142c6854de795372cc2b256d74eab6071cf3ea'\nassert binding['canonical_verifier']['blob']=='f65bae942cc5424f6c24b9b3fc56180e1dee36ce'\n(root/'input-bindings.json').write_text(json.dumps(binding,ensure_ascii=False,indent=2)+'\\n')\nprint(json.dumps({'root':str(root),'source_head':binding['source_head'],'baseline_files':len(binding['inputs']),'baseline_js':binding['inputs']['gmi.js'],'baseline_explorer':binding['inputs']['gmi.html']}),flush=True)\nPY",
+    "patch": "python3 - <<'PY'\nfrom pathlib import Path\nimport json,hashlib,ast\nv=json.loads(\"{\\\"root\\\":\\\"/Volumes/Mastermind/agent-workspaces/verify/gmi-primary-escape-20261109-odggopgu\\\",\\\"old\\\":\\\"search.addEventListener('keydown',function(event){if(event.key==='Escape'&&search.value){event.preventDefault();event.stopPropagation();search.value='';updateFilters();}});\\\",\\\"replacement\\\":\\\"search.addEventListener('keydown',function(event){\\\\n  if(event.key!=='Escape')return;\\\\n  if(event.defaultPrevented||event.isComposing||event.keyCode===229){event.stopPropagation();return;}\\\\n  if(search.value){event.preventDefault();event.stopPropagation();search.value='';updateFilters();}\\\\n});\\\"}\")\nr=Path(v['root']);s=(r/'baseline/gmi.js').read_text();assert s.count(v['old'])==1\ncandidate=s.replace(v['old'],v['replacement']);(r/'candidate/gmi.js').write_text(candidate);(r/'templates/gmi.js').write_text(candidate)\nt=(r/'baseline-verify_product_browser.py').read_text();marker='\\n    browser.close()\\nserver.shutdown()';assert t.count(marker)==1\nt=t.replace(marker,'\\n'+(r/'primary-escape-definitions.py').read_text()+marker);ast.parse(t);(r/'verify_product_browser.py').write_text(t)\ndef meta(p):\n b=p.read_bytes();return {'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest(),'blob':hashlib.sha1(b'blob '+str(len(b)).encode()+b'\\0'+b).hexdigest()}\nunchanged=[p.name for p in sorted((r/'baseline').iterdir()) if p.name!='gmi.js'];assert len(unchanged)==8\nassert all((r/'baseline'/n).read_bytes()==(r/'candidate'/n).read_bytes() for n in unchanged)\nassert (r/'templates/gmi.js').read_bytes()==(r/'candidate/gmi.js').read_bytes()\nout={'source_head':'60cd0e21fd5f8d08f19248198780efc5cf12937d','single_handler_replacement':True,'paired_js_exact':True,'unchanged_outputs':unchanged,'source_hashes':{n:meta(r/n) for n in ['baseline/gmi.js','templates/gmi.js','candidate/gmi.js','verify_product_browser.py','verify_primary_escape_component.py']}}\n(r/'source-checks.json').write_text(json.dumps(out,indent=2)+'\\n');print(json.dumps(out),flush=True)\nPY",
+    "browser": "PYTHONDONTWRITEBYTECODE=1 python3 '/Volumes/Mastermind/agent-workspaces/verify/gmi-primary-escape-20261109-odggopgu/verify_primary_escape_component.py' --root '/Volumes/Mastermind/agent-workspaces/verify/gmi-primary-escape-20261109-odggopgu' --executable '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'",
+    "export": "python3 - <<'PY'\nfrom pathlib import Path\nimport json,hashlib\nr=Path('/Volumes/Mastermind/agent-workspaces/verify/gmi-primary-escape-20261109-odggopgu')\ndef meta(p):\n b=p.read_bytes()\n return {'path':str(p),'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest(),'blob':hashlib.sha1(b'blob '+str(len(b)).encode()+b'\\0'+b).hexdigest()}\nnames={'input_bindings':'input-bindings.json','source_checks':'source-checks.json','baseline_browser':'baseline-proof/browser-report.json','candidate_browser':'candidate-proof/browser-report.json'}\nv={k:json.loads((r/n).read_text()) for k,n in names.items()};v['receipt_files']={k:meta(r/n) for k,n in names.items()};v['screenshot_hashes']=[meta(p) for p in sorted((r/'candidate-proof').glob('*.png'))]\np=r/'primary-escape-native-receipts.json';p.write_text(json.dumps(v,ensure_ascii=False,separators=(',',':'))+'\\n')\nprint(json.dumps({'receipt':meta(p),'pass':v['candidate_browser']['pass'],'cases':len(v['candidate_browser']['cases']),'contexts':v['candidate_browser']['contexts'],'guard_events':sum(len(x['guards']) for x in v['candidate_browser']['primary_escape_observations'])}),flush=True)\nPY"
+  },
+  "source_self_check": {
+    "existing_definitions": 92,
+    "all_existing_definitions_ast_exact": true,
+    "added_definitions": [
+      "primary_escape_contract#0",
+      "primary_escape_contract#0.snapshot#0",
+      "primary_escape_contract#0.guarded#0"
+    ],
+    "hashes": {
+      "candidate-gmi.js": {
+        "bytes": 54161,
+        "sha256": "e3d444b31192b272eca62d1e97e671b074f1acfac0a6ffdbc399c9669e459373",
+        "blob": "d7d9107dbb08c8098ea8be168a4378aef30c0338"
+      },
+      "candidate-verify_product_browser.py": {
+        "bytes": 234059,
+        "sha256": "ac44e8e871d750f2b0d10617828b6031306e0358660e0c5e59af9bc782ba11d2",
+        "blob": "a7f67b65258a4b40da9a39d86528d3fec7e669dd"
+      },
+      "verify_primary_escape_component.py": {
+        "bytes": 6433,
+        "sha256": "1e58e4c77a5e19ef1d14ea19d5d2a6ecb49bb4924df2d7b11078a00057d5b444",
+        "blob": "6271bac754b47a77e871f783ae1f4d7c0202a16b"
+      }
+    }
+  },
+  "native_receipts": {
+    "input_bindings": {
+      "source_head": "60cd0e21fd5f8d08f19248198780efc5cf12937d",
+      "source_root": "/Volumes/Mastermind/agent-workspaces/verify/gmi-payload-recovery-20261109-bt0yvuue",
+      "retained_model_sha256": "e644fa48a2bb6e6affe8d1fda74556d9db5f82acadffdad839e1efe8f095359f",
+      "inputs": {
+        "gmi-companies.html": {
+          "bytes": 65156,
+          "sha256": "fda702382d62068f8f39874bcd07bbb915ddacee6a3d4f734b337b58f3e47d3c",
+          "blob": "c4b1c81c92c270411c6698a473b55354a05dc8a5"
+        },
+        "gmi-coverage.html": {
+          "bytes": 75416,
+          "sha256": "893408143f6c0cb1db08084ad9c7c57b56386421f3a3958f1879a87f9035b745",
+          "blob": "5df5c79f27a467894d125da61d3cf88b3969edf9"
+        },
+        "gmi-index.html": {
+          "bytes": 262285,
+          "sha256": "3e6e6f4846598bc6240f3aa69c5523a5500e7f79f7838e655ea7ecd7800536d4",
+          "blob": "d0cff23fec423c3480ea12ee200c272396fd53a0"
+        },
+        "gmi-issuer-mu.html": {
+          "bytes": 65585,
+          "sha256": "22cc39aca77961584fad494ab0afa788b287636f7e3c5cfaecba7dbda2172bdd",
+          "blob": "3a4515417dbc651737c954799fa6f234d7a178da"
+        },
+        "gmi-relationships.html": {
+          "bytes": 61988,
+          "sha256": "86243e69c432370eb83600a45cda897e29a1a63697f55e3a72ccffcf9468c377",
+          "blob": "8a693c57b649b300a5c3e53e9d24cfa9c92987c7"
+        },
+        "gmi-states.html": {
+          "bytes": 64663,
+          "sha256": "3b3c22bd3c57dc34586ac5b9d0800cab9d6c3259f56c9cdc5c2021117a65187e",
+          "blob": "6f31a9ea9deb80794422096fd4233a566502de6e"
+        },
+        "gmi.css": {
+          "bytes": 75647,
+          "sha256": "3bbf6c4e0a53a688f8fc1f0274213c3c5faaf43af62ed519d2c3ef5c2a571ce0",
+          "blob": "4302bf7edbbb66d9356b75723785ef146e12adb5"
+        },
+        "gmi.html": {
+          "bytes": 973168,
+          "sha256": "8cdbadf83bcfb49153f4c0f258f72541349d0eb34becbf34772f00d2ccfe676d",
+          "blob": "9c142c6854de795372cc2b256d74eab6071cf3ea"
+        },
+        "gmi.js": {
+          "bytes": 54043,
+          "sha256": "74db8222c79911a06add34d076e69d7e838aa67a21740522d8c31b60e4f58896",
+          "blob": "34b2ad1110ace6a667e87e7164ff74bde701eb85"
+        }
+      },
+      "theme_css": {
+        "bytes": 227583,
+        "sha256": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757",
+        "blob": "619436f58d37a222d1db7021ba9d52bb3a05a7fa"
+      },
+      "canonical_verifier": {
+        "bytes": 224155,
+        "sha256": "e528935102d7c2e87efd954d610e6778f115a7b5f7f093c896a27eaaceb3469f",
+        "blob": "f65bae942cc5424f6c24b9b3fc56180e1dee36ce"
+      }
+    },
+    "source_checks": {
+      "source_head": "60cd0e21fd5f8d08f19248198780efc5cf12937d",
+      "single_handler_replacement": true,
+      "paired_js_exact": true,
+      "unchanged_outputs": [
+        "gmi-companies.html",
+        "gmi-coverage.html",
+        "gmi-index.html",
+        "gmi-issuer-mu.html",
+        "gmi-relationships.html",
+        "gmi-states.html",
+        "gmi.css",
+        "gmi.html"
+      ],
+      "source_hashes": {
+        "baseline/gmi.js": {
+          "bytes": 54043,
+          "sha256": "74db8222c79911a06add34d076e69d7e838aa67a21740522d8c31b60e4f58896",
+          "blob": "34b2ad1110ace6a667e87e7164ff74bde701eb85"
+        },
+        "templates/gmi.js": {
+          "bytes": 54161,
+          "sha256": "e3d444b31192b272eca62d1e97e671b074f1acfac0a6ffdbc399c9669e459373",
+          "blob": "d7d9107dbb08c8098ea8be168a4378aef30c0338"
+        },
+        "candidate/gmi.js": {
+          "bytes": 54161,
+          "sha256": "e3d444b31192b272eca62d1e97e671b074f1acfac0a6ffdbc399c9669e459373",
+          "blob": "d7d9107dbb08c8098ea8be168a4378aef30c0338"
+        },
+        "verify_product_browser.py": {
+          "bytes": 234059,
+          "sha256": "ac44e8e871d750f2b0d10617828b6031306e0358660e0c5e59af9bc782ba11d2",
+          "blob": "a7f67b65258a4b40da9a39d86528d3fec7e669dd"
+        },
+        "verify_primary_escape_component.py": {
+          "bytes": 6433,
+          "sha256": "1e58e4c77a5e19ef1d14ea19d5d2a6ecb49bb4924df2d7b11078a00057d5b444",
+          "blob": "6271bac754b47a77e871f783ae1f4d7c0202a16b"
+        }
+      }
+    },
+    "baseline_browser": {
+      "generated_at": "2026-11-09T08:58:40.167405+00:00",
+      "baseline": true,
+      "scope": "Primary GMI search Escape contract on actual generated-main fixtures.\n\nSynthetic composing events prove authored guards, not OS-native IME behavior.\nReal ordinary and consumed Escape keys observe the native dialog boundary.\nProduction JS, shared\ntheme/GMI CSS and seven generated main sections are retained. External network\nis blocked; no shared-shell/font runtime, account, AT speech or release claim.",
+      "script_sha256": "74db8222c79911a06add34d076e69d7e838aa67a21740522d8c31b60e4f58896",
+      "gmi_css_sha256": "3bbf6c4e0a53a688f8fc1f0274213c3c5faaf43af62ed519d2c3ef5c2a571ce0",
+      "verifier_sha256": "ac44e8e871d750f2b0d10617828b6031306e0358660e0c5e59af9bc782ba11d2",
+      "inputs": {
+        "source_head": "60cd0e21fd5f8d08f19248198780efc5cf12937d",
+        "source_root": "/Volumes/Mastermind/agent-workspaces/verify/gmi-payload-recovery-20261109-bt0yvuue",
+        "retained_model_sha256": "e644fa48a2bb6e6affe8d1fda74556d9db5f82acadffdad839e1efe8f095359f",
+        "inputs": {
+          "gmi-companies.html": {
+            "bytes": 65156,
+            "sha256": "fda702382d62068f8f39874bcd07bbb915ddacee6a3d4f734b337b58f3e47d3c",
+            "blob": "c4b1c81c92c270411c6698a473b55354a05dc8a5"
+          },
+          "gmi-coverage.html": {
+            "bytes": 75416,
+            "sha256": "893408143f6c0cb1db08084ad9c7c57b56386421f3a3958f1879a87f9035b745",
+            "blob": "5df5c79f27a467894d125da61d3cf88b3969edf9"
+          },
+          "gmi-index.html": {
+            "bytes": 262285,
+            "sha256": "3e6e6f4846598bc6240f3aa69c5523a5500e7f79f7838e655ea7ecd7800536d4",
+            "blob": "d0cff23fec423c3480ea12ee200c272396fd53a0"
+          },
+          "gmi-issuer-mu.html": {
+            "bytes": 65585,
+            "sha256": "22cc39aca77961584fad494ab0afa788b287636f7e3c5cfaecba7dbda2172bdd",
+            "blob": "3a4515417dbc651737c954799fa6f234d7a178da"
+          },
+          "gmi-relationships.html": {
+            "bytes": 61988,
+            "sha256": "86243e69c432370eb83600a45cda897e29a1a63697f55e3a72ccffcf9468c377",
+            "blob": "8a693c57b649b300a5c3e53e9d24cfa9c92987c7"
+          },
+          "gmi-states.html": {
+            "bytes": 64663,
+            "sha256": "3b3c22bd3c57dc34586ac5b9d0800cab9d6c3259f56c9cdc5c2021117a65187e",
+            "blob": "6f31a9ea9deb80794422096fd4233a566502de6e"
+          },
+          "gmi.css": {
+            "bytes": 75647,
+            "sha256": "3bbf6c4e0a53a688f8fc1f0274213c3c5faaf43af62ed519d2c3ef5c2a571ce0",
+            "blob": "4302bf7edbbb66d9356b75723785ef146e12adb5"
+          },
+          "gmi.html": {
+            "bytes": 973168,
+            "sha256": "8cdbadf83bcfb49153f4c0f258f72541349d0eb34becbf34772f00d2ccfe676d",
+            "blob": "9c142c6854de795372cc2b256d74eab6071cf3ea"
+          },
+          "gmi.js": {
+            "bytes": 54043,
+            "sha256": "74db8222c79911a06add34d076e69d7e838aa67a21740522d8c31b60e4f58896",
+            "blob": "34b2ad1110ace6a667e87e7164ff74bde701eb85"
+          }
+        },
+        "theme_css": {
+          "bytes": 227583,
+          "sha256": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757",
+          "blob": "619436f58d37a222d1db7021ba9d52bb3a05a7fa"
+        },
+        "canonical_verifier": {
+          "bytes": 224155,
+          "sha256": "e528935102d7c2e87efd954d610e6778f115a7b5f7f093c896a27eaaceb3469f",
+          "blob": "f65bae942cc5424f6c24b9b3fc56180e1dee36ce"
+        }
+      },
+      "cases": [
+        {
+          "name": "baseline-primary-composing",
+          "result": "FAIL",
+          "error": "Traceback (most recent call last):\n  File \"/Volumes/Mastermind/agent-workspaces/verify/gmi-primary-escape-20261109-odggopgu/verify_primary_escape_component.py\", line 92, in <module>\n    try:action();result={'name':name,'result':'PASS'}\n        ~~~~~~^^\n  File \"/Volumes/Mastermind/agent-workspaces/verify/gmi-primary-escape-20261109-odggopgu/verify_primary_escape_component.py\", line 85, in <lambda>\n    actions=[('baseline-primary-'+kind,lambda k=kind:primary_escape_contract(390,'en',only_guard=k)) for kind in ('composing','legacy229','consumed')]\n                                                     ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Volumes/Mastermind/agent-workspaces/verify/gmi-primary-escape-20261109-odggopgu/verify_product_browser.py\", line 3241, in primary_escape_contract\n    guarded(only_guard,'nonempty');return\n    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Volumes/Mastermind/agent-workspaces/verify/gmi-primary-escape-20261109-odggopgu/verify_product_browser.py\", line 3237, in guarded\n    assert flags['finally_prevented']==flags['initially_prevented'],item\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: {'kind': 'composing', 'stage': 'nonempty', 'flags': {'isTrusted': False, 'isComposing': True, 'keyCode': 27, 'initially_prevented': False, 'finally_prevented': True, 'dispatch_accepted': False}, 'state_unchanged': False, 'before': {'value': 'HBM', 'selection': [1, 2], 'url': 'http://127.0.0.1:55972/case-1/gmi.html#scope=core&lens=chain&theme=theme%3Ahbm_packaging&category=theme%3Asemiconductors_hardware&q=HBM', 'history_length': 2, 'category': 'theme:semiconductors_hardware', 'scope': 'core', 'evidence': False, 'lens': 'chain', 'visible': ['theme:hbm_packaging', 'theme:conventional_dram', 'theme:nand_enterprise_storage'], 'title': 'HBM & advanced packaging', 'focus_is_field': True, 'dialog_open': True, 'same_nodes': True, 'browse_at_home': False, 'writes': [], 'cancel': 0, 'close': 0, 'bubble': 0, 'sequence': []}, 'after': {'value': '', 'selection': [0, 0], 'url': 'http://127.0.0.1:55972/case-1/gmi.html#scope=core&lens=chain&theme=theme%3Ahbm_packaging&category=theme%3Asemiconductors_hardware', 'history_length': 2, 'category': 'theme:semiconductors_hardware', 'scope': 'core', 'evidence': False, 'lens': 'chain', 'visible': ['theme:hbm_packaging', 'theme:ai_interconnect_silicon', 'theme:conventional_dram', 'theme:custom_asic_silicon', 'theme:etch_deposition_equipment', 'theme:gpu_merchant_accelerators', 'theme:lithography_tools', 'theme:nand_enterprise_storage', 'theme:process_metrology_inspection', 'theme:wafer_fab_subsystems'], 'title': 'HBM & advanced packaging', 'focus_is_field': True, 'dialog_open': True, 'same_nodes': True, 'browse_at_home': False, 'writes': ['replaceState'], 'cancel': 0, 'close': 0, 'bubble': 0, 'sequence': []}}\n",
+          "contexts": 1
+        },
+        {
+          "name": "baseline-primary-legacy229",
+          "result": "FAIL",
+          "error": "Traceback (most recent call last):\n  File \"/Volumes/Mastermind/agent-workspaces/verify/gmi-primary-escape-20261109-odggopgu/verify_primary_escape_component.py\", line 92, in <module>\n    try:action();result={'name':name,'result':'PASS'}\n        ~~~~~~^^\n  File \"/Volumes/Mastermind/agent-workspaces/verify/gmi-primary-escape-20261109-odggopgu/verify_primary_escape_component.py\", line 85, in <lambda>\n    actions=[('baseline-primary-'+kind,lambda k=kind:primary_escape_contract(390,'en',only_guard=k)) for kind in ('composing','legacy229','consumed')]\n                                                     ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Volumes/Mastermind/agent-workspaces/verify/gmi-primary-escape-20261109-odggopgu/verify_product_browser.py\", line 3241, in primary_escape_contract\n    guarded(only_guard,'nonempty');return\n    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Volumes/Mastermind/agent-workspaces/verify/gmi-primary-escape-20261109-odggopgu/verify_product_browser.py\", line 3237, in guarded\n    assert flags['finally_prevented']==flags['initially_prevented'],item\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: {'kind': 'legacy229', 'stage': 'nonempty', 'flags': {'isTrusted': False, 'isComposing': False, 'keyCode': 229, 'initially_prevented': False, 'finally_prevented': True, 'dispatch_accepted': False}, 'state_unchanged': False, 'before': {'value': 'HBM', 'selection': [1, 2], 'url': 'http://127.0.0.1:55972/case-2/gmi.html#scope=core&lens=chain&theme=theme%3Ahbm_packaging&category=theme%3Asemiconductors_hardware&q=HBM', 'history_length': 2, 'category': 'theme:semiconductors_hardware', 'scope': 'core', 'evidence': False, 'lens': 'chain', 'visible': ['theme:hbm_packaging', 'theme:conventional_dram', 'theme:nand_enterprise_storage'], 'title': 'HBM & advanced packaging', 'focus_is_field': True, 'dialog_open': True, 'same_nodes': True, 'browse_at_home': False, 'writes': [], 'cancel': 0, 'close': 0, 'bubble': 0, 'sequence': []}, 'after': {'value': '', 'selection': [0, 0], 'url': 'http://127.0.0.1:55972/case-2/gmi.html#scope=core&lens=chain&theme=theme%3Ahbm_packaging&category=theme%3Asemiconductors_hardware', 'history_length': 2, 'category': 'theme:semiconductors_hardware', 'scope': 'core', 'evidence': False, 'lens': 'chain', 'visible': ['theme:hbm_packaging', 'theme:ai_interconnect_silicon', 'theme:conventional_dram', 'theme:custom_asic_silicon', 'theme:etch_deposition_equipment', 'theme:gpu_merchant_accelerators', 'theme:lithography_tools', 'theme:nand_enterprise_storage', 'theme:process_metrology_inspection', 'theme:wafer_fab_subsystems'], 'title': 'HBM & advanced packaging', 'focus_is_field': True, 'dialog_open': True, 'same_nodes': True, 'browse_at_home': False, 'writes': ['replaceState'], 'cancel': 0, 'close': 0, 'bubble': 0, 'sequence': []}}\n",
+          "contexts": 1
+        },
+        {
+          "name": "baseline-primary-consumed",
+          "result": "FAIL",
+          "error": "Traceback (most recent call last):\n  File \"/Volumes/Mastermind/agent-workspaces/verify/gmi-primary-escape-20261109-odggopgu/verify_primary_escape_component.py\", line 92, in <module>\n    try:action();result={'name':name,'result':'PASS'}\n        ~~~~~~^^\n  File \"/Volumes/Mastermind/agent-workspaces/verify/gmi-primary-escape-20261109-odggopgu/verify_primary_escape_component.py\", line 85, in <lambda>\n    actions=[('baseline-primary-'+kind,lambda k=kind:primary_escape_contract(390,'en',only_guard=k)) for kind in ('composing','legacy229','consumed')]\n                                                     ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Volumes/Mastermind/agent-workspaces/verify/gmi-primary-escape-20261109-odggopgu/verify_product_browser.py\", line 3241, in primary_escape_contract\n    guarded(only_guard,'nonempty');return\n    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Volumes/Mastermind/agent-workspaces/verify/gmi-primary-escape-20261109-odggopgu/verify_product_browser.py\", line 3238, in guarded\n    assert before==after,item\n           ^^^^^^^^^^^^^\nAssertionError: {'kind': 'consumed', 'stage': 'nonempty', 'flags': {'isTrusted': False, 'isComposing': False, 'keyCode': 27, 'initially_prevented': True, 'finally_prevented': True, 'dispatch_accepted': False}, 'state_unchanged': False, 'before': {'value': 'HBM', 'selection': [1, 2], 'url': 'http://127.0.0.1:55972/case-3/gmi.html#scope=core&lens=chain&theme=theme%3Ahbm_packaging&category=theme%3Asemiconductors_hardware&q=HBM', 'history_length': 2, 'category': 'theme:semiconductors_hardware', 'scope': 'core', 'evidence': False, 'lens': 'chain', 'visible': ['theme:hbm_packaging', 'theme:conventional_dram', 'theme:nand_enterprise_storage'], 'title': 'HBM & advanced packaging', 'focus_is_field': True, 'dialog_open': True, 'same_nodes': True, 'browse_at_home': False, 'writes': [], 'cancel': 0, 'close': 0, 'bubble': 0, 'sequence': []}, 'after': {'value': '', 'selection': [0, 0], 'url': 'http://127.0.0.1:55972/case-3/gmi.html#scope=core&lens=chain&theme=theme%3Ahbm_packaging&category=theme%3Asemiconductors_hardware', 'history_length': 2, 'category': 'theme:semiconductors_hardware', 'scope': 'core', 'evidence': False, 'lens': 'chain', 'visible': ['theme:hbm_packaging', 'theme:ai_interconnect_silicon', 'theme:conventional_dram', 'theme:custom_asic_silicon', 'theme:etch_deposition_equipment', 'theme:gpu_merchant_accelerators', 'theme:lithography_tools', 'theme:nand_enterprise_storage', 'theme:process_metrology_inspection', 'theme:wafer_fab_subsystems'], 'title': 'HBM & advanced packaging', 'focus_is_field': True, 'dialog_open': True, 'same_nodes': True, 'browse_at_home': False, 'writes': ['replaceState'], 'cancel': 0, 'close': 0, 'bubble': 0, 'sequence': []}}\n",
+          "contexts": 1
+        }
+      ],
+      "contexts": 3,
+      "screenshots": [],
+      "page_errors": [],
+      "browser": "157.0.8103.39",
+      "expected_cases": 3,
+      "primary_escape_observations": [
+        {
+          "width": 390,
+          "language": "en",
+          "theme": "light",
+          "narrow": true,
+          "composition_proof": "synthetic KeyboardEvent contract; no OS-native IME claim",
+          "guards": [
+            {
+              "kind": "composing",
+              "stage": "nonempty",
+              "flags": {
+                "isTrusted": false,
+                "isComposing": true,
+                "keyCode": 27,
+                "initially_prevented": false,
+                "finally_prevented": true,
+                "dispatch_accepted": false
+              },
+              "state_unchanged": false,
+              "before": {
+                "value": "HBM",
+                "selection": [
+                  1,
+                  2
+                ],
+                "url": "http://127.0.0.1:55972/case-1/gmi.html#scope=core&lens=chain&theme=theme%3Ahbm_packaging&category=theme%3Asemiconductors_hardware&q=HBM",
+                "history_length": 2,
+                "category": "theme:semiconductors_hardware",
+                "scope": "core",
+                "evidence": false,
+                "lens": "chain",
+                "visible": [
+                  "theme:hbm_packaging",
+                  "theme:conventional_dram",
+                  "theme:nand_enterprise_storage"
+                ],
+                "title": "HBM & advanced packaging",
+                "focus_is_field": true,
+                "dialog_open": true,
+                "same_nodes": true,
+                "browse_at_home": false,
+                "writes": [],
+                "cancel": 0,
+                "close": 0,
+                "bubble": 0,
+                "sequence": []
+              },
+              "after": {
+                "value": "",
+                "selection": [
+                  0,
+                  0
+                ],
+                "url": "http://127.0.0.1:55972/case-1/gmi.html#scope=core&lens=chain&theme=theme%3Ahbm_packaging&category=theme%3Asemiconductors_hardware",
+                "history_length": 2,
+                "category": "theme:semiconductors_hardware",
+                "scope": "core",
+                "evidence": false,
+                "lens": "chain",
+                "visible": [
+                  "theme:hbm_packaging",
+                  "theme:ai_interconnect_silicon",
+                  "theme:conventional_dram",
+                  "theme:custom_asic_silicon",
+                  "theme:etch_deposition_equipment",
+                  "theme:gpu_merchant_accelerators",
+                  "theme:lithography_tools",
+                  "theme:nand_enterprise_storage",
+                  "theme:process_metrology_inspection",
+                  "theme:wafer_fab_subsystems"
+                ],
+                "title": "HBM & advanced packaging",
+                "focus_is_field": true,
+                "dialog_open": true,
+                "same_nodes": true,
+                "browse_at_home": false,
+                "writes": [
+                  "replaceState"
+                ],
+                "cancel": 0,
+                "close": 0,
+                "bubble": 0,
+                "sequence": []
+              }
+            }
+          ]
+        },
+        {
+          "width": 390,
+          "language": "en",
+          "theme": "light",
+          "narrow": true,
+          "composition_proof": "synthetic KeyboardEvent contract; no OS-native IME claim",
+          "guards": [
+            {
+              "kind": "legacy229",
+              "stage": "nonempty",
+              "flags": {
+                "isTrusted": false,
+                "isComposing": false,
+                "keyCode": 229,
+                "initially_prevented": false,
+                "finally_prevented": true,
+                "dispatch_accepted": false
+              },
+              "state_unchanged": false,
+              "before": {
+                "value": "HBM",
+                "selection": [
+                  1,
+                  2
+                ],
+                "url": "http://127.0.0.1:55972/case-2/gmi.html#scope=core&lens=chain&theme=theme%3Ahbm_packaging&category=theme%3Asemiconductors_hardware&q=HBM",
+                "history_length": 2,
+                "category": "theme:semiconductors_hardware",
+                "scope": "core",
+                "evidence": false,
+                "lens": "chain",
+                "visible": [
+                  "theme:hbm_packaging",
+                  "theme:conventional_dram",
+                  "theme:nand_enterprise_storage"
+                ],
+                "title": "HBM & advanced packaging",
+                "focus_is_field": true,
+                "dialog_open": true,
+                "same_nodes": true,
+                "browse_at_home": false,
+                "writes": [],
+                "cancel": 0,
+                "close": 0,
+                "bubble": 0,
+                "sequence": []
+              },
+              "after": {
+                "value": "",
+                "selection": [
+                  0,
+                  0
+                ],
+                "url": "http://127.0.0.1:55972/case-2/gmi.html#scope=core&lens=chain&theme=theme%3Ahbm_packaging&category=theme%3Asemiconductors_hardware",
+                "history_length": 2,
+                "category": "theme:semiconductors_hardware",
+                "scope": "core",
+                "evidence": false,
+                "lens": "chain",
+                "visible": [
+                  "theme:hbm_packaging",
+                  "theme:ai_interconnect_silicon",
+                  "theme:conventional_dram",
+                  "theme:custom_asic_silicon",
+                  "theme:etch_deposition_equipment",
+                  "theme:gpu_merchant_accelerators",
+                  "theme:lithography_tools",
+                  "theme:nand_enterprise_storage",
+                  "theme:process_metrology_inspection",
+                  "theme:wafer_fab_subsystems"
+                ],
+                "title": "HBM & advanced packaging",
+                "focus_is_field": true,
+                "dialog_open": true,
+                "same_nodes": true,
+                "browse_at_home": false,
+                "writes": [
+                  "replaceState"
+                ],
+                "cancel": 0,
+                "close": 0,
+                "bubble": 0,
+                "sequence": []
+              }
+            }
+          ]
+        },
+        {
+          "width": 390,
+          "language": "en",
+          "theme": "light",
+          "narrow": true,
+          "composition_proof": "synthetic KeyboardEvent contract; no OS-native IME claim",
+          "guards": [
+            {
+              "kind": "consumed",
+              "stage": "nonempty",
+              "flags": {
+                "isTrusted": false,
+                "isComposing": false,
+                "keyCode": 27,
+                "initially_prevented": true,
+                "finally_prevented": true,
+                "dispatch_accepted": false
+              },
+              "state_unchanged": false,
+              "before": {
+                "value": "HBM",
+                "selection": [
+                  1,
+                  2
+                ],
+                "url": "http://127.0.0.1:55972/case-3/gmi.html#scope=core&lens=chain&theme=theme%3Ahbm_packaging&category=theme%3Asemiconductors_hardware&q=HBM",
+                "history_length": 2,
+                "category": "theme:semiconductors_hardware",
+                "scope": "core",
+                "evidence": false,
+                "lens": "chain",
+                "visible": [
+                  "theme:hbm_packaging",
+                  "theme:conventional_dram",
+                  "theme:nand_enterprise_storage"
+                ],
+                "title": "HBM & advanced packaging",
+                "focus_is_field": true,
+                "dialog_open": true,
+                "same_nodes": true,
+                "browse_at_home": false,
+                "writes": [],
+                "cancel": 0,
+                "close": 0,
+                "bubble": 0,
+                "sequence": []
+              },
+              "after": {
+                "value": "",
+                "selection": [
+                  0,
+                  0
+                ],
+                "url": "http://127.0.0.1:55972/case-3/gmi.html#scope=core&lens=chain&theme=theme%3Ahbm_packaging&category=theme%3Asemiconductors_hardware",
+                "history_length": 2,
+                "category": "theme:semiconductors_hardware",
+                "scope": "core",
+                "evidence": false,
+                "lens": "chain",
+                "visible": [
+                  "theme:hbm_packaging",
+                  "theme:ai_interconnect_silicon",
+                  "theme:conventional_dram",
+                  "theme:custom_asic_silicon",
+                  "theme:etch_deposition_equipment",
+                  "theme:gpu_merchant_accelerators",
+                  "theme:lithography_tools",
+                  "theme:nand_enterprise_storage",
+                  "theme:process_metrology_inspection",
+                  "theme:wafer_fab_subsystems"
+                ],
+                "title": "HBM & advanced packaging",
+                "focus_is_field": true,
+                "dialog_open": true,
+                "same_nodes": true,
+                "browse_at_home": false,
+                "writes": [
+                  "replaceState"
+                ],
+                "cancel": 0,
+                "close": 0,
+                "bubble": 0,
+                "sequence": []
+              }
+            }
+          ]
+        }
+      ],
+      "complete": true,
+      "pass": false
+    },
+    "candidate_browser": {
+      "generated_at": "2026-11-09T08:58:54.384781+00:00",
+      "baseline": false,
+      "scope": "Primary GMI search Escape contract on actual generated-main fixtures.\n\nSynthetic composing events prove authored guards, not OS-native IME behavior.\nReal ordinary and consumed Escape keys observe the native dialog boundary.\nProduction JS, shared\ntheme/GMI CSS and seven generated main sections are retained. External network\nis blocked; no shared-shell/font runtime, account, AT speech or release claim.",
+      "script_sha256": "e3d444b31192b272eca62d1e97e671b074f1acfac0a6ffdbc399c9669e459373",
+      "gmi_css_sha256": "3bbf6c4e0a53a688f8fc1f0274213c3c5faaf43af62ed519d2c3ef5c2a571ce0",
+      "verifier_sha256": "ac44e8e871d750f2b0d10617828b6031306e0358660e0c5e59af9bc782ba11d2",
+      "inputs": {
+        "source_head": "60cd0e21fd5f8d08f19248198780efc5cf12937d",
+        "source_root": "/Volumes/Mastermind/agent-workspaces/verify/gmi-payload-recovery-20261109-bt0yvuue",
+        "retained_model_sha256": "e644fa48a2bb6e6affe8d1fda74556d9db5f82acadffdad839e1efe8f095359f",
+        "inputs": {
+          "gmi-companies.html": {
+            "bytes": 65156,
+            "sha256": "fda702382d62068f8f39874bcd07bbb915ddacee6a3d4f734b337b58f3e47d3c",
+            "blob": "c4b1c81c92c270411c6698a473b55354a05dc8a5"
+          },
+          "gmi-coverage.html": {
+            "bytes": 75416,
+            "sha256": "893408143f6c0cb1db08084ad9c7c57b56386421f3a3958f1879a87f9035b745",
+            "blob": "5df5c79f27a467894d125da61d3cf88b3969edf9"
+          },
+          "gmi-index.html": {
+            "bytes": 262285,
+            "sha256": "3e6e6f4846598bc6240f3aa69c5523a5500e7f79f7838e655ea7ecd7800536d4",
+            "blob": "d0cff23fec423c3480ea12ee200c272396fd53a0"
+          },
+          "gmi-issuer-mu.html": {
+            "bytes": 65585,
+            "sha256": "22cc39aca77961584fad494ab0afa788b287636f7e3c5cfaecba7dbda2172bdd",
+            "blob": "3a4515417dbc651737c954799fa6f234d7a178da"
+          },
+          "gmi-relationships.html": {
+            "bytes": 61988,
+            "sha256": "86243e69c432370eb83600a45cda897e29a1a63697f55e3a72ccffcf9468c377",
+            "blob": "8a693c57b649b300a5c3e53e9d24cfa9c92987c7"
+          },
+          "gmi-states.html": {
+            "bytes": 64663,
+            "sha256": "3b3c22bd3c57dc34586ac5b9d0800cab9d6c3259f56c9cdc5c2021117a65187e",
+            "blob": "6f31a9ea9deb80794422096fd4233a566502de6e"
+          },
+          "gmi.css": {
+            "bytes": 75647,
+            "sha256": "3bbf6c4e0a53a688f8fc1f0274213c3c5faaf43af62ed519d2c3ef5c2a571ce0",
+            "blob": "4302bf7edbbb66d9356b75723785ef146e12adb5"
+          },
+          "gmi.html": {
+            "bytes": 973168,
+            "sha256": "8cdbadf83bcfb49153f4c0f258f72541349d0eb34becbf34772f00d2ccfe676d",
+            "blob": "9c142c6854de795372cc2b256d74eab6071cf3ea"
+          },
+          "gmi.js": {
+            "bytes": 54043,
+            "sha256": "74db8222c79911a06add34d076e69d7e838aa67a21740522d8c31b60e4f58896",
+            "blob": "34b2ad1110ace6a667e87e7164ff74bde701eb85"
+          }
+        },
+        "theme_css": {
+          "bytes": 227583,
+          "sha256": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757",
+          "blob": "619436f58d37a222d1db7021ba9d52bb3a05a7fa"
+        },
+        "canonical_verifier": {
+          "bytes": 224155,
+          "sha256": "e528935102d7c2e87efd954d610e6778f115a7b5f7f093c896a27eaaceb3469f",
+          "blob": "f65bae942cc5424f6c24b9b3fc56180e1dee36ce"
+        }
+      },
+      "cases": [
+        {
+          "name": "primary-escape-1440-en",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "primary-escape-1440-zh",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "primary-escape-390-en",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "primary-escape-390-zh",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "primary-escape-320-en",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "primary-escape-320-zh",
+          "result": "PASS",
+          "contexts": 1
+        }
+      ],
+      "contexts": 6,
+      "screenshots": [
+        "primary-search-390-en.png",
+        "primary-search-320-zh.png"
+      ],
+      "page_errors": [],
+      "browser": "157.0.8103.39",
+      "expected_cases": 6,
+      "primary_escape_observations": [
+        {
+          "width": 1440,
+          "language": "en",
+          "theme": "light",
+          "narrow": false,
+          "composition_proof": "synthetic KeyboardEvent contract; no OS-native IME claim",
+          "guards": [
+            {
+              "kind": "composing",
+              "stage": "nonempty",
+              "flags": {
+                "isTrusted": false,
+                "isComposing": true,
+                "keyCode": 27,
+                "initially_prevented": false,
+                "finally_prevented": false,
+                "dispatch_accepted": true
+              },
+              "state_unchanged": true
+            },
+            {
+              "kind": "legacy229",
+              "stage": "nonempty",
+              "flags": {
+                "isTrusted": false,
+                "isComposing": false,
+                "keyCode": 229,
+                "initially_prevented": false,
+                "finally_prevented": false,
+                "dispatch_accepted": true
+              },
+              "state_unchanged": true
+            },
+            {
+              "kind": "consumed",
+              "stage": "nonempty",
+              "flags": {
+                "isTrusted": false,
+                "isComposing": false,
+                "keyCode": 27,
+                "initially_prevented": true,
+                "finally_prevented": true,
+                "dispatch_accepted": false
+              },
+              "state_unchanged": true
+            },
+            {
+              "kind": "composing",
+              "stage": "empty",
+              "flags": {
+                "isTrusted": false,
+                "isComposing": true,
+                "keyCode": 27,
+                "initially_prevented": false,
+                "finally_prevented": false,
+                "dispatch_accepted": true
+              },
+              "state_unchanged": true
+            },
+            {
+              "kind": "legacy229",
+              "stage": "empty",
+              "flags": {
+                "isTrusted": false,
+                "isComposing": false,
+                "keyCode": 229,
+                "initially_prevented": false,
+                "finally_prevented": false,
+                "dispatch_accepted": true
+              },
+              "state_unchanged": true
+            },
+            {
+              "kind": "consumed",
+              "stage": "empty",
+              "flags": {
+                "isTrusted": false,
+                "isComposing": false,
+                "keyCode": 27,
+                "initially_prevented": true,
+                "finally_prevented": true,
+                "dispatch_accepted": false
+              },
+              "state_unchanged": true
+            }
+          ],
+          "real_consumed_nonempty_unchanged": true,
+          "before_clear": {
+            "value": "HBM",
+            "selection": [
+              1,
+              2
+            ],
+            "url": "http://127.0.0.1:56045/case-1/gmi.html#scope=core&lens=chain&theme=theme%3Ahbm_packaging&category=theme%3Asemiconductors_hardware&q=HBM",
+            "history_length": 2,
+            "category": "theme:semiconductors_hardware",
+            "scope": "core",
+            "evidence": false,
+            "lens": "chain",
+            "visible": [
+              "theme:hbm_packaging",
+              "theme:conventional_dram",
+              "theme:nand_enterprise_storage"
+            ],
+            "title": "HBM & advanced packaging",
+            "focus_is_field": true,
+            "dialog_open": false,
+            "same_nodes": true,
+            "browse_at_home": true,
+            "writes": [],
+            "cancel": 0,
+            "close": 0,
+            "bubble": 0,
+            "sequence": []
+          },
+          "after_clear": {
+            "value": "",
+            "selection": [
+              0,
+              0
+            ],
+            "url": "http://127.0.0.1:56045/case-1/gmi.html#scope=core&lens=chain&theme=theme%3Ahbm_packaging&category=theme%3Asemiconductors_hardware",
+            "history_length": 2,
+            "category": "theme:semiconductors_hardware",
+            "scope": "core",
+            "evidence": false,
+            "lens": "chain",
+            "visible": [
+              "theme:hbm_packaging",
+              "theme:ai_interconnect_silicon",
+              "theme:conventional_dram",
+              "theme:custom_asic_silicon",
+              "theme:etch_deposition_equipment",
+              "theme:gpu_merchant_accelerators",
+              "theme:lithography_tools",
+              "theme:nand_enterprise_storage",
+              "theme:process_metrology_inspection",
+              "theme:wafer_fab_subsystems"
+            ],
+            "title": "HBM & advanced packaging",
+            "focus_is_field": true,
+            "dialog_open": false,
+            "same_nodes": true,
+            "browse_at_home": true,
+            "writes": [
+              "replaceState"
+            ],
+            "cancel": 0,
+            "close": 0,
+            "bubble": 0,
+            "sequence": []
+          },
+          "real_consumed_empty_unchanged": true,
+          "desktop_empty_escape_passed_through": true,
+          "pass": true
+        },
+        {
+          "width": 1440,
+          "language": "zh",
+          "theme": "light",
+          "narrow": false,
+          "composition_proof": "synthetic KeyboardEvent contract; no OS-native IME claim",
+          "guards": [
+            {
+              "kind": "composing",
+              "stage": "nonempty",
+              "flags": {
+                "isTrusted": false,
+                "isComposing": true,
+                "keyCode": 27,
+                "initially_prevented": false,
+                "finally_prevented": false,
+                "dispatch_accepted": true
+              },
+              "state_unchanged": true
+            },
+            {
+              "kind": "legacy229",
+              "stage": "nonempty",
+              "flags": {
+                "isTrusted": false,
+                "isComposing": false,
+                "keyCode": 229,
+                "initially_prevented": false,
+                "finally_prevented": false,
+                "dispatch_accepted": true
+              },
+              "state_unchanged": true
+            },
+            {
+              "kind": "consumed",
+              "stage": "nonempty",
+              "flags": {
+                "isTrusted": false,
+                "isComposing": false,
+                "keyCode": 27,
+                "initially_prevented": true,
+                "finally_prevented": true,
+                "dispatch_accepted": false
+              },
+              "state_unchanged": true
+            },
+            {
+              "kind": "composing",
+              "stage": "empty",
+              "flags": {
+                "isTrusted": false,
+                "isComposing": true,
+                "keyCode": 27,
+                "initially_prevented": false,
+                "finally_prevented": false,
+                "dispatch_accepted": true
+              },
+              "state_unchanged": true
+            },
+            {
+              "kind": "legacy229",
+              "stage": "empty",
+              "flags": {
+                "isTrusted": false,
+                "isComposing": false,
+                "keyCode": 229,
+                "initially_prevented": false,
+                "finally_prevented": false,
+                "dispatch_accepted": true
+              },
+              "state_unchanged": true
+            },
+            {
+              "kind": "consumed",
+              "stage": "empty",
+              "flags": {
+                "isTrusted": false,
+                "isComposing": false,
+                "keyCode": 27,
+                "initially_prevented": true,
+                "finally_prevented": true,
+                "dispatch_accepted": false
+              },
+              "state_unchanged": true
+            }
+          ],
+          "real_consumed_nonempty_unchanged": true,
+          "before_clear": {
+            "value": "HBM",
+            "selection": [
+              1,
+              2
+            ],
+            "url": "http://127.0.0.1:56045/case-2/gmi.html#scope=core&lens=chain&theme=theme%3Ahbm_packaging&category=theme%3Asemiconductors_hardware&evidence=1&q=HBM",
+            "history_length": 2,
+            "category": "theme:semiconductors_hardware",
+            "scope": "core",
+            "evidence": true,
+            "lens": "chain",
+            "visible": [
+              "theme:hbm_packaging"
+            ],
+            "title": "HBM 与先进封装",
+            "focus_is_field": true,
+            "dialog_open": false,
+            "same_nodes": true,
+            "browse_at_home": true,
+            "writes": [],
+            "cancel": 0,
+            "close": 0,
+            "bubble": 0,
+            "sequence": []
+          },
+          "after_clear": {
+            "value": "",
+            "selection": [
+              0,
+              0
+            ],
+            "url": "http://127.0.0.1:56045/case-2/gmi.html#scope=core&lens=chain&theme=theme%3Ahbm_packaging&category=theme%3Asemiconductors_hardware&evidence=1",
+            "history_length": 2,
+            "category": "theme:semiconductors_hardware",
+            "scope": "core",
+            "evidence": true,
+            "lens": "chain",
+            "visible": [
+              "theme:hbm_packaging"
+            ],
+            "title": "HBM 与先进封装",
+            "focus_is_field": true,
+            "dialog_open": false,
+            "same_nodes": true,
+            "browse_at_home": true,
+            "writes": [
+              "replaceState"
+            ],
+            "cancel": 0,
+            "close": 0,
+            "bubble": 0,
+            "sequence": []
+          },
+          "real_consumed_empty_unchanged": true,
+          "desktop_empty_escape_passed_through": true,
+          "pass": true
+        },
+        {
+          "width": 390,
+          "language": "en",
+          "theme": "dark",
+          "narrow": true,
+          "composition_proof": "synthetic KeyboardEvent contract; no OS-native IME claim",
+          "guards": [
+            {
+              "kind": "composing",
+              "stage": "nonempty",
+              "flags": {
+                "isTrusted": false,
+                "isComposing": true,
+                "keyCode": 27,
+                "initially_prevented": false,
+                "finally_prevented": false,
+                "dispatch_accepted": true
+              },
+              "state_unchanged": true
+            },
+            {
+              "kind": "legacy229",
+              "stage": "nonempty",
+              "flags": {
+                "isTrusted": false,
+                "isComposing": false,
+                "keyCode": 229,
+                "initially_prevented": false,
+                "finally_prevented": false,
+                "dispatch_accepted": true
+              },
+              "state_unchanged": true
+            },
+            {
+              "kind": "consumed",
+              "stage": "nonempty",
+              "flags": {
+                "isTrusted": false,
+                "isComposing": false,
+                "keyCode": 27,
+                "initially_prevented": true,
+                "finally_prevented": true,
+                "dispatch_accepted": false
+              },
+              "state_unchanged": true
+            },
+            {
+              "kind": "composing",
+              "stage": "empty",
+              "flags": {
+                "isTrusted": false,
+                "isComposing": true,
+                "keyCode": 27,
+                "initially_prevented": false,
+                "finally_prevented": false,
+                "dispatch_accepted": true
+              },
+              "state_unchanged": true
+            },
+            {
+              "kind": "legacy229",
+              "stage": "empty",
+              "flags": {
+                "isTrusted": false,
+                "isComposing": false,
+                "keyCode": 229,
+                "initially_prevented": false,
+                "finally_prevented": false,
+                "dispatch_accepted": true
+              },
+              "state_unchanged": true
+            },
+            {
+              "kind": "consumed",
+              "stage": "empty",
+              "flags": {
+                "isTrusted": false,
+                "isComposing": false,
+                "keyCode": 27,
+                "initially_prevented": true,
+                "finally_prevented": true,
+                "dispatch_accepted": false
+              },
+              "state_unchanged": true
+            }
+          ],
+          "real_consumed_nonempty_unchanged": true,
+          "before_clear": {
+            "value": "HBM",
+            "selection": [
+              1,
+              2
+            ],
+            "url": "http://127.0.0.1:56045/case-3/gmi.html#scope=core&lens=chain&theme=theme%3Ahbm_packaging&category=theme%3Asemiconductors_hardware&q=HBM",
+            "history_length": 2,
+            "category": "theme:semiconductors_hardware",
+            "scope": "core",
+            "evidence": false,
+            "lens": "chain",
+            "visible": [
+              "theme:hbm_packaging",
+              "theme:conventional_dram",
+              "theme:nand_enterprise_storage"
+            ],
+            "title": "HBM & advanced packaging",
+            "focus_is_field": true,
+            "dialog_open": true,
+            "same_nodes": true,
+            "browse_at_home": false,
+            "writes": [],
+            "cancel": 0,
+            "close": 0,
+            "bubble": 0,
+            "sequence": []
+          },
+          "after_clear": {
+            "value": "",
+            "selection": [
+              0,
+              0
+            ],
+            "url": "http://127.0.0.1:56045/case-3/gmi.html#scope=core&lens=chain&theme=theme%3Ahbm_packaging&category=theme%3Asemiconductors_hardware",
+            "history_length": 2,
+            "category": "theme:semiconductors_hardware",
+            "scope": "core",
+            "evidence": false,
+            "lens": "chain",
+            "visible": [
+              "theme:hbm_packaging",
+              "theme:ai_interconnect_silicon",
+              "theme:conventional_dram",
+              "theme:custom_asic_silicon",
+              "theme:etch_deposition_equipment",
+              "theme:gpu_merchant_accelerators",
+              "theme:lithography_tools",
+              "theme:nand_enterprise_storage",
+              "theme:process_metrology_inspection",
+              "theme:wafer_fab_subsystems"
+            ],
+            "title": "HBM & advanced packaging",
+            "focus_is_field": true,
+            "dialog_open": true,
+            "same_nodes": true,
+            "browse_at_home": false,
+            "writes": [
+              "replaceState"
+            ],
+            "cancel": 0,
+            "close": 0,
+            "bubble": 0,
+            "sequence": []
+          },
+          "real_consumed_empty_unchanged": true,
+          "native_clear_then_cancel": true,
+          "native_cancel_prevention_then_recovery": true,
+          "final_native_sequence": [
+            "cancel",
+            "close",
+            "cancel",
+            "cancel",
+            "close"
+          ],
+          "pass": true
+        },
+        {
+          "width": 390,
+          "language": "zh",
+          "theme": "light",
+          "narrow": true,
+          "composition_proof": "synthetic KeyboardEvent contract; no OS-native IME claim",
+          "guards": [
+            {
+              "kind": "composing",
+              "stage": "nonempty",
+              "flags": {
+                "isTrusted": false,
+                "isComposing": true,
+                "keyCode": 27,
+                "initially_prevented": false,
+                "finally_prevented": false,
+                "dispatch_accepted": true
+              },
+              "state_unchanged": true
+            },
+            {
+              "kind": "legacy229",
+              "stage": "nonempty",
+              "flags": {
+                "isTrusted": false,
+                "isComposing": false,
+                "keyCode": 229,
+                "initially_prevented": false,
+                "finally_prevented": false,
+                "dispatch_accepted": true
+              },
+              "state_unchanged": true
+            },
+            {
+              "kind": "consumed",
+              "stage": "nonempty",
+              "flags": {
+                "isTrusted": false,
+                "isComposing": false,
+                "keyCode": 27,
+                "initially_prevented": true,
+                "finally_prevented": true,
+                "dispatch_accepted": false
+              },
+              "state_unchanged": true
+            },
+            {
+              "kind": "composing",
+              "stage": "empty",
+              "flags": {
+                "isTrusted": false,
+                "isComposing": true,
+                "keyCode": 27,
+                "initially_prevented": false,
+                "finally_prevented": false,
+                "dispatch_accepted": true
+              },
+              "state_unchanged": true
+            },
+            {
+              "kind": "legacy229",
+              "stage": "empty",
+              "flags": {
+                "isTrusted": false,
+                "isComposing": false,
+                "keyCode": 229,
+                "initially_prevented": false,
+                "finally_prevented": false,
+                "dispatch_accepted": true
+              },
+              "state_unchanged": true
+            },
+            {
+              "kind": "consumed",
+              "stage": "empty",
+              "flags": {
+                "isTrusted": false,
+                "isComposing": false,
+                "keyCode": 27,
+                "initially_prevented": true,
+                "finally_prevented": true,
+                "dispatch_accepted": false
+              },
+              "state_unchanged": true
+            }
+          ],
+          "real_consumed_nonempty_unchanged": true,
+          "before_clear": {
+            "value": "HBM",
+            "selection": [
+              1,
+              2
+            ],
+            "url": "http://127.0.0.1:56045/case-4/gmi.html#scope=core&lens=chain&theme=theme%3Ahbm_packaging&category=theme%3Asemiconductors_hardware&evidence=1&q=HBM",
+            "history_length": 2,
+            "category": "theme:semiconductors_hardware",
+            "scope": "core",
+            "evidence": true,
+            "lens": "chain",
+            "visible": [
+              "theme:hbm_packaging"
+            ],
+            "title": "HBM 与先进封装",
+            "focus_is_field": true,
+            "dialog_open": true,
+            "same_nodes": true,
+            "browse_at_home": false,
+            "writes": [],
+            "cancel": 0,
+            "close": 0,
+            "bubble": 0,
+            "sequence": []
+          },
+          "after_clear": {
+            "value": "",
+            "selection": [
+              0,
+              0
+            ],
+            "url": "http://127.0.0.1:56045/case-4/gmi.html#scope=core&lens=chain&theme=theme%3Ahbm_packaging&category=theme%3Asemiconductors_hardware&evidence=1",
+            "history_length": 2,
+            "category": "theme:semiconductors_hardware",
+            "scope": "core",
+            "evidence": true,
+            "lens": "chain",
+            "visible": [
+              "theme:hbm_packaging"
+            ],
+            "title": "HBM 与先进封装",
+            "focus_is_field": true,
+            "dialog_open": true,
+            "same_nodes": true,
+            "browse_at_home": false,
+            "writes": [
+              "replaceState"
+            ],
+            "cancel": 0,
+            "close": 0,
+            "bubble": 0,
+            "sequence": []
+          },
+          "real_consumed_empty_unchanged": true,
+          "native_clear_then_cancel": true,
+          "native_cancel_prevention_then_recovery": true,
+          "final_native_sequence": [
+            "cancel",
+            "close",
+            "cancel",
+            "cancel",
+            "close"
+          ],
+          "pass": true
+        },
+        {
+          "width": 320,
+          "language": "en",
+          "theme": "light",
+          "narrow": true,
+          "composition_proof": "synthetic KeyboardEvent contract; no OS-native IME claim",
+          "guards": [
+            {
+              "kind": "composing",
+              "stage": "nonempty",
+              "flags": {
+                "isTrusted": false,
+                "isComposing": true,
+                "keyCode": 27,
+                "initially_prevented": false,
+                "finally_prevented": false,
+                "dispatch_accepted": true
+              },
+              "state_unchanged": true
+            },
+            {
+              "kind": "legacy229",
+              "stage": "nonempty",
+              "flags": {
+                "isTrusted": false,
+                "isComposing": false,
+                "keyCode": 229,
+                "initially_prevented": false,
+                "finally_prevented": false,
+                "dispatch_accepted": true
+              },
+              "state_unchanged": true
+            },
+            {
+              "kind": "consumed",
+              "stage": "nonempty",
+              "flags": {
+                "isTrusted": false,
+                "isComposing": false,
+                "keyCode": 27,
+                "initially_prevented": true,
+                "finally_prevented": true,
+                "dispatch_accepted": false
+              },
+              "state_unchanged": true
+            },
+            {
+              "kind": "composing",
+              "stage": "empty",
+              "flags": {
+                "isTrusted": false,
+                "isComposing": true,
+                "keyCode": 27,
+                "initially_prevented": false,
+                "finally_prevented": false,
+                "dispatch_accepted": true
+              },
+              "state_unchanged": true
+            },
+            {
+              "kind": "legacy229",
+              "stage": "empty",
+              "flags": {
+                "isTrusted": false,
+                "isComposing": false,
+                "keyCode": 229,
+                "initially_prevented": false,
+                "finally_prevented": false,
+                "dispatch_accepted": true
+              },
+              "state_unchanged": true
+            },
+            {
+              "kind": "consumed",
+              "stage": "empty",
+              "flags": {
+                "isTrusted": false,
+                "isComposing": false,
+                "keyCode": 27,
+                "initially_prevented": true,
+                "finally_prevented": true,
+                "dispatch_accepted": false
+              },
+              "state_unchanged": true
+            }
+          ],
+          "real_consumed_nonempty_unchanged": true,
+          "before_clear": {
+            "value": "HBM",
+            "selection": [
+              1,
+              2
+            ],
+            "url": "http://127.0.0.1:56045/case-5/gmi.html#scope=core&lens=chain&theme=theme%3Ahbm_packaging&category=theme%3Asemiconductors_hardware&q=HBM",
+            "history_length": 2,
+            "category": "theme:semiconductors_hardware",
+            "scope": "core",
+            "evidence": false,
+            "lens": "chain",
+            "visible": [
+              "theme:hbm_packaging",
+              "theme:conventional_dram",
+              "theme:nand_enterprise_storage"
+            ],
+            "title": "HBM & advanced packaging",
+            "focus_is_field": true,
+            "dialog_open": true,
+            "same_nodes": true,
+            "browse_at_home": false,
+            "writes": [],
+            "cancel": 0,
+            "close": 0,
+            "bubble": 0,
+            "sequence": []
+          },
+          "after_clear": {
+            "value": "",
+            "selection": [
+              0,
+              0
+            ],
+            "url": "http://127.0.0.1:56045/case-5/gmi.html#scope=core&lens=chain&theme=theme%3Ahbm_packaging&category=theme%3Asemiconductors_hardware",
+            "history_length": 2,
+            "category": "theme:semiconductors_hardware",
+            "scope": "core",
+            "evidence": false,
+            "lens": "chain",
+            "visible": [
+              "theme:hbm_packaging",
+              "theme:ai_interconnect_silicon",
+              "theme:conventional_dram",
+              "theme:custom_asic_silicon",
+              "theme:etch_deposition_equipment",
+              "theme:gpu_merchant_accelerators",
+              "theme:lithography_tools",
+              "theme:nand_enterprise_storage",
+              "theme:process_metrology_inspection",
+              "theme:wafer_fab_subsystems"
+            ],
+            "title": "HBM & advanced packaging",
+            "focus_is_field": true,
+            "dialog_open": true,
+            "same_nodes": true,
+            "browse_at_home": false,
+            "writes": [
+              "replaceState"
+            ],
+            "cancel": 0,
+            "close": 0,
+            "bubble": 0,
+            "sequence": []
+          },
+          "real_consumed_empty_unchanged": true,
+          "native_clear_then_cancel": true,
+          "native_cancel_prevention_then_recovery": true,
+          "final_native_sequence": [
+            "cancel",
+            "close",
+            "cancel",
+            "cancel",
+            "close"
+          ],
+          "pass": true
+        },
+        {
+          "width": 320,
+          "language": "zh",
+          "theme": "dark",
+          "narrow": true,
+          "composition_proof": "synthetic KeyboardEvent contract; no OS-native IME claim",
+          "guards": [
+            {
+              "kind": "composing",
+              "stage": "nonempty",
+              "flags": {
+                "isTrusted": false,
+                "isComposing": true,
+                "keyCode": 27,
+                "initially_prevented": false,
+                "finally_prevented": false,
+                "dispatch_accepted": true
+              },
+              "state_unchanged": true
+            },
+            {
+              "kind": "legacy229",
+              "stage": "nonempty",
+              "flags": {
+                "isTrusted": false,
+                "isComposing": false,
+                "keyCode": 229,
+                "initially_prevented": false,
+                "finally_prevented": false,
+                "dispatch_accepted": true
+              },
+              "state_unchanged": true
+            },
+            {
+              "kind": "consumed",
+              "stage": "nonempty",
+              "flags": {
+                "isTrusted": false,
+                "isComposing": false,
+                "keyCode": 27,
+                "initially_prevented": true,
+                "finally_prevented": true,
+                "dispatch_accepted": false
+              },
+              "state_unchanged": true
+            },
+            {
+              "kind": "composing",
+              "stage": "empty",
+              "flags": {
+                "isTrusted": false,
+                "isComposing": true,
+                "keyCode": 27,
+                "initially_prevented": false,
+                "finally_prevented": false,
+                "dispatch_accepted": true
+              },
+              "state_unchanged": true
+            },
+            {
+              "kind": "legacy229",
+              "stage": "empty",
+              "flags": {
+                "isTrusted": false,
+                "isComposing": false,
+                "keyCode": 229,
+                "initially_prevented": false,
+                "finally_prevented": false,
+                "dispatch_accepted": true
+              },
+              "state_unchanged": true
+            },
+            {
+              "kind": "consumed",
+              "stage": "empty",
+              "flags": {
+                "isTrusted": false,
+                "isComposing": false,
+                "keyCode": 27,
+                "initially_prevented": true,
+                "finally_prevented": true,
+                "dispatch_accepted": false
+              },
+              "state_unchanged": true
+            }
+          ],
+          "real_consumed_nonempty_unchanged": true,
+          "before_clear": {
+            "value": "HBM",
+            "selection": [
+              1,
+              2
+            ],
+            "url": "http://127.0.0.1:56045/case-6/gmi.html#scope=core&lens=chain&theme=theme%3Ahbm_packaging&category=theme%3Asemiconductors_hardware&evidence=1&q=HBM",
+            "history_length": 2,
+            "category": "theme:semiconductors_hardware",
+            "scope": "core",
+            "evidence": true,
+            "lens": "chain",
+            "visible": [
+              "theme:hbm_packaging"
+            ],
+            "title": "HBM 与先进封装",
+            "focus_is_field": true,
+            "dialog_open": true,
+            "same_nodes": true,
+            "browse_at_home": false,
+            "writes": [],
+            "cancel": 0,
+            "close": 0,
+            "bubble": 0,
+            "sequence": []
+          },
+          "after_clear": {
+            "value": "",
+            "selection": [
+              0,
+              0
+            ],
+            "url": "http://127.0.0.1:56045/case-6/gmi.html#scope=core&lens=chain&theme=theme%3Ahbm_packaging&category=theme%3Asemiconductors_hardware&evidence=1",
+            "history_length": 2,
+            "category": "theme:semiconductors_hardware",
+            "scope": "core",
+            "evidence": true,
+            "lens": "chain",
+            "visible": [
+              "theme:hbm_packaging"
+            ],
+            "title": "HBM 与先进封装",
+            "focus_is_field": true,
+            "dialog_open": true,
+            "same_nodes": true,
+            "browse_at_home": false,
+            "writes": [
+              "replaceState"
+            ],
+            "cancel": 0,
+            "close": 0,
+            "bubble": 0,
+            "sequence": []
+          },
+          "real_consumed_empty_unchanged": true,
+          "native_clear_then_cancel": true,
+          "native_cancel_prevention_then_recovery": true,
+          "final_native_sequence": [
+            "cancel",
+            "close",
+            "cancel",
+            "cancel",
+            "close"
+          ],
+          "pass": true
+        }
+      ],
+      "complete": true,
+      "pass": true
+    },
+    "receipt_files": {
+      "input_bindings": {
+        "path": "/Volumes/Mastermind/agent-workspaces/verify/gmi-primary-escape-20261109-odggopgu/input-bindings.json",
+        "bytes": 2396,
+        "sha256": "367739837dc06f7b42b5963be206217ea59c3bd7358928ae3aa035f6b9fb71d2",
+        "blob": "2e5c3957aa0eae85f6f81ad1c5bcadcc0c967233"
+      },
+      "source_checks": {
+        "path": "/Volumes/Mastermind/agent-workspaces/verify/gmi-primary-escape-20261109-odggopgu/source-checks.json",
+        "bytes": 1372,
+        "sha256": "05abee09e307dc52b700fa07077fc79fe267a85444564863060a2b195fd14382",
+        "blob": "e2dfa5e3b299c6006625c1dbf8d7dd9e19e0d110"
+      },
+      "baseline_browser": {
+        "path": "/Volumes/Mastermind/agent-workspaces/verify/gmi-primary-escape-20261109-odggopgu/baseline-proof/browser-report.json",
+        "bytes": 20891,
+        "sha256": "7057e0d46e59ab5e82b3480e7a977c0f85203098850ae0f522df96022bb7ef86",
+        "blob": "91f054f27d4ea03f352783e412a418bb639ef5d0"
+      },
+      "candidate_browser": {
+        "path": "/Volumes/Mastermind/agent-workspaces/verify/gmi-primary-escape-20261109-odggopgu/candidate-proof/browser-report.json",
+        "bytes": 30886,
+        "sha256": "a93057f5f77d22517e9eace8466f62299d7a0faded05dedb4f02fdf66d920f74",
+        "blob": "bc50fb2764cbc5ed61acd21192bf65367d37cfeb"
+      }
+    },
+    "screenshot_hashes": [
+      {
+        "path": "/Volumes/Mastermind/agent-workspaces/verify/gmi-primary-escape-20261109-odggopgu/candidate-proof/primary-search-320-zh.png",
+        "bytes": 55176,
+        "sha256": "423f4d0a7e0ef94df562a3ccd03f68a2499af6c0e82b806a562ced0ffa3b4519",
+        "blob": "aaeb22e10c7ec04245037e3867595f165d170cb7"
+      },
+      {
+        "path": "/Volumes/Mastermind/agent-workspaces/verify/gmi-primary-escape-20261109-odggopgu/candidate-proof/primary-search-390-en.png",
+        "bytes": 57428,
+        "sha256": "5dd7672703e372b13e8d38c0295ad2200a0e7f4352480ce44624adc6c0eefbb6",
+        "blob": "123c4f408436d9e690ea909db24bba20ad3781a5"
+      }
+    ]
+  },
+  "standards": [
+    {
+      "url": "https://www.w3.org/TR/uievents/#events-composition-key-events",
+      "basis": "Composition key events can carry isComposing on the exiting key; canceling keydown can suppress composition events."
+    },
+    {
+      "url": "https://html.spec.whatwg.org/multipage/interaction.html#close-requests",
+      "basis": "Canceling the relevant Escape keydown stops native close-request processing; propagation and default action are separate."
+    }
+  ],
+  "paper": {
+    "file_id": "01M5H6EARN9YHQV17JC6ZG9BRY",
+    "build_root": "7M9-0",
+    "build_page": "p-7-0",
+    "existing_module_body": "7YQ-0",
+    "module_count": 18,
+    "new_module": false,
+    "new_product_specimen": false,
+    "page_updates": [
+      {
+        "pageId": "p-7-0",
+        "name": "Build · Interaction & receipts",
+        "icon": "blueprint"
+      },
+      {
+        "pageId": "p-6-0",
+        "name": "Reference · Preservation rules",
+        "icon": "info"
+      }
+    ],
+    "reference_page": "p-6-0",
+    "reference_root": "73U-0"
+  },
+  "limits": [
+    "Actual generated-main fixtures with production GMI JS and shared theme/GMI CSS; external requests blocked",
+    "No native operating-system IME interaction or universal dialog behavior across browsers asserted",
+    "No full shared-shell/fonts, spoken AT, live account/admission, current hosted CI, deployment or public-release acceptance",
+    "All seven HTML pages and CSS are byte-exact; no renderer/model regeneration needed for this paired-JS-only product change"
+  ]
+}
