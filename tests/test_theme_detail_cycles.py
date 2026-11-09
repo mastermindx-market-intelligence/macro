@@ -221,26 +221,30 @@ def test_theme_cycle_chart_preserves_geometry_on_wide_detail_pages():
     assert 'preserveAspectRatio="none" style="display:block;height:168px"' not in template
 
 
-@pytest.mark.parametrize("price_date", ["2026-11-06", None, ""])
-def test_intl_price_panel_date_is_separate_and_does_not_claim_ingestion_delay(
-    source, render_detail, tmp_path, price_date,
+@pytest.mark.parametrize("region", ["intl", "canada"])
+@pytest.mark.parametrize("panel_case", ["retained", "missing", "blank"])
+def test_price_panel_date_is_separate_and_does_not_claim_ingestion_delay(
+    source, render_detail, tmp_path, region, panel_case,
 ):
-    # Controlled metadata on the existing regional renderer fixture. No new market reading.
-    source["as_of"] = price_date
+    if panel_case == "missing":
+        source.pop("as_of")
+    elif panel_case == "blank":
+        source["as_of"] = ""
+    price_date = source.get("as_of")
     source["theme_intel"]["as_of"] = "2026-11-08"
-    _, html, detail = render_detail(source, "intl")
+    _, html, detail = render_detail(source, region)
     assert detail["price_panel_as_of"] == price_date
     assert detail["as_of"] == "2026-11-08", "the existing theme clock must remain separate"
-    assert detail["back"] == "../baskets_intl.html"
+    assert detail["back"] == f"../baskets_{region}.html"
     assert detail["members"]
     assert all(detail["basket"][key] == value for key, value in source["baskets"][0].items())
     rendered_dates = []
-    for viewer_at in ("2026-11-06T14:00:00Z", "2026-11-09T01:28:00Z", "2026-11-10T14:00:00Z"):
+    for viewer_at in ("2026-11-02T23:15:00Z", "2026-11-08T15:00:00Z", "2026-11-09T13:30:00Z"):
         cells = _render_javascript(html, tmp_path, viewer_at)["cells"]
         rendered_dates.append({})
         for language, markup in cells.items():
             match = re.search(r'<div class="disc" data-price-panel-date>(.*?)</div>', markup)
-            assert match, "International reader must disclose the panel's own date"
+            assert match, "the regional reader must disclose the panel's own date"
             localized = re.search(r'<span class="l-' + language + r'">(.*?)</span>', match.group(1))
             assert localized, "the incumbent language owner must retain both translations"
             text = html_module.unescape(localized.group(1))
@@ -253,8 +257,8 @@ def test_intl_price_panel_date_is_separate_and_does_not_claim_ingestion_delay(
     assert rendered_dates[0] == rendered_dates[1] == rendered_dates[2]
 
 
-@pytest.mark.parametrize("region", ["us", "canada", "hk"])
-def test_intl_price_date_addition_preserves_other_regional_readers(source, render_detail, tmp_path, region):
+@pytest.mark.parametrize("region", ["us", "hk", "china"])
+def test_price_panel_date_preserves_other_regional_readers(source, render_detail, tmp_path, region):
     _, html, detail = render_detail(source, region)
     assert "price_panel_as_of" not in detail
     assert detail["as_of"] == source["theme_intel"]["as_of"]

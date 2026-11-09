@@ -1816,8 +1816,9 @@ function injectFtrWidgets(pulse, turnWatch){
 
   var detailAsOf=(DETAIL.as_of||'').slice(0,10);
 
-  // Keep the mixed-market panel clock separate from the optional theme clock.
-  var bannerHtml=DETAIL.region==='intl'?pricePanelDateHtml(DETAIL.price_panel_as_of):stalenessBannerHtml(detailAsOf);
+  // Keep the panel observation date separate from the optional theme clock.
+  var usesPricePanelDate=DETAIL.region==='canada'||DETAIL.region==='intl';
+  var bannerHtml=usesPricePanelDate?pricePanelDateHtml(DETAIL.price_panel_as_of):stalenessBannerHtml(detailAsOf);
   if(bannerHtml){
     var bannerEl=document.createElement('div');
     bannerEl.className='ftr-stale-banner';
