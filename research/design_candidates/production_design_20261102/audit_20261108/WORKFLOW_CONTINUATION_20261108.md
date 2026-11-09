@@ -905,6 +905,26 @@ Only two existing Build text nodes changed (`11K-0` and `120-0`), to distinguish
 
 The eight native search specimens and the P9/UV Clear-return companions were not edited in this phase. Original R4, RIG, baseline/current-source and runtime qualifications remain. This adds executable builder evidence within the existing programme without claiming a shipped search feature.
 
+
+## 17. T47: show the added primary-result case at 390px and 320px
+
+The extra reference decision from §16 now has two native specimens on the existing [T47 Build page](https://app.paper.design/file/01M6Y2SGKNTEESDJX96ZSJJGPF/p-2-0):
+
+| State | Root | Treatment |
+|---|---|---|
+| 11 · Primary-only match | `128-0` | 390px, light, English |
+| 12 · 主列表匹配 | `12V-0` | 320px, dark, Chinese |
+
+These explicitly labeled **synthetic 50-row reference states** show the query `BTC`, one matching asset, original rank **01**, the original Bitcoin label and the retained missing-value dash. Each has one Clear action, a visible focused-input treatment and the retained source-strip placeholder. No empty lower-rank disclosure is drawn.
+
+The result rows were cloned from the existing same-theme source rows **`D3-0`** and **`MO-0`**, whose content was read immediately before use. The source strips reuse the existing **`EU-0`** and **`OF-0`** content. The existing eight treatment matrices and paired Clear-return boards were not edited.
+
+Native screenshots showed both compositions without clipping, including the 320px Chinese count/action row. Final JSX verified the exact query/result pair, original rank, missing-value dash, one Clear action and absence of an expansion affordance. This is visual reference proof; the images are not runtime captures.
+
+The existing executable-reference module **`124-0`** now names both new roots. Its pointer was read back. The reference code and its 16-test evidence were unchanged, so no additional test run was needed. Exact roots **`128-0, 12V-0, 10H-0`** were released after the extension.
+
+This makes the declared primary-only behavior reviewable in both a regular mobile width and a narrow translated layout. It adds no source data, provider action, route, persistence or application release claim.
+
 ## Active next phase: next demonstrated workflow gap
 
 The next bounded review is looking for a navigation, comparison or recovery gap in an existing Paper family, while preserving the completed work and other writers’ fenced or accepted surfaces. Choose from observed current nodes and exact source ownership rather than adding generic states.
