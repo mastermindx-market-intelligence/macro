@@ -492,7 +492,14 @@ html[data-theme="light"] .tt-ticker-profile{background:var(--panel);box-shadow:n
       var u=new URL(window.location.href),values=u.searchParams.getAll(selectionKey);
       if(value===null&&!values.length)return;
       if(value!==null&&values.length===1&&values[0]===value)return;
-      if(value===null)u.searchParams.delete(selectionKey);else u.searchParams.set(selectionKey,value);
+      // Keep unrelated raw segments in the same form the Shell bridge received.
+      var parts=u.search?u.search.slice(1).split('&'):[];
+      parts=parts.filter(function(part){
+        var key=part.split('=',1)[0];
+        try{return decodeURIComponent(key.replace(/\+/g,' '))!==selectionKey;}catch(e){return true;}
+      });
+      if(value!==null)parts.push(selectionKey+'='+encodeURIComponent(value));
+      u.search=parts.length?'?'+parts.join('&'):'';
       window.history.replaceState(window.history.state,'',u.href);
     }catch(e){}
   }

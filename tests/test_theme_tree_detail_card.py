@@ -225,7 +225,8 @@ function boot(url, ambiguous=false, data=input.data) {
   const document={body:new El(),getElementById:id=>id==='tt-detail-data'?{textContent:JSON.stringify(data)}:card,
     querySelectorAll:q=>chips,createElement:()=>new El(),createTextNode:t=>({textContent:t}),
     addEventListener:(k,f)=>{(devents[k]??=[]).push(f);}};
-  const history={state:{preserved:true},replaceState(s,t,u){assert.equal(s.preserved,true);location.href=new URL(u,location.href).href;replacements++;},
+  const state={preserved:true};
+  const history={state,replaceState(s,t,u){assert.equal(s,state);location.href=new URL(u,location.href).href;replacements++;},
     pushState(){throw Error('selection must not create a history entry');}};
   const window={location,history,addEventListener:(k,f)=>{(wevents[k]??=[]).push(f);}};
   vm.runInNewContext(input.script,{document,window,URL});
@@ -262,6 +263,34 @@ const absent={...input.data};delete absent[selected.getAttribute('data-node')];
 assert.equal(boot(returnedURL,false,absent).card.hidden,true);
 page=boot(returnedURL);page.location.href=original;page.event('popstate');assert.equal(page.card.hidden,true);
 page.location.href=returnedURL;page.event('mmx:shell-location');assert.equal(page.card.hidden,false);
+// The bridge preserves raw query bytes. The card owns only the selection key.
+const query='?view=A%20B&view=~&view=%2b&%76iew=Keep+One&bad%ZZ=kept&flag&?tt-selection=unrelated&%2574t-selection=unrelated';
+const root='https://macro.example/theme_tree.html';
+const rawURL=root+query+'#branch';
+const alt=input.chips.findIndex((attrs,i)=>i!==input.selected && attrs['data-node']===selected.getAttribute('data-node'));
+const firstValue=input.chips[input.selected]['data-tt-selection'];
+const altValue=input.chips[alt]['data-tt-selection'];
+function assertSelectedURL(current,value) {
+  assert.ok(current.href.startsWith(root+query+'&tt-selection='),current.href);
+  const url=new URL(current.href);
+  assert.deepEqual(url.searchParams.getAll('tt-selection'),[value]);
+  assert.equal(url.hash,'#branch');
+}
+page=boot(rawURL);page.click(page.chips[input.selected]);
+assertSelectedURL(page.location,firstValue);
+page.click(page.chips[alt]);assertSelectedURL(page.location,altValue);
+page.click(page.fields['.tt-detail-close']);assert.equal(page.location.href,rawURL);
+assert.equal(page.replacements,3);
+
+const encodedOwned=root+query+'&%74t-selection='+encodeURIComponent(firstValue)+'#branch';
+page=boot(encodedOwned);assert.equal(page.active,page.chips[input.selected]);
+assert.equal(page.replacements,0);
+page.click(page.fields['.tt-detail-close']);assert.equal(page.location.href,rawURL);
+page=boot(encodedOwned);page.click(page.chips[alt]);assertSelectedURL(page.location,altValue);
+const duplicateOwned=encodedOwned.replace('#branch','&tt-selection=extra#branch');
+page=boot(duplicateOwned);assert.equal(page.card.hidden,true);
+page.click(page.chips[input.selected]);assertSelectedURL(page.location,firstValue);
+page.click(page.fields['.tt-detail-close']);assert.equal(page.location.href,rawURL);
 console.log('real rendered multi-parent selection: click, replace, fresh-frame return, close, neutral controls and bridge replay PASS');
 """], input=json.dumps(packet), capture_output=True, text=True, timeout=30)
     assert result.returncode == 0, result.stdout + result.stderr
