@@ -1,0 +1,520 @@
+{
+  "kind": "bounded native visual/semantic inspection, not a new functional regression suite",
+  "contexts": 4,
+  "page_observations": 8,
+  "browser": "157.0.8103.39",
+  "observations": [
+    {
+      "width": 320,
+      "lang": "en",
+      "theme": "dark",
+      "before": {
+        "tag": "H3",
+        "title": "No eligible line-ups",
+        "h1Count": 0,
+        "fontSize": "18px",
+        "lineHeight": "27px",
+        "weight": "800",
+        "titleBox": {
+          "x": 45,
+          "y": 673.546875,
+          "width": 230,
+          "height": 27,
+          "right": 275,
+          "bottom": 700.546875
+        },
+        "cardBox": {
+          "x": 20,
+          "y": 632.546875,
+          "width": 280,
+          "height": 255.765625,
+          "right": 300,
+          "bottom": 888.3125
+        },
+        "paragraphBox": {
+          "x": 45,
+          "y": 706.546875,
+          "width": 230,
+          "height": 62.765625,
+          "right": 275,
+          "bottom": 769.3125
+        },
+        "actionBox": {
+          "x": 85.53125,
+          "y": 803.3125,
+          "width": 148.9375,
+          "height": 44,
+          "right": 234.46875,
+          "bottom": 847.3125
+        },
+        "titleScroll": 230,
+        "titleClient": 230,
+        "documentWidth": 320,
+        "paragraph": "This source contains no active line-ups with historical readings for both periods. Check the next update.",
+        "action": "Open Mastermind",
+        "href": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+        "footer": "Source built 2026-07-19T04:00:00Z · market observation time not supplied.\nContext, not investment advice."
+      },
+      "after": {
+        "tag": "H1",
+        "title": "No eligible line-ups",
+        "h1Count": 1,
+        "fontSize": "26px",
+        "lineHeight": "31.2px",
+        "weight": "800",
+        "titleBox": {
+          "x": 45,
+          "y": 673.546875,
+          "width": 230,
+          "height": 31.1875,
+          "right": 275,
+          "bottom": 704.734375
+        },
+        "cardBox": {
+          "x": 20,
+          "y": 632.546875,
+          "width": 280,
+          "height": 265.953125,
+          "right": 300,
+          "bottom": 898.5
+        },
+        "paragraphBox": {
+          "x": 45,
+          "y": 716.734375,
+          "width": 230,
+          "height": 62.765625,
+          "right": 275,
+          "bottom": 779.5
+        },
+        "actionBox": {
+          "x": 85.53125,
+          "y": 813.5,
+          "width": 148.9375,
+          "height": 44,
+          "right": 234.46875,
+          "bottom": 857.5
+        },
+        "titleScroll": 230,
+        "titleClient": 230,
+        "documentWidth": 320,
+        "paragraph": "This source contains no active line-ups with historical readings for both periods. Check the next update.",
+        "action": "Open Mastermind",
+        "href": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+        "footer": "Source built 2026-07-19T04:00:00Z · market observation time not supplied.\nContext, not investment advice."
+      },
+      "observation_checks": {
+        "title_text_exact": true,
+        "one_primary_heading": true,
+        "body_action_footer_exact": true,
+        "heading_contained": true,
+        "document_contained": true,
+        "action_minimum_preserved": true,
+        "existing_type_scale": true
+      },
+      "card_height_delta": 10.1875
+    },
+    {
+      "width": 320,
+      "lang": "zh",
+      "theme": "light",
+      "before": {
+        "tag": "H3",
+        "title": "暂无符合条件的组合",
+        "h1Count": 0,
+        "fontSize": "18px",
+        "lineHeight": "27px",
+        "weight": "800",
+        "titleBox": {
+          "x": 45,
+          "y": 656.046875,
+          "width": 230,
+          "height": 27,
+          "right": 275,
+          "bottom": 683.046875
+        },
+        "cardBox": {
+          "x": 20,
+          "y": 615.046875,
+          "width": 280,
+          "height": 234.84375,
+          "right": 300,
+          "bottom": 849.890625
+        },
+        "paragraphBox": {
+          "x": 45,
+          "y": 689.046875,
+          "width": 230,
+          "height": 41.84375,
+          "right": 275,
+          "bottom": 730.890625
+        },
+        "actionBox": {
+          "x": 91.140625,
+          "y": 764.890625,
+          "width": 137.71875,
+          "height": 44,
+          "right": 228.859375,
+          "bottom": 808.890625
+        },
+        "titleScroll": 230,
+        "titleClient": 230,
+        "documentWidth": 320,
+        "paragraph": "此源数据没有同时具备两段历史读数的活跃信号组合。请查看下次更新。",
+        "action": "打开 Mastermind",
+        "href": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+        "footer": "源数据生成于 2026-07-19T04:00:00Z · 未提供市场观察时间。\n仅供参考，非投资建议。"
+      },
+      "after": {
+        "tag": "H1",
+        "title": "暂无符合条件的组合",
+        "h1Count": 1,
+        "fontSize": "26px",
+        "lineHeight": "31.2px",
+        "weight": "800",
+        "titleBox": {
+          "x": 45,
+          "y": 656.046875,
+          "width": 230,
+          "height": 31.1875,
+          "right": 275,
+          "bottom": 687.234375
+        },
+        "cardBox": {
+          "x": 20,
+          "y": 615.046875,
+          "width": 280,
+          "height": 245.03125,
+          "right": 300,
+          "bottom": 860.078125
+        },
+        "paragraphBox": {
+          "x": 45,
+          "y": 699.234375,
+          "width": 230,
+          "height": 41.84375,
+          "right": 275,
+          "bottom": 741.078125
+        },
+        "actionBox": {
+          "x": 91.140625,
+          "y": 775.078125,
+          "width": 137.71875,
+          "height": 44,
+          "right": 228.859375,
+          "bottom": 819.078125
+        },
+        "titleScroll": 230,
+        "titleClient": 230,
+        "documentWidth": 320,
+        "paragraph": "此源数据没有同时具备两段历史读数的活跃信号组合。请查看下次更新。",
+        "action": "打开 Mastermind",
+        "href": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+        "footer": "源数据生成于 2026-07-19T04:00:00Z · 未提供市场观察时间。\n仅供参考，非投资建议。"
+      },
+      "observation_checks": {
+        "title_text_exact": true,
+        "one_primary_heading": true,
+        "body_action_footer_exact": true,
+        "heading_contained": true,
+        "document_contained": true,
+        "action_minimum_preserved": true,
+        "existing_type_scale": true
+      },
+      "card_height_delta": 10.1875
+    },
+    {
+      "width": 1440,
+      "lang": "en",
+      "theme": "dark",
+      "before": {
+        "tag": "H3",
+        "title": "No eligible line-ups",
+        "h1Count": 0,
+        "fontSize": "18px",
+        "lineHeight": "27px",
+        "weight": "800",
+        "titleBox": {
+          "x": 225,
+          "y": 808.546875,
+          "width": 990,
+          "height": 27,
+          "right": 1215,
+          "bottom": 835.546875
+        },
+        "cardBox": {
+          "x": 200,
+          "y": 767.546875,
+          "width": 1040,
+          "height": 234.84375,
+          "right": 1240,
+          "bottom": 1002.390625
+        },
+        "paragraphBox": {
+          "x": 549.9375,
+          "y": 841.546875,
+          "width": 340.125,
+          "height": 41.84375,
+          "right": 890.0625,
+          "bottom": 883.390625
+        },
+        "actionBox": {
+          "x": 645.53125,
+          "y": 917.390625,
+          "width": 148.9375,
+          "height": 44,
+          "right": 794.46875,
+          "bottom": 961.390625
+        },
+        "titleScroll": 990,
+        "titleClient": 990,
+        "documentWidth": 1440,
+        "paragraph": "This source contains no active line-ups with historical readings for both periods. Check the next update.",
+        "action": "Open Mastermind",
+        "href": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+        "footer": "Source built 2026-07-19T04:00:00Z · market observation time not supplied.\nContext, not investment advice."
+      },
+      "after": {
+        "tag": "H1",
+        "title": "No eligible line-ups",
+        "h1Count": 1,
+        "fontSize": "32px",
+        "lineHeight": "38.4px",
+        "weight": "800",
+        "titleBox": {
+          "x": 225,
+          "y": 808.546875,
+          "width": 990,
+          "height": 38.390625,
+          "right": 1215,
+          "bottom": 846.9375
+        },
+        "cardBox": {
+          "x": 200,
+          "y": 767.546875,
+          "width": 1040,
+          "height": 252.234375,
+          "right": 1240,
+          "bottom": 1019.78125
+        },
+        "paragraphBox": {
+          "x": 549.9375,
+          "y": 858.9375,
+          "width": 340.125,
+          "height": 41.84375,
+          "right": 890.0625,
+          "bottom": 900.78125
+        },
+        "actionBox": {
+          "x": 645.53125,
+          "y": 934.78125,
+          "width": 148.9375,
+          "height": 44,
+          "right": 794.46875,
+          "bottom": 978.78125
+        },
+        "titleScroll": 990,
+        "titleClient": 990,
+        "documentWidth": 1440,
+        "paragraph": "This source contains no active line-ups with historical readings for both periods. Check the next update.",
+        "action": "Open Mastermind",
+        "href": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+        "footer": "Source built 2026-07-19T04:00:00Z · market observation time not supplied.\nContext, not investment advice."
+      },
+      "observation_checks": {
+        "title_text_exact": true,
+        "one_primary_heading": true,
+        "body_action_footer_exact": true,
+        "heading_contained": true,
+        "document_contained": true,
+        "action_minimum_preserved": true,
+        "existing_type_scale": true
+      },
+      "card_height_delta": 17.390625
+    },
+    {
+      "width": 1440,
+      "lang": "zh",
+      "theme": "light",
+      "before": {
+        "tag": "H3",
+        "title": "暂无符合条件的组合",
+        "h1Count": 0,
+        "fontSize": "18px",
+        "lineHeight": "27px",
+        "weight": "800",
+        "titleBox": {
+          "x": 225,
+          "y": 791.046875,
+          "width": 990,
+          "height": 27,
+          "right": 1215,
+          "bottom": 818.046875
+        },
+        "cardBox": {
+          "x": 200,
+          "y": 750.046875,
+          "width": 1040,
+          "height": 234.84375,
+          "right": 1240,
+          "bottom": 984.890625
+        },
+        "paragraphBox": {
+          "x": 561.40625,
+          "y": 824.046875,
+          "width": 317.1875,
+          "height": 41.84375,
+          "right": 878.59375,
+          "bottom": 865.890625
+        },
+        "actionBox": {
+          "x": 651.140625,
+          "y": 899.890625,
+          "width": 137.71875,
+          "height": 44,
+          "right": 788.859375,
+          "bottom": 943.890625
+        },
+        "titleScroll": 990,
+        "titleClient": 990,
+        "documentWidth": 1440,
+        "paragraph": "此源数据没有同时具备两段历史读数的活跃信号组合。请查看下次更新。",
+        "action": "打开 Mastermind",
+        "href": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+        "footer": "源数据生成于 2026-07-19T04:00:00Z · 未提供市场观察时间。\n仅供参考，非投资建议。"
+      },
+      "after": {
+        "tag": "H1",
+        "title": "暂无符合条件的组合",
+        "h1Count": 1,
+        "fontSize": "32px",
+        "lineHeight": "38.4px",
+        "weight": "800",
+        "titleBox": {
+          "x": 225,
+          "y": 791.046875,
+          "width": 990,
+          "height": 38.390625,
+          "right": 1215,
+          "bottom": 829.4375
+        },
+        "cardBox": {
+          "x": 200,
+          "y": 750.046875,
+          "width": 1040,
+          "height": 252.234375,
+          "right": 1240,
+          "bottom": 1002.28125
+        },
+        "paragraphBox": {
+          "x": 561.40625,
+          "y": 841.4375,
+          "width": 317.1875,
+          "height": 41.84375,
+          "right": 878.59375,
+          "bottom": 883.28125
+        },
+        "actionBox": {
+          "x": 651.140625,
+          "y": 917.28125,
+          "width": 137.71875,
+          "height": 44,
+          "right": 788.859375,
+          "bottom": 961.28125
+        },
+        "titleScroll": 990,
+        "titleClient": 990,
+        "documentWidth": 1440,
+        "paragraph": "此源数据没有同时具备两段历史读数的活跃信号组合。请查看下次更新。",
+        "action": "打开 Mastermind",
+        "href": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+        "footer": "源数据生成于 2026-07-19T04:00:00Z · 未提供市场观察时间。\n仅供参考，非投资建议。"
+      },
+      "observation_checks": {
+        "title_text_exact": true,
+        "one_primary_heading": true,
+        "body_action_footer_exact": true,
+        "heading_contained": true,
+        "document_contained": true,
+        "action_minimum_preserved": true,
+        "existing_type_scale": true
+      },
+      "card_height_delta": 17.390625
+    }
+  ],
+  "page_errors": [],
+  "captures": [
+    {
+      "file": "before-zero-320-en.png",
+      "width": 320,
+      "lang": "en",
+      "state": "before",
+      "bytes": 20925,
+      "sha256": "ab73683b842c288022a69550469c064883ef784eea40bdc5526867a542c6a1b9",
+      "blob": "227a866db50c64b8d223e38c6433e06ebb802a63"
+    },
+    {
+      "file": "after-zero-320-en.png",
+      "width": 320,
+      "lang": "en",
+      "state": "after",
+      "bytes": 22525,
+      "sha256": "80251c784c17d34777473771100ac66e7eed62ab3e190b7650bf11d6a4a154b9",
+      "blob": "a7087e0043c5e89e9ce17a879661fa92a8765e80"
+    },
+    {
+      "file": "before-zero-320-zh.png",
+      "width": 320,
+      "lang": "zh",
+      "state": "before",
+      "bytes": 19674,
+      "sha256": "e6fd70e8414394efaf0ea0c0c43132869771e6a1a319a11c8f6089d7b65291f5",
+      "blob": "e519807cdf0d93823616b87b3c7af8cf02e16753"
+    },
+    {
+      "file": "after-zero-320-zh.png",
+      "width": 320,
+      "lang": "zh",
+      "state": "after",
+      "bytes": 22706,
+      "sha256": "7abacad27b7e604dd3f2cc557e70346e7a034cef9edefacaa02714fcd4c4199a",
+      "blob": "7f3ddfe308b72c2bebf5884edaa6accb8e2bef48"
+    },
+    {
+      "file": "before-zero-1440-en.png",
+      "width": 1440,
+      "lang": "en",
+      "state": "before",
+      "bytes": 20620,
+      "sha256": "ad90aa85c55f7d4814c9dc7afa6a74a81147c4838ef2506b5221477b77c07a49",
+      "blob": "57960656c3c8204f160b339aefd37f31d6997893"
+    },
+    {
+      "file": "after-zero-1440-en.png",
+      "width": 1440,
+      "lang": "en",
+      "state": "after",
+      "bytes": 22676,
+      "sha256": "4a94778e035307152fd3deb02578e83b647db043264a5f3e836baf89d12fb2fa",
+      "blob": "005ce61445750912347f6d870f35ec6e4691e16f"
+    },
+    {
+      "file": "before-zero-1440-zh.png",
+      "width": 1440,
+      "lang": "zh",
+      "state": "before",
+      "bytes": 19069,
+      "sha256": "18a308e15ead44904cebd340d25825aa7da666d6cd2f9bbaba7715b06de53256",
+      "blob": "e0f4933ddf042362eb82746d0849606770910e86"
+    },
+    {
+      "file": "after-zero-1440-zh.png",
+      "width": 1440,
+      "lang": "zh",
+      "state": "after",
+      "bytes": 22853,
+      "sha256": "684b91572ec74fd8ed0efbfb58bc8e3fa9b95ee19937250622ee13b321c34531",
+      "blob": "eca96ce5dd1a185c54bb6907d004fa1822d21085"
+    }
+  ],
+  "fixture": "existing qualified-zero synthetic source; source time2026-07-19T04:00:00Z. Current saved production-input page remains positive. No account/navigation action performed."
+}

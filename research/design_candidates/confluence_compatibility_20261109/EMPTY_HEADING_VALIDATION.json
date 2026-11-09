@@ -1,0 +1,173 @@
+{
+  "scope": "qualified-zero primary heading; two template substitutions / one positive saved-page CSS substitution",
+  "parent": "1c868e55b99fe52d5f90310bcbd4a7546fdb2c22",
+  "source": {
+    "parent": "1c868e55b99fe52d5f90310bcbd4a7546fdb2c22",
+    "template_inverse_exact": true,
+    "saved_positive_page_inverse_exact": true,
+    "saved_positive_body_and_scripts_exact": true,
+    "saved_positive_changed_region": "one local empty-heading CSS rule; qualified-zero markup is absent from the current positive page",
+    "qualified_zero_render_exact_under_two_replacements": true,
+    "zero_h1_before": 0,
+    "zero_h1_after": 1,
+    "qualified_zero_source": {
+      "source_status": "available",
+      "n_active_total": 0,
+      "source_built": "2026-07-19T04:00:00Z",
+      "source_generation": {
+        "schema": "confluence_source.v1",
+        "generated_utc": "2026-07-19T04:00:00Z",
+        "sha256": "2a6b527d7b44cad06372e6f4700f21ccc0c7fd8e560b2c01ec934cc13c6153b6"
+      },
+      "fixture": "existing _make_raw() with combos.long=[]; explicit synthetic qualified source"
+    },
+    "zero_text_footer_hrefs_exact": true,
+    "unavailable_body_heading_exact": true,
+    "unchanged_files": [
+      "scripts/build_confluence_screener.py",
+      "tests/test_confluence_screener_page.py",
+      "site/premiumdata/confluence_screener.json"
+    ],
+    "protected_payload_matches_actual_producer": true,
+    "tagged_cta_exact": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+    "files": {
+      "templates/confluence_screener.html.j2": {
+        "bytes": 53035,
+        "sha256": "ff6728e7558a8f921105bb13d1be6edcf9d8bea7e63e2eec434c99a7bf978e10",
+        "blob": "a677426dd4a814d4fd2b00bc8675e5253775f4cb"
+      },
+      "site/confluence_screener.html": {
+        "bytes": 123127,
+        "sha256": "6283d456fde6ce83e6de229e71b1a678e412210046e024aa99d00a56935aceb0",
+        "blob": "b42e7e3465077592d56a7184e80f2b0356982ae6"
+      },
+      "scripts/build_confluence_screener.py": {
+        "bytes": 19003,
+        "sha256": "b5aa86624a18a17fd985870d9baaaa8cb745b0baffa6d4c17b6e198b6668d50a",
+        "blob": "b3db0ced7bc46607f728764c6f9f00dd851f9012"
+      },
+      "tests/test_confluence_screener_page.py": {
+        "bytes": 39299,
+        "sha256": "d1877abe2a29d2c5d7412566eface17f81c62fdd980dff178efa2d0c5e657257",
+        "blob": "906eb06bc02fb37140fa403b425316bc8341ac87"
+      },
+      "site/premiumdata/confluence_screener.json": {
+        "bytes": 542,
+        "sha256": "11a76bb62e26bd344ef29c198b7791df95b4140d18328f46f54b343f78aa4e7d",
+        "blob": "ed039512de9bf2fe3c838b6d562d0ef5da72658f"
+      }
+    },
+    "fixture_files": {
+      "before-zero.html": {
+        "bytes": 84081,
+        "sha256": "103771d1ddb440f815637a253b8186adea87b030b476530fb9b1ed8c5fdeb1b6",
+        "blob": "eb47f144e6dd71d220adf282bdfa291b4435e24e"
+      },
+      "after-zero.html": {
+        "bytes": 84112,
+        "sha256": "3a3ddb4c5ce47962a0ddb7445ffd339a055892fd2ff95ab8e7dff284ccedf957",
+        "blob": "abfe8279a90d1d5d8d99fd0c385e0e712cabc8f4"
+      },
+      "zero-source.json": {
+        "bytes": 615,
+        "sha256": "d3e4806e3b3628b5cfcf704a89c07fd25c7a0d54ba88a2f1a525a211e43f90c0",
+        "blob": "053bcce1511ce9f406813f436de8a3eae63ed5bf"
+      }
+    }
+  },
+  "fixture_raw": {
+    "generated_utc": "2026-07-19T04:00:00Z",
+    "universe_n": 226,
+    "split_date": "2018-01-01",
+    "legs": [
+      {
+        "leg_id": "leg0",
+        "signal_id": "s0",
+        "tf": "D",
+        "display_en": "Golden Cross",
+        "display_zh": "黄金交叉"
+      },
+      {
+        "leg_id": "leg1",
+        "signal_id": "s1",
+        "tf": "W",
+        "display_en": "Weekly Uptrend",
+        "display_zh": "周线上升趋势"
+      },
+      {
+        "leg_id": "leg2",
+        "signal_id": "s2",
+        "tf": "D",
+        "display_en": "RSI Curl",
+        "display_zh": "RSI上卷"
+      }
+    ],
+    "combos": {
+      "long": [],
+      "short": []
+    }
+  },
+  "template_changes": [
+    [
+      ".empty h3{margin:0 0 6px;font-size:18px;font-weight:800;color:var(--text)}",
+      ".empty .hero-state{margin:0 0 var(--sp-3,12px);line-height:1.2;overflow-wrap:anywhere}"
+    ],
+    [
+      "    <h3><span class=\"l-en\">No eligible line-ups</span><span class=\"l-zh\">暂无符合条件的组合</span></h3>",
+      "    <h1 class=\"hero-state\"><span class=\"l-en\">No eligible line-ups</span><span class=\"l-zh\">暂无符合条件的组合</span></h1>"
+    ]
+  ],
+  "processes": {
+    "projection": {
+      "pid": 17231,
+      "exit": 0,
+      "process_seconds": 1.7,
+      "command": "python3 - <<'PY'\nfrom pathlib import Path\nimport copy,hashlib,html,importlib.util,json,re,sys\nfrom bs4 import BeautifulSoup\nr=Path(\"/Volumes/Mastermind/agent-workspaces/verify/confluence-compat-20261109-klbmhv4a\");p=r/'empty-heading-parent';out=r/'empty-heading-fixtures';out.mkdir(exist_ok=True);sys.path.insert(0,str(r))\nm=json.loads((r/'empty-heading-manifest.json').read_text());old_template=(p/'templates/confluence_screener.html.j2').read_text();new_template=(r/'templates/confluence_screener.html.j2').read_text();inverse=new_template\nfor a,b in reversed(m['changes']):\n assert inverse.count(b)==1;inverse=inverse.replace(b,a,1)\nassert inverse==old_template\nold=(p/'site/confluence_screener.html').read_bytes().decode();a,b=m['changes'][0];assert old.count(a)==1;new=old.replace(a,b,1);assert new.replace(b,a,1)==old\nbs,ns=BeautifulSoup(old,'html.parser'),BeautifulSoup(new,'html.parser')\nassert str(bs.body)==str(ns.body)\nassert [str(n) for n in bs.find_all('script')]==[str(n) for n in ns.find_all('script')]\nfrom scripts.build_confluence_screener import build_context,render_html,build_premium_payload\nspec=importlib.util.spec_from_file_location('heading_fixture',r/'tests/test_confluence_screener_page.py');fixture=importlib.util.module_from_spec(spec);spec.loader.exec_module(fixture)\nzero_raw=copy.deepcopy(fixture._make_raw());zero_raw['combos']['long']=[]\nzero=build_context(zero_raw,{})\nassert zero['source_status']=='available' and zero['n_active_total']==0 and zero['combos']==[]\nzero['generated_utc']='FIXED_EMPTY_HEADING_CLOCK'\ncta=html.unescape(re.search(r'<a class=\"btn\" href=\"([^\"]+)\"><span class=\"l-en\">Start free trial',old).group(1));zero['cta_url']=cta\nzo,zn=render_html(p,zero),render_html(r,zero)\nexpected=zo\nfor a,b in m['changes']:\n assert expected.count(a)==1;expected=expected.replace(a,b,1)\nassert expected==zn\nzbs,zns=BeautifulSoup(zo,'html.parser'),BeautifulSoup(zn,'html.parser')\nassert len(zbs.select('.wrap h1'))==0 and len(zns.select('.wrap h1'))==1\nassert zns.select_one('.wrap h1').get_text()==zbs.select_one('[data-source-state=\"available-empty\"] h3').get_text()\nassert str(zbs.select_one('.site-foot'))==str(zns.select_one('.site-foot'))\nassert [n.get('href') for n in zbs.select('[href]')]==[n.get('href') for n in zns.select('[href]')]\nunavailable=build_context(None,{});unavailable['generated_utc']='FIXED_EMPTY_HEADING_CLOCK';unavailable['cta_url']=cta\nuo,un=render_html(p,unavailable),render_html(r,unavailable)\nassert uo.replace(*m['changes'][0],1)==un\nassert str(BeautifulSoup(uo,'html.parser').select_one('h1'))==str(BeautifulSoup(un,'html.parser').select_one('h1'))\n(out/'before-zero.html').write_text(zo);(out/'after-zero.html').write_text(zn);(out/'zero-source.json').write_text(json.dumps(zero_raw,ensure_ascii=False,indent=2)+'\\n')\nunchanged=['scripts/build_confluence_screener.py','tests/test_confluence_screener_page.py','site/premiumdata/confluence_screener.json']\nfor path in unchanged:assert (r/path).read_bytes()==(p/path).read_bytes(),path\nraw=json.loads((r/'site/factordata/tech_confluence.json').read_text());tiles=json.loads((r/'site/marketdata/sp500_heatmap.json').read_text()).get('tiles',[]);names={t['t']:t['name'] for t in tiles if t.get('t') and t.get('name')}\nassert build_premium_payload(raw,names)==json.loads((r/'site/premiumdata/confluence_screener.json').read_text())\n(r/'site/confluence_screener.html').write_bytes(new.encode())\ndef meta(path):\n b=path.read_bytes();return {'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest(),'blob':hashlib.sha1(b'blob '+str(len(b)).encode()+b'\\0'+b).hexdigest()}\nproof={'parent':m['parent'],'template_inverse_exact':True,'saved_positive_page_inverse_exact':True,'saved_positive_body_and_scripts_exact':True,'saved_positive_changed_region':'one local empty-heading CSS rule; qualified-zero markup is absent from the current positive page','qualified_zero_render_exact_under_two_replacements':True,'zero_h1_before':0,'zero_h1_after':1,'qualified_zero_source':{'source_status':zero['source_status'],'n_active_total':zero['n_active_total'],'source_built':zero['source_built'],'source_generation':zero['source_generation'],'fixture':'existing _make_raw() with combos.long=[]; explicit synthetic qualified source'},'zero_text_footer_hrefs_exact':True,'unavailable_body_heading_exact':True,'unchanged_files':unchanged,'protected_payload_matches_actual_producer':True,'tagged_cta_exact':cta,'files':{s:meta(r/s) for s in ['templates/confluence_screener.html.j2','site/confluence_screener.html']+unchanged},'fixture_files':{n:meta(out/n) for n in ['before-zero.html','after-zero.html','zero-source.json']}}\n(r/'empty-heading-source-receipt.json').write_text(json.dumps(proof,ensure_ascii=False,indent=2)+'\\n');print(json.dumps(proof,ensure_ascii=False))\nPY"
+    },
+    "existing_page_tests": {
+      "pid": 19330,
+      "exit": 0,
+      "passed": 92,
+      "pytest_seconds": 10.96,
+      "process_seconds": 11.9,
+      "command": "python3 - <<'PY'\nfrom pathlib import Path\nimport json,subprocess,sys\nr=Path('/Volumes/Mastermind/agent-workspaces/verify/confluence-compat-20261109-klbmhv4a')\np=subprocess.run([sys.executable,'-B','-m','pytest','-q','tests/test_confluence_screener_page.py','--disable-warnings','--basetemp',str(r/'pytest-empty-heading-render')],cwd=r,text=True,capture_output=True)\n(r/'empty-heading-page-tests-output.txt').write_text(p.stdout+p.stderr);print(p.stdout);print(p.stderr);print(json.dumps({'exit':p.returncode}));raise SystemExit(p.returncode)\nPY",
+      "receipt": {
+        "content": [
+          {
+            "type": "text",
+            "text": "[Reading 7 new lines (total: 7 lines)]\n\n........................................................................ [ 78%]\n....................                                                     [100%]\n92 passed in 10.96s\n\n\n{\"exit\": 0}\n\n✅ Process completed with exit code 0 (runtime: 11.90s)"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      }
+    },
+    "bounded_visual_semantic_inspection": {
+      "pid": 19455,
+      "exit": 0,
+      "process_seconds": 7.83,
+      "command": "python3 - <<'PY'\nfrom pathlib import Path\nimport hashlib,http.server,json,socketserver,threading\nfrom urllib.parse import parse_qs,urlsplit\nfrom playwright.sync_api import sync_playwright\nr=Path(\"/Volumes/Mastermind/agent-workspaces/verify/confluence-compat-20261109-klbmhv4a\");fixtures=r/'empty-heading-fixtures';out=r/'empty-heading-inspection';out.mkdir(exist_ok=True)\npages={state:(fixtures/(state+'-zero.html')).read_bytes() for state in ['before','after']}\nclass Handler(http.server.SimpleHTTPRequestHandler):\n def __init__(self,*a,**kw):super().__init__(*a,directory=str(r/'site'),**kw)\n def do_GET(self):\n  p=urlsplit(self.path)\n  if p.path=='/confluence_screener.html':\n   state=parse_qs(p.query)['heading_version'][0];b=pages[state];self.send_response(200);self.send_header('Content-Type','text/html; charset=utf-8');self.send_header('Content-Length',str(len(b)));self.end_headers();self.wfile.write(b);return\n  if p.path.startswith('/premiumdata/'):self.send_response(403);self.end_headers();return\n  super().do_GET()\n def log_message(self,*_):pass\nserver=socketserver.ThreadingTCPServer(('127.0.0.1',0),Handler);threading.Thread(target=server.serve_forever,daemon=True).start();origin='http://127.0.0.1:'+str(server.server_address[1])\nrows=[];errors=[];captures=[]\ntry:\n with sync_playwright() as pw:\n  browser=pw.chromium.launch(headless=True,executable_path='/Applications/Google Chrome.app/Contents/MacOS/Google Chrome');version=browser.version\n  for width,lang,theme in [(320,'en','dark'),(320,'zh','light'),(1440,'en','dark'),(1440,'zh','light')]:\n   context=browser.new_context(viewport={'width':width,'height':900},device_scale_factor=1,reduced_motion='reduce')\n   context.route('**/*',lambda route:route.continue_() if urlsplit(route.request.url).hostname=='127.0.0.1' else route.abort())\n   context.add_init_script(\"localStorage.setItem('lang',\"+json.dumps(lang)+\");localStorage.setItem('theme',\"+json.dumps(theme)+\");\")\n   page=context.new_page();page.on('pageerror',lambda e:errors.append(str(e)));item={'width':width,'lang':lang,'theme':theme}\n   for state in ['before','after']:\n    page.goto(origin+'/confluence_screener.html?heading_version='+state,wait_until='load')\n    item[state]=page.evaluate(\"\"\"() => {\n      const n=document.querySelector('[data-source-state=\"available-empty\"]'),h=n.querySelector('h1,h3'),p=n.querySelector('p'),a=n.querySelector('a');\n      const box=n=>{const b=n.getBoundingClientRect();return{x:b.x,y:b.y,width:b.width,height:b.height,right:b.right,bottom:b.bottom}};\n      return {tag:h.tagName,title:h.innerText,h1Count:document.querySelectorAll('.wrap h1').length,\n        fontSize:getComputedStyle(h).fontSize,lineHeight:getComputedStyle(h).lineHeight,weight:getComputedStyle(h).fontWeight,\n        titleBox:box(h),cardBox:box(n),paragraphBox:box(p),actionBox:box(a),\n        titleScroll:h.scrollWidth,titleClient:h.clientWidth,documentWidth:document.documentElement.scrollWidth,\n        paragraph:p.innerText,action:a.innerText,href:a.getAttribute('href'),footer:document.querySelector('.site-foot').innerText};\n    }\"\"\")\n    name=state+'-zero-'+str(width)+'-'+lang+'.png';page.locator('[data-source-state=\"available-empty\"]').screenshot(path=str(out/name))\n    b=(out/name).read_bytes();captures.append({'file':name,'width':width,'lang':lang,'state':state,'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest(),'blob':hashlib.sha1(b'blob '+str(len(b)).encode()+b'\\0'+b).hexdigest()})\n   a,b=item['before'],item['after'];item['observation_checks']={'title_text_exact':a['title']==b['title'],'one_primary_heading':a['h1Count']==0 and b['h1Count']==1 and b['tag']=='H1','body_action_footer_exact':all(a[k]==b[k] for k in ['paragraph','action','href','footer']),'heading_contained':b['titleScroll']<=b['titleClient']+1 and b['titleBox']['right']<=b['cardBox']['right']+1,'document_contained':b['documentWidth']<=width,'action_minimum_preserved':b['actionBox']['height']>=a['actionBox']['height']>=44,'existing_type_scale':b['fontSize']==('26px' if width<=640 else '32px')}\n   item['card_height_delta']=b['cardBox']['height']-a['cardBox']['height'];rows.append(item);context.close()\n  browser.close()\nfinally:server.shutdown();server.server_close()\nreport={'kind':'bounded native visual/semantic inspection, not a new functional regression suite','contexts':len(rows),'page_observations':len(rows)*2,'browser':version,'observations':rows,'page_errors':errors,'captures':captures,'fixture':'existing qualified-zero synthetic source; source time2026-07-19T04:00:00Z. Current saved production-input page remains positive. No account/navigation action performed.'}\n(out/'inspection.json').write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\\n')\nprint(json.dumps({'report':str(out/'inspection.json'),'contexts':len(rows),'page_observations':len(rows)*2,'page_errors':len(errors),'observations':[{'width':i['width'],'lang':i['lang'],'checks':i['observation_checks'],'font':i['after']['fontSize'],'title_height':i['after']['titleBox']['height'],'card_height_delta':i['card_height_delta']} for i in rows]},ensure_ascii=False))\nPY",
+      "receipt": {
+        "content": [
+          {
+            "type": "text",
+            "text": "[Reading 2 new lines (total: 2 lines)]\n\n{\"report\": \"/Volumes/Mastermind/agent-workspaces/verify/confluence-compat-20261109-klbmhv4a/empty-heading-inspection/inspection.json\", \"contexts\": 4, \"page_observations\": 8, \"page_errors\": 0, \"observations\": [{\"width\": 320, \"lang\": \"en\", \"checks\": {\"title_text_exact\": true, \"one_primary_heading\": true, \"body_action_footer_exact\": true, \"heading_contained\": true, \"document_contained\": true, \"action_minimum_preserved\": true, \"existing_type_scale\": true}, \"font\": \"26px\", \"title_height\": 31.1875, \"card_height_delta\": 10.1875}, {\"width\": 320, \"lang\": \"zh\", \"checks\": {\"title_text_exact\": true, \"one_primary_heading\": true, \"body_action_footer_exact\": true, \"heading_contained\": true, \"document_contained\": true, \"action_minimum_preserved\": true, \"existing_type_scale\": true}, \"font\": \"26px\", \"title_height\": 31.1875, \"card_height_delta\": 10.1875}, {\"width\": 1440, \"lang\": \"en\", \"checks\": {\"title_text_exact\": true, \"one_primary_heading\": true, \"body_action_footer_exact\": true, \"heading_contained\": true, \"document_contained\": true, \"action_minimum_preserved\": true, \"existing_type_scale\": true}, \"font\": \"32px\", \"title_height\": 38.390625, \"card_height_delta\": 17.390625}, {\"width\": 1440, \"lang\": \"zh\", \"checks\": {\"title_text_exact\": true, \"one_primary_heading\": true, \"body_action_footer_exact\": true, \"heading_contained\": true, \"document_contained\": true, \"action_minimum_preserved\": true, \"existing_type_scale\": true}, \"font\": \"32px\", \"title_height\": 38.390625, \"card_height_delta\": 17.390625}]}\n\n✅ Process completed with exit code 0 (runtime: 7.83s)"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      }
+    }
+  },
+  "visual_review": {
+    "all_original_captures_inspected": true,
+    "capture_count": 8,
+    "byte_length_sha256_and_git_blob_exact": true
+  },
+  "limits": [
+    "Four inspection contexts / eight page observations, not a new functional regression suite.",
+    "Synthetic qualified-zero fixture, not current-source empty result.",
+    "No deployment, live entitlement, full shared shell/font or spoken AT proof.",
+    "Prior recovery/method/layout reports keep their original source identities."
+  ]
+}

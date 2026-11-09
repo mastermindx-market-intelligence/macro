@@ -201,7 +201,7 @@ html[data-theme="light"] .confluence-access{background:var(--panel);box-shadow:v
 /* empty state */
 .empty{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:40px 24px;text-align:center;margin-top:14px}
 .empty .ec-ic{font-size:30px;margin-bottom:10px;opacity:.7}
-.empty h3{margin:0 0 6px;font-size:18px;font-weight:800;color:var(--text)}
+.empty .hero-state{margin:0 0 var(--sp-3,12px);line-height:1.2;overflow-wrap:anywhere}
 .empty p{margin:0 auto;font-size:13.5px;color:var(--muted);max-width:40ch;line-height:1.55}
 
 /* footer */
@@ -505,7 +505,7 @@ html[data-theme="light"] .cs-tipped:hover,html[data-theme="light"] .cs-tipped:fo
   {% else %}
   {# ================= EMPTY STATE ================= #}
   <div class="empty" data-source-state="available-empty">
-    <h3><span class="l-en">No eligible line-ups</span><span class="l-zh">暂无符合条件的组合</span></h3>
+    <h1 class="hero-state"><span class="l-en">No eligible line-ups</span><span class="l-zh">暂无符合条件的组合</span></h1>
     <p><span class="l-en">This source contains no active line-ups with historical readings for both periods. Check the next update.</span>
       <span class="l-zh">此源数据没有同时具备两段历史读数的活跃信号组合。请查看下次更新。</span></p>
     <div style="margin-top:18px">

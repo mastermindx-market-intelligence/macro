@@ -1,10 +1,14 @@
 # Confluence compatibility and truthful actions
 
-## Current continuation: focus-safe reload recovery
+## Current continuation: qualified-zero primary heading
+
+A qualified empty result now has one visible H1 using the existing primary-heading scale: 26px narrow /32px desktop. Its words, count, source clock and Open Mastermind destination remain exact. [EMPTY_HEADING.md](EMPTY_HEADING.md) records the two template substitutions, **92 existing page tests**, four bounded before/after inspection contexts and eight original captures. The current positive saved page changes only one local CSS rule; its body/scripts, builder and protected data remain exact.
+
+## Previous continuation: focus-safe reload recovery
 
 When a keyboard retry receives a different source generation, focus now moves to the existing Reload action before the retry hides. Newer user focus and synchronous existing-owner callbacks are preserved. A Chinese survivorship phrase also drops an unsupported winner implication. [FOCUS_RECOVERY.md](FOCUS_RECOVERY.md) contains the exact same-controller contract, 10 focused recovery cases, 14 compatibility regressions, 92 existing page tests and original before/after captures. All card markup, layout, method/motion code, builder and protected data remain exact.
 
-## Previous continuation: method figure and narrow locked grouping
+## Earlier continuation: method figure and narrow locked grouping
 
 The native method disclosure now explains monthly aggregation in two visible steps, with a precise entry-price definition and one 120ms opacity reveal that disappears under reduced motion. At 320px, the locked icon stays beside its explanation and its unchanged action moves upward. [METHOD_AND_NARROW_LAYOUT.md](METHOD_AND_NARROW_LAYOUT.md) records the source contract, original captures, 92 existing page tests and 13 focused browser cases, including page-JavaScript-disabled native disclosure. The builder, protected JSON, four remaining method paragraphs and scripts remain exact.
 
