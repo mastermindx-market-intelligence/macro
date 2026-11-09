@@ -1,6 +1,18 @@
 # Paper audit and upgrade — 8–9 November 2026
 
-## Current implementation — Crypto frozen-case reading workflow (§64)
+## Current implementation — Crypto comparison basis and asset workflow (§65)
+
+[Dependent Draft PR #10901](https://github.com/mastermindx-market-intelligence/Macro/pull/10901), head `32ad0bc508b50afefa3dc485f970423733a42c54`, now uses accurate ratio/price-change labels and a single bilingual basis disclosure. Source-order discovery, full-snapshot comparison, null/zero handling, distinct missing/empty/filter states and precise focus/return behavior are implemented without changing values, dates, producer or view JSON.
+
+**161 cases passed** (39 contract + 122 browser), 123 contexts / 129 pages, zero page errors or external/WebSocket traffic. Eight final unchanged-runtime focused/capture cases passed; six overlap and two are visual readbacks. Thirteen final native crops inspected. The narrow fine-pointer Settings-hover collision is repaired in Crypto geometry; touch drawers remain full-height.
+
+Paper Build `2ZJ-0` has **12 applied text updates across 72 preserved nodes/styles**. Proposed frames `2XH-0` and `2YI-0` remain byte-identical. The Build is finished and its full screenshot inspected. Receipt: [PAPER_CRYPTO_COMPARISON_BASIS_20261109.json](PAPER_CRYPTO_COMPARISON_BASIS_20261109.json).
+
+**29 source/evidence text files and 13 capture binaries have exact commit readback.** The proposed paired-window receipt is still not emitted. [Builder contract and source evidence](https://github.com/mastermindx-market-intelligence/Macro/tree/32ad0bc508b50afefa3dc485f970423733a42c54/research/design_candidates/crypto_snapshot_safety_20261109) include qualified baseline/harness failures, current state logic and the remaining producer plan.
+
+**Next:** compact the two-asset matrix at 320/390px if full dates/values fit at the unchanged font size; retain native scrolling for larger cohorts. Existing release/H5/alert/visual/route holds remain.
+
+## Previous implementation — Crypto frozen-case reading workflow (§64)
 
 [Dependent Draft PR #10901](https://github.com/mastermindx-market-intelligence/Macro/pull/10901), head `7308f6d706777a49009437554dd35fe42ae163dd`, now presents the original condition first, two native disclosures, compact saved review, clear primary/removal actions and spaced recovery. Original progress remains distinct from today's expiry. Optional saved evidence is typed and calendar-qualified without mutation or borrowed current data.
 

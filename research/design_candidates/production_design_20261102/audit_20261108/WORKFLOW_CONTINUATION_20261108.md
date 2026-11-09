@@ -3087,3 +3087,44 @@ Exact applied responses, descendant maps, before/after JSX, final order and veri
 The next source/design discrepancy is the relative-comparison basis: “90-day” and “same published horizon” labels require comparison with the exact producer's paired-observation window and the proposed Paper receipt contract. Bound the next implementation to honest window/cohort/basis presentation and missing-state distinctions in existing R4 owners. Do not fabricate paired dates/counts, promote a proposed receipt or refresh producer/model/data.
 
 All H5/model, alerts, hosted/independent visual acceptance, public-route cutover, release/admission, denied capture and unknown-effect worker boundaries remain. This phase is saved and read back; the wider mission continues.
+
+## 65. Crypto comparison basis, full-cohort navigation and missing-state recovery — implemented
+
+### Source and applied outcome
+
+Dependent Draft [PR #10901](https://github.com/mastermindx-market-intelligence/Macro/pull/10901) now has head `32ad0bc508b50afefa3dc485f970423733a42c54`, tree `39e7c58c6fc271eec03cafc672fd123b2085ebfe`, parent `7308f6d706777a49009437554dd35fe42ae163dd`. Asset version: `d4393a5d0e55`. The same root session remains sole writer; no model, producer, JSON data refresh or production route replacement occurred.
+
+The source audit confirms that the producer compares an asset/BTC price ratio over 90 shared observation steps, requiring 91 matched observations. Its own-price change uses 30 observation steps. Per-result paired endpoints, matched counts and actual Bitcoin price basis are not emitted. The former calendar-day and same-horizon presentation was therefore replaced with accurate measure labels and one native bilingual disclosure. The 91-observation requirement is explicitly a calculation rule, not an invented receipt.
+
+Markets retains the supplied asset order by default, with explicit reported-value sorts available through the existing options and URLs. A single Compare all N assets action opens the complete snapshot cohort even from a zero-match filtered list. Close retains the original route, filters, scenario horizon/chart window and eligible opener. Rows move only when their order changes, preserving focused asset controls during locale refresh.
+
+Missing contract, accepted empty projection, filtered zero and missing requested asset are separate states. Null relative values keep supplied history-state text and usable price/structure/risk; true zero remains zero. Reset transfers focus before hiding itself and yields to newer navigation, language or focus. Asset and comparison drawers reuse the Markets basis markup, bind the clone within the existing drawer owner, and preserve same-panel language reading state without a new router, storage key or history system.
+
+Native integration review found an existing narrow fine-pointer Close/Settings-hover collision. Crypto's own narrow pointer geometry now leaves an 80px top inset; full-height touch drawers remain. Shared settings code/classes/ARIA remain under their existing owner. The final suite covers all previous saved-case paths after this intentional narrow geometry change. Prior exact-geometry evidence remains scoped to its original source commit.
+
+### Verification and qualified falsifiers
+
+- Parent renderer proof reproduces both saved HTML pages, view JSON, JS and CSS exactly using the retained projected JSON; no `build()` or producer refresh.
+- Original baseline: **27 failures / 86 deselected**, 51.35s, 27 contexts/pages, no page errors or external/WebSocket requests. These are shared behavior/copy gaps, not 27 independent bugs. Two Reset cases initially stopped at the old duplicate comparison buttons; corrected parent checks reach the focus assertion and fail **2 / 117 deselected**.
+- Initial candidate: **152 passed / 4 failed**, 92.50s, 118 contexts / 124 pages, no page errors or external/WebSocket requests. Two failures were the harness's End-key horizontal-scroll assumption; two were actual Settings hover interception.
+- Diagnostic: **2 failed / 1 passed**, 7.01s. Locale changes shift a retained Close-focused reading by 13px before the repair; the pointer capture identifies the shared hover target. Hover-away recovery is diagnostic, not direct-path acceptance.
+- The first pointer baseline was confounded by row position/new-title expectations and is retained as a harness failure, not a defect reproduction. Corrected first-visible-row/two-paint-frame parent cases fail **2 / 120 deselected** at Settings pointer-events:auto.
+- Final complete run: **161 passed**, 92.30s: **39 contract + 122 browser cases**, including the previous 86 and 36 additions. **123 contexts / 129 pages**, Chrome 157.0.8103.39, zero page errors/external/WebSocket traffic.
+- Final unchanged-runtime focused/capture run: **8 passed / 116 deselected**, 17.01s, **10 contexts / 10 pages**, zero errors/external/WebSocket traffic. Six cases overlap the complete suite; two are extra visual readbacks. The source test file includes the corrected pointer path and takes matrix captures before keyboard scrolling.
+- **Thirteen final native crops inspected**: desktop and 390/320 matrices, both languages/themes, real touch-only 320 layout, Markets, asset inspection, expanded basis, unavailable/empty snapshot examples and a saved-case regression view.
+- Node syntax passes. **13 JS, 3 CSS and 6 HTML transformations invert exactly** to the source parent. Template/served assets match. Thirteen other inputs remain unchanged. Both saved HTML pages are exact outside Markets after normalizing version references.
+- **29 text/source/evidence files and 13 PNG binaries read back exactly** at source head `32ad0bc508b50afefa3dc485f970423733a42c54`. Three archived harness inputs match their recorded SHA-256 values.
+
+The [builder contract](https://github.com/mastermindx-market-intelligence/Macro/blob/32ad0bc508b50afefa3dc485f970423733a42c54/research/design_candidates/crypto_snapshot_safety_20261109/COMPARISON_BASIS.md) describes data ownership, state distinctions, clone/event ownership, focus recovery, pointer-mode geometry and the remaining additive producer receipt plan. [Validation and raw evidence](https://github.com/mastermindx-market-intelligence/Macro/tree/32ad0bc508b50afefa3dc485f970423733a42c54/research/design_candidates/crypto_snapshot_safety_20261109/comparison) preserve the baselines, initial failures, corrected proofs, exact test inputs, transforms and inspected captures.
+
+### Paper alignment
+
+File `01M6Y3F0NXNDPAKJMJGCAD759Z`, page `p-3-0`, Build `2ZJ-0`: **12 text updates** make implemented presentation versus proposed receipt metadata explicit. All **72 node IDs, parents, internal order and styles** are preserved. All intended text changes and untouched texts are checked. Proposed desktop `2XH-0` and incomplete/mobile `2YI-0` read back byte-identical. The Build root is finished and its entire 1440×1200 screenshot inspected with no clipping.
+
+Applied responses, snapshot guards, before/after JSX and exact checks are in [PAPER_CRYPTO_COMPARISON_BASIS_20261109.json](PAPER_CRYPTO_COMPARISON_BASIS_20261109.json). The synthetic 82/91 and 120-observation design fixtures remain proposed and are not inserted into runtime data.
+
+### Immediate continuation
+
+Next: a bounded compact-matrix refinement at 320/390px. The current native scrolling matrix is coherent and verified; its initial 320px viewport partly hides the second current asset. Investigate a 100px measure column, 90px asset columns and 8px horizontal cell padding at the narrow breakpoint. Keep the existing font size, full unbroken dates and values, automatic table layout and sticky/keyboard-scroll behavior for larger cohorts. If measured text cannot fit, retain scrolling rather than clip or shrink. No new data or layout-state owner is needed.
+
+Current source head is `32ad0bc508b50afefa3dc485f970423733a42c54`; keep producer/model/data and proposed receipt fields unchanged. All H5/model, alert, hosted/independent visual, public-route cutover, release/admission, denied-capture and unknown-effect worker boundaries remain. The wider mission continues in the same session.
