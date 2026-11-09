@@ -2449,3 +2449,51 @@ Two Paper operations—one guarded text update and one finish of **7M9-0**—ret
 Read-only source judgment found that primary Browse's Arrow/Home/End handler consumes already-handled and modified keys, while both existing slash handlers omit consumed/composition guards. Continue with baseline consumer reproduction and the same existing owners. The empty-topic phone review also shows its company-evidence action below the EN390 fold after repeated generic and absence prose; a distinct copy/layout consolidation can make that next action visible without changing navigation or evidence limits.
 
 Original model01 **EFFECT_UNKNOWN / ROOT_UNVERIFIED** remains fenced. PR10676 stays Draft/unmerged with original no-Ready/no-merge/no-relabel/no-enqueue/release holds. Catalyst's original service-hook boundary, Shared Tools' receipt/browser boundary, protected Paper style/token/archive rules and other independent writer holds are unchanged. This phase proves neither full shared shell/fonts nor native OS IME, spoken AT, live account/admission, current hosted CI or deployment acceptance.
+
+
+## 50. GMI keyboard ownership and delayed dialog close — 9 November 2026
+
+### Source changes and real consumer behavior
+
+[Draft source PR10676](https://github.com/mastermindx-market-intelligence/Macro/pull/10676) advances from **fa09ffaf0b97a970a649185753579d2510863bc0** to [**ce523870476f250e456eb3c481f4f89bf619866d**](https://github.com/mastermindx-market-intelligence/Macro/commit/ce523870476f250e456eb3c481f4f89bf619866d). The work stays inside the existing paired JavaScript.
+
+Primary Browse's result handler now yields to consumed, composing/229 and Ctrl/Meta/Alt/Shift navigation, and rejects a hidden or unowned origin before changing its roving stop. Both incumbent slash handlers yield to consumed/composing/229 keys while retaining their existing modifiers and editable-focus exclusions. Plain arrows, Home/End, repeat, native Enter and ordinary slash entry remain. Shift-marked slash is still eligible.
+
+The first candidate also exposed a separate existing close race. A real slash reopened Browse before the previous native close notification arrived. The old listener then moved the search panel home while the modal was open, leaving an empty dialog and BODY focus. The trace is retained. Two additional original-source cases reproduce that same condition with native close notification and a controlled same-turn call through the existing opener.
+
+The current close listener now returns while **dialog.open** is true. Native open state prevents the delayed notification from retiring a newer dialog; ordinary closing still performs its existing home/focus work. No lifecycle counter, timer, retry, queue, controller or selection owner was added.
+
+| Proof | Exact result |
+|---|---|
+| Trusted consumed-key baseline | **Six failures**, EN1440/ZH320 primary result, primary slash and index slash; PID68644 exit1, 40.81 s |
+| Initial candidate and diagnosis | PID73007 passed 4/5 executed before the race; expected six. PID80285 records the actual delayed-close ordering |
+| Original-source reopen baseline | EN390 PID88792 exit1, 5.86 s; ZH320 PID88528 exit1, 7.83 s; both leave an open modal with Browse outside its slot |
+| Final browser | **8 cases / 8 contexts**, Chrome157.0.8103.39, zero page errors; PID94735 exit0, **17.01 s** |
+| Final observation scopes | **66 result + 40 slash** observations, **6 reopen** observations, **2 ordinary close-settlement** records |
+| Native/controlled distinction | Trusted consumed and ordinary/repeat keys; synthetic modifier/composition/229/Shift contracts; actual native close with controlled immediate reopen |
+| Visual review | Six final captures generated; four inspected: desktop/phone result focus plus primary/index ZH320 shortcut entry |
+| Source bounds | Four guard additions reverse exactly to parent JS. **129 prior verifier definitions**, **47 other render inputs**, accepted model, seven HTML outputs and CSS remain exact |
+| Source publication | All **six changed source/evidence files** read back exactly |
+
+[DESIGN_RECORD §11.41](https://github.com/mastermindx-market-intelligence/Macro/blob/ce523870476f250e456eb3c481f4f89bf619866d/research/theme_graph/gmi_design_20261021/DESIGN_RECORD.md) explains key ownership, the [native close algorithm](https://html.spec.whatwg.org/multipage/interactive-elements.html#close-the-dialog), empirical event ordering and reproduction. [Validation](https://github.com/mastermindx-market-intelligence/Macro/blob/ce523870476f250e456eb3c481f4f89bf619866d/research/theme_graph/gmi_design_20261021/BROWSE_KEYS_VALIDATION_20261109.json) retains all final observations, baseline cases, diagnostic case failures and the meaningful event trace. Repeated diagnostic snapshots and serialized BODY markup have explicit projections with complete retained report hashes.
+
+Ordinary shortcut/typing checks wait for the preceding actual close event and home/opener-focus state before starting another independent action. Dedicated early-reopen cases exercise the delayed event separately. There is no fixed sleep or removed acceptance assertion.
+
+### Applied Paper guidance and readback
+
+The current [Build page](https://app.paper.design/file/01M5H6EARN9YHQV17JC6ZG9BRY/p-7-0), root **7M9-0**, remains **18 modules / 57 nodes**:
+
+- Module06 body **7NB-0** explains the native delayed-close guard and the two different proof boundaries.
+- Module08 body **7NL-0** records primary result and both slash-handler guards, ordinary repeat/Enter, Shift eligibility and existing-owner reuse.
+- Module02 **7MV-0** and module03 **7MZ-0** advance source references; paired JS is **0a7c89a16b34d43db2354b6ac9c904d22c370bd3**.
+- Module18 **7NF-0** separates the new eight-case proof, original baseline/diagnostic results and previous accepted description/search/copy/fallback/Clear evidence.
+
+All 57 node IDs, parents and styles remain exact; only those five text nodes change. Other guide text is exact. The complete Browse flow **A1F-0** remains byte-exact at **78,302 characters**, preserving Q01–Q06. Module06, module08 and module18 screenshots were inspected; final JSX after finish matches the readback.
+
+One guarded text update and one finish of **7M9-0** both returned **APPLIED_RESPONSE_OBSERVED**. [PAPER_BROWSE_KEYS_20261109.json](PAPER_BROWSE_KEYS_20261109.json) retains complete before/after guide JSX, operation receipts, structural checks, immutable reference to the unchanged full Browse JSX, source readback and qualified proof.
+
+### Continue with empty-topic clarity
+
+The next source/design pass consolidates generic topic instructions and duplicate absence prose. Keep actual parent classification, canonical HBM identity, the distinction between no published evidence and no real-world participation, the existing company catalogue action, related topics and Theme details. Bring the company-evidence action into the phone viewport through clearer copy, not smaller type or targets, then add matching editable Paper states.
+
+PR10676 and this audit PR remain Draft/unmerged. Model01 **EFFECT_UNKNOWN / ROOT_UNVERIFIED** and original release, consumer-admission, protected-style and independent-writer holds remain. This work makes no full-shell/font, physical IME/keyboard-layout, spoken-AT, live-account, current-hosted-CI or deployment claim.
