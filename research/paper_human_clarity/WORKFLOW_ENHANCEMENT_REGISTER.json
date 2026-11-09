@@ -9050,7 +9050,7 @@
       "existingHold": "Preserve existing #8186 hold in AHN/AHP; do not clear or arm it."
     },
     "ontology": {
-      "status": "NATIVE_COMPOSITION_REVIEW_IN_PROGRESS",
+      "status": "PRESERVED_BEFORE_NATIVE_REFINEMENT",
       "fileId": "01M3P1X4FR6BRTB13KA736Y1HT",
       "roots": [
         "44L-0",
@@ -9058,7 +9058,177 @@
         "ATA-0"
       ],
       "buildRoot": "ASY-0",
-      "unitContract": "AUR-0 preserves Macro 338a1085: MA50 is a 50-observation rolling mean and its five-position change is raw units, not percent or fitted slope."
+      "unitContract": "AUR-0 preserves Macro 338a1085: MA50 is a 50-observation rolling mean and its five-position change is raw units, not percent or fitted slope.",
+      "originals": [
+        {
+          "id": "4L4-0",
+          "text": "+17.8%"
+        },
+        {
+          "id": "4LN-0",
+          "text": "above 0"
+        },
+        {
+          "id": "4LO-0",
+          "text": "Positive slope clears the &gt;0 trend test. Both tests must pass."
+        },
+        {
+          "id": "485-0",
+          "text": "Real yields meet the owner’s 63-period change test."
+        },
+        {
+          "id": "48L-0",
+          "text": "QQQ trails SPY on the owner’s 63-period returns, consistent with duration pressure."
+        },
+        {
+          "id": "49F-0",
+          "text": "+17.8%"
+        },
+        {
+          "id": "49V-0",
+          "text": "Positive slope clears the &gt;0 trend test. Both tests must pass."
+        },
+        {
+          "id": "4CW-0",
+          "text": "Both tests must pass. The slope clears, but oil’s 60-observation return is only 17.8% in this snapshot."
+        },
+        {
+          "id": "4EE-0",
+          "text": "ret_pct · ma50_slope5"
+        },
+        {
+          "id": "4EI-0",
+          "text": "chg_bp · 22 observations"
+        },
+        {
+          "id": "4EL-0",
+          "text": "Real 10y owner"
+        },
+        {
+          "id": "4EM-0",
+          "text": "chg_bp · direction"
+        },
+        {
+          "id": "4QX-0",
+          "text": "ret_pct · 60 observations\nma50_slope5"
+        },
+        {
+          "id": "4R3-0",
+          "text": "chg_bp · 22 observations\nowner threshold +15 bp"
+        },
+        {
+          "id": "4R8-0",
+          "text": "Real 10y owner"
+        },
+        {
+          "id": "4R9-0",
+          "text": "Owner’s 63-period change\ndirection · rising"
+        },
+        {
+          "id": "AUF-0",
+          "text": "Oil and breakeven windows count retained observations. QQQ and SPY use their own observation sequences. Real yields use the owner’s 63-period measure, which may carry earlier readings forward. Endpoints and dates need not align across sources. The declared 5–60, 0–90 and 0–120 day transition lags are calendar days."
+        }
+      ],
+      "updates": [
+        {
+          "nodeId": "4L4-0",
+          "html": "+17.783%"
+        },
+        {
+          "nodeId": "49F-0",
+          "html": "+17.783%"
+        },
+        {
+          "nodeId": "4LO-0",
+          "html": "Change in raw units"
+        },
+        {
+          "nodeId": "4LN-0",
+          "html": "needs &gt;0"
+        },
+        {
+          "nodeId": "49V-0",
+          "html": "Needs &gt;0 · change in raw units"
+        },
+        {
+          "nodeId": "4EE-0",
+          "html": "Oil return · 60 obs.<br>MA50 change · 5 obs."
+        },
+        {
+          "nodeId": "4EI-0",
+          "html": "Breakeven change · 22 observations"
+        },
+        {
+          "nodeId": "4EL-0",
+          "html": "10-year real yield"
+        },
+        {
+          "nodeId": "4EM-0",
+          "html": "Change in basis points · direction"
+        },
+        {
+          "nodeId": "4QX-0",
+          "html": "Oil return · 60 observations<br>MA50 change · 5 observations (raw units)"
+        },
+        {
+          "nodeId": "4R3-0",
+          "html": "Breakeven change · 22 observations<br>Threshold: &gt;15 bp"
+        },
+        {
+          "nodeId": "4R8-0",
+          "html": "10-year real yield"
+        },
+        {
+          "nodeId": "4R9-0",
+          "html": "63-period change<br>Direction · rising"
+        },
+        {
+          "nodeId": "485-0",
+          "html": "Real yields meet the 63-period change test."
+        },
+        {
+          "nodeId": "48L-0",
+          "html": "QQQ trails SPY on 63-period returns, consistent with duration pressure."
+        },
+        {
+          "nodeId": "4CW-0",
+          "html": "Both tests must pass. MA50 change clears its threshold, but oil’s 60-observation return is 17.783% in this snapshot."
+        },
+        {
+          "nodeId": "AUF-0",
+          "html": "Oil and breakeven windows count retained observations. QQQ and SPY use their own observation sequences. Real yields use a 63-period measure that may carry earlier readings forward. Endpoints and dates need not align across sources. Transition lags of 5–60, 0–90 and 0–120 days use calendar days."
+        }
+      ],
+      "moves": [
+        {
+          "node": "4KR-0",
+          "from": "4KI-0",
+          "meaning": "mobile duplicate metric table"
+        },
+        {
+          "node": "4MC-0",
+          "from": "4KS-0",
+          "meaning": "mobile duplicate required-tests card"
+        },
+        {
+          "node": "49W-0",
+          "from": "491-0",
+          "meaning": "desktop duplicate metric table"
+        },
+        {
+          "node": "4AJ-0",
+          "from": "4AI-0",
+          "meaning": "desktop duplicate required-tests card"
+        }
+      ],
+      "keep": [
+        "condition conjunction and strict thresholds",
+        "17.783% and +0.769",
+        "60-observation return,50-observation mean,5-position raw-unit change",
+        "mechanism and 5–60-calendar-day lag",
+        "reading dates,page-match limitation,source-specific lookbacks,carried-forward real-yield warning"
+      ],
+      "currentPrimaryPrecision": "Promote17.783% from preserved exact table into main evidence cards; no numeric recalculation."
     },
     "ai": {
       "status": "NO_NEW_CONFIRMED_DEFECT_IN_SELECTED_STATES",
