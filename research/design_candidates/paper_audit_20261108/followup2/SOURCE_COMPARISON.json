@@ -53,5 +53,27 @@
     "Read-only source comparison; no runtime tests executed for this design delta.",
     "Existing AC-E13-04 was inspected, not re-run.",
     "The synthetic cross-count acceptance case is specified, not claimed as implemented or passed."
+  ],
+  "draft_dependencies": [
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "path": "templates/si_workspace.js",
+      "ref": "9fc460ff36345387c3a2c5435b079852e8488da0",
+      "blob": "ac426abc3a8a49a6d1023cc53b8eedb00a23c57a",
+      "pr": 10703,
+      "state": "open",
+      "draft": true,
+      "merged": false,
+      "content_read": true
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "ref": "74930f6931773b23072f91590319dc39fe5a7d07",
+      "pr": 10707,
+      "state": "open",
+      "draft": true,
+      "merged": false,
+      "observation": "PR metadata and dependency identity only; component contents not newly inspected."
+    }
   ]
 }

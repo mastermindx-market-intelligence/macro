@@ -1,4 +1,4 @@
-# Paper refinement — count scope and evidence clarity
+# Paper refinement — count scope, Dossier opening and evidence clarity
 
 Date: 9 November 2026. Governance remains Mastermind `5c3d3885234358aefb97ecdbc59be0864df14f8b`.
 
@@ -33,14 +33,20 @@ Options mobile candidate source details `B7-0` also remains unchanged: supplied 
 
 The top model explanation at `8QB-0` names the next 21 closing observations, but the method paragraph called it “21-day model risk.” The applied text now says “model risk over 21 closing observations.” The entire remainder is unchanged: 17.8% rounded to18%, the0.73× comparison rather than exposure size, unverified calibration and separate driver scales.
 
-The exact JSX comparison contains this one Text replacement only. The full1240px postimage is readable without clipping, and the original Text readback matches. The artboard was released. The current light-English `98K-0` and dark-Chinese `9AI-0` siblings already name closing observations and omit this method paragraph; no paired translation change was necessary. The previously accepted `8SH-0`/`8ZF-0` mobile corrections, `AZL` build reference, retained21D cohort, #8186/#7647 boundaries and every numeric fixture remain intact.
+The exact JSX comparison contains this one Text replacement only. The full 1240px postimage is readable without clipping, and the original Text readback matches. The artboard was released. The current light-English `98K-0` and dark-Chinese `9AI-0` siblings already name closing observations and omit this method paragraph; no paired translation change was necessary. The previously accepted `8SH-0`/`8ZF-0` mobile corrections, `AZL` build reference, retained21D cohort, #8186/#7647 boundaries and every numeric fixture remain intact.
 
 This correction uses the already accepted native-SPY target from F05/R5 of PR#10872; it makes no new model, calibration, market-risk, exposure, runtime or production claim. No extra diagram was added because the existing explanation already states the comparison and its limits.
 
 ## News review architecture and worked illustration
 
-Added card `414-0` and original native SVG `417-0` to the existing `3H7-0` News Build reference. It explains the independently supplied report count, source-filtered story counts, review-filtered visible set, exact Mark shown targets, and the current-presented-page receipt. Seven Text nodes were read back exactly; all preexisting children and the complete previous JSX prefix were preserved. The612px card was visually inspected and its parent released. `BUILD_EXTENSION.md` provides source links, implementation boundaries and a concrete acceptance fixture. Four source files were independently read at both pins and are byte-identical.
+Added card `414-0` and original native SVG `417-0` to the existing `3H7-0` News Build reference. It explains the independently supplied report count, source-filtered story counts, review-filtered visible set, exact Mark shown targets, and the current-presented-page receipt. Seven Text nodes were read back exactly; all preexisting children and the complete previous JSX prefix were preserved. The 612px card was visually inspected and its parent released. `BUILD_EXTENSION.md` provides source links, implementation boundaries and a concrete acceptance fixture. Four source files were independently read at both pins and are byte-identical.
 
 The follow-save references `AJV-0` remain future references. Their four language/theme variants correctly identify a lost reply as an unknown result, direct the user to inspect the original request, and offer return without automatic resubmission. No runtime capability was inferred and no patch was needed.
 
-**This continuation:** seven observed Paper operations, ten exact final Text readbacks, five inspected captures, no unresolved canvas effects. The original package's counts and files remain frozen in#10872.
+**This continuation:** twelve observed Paper operations, seventeen exact final Text readbacks, seven inspected renderings (six captures in the final manifest), no unresolved canvas effects. The original package's counts and files remain frozen in#10872.
+
+## Sector Dossier opening contract
+
+Added `HBL-0` to the existing `GYT-0` Build reference, with seven exact Text readbacks and an inspected1000px rendering. The previous child IDs and entire preexisting JSX prefix remain exact. The new contract distinguishes accepted Cycles navigation from an actually opened, qualified inline Dossier. It names the existing entry state, refreshDossier, selection/publication guards, onOpenCycles return and separate Central return. The Energy/Technology case requires the actual requested subject to appear, rejects stale/default substitution, and keeps GPL's ordered return as proposed work. Both dependency PRs remain draft/open/unmerged; none of their source, review or acceptance controls changed.
+
+The News card's final scope wording now explicitly uses Feed total when a review-state filter is active, while a source-only recovery may use its existing all-N-sources basis. Its earlier inspected rendering remains at commit35cc0249ffd94b8a1ab88b210fa9e500cce34235; the current manifest retains the final rendering.

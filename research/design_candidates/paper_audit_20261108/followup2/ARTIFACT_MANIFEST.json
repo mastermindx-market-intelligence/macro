@@ -3,33 +3,33 @@
   "entries": [
     {
       "path": "BUILD_EXTENSION.md",
-      "bytes": 7663,
-      "sha256": "0a8404eabeb167a5ec2d817f5054a29a53416f3671b98f827ab9f422b26d6680",
-      "git_blob": "523e01bbe428a7c42c6df4b90f7d639795413d25"
+      "bytes": 12310,
+      "sha256": "e7bb52943c8df85dc01b90735f0bb168309c9b4e4090cee697adc70fd0dc5bf9",
+      "git_blob": "9362fd7340bde049449e0555b6a7aa87b9f93650"
     },
     {
       "path": "EFFECTS.json",
-      "bytes": 159643,
-      "sha256": "c0ca8f4976ad521d29027084773a16b318e8b8c78cf732b73af1265eb905f871",
-      "git_blob": "a4930bdc61e7888ef7984832accbc8e1009c0054"
+      "bytes": 227672,
+      "sha256": "1bb5d888ce58aef14cb599602655c9b516cfe67c71e15e152b67ccf944b54422",
+      "git_blob": "79d329a5c98c9b19a87eae88b96b66248ccf1bf1"
     },
     {
       "path": "RESULTS.md",
-      "bytes": 5715,
-      "sha256": "fddc2e2e9f44d26e1fbe66da40aa0a062562a0582de45a095f11c9b2336cf452",
-      "git_blob": "d2b238d8cfb045dfd5d7d4ae8a741e70412ca32f"
+      "bytes": 6837,
+      "sha256": "4797bc215d9ca67d649b2a785d91075d0efc8ac68d9fe1ade516fe1a7b15547c",
+      "git_blob": "313a786e8760afacc8ef64404c67b0181e35a1d3"
     },
     {
       "path": "SOURCE_COMPARISON.json",
-      "bytes": 2951,
-      "sha256": "a65eb5381796f3baa833a21e571cf32034928453e7faa3614e6fc81f28bf1574",
-      "git_blob": "5c256b12366bf44305c4e2e484fb197346d1bcfe"
+      "bytes": 3648,
+      "sha256": "a93f572f4f9f4cffe5dd78282e8811f982c3c01367bacf51ddaa492f6421cd4c",
+      "git_blob": "ae9c7c5a2cc23ffd55787c8659118d2ce520dba9"
     },
     {
       "path": "VERIFICATION.json",
-      "bytes": 7847,
-      "sha256": "289482b8b372923788a8bd1dfe41142b15fea505c5c34b0bc1b225194a7a0f5a",
-      "git_blob": "cf472fc3a0885bd3fd1327ee79f97230c0fef400"
+      "bytes": 13513,
+      "sha256": "b40408bcc17210c2f156829d0c662ef35c964cd5d0c1fd6d87921a224f43ed22",
+      "git_blob": "d069301d671cdee1f3198e38d901cf2769f7a3b9"
     },
     {
       "path": "before/news_review_build.jsx",
@@ -50,6 +50,12 @@
       "git_blob": "0f1150911ea35e7c01210a26c672156bc7128ded"
     },
     {
+      "path": "before/sector_dossier_build.jsx",
+      "bytes": 7214,
+      "sha256": "2f5ce763eb8d8c9b4275e64b312f755f512b9004baae2aaa9135a396a3b7953e",
+      "git_blob": "b16db0eff3bea6267108d28b57c2abd8a0b62532"
+    },
+    {
       "path": "news_count_scope.svg",
       "bytes": 2197,
       "sha256": "d3435f49ffd66b262d1052198856fdaf0ff273dd8db8c7651748c7a434855dce",
@@ -57,15 +63,15 @@
     },
     {
       "path": "post/news_count_contract.jsx",
-      "bytes": 6818,
-      "sha256": "9cf6730e4b7c8a9806f80e5374a93f88f3c56150a477f4749a7c0df829ed93ab",
-      "git_blob": "c3bb0f628585d4b5f793a737b9473eb12fe99815"
+      "bytes": 6834,
+      "sha256": "d832f62256a9d5b745bda75e395d832421d2f9d36be70a3f71a8a3c0781019c8",
+      "git_blob": "9bbfe9046eabde3e8c8777c8ca0d2582e4bbacec"
     },
     {
       "path": "post/news_review_build.jsx",
-      "bytes": 24298,
-      "sha256": "63a3a623b5c39983b6087e26badfb5ca6eede5fca5ce1a4a2fc8a00cc96a8197",
-      "git_blob": "d87e51b77c359185350b71cef4e79ecbaf41fb6b"
+      "bytes": 24314,
+      "sha256": "ce999355c328900a8c6e2c18c71db2d911f192bf2f72f1caa638371e5934d141",
+      "git_blob": "9900a8a39e616d57ae96826e38d53720a7fb7fe5"
     },
     {
       "path": "post/news_source_filter.jsx",
@@ -80,10 +86,22 @@
       "git_blob": "f26097f213809ad7b99b4c2cc66095c03f0e73cf"
     },
     {
+      "path": "post/sector_dossier_build.jsx",
+      "bytes": 10962,
+      "sha256": "e10eb11c008a2acc02fb7e291597b45b98bdad8406f2323f9788dbbe5affea59",
+      "git_blob": "3bdb33a81eacf229d45e6734ed4b67cd604caa17"
+    },
+    {
+      "path": "post/sector_dossier_contract.jsx",
+      "bytes": 3827,
+      "sha256": "bf6c7e1dc24bb543cf9328ab0baf986b3ffcfc440e10871293a9d75d65393b77",
+      "git_blob": "bde50c563142b80116f94fdf9c1e30bd20cfaeeb"
+    },
+    {
       "path": "proof/news_count_contract_after.jpg",
-      "bytes": 167286,
-      "sha256": "3c2482216bc025ac2b52769894bc2128928bc5a1202a135188c7b8345b68d4c4",
-      "git_blob": "18dc6cc6c86b152512880c1152d490af814256a2",
+      "bytes": 167884,
+      "sha256": "9fa06ca802af45c0a8fd86b6406ebc328e84910176652350483bd5bccafa2a08",
+      "git_blob": "18dd21c62fbe588ed0a62c7fd0545a30839b82c2",
       "width": 612,
       "height": 1001,
       "format": "JPEG"
@@ -122,6 +140,15 @@
       "git_blob": "bb70dfa769ad68e896ec7e42614f0786f2fb61ef",
       "width": 1240,
       "height": 1557,
+      "format": "JPEG"
+    },
+    {
+      "path": "proof/sector_dossier_contract_after.jpg",
+      "bytes": 144320,
+      "sha256": "afc45a7ed1ca95320f4db4746f4737193c30e7c05fc579c5708f423cf8219230",
+      "git_blob": "74245bed3fcbf8c8164ccd3a8ec5116f5db99446",
+      "width": 1000,
+      "height": 457,
       "format": "JPEG"
     }
   ]

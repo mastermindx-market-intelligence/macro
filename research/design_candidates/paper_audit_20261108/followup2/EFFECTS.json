@@ -5218,5 +5218,2188 @@
       "retry_allowed": false,
       "production_acceptance": false
     }
+  },
+  {
+    "operation_id": "paper-audit-c3-news-review-filter-scope-20261109-v1",
+    "tool": "set_text_content",
+    "arguments": {
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "updates": [
+        {
+          "nodeId": "420-0",
+          "html": "Presentation extension: when a review-state filter is active, label the activity reading “Feed total” / “资讯流总计”. For a source-only filter, the existing count-basis line can use “all 2 sources” / “全部 2 个来源”, as in the recovery specimen. Derive the chosen scope treatment in TickerNewsPanel from the existing source and effective review filter. Keep its window and coverage; add no count, store or review effect."
+        }
+      ]
+    },
+    "receipt": {
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "operation_id": "paper-audit-c3-news-review-filter-scope-20261109-v1",
+      "tool": "set_text_content",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M5EXPMQTSBFBAM8KKG83FTZH\",\n    \"name\": \"News Intelligence · R3 Ledger + R2 States\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"1a25e5be\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"updates\": [\n    {\n      \"nodeId\": \"420-0\"\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "before": {
+        "basic_info": {
+          "fileName": "News Intelligence · R3 Ledger + R2 States",
+          "pageName": "01 · States & user help",
+          "pageId": "p-1-0",
+          "url": "https://app.paper.design/file/01M5EXPMQTSBFBAM8KKG83FTZH/p-1-0",
+          "rootNodeId": "root_node_p-1-0",
+          "nodeCount": 1719,
+          "artboardCount": 7,
+          "artboards": [
+            {
+              "id": "1-0",
+              "name": "REF · R2 · Desktop 1440 · Details open",
+              "childCount": 3,
+              "width": 1440,
+              "height": 900,
+              "worldX": -720,
+              "worldY": -450
+            },
+            {
+              "id": "9B-0",
+              "name": "REF · R2 · Desktop 1440 · Evidence expanded",
+              "childCount": 3,
+              "width": 1440,
+              "height": 900,
+              "worldX": 800,
+              "worldY": -450
+            },
+            {
+              "id": "H3-0",
+              "name": "REF · R2 · Tablet 768 · Details open",
+              "childCount": 2,
+              "width": 768,
+              "height": 1220,
+              "worldX": 2320,
+              "worldY": -450
+            },
+            {
+              "id": "M3-0",
+              "name": "REF · R2 · Mobile 390 · Details open",
+              "childCount": 2,
+              "width": 390,
+              "height": 1300,
+              "worldX": 3168,
+              "worldY": -450
+            },
+            {
+              "id": "QO-0",
+              "name": "S · Spec §5 states · DARK · EN · rail 360 · every degraded, empty and edge case",
+              "childCount": 7,
+              "width": 1600,
+              "height": 1646,
+              "worldX": 3638,
+              "worldY": -450
+            },
+            {
+              "id": "169-0",
+              "name": "Z · ZH 中文 · glance strip + details · DARK · specimen-reachable",
+              "childCount": 4,
+              "width": 1600,
+              "height": 1356,
+              "worldX": 5318,
+              "worldY": -450
+            },
+            {
+              "id": "1SF-0",
+              "name": "G · Restricted and guest · DARK · EN + ZH · rail 360 · no paywall theatre",
+              "childCount": 2,
+              "width": 1600,
+              "height": 483,
+              "worldX": 8678,
+              "worldY": -450
+            }
+          ],
+          "pages": [
+            {
+              "type": "page",
+              "id": "p-2-0",
+              "name": "Product · News rail",
+              "icon": "arrow",
+              "isActive": false
+            },
+            {
+              "type": "page",
+              "id": "p-1-0",
+              "name": "01 · States & user help",
+              "icon": "design",
+              "isActive": true
+            },
+            {
+              "type": "page",
+              "id": "p-5-0",
+              "name": "Product · Activity & returns",
+              "icon": "design",
+              "isActive": false
+            },
+            {
+              "type": "page",
+              "id": "p-4-0",
+              "name": "Reference · Count states & help",
+              "icon": "question",
+              "isActive": false
+            },
+            {
+              "type": "page",
+              "id": "p-3-0",
+              "name": "02 · Build & design rules",
+              "icon": "blueprint",
+              "isActive": false
+            }
+          ],
+          "fontFamilies": [
+            "Inter",
+            "JetBrains Mono",
+            "PingFang SC",
+            "System Sans-Serif"
+          ],
+          "tokens": {
+            "items": [
+              {
+                "name": "--bg",
+                "value": "#0A0B0E"
+              },
+              {
+                "name": "--inset",
+                "value": "#08090C"
+              },
+              {
+                "name": "--panel",
+                "value": "#0D0F13"
+              },
+              {
+                "name": "--panel-2",
+                "value": "#15171D"
+              },
+              {
+                "name": "--panel-3",
+                "value": "#1F222B"
+              },
+              {
+                "name": "--line",
+                "value": "#23262F"
+              },
+              {
+                "name": "--line-2",
+                "value": "#1A1D24"
+              },
+              {
+                "name": "--line-3",
+                "value": "#33373F"
+              },
+              {
+                "name": "--text",
+                "value": "#D6DAE3"
+              },
+              {
+                "name": "--text-2",
+                "value": "#9BA3B4"
+              },
+              {
+                "name": "--muted",
+                "value": "#717A8E"
+              },
+              {
+                "name": "--text-dim",
+                "value": "#4A5468"
+              },
+              {
+                "name": "--brand-2",
+                "value": "#4D82FF"
+              },
+              {
+                "name": "--warn",
+                "value": "#E8A33D"
+              },
+              {
+                "name": "--mx-dark-bg",
+                "value": "#0F1115"
+              },
+              {
+                "name": "--mx-dark-panel",
+                "value": "#181B21"
+              },
+              {
+                "name": "--mx-dark-text",
+                "value": "#D7DCE3"
+              },
+              {
+                "name": "--mx-dark-muted",
+                "value": "#8B93A1"
+              },
+              {
+                "name": "--mx-dark-line",
+                "value": "#3A4150"
+              },
+              {
+                "name": "--mx-dark-prov",
+                "value": "#62A0E8"
+              },
+              {
+                "name": "--l-canvas",
+                "value": "#F3F5F8"
+              },
+              {
+                "name": "--l-surface",
+                "value": "#FFFFFF"
+              },
+              {
+                "name": "--l-hair",
+                "value": "#E2E6EC"
+              },
+              {
+                "name": "--l-border",
+                "value": "#DDE2E9"
+              },
+              {
+                "name": "--l-count",
+                "value": "#161A22"
+              },
+              {
+                "name": "--l-words",
+                "value": "#4A5361"
+              },
+              {
+                "name": "--l-muted",
+                "value": "#6B7482"
+              },
+              {
+                "name": "--l-dim",
+                "value": "#9AA2AE"
+              },
+              {
+                "name": "--l-live",
+                "value": "#2F5CE6"
+              },
+              {
+                "name": "--l-bar",
+                "value": "#5F6877"
+              },
+              {
+                "name": "--l-grid",
+                "value": "#EDF0F4"
+              },
+              {
+                "name": "--flow-muted",
+                "value": "#7A8396"
+              },
+              {
+                "name": "--font-ui",
+                "value": "\"Inter\""
+              },
+              {
+                "name": "--font-zh",
+                "value": "\"PingFang SC\""
+              },
+              {
+                "name": "--font-code",
+                "value": "\"JetBrains Mono\""
+              },
+              {
+                "name": "--fs-micro",
+                "value": "10px"
+              },
+              {
+                "name": "--fs-label",
+                "value": "11px"
+              },
+              {
+                "name": "--fs-sm",
+                "value": "12px"
+              },
+              {
+                "name": "--fs-row",
+                "value": "13px"
+              },
+              {
+                "name": "--fs-md",
+                "value": "15px"
+              },
+              {
+                "name": "--fs-h2",
+                "value": "17px"
+              },
+              {
+                "name": "--fs-num-lg",
+                "value": "22px"
+              },
+              {
+                "name": "--fs-h1",
+                "value": "28px"
+              },
+              {
+                "name": "--sp-1",
+                "value": "4px"
+              },
+              {
+                "name": "--sp-2",
+                "value": "8px"
+              },
+              {
+                "name": "--sp-3",
+                "value": "12px"
+              },
+              {
+                "name": "--sp-4",
+                "value": "16px"
+              },
+              {
+                "name": "--sp-5",
+                "value": "20px"
+              },
+              {
+                "name": "--sp-6",
+                "value": "24px"
+              },
+              {
+                "name": "--sp-7",
+                "value": "32px"
+              },
+              {
+                "name": "--sp-8",
+                "value": "44px"
+              },
+              {
+                "name": "--r",
+                "value": "4px"
+              },
+              {
+                "name": "--r-md",
+                "value": "6px"
+              },
+              {
+                "name": "--r-lg",
+                "value": "8px"
+              },
+              {
+                "name": "--r-card",
+                "value": "12px"
+              },
+              {
+                "name": "--r-pill",
+                "value": "999px"
+              }
+            ]
+          },
+          "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+          "contentHash": {
+            "tokens": "1a25e5be"
+          }
+        },
+        "identity": {
+          "kind": "file-id",
+          "id": "01M5EXPMQTSBFBAM8KKG83FTZH"
+        },
+        "snapshot_sha256": "abf41bb305250fef0e370cd43f306dd13a71ef91ff14dc97367edd7aed3c7a24",
+        "write_binding_ready": true,
+        "binding_error": null
+      },
+      "after": {
+        "basic_info": {
+          "fileName": "News Intelligence · R3 Ledger + R2 States",
+          "pageName": "01 · States & user help",
+          "pageId": "p-1-0",
+          "url": "https://app.paper.design/file/01M5EXPMQTSBFBAM8KKG83FTZH/p-1-0",
+          "rootNodeId": "root_node_p-1-0",
+          "nodeCount": 1719,
+          "artboardCount": 7,
+          "artboards": [
+            {
+              "id": "1-0",
+              "name": "REF · R2 · Desktop 1440 · Details open",
+              "childCount": 3,
+              "width": 1440,
+              "height": 900,
+              "worldX": -720,
+              "worldY": -450
+            },
+            {
+              "id": "9B-0",
+              "name": "REF · R2 · Desktop 1440 · Evidence expanded",
+              "childCount": 3,
+              "width": 1440,
+              "height": 900,
+              "worldX": 800,
+              "worldY": -450
+            },
+            {
+              "id": "H3-0",
+              "name": "REF · R2 · Tablet 768 · Details open",
+              "childCount": 2,
+              "width": 768,
+              "height": 1220,
+              "worldX": 2320,
+              "worldY": -450
+            },
+            {
+              "id": "M3-0",
+              "name": "REF · R2 · Mobile 390 · Details open",
+              "childCount": 2,
+              "width": 390,
+              "height": 1300,
+              "worldX": 3168,
+              "worldY": -450
+            },
+            {
+              "id": "QO-0",
+              "name": "S · Spec §5 states · DARK · EN · rail 360 · every degraded, empty and edge case",
+              "childCount": 7,
+              "width": 1600,
+              "height": 1646,
+              "worldX": 3638,
+              "worldY": -450
+            },
+            {
+              "id": "169-0",
+              "name": "Z · ZH 中文 · glance strip + details · DARK · specimen-reachable",
+              "childCount": 4,
+              "width": 1600,
+              "height": 1356,
+              "worldX": 5318,
+              "worldY": -450
+            },
+            {
+              "id": "1SF-0",
+              "name": "G · Restricted and guest · DARK · EN + ZH · rail 360 · no paywall theatre",
+              "childCount": 2,
+              "width": 1600,
+              "height": 483,
+              "worldX": 8678,
+              "worldY": -450
+            }
+          ],
+          "pages": [
+            {
+              "type": "page",
+              "id": "p-2-0",
+              "name": "Product · News rail",
+              "icon": "arrow",
+              "isActive": false
+            },
+            {
+              "type": "page",
+              "id": "p-1-0",
+              "name": "01 · States & user help",
+              "icon": "design",
+              "isActive": true
+            },
+            {
+              "type": "page",
+              "id": "p-5-0",
+              "name": "Product · Activity & returns",
+              "icon": "design",
+              "isActive": false
+            },
+            {
+              "type": "page",
+              "id": "p-4-0",
+              "name": "Reference · Count states & help",
+              "icon": "question",
+              "isActive": false
+            },
+            {
+              "type": "page",
+              "id": "p-3-0",
+              "name": "02 · Build & design rules",
+              "icon": "blueprint",
+              "isActive": false
+            }
+          ],
+          "fontFamilies": [
+            "Inter",
+            "JetBrains Mono",
+            "PingFang SC",
+            "System Sans-Serif"
+          ],
+          "tokens": {
+            "items": [
+              {
+                "name": "--bg",
+                "value": "#0A0B0E"
+              },
+              {
+                "name": "--inset",
+                "value": "#08090C"
+              },
+              {
+                "name": "--panel",
+                "value": "#0D0F13"
+              },
+              {
+                "name": "--panel-2",
+                "value": "#15171D"
+              },
+              {
+                "name": "--panel-3",
+                "value": "#1F222B"
+              },
+              {
+                "name": "--line",
+                "value": "#23262F"
+              },
+              {
+                "name": "--line-2",
+                "value": "#1A1D24"
+              },
+              {
+                "name": "--line-3",
+                "value": "#33373F"
+              },
+              {
+                "name": "--text",
+                "value": "#D6DAE3"
+              },
+              {
+                "name": "--text-2",
+                "value": "#9BA3B4"
+              },
+              {
+                "name": "--muted",
+                "value": "#717A8E"
+              },
+              {
+                "name": "--text-dim",
+                "value": "#4A5468"
+              },
+              {
+                "name": "--brand-2",
+                "value": "#4D82FF"
+              },
+              {
+                "name": "--warn",
+                "value": "#E8A33D"
+              },
+              {
+                "name": "--mx-dark-bg",
+                "value": "#0F1115"
+              },
+              {
+                "name": "--mx-dark-panel",
+                "value": "#181B21"
+              },
+              {
+                "name": "--mx-dark-text",
+                "value": "#D7DCE3"
+              },
+              {
+                "name": "--mx-dark-muted",
+                "value": "#8B93A1"
+              },
+              {
+                "name": "--mx-dark-line",
+                "value": "#3A4150"
+              },
+              {
+                "name": "--mx-dark-prov",
+                "value": "#62A0E8"
+              },
+              {
+                "name": "--l-canvas",
+                "value": "#F3F5F8"
+              },
+              {
+                "name": "--l-surface",
+                "value": "#FFFFFF"
+              },
+              {
+                "name": "--l-hair",
+                "value": "#E2E6EC"
+              },
+              {
+                "name": "--l-border",
+                "value": "#DDE2E9"
+              },
+              {
+                "name": "--l-count",
+                "value": "#161A22"
+              },
+              {
+                "name": "--l-words",
+                "value": "#4A5361"
+              },
+              {
+                "name": "--l-muted",
+                "value": "#6B7482"
+              },
+              {
+                "name": "--l-dim",
+                "value": "#9AA2AE"
+              },
+              {
+                "name": "--l-live",
+                "value": "#2F5CE6"
+              },
+              {
+                "name": "--l-bar",
+                "value": "#5F6877"
+              },
+              {
+                "name": "--l-grid",
+                "value": "#EDF0F4"
+              },
+              {
+                "name": "--flow-muted",
+                "value": "#7A8396"
+              },
+              {
+                "name": "--font-ui",
+                "value": "\"Inter\""
+              },
+              {
+                "name": "--font-zh",
+                "value": "\"PingFang SC\""
+              },
+              {
+                "name": "--font-code",
+                "value": "\"JetBrains Mono\""
+              },
+              {
+                "name": "--fs-micro",
+                "value": "10px"
+              },
+              {
+                "name": "--fs-label",
+                "value": "11px"
+              },
+              {
+                "name": "--fs-sm",
+                "value": "12px"
+              },
+              {
+                "name": "--fs-row",
+                "value": "13px"
+              },
+              {
+                "name": "--fs-md",
+                "value": "15px"
+              },
+              {
+                "name": "--fs-h2",
+                "value": "17px"
+              },
+              {
+                "name": "--fs-num-lg",
+                "value": "22px"
+              },
+              {
+                "name": "--fs-h1",
+                "value": "28px"
+              },
+              {
+                "name": "--sp-1",
+                "value": "4px"
+              },
+              {
+                "name": "--sp-2",
+                "value": "8px"
+              },
+              {
+                "name": "--sp-3",
+                "value": "12px"
+              },
+              {
+                "name": "--sp-4",
+                "value": "16px"
+              },
+              {
+                "name": "--sp-5",
+                "value": "20px"
+              },
+              {
+                "name": "--sp-6",
+                "value": "24px"
+              },
+              {
+                "name": "--sp-7",
+                "value": "32px"
+              },
+              {
+                "name": "--sp-8",
+                "value": "44px"
+              },
+              {
+                "name": "--r",
+                "value": "4px"
+              },
+              {
+                "name": "--r-md",
+                "value": "6px"
+              },
+              {
+                "name": "--r-lg",
+                "value": "8px"
+              },
+              {
+                "name": "--r-card",
+                "value": "12px"
+              },
+              {
+                "name": "--r-pill",
+                "value": "999px"
+              }
+            ]
+          },
+          "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+          "contentHash": {
+            "tokens": "1a25e5be"
+          }
+        },
+        "identity": {
+          "kind": "file-id",
+          "id": "01M5EXPMQTSBFBAM8KKG83FTZH"
+        },
+        "snapshot_sha256": "abf41bb305250fef0e370cd43f306dd13a71ef91ff14dc97367edd7aed3c7a24",
+        "write_binding_ready": true,
+        "binding_error": null
+      },
+      "retry_allowed": false,
+      "production_acceptance": false
+    }
+  },
+  {
+    "operation_id": "paper-audit-c3-news-review-filter-scope-finish-20261109-v1",
+    "tool": "finish_working_on_nodes",
+    "arguments": {
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "nodeIds": [
+        "3H7-0"
+      ]
+    },
+    "receipt": {
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "operation_id": "paper-audit-c3-news-review-filter-scope-finish-20261109-v1",
+      "tool": "finish_working_on_nodes",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M5EXPMQTSBFBAM8KKG83FTZH\",\n    \"name\": \"News Intelligence · R3 Ledger + R2 States\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"1a25e5be\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "OK"
+          }
+        ]
+      },
+      "before": {
+        "basic_info": {
+          "fileName": "News Intelligence · R3 Ledger + R2 States",
+          "pageName": "01 · States & user help",
+          "pageId": "p-1-0",
+          "url": "https://app.paper.design/file/01M5EXPMQTSBFBAM8KKG83FTZH/p-1-0",
+          "rootNodeId": "root_node_p-1-0",
+          "nodeCount": 1719,
+          "artboardCount": 7,
+          "artboards": [
+            {
+              "id": "1-0",
+              "name": "REF · R2 · Desktop 1440 · Details open",
+              "childCount": 3,
+              "width": 1440,
+              "height": 900,
+              "worldX": -720,
+              "worldY": -450
+            },
+            {
+              "id": "9B-0",
+              "name": "REF · R2 · Desktop 1440 · Evidence expanded",
+              "childCount": 3,
+              "width": 1440,
+              "height": 900,
+              "worldX": 800,
+              "worldY": -450
+            },
+            {
+              "id": "H3-0",
+              "name": "REF · R2 · Tablet 768 · Details open",
+              "childCount": 2,
+              "width": 768,
+              "height": 1220,
+              "worldX": 2320,
+              "worldY": -450
+            },
+            {
+              "id": "M3-0",
+              "name": "REF · R2 · Mobile 390 · Details open",
+              "childCount": 2,
+              "width": 390,
+              "height": 1300,
+              "worldX": 3168,
+              "worldY": -450
+            },
+            {
+              "id": "QO-0",
+              "name": "S · Spec §5 states · DARK · EN · rail 360 · every degraded, empty and edge case",
+              "childCount": 7,
+              "width": 1600,
+              "height": 1646,
+              "worldX": 3638,
+              "worldY": -450
+            },
+            {
+              "id": "169-0",
+              "name": "Z · ZH 中文 · glance strip + details · DARK · specimen-reachable",
+              "childCount": 4,
+              "width": 1600,
+              "height": 1356,
+              "worldX": 5318,
+              "worldY": -450
+            },
+            {
+              "id": "1SF-0",
+              "name": "G · Restricted and guest · DARK · EN + ZH · rail 360 · no paywall theatre",
+              "childCount": 2,
+              "width": 1600,
+              "height": 483,
+              "worldX": 8678,
+              "worldY": -450
+            }
+          ],
+          "pages": [
+            {
+              "type": "page",
+              "id": "p-2-0",
+              "name": "Product · News rail",
+              "icon": "arrow",
+              "isActive": false
+            },
+            {
+              "type": "page",
+              "id": "p-1-0",
+              "name": "01 · States & user help",
+              "icon": "design",
+              "isActive": true
+            },
+            {
+              "type": "page",
+              "id": "p-5-0",
+              "name": "Product · Activity & returns",
+              "icon": "design",
+              "isActive": false
+            },
+            {
+              "type": "page",
+              "id": "p-4-0",
+              "name": "Reference · Count states & help",
+              "icon": "question",
+              "isActive": false
+            },
+            {
+              "type": "page",
+              "id": "p-3-0",
+              "name": "02 · Build & design rules",
+              "icon": "blueprint",
+              "isActive": false
+            }
+          ],
+          "fontFamilies": [
+            "Inter",
+            "JetBrains Mono",
+            "PingFang SC",
+            "System Sans-Serif"
+          ],
+          "tokens": {
+            "items": [
+              {
+                "name": "--bg",
+                "value": "#0A0B0E"
+              },
+              {
+                "name": "--inset",
+                "value": "#08090C"
+              },
+              {
+                "name": "--panel",
+                "value": "#0D0F13"
+              },
+              {
+                "name": "--panel-2",
+                "value": "#15171D"
+              },
+              {
+                "name": "--panel-3",
+                "value": "#1F222B"
+              },
+              {
+                "name": "--line",
+                "value": "#23262F"
+              },
+              {
+                "name": "--line-2",
+                "value": "#1A1D24"
+              },
+              {
+                "name": "--line-3",
+                "value": "#33373F"
+              },
+              {
+                "name": "--text",
+                "value": "#D6DAE3"
+              },
+              {
+                "name": "--text-2",
+                "value": "#9BA3B4"
+              },
+              {
+                "name": "--muted",
+                "value": "#717A8E"
+              },
+              {
+                "name": "--text-dim",
+                "value": "#4A5468"
+              },
+              {
+                "name": "--brand-2",
+                "value": "#4D82FF"
+              },
+              {
+                "name": "--warn",
+                "value": "#E8A33D"
+              },
+              {
+                "name": "--mx-dark-bg",
+                "value": "#0F1115"
+              },
+              {
+                "name": "--mx-dark-panel",
+                "value": "#181B21"
+              },
+              {
+                "name": "--mx-dark-text",
+                "value": "#D7DCE3"
+              },
+              {
+                "name": "--mx-dark-muted",
+                "value": "#8B93A1"
+              },
+              {
+                "name": "--mx-dark-line",
+                "value": "#3A4150"
+              },
+              {
+                "name": "--mx-dark-prov",
+                "value": "#62A0E8"
+              },
+              {
+                "name": "--l-canvas",
+                "value": "#F3F5F8"
+              },
+              {
+                "name": "--l-surface",
+                "value": "#FFFFFF"
+              },
+              {
+                "name": "--l-hair",
+                "value": "#E2E6EC"
+              },
+              {
+                "name": "--l-border",
+                "value": "#DDE2E9"
+              },
+              {
+                "name": "--l-count",
+                "value": "#161A22"
+              },
+              {
+                "name": "--l-words",
+                "value": "#4A5361"
+              },
+              {
+                "name": "--l-muted",
+                "value": "#6B7482"
+              },
+              {
+                "name": "--l-dim",
+                "value": "#9AA2AE"
+              },
+              {
+                "name": "--l-live",
+                "value": "#2F5CE6"
+              },
+              {
+                "name": "--l-bar",
+                "value": "#5F6877"
+              },
+              {
+                "name": "--l-grid",
+                "value": "#EDF0F4"
+              },
+              {
+                "name": "--flow-muted",
+                "value": "#7A8396"
+              },
+              {
+                "name": "--font-ui",
+                "value": "\"Inter\""
+              },
+              {
+                "name": "--font-zh",
+                "value": "\"PingFang SC\""
+              },
+              {
+                "name": "--font-code",
+                "value": "\"JetBrains Mono\""
+              },
+              {
+                "name": "--fs-micro",
+                "value": "10px"
+              },
+              {
+                "name": "--fs-label",
+                "value": "11px"
+              },
+              {
+                "name": "--fs-sm",
+                "value": "12px"
+              },
+              {
+                "name": "--fs-row",
+                "value": "13px"
+              },
+              {
+                "name": "--fs-md",
+                "value": "15px"
+              },
+              {
+                "name": "--fs-h2",
+                "value": "17px"
+              },
+              {
+                "name": "--fs-num-lg",
+                "value": "22px"
+              },
+              {
+                "name": "--fs-h1",
+                "value": "28px"
+              },
+              {
+                "name": "--sp-1",
+                "value": "4px"
+              },
+              {
+                "name": "--sp-2",
+                "value": "8px"
+              },
+              {
+                "name": "--sp-3",
+                "value": "12px"
+              },
+              {
+                "name": "--sp-4",
+                "value": "16px"
+              },
+              {
+                "name": "--sp-5",
+                "value": "20px"
+              },
+              {
+                "name": "--sp-6",
+                "value": "24px"
+              },
+              {
+                "name": "--sp-7",
+                "value": "32px"
+              },
+              {
+                "name": "--sp-8",
+                "value": "44px"
+              },
+              {
+                "name": "--r",
+                "value": "4px"
+              },
+              {
+                "name": "--r-md",
+                "value": "6px"
+              },
+              {
+                "name": "--r-lg",
+                "value": "8px"
+              },
+              {
+                "name": "--r-card",
+                "value": "12px"
+              },
+              {
+                "name": "--r-pill",
+                "value": "999px"
+              }
+            ]
+          },
+          "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+          "contentHash": {
+            "tokens": "1a25e5be"
+          }
+        },
+        "identity": {
+          "kind": "file-id",
+          "id": "01M5EXPMQTSBFBAM8KKG83FTZH"
+        },
+        "snapshot_sha256": "abf41bb305250fef0e370cd43f306dd13a71ef91ff14dc97367edd7aed3c7a24",
+        "write_binding_ready": true,
+        "binding_error": null
+      },
+      "after": {
+        "basic_info": {
+          "fileName": "News Intelligence · R3 Ledger + R2 States",
+          "pageName": "01 · States & user help",
+          "pageId": "p-1-0",
+          "url": "https://app.paper.design/file/01M5EXPMQTSBFBAM8KKG83FTZH/p-1-0",
+          "rootNodeId": "root_node_p-1-0",
+          "nodeCount": 1719,
+          "artboardCount": 7,
+          "artboards": [
+            {
+              "id": "1-0",
+              "name": "REF · R2 · Desktop 1440 · Details open",
+              "childCount": 3,
+              "width": 1440,
+              "height": 900,
+              "worldX": -720,
+              "worldY": -450
+            },
+            {
+              "id": "9B-0",
+              "name": "REF · R2 · Desktop 1440 · Evidence expanded",
+              "childCount": 3,
+              "width": 1440,
+              "height": 900,
+              "worldX": 800,
+              "worldY": -450
+            },
+            {
+              "id": "H3-0",
+              "name": "REF · R2 · Tablet 768 · Details open",
+              "childCount": 2,
+              "width": 768,
+              "height": 1220,
+              "worldX": 2320,
+              "worldY": -450
+            },
+            {
+              "id": "M3-0",
+              "name": "REF · R2 · Mobile 390 · Details open",
+              "childCount": 2,
+              "width": 390,
+              "height": 1300,
+              "worldX": 3168,
+              "worldY": -450
+            },
+            {
+              "id": "QO-0",
+              "name": "S · Spec §5 states · DARK · EN · rail 360 · every degraded, empty and edge case",
+              "childCount": 7,
+              "width": 1600,
+              "height": 1646,
+              "worldX": 3638,
+              "worldY": -450
+            },
+            {
+              "id": "169-0",
+              "name": "Z · ZH 中文 · glance strip + details · DARK · specimen-reachable",
+              "childCount": 4,
+              "width": 1600,
+              "height": 1356,
+              "worldX": 5318,
+              "worldY": -450
+            },
+            {
+              "id": "1SF-0",
+              "name": "G · Restricted and guest · DARK · EN + ZH · rail 360 · no paywall theatre",
+              "childCount": 2,
+              "width": 1600,
+              "height": 483,
+              "worldX": 8678,
+              "worldY": -450
+            }
+          ],
+          "pages": [
+            {
+              "type": "page",
+              "id": "p-2-0",
+              "name": "Product · News rail",
+              "icon": "arrow",
+              "isActive": false
+            },
+            {
+              "type": "page",
+              "id": "p-1-0",
+              "name": "01 · States & user help",
+              "icon": "design",
+              "isActive": true
+            },
+            {
+              "type": "page",
+              "id": "p-5-0",
+              "name": "Product · Activity & returns",
+              "icon": "design",
+              "isActive": false
+            },
+            {
+              "type": "page",
+              "id": "p-4-0",
+              "name": "Reference · Count states & help",
+              "icon": "question",
+              "isActive": false
+            },
+            {
+              "type": "page",
+              "id": "p-3-0",
+              "name": "02 · Build & design rules",
+              "icon": "blueprint",
+              "isActive": false
+            }
+          ],
+          "fontFamilies": [
+            "Inter",
+            "JetBrains Mono",
+            "PingFang SC",
+            "System Sans-Serif"
+          ],
+          "tokens": {
+            "items": [
+              {
+                "name": "--bg",
+                "value": "#0A0B0E"
+              },
+              {
+                "name": "--inset",
+                "value": "#08090C"
+              },
+              {
+                "name": "--panel",
+                "value": "#0D0F13"
+              },
+              {
+                "name": "--panel-2",
+                "value": "#15171D"
+              },
+              {
+                "name": "--panel-3",
+                "value": "#1F222B"
+              },
+              {
+                "name": "--line",
+                "value": "#23262F"
+              },
+              {
+                "name": "--line-2",
+                "value": "#1A1D24"
+              },
+              {
+                "name": "--line-3",
+                "value": "#33373F"
+              },
+              {
+                "name": "--text",
+                "value": "#D6DAE3"
+              },
+              {
+                "name": "--text-2",
+                "value": "#9BA3B4"
+              },
+              {
+                "name": "--muted",
+                "value": "#717A8E"
+              },
+              {
+                "name": "--text-dim",
+                "value": "#4A5468"
+              },
+              {
+                "name": "--brand-2",
+                "value": "#4D82FF"
+              },
+              {
+                "name": "--warn",
+                "value": "#E8A33D"
+              },
+              {
+                "name": "--mx-dark-bg",
+                "value": "#0F1115"
+              },
+              {
+                "name": "--mx-dark-panel",
+                "value": "#181B21"
+              },
+              {
+                "name": "--mx-dark-text",
+                "value": "#D7DCE3"
+              },
+              {
+                "name": "--mx-dark-muted",
+                "value": "#8B93A1"
+              },
+              {
+                "name": "--mx-dark-line",
+                "value": "#3A4150"
+              },
+              {
+                "name": "--mx-dark-prov",
+                "value": "#62A0E8"
+              },
+              {
+                "name": "--l-canvas",
+                "value": "#F3F5F8"
+              },
+              {
+                "name": "--l-surface",
+                "value": "#FFFFFF"
+              },
+              {
+                "name": "--l-hair",
+                "value": "#E2E6EC"
+              },
+              {
+                "name": "--l-border",
+                "value": "#DDE2E9"
+              },
+              {
+                "name": "--l-count",
+                "value": "#161A22"
+              },
+              {
+                "name": "--l-words",
+                "value": "#4A5361"
+              },
+              {
+                "name": "--l-muted",
+                "value": "#6B7482"
+              },
+              {
+                "name": "--l-dim",
+                "value": "#9AA2AE"
+              },
+              {
+                "name": "--l-live",
+                "value": "#2F5CE6"
+              },
+              {
+                "name": "--l-bar",
+                "value": "#5F6877"
+              },
+              {
+                "name": "--l-grid",
+                "value": "#EDF0F4"
+              },
+              {
+                "name": "--flow-muted",
+                "value": "#7A8396"
+              },
+              {
+                "name": "--font-ui",
+                "value": "\"Inter\""
+              },
+              {
+                "name": "--font-zh",
+                "value": "\"PingFang SC\""
+              },
+              {
+                "name": "--font-code",
+                "value": "\"JetBrains Mono\""
+              },
+              {
+                "name": "--fs-micro",
+                "value": "10px"
+              },
+              {
+                "name": "--fs-label",
+                "value": "11px"
+              },
+              {
+                "name": "--fs-sm",
+                "value": "12px"
+              },
+              {
+                "name": "--fs-row",
+                "value": "13px"
+              },
+              {
+                "name": "--fs-md",
+                "value": "15px"
+              },
+              {
+                "name": "--fs-h2",
+                "value": "17px"
+              },
+              {
+                "name": "--fs-num-lg",
+                "value": "22px"
+              },
+              {
+                "name": "--fs-h1",
+                "value": "28px"
+              },
+              {
+                "name": "--sp-1",
+                "value": "4px"
+              },
+              {
+                "name": "--sp-2",
+                "value": "8px"
+              },
+              {
+                "name": "--sp-3",
+                "value": "12px"
+              },
+              {
+                "name": "--sp-4",
+                "value": "16px"
+              },
+              {
+                "name": "--sp-5",
+                "value": "20px"
+              },
+              {
+                "name": "--sp-6",
+                "value": "24px"
+              },
+              {
+                "name": "--sp-7",
+                "value": "32px"
+              },
+              {
+                "name": "--sp-8",
+                "value": "44px"
+              },
+              {
+                "name": "--r",
+                "value": "4px"
+              },
+              {
+                "name": "--r-md",
+                "value": "6px"
+              },
+              {
+                "name": "--r-lg",
+                "value": "8px"
+              },
+              {
+                "name": "--r-card",
+                "value": "12px"
+              },
+              {
+                "name": "--r-pill",
+                "value": "999px"
+              }
+            ]
+          },
+          "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+          "contentHash": {
+            "tokens": "1a25e5be"
+          }
+        },
+        "identity": {
+          "kind": "file-id",
+          "id": "01M5EXPMQTSBFBAM8KKG83FTZH"
+        },
+        "snapshot_sha256": "abf41bb305250fef0e370cd43f306dd13a71ef91ff14dc97367edd7aed3c7a24",
+        "write_binding_ready": true,
+        "binding_error": null
+      },
+      "retry_allowed": false,
+      "production_acceptance": false
+    }
+  },
+  {
+    "operation_id": "paper-audit-c3-sector-dossier-opening-contract-20261109-v1",
+    "tool": "write_html",
+    "arguments": {
+      "fileId": "01M6FAXA774QT1VRDMAG7DFQ2W",
+      "targetNodeId": "GYT-0",
+      "mode": "insert-children",
+      "html": "<div layer-name=\"BUILD · Dossier opening receipt and return\" style=\"display:flex;flex-direction:column;gap:12px;width:100%;max-width:1000px;border-top:1px solid #3A4150;padding-top:20px;\"><div style=\"font-family:Inter;font-size:20px;font-weight:600;line-height:28px;color:#D7DCE3;\">Dossier actions must open the dossier</div><div style=\"font-family:Inter;font-size:13px;line-height:20px;color:#E0A030;\">Proposed R4 action binding. The native workspace and Dossier sources are still draft and held in PRs #10703 and #10707. This note does not qualify or release either dependency.</div><div style=\"font-family:Inter;font-size:14px;line-height:22px;color:#A5ADBA;\">SectorCentralOpenCycle(nativeId, trigger) records the origin and opens Cycles. Its true return confirms navigation was accepted; it does not confirm an open or source-qualified Dossier. The new entry has cycles:null and no open Dossier state. refreshDossier reads entry.dossier.open.</div><div style=\"font-family:Inter;font-size:14px;line-height:22px;color:#A5ADBA;\">Extend that same entry path to carry the intended inline Dossier opening through its existing state and refreshDossier owner. Use the selected row’s admitted native ID and real trigger. Keep dossierAccess, the applied SectorCyclesApply receipt, entry/href, subject/family and publication checks before mounting. Preserve pending and unavailable states; never mount the component directly or substitute an old/default subject.</div><div style=\"font-family:Inter;font-size:14px;line-height:22px;color:#A5ADBA;\">Consumer proof: start with ordered A = Energy, B = Technology while native Cycles last showed Energy. Activate Technology Dossier. Prove that the Technology component actually opens with its qualified subject, family and publication; a true navigation return does not pass. Change selection during loading and reject the obsolete opening. Pending or missing evidence must never display the Energy dossier.</div><div style=\"font-family:Inter;font-size:14px;line-height:22px;color:#A5ADBA;\">Closing the inline Dossier returns to sc-cycle-heading. The separate sc-cycle-return then uses the qualified Central origin. The ordered comparison context and full-basis restoration remain the GPL proposal, with its existing validators and partial-result rules. Preserve G4P, BML and the source/provenance holds; add no route, modal or restoration store.</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;color:#9CA6B5;\">Source: macro / templates/si_workspace.js at 9fc460ff36345387c3a2c5435b079852e8488da0 (PR #10703). Dossier PR #10707 remains 74930f6931773b23072f91590319dc39fe5a7d07. Both were read as draft/open/unmerged. F06 extension; source inspection and Paper rendering are not native-consumer acceptance.</div></div>"
+    },
+    "receipt": {
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "operation_id": "paper-audit-c3-sector-dossier-opening-contract-20261109-v1",
+      "tool": "write_html",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M6FAXA774QT1VRDMAG7DFQ2W\",\n    \"name\": \"Sector Intelligence · R4 · Astra Pro · 2026-11-02\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"811c9dc5\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"HBL-0\",\n      \"name\": \"BUILD · Dossier opening receipt and return\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"HBM-0\",\n      \"name\": \"Dossier actions must…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"HBN-0\",\n      \"name\": \"Proposed R4 action b…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"HBO-0\",\n      \"name\": \"SectorCentralOpenCyc…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"HBP-0\",\n      \"name\": \"Extend that same ent…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"HBQ-0\",\n      \"name\": \"Consumer proof: star…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"HBR-0\",\n      \"name\": \"Closing the inline D…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"HBS-0\",\n      \"name\": \"Source: macro / temp…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "before": {
+        "basic_info": {
+          "fileName": "Sector Intelligence · R4 · Astra Pro · 2026-11-02",
+          "pageName": "Reference · Terminal breadth rotation card",
+          "pageId": "p-1-0",
+          "url": "https://app.paper.design/file/01M6FAXA774QT1VRDMAG7DFQ2W/p-1-0",
+          "rootNodeId": "root_node_p-1-0",
+          "nodeCount": 41,
+          "artboardCount": 1,
+          "artboards": [
+            {
+              "id": "1-0",
+              "name": "Terminal · Sector Breadth · Rotation groups",
+              "childCount": 4,
+              "width": 960,
+              "height": 590,
+              "worldX": -480,
+              "worldY": -295
+            }
+          ],
+          "pages": [
+            {
+              "type": "page",
+              "id": "p-3-0",
+              "name": "00 · D05 journey & contract · Provisional",
+              "icon": "info",
+              "isActive": false
+            },
+            {
+              "type": "page",
+              "id": "p-4-0",
+              "name": "01 · R4 Explore & compare · Design",
+              "icon": "design",
+              "isActive": false
+            },
+            {
+              "type": "page",
+              "id": "p-8-0",
+              "name": "02 · Comparison context",
+              "icon": "design",
+              "isActive": false
+            },
+            {
+              "type": "page",
+              "id": "p-2-0",
+              "name": "R4 · M1",
+              "icon": null,
+              "isActive": false
+            },
+            {
+              "type": "page",
+              "id": "p-1-0",
+              "name": "Reference · Terminal breadth rotation card",
+              "icon": "info",
+              "isActive": true
+            },
+            {
+              "type": "page",
+              "id": "p-7-0",
+              "name": "Reference · Unbound timing fixtures",
+              "icon": "paper",
+              "isActive": false
+            },
+            {
+              "type": "page",
+              "id": "p-6-0",
+              "name": "Proposed · Comparison return",
+              "icon": "design",
+              "isActive": false
+            },
+            {
+              "type": "page",
+              "id": "p-5-0",
+              "name": "Build · Clarity, models & interaction",
+              "icon": "blueprint",
+              "isActive": false
+            }
+          ],
+          "fontFamilies": [
+            "Inter",
+            "IBM Plex Mono",
+            "PingFang SC",
+            "System Sans-Serif"
+          ],
+          "tokens": {
+            "items": []
+          },
+          "fileId": "01M6FAXA774QT1VRDMAG7DFQ2W",
+          "contentHash": {
+            "tokens": "811c9dc5"
+          }
+        },
+        "identity": {
+          "kind": "file-id",
+          "id": "01M6FAXA774QT1VRDMAG7DFQ2W"
+        },
+        "snapshot_sha256": "b683f1fbb6c531a52e4e9c77abc464d333fc16240aea76788095fafb3e7d9e22",
+        "write_binding_ready": true,
+        "binding_error": null
+      },
+      "after": {
+        "basic_info": {
+          "fileName": "Sector Intelligence · R4 · Astra Pro · 2026-11-02",
+          "pageName": "Reference · Terminal breadth rotation card",
+          "pageId": "p-1-0",
+          "url": "https://app.paper.design/file/01M6FAXA774QT1VRDMAG7DFQ2W/p-1-0",
+          "rootNodeId": "root_node_p-1-0",
+          "nodeCount": 41,
+          "artboardCount": 1,
+          "artboards": [
+            {
+              "id": "1-0",
+              "name": "Terminal · Sector Breadth · Rotation groups",
+              "childCount": 4,
+              "width": 960,
+              "height": 590,
+              "worldX": -480,
+              "worldY": -295
+            }
+          ],
+          "pages": [
+            {
+              "type": "page",
+              "id": "p-3-0",
+              "name": "00 · D05 journey & contract · Provisional",
+              "icon": "info",
+              "isActive": false
+            },
+            {
+              "type": "page",
+              "id": "p-4-0",
+              "name": "01 · R4 Explore & compare · Design",
+              "icon": "design",
+              "isActive": false
+            },
+            {
+              "type": "page",
+              "id": "p-8-0",
+              "name": "02 · Comparison context",
+              "icon": "design",
+              "isActive": false
+            },
+            {
+              "type": "page",
+              "id": "p-2-0",
+              "name": "R4 · M1",
+              "icon": null,
+              "isActive": false
+            },
+            {
+              "type": "page",
+              "id": "p-1-0",
+              "name": "Reference · Terminal breadth rotation card",
+              "icon": "info",
+              "isActive": true
+            },
+            {
+              "type": "page",
+              "id": "p-7-0",
+              "name": "Reference · Unbound timing fixtures",
+              "icon": "paper",
+              "isActive": false
+            },
+            {
+              "type": "page",
+              "id": "p-6-0",
+              "name": "Proposed · Comparison return",
+              "icon": "design",
+              "isActive": false
+            },
+            {
+              "type": "page",
+              "id": "p-5-0",
+              "name": "Build · Clarity, models & interaction",
+              "icon": "blueprint",
+              "isActive": false
+            }
+          ],
+          "fontFamilies": [
+            "Inter",
+            "IBM Plex Mono",
+            "PingFang SC",
+            "System Sans-Serif"
+          ],
+          "tokens": {
+            "items": []
+          },
+          "fileId": "01M6FAXA774QT1VRDMAG7DFQ2W",
+          "contentHash": {
+            "tokens": "811c9dc5"
+          }
+        },
+        "identity": {
+          "kind": "file-id",
+          "id": "01M6FAXA774QT1VRDMAG7DFQ2W"
+        },
+        "snapshot_sha256": "b683f1fbb6c531a52e4e9c77abc464d333fc16240aea76788095fafb3e7d9e22",
+        "write_binding_ready": true,
+        "binding_error": null
+      },
+      "retry_allowed": false,
+      "production_acceptance": false
+    }
+  },
+  {
+    "operation_id": "paper-audit-c3-sector-dossier-return-precision-20261109-v1",
+    "tool": "set_text_content",
+    "arguments": {
+      "fileId": "01M6FAXA774QT1VRDMAG7DFQ2W",
+      "updates": [
+        {
+          "nodeId": "HBR-0",
+          "html": "Use dossierOptions().onOpenCycles for the Dossier-to-Cycles action: it closes the inline Dossier and focuses sc-cycle-heading. The separate sc-cycle-return then uses the qualified Central origin. Ordered comparison and full-basis restoration remain the GPL proposal, with its existing validators and partial-result rules. Preserve G4P, BML and source/provenance holds; add no route, modal or restoration store."
+        }
+      ]
+    },
+    "receipt": {
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "operation_id": "paper-audit-c3-sector-dossier-return-precision-20261109-v1",
+      "tool": "set_text_content",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M6FAXA774QT1VRDMAG7DFQ2W\",\n    \"name\": \"Sector Intelligence · R4 · Astra Pro · 2026-11-02\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"811c9dc5\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"updates\": [\n    {\n      \"nodeId\": \"HBR-0\"\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "before": {
+        "basic_info": {
+          "fileName": "Sector Intelligence · R4 · Astra Pro · 2026-11-02",
+          "pageName": "Reference · Terminal breadth rotation card",
+          "pageId": "p-1-0",
+          "url": "https://app.paper.design/file/01M6FAXA774QT1VRDMAG7DFQ2W/p-1-0",
+          "rootNodeId": "root_node_p-1-0",
+          "nodeCount": 41,
+          "artboardCount": 1,
+          "artboards": [
+            {
+              "id": "1-0",
+              "name": "Terminal · Sector Breadth · Rotation groups",
+              "childCount": 4,
+              "width": 960,
+              "height": 590,
+              "worldX": -480,
+              "worldY": -295
+            }
+          ],
+          "pages": [
+            {
+              "type": "page",
+              "id": "p-3-0",
+              "name": "00 · D05 journey & contract · Provisional",
+              "icon": "info",
+              "isActive": false
+            },
+            {
+              "type": "page",
+              "id": "p-4-0",
+              "name": "01 · R4 Explore & compare · Design",
+              "icon": "design",
+              "isActive": false
+            },
+            {
+              "type": "page",
+              "id": "p-8-0",
+              "name": "02 · Comparison context",
+              "icon": "design",
+              "isActive": false
+            },
+            {
+              "type": "page",
+              "id": "p-2-0",
+              "name": "R4 · M1",
+              "icon": null,
+              "isActive": false
+            },
+            {
+              "type": "page",
+              "id": "p-1-0",
+              "name": "Reference · Terminal breadth rotation card",
+              "icon": "info",
+              "isActive": true
+            },
+            {
+              "type": "page",
+              "id": "p-7-0",
+              "name": "Reference · Unbound timing fixtures",
+              "icon": "paper",
+              "isActive": false
+            },
+            {
+              "type": "page",
+              "id": "p-6-0",
+              "name": "Proposed · Comparison return",
+              "icon": "design",
+              "isActive": false
+            },
+            {
+              "type": "page",
+              "id": "p-5-0",
+              "name": "Build · Clarity, models & interaction",
+              "icon": "blueprint",
+              "isActive": false
+            }
+          ],
+          "fontFamilies": [
+            "Inter",
+            "IBM Plex Mono",
+            "PingFang SC",
+            "System Sans-Serif"
+          ],
+          "tokens": {
+            "items": []
+          },
+          "fileId": "01M6FAXA774QT1VRDMAG7DFQ2W",
+          "contentHash": {
+            "tokens": "811c9dc5"
+          }
+        },
+        "identity": {
+          "kind": "file-id",
+          "id": "01M6FAXA774QT1VRDMAG7DFQ2W"
+        },
+        "snapshot_sha256": "b683f1fbb6c531a52e4e9c77abc464d333fc16240aea76788095fafb3e7d9e22",
+        "write_binding_ready": true,
+        "binding_error": null
+      },
+      "after": {
+        "basic_info": {
+          "fileName": "Sector Intelligence · R4 · Astra Pro · 2026-11-02",
+          "pageName": "Reference · Terminal breadth rotation card",
+          "pageId": "p-1-0",
+          "url": "https://app.paper.design/file/01M6FAXA774QT1VRDMAG7DFQ2W/p-1-0",
+          "rootNodeId": "root_node_p-1-0",
+          "nodeCount": 41,
+          "artboardCount": 1,
+          "artboards": [
+            {
+              "id": "1-0",
+              "name": "Terminal · Sector Breadth · Rotation groups",
+              "childCount": 4,
+              "width": 960,
+              "height": 590,
+              "worldX": -480,
+              "worldY": -295
+            }
+          ],
+          "pages": [
+            {
+              "type": "page",
+              "id": "p-3-0",
+              "name": "00 · D05 journey & contract · Provisional",
+              "icon": "info",
+              "isActive": false
+            },
+            {
+              "type": "page",
+              "id": "p-4-0",
+              "name": "01 · R4 Explore & compare · Design",
+              "icon": "design",
+              "isActive": false
+            },
+            {
+              "type": "page",
+              "id": "p-8-0",
+              "name": "02 · Comparison context",
+              "icon": "design",
+              "isActive": false
+            },
+            {
+              "type": "page",
+              "id": "p-2-0",
+              "name": "R4 · M1",
+              "icon": null,
+              "isActive": false
+            },
+            {
+              "type": "page",
+              "id": "p-1-0",
+              "name": "Reference · Terminal breadth rotation card",
+              "icon": "info",
+              "isActive": true
+            },
+            {
+              "type": "page",
+              "id": "p-7-0",
+              "name": "Reference · Unbound timing fixtures",
+              "icon": "paper",
+              "isActive": false
+            },
+            {
+              "type": "page",
+              "id": "p-6-0",
+              "name": "Proposed · Comparison return",
+              "icon": "design",
+              "isActive": false
+            },
+            {
+              "type": "page",
+              "id": "p-5-0",
+              "name": "Build · Clarity, models & interaction",
+              "icon": "blueprint",
+              "isActive": false
+            }
+          ],
+          "fontFamilies": [
+            "Inter",
+            "IBM Plex Mono",
+            "PingFang SC",
+            "System Sans-Serif"
+          ],
+          "tokens": {
+            "items": []
+          },
+          "fileId": "01M6FAXA774QT1VRDMAG7DFQ2W",
+          "contentHash": {
+            "tokens": "811c9dc5"
+          }
+        },
+        "identity": {
+          "kind": "file-id",
+          "id": "01M6FAXA774QT1VRDMAG7DFQ2W"
+        },
+        "snapshot_sha256": "b683f1fbb6c531a52e4e9c77abc464d333fc16240aea76788095fafb3e7d9e22",
+        "write_binding_ready": true,
+        "binding_error": null
+      },
+      "retry_allowed": false,
+      "production_acceptance": false
+    }
+  },
+  {
+    "operation_id": "paper-audit-c3-sector-dossier-opening-finish-20261109-v1",
+    "tool": "finish_working_on_nodes",
+    "arguments": {
+      "fileId": "01M6FAXA774QT1VRDMAG7DFQ2W",
+      "nodeIds": [
+        "GYT-0"
+      ]
+    },
+    "receipt": {
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "operation_id": "paper-audit-c3-sector-dossier-opening-finish-20261109-v1",
+      "tool": "finish_working_on_nodes",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M6FAXA774QT1VRDMAG7DFQ2W\",\n    \"name\": \"Sector Intelligence · R4 · Astra Pro · 2026-11-02\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"811c9dc5\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "OK"
+          }
+        ]
+      },
+      "before": {
+        "basic_info": {
+          "fileName": "Sector Intelligence · R4 · Astra Pro · 2026-11-02",
+          "pageName": "Reference · Terminal breadth rotation card",
+          "pageId": "p-1-0",
+          "url": "https://app.paper.design/file/01M6FAXA774QT1VRDMAG7DFQ2W/p-1-0",
+          "rootNodeId": "root_node_p-1-0",
+          "nodeCount": 41,
+          "artboardCount": 1,
+          "artboards": [
+            {
+              "id": "1-0",
+              "name": "Terminal · Sector Breadth · Rotation groups",
+              "childCount": 4,
+              "width": 960,
+              "height": 590,
+              "worldX": -480,
+              "worldY": -295
+            }
+          ],
+          "pages": [
+            {
+              "type": "page",
+              "id": "p-3-0",
+              "name": "00 · D05 journey & contract · Provisional",
+              "icon": "info",
+              "isActive": false
+            },
+            {
+              "type": "page",
+              "id": "p-4-0",
+              "name": "01 · R4 Explore & compare · Design",
+              "icon": "design",
+              "isActive": false
+            },
+            {
+              "type": "page",
+              "id": "p-8-0",
+              "name": "02 · Comparison context",
+              "icon": "design",
+              "isActive": false
+            },
+            {
+              "type": "page",
+              "id": "p-2-0",
+              "name": "R4 · M1",
+              "icon": null,
+              "isActive": false
+            },
+            {
+              "type": "page",
+              "id": "p-1-0",
+              "name": "Reference · Terminal breadth rotation card",
+              "icon": "info",
+              "isActive": true
+            },
+            {
+              "type": "page",
+              "id": "p-7-0",
+              "name": "Reference · Unbound timing fixtures",
+              "icon": "paper",
+              "isActive": false
+            },
+            {
+              "type": "page",
+              "id": "p-6-0",
+              "name": "Proposed · Comparison return",
+              "icon": "design",
+              "isActive": false
+            },
+            {
+              "type": "page",
+              "id": "p-5-0",
+              "name": "Build · Clarity, models & interaction",
+              "icon": "blueprint",
+              "isActive": false
+            }
+          ],
+          "fontFamilies": [
+            "Inter",
+            "IBM Plex Mono",
+            "PingFang SC",
+            "System Sans-Serif"
+          ],
+          "tokens": {
+            "items": []
+          },
+          "fileId": "01M6FAXA774QT1VRDMAG7DFQ2W",
+          "contentHash": {
+            "tokens": "811c9dc5"
+          }
+        },
+        "identity": {
+          "kind": "file-id",
+          "id": "01M6FAXA774QT1VRDMAG7DFQ2W"
+        },
+        "snapshot_sha256": "b683f1fbb6c531a52e4e9c77abc464d333fc16240aea76788095fafb3e7d9e22",
+        "write_binding_ready": true,
+        "binding_error": null
+      },
+      "after": {
+        "basic_info": {
+          "fileName": "Sector Intelligence · R4 · Astra Pro · 2026-11-02",
+          "pageName": "Reference · Terminal breadth rotation card",
+          "pageId": "p-1-0",
+          "url": "https://app.paper.design/file/01M6FAXA774QT1VRDMAG7DFQ2W/p-1-0",
+          "rootNodeId": "root_node_p-1-0",
+          "nodeCount": 41,
+          "artboardCount": 1,
+          "artboards": [
+            {
+              "id": "1-0",
+              "name": "Terminal · Sector Breadth · Rotation groups",
+              "childCount": 4,
+              "width": 960,
+              "height": 590,
+              "worldX": -480,
+              "worldY": -295
+            }
+          ],
+          "pages": [
+            {
+              "type": "page",
+              "id": "p-3-0",
+              "name": "00 · D05 journey & contract · Provisional",
+              "icon": "info",
+              "isActive": false
+            },
+            {
+              "type": "page",
+              "id": "p-4-0",
+              "name": "01 · R4 Explore & compare · Design",
+              "icon": "design",
+              "isActive": false
+            },
+            {
+              "type": "page",
+              "id": "p-8-0",
+              "name": "02 · Comparison context",
+              "icon": "design",
+              "isActive": false
+            },
+            {
+              "type": "page",
+              "id": "p-2-0",
+              "name": "R4 · M1",
+              "icon": null,
+              "isActive": false
+            },
+            {
+              "type": "page",
+              "id": "p-1-0",
+              "name": "Reference · Terminal breadth rotation card",
+              "icon": "info",
+              "isActive": true
+            },
+            {
+              "type": "page",
+              "id": "p-7-0",
+              "name": "Reference · Unbound timing fixtures",
+              "icon": "paper",
+              "isActive": false
+            },
+            {
+              "type": "page",
+              "id": "p-6-0",
+              "name": "Proposed · Comparison return",
+              "icon": "design",
+              "isActive": false
+            },
+            {
+              "type": "page",
+              "id": "p-5-0",
+              "name": "Build · Clarity, models & interaction",
+              "icon": "blueprint",
+              "isActive": false
+            }
+          ],
+          "fontFamilies": [
+            "Inter",
+            "IBM Plex Mono",
+            "PingFang SC",
+            "System Sans-Serif"
+          ],
+          "tokens": {
+            "items": []
+          },
+          "fileId": "01M6FAXA774QT1VRDMAG7DFQ2W",
+          "contentHash": {
+            "tokens": "811c9dc5"
+          }
+        },
+        "identity": {
+          "kind": "file-id",
+          "id": "01M6FAXA774QT1VRDMAG7DFQ2W"
+        },
+        "snapshot_sha256": "b683f1fbb6c531a52e4e9c77abc464d333fc16240aea76788095fafb3e7d9e22",
+        "write_binding_ready": true,
+        "binding_error": null
+      },
+      "retry_allowed": false,
+      "production_acceptance": false
+    }
   }
 ]
