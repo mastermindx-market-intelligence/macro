@@ -88,8 +88,11 @@ Rules that come with the fields, and are the point of them:
    The validator refuses any credential-like value: a URL carrying userinfo, a 32+ character
    base64-looking string, or any key named `password`/`secret`/`token`/`seed`. A receipt's
    `sha256` digest is itself the evidence and is exempt.
-3. **`registry_revision` bumps on any mutation.** The harness refuses to launch if the revision it
-   validated against differs from the revision on disk — a registry edited mid-run is drift.
+3. **`registry_revision` bumps on any mutation.** `check_revision(doc, expected)` refuses when the
+   revision on disk differs from the one a caller validated against — a registry edited mid-run
+   is drift. Today its only caller is `registry-check --expect-revision`; no runtime launch path
+   calls it yet (see "Wiring status" below). The sentence "the harness refuses to launch" is
+   owed by the runtime wiring, not delivered by this module.
 4. **`binding.cdp_port` is unique across the fleet.** Two identities on one port is a collision,
    not a shared resource. Retired entries are exempt: the port leaves uniqueness at retirement
    while its history stays auditable.
@@ -187,13 +190,46 @@ def canonical_sha(mapping: Mapping, drop: tuple[str, ...] = ()) -> str
   run is never a pass.
 
 Operator CLI (read-only side): `python -m tools.xguerrilla.cli registry-check --registry
-<path> [--lock <path>] [--personas <dir>] [--proxies <path>] [--expect-revision N]` loads
-registry, lock (default: `<stem>.lock.<rest>` beside the registry, e.g. `registry.lock.yml`; a
-missing lock file is a refusal, exit 2), personas and credential slots, runs `validate_all`, prints one refusal per line,
-and exits 0 on pass / 2 on any refusal (including a missing registry file). The write side is
+<path> [--lock <path>] [--personas <dir>] [--proxies <path>] [--expect-revision N]
+[--skip-bindings]` loads registry, lock (default: `<stem>.lock.<rest>` beside the registry, e.g.
+`registry.lock.yml`; a missing lock file is a refusal, exit 2), personas and credential slots,
+runs `validate_all`, prints one refusal per line, and exits 0 on pass / 2 on any refusal
+(including a missing registry file). `--personas` defaults to the repo personas directory
+(`DEFAULT_PERSONAS`) so the persona↔entry binding check runs on the default invocation; a
+missing or empty personas directory is itself a refusal (exit 2, "binding check could not run"),
+never a silent pass. `--skip-bindings` exists only for the lock-only structural check and prints
+a loud `bindings NOT checked` line. The write side is
 `registry-lock --registry <path> --lock <path>`: `validate_document` must return `[]` first;
 if a prior target exists, loading it and `check_relock` must also succeed. Only then is the
 new exact snapshot written. Refusals exit 2 without replacing the previous lock.
+
+## Wiring status (what actually calls this module)
+
+Measured on `main` at the rework PR's base, so a reader can re-run the grep rather than trust
+the prose: `git grep -n 'registry\.' -- tools/xguerrilla ':!tools/xguerrilla/tests' ':!tools/xguerrilla/registry.py'`.
+
+- **Called today:** only the two operator subcommands above (`cli.py` `cmd_registry_check` /
+  `cmd_registry_lock`). `validate_all`, `validate_document`, `check_relock`, `write_lock`,
+  `load_registry`, `load_lock` are therefore exercised on every hand-run gate.
+- **Written, tested, and NOT yet called by any runtime path:** `launchable`,
+  `links_outside_domain`, `validate_bio_against_registry`, `check_revision`, `check_lock`
+  (outside `validate_all`). They are gate inputs the runtime owner has to consume.
+- **Where they belong** is already decided, not by this document: `tools/xguerrilla/ADMISSION.md`
+  §"The one call site (runtime owner)" names `pilot_sim.run_pilot()` after
+  `config.load_personas()` as the single wiring point for the admission chain, and the registry
+  gate rides the same call — `launchable` + `check_revision` belong at the identity stage of
+  that chain, not beside it. Do not add a second copy of either check on the way past.
+- **What the live post path enforces meanwhile:** `pilot_sim` already runs
+  `validators.validate(...)` on every finalised post, whose absolute zero-URL rule
+  (`validators.links_in_text`) refuses *any* link; `links_outside_domain` is the registry-side
+  defence that matters only once a post is allowed to carry a canonical link at all. There is
+  no bio-writing path in the harness today, so `validate_bio_against_registry` has no sink yet.
+- **CI:** the suite runs under the `xguerrilla-identity-registry` job in
+  `.github/ci/legacy-jobs.yml`, which is enrolled in `CURATED_EXCLUSIVE` but carries
+  `if: ${{ false }}` — enrolment, not execution. Enabling it is a separate CI-weight change.
+
+Until the runtime wiring lands, the honest claim is: the registry is data the *operator gate*
+consumes; the harness consumes `personas/*.yml` (voice) and does not yet read admission state.
 
 ## Schema amendments vs the 2026-11-07 draft
 
