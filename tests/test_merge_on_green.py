@@ -4294,6 +4294,82 @@ def test_the_manifest_is_read_through_bounded_tree_hops(monkeypatch):
     assert freshness.manifest_jobs_at("c3" * 20) is None
 
 
+@pytest.mark.parametrize("returned_sha", [None, "f" * 40])
+@pytest.mark.parametrize("bad_end", ["base", "tip"])
+def test_manifest_blob_identity_failure_cannot_keep_a_proof_current(
+    monkeypatch, returned_sha, bad_end,
+):
+    """Valid YAML from the wrong or unidentified blob is not proof of its bytes."""
+    freshness = _manifest_window()
+    tip = freshness.commits[0]["sha"]
+    blobs = {PROOF_BASE_SHA: "a" * 40, tip: "b" * 40}
+    freshness._manifest_blob_shas.update(blobs)
+    freshness._proof_plans[(4242, EXACT_HEAD_SHA)] = (frozenset({"a"}), PROOF_BASE_SHA)
+    bad_commit = PROOF_BASE_SHA if bad_end == "base" else tip
+    bad_blob = blobs[bad_commit]
+    encoded = base64.b64encode(yaml.safe_dump({"jobs": {"a": _exclusive_job()}}).encode()).decode()
+
+    def request(method, url, token):
+        assert method == "GET" and token == "read"
+        requested = url.rsplit("/", 1)[-1]
+        assert requested in blobs.values()
+        payload = {"encoding": "base64", "content": encoded, "sha": requested}
+        if requested == bad_blob:
+            if returned_sha is None:
+                payload.pop("sha")
+            else:
+                payload["sha"] = returned_sha
+        return 200, payload
+
+    monkeypatch.setattr(MOG, "_request", request)
+    stale, reason = _manifest_verdict(freshness)
+    assert stale is True and "identity mismatch" in reason, reason
+    assert bad_blob not in freshness._blobs
+    assert bad_blob not in freshness._parsed_manifests
+    assert bad_commit not in freshness._manifest_jobs
+
+
+def test_matching_manifest_blob_identity_keeps_the_proof_current(monkeypatch):
+    freshness = _manifest_window()
+    tip = freshness.commits[0]["sha"]
+    freshness._manifest_blob_shas.update({PROOF_BASE_SHA: "a" * 40, tip: "b" * 40})
+    freshness._proof_plans[(4242, EXACT_HEAD_SHA)] = (frozenset({"a"}), PROOF_BASE_SHA)
+    content = yaml.safe_dump({"jobs": {"a": _exclusive_job()}}).encode()
+    reads = []
+
+    def request(method, url, token):
+        assert method == "GET" and token == "read"
+        sha = url.rsplit("/", 1)[-1]
+        assert sha in freshness._manifest_blob_shas.values()
+        reads.append(sha)
+        return 200, {"sha": sha, "encoding": "base64", "content": base64.b64encode(content).decode()}
+
+    monkeypatch.setattr(MOG, "_request", request)
+    stale, reason = _manifest_verdict(freshness)
+    assert stale is False, reason
+    assert reads == ["a" * 40, "b" * 40]
+    assert freshness._blobs == {"a" * 40: content, "b" * 40: content}
+    # Another commit carrying the same verified blob reuses both bytes and parse.
+    other = "c" * 40
+    freshness._manifest_blob_shas[other] = "b" * 40
+    monkeypatch.setattr(MOG, "_manifest_jobs_from_bytes", lambda *_a: pytest.fail("already parsed"))
+    assert freshness.manifest_jobs_at(other) is freshness.manifest_jobs_at(tip)
+    assert reads == ["a" * 40, "b" * 40]
+
+
+def test_manifest_blob_rate_limit_still_defers_instead_of_staling(monkeypatch):
+    freshness = _manifest_window()
+    tip = freshness.commits[0]["sha"]
+    freshness._manifest_blob_shas.update({PROOF_BASE_SHA: "a" * 40, tip: "b" * 40})
+    freshness._proof_plans[(4242, EXACT_HEAD_SHA)] = (frozenset({"a"}), PROOF_BASE_SHA)
+    monkeypatch.setattr(MOG, "_request", lambda *_a: (429, {"message": "Secondary rate limit exceeded"}))
+    with pytest.raises(MOG.RateLimited):
+        _manifest_verdict(freshness)
+    assert not freshness._blobs
+    assert not freshness._parsed_manifests
+    assert not freshness._manifest_jobs
+
+
 def test_the_manifest_parser_accepts_only_a_jobs_mapping():
     assert MOG._manifest_jobs_from_bytes(b"jobs:\n  a:\n    gate: code\n") == {"a": {"gate": "code"}}
     assert MOG._manifest_jobs_from_bytes(b"jobs: []\n") is None
@@ -5142,9 +5218,9 @@ def test_a_large_public_render_proves_only_owned_template_asset_stamps(
                 "tree": [blob("chat.html", parent_blob)],
             }
         if url.endswith(f"/git/blobs/{current_blob}"):
-            return 200, {"encoding": "base64", "content": encoded(new)}
+            return 200, {"sha": current_blob, "encoding": "base64", "content": encoded(new)}
         if url.endswith(f"/git/blobs/{parent_blob}"):
-            return 200, {"encoding": "base64", "content": encoded(old)}
+            return 200, {"sha": parent_blob, "encoding": "base64", "content": encoded(old)}
         raise AssertionError(url)
 
     monkeypatch.setattr(MOG, "_request", fake_request)

@@ -2488,6 +2488,8 @@ class ProofFreshness:
         )
         if status >= 400 or not isinstance(payload, dict):
             raise _read_failed(status, payload, f"blob {blob_sha[:12]} unreadable")
+        if payload.get("sha") != blob_sha:
+            raise RuntimeError(f"blob {blob_sha[:12]} identity mismatch")
         if str(payload.get("encoding") or "") != "base64":
             raise RuntimeError(f"blob {blob_sha[:12]} has unsupported encoding")
         try:
