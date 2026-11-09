@@ -1,0 +1,14 @@
+[
+  {
+    "label": "Do not return an unbound native storage method from Playwright evaluate",
+    "before": "page.evaluate(\"Storage.prototype.getItem=window.__snapshotNativeGet\")",
+    "after": "page.evaluate(\"() => { Storage.prototype.getItem=window.__snapshotNativeGet; }\")",
+    "count": 1
+  },
+  {
+    "label": "Reentrant opener must target the displayed 30-day case, not the hidden seven-day duplicate",
+    "before": "document.querySelector('#crypto-intelligence [data-open=\"scenario:continuation\"]').click();",
+    "after": "document.querySelector('#crypto-intelligence [data-case-horizon=\"30\"] [data-open=\"scenario:continuation\"]').click();",
+    "count": 1
+  }
+]

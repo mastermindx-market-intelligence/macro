@@ -198,14 +198,16 @@
   function viewHeading(view) {
     return root.querySelector('[data-view="' + view + '"] h2') || root.querySelector("h1");
   }
-  function update(view, changes, replace) {
+  function update(view, changes, replace, feedback) {
     pendingCaseReturn = null; rememberDrawer();
     var current = state(), params = current.params, oldPanel = params.get("panel");
     Object.keys(changes || {}).forEach(function (key) { if (changes[key] == null || changes[key] === "") params.delete(key); else params.set(key, changes[key]); });
     var metadata = replace && params.has("panel") && history.state && history.state.drawer ? Object.assign({}, history.state) : { r4: true };
     if (params.get("panel") !== oldPanel) delete metadata.reading;
-    history[replace ? "replaceState" : "pushState"](metadata, "", address(view || current.view, params));
-    apply();
+    var next = address(view || current.view, params);
+    var options = feedback ? { feedback: { witness: feedback, address: new URL(next, location.href).href, language: zh() } } : undefined;
+    history[replace ? "replaceState" : "pushState"](metadata, "", next);
+    apply(options);
   }
   function horizon() { return state().params.get("h") === "30" ? "30" : "7"; }
   function activeScenario(id) { return (data.scenarios[horizon()] || []).find(function (s) { return s.id === id; }); }
@@ -241,10 +243,24 @@
     if (history.state && history.state.r4 && history.state.drawer && !history.state.detachedOrigin && Number.isInteger(history.state.depth) && history.state.depth > 0) history.go(-history.state.depth);
     else update(null, { panel: null }, true);
   }
+  function toastWitness() {
+    var el = document.getElementById("cri-toast");
+    return { element: el, timer: toastTimer, text: el.textContent };
+  }
+  function ownsToast(witness) {
+    return witness && witness.element === document.getElementById("cri-toast") &&
+      witness.timer === toastTimer && witness.element.textContent === witness.text;
+  }
+  function retireToast(witness) {
+    if (!ownsToast(witness)) return;
+    clearTimeout(toastTimer); toastTimer = null;
+    witness.element.hidden = true; witness.element.textContent = "";
+  }
   function toast(message) {
     var el = document.getElementById("cri-toast");
     clearTimeout(toastTimer); el.textContent = message; el.hidden = false;
     toastTimer = setTimeout(function () { el.hidden = true; }, 5000);
+    return toastWitness();
   }
   function storedSnapshot(s) {
     return !!s && typeof s === "object" && !Array.isArray(s) &&
@@ -379,14 +395,14 @@
       }
     }
     if (!ownsAction()) return;
-    toast(outcome === "saved" ? t("Saved on this device.", "已保存至本设备。") :
+    var feedback = toast(outcome === "saved" ? t("Saved on this device.", "已保存至本设备。") :
       outcome === "removed" ? t("Removed from this device.", "已从本设备移除。") :
       outcome === "present" ? t("Already saved on this device.", "本设备已保存此快照。") :
       t("This snapshot is no longer saved on this device.", "本设备已无此快照。"));
     // A programmatic activation must not replace an unrelated focused control.
     if (!ownedFocus || document.activeElement !== trigger) return;
     if (intent === "remove" && panel === "saved-item:" + s.revision) {
-      update(null, { panel: "saved" }, true);
+      update(null, { panel: "saved" }, true, feedback);
       return; // apply() owns displaced focus; no late focus after its callbacks.
     }
     var captured = captureDrawerReading();
@@ -892,6 +908,7 @@
     if (event && event.type === "hashchange" &&
         (event.newURL !== location.href || root.dataset.renderedAddress === location.href &&
          root.dataset.renderedLanguage === String(zh()))) return;
+    var handoff = event && event.feedback, previousFeedback = handoff ? handoff.witness : toastWitness();
     var priorSuspension = readingSuspended; readingSuspended = true;
     try {
       var s = state(), panel = s.params.get("panel"), requestAddress = location.href, requestLanguage = zh(), requestSubtree = body.firstChild, requestFocus = document.activeElement;
@@ -935,6 +952,8 @@
         basisReading = { open: priorBasis.open, scroll: dialog.scrollTop,
           focus: basisFocus && priorBasis.contains(basisFocus) ? basisFocus.dataset.basisFocus : null };
       }
+      if (!(handoff && handoff.address === requestAddress && handoff.language === requestLanguage &&
+            ownsToast(handoff.witness))) retireToast(previousFeedback);
       if (panel) renderDrawer(panel, collection);
       if (startingCurrentReview) dialog.scrollTop = 0;
       var renderedBasis = body.querySelector("[data-comparison-basis]");

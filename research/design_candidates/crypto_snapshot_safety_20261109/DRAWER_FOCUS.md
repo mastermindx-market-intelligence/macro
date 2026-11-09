@@ -1,5 +1,7 @@
 # Drawer keyboard focus and the sticky header
 
+> **Later feedback lifetime extension:** [Feedback lifetime](FEEDBACK_LIFETIME.md) now implements the retirement work described below. It uses the existing status/navigation owners and preserves fresh current confirmation and the intentional frozen Remove → Saved result. Focus geometry and this phase's historical proof remain unchanged.
+
 ## User outcome
 
 Native forward and reverse keyboard navigation should show the complete focused control and its focus ring inside the existing drawer. The minimum intended clearance is 8px. Existing action and saved-disclosure rings occupy 6px (a 2px outline plus 4px offset), leaving room around the complete ring. Explicit reading restoration using `focus({preventScroll:true})` retains the reader's chosen position.

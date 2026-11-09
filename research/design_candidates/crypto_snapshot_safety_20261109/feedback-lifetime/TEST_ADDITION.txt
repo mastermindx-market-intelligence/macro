@@ -1,0 +1,299 @@
+
+
+# Transient feedback belongs to its task; the stable status node is not a history store.
+def _feedback_node(page):
+    page.evaluate("window.__feedbackNode=document.getElementById('cri-toast')")
+
+
+def _assert_feedback_retired(page):
+    value = page.locator("#cri-toast").evaluate("""n => ({
+      same:n===window.__feedbackNode,hidden:n.hidden,text:n.textContent,
+      height:n.getBoundingClientRect().height,role:n.getAttribute('role'),live:n.getAttribute('aria-live'),
+      count:document.querySelectorAll('#cri-dialog [role="status"]').length
+    })""")
+    assert value == {"same": True, "hidden": True, "text": "", "height": 0,
+                     "role": "status", "live": "polite", "count": 1}, value
+
+
+def _current_feedback(page, outcome="success"):
+    _open_scenario(page)
+    _feedback_node(page)
+    if outcome == "failure":
+        page.evaluate("""() => {
+          Storage.prototype.getItem=function(key) {
+            if(key===__snapshotKey)throw new Error('Synthetic initial read failure');
+            return __snapshotNativeGet.call(this,key);
+          };
+        }""")
+    page.locator('[data-snapshot-action="save"]').click()
+    assert page.locator("#cri-toast").is_visible()
+
+
+def _feedback_blocked_saved_list(page):
+    target = _frozen(_scenario(page))
+    _seed(page, [target])
+    _open_saved(page, target["revision"])
+    _feedback_node(page)
+    page.evaluate("""() => {
+      let reads=0;
+      Storage.prototype.getItem=function(key) {
+        if(key===__snapshotKey && ++reads>=3)throw new Error('Synthetic later list failure');
+        return __snapshotNativeGet.call(this,key);
+      };
+    }""")
+    page.locator('[data-snapshot-action="remove"]').click()
+    page.wait_for_function("document.getElementById('cri-dialog-body').dataset.panel==='saved'")
+    assert page.locator("#cri-toast").is_visible()
+    assert _writes(page) == 1 and _entries(page) == []
+
+
+@pytest.mark.parametrize("destination", ["review", "demand-evidence"])
+@pytest.mark.parametrize("outcome", ["success", "failure"])
+@pytest.mark.parametrize("lang,width", [("en", 390), ("zh", 320)])
+def test_r4_feedback_retires_on_task_navigation_and_does_not_return_with_back(snapshot_page, lang, width, outcome, destination):
+    page = snapshot_page(lang, width)
+    _current_feedback(page, outcome)
+    original, writes = _raw(page), _writes(page)
+    page.locator('[data-drawer-focus="' + destination + '"]').click()
+    panel = "memory:continuation" if destination == "review" else "evidence:liquidity_flows"
+    page.wait_for_function("panel => document.getElementById('cri-dialog-body').dataset.panel===panel", arg=panel)
+    _capture(page, f"feedback-task-{destination}-{outcome}-{lang}-{width}")
+    _assert_feedback_retired(page)
+    page.go_back()
+    page.wait_for_function("document.getElementById('cri-dialog-body').dataset.panel==='scenario:continuation'")
+    _assert_feedback_retired(page)
+    assert _raw(page) == original and _writes(page) == writes == (1 if outcome == "success" else 0)
+
+
+@pytest.mark.parametrize("lang,width", [("en", 390), ("zh", 320)])
+def test_r4_expired_feedback_space_retires_only_when_the_task_changes(snapshot_page, lang, width):
+    page = snapshot_page(lang, width)
+    _current_feedback(page)
+    message = page.locator("#cri-toast").text_content()
+    page.wait_for_function("document.getElementById('cri-toast').hidden", timeout=7000)
+    assert message and page.locator("#cri-toast").text_content() == message
+    assert page.locator("#cri-toast").evaluate("n => n.getBoundingClientRect().height") > 0
+    page.locator('[data-drawer-focus="demand-evidence"]').click()
+    page.wait_for_function("document.getElementById('cri-dialog-body').dataset.panel==='evidence:liquidity_flows'")
+    _assert_feedback_retired(page)
+    assert _writes(page) == 1
+
+
+@pytest.mark.parametrize("same_case", [True, False])
+@pytest.mark.parametrize("lang,width", [("en", 390), ("zh", 320)])
+def test_r4_close_reopen_never_resurrects_transient_feedback(snapshot_page, lang, width, same_case):
+    page = snapshot_page(lang, width)
+    _current_feedback(page)
+    original = _raw(page)
+    page.locator("#cri-dialog-close").click()
+    _wait_closed(page)
+    _assert_feedback_retired(page)
+    if same_case:
+        _open_scenario(page)
+    else:
+        page.locator('[data-open^="scenario:"]:not([data-open="scenario:continuation"]):visible').first.click()
+    assert page.locator("#cri-dialog").evaluate("n => n.open")
+    _assert_feedback_retired(page)
+    assert _raw(page) == original and _writes(page) == 1
+
+
+@pytest.mark.parametrize("lang,width", [("en", 390), ("zh", 320)])
+def test_r4_locale_change_retires_old_feedback_and_preserves_the_reader(snapshot_page, lang, width):
+    page = snapshot_page(lang, width)
+    page.set_viewport_size({"width": width, "height": 600})
+    _feedback_node(page)
+    action, scroll = _current_mutation_reader(page, "save", lang)
+    action.click()
+    assert page.locator("#cri-toast").is_visible()
+    address, original = page.url, _raw(page)
+    target = "zh" if lang == "en" else "en"
+    page.evaluate("lang => document.documentElement.dataset.lang=lang", target)
+    page.wait_for_function("value => document.getElementById('crypto-intelligence').dataset.renderedLanguage===value", arg=str(target == "zh").lower())
+    _assert_feedback_retired(page)
+    assert page.locator('[data-drawer-disclosure="scenario-conditions"]').evaluate("n => n.open")
+    assert page.locator('[data-snapshot-action="remove"]').evaluate("n => document.activeElement===n")
+    current = page.locator("#cri-dialog").evaluate("n => ({scroll:n.scrollTop,max:n.scrollHeight-n.clientHeight})")
+    assert abs(current["scroll"] - min(scroll, current["max"])) <= 1
+    assert page.url == address and _raw(page) == original and _writes(page) == 1
+
+
+@pytest.mark.parametrize("recovers", [False, True])
+@pytest.mark.parametrize("lang,width", [("en", 390), ("zh", 320)])
+def test_r4_frozen_remove_handoff_survives_but_explicit_retry_retires_it(snapshot_page, lang, width, recovers):
+    page = snapshot_page(lang, width)
+    _feedback_blocked_saved_list(page)
+    assert page.locator("#cri-toast").text_content() == ("Removed from this device." if lang == "en" else "已从本设备移除。")
+    address, original = page.url, _raw(page)
+    if recovers:
+        page.evaluate("() => { Storage.prototype.getItem=window.__snapshotNativeGet; }")
+    page.locator("#cri-dialog-body").get_by_role("button", name="Try reading again" if lang == "en" else "重试读取", exact=True).click()
+    _assert_feedback_retired(page)
+    assert page.url == address and _raw(page) == original and _writes(page) == 1
+    expected = "Saved snapshots" if lang == "en" else "已存快照"
+    if not recovers:
+        expected = "Saved snapshots unavailable" if lang == "en" else "已存快照暂不可用"
+    assert page.locator("#cri-dialog-title").text_content() == expected
+    if recovers:
+        _capture(page, f"feedback-retry-{lang}-{width}")
+
+
+@pytest.mark.parametrize("lang,width", [("en", 390), ("zh", 320)])
+def test_r4_same_url_history_traversal_retires_feedback(snapshot_page, lang, width):
+    page = snapshot_page(lang, width)
+    _current_feedback(page)
+    original, address = _raw(page), page.url
+    page.evaluate("history.pushState(Object.assign({},history.state,{feedbackEntry:'later'}),'',location.href)")
+    page.go_back()
+    page.wait_for_function("!history.state.feedbackEntry")
+    _assert_feedback_retired(page)
+    assert page.url == address and _raw(page) == original and _writes(page) == 1
+
+
+@pytest.mark.parametrize("lang,width", [("en", 390), ("zh", 320)])
+def test_r4_older_apply_does_not_retire_newer_feedback_from_its_preflight(snapshot_page, lang, width):
+    page = snapshot_page(lang, width)
+    _current_feedback(page)
+    page.locator('[data-drawer-focus="review"]').focus()
+    page.evaluate("""() => {
+      let fired=false;
+      Storage.prototype.getItem=function(key) {
+        if(key===__snapshotKey && !fired) {
+          fired=true;window.__newerFeedbackFired=true;
+          document.querySelector('[data-snapshot-action="remove"]').click();
+        }
+        return __snapshotNativeGet.call(this,key);
+      };
+    }""")
+    target = "zh" if lang == "en" else "en"
+    page.evaluate("lang => document.documentElement.dataset.lang=lang", target)
+    page.wait_for_function("window.__newerFeedbackFired===true && document.querySelector('[data-snapshot-action=\"save\"]')")
+    expected = "Removed from this device." if target == "en" else "已从本设备移除。"
+    assert page.locator("#cri-toast").is_visible() and page.locator("#cri-toast").text_content() == expected
+    assert page.locator("#cri-toast").evaluate("n => n===window.__feedbackNode")
+    assert _entries(page) == [] and _writes(page) == 2
+    assert page.locator('[data-drawer-focus="review"]').evaluate("n => document.activeElement===n")
+
+
+def test_r4_superseded_preflight_cannot_clear_its_newer_navigation_result(snapshot_page):
+    page = snapshot_page("en", 390)
+    _current_feedback(page)
+    page.locator('[data-drawer-focus="review"]').focus()
+    page.evaluate("""() => {
+      let fired=false;
+      Storage.prototype.getItem=function(key) {
+        if(key===__snapshotKey && !fired) {
+          fired=true;window.__newerNavigationFeedback=true;
+          document.querySelector('#crypto-intelligence [data-case-horizon="30"] [data-open="scenario:continuation"]').click();
+          const remove=document.querySelector('[data-snapshot-action="remove"]');
+          remove.focus();remove.click();
+        }
+        return __snapshotNativeGet.call(this,key);
+      };
+    }""")
+    page.evaluate("document.documentElement.dataset.lang='zh'")
+    page.wait_for_function("window.__newerNavigationFeedback===true && document.querySelector('[data-snapshot-action=\"save\"]')")
+    assert page.locator("#cri-toast").is_visible()
+    assert page.locator("#cri-toast").text_content() == "已从本设备移除。"
+    assert page.locator('[data-snapshot-action="save"]').evaluate("n => document.activeElement===n")
+    assert _entries(page) == [] and _writes(page) == 2
+
+
+@pytest.mark.parametrize("path", ["frozen-remove", "current-save"])
+def test_r4_completion_navigation_retires_feedback_without_a_late_reissue(snapshot_page, path):
+    page = snapshot_page()
+    source = _scenario(page)
+    if path == "frozen-remove":
+        _seed(page, [_frozen(source)])
+        _open_saved(page, source["revision"])
+    else:
+        _open_scenario(page)
+    _feedback_node(page)
+    page.evaluate("""path => {
+      let fired=false;
+      document.addEventListener('focusin',event=>{
+        const target=event.target,chosen=path==='frozen-remove'?target.id==='cri-dialog-close':
+          target.dataset.snapshotAction==='remove';
+        if(fired || !chosen)return;
+        fired=true;
+        document.querySelector('#crypto-intelligence [data-open="evidence:liquidity_flows"]').click();
+        window.__feedbackDestinationFocus=document.querySelector('#cri-dialog-body summary');
+        __feedbackDestinationFocus.focus();
+      });
+    }""", path)
+    page.locator("[data-snapshot-action]").click()
+    page.wait_for_function("document.getElementById('cri-dialog-body').dataset.panel==='evidence:liquidity_flows'")
+    _assert_feedback_retired(page)
+    assert page.evaluate("__feedbackDestinationFocus.isConnected && document.activeElement===__feedbackDestinationFocus")
+    assert _writes(page) == 1
+
+
+def test_r4_remove_feedback_handoff_cannot_follow_a_retargeted_history_write(snapshot_page):
+    page = snapshot_page()
+    source = _scenario(page)
+    _seed(page, [_frozen(source)])
+    _open_saved(page, source["revision"])
+    _feedback_node(page)
+    page.evaluate("""() => {
+      const replace=history.replaceState.bind(history);let fired=false;
+      history.replaceState=function(meta,title,url) {
+        const result=replace(meta,title,url);
+        if(!fired && url && new URLSearchParams(new URL(url,location.href).hash.split('?')[1]).get('panel')==='saved') {
+          fired=true;window.__feedbackRetargeted=true;
+          replace(Object.assign({},history.state,{feedbackRetarget:'kept'}),'','#overview?h=30&panel=coverage');
+        }
+        return result;
+      };
+    }""")
+    page.locator('[data-snapshot-action="remove"]').click()
+    page.wait_for_function("window.__feedbackRetargeted===true && document.getElementById('cri-dialog-body').dataset.panel==='coverage'")
+    _assert_feedback_retired(page)
+    assert page.evaluate("history.state.feedbackRetarget") == "kept"
+    assert _entries(page) == [] and _writes(page) == 1
+
+
+def test_r4_retired_deadline_cannot_hide_a_new_feedback_message(snapshot_page):
+    page = snapshot_page("en", 390)
+    _current_feedback(page)
+    page.evaluate("window.__oldFeedbackAt=performance.now()")
+    page.wait_for_timeout(2200)
+    page.locator("#cri-dialog-close").click()
+    _wait_closed(page)
+    _assert_feedback_retired(page)
+    _open_scenario(page)
+    page.locator('[data-snapshot-action="remove"]').click()
+    assert page.locator("#cri-toast").text_content() == "Removed from this device."
+    page.wait_for_function("performance.now() >= window.__oldFeedbackAt+5200", timeout=6000)
+    assert page.locator("#cri-toast").is_visible()
+    assert page.locator("#cri-toast").text_content() == "Removed from this device."
+    page.wait_for_function("document.getElementById('cri-toast').hidden", timeout=4000)
+    assert page.locator("#cri-toast").evaluate("n => n.getBoundingClientRect().height") > 0
+    assert _entries(page) == [] and _writes(page) == 2
+
+
+
+def test_r4_newer_feedback_inside_handoff_history_write_survives_the_older_handoff(snapshot_page):
+    page = snapshot_page()
+    source = _scenario(page)
+    _seed(page, [_frozen(source)])
+    _open_saved(page, source["revision"])
+    _feedback_node(page)
+    page.evaluate("""() => {
+      const replace=history.replaceState.bind(history);let fired=false;
+      history.replaceState=function(meta,title,url) {
+        const result=replace(meta,title,url);
+        if(!fired && url && new URLSearchParams(new URL(url,location.href).hash.split('?')[1]).get('panel')==='saved') {
+          fired=true;window.__feedbackHandoffReentered=true;
+          document.querySelector('[data-snapshot-action="remove"]').click();
+          window.__newerHandoffMessage=document.getElementById('cri-toast').textContent;
+        }
+        return result;
+      };
+    }""")
+    page.locator('[data-snapshot-action="remove"]').click()
+    page.wait_for_function("window.__feedbackHandoffReentered===true && document.getElementById('cri-dialog-body').dataset.panel==='saved'")
+    assert page.evaluate("window.__newerHandoffMessage") == "This snapshot is no longer saved on this device."
+    assert page.locator("#cri-toast").is_visible()
+    assert page.locator("#cri-toast").text_content() == "This snapshot is no longer saved on this device."
+    assert page.locator("#cri-toast").evaluate("n => n===window.__feedbackNode")
+    assert page.locator("#cri-dialog-close").evaluate("n => document.activeElement===n")
+    assert _entries(page) == [] and _writes(page) == 1

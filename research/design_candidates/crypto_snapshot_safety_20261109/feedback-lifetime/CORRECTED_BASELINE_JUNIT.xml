@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="26" skipped="0" tests="30" time="33.167" timestamp="2026-11-09T12:46:43.771984-07:00" hostname="m2studio"><testcase classname="tests.test_crypto_intelligence_r4_browser" name="test_r4_feedback_retires_on_task_navigation_and_does_not_return_with_back[en-390-success-review]" time="1.507"><failure message="AssertionError: {'same': True, 'hidden': False, 'text': 'Saved on this device.', 'height': 47, ...}&#10;assert {'same': True...ght': 47, ...} == {'same': True...ight': 0, ...}&#10;  &#10;  Omitting 4 identical items, use -vv to show&#10;  Differing items:&#10;  {'hidden': False} != {'hidden': True}&#10;  {'height': 47} != {'height': 0}&#10;  {'text': 'Saved on this device.'} != {'text': ''}&#10;  Use -v to get more diff">tests/test_crypto_intelligence_r4_browser.py:3552: in test_r4_feedback_retires_on_task_navigation_and_does_not_return_with_back
+    _assert_feedback_retired(page)
+tests/test_crypto_intelligence_r4_browser.py:3505: in _assert_feedback_retired
+    assert value == {"same": True, "hidden": True, "text": "", "height": 0,
+E   AssertionError: {'same': True, 'hidden': False, 'text': 'Saved on this device.', 'height': 47, ...}
+E   assert {'same': True...ght': 47, ...} == {'same': True...ight': 0, ...}
+E     
+E     Omitting 4 identical items, use -vv to show
+E     Differing items:
+E     {'hidden': False} != {'hidden': True}
+E     {'height': 47} != {'height': 0}
+E     {'text': 'Saved on this device.'} != {'text': ''}
+E     Use -v to get more diff</failure></testcase><testcase classname="tests.test_crypto_intelligence_r4_browser" name="test_r4_feedback_retires_on_task_navigation_and_does_not_return_with_back[en-390-success-demand-evidence]" time="0.565"><failure message="AssertionError: {'same': True, 'hidden': False, 'text': 'Saved on this device.', 'height': 47, ...}&#10;assert {'same': True...ght': 47, ...} == {'same': True...ight': 0, ...}&#10;  &#10;  Omitting 4 identical items, use -vv to show&#10;  Differing items:&#10;  {'hidden': False} != {'hidden': True}&#10;  {'height': 47} != {'height': 0}&#10;  {'text': 'Saved on this device.'} != {'text': ''}&#10;  Use -v to get more diff">tests/test_crypto_intelligence_r4_browser.py:3552: in test_r4_feedback_retires_on_task_navigation_and_does_not_return_with_back
+    _assert_feedback_retired(page)
+tests/test_crypto_intelligence_r4_browser.py:3505: in _assert_feedback_retired
+    assert value == {"same": True, "hidden": True, "text": "", "height": 0,
+E   AssertionError: {'same': True, 'hidden': False, 'text': 'Saved on this device.', 'height': 47, ...}
+E   assert {'same': True...ght': 47, ...} == {'same': True...ight': 0, ...}
+E     
+E     Omitting 4 identical items, use -vv to show
+E     Differing items:
+E     {'hidden': False} != {'hidden': True}
+E     {'height': 47} != {'height': 0}
+E     {'text': 'Saved on this device.'} != {'text': ''}
+E     Use -v to get more diff</failure></testcase><testcase classname="tests.test_crypto_intelligence_r4_browser" name="test_r4_feedback_retires_on_task_navigation_and_does_not_return_with_back[en-390-failure-review]" time="0.606"><failure message="AssertionError: {'same': True, 'hidden': False, 'text': 'Saved snapshots couldn’t be read. No changes were made.', 'height': 64, ...}&#10;assert {'same': True...ght': 64, ...} == {'same': True...ight': 0, ...}&#10;  &#10;  Omitting 4 identical items, use -vv to show&#10;  Differing items:&#10;  {'hidden': False} != {'hidden': True}&#10;  {'height': 64} != {'height': 0}&#10;  {'text': 'Saved snapshots couldn’t be read. No changes were made.'} != {'text': ''}&#10;  Use -v to get more diff">tests/test_crypto_intelligence_r4_browser.py:3552: in test_r4_feedback_retires_on_task_navigation_and_does_not_return_with_back
+    _assert_feedback_retired(page)
+tests/test_crypto_intelligence_r4_browser.py:3505: in _assert_feedback_retired
+    assert value == {"same": True, "hidden": True, "text": "", "height": 0,
+E   AssertionError: {'same': True, 'hidden': False, 'text': 'Saved snapshots couldn’t be read. No changes were made.', 'height': 64, ...}
+E   assert {'same': True...ght': 64, ...} == {'same': True...ight': 0, ...}
+E     
+E     Omitting 4 identical items, use -vv to show
+E     Differing items:
+E     {'hidden': False} != {'hidden': True}
+E     {'height': 64} != {'height': 0}
+E     {'text': 'Saved snapshots couldn’t be read. No changes were made.'} != {'text': ''}
+E     Use -v to get more diff</failure></testcase><testcase classname="tests.test_crypto_intelligence_r4_browser" name="test_r4_feedback_retires_on_task_navigation_and_does_not_return_with_back[en-390-failure-demand-evidence]" time="0.541"><failure message="AssertionError: {'same': True, 'hidden': False, 'text': 'Saved snapshots couldn’t be read. No changes were made.', 'height': 64, ...}&#10;assert {'same': True...ght': 64, ...} == {'same': True...ight': 0, ...}&#10;  &#10;  Omitting 4 identical items, use -vv to show&#10;  Differing items:&#10;  {'hidden': False} != {'hidden': True}&#10;  {'height': 64} != {'height': 0}&#10;  {'text': 'Saved snapshots couldn’t be read. No changes were made.'} != {'text': ''}&#10;  Use -v to get more diff">tests/test_crypto_intelligence_r4_browser.py:3552: in test_r4_feedback_retires_on_task_navigation_and_does_not_return_with_back
+    _assert_feedback_retired(page)
+tests/test_crypto_intelligence_r4_browser.py:3505: in _assert_feedback_retired
+    assert value == {"same": True, "hidden": True, "text": "", "height": 0,
+E   AssertionError: {'same': True, 'hidden': False, 'text': 'Saved snapshots couldn’t be read. No changes were made.', 'height': 64, ...}
+E   assert {'same': True...ght': 64, ...} == {'same': True...ight': 0, ...}
+E     
+E     Omitting 4 identical items, use -vv to show
+E     Differing items:
+E     {'hidden': False} != {'hidden': True}
+E     {'height': 64} != {'height': 0}
+E     {'text': 'Saved snapshots couldn’t be read. No changes were made.'} != {'text': ''}
+E     Use -v to get more diff</failure></testcase><testcase classname="tests.test_crypto_intelligence_r4_browser" name="test_r4_feedback_retires_on_task_navigation_and_does_not_return_with_back[zh-320-success-review]" time="0.636"><failure message="AssertionError: {'same': True, 'hidden': False, 'text': '已保存至本设备。', 'height': 50, ...}&#10;assert {'same': True...ght': 50, ...} == {'same': True...ight': 0, ...}&#10;  &#10;  Omitting 4 identical items, use -vv to show&#10;  Differing items:&#10;  {'hidden': False} != {'hidden': True}&#10;  {'height': 50} != {'height': 0}&#10;  {'text': '已保存至本设备。'} != {'text': ''}&#10;  Use -v to get more diff">tests/test_crypto_intelligence_r4_browser.py:3552: in test_r4_feedback_retires_on_task_navigation_and_does_not_return_with_back
+    _assert_feedback_retired(page)
+tests/test_crypto_intelligence_r4_browser.py:3505: in _assert_feedback_retired
+    assert value == {"same": True, "hidden": True, "text": "", "height": 0,
+E   AssertionError: {'same': True, 'hidden': False, 'text': '已保存至本设备。', 'height': 50, ...}
+E   assert {'same': True...ght': 50, ...} == {'same': True...ight': 0, ...}
+E     
+E     Omitting 4 identical items, use -vv to show
+E     Differing items:
+E     {'hidden': False} != {'hidden': True}
+E     {'height': 50} != {'height': 0}
+E     {'text': '已保存至本设备。'} != {'text': ''}
+E     Use -v to get more diff</failure></testcase><testcase classname="tests.test_crypto_intelligence_r4_browser" name="test_r4_feedback_retires_on_task_navigation_and_does_not_return_with_back[zh-320-success-demand-evidence]" time="0.577"><failure message="AssertionError: {'same': True, 'hidden': False, 'text': '已保存至本设备。', 'height': 50, ...}&#10;assert {'same': True...ght': 50, ...} == {'same': True...ight': 0, ...}&#10;  &#10;  Omitting 4 identical items, use -vv to show&#10;  Differing items:&#10;  {'hidden': False} != {'hidden': True}&#10;  {'height': 50} != {'height': 0}&#10;  {'text': '已保存至本设备。'} != {'text': ''}&#10;  Use -v to get more diff">tests/test_crypto_intelligence_r4_browser.py:3552: in test_r4_feedback_retires_on_task_navigation_and_does_not_return_with_back
+    _assert_feedback_retired(page)
+tests/test_crypto_intelligence_r4_browser.py:3505: in _assert_feedback_retired
+    assert value == {"same": True, "hidden": True, "text": "", "height": 0,
+E   AssertionError: {'same': True, 'hidden': False, 'text': '已保存至本设备。', 'height': 50, ...}
+E   assert {'same': True...ght': 50, ...} == {'same': True...ight': 0, ...}
+E     
+E     Omitting 4 identical items, use -vv to show
+E     Differing items:
+E     {'hidden': False} != {'hidden': True}
+E     {'height': 50} != {'height': 0}
+E     {'text': '已保存至本设备。'} != {'text': ''}
+E     Use -v to get more diff</failure></testcase><testcase classname="tests.test_crypto_intelligence_r4_browser" name="test_r4_feedback_retires_on_task_navigation_and_does_not_return_with_back[zh-320-failure-review]" time="0.752"><failure message="AssertionError: {'same': True, 'hidden': False, 'text': '无法读取已存快照，未作任何更改。', 'height': 50, ...}&#10;assert {'same': True...ght': 50, ...} == {'same': True...ight': 0, ...}&#10;  &#10;  Omitting 4 identical items, use -vv to show&#10;  Differing items:&#10;  {'hidden': False} != {'hidden': True}&#10;  {'height': 50} != {'height': 0}&#10;  {'text': '无法读取已存快照，未作任何更改。'} != {'text': ''}&#10;  Use -v to get more diff">tests/test_crypto_intelligence_r4_browser.py:3552: in test_r4_feedback_retires_on_task_navigation_and_does_not_return_with_back
+    _assert_feedback_retired(page)
+tests/test_crypto_intelligence_r4_browser.py:3505: in _assert_feedback_retired
+    assert value == {"same": True, "hidden": True, "text": "", "height": 0,
+E   AssertionError: {'same': True, 'hidden': False, 'text': '无法读取已存快照，未作任何更改。', 'height': 50, ...}
+E   assert {'same': True...ght': 50, ...} == {'same': True...ight': 0, ...}
+E     
+E     Omitting 4 identical items, use -vv to show
+E     Differing items:
+E     {'hidden': False} != {'hidden': True}
+E     {'height': 50} != {'height': 0}
+E     {'text': '无法读取已存快照，未作任何更改。'} != {'text': ''}
+E     Use -v to get more diff</failure></testcase><testcase classname="tests.test_crypto_intelligence_r4_browser" name="test_r4_feedback_retires_on_task_navigation_and_does_not_return_with_back[zh-320-failure-demand-evidence]" time="0.656"><failure message="AssertionError: {'same': True, 'hidden': False, 'text': '无法读取已存快照，未作任何更改。', 'height': 50, ...}&#10;assert {'same': True...ght': 50, ...} == {'same': True...ight': 0, ...}&#10;  &#10;  Omitting 4 identical items, use -vv to show&#10;  Differing items:&#10;  {'hidden': False} != {'hidden': True}&#10;  {'height': 50} != {'height': 0}&#10;  {'text': '无法读取已存快照，未作任何更改。'} != {'text': ''}&#10;  Use -v to get more diff">tests/test_crypto_intelligence_r4_browser.py:3552: in test_r4_feedback_retires_on_task_navigation_and_does_not_return_with_back
+    _assert_feedback_retired(page)
+tests/test_crypto_intelligence_r4_browser.py:3505: in _assert_feedback_retired
+    assert value == {"same": True, "hidden": True, "text": "", "height": 0,
+E   AssertionError: {'same': True, 'hidden': False, 'text': '无法读取已存快照，未作任何更改。', 'height': 50, ...}
+E   assert {'same': True...ght': 50, ...} == {'same': True...ight': 0, ...}
+E     
+E     Omitting 4 identical items, use -vv to show
+E     Differing items:
+E     {'hidden': False} != {'hidden': True}
+E     {'height': 50} != {'height': 0}
+E     {'text': '无法读取已存快照，未作任何更改。'} != {'text': ''}
+E     Use -v to get more diff</failure></testcase><testcase classname="tests.test_crypto_intelligence_r4_browser" name="test_r4_expired_feedback_space_retires_only_when_the_task_changes[en-390]" time="5.468"><failure message="AssertionError: {'same': True, 'hidden': True, 'text': 'Saved on this device.', 'height': 47, ...}&#10;assert {'same': True...ght': 47, ...} == {'same': True...ight': 0, ...}&#10;  &#10;  Omitting 5 identical items, use -vv to show&#10;  Differing items:&#10;  {'height': 47} != {'height': 0}&#10;  {'text': 'Saved on this device.'} != {'text': ''}&#10;  Use -v to get more diff">tests/test_crypto_intelligence_r4_browser.py:3569: in test_r4_expired_feedback_space_retires_only_when_the_task_changes
+    _assert_feedback_retired(page)
+tests/test_crypto_intelligence_r4_browser.py:3505: in _assert_feedback_retired
+    assert value == {"same": True, "hidden": True, "text": "", "height": 0,
+E   AssertionError: {'same': True, 'hidden': True, 'text': 'Saved on this device.', 'height': 47, ...}
+E   assert {'same': True...ght': 47, ...} == {'same': True...ight': 0, ...}
+E     
+E     Omitting 5 identical items, use -vv to show
+E     Differing items:
+E     {'height': 47} != {'height': 0}
+E     {'text': 'Saved on this device.'} != {'text': ''}
+E     Use -v to get more diff</failure></testcase><testcase classname="tests.test_crypto_intelligence_r4_browser" name="test_r4_expired_feedback_space_retires_only_when_the_task_changes[zh-320]" time="5.512"><failure message="AssertionError: {'same': True, 'hidden': True, 'text': '已保存至本设备。', 'height': 50, ...}&#10;assert {'same': True...ght': 50, ...} == {'same': True...ight': 0, ...}&#10;  &#10;  Omitting 5 identical items, use -vv to show&#10;  Differing items:&#10;  {'height': 50} != {'height': 0}&#10;  {'text': '已保存至本设备。'} != {'text': ''}&#10;  Use -v to get more diff">tests/test_crypto_intelligence_r4_browser.py:3569: in test_r4_expired_feedback_space_retires_only_when_the_task_changes
+    _assert_feedback_retired(page)
+tests/test_crypto_intelligence_r4_browser.py:3505: in _assert_feedback_retired
+    assert value == {"same": True, "hidden": True, "text": "", "height": 0,
+E   AssertionError: {'same': True, 'hidden': True, 'text': '已保存至本设备。', 'height': 50, ...}
+E   assert {'same': True...ght': 50, ...} == {'same': True...ight': 0, ...}
+E     
+E     Omitting 5 identical items, use -vv to show
+E     Differing items:
+E     {'height': 50} != {'height': 0}
+E     {'text': '已保存至本设备。'} != {'text': ''}
+E     Use -v to get more diff</failure></testcase><testcase classname="tests.test_crypto_intelligence_r4_browser" name="test_r4_close_reopen_never_resurrects_transient_feedback[en-390-True]" time="0.495"><failure message="AssertionError: {'same': True, 'hidden': False, 'text': 'Saved on this device.', 'height': 0, ...}&#10;assert {'same': True...ight': 0, ...} == {'same': True...ight': 0, ...}&#10;  &#10;  Omitting 5 identical items, use -vv to show&#10;  Differing items:&#10;  {'hidden': False} != {'hidden': True}&#10;  {'text': 'Saved on this device.'} != {'text': ''}&#10;  Use -v to get more diff">tests/test_crypto_intelligence_r4_browser.py:3581: in test_r4_close_reopen_never_resurrects_transient_feedback
+    _assert_feedback_retired(page)
+tests/test_crypto_intelligence_r4_browser.py:3505: in _assert_feedback_retired
+    assert value == {"same": True, "hidden": True, "text": "", "height": 0,
+E   AssertionError: {'same': True, 'hidden': False, 'text': 'Saved on this device.', 'height': 0, ...}
+E   assert {'same': True...ight': 0, ...} == {'same': True...ight': 0, ...}
+E     
+E     Omitting 5 identical items, use -vv to show
+E     Differing items:
+E     {'hidden': False} != {'hidden': True}
+E     {'text': 'Saved on this device.'} != {'text': ''}
+E     Use -v to get more diff</failure></testcase><testcase classname="tests.test_crypto_intelligence_r4_browser" name="test_r4_close_reopen_never_resurrects_transient_feedback[en-390-False]" time="0.495"><failure message="AssertionError: {'same': True, 'hidden': False, 'text': 'Saved on this device.', 'height': 0, ...}&#10;assert {'same': True...ight': 0, ...} == {'same': True...ight': 0, ...}&#10;  &#10;  Omitting 5 identical items, use -vv to show&#10;  Differing items:&#10;  {'hidden': False} != {'hidden': True}&#10;  {'text': 'Saved on this device.'} != {'text': ''}&#10;  Use -v to get more diff">tests/test_crypto_intelligence_r4_browser.py:3581: in test_r4_close_reopen_never_resurrects_transient_feedback
+    _assert_feedback_retired(page)
+tests/test_crypto_intelligence_r4_browser.py:3505: in _assert_feedback_retired
+    assert value == {"same": True, "hidden": True, "text": "", "height": 0,
+E   AssertionError: {'same': True, 'hidden': False, 'text': 'Saved on this device.', 'height': 0, ...}
+E   assert {'same': True...ight': 0, ...} == {'same': True...ight': 0, ...}
+E     
+E     Omitting 5 identical items, use -vv to show
+E     Differing items:
+E     {'hidden': False} != {'hidden': True}
+E     {'text': 'Saved on this device.'} != {'text': ''}
+E     Use -v to get more diff</failure></testcase><testcase classname="tests.test_crypto_intelligence_r4_browser" name="test_r4_close_reopen_never_resurrects_transient_feedback[zh-320-True]" time="0.542"><failure message="AssertionError: {'same': True, 'hidden': False, 'text': '已保存至本设备。', 'height': 0, ...}&#10;assert {'same': True...ight': 0, ...} == {'same': True...ight': 0, ...}&#10;  &#10;  Omitting 5 identical items, use -vv to show&#10;  Differing items:&#10;  {'hidden': False} != {'hidden': True}&#10;  {'text': '已保存至本设备。'} != {'text': ''}&#10;  Use -v to get more diff">tests/test_crypto_intelligence_r4_browser.py:3581: in test_r4_close_reopen_never_resurrects_transient_feedback
+    _assert_feedback_retired(page)
+tests/test_crypto_intelligence_r4_browser.py:3505: in _assert_feedback_retired
+    assert value == {"same": True, "hidden": True, "text": "", "height": 0,
+E   AssertionError: {'same': True, 'hidden': False, 'text': '已保存至本设备。', 'height': 0, ...}
+E   assert {'same': True...ight': 0, ...} == {'same': True...ight': 0, ...}
+E     
+E     Omitting 5 identical items, use -vv to show
+E     Differing items:
+E     {'hidden': False} != {'hidden': True}
+E     {'text': '已保存至本设备。'} != {'text': ''}
+E     Use -v to get more diff</failure></testcase><testcase classname="tests.test_crypto_intelligence_r4_browser" name="test_r4_close_reopen_never_resurrects_transient_feedback[zh-320-False]" time="0.554"><failure message="AssertionError: {'same': True, 'hidden': False, 'text': '已保存至本设备。', 'height': 0, ...}&#10;assert {'same': True...ight': 0, ...} == {'same': True...ight': 0, ...}&#10;  &#10;  Omitting 5 identical items, use -vv to show&#10;  Differing items:&#10;  {'hidden': False} != {'hidden': True}&#10;  {'text': '已保存至本设备。'} != {'text': ''}&#10;  Use -v to get more diff">tests/test_crypto_intelligence_r4_browser.py:3581: in test_r4_close_reopen_never_resurrects_transient_feedback
+    _assert_feedback_retired(page)
+tests/test_crypto_intelligence_r4_browser.py:3505: in _assert_feedback_retired
+    assert value == {"same": True, "hidden": True, "text": "", "height": 0,
+E   AssertionError: {'same': True, 'hidden': False, 'text': '已保存至本设备。', 'height': 0, ...}
+E   assert {'same': True...ight': 0, ...} == {'same': True...ight': 0, ...}
+E     
+E     Omitting 5 identical items, use -vv to show
+E     Differing items:
+E     {'hidden': False} != {'hidden': True}
+E     {'text': '已保存至本设备。'} != {'text': ''}
+E     Use -v to get more diff</failure></testcase><testcase classname="tests.test_crypto_intelligence_r4_browser" name="test_r4_locale_change_retires_old_feedback_and_preserves_the_reader[en-390]" time="0.529"><failure message="AssertionError: {'same': True, 'hidden': False, 'text': 'Saved on this device.', 'height': 47, ...}&#10;assert {'same': True...ght': 47, ...} == {'same': True...ight': 0, ...}&#10;  &#10;  Omitting 4 identical items, use -vv to show&#10;  Differing items:&#10;  {'hidden': False} != {'hidden': True}&#10;  {'height': 47} != {'height': 0}&#10;  {'text': 'Saved on this device.'} != {'text': ''}&#10;  Use -v to get more diff">tests/test_crypto_intelligence_r4_browser.py:3603: in test_r4_locale_change_retires_old_feedback_and_preserves_the_reader
+    _assert_feedback_retired(page)
+tests/test_crypto_intelligence_r4_browser.py:3505: in _assert_feedback_retired
+    assert value == {"same": True, "hidden": True, "text": "", "height": 0,
+E   AssertionError: {'same': True, 'hidden': False, 'text': 'Saved on this device.', 'height': 47, ...}
+E   assert {'same': True...ght': 47, ...} == {'same': True...ight': 0, ...}
+E     
+E     Omitting 4 identical items, use -vv to show
+E     Differing items:
+E     {'hidden': False} != {'hidden': True}
+E     {'height': 47} != {'height': 0}
+E     {'text': 'Saved on this device.'} != {'text': ''}
+E     Use -v to get more diff</failure></testcase><testcase classname="tests.test_crypto_intelligence_r4_browser" name="test_r4_locale_change_retires_old_feedback_and_preserves_the_reader[zh-320]" time="0.525"><failure message="AssertionError: {'same': True, 'hidden': False, 'text': '已保存至本设备。', 'height': 50, ...}&#10;assert {'same': True...ght': 50, ...} == {'same': True...ight': 0, ...}&#10;  &#10;  Omitting 4 identical items, use -vv to show&#10;  Differing items:&#10;  {'hidden': False} != {'hidden': True}&#10;  {'height': 50} != {'height': 0}&#10;  {'text': '已保存至本设备。'} != {'text': ''}&#10;  Use -v to get more diff">tests/test_crypto_intelligence_r4_browser.py:3603: in test_r4_locale_change_retires_old_feedback_and_preserves_the_reader
+    _assert_feedback_retired(page)
+tests/test_crypto_intelligence_r4_browser.py:3505: in _assert_feedback_retired
+    assert value == {"same": True, "hidden": True, "text": "", "height": 0,
+E   AssertionError: {'same': True, 'hidden': False, 'text': '已保存至本设备。', 'height': 50, ...}
+E   assert {'same': True...ght': 50, ...} == {'same': True...ight': 0, ...}
+E     
+E     Omitting 4 identical items, use -vv to show
+E     Differing items:
+E     {'hidden': False} != {'hidden': True}
+E     {'height': 50} != {'height': 0}
+E     {'text': '已保存至本设备。'} != {'text': ''}
+E     Use -v to get more diff</failure></testcase><testcase classname="tests.test_crypto_intelligence_r4_browser" name="test_r4_frozen_remove_handoff_survives_but_explicit_retry_retires_it[en-390-False]" time="0.437"><failure message="AssertionError: {'same': True, 'hidden': False, 'text': 'Removed from this device.', 'height': 47, ...}&#10;assert {'same': True...ght': 47, ...} == {'same': True...ight': 0, ...}&#10;  &#10;  Omitting 4 identical items, use -vv to show&#10;  Differing items:&#10;  {'hidden': False} != {'hidden': True}&#10;  {'height': 47} != {'height': 0}&#10;  {'text': 'Removed from this device.'} != {'text': ''}&#10;  Use -v to get more diff">tests/test_crypto_intelligence_r4_browser.py:3621: in test_r4_frozen_remove_handoff_survives_but_explicit_retry_retires_it
+    _assert_feedback_retired(page)
+tests/test_crypto_intelligence_r4_browser.py:3505: in _assert_feedback_retired
+    assert value == {"same": True, "hidden": True, "text": "", "height": 0,
+E   AssertionError: {'same': True, 'hidden': False, 'text': 'Removed from this device.', 'height': 47, ...}
+E   assert {'same': True...ght': 47, ...} == {'same': True...ight': 0, ...}
+E     
+E     Omitting 4 identical items, use -vv to show
+E     Differing items:
+E     {'hidden': False} != {'hidden': True}
+E     {'height': 47} != {'height': 0}
+E     {'text': 'Removed from this device.'} != {'text': ''}
+E     Use -v to get more diff</failure></testcase><testcase classname="tests.test_crypto_intelligence_r4_browser" name="test_r4_frozen_remove_handoff_survives_but_explicit_retry_retires_it[en-390-True]" time="0.433"><failure message="AssertionError: {'same': True, 'hidden': False, 'text': 'Removed from this device.', 'height': 47, ...}&#10;assert {'same': True...ght': 47, ...} == {'same': True...ight': 0, ...}&#10;  &#10;  Omitting 4 identical items, use -vv to show&#10;  Differing items:&#10;  {'hidden': False} != {'hidden': True}&#10;  {'height': 47} != {'height': 0}&#10;  {'text': 'Removed from this device.'} != {'text': ''}&#10;  Use -v to get more diff">tests/test_crypto_intelligence_r4_browser.py:3621: in test_r4_frozen_remove_handoff_survives_but_explicit_retry_retires_it
+    _assert_feedback_retired(page)
+tests/test_crypto_intelligence_r4_browser.py:3505: in _assert_feedback_retired
+    assert value == {"same": True, "hidden": True, "text": "", "height": 0,
+E   AssertionError: {'same': True, 'hidden': False, 'text': 'Removed from this device.', 'height': 47, ...}
+E   assert {'same': True...ght': 47, ...} == {'same': True...ight': 0, ...}
+E     
+E     Omitting 4 identical items, use -vv to show
+E     Differing items:
+E     {'hidden': False} != {'hidden': True}
+E     {'height': 47} != {'height': 0}
+E     {'text': 'Removed from this device.'} != {'text': ''}
+E     Use -v to get more diff</failure></testcase><testcase classname="tests.test_crypto_intelligence_r4_browser" name="test_r4_frozen_remove_handoff_survives_but_explicit_retry_retires_it[zh-320-False]" time="0.502"><failure message="AssertionError: {'same': True, 'hidden': False, 'text': '已从本设备移除。', 'height': 50, ...}&#10;assert {'same': True...ght': 50, ...} == {'same': True...ight': 0, ...}&#10;  &#10;  Omitting 4 identical items, use -vv to show&#10;  Differing items:&#10;  {'hidden': False} != {'hidden': True}&#10;  {'height': 50} != {'height': 0}&#10;  {'text': '已从本设备移除。'} != {'text': ''}&#10;  Use -v to get more diff">tests/test_crypto_intelligence_r4_browser.py:3621: in test_r4_frozen_remove_handoff_survives_but_explicit_retry_retires_it
+    _assert_feedback_retired(page)
+tests/test_crypto_intelligence_r4_browser.py:3505: in _assert_feedback_retired
+    assert value == {"same": True, "hidden": True, "text": "", "height": 0,
+E   AssertionError: {'same': True, 'hidden': False, 'text': '已从本设备移除。', 'height': 50, ...}
+E   assert {'same': True...ght': 50, ...} == {'same': True...ight': 0, ...}
+E     
+E     Omitting 4 identical items, use -vv to show
+E     Differing items:
+E     {'hidden': False} != {'hidden': True}
+E     {'height': 50} != {'height': 0}
+E     {'text': '已从本设备移除。'} != {'text': ''}
+E     Use -v to get more diff</failure></testcase><testcase classname="tests.test_crypto_intelligence_r4_browser" name="test_r4_frozen_remove_handoff_survives_but_explicit_retry_retires_it[zh-320-True]" time="0.480"><failure message="AssertionError: {'same': True, 'hidden': False, 'text': '已从本设备移除。', 'height': 50, ...}&#10;assert {'same': True...ght': 50, ...} == {'same': True...ight': 0, ...}&#10;  &#10;  Omitting 4 identical items, use -vv to show&#10;  Differing items:&#10;  {'hidden': False} != {'hidden': True}&#10;  {'height': 50} != {'height': 0}&#10;  {'text': '已从本设备移除。'} != {'text': ''}&#10;  Use -v to get more diff">tests/test_crypto_intelligence_r4_browser.py:3621: in test_r4_frozen_remove_handoff_survives_but_explicit_retry_retires_it
+    _assert_feedback_retired(page)
+tests/test_crypto_intelligence_r4_browser.py:3505: in _assert_feedback_retired
+    assert value == {"same": True, "hidden": True, "text": "", "height": 0,
+E   AssertionError: {'same': True, 'hidden': False, 'text': '已从本设备移除。', 'height': 50, ...}
+E   assert {'same': True...ght': 50, ...} == {'same': True...ight': 0, ...}
+E     
+E     Omitting 4 identical items, use -vv to show
+E     Differing items:
+E     {'hidden': False} != {'hidden': True}
+E     {'height': 50} != {'height': 0}
+E     {'text': '已从本设备移除。'} != {'text': ''}
+E     Use -v to get more diff</failure></testcase><testcase classname="tests.test_crypto_intelligence_r4_browser" name="test_r4_same_url_history_traversal_retires_feedback[en-390]" time="0.404"><failure message="AssertionError: {'same': True, 'hidden': False, 'text': 'Saved on this device.', 'height': 47, ...}&#10;assert {'same': True...ght': 47, ...} == {'same': True...ight': 0, ...}&#10;  &#10;  Omitting 4 identical items, use -vv to show&#10;  Differing items:&#10;  {'hidden': False} != {'hidden': True}&#10;  {'height': 47} != {'height': 0}&#10;  {'text': 'Saved on this device.'} != {'text': ''}&#10;  Use -v to get more diff">tests/test_crypto_intelligence_r4_browser.py:3639: in test_r4_same_url_history_traversal_retires_feedback
+    _assert_feedback_retired(page)
+tests/test_crypto_intelligence_r4_browser.py:3505: in _assert_feedback_retired
+    assert value == {"same": True, "hidden": True, "text": "", "height": 0,
+E   AssertionError: {'same': True, 'hidden': False, 'text': 'Saved on this device.', 'height': 47, ...}
+E   assert {'same': True...ght': 47, ...} == {'same': True...ight': 0, ...}
+E     
+E     Omitting 4 identical items, use -vv to show
+E     Differing items:
+E     {'hidden': False} != {'hidden': True}
+E     {'height': 47} != {'height': 0}
+E     {'text': 'Saved on this device.'} != {'text': ''}
+E     Use -v to get more diff</failure></testcase><testcase classname="tests.test_crypto_intelligence_r4_browser" name="test_r4_same_url_history_traversal_retires_feedback[zh-320]" time="0.445"><failure message="AssertionError: {'same': True, 'hidden': False, 'text': '已保存至本设备。', 'height': 50, ...}&#10;assert {'same': True...ght': 50, ...} == {'same': True...ight': 0, ...}&#10;  &#10;  Omitting 4 identical items, use -vv to show&#10;  Differing items:&#10;  {'hidden': False} != {'hidden': True}&#10;  {'height': 50} != {'height': 0}&#10;  {'text': '已保存至本设备。'} != {'text': ''}&#10;  Use -v to get more diff">tests/test_crypto_intelligence_r4_browser.py:3639: in test_r4_same_url_history_traversal_retires_feedback
+    _assert_feedback_retired(page)
+tests/test_crypto_intelligence_r4_browser.py:3505: in _assert_feedback_retired
+    assert value == {"same": True, "hidden": True, "text": "", "height": 0,
+E   AssertionError: {'same': True, 'hidden': False, 'text': '已保存至本设备。', 'height': 50, ...}
+E   assert {'same': True...ght': 50, ...} == {'same': True...ight': 0, ...}
+E     
+E     Omitting 4 identical items, use -vv to show
+E     Differing items:
+E     {'hidden': False} != {'hidden': True}
+E     {'height': 50} != {'height': 0}
+E     {'text': '已保存至本设备。'} != {'text': ''}
+E     Use -v to get more diff</failure></testcase><testcase classname="tests.test_crypto_intelligence_r4_browser" name="test_r4_older_apply_does_not_retire_newer_feedback_from_its_preflight[en-390]" time="0.485" /><testcase classname="tests.test_crypto_intelligence_r4_browser" name="test_r4_older_apply_does_not_retire_newer_feedback_from_its_preflight[zh-320]" time="0.515" /><testcase classname="tests.test_crypto_intelligence_r4_browser" name="test_r4_superseded_preflight_cannot_clear_its_newer_navigation_result" time="0.497" /><testcase classname="tests.test_crypto_intelligence_r4_browser" name="test_r4_completion_navigation_retires_feedback_without_a_late_reissue[frozen-remove]" time="0.428"><failure message="AssertionError: {'same': True, 'hidden': False, 'text': 'Removed from this device.', 'height': 47, ...}&#10;assert {'same': True...ght': 47, ...} == {'same': True...ight': 0, ...}&#10;  &#10;  Omitting 4 identical items, use -vv to show&#10;  Differing items:&#10;  {'hidden': False} != {'hidden': True}&#10;  {'height': 47} != {'height': 0}&#10;  {'text': 'Removed from this device.'} != {'text': ''}&#10;  Use -v to get more diff">tests/test_crypto_intelligence_r4_browser.py:3716: in test_r4_completion_navigation_retires_feedback_without_a_late_reissue
+    _assert_feedback_retired(page)
+tests/test_crypto_intelligence_r4_browser.py:3505: in _assert_feedback_retired
+    assert value == {"same": True, "hidden": True, "text": "", "height": 0,
+E   AssertionError: {'same': True, 'hidden': False, 'text': 'Removed from this device.', 'height': 47, ...}
+E   assert {'same': True...ght': 47, ...} == {'same': True...ight': 0, ...}
+E     
+E     Omitting 4 identical items, use -vv to show
+E     Differing items:
+E     {'hidden': False} != {'hidden': True}
+E     {'height': 47} != {'height': 0}
+E     {'text': 'Removed from this device.'} != {'text': ''}
+E     Use -v to get more diff</failure></testcase><testcase classname="tests.test_crypto_intelligence_r4_browser" name="test_r4_completion_navigation_retires_feedback_without_a_late_reissue[current-save]" time="0.441"><failure message="AssertionError: {'same': True, 'hidden': False, 'text': 'Saved on this device.', 'height': 47, ...}&#10;assert {'same': True...ght': 47, ...} == {'same': True...ight': 0, ...}&#10;  &#10;  Omitting 4 identical items, use -vv to show&#10;  Differing items:&#10;  {'hidden': False} != {'hidden': True}&#10;  {'height': 47} != {'height': 0}&#10;  {'text': 'Saved on this device.'} != {'text': ''}&#10;  Use -v to get more diff">tests/test_crypto_intelligence_r4_browser.py:3716: in test_r4_completion_navigation_retires_feedback_without_a_late_reissue
+    _assert_feedback_retired(page)
+tests/test_crypto_intelligence_r4_browser.py:3505: in _assert_feedback_retired
+    assert value == {"same": True, "hidden": True, "text": "", "height": 0,
+E   AssertionError: {'same': True, 'hidden': False, 'text': 'Saved on this device.', 'height': 47, ...}
+E   assert {'same': True...ght': 47, ...} == {'same': True...ight': 0, ...}
+E     
+E     Omitting 4 identical items, use -vv to show
+E     Differing items:
+E     {'hidden': False} != {'hidden': True}
+E     {'height': 47} != {'height': 0}
+E     {'text': 'Saved on this device.'} != {'text': ''}
+E     Use -v to get more diff</failure></testcase><testcase classname="tests.test_crypto_intelligence_r4_browser" name="test_r4_remove_feedback_handoff_cannot_follow_a_retargeted_history_write" time="0.394"><failure message="AssertionError: {'same': True, 'hidden': False, 'text': 'Removed from this device.', 'height': 47, ...}&#10;assert {'same': True...ght': 47, ...} == {'same': True...ight': 0, ...}&#10;  &#10;  Omitting 4 identical items, use -vv to show&#10;  Differing items:&#10;  {'hidden': False} != {'hidden': True}&#10;  {'height': 47} != {'height': 0}&#10;  {'text': 'Removed from this device.'} != {'text': ''}&#10;  Use -v to get more diff">tests/test_crypto_intelligence_r4_browser.py:3740: in test_r4_remove_feedback_handoff_cannot_follow_a_retargeted_history_write
+    _assert_feedback_retired(page)
+tests/test_crypto_intelligence_r4_browser.py:3505: in _assert_feedback_retired
+    assert value == {"same": True, "hidden": True, "text": "", "height": 0,
+E   AssertionError: {'same': True, 'hidden': False, 'text': 'Removed from this device.', 'height': 47, ...}
+E   assert {'same': True...ght': 47, ...} == {'same': True...ight': 0, ...}
+E     
+E     Omitting 4 identical items, use -vv to show
+E     Differing items:
+E     {'hidden': False} != {'hidden': True}
+E     {'height': 47} != {'height': 0}
+E     {'text': 'Removed from this device.'} != {'text': ''}
+E     Use -v to get more diff</failure></testcase><testcase classname="tests.test_crypto_intelligence_r4_browser" name="test_r4_retired_deadline_cannot_hide_a_new_feedback_message" time="2.628"><failure message="AssertionError: {'same': True, 'hidden': False, 'text': 'Saved on this device.', 'height': 0, ...}&#10;assert {'same': True...ight': 0, ...} == {'same': True...ight': 0, ...}&#10;  &#10;  Omitting 5 identical items, use -vv to show&#10;  Differing items:&#10;  {'hidden': False} != {'hidden': True}&#10;  {'text': 'Saved on this device.'} != {'text': ''}&#10;  Use -v to get more diff">tests/test_crypto_intelligence_r4_browser.py:3752: in test_r4_retired_deadline_cannot_hide_a_new_feedback_message
+    _assert_feedback_retired(page)
+tests/test_crypto_intelligence_r4_browser.py:3505: in _assert_feedback_retired
+    assert value == {"same": True, "hidden": True, "text": "", "height": 0,
+E   AssertionError: {'same': True, 'hidden': False, 'text': 'Saved on this device.', 'height': 0, ...}
+E   assert {'same': True...ight': 0, ...} == {'same': True...ight': 0, ...}
+E     
+E     Omitting 5 identical items, use -vv to show
+E     Differing items:
+E     {'hidden': False} != {'hidden': True}
+E     {'text': 'Saved on this device.'} != {'text': ''}
+E     Use -v to get more diff</failure></testcase><testcase classname="tests.test_crypto_intelligence_r4_browser" name="test_r4_newer_feedback_inside_handoff_history_write_survives_the_older_handoff" time="2.376" /></testsuite></testsuites>

@@ -1,5 +1,7 @@
 # Current actions and unobstructed mutation feedback
 
+> **Later feedback lifetime extension:** [Feedback lifetime](FEEDBACK_LIFETIME.md) keeps a fresh result within its task and retires obsolete text and reserved space on navigation, Close, language changes or Retry. The five-second timeout still preserves geometry within its originating task. The proof below remains this phase's historical scope.
+
 > **Later keyboard-focus extension:** [Drawer focus clearance](DRAWER_FOCUS.md) now keeps native forward/reverse keyboard focus clear of the viewport edges and the measured sticky header. Explicit reading restoration still retains its scroll. The proof below remains the action/feedback phase's historical scope.
 
 ## User outcome
