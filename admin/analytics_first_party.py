@@ -783,27 +783,31 @@ def overview(days=7, minutes=None, gap=None) -> dict:
               f"and {_not_excluded('e')} "
               "and e.visitor_id in (select visitor_id from bots)) as bots"
         )
-        r = _parallel(
-            core=lambda: (_query(core_sql) or [{}])[0],
-            # Exact all-time human count is context, not a render dependency. Keep it
-            # historically exact when it is cheap; otherwise omit only that secondary number.
-            alltime=lambda: (_optional_query(
-                _cte(include_ident=True)
-                + f"select count(*)::int as events, {_CANON_VISITORS} "
-                  "from public.analytics_events e left join ident i on i.visitor_id = e.visitor_id "
-                  f"where {_not_excluded('e')} and {_not_a_bot('e')}",
-                timeout_cap_s=_OVERVIEW_ALLTIME_TIMEOUT_S,
-                default=[],
-            ) or [{}])[0],
-        )
-        core = r["core"] or {}
+        core = (_query(core_sql) or [{}])[0] or {}
+        # The all-time count runs AFTER the core fold, never beside it. It is a full-history
+        # scan of a 192MB table against a 224MB shared_buffers, capped at 0.75s — so it is
+        # cancelled part-way through after having pulled most of the store through the cache
+        # and evicted the pages the MANDATORY statement was about to read. Run concurrently it
+        # made the panel it decorates slower: measured on production 2026-11-09, overview
+        # returned in 3.55s on a warm pool and then failed its 9s budget on five consecutive
+        # calls once this probe had run, and the next Visitors/Sessions statements came back
+        # at 9.1s instead of 3.3s. It is explicitly "context, not a render dependency", so it
+        # may not cost the number the operator actually opens the panel for.
+        alltime = (_optional_query(
+            _cte(include_ident=True)
+            + f"select count(*)::int as events, {_CANON_VISITORS} "
+              "from public.analytics_events e left join ident i on i.visitor_id = e.visitor_id "
+              f"where {_not_excluded('e')} and {_not_a_bot('e')}",
+            timeout_cap_s=_OVERVIEW_ALLTIME_TIMEOUT_S,
+            default=[],
+        ) or [{}])[0]
         win = core.get("win") or {}
         win["sessions"] = core.get("sessions")
         return {
             "days": round(m / 1440, 2),
             "minutes": m,
             "window": win,
-            "alltime": r["alltime"],
+            "alltime": alltime,
             "bots": core.get("bots") or {},
             "by_site": core.get("by_site") or [],
             "daily": core.get("daily") or [],

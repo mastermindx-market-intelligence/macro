@@ -56,11 +56,22 @@ create index if not exists analytics_events_user
 create index if not exists analytics_events_ip_visitor
   on public.analytics_events (ip, visitor_id) where ip is not null;
 
--- NOTE on fingerprints: covering indexes for the `fp` half of `excl_link` were tried and
--- REVERTED. They made each probe index-only, but they also flipped the planner from a hash
--- join to nested-loop index probes over a low-selectivity key, and `excluded` regressed from
--- 7.6s to ~33s. An index that changes the join strategy is not a free win; measure before
--- re-adding one here.
+create index if not exists analytics_events_fp
+  on public.analytics_events (fp) where fp is not null;
+-- `fp_farm` is the single most expensive term in a VISITORS/SESSIONS statement. It asks
+-- "for the fingerprints seen in this window, how many distinct visitors and IPs share
+-- each one" — a question that spans ALL history, over `fp in (select fp from focus_fp)`.
+-- With no `fp` index that membership test seq-scanned the store; measured on production
+-- 2026-11-09, the 24h Visitors statement sat at 7.54s / 7.44s and fell to 5.54s / 3.89s /
+-- 3.37s once this index existed. Dropping the classifiers entirely takes the same
+-- statement to 0.73s, so this is where the remaining cost lives.
+--
+-- NOTE on fingerprints: the COVERING form of this index — (fp, visitor_id) — was tried and
+-- REVERTED. It made each probe index-only, but it also flipped the planner from a hash
+-- join to nested-loop index probes over a low-selectivity key, and `excluded` regressed
+-- from 7.6s to ~33s. The plain (fp) index below is a different animal and measured well.
+-- An index that changes the join strategy is not a free win; measure before changing this
+-- one back into a covering index.
 
 alter table public.analytics_events enable row level security;
 
