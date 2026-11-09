@@ -2,7 +2,7 @@
   "session": "2026-11-06",
   "attempts": [
     {
-      "capture_instant": "2026-11-07T04:30:54.272512+00:00",
+      "capture_instant": "2026-11-07T05:17:32.648028+00:00",
       "requested_underlyings": 375,
       "attempted_underlyings": 5,
       "successful_underlyings": 0,
@@ -20,6 +20,42 @@
       "aborted_early": true,
       "decision": "nothing_captured",
       "health": "failed"
+    },
+    {
+      "capture_instant": "2026-11-08T05:08:42.818744+00:00",
+      "requested_underlyings": 375,
+      "attempted_underlyings": null,
+      "successful_underlyings": null,
+      "coverage_pct": null,
+      "failure_reasons": {},
+      "failure_examples": {},
+      "aborted_early": false,
+      "decision": "skipped_outside_lease",
+      "health": "absent",
+      "lease": {
+        "valid": false,
+        "resolved_session": "2026-11-06",
+        "lease_end_et": "2026-11-07T03:00:00-05:00",
+        "write_kind": "first_write"
+      }
+    },
+    {
+      "capture_instant": "2026-11-09T05:28:25.528695+00:00",
+      "requested_underlyings": 375,
+      "attempted_underlyings": null,
+      "successful_underlyings": null,
+      "coverage_pct": null,
+      "failure_reasons": {},
+      "failure_examples": {},
+      "aborted_early": false,
+      "decision": "skipped_outside_lease",
+      "health": "absent",
+      "lease": {
+        "valid": false,
+        "resolved_session": "2026-11-06",
+        "lease_end_et": "2026-11-07T03:00:00-05:00",
+        "write_kind": "first_write"
+      }
     }
   ]
 }
