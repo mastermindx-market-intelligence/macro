@@ -1,25 +1,13 @@
 {
-  "as_of": "2026-09-24",
+  "as_of": "2026-11-09",
   "bottleneck": {
     "accounts": [
       {
         "account": "flagship",
         "author_replies": 0,
-        "contributions": 4,
-        "engagements": 0,
-        "impressions": 7,
-        "measured": 4,
-        "replies_abstained": 0,
-        "replies_enqueued": 0,
-        "replies_sent": 0,
-        "unmeasured": 0
-      },
-      {
-        "account": "founder",
-        "author_replies": 0,
         "contributions": 1,
         "engagements": 0,
-        "impressions": 20,
+        "impressions": 19,
         "measured": 1,
         "replies_abstained": 0,
         "replies_enqueued": 0,
@@ -29,10 +17,10 @@
       {
         "account": "mastermind_news",
         "author_replies": 0,
-        "contributions": 3,
+        "contributions": 7,
         "engagements": 0,
-        "impressions": 9,
-        "measured": 3,
+        "impressions": 10,
+        "measured": 7,
         "replies_abstained": 0,
         "replies_enqueued": 0,
         "replies_sent": 0,
@@ -46,61 +34,29 @@
   "cells": [
     {
       "dims": {
-        "account": "flagship",
-        "format": "breaking",
-        "hook_family": "press_lane",
-        "register": "unknown"
-      },
-      "med_adjusted": -0.035761,
-      "med_impressions": 2.0,
-      "med_label": 0.0,
-      "n": 3,
-      "n_labelled": 3,
-      "n_null": 0,
-      "verdict": "seeding",
-      "verdict_note": "3 labelled rows against an n-floor of 20 — no ranking claim is made from this cell"
-    },
-    {
-      "dims": {
         "account": "mastermind_news",
         "format": "breaking",
         "hook_family": "press_lane",
         "register": "unknown"
       },
-      "med_adjusted": -0.035761,
-      "med_impressions": 2.0,
+      "med_adjusted": -0.009153,
+      "med_impressions": 1.0,
       "med_label": 0.0,
-      "n": 3,
-      "n_labelled": 3,
+      "n": 7,
+      "n_labelled": 7,
       "n_null": 0,
       "verdict": "seeding",
-      "verdict_note": "3 labelled rows against an n-floor of 20 — no ranking claim is made from this cell"
+      "verdict_note": "7 labelled rows against an n-floor of 20 — no ranking claim is made from this cell"
     },
     {
       "dims": {
         "account": "flagship",
-        "format": "theme_list",
-        "hook_family": "publisher_live_movers",
+        "format": "breaking",
+        "hook_family": "press_lane",
         "register": "unknown"
       },
-      "med_adjusted": -0.035761,
-      "med_impressions": 2.0,
-      "med_label": 0.0,
-      "n": 1,
-      "n_labelled": 1,
-      "n_null": 0,
-      "verdict": "seeding",
-      "verdict_note": "1 labelled rows against an n-floor of 20 — no ranking claim is made from this cell"
-    },
-    {
-      "dims": {
-        "account": "founder",
-        "format": "mover",
-        "hook_family": "publisher_live_movers",
-        "register": "analysis"
-      },
-      "med_adjusted": -0.035761,
-      "med_impressions": 20.0,
+      "med_adjusted": -0.009153,
+      "med_impressions": 19.0,
       "med_label": 0.0,
       "n": 1,
       "n_labelled": 1,
@@ -143,7 +99,7 @@
   ],
   "n_floor": 20,
   "n_rows": 8,
-  "n_rows_all_time": 168,
+  "n_rows_all_time": 488,
   "north_star": {
     "active": false,
     "follower_floor": 250,
@@ -160,8 +116,8 @@
     "angle": [
       {
         "angle": "unknown",
-        "med_adjusted": -0.035761,
-        "med_impressions": 2.0,
+        "med_adjusted": -0.009153,
+        "med_impressions": 1.0,
         "med_label": 0.0,
         "n": 8,
         "n_labelled": 8,
@@ -173,8 +129,8 @@
     "note": "Marginal tables, one dimension at a time — NOT extra joint-cell dimensions. See labels.PROVENANCE_DIMS for the cardinality arithmetic. 'unknown' is a real bucket: an item that carried no shape/angle/trigger is counted, never dropped.",
     "shape": [
       {
-        "med_adjusted": -0.035761,
-        "med_impressions": 2.0,
+        "med_adjusted": -0.009153,
+        "med_impressions": 1.0,
         "med_label": 0.0,
         "n": 8,
         "n_labelled": 8,
@@ -186,8 +142,8 @@
     ],
     "trigger": [
       {
-        "med_adjusted": -0.035761,
-        "med_impressions": 2.0,
+        "med_adjusted": -0.009153,
+        "med_impressions": 1.0,
         "med_label": 0.0,
         "n": 8,
         "n_labelled": 8,

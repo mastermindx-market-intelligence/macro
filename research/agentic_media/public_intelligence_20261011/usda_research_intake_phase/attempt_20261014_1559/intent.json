@@ -1,0 +1,30 @@
+{
+  "operation": "mmx-public-intelligence-delivery-20261011-local-ceo-001",
+  "at": "2026-10-14T15:59:38.105050+00:00",
+  "slot_id": "press-research_desk-2026-10-14-593acfb87c11",
+  "source_commit": "e7112006a5d69b9fb125ff5e36f2f61a6174dadd",
+  "source_manifest_sha256": "6047d6ed2043997a71cad134e4f6404f2c1d595530f086fe32cc6b353bb6a15e",
+  "planner_snapshot_sha256": "d0cd0451dd796e768de231682f327b37d2d9d746590310551db006632a32db08",
+  "installed_planner_head": "40568df0a487037144f55526ece6e0329b6272a4",
+  "public_page_sha256": "cb0dac22c1bfdc3cdec77c86f2e5872eef2b6335fbe516183417734469d2549b",
+  "private_stage_only": true,
+  "single_provider_attempt": true,
+  "max_regenerations": 0,
+  "budget": 24000,
+  "budget_kind": "existing estimated budget; not hard provider token cap",
+  "accounting_root": "/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/mmx-press-current-event-20261013-3acef99375769a7f",
+  "accounting_before": {
+    "data/ai_costs/usage.jsonl": "de5168482afc6729dddbff288853c9173dd697b860dda3d26ea9fa5944bdfb86",
+    "data/ai_costs/provider_health.jsonl": "a93e2ab47750f6c08409d256216056208ce9872bc2e8109f6233e6f919ac4bc9",
+    "data/metabolism/key_ledger.jsonl": "702c04bec9e1bb28483eb7b128e4561bf33bd7db41e76129b72340c959fe6c53"
+  },
+  "stages_before": {
+    "press-research_desk-2026-10-11-81675c403cda.json": "1174c20e6a630dec8cd97369ae91d946caebfa06d30bb3a7d57ed17d58becffe",
+    "press-official-cd2747adeed2.json": "444946ab02c0537c539e367cf121ee8efd4d6ab8a6c5f27ae880ff2934053931",
+    "press-brief-2026-10-11-6cf53bdfd11a.json": "340de7c873a807794cb00807753dec7da04842295fe5439ce1462a1b015afbc8",
+    "_run_summary.json": "d8aa6bae34ec95e4fd873b2e1cc62ae6555eab2fb61e9eac5562e37c184ebbf2",
+    "press-research_desk-2026-10-13-6baf3247f154.json": "2aef46759c72b4621e772d0da04d2eeee4025b525988f8dd7f1ae1f207206c0a"
+  },
+  "publication_approved": false,
+  "cutover": false
+}

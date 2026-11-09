@@ -408,3 +408,125 @@ def test_replay_ignores_missing_vintage_of_out_of_scope_business():
     widened = dataclasses.replace(bundle, identity_results=bundle.identity_results + (extra,))
     assert robotics.compose_robotics_research(replay, widened) == \
         robotics.compose_robotics_research(replay, bundle)
+
+
+# ---------------------------------------------------------------------------
+# R-36 item 17 rule 9 -- owner review clocks are aware-UTC instants, and an
+# owner clock the composer cannot read withholds its row (never a 503)
+# ---------------------------------------------------------------------------
+
+UNREADABLE = "2026-13-45T00:00:00Z"   # passes the curation clock pattern
+
+
+def _two_reviews(first_reviewed, second_review):
+    query, bundle = load_bundle_case("review_expired_or_withdrawn")
+    first = copy.deepcopy(dict(bundle.assertions[0]))
+    second = copy.deepcopy(dict(bundle.assertions[1]))
+    first["review"].update(disposition="accepted", reviewed_at=first_reviewed,
+                           review_due_at=None)
+    second["review"].update(disposition="accepted", **second_review)
+    rebuilt = dataclasses.replace(
+        bundle, assertions=(restamp(first), restamp(second)))
+    return robotics.compose_robotics_research(query, rebuilt)
+
+
+def _review_state(response):
+    rows = response["industrial_views"]["composition"]["rows"]
+    return len(rows), "review_expired_present" in response["limitations"]
+
+
+@pytest.mark.skipif(not HAS_CODEC, reason=CODEC_REASON)
+def test_latest_now_is_the_newest_review_instant_not_the_newest_string():
+    """#9103 F2: 23:00+05:00 is 18:00Z, older than 22:00Z, although it sorts
+    after it as text. "now" is 22:00Z either way, so a review due at 20:00Z
+    has expired whichever offset the second stamp is written in."""
+    for written in ("2026-09-20T18:00:00Z", "2026-09-20T23:00:00+05:00"):
+        response = _two_reviews(
+            "2026-09-20T22:00:00Z",
+            dict(reviewed_at=written, review_due_at="2026-09-20T20:00:00Z"))
+        assert _review_state(response) == (1, True), written
+
+
+@pytest.mark.skipif(not HAS_CODEC, reason=CODEC_REASON)
+def test_review_due_after_now_keeps_the_row():
+    response = _two_reviews(
+        "2026-09-20T22:00:00Z",
+        dict(reviewed_at="2026-09-20T18:00:00Z",
+             review_due_at="2026-09-20T23:00:00+00:00"))
+    assert _review_state(response) == (2, False)
+
+
+@pytest.mark.skipif(not HAS_CODEC, reason=CODEC_REASON)
+def test_unreadable_review_due_withholds_that_row_only():
+    """An unreadable review_due_at raised ValueError (the route's 503) on
+    5bf72439. It now withholds that one row; the other row stays."""
+    response = _two_reviews(
+        "2026-09-20T22:00:00Z",
+        dict(reviewed_at="2026-09-20T18:00:00Z", review_due_at=UNREADABLE))
+    assert _review_state(response) == (1, True)
+
+
+@pytest.mark.skipif(not HAS_CODEC, reason=CODEC_REASON)
+def test_unreadable_reviewed_at_counts_as_expired_and_never_sets_now():
+    """An unreadable reviewed_at counts as expired: that row is withheld, and
+    the stamp is not "now" for the readable row (whose due date is after
+    the readable now, so it stays)."""
+    response = _two_reviews(
+        "2026-09-20T22:00:00Z",
+        dict(reviewed_at="2026-02-30T18:00:00Z", review_due_at=None))
+    assert _review_state(response) == (1, True)
+    query, bundle = load_bundle_case("review_expired_or_withdrawn")
+    first = copy.deepcopy(dict(bundle.assertions[0]))
+    second = copy.deepcopy(dict(bundle.assertions[1]))
+    first["review"].update(disposition="accepted", reviewed_at=UNREADABLE,
+                           review_due_at=None)
+    second["review"].update(disposition="accepted",
+                            reviewed_at="2026-09-20T18:00:00Z",
+                            review_due_at="2026-09-20T20:00:00Z")
+    response = robotics.compose_robotics_research(
+        query, dataclasses.replace(
+            bundle, assertions=(restamp(first), restamp(second))))
+    assert _review_state(response) == (1, True)
+
+
+def test_replay_unreadable_mapping_learned_at_withholds_the_identity():
+    _, replay, bundle = _replay_case()
+    label = bundle.assertions[0]["subject"]["source_business_label"]
+
+    def learned(value):
+        rows = []
+        for result in bundle.identity_results:
+            result = dict(result)
+            if result.get("source_business_label") == label:
+                result["mapping_learned_at"] = value
+            rows.append(result)
+        response = robotics.compose_robotics_research(
+            replay, dataclasses.replace(bundle, identity_results=tuple(rows)))
+        return next(row for row in response["companies"]["rows"]
+                    if row["source_business_label"] == label)
+
+    readable_row = learned("2026-09-01T00:00:00Z")
+    assert readable_row["company_node_id"] is not None
+    withheld = learned(UNREADABLE)
+    assert withheld["company_node_id"] is None
+    assert withheld["security"] is None
+    assert withheld["navigation"]["reason"] == "identity_not_yet_learned"
+
+
+def test_replay_unreadable_block_reviewed_at_withholds_the_block():
+    query, bundle = load_bundle_case("witness_perception_orbbec_twinny")
+    replay = dataclasses.replace(
+        query, time_mode="system_replay",
+        source_cutoff="2026-09-24T00:00:00Z",
+        recorded_cutoff="2026-09-24T00:00:00Z")
+
+    def matters(reviewed_at):
+        blocks = tuple({**dict(block), "reviewed_at": reviewed_at}
+                       for block in bundle.interpretation_blocks)
+        response = robotics.compose_robotics_research(
+            replay, dataclasses.replace(bundle, interpretation_blocks=blocks))
+        return [item for item in response["summary"]["why_it_matters"]
+                if item["label"] == "interpretation"]
+
+    assert matters("2026-09-23T07:00:00Z")
+    assert matters(UNREADABLE) == []

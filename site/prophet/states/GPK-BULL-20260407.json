@@ -1,32 +1,32 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "GPK-BULL-20260407",
-  "asof": "2026-09-25",
+  "asof": "2026-11-09",
   "phase": "overtime",
   "detection_phase": "overtime",
-  "management_confidence": 22.0,
-  "raw_confidence": 21.2,
-  "delta_vs_base": -38.0,
+  "management_confidence": 29.2,
+  "raw_confidence": 40.0,
+  "delta_vs_base": -30.8,
   "recommended_action": null,
-  "human_state": "Window Elapsed \u2014 Awaiting Close",
+  "human_state": "Closed",
   "components": {
-    "validity": 17.7,
-    "progress": 0.0,
-    "pace": 0.7,
-    "retention": 0.0,
-    "overlay": 53.0
+    "validity": 100.0,
+    "progress": 12.6,
+    "pace": 0.0,
+    "retention": 27.8,
+    "overlay": 33.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.277,
-    "dist_to_t1_r": 1.5,
-    "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 148.9,
-    "p1": -0.4818,
-    "p2": -0.2409,
+    "dist_to_stop_r": 1.159,
+    "dist_to_t1_r": 1.341,
+    "dist_to_t2_r": 2.841,
+    "horizon_pct_used": 248.9,
+    "p1": 0.1061,
+    "p2": 0.053,
     "p3": null,
-    "move_r": -0.723,
+    "move_r": 0.159,
     "mfe_r": 0.573,
-    "mae_r": -0.723
+    "mae_r": -1.118
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -36,23 +36,17 @@
   "authority_tier": "display",
   "reliability": {
     "management_confidence": "display \u2014 no forward ledger has passed yet",
-    "recommended_action": "paused \u2014 no closing print since 2026-09-21; a stale price frame carries no current action authority",
+    "recommended_action": "withheld \u2014 canonical forward ledger has closed this plan",
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 1.2600003814697267,
-  "_mae": -1.5899999999999999,
+  "_mae": -2.459999885559082,
   "_max_p1": 0.3818182974150686,
   "_first_trigger_ts": "2026-08-08",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 67,
-  "tau": 1.4889,
-  "price_frame": {
-    "state": "stale",
-    "last_close_date": "2026-09-21",
-    "run_asof": "2026-09-25",
-    "lag": 4,
-    "lag_basis": "business_days",
-    "max_lag": 3
-  }
+  "days_elapsed": 112,
+  "tau": 2.4889,
+  "closed": true,
+  "outcome": "EXPIRED"
 }

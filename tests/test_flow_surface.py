@@ -1654,3 +1654,51 @@ def test_retain_sessions_override_trims_dates_index(tmp_path, monkeypatch):
     doc = json.loads((tmp_path / "live_flow_out" / "surface" / "SPY" / "dates.json").read_text())
     assert doc["dates"] == ["2026-07-06", "2026-07-05"]   # oldest dropped at the cap
     assert doc["retain"] == 2 and doc["latest"] == "2026-07-06"
+
+
+# ── N01-F2: maturity clock across DST end, naive clocks and holiday expiries ──
+
+def test_year_fraction_dst_end_day_last_minute_is_sixty_seconds():
+    import scripts.build_flow_surface as bfs
+
+    # Monday 2026-11-02 is EST. The cash close is 16:00 ET = 21:00Z, so one
+    # minute before the close is sixty seconds of maturity.
+    last_minute = bfs._year_fraction("2026-11-02", "2026-11-02T20:59:00Z")
+    assert last_minute is not None
+    assert abs(last_minute - (1.0 / 60.0 / 24.0) / 365.0) < 1e-12
+
+    # 20:00Z is 15:00 EST: one hour remains. A close pinned at the EDT offset
+    # would return None here.
+    one_hour = bfs._year_fraction("2026-11-02", "2026-11-02T20:00:00Z")
+    assert one_hour is not None
+    assert abs(one_hour - (1.0 / 24.0) / 365.0) < 1e-12
+
+    assert bfs._year_fraction("2026-11-02", "2026-11-02T21:00:00Z") is None
+
+
+def test_year_fraction_elapsed_clock_counts_the_dst_fallback_hour():
+    import scripts.build_flow_surface as bfs
+
+    # Fri 10:00 EDT to Mon 16:00 EST is 78 wall-clock hours plus the repeated
+    # hour on Sun 2026-11-01.
+    spanned = bfs._year_fraction("2026-11-02", "2026-10-30T14:00:00Z")
+    assert spanned is not None
+    assert abs(spanned - (79.0 / 24.0) / 365.0) < 1e-12
+
+
+def test_year_fraction_naive_observation_fails_closed():
+    import scripts.build_flow_surface as bfs
+
+    assert bfs._year_fraction("2026-11-02", "2026-11-02T20:59:00") is None
+    aware = bfs._year_fraction("2026-11-02", "2026-11-02T20:59:00+00:00")
+    assert aware is not None
+    assert abs(aware - (1.0 / 60.0 / 24.0) / 365.0) < 1e-12
+
+
+def test_year_fraction_thanksgiving_expiry_is_not_a_maturity():
+    import scripts.build_flow_surface as bfs
+
+    assert bfs._year_fraction("2026-11-26", "2026-11-25T15:00:00Z") is None
+    wednesday = bfs._year_fraction("2026-11-25", "2026-11-25T15:00:00Z")
+    assert wednesday is not None
+    assert abs(wednesday - (6.0 / 24.0) / 365.0) < 1e-12
