@@ -1,6 +1,6 @@
 {
   "schema": "grading_closure.v1",
-  "generated_at": "2026-11-08T05:19:40.402721+00:00",
+  "generated_at": "2026-11-09T05:39:22.823077+00:00",
   "n_ledgers": 35,
   "n_closed": 28,
   "n_grader_starved": 7,
@@ -16,7 +16,7 @@
       ],
       "n_logged": 118459,
       "n_graded": 219939,
-      "last_graded_at": "2026-11-08T05:14:52.299584+00:00",
+      "last_graded_at": "2026-11-09T05:34:32.576221+00:00",
       "tune_step": "N",
       "verdict": "CLOSED"
     },
@@ -30,7 +30,7 @@
       ],
       "n_logged": 219939,
       "n_graded": 219939,
-      "last_graded_at": "2026-11-08T05:14:52.299584+00:00",
+      "last_graded_at": "2026-11-09T05:34:32.576221+00:00",
       "tune_step": "N",
       "verdict": "CLOSED"
     },
@@ -141,7 +141,7 @@
       "graders": [
         "scripts/grade_promises.py"
       ],
-      "n_logged": 2542,
+      "n_logged": 2573,
       "n_graded": 5769,
       "last_graded_at": "2026-07-02T18:59:31.570004+00:00",
       "tune_step": "N",
@@ -324,7 +324,7 @@
         "engine/grey_deer_pullback_forward_grade.py",
         "scripts/grey_deer_pullback_nightly.py"
       ],
-      "n_logged": 30,
+      "n_logged": 60,
       "n_graded": 20,
       "last_graded_at": "2026-11-03T20:14:13+00:00",
       "tune_step": "N",
@@ -411,7 +411,7 @@
       ],
       "n_logged": 356,
       "n_graded": 138,
-      "last_graded_at": "2026-11-07",
+      "last_graded_at": "2026-11-08",
       "tune_step": "N",
       "verdict": "CLOSED"
     },
@@ -423,7 +423,7 @@
       "graders": [
         "scripts/grade_policy_calendar.py"
       ],
-      "n_logged": 1387,
+      "n_logged": 1404,
       "n_graded": 1266,
       "last_graded_at": "2026-11-07",
       "tune_step": "N",
@@ -465,7 +465,7 @@
       "graders": [
         "engine/species_registry.py"
       ],
-      "n_logged": 6395,
+      "n_logged": 6399,
       "n_graded": 0,
       "last_graded_at": null,
       "tune_step": "N",
@@ -479,7 +479,7 @@
       "graders": [
         "engine/species_registry.py"
       ],
-      "n_logged": 6395,
+      "n_logged": 6399,
       "n_graded": 0,
       "last_graded_at": null,
       "tune_step": "N",
