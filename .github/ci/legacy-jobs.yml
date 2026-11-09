@@ -29844,7 +29844,48 @@ jobs:
         # Harness cases use generated temporary config and fake drivers.
         # Public runtime operations refuse; no live pool/persona/profile is read.
         # Git policy checks inspect ignore/index metadata, not the private file.
-        run: python -m pytest tests/test_marketing_approval_desk.py tests/test_marketing_card_earns_pixels.py tests/test_marketing_wire_expiry.py tools/xguerrilla/tests/test_drivers.py tools/xguerrilla/tests/test_net.py tools/xguerrilla/tests/test_ops.py tools/xguerrilla/tests/test_pilot_sim.py tools/xguerrilla/tests/test_proxies_template.py tools/xguerrilla/tests/test_state.py tools/xguerrilla/tests/test_textdrift.py tools/xguerrilla/tests/test_typing.py tools/xguerrilla/tests/test_validators.py tools/xguerrilla/tests/test_runtime_boundary.py tools/xguerrilla/tests/test_admission.py -q
+        run: python -m pytest tests/test_marketing_approval_desk.py tests/test_marketing_card_earns_pixels.py tests/test_marketing_wire_expiry.py tools/xguerrilla/tests/test_drivers.py tools/xguerrilla/tests/test_net.py tools/xguerrilla/tests/test_ops.py tools/xguerrilla/tests/test_pilot_sim.py tools/xguerrilla/tests/test_proxies_template.py tools/xguerrilla/tests/test_state.py tools/xguerrilla/tests/test_textdrift.py tools/xguerrilla/tests/test_typing.py tools/xguerrilla/tests/test_validators.py tools/xguerrilla/tests/test_runtime_boundary.py -q
+
+  xguerrilla-admission:
+    if: ${{ false }}  # executed inside ci-pack — NOT a disabled gate; see the ci-pack job.
+    gate: code
+    # PR #10870 admission chain: tools/xguerrilla/admission.py's regression
+    # suite first landed appended to marketing-social-publisher's run line,
+    # which re-selected that job for ordinary code PRs and pushed all three
+    # packing probes 2 weight-seconds over their composed ceilings
+    # (contract-delta: 3 introduced, 0 inherited). Curated here instead:
+    # scope: exclusive + exact paths, so the job is selected ONLY by edits to
+    # the files below and the probes' aggregates return to their base values.
+    # paths: is the suite's measured import/read closure — conftest.py puts
+    # tools/ on sys.path so the package imports as `xguerrilla`, admission.py
+    # imports .net and .persona, both import yaml, and `import xguerrilla`
+    # executes the package __init__ — plus ADMISSION.md, the call-site
+    # contract this suite qualifies. No per-job weight field exists in the
+    # schema: the pack estimator derives it from the commands (2 run steps +
+    # 2 x 1 tests/test_ reference + 0 length units = 4), and this job is never
+    # selected by the three probes, so no ceiling moves.
+    scope: exclusive
+    paths:
+      - "tools/xguerrilla/__init__.py"
+      - "tools/xguerrilla/admission.py"
+      - "tools/xguerrilla/net.py"
+      - "tools/xguerrilla/persona.py"
+      - "tools/xguerrilla/ADMISSION.md"
+      - "tools/xguerrilla/tests/conftest.py"
+      - "tools/xguerrilla/tests/test_admission.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install deps
+        # Minimal lane deps: pytest + pyyaml only. admission.py is stdlib
+        # (hashlib/json/math/time/dataclasses/datetime/typing); net.py and
+        # persona.py import yaml. No numpy/pandas/pyarrow, zero network.
+        run: pip install pytest pyyaml
+      - name: admission chain unit tests
+        run: python -m pytest tools/xguerrilla/tests/test_admission.py -q
 
   marketing-media-pipeline:
     if: ${{ false }}

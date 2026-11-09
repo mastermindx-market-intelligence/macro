@@ -5331,6 +5331,11 @@ CURATED_EXCLUSIVE = {
     "global-liquidity-transmission",
     # Options scenario contract: keep the ordinary code job explicitly scoped.
     "options-scenario-contract",
+    # xguerrilla admission chain: one gate:code exclusive home for the
+    # tools/xguerrilla admission suite, selected only by edits to its own
+    # import closure, so the three packing probes keep their base aggregates
+    # with no ceiling moved.
+    "xguerrilla-admission",
 }
 
 
@@ -5616,9 +5621,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_945),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_966),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_703),
+    ("templates/index.html", 137, 5_943),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_964),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_701),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5631,18 +5636,21 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     run 42536598947 / job 128902154215 measured head
     bad01ea0772cce5209ae05cd0ad7f59341a293d9 against base
     aec7f387badcdf69c9a947fafbc73b4c68470c7d on tested merge
-    4ccd84d857831ddceaa5d3aa887e9b24f3956f1f. The existing
-    marketing-social-publisher pytest command adds test_admission.py:
-    five run commands, test references 28->29, command characters 1248->1289
-    (the same 800-character bucket), so its estimator weight is 62->64.
-    The three measured probe weights are 5945/5966/5703, exactly +2 over
-    their prior ceilings; the diagnostic reports no newly selected jobs
-    and no job-count or pack-count breach. Fund only that intended coverage
-    increment. Job ceilings 137/138/131, the ten-pack bound, selectors,
-    enrollment, assertions, timeouts and admission/concurrency controls stay.
-    This is measured planner accounting, not an elapsed-time claim; natural
-    successor CI must qualify the repaired source. Original failed and
-    unsettled baseline-run evidence is not converted into passing proof.
+    4ccd84d857831ddceaa5d3aa887e9b24f3956f1f. Appending test_admission.py to
+    the existing marketing-social-publisher pytest command (five run commands,
+    test references 28->29, command characters 1248->1289, the same
+    800-character bucket) moved its estimator weight 62->64 and the three
+    probe weights to 5945/5966/5703, exactly +2 over their ceilings, with no
+    newly selected job and no job-count or pack-count breach. The gate's own
+    remedy was taken instead of funding: the append is reverted byte-for-byte
+    and the suite is curated into its own gate:code job `xguerrilla-admission`
+    (`scope: exclusive`, `paths:` = the suite's import closure under
+    tools/xguerrilla/), which none of the three probes selects. Probe
+    aggregates return to their base values and no ceiling moves. Job ceilings
+    137/138/131, the ten-pack bound, selectors, enrollment, assertions,
+    timeouts and admission/concurrency controls stay. This is measured planner
+    accounting, not an elapsed-time claim; natural successor CI must qualify
+    the repaired source.
 
     2026-11-08 (PR #10837, explicit synthetic harness enrollment, recomposed on
     current main 005baca8b092abe82acb4462eb6710af8f59a1c8): natural
