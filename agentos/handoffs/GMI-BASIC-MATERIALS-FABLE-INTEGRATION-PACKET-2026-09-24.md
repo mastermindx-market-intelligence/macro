@@ -6,6 +6,19 @@ program: gmi-theme-graph
 repository: mastermindx-market-intelligence/macro
 mission_complete: false
 implementation_authority: none
+workstream: "WS:GMI-THEME-GRAPH"
+session: "sol/basic-materials-research-20260923"
+model: "sol"
+mission: "Preserve the R25 sector-first Basic Materials research handoff and its 44 requirements, T1-T8, five originals/four company journeys, ten families/eight lenses and V0-V4 product ambition."
+state_before: "At the dated R25 checkpoint, the source-local assertion design was proposed; shared scope/ref/K1/P5 acceptance, sector identity and the private reader were unresolved, and the separate #7984 economic core remained held."
+changed: [{"path":"agentos/handoffs/GMI-BASIC-MATERIALS-FABLE-INTEGRATION-PACKET-2026-09-24.md","what":"The R25 packet records source-local versus theme-bound design choices. The 2026-11-09 source repair adds required handoff metadata only and preserves the entire original narrative and all historical limits."}]
+verified: [{"claim":"On 2026-11-09, the metadata repair preserves the complete dated R25 narrative and its verified original Git blob identity.","command":"JavaScript source check: const bodyOf = s => s.slice(s.indexOf(\"\\n---\\n\", 4) + 5); h.gitBlob(original) === \"3a52842000a0d2f1aa72dc4edfd989dc99350378\" && bodyOf(candidate) === bodyOf(original). original is the immutable 3a52842000a0d2f1aa72dc4edfd989dc99350378 blob; candidate is this metadata-only composition.","result":"PASS: the original Git blob hash and every narrative byte match. This source-integrity check executes no Python, product, browser, historical study or provider test."}]
+unresolved: ["Shared source-local scope/ref/parser/K1/P5 acceptance and the accepted sector-private identity/reader join.","Separate #7984 core, original source retention/current rights, and all four real company/browser journeys; the research packet grants no implementation or release authority."]
+next_actions: ["The current or next lawfully assigned receiver should reconcile the existing #7773 Materials request and #7870 shared-owner returns against current source, preserving real STARTed custody and any EFFECT_UNKNOWN.","Consume an accepted source-local/shared representation and the existing sector-private reader binding before separately admitted product implementation; preserve the original denied-action boundaries."]
+do_not_redo: ["Preserve the R21 sector-first architecture, R25 design disposition and all original research evidence; do not restart equivalent scope/design exercises.","Do not mint theme:basic_materials, force a sector or ETF into a theme key, or create another source, identity, rights, publication or reader control plane."]
+danger_areas: ["This is a dated research checkpoint. model:sol names the record-author category; ended_because:blocked describes that checkpoint, not termination of the current repair session.","Thirteen shape expectations are historical design evidence, not native/product/P5/source-admission/storage/API/browser proof; no receiver, PICKUP_ACK, START or implementation authority is established."]
+ended_because: "blocked"
+unverified: [{"claim":"The R25 design experiment is not an implemented shared contract or accepted Materials product.","what_would_verify":"An authorized return from the existing shared owners covering scope/ref/parser/K1/P5 semantics, sector identity, private reader and the original rights/identity proof cases."},{"claim":"Native/product, private-delivery and browser acceptance remain unproved by this research record.","what_would_verify":"Source-bound results from actually permitted existing product and visual paths; no retry of a recorded denied action or substitute fixture claim."}]
 ---
 
 # Basic Materials Economics — current integration handoff
