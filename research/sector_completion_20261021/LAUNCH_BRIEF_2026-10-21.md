@@ -1,5 +1,12 @@
 # Fable CEO — Sector Intelligence and Sector Cycles completion brief
 
+## Current four-round amendment — 9 November 2026
+
+Read [Sector Intelligence in Shared Shell — four-round masterplan](SHARED_SHELL_MASTERPLAN_2026-11-09.md) before using the historical frontier below. The Chairman has requested census/architecture, Paper design, architecture hardening, then a final Fable-led T3 implementation packet. Revision 0.1 records Round 1; it is not a dispatch or release instruction.
+
+The amendment preserves B01–B12, P01–P23, J01–J15 and the 134-row capability contract. It updates the final product destination to Beta Shared Shell, maps useful Terminal components as donors, reconciles merged and pending work, and identifies current Paper files and source-generation gaps. The original 21 October source, publication and Paper observations below are historical and must not be treated as today's launch state.
+
+
 Prepared 21 October 2026 UTC. Pass this brief together with:
 
 1. `Sector_Intelligence_and_Cycles_Completion_Masterplan_2026-10-21.md` — full census, findings, scope, task dependencies, acceptance and primary sources.
