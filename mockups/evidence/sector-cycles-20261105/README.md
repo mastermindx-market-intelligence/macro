@@ -29,6 +29,27 @@ plus 22 `zh_latin/*.txt` scans, one for each ZH cell.
 | v4 | `/sector_cycles_china.html` | 5 |
 | v5 (delta only) | `/country_cycles.html` | 2 |
 
+## Archived renderer and recipe scope
+
+The renderer source is preserved byte-for-byte as
+[`render_l6.py.txt`](render_l6.py.txt). Its `.txt` suffix identifies it as an
+archived record of the capture source at
+`b601c02749a34fd83877393d59ee88e6045207cd` (L6.17d).
+The archived file has Git blob `f966fdb69d6936bf1896ade36ac5e1be955b4fe6`
+and SHA256 `e9d3be1969aa3cc8915168d3b518895a82aa13cff09e713629f278c1659f925b`.
+
+The recipe below belongs to that historical wave checkout. Reproduction requires
+its original `render_l6.py`, matching templates and payloads, and
+`scripts/build_sector_cycles.py` blob
+`60d18b5ee0973713674a055a95fd21573af2639c`, which defines the renderer's
+`cycles_page_ctx` dependency. Run the recipe from the original evidence directory
+in a separate checkout of that pinned revision.
+
+References below to `render_l6.py`, `HEAD`, `<worktree>`, the render tree and source
+currency describe the recorded capture and wave branch. The capture receipts and
+their documented gaps keep that historical scope. This archive does not attest a
+fresh capture or production acceptance at today's main revision.
+
 ## Recipe
 
 ```
