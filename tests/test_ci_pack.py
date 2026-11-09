@@ -5703,9 +5703,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_943),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_964),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_701),
+    ("templates/index.html", 137, 5_945),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_966),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_703),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5713,6 +5713,23 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-09 (PR #7493, existing marketing-copy suite): natural contract
+    run 42597204752 / job 129092651216 measured head
+    3fe03917fee941410a6eec668c4bc1a2d36ae236 against base
+    e013dadb5ee85c1fdead2a15669941bab4b2e08b on tested merge
+    014b5eddd40779e59f7d873a842f0d40aa0598c2. Enrolling the existing
+    tests/test_marketing_copy_v2.py in unrun-marketing-desk changes its
+    estimator weight 13->15 (three commands unchanged, literal test references
+    5->6, command characters 330->362, same character bucket). The three
+    probes move 5943/5964/5701 -> 5945/5966/5703, with no newly selected
+    owner: fund only this measured +2 in each weight ceiling. These are
+    planning-weight seconds, not elapsed-runtime measurements. Job-count
+    ceilings 137/138/131, the ten-pack bound, all command/runtime limits,
+    selectors and assertions remain unchanged. This does not settle the old
+    base replay or authorize a replay/rerun; execution evidence stays in the
+    original PR receipt:
+    https://github.com/mastermindx-market-intelligence/Macro/pull/7493#issuecomment-6737165570
 
     2026-11-09 (PR #10870, dependency-coverage correction): the separate
     admission job conservatively owns tools/xguerrilla/** because pytest
