@@ -101,17 +101,41 @@ const tab=name=>click('#cw-tab-'+name);
 const pause=()=>new Promise(resolve=>setTimeout(resolve,35));
 let passed=0;
 function check(name,fn){fn();passed++;console.log("PASS",name);}
-function checkCompanyReturn(selector='[data-cw-company-href]') {
-  const link=q(selector), original=new URL(link.dataset.cwCompanyHref), current=new URL(link.href);
+const cohortLinkSelector='.cw-cohorts a[data-cw-company-href]';
+function checkCompanyReturnLink(link,currentWindow,payload) {
+  const original=new URL(link.dataset.cwCompanyHref), current=new URL(link.href);
   for (const [key,value] of original.searchParams) assert.equal(current.searchParams.get(key),value,key);
   assert.deepEqual(Array.from(current.searchParams.keys()).sort(),Array.from(original.searchParams.keys()).concat("from","ret").sort());
   assert.equal(current.searchParams.get("from"),"macro");
   assert.equal(current.searchParams.getAll("ret").length,1);
   const back=new URL(current.searchParams.get("ret"));
-  assert.equal(back.origin,w.location.origin);assert.equal(back.pathname,"/commodities.html");assert.equal(back.search,"");
-  assert.deepEqual(api.readState(back.hash,data),api.readState(w.location.hash,data));
+  assert.equal(back.origin,currentWindow.location.origin);assert.equal(back.pathname,"/commodities.html");assert.equal(back.search,"");
+  assert.deepEqual(api.readState(back.hash,payload),api.readState(currentWindow.location.hash,payload));
   assert.equal(link.target,"_blank");assert.equal(link.rel,"noopener");
   return current.href;
+}
+
+function checkCompanyContinuations(currentWindow,payload) {
+  const document=currentWindow.document,chains=Array.from(document.querySelectorAll('.cw-chain'));
+  assert.equal(chains.length,payload.chains.length,"every fixture chain is rendered");
+  const continuations=[];
+  for (const chain of chains) {
+    const links=chain.querySelectorAll(':scope > a[data-cw-company-href]');
+    assert.equal(links.length,1,"one generic Company Intelligence continuation per chain");
+    assert.equal(links[0].dataset.cwCompanyHref,"https://app.mastermind-x.com/analysis?page=intelligence",
+      "generic continuation must not fabricate a company or owner identity");
+    checkCompanyReturnLink(links[0],currentWindow,payload);
+    continuations.push(links[0]);
+  }
+  const cohortLinks=Array.from(document.querySelectorAll(cohortLinkSelector));
+  const marked=Array.from(document.querySelectorAll('[data-cw-company-href]'));
+  assert.equal(marked.length,continuations.length+cohortLinks.length,"all company bindings are accounted for");
+  assert.ok(marked.every(link=>continuations.includes(link)||cohortLinks.includes(link)),"unexpected company binding");
+}
+
+function checkCompanyReturn(selector=cohortLinkSelector) {
+  checkCompanyContinuations(w,data);
+  return checkCompanyReturnLink(q(selector),w,data);
 }
 
 async function checkMissingCompanyCohort(mode) {
@@ -130,8 +154,9 @@ async function checkMissingCompanyCohort(mode) {
     assert.equal(payload.test_fixture,"company-return-cohort:"+mode);
     const get=selector=>{const el=fd.querySelector(selector);assert.ok(el,selector);return el;};
     const noCompanyLink=()=>{
-      assert.equal(fd.querySelectorAll("[data-cw-company-href]").length,0,mode);
+      assert.equal(fd.querySelectorAll(cohortLinkSelector).length,0,mode);
       assert.equal(fd.querySelectorAll(".cw-cohorts a").length,0,mode);
+      checkCompanyContinuations(fw,payload);
     };
     noCompanyLink();
     assert.equal(fd.querySelectorAll(".cw-cohorts").length,mode === "empty" ? 0 : 1);
@@ -162,8 +187,11 @@ async function checkMissingCompanyCohort(mode) {
 (async()=>{
   check("controlled company links come from the actual template",()=>{
     assert.equal(data.test_fixture,"company-return-cohort:linked");
-    assert.equal(d.querySelectorAll("[data-cw-company-href]").length,1);
-    assert.equal(new URL(q("[data-cw-company-href]").dataset.cwCompanyHref).searchParams.get("owner"),"fixture");
+    assert.equal(d.querySelectorAll(cohortLinkSelector).length,1);
+    assert.equal(new URL(q(cohortLinkSelector).dataset.cwCompanyHref).searchParams.get("owner"),"fixture");
+  });
+  check("generic Company Intelligence continuations retain every chain and its return state",()=>{
+    checkCompanyContinuations(w,data);
   });
   check("default overview and dated evidence",()=>{
     assert.equal(q('#cw-panel-overview').hidden,false);
@@ -197,7 +225,7 @@ async function checkMissingCompanyCohort(mode) {
     assert.equal(api.readState(w.location.hash,data).hypothesis,'demand');checkCompanyReturn();
   });
   check("company return transport is bounded, single-encoded and idempotent",()=>{
-    const original=q('[data-cw-company-href]').dataset.cwCompanyHref, state=api.readState(w.location.hash,data);
+    const original=q(cohortLinkSelector).dataset.cwCompanyHref, state=api.readState(w.location.hash,data);
     for (const origin of ["https://www.mastermind-x.com","https://mastermind-x.com","https://beta.mastermind-x.com"]) {
       const current=api.companyReturnHref(original,state,origin+"/commodities.html?ret=https://evil.example");
       assert.equal(new URL(current).searchParams.get("ret"),origin+"/commodities.html"+api.stateHash(state));
@@ -331,7 +359,7 @@ async function checkMissingCompanyCohort(mode) {
     assert.equal(q('#cw-panel-explore').hidden,false);
   });
   check("company return follows Gold and the selected comparison window",()=>{
-    checkCompanyReturn('[data-cw-chain-asset="gold"] [data-cw-company-href]');
+    checkCompanyReturn('[data-cw-chain-asset="gold"] .cw-cohorts a[data-cw-company-href]');
     assert.equal(api.readState(w.location.hash,data).asset,"gold");assert.equal(api.readState(w.location.hash,data).window,"60");
   });
   tab('relationships');change('[data-cw-relationship-asset]','corn');
@@ -359,9 +387,9 @@ async function checkMissingCompanyCohort(mode) {
   const directState=api.normalizeState({tab:"relationships",asset:"gold",window:"5",compare:["oil","gold"],hypothesis:"rates"},data);
   w.location.hash=api.stateHash(directState);await pause();
   check("direct hash and repeated language renders keep the exact company return",()=>{
-    const before=checkCompanyReturn('[data-cw-chain-asset="gold"] [data-cw-company-href]');
+    const before=checkCompanyReturn('[data-cw-chain-asset="gold"] .cw-cohorts a[data-cw-company-href]');
     d.dispatchEvent(new w.Event('langchange'));d.dispatchEvent(new w.Event('langchange'));
-    assert.equal(checkCompanyReturn('[data-cw-chain-asset="gold"] [data-cw-company-href]'),before);
+    assert.equal(checkCompanyReturn('[data-cw-chain-asset="gold"] .cw-cohorts a[data-cw-company-href]'),before);
     assert.deepEqual(api.readState(new URL(new URL(before).searchParams.get("ret")).hash,data),directState);
   });
   for (const mode of ["empty","unavailable"]) {
