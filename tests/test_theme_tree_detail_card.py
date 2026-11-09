@@ -202,8 +202,10 @@ def test_return_selection_identifies_rendered_occurrence_and_restores_actual_scr
     result = subprocess.run(["node", "-e", r"""
 const vm = require('node:vm'), assert = require('node:assert/strict');
 const input = JSON.parse(require('node:fs').readFileSync(0, 'utf8'));
-function boot(url, ambiguous=false, data=input.data) {
-  let active=null, replacements=0;
+function boot(url, ambiguous=false, data=input.data, mobile=false) {
+  let active=null, replacements=0, scrollY=0, scrolls=0;
+  const viewport=mobile?780:836;
+  const body=new Set();
   class El {
     constructor(attrs={}) { this.attrs={...attrs}; this.children=[]; this.hidden=false; this.parentElement=null;
       this.classList={add(){},remove(){}}; }
@@ -211,6 +213,12 @@ function boot(url, ambiguous=false, data=input.data) {
     appendChild(c){this.children.push(c); c.parentElement=this;return c;}
     get firstChild(){return this.children[0]||null;} removeChild(c){this.children.splice(this.children.indexOf(c),1);}
     focus(){active=this;}
+    getBoundingClientRect(){
+      if(this===card)return {top:mobile?420:96,bottom:mobile?viewport:410};
+      // Model the actual desktop opening reflow and the phone's sheet overlap.
+      const top=(mobile?680:body.has('tt-detail-open')?1007:680)-scrollY;
+      return {top,bottom:top+24,height:24};
+    }
     closest(q){if(q==='details')return this.tagName==='DETAILS'?this:this.parentElement?.closest(q)||null;
       if(q==='[data-close]')return this.attrs['data-close']!==undefined?this:null;
       return this.attrs['data-node']?this:null;}
@@ -222,15 +230,19 @@ function boot(url, ambiguous=false, data=input.data) {
   const card=new El();card.hidden=true;card.querySelector=q=>fields[q];
   card.querySelectorAll=q=>[new El(),new El()];
   const devents={},wevents={},location={href:url};
-  const document={body:new El(),getElementById:id=>id==='tt-detail-data'?{textContent:JSON.stringify(data)}:card,
+  const document={body:{classList:{add:k=>body.add(k),remove:k=>body.delete(k)}},getElementById:id=>id==='tt-detail-data'?{textContent:JSON.stringify(data)}:card,
     querySelectorAll:q=>chips,createElement:()=>new El(),createTextNode:t=>({textContent:t}),
     addEventListener:(k,f)=>{(devents[k]??=[]).push(f);}};
   const state={preserved:true};
   const history={state,replaceState(s,t,u){assert.equal(s,state);location.href=new URL(u,location.href).href;replacements++;},
     pushState(){throw Error('selection must not create a history entry');}};
-  const window={location,history,addEventListener:(k,f)=>{(wevents[k]??=[]).push(f);}};
+  const window={location,history,innerWidth:mobile?390:1440,innerHeight:viewport,
+    matchMedia:q=>({matches:mobile&&q==='(max-width: 560px)'}),
+    scrollBy:({top,behavior})=>{assert.equal(behavior,'instant');scrollY+=top;scrolls++;},
+    addEventListener:(k,f)=>{(wevents[k]??=[]).push(f);}};
   vm.runInNewContext(input.script,{document,window,URL});
-  return {card,chips,fields,location,get active(){return active;},get replacements(){return replacements;},
+  return {card,chips,fields,location,get active(){return active;},get replacements(){return replacements;},get scrolls(){return scrolls;},
+    painted(){const rect=chips[input.selected].getBoundingClientRect();return rect.top>=0&&rect.bottom<=(mobile&&!card.hidden?420:viewport);},
     click(target){for(const f of devents.click||[])f({target});},
     event(k){for(const f of wevents[k]||[])f({type:k});}};
 }
@@ -291,6 +303,17 @@ const duplicateOwned=encodedOwned.replace('#branch','&tt-selection=extra#branch'
 page=boot(duplicateOwned);assert.equal(page.card.hidden,true);
 page.click(page.chips[input.selected]);assertSelectedURL(page.location,firstValue);
 page.click(page.fields['.tt-detail-close']);assert.equal(page.location.href,rawURL);
+// Keep the occurrence painted after layout changes and behind no sheet.
+for(const mobile of [false,true]){
+  const entry=boot(original,false,input.data,mobile);assert.equal(entry.painted(),true);
+  entry.click(entry.chips[input.selected]);assert.equal(entry.painted(),true);
+  assert.equal(entry.scrolls,1);
+  const back=boot(entry.location.href,false,input.data,mobile);
+  assert.equal(back.active,back.chips[input.selected]);assert.equal(back.painted(),true);
+  assert.equal(back.scrolls,1);
+  back.event('mmx:shell-location');
+  assert.equal(back.scrolls,1);assert.equal(back.replacements,0);
+}
 console.log('real rendered multi-parent selection: click, replace, fresh-frame return, close, neutral controls and bridge replay PASS');
 """], input=json.dumps(packet), capture_output=True, text=True, timeout=30)
     assert result.returncode == 0, result.stdout + result.stderr
