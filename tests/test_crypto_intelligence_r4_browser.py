@@ -1296,3 +1296,347 @@ def test_r4_frozen_partial_evidence_does_not_certify_malformed_fields(snapshot_p
     assert ("Quality unavailable" if lang == "en" else "质量未知") in text
     assert "[object Object]" not in text and "2026-02-30" not in text
     assert _raw(page) == before and _writes(page) == 0
+
+
+# Comparison uses the retained view projection. Synthetic variants below exercise
+# unavailable/empty/zero states through the existing renderer, without producers.
+@pytest.fixture
+def comparison_page(browser, page_url, request, tmp_path):
+    created = 0
+    def create(lang="en", width=390, variant="retained", start="#markets", javascript=True, touch=False):
+        nonlocal created
+        view = json.loads((SITE / "crypto_intelligence_r4.json").read_text())
+        if variant == "mixed":
+            eth, sol = deepcopy(view["assets"])
+            eth["relative_90d_pct"] = 0.0
+            sol.update(relative_90d_pct=None, relative_en="Building history", relative_zh="积累历史中")
+            btc = dict(eth, symbol="BTC", name="Bitcoin", price=100.0, relative_90d_pct=None,
+                       relative_en="Building history", relative_zh="积累历史中")
+            view["assets"] = [sol, eth, btc]
+        elif variant in ("missing", "empty"):
+            view["assets"] = []
+            view["contracts"]["asset_states"] = "accepted" if variant == "empty" else "missing_or_schema_mismatch"
+            if variant == "missing":
+                view["asset_as_of"] = None
+        elif variant != "retained":
+            raise AssertionError(variant)
+        context = _context(browser, page_url, viewport={"width": width, "height": 844},
+                           java_script_enabled=javascript, is_mobile=touch, has_touch=touch)
+        request.addfinalizer(context.close)
+        page = context.new_page()
+        page.set_default_timeout(4500)
+        _freeze_time(page)
+        page.add_init_script(
+            "localStorage.setItem('lang'," + json.dumps(lang) + ");"
+            "localStorage.setItem('theme'," + json.dumps("dark" if lang == "en" else "light") + ");"
+            "window.__comparisonWrites=0;"
+            "const originalSet=Storage.prototype.setItem;"
+            "Storage.prototype.setItem=function(k,v){if(k===" + json.dumps(KEY) +
+            ")window.__comparisonWrites++;return originalSet.call(this,k,v);};"
+        )
+        if variant != "retained" or not javascript:
+            from scripts.build_crypto_intelligence_r4 import render_view
+            created += 1
+            rendered = tmp_path / ("rendered-" + str(created))
+            render_view(view, rendered)
+            markup = (rendered / "crypto-r4.html").read_text()
+            if not javascript:
+                # Inspect the server-rendered Markets subtree with CSS language
+                # selected, without relying on client-side routing.
+                markup = markup.replace('data-view="markets" hidden', 'data-view="markets"')
+                markup = markup.replace('<html lang="en"', '<html lang="en" data-lang="' + lang + '"')
+            page.route("**/crypto-r4.html?*", lambda route: route.fulfill(
+                status=200, content_type="text/html; charset=utf-8", body=markup))
+        page.goto(page_url + "?lang=" + lang + start, wait_until="load")
+        if javascript:
+            page.wait_for_function("document.getElementById('crypto-intelligence').dataset.renderedAddress===location.href")
+        return page, view
+    return create
+
+
+def _comparison_storage_untouched(page):
+    assert page.evaluate("window.__comparisonWrites") == 0
+    assert page.evaluate("key=>localStorage.getItem(key)", KEY) is None
+
+
+@pytest.mark.parametrize("sort,expected", [
+    (None, ["ETH", "SOL"]), ("unknown", ["ETH", "SOL"]),
+    ("relative", ["SOL", "ETH"]), ("return", ["SOL", "ETH"]), ("symbol", ["ETH", "SOL"]),
+])
+def test_r4_comparison_default_order_is_neutral_and_explicit_sorts_survive(comparison_page, sort, expected):
+    suffix = "" if sort is None else "?sort=" + sort
+    page, view = comparison_page(start="#markets" + suffix)
+    before = page.url
+    rows = page.locator("#cri-market-table tbody tr")
+    assert rows.evaluate_all("nodes=>nodes.map(node=>node.dataset.assetRow)") == expected
+    assert page.locator("#cri-sort").input_value() == (sort if sort in ("relative", "return", "symbol") else "default")
+    assert page.url == before
+    assert page.locator("#cri-sort option").all_text_contents() == ["Default order", "Ratio change", "Price change", "Symbol"]
+    assert page.evaluate("JSON.parse(document.getElementById('cri-data').textContent).assets") == view["assets"]
+    _comparison_storage_untouched(page)
+
+
+@pytest.mark.parametrize("lang,width,touch", [("en", 1440, False), ("en", 390, False), ("zh", 320, False), ("zh", 320, True)])
+def test_r4_comparison_full_cohort_keeps_filtered_origin_and_narrow_context(comparison_page, lang, width, touch):
+    origin = "#markets?h=30&window=30&q=ETH&filter=all&sort=return&keep=proof"
+    page, view = comparison_page(lang, width, start=origin, touch=touch)
+    assert page.locator("#cri-market-table tbody tr:visible").count() == 1
+    opener = page.locator('[data-view="markets"] [data-open="comparison"]').first
+    assert opener.inner_text().startswith("Compare all 2 assets" if lang == "en" else "比较全部2项资产")
+    opener.click()
+    _wait_drawer(page, "comparison", "Compare assets" if lang == "en" else "比较资产")
+    assert page.locator(".cri-comparison-scope").inner_text() == ("All 2 assets in this snapshot" if lang == "en" else "本快照中的全部2项资产")
+    assert page.locator(".cri-comparison-table thead th").all_text_contents()[1:] == [a["symbol"] for a in view["assets"]]
+    rows = page.locator(".cri-comparison-table tbody tr")
+    assert rows.nth(0).locator("td").all_text_contents() == [a["as_of"] for a in view["assets"]]
+    assert rows.nth(1).locator("td").all_text_contents() == ["+2.6%", "+8.8%"]
+    assert rows.nth(2).locator("td").all_text_contents() == ["+0.7%", "+7.6%"]
+    labels = rows.locator("th").all_text_contents()
+    assert labels[1:3] == (["Asset/BTC ratio change", "Price change"] if lang == "en" else ["资产/BTC比值变化", "价格涨跌"])
+    body_text = page.locator("#cri-dialog-body").inner_text()
+    assert "same published horizon" not in body_text and "0% by definition" not in body_text
+    assert "90D" not in body_text and "90天相对" not in body_text
+    basis = page.locator("#cri-dialog-body [data-comparison-basis]")
+    assert basis.count() == 1 and not basis.evaluate("node=>node.open")
+    assert ("Paired window not supplied" if lang == "en" else "未提供配对区间") in basis.locator("summary").inner_text()
+    assert not basis.get_attribute("id")
+    assert page.locator("#cri-market-basis").count() == 1
+    assert page.evaluate("document.documentElement.scrollWidth <= innerWidth")
+    _capture(page, f"comparison-all-{lang}-{width}" + ("-touch" if touch else ""))
+    wrap = page.locator(".cri-comparison-scroll")
+    if width <= 390:
+        assert page.locator("#cri-dialog").evaluate("node=>Math.abs(node.getBoundingClientRect().width-innerWidth)<1")
+        assert wrap.evaluate("node=>node.scrollWidth>node.clientWidth")
+        sticky = rows.nth(1).locator("th")
+        left_before = sticky.bounding_box()["x"]
+        wrap.focus()
+        page.keyboard.press("ArrowRight")
+        page.wait_for_function("document.querySelector('.cri-comparison-scroll').scrollLeft>0")
+        assert abs(sticky.bounding_box()["x"] - left_before) < 1
+        assert wrap.evaluate("node=>document.activeElement===node")
+        wrap.evaluate("node=>node.scrollLeft=0")
+    if touch:
+        assert page.locator("#cri-dialog").evaluate("node=>Math.abs(node.getBoundingClientRect().height-innerHeight)<1")
+    summary = basis.locator("summary")
+    summary.focus()
+    page.keyboard.press("Enter")
+    assert basis.evaluate("node=>node.open")
+    detail = basis.inner_text()
+    assert "90" in detail and "91" in detail and "30" in detail
+    assert ("need not equal calendar days" if lang == "en" else "不一定等于日历天数") in detail
+    assert ("cannot be verified" if lang == "en" else "无法核验") in detail
+    page.keyboard.press("Space")
+    assert not basis.evaluate("node=>node.open")
+    page.locator("#cri-dialog-close").click()
+    page.wait_for_function("(hash)=>location.hash===hash&&!document.getElementById('cri-dialog').open", arg=origin)
+    assert opener.evaluate("node=>document.activeElement===node")
+    assert page.locator("#cri-search").input_value() == "ETH"
+    assert page.locator("#cri-sort").input_value() == "return"
+    assert page.locator("#cri-market-table tbody tr:visible").count() == 1
+    _comparison_storage_untouched(page)
+
+
+@pytest.mark.parametrize("lang", ["en", "zh"])
+def test_r4_comparison_reset_moves_focus_before_hiding_recovery(comparison_page, lang):
+    page, _ = comparison_page(lang, 320, start="#markets?h=30&window=30&q=absent&filter=leaders&sort=relative&keep=proof")
+    reset = page.locator("#cri-reset")
+    assert reset.is_visible()
+    assert page.locator('[data-view="markets"] [data-open="comparison"]').first.is_visible()
+    reset.focus()
+    page.keyboard.press("Enter")
+    assert page.evaluate("location.hash") == "#markets?h=30&window=30&keep=proof"
+    assert page.locator("#cri-search").evaluate("node=>document.activeElement===node")
+    assert not reset.is_visible()
+    assert page.locator("#cri-sort").input_value() == "default"
+    assert page.locator("#cri-market-table tbody tr:visible").count() == 2
+    _comparison_storage_untouched(page)
+
+
+@pytest.mark.parametrize("interruption", ["navigation", "language", "focus"])
+def test_r4_comparison_reset_yields_to_a_new_focus_destination(comparison_page, interruption):
+    page, _ = comparison_page(start="#markets?q=absent&h=30&keep=proof")
+    page.evaluate("""kind=>{
+      document.getElementById('cri-search').addEventListener('focus',()=>{
+        if(kind==='navigation')document.querySelector('.cri-tabs [data-route="bitcoin"]').click();
+        if(kind==='language')document.documentElement.dataset.lang='zh';
+        if(kind==='focus')document.getElementById('cri-sort').focus();
+      },{once:true});
+    }""", interruption)
+    page.locator("#cri-reset").click()
+    assert "q=absent" in page.evaluate("location.hash")
+    assert "h=30" in page.evaluate("location.hash") and "keep=proof" in page.evaluate("location.hash")
+    if interruption == "navigation":
+        assert page.locator('[data-view="bitcoin"]').is_visible()
+    elif interruption == "language":
+        page.wait_for_function("document.getElementById('crypto-intelligence').dataset.renderedLanguage==='true'")
+        assert page.locator("#cri-market-empty").is_visible()
+    else:
+        assert page.locator("#cri-sort").evaluate("node=>document.activeElement===node")
+    _comparison_storage_untouched(page)
+
+
+@pytest.mark.parametrize("variant,lang", [("missing", "en"), ("missing", "zh"), ("empty", "en"), ("empty", "zh")])
+def test_r4_comparison_missing_and_empty_assets_are_not_filter_failures(comparison_page, variant, lang):
+    page, _ = comparison_page(lang, 320, variant, "#markets?q=absent&h=30&window=30&panel=comparison")
+    expected = ("Asset data unavailable" if lang == "en" else "资产数据暂无") if variant == "missing" else ("No assets in this snapshot" if lang == "en" else "本快照暂无资产")
+    assert page.locator("#cri-dialog-body").get_by_role("heading", name=expected, exact=True).count() == 1
+    assert page.locator(".cri-comparison-table").count() == 0
+    assert page.locator("#cri-dialog-body [data-comparison-basis]").count() == 0
+    page.locator("#cri-dialog-close").click()
+    assert page.evaluate("location.hash") == "#markets?q=absent&h=30&window=30"
+    assert page.locator("#cri-market-empty-title").inner_text() == expected
+    assert page.locator("#cri-market-empty").is_visible()
+    assert not page.locator("#cri-reset").is_visible()
+    assert not page.locator("#cri-market-table").is_visible()
+    assert not page.locator("#cri-market-controls").is_visible()
+    assert page.locator("#cri-empty-coverage").is_visible()
+    assert page.locator(".cri-tabs").is_visible()
+    page.locator("#cri-empty-coverage").click()
+    _wait_drawer(page, "coverage", "Data and coverage" if lang == "en" else "数据与覆盖")
+    _comparison_storage_untouched(page)
+
+
+@pytest.mark.parametrize("variant", ["missing", "empty"])
+def test_r4_comparison_empty_server_reading_needs_no_javascript(comparison_page, variant):
+    page, _ = comparison_page("en", 390, variant, javascript=False)
+    expected = "Asset data unavailable" if variant == "missing" else "No assets in this snapshot"
+    market = page.locator('[data-view="markets"]')
+    assert market.is_visible()
+    assert market.locator("#cri-market-empty-title").inner_text() == expected
+    assert market.locator("#cri-market-empty").is_visible()
+    assert not market.locator("#cri-reset").is_visible()
+    assert not market.locator("#cri-market-table").is_visible()
+
+
+@pytest.mark.parametrize("lang,width", [("en", 390), ("zh", 320)])
+def test_r4_comparison_null_relative_does_not_erase_usable_asset_or_zero(comparison_page, lang, width):
+    page, view = comparison_page(lang, width, "mixed")
+    assert page.locator("#cri-market-table tbody tr").evaluate_all("nodes=>nodes.map(node=>node.dataset.assetRow)") == ["SOL", "ETH", "BTC"]
+    sol = page.locator('[data-asset-row="SOL"]')
+    ratio = sol.locator("td").nth(3).inner_text()
+    assert ("Unavailable" if lang == "en" else "暂无") in ratio
+    assert ("Building history" if lang == "en" else "积累历史中") in ratio
+    assert page.locator('[data-asset-row="ETH"] td').nth(3).inner_text() == "0.0%"
+    sol.locator('[data-open="asset:SOL"]').first.click()
+    _wait_drawer(page, "asset:SOL", "Solana · SOL")
+    content = page.locator("#cri-dialog-body").inner_text()
+    assert "$104.19" in content
+    assert ("Advancing" if lang == "en" else "上行") in content
+    assert ("Stressed" if lang == "en" else "承压") in content
+    assert ("Building history" if lang == "en" else "积累历史中") in content
+    assert "90-day" not in content and "30-day" not in content and "90天" not in content
+    page.locator("#cri-dialog-close").click()
+    page.locator('[data-view="markets"] [data-open="comparison"]').click()
+    row = page.locator(".cri-comparison-table tbody tr").nth(1)
+    cells = row.locator("td").all_text_contents()
+    assert "0.0%" == cells[1]
+    assert all(("Unavailable" if lang == "en" else "暂无") in cells[i] for i in (0, 2))
+    assert "0% by definition" not in page.locator("#cri-dialog-body").inner_text()
+    assert page.evaluate("JSON.parse(document.getElementById('cri-data').textContent).assets") == view["assets"]
+    _comparison_storage_untouched(page)
+
+
+@pytest.mark.parametrize("lang", ["en", "zh"])
+def test_r4_comparison_locale_refresh_keeps_surviving_asset_control(comparison_page, lang):
+    page, _ = comparison_page(lang, 390)
+    target = page.locator('[data-asset-row="ETH"] .cri-asset')
+    target.focus()
+    page.evaluate("""()=>{
+      window.__comparisonRowMoves=0;
+      new MutationObserver(records=>{window.__comparisonRowMoves+=records.filter(r=>r.type==='childList').length})
+        .observe(document.querySelector('#cri-market-table tbody'),{childList:true});
+    }""")
+    before = page.url
+    other = "zh" if lang == "en" else "en"
+    page.locator("html").evaluate("(node,lang)=>node.dataset.lang=lang", other)
+    page.wait_for_function("(lang)=>document.getElementById('crypto-intelligence').dataset.renderedLanguage===String(lang==='zh')", arg=other)
+    assert target.evaluate("node=>document.activeElement===node")
+    assert page.evaluate("window.__comparisonRowMoves") == 0
+    assert page.url == before
+    _comparison_storage_untouched(page)
+
+
+@pytest.mark.parametrize("panel,focus", [("comparison", "summary"), ("comparison", "coverage"), ("asset:ETH", "summary"), ("asset:ETH", "coverage")])
+def test_r4_comparison_basis_locale_and_coverage_keep_existing_navigation(comparison_page, panel, focus):
+    page, _ = comparison_page(start="#markets?h=7&window=30&sort=symbol")
+    opener = page.locator('[data-view="markets"] [data-open="' + panel + '"]').first
+    opener.click()
+    basis = page.locator("#cri-dialog-body [data-comparison-basis]")
+    basis.locator("summary").click()
+    target = basis.locator('[data-basis-focus="' + focus + '"]')
+    target.focus()
+    before_url, before_history = page.url, page.evaluate("history.length")
+    page.locator("html").evaluate("node=>node.dataset.lang='zh'")
+    page.wait_for_function("document.getElementById('crypto-intelligence').dataset.renderedLanguage==='true'")
+    basis = page.locator("#cri-dialog-body [data-comparison-basis]")
+    assert basis.evaluate("node=>node.open")
+    assert basis.locator('[data-basis-focus="' + focus + '"]').evaluate("node=>document.activeElement===node")
+    assert page.url == before_url and page.evaluate("history.length") == before_history
+    basis.locator('[data-basis-focus="coverage"]').click()
+    _wait_drawer(page, "evidence:participation", "判断背后的证据")
+    assert page.evaluate("history.length") == before_history + 1
+    assert page.evaluate("history.state.depth") == 2
+    page.locator("#cri-dialog-close").click()
+    page.wait_for_function("location.hash==='#markets?h=7&window=30&sort=symbol'&&!document.getElementById('cri-dialog').open")
+    assert opener.evaluate("node=>document.activeElement===node")
+    _comparison_storage_untouched(page)
+
+
+
+@pytest.mark.parametrize("variant,lang", [("missing", "en"), ("missing", "zh"), ("empty", "en"), ("empty", "zh")])
+def test_r4_comparison_asset_link_distinguishes_unavailable_source_from_absence(comparison_page, variant, lang):
+    page, _ = comparison_page(lang, 320, variant, "#markets?h=30&panel=asset:ETH")
+    assert page.locator("#cri-dialog-title").inner_text() == ("Asset unavailable" if lang == "en" else "资产暂不可用")
+    text = page.locator("#cri-dialog-body").inner_text()
+    unavailable = "This snapshot could not provide asset readings." if lang == "en" else "本快照无法提供资产读数。"
+    absent = "This asset is not present in the snapshot." if lang == "en" else "本快照中没有此资产。"
+    assert (unavailable if variant == "missing" else absent) in text
+    assert (absent if variant == "missing" else unavailable) not in text
+    assert page.locator("#cri-dialog-body").get_by_role("button", name="Data and coverage" if lang == "en" else "数据与覆盖", exact=True).count() == 1
+    _comparison_storage_untouched(page)
+
+
+
+@pytest.mark.parametrize("lang", ["en", "zh"])
+def test_r4_comparison_basis_locale_preserves_scroll_when_close_keeps_focus(comparison_page, lang):
+    page, _ = comparison_page(lang, 320)
+    page.locator('[data-asset-row="ETH"] .cri-asset').click()
+    basis = page.locator("#cri-dialog-body [data-comparison-basis]")
+    basis.locator("summary").click()
+    dialog = page.locator("#cri-dialog")
+    before = dialog.evaluate("node=>{node.scrollTop=180;return node.scrollTop;}")
+    assert before > 100
+    close = page.locator("#cri-dialog-close")
+    close.evaluate("node=>node.focus({preventScroll:true})")
+    other = "zh" if lang == "en" else "en"
+    page.locator("html").evaluate("(node,lang)=>node.dataset.lang=lang", other)
+    page.wait_for_function("(lang)=>document.getElementById('crypto-intelligence').dataset.renderedLanguage===String(lang==='zh')", arg=other)
+    assert close.evaluate("node=>document.activeElement===node")
+    assert page.locator("#cri-dialog-body [data-comparison-basis]").evaluate("node=>node.open")
+    metrics = dialog.evaluate("node=>({scroll:node.scrollTop,maximum:node.scrollHeight-node.clientHeight})")
+    assert abs(metrics["scroll"] - min(before, metrics["maximum"])) <= 1, (before, metrics)
+    _comparison_storage_untouched(page)
+
+
+
+@pytest.mark.parametrize("lang,width", [("en", 390), ("zh", 320)])
+def test_r4_comparison_pointer_close_keeps_settings_clear_and_owner_usable(comparison_page, lang, width):
+    page, _ = comparison_page(lang, width)
+    assert page.evaluate("matchMedia('(hover:hover) and (pointer:fine)').matches")
+    page.locator("#cri-market-table tbody tr:visible .cri-asset").first.click()
+    page.locator("#cri-dialog-close").click()
+    page.wait_for_function("location.hash==='#markets'&&!document.getElementById('cri-dialog').open")
+    page.evaluate("()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)))")
+    assert page.locator("#settings-pop").evaluate("node=>getComputedStyle(node).pointerEvents") == "none"
+    page.locator('[data-view="markets"] [data-open="comparison"]').first.click()
+    page.wait_for_function("document.getElementById('cri-dialog').open&&document.getElementById('cri-dialog-body').dataset.panel==='comparison'")
+    assert page.evaluate("history.state.depth") == 1
+    page.locator("#cri-dialog-close").click()
+    page.wait_for_function("location.hash==='#markets'&&!document.getElementById('cri-dialog').open")
+    assert page.locator("#settings-pop").evaluate("node=>getComputedStyle(node).pointerEvents") == "none"
+    page.locator("#settings-open").hover()
+    page.wait_for_function("getComputedStyle(document.getElementById('settings-pop')).pointerEvents==='auto'")
+    page.locator("#settings-open").click()
+    assert page.locator("#settings-open").get_attribute("aria-expanded") == "true"
+    assert page.evaluate("document.documentElement.scrollWidth<=innerWidth")
+    _comparison_storage_untouched(page)

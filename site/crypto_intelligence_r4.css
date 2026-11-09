@@ -202,7 +202,30 @@ html[data-lang=zh] .cri :is(h1,h2,h3,.cri-kicker,.cri-case-label){letter-spacing
 .cri-comparison-table{width:100%;border-collapse:collapse;font-size:var(--fs-sm);margin:20px 0}
 .cri-comparison-table th,.cri-comparison-table td{padding:14px 12px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
 .cri-comparison-table th{font-weight:600;color:var(--muted)}
-.cri-comparison-scroll{overflow-x:auto}
+.cri-comparison-table th:first-child{position:sticky;left:0;width:160px;min-width:130px;max-width:160px;background:var(--panel);z-index:1}
+.cri-comparison-table td{min-width:120px;font-variant-numeric:tabular-nums}
+.cri-comparison-scroll{overflow-x:auto;position:relative;isolation:isolate}
+.cri-comparison-scroll:focus-visible{outline:2px solid var(--link);outline-offset:4px}
+.cri-dialog:has([data-comparison-basis]){overflow-anchor:none}
+.cri-dialog-body .cri-comparison-scope{margin:0 0 16px;font-weight:600;color:var(--text)}
+.cri-comparison-basis{border-top:1px solid var(--line);border-bottom:1px solid var(--line);font-size:var(--fs-sm);line-height:1.6}
+.cri-comparison-basis>summary{min-height:48px;padding:12px 0;cursor:pointer;color:var(--text);font-weight:600}
+.cri-comparison-basis>summary:focus-visible{outline:2px solid var(--link);outline-offset:4px}
+.cri-basis-status{display:inline-block;margin-left:8px;font-weight:400;color:var(--muted)}
+.cri-comparison-basis dl{margin:8px 0 12px}.cri-comparison-basis dl>div{padding:10px 0}
+.cri-comparison-basis dt{font-weight:600;color:var(--text)}.cri-comparison-basis dd{margin:4px 0 0;color:var(--muted)}
+.cri-comparison-basis p,.cri-dialog-body .cri-comparison-basis p{font-size:var(--fs-sm);line-height:1.6;color:var(--muted);margin:12px 0}
+.cri-comparison-basis .cri-btn{min-height:44px;margin:0 0 10px}
+.cri-measure-state{display:block;margin-top:4px;font-size:var(--fs-sm);color:var(--muted)}
+#cri-market-count{font-size:var(--fs-sm);color:var(--muted)}
+@media(max-width:760px){
+.cri-dialog.cri-dialog-wide{width:100%;max-width:100vw}
+.cri-tools select{min-width:0;flex:1;padding-left:10px;padding-right:10px}
+.cri-comparison-table th:first-child{width:130px}
+}
 
 /* Keep desktop dismissal clear of the shared navigation hover controls. */
 @media(min-width:761px){.cri-dialog{height:calc(100dvh - 104px);max-height:calc(100dvh - 104px);margin:80px 24px 24px auto;border:1px solid var(--line);border-radius:var(--r-panel,14px)}}
+/* A narrow fine pointer can otherwise reveal the shared Settings hover target under Close. */
+@media(max-width:760px) and (hover:hover) and (pointer:fine){.cri-dialog{height:calc(100dvh - 80px);max-height:calc(100dvh - 80px);margin:80px 0 0 auto}}
+

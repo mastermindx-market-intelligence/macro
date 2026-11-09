@@ -1,0 +1,108 @@
+{
+  "captures": [
+    {
+      "name": "comparison-markets-en-390",
+      "path": "comparison-visual-final/captures/comparison-markets-en-390.png",
+      "bytes": 105420,
+      "sha256": "aa68cd34b2c7553b84fbe9665f5df2c674b7d61005e6556a1b15fe21b8a31112",
+      "blob": "50ca1d38c34fc4a340248dc301f6262a9b9de49f"
+    },
+    {
+      "name": "comparison-asset-en-390",
+      "path": "comparison-visual-final/captures/comparison-asset-en-390.png",
+      "bytes": 29262,
+      "sha256": "088ab7cd5b2ae6a77bc026a8c550143956ad44c223b3bde9531b548682924271",
+      "blob": "e8cbb695c91d92bb60495c7564a6cd4c1ecff422"
+    },
+    {
+      "name": "comparison-basis-en-390",
+      "path": "comparison-visual-final/captures/comparison-basis-en-390.png",
+      "bytes": 61318,
+      "sha256": "f1271e824638eff20cb75e1e26be6b8642d8a2f631bea0177077e118d61d36f2",
+      "blob": "cec0dd336f1c77cae99a57d5d09d2453e68a6f8e"
+    },
+    {
+      "name": "comparison-missing-en-390",
+      "path": "comparison-visual-final/captures/comparison-missing-en-390.png",
+      "bytes": 23077,
+      "sha256": "8b429627a5d1932d4da8de08f9999105b85cd221e5a145fdbbe1114824609a93",
+      "blob": "141aa984f9fea75d78f40d6d6bb5d8160caa3286"
+    },
+    {
+      "name": "comparison-markets-zh-320",
+      "path": "comparison-visual-final/captures/comparison-markets-zh-320.png",
+      "bytes": 89028,
+      "sha256": "ef3b377abc603aa7d121551c1e7a132d4b7270dd1c0e09c2852cb22abae5783c",
+      "blob": "426cb577bb43e738de8431c5b41742eeed06c017"
+    },
+    {
+      "name": "comparison-asset-zh-320",
+      "path": "comparison-visual-final/captures/comparison-asset-zh-320.png",
+      "bytes": 26272,
+      "sha256": "cf3a84eec81186a6cf01ee82a009f9c083715700647f04d1436e4a9c56cca375",
+      "blob": "145e7e39916573c6d61f51eb4aef9b59fd66fe7c"
+    },
+    {
+      "name": "comparison-basis-zh-320",
+      "path": "comparison-visual-final/captures/comparison-basis-zh-320.png",
+      "bytes": 60217,
+      "sha256": "c0a861146eb52bad2a17493c4dbcf863035aa520d8cfadaf7a228f898047c538",
+      "blob": "4a9772660efe9dbb604cbc3f453727e391456d59"
+    },
+    {
+      "name": "comparison-empty-zh-320",
+      "path": "comparison-visual-final/captures/comparison-empty-zh-320.png",
+      "bytes": 20328,
+      "sha256": "36e9095bce2955144647550ad7f77f0e204cd8841d3d2677ea61e8bc466ed79e",
+      "blob": "b67bfbb44c77deb04b36830f725fbfb78c218fef"
+    },
+    {
+      "name": "comparison-all-en-1440",
+      "path": "comparison-visual-final/captures/comparison-all-en-1440.png",
+      "bytes": 35579,
+      "sha256": "1b9b041325b0afa4e393b5dd97df5e8d94f35e9bba77247ecf121a800c97eeff",
+      "blob": "9c9977668e53cec245c3c111cce06dfcf314a268"
+    },
+    {
+      "name": "comparison-all-en-390",
+      "path": "comparison-visual-final/captures/comparison-all-en-390.png",
+      "bytes": 32049,
+      "sha256": "74aff18e97db2a8ebc9e3b3a5bd70672c468c7c417c28d3661a3d02a5a286027",
+      "blob": "1331673f86f1e817a4315bb6ab263548e5fefb8f"
+    },
+    {
+      "name": "comparison-all-zh-320",
+      "path": "comparison-visual-final/captures/comparison-all-zh-320.png",
+      "bytes": 27699,
+      "sha256": "843932da8ba051b0e43ed2f1ed7e37efcfc13f3771f48188154146cd5cdf2bf9",
+      "blob": "3d268ce2d606fe789de698b9a20954e77942ba28"
+    },
+    {
+      "name": "comparison-all-zh-320-touch",
+      "path": "comparison-visual-final/captures/comparison-all-zh-320-touch.png",
+      "bytes": 28039,
+      "sha256": "0484ae407d1bbf46bc7748ce1194b9ded55c5237f2b618d27d4bffdc7034f912",
+      "blob": "67291dd57c7ecbc12d5bcb3f656253e9f5cb80c7"
+    },
+    {
+      "name": "comparison-saved-regression-en-320",
+      "path": "comparison-repaired/captures/layout-saved-en-320-dark.png",
+      "bytes": 37505,
+      "sha256": "b2ba6d774d30bcc35529c1ab9386d43b3ce4960ebd1ff2a2b14cff940e0e03b9",
+      "blob": "523f19e88bded5848339f99553658fd1a68dc46b"
+    }
+  ],
+  "junit": {
+    "primary_passed": 161,
+    "focused_passed": 8,
+    "overlap": 6,
+    "union": 163
+  },
+  "runtime_version": "d4393a5d0e55",
+  "runtime_unchanged_since_161_pass": true,
+  "published_test": {
+    "bytes": 89057,
+    "sha256": "6eba4035d5f5f6d0352ad2a10b891c6ca247e3db94f3d4aae723801ad1f3e794",
+    "blob": "10fbe6174f36787171194ad65c8115e68767a2bd"
+  }
+}

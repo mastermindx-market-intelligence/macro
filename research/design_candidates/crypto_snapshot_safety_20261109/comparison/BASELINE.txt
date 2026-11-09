@@ -1,0 +1,319 @@
+FFFFFFFFFFFFFFFFFFFFFFFFFFF                                              [100%]
+=================================== FAILURES ===================================
+_ test_r4_comparison_default_order_is_neutral_and_explicit_sorts_survive[None-expected0] _
+tests/test_crypto_intelligence_r4_browser.py:1371: in test_r4_comparison_default_order_is_neutral_and_explicit_sorts_survive
+    assert rows.evaluate_all("nodes=>nodes.map(node=>node.dataset.assetRow)") == expected
+E   AssertionError: assert ['SOL', 'ETH'] == ['ETH', 'SOL']
+E     
+E     At index 0 diff: 'SOL' != 'ETH'
+E     Use -v to get more diff
+_ test_r4_comparison_default_order_is_neutral_and_explicit_sorts_survive[unknown-expected1] _
+tests/test_crypto_intelligence_r4_browser.py:1371: in test_r4_comparison_default_order_is_neutral_and_explicit_sorts_survive
+    assert rows.evaluate_all("nodes=>nodes.map(node=>node.dataset.assetRow)") == expected
+E   AssertionError: assert ['SOL', 'ETH'] == ['ETH', 'SOL']
+E     
+E     At index 0 diff: 'SOL' != 'ETH'
+E     Use -v to get more diff
+_ test_r4_comparison_default_order_is_neutral_and_explicit_sorts_survive[relative-expected2] _
+tests/test_crypto_intelligence_r4_browser.py:1374: in test_r4_comparison_default_order_is_neutral_and_explicit_sorts_survive
+    assert page.locator("#cri-sort option").all_text_contents() == ["Default order", "Ratio change", "Price change", "Symbol"]
+E   AssertionError: assert ['Relative st...urn', 'Asset'] == ['Default ord...ge', 'Symbol']
+E     
+E     At index 0 diff: 'Relative strength' != 'Default order'
+E     Right contains one more item: 'Symbol'
+E     Use -v to get more diff
+_ test_r4_comparison_default_order_is_neutral_and_explicit_sorts_survive[return-expected3] _
+tests/test_crypto_intelligence_r4_browser.py:1374: in test_r4_comparison_default_order_is_neutral_and_explicit_sorts_survive
+    assert page.locator("#cri-sort option").all_text_contents() == ["Default order", "Ratio change", "Price change", "Symbol"]
+E   AssertionError: assert ['Relative st...urn', 'Asset'] == ['Default ord...ge', 'Symbol']
+E     
+E     At index 0 diff: 'Relative strength' != 'Default order'
+E     Right contains one more item: 'Symbol'
+E     Use -v to get more diff
+_ test_r4_comparison_default_order_is_neutral_and_explicit_sorts_survive[symbol-expected4] _
+tests/test_crypto_intelligence_r4_browser.py:1374: in test_r4_comparison_default_order_is_neutral_and_explicit_sorts_survive
+    assert page.locator("#cri-sort option").all_text_contents() == ["Default order", "Ratio change", "Price change", "Symbol"]
+E   AssertionError: assert ['Relative st...urn', 'Asset'] == ['Default ord...ge', 'Symbol']
+E     
+E     At index 0 diff: 'Relative strength' != 'Default order'
+E     Right contains one more item: 'Symbol'
+E     Use -v to get more diff
+_ test_r4_comparison_full_cohort_keeps_filtered_origin_and_narrow_context[en-1440] _
+tests/test_crypto_intelligence_r4_browser.py:1385: in test_r4_comparison_full_cohort_keeps_filtered_origin_and_narrow_context
+    assert opener.inner_text().startswith("Compare all 2 assets" if lang == "en" else "比较全部2项资产")
+E   assert False
+E    +  where False = <built-in method startswith of str object at 0x10738ff30>('Compare all 2 assets')
+E    +    where <built-in method startswith of str object at 0x10738ff30> = 'Compare assets'.startswith
+E    +      where 'Compare assets' = inner_text()
+E    +        where inner_text = <Locator frame=<Frame name= url='http://127.0.0.1:59131/crypto-r4.html?lang=en#markets?h=30&window=30&q=ETH&filter=all&sort=return&keep=proof'> selector='[data-view="markets"] [data-open="comparison"] >> nth=0'>.inner_text
+_ test_r4_comparison_full_cohort_keeps_filtered_origin_and_narrow_context[en-390] _
+tests/test_crypto_intelligence_r4_browser.py:1385: in test_r4_comparison_full_cohort_keeps_filtered_origin_and_narrow_context
+    assert opener.inner_text().startswith("Compare all 2 assets" if lang == "en" else "比较全部2项资产")
+E   assert False
+E    +  where False = <built-in method startswith of str object at 0x10761c870>('Compare all 2 assets')
+E    +    where <built-in method startswith of str object at 0x10761c870> = 'Compare assets'.startswith
+E    +      where 'Compare assets' = inner_text()
+E    +        where inner_text = <Locator frame=<Frame name= url='http://127.0.0.1:59131/crypto-r4.html?lang=en#markets?h=30&window=30&q=ETH&filter=all&sort=return&keep=proof'> selector='[data-view="markets"] [data-open="comparison"] >> nth=0'>.inner_text
+_ test_r4_comparison_full_cohort_keeps_filtered_origin_and_narrow_context[zh-320] _
+tests/test_crypto_intelligence_r4_browser.py:1385: in test_r4_comparison_full_cohort_keeps_filtered_origin_and_narrow_context
+    assert opener.inner_text().startswith("Compare all 2 assets" if lang == "en" else "比较全部2项资产")
+E   assert False
+E    +  where False = <built-in method startswith of str object at 0x1075a4ee0>('比较全部2项资产')
+E    +    where <built-in method startswith of str object at 0x1075a4ee0> = '比较资产'.startswith
+E    +      where '比较资产' = inner_text()
+E    +        where inner_text = <Locator frame=<Frame name= url='http://127.0.0.1:59131/crypto-r4.html?lang=zh#markets?h=30&window=30&q=ETH&filter=all&sort=return&keep=proof'> selector='[data-view="markets"] [data-open="comparison"] >> nth=0'>.inner_text
+_______ test_r4_comparison_reset_moves_focus_before_hiding_recovery[en] ________
+tests/test_crypto_intelligence_r4_browser.py:1442: in test_r4_comparison_reset_moves_focus_before_hiding_recovery
+    assert page.locator('[data-view="markets"] [data-open="comparison"]').is_visible()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/sync_api/_generated.py:19684: in is_visible
+    self._sync(self._impl_obj.is_visible(timeout=to_milliseconds(timeout)))
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_locator.py:553: in is_visible
+    return await self._frame.is_visible(
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_frame.py:433: in is_visible
+    return await self._channel.send(
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_connection.py:76: in send
+    return await self._connection.wrap_api_call(
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_connection.py:632: in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+E   playwright._impl._errors.Error: Locator.is_visible: Error: strict mode violation: locator("[data-view=\"markets\"] [data-open=\"comparison\"]") resolved to 2 elements:
+E       1) <button class="cri-btn" data-open="comparison">…</button> aka get_by_role("button", name="Compare assets")
+E       2) <button data-open="comparison" class="cri-btn cri-btn-text">…</button> aka get_by_role("button", name="Compare supported assets")
+E   
+E   Call log:
+E       - checking visibility of locator("[data-view=\"markets\"] [data-open=\"comparison\"]")
+_______ test_r4_comparison_reset_moves_focus_before_hiding_recovery[zh] ________
+tests/test_crypto_intelligence_r4_browser.py:1442: in test_r4_comparison_reset_moves_focus_before_hiding_recovery
+    assert page.locator('[data-view="markets"] [data-open="comparison"]').is_visible()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/sync_api/_generated.py:19684: in is_visible
+    self._sync(self._impl_obj.is_visible(timeout=to_milliseconds(timeout)))
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_locator.py:553: in is_visible
+    return await self._frame.is_visible(
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_frame.py:433: in is_visible
+    return await self._channel.send(
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_connection.py:76: in send
+    return await self._connection.wrap_api_call(
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_connection.py:632: in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+E   playwright._impl._errors.Error: Locator.is_visible: Error: strict mode violation: locator("[data-view=\"markets\"] [data-open=\"comparison\"]") resolved to 2 elements:
+E       1) <button class="cri-btn" data-open="comparison">…</button> aka get_by_role("button", name="比较资产")
+E       2) <button data-open="comparison" class="cri-btn cri-btn-text">…</button> aka get_by_role("button", name="比较已覆盖资产")
+E   
+E   Call log:
+E       - checking visibility of locator("[data-view=\"markets\"] [data-open=\"comparison\"]")
+____ test_r4_comparison_reset_yields_to_a_new_focus_destination[navigation] ____
+tests/test_crypto_intelligence_r4_browser.py:1464: in test_r4_comparison_reset_yields_to_a_new_focus_destination
+    assert "q=absent" in page.evaluate("location.hash")
+E   AssertionError: assert 'q=absent' in '#markets?h=30&keep=proof'
+E    +  where '#markets?h=30&keep=proof' = evaluate('location.hash')
+E    +    where evaluate = <Page url='http://127.0.0.1:59131/crypto-r4.html?lang=en#markets?h=30&keep=proof'>.evaluate
+_____ test_r4_comparison_reset_yields_to_a_new_focus_destination[language] _____
+tests/test_crypto_intelligence_r4_browser.py:1464: in test_r4_comparison_reset_yields_to_a_new_focus_destination
+    assert "q=absent" in page.evaluate("location.hash")
+E   AssertionError: assert 'q=absent' in '#markets?h=30&keep=proof'
+E    +  where '#markets?h=30&keep=proof' = evaluate('location.hash')
+E    +    where evaluate = <Page url='http://127.0.0.1:59131/crypto-r4.html?lang=en#markets?h=30&keep=proof'>.evaluate
+______ test_r4_comparison_reset_yields_to_a_new_focus_destination[focus] _______
+tests/test_crypto_intelligence_r4_browser.py:1464: in test_r4_comparison_reset_yields_to_a_new_focus_destination
+    assert "q=absent" in page.evaluate("location.hash")
+E   AssertionError: assert 'q=absent' in '#markets?h=30&keep=proof'
+E    +  where '#markets?h=30&keep=proof' = evaluate('location.hash')
+E    +    where evaluate = <Page url='http://127.0.0.1:59131/crypto-r4.html?lang=en#markets?h=30&keep=proof'>.evaluate
+_ test_r4_comparison_missing_and_empty_assets_are_not_filter_failures[missing-en] _
+tests/test_crypto_intelligence_r4_browser.py:1480: in test_r4_comparison_missing_and_empty_assets_are_not_filter_failures
+    assert page.locator("#cri-dialog-body").get_by_role("heading", name=expected, exact=True).count() == 1
+E   assert 0 == 1
+E    +  where 0 = count()
+E    +    where count = <Locator frame=<Frame name= url='http://127.0.0.1:59131/crypto-r4.html?lang=en#markets?q=absent&h=30&window=30&panel=comparison'> selector='#cri-dialog-body >> internal:role=heading[name="Asset data unavailable"s]'>.count
+E    +      where <Locator frame=<Frame name= url='http://127.0.0.1:59131/crypto-r4.html?lang=en#markets?q=absent&h=30&window=30&panel=comparison'> selector='#cri-dialog-body >> internal:role=heading[name="Asset data unavailable"s]'> = get_by_role('heading', name='Asset data unavailable', exact=True)
+E    +        where get_by_role = <Locator frame=<Frame name= url='http://127.0.0.1:59131/crypto-r4.html?lang=en#markets?q=absent&h=30&window=30&panel=comparison'> selector='#cri-dialog-body'>.get_by_role
+E    +          where <Locator frame=<Frame name= url='http://127.0.0.1:59131/crypto-r4.html?lang=en#markets?q=absent&h=30&window=30&panel=comparison'> selector='#cri-dialog-body'> = locator('#cri-dialog-body')
+E    +            where locator = <Page url='http://127.0.0.1:59131/crypto-r4.html?lang=en#markets?q=absent&h=30&window=30&panel=comparison'>.locator
+_ test_r4_comparison_missing_and_empty_assets_are_not_filter_failures[missing-zh] _
+tests/test_crypto_intelligence_r4_browser.py:1480: in test_r4_comparison_missing_and_empty_assets_are_not_filter_failures
+    assert page.locator("#cri-dialog-body").get_by_role("heading", name=expected, exact=True).count() == 1
+E   assert 0 == 1
+E    +  where 0 = count()
+E    +    where count = <Locator frame=<Frame name= url='http://127.0.0.1:59131/crypto-r4.html?lang=zh#markets?q=absent&h=30&window=30&panel=comparison'> selector='#cri-dialog-body >> internal:role=heading[name="资产数据暂无"s]'>.count
+E    +      where <Locator frame=<Frame name= url='http://127.0.0.1:59131/crypto-r4.html?lang=zh#markets?q=absent&h=30&window=30&panel=comparison'> selector='#cri-dialog-body >> internal:role=heading[name="资产数据暂无"s]'> = get_by_role('heading', name='资产数据暂无', exact=True)
+E    +        where get_by_role = <Locator frame=<Frame name= url='http://127.0.0.1:59131/crypto-r4.html?lang=zh#markets?q=absent&h=30&window=30&panel=comparison'> selector='#cri-dialog-body'>.get_by_role
+E    +          where <Locator frame=<Frame name= url='http://127.0.0.1:59131/crypto-r4.html?lang=zh#markets?q=absent&h=30&window=30&panel=comparison'> selector='#cri-dialog-body'> = locator('#cri-dialog-body')
+E    +            where locator = <Page url='http://127.0.0.1:59131/crypto-r4.html?lang=zh#markets?q=absent&h=30&window=30&panel=comparison'>.locator
+_ test_r4_comparison_missing_and_empty_assets_are_not_filter_failures[empty-en] _
+tests/test_crypto_intelligence_r4_browser.py:1480: in test_r4_comparison_missing_and_empty_assets_are_not_filter_failures
+    assert page.locator("#cri-dialog-body").get_by_role("heading", name=expected, exact=True).count() == 1
+E   assert 0 == 1
+E    +  where 0 = count()
+E    +    where count = <Locator frame=<Frame name= url='http://127.0.0.1:59131/crypto-r4.html?lang=en#markets?q=absent&h=30&window=30&panel=comparison'> selector='#cri-dialog-body >> internal:role=heading[name="No assets in this snapshot"s]'>.count
+E    +      where <Locator frame=<Frame name= url='http://127.0.0.1:59131/crypto-r4.html?lang=en#markets?q=absent&h=30&window=30&panel=comparison'> selector='#cri-dialog-body >> internal:role=heading[name="No assets in this snapshot"s]'> = get_by_role('heading', name='No assets in this snapshot', exact=True)
+E    +        where get_by_role = <Locator frame=<Frame name= url='http://127.0.0.1:59131/crypto-r4.html?lang=en#markets?q=absent&h=30&window=30&panel=comparison'> selector='#cri-dialog-body'>.get_by_role
+E    +          where <Locator frame=<Frame name= url='http://127.0.0.1:59131/crypto-r4.html?lang=en#markets?q=absent&h=30&window=30&panel=comparison'> selector='#cri-dialog-body'> = locator('#cri-dialog-body')
+E    +            where locator = <Page url='http://127.0.0.1:59131/crypto-r4.html?lang=en#markets?q=absent&h=30&window=30&panel=comparison'>.locator
+_ test_r4_comparison_missing_and_empty_assets_are_not_filter_failures[empty-zh] _
+tests/test_crypto_intelligence_r4_browser.py:1480: in test_r4_comparison_missing_and_empty_assets_are_not_filter_failures
+    assert page.locator("#cri-dialog-body").get_by_role("heading", name=expected, exact=True).count() == 1
+E   assert 0 == 1
+E    +  where 0 = count()
+E    +    where count = <Locator frame=<Frame name= url='http://127.0.0.1:59131/crypto-r4.html?lang=zh#markets?q=absent&h=30&window=30&panel=comparison'> selector='#cri-dialog-body >> internal:role=heading[name="本快照暂无资产"s]'>.count
+E    +      where <Locator frame=<Frame name= url='http://127.0.0.1:59131/crypto-r4.html?lang=zh#markets?q=absent&h=30&window=30&panel=comparison'> selector='#cri-dialog-body >> internal:role=heading[name="本快照暂无资产"s]'> = get_by_role('heading', name='本快照暂无资产', exact=True)
+E    +        where get_by_role = <Locator frame=<Frame name= url='http://127.0.0.1:59131/crypto-r4.html?lang=zh#markets?q=absent&h=30&window=30&panel=comparison'> selector='#cri-dialog-body'>.get_by_role
+E    +          where <Locator frame=<Frame name= url='http://127.0.0.1:59131/crypto-r4.html?lang=zh#markets?q=absent&h=30&window=30&panel=comparison'> selector='#cri-dialog-body'> = locator('#cri-dialog-body')
+E    +            where locator = <Page url='http://127.0.0.1:59131/crypto-r4.html?lang=zh#markets?q=absent&h=30&window=30&panel=comparison'>.locator
+_____ test_r4_comparison_empty_server_reading_needs_no_javascript[missing] _____
+tests/test_crypto_intelligence_r4_browser.py:1503: in test_r4_comparison_empty_server_reading_needs_no_javascript
+    assert market.locator("#cri-market-empty-title").inner_text() == expected
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/sync_api/_generated.py:19446: in inner_text
+    self._sync(self._impl_obj.inner_text(timeout=to_milliseconds(timeout)))
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_locator.py:498: in inner_text
+    return await self._frame.inner_text(
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_frame.py:743: in inner_text
+    return await self._channel.send(
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_connection.py:76: in send
+    return await self._connection.wrap_api_call(
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_connection.py:632: in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+E   playwright._impl._errors.TimeoutError: Locator.inner_text: Timeout 4500ms exceeded.
+E   Call log:
+E     - waiting for locator("[data-view=\"markets\"]").locator("#cri-market-empty-title")
+______ test_r4_comparison_empty_server_reading_needs_no_javascript[empty] ______
+tests/test_crypto_intelligence_r4_browser.py:1503: in test_r4_comparison_empty_server_reading_needs_no_javascript
+    assert market.locator("#cri-market-empty-title").inner_text() == expected
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/sync_api/_generated.py:19446: in inner_text
+    self._sync(self._impl_obj.inner_text(timeout=to_milliseconds(timeout)))
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_locator.py:498: in inner_text
+    return await self._frame.inner_text(
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_frame.py:743: in inner_text
+    return await self._channel.send(
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_connection.py:76: in send
+    return await self._connection.wrap_api_call(
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_connection.py:632: in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+E   playwright._impl._errors.TimeoutError: Locator.inner_text: Timeout 4500ms exceeded.
+E   Call log:
+E     - waiting for locator("[data-view=\"markets\"]").locator("#cri-market-empty-title")
+_ test_r4_comparison_null_relative_does_not_erase_usable_asset_or_zero[en-390] _
+tests/test_crypto_intelligence_r4_browser.py:1512: in test_r4_comparison_null_relative_does_not_erase_usable_asset_or_zero
+    assert page.locator("#cri-market-table tbody tr").evaluate_all("nodes=>nodes.map(node=>node.dataset.assetRow)") == ["SOL", "ETH", "BTC"]
+E   AssertionError: assert ['ETH', 'SOL', 'BTC'] == ['SOL', 'ETH', 'BTC']
+E     
+E     At index 0 diff: 'ETH' != 'SOL'
+E     Use -v to get more diff
+_ test_r4_comparison_null_relative_does_not_erase_usable_asset_or_zero[zh-320] _
+tests/test_crypto_intelligence_r4_browser.py:1512: in test_r4_comparison_null_relative_does_not_erase_usable_asset_or_zero
+    assert page.locator("#cri-market-table tbody tr").evaluate_all("nodes=>nodes.map(node=>node.dataset.assetRow)") == ["SOL", "ETH", "BTC"]
+E   AssertionError: assert ['ETH', 'SOL', 'BTC'] == ['SOL', 'ETH', 'BTC']
+E     
+E     At index 0 diff: 'ETH' != 'SOL'
+E     Use -v to get more diff
+_____ test_r4_comparison_locale_refresh_keeps_surviving_asset_control[en] ______
+tests/test_crypto_intelligence_r4_browser.py:1551: in test_r4_comparison_locale_refresh_keeps_surviving_asset_control
+    assert target.evaluate("node=>document.activeElement===node")
+E   assert False
+E    +  where False = evaluate('node=>document.activeElement===node')
+E    +    where evaluate = <Locator frame=<Frame name= url='http://127.0.0.1:59131/crypto-r4.html?lang=en#markets'> selector='[data-asset-row="ETH"] .cri-asset'>.evaluate
+_____ test_r4_comparison_locale_refresh_keeps_surviving_asset_control[zh] ______
+tests/test_crypto_intelligence_r4_browser.py:1551: in test_r4_comparison_locale_refresh_keeps_surviving_asset_control
+    assert target.evaluate("node=>document.activeElement===node")
+E   assert False
+E    +  where False = evaluate('node=>document.activeElement===node')
+E    +    where evaluate = <Locator frame=<Frame name= url='http://127.0.0.1:59131/crypto-r4.html?lang=zh#markets'> selector='[data-asset-row="ETH"] .cri-asset'>.evaluate
+_ test_r4_comparison_basis_locale_and_coverage_keep_existing_navigation[comparison-summary] _
+tests/test_crypto_intelligence_r4_browser.py:1563: in test_r4_comparison_basis_locale_and_coverage_keep_existing_navigation
+    basis.locator("summary").click()
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/sync_api/_generated.py:17876: in click
+    self._sync(
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_locator.py:165: in click
+    return await self._frame._click(self._selector, strict=True, **params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_frame.py:593: in _click
+    await self._channel.send("click", self._timeout, locals_to_params(locals()))
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_connection.py:76: in send
+    return await self._connection.wrap_api_call(
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_connection.py:632: in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+E   playwright._impl._errors.TimeoutError: Locator.click: Timeout 4500ms exceeded.
+E   Call log:
+E     - waiting for locator("#cri-dialog-body [data-comparison-basis]").locator("summary")
+_ test_r4_comparison_basis_locale_and_coverage_keep_existing_navigation[comparison-coverage] _
+tests/test_crypto_intelligence_r4_browser.py:1563: in test_r4_comparison_basis_locale_and_coverage_keep_existing_navigation
+    basis.locator("summary").click()
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/sync_api/_generated.py:17876: in click
+    self._sync(
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_locator.py:165: in click
+    return await self._frame._click(self._selector, strict=True, **params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_frame.py:593: in _click
+    await self._channel.send("click", self._timeout, locals_to_params(locals()))
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_connection.py:76: in send
+    return await self._connection.wrap_api_call(
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_connection.py:632: in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+E   playwright._impl._errors.TimeoutError: Locator.click: Timeout 4500ms exceeded.
+E   Call log:
+E     - waiting for locator("#cri-dialog-body [data-comparison-basis]").locator("summary")
+_ test_r4_comparison_basis_locale_and_coverage_keep_existing_navigation[asset:ETH-summary] _
+tests/test_crypto_intelligence_r4_browser.py:1563: in test_r4_comparison_basis_locale_and_coverage_keep_existing_navigation
+    basis.locator("summary").click()
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/sync_api/_generated.py:17876: in click
+    self._sync(
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_locator.py:165: in click
+    return await self._frame._click(self._selector, strict=True, **params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_frame.py:593: in _click
+    await self._channel.send("click", self._timeout, locals_to_params(locals()))
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_connection.py:76: in send
+    return await self._connection.wrap_api_call(
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_connection.py:632: in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+E   playwright._impl._errors.TimeoutError: Locator.click: Timeout 4500ms exceeded.
+E   Call log:
+E     - waiting for locator("#cri-dialog-body [data-comparison-basis]").locator("summary")
+_ test_r4_comparison_basis_locale_and_coverage_keep_existing_navigation[asset:ETH-coverage] _
+tests/test_crypto_intelligence_r4_browser.py:1563: in test_r4_comparison_basis_locale_and_coverage_keep_existing_navigation
+    basis.locator("summary").click()
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/sync_api/_generated.py:17876: in click
+    self._sync(
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_locator.py:165: in click
+    return await self._frame._click(self._selector, strict=True, **params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_frame.py:593: in _click
+    await self._channel.send("click", self._timeout, locals_to_params(locals()))
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_connection.py:76: in send
+    return await self._connection.wrap_api_call(
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_connection.py:632: in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+E   playwright._impl._errors.TimeoutError: Locator.click: Timeout 4500ms exceeded.
+E   Call log:
+E     - waiting for locator("#cri-dialog-body [data-comparison-basis]").locator("summary")
+=========================== short test summary info ============================
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_comparison_default_order_is_neutral_and_explicit_sorts_survive[None-expected0]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_comparison_default_order_is_neutral_and_explicit_sorts_survive[unknown-expected1]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_comparison_default_order_is_neutral_and_explicit_sorts_survive[relative-expected2]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_comparison_default_order_is_neutral_and_explicit_sorts_survive[return-expected3]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_comparison_default_order_is_neutral_and_explicit_sorts_survive[symbol-expected4]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_comparison_full_cohort_keeps_filtered_origin_and_narrow_context[en-1440]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_comparison_full_cohort_keeps_filtered_origin_and_narrow_context[en-390]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_comparison_full_cohort_keeps_filtered_origin_and_narrow_context[zh-320]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_comparison_reset_moves_focus_before_hiding_recovery[en]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_comparison_reset_moves_focus_before_hiding_recovery[zh]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_comparison_reset_yields_to_a_new_focus_destination[navigation]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_comparison_reset_yields_to_a_new_focus_destination[language]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_comparison_reset_yields_to_a_new_focus_destination[focus]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_comparison_missing_and_empty_assets_are_not_filter_failures[missing-en]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_comparison_missing_and_empty_assets_are_not_filter_failures[missing-zh]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_comparison_missing_and_empty_assets_are_not_filter_failures[empty-en]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_comparison_missing_and_empty_assets_are_not_filter_failures[empty-zh]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_comparison_empty_server_reading_needs_no_javascript[missing]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_comparison_empty_server_reading_needs_no_javascript[empty]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_comparison_null_relative_does_not_erase_usable_asset_or_zero[en-390]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_comparison_null_relative_does_not_erase_usable_asset_or_zero[zh-320]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_comparison_locale_refresh_keeps_surviving_asset_control[en]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_comparison_locale_refresh_keeps_surviving_asset_control[zh]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_comparison_basis_locale_and_coverage_keep_existing_navigation[comparison-summary]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_comparison_basis_locale_and_coverage_keep_existing_navigation[comparison-coverage]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_comparison_basis_locale_and_coverage_keep_existing_navigation[asset:ETH-summary]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_comparison_basis_locale_and_coverage_keep_existing_navigation[asset:ETH-coverage]
+27 failed, 86 deselected in 51.35s

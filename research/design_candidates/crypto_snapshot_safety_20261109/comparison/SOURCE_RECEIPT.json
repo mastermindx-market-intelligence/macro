@@ -1,0 +1,74 @@
+{
+  "source_parent": "7308f6d706777a49009437554dd35fe42ae163dd",
+  "version": "d4393a5d0e55",
+  "files": {
+    "templates/crypto_intelligence_r4.js": {
+      "bytes": 64811,
+      "sha256": "917775e6c2f85b4e333bfe14472b36fc05ef28de9429314243ce49401c41bc96",
+      "blob": "e4b62c20b732e601f67765987f4c451fa65b2c28"
+    },
+    "tests/test_crypto_intelligence_r4_browser.py": {
+      "bytes": 88879,
+      "sha256": "c76b94150d35699a34fa88362ff8e6f2b7f4d03f18db761fe4f65f254c13a8f2",
+      "blob": "ea7415b2f45327e222ab3518997c4904551abeb8"
+    },
+    "site/crypto-r4.html": {
+      "bytes": 118948,
+      "sha256": "6cd1ac5499a3e87f0612ea22b71846b7da1d6e52ea5fff3ca2423a792c68a965",
+      "blob": "2c088d211ce4f87f7ddac830a81a8b10373d124e"
+    },
+    "site/vector-r4.html": {
+      "bytes": 118947,
+      "sha256": "de2801d7777e6adf4dab8a4b540f9646200b3e9332d443dd74d3c88d8ea08daa",
+      "blob": "dc02bbcdd4b402b8bbaddc6909f5b6ac333a10a5"
+    },
+    "site/crypto_intelligence_r4.js": {
+      "bytes": 64811,
+      "sha256": "917775e6c2f85b4e333bfe14472b36fc05ef28de9429314243ce49401c41bc96",
+      "blob": "e4b62c20b732e601f67765987f4c451fa65b2c28"
+    },
+    "site/crypto_intelligence_r4.css": {
+      "bytes": 21539,
+      "sha256": "59110210484037e0d491f563b09d209b44dc7b6dbc9c44d46f569367024e5889",
+      "blob": "20ed88f105ce31ccd89c36138196823df34c0802"
+    },
+    "templates/crypto_intelligence_r4.html.j2": {
+      "bytes": 21276,
+      "sha256": "54635a22fcfa2329837bb8354d4f946c83d3743590c8b1d30fcd98fa13ce18f0",
+      "blob": "2f71035a07df7036674611c03e4830ec1e411903"
+    },
+    "templates/crypto_intelligence_r4.css": {
+      "bytes": 21539,
+      "sha256": "59110210484037e0d491f563b09d209b44dc7b6dbc9c44d46f569367024e5889",
+      "blob": "20ed88f105ce31ccd89c36138196823df34c0802"
+    }
+  },
+  "unchanged_inputs": [
+    "site/crypto_intelligence_r4.json",
+    "scripts/build_crypto_intelligence_r4.py",
+    "tests/test_crypto_intelligence_r4.py",
+    "lib/crypto_intelligence_view.py",
+    "site/theme.js",
+    "site/theme.css",
+    "site/illus.js",
+    "site/illus.css",
+    "site/navigation-refresh.css",
+    "site/logo_config.js",
+    "site/stock-logos.js",
+    "site/live_config.js",
+    "site/live.js"
+  ],
+  "pages": [
+    {
+      "path": "site/crypto-r4.html",
+      "outside_markets_and_asset_version_exact": true
+    },
+    {
+      "path": "site/vector-r4.html",
+      "outside_markets_and_asset_version_exact": true
+    }
+  ],
+  "view_json_exact": true,
+  "node_check": true,
+  "method": "Existing render_view with exact retained view; no producer/model/data refresh."
+}

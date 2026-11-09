@@ -1,0 +1,149 @@
+{
+  "before": {
+    "url": "http://127.0.0.1:50964/crypto-r4.html?lang=en#markets",
+    "active": "<button class=\"cri-asset\" data-open=\"asset:SOL\"><span class=\"cri-coin\">S</span><span>Solana<small>SOL</small></span></button>",
+    "hovered": [
+      {
+        "tag": "HTML",
+        "id": "",
+        "cls": "soft-contrast"
+      },
+      {
+        "tag": "BODY",
+        "id": "",
+        "cls": "crypto-r4"
+      },
+      {
+        "tag": "NAV",
+        "id": "",
+        "cls": "site-nav has-nav-toggle"
+      },
+      {
+        "tag": "DIV",
+        "id": "",
+        "cls": "nav-ctrls"
+      },
+      {
+        "tag": "DIV",
+        "id": "",
+        "cls": "nav-settings"
+      },
+      {
+        "tag": "BUTTON",
+        "id": "settings-open",
+        "cls": "nav-settings-btn"
+      },
+      {
+        "tag": "svg",
+        "id": "",
+        "cls": {}
+      },
+      {
+        "tag": "path",
+        "id": "",
+        "cls": {}
+      }
+    ],
+    "nav": [
+      {
+        "id": "",
+        "cls": "site-nav has-nav-toggle",
+        "box": {
+          "x": 16,
+          "y": 18,
+          "width": 358,
+          "height": 88
+        },
+        "display": "flex",
+        "visibility": "visible",
+        "pointerEvents": "auto"
+      },
+      {
+        "id": "settings-pop",
+        "cls": "settings-pop",
+        "box": {
+          "x": 44.199981689453125,
+          "y": 59,
+          "width": 329.8000183105469,
+          "height": 355.5050048828125
+        },
+        "display": "block",
+        "visibility": "visible",
+        "pointerEvents": "auto"
+      },
+      {
+        "id": "",
+        "cls": "cri-btn",
+        "box": {
+          "x": 16,
+          "y": 383.9375,
+          "width": 198.953125,
+          "height": 42
+        },
+        "display": "flex",
+        "visibility": "visible",
+        "pointerEvents": "auto"
+      }
+    ],
+    "scroll": 0
+  },
+  "after_pointer_leave": {
+    "url": "http://127.0.0.1:50964/crypto-r4.html?lang=en#markets",
+    "active": "<button class=\"cri-asset\" data-open=\"asset:SOL\"><span class=\"cri-coin\">S</span><span>Solana<small>SOL</small></span></button>",
+    "hovered": [
+      {
+        "tag": "HTML",
+        "id": "",
+        "cls": "soft-contrast"
+      },
+      {
+        "tag": "BODY",
+        "id": "",
+        "cls": "crypto-r4"
+      }
+    ],
+    "nav": [
+      {
+        "id": "",
+        "cls": "site-nav has-nav-toggle",
+        "box": {
+          "x": 16,
+          "y": 18,
+          "width": 358,
+          "height": 88
+        },
+        "display": "flex",
+        "visibility": "visible",
+        "pointerEvents": "auto"
+      },
+      {
+        "id": "settings-pop",
+        "cls": "settings-pop",
+        "box": {
+          "x": 34.228302001953125,
+          "y": 66.8209457397461,
+          "width": 339.7716979980469,
+          "height": 366.25390625
+        },
+        "display": "block",
+        "visibility": "visible",
+        "pointerEvents": "none"
+      },
+      {
+        "id": "",
+        "cls": "cri-btn",
+        "box": {
+          "x": 16,
+          "y": 383.9375,
+          "width": 198.953125,
+          "height": 42
+        },
+        "display": "flex",
+        "visibility": "visible",
+        "pointerEvents": "auto"
+      }
+    ],
+    "scroll": 0
+  },
+  "comparison_opened_after_leaving": true
+}

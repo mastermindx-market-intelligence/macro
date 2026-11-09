@@ -491,6 +491,25 @@
     }
     button(t("Inspect demand evidence", "查看需求证据"), function () { open("evidence:liquidity_flows"); });
   }
+  function comparisonBasis(asset) {
+    // One bilingual copy owner: the server-rendered Markets disclosure.
+    var details = document.getElementById("cri-market-basis").cloneNode(true);
+    details.removeAttribute("id"); details.hidden = false; details.open = false;
+    var coverage = details.querySelector("[data-open]");
+    coverage.addEventListener("click", function () { open(coverage.dataset.open, coverage); });
+    if (asset) {
+      details.appendChild(node("h3", t("Asset coverage", "资产覆盖")));
+      details.appendChild(node("p", field(asset, "coverage")));
+      details.appendChild(node("p", t("Asset-specific conditional price levels are not supplied.", "未提供此资产的条件价位。")));
+    }
+    body.appendChild(details);
+    return details;
+  }
+  function assetEmptyCopy() {
+    return data.contracts && data.contracts.asset_states === "accepted" ?
+      [t("No assets in this snapshot", "本快照暂无资产"), t("There are no asset readings to display.", "暂无可显示的资产读数。")] :
+      [t("Asset data unavailable", "资产数据暂无"), t("This snapshot could not provide asset readings.", "本快照无法提供资产读数。")];
+  }
   function renderDrawer(key, collection) {
     if (!key) return;
     body.replaceChildren(); body.classList.remove("cri-saved-case", "cri-saved-review");
@@ -519,32 +538,50 @@
       var asset = data.assets.find(function (a) { return a.symbol === id; });
       title.textContent = asset ? asset.name + " · " + asset.symbol : t("Asset unavailable", "资产暂不可用");
       if (asset) {
-        definition([[t("Price", "价格"), money(asset.price)], [t("Observation date", "观测日期"), asset.as_of], [t("30-day change", "30天涨跌"), pct(asset.change_30d_pct)], [t("90-day relative return vs Bitcoin", "90天相对比特币表现"), pct(asset.relative_90d_pct)], [t("Structure", "结构"), field(asset, "trend")], [t("Risk", "风险"), field(asset, "risk")]]);
-        heading(t("What matters next", "接下来关注什么"));
-        paragraph(t("Look for persistent relative strength with improving risk conditions. The present state alone is not an entry signal.", "关注相对强势能否持续，以及风险是否改善。当前状态本身不是入场信号。"));
-        heading(t("Coverage", "覆盖情况")); paragraph(field(asset, "coverage"));
-        paragraph(t("Asset-specific conditional price levels are not yet available from this contract.", "该数据约定暂未提供此资产的条件价位。"));
+        comparisonBasis(asset);
+        definition([[t("Price", "价格"), money(asset.price)], [t("Asset observation date", "资产观测日期"), asset.as_of],
+          [t("Price change", "价格涨跌"), pct(asset.change_30d_pct)],
+          [t("Asset/BTC ratio change", "资产/BTC比值变化"), pct(asset.relative_90d_pct)],
+          [t("Relative state", "相对状态"), field(asset, "relative") || t("Unavailable", "暂无")],
+          [t("Structure", "结构"), field(asset, "trend")], [t("Risk", "风险"), field(asset, "risk")]]);
+      } else {
+        paragraph(data.contracts && data.contracts.asset_states === "accepted" ?
+          t("This asset is not present in the snapshot.", "本快照中没有此资产。") : assetEmptyCopy()[1]);
+        button(t("Data and coverage", "数据与覆盖"), function () { open("coverage"); });
       }
     } else if (category === "comparison") {
-      title.textContent = t("Compare supported assets", "比较已覆盖资产");
-      paragraph(t("Compare the same published horizon; missing values stay unavailable.", "比较相同发布周期；缺失读数保留为暂无。"));
+      title.textContent = t("Compare assets", "比较资产");
+      if (!data.assets.length) {
+        var empty = assetEmptyCopy();
+        heading(empty[0]); paragraph(empty[1]);
+        button(t("Data and coverage", "数据与覆盖"), function () { open("coverage"); });
+        return;
+      }
+      paragraph(t("All " + data.assets.length + " assets in this snapshot", "本快照中的全部" + data.assets.length + "项资产")).className = "cri-comparison-scope";
+      comparisonBasis();
       var wrap = node("div", null, "cri-comparison-scroll"), table = node("table", null, "cri-comparison-table");
-      var caption = node("caption", t("Bitcoin is the relative-return benchmark (0% by definition, not its price change). Asset observations retain their own dates.", "比特币为相对表现基准（定义为0%，并非其价格涨跌），各资产保留自己的观测日期。"));
+      wrap.tabIndex = 0; wrap.setAttribute("role", "region"); wrap.setAttribute("aria-label", t("Asset comparison, scroll for more columns", "资产比较，可滚动查看其余列"));
+      var caption = node("caption", t("All reported assets. Observation dates belong to each asset, not a verified shared comparison endpoint.", "全部已提供的资产。观测日期属于各资产，并非已确认的共同比较截止日期。"), "cri-sr");
       table.appendChild(caption);
       var headerRow = node("tr");
       [t("Measure", "指标")].concat(data.assets.map(function (a) { return a.symbol; })).forEach(function (label) { var cell = node("th", label); cell.scope = "col"; headerRow.appendChild(cell); });
       var head = node("thead"); head.appendChild(headerRow); table.appendChild(head);
       var tbody = node("tbody");
-      [[t("Observation date", "观测日期"), function (a) { return a.as_of; }],
-       [t("90D vs Bitcoin", "90天相对比特币"), function (a) { return pct(a.relative_90d_pct); }],
-       [t("30D price change", "30天价格涨跌"), function (a) { return pct(a.change_30d_pct); }],
+      [[t("Asset observation date", "资产观测日期"), function (a) { return a.as_of; }],
+       [t("Asset/BTC ratio change", "资产/BTC比值变化"), function (a) { return pct(a.relative_90d_pct); }, "relative"],
+       [t("Price change", "价格涨跌"), function (a) { return pct(a.change_30d_pct); }],
        [t("Structure", "结构"), function (a) { return field(a, "trend"); }],
        [t("Risk", "风险"), function (a) { return field(a, "risk"); }]].forEach(function (row) {
         var tr = node("tr"), label = node("th", row[0]); label.scope = "row"; tr.appendChild(label);
-        data.assets.forEach(function (a) { tr.appendChild(node("td", row[1](a) || t("Unavailable", "暂无"))); }); tbody.appendChild(tr);
+        data.assets.forEach(function (a) {
+          var cell = node("td", row[1](a) || t("Unavailable", "暂无"));
+          if (row[2] === "relative" && a.relative_90d_pct === null && field(a, "relative") && field(a, "relative") !== t("Unavailable", "暂无")) {
+            cell.appendChild(node("span", field(a, "relative"), "cri-measure-state"));
+          }
+          tr.appendChild(cell);
+        }); tbody.appendChild(tr);
       });
       table.appendChild(tbody); wrap.appendChild(table); body.appendChild(wrap);
-      if (!data.assets.length) paragraph(t("No supported assets are available for comparison.", "暂无可供比较的已覆盖资产。"));
     } else if (category === "coverage") {
       title.textContent = t("Data and coverage", "数据与覆盖");
       definition([[t("Bitcoin daily close", "比特币日收盘"), data.as_of], [t("Broad-market snapshot", "全市场快照"), data.market_as_of], [t("Asset snapshot", "资产快照"), data.asset_as_of]]);
@@ -616,27 +653,48 @@
     }
   }
   function filterMarkets() {
-    var s = state(), query = (s.params.get("q") || "").toLowerCase(), filter = s.params.get("filter") || "all", sort = s.params.get("sort") || "relative";
-    document.getElementById("cri-search").value = s.params.get("q") || "";
-    document.getElementById("cri-search").placeholder = t("Search assets", "搜索资产");
-    Array.from(document.getElementById("cri-filter").options).forEach(function(o){o.textContent = {all:t("All assets","全部资产"),leaders:t("Leading Bitcoin","领先比特币"),stressed:t("Stressed","承压")}[o.value];});
-    Array.from(document.getElementById("cri-sort").options).forEach(function(o){o.textContent = {relative:t("Relative strength","相对强弱"),return:t("30-day return","30天涨跌"),symbol:t("Asset","资产")}[o.value];});
-    document.getElementById("cri-filter").value = ["all", "leaders", "stressed"].indexOf(filter) >= 0 ? filter : "all";
-    document.getElementById("cri-sort").value = ["relative", "return", "symbol"].indexOf(sort) >= 0 ? sort : "relative";
-    var items = data.assets.slice().sort(function (a, b) {
+    var s = state(), query = (s.params.get("q") || "").toLowerCase();
+    var filter = s.params.get("filter"), sort = s.params.get("sort");
+    filter = ["all", "leaders", "stressed"].indexOf(filter) >= 0 ? filter : "all";
+    sort = ["default", "relative", "return", "symbol"].indexOf(sort) >= 0 ? sort : "default";
+    var search = document.getElementById("cri-search"), filterSelect = document.getElementById("cri-filter"), sortSelect = document.getElementById("cri-sort");
+    search.value = s.params.get("q") || ""; search.placeholder = t("Search assets", "搜索资产");
+    filterSelect.setAttribute("aria-label", t("Asset filter", "资产筛选"));
+    sortSelect.setAttribute("aria-label", t("Asset sort", "资产排序"));
+    Array.from(filterSelect.options).forEach(function (o) { o.textContent = {all:t("All assets","全部资产"),leaders:t("Leading Bitcoin","领先比特币"),stressed:t("Stressed","承压")}[o.value]; });
+    Array.from(sortSelect.options).forEach(function (o) { o.textContent = {default:t("Default order","默认顺序"),relative:t("Ratio change","比值变化"),return:t("Price change","价格涨跌"),symbol:t("Symbol","代码")}[o.value]; });
+    filterSelect.value = filter; sortSelect.value = sort;
+    var items = data.assets.slice();
+    if (sort !== "default") items.sort(function (a, b) {
       if (sort === "symbol") return a.symbol.localeCompare(b.symbol);
       var key = sort === "return" ? "change_30d_pct" : "relative_90d_pct";
       return (b[key] === null ? -Infinity : b[key]) - (a[key] === null ? -Infinity : a[key]);
-    }), shown = 0, tbody = document.querySelector("#cri-market-table tbody");
-    items.forEach(function (asset) {
+    });
+    var shown = 0, tbody = document.querySelector("#cri-market-table tbody");
+    items.forEach(function (asset, index) {
       var row = Array.from(tbody.children).find(function (r) { return r.dataset.assetRow === asset.symbol; });
       if (!row) return;
       var matches = (asset.name + " " + asset.symbol).toLowerCase().indexOf(query) >= 0 &&
         (filter !== "leaders" || asset.relative_en === "Leading Bitcoin") && (filter !== "stressed" || asset.risk_en === "Stressed");
-      row.hidden = !matches; tbody.appendChild(row); if (matches) shown++;
+      row.hidden = !matches;
+      // Keep surviving controls attached when locale or unrelated state refreshes.
+      if (tbody.children[index] !== row) tbody.insertBefore(row, tbody.children[index] || null);
+      if (matches) shown++;
     });
-    document.getElementById("cri-market-empty").hidden = shown !== 0;
-    document.getElementById("cri-market-count").textContent = t(shown + " of " + data.assets.length + " supported assets", "显示" + shown + "个，共覆盖" + data.assets.length + "个资产");
+    var hasAssets = data.assets.length > 0, empty = document.getElementById("cri-market-empty");
+    document.getElementById("cri-market-controls").hidden = !hasAssets;
+    document.getElementById("cri-market-table").hidden = !hasAssets || shown === 0;
+    document.getElementById("cri-market-basis").hidden = !hasAssets;
+    document.getElementById("cri-market-compare").hidden = !hasAssets;
+    document.getElementById("cri-reset").hidden = !hasAssets;
+    document.getElementById("cri-empty-coverage").hidden = hasAssets;
+    empty.hidden = shown !== 0;
+    var copy = hasAssets ? [t("No matching assets", "没有符合条件的资产"), t("Try a different search or reset the filters.", "请调整搜索或重置筛选。")] : assetEmptyCopy();
+    document.getElementById("cri-market-empty-title").textContent = copy[0];
+    document.getElementById("cri-market-empty-note").textContent = copy[1];
+    var count = document.getElementById("cri-market-count");
+    count.hidden = !hasAssets;
+    count.textContent = t(shown + " of " + data.assets.length + " assets", "显示" + shown + "项，共" + data.assets.length + "项资产");
   }
   var shocks = {
     tightening: {
@@ -710,7 +768,16 @@
       root.querySelectorAll("[data-case-horizon]").forEach(function (p) { p.hidden = p.dataset.caseHorizon !== h; });
       filterMarkets(); renderShock();
       var focusWasInside = dialog.contains(document.activeElement);
+      var priorBasis = body.querySelector("[data-comparison-basis]"), basisReading = null;
+      if (priorBasis && body.dataset.panel === panel && root.dataset.renderedAddress === location.href &&
+          root.dataset.renderedLanguage !== String(zh())) {
+        var basisFocus = document.activeElement.closest("[data-basis-focus]");
+        basisReading = { open: priorBasis.open, scroll: dialog.scrollTop,
+          focus: basisFocus && priorBasis.contains(basisFocus) ? basisFocus.dataset.basisFocus : null };
+      }
       if (panel) renderDrawer(panel, collection);
+      var renderedBasis = body.querySelector("[data-comparison-basis]");
+      if (basisReading && renderedBasis) renderedBasis.open = basisReading.open;
       root.dataset.renderedAddress = location.href; root.dataset.renderedLanguage = String(zh());
       renderedHistory = historySignature();
       var renderedAddress = location.href, renderedLanguage = zh(), subtree = body.firstChild;
@@ -725,6 +792,7 @@
           try { dialog.showModal(); } finally { dialog.removeEventListener("focusin", noteOpeningFocus, true); }
           if (!ownsRender() || !dialog.open || openingFocusEvents > 1) return;
         }
+        if (basisReading && renderedBasis && ownsRender()) dialog.scrollTop = basisReading.scroll;
         var reading = savedReading(), returningToCase = returning && retained && body.dataset.savedRevision === retained.revision;
         if (reading || returningToCase) {
           if (reading) {
@@ -739,6 +807,13 @@
           if (restored === title) title.tabIndex = -1;
           restored.focus({ preventScroll: !!reading });
           return; // A focus callback owns any newer destination or reading position.
+        }
+        if (basisReading && basisReading.focus && renderedBasis && ownsRender()) {
+          var basisTarget = renderedBasis.querySelector('[data-basis-focus="' + basisReading.focus + '"]');
+          if (basisTarget) {
+            basisTarget.focus({ preventScroll: true });
+            return; // A focus callback owns any newer destination.
+          }
         }
         if (focusWasInside && !dialog.contains(document.activeElement)) {
           var fallback = /^(saved-item|memory-saved):/.test(panel) ? title : document.getElementById("cri-dialog-close");
@@ -775,7 +850,12 @@
   document.getElementById("cri-search").addEventListener("input", function (event) { update(null, { q: event.target.value.slice(0, 80) }, true); });
   document.getElementById("cri-filter").addEventListener("change", function (event) { update(null, { filter: event.target.value }, true); });
   document.getElementById("cri-sort").addEventListener("change", function (event) { update(null, { sort: event.target.value }, true); });
-  document.getElementById("cri-reset").addEventListener("click", function () { update(null, { q: null, filter: null, sort: null }, true); });
+  document.getElementById("cri-reset").addEventListener("click", function () {
+    var addressBefore = location.href, languageBefore = zh(), search = document.getElementById("cri-search");
+    search.focus();
+    if (location.href !== addressBefore || zh() !== languageBefore || document.activeElement !== search) return;
+    update(null, { q: null, filter: null, sort: null }, true);
+  });
   window.addEventListener("popstate", apply); window.addEventListener("hashchange", apply);
   body.addEventListener("toggle", function (event) {
     if (body.contains(event.target) && event.target.hasAttribute("data-drawer-disclosure")) rememberDrawer();

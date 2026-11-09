@@ -1,0 +1,456 @@
+{
+  "mission": "Paper estate continuation / Crypto comparison basis and workflow",
+  "protected_mastermind_pin": "5c3d3885234358aefb97ecdbc59be0864df14f8b",
+  "macro_agents_pin": "3d18585b00607c4cd2438d990d8289da98dbcc16",
+  "source_parent": "7308f6d706777a49009437554dd35fe42ae163dd",
+  "source_parent_tree": "6fb0a5d0012cd548b271eff9ddef103b65b1dbab",
+  "source_branch": "design/crypto-snapshot-safety-20261109",
+  "source_pr": "https://github.com/mastermindx-market-intelligence/Macro/pull/10901",
+  "runtime_version": "d4393a5d0e55",
+  "producer": {
+    "path": "engine/eth_state.py",
+    "ref": "7308f6d706777a49009437554dd35fe42ae163dd",
+    "blob": "481c04ad243c11abd8482a22b1845be1cd2a518d",
+    "same_blob_at_incumbent_parent": true,
+    "modified": false
+  },
+  "published_files": {
+    "templates/crypto_intelligence_r4.js": {
+      "bytes": 64811,
+      "sha256": "917775e6c2f85b4e333bfe14472b36fc05ef28de9429314243ce49401c41bc96",
+      "blob": "e4b62c20b732e601f67765987f4c451fa65b2c28"
+    },
+    "tests/test_crypto_intelligence_r4_browser.py": {
+      "bytes": 89057,
+      "sha256": "6eba4035d5f5f6d0352ad2a10b891c6ca247e3db94f3d4aae723801ad1f3e794",
+      "blob": "10fbe6174f36787171194ad65c8115e68767a2bd"
+    },
+    "site/crypto-r4.html": {
+      "bytes": 118948,
+      "sha256": "6cd1ac5499a3e87f0612ea22b71846b7da1d6e52ea5fff3ca2423a792c68a965",
+      "blob": "2c088d211ce4f87f7ddac830a81a8b10373d124e"
+    },
+    "site/vector-r4.html": {
+      "bytes": 118947,
+      "sha256": "de2801d7777e6adf4dab8a4b540f9646200b3e9332d443dd74d3c88d8ea08daa",
+      "blob": "dc02bbcdd4b402b8bbaddc6909f5b6ac333a10a5"
+    },
+    "site/crypto_intelligence_r4.js": {
+      "bytes": 64811,
+      "sha256": "917775e6c2f85b4e333bfe14472b36fc05ef28de9429314243ce49401c41bc96",
+      "blob": "e4b62c20b732e601f67765987f4c451fa65b2c28"
+    },
+    "site/crypto_intelligence_r4.css": {
+      "bytes": 21539,
+      "sha256": "59110210484037e0d491f563b09d209b44dc7b6dbc9c44d46f569367024e5889",
+      "blob": "20ed88f105ce31ccd89c36138196823df34c0802"
+    },
+    "templates/crypto_intelligence_r4.html.j2": {
+      "bytes": 21276,
+      "sha256": "54635a22fcfa2329837bb8354d4f946c83d3743590c8b1d30fcd98fa13ce18f0",
+      "blob": "2f71035a07df7036674611c03e4830ec1e411903"
+    },
+    "templates/crypto_intelligence_r4.css": {
+      "bytes": 21539,
+      "sha256": "59110210484037e0d491f563b09d209b44dc7b6dbc9c44d46f569367024e5889",
+      "blob": "20ed88f105ce31ccd89c36138196823df34c0802"
+    }
+  },
+  "unchanged_inputs": [
+    "site/crypto_intelligence_r4.json",
+    "scripts/build_crypto_intelligence_r4.py",
+    "tests/test_crypto_intelligence_r4.py",
+    "lib/crypto_intelligence_view.py",
+    "site/theme.js",
+    "site/theme.css",
+    "site/illus.js",
+    "site/illus.css",
+    "site/navigation-refresh.css",
+    "site/logo_config.js",
+    "site/stock-logos.js",
+    "site/live_config.js",
+    "site/live.js"
+  ],
+  "retained_view_json_sha256": "807839328e14080902df593408c9001d958b69be70d74d09fadbdc811d859401",
+  "parent_render_proof": {
+    "source_parent": "7308f6d706777a49009437554dd35fe42ae163dd",
+    "method": "Existing render_view called with exact retained view JSON; no read_contract/build/model/producer/data refresh. Output isolated in comparison-render-parent.",
+    "files": [
+      {
+        "name": "crypto-r4.html",
+        "bytes": 117388,
+        "sha256": "d1b1ff0480eeade13dfdc30592aeb8bb5261874f9b79faef99868a106f3346a2",
+        "parent_exact": true
+      },
+      {
+        "name": "vector-r4.html",
+        "bytes": 117387,
+        "sha256": "99d01edf84059207714c8f1cc5fe2ee69dfb8fec6489a2ffd9693fbad4323f0f",
+        "parent_exact": true
+      },
+      {
+        "name": "crypto_intelligence_r4.json",
+        "bytes": 28027,
+        "sha256": "807839328e14080902df593408c9001d958b69be70d74d09fadbdc811d859401",
+        "parent_exact": true
+      },
+      {
+        "name": "crypto_intelligence_r4.js",
+        "bytes": 60408,
+        "sha256": "07038c0fa0c89d1c05640221d49f95082cc15c41376eb7b4c83edc58022a28ae",
+        "parent_exact": true
+      },
+      {
+        "name": "crypto_intelligence_r4.css",
+        "bytes": 19602,
+        "sha256": "d39fca22e0dfb94f786576cf8102fc36ccaba53d4cc37ffd57dec61cc18ee2ef",
+        "parent_exact": true
+      }
+    ]
+  },
+  "source_conservation": {
+    "inverse_exact": true,
+    "ordered_transform_counts": {
+      "js": 13,
+      "css": 3,
+      "html": 6
+    },
+    "reversal": "Apply recorded replacements in reverse order with first-match replacement; final entire source equals exact parent.",
+    "served_assets_match_templates": true,
+    "outside_markets_html_exact_after_asset_version_normalization": true,
+    "retained_view_json_exact": true,
+    "node_syntax_passed": true
+  },
+  "native_runs": [
+    {
+      "name": "original_baseline",
+      "pid": 11407,
+      "runtime": "e38da6bba4dd",
+      "test_sha256": "aab824a9f031949323bfbd03c2dda992fc109ac6e9eb862113fe1e19a25e0e5a",
+      "failed": 27,
+      "deselected": 86,
+      "pytest_seconds": 51.35,
+      "subprocess_seconds": 51.843,
+      "contexts": 27,
+      "pages": 27,
+      "page_errors": 0,
+      "external_requests": 0,
+      "websockets": 0,
+      "qualification": "Shared design/behavior gaps, not 27 independent bugs. Two Reset cases initially stopped at a duplicate comparison-button selector and were corrected below."
+    },
+    {
+      "name": "corrected_reset_baseline",
+      "pid": 58613,
+      "runtime": "e38da6bba4dd",
+      "test_sha256": "595f5f2832d0b02c301cfcd708d0e8d84396957fa6f08bc872951a222d3bfae2",
+      "failed": 2,
+      "deselected": 117,
+      "pytest_seconds": 4.54,
+      "subprocess_seconds": 4.92,
+      "qualification": "Exact parent runtime in isolated copied fixture; both fail at lost search focus after Reset."
+    },
+    {
+      "name": "initial_candidate",
+      "pid": 31306,
+      "runtime": "8e0339b5a1b2",
+      "test_sha256": "8f9f8844211cef5dccf6465d4718e53d4b9569a6552cd5e17cd4f383408e45a7",
+      "passed": 152,
+      "failed": 4,
+      "pytest_seconds": 92.5,
+      "subprocess_seconds": 93.034,
+      "observations": {
+        "contexts": 118,
+        "pages": 124,
+        "page_errors": [],
+        "blocked_external_requests": 0,
+        "blocked_websockets": 0,
+        "browser": "157.0.8103.39"
+      },
+      "classification": [
+        "Two tests incorrectly assumed End is horizontal scroll; changed to native ArrowRight.",
+        "Two real Close-to-Compare pointer flows were intercepted by shared Settings hover."
+      ]
+    },
+    {
+      "name": "scroll_and_pointer_diagnostic",
+      "pid": 58613,
+      "runtime": "8e0339b5a1b2",
+      "test_sha256": "595f5f2832d0b02c301cfcd708d0e8d84396957fa6f08bc872951a222d3bfae2",
+      "passed": 1,
+      "failed": 2,
+      "deselected": 117,
+      "pytest_seconds": 7.01,
+      "subprocess_seconds": 7.3,
+      "qualification": "Both locale scroll cases move 13px with Close retained. Pointer capture identifies underlying Settings hover; moving away permits Compare, diagnostic only."
+    },
+    {
+      "name": "initial_pointer_baseline_harness",
+      "pid": 77869,
+      "runtime": "e38da6bba4dd",
+      "test_sha256": "c76b94150d35699a34fa88362ff8e6f2b7f4d03f18db761fe4f65f254c13a8f2",
+      "failed": 2,
+      "deselected": 120,
+      "pytest_seconds": 14.87,
+      "subprocess_seconds": 15.185,
+      "qualification": "Not counted as a hover defect reproduction: tested a different row position and expected the new drawer title on old source."
+    },
+    {
+      "name": "corrected_pointer_baseline",
+      "pid": 90235,
+      "runtime": "e38da6bba4dd",
+      "test_sha256": "cd7936d4a10662432347333fc07b5d0317ffa47a6ea2314c1e038476375e87b2",
+      "failed": 2,
+      "deselected": 120,
+      "pytest_seconds": 4.75,
+      "subprocess_seconds": 5.138,
+      "qualification": "First visible asset; stationary pointer after two native paint frames. Both exact-parent cases expose Settings pointer-events:auto after Close."
+    },
+    {
+      "name": "complete_candidate",
+      "pid": 80123,
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "-m",
+        "pytest",
+        "-q",
+        "tests/test_crypto_intelligence_r4.py",
+        "tests/test_crypto_intelligence_r4_browser.py",
+        "--tb=short",
+        "--junitxml=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/comparison-repaired/junit.xml",
+        "--basetemp=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/comparison-repaired/pytest-temp"
+      ],
+      "exit_code": 0,
+      "seconds": 92.949,
+      "source_parent": "7308f6d706777a49009437554dd35fe42ae163dd",
+      "runtime_version": "d4393a5d0e55",
+      "test_sha256": "c76b94150d35699a34fa88362ff8e6f2b7f4d03f18db761fe4f65f254c13a8f2",
+      "passed": 161,
+      "failed": 0,
+      "contract_cases": 39,
+      "browser_cases": 122,
+      "previous_browser_cases": 86,
+      "new_browser_cases": 36,
+      "pytest_seconds": 92.3,
+      "observations": {
+        "contexts": 123,
+        "pages": 129,
+        "page_errors": [],
+        "blocked_external_requests": 0,
+        "blocked_websockets": 0,
+        "browser": "157.0.8103.39"
+      }
+    },
+    {
+      "name": "final_focused_and_visual",
+      "pid": 756,
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "-m",
+        "pytest",
+        "-q",
+        "tests/test_crypto_intelligence_r4_browser.py",
+        "tests/comparison_visual_readback.py",
+        "-k",
+        "comparison_full_cohort or pointer_close_keeps_settings_clear or comparison_visual_readback",
+        "--tb=short",
+        "--junitxml=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/comparison-visual-final/junit.xml",
+        "--basetemp=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/comparison-visual-final/pytest-temp"
+      ],
+      "exit_code": 0,
+      "seconds": 18.603,
+      "runtime_version": "d4393a5d0e55",
+      "test_sha256": "6eba4035d5f5f6d0352ad2a10b891c6ca247e3db94f3d4aae723801ad1f3e794",
+      "runtime_unchanged": true,
+      "passed": 8,
+      "failed": 0,
+      "deselected": 116,
+      "pytest_seconds": 17.01,
+      "observations": {
+        "contexts": 10,
+        "pages": 10,
+        "page_errors": [],
+        "blocked_external_requests": 0,
+        "blocked_websockets": 0,
+        "browser": "157.0.8103.39"
+      },
+      "qualification": "Unchanged runtime. Six primary cases overlap the complete run; two visual readback cases are additional. Pointer test now selects the first visible row, waits two paint frames and isolates panel routing from title copy. Captures are taken before keyboard scrolling."
+    }
+  ],
+  "junit_union": {
+    "primary_passed": 161,
+    "focused_passed": 8,
+    "overlap": 6,
+    "union": 163
+  },
+  "captures": [
+    {
+      "name": "comparison-markets-en-390",
+      "path": "comparison-visual-final/captures/comparison-markets-en-390.png",
+      "bytes": 105420,
+      "sha256": "aa68cd34b2c7553b84fbe9665f5df2c674b7d61005e6556a1b15fe21b8a31112",
+      "blob": "50ca1d38c34fc4a340248dc301f6262a9b9de49f",
+      "published_path": "comparison/captures/comparison-markets-en-390.png",
+      "visually_inspected": true,
+      "synthetic_state": false
+    },
+    {
+      "name": "comparison-asset-en-390",
+      "path": "comparison-visual-final/captures/comparison-asset-en-390.png",
+      "bytes": 29262,
+      "sha256": "088ab7cd5b2ae6a77bc026a8c550143956ad44c223b3bde9531b548682924271",
+      "blob": "e8cbb695c91d92bb60495c7564a6cd4c1ecff422",
+      "published_path": "comparison/captures/comparison-asset-en-390.png",
+      "visually_inspected": true,
+      "synthetic_state": false
+    },
+    {
+      "name": "comparison-basis-en-390",
+      "path": "comparison-visual-final/captures/comparison-basis-en-390.png",
+      "bytes": 61318,
+      "sha256": "f1271e824638eff20cb75e1e26be6b8642d8a2f631bea0177077e118d61d36f2",
+      "blob": "cec0dd336f1c77cae99a57d5d09d2453e68a6f8e",
+      "published_path": "comparison/captures/comparison-basis-en-390.png",
+      "visually_inspected": true,
+      "synthetic_state": false
+    },
+    {
+      "name": "comparison-missing-en-390",
+      "path": "comparison-visual-final/captures/comparison-missing-en-390.png",
+      "bytes": 23077,
+      "sha256": "8b429627a5d1932d4da8de08f9999105b85cd221e5a145fdbbe1114824609a93",
+      "blob": "141aa984f9fea75d78f40d6d6bb5d8160caa3286",
+      "published_path": "comparison/captures/comparison-missing-en-390.png",
+      "visually_inspected": true,
+      "synthetic_state": true
+    },
+    {
+      "name": "comparison-markets-zh-320",
+      "path": "comparison-visual-final/captures/comparison-markets-zh-320.png",
+      "bytes": 89028,
+      "sha256": "ef3b377abc603aa7d121551c1e7a132d4b7270dd1c0e09c2852cb22abae5783c",
+      "blob": "426cb577bb43e738de8431c5b41742eeed06c017",
+      "published_path": "comparison/captures/comparison-markets-zh-320.png",
+      "visually_inspected": true,
+      "synthetic_state": false
+    },
+    {
+      "name": "comparison-asset-zh-320",
+      "path": "comparison-visual-final/captures/comparison-asset-zh-320.png",
+      "bytes": 26272,
+      "sha256": "cf3a84eec81186a6cf01ee82a009f9c083715700647f04d1436e4a9c56cca375",
+      "blob": "145e7e39916573c6d61f51eb4aef9b59fd66fe7c",
+      "published_path": "comparison/captures/comparison-asset-zh-320.png",
+      "visually_inspected": true,
+      "synthetic_state": false
+    },
+    {
+      "name": "comparison-basis-zh-320",
+      "path": "comparison-visual-final/captures/comparison-basis-zh-320.png",
+      "bytes": 60217,
+      "sha256": "c0a861146eb52bad2a17493c4dbcf863035aa520d8cfadaf7a228f898047c538",
+      "blob": "4a9772660efe9dbb604cbc3f453727e391456d59",
+      "published_path": "comparison/captures/comparison-basis-zh-320.png",
+      "visually_inspected": true,
+      "synthetic_state": false
+    },
+    {
+      "name": "comparison-empty-zh-320",
+      "path": "comparison-visual-final/captures/comparison-empty-zh-320.png",
+      "bytes": 20328,
+      "sha256": "36e9095bce2955144647550ad7f77f0e204cd8841d3d2677ea61e8bc466ed79e",
+      "blob": "b67bfbb44c77deb04b36830f725fbfb78c218fef",
+      "published_path": "comparison/captures/comparison-empty-zh-320.png",
+      "visually_inspected": true,
+      "synthetic_state": true
+    },
+    {
+      "name": "comparison-all-en-1440",
+      "path": "comparison-visual-final/captures/comparison-all-en-1440.png",
+      "bytes": 35579,
+      "sha256": "1b9b041325b0afa4e393b5dd97df5e8d94f35e9bba77247ecf121a800c97eeff",
+      "blob": "9c9977668e53cec245c3c111cce06dfcf314a268",
+      "published_path": "comparison/captures/comparison-all-en-1440.png",
+      "visually_inspected": true,
+      "synthetic_state": false
+    },
+    {
+      "name": "comparison-all-en-390",
+      "path": "comparison-visual-final/captures/comparison-all-en-390.png",
+      "bytes": 32049,
+      "sha256": "74aff18e97db2a8ebc9e3b3a5bd70672c468c7c417c28d3661a3d02a5a286027",
+      "blob": "1331673f86f1e817a4315bb6ab263548e5fefb8f",
+      "published_path": "comparison/captures/comparison-all-en-390.png",
+      "visually_inspected": true,
+      "synthetic_state": false
+    },
+    {
+      "name": "comparison-all-zh-320",
+      "path": "comparison-visual-final/captures/comparison-all-zh-320.png",
+      "bytes": 27699,
+      "sha256": "843932da8ba051b0e43ed2f1ed7e37efcfc13f3771f48188154146cd5cdf2bf9",
+      "blob": "3d268ce2d606fe789de698b9a20954e77942ba28",
+      "published_path": "comparison/captures/comparison-all-zh-320.png",
+      "visually_inspected": true,
+      "synthetic_state": false
+    },
+    {
+      "name": "comparison-all-zh-320-touch",
+      "path": "comparison-visual-final/captures/comparison-all-zh-320-touch.png",
+      "bytes": 28039,
+      "sha256": "0484ae407d1bbf46bc7748ce1194b9ded55c5237f2b618d27d4bffdc7034f912",
+      "blob": "67291dd57c7ecbc12d5bcb3f656253e9f5cb80c7",
+      "published_path": "comparison/captures/comparison-all-zh-320-touch.png",
+      "visually_inspected": true,
+      "synthetic_state": false
+    },
+    {
+      "name": "comparison-saved-regression-en-320",
+      "path": "comparison-repaired/captures/layout-saved-en-320-dark.png",
+      "bytes": 37505,
+      "sha256": "b2ba6d774d30bcc35529c1ab9386d43b3ce4960ebd1ff2a2b14cff940e0e03b9",
+      "blob": "523f19e88bded5848339f99553658fd1a68dc46b",
+      "published_path": "comparison/captures/comparison-saved-regression-en-320.png",
+      "visually_inspected": true,
+      "synthetic_state": true
+    }
+  ],
+  "capabilities": {
+    "native_chrome": "157.0.8103.39",
+    "loopback_http_only": true,
+    "external_and_websocket_requests": 0,
+    "personal_browser_profile": false
+  },
+  "behavior_boundaries": {
+    "full_snapshot_cohort": true,
+    "neutral_supplied_order": true,
+    "explicit_legacy_numeric_sort_links": true,
+    "null_zero_and_unavailable_states_distinct": true,
+    "missing_contract_not_known_empty": true,
+    "source_metadata_not_invented": true,
+    "single_disclosure_copy_owner": true,
+    "original_route_focus_and_filters_preserved": true,
+    "reset_yields_to_new_focus_navigation": true,
+    "locale_basis_state_and_scroll_preserved_within_existing_apply": true,
+    "narrow_fine_pointer_dialog_offset_px": 80,
+    "touch_only_drawer_full_height": true,
+    "no_new_navigation_storage_or_settings_owner": true
+  },
+  "remaining": {
+    "paired_window_receipt": "PROPOSED_NOT_EMITTED",
+    "source_model_producer_and_data_refresh": false,
+    "public_routes_replaced": false,
+    "release": "DRAFT_UNARMED_UNMERGED",
+    "production_acceptance": false,
+    "other_browser_engines": "not exercised",
+    "narrow_comparison": "Native horizontal scroll retains all columns; at 320px the second asset is partly outside the initial viewport. Two-asset compact fit is a candidate next phase.",
+    "prior_narrow_geometry_claim": "The narrow fine-pointer dialog offset is a new intentional geometry change. Earlier exact current-scenario geometry evidence remains scoped to its prior commit."
+  },
+  "holds": [
+    "H5/model",
+    "alerts",
+    "hosted/independent visual acceptance",
+    "public-route cutover",
+    "admission/release",
+    "all previously denied or unknown-effect action families"
+  ]
+}

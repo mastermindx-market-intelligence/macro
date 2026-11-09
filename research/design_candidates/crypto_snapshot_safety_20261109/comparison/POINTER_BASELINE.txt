@@ -1,0 +1,20 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+_ test_r4_comparison_pointer_close_keeps_settings_clear_and_owner_usable[en-390] _
+tests/test_crypto_intelligence_r4_browser.py:1630: in test_r4_comparison_pointer_close_keeps_settings_clear_and_owner_usable
+    assert page.locator("#settings-pop").evaluate("node=>getComputedStyle(node).pointerEvents") == "none"
+E   AssertionError: assert 'auto' == 'none'
+E     
+E     - none
+E     + auto
+_ test_r4_comparison_pointer_close_keeps_settings_clear_and_owner_usable[zh-320] _
+tests/test_crypto_intelligence_r4_browser.py:1630: in test_r4_comparison_pointer_close_keeps_settings_clear_and_owner_usable
+    assert page.locator("#settings-pop").evaluate("node=>getComputedStyle(node).pointerEvents") == "none"
+E   AssertionError: assert 'auto' == 'none'
+E     
+E     - none
+E     + auto
+=========================== short test summary info ============================
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_comparison_pointer_close_keeps_settings_clear_and_owner_usable[en-390]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_comparison_pointer_close_keeps_settings_clear_and_owner_usable[zh-320]
+2 failed, 120 deselected in 4.75s

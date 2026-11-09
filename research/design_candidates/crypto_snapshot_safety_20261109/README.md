@@ -1,6 +1,24 @@
-# Crypto R4 saved snapshots: safe, navigable and readable
+# Crypto R4: safe saved cases and clear asset comparisons
 
-## Current phase — original-condition-first saved cases
+## Current phase — honest comparison basis and usable asset workflows
+
+The interface now names the reported measures accurately: **Asset/BTC ratio change** and **Price change**. One native **Comparison basis** disclosure separates the calculation rule from missing paired-window metadata. Markets starts in the supplied asset order, comparison explicitly includes all snapshot assets, and null relative history keeps other usable asset readings visible.
+
+Missing asset data, an empty projection, an absent requested asset and a search with no matches have distinct recovery. Reset keeps keyboard focus. Locale refresh preserves the basis disclosure and reading position. Narrow fine-pointer Close no longer exposes the Settings hover target beneath the mouse; touch drawers remain full-height.
+
+**161 cases passed**: 39 contract + 122 browser cases (all previous 86 plus 36). The native run used 123 contexts / 129 pages with zero page errors or external/WebSocket traffic. Eight final focused/capture cases passed with unchanged runtime; six overlap the suite and two are visual readbacks. **Thirteen final native crops inspected.**
+
+Published values, dates, view JSON, producer and model remain unchanged. The existing renderer reproduces the parent exactly before applying the presentation patch. The proposed per-result comparison receipt remains unimplemented.
+
+- [Comparison architecture, state logic and remaining build plan](COMPARISON_BASIS.md)
+- [Exact source and validation](COMPARISON_VALIDATION.json)
+- [Complete native JUnit](comparison/CANDIDATE_RESULTS.xml) and [final focused JUnit](comparison/FINAL_FOCUSED_RESULTS.xml)
+- [Parent baseline](comparison/BASELINE.txt), [corrected Reset proof](comparison/RESET_BASELINE.txt) and [corrected pointer proof](comparison/POINTER_BASELINE.txt)
+- [Inspected native captures](comparison/captures)
+
+Next: evaluate a compact two-asset matrix at 320/390px while preserving native scrolling for larger cohorts. Public-route, H5/model, alert, hosted/independent visual and release holds remain unchanged.
+
+## Prior phase — original-condition-first saved cases
 
 The complete saved condition is now visible immediately. Two native disclosures hold the original case details and captured evidence; Historical review is the clear primary action. Review qualifications are available on demand. Expiry remains distinct from original progress, and malformed optional evidence never creates invented readings or dates.
 
@@ -15,7 +33,7 @@ Paper now includes **state 17 / 3LJ-0** for unreadable saved evidence and **stat
 - [Source transformations](layout/SOURCE_TRANSFORMS.json)
 - [Inspected native captures](layout/captures)
 
-Next: compare the existing relative-comparison workflow with the accepted Paper window/cohort/basis contract. Release, H5/model, alerts, hosted/independent visual and route-cutover holds remain unchanged.
+The current comparison phase above completes that presentation audit. The proposed paired-window receipt remains separate from implemented UI.
 
 ## Prior phase — saved-case navigation verified
 
