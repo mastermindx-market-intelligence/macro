@@ -3530,3 +3530,58 @@ Source receipt: [BUILD_MAP_VALIDATION.json](https://github.com/mastermindx-marke
 ### Next safe phase
 
 Qualify scenario-card lifecycle through strict supplied date/text validation in the existing apply pass. Expose expired, future-dated or unverifiable windows before inspection, preserve original progress as recorded material, and keep evidence availability independent from the date window. Retain the focused card, original case/horizon, genuine empty branch, shared expiry/save helper and current/saved drawer order. Then inspect the same-case return gap in valid current review. No release/model/denied-effect boundary changes.
+
+
+## 76. Crypto scenario-card lifecycle — dated windows and recorded instructions (2026-11-09)
+
+**Implemented, verified and saved; continuing into current-review parent return.** Dependent Draft [PR #10901](https://github.com/mastermindx-market-intelligence/Macro/pull/10901) advances from documentation checkpoint `2c9d619dfdc2e21a0cc0839094c6fa2be84a6260` to **`bcf8e84957017181dc323ff3c3a9f4b32b218799`**, tree `2ce718df8579f6cb4e01ac6128c0d4e281c168ac`, assets `7fc541a886d1`.
+
+### Product behavior and owner fit
+
+Overview, Bitcoin and Scenarios now show supplied observation/expiry dates and qualify each case before inspection. A coherent expiry remains open through its entire UTC day. Expired windows say **Expired · historical context only**, with original progress under **At cutoff** and instructions under **Recorded next check**. Future-dated observations and missing/impossible/reversed windows retain explicit qualifications and recorded wording.
+
+Evidence availability stays independent from the date window. Explicit insufficient/unavailable evidence overrides contradictory met/pending prose; missing localized progress receives an honest unavailable state without another locale’s text or a levels-derived reconstruction. Missing/nonstring next checks read Not supplied. No-JS cards are time-neutral and typed. Genuine empty scenario lists remain empty.
+
+A pure card projection reuses strict savedDay and savedText checks. Existing apply supplies one sampled UTC day and its captured language. Every repeated instance resolves the case by its enclosing horizon and ID. Text-hook updates preserve the original focused button and inspection destination. No additional timer, clock source, state store, route/history controller or retry owner. The implementation makes no Live/current-evidence or unattended-midnight-refresh claim.
+
+Shared expiry/progress helpers, Save eligibility, current/saved drawer order, producer/model, retained JSON and shared assets remain unchanged. The source contract names the card-only boundary and defensive-fixture scope explicitly.
+
+### Executed native proof
+
+| Run | Outcome | Exact observation |
+|---|---|---|
+| Parent snapshot/reproduction, PID58363 | Exit0 | 21 native inputs match; both retained pages, JS, CSS and JSON reproduce exactly; 0.24s |
+| Parent baseline, PID71236 | 40 failed / 5 passed | 29.11s pytest / 29.535s subprocess; 45 contexts/pages |
+| Initial candidate, PID91280 | 40 passed / 5 failed | 25.49s pytest / 25.764s subprocess; 45 contexts/pages |
+| Corrected affected checks, PID16003 | 5 passed | 6.05s pytest / 6.410s subprocess; 5 contexts/pages |
+| Publication conservation, PID31255 | Exit0 | 8 changed source/served/test paths, 13 unchanged inputs; 0.09s |
+
+**45 unique affected cases have passing coverage across the initial and corrected runs, not one 45-pass run.** The five corrected case identities are exactly the initial candidate failures. Three harness corrections addressed existing CSS uppercase in one enhanced and two static checks, and horizon-ambiguous selectors in two captures. Runtime assets did not change between candidate runs. Initial logs, JUnit, source receipts, test additions and reversible corrections remain in the proof package.
+
+All three browser runs used Chrome 157.0.8103.39 and recorded zero page errors, external requests or WebSocket traffic. Cases cover both locales across the UTC boundary, all repeated 7D/30D instances, future/unverifiable dates, localized missing/blank/object text, contradictory insufficiency, static fallback, genuine empty inputs, retained focus, exact case/horizon inspection, current-drawer order and frozen expiry/progress separation. Opaque saved storage and the entire embedded view remain exact.
+
+Six selected narrow captures were inspected: compact/full expired cases in EN390/ZH320, a future observation and an unavailable expiry. The distinct initial EN full-group capture was also retained and inspected; the compact EN repeat is byte-identical. Full-group crops retain the existing fixed shared launcher.
+
+All **37 text/source/evidence files and seven PNGs** match published content and blob readback. Product/test inverses recover the parent. Both retained pages remain byte-identical outside their 14 card blocks, two asset-version references and three leading template newlines; case identities/order are exact. Template/served JS and CSS match. This is affected local proof, not a full-suite or production-acceptance claim.
+
+[Builder contract](https://github.com/mastermindx-market-intelligence/Macro/blob/bcf8e84957017181dc323ff3c3a9f4b32b218799/research/design_candidates/crypto_snapshot_safety_20261109/SCENARIO_CARD_LIFECYCLE.md) · [Exact proof package](https://github.com/mastermindx-market-intelligence/Macro/tree/bcf8e84957017181dc323ff3c3a9f4b32b218799/research/design_candidates/crypto_snapshot_safety_20261109/card-lifecycle). The consolidated source landing remains a task map and now has 13 workflow rows; no phase chronology was reintroduced.
+
+### Applied editable Paper references
+
+File `01M6Y3F0NXNDPAKJMJGCAD759Z`, existing page `p-1-0`:
+
+- Overview `1-0` and Bitcoin `4B-0`: each compact 7D case gains a date line and a distinct lifecycle/progress line. Complete original progress remains visible under At cutoff; recorded next checks, arrows and Compare remain readable. Four new text nodes per root reuse exact existing styles.
+- Scenarios `BB-0`: the three existing 7D cards show observed 2026-10-17 and expiry 2026-10-24, explicit historical status, complete at-cutoff progress and recorded next checks. Levels and Inspect actions remain. Twelve existing text nodes change; no new nodes or style edits.
+- Scorecard `QI-0`: source note binds bcf8e84. New six-node **Scenario lifecycle scorecard 3OO-0** follows Navigation under RA-0, index 6. It names the existing apply owner, supplied dates/progress, unchanged shared drawer/Save rules, inclusive UTC day, independent evidence and no timer.
+
+All **457 original nodes** preserve exact styles, identities, parent relationships and relative order. **14 new nodes** have exact seed styles. Reversing 21 original text changes and removing only the new nodes recovers all four original JSX strings exactly. Dates remain consistent with the retained 7D selections.
+
+Four full canvases were inspected; text wraps within its existing regions and all five scorecard rows fit inside the 1440×1200 board. Original typography/colors and source values remain. Overview and Bitcoin grow naturally to 1401px and 1387px; their next-row gaps remain 49px and 63px. Scenarios retains a 53px gap before its next board. All four roots were finished after inspection.
+
+Receipt: `PAPER_CRYPTO_CARD_LIFECYCLE_20261109.json`. Full JPEGs: `PAPER_CRYPTO_CARD_LIFECYCLE_OVERVIEW_20261109.jpg`, `PAPER_CRYPTO_CARD_LIFECYCLE_BITCOIN_20261109.jpg`, `PAPER_CRYPTO_CARD_LIFECYCLE_SCENARIOS_20261109.jpg`, `PAPER_CRYPTO_CARD_LIFECYCLE_SCORECARD_20261109.jpg`.
+
+### Next safe phase
+
+Valid current-scenario Historical review still has no explicit same-case parent action. Browser Back returns one level but does not retain that current case’s disclosure/scroll/review focus. Extend the existing history, reading and single pending-return owners with a qualified current-case context; match case ID, horizon, revision and cutoff. Preserve whole-drawer Close, detached replacement semantics, missing-case recovery, unreadable-storage handling and newer-choice safeguards.
+
+All model/H5, alert, paired-receipt, qualified-result, hosted/independent acceptance, public-route cutover, admission/release and denied/unknown-effect boundaries remain. Quote-companion freeform coordinates remain unreported. No production deployment, merge or acceptance is claimed.
