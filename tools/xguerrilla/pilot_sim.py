@@ -20,12 +20,19 @@ from dataclasses import dataclass, field
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from statistics import median
+from typing import Mapping
 
-from . import config, scheduler, telemetry, typing as typing_mod, validators
+from . import (admission, config, net, registry, scheduler, telemetry,
+               typing as typing_mod, validators)
 from .drivers.base import Driver, DriverError, is_challenge
 from .lease import SimulationLeaseStore
 from .validators import Draft
 from .supervisor import SimulationSupervisor
+
+#: Module alias read inside ``run_pilot``: the ``admission`` keyword parameter
+#: shadows the module name there, and the gate must resolve ``preflight`` on
+#: the module at call time (that seam is what the seam tests monkeypatch).
+_admission = admission
 
 #: One lead, one conversation, one broadcast — the three roles §26.9 names. The
 #: broadcast child is the one a worker outage is allowed to drop.
@@ -433,16 +440,227 @@ def _overlong(text: str, persona) -> str:
 
 
 # --------------------------------------------------------------------------
+# identity gates: the registry lock and the admission chain (ADMISSION.md)
+# --------------------------------------------------------------------------
+#: Fail-closed default registry source: the package-shipped SYNTHETIC example
+#: pair, whose single entry is ``proposed`` and so admits no cohort. A caller
+#: that means the run to launch must point ``registry_path`` at a registry
+#: validated against its lock; an absent or unparseable file at whichever path
+#: resolves is a refusal, never a bypass.
+DEFAULT_REGISTRY_PATH = str(Path(__file__).with_name("registry.example.yml"))
+
+#: The simulator's box and the deterministic readings behind its ceiling.
+#: Not a measurement of any box — constants chosen so the declared §26.3
+#: ceiling of six is the binding term, which seats the five-persona roster
+#: and leaves the refusal to a real shortfall, not a fake one.
+SIM_BOX = "synthetic-box"
+SIM_BOX_CEILING = 6
+_SIM_GB = 1024 ** 3
+#: Domain-registration horizon the simulator grants its records (the sim
+#: mints no real registration, so expiry is a fixed distance from the clock).
+ADMISSION_RECORD_HORIZON_S = 10 ** 7
+
+
+class PilotRefused(RuntimeError):
+    """``run_pilot`` refused before launch: an identity gate found a fault.
+
+    ``refusals`` is the channel — one human-readable string per failed gate,
+    house style — and ``str(exc)`` is that list joined, so the exception is
+    only the transport to the caller. Raised before any store, report,
+    supervisor, lease store or driver exists: a refused pilot creates nothing.
+    """
+
+    def __init__(self, refusals: list[str]) -> None:
+        self.refusals = list(refusals)
+        super().__init__("; ".join(self.refusals))
+
+
+def _default_lock_path(registry_path: str, lock_path: str | None) -> str:
+    """``registry.yml`` -> ``registry.lock.yml``; ``registry.example.yml`` ->
+    ``registry.lock.example.yml`` — the same stem rule cli.py applies."""
+    if lock_path:
+        return lock_path
+    path = Path(registry_path)
+    stem, _, rest = path.name.partition(".")
+    return str(path.with_name(f"{stem}.lock.{rest}" if rest else f"{stem}.lock.yml"))
+
+
+def _admission_records(doc: dict, handles: list[str], now: float) -> tuple:
+    """Deterministic admission records derived from the registry rows.
+
+    The registry document is where identity already lives, so each cohort
+    entry's domain, recovery owner, mailbox binding, custody seat, child id
+    and proxy slot become the stage records. Every record reads as
+    verified/enrolled/admitted because a row that is not admitted is refused
+    earlier, by ``launchable``; expiry is a fixed horizon from the clock; the
+    proxy slot is a name-bearing synthetic stand-in whose only real field is
+    the registry's ``proxy_slot`` key (a grant carries slot names, never
+    endpoints or credentials).
+    """
+    entries = {row.get("handle"): row for row in (doc.get("entries") or [])
+               if isinstance(row, dict) and isinstance(row.get("handle"), str)}
+    horizon = now + ADMISSION_RECORD_HORIZON_S
+    domains, identities, custody, accounts, slots = [], [], [], [], []
+    for i, handle in enumerate(handles):
+        entry = entries.get(handle) or {}
+        raw_binding = entry.get("binding")
+        binding = raw_binding if isinstance(raw_binding, dict) else {}
+        domain = entry.get("domain") or f"{handle}.invalid"
+        mailbox = binding.get("email_mailbox")
+        address = (mailbox.replace(":", "@", 1)
+                   if isinstance(mailbox, str) and ":" in mailbox else f"sim@{domain}")
+        slot = binding.get("proxy_slot")
+        slot_name = (slot if isinstance(slot, str) and slot.strip()
+                     else f"sim-slot-{i:02d}")
+        domains.append(admission.DomainRecord(
+            domain=domain, handle=handle, verified=True, expires_at=horizon))
+        identities.append(admission.Identity(
+            handle=handle, address=address, domain=domain,
+            recovery_owner=entry.get("recovery_owner") or "sim-custodian",
+            verified=True))
+        custody.append(admission.Custody(
+            handle=handle, totp_enrolled=True,
+            recovery_custodian=binding.get("totp_custodian") or "sim-custodian",
+            recovery_codes_held=True))
+        accounts.append(admission.Account(
+            handle=handle, account_id=str(entry.get("child_id") or handle),
+            admitted=True))
+        slots.append(net.Slot(host=f"sim-proxy-{i:02d}.invalid", port=10000 + i,
+                              user="sim", password="synthetic", name=slot_name))
+    return domains, identities, custody, accounts, slots
+
+
+def _default_box(doc: dict, handles: list[str], now: float) -> admission.Box:
+    """The simulator's box: an empty census of a synthetic host, a ceiling
+    bound by its declaration. The persona binding ports are declared so a
+    census that ever observes one is a declared port, not a refusal."""
+    entries = {row.get("handle"): row for row in (doc.get("entries") or [])
+               if isinstance(row, dict) and isinstance(row.get("handle"), str)}
+    declared_ports = set()
+    for handle in handles:
+        binding = entries.get(handle, {}).get("binding")
+        port = binding.get("cdp_port") if isinstance(binding, dict) else None
+        if isinstance(port, int) and not isinstance(port, bool):
+            declared_ports.add(port)
+    headroom = admission.Headroom(
+        measured_at=now - 5,
+        memory_total_bytes=16 * _SIM_GB,
+        memory_available_bytes=9 * _SIM_GB,
+        browser_resident_bytes=1 * _SIM_GB,
+        process_limit=4000,
+        process_in_use=1000,
+        browser_processes=30,
+        memory_basis="free_inactive_speculative",
+    )
+    census = admission.Enumeration(
+        schema_version=1, host=SIM_BOX, taken_at=now - 5,
+        collection_status="complete", observed_ports=frozenset())
+    return admission.Box(SIM_BOX, SIM_BOX_CEILING, headroom,
+                         admission.DEFAULT_MAX_AGE, census,
+                         frozenset(declared_ports), frozenset())
+
+
+def _identity_gates(handles: list[str], *, registry_path: str | None,
+                    lock_path: str | None, expected_revision: int | None,
+                    admission: Mapping | None, now: float) -> admission.SlotGrant:
+    """The one runtime call site (ADMISSION.md): refuse, or grant.
+
+    Registry gates first — load (fail-closed), revision, lock, then per
+    cohort handle ``launchable`` and the bio law — then the admission chain
+    for the cohort as a whole. Every refusal collects into one ``list[str]``
+    (house style) and raises :class:`PilotRefused`; success returns the one
+    ``SlotGrant`` the chain minted. Pure: no clock, no report, no store, no
+    driver exists before this returns or raises.
+    """
+    refusals: list[str] = []
+    source = registry_path or DEFAULT_REGISTRY_PATH
+    doc, load_errors = registry.load_registry(source)
+    refusals.extend(load_errors)
+    lock, lock_errors = registry.load_lock(_default_lock_path(source, lock_path))
+    refusals.extend(lock_errors)
+    if doc is not None:
+        expected = expected_revision
+        if expected is None and isinstance(lock, dict):
+            expected = lock.get("registry_revision")
+        if expected is not None:
+            refusals.extend(registry.check_revision(doc, expected))
+        if lock is not None:
+            # The lock is the mutation check: an edit that kept the revision
+            # would pass check_revision and still be drift.
+            refusals.extend(registry.check_lock(doc, lock))
+        entries = {row.get("handle"): row for row in (doc.get("entries") or [])
+                   if isinstance(row, dict) and isinstance(row.get("handle"), str)}
+        for handle in handles:
+            refusals.extend(registry.launchable(doc, handle))
+            entry = entries.get(handle)
+            if entry is None:
+                # The bio/link gates test text derived FROM the entry; with no
+                # entry there is no bio payload, and launchable's refusal
+                # above already names the handle.
+                continue
+            # The pilot composes zero links in posts (BL-9), so the profile
+            # bio is the one text under test — and the simulator's bio is
+            # exactly the canonical attribution link (BL-2: the path IS the
+            # child id).
+            bio = validators.canonical_bio_link(entry.get("child_id") or "")
+            refusals.extend(registry.validate_bio_against_registry(bio, doc, handle))
+            refusals.extend(registry.links_outside_domain(bio, entry))
+        bundle = dict(admission or {})
+        records = _admission_records(doc, handles, now)
+        preflight_kwargs = {
+            "domains": records[0], "identities": records[1],
+            "custody": records[2], "accounts": records[3], "slots": records[4],
+            "box": _default_box(doc, handles, now),
+            **bundle,
+        }
+        try:
+            # Pure: records in, a grant out. The grant is minted and logged
+            # by the caller, never handed to a driver — the drivers here are
+            # fake.
+            chain = _admission.preflight(handles=handles, now=now,
+                                         **preflight_kwargs)
+        except _admission.AdmissionRefused as exc:
+            # One verdict line joins the same refusal list the registry gates
+            # built (no secrets: public() is already JSON-safe).
+            verdict = exc.public()
+            raise PilotRefused(refusals + [
+                f"admission:{verdict['stage']}:{verdict['code']}: "
+                f"{verdict['detail']} — {verdict['remedy']}",
+            ]) from exc
+        if refusals:
+            raise PilotRefused(refusals)
+        return chain.grant
+    raise PilotRefused(refusals)
+
+
+# --------------------------------------------------------------------------
 # the run
 # --------------------------------------------------------------------------
 def run_pilot(children=None, days: int = 14, *, seed: int = 7,
-              store_dir=None, persona_dir=None, inject: dict | None = None) -> Report:
+              store_dir=None, persona_dir=None, inject: dict | None = None,
+              registry_path: str | None = None, lock_path: str | None = None,
+              expected_revision: int | None = None,
+              admission: Mapping | None = None) -> Report:
     """Run the whole pilot in simulation and return the evidence.
 
     Never sleeps, never opens a browser, never touches the network. ``inject``
     is the failure panel; with none supplied the run is a clean fourteen days
     plus the two things §26.9 requires on purpose: one restart (day 7) and one
     worker outage (days 9-10) that must degrade and recover.
+
+    Before anything is created, the run clears the identity gates — the one
+    runtime call site (ADMISSION.md, "The one call site"): the registry gates
+    (``launchable``, the bio law, the lock and revision checks) for every
+    cohort handle, then ``admission.preflight`` for the cohort as a whole.
+    ``registry_path``/``lock_path`` source the registry (fail-closed: the
+    default is the shipped synthetic example, which admits nobody);
+    ``expected_revision`` defaults to the lock's recorded revision.
+    ``admission`` optionally overrides the preflight bundle — a mapping
+    whose keys are ``domains``, ``identities``, ``custody``, ``slots``,
+    ``accounts`` or ``box`` (the admission.py record types); anything not
+    supplied is derived from the registry rows and the simulator's constant
+    box. Refusals collect into one ``list[str]`` and raise :class:`PilotRefused`
+    (``.refusals``); nothing is launched, created or written when it fires.
     """
     inject = dict(inject or {})
     personas = config.load_personas(persona_dir)
@@ -454,6 +672,16 @@ def run_pilot(children=None, days: int = 14, *, seed: int = 7,
         raise ValueError("days must be at least 1")
 
     start = inject.get("start") or START
+
+    # -- the identity gates: the last cheap place to refuse -------------------
+    # One call site, by design (ADMISSION.md): registry gates first, then the
+    # admission chain — all before a clock, a report, a supervisor, a lease
+    # store or a driver exists. No second copy of any check lives elsewhere.
+    grant = _identity_gates(handles, registry_path=registry_path,
+                            lock_path=lock_path,
+                            expected_revision=expected_revision,
+                            admission=admission, now=start.timestamp())
+
     clock = SimClock(start)
     root = Path(store_dir) if store_dir else Path(tempfile.mkdtemp(prefix="xg-pilot-"))
     root.mkdir(parents=True, exist_ok=True)
@@ -466,6 +694,16 @@ def run_pilot(children=None, days: int = 14, *, seed: int = 7,
     report.per_child_days = {h: 0 for h in handles}
     report.labels = {h: {} for h in handles}
     report.iki = {h: {"n": 0, "median": 0.0, "cv": 0.0, "skew": 0.0} for h in handles}
+
+    # The admission receipt travels with the telemetry (names only — a grant
+    # carries slot names, never endpoints), so the evidence trail shows the
+    # cohort was admitted by the gate, not assumed by the run.
+    telemetry.record(tele, "admission", box=grant.box,
+                     handles=list(grant.handles),
+                     slots=dict(grant.slots),
+                     effective_ceiling=grant.effective_ceiling,
+                     chain_digest=grant.chain_digest,
+                     at_sim=start.isoformat())
 
     sup = SimulationSupervisor(db, personas={h: personas[h] for h in handles})
     leases = [SimulationLeaseStore(db, clock=lambda: clock.now().timestamp()) for _ in range(2)]
@@ -847,5 +1085,5 @@ def driver_contract_ok(driver=None) -> bool:
     return isinstance(driver if driver is not None else FakeDriver(), Driver)
 
 
-__all__ = ["CRITERIA", "DEFAULT_CHILDREN", "FakeDriver", "Report", "SimClock",
-           "criteria_state", "driver_contract_ok", "judge", "run_pilot"]
+__all__ = ["CRITERIA", "DEFAULT_CHILDREN", "FakeDriver", "PilotRefused", "Report",
+           "SimClock", "criteria_state", "driver_contract_ok", "judge", "run_pilot"]

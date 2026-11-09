@@ -117,6 +117,90 @@ def tmp_profile(tmp_path):
 
 
 @pytest.fixture(scope="session")
+def synthetic_registry_lock(tmp_path_factory):
+    """A valid ADMITTED registry plus its exact lock, written on disk.
+
+    ``run_pilot``'s registry gate is fail-closed and its default source is the
+    shipped ``registry.example.yml`` — whose single entry is ``proposed``, so
+    it admits no cohort. Every pilot test therefore runs against this
+    synthetic admitted registry (one entry per ``synthetic_xg_config`` handle,
+    all ``admitted``); the lock comes from ``registry.write_lock`` so it is
+    the exact snapshot the mutation check requires. Receipts are
+    documentation placeholders (the same convention the shipped example uses)
+    because no admission event ever happened: these are synthetic identities
+    for a paper harness.
+    """
+    import yaml
+
+    from xguerrilla import registry
+
+    zero = "0" * 64
+    handles = ["wren.mp4", "harperbuilds", "lowlit.austin", "mila.lifts", "desk.and.dusk"]
+    entries = []
+    for i, handle in enumerate(handles, start=1):
+        entries.append({
+            "handle": handle,
+            "child_id": f"xg{i:04d}",
+            "state": "admitted",
+            "revision": 1,
+            "domain": "www.mastermind-x.com",
+            "recovery_owner": "seat:synthetic",
+            "bio_link_policy": "single_canonical",
+            "binding": {
+                "email_mailbox": f"mail.synthetic.invalid:{handle.replace('.', '-')}",
+                "proxy_slot": f"synthetic-{i:02d}",
+                "cdp_port": 9300 + i,
+                "totp_custodian": "seat:sim",
+            },
+            "admission_receipt": {"path": f"synthetic/admission-{i:02d}.md",
+                                  "sha256": zero},
+            "drift_observed_at": None,
+            "drift_evidence_ref": None,
+            "suspended_by": None,
+            "retired_from": None,
+        })
+    doc = {
+        "schema_version": 1,
+        "registry_revision": 1,
+        "mail_domains": ["mail.synthetic.invalid"],
+        "domains": [{
+            "domain": "www.mastermind-x.com",
+            "state": "admitted",
+            "recovery_owner": "seat:synthetic",
+            "bio_link_policy": "single_canonical",
+            "admission_receipt": {"path": "synthetic/domain.md", "sha256": zero},
+        }],
+        "entries": entries,
+    }
+    root = tmp_path_factory.mktemp("xg-synthetic-registry")
+    reg_path = root / "registry.yml"
+    lock_path = root / "registry.lock.yml"
+    reg_path.write_text(yaml.safe_dump(doc, sort_keys=True))
+    lock_path.write_text(yaml.safe_dump(registry.write_lock(doc), sort_keys=True))
+    return SimpleNamespace(registry=str(reg_path), lock=str(lock_path), doc=doc)
+
+
+@pytest.fixture(scope="session", autouse=True)
+def _admitted_registry_for_pilot(synthetic_registry_lock):
+    """Point ``run_pilot``'s fail-closed default at the admitted registry.
+
+    Session-wide, so every run_pilot consumer — the pilot tests and the gate
+    CLI tests alike — clears the identity gates without passing registry
+    paths. The gate reads ``DEFAULT_REGISTRY_PATH`` at call time, which is
+    what makes this patch the only wiring the suite needs.
+    """
+    try:
+        from tools.xguerrilla import pilot_sim
+    except ImportError:  # e.g. pytest rooted inside tests/ without the repo
+        from xguerrilla import pilot_sim  # pragma: no cover
+
+    with pytest.MonkeyPatch.context() as patch:
+        patch.setattr(pilot_sim, "DEFAULT_REGISTRY_PATH",
+                      synthetic_registry_lock.registry)
+        yield
+
+
+@pytest.fixture(scope="session")
 def net_slots(synthetic_proxy_path):
     """Synthetic slots parsed by the actual loader; no private-path fallback."""
     return net.load(str(synthetic_proxy_path))

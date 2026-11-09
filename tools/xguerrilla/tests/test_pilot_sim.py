@@ -4,12 +4,16 @@ Temporary generated persona/link files pass through the actual loader. Fake
 clock/driver/model results confer no live or incumbent runtime authority."""
 from __future__ import annotations
 
+import copy
 import json
+import sys
 from datetime import datetime, timedelta
+from pathlib import Path
 
 import pytest
+import yaml
 
-from tools.xguerrilla import config, gate, pilot_sim, telemetry
+from tools.xguerrilla import admission, config, gate, pilot_sim, registry, telemetry
 from tools.xguerrilla.drivers import base
 from tools.xguerrilla.lease import SimulationLeaseStore
 from tools.xguerrilla.typing import plan
@@ -357,3 +361,184 @@ def test_gate_drill_passes(capsys):
 @pytest.fixture(scope="module")
 def store_dir(tmp_path_factory):
     return str(tmp_path_factory.mktemp("gate-store"))
+
+
+# --------------------------------------------------------------------------
+# identity gates: registry + admission at the one run_pilot call site
+# --------------------------------------------------------------------------
+def _write_registry(tmp_path, doc, stem="registry"):
+    """A registry document plus its exact lock (written by the real writer)."""
+    reg = tmp_path / f"{stem}.yml"
+    lock = tmp_path / f"{stem}.lock.yml"
+    reg.write_text(yaml.safe_dump(doc, sort_keys=True))
+    lock.write_text(yaml.safe_dump(registry.write_lock(doc), sort_keys=True))
+    return str(reg), str(lock)
+
+
+def test_a_non_admitted_entry_refuses_before_anything_launches(
+        tmp_path, synthetic_registry_lock, monkeypatch):
+    """T1: a real payload row in the wrong state refuses the whole run."""
+    doc = copy.deepcopy(synthetic_registry_lock.doc)
+    row = [e for e in doc["entries"] if e["handle"] == CHILD][0]
+    row["state"] = "proposed"
+    row["binding"] = {"email_mailbox": None, "proxy_slot": None,
+                      "cdp_port": None, "totp_custodian": None}
+    row["admission_receipt"] = None
+    reg, lock = _write_registry(tmp_path, doc, stem="registry-proposed")
+
+    def _no_supervisor(*args, **kwargs):
+        raise AssertionError("SimulationSupervisor constructed past the gate")
+
+    monkeypatch.setattr(pilot_sim, "SimulationSupervisor", _no_supervisor)
+    store = tmp_path / "store"
+    with pytest.raises(pilot_sim.PilotRefused) as caught:
+        pilot_sim.run_pilot([CHILD], 2, store_dir=str(store),
+                            registry_path=reg, lock_path=lock)
+    refused = caught.value
+    assert any(CHILD in r and "not admitted" in r for r in refused.refusals), \
+        refused.refusals
+    assert str(refused) == "; ".join(refused.refusals)
+    assert not (store / "state.db").exists()
+    assert not (store / "telemetry.jsonl").exists()
+
+
+def test_a_registry_mutated_after_its_lock_refuses_the_pilot(
+        tmp_path, synthetic_registry_lock):
+    """T2: the revision/lock gate fires before launch on a post-lock edit."""
+    doc = copy.deepcopy(synthetic_registry_lock.doc)
+    doc["registry_revision"] += 1
+    reg, _ = _write_registry(tmp_path, doc, stem="registry-mutated")
+    store = tmp_path / "store"
+    with pytest.raises(pilot_sim.PilotRefused) as caught:
+        pilot_sim.run_pilot([CHILD], 2, store_dir=str(store),
+                            registry_path=reg,
+                            lock_path=synthetic_registry_lock.lock)
+    text = "; ".join(caught.value.refusals)
+    # Both gates fire on this payload: check_revision (expected defaults to
+    # the lock's recorded revision) and check_lock (exact snapshot law).
+    assert "edited mid-run" in text, caught.value.refusals
+    assert "document and lock revisions must agree" in text, caught.value.refusals
+    assert not (store / "state.db").exists()
+    assert not (store / "telemetry.jsonl").exists()
+
+
+def test_an_admission_refusal_joins_the_registry_refusals_in_one_list(
+        tmp_path, synthetic_registry_lock, monkeypatch):
+    """T3: the admission verdict and the registry refusals share one channel."""
+    doc = copy.deepcopy(synthetic_registry_lock.doc)
+    doc["registry_revision"] += 1
+    reg, _ = _write_registry(tmp_path, doc, stem="registry-mutated")
+
+    def _refused(**kwargs):
+        raise admission.AdmissionRefused(
+            "slot", "ceiling_exhausted",
+            "1 child for synthetic-box, whose measured ceiling is 0 (declared 6, "
+            "memory supports 0, processes support 100, bound by memory)",
+            "shrink the cohort or free the box")
+
+    monkeypatch.setattr(pilot_sim.admission, "preflight", _refused)
+    with pytest.raises(pilot_sim.PilotRefused) as caught:
+        pilot_sim.run_pilot([CHILD], 2, store_dir=str(tmp_path / "store"),
+                            registry_path=reg,
+                            lock_path=synthetic_registry_lock.lock)
+    refusals = caught.value.refusals
+    assert any("edited mid-run" in r for r in refusals), refusals
+    assert any(r.startswith("admission:slot:ceiling_exhausted:")
+               and "measured ceiling is 0" in r and "shrink the cohort" in r
+               for r in refusals), refusals
+
+
+def test_a_real_preflight_refusal_travels_through_the_same_channel(
+        tmp_path, synthetic_registry_lock):
+    """No monkeypatch: an empty slot pool refuses at stage 4 via the kwarg."""
+    with pytest.raises(pilot_sim.PilotRefused) as caught:
+        pilot_sim.run_pilot([CHILD], 2, store_dir=str(tmp_path / "store"),
+                            registry_path=synthetic_registry_lock.registry,
+                            lock_path=synthetic_registry_lock.lock,
+                            admission={"slots": []})
+    refusals = caught.value.refusals
+    assert any(r.startswith("admission:proxy:proxy_shortfall:") for r in refusals), \
+        refusals
+    assert not (tmp_path / "store" / "state.db").exists()
+
+
+def test_each_gate_is_invoked_from_the_one_call_site(
+        tmp_path, synthetic_registry_lock, monkeypatch):
+    """T4: every gate counts exactly once for a one-handle happy-path run.
+
+    ``links_outside_domain`` is counted at the pilot's call site only: the
+    registry's own ``validate_bio_against_registry`` also composes it for the
+    single_canonical policy (registry.py), so the module attribute fires once
+    more per handle. The pilot's own call site is exactly one of the two.
+    """
+    calls: dict[str, int] = {}
+    total: dict[str, int] = {}
+
+    def counting(name, fn):
+        def wrapped(*args, **kwargs):
+            total[name] = total.get(name, 0) + 1
+            calls[name] = calls.get(name, 0) + 1
+            return fn(*args, **kwargs)
+        return wrapped
+
+    def gate_counting(name, fn):
+        def wrapped(*args, **kwargs):
+            total[name] = total.get(name, 0) + 1
+            if sys._getframe(1).f_code.co_name == "_identity_gates":
+                calls[name] = calls.get(name, 0) + 1
+            return fn(*args, **kwargs)
+        return wrapped
+
+    monkeypatch.setattr(pilot_sim.registry, "check_revision",
+                        counting("check_revision", pilot_sim.registry.check_revision))
+    monkeypatch.setattr(pilot_sim.registry, "check_lock",
+                        counting("check_lock", pilot_sim.registry.check_lock))
+    monkeypatch.setattr(pilot_sim.registry, "launchable",
+                        counting("launchable", pilot_sim.registry.launchable))
+    monkeypatch.setattr(pilot_sim.registry, "validate_bio_against_registry",
+                        counting("bio", pilot_sim.registry.validate_bio_against_registry))
+    monkeypatch.setattr(pilot_sim.registry, "links_outside_domain",
+                        gate_counting("links", pilot_sim.registry.links_outside_domain))
+    monkeypatch.setattr(pilot_sim.admission, "preflight",
+                        counting("preflight", pilot_sim.admission.preflight))
+    report = pilot_sim.run_pilot([CHILD], 2, store_dir=str(tmp_path / "store"),
+                                 registry_path=synthetic_registry_lock.registry,
+                                 lock_path=synthetic_registry_lock.lock)
+    assert calls == {"check_revision": 1, "check_lock": 1, "launchable": 1,
+                     "bio": 1, "links": 1, "preflight": 1}, calls
+    # the second links call is the bio gate's own composition, not a second
+    # pilot call site: two for one handle, both from inside the one gate pass
+    assert total["links"] == 2, total
+    assert report.posts >= 5
+
+
+def test_an_admitted_cohort_clears_the_gates_and_runs(tmp_path):
+    """T5: the NON-FIRE case — admitted rows, matching revision, real run."""
+    report = run(tmp_path, days=2)
+    assert isinstance(report, pilot_sim.Report)
+    assert report.per_child_days[CHILD] == 2 and report.posts >= 5
+    assert report.labels[CHILD]
+    # the minted grant is logged once, names only, with the measured ceiling
+    admissions = [r for r in telemetry.rows(report.telemetry)
+                  if r["kind"] == "admission"]
+    assert len(admissions) == 1
+    assert admissions[0]["handles"] == [CHILD]
+    assert admissions[0]["effective_ceiling"] == pilot_sim.SIM_BOX_CEILING
+    assert admissions[0]["chain_digest"]
+
+
+def test_the_fail_closed_default_is_the_shipped_example_registry(monkeypatch, tmp_path):
+    """registry_path=None resolves to the shipped example, which admits nobody:
+    every default handle comes back named in one refusal list, nothing written."""
+    shipped = str(Path(pilot_sim.__file__).parent / "registry.example.yml")
+    monkeypatch.setattr(pilot_sim, "DEFAULT_REGISTRY_PATH", shipped)
+    store = tmp_path / "store"
+    with pytest.raises(pilot_sim.PilotRefused) as caught:
+        pilot_sim.run_pilot(list(pilot_sim.DEFAULT_CHILDREN), 2,
+                            store_dir=str(store))
+    text = "; ".join(caught.value.refusals)
+    for handle in pilot_sim.DEFAULT_CHILDREN:
+        assert handle in text, (handle, caught.value.refusals)
+    assert "no registry entry" in text
+    assert not (store / "state.db").exists()
+    assert not (store / "telemetry.jsonl").exists()
