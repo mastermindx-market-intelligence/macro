@@ -493,6 +493,14 @@ MEASURED_JOB_SECONDS_PATH = (
 )
 MEASURED_SAMPLE_MAX_AGE_DAYS = 120
 MEASURED_SAMPLE_HEADROOM = 1.10
+# One-time migration seed of the frozen OBSERVED_COMMAND_SECONDS hand-entered
+# hosted seconds (2026-11-09). Those values were permanent in code — they never
+# aged out — so their seeded samples are exempt from the freshness window:
+# without the exemption, 2026-12-13 would silently drop ~16 data-gated
+# heavyweights (engine-render-guards 875 s et al., jobs a code-gated natural
+# run cannot select) to the 150 s unobserved bound. They leave the table only
+# by explicit edit; a natural observation supersedes them via max().
+LEGACY_SEED_RUN_ID = "legacy-observed-command-seconds"
 # Derived 2026-11-09 from run 42559449303's 325 measured logical jobs
 # (max observed test seconds per job, deduplicated across re-emits):
 # p50 9.0 / p75 33.8 / p85 75.3 / p90 128.8 / p95 258.5 / max 4700.5.
@@ -546,7 +554,7 @@ def _measured_job_seconds_cached(
                 observed_date = dt.date.fromisoformat(observed)
             except ValueError:
                 continue
-            if observed_date < horizon:
+            if observed_date < horizon and sample.get("run_id") != LEGACY_SEED_RUN_ID:
                 continue
             estimates.append(float(test_seconds) + float(dependency_seconds))
         if estimates:

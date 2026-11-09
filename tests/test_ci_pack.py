@@ -3109,11 +3109,31 @@ def test_plan_is_deterministic() -> None:
 def test_measured_heavy_weights_rebalance_without_changing_execution_proofs(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """Calibration changes the attested assignment, never the work it proves."""
+    """Calibration changes the attested assignment, never the work it proves.
+
+    2026-11-09 measured-cost migration (receipt:
+    research/ci_pack_measured_costs_20261109/): the calibration lever moved
+    from OBSERVED_COMMAND_SECONDS — now frozen replay-parity data that
+    ``_job_weight`` no longer reads — to the committed measured table. The
+    analogous perturbation is dropping the two heaviest measured jobs'
+    table entries so they plan at the unobserved bound; the assignment must
+    move while every execution proof stays byte-identical.
+    """
     calibrated = _full_plan()
+    committed = PACK.measured_job_weight_table()
+    assert committed, "the committed measured table must load in this checkout"
     for job_id in ("fif-kernel-guards", "earnings-economic-dossier"):
-        monkeypatch.delitem(PACK.OBSERVED_COMMAND_SECONDS, job_id, raising=False)
+        assert job_id in committed, job_id
+    uncalibrated = {
+        job_id: weight
+        for job_id, weight in committed.items()
+        if job_id not in ("fif-kernel-guards", "earnings-economic-dossier")
+    }
+    monkeypatch.setattr(
+        PACK, "measured_job_weight_table", lambda *args, **kwargs: uncalibrated
+    )
     heuristic = _full_plan()
+    monkeypatch.undo()
 
     assert calibrated.eligible_job_ids == heuristic.eligible_job_ids
     assert calibrated.pack_count == heuristic.pack_count == 12

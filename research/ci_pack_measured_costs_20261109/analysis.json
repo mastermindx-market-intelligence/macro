@@ -48,7 +48,18 @@
     "nearest_rank": true,
     "total_test_s": 20118.6,
     "total_dep_s": 2507.1,
-    "jobs_with_dependency_install_phase": 226
+    "jobs_with_dependency_install_phase": 226,
+    "derivation": "exact nanoseconds summed from the raw artifacts (deduplicated max per job and phase)"
+  },
+  "committed_table_reproduction": {
+    "total_test_s": 20118.1,
+    "total_dep_s": 2507.0,
+    "jobs_with_dependency_install_phase": 219,
+    "deltas_from_raw": [
+      "each sample is rounded to 0.1 s at ingest (_seconds_from_ns), moving the sums by -0.5 s test / -0.1 s dep",
+      "7 dependency-only observations (dep phase, no test phase) are dropped by ingest_samples' test-phase filter, hence 226 -> 219"
+    ],
+    "quantiles_unaffected": "the per-job quantiles and the UNOBSERVED_JOB_COST_SECONDS=150 derivation reproduce exactly from the committed table"
   },
   "estimator_constants": {
     "MEASURED_SAMPLE_MAX_AGE_DAYS": 120,

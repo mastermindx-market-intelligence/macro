@@ -119,6 +119,23 @@ def test_estimator_takes_max_fresh_sample_plus_dependency_and_headroom(tmp_path)
     assert weights["beta"] == 132   # ceil(1.10 * 100 + 1.10 * 20 dependency)
 
 
+def test_the_legacy_migration_seed_never_ages_out(tmp_path):
+    """The seeded hand-entered seconds were permanent in code; keep them so.
+
+    Without the exemption, 2026-12-13 would silently drop the ~16 data-gated
+    heavyweights a code-gated natural run cannot select (engine-render-guards
+    875 s et al.) from 875 s to the 150 s unobserved bound.
+    """
+    table = _write_table(tmp_path / "measured.json", _table({
+        "seeded-heavyweight": [
+            _sample(875.0, STALE, run_id=PACK.LEGACY_SEED_RUN_ID),
+        ],
+        "natural-stale": [_sample(400.0, STALE)],
+    }))
+    weights = PACK.measured_job_weight_table(table, today=TODAY)
+    assert weights == {"seeded-heavyweight": 963}  # ceil(1.1 * 875), kept
+
+
 def test_stale_or_malformed_samples_are_unobserved(tmp_path):
     table = _write_table(tmp_path / "measured.json", _table({
         "only-stale": [_sample(4000.0, STALE)],
@@ -222,8 +239,12 @@ def test_ingest_merges_by_run_identity_and_takes_upper_tail(tmp_path):
         "run_id": "42559449303", "attempt": 1, "observed": FRESH,
         "test_seconds": 4700.5, "dependency_install_seconds": 20.2,
     }]
-    # Re-ingesting the same run replaces its samples; a second run appends.
-    UPDATE.main(args)
+    # Re-ingesting the same run is refused without --replace-run (a partial
+    # artifact download must not silently drop that run's jobs) and replaces
+    # its samples wholesale with it; a second run appends.
+    with pytest.raises(UPDATE.IngestError, match="already in the table"):
+        UPDATE.main(args)
+    UPDATE.main([*args, "--replace-run"])
     second_artifacts = _artifact_tree(tmp_path / "second", {
         "pack-0/timing.jsonl": [
             _observed("fif-kernel-guards", "test", 5_100_000_000_000),
@@ -260,6 +281,39 @@ def test_ingest_is_fail_closed_on_unknown_shapes(tmp_path, record):
         UPDATE.main(["--artifacts", str(artifacts), "--run-id", "1",
                      "--attempt", "1", "--captured", FRESH,
                      "--output", str(tmp_path / "out.json")])
+
+
+def test_a_partial_reingest_cannot_silently_drop_jobs(tmp_path):
+    """--replace-run makes wholesale replacement an explicit choice.
+
+    Re-ingesting a run replaces that run's samples wholesale, so a partial
+    download (fewer packs, fewer jobs) with the flag deliberately narrows
+    the run's job set — visibly, in the reviewed diff — while the refusal
+    keeps the accident impossible.
+    """
+    output = tmp_path / "measured.json"
+    full = _artifact_tree(tmp_path / "full", {
+        "pack-0/timing.jsonl": [
+            _observed("alpha", "test", 100_000_000_000),
+            _observed("beta", "test", 200_000_000_000),
+        ],
+    })
+    args = ["--artifacts", str(full), "--run-id", "42", "--attempt", "1",
+            "--captured", FRESH, "--output", str(output)]
+    UPDATE.main(args)
+    assert sorted(json.loads(output.read_text())["jobs"]) == ["alpha", "beta"]
+
+    partial = _artifact_tree(tmp_path / "partial", {
+        "pack-0/timing.jsonl": [_observed("alpha", "test", 90_000_000_000)],
+    })
+    partial_args = ["--artifacts", str(partial), "--run-id", "42", "--attempt", "1",
+                    "--captured", FRESH, "--output", str(output)]
+    with pytest.raises(UPDATE.IngestError, match="--replace-run"):
+        UPDATE.main(partial_args)
+    UPDATE.main([*partial_args, "--replace-run"])
+    table = json.loads(output.read_text())
+    assert sorted(table["jobs"]) == ["alpha"]  # beta is gone — visibly
+    assert table["jobs"]["alpha"]["samples"][0]["test_seconds"] == 90.0
 
 
 def test_ingest_refuses_an_empty_download(tmp_path):
@@ -347,20 +401,10 @@ def test_replay_parity_measured_grouping_preserves_the_selected_workload():
             assert len(proofs) == len(set(proofs)), (label, job.job_id)
 
     # Predicted wall model, from the measured data only: the migration must
-    # not lengthen the critical-path pack. Setup is a constant per pack, so
-    # it cancels out of the comparison but is included for the printed model
-    # numbers the migration receipt carries.
-    measured = PACK.measured_job_weight_table(today=TODAY)
-
-    def walls(packs):
-        return sorted(
-            PACK.PACK_SETUP_OVERHEAD_SECONDS
-            + sum(measured.get(job.job_id, PACK.UNOBSERVED_JOB_COST_SECONDS)
-                  for job in pack)
-            for pack in packs if pack
-        )
-
-    new_walls, old_walls = walls(new_packs), walls(old_packs)
+    # not lengthen the critical-path pack. The shared model helper is the
+    # one production surface (no test-local copy to drift from it).
+    new_walls = sorted(PACK.predicted_pack_walls_seconds(new_packs))
+    old_walls = sorted(PACK.predicted_pack_walls_seconds(old_packs))
     total_new = sum(new_walls)
     total_old = sum(old_walls)
     print(

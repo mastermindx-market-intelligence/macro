@@ -56,6 +56,12 @@ RETENTION_DAYS = 180
 RUN_ID_RE = re.compile(r"\A[0-9]+\Z")
 DATE_RE = re.compile(r"\A\d{4}-\d{2}-\d{2}\Z")
 ALLOWED_PHASES = frozenset({"dependency_install", "test"})
+# The one-time migration seed of the frozen OBSERVED_COMMAND_SECONDS values
+# (see run_ci_pack.py::LEGACY_SEED_RUN_ID): permanent in code before the
+# migration, so it is exempt from retention here and from the freshness
+# window in the estimator. RUN_ID_RE keeps this id out of --run-id, so an
+# ingest can never collide with or rewrite the seed.
+LEGACY_SEED_RUN_ID = "legacy-observed-command-seconds"
 
 
 class IngestError(ValueError):
@@ -106,7 +112,11 @@ def _iter_timing_records(artifacts_dir: Path) -> list[dict[str, Any]]:
                 if not isinstance(job_id, str) or not job_id:
                     raise IngestError(f"{path}:{line_number}: missing logical_job_id")
                 duration_ns = record.get("duration_ns")
-                if not isinstance(duration_ns, int) or duration_ns < 0:
+                if (
+                    isinstance(duration_ns, bool)
+                    or not isinstance(duration_ns, int)
+                    or duration_ns < 0
+                ):
                     raise IngestError(
                         f"{path}:{line_number}: duration_ns {duration_ns!r} is not "
                         "a nonnegative integer"
@@ -116,7 +126,10 @@ def _iter_timing_records(artifacts_dir: Path) -> list[dict[str, Any]]:
 
 
 def _seconds_from_ns(duration_ns: int) -> float:
-    # Round half-up to 0.1 s so identical inputs yield byte-identical tables.
+    # Round-half-even to 0.1 s (Python's round) so identical inputs yield
+    # byte-identical tables. The runner's own monotonic span (ended - started)
+    # is carried in the artifact but not cross-checked: this tool trusts the
+    # duration field of its own runner's records and only fails closed on shape.
     return round(duration_ns / 1_000_000_000, 1)
 
 
@@ -211,8 +224,11 @@ def merge_table(
                 continue  # this ingest replaces that run's samples wholesale
             if key not in active_runs or not DATE_RE.fullmatch(observed):
                 continue  # source run was superseded or the sample is malformed
-            if dt.date.fromisoformat(observed) < cutoff:
-                continue  # past retention
+            if (
+                dt.date.fromisoformat(observed) < cutoff
+                and str(sample.get("run_id")) != LEGACY_SEED_RUN_ID
+            ):
+                continue  # past retention (the migration seed never retires)
             fresh_samples.append(dict(sample))
         if fresh_samples:
             merged.setdefault(job_id, {"samples": []})["samples"].extend(fresh_samples)
@@ -259,6 +275,11 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--observed", default=None,
                         help="date the run executed, YYYY-MM-DD (default: --captured)")
     parser.add_argument("--output", type=Path, default=TABLE_PATH)
+    parser.add_argument("--replace-run", action="store_true",
+                        help="required to re-ingest a run that is already in the "
+                             "table: the ingest replaces that run's samples "
+                             "wholesale, so a partial artifact download must "
+                             "not be able to drop jobs silently")
     parser.add_argument("--dry-run", action="store_true",
                         help="print the rendered table instead of writing it")
     args = parser.parse_args(argv)
@@ -285,6 +306,18 @@ def main(argv: list[str] | None = None) -> int:
             raise IngestError(f"existing table {args.output} is unreadable ({exc})") from exc
         if not isinstance(existing, dict):
             raise IngestError(f"existing table {args.output} is not a JSON object")
+        ingested_runs = {
+            (str(source.get("run_id")), int(source.get("attempt", 1)))
+            for source in existing.get("provenance", {}).get("sources", [])
+            if isinstance(source, dict)
+        }
+        if (args.run_id, args.attempt) in ingested_runs and not args.replace_run:
+            raise IngestError(
+                f"run {args.run_id} attempt {args.attempt} is already in the "
+                "table; re-ingesting replaces that run's samples wholesale, so "
+                "a partial artifact download could silently drop jobs. Pass "
+                "--replace-run if this deliberate re-ingest is complete."
+            )
     table = merge_table(
         existing, samples, run_id=args.run_id, attempt=args.attempt,
         runner=args.runner, captured=args.captured, today=today,
