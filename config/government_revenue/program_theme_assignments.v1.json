@@ -1,54 +1,54 @@
 {
   "contract": "government_program_theme_assignment_review.v1",
   "schema_version": "1.2.0",
-  "reviewed_at": "2026-10-16T01:03:39.509029+00:00",
-  "reviewer": "assigned-principal:01a13300:exact-Space-source-and-additive-PAC3-coverage-review; 01a13300 parent review of six current stale broad-basket reference fingerprints only",
+  "reviewed_at": "2026-10-19T13:56:46.335525+00:00",
+  "reviewer": "Assigned OpenAI principal: canonical complete10 readback; 51 existing references unchanged; three ontology leaves unchanged with additive reviewed coverage; retained independent AMDT3 source review adopted. Documentary context only; no research promotion.",
   "owners": {
     "fms": {
       "owner_kind": "fms",
       "path": "data/government_revenue/fms_case_graph.json",
-      "sha256": "aaa65845056df2bd87ed3760288ec69720b647b2294b0f3c1af4e2b8c942e7df",
-      "available_at": "2026-10-14T02:39:09.686036+00:00",
+      "sha256": "ab807e6e1639360621b93205241c68800a65d0d4b227e8726592e1b6be5ed6c4",
+      "available_at": "2026-10-18T14:10:12.157549+00:00",
       "admission_ref": "existing:fms_case_graph.json",
       "rights_state": "qualified_public_display"
     },
     "ontology": {
       "owner_kind": "program_ontology",
       "path": "data/government_revenue/program_ontology.json",
-      "sha256": "989e62226a63fbaadee860271a0ed602e1c7b2e37f23a93116e1e40e8d63c5d4",
-      "available_at": "2026-10-13T03:16:05+00:00",
-      "admission_ref": "root-approved:NATO-policy-only:3972074b2bba",
+      "sha256": "c29fbbddeda9b7e62622364f6b9d0bc386f434f6d40f3a865268cb38b215dfe8",
+      "available_at": "2026-10-19T12:15:36+00:00",
+      "admission_ref": "assigned-principal:AMDT3_SDA_WORKSHEET_PROPOSAL_20261018:retained-trust-review:20261019",
       "rights_state": "qualified_public_display"
     },
     "atlas": {
       "owner_kind": "identity_atlas",
       "path": "data/government_revenue/identity_atlas.json",
-      "sha256": "9af3525d93ce71b941b236ae30713d3601ecbb14b74c7c2bd43dca5cbbcea39f",
-      "available_at": "2026-08-19T05:44:34.128190+00:00",
+      "sha256": "97d8ed9fcf8ec1bd648f061411a3971fdb7abb6be8ae8e3830ae971b1f5f2bf6",
+      "available_at": "2026-10-16T01:52:43.571710+00:00",
       "admission_ref": "existing:identity_atlas.json",
       "rights_state": "qualified_public_display"
     },
     "quartet_economics": {
       "owner_kind": "defense_economics",
       "path": "data/government_revenue/defense_economics.json",
-      "sha256": "bea40e93dfeaeea9ca834c0f19618fd840d2743ce625efa89a47130c34cf0594",
-      "available_at": "2026-10-15T20:03:59.602196+00:00",
+      "sha256": "44e2454a97a3fd41f313632a73e6d54f4c6e51a83984be7d5791d9e402d2264d",
+      "available_at": "2026-10-19T13:48:14.780709+00:00",
       "admission_ref": "O3review:MANIFEST.sha256:2df3b88823aa9a5bea7931c772c4bdf44d9f93d84375ce094eb652ccb93610ff",
       "rights_state": "qualified_public_display"
     },
     "budget": {
       "owner_kind": "budget",
       "path": "data/government_revenue/budget_program_graph.json",
-      "sha256": "86d064269684c7e9b07ad8eff608bc637057eec9f710c5d0115ee07ec2a6ae71",
-      "available_at": "2026-10-13T07:05:58.429543+00:00",
+      "sha256": "0b76330be7d13f62b8c6981a6df60bc9a24f698a5fc85c40ce3d03e092a22cbd",
+      "available_at": "2026-10-16T01:52:43.571710+00:00",
       "admission_ref": "existing:dod_budget_live:verified-source:4dcd91ae15ea",
       "rights_state": "qualified_public_display"
     },
     "gd_company_economics": {
       "owner_kind": "company_intelligence",
-      "path": "data/company_intelligence/event_workspaces/generations/883fb5c69607c3d248b45f7e/workspaces/evt_cik0000040533_2026q2_results.json",
-      "sha256": "5c51c7a1f89f6cb20fadcf9acdfd68fc8bd302df333b28daae256c832cd06260",
-      "available_at": "2026-10-13T05:48:30+00:00",
+      "path": "data/company_intelligence/event_workspaces/generations/df085ec3392c1f8d1c33b6e2/workspaces/evt_cik0000040533_2026q2_results.json",
+      "sha256": "72597c6cdf6ff9e53146847b5a64d003440952bdf60ac3454cda5a6c6d9f5509",
+      "available_at": "2026-10-19T04:44:26+00:00",
       "admission_ref": "existing:EventWorkspace:owner883:GD-native-SEC013e22cc",
       "rights_state": "qualified_public_display"
     }
@@ -72,12 +72,17 @@
       },
       "funding_stage": {
         "state": "partial",
-        "reason_code": "allocation_plan_only",
+        "reason_code": "mixed_allocation_and_prototype_agreement",
         "references": [
           {
             "owner_key": "budget",
             "pointer": "/documents/2/allocations/1",
             "row_id": "dod-budget-context:1be43527222a91463755698a"
+          },
+          {
+            "owner_key": "ontology",
+            "pointer": "/public_agreement_assertions/0",
+            "row_id": "prog-agreement:eec195ec468839fecf413ea8"
           }
         ]
       },
@@ -93,9 +98,15 @@
         ]
       },
       "next_event": {
-        "reason_code": "owner_reference_absent",
-        "references": [],
-        "state": "source_unavailable"
+        "state": "partial",
+        "reason_code": "reported_launch_availability_target",
+        "references": [
+          {
+            "owner_key": "ontology",
+            "pointer": "/public_agreement_assertions/0",
+            "row_id": "prog-agreement:eec195ec468839fecf413ea8"
+          }
+        ]
       }
     },
     "munitions_replenishment": {
@@ -174,9 +185,15 @@
         ]
       },
       "next_event": {
-        "reason_code": "owner_reference_absent",
-        "references": [],
-        "state": "source_unavailable"
+        "state": "partial",
+        "reason_code": "condition_not_scheduled_date",
+        "references": [
+          {
+            "owner_key": "fms",
+            "pointer": "/cases/63/advancement_condition",
+            "row_id": "fms:transmittal:26-82"
+          }
+        ]
       }
     },
     "space": {
@@ -332,9 +349,40 @@
         "state": "source_unavailable"
       },
       "economics": {
-        "reason_code": "owner_reference_absent",
-        "references": [],
-        "state": "source_unavailable"
+        "state": "partial",
+        "reason_code": "issuer_segment_context_no_program_allocation",
+        "references": [
+          {
+            "owner_key": "quartet_economics",
+            "pointer": "/profiles/0/axes/economics/facts/21",
+            "row_id": "evt_cik0000936468_2026q2_results:fleet_rms_sales"
+          },
+          {
+            "owner_key": "quartet_economics",
+            "pointer": "/profiles/0/axes/economics/facts/22",
+            "row_id": "evt_cik0000936468_2026q2_results:fleet_rms_sales_prior"
+          },
+          {
+            "owner_key": "quartet_economics",
+            "pointer": "/profiles/0/axes/economics/facts/23",
+            "row_id": "evt_cik0000936468_2026q2_results:fleet_rms_operating_profit"
+          },
+          {
+            "owner_key": "quartet_economics",
+            "pointer": "/profiles/0/axes/economics/facts/24",
+            "row_id": "evt_cik0000936468_2026q2_results:fleet_rms_operating_profit_prior"
+          },
+          {
+            "owner_key": "quartet_economics",
+            "pointer": "/profiles/0/axes/economics/facts/25",
+            "row_id": "evt_cik0000936468_2026q2_results:fleet_rms_margin"
+          },
+          {
+            "owner_key": "quartet_economics",
+            "pointer": "/profiles/0/axes/economics/facts/26",
+            "row_id": "evt_cik0000936468_2026q2_results:fleet_rms_margin_prior"
+          }
+        ]
       },
       "exposure": {
         "reason_code": "contractor_identity_not_reviewed",
@@ -492,15 +540,19 @@
   },
   "reference_fingerprints": {
     "golden_dome/funding_stage/0": "196edacde632e80f7968a6f2f1cddbbf9b043f1ac50cdd003462260287d0c8d3",
-    "golden_dome/market_context/0": "085bc6df4835cd112ad11cc05deb9536d849c5a1035b1558a4a43c9535d8c1de",
-    "munitions_replenishment/economics/0": "e9d81533dc120821131e1a31445a62c6c636c1e3db40159597fc75d14f7d2308",
-    "munitions_replenishment/economics/1": "317b4e4e19751308e3c335da13cd626a17c529da06415b6b341fb2ed3a7b31cb",
-    "munitions_replenishment/economics/2": "f869416f404c0e69256c2a059e2ba1d8073acb685f5386373a2125df15aa5678",
+    "golden_dome/funding_stage/1": "8e558241518b4a013288c3ef4dc7edaf2d7677f069c08dadc3a280a87f09ee74",
+    "golden_dome/market_context/0": "add814de5c6c6e41e6a224ca6c4fb85a7afb180d4da6a227e7bba9ebab3d96bb",
+    "golden_dome/next_event/0": "8e558241518b4a013288c3ef4dc7edaf2d7677f069c08dadc3a280a87f09ee74",
+    "munitions_replenishment/contrary_case/0": "f5f78ae262a02c32bddbd9031169123ebde9cbccc8d82e17ba117de2f91b28dd",
+    "munitions_replenishment/economics/0": "b0cd4af2c427a7e0cc3e8376d09eb6e5e83437c168a2e7fd46a01d96539b60cf",
+    "munitions_replenishment/economics/1": "bb4dd4564624b550a4afada252449e3432ad44ef20b0682f966027039d2301ff",
+    "munitions_replenishment/economics/2": "8e5c407309a265c2327ab910f3c6b1860b66902bb98a657d204c742ded1bdcdf",
     "munitions_replenishment/economics/3": "905eb0f940266495183eaa901cfdf8cdbc2b4baf4ca139ec59bf9927ec20722f",
     "munitions_replenishment/economics/4": "7f437bbf78e07c2dad50ff704773e78c49d499f462c1ec2190fa70945003e3ad",
     "munitions_replenishment/economics/5": "ce7af13a990d323536110c751df8ac77325fd5be2cb97019de204f300c49a233",
     "munitions_replenishment/funding_stage/0": "27c30b10d142c94b63c975a9f4c6a93cb7e951425011bf1f3a91d4aeda67d073",
-    "munitions_replenishment/market_context/0": "085bc6df4835cd112ad11cc05deb9536d849c5a1035b1558a4a43c9535d8c1de",
+    "munitions_replenishment/market_context/0": "add814de5c6c6e41e6a224ca6c4fb85a7afb180d4da6a227e7bba9ebab3d96bb",
+    "munitions_replenishment/next_event/0": "1437a7c484265623893b83e1301a5b5e5c1e7df41b4f41d4f777408fdf0b0e08",
     "space/contrary_case/0": "4e95fe25f5510e36907c5bac8fa3a08e836c0489b62cc104fd915fb12bba5651",
     "space/contrary_case/1": "2feacb2fe5d4742fe8656ec13751510ed249b7b59810840854f3f338e8e58141",
     "space/economics/0": "45470336e3fe2f8e53d148ec42b45750a3097b054f5a38d646aad1ca59632f58",
@@ -509,15 +561,22 @@
     "space/economics/3": "1bf2077c0fc35fa25a74768dc4561c838f5751b96a29c5c9afda5693fe17264c",
     "space/economics/4": "519841c2efb2f1b87c285093da8d3136ad887e5ea17b3f8efd15ada7b28c69d7",
     "space/economics/5": "cd9723bdf42fa2f5f1b3bff0a9a04a0dd2e9d8a23e440c2eabd041bbfae45646",
-    "space/market_context/0": "085bc6df4835cd112ad11cc05deb9536d849c5a1035b1558a4a43c9535d8c1de",
+    "space/economics/6": "f9936c8985c58a97010f0b78cdd6904437a34470fac8c285d69d4dba575cbb1d",
+    "space/market_context/0": "add814de5c6c6e41e6a224ca6c4fb85a7afb180d4da6a227e7bba9ebab3d96bb",
     "nato_fms_demand/exposure/0": "9df04e2f2f474eaaff2c0602fb1219c09407ab3bffa2705ba530d7e190a174b2",
     "nato_fms_demand/funding_stage/0": "6db8182652e8a6582205b96cda943525981f8f2383b4b902a7607f7fc597ad2d",
-    "nato_fms_demand/funding_stage/1": "ec5d41f6fea33ff00b9dea2c67953943c1f87020edb0b35d67a2cbe323c8665c",
-    "nato_fms_demand/market_context/0": "085bc6df4835cd112ad11cc05deb9536d849c5a1035b1558a4a43c9535d8c1de",
+    "nato_fms_demand/funding_stage/1": "2cba403150658942dbf37ce9438ec0c170c84772d4c18f9e9617e5babd2e0cc7",
+    "nato_fms_demand/market_context/0": "add814de5c6c6e41e6a224ca6c4fb85a7afb180d4da6a227e7bba9ebab3d96bb",
     "nato_fms_demand/next_event/0": "5f6d5dd1bf1322a9481a67e7c1e06a8dea8cb65425db127b5745d529dc2d600c",
+    "fleet_sustainment_upgrades/economics/0": "add9eb39c7a21313f030f3d94a5b4fdbee1ee6e79202702dc0ea505ba397d75a",
+    "fleet_sustainment_upgrades/economics/1": "e443aaefd60413febf6e3ca9d574ef29ec2db47c4ac1a924f12071f71adec448",
+    "fleet_sustainment_upgrades/economics/2": "fef6b1dc2d241f7dfc30e3c2cfc671e6992175f7cb287f514bf9c5b568ebca99",
+    "fleet_sustainment_upgrades/economics/3": "1aa3f39044a946ee61b2c038483745901ef09f34e2557306fdb933e39f5e28ad",
+    "fleet_sustainment_upgrades/economics/4": "98792eb792ac0cda4595e2c4a72f7fc5b9c7acb7f8bcff11ef19a693b306af89",
+    "fleet_sustainment_upgrades/economics/5": "fc6364a7bb95214c1d92f84b0e046723b8cc6c73e13c81b09fb215805fb1f731",
     "fleet_sustainment_upgrades/exposure/0": "9df04e2f2f474eaaff2c0602fb1219c09407ab3bffa2705ba530d7e190a174b2",
     "fleet_sustainment_upgrades/funding_stage/0": "6db8182652e8a6582205b96cda943525981f8f2383b4b902a7607f7fc597ad2d",
-    "fleet_sustainment_upgrades/market_context/0": "085bc6df4835cd112ad11cc05deb9536d849c5a1035b1558a4a43c9535d8c1de",
+    "fleet_sustainment_upgrades/market_context/0": "add814de5c6c6e41e6a224ca6c4fb85a7afb180d4da6a227e7bba9ebab3d96bb",
     "fleet_sustainment_upgrades/next_event/0": "5f6d5dd1bf1322a9481a67e7c1e06a8dea8cb65425db127b5745d529dc2d600c",
     "shipbuilding/contrary_case/0": "67f20d0c4233f48d22df09414e2a2db3df96d5359a59cf5a2eb301e7d8a284bc",
     "shipbuilding/economics/0": "bccc781c5850d48f39b5c8071f5221a6f02128a84a5f4b8dd0b28c9e0a9bb6a2",
@@ -528,12 +587,10 @@
     "shipbuilding/economics/5": "7cf5142e49999f9adf53877ed9f468729f5f9910dfe5c46fed9e26420bf59867",
     "shipbuilding/economics/6": "7f8372949add639940e2bc6faf024ed2611759c9bb86872996570da765455ddb",
     "shipbuilding/economics/7": "9ef642ef323254461967e6f0522d5b2fc272658fb048bfe2cbfd0942af719688",
-    "shipbuilding/exposure/0": "b651ce6357cbd7a887a48372198ad33e1d3f93170e01a8d6510079db6ed4471a",
+    "shipbuilding/exposure/0": "f5c65e11ef7314a9210c66dea7d827de7d2fb57ecb66eb73f830b426b81806b2",
     "shipbuilding/exposure/1": "09d3d6ff9ae28b2f1837a6a1cb5b00f0234d4e570d4af43eff7fe9c43aa00d3e",
     "shipbuilding/funding_stage/0": "fddb75dc4c7a4e8935af5184b5ec0049440a674ca563ce2bac03c5beb801e6c9",
-    "shipbuilding/market_context/0": "085bc6df4835cd112ad11cc05deb9536d849c5a1035b1558a4a43c9535d8c1de",
-    "shipbuilding/next_event/0": "6ff559836265aec5c5c0084fd7b03b4b371b2295b0a618f2b6e9e6bc2f08abfe",
-    "munitions_replenishment/contrary_case/0": "f5f78ae262a02c32bddbd9031169123ebde9cbccc8d82e17ba117de2f91b28dd",
-    "space/economics/6": "f9936c8985c58a97010f0b78cdd6904437a34470fac8c285d69d4dba575cbb1d"
+    "shipbuilding/market_context/0": "add814de5c6c6e41e6a224ca6c4fb85a7afb180d4da6a227e7bba9ebab3d96bb",
+    "shipbuilding/next_event/0": "3c218954c756b3fad8819b4d037ec40a2abf8f83969d5f79a7e11498f13cce3f"
   }
 }

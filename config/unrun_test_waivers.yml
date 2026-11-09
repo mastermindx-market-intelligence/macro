@@ -14,6 +14,20 @@
 # wire it into the job that owns its subject (see the signal-contract
 # research-resident steps in .github/ci/legacy-jobs.yml for the pattern).
 
+tests/test_china_explore_theme_layout.py: >-
+  PR #10621 isolated China Sector Intelligence Explore Chromium fixture: long
+  bilingual names, bounded sparks, contested/no-entry chips, empty/error data
+  and disclosures. MastermindX3 ran 62 targeted local tests and a 22-theme,
+  seven-viewport light/dark EN/ZH matrix at source head 587c5856; desktop/phone
+  evidence and the deep-linked keyboard holdings check are pinned in the PR.
+  A direct addition to .github/ci/legacy-jobs.yml would invalidate the global
+  legacy CI matrix (and require separate ci-authority review) for this bounded
+  visual repair; these new browser cases are NOT claimed as hosted CI coverage.
+  Owner: MastermindX3, China Explore #10621. Remove this exception and name
+  the suite in the approved dedicated China browser/render CI job when that
+  code-gate carrier is commissioned, retaining Chromium dependencies and
+  positive executed-test evidence. This waiver is not production acceptance.
+
 tests/test_entry_radar_w8_rig.py: >-
   W8 Live Entry Radar reference RIG (PR #5737). Listing this file in
   signal-contract edits .github/ci/legacy-jobs.yml, which is a global CI
@@ -265,3 +279,14 @@ research/prophet_v4/astra_regime_indicator_handoff_20261004/results/D0/code/test
   research PR. Owner: WS:PROPHET-REGIME-TIMEFRAME-RESEARCH (seat f273dd7d). Delete this
   row when the lane artifacts are published to R2 and a research-resident CI step adopts
   the suite, or when the results directory is archived.
+research/homepage_prophet_first/tests/test_product_contract.py: >-
+  PR #7063 historical rejected-prototype evidence. Old contract-delta
+  job103242426588 measured this new suite as unrun (1 introduced,0 inherited);
+  its original assertions require the replacement homepage composition
+  explicitly rejected by Chairman ruling Macro#7034 comment5629746461. It is
+  retained byte-exact as evidence of that rejected artifact and must not govern
+  the live homepage. Owner: current Mastermind#2028 oldest-first recovery,
+  Macro#7063 historical qualification. Delete this waiver if the artifact is
+  removed or separately authorized historical-only CI enrollment names the
+  suite. Any future product reuse must first replace rejected-design assertions
+  under the actual product owner; this waiver grants no product-test exemption.

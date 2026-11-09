@@ -119,7 +119,12 @@
              ITS OWN measured rates, never the ext_z ones. #}
         {% set _es_chip = n.get('earnings_soon') %}
         {% if _es_chip and _es_chip.get('days_to') is not none %}{% set _fl.rows = _fl.rows + [(_es_chip.get('chip_en') or ('Earnings in ' ~ _es_chip.days_to ~ 'd'), _es_chip.get('chip_zh') or ('财报还有' ~ _es_chip.days_to ~ '天'))] %}{% endif %}
-        {% if n.get('sector_stance') and n.sector_stance in ('Reduce','Cautious') %}{% set _fl.rows = _fl.rows + [('Sector stance is ' ~ n.sector_stance|lower ~ '. This is a single-stock trigger, not a sector call.', '板块态度为' ~ (n.sector_stance_zh or n.sector_stance) ~ '。个股信号，非板块判断。')] %}{% endif %}
+        {# The sidecar snapshot has its own clock; keep its receipt in the same caution. #}
+        {% set _ss = n.get('sector_stance_source') if n.get('sector_stance_source') is mapping else {} %}
+        {% set _ss_id = (' (' ~ _ss.etf ~ ')') if _ss.get('etf') else '' %}
+        {% set _ss_en = ' Sector snapshot date' ~ _ss_id ~ ': ' ~ (_ss.get('snapshot_as_of') or 'unavailable') ~ '.' %}
+        {% set _ss_zh = ' 板块快照日期' ~ _ss_id ~ '：' ~ (_ss.get('snapshot_as_of') or '不可用') ~ '。' %}
+        {% if n.get('sector_stance') and n.sector_stance in ('Reduce','Cautious') %}{% set _fl.rows = _fl.rows + [('Sector stance is ' ~ n.sector_stance|lower ~ '. This is a single-stock trigger, not a sector call.' ~ _ss_en, '板块态度为' ~ (n.sector_stance_zh or n.sector_stance) ~ '。个股信号，非板块判断。' ~ _ss_zh)] %}{% endif %}
         {% if n.get('hold') and n.hold.get('state') == 'broken' %}{% set _fl.rows = _fl.rows + [('Base broken: price hit the level that voids the thesis.', '筑底破位：价格已触及使论点失效的水平。')] %}{% endif %}
         {# OEU M-PRO: display-tier options context, folded into the SAME ⚠ popover as every
            other caution (no new chip, no layout change). Rows are pre-derived (en, zh) pairs

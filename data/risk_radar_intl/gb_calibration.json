@@ -8,14 +8,14 @@
       "risk-off": 0.037
     },
     "h10": {
-      "calm": 0.003,
+      "calm": 0.002,
       "watch": 0.087,
       "caution": 0.087,
       "elevated": 0.087,
       "risk-off": 0.087
     },
     "h21": {
-      "calm": 0.011,
+      "calm": 0.005,
       "watch": 0.186,
       "caution": 0.186,
       "elevated": 0.186,
@@ -23,7 +23,7 @@
     }
   },
   "n_graded": 29,
-  "brier_before": 0.011,
+  "brier_before": 0.0108,
   "brier_after": 0.0108,
-  "updated": "2026-10-17T18:31:30+00:00"
+  "updated": "2026-10-18T06:47:15+00:00"
 }

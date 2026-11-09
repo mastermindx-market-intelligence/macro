@@ -77,6 +77,7 @@ class BasketRefusalCode(StrEnum):
     MEMBERSHIP_ECHO_MISMATCH = "MEMBERSHIP_ECHO_MISMATCH"
     MALFORMED_MEMBERSHIP = "MALFORMED_MEMBERSHIP"
     UNKNOWN_BASKET = "UNKNOWN_BASKET"
+    MEMBERSHIP_UNREADABLE = "MEMBERSHIP_UNREADABLE"
     EMPTY_MEMBERSHIP = "EMPTY_MEMBERSHIP"
     LOOKAHEAD_MEMBERSHIP = "LOOKAHEAD_MEMBERSHIP"
     SNAPSHOT_AFTER_DAY = "SNAPSHOT_AFTER_DAY"
@@ -101,6 +102,7 @@ class BasketReadRefusal(ReadContractError):
 _BASIS_PIT = "pit_snapshot"
 _BASIS_CURRENT = "current_membership"
 _BASIS_UNKNOWN = "unknown_basket"
+_BASIS_UNREADABLE = "membership_unreadable"
 _SHAPE_MEMBERSHIP = "membership"
 _SHAPE_CONCEPT_DUMP = "ths_concept_dump"
 # A venue-TIMEZONE anchor used only to turn a cutoff instant into a local
@@ -108,7 +110,8 @@ _SHAPE_CONCEPT_DUMP = "ths_concept_dump"
 # nothing about where a member trades.
 _SUITE_TZ_MIC = {"baskets": "XNYS", "baskets_china": "XSHG", "baskets_china_ths": "XSHG"}
 
-_LAWFUL_MEMBERSHIP = {(True, _BASIS_PIT), (False, _BASIS_CURRENT), (False, _BASIS_UNKNOWN)}
+_LAWFUL_MEMBERSHIP = {(True, _BASIS_PIT), (False, _BASIS_CURRENT), (False, _BASIS_UNKNOWN),
+                      (False, _BASIS_UNREADABLE)}
 
 
 def _require_text(value: object, what: str) -> None:
@@ -217,6 +220,11 @@ def read_basket(
         raise BasketReadRefusal(
             BasketRefusalCode.MALFORMED_MEMBERSHIP,
             "the (pit, basis) pair is not a lawful membership basis pair")
+    if basis == _BASIS_UNREADABLE:
+        raise BasketReadRefusal(
+            BasketRefusalCode.MEMBERSHIP_UNREADABLE,
+            f"the membership store for suite {suite!r} exists but is unreadable; "
+            "corruption is refused, never measured as absence or as a current membership")
     if basis == _BASIS_UNKNOWN:
         raise BasketReadRefusal(
             BasketRefusalCode.UNKNOWN_BASKET,

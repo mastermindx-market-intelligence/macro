@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://mastermind-x.com/contracts/specialist_packs/pack.pk01.v1.schema.json",
   "title": "Specialist pack PK01 v1 catalogue",
-  "description": "Debt, liquidity, covenants and maturities. Result instances validate against specialist_pack_result.v1. The field catalogue is unspecified at contract v1; the pack implementation populates fields and checks and sets catalogue_state to specified.",
+  "description": "Debt, liquidity, covenants and maturities. Result instances validate against specialist_pack_result.v1. The field, check and reason-code catalogue is frozen by the FIF K1/K2 seat spec; pack results remain display-only context (attested: false) until a Q1 held-out evaluation under Q0.",
   "pack_schema_id": "pack.pk01/v1",
   "pack_id": "PK01",
   "name": "Debt, liquidity, covenants and maturities",
@@ -15,10 +15,349 @@
     "typed absences",
     "production source trace"
   ],
-  "catalogue_state": "unspecified",
-  "fields": [],
-  "checks": [],
-  "reason_codes": [],
+  "catalogue_state": "specified",
+  "fields": [
+    {
+      "field_id": "short_term_debt",
+      "name": "Short-term debt (core, consumed)",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "instant",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "long_term_debt_current",
+      "name": "Long-term debt, current portion (core, consumed)",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "instant",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "long_term_debt",
+      "name": "Long-term debt, noncurrent (core, consumed)",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "instant",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "total_debt",
+      "name": "Total debt (core, consumed)",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "instant",
+      "allowed_evidence_kinds": [
+        "xbrl_fact",
+        "formula"
+      ],
+      "required": true
+    },
+    {
+      "field_id": "debt_maturity_y1",
+      "name": "Debt principal maturing in year 1",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "instant",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "debt_maturity_y2",
+      "name": "Debt principal maturing in year 2",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "instant",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "debt_maturity_y3",
+      "name": "Debt principal maturing in year 3",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "instant",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "debt_maturity_y4",
+      "name": "Debt principal maturing in year 4",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "instant",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "debt_maturity_y5",
+      "name": "Debt principal maturing in year 5",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "instant",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "debt_maturity_after_5y",
+      "name": "Debt principal maturing after year 5",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "instant",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "debt_carrying_amount_total",
+      "name": "Debt carrying amount, total (dimensionless)",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "instant",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "debt_carrying_amount_by_instrument",
+      "name": "Debt carrying amount by debt-instrument member",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "instant",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "debt_fair_value",
+      "name": "Long-term debt fair value",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "instant",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "revolver_undrawn_capacity",
+      "name": "Revolving facility remaining borrowing capacity",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "instant",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "covenant_term_observation",
+      "name": "Covenant term observation (Capital Structure receipt)",
+      "type": "text",
+      "unit": null,
+      "period_kind": "duration",
+      "allowed_evidence_kinds": [
+        "text_span"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "liquidity_total_cash_and_securities",
+      "name": "Cash, cash equivalents and short-term investments (pack formula)",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "instant",
+      "allowed_evidence_kinds": [
+        "formula"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "cash_and_cash_equivalents",
+      "name": "Cash and cash equivalents (core, formula input)",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "instant",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "short_term_investments",
+      "name": "Short-term investments (core, formula input)",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "instant",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "current_assets",
+      "name": "Current assets (core, formula input)",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "instant",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "current_liabilities",
+      "name": "Current liabilities (core, formula input)",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "instant",
+      "allowed_evidence_kinds": [
+        "xbrl_fact"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "current_ratio",
+      "name": "Current ratio (industrial basis, pack formula)",
+      "type": "ratio",
+      "unit": "ratio",
+      "period_kind": "instant",
+      "allowed_evidence_kinds": [
+        "formula"
+      ],
+      "required": false
+    },
+    {
+      "field_id": "working_capital",
+      "name": "Working capital (industrial basis, pack formula)",
+      "type": "decimal",
+      "unit": "USD",
+      "period_kind": "instant",
+      "allowed_evidence_kinds": [
+        "formula"
+      ],
+      "required": false
+    }
+  ],
+  "checks": [
+    {
+      "check_id": "maturity_ladder_vs_carrying",
+      "kind": "sum_identity",
+      "operands": [
+        "debt_maturity_y1",
+        "debt_maturity_y2",
+        "debt_maturity_y3",
+        "debt_maturity_y4",
+        "debt_maturity_y5",
+        "debt_maturity_after_5y",
+        "debt_carrying_amount_total"
+      ]
+    },
+    {
+      "check_id": "debt_components_vs_total",
+      "kind": "sum_identity",
+      "operands": [
+        "short_term_debt",
+        "long_term_debt_current",
+        "long_term_debt",
+        "total_debt"
+      ]
+    },
+    {
+      "check_id": "instrument_rows_vs_total",
+      "kind": "reconcile_to_consolidated",
+      "operands": [
+        "debt_carrying_amount_by_instrument",
+        "debt_carrying_amount_total"
+      ]
+    },
+    {
+      "check_id": "covenant_span_present",
+      "kind": "qualitative_presence",
+      "operands": [
+        "covenant_term_observation"
+      ]
+    }
+  ],
+  "reason_codes": [
+    {
+      "code": "applicability_rule_satisfied",
+      "parameter": null,
+      "meaning": "the pack's versioned applicability rule (`applicability.rule_id`) evaluated true"
+    },
+    {
+      "code": "form_outside_pack_forms",
+      "parameter": null,
+      "meaning": "the admitted form is outside the pack's Q0-frozen forms"
+    },
+    {
+      "code": "missing_standard_fact",
+      "parameter": "concept",
+      "meaning": "the standard concept named by the parameter has no admitted fact for the period"
+    },
+    {
+      "code": "extension_concept_unaliased",
+      "parameter": "prefix",
+      "meaning": "the value exists only under an extension prefix with no frozen alias"
+    },
+    {
+      "code": "disallowed_dimension",
+      "parameter": null,
+      "meaning": "the only facts carry a dimension the field does not admit"
+    },
+    {
+      "code": "missing_dependency",
+      "parameter": null,
+      "meaning": "a formula/check operand is not valued (R-K3: never an implied zero)"
+    },
+    {
+      "code": "division_by_zero",
+      "parameter": null,
+      "meaning": "a ratio denominator is zero"
+    },
+    {
+      "code": "unit_mismatch",
+      "parameter": null,
+      "meaning": "operands differ in unit/currency/period basis"
+    },
+    {
+      "code": "numeric_value_in_narrative_only",
+      "parameter": null,
+      "meaning": "the number appears only inside narrative text; R-K4' forbids extracting it"
+    },
+    {
+      "code": "issuer_class_unknown",
+      "parameter": null,
+      "meaning": "the SIC needed to resolve applicability is unbound"
+    },
+    {
+      "code": "industrial_basis_excluded_for_financial_institution",
+      "parameter": null,
+      "meaning": "(K1K2) an industrial-basis row on a bank-class issuer"
+    }
+  ],
   "type": "object",
   "additionalProperties": false
 }
