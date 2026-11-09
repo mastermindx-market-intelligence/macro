@@ -3502,3 +3502,31 @@ Receipt: `PAPER_CRYPTO_NATIVE_NAVIGATION_20261109.json`. Capture: `PAPER_CRYPTO_
 Expired current-scenario cards still present their original progress and Next check as current until inspection. Qualify lifecycle in those cards using the existing expiry/progress owner, keeping original conditions and historical instructions distinguishable. Validate current, expired and insufficient/unknown states without changing saved/current drawer reading order.
 
 Then add a same-case return from valid current review through the existing history owner. All prior model/H5, alert, qualified-result, hosted/independent acceptance, public-route cutover, admission/release and denied/unknown-effect boundaries remain.
+
+
+## 75. Builder entry points — workflow maps with preserved source history (2026-11-09)
+
+**Implemented and read back; continuing into scenario-card lifecycle clarity.** This is a documentation-only consolidation in the existing programme and dependent Crypto candidate. Runtime remains the accepted §74 checkpoint `e70fc60183c83565497c431c433b0594423cc7cb`, assets `f15feec04ead`.
+
+### Problem and revised reading path
+
+The portfolio README placed its surface map after sixteen chronological phase headings. The Crypto README mixed a long current/prior narrative with older generic Implemented and Verification headings. Builders had to reconstruct the present contract and distinguish older “now” and “next” statements themselves.
+
+The portfolio entry now starts with task-based links, a six-row **Last audited implementation** map and all 23 existing Paper surfaces. Every one of its 53 original Paper page destinations remains, with two explicit Crypto guide/asset entries added. Market Memory and the separate evidence workspace remain distinct. The table separates recorded source, implementation, proof and unresolved boundary; it does not declare other PRs' live heads or grant release authority.
+
+The Crypto entry now provides twelve workflow → contract → exact-proof rows, existing source owners, four editable-design entry points, explicit candidate/proposal distinctions and one dated next-work statement. Source documentation head **`2c9d619dfdc2e21a0cc0839094c6fa2be84a6260`**, tree `c86fc3372cc0885a779b9548da5996ce5f36a375`; the three documentation files read back exactly. The first documentation commit was `0014c2c46f2d4aea99dc65391e27b069f454f625`; the follow-up retains the original title destination as well as all section destinations. Neither changes runtime or tests.
+
+### Preservation and verification
+
+- Both complete pre-edit READMEs are copied beside their originals as **README_PHASE_HISTORY_20261109.md**, reusing their exact existing Git blobs. The source archive is `521089bfbbb99eccac1e556b58f7de4be1d090ea`; the audit archive is `791479733ec5845ad8e8d9a0630fa6d0f5b67357`. Both archive paths were absent at their original parent checkpoints.
+- The new entry points retain **16 Crypto and 23 audit heading destinations**, including each original title, and link to the corresponding archived section. The archives receive no inserted provenance or rewritten relative paths.
+- All source Build/proof targets in the new Crypto map already occur in its inspected preimage. No contract, receipt, capture, test, harness diagnostic or source transformation is removed. The ongoing continuation remains the history owner; the archives are immutable snapshots.
+- Crypto landing prose falls from 18,973 to 9,942 characters; the portfolio landing from 72,117 to 23,322 characters. This is a navigation/clarity measure, not a usability-study result.
+- The existing source and release distinctions remain: dependent versus incumbent Crypto and Confluence; held GMI model01; Tools loader/capture/receipt-closure gate; merged-but-uninstalled Catalyst; incumbent Market Memory return work. Foundation/source pins, accepted Options originals, protected migration/design-system/R14 scopes and live/uncertain writers remain explicit.
+- No runtime, data, test, Paper, model, route, browser-capture or release effect. No application test was rerun for this reversible documentation change. Earlier proof counts keep their original scope, including the initial 76-pass plus three affected dependency-recovery passes for storage.
+
+Source receipt: [BUILD_MAP_VALIDATION.json](https://github.com/mastermindx-market-intelligence/Macro/blob/2c9d619dfdc2e21a0cc0839094c6fa2be84a6260/research/design_candidates/crypto_snapshot_safety_20261109/BUILD_MAP_VALIDATION.json). Portfolio receipt: [BUILDER_ENTRY_VALIDATION_20261109.json](BUILDER_ENTRY_VALIDATION_20261109.json).
+
+### Next safe phase
+
+Qualify scenario-card lifecycle through strict supplied date/text validation in the existing apply pass. Expose expired, future-dated or unverifiable windows before inspection, preserve original progress as recorded material, and keep evidence availability independent from the date window. Retain the focused card, original case/horizon, genuine empty branch, shared expiry/save helper and current/saved drawer order. Then inspect the same-case return gap in valid current review. No release/model/denied-effect boundary changes.
