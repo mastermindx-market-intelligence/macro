@@ -1170,6 +1170,190 @@ with sync_playwright() as pw:
             check(f'taxonomy-keyboard-{width}-{language}', lambda w=width,l=language: taxonomy_keyboard_activation(w,l))
             check(f'index-shortcuts-{width}-{language}', lambda w=width,l=language: index_filtered_shortcuts(w,l))
 
+    def tree_roving_paths(width, language):
+        """Native Tab/arrow traversal and owned hide recovery on the generated tree."""
+        with context(width,'light',language,reduced_motion='reduce') as c:
+            p=page_for(c,'gmi.html?fixture=tree#lens=chain')
+            p.locator('.gmi-advanced > summary').click()
+            tree=p.locator('.gmi-tree')
+            search=p.locator('input[data-gmi-filter="tree"]')
+            exit_link=p.locator('.gmi-trow--more')
+            expect(tree).to_have_accessible_name('Browse the tree' if language=='en' else '浏览主题树')
+            original_url=p.url
+            original_title=p.locator('#gmi-topic-title').inner_text()
+            destinations=tree.locator('a[data-topic-select]').evaluate_all('(nodes)=>nodes.map(n=>({id:n.getAttribute("data-topic-select"),href:n.getAttribute("href")}))')
+            information=tree.locator('button').evaluate_all('(nodes)=>nodes.map(n=>({text:n.textContent,tabindex:n.getAttribute("tabindex")}))')
+            # Observe unsafe hide ordering without changing the native hidden setter.
+            p.evaluate('''()=>{
+              const descriptor=Object.getOwnPropertyDescriptor(HTMLElement.prototype,'hidden');
+              window.__gmiTreeUnsafeHides=[];
+              Object.defineProperty(HTMLElement.prototype,'hidden',{...descriptor,set(value){
+                if(value&&this.closest('.gmi-tree')&&this.contains(document.activeElement))
+                  window.__gmiTreeUnsafeHides.push({tag:this.tagName,row:this.getAttribute('data-gmi-q')});
+                descriptor.set.call(this,value);
+              }});
+            }''')
+
+            def invariant(empty=False):
+                state=tree.evaluate('''n=>{
+                  const rows=[...n.querySelectorAll('[role="treeitem"]')];
+                  return {visible:rows.filter(r=>!r.hidden).length,
+                    visibleZeros:rows.filter(r=>!r.hidden&&r.tabIndex===0).length,
+                    hiddenZeros:rows.filter(r=>r.hidden&&r.tabIndex===0).length,
+                    rowValues:rows.every(r=>r.tabIndex===0||r.tabIndex===-1),
+                    links:[...n.querySelectorAll('[role="treeitem"] a[data-topic-select]')].every(a=>a.tabIndex===-1)};
+                }''')
+                assert state['visibleZeros']==(0 if empty else 1),state
+                assert state['hiddenZeros']==0 and state['rowValues'] and state['links'],state
+                if empty:
+                    assert state['visible']==0,state
+                assert exit_link.evaluate('(n)=>n.tabIndex')==0
+                assert not p.evaluate('window.__gmiTreeUnsafeHides.length')
+                return state
+
+            def row(identifier):
+                return tree.locator('[role="treeitem"]').filter(has=p.locator('a[data-topic-select="'+identifier+'"]')).first
+
+            def focus_leaf(identifier):
+                search.focus();p.keyboard.press('Tab');p.keyboard.press('Home')
+                target=row(identifier)
+                for _ in range(tree.locator('[role="treeitem"]:visible').count()):
+                    if target.evaluate('(n)=>n===document.activeElement'):
+                        break
+                    p.keyboard.press('ArrowDown')
+                expect(target).to_be_focused()
+                invariant()
+                return target
+
+            def query_without_focus(value):
+                search.evaluate('''(n,value)=>{n.value=value;n.dispatchEvent(new Event('input',{bubbles:true}));}''',value)
+
+            initial=invariant()
+            assert initial['visible']>2
+            search.focus();p.keyboard.press('Tab')
+            entry=tree.locator('[role="treeitem"][tabindex="0"]')
+            expect(entry).to_be_focused()
+            p.keyboard.press('Tab');expect(exit_link).to_be_focused()
+            p.keyboard.press('Shift+Tab');expect(entry).to_be_focused()
+            p.keyboard.press('Shift+Tab');expect(search).to_be_focused()
+
+            search.fill('HBM');expect(search).to_be_focused();invariant()
+            leaf=focus_leaf('theme:hbm_packaging')
+            p.keyboard.press('Tab');expect(exit_link).to_be_focused()
+            p.keyboard.press('Shift+Tab');expect(leaf).to_be_focused()
+            parent_id=leaf.get_attribute('data-gmi-tree-parent')
+            parent=tree.locator('[data-gmi-tree-id="'+parent_id+'"]')
+            p.keyboard.press('ArrowLeft');expect(parent).to_be_focused()
+            p.keyboard.press('ArrowLeft')
+            expect(parent).to_have_attribute('aria-expanded','false')
+            expect(leaf).not_to_be_visible();expect(parent).to_be_focused();invariant()
+            p.keyboard.press('ArrowRight')
+            expect(parent).to_have_attribute('aria-expanded','true')
+            expect(parent).to_be_focused();invariant()
+            p.keyboard.press('ArrowRight')
+            assert p.evaluate('document.activeElement.getAttribute("data-gmi-tree-parent")')==parent_id
+            invariant()
+
+            # A synchronous collapse while a descendant still owns focus must release it
+            # before hidden is assigned, not merely repair body focus after the fact.
+            leaf=focus_leaf('theme:hbm_packaging')
+            parent.evaluate('(n)=>n.click()')
+            expect(parent).to_be_focused();expect(leaf).not_to_be_visible();invariant()
+            parent.press('ArrowRight')
+            leaf=focus_leaf('theme:hbm_packaging')
+            query_without_focus('Conventional DRAM (non-HBM)')
+            expect(search).to_be_focused();expect(leaf).not_to_be_visible();invariant()
+            dram=focus_leaf('theme:conventional_dram')
+            # Clearing restores the pre-search closed memory branch; the active leaf
+            # cannot remain focused while that original visibility is restored.
+            query_without_focus('')
+            expect(search).to_be_focused();expect(dram).not_to_be_visible();invariant()
+
+            search.fill('HBM')
+            leaf=focus_leaf('theme:hbm_packaging')
+            query_without_focus('HBM & advanced packaging')
+            expect(leaf).to_be_focused();invariant()
+            # A focused nested link that survives filtering keeps its own native focus.
+            anchor=leaf.locator('a[data-topic-select]')
+            anchor.focus();query_without_focus('HBM')
+            expect(anchor).to_be_focused();assert leaf.evaluate('(n)=>n.tabIndex')==0
+            query_without_focus('Conventional DRAM (non-HBM)')
+            expect(search).to_be_focused();invariant()
+
+            p.locator('[data-gmi-copy]').focus()
+            query_without_focus('zz-no-matching-gmi-theme')
+            expect(p.locator('[data-gmi-copy]')).to_be_focused()
+            expect(p.locator('[data-gmi-nomatch="tree"]')).to_be_visible()
+            invariant(empty=True)
+            search.fill('');expect(search).to_be_focused();invariant()
+            assert tree.locator('[role="treeitem"]:visible').first.evaluate('(n)=>n.tabIndex')==0
+            exit_link.focus();query_without_focus('HBM')
+            expect(exit_link).to_be_focused();invariant()
+            query_without_focus('zz-no-matching-gmi-theme')
+            expect(exit_link).to_be_focused();invariant(empty=True)
+            query_without_focus('');expect(exit_link).to_be_focused();invariant()
+            assert p.url==original_url
+            assert p.locator('#gmi-topic-title').inner_text()==original_title
+
+            # Informational controls retain their independent access; only topic links
+            # are removed from sequential Tab traversal during enhancement.
+            info=tree.locator('button').first
+            info_row=info.locator('xpath=..')
+            info_query=info_row.get_attribute('data-gmi-q')
+            assert info_query
+            search.fill(info_query)
+            expect(info).to_be_visible();assert info.evaluate('(n)=>n.tabIndex')==0
+            info_parent=tree.locator('[data-gmi-tree-id="'+info_row.get_attribute('data-gmi-tree-parent')+'"]')
+            info.focus();info_parent.evaluate('(n)=>n.click()')
+            expect(info_parent).to_be_focused();expect(info).not_to_be_visible();invariant()
+            info_parent.press('ArrowRight');expect(info).to_be_visible()
+            info.focus();query_without_focus('zz-no-matching-gmi-theme')
+            expect(search).to_be_focused();invariant(empty=True)
+            search.fill('')
+            assert tree.locator('button').evaluate_all('(nodes)=>nodes.map(n=>({text:n.textContent,tabindex:n.getAttribute("tabindex")}))')==information
+
+            # A real modified pointer activation still opens its unchanged native URL.
+            search.fill('Conventional DRAM (non-HBM)')
+            dram=focus_leaf('theme:conventional_dram')
+            link=dram.locator('a[data-topic-select]')
+            destination=link.evaluate('(n)=>n.href')
+            modifier='Meta' if p.evaluate('navigator.platform').startswith('Mac') else 'Control'
+            with c.expect_page() as opened:
+                link.click(modifiers=[modifier])
+            popup=opened.value
+            popup.wait_for_load_state('domcontentloaded')
+            assert popup.url==destination
+            expect(popup.locator('#gmi-topic-title')).to_have_text('Conventional DRAM (non-HBM)' if language=='en' else '常规 DRAM（非 HBM）')
+            popup.close()
+            assert p.url==original_url
+            assert tree.locator('a[data-topic-select]').evaluate_all('(nodes)=>nodes.map(n=>({id:n.getAttribute("data-topic-select"),href:n.getAttribute("href")}))')==destinations
+            invariant()
+            p.evaluate('(language)=>document.documentElement.setAttribute("data-lang",language)', 'zh' if language=='en' else 'en')
+            expect(tree).to_have_accessible_name('浏览主题树' if language=='en' else 'Browse the tree')
+            p.evaluate('(language)=>document.documentElement.setAttribute("data-lang",language)',language)
+            search.fill('HBM');focus_leaf('theme:hbm_packaging')
+            if (width,language) in ((390,'en'),(320,'zh')):
+                path=args.out/f'tree-roving-{width}-{language}.png'
+                tree.screenshot(path=str(path))
+                report['screenshots'].append(path.name)
+
+        # Actual script-disabled contexts preserve the original native link fallback.
+        # This proves retained link markup, not a complete no-JavaScript research app.
+        with context(width,'light',language,java_script_enabled=False,reduced_motion='reduce') as c:
+            p=page_for(c)
+            p.locator('.gmi-advanced > summary').click()
+            links=p.locator('.gmi-tree a[data-topic-select]')
+            assert links.count()==371
+            assert links.evaluate_all('(nodes)=>nodes.every(n=>!n.hasAttribute("tabindex")&&n.getAttribute("href").startsWith("gmi.html#theme="))')
+            expect(p.locator('.gmi-tree a[data-topic-select="theme:hbm_packaging"]')).to_be_visible()
+            assert p.locator('.gmi-trow--more').evaluate('(n)=>n.tabIndex')==0
+            expect(p.locator('[data-gmi-ready]')).to_have_count(0)
+
+
+    for width in (1440, 390, 320):
+        for language in ('en', 'zh'):
+            check(f'tree-roving-{width}-{language}', lambda w=width,l=language: tree_roving_paths(w,l))
+
     browser.close()
 server.shutdown()
 report['pass'] = all(c['result']=='PASS' for c in report['cases']) and not report['page_errors']

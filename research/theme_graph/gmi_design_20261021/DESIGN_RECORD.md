@@ -846,3 +846,32 @@ Current JavaScript is blob **6231f3aeacffa0ea1645772633ee2362ab375e0d**; CSS is 
 The canonical `verify_product_browser.py` exposes the new `taxonomy-keyboard-<width>-<language>` and `index-shortcuts-<width>-<language>` cases through its existing selector. The bounded component harness executes those actual definitions, with explicit queued-observer, modifier/repeat and empty-row fault injections; it does not maintain a second selection/filter implementation. Two native mobile captures were inspected for count consistency, wrapping and clipping. JavaScript and complete Python-verifier syntax pass.
 
 These are actual generated-component proofs with complete GMI/shared theme CSS and blocked external networking, not full shared-shell/font/live-account/publication acceptance. No model was regenerated or consumed from model01. Original **EFFECT_UNKNOWN / ROOT_UNVERIFIED**, Draft, admission and release holds remain unchanged.
+
+
+### 11.23 Give the taxonomy one dependable keyboard entry — 2026-11-09
+
+This continuation uses original Draft PR10676 parent **386937ff4b3b689be5bd4a42a1b6e17a7f3dc6eb**. The committed generated tree had seven visible tree rows with `tabindex=0` plus seven visible native topic links in the sequential Tab order. Tab from an arrow-focused leaf revisited that leaf's nested link. A zero-match query also left three empty category rows visible, and the tree had no accessible name. Native desktop EN and mobile ZH baseline observations reproduce each condition.
+
+**One existing owner.** The current tree controller now normalizes every treeitem, including hidden and empty category rows. Exactly one visible row is the sequential row entry; no row remains a Tab entry when search has no matches. Arrow navigation, Home/End and branch expansion stay in that controller. Nested theme anchors leave the sequential Tab order only after JavaScript enhancement, retaining their original destinations and pointer behavior. Information buttons and the existing **See all** link remain separately reachable. Without JavaScript, all 371 original native theme links retain their generated attributes.
+
+The existing visible bilingual heading labels the tree with `aria-labelledby`. This follows the focus/selection distinction and composite keyboard guidance in the [WAI-ARIA tree pattern](https://www.w3.org/WAI/ARIA/apg/patterns/treeview/) and [keyboard interface practices](https://www.w3.org/WAI/ARIA/apg/practices/keyboard-interface/). It does not claim complete tree-pattern conformance: flat hierarchy semantics, retained information-button stops, typeahead and assistive-technology speech remain separate qualifications.
+
+| Event | Focus and row entry |
+| --- | --- |
+| Tab into the tree | Enter its one current visible row; arrow keys move within the rows. |
+| Pointer or programmatic focus enters a visible row or its link | Align the row entry without moving the nested focus. |
+| Search will hide the active row, nested link or information control | Move focus to the existing search input immediately before that owned hide. |
+| Collapse will hide an active descendant | Return to its nearest visible ancestor before hiding it. |
+| Search leaves the current focused row visible | Preserve that focus and row entry. |
+| Unrelated control retains focus | Do not move it. |
+| Clear after an empty result | Restore the existing expansion snapshot and choose the first visible row as the next entry; no new remembered-focus store is introduced. |
+
+**Exact source and proof.** Mirrored JavaScript blob **ec0e5b7c96d1dc876c6f13d0df14daf5e0749d2b** changes only the tree owner and its existing search call. The index controller and complete answer-first controller are byte-identical to the parent. Generated HTML, CSS, source records, accepted model, copy and locale owners are unchanged. Complete JavaScript and Python-verifier syntax pass.
+
+The canonical verifier adds `tree-roving-<width>-<language>` cases and retains the existing `taxonomy-keyboard` activation cases. The final native run passed **12 named cases in 24 fresh anonymous contexts**, at 1440, 390 and 320 px in EN/ZH, Chrome **157.0.8103.39**, zero page errors, exit 0 in 36.95 seconds. Coverage includes actual Tab/Shift+Tab, arrows, collapse/search recovery before hiding, surviving and unrelated focus, zero results including empty categories, bilingual accessible names, unchanged 371-link destinations, retained information controls, and actual JavaScript-disabled native-link markup. A real platform-modified click creates a separate tab and loads the chosen theme while leaving the original page unchanged. Two phone captures were inspected for visible focus, wrapping and clipping.
+
+**Fixture correction is explicit.** The initial component run passed three activation cases but stopped during a third roving case after two timeouts waiting for a page `popup` event. Native Cmd/middle clicks produced a browser-context page while the fictional-origin interceptor did not observe its first navigation. The corrected test listens to the context's page event; the bounded harness serves the same generated component on a dedicated loopback server, blocks external requests, and verifies the loaded destination. Product JavaScript did not change to accommodate this fixture repair. The stopped run is not counted as a passing matrix.
+
+[TREE_ROVING_VALIDATION_20261109.json](TREE_ROVING_VALIDATION_20261109.json) binds baseline observations, exact source/test/harness inputs, the interrupted attempt, native-link diagnosis, final results and capture hashes. The harness executes named definitions from the one canonical verifier rather than duplicating behavioral test logic. These are generated-component proofs with complete GMI/shared theme CSS; full shared shell, fonts, account, live serving, screen-reader speech and release acceptance remain separate. The existing no-match paragraph's announcement lifecycle is not claimed by this phase.
+
+Original model01 **EFFECT_UNKNOWN / ROOT_UNVERIFIED**, Draft, admission and release holds remain. No model generation, fenced result consumption, new route, registry, persisted state or lifecycle owner was introduced.
