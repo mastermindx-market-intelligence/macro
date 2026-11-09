@@ -2124,3 +2124,47 @@ Build **7M9-0** reaches **18 modules / 57 div nodes**. New module **A1B-0**, tit
 Local verification uses actual generated main content and production GMI JS/CSS, blocks external requests and explicitly fixtures Brain/stale state. It is not full shared-shell/font, spoken assistive-technology, authenticated account/admission, current hosted CI, deployment or release acceptance. The original model01 unknown-effect fence and every release hold remain. Catalyst, Tools, protected-style and other held lanes remain untouched.
 
 The next bounded source issue is the primary theme search's Escape handler: it still clears a composing or already-handled event while tree/index searches have guards. Continue with the exact event contract, preserving input/URL/results/focus for guarded events and the mobile first-Escape-clear/second-Escape-close behavior. This is new primary-search work; accepted tree/index behavior is not reopened. The parent mission continues in the same foreground session.
+
+
+## 43 · Primary-search Escape ownership and current builder navigation — 9 November 2026
+
+### Applied source and bounded keyboard behavior
+
+[Draft PR10676](https://github.com/mastermindx-market-intelligence/Macro/pull/10676) now points to **2b2ab6615039e2e4172a0d0a713eae50fc237c1e**, tree **9453d4f024333059f4b01b498aa9096bbb9f3e1f**, through the original GitHub carrier and exact-parent compare-and-swap from **60cd0e21fd5f8d08f19248198780efc5cf12937d**. All **six files** read back exactly; Draft/unmerged status and the original release/model hold remain.
+
+The existing primary Browse input cleared nonempty Escape even when the event was already consumed, composing or carrying legacy code229. The three baseline cases reproduce the authored query clear, removed query URL field and replaceState write. Its only authored Escape handler now returns for other keys, stops propagation for guarded Escape without adding preventDefault, and preserves the original ordinary nonempty clear path.
+
+The source distinction matters: native Browse has no second Escape/cancel controller, but existing shared-shell document-bubble handlers can dismiss their own surfaces or move focus. The primary guard shields that propagation without changing the shell. It leaves the input method's default action intact. Ordinary empty Escape remains available for native dialog cancellation and existing opener-focus cleanup. No composition state, timer, cancel blocker, new control or ignore-next-close flag is introduced.
+
+### Focused proof
+
+[DESIGN_RECORD §11.34](https://github.com/mastermindx-market-intelligence/Macro/blob/2b2ab6615039e2e4172a0d0a713eae50fc237c1e/research/theme_graph/gmi_design_20261021/DESIGN_RECORD.md) and [PRIMARY_ESCAPE_VALIDATION_20261109.json](https://github.com/mastermindx-market-intelligence/Macro/blob/2b2ab6615039e2e4172a0d0a713eae50fc237c1e/research/theme_graph/gmi_design_20261021/PRIMARY_ESCAPE_VALIDATION_20261109.json) retain exact source inputs, commands, baseline failures, final evidence and qualifications.
+
+| Evidence | Result |
+|---|---|
+| Final browser PID57258 | Exit0; **6 cases / 6 fresh contexts**, Chrome157.0.8103.39, zero page errors, **13.24 s** |
+| Guarded authored events | **36** synthetic composing/code229/consumed Escape events across nonempty and empty input |
+| Real consumed keys | **12 trusted Escape presses** prevented by an earlier capture handler; no query/focus/history/dialog effect |
+| Ordinary clear | One replaceState, query removed, other filters and selected answer retained; EN fixture expands from 3 to 10 matching category/core results |
+| Native mobile dismissal | Empty Escape emits cancel then close, returns Browse home and focuses the opener; one-use test cancel prevention and later normal dismissal also pass |
+| Layout/language | EN/ZH1440/390/320, EN390/ZH320 dark and 320 reduced motion; two final mobile captures inspected |
+| Source preservation | All seven HTML pages/CSS byte-exact; all **92 prior verifier definitions** by lexical path/occurrence AST-exact |
+
+The paired JS blob is **d7d9107dbb08c8098ea8be168a4378aef30c0338**, SHA256 **e3d444b31192b272eca62d1e97e671b074f1acfac0a6ffdbc399c9669e459373**. Only paired JS changes in the product. One canonical test function and its two nested helpers are added; the isolated harness extracts the real definition and introduces no product logic.
+
+Guarded snapshots preserve input value and selection, URL/history, category/scope/evidence/lens, visible result IDs, selected title, input/answer node identity, focus and dialog state. A document bubble probe receives none of the guarded events. Default-prevention flags remain as supplied by the event's existing owner.
+
+**Synthetic composition is authored-event proof, not native operating-system IME proof.** Real consumed and ordinary Escape/native cancel evidence is separate. The standards distinguish propagation from cancellation and allow composition's exiting key to remain composing; the implementation does not cancel that default merely to keep a modal open. Shared-shell runtime, cross-browser/native IME, spoken AT, live account/admission, current hosted CI and deployment remain outside this component proof.
+
+### Paper contract and corrected destinations
+
+Build stays at **18 modules / 57 div nodes**. Existing module11 **7YP-0**, body **7YQ-0**, now scopes the earlier Clear guidance explicitly to tree/index actions and adds the primary input's consumed/composing/ordinary Escape contract. It states the event-proof versus native-IME distinction and the existing dialog boundary. No duplicate module or visual product specimen is added.
+
+Native parent inspection proved **7M9-0 is on p-7-0**, while **73U-0 on p-6-0** is the earlier preservation reference. The prior phase's newly split PR/README Build link incorrectly targeted p-6; it is corrected to p-7. Paper names/icons now make the destinations explicit:
+
+- [Build · Interaction & receipts](https://app.paper.design/file/01M5H6EARN9YHQV17JC6ZG9BRY/p-7-0): current source receipts and eighteen interaction/build modules.
+- [Reference · Preservation rules](https://app.paper.design/file/01M5H6EARN9YHQV17JC6ZG9BRY/p-6-0): preserved earlier reference content.
+
+All 57 Build IDs/styles/parents and unaffected text remain exact outside **7YQ, 7MV, 7MZ and 7NF**. The reference JSX remains exact, page order stays unchanged and token hash remains **ac191fd9**. The amended contract/proof modules were captured and inspected; the exact Build working indicator was released. [PAPER_PRIMARY_ESCAPE_20261109.json](PAPER_PRIMARY_ESCAPE_20261109.json) preserves source readbacks, before/after JSX and the four observed Paper operations.
+
+The parent mission continues. The next source-proven defect is in primary Browse `filters()`: it can hide a focused result or the no-results Clear action before recovering focus. Continue in that existing owner, preserve surviving/unrelated focus and the separate answer-notice focus contract, and keep closed mobile Browse closed. No model01, release, shared Tools, Catalyst or protected-style lane is reopened.
