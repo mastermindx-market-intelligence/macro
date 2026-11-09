@@ -540,8 +540,117 @@ The inspected S0 candidate projects account cash/starting NAV and position share
 
 The source helpers, native design layouts, source diagram and preservation checks were verified at their stated boundaries. Runtime integration, accounting/FX qualification and browser acceptance remain open. No production source or account state was changed.
 
+## Phase 9 — BioCatalyst: manual review conditions with an exact origin
+
+### Native changes
+
+File [Catalyst Intelligence](https://app.paper.design/file/01M6Y2VTQBVC9NA39HNG1DYWFH/p-1-0). New [R2 manual review flow](https://app.paper.design/file/01M6Y2VTQBVC9NA39HNG1DYWFH/p-4-0), root **171-0**.
+
+The original local-save specimen already correctly stated that it does not monitor closes, send notifications or automatically bring the case back. Those limits **C7-0** and the **Save locally** label **CC-0** are preserved. The new work makes the rest of the journey agree with that manual capability:
+
+- Save actions consistently say **Save review condition**; the desktop form says **Save a review condition**. Navigation is **Saved conditions**, or **Saved** on the compact bottom bar.
+- The editable form no longer declares that its condition is “not met” regardless of the user's level. Its helper asks for manual review against a dated close.
+- Source-conflict copy no longer says automatic evaluations are paused when no evaluation feature is present. It retains source conflict, withheld interpretation and the availability of saved definitions.
+- Aster's price summary says **Manual review condition**, replacing “Next trigger.” No numerical fixture value changed.
+- The original mobile feed and scenario wrappers now use flexible widths/heights, and actions can wrap. The bottom navigation has four equal flexible controls with at least44px targets.
+- The new **320px full-content reference17P-0** contains all four original cases, including the recent research and chart expansion. An inspected defect split the last digit of $42.80. The price header now stacks its explanatory label below the intact value.
+- The original recent research nodes **VF-0 / VY-0 / W5-0 / W7-0 / W8-0 / W9-0** remain present. The original **W9-0 SVG is exactly unchanged**. Parent replacement used temporary child moves and restoration, preserving actual accepted child IDs.
+- The original390px shells remain844px viewports. Paper normalizes imported overflow-y:auto to overflow:clip. The complete-content specimen proves narrow layout and content presence, **not working scroll interaction**.
+
+The new builder board separates short product states from implementation explanation. Its six compact states are:
+
+| State | Visible behavior |
+|---|---|
+| Create from Morrow | EX-B context remains visible; no Aster level is inherited; price and currency start unset |
+| Confirmed Aster save | “Saved on this browser”; a loaded saved row with its original source reference |
+| Write not completed | Draft remains visible; no success count or receipt |
+| Edit the same record |39.60 is the committed fictional value;41.00 is only a proposed user draft; Cancel preserves the original |
+| Saved-list read failure | Unknown count is an em dash, not zero; explicit retry |
+| Saved reference unavailable | The saved definition remains visible; Open current record is an explicit, qualified alternative |
+
+The board also distinguishes invalid input, unverified write and account change. Cancel returns to the case or Saved row that opened the form, with focus/scroll restoration. A successful write is immediate browser readback, not cross-device synchronization, permanent retention or an alert.
+
+New p-3-0, “Proposed · Selected case and filters,” belongs to another live writer. Its10D/10J/117/11D/11J/11P boards concern Terminal research themes, filters and copied case links. They and their growing13M/16G-era descendants were not edited. The Government shared shell and p2 Defense/integration work are also preserved.
+
+### Existing source owners and viability
+
+The exact Macro source pin is **aec7f387badcdf69c9a947fafbc73b4c68470c7d**:
+
+- [templates/biocatalyst.js](https://github.com/mastermindx-market-intelligence/macro/blob/aec7f387badcdf69c9a947fafbc73b4c68470c7d/templates/biocatalyst.js): current selection, rowIdentity, readUrl/writeUrl, request abort/token, focus and MDXAuth lifecycle.
+- [app/biocatalyst.py](https://github.com/mastermindx-market-intelligence/macro/blob/aec7f387badcdf69c9a947fafbc73b4c68470c7d/app/biocatalyst.py): pointer-bound public bundle, public evidence allowlist, current trial dossier and metadata.
+- [engine/biocatalyst/catalyst_events.py](https://github.com/mastermindx-market-intelligence/macro/blob/aec7f387badcdf69c9a947fafbc73b4c68470c7d/engine/biocatalyst/catalyst_events.py): existing NCT/event identity and explicit issuer-join limits.
+
+The current inspected client/API does not implement the Paper save/read/edit feature. It is a protected ClinicalTrials.gov research workbench. Its clinical **condition** query parameter must not be repurposed for a saved review condition.
+
+The sponsor map is **ticker_only**, and company identity remains **company_identity_not_joined**. Aster/Morrow are fictional design examples. A production price condition needs a reviewed issuer/security and price/currency projection; a name or sponsor ticker cannot supply that join. Current source authority permits display/context/explanation and does not authorize security selection, ranking, sizing, gating or trading.
+
+Current milestone keys use existing event_id; when absent, their fallback includes NCT, kind and date. Changes use NCT/before-version/after-version/operation index; prospective changes use NCT/change ID. The existing event identity may remain stable when its date changes. Keep source version separate rather than changing that canonical identity.
+
+### Executed source characterization: exact row and URL
+
+**verify_biocatalyst_selection.js** extracts25 exact helpers and12 constants from the pinned client into an isolated Node vm. Source SHA-256 is **f0c7d9256cd57afc9b7ea2d343366f5c9ee895a139f7883543900cae120b99a0**; extracted-function/constant SHA-256 is **06a92628a06d6aa71a4d6d6dde96a83242c83177b114fcde634d2d7af083f356**.
+
+Eight controlled cases passed:
+
+1. An exact selected second-row key returns that row.
+2. A missing exact key falls back to the first row with the same NCT.
+3. Trial-only fallback changes when row order changes.
+4. A stable milestone event ID can have a changed milestone date.
+5. Milestones URL roundtrip retains NCT but loses the selected event.
+6. Change-tape URL roundtrip loses the selected operation index.
+7. Prospective URL roundtrip loses the selected change ID.
+8. A different missing NCT returns no row.
+
+All URL cases retained the existing clinical-condition filter. The current trial-level fallback may be intentional for the workbench; it is insufficient for the **proposed exact saved-row return**. This does not claim a live misrouting incident. No DOM, network, auth, storage or app initialization executed.
+
+### Publication identity and the current-record boundary
+
+The dossier endpoint reads the current projection by NCT; no historical-version parameter was found. The existing request controller validates NCT but does not compare queue and dossier publication identity.
+
+_meta returns schema, source/operational clocks, current-only coverage/counts and source authority. The client's generationKey concatenates visible clocks/counts. Neither is a shared immutable publication identity.
+
+An incumbent generation identity already exists: Radar cursor handling hashes **projection.generation.generation_id** through the existing canonical-JSON **_opaque_digest** and rejects a cross-generation cursor. Do not add another generation owner or source registry.
+
+**verify_biocatalyst_publication.py** AST-extracts _meta, _opaque_digest and the actual _AUTHORITY constant. Two controlled source cases passed:
+
+- Different generation IDs with identical current metadata produce equal _meta output but different incumbent generation digests.
+- The same generation with changed operational health produces different metadata while the generation digest remains equal.
+
+The proposed **publication_ref** should project that existing generation binding from the actual bundle, consistently through queue and dossier. Trial Screen and facets have separate publication_context construction; changing _meta alone will not cover them. Equality means same published cut alongside exact NCT/row identity. It provides neither historical retrieval nor issuer identity, authorization or evidence quality.
+
+If the saved source is absent or differs, retain the condition and reference. Offer the current record only when the exact NCT is available and authorized. That explicit action does not rewrite the saved reference or claim historical restoration.
+
+### Storage and identity integration
+
+Use Terminal source pin **5107f4d84e26aefc540c8c99e0ea3803770f1bb3**:
+
+- [ownerStorage.ts](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/5107f4d84e26aefc540c8c99e0ea3803770f1bb3/terminal/lib/ownerStorage.ts)
+- [accountIdentity.ts](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/5107f4d84e26aefc540c8c99e0ea3803770f1bb3/terminal/lib/accountIdentity.ts)
+
+The existing storage implementation already owns the per-owner envelope. Its legacy readEnvelope catches malformed/unavailable reads and returns an empty object; writeOwnerSlot can use that empty interpretation. Those compatibility functions alone cannot support the new “read failed” state or prove valid data preservation.
+
+The structured **BIOCATALYST_BUILD_DELTA.json** specifies additive strict result APIs in that incumbent module, with its existing exports preserved:
+
+- Typed reads: missing, ready, invalid, unavailable. Only a successful absent key/owner in a valid envelope is empty; an empty string is invalid JSON.
+- Validated writes: not_written, written_verified, write_unverified. Validate payload, strictly reread, compare the expected raw envelope, preserve other owner slots, write once and verify exact immediate readback.
+- Invalid data must not be reset or overwritten as an empty envelope. An unverified write is reconciled before another attempt.
+- Read/compare/write/readback is **not atomic CAS** and cannot prevent all interleaving writes from another tab. A storage event may prompt reconciliation; it is not a lock.
+- Bundle the same ownerStorage/accountIdentity source into a version-pinned browser adapter for Macro. Do not copy the helper bodies into the Bio client.
+- Reuse existing **currentSubject()** at biocatalyst.js317–323 and **ownerKeyFor()**. On this protected page, an unresolved subject suspends saving; no silent guest fallback. Reuse MDXAuth.onChange and recheck captured subject before applying a load/save.
+- A local record ID identifies the note and stays constant on edit. NCT, row key, publication_ref, source clocks, verified instrument mapping, level and currency remain distinct fields. Do not persist raw source snapshots, auth tokens or private source paths.
+
+### Build order, proof and delivery boundary
+
+The native board provides source/return topology, an implementation order and motion/accessibility rules. First extend the incumbent allowlisted source binding and qualify production instrument mapping. Then add strict ownerStorage results and bundle integration. Finally integrate form/Saved states into the existing Bio controller and prove actual end-to-end behavior.
+
+Acceptance must include same-NCT multiple rows; a changed publication with unchanged clocks; corrupt/blocked storage; failed/differing readback; account changes; duplicate submission; edit cancellation; source disappearance; quiet-day reopening;320px real scrolling; keyboard/focus; enlarged text and reduced motion. Panel/feedback motion is specified at140–180ms with no invented evaluation state; playback remains unverified.
+
+**BIOCATALYST_NATIVE_VERIFICATION.json** records source-chart equality, preserved recent IDs, unchanged original local-save limits/label and the exact intentional copy differences. Eight final native screenshots cover full build,320content, create/error states, edit/return states, both390viewports,450form and the corrected price header. All are static design proof.
+
+Paper operations305–346 are observed/reconciled. Operations303–304, the prior Bot immutable packet pointer/finish, are included in this save. No production source, auth, account data, alert, trade, deployment, merge, deletion or archive changed.
+
 ## Next safe phase in progress
 
-BioCatalyst case → manual condition → return in Catalyst Intelligence file 01M6Y2VTQBVC9NA39HNG1DYWFH, p-1-0, boards 1-0 / 3F-0 / 9T-0 / AP-0 / BU-0 / HK-0. Preserve the already-correct manual-only local-save capability, Defense/Government integration, and current source-state distinctions. Focus on exact case/issuer/evidence identity, confirmed save versus failure, cancellation, editing and reopening from a quiet day.
+Shared Market Search and Comparison, file01M6Y31C449F02KGRNPGK94Q8D: R41 search → selected destination → return at320px and with an on-screen keyboard. The existing mobileEP dialogF0 and market selectorFK have fixed390/350 widths. Comparison already has320EN/ZH variants and is DO_NOT_REDO. Preserve recent13M/13P selected-state work and the existing loading/error/no-match semantics. Inspect the incumbent source owner before choosing the exact layout/interaction patch.
 
 Phase completion is save-and-continue; this record does not terminate the continuing mission.

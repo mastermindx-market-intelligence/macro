@@ -5052,5 +5052,1016 @@
         }
       ]
     }
+  },
+  {
+    "operation_id": "paper-audit-next-303-bot-evidence-link",
+    "fileId": "01M6Y3AT0XJBWTM3AVCMBJQ8TE",
+    "tool": "set_text_content",
+    "targets": [
+      "2DL-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3AT0XJBWTM3AVCMBJQ8TE\",\n    \"name\": \"Mastermind - Bot Paper Portfolio - V3 Design\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"updates\": [\n    {\n      \"nodeId\": \"2DL-0\"\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-304-bot-link-finish",
+    "fileId": "01M6Y3AT0XJBWTM3AVCMBJQ8TE",
+    "tool": "finish_working_on_nodes",
+    "targets": [
+      "2EV-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3AT0XJBWTM3AVCMBJQ8TE\",\n    \"name\": \"Mastermind - Bot Paper Portfolio - V3 Design\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "OK"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-305-bio-manual-copy",
+    "fileId": "01M6Y2VTQBVC9NA39HNG1DYWFH",
+    "tool": "set_text_content",
+    "targets": [
+      "C6-0",
+      "DS-0",
+      "UM-0",
+      "VR-0",
+      "AD-0",
+      "WT-0",
+      "US-0",
+      "VX-0",
+      "AO-0",
+      "BT-0",
+      "WZ-0",
+      "F-0",
+      "6T-0",
+      "HY-0",
+      "CR-0",
+      "6B-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y2VTQBVC9NA39HNG1DYWFH\",\n    \"name\": \"Mastermind - Catalyst Intelligence - Decision Desk and Integration\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"updates\": [\n    {\n      \"nodeId\": \"C6-0\"\n    },\n    {\n      \"nodeId\": \"DS-0\"\n    },\n    {\n      \"nodeId\": \"UM-0\"\n    },\n    {\n      \"nodeId\": \"VR-0\"\n    },\n    {\n      \"nodeId\": \"AD-0\"\n    },\n    {\n      \"nodeId\": \"WT-0\"\n    },\n    {\n      \"nodeId\": \"US-0\"\n    },\n    {\n      \"nodeId\": \"VX-0\"\n    },\n    {\n      \"nodeId\": \"AO-0\"\n    },\n    {\n      \"nodeId\": \"BT-0\"\n    },\n    {\n      \"nodeId\": \"WZ-0\"\n    },\n    {\n      \"nodeId\": \"F-0\"\n    },\n    {\n      \"nodeId\": \"6T-0\"\n    },\n    {\n      \"nodeId\": \"HY-0\"\n    },\n    {\n      \"nodeId\": \"CR-0\"\n    },\n    {\n      \"nodeId\": \"6B-0\"\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-306-bio-preserve-scroll-content",
+    "fileId": "01M6Y2VTQBVC9NA39HNG1DYWFH",
+    "tool": "move_nodes",
+    "targets": [
+      "3R-0",
+      "3Q-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y2VTQBVC9NA39HNG1DYWFH\",\n    \"name\": \"Mastermind - Catalyst Intelligence - Decision Desk and Integration\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"moves\": [\n    {\n      \"nodeId\": \"3R-0\",\n      \"parentId\": \"3F-0\",\n      \"index\": 2\n    }\n  ],\n  \"affectedParents\": [\n    {\n      \"parentId\": \"3F-0\",\n      \"childIds\": [\n        \"3G-0\",\n        \"3Q-0\",\n        \"3R-0\",\n        \"64-0\"\n      ]\n    },\n    {\n      \"parentId\": \"3Q-0\",\n      \"childIds\": []\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-307-bio-scroll-viewport",
+    "fileId": "01M6Y2VTQBVC9NA39HNG1DYWFH",
+    "tool": "write_html",
+    "targets": [
+      "3Q-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y2VTQBVC9NA39HNG1DYWFH\",\n    \"name\": \"Mastermind - Catalyst Intelligence - Decision Desk and Integration\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"ZL-0\",\n      \"name\": \"CI-mobile-viewport\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-308-bio-restore-scroll-content",
+    "fileId": "01M6Y2VTQBVC9NA39HNG1DYWFH",
+    "tool": "move_nodes",
+    "targets": [
+      "3R-0",
+      "ZL-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y2VTQBVC9NA39HNG1DYWFH\",\n    \"name\": \"Mastermind - Catalyst Intelligence - Decision Desk and Integration\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"moves\": [\n    {\n      \"nodeId\": \"3R-0\",\n      \"parentId\": \"ZL-0\",\n      \"index\": 0\n    }\n  ],\n  \"affectedParents\": [\n    {\n      \"parentId\": \"ZL-0\",\n      \"childIds\": [\n        \"3R-0\"\n      ]\n    },\n    {\n      \"parentId\": \"3F-0\",\n      \"childIds\": [\n        \"3G-0\",\n        \"ZL-0\",\n        \"64-0\"\n      ]\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-309-bio-preserve-mobile-content",
+    "fileId": "01M6Y2VTQBVC9NA39HNG1DYWFH",
+    "tool": "move_nodes",
+    "targets": [
+      "3R-0",
+      "3S-0",
+      "3V-0",
+      "42-0",
+      "45-0",
+      "VF-0",
+      "5J-0",
+      "5Q-0",
+      "5X-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y2VTQBVC9NA39HNG1DYWFH\",\n    \"name\": \"Mastermind - Catalyst Intelligence - Decision Desk and Integration\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"moves\": [\n    {\n      \"nodeId\": \"3S-0\",\n      \"parentId\": \"ZL-0\",\n      \"index\": 0\n    },\n    {\n      \"nodeId\": \"3V-0\",\n      \"parentId\": \"ZL-0\",\n      \"index\": 1\n    },\n    {\n      \"nodeId\": \"42-0\",\n      \"parentId\": \"ZL-0\",\n      \"index\": 2\n    },\n    {\n      \"nodeId\": \"45-0\",\n      \"parentId\": \"ZL-0\",\n      \"index\": 3\n    },\n    {\n      \"nodeId\": \"VF-0\",\n      \"parentId\": \"ZL-0\",\n      \"index\": 4\n    },\n    {\n      \"nodeId\": \"5J-0\",\n      \"parentId\": \"ZL-0\",\n      \"index\": 5\n    },\n    {\n      \"nodeId\": \"5Q-0\",\n      \"parentId\": \"ZL-0\",\n      \"index\": 6\n    },\n    {\n      \"nodeId\": \"5X-0\",\n      \"parentId\": \"ZL-0\",\n      \"index\": 7\n    }\n  ],\n  \"affectedParents\": [\n    {\n      \"parentId\": \"ZL-0\",\n      \"childIds\": [\n        \"3S-0\",\n        \"3V-0\",\n        \"42-0\",\n        \"45-0\",\n        \"VF-0\",\n        \"5J-0\",\n        \"5Q-0\",\n        \"5X-0\",\n        \"3R-0\"\n      ]\n    },\n    {\n      \"parentId\": \"3R-0\",\n      \"childIds\": []\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-310-bio-style-mobile-content",
+    "fileId": "01M6Y2VTQBVC9NA39HNG1DYWFH",
+    "tool": "write_html",
+    "targets": [
+      "3R-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y2VTQBVC9NA39HNG1DYWFH\",\n    \"name\": \"Mastermind - Catalyst Intelligence - Decision Desk and Integration\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"ZN-0\",\n      \"name\": \"CI-mobile\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-311-bio-restore-mobile-content",
+    "fileId": "01M6Y2VTQBVC9NA39HNG1DYWFH",
+    "tool": "move_nodes",
+    "targets": [
+      "ZN-0",
+      "3S-0",
+      "3V-0",
+      "42-0",
+      "45-0",
+      "VF-0",
+      "5J-0",
+      "5Q-0",
+      "5X-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y2VTQBVC9NA39HNG1DYWFH\",\n    \"name\": \"Mastermind - Catalyst Intelligence - Decision Desk and Integration\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"moves\": [\n    {\n      \"nodeId\": \"3S-0\",\n      \"parentId\": \"ZN-0\",\n      \"index\": 0\n    },\n    {\n      \"nodeId\": \"3V-0\",\n      \"parentId\": \"ZN-0\",\n      \"index\": 1\n    },\n    {\n      \"nodeId\": \"42-0\",\n      \"parentId\": \"ZN-0\",\n      \"index\": 2\n    },\n    {\n      \"nodeId\": \"45-0\",\n      \"parentId\": \"ZN-0\",\n      \"index\": 3\n    },\n    {\n      \"nodeId\": \"VF-0\",\n      \"parentId\": \"ZN-0\",\n      \"index\": 4\n    },\n    {\n      \"nodeId\": \"5J-0\",\n      \"parentId\": \"ZN-0\",\n      \"index\": 5\n    },\n    {\n      \"nodeId\": \"5Q-0\",\n      \"parentId\": \"ZN-0\",\n      \"index\": 6\n    },\n    {\n      \"nodeId\": \"5X-0\",\n      \"parentId\": \"ZN-0\",\n      \"index\": 7\n    }\n  ],\n  \"affectedParents\": [\n    {\n      \"parentId\": \"ZN-0\",\n      \"childIds\": [\n        \"3S-0\",\n        \"3V-0\",\n        \"42-0\",\n        \"45-0\",\n        \"VF-0\",\n        \"5J-0\",\n        \"5Q-0\",\n        \"5X-0\"\n      ]\n    },\n    {\n      \"parentId\": \"ZL-0\",\n      \"childIds\": [\n        \"ZN-0\"\n      ]\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-312-bio-preserve-mobile-header",
+    "fileId": "01M6Y2VTQBVC9NA39HNG1DYWFH",
+    "tool": "move_nodes",
+    "targets": [
+      "3S-0",
+      "3T-0",
+      "3U-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y2VTQBVC9NA39HNG1DYWFH\",\n    \"name\": \"Mastermind - Catalyst Intelligence - Decision Desk and Integration\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"moves\": [\n    {\n      \"nodeId\": \"3T-0\",\n      \"parentId\": \"ZN-0\",\n      \"index\": 0\n    },\n    {\n      \"nodeId\": \"3U-0\",\n      \"parentId\": \"ZN-0\",\n      \"index\": 1\n    }\n  ],\n  \"affectedParents\": [\n    {\n      \"parentId\": \"ZN-0\",\n      \"childIds\": [\n        \"3T-0\",\n        \"3U-0\",\n        \"3S-0\",\n        \"3V-0\",\n        \"42-0\",\n        \"45-0\",\n        \"VF-0\",\n        \"5J-0\",\n        \"5Q-0\",\n        \"5X-0\"\n      ]\n    },\n    {\n      \"parentId\": \"3S-0\",\n      \"childIds\": []\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-313-bio-style-mobile-header",
+    "fileId": "01M6Y2VTQBVC9NA39HNG1DYWFH",
+    "tool": "write_html",
+    "targets": [
+      "3S-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y2VTQBVC9NA39HNG1DYWFH\",\n    \"name\": \"Mastermind - Catalyst Intelligence - Decision Desk and Integration\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"ZP-0\",\n      \"name\": \"Brand\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-314-bio-restore-mobile-header",
+    "fileId": "01M6Y2VTQBVC9NA39HNG1DYWFH",
+    "tool": "move_nodes",
+    "targets": [
+      "ZP-0",
+      "3T-0",
+      "3U-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y2VTQBVC9NA39HNG1DYWFH\",\n    \"name\": \"Mastermind - Catalyst Intelligence - Decision Desk and Integration\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"moves\": [\n    {\n      \"nodeId\": \"3T-0\",\n      \"parentId\": \"ZP-0\",\n      \"index\": 0\n    },\n    {\n      \"nodeId\": \"3U-0\",\n      \"parentId\": \"ZP-0\",\n      \"index\": 1\n    }\n  ],\n  \"affectedParents\": [\n    {\n      \"parentId\": \"ZP-0\",\n      \"childIds\": [\n        \"3T-0\",\n        \"3U-0\"\n      ]\n    },\n    {\n      \"parentId\": \"ZN-0\",\n      \"childIds\": [\n        \"ZP-0\",\n        \"3V-0\",\n        \"42-0\",\n        \"45-0\",\n        \"VF-0\",\n        \"5J-0\",\n        \"5Q-0\",\n        \"5X-0\"\n      ]\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-315-bio-preserve-sector-navigation",
+    "fileId": "01M6Y2VTQBVC9NA39HNG1DYWFH",
+    "tool": "move_nodes",
+    "targets": [
+      "3V-0",
+      "VC-0",
+      "3Y-0",
+      "40-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y2VTQBVC9NA39HNG1DYWFH\",\n    \"name\": \"Mastermind - Catalyst Intelligence - Decision Desk and Integration\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"moves\": [\n    {\n      \"nodeId\": \"VC-0\",\n      \"parentId\": \"ZN-0\",\n      \"index\": 1\n    },\n    {\n      \"nodeId\": \"3Y-0\",\n      \"parentId\": \"ZN-0\",\n      \"index\": 2\n    },\n    {\n      \"nodeId\": \"40-0\",\n      \"parentId\": \"ZN-0\",\n      \"index\": 3\n    }\n  ],\n  \"affectedParents\": [\n    {\n      \"parentId\": \"ZN-0\",\n      \"childIds\": [\n        \"ZP-0\",\n        \"VC-0\",\n        \"3Y-0\",\n        \"40-0\",\n        \"3V-0\",\n        \"42-0\",\n        \"45-0\",\n        \"VF-0\",\n        \"5J-0\",\n        \"5Q-0\",\n        \"5X-0\"\n      ]\n    },\n    {\n      \"parentId\": \"3V-0\",\n      \"childIds\": []\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-316-bio-style-sector-navigation",
+    "fileId": "01M6Y2VTQBVC9NA39HNG1DYWFH",
+    "tool": "write_html",
+    "targets": [
+      "3V-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y2VTQBVC9NA39HNG1DYWFH\",\n    \"name\": \"Mastermind - Catalyst Intelligence - Decision Desk and Integration\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"ZR-0\",\n      \"name\": \"Sectors\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-317-bio-restore-sector-navigation",
+    "fileId": "01M6Y2VTQBVC9NA39HNG1DYWFH",
+    "tool": "move_nodes",
+    "targets": [
+      "ZR-0",
+      "VC-0",
+      "3Y-0",
+      "40-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y2VTQBVC9NA39HNG1DYWFH\",\n    \"name\": \"Mastermind - Catalyst Intelligence - Decision Desk and Integration\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"moves\": [\n    {\n      \"nodeId\": \"VC-0\",\n      \"parentId\": \"ZR-0\",\n      \"index\": 0\n    },\n    {\n      \"nodeId\": \"3Y-0\",\n      \"parentId\": \"ZR-0\",\n      \"index\": 1\n    },\n    {\n      \"nodeId\": \"40-0\",\n      \"parentId\": \"ZR-0\",\n      \"index\": 2\n    }\n  ],\n  \"affectedParents\": [\n    {\n      \"parentId\": \"ZR-0\",\n      \"childIds\": [\n        \"VC-0\",\n        \"3Y-0\",\n        \"40-0\"\n      ]\n    },\n    {\n      \"parentId\": \"ZN-0\",\n      \"childIds\": [\n        \"ZP-0\",\n        \"ZR-0\",\n        \"42-0\",\n        \"45-0\",\n        \"VF-0\",\n        \"5J-0\",\n        \"5Q-0\",\n        \"5X-0\"\n      ]\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-318-bio-preserve-status-filters",
+    "fileId": "01M6Y2VTQBVC9NA39HNG1DYWFH",
+    "tool": "move_nodes",
+    "targets": [
+      "45-0",
+      "46-0",
+      "49-0",
+      "4C-0",
+      "4F-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y2VTQBVC9NA39HNG1DYWFH\",\n    \"name\": \"Mastermind - Catalyst Intelligence - Decision Desk and Integration\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"moves\": [\n    {\n      \"nodeId\": \"46-0\",\n      \"parentId\": \"ZN-0\",\n      \"index\": 3\n    },\n    {\n      \"nodeId\": \"49-0\",\n      \"parentId\": \"ZN-0\",\n      \"index\": 4\n    },\n    {\n      \"nodeId\": \"4C-0\",\n      \"parentId\": \"ZN-0\",\n      \"index\": 5\n    },\n    {\n      \"nodeId\": \"4F-0\",\n      \"parentId\": \"ZN-0\",\n      \"index\": 6\n    }\n  ],\n  \"affectedParents\": [\n    {\n      \"parentId\": \"ZN-0\",\n      \"childIds\": [\n        \"ZP-0\",\n        \"ZR-0\",\n        \"42-0\",\n        \"46-0\",\n        \"49-0\",\n        \"4C-0\",\n        \"4F-0\",\n        \"45-0\",\n        \"VF-0\",\n        \"5J-0\",\n        \"5Q-0\",\n        \"5X-0\"\n      ]\n    },\n    {\n      \"parentId\": \"45-0\",\n      \"childIds\": []\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-319-bio-style-status-filters",
+    "fileId": "01M6Y2VTQBVC9NA39HNG1DYWFH",
+    "tool": "write_html",
+    "targets": [
+      "45-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y2VTQBVC9NA39HNG1DYWFH\",\n    \"name\": \"Mastermind - Catalyst Intelligence - Decision Desk and Integration\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"ZT-0\",\n      \"name\": \"Lanes\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-320-bio-restore-status-filters",
+    "fileId": "01M6Y2VTQBVC9NA39HNG1DYWFH",
+    "tool": "move_nodes",
+    "targets": [
+      "ZT-0",
+      "46-0",
+      "49-0",
+      "4C-0",
+      "4F-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y2VTQBVC9NA39HNG1DYWFH\",\n    \"name\": \"Mastermind - Catalyst Intelligence - Decision Desk and Integration\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"moves\": [\n    {\n      \"nodeId\": \"46-0\",\n      \"parentId\": \"ZT-0\",\n      \"index\": 0\n    },\n    {\n      \"nodeId\": \"49-0\",\n      \"parentId\": \"ZT-0\",\n      \"index\": 1\n    },\n    {\n      \"nodeId\": \"4C-0\",\n      \"parentId\": \"ZT-0\",\n      \"index\": 2\n    },\n    {\n      \"nodeId\": \"4F-0\",\n      \"parentId\": \"ZT-0\",\n      \"index\": 3\n    }\n  ],\n  \"affectedParents\": [\n    {\n      \"parentId\": \"ZT-0\",\n      \"childIds\": [\n        \"46-0\",\n        \"49-0\",\n        \"4C-0\",\n        \"4F-0\"\n      ]\n    },\n    {\n      \"parentId\": \"ZN-0\",\n      \"childIds\": [\n        \"ZP-0\",\n        \"ZR-0\",\n        \"42-0\",\n        \"ZT-0\",\n        \"VF-0\",\n        \"5J-0\",\n        \"5Q-0\",\n        \"5X-0\"\n      ]\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-321-bio-preserve-case-actions",
+    "fileId": "01M6Y2VTQBVC9NA39HNG1DYWFH",
+    "tool": "move_nodes",
+    "targets": [
+      "VT-0",
+      "VU-0",
+      "VW-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y2VTQBVC9NA39HNG1DYWFH\",\n    \"name\": \"Mastermind - Catalyst Intelligence - Decision Desk and Integration\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"moves\": [\n    {\n      \"nodeId\": \"VU-0\",\n      \"parentId\": \"VF-0\",\n      \"index\": 4\n    },\n    {\n      \"nodeId\": \"VW-0\",\n      \"parentId\": \"VF-0\",\n      \"index\": 5\n    }\n  ],\n  \"affectedParents\": [\n    {\n      \"parentId\": \"VF-0\",\n      \"childIds\": [\n        \"VG-0\",\n        \"VM-0\",\n        \"VP-0\",\n        \"VS-0\",\n        \"VU-0\",\n        \"VW-0\",\n        \"VT-0\",\n        \"VY-0\",\n        \"W5-0\"\n      ]\n    },\n    {\n      \"parentId\": \"VT-0\",\n      \"childIds\": []\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-322-bio-style-case-actions",
+    "fileId": "01M6Y2VTQBVC9NA39HNG1DYWFH",
+    "tool": "write_html",
+    "targets": [
+      "VT-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y2VTQBVC9NA39HNG1DYWFH\",\n    \"name\": \"Mastermind - Catalyst Intelligence - Decision Desk and Integration\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"ZV-0\",\n      \"name\": \"mobile-lead-actions\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-323-bio-restore-case-actions",
+    "fileId": "01M6Y2VTQBVC9NA39HNG1DYWFH",
+    "tool": "move_nodes",
+    "targets": [
+      "ZV-0",
+      "VU-0",
+      "VW-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y2VTQBVC9NA39HNG1DYWFH\",\n    \"name\": \"Mastermind - Catalyst Intelligence - Decision Desk and Integration\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"moves\": [\n    {\n      \"nodeId\": \"VU-0\",\n      \"parentId\": \"ZV-0\",\n      \"index\": 0\n    },\n    {\n      \"nodeId\": \"VW-0\",\n      \"parentId\": \"ZV-0\",\n      \"index\": 1\n    }\n  ],\n  \"affectedParents\": [\n    {\n      \"parentId\": \"ZV-0\",\n      \"childIds\": [\n        \"VU-0\",\n        \"VW-0\"\n      ]\n    },\n    {\n      \"parentId\": \"VF-0\",\n      \"childIds\": [\n        \"VG-0\",\n        \"VM-0\",\n        \"VP-0\",\n        \"VS-0\",\n        \"ZV-0\",\n        \"VY-0\",\n        \"W5-0\"\n      ]\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-324-bio-preserve-scenario-content",
+    "fileId": "01M6Y2VTQBVC9NA39HNG1DYWFH",
+    "tool": "move_nodes",
+    "targets": [
+      "BG-0",
+      "BH-0",
+      "BK-0",
+      "BN-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y2VTQBVC9NA39HNG1DYWFH\",\n    \"name\": \"Mastermind - Catalyst Intelligence - Decision Desk and Integration\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"moves\": [\n    {\n      \"nodeId\": \"BH-0\",\n      \"parentId\": \"B0-0\",\n      \"index\": 1\n    },\n    {\n      \"nodeId\": \"BK-0\",\n      \"parentId\": \"B0-0\",\n      \"index\": 2\n    },\n    {\n      \"nodeId\": \"BN-0\",\n      \"parentId\": \"B0-0\",\n      \"index\": 3\n    }\n  ],\n  \"affectedParents\": [\n    {\n      \"parentId\": \"B0-0\",\n      \"childIds\": [\n        \"B1-0\",\n        \"BH-0\",\n        \"BK-0\",\n        \"BN-0\",\n        \"BG-0\"\n      ]\n    },\n    {\n      \"parentId\": \"BG-0\",\n      \"childIds\": []\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-325-bio-style-scenario-content",
+    "fileId": "01M6Y2VTQBVC9NA39HNG1DYWFH",
+    "tool": "write_html",
+    "targets": [
+      "BG-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y2VTQBVC9NA39HNG1DYWFH\",\n    \"name\": \"Mastermind - Catalyst Intelligence - Decision Desk and Integration\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"ZX-0\",\n      \"name\": \"CI-detail-body\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-326-bio-restore-scenario-content",
+    "fileId": "01M6Y2VTQBVC9NA39HNG1DYWFH",
+    "tool": "move_nodes",
+    "targets": [
+      "ZX-0",
+      "BH-0",
+      "BK-0",
+      "BN-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y2VTQBVC9NA39HNG1DYWFH\",\n    \"name\": \"Mastermind - Catalyst Intelligence - Decision Desk and Integration\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"moves\": [\n    {\n      \"nodeId\": \"BH-0\",\n      \"parentId\": \"ZX-0\",\n      \"index\": 0\n    },\n    {\n      \"nodeId\": \"BK-0\",\n      \"parentId\": \"ZX-0\",\n      \"index\": 1\n    },\n    {\n      \"nodeId\": \"BN-0\",\n      \"parentId\": \"ZX-0\",\n      \"index\": 2\n    }\n  ],\n  \"affectedParents\": [\n    {\n      \"parentId\": \"ZX-0\",\n      \"childIds\": [\n        \"BH-0\",\n        \"BK-0\",\n        \"BN-0\"\n      ]\n    },\n    {\n      \"parentId\": \"B0-0\",\n      \"childIds\": [\n        \"B1-0\",\n        \"ZX-0\"\n      ]\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-327-bio-preserve-scenario-viewport",
+    "fileId": "01M6Y2VTQBVC9NA39HNG1DYWFH",
+    "tool": "move_nodes",
+    "targets": [
+      "B0-0",
+      "B1-0",
+      "ZX-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y2VTQBVC9NA39HNG1DYWFH\",\n    \"name\": \"Mastermind - Catalyst Intelligence - Decision Desk and Integration\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"moves\": [\n    {\n      \"nodeId\": \"B1-0\",\n      \"parentId\": \"AP-0\",\n      \"index\": 1\n    },\n    {\n      \"nodeId\": \"ZX-0\",\n      \"parentId\": \"AP-0\",\n      \"index\": 2\n    }\n  ],\n  \"affectedParents\": [\n    {\n      \"parentId\": \"AP-0\",\n      \"childIds\": [\n        \"AQ-0\",\n        \"B1-0\",\n        \"ZX-0\",\n        \"B0-0\",\n        \"BQ-0\"\n      ]\n    },\n    {\n      \"parentId\": \"B0-0\",\n      \"childIds\": []\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-328-bio-style-scenario-viewport",
+    "fileId": "01M6Y2VTQBVC9NA39HNG1DYWFH",
+    "tool": "write_html",
+    "targets": [
+      "B0-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y2VTQBVC9NA39HNG1DYWFH\",\n    \"name\": \"Mastermind - Catalyst Intelligence - Decision Desk and Integration\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"ZZ-0\",\n      \"name\": \"CI-detail\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-329-bio-restore-scenario-viewport",
+    "fileId": "01M6Y2VTQBVC9NA39HNG1DYWFH",
+    "tool": "move_nodes",
+    "targets": [
+      "ZZ-0",
+      "B1-0",
+      "ZX-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y2VTQBVC9NA39HNG1DYWFH\",\n    \"name\": \"Mastermind - Catalyst Intelligence - Decision Desk and Integration\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"moves\": [\n    {\n      \"nodeId\": \"B1-0\",\n      \"parentId\": \"ZZ-0\",\n      \"index\": 0\n    },\n    {\n      \"nodeId\": \"ZX-0\",\n      \"parentId\": \"ZZ-0\",\n      \"index\": 1\n    }\n  ],\n  \"affectedParents\": [\n    {\n      \"parentId\": \"ZZ-0\",\n      \"childIds\": [\n        \"B1-0\",\n        \"ZX-0\"\n      ]\n    },\n    {\n      \"parentId\": \"AP-0\",\n      \"childIds\": [\n        \"AQ-0\",\n        \"ZZ-0\",\n        \"BQ-0\"\n      ]\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-330-bio-responsive-footer",
+    "fileId": "01M6Y2VTQBVC9NA39HNG1DYWFH",
+    "tool": "write_html",
+    "targets": [
+      "64-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y2VTQBVC9NA39HNG1DYWFH\",\n    \"name\": \"Mastermind - Catalyst Intelligence - Decision Desk and Integration\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"101-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"102-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"103-0\",\n      \"name\": \"Signals control\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"104-0\",\n      \"name\": \"Signals\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"105-0\",\n      \"name\": \"Calendar control\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"106-0\",\n      \"name\": \"Calendar\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"107-0\",\n      \"name\": \"Watches control\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"108-0\",\n      \"name\": \"Saved\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"109-0\",\n      \"name\": \"Research control\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"10A-0\",\n      \"name\": \"Research\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"10B-0\",\n      \"name\": \"Home indicator\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-331-bio-case-context",
+    "fileId": "01M6Y2VTQBVC9NA39HNG1DYWFH",
+    "tool": "write_html",
+    "targets": [
+      "BW-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y2VTQBVC9NA39HNG1DYWFH\",\n    \"name\": \"Mastermind - Catalyst Intelligence - Decision Desk and Integration\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"10U-0\",\n      \"name\": \"Trial-results case ·…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-332-bio-build-page",
+    "fileId": "01M6Y2VTQBVC9NA39HNG1DYWFH",
+    "tool": "create_page",
+    "targets": [
+      "p-1-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y2VTQBVC9NA39HNG1DYWFH\",\n    \"name\": \"Mastermind - Catalyst Intelligence - Decision Desk and Integration\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"pageId\": \"p-4-0\",\n  \"name\": \"R2 · Manual review condition flow\",\n  \"icon\": \"blueprint\"\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-333-bio-form-title",
+    "fileId": "01M6Y2VTQBVC9NA39HNG1DYWFH",
+    "tool": "set_text_content",
+    "targets": [
+      "BX-0",
+      "C0-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y2VTQBVC9NA39HNG1DYWFH\",\n    \"name\": \"Mastermind - Catalyst Intelligence - Decision Desk and Integration\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"updates\": [\n    {\n      \"nodeId\": \"BX-0\"\n    },\n    {\n      \"nodeId\": \"C0-0\"\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-334-bio-build-shell",
+    "fileId": "01M6Y2VTQBVC9NA39HNG1DYWFH",
+    "tool": "write_html",
+    "targets": [
+      "root_node_p-4-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y2VTQBVC9NA39HNG1DYWFH\",\n    \"name\": \"Mastermind - Catalyst Intelligence - Decision Desk and Integration\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"171-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"172-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"173-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"174-0\",\n      \"name\": \"BIOCATALYST / R2\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"175-0\",\n      \"name\": \"BUILD PROPOSAL · FIC…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"176-0\",\n      \"name\": \"A condition you can …\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"177-0\",\n      \"name\": \"Keep the case, the l…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"178-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"179-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"17A-0\",\n      \"name\": \"01\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"17B-0\",\n      \"name\": \"Open the originating…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"17C-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"17D-0\",\n      \"name\": \"02\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"17E-0\",\n      \"name\": \"Set a manual conditi…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"17F-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"17G-0\",\n      \"name\": \"03\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"17H-0\",\n      \"name\": \"Confirm the local sa…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"17I-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"17J-0\",\n      \"name\": \"04\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"17K-0\",\n      \"name\": \"Return through Saved\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"17L-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"17M-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"17N-0\",\n      \"name\": \"320 px · full conten…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"17O-0\",\n      \"name\": \"All four cases remai…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"17P-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"17Q-0\",\n      \"name\": \"CI-mobile\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"17R-0\",\n      \"name\": \"Brand\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"17S-0\",\n      \"name\": \"Catalyst Intelligenc…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"17T-0\",\n      \"name\": \"Fictional examples\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"17U-0\",\n      \"name\": \"Sectors\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"17V-0\",\n      \"name\": \"BioCatalyst sector\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"17W-0\",\n      \"name\": \"BioCatalyst\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"17X-0\",\n      \"name\": \"Government sector\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"17Y-0\",\n      \"name\": \"Government\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"17Z-0\",\n      \"name\": \"All sectors sector\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"180-0\",\n      \"name\": \"All sectors\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"181-0\",\n      \"name\": \"Heading\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"182-0\",\n      \"name\": \"Page title\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"183-0\",\n      \"name\": \"Subtitle\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"184-0\",\n      \"name\": \"Lanes\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"185-0\",\n      \"name\": \"All filter\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"186-0\",\n      \"name\": \"All\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"187-0\",\n      \"name\": \"4\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"188-0\",\n      \"name\": \"Ready filter\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"189-0\",\n      \"name\": \"Ready\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"18A-0\",\n      \"name\": \"1\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"18B-0\",\n      \"name\": \"Prepare filter\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"18C-0\",\n      \"name\": \"Prepare\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"18D-0\",\n      \"name\": \"2\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"18E-0\",\n      \"name\": \"Reassess filter\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"18F-0\",\n      \"name\": \"Reassess\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"18G-0\",\n      \"name\": \"1\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"18H-0\",\n      \"name\": \"mobile-lead-card\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"18I-0\",\n      \"name\": \"mobile-lead-identity\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"18J-0\",\n      \"name\": \"Company\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"18K-0\",\n      \"name\": \"Company name\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"18L-0\",\n      \"name\": \"Company context\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"18M-0\",\n      \"name\": \"State\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"18N-0\",\n      \"name\": \"State label\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"18O-0\",\n      \"name\": \"mobile-lead-thesis\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"18P-0\",\n      \"name\": \"Decision title\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"18Q-0\",\n      \"name\": \"Decision summary\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"18R-0\",\n      \"name\": \"mobile-lead-condition\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"18S-0\",\n      \"name\": \"Condition origin\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"18T-0\",\n      \"name\": \"Next condition\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"18U-0\",\n      \"name\": \"mobile-lead-risk\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"18V-0\",\n      \"name\": \"mobile-lead-actions\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"18W-0\",\n      \"name\": \"Open the setup →\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"18X-0\",\n      \"name\": \"Open the setup →\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"18Y-0\",\n      \"name\": \"Watch the next change\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"18Z-0\",\n      \"name\": \"Save review conditio…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"190-0\",\n      \"name\": \"mobile-lead-evidence\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"191-0\",\n      \"name\": \"Event evidence\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"192-0\",\n      \"name\": \"Event label\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"193-0\",\n      \"name\": \"Event claim\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"194-0\",\n      \"name\": \"Market evidence\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"195-0\",\n      \"name\": \"Market label\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"196-0\",\n      \"name\": \"Market claim\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"197-0\",\n      \"name\": \"Illustrative price context\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"198-0\",\n      \"name\": \"Quote row\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"199-0\",\n      \"name\": \"Price\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"19A-0\",\n      \"name\": \"Data label\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"19B-0\",\n      \"name\": \"SVG\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"19C-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"19D-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"19E-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"19F-0\",\n      \"name\": \"42.80\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"19G-0\",\n      \"name\": \"41.20\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"19H-0\",\n      \"name\": \"Reference note\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"19I-0\",\n      \"name\": \"mobile-signals-morrow\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"19J-0\",\n      \"name\": \"Company\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"19K-0\",\n      \"name\": \"Decision\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"19L-0\",\n      \"name\": \"Meaning\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"19M-0\",\n      \"name\": \"Principal uncertainty\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"19N-0\",\n      \"name\": \"Review action\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"19O-0\",\n      \"name\": \"Action\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"19P-0\",\n      \"name\": \"mobile-signals-kestrel\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"19Q-0\",\n      \"name\": \"Company\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"19R-0\",\n      \"name\": \"Decision\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"19S-0\",\n      \"name\": \"Meaning\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"19T-0\",\n      \"name\": \"Principal uncertainty\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"19U-0\",\n      \"name\": \"Review action\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"19V-0\",\n      \"name\": \"Action\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"19W-0\",\n      \"name\": \"mobile-signals-lumen\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"19X-0\",\n      \"name\": \"Company\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"19Y-0\",\n      \"name\": \"Decision\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"19Z-0\",\n      \"name\": \"Meaning\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1A0-0\",\n      \"name\": \"Principal uncertainty\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1A1-0\",\n      \"name\": \"Review action\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1A2-0\",\n      \"name\": \"Action\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1A3-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1A4-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1A5-0\",\n      \"name\": \"Signals control\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1A6-0\",\n      \"name\": \"Signals\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1A7-0\",\n      \"name\": \"Calendar control\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1A8-0\",\n      \"name\": \"Calendar\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1A9-0\",\n      \"name\": \"Watches control\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1AA-0\",\n      \"name\": \"Saved\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1AB-0\",\n      \"name\": \"Research control\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1AC-0\",\n      \"name\": \"Research\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1AD-0\",\n      \"name\": \"Home indicator\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1AE-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1AF-0\",\n      \"name\": \"Save and return · co…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-335-bio-save-return-states",
+    "fileId": "01M6Y2VTQBVC9NA39HNG1DYWFH",
+    "tool": "write_html",
+    "targets": [
+      "1AE-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y2VTQBVC9NA39HNG1DYWFH\",\n    \"name\": \"Mastermind - Catalyst Intelligence - Decision Desk and Integration\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1B2-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1B3-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1B4-0\",\n      \"name\": \"01 / START FROM THIS…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1B5-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1B6-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1B7-0\",\n      \"name\": \"Save a review condit…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1B8-0\",\n      \"name\": \"EX-B · Morrow Therap…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1B9-0\",\n      \"name\": \"Regulatory review · …\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1BA-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1BB-0\",\n      \"name\": \"Review condition\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1BC-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1BD-0\",\n      \"name\": \"Daily close below my…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1BE-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1BF-0\",\n      \"name\": \"Price level\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1BG-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1BH-0\",\n      \"name\": \"Enter a price\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1BI-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1BJ-0\",\n      \"name\": \"Currency\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1BK-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1BL-0\",\n      \"name\": \"Choose currency\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1BM-0\",\n      \"name\": \"Saved only in this b…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1BN-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1BO-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1BP-0\",\n      \"name\": \"Cancel\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1BQ-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1BR-0\",\n      \"name\": \"Save locally\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1BS-0\",\n      \"name\": \"Morrow starts with n…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1BT-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1BU-0\",\n      \"name\": \"02 / CONFIRMED LOCAL…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1BV-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1BW-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1BX-0\",\n      \"name\": \"Saved on this browse…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1BY-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1BZ-0\",\n      \"name\": \"Saved conditions · 1\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1C0-0\",\n      \"name\": \"Aster Bio\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1C1-0\",\n      \"name\": \"EX-A · Trial-results…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1C2-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1C3-0\",\n      \"name\": \"Daily close below\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1C4-0\",\n      \"name\": \"$39.60\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1C5-0\",\n      \"name\": \"USD · Manual review\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1C6-0\",\n      \"name\": \"Saved source · 18 Oc…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1C7-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1C8-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1C9-0\",\n      \"name\": \"Open case\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1CA-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1CB-0\",\n      \"name\": \"Edit\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1CC-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1CD-0\",\n      \"name\": \"Back to case\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1CE-0\",\n      \"name\": \"Show confirmation an…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1CF-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1CG-0\",\n      \"name\": \"03 / WRITE DID NOT C…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1CH-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1CI-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1CJ-0\",\n      \"name\": \"Save a review condit…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1CK-0\",\n      \"name\": \"EX-A · Aster Bio\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1CL-0\",\n      \"name\": \"Trial-results case\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1CM-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1CN-0\",\n      \"name\": \"Review condition\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1CO-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1CP-0\",\n      \"name\": \"Daily close below my…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1CQ-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1CR-0\",\n      \"name\": \"Price level · USD\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1CS-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1CT-0\",\n      \"name\": \"39.60\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1CU-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1CV-0\",\n      \"name\": \"Couldn’t save on thi…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1CW-0\",\n      \"name\": \"Your draft is still …\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1CX-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1CY-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1CZ-0\",\n      \"name\": \"Cancel\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1D0-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1D1-0\",\n      \"name\": \"Try saving again\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1D2-0\",\n      \"name\": \"Retain the draft and…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1D3-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1D4-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1D5-0\",\n      \"name\": \"04 / EDIT THE SAME R…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1D6-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1D7-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1D8-0\",\n      \"name\": \"Edit condition\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1D9-0\",\n      \"name\": \"EX-A · Aster Bio\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1DA-0\",\n      \"name\": \"Saved source · 18 Oc…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1DB-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1DC-0\",\n      \"name\": \"Review condition\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1DD-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1DE-0\",\n      \"name\": \"Daily close below my…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1DF-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1DG-0\",\n      \"name\": \"Price level · USD\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1DH-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1DI-0\",\n      \"name\": \"41.00\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1DJ-0\",\n      \"name\": \"Saved only in this b…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1DK-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1DL-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1DM-0\",\n      \"name\": \"Cancel\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1DN-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1DO-0\",\n      \"name\": \"Save changes\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1DP-0\",\n      \"name\": \"Example edit: commit…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1DQ-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1DR-0\",\n      \"name\": \"05 / LIST READ FAILE…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1DS-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1DT-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1DU-0\",\n      \"name\": \"Saved conditions · —\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1DV-0\",\n      \"name\": \"Saved conditions cou…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1DW-0\",\n      \"name\": \"Rectangle\",\n      \"component\": \"Rectangle\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1DX-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1DY-0\",\n      \"name\": \"Try again\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1DZ-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1E0-0\",\n      \"name\": \"Back to cases\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1E1-0\",\n      \"name\": \"Unknown is not zero.…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1E2-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1E3-0\",\n      \"name\": \"06 / SAVED SOURCE UN…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1E4-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1E5-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1E6-0\",\n      \"name\": \"Review saved conditi…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1E7-0\",\n      \"name\": \"EX-A · Aster Bio\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1E8-0\",\n      \"name\": \"Daily close below $3…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1E9-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1EA-0\",\n      \"name\": \"Saved reference unav…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1EB-0\",\n      \"name\": \"Your condition is ke…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1EC-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1ED-0\",\n      \"name\": \"Open current record\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1EE-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1EF-0\",\n      \"name\": \"Back to saved\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1EG-0\",\n      \"name\": \"Offer the current re…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-336-bio-preserve-price-header-original",
+    "fileId": "01M6Y2VTQBVC9NA39HNG1DYWFH",
+    "tool": "move_nodes",
+    "targets": [
+      "W6-0",
+      "W7-0",
+      "W8-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y2VTQBVC9NA39HNG1DYWFH\",\n    \"name\": \"Mastermind - Catalyst Intelligence - Decision Desk and Integration\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"moves\": [\n    {\n      \"nodeId\": \"W7-0\",\n      \"parentId\": \"W5-0\",\n      \"index\": 0\n    },\n    {\n      \"nodeId\": \"W8-0\",\n      \"parentId\": \"W5-0\",\n      \"index\": 1\n    }\n  ],\n  \"affectedParents\": [\n    {\n      \"parentId\": \"W5-0\",\n      \"childIds\": [\n        \"W7-0\",\n        \"W8-0\",\n        \"W6-0\",\n        \"W9-0\",\n        \"WF-0\"\n      ]\n    },\n    {\n      \"parentId\": \"W6-0\",\n      \"childIds\": []\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-337-bio-style-price-header-original",
+    "fileId": "01M6Y2VTQBVC9NA39HNG1DYWFH",
+    "tool": "write_html",
+    "targets": [
+      "W6-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y2VTQBVC9NA39HNG1DYWFH\",\n    \"name\": \"Mastermind - Catalyst Intelligence - Decision Desk and Integration\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1FA-0\",\n      \"name\": \"Quote row\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-338-bio-restore-price-header-original",
+    "fileId": "01M6Y2VTQBVC9NA39HNG1DYWFH",
+    "tool": "move_nodes",
+    "targets": [
+      "1FA-0",
+      "W7-0",
+      "W8-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y2VTQBVC9NA39HNG1DYWFH\",\n    \"name\": \"Mastermind - Catalyst Intelligence - Decision Desk and Integration\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"moves\": [\n    {\n      \"nodeId\": \"W7-0\",\n      \"parentId\": \"1FA-0\",\n      \"index\": 0\n    },\n    {\n      \"nodeId\": \"W8-0\",\n      \"parentId\": \"1FA-0\",\n      \"index\": 1\n    }\n  ],\n  \"affectedParents\": [\n    {\n      \"parentId\": \"1FA-0\",\n      \"childIds\": [\n        \"W7-0\",\n        \"W8-0\"\n      ]\n    },\n    {\n      \"parentId\": \"W5-0\",\n      \"childIds\": [\n        \"1FA-0\",\n        \"W9-0\",\n        \"WF-0\"\n      ]\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-339-bio-preserve-price-header-320",
+    "fileId": "01M6Y2VTQBVC9NA39HNG1DYWFH",
+    "tool": "move_nodes",
+    "targets": [
+      "198-0",
+      "199-0",
+      "19A-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y2VTQBVC9NA39HNG1DYWFH\",\n    \"name\": \"Mastermind - Catalyst Intelligence - Decision Desk and Integration\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"moves\": [\n    {\n      \"nodeId\": \"199-0\",\n      \"parentId\": \"197-0\",\n      \"index\": 0\n    },\n    {\n      \"nodeId\": \"19A-0\",\n      \"parentId\": \"197-0\",\n      \"index\": 1\n    }\n  ],\n  \"affectedParents\": [\n    {\n      \"parentId\": \"197-0\",\n      \"childIds\": [\n        \"199-0\",\n        \"19A-0\",\n        \"198-0\",\n        \"19B-0\",\n        \"19H-0\"\n      ]\n    },\n    {\n      \"parentId\": \"198-0\",\n      \"childIds\": []\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-340-bio-style-price-header-320",
+    "fileId": "01M6Y2VTQBVC9NA39HNG1DYWFH",
+    "tool": "write_html",
+    "targets": [
+      "198-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y2VTQBVC9NA39HNG1DYWFH\",\n    \"name\": \"Mastermind - Catalyst Intelligence - Decision Desk and Integration\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1FC-0\",\n      \"name\": \"Quote row\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-341-bio-restore-price-header-320",
+    "fileId": "01M6Y2VTQBVC9NA39HNG1DYWFH",
+    "tool": "move_nodes",
+    "targets": [
+      "1FC-0",
+      "199-0",
+      "19A-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y2VTQBVC9NA39HNG1DYWFH\",\n    \"name\": \"Mastermind - Catalyst Intelligence - Decision Desk and Integration\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"moves\": [\n    {\n      \"nodeId\": \"199-0\",\n      \"parentId\": \"1FC-0\",\n      \"index\": 0\n    },\n    {\n      \"nodeId\": \"19A-0\",\n      \"parentId\": \"1FC-0\",\n      \"index\": 1\n    }\n  ],\n  \"affectedParents\": [\n    {\n      \"parentId\": \"1FC-0\",\n      \"childIds\": [\n        \"199-0\",\n        \"19A-0\"\n      ]\n    },\n    {\n      \"parentId\": \"197-0\",\n      \"childIds\": [\n        \"1FC-0\",\n        \"19B-0\",\n        \"19H-0\"\n      ]\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-342-bio-build-contract",
+    "fileId": "01M6Y2VTQBVC9NA39HNG1DYWFH",
+    "tool": "write_html",
+    "targets": [
+      "1AE-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y2VTQBVC9NA39HNG1DYWFH\",\n    \"name\": \"Mastermind - Catalyst Intelligence - Decision Desk and Integration\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1FM-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1FN-0\",\n      \"name\": \"Guarded transitions\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1FO-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1FP-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1FQ-0\",\n      \"name\": \"INVALID INPUT\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1FR-0\",\n      \"name\": \"Enter a price above …\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1FS-0\",\n      \"name\": \"Retain the field val…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1FT-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1FU-0\",\n      \"name\": \"WRITE NOT VERIFIED\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1FV-0\",\n      \"name\": \"Save not confirmed. …\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1FW-0\",\n      \"name\": \"Reconcile first. A f…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1FX-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1FY-0\",\n      \"name\": \"ACCOUNT CHANGED\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1FZ-0\",\n      \"name\": \"Sign in to save this…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1G0-0\",\n      \"name\": \"Suspend the prior-ow…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1G1-0\",\n      \"name\": \"SVG\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1G2-0\",\n      \"name\": \"Rect\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1G3-0\",\n      \"name\": \"PROPOSED RETURN CONT…\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1G4-0\",\n      \"name\": \"Rect\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1G5-0\",\n      \"name\": \"Saved condition\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1G6-0\",\n      \"name\": \"Level + currency\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1G7-0\",\n      \"name\": \"Origin NCT + exact r…\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1G8-0\",\n      \"name\": \"Saved publication_re…\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1G9-0\",\n      \"name\": \"Existing owner names…\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GA-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GB-0\",\n      \"name\": \"Rect\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GC-0\",\n      \"name\": \"Read current source\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GD-0\",\n      \"name\": \"Existing API + contr…\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GE-0\",\n      \"name\": \"Compare NCT, row and\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GF-0\",\n      \"name\": \"publication_ref toge…\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GG-0\",\n      \"name\": \"Preserve the saved r…\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GH-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GI-0\",\n      \"name\": \"Rect\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GJ-0\",\n      \"name\": \"Same record · same p…\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GK-0\",\n      \"name\": \"Open the referenced …\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GL-0\",\n      \"name\": \"Rect\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GM-0\",\n      \"name\": \"Missing or different…\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GN-0\",\n      \"name\": \"Keep the condition ·…\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GO-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GP-0\",\n      \"name\": \"Builder contract · p…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GQ-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GR-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GS-0\",\n      \"name\": \"01 / Extend the curr…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GT-0\",\n      \"name\": \"The inspected Bio AP…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GU-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GV-0\",\n      \"name\": \"02 / Bind the origin…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GW-0\",\n      \"name\": \"Keep NCT, mode, exac…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GX-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GY-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GZ-0\",\n      \"name\": \"03 / Reuse generatio…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1H0-0\",\n      \"name\": \"Project publication_…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1H1-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1H2-0\",\n      \"name\": \"04 / Make local writ…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1H3-0\",\n      \"name\": \"Extend ownerStorage …\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1H4-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1H5-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1H6-0\",\n      \"name\": \"05 / Reuse account a…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1H7-0\",\n      \"name\": \"Bind to currentSubje…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1H8-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1H9-0\",\n      \"name\": \"06 / Build and prove…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1HA-0\",\n      \"name\": \"Use real labels, but…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1HB-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1HC-0\",\n      \"name\": \"Implementation order\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1HD-0\",\n      \"name\": \"1. Add the allowlist…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1HE-0\",\n      \"name\": \"Scroll: flex:1; min-…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1HF-0\",\n      \"name\": \"Motion: 140–180 ms o…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1HG-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1HH-0\",\n      \"name\": \"Evidence · exact sou…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1HI-0\",\n      \"name\": \"8 selected-row / URL…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1HJ-0\",\n      \"name\": \"Source: macro aec7f3…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-343-bio-return-label",
+    "fileId": "01M6Y2VTQBVC9NA39HNG1DYWFH",
+    "tool": "set_text_content",
+    "targets": [
+      "1CD-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y2VTQBVC9NA39HNG1DYWFH\",\n    \"name\": \"Mastermind - Catalyst Intelligence - Decision Desk and Integration\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"updates\": [\n    {\n      \"nodeId\": \"1CD-0\"\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-344-bio-board-names",
+    "fileId": "01M6Y2VTQBVC9NA39HNG1DYWFH",
+    "tool": "rename_nodes",
+    "targets": [
+      "171-0",
+      "17P-0",
+      "1AE-0",
+      "1B3-0",
+      "1BT-0",
+      "1CF-0",
+      "1FM-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y2VTQBVC9NA39HNG1DYWFH\",\n    \"name\": \"Mastermind - Catalyst Intelligence - Decision Desk and Integration\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"updates\": [\n    {\n      \"nodeId\": \"171-0\",\n      \"name\": \"R2 · Manual review · Flow and build contract\"\n    },\n    {\n      \"nodeId\": \"17P-0\",\n      \"name\": \"320px · Complete catalyst content\"\n    },\n    {\n      \"nodeId\": \"1AE-0\",\n      \"name\": \"Manual save states and builder contract\"\n    },\n    {\n      \"nodeId\": \"1B3-0\",\n      \"name\": \"Create · Morrow · No inherited price\"\n    },\n    {\n      \"nodeId\": \"1BT-0\",\n      \"name\": \"Confirmed · Aster · Saved list\"\n    },\n    {\n      \"nodeId\": \"1CF-0\",\n      \"name\": \"Failed write · Retained draft\"\n    },\n    {\n      \"nodeId\": \"1FM-0\",\n      \"name\": \"Validation and interrupted save states\"\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-345-bio-evidence-count",
+    "fileId": "01M6Y2VTQBVC9NA39HNG1DYWFH",
+    "tool": "set_text_content",
+    "targets": [
+      "1HI-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y2VTQBVC9NA39HNG1DYWFH\",\n    \"name\": \"Mastermind - Catalyst Intelligence - Decision Desk and Integration\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"updates\": [\n    {\n      \"nodeId\": \"1HI-0\"\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-346-bio-finish-native",
+    "fileId": "01M6Y2VTQBVC9NA39HNG1DYWFH",
+    "tool": "finish_working_on_nodes",
+    "targets": [
+      "171-0",
+      "ZL-0",
+      "ZN-0",
+      "ZZ-0",
+      "ZX-0",
+      "BU-0",
+      "101-0",
+      "1FA-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y2VTQBVC9NA39HNG1DYWFH\",\n    \"name\": \"Mastermind - Catalyst Intelligence - Decision Desk and Integration\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "OK"
+        }
+      ]
+    }
   }
 ]
