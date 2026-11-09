@@ -1,12 +1,43 @@
 # Shared Shell — source-fed All tools
 
-## Current adoption — R41 reference parity and recovered verification
+## Current source candidate — mobile categories, 9 November 2026
+
+The production owner remains the embedded controller in `templates/nav_market.js`
+and its identical served asset. The paired `navigation-refresh.css` owns layout;
+the original three-page opt-in ceiling is unchanged.
+
+The new mobile category chooser enhances the existing category region at mount,
+so already generated pilot hosts remain compatible. It reuses the source-driven
+buttons, retained group, global query, per-opening withdrawal checks and native
+destinations. Desktop keeps its category controls; mobile uses one dialog
+scrollport, an explicit category button and an inline list.
+
+This candidate passes **138 Node behavior checks and 11 All Tools integration
+contracts**. The original controller reproduces the missing-chooser failure.
+The existing asset optimizer reproduces each pilot unchanged at baseline, then
+changes only its two navigation-CSS references. This is recording-DOM/source
+proof, **not browser layout, OS IME, assistive-technology or live acceptance**.
+
+**Release is held.** The existing loader-key/payload contract fails for the new
+payload until the incumbent navigation integration closes its shared loader
+chain. The required P0B gate also reports changed navigation JS/CSS without
+same-source measured receipts; its previously denied capture family remains
+closed. PR7601/10261 and their effects/holds are preserved. No Ready, native
+auto-merge, merge or deployment is authorized by these source checks.
+
+See [the implementation and qualification record](mobile-chooser-20261109/README.md)
+and [the exact validation manifest](mobile-chooser-20261109/VALIDATION.json).
+Only `src/all-tools.js` is the exact documentary mirror of the current embedded
+controller. Older standalone CSS, host and patch examples below remain historical
+material and are not loaded as new production owners.
+
+## Historical R41 adoption and recovered verification
 
 The source owner remains the embedded All tools controller in
 `templates/nav_market.js`, paired with `site/nav_market.js`. Presentation remains
 in paired `navigation-refresh.css`; `_site_nav.html.j2` includes the strict
 opt-in host. Only Macro overview, Sector Central and Reports index opt in.
-This is built source on PR7949, not merged, deployed or production-accepted.
+PR7949 was a source candidate at this recorded R41 phase; it later merged on 21 October 2026 at ccc3242ef52966877e24b5290a5883628664e707. The historical checks below do not establish deployment or acceptance of the newer chooser.
 
 R39 makes source-authored section headings searchable in English and Chinese.
 Each public field is normalized separately so long bilingual copy cannot hide
@@ -21,7 +52,7 @@ regression first failed on the stale reference, then passed after synchronizing
 This also preserves the production shared-asset boot behavior; the reference is
 not a second source owner and is not separately loaded into production.
 
-Current source checks execute the synchronized reference rather than historical
+R41 source checks executed the synchronized reference rather than historical
 bytes: the three Node suites pass **107/107**, mutation testing detects **12/12**
 deliberate breaks, the template contract passes **20/20**, template/site sync
 passes **105 pairs**, and the shared All-tools/nav/account pytest slice passes
@@ -61,7 +92,7 @@ All tools opens a mega menu first. Full browsing remains available inside it; th
 
 The first view is prepared from the current source section. Every source category remains reachable. Familiar tool names, meaningful source groups, concise descriptions, source-authored blueprint icons, language variants and source tier badges are retained. Search is for tools; the existing stock search keeps its separate job.
 
-## Current implementation
+## Historical R23 implementation reference
 
 `src/all-tools.js` projects the incumbent product-navigation anchors at opening, preserving actual hrefs, prefixes, queries and hashes. It does not ship a copied fixed destination list or infer equivalent tools in another country. `src/_all_tools_menu.html.j2` is a default-OFF shared-header host. `src/all-tools.css` is a static stylesheet consuming the existing design tokens. `shared-header.patch` is the unapplied one-include hook. None of these files is imported into production by this directory.
 
@@ -73,13 +104,13 @@ The list does not silently reorder or erase the item the user was reading. The c
 
 A local per-opening withdrawn map is presentation memory only. It is discarded on close/reopen and never changes server permissions, the source DOM, account preferences, saved work or routing. Valid anchors retain native navigation, including new tabs and modifier keys.
 
-## Visual direction retained
+## Historical R23 visual direction
 
 The existing static stylesheet remains unchanged. Dark uses the shared graphite material and restrained luminance emphasis. Light uses white research material, crisp strokes and a pale inset note. Both retain the same information and actions; there is no parallel palette or runtime-injected material sheet. Desktop uses a bounded panel; phone uses a sheet with a scrollable body and reachable footer, with a short-height escape treatment. These are authored compositions, not measured browser layouts.
 
 The user-supplied menu remains the visual reference: blueprint-like line drawings, spacious grouped destinations and concise explanatory copy. No new screenshot or award-level visual acceptance is claimed for R23.
 
-## Verified in this recovery turn
+## Verified in the R23 recovery turn
 
 - Exact R22 controller and three original test/fixture files were reconstructed and matched to their Git blob hashes before editing.
 - The first new test run terminated with SIGKILL while formatting a failed cyclic DOM-object identity comparison. Assertions were changed to boolean identity checks without changing the behavior under test. The meaningful baseline then ran: **21 cases, 6 pass / 15 fail**.
@@ -112,7 +143,7 @@ The interrupted R22 root-tree call has no returned root SHA. Its possible effect
 
 R22 inspected product source at `dea858959c6f37122fd500dd673c44b271f19fa9`; shared header fixture blob `9848b9366d43553f9d69997ecdb0a07e15e4ad2b`; nav controller `4edee693e1e6d4391de3482b2a618057df686e56`. They are compatibility inputs, not a current full-site acceptance claim. Historical R22 README/qualification/mutations are retained under explicitly named evidence paths.
 
-## Remaining installation gates
+## Historical R23 installation gates
 
 Adopt through the existing product header/navigation/stylesheet owners, not through per-page header copies. Qualify paired template/site assets, cache keys, serving access and default-OFF inclusion. Current pilot ceiling remains `/macro.html`, `/sector_central.html`, `/reports.html`; no page is enabled here. Preserve anonymous/public chrome and all native workspace/Terminal semantics.
 
@@ -120,6 +151,6 @@ Then register tests with the existing owner and obtain real dark/light × EN/ZH 
 
 The R18 failing assertion, three R19 consumer failures, current-base merge compatibility and PR7129 persistence-before-rebind boundary remain separate release requirements. No menu test waives them.
 
-## Native state
+## Historical R23 native state
 
 The newly selected Mastermind Paper app exposed all five actions, but its inspect and catalog calls both returned JSON-RPC32600, `Session terminated`. No content call was made through it. Studio Direct inspection worked, but its backend still identifies M2, not the assigned M1. No fallback edit, file transition or native working-indicator change occurred. Repair/reconnect the intended Paper session before native composition; do not infer write permission from an unrelated source test.

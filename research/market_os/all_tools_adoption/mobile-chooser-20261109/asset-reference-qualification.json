@@ -1,0 +1,44 @@
+[
+  {
+    "path": "site/macro.html",
+    "baseline_exact": true,
+    "baseline_delta_lines": 0,
+    "candidate_changed_lines": [
+      "--- a/site/macro.html",
+      "+++ b/site/macro.html",
+      "-<link rel=\"preload\" as=\"style\" href=\"navigation-refresh.css?v=edfd821b\">",
+      "+<link rel=\"preload\" as=\"style\" href=\"navigation-refresh.css?v=f7206632\">",
+      "-    <link rel=\"stylesheet\" href=\"navigation-refresh.css?v=edfd821b\">",
+      "+    <link rel=\"stylesheet\" href=\"navigation-refresh.css?v=f7206632\">"
+    ],
+    "candidate_sha256": "78d50b23f4895dca853a3635664e9592a981a8e768fdb18370b7f0eb296b1820"
+  },
+  {
+    "path": "site/sector_central.html",
+    "baseline_exact": true,
+    "baseline_delta_lines": 0,
+    "candidate_changed_lines": [
+      "--- a/site/sector_central.html",
+      "+++ b/site/sector_central.html",
+      "-<link rel=\"preload\" as=\"style\" href=\"navigation-refresh.css?v=edfd821b\">",
+      "+<link rel=\"preload\" as=\"style\" href=\"navigation-refresh.css?v=f7206632\">",
+      "-    <link rel=\"stylesheet\" href=\"navigation-refresh.css?v=edfd821b\">",
+      "+    <link rel=\"stylesheet\" href=\"navigation-refresh.css?v=f7206632\">"
+    ],
+    "candidate_sha256": "4600d238b1888d8a2fa4bb3ae4a9133ef1bf36e6a7f17127c166f161d3cacb78"
+  },
+  {
+    "path": "site/reports.html",
+    "baseline_exact": true,
+    "baseline_delta_lines": 0,
+    "candidate_changed_lines": [
+      "--- a/site/reports.html",
+      "+++ b/site/reports.html",
+      "-<link rel=\"preload\" as=\"style\" href=\"navigation-refresh.css?v=edfd821b\">",
+      "+<link rel=\"preload\" as=\"style\" href=\"navigation-refresh.css?v=f7206632\">",
+      "-    <link rel=\"stylesheet\" href=\"navigation-refresh.css?v=edfd821b\">",
+      "+    <link rel=\"stylesheet\" href=\"navigation-refresh.css?v=f7206632\">"
+    ],
+    "candidate_sha256": "e3cfa06133659059337745d80269563c8bac7513990f08e37f1bf8bc70ffac57"
+  }
+]

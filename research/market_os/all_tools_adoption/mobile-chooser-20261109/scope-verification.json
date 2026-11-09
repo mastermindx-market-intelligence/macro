@@ -1,0 +1,14 @@
+[
+  {
+    "path": "templates/nav_market.js",
+    "outside_owner_exact": true,
+    "paired_asset_exact": true,
+    "sha256": "bfab19e198890598b4d4b980c20bbf150054ca65288e8155052ff0ef345a899a"
+  },
+  {
+    "path": "templates/navigation-refresh.css",
+    "outside_owner_exact": true,
+    "paired_asset_exact": true,
+    "sha256": "f72066322cbdb127387f9e396a7076b1bfe8625c1029d40e84f167f03af3dd12"
+  }
+]

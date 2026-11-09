@@ -1,0 +1,838 @@
+TAP version 13
+# Subtest: same component mounts in pilot /macro.html
+ok 1 - same component mounts in pilot /macro.html
+  ---
+  duration_ms: 6.139643
+  type: 'test'
+  ...
+# Subtest: same component mounts in pilot /sector_central.html
+ok 2 - same component mounts in pilot /sector_central.html
+  ---
+  duration_ms: 2.102305
+  type: 'test'
+  ...
+# Subtest: same component mounts in pilot /reports.html
+ok 3 - same component mounts in pilot /reports.html
+  ---
+  duration_ms: 0.89022
+  type: 'test'
+  ...
+# Subtest: no unrelated/public route adoption /index.html
+ok 4 - no unrelated/public route adoption /index.html
+  ---
+  duration_ms: 0.36526
+  type: 'test'
+  ...
+# Subtest: no unrelated/public route adoption /pricing.html
+ok 5 - no unrelated/public route adoption /pricing.html
+  ---
+  duration_ms: 0.638341
+  type: 'test'
+  ...
+# Subtest: no unrelated/public route adoption /sectors/macro.html
+ok 6 - no unrelated/public route adoption /sectors/macro.html
+  ---
+  duration_ms: 0.277909
+  type: 'test'
+  ...
+# Subtest: no unrelated/public route adoption /watchlist.html
+ok 7 - no unrelated/public route adoption /watchlist.html
+  ---
+  duration_ms: 0.404038
+  type: 'test'
+  ...
+# Subtest: no dialog support leaves original source navigation intact
+ok 8 - no dialog support leaves original source navigation intact
+  ---
+  duration_ms: 0.517439
+  type: 'test'
+  ...
+# Subtest: opening copies resolved source links without mutating them
+ok 9 - opening copies resolved source links without mutating them
+  ---
+  duration_ms: 4.464281
+  type: 'test'
+  ...
+# Subtest: new incumbent source entries are picked up without another route list
+ok 10 - new incumbent source entries are picked up without another route list
+  ---
+  duration_ms: 2.350629
+  type: 'test'
+  ...
+# Subtest: disabled source entry never appears
+ok 11 - disabled source entry never appears
+  ---
+  duration_ms: 2.248856
+  type: 'test'
+  ...
+# Subtest: duplicates are collapsed by exact href and not translated label
+ok 12 - duplicates are collapsed by exact href and not translated label
+  ---
+  duration_ms: 1.719419
+  type: 'test'
+  ...
+# Subtest: desktop opens search without a viewport jump
+ok 13 - desktop opens search without a viewport jump
+  ---
+  duration_ms: 2.085419
+  type: 'test'
+  ...
+# Subtest: phone opens heading without forcing the virtual keyboard
+ok 14 - phone opens heading without forcing the virtual keyboard
+  ---
+  duration_ms: 2.395827
+  type: 'test'
+  ...
+# Subtest: Escape returns the original focus and releases only own scroll class
+ok 15 - Escape returns the original focus and releases only own scroll class
+  ---
+  duration_ms: 1.415661
+  type: 'test'
+  ...
+# Subtest: one menu instance and one opener survive duplicate mount attempts
+ok 16 - one menu instance and one opener survive duplicate mount attempts
+  ---
+  duration_ms: 0.517809
+  type: 'test'
+  ...
+# Subtest: composing Chinese does not render the unfinished query
+ok 17 - composing Chinese does not render the unfinished query
+  ---
+  duration_ms: 1.251744
+  type: 'test'
+  ...
+# Subtest: query searches other groups without forcing a category change
+ok 18 - query searches other groups without forcing a category change
+  ---
+  duration_ms: 0.987167
+  type: 'test'
+  ...
+# Subtest: no match is tool-specific and query cannot inject nodes
+ok 19 - no match is tool-specific and query cannot inject nodes
+  ---
+  duration_ms: 1.236532
+  type: 'test'
+  ...
+# Subtest: directory is an in-place full view, not a page transition
+ok 20 - directory is an in-place full view, not a page transition
+  ---
+  duration_ms: 0.935729
+  type: 'test'
+  ...
+# Subtest: withdrawn target is stopped at click without substituting a tool
+ok 21 - withdrawn target is stopped at click without substituting a tool
+  ---
+  duration_ms: 1.347929
+  type: 'test'
+  ...
+# Subtest: changed href is not allowed to navigate to the old or new target silently
+ok 22 - changed href is not allowed to navigate to the old or new target silently
+  ---
+  duration_ms: 1.971839
+  type: 'test'
+  ...
+# Subtest: valid links retain normal modifier-key semantics
+ok 23 - valid links retain normal modifier-key semantics
+  ---
+  duration_ms: 1.26231
+  type: 'test'
+  ...
+# Subtest: cross-product source target and badge remain separate from portfolio
+ok 24 - cross-product source target and badge remain separate from portfolio
+  ---
+  duration_ms: 1.650014
+  type: 'test'
+  ...
+# Subtest: source labels are copied as text, not interpreted as markup
+ok 25 - source labels are copied as text, not interpreted as markup
+  ---
+  duration_ms: 1.086115
+  type: 'test'
+  ...
+# Subtest: ordinary language switch keeps current query and hrefs
+ok 26 - ordinary language switch keeps current query and hrefs
+  ---
+  duration_ms: 1.724136
+  type: 'test'
+  ...
+# Subtest: reopen clears search but does not change any source selection
+ok 27 - reopen clears search but does not change any source selection
+  ---
+  duration_ms: 1.021858
+  type: 'test'
+  ...
+# Subtest: an already visible foreign modal is not overlaid
+ok 28 - an already visible foreign modal is not overlaid
+  ---
+  duration_ms: 0.497759
+  type: 'test'
+  ...
+# Subtest: inactive aria-modal markup does not strand the menu closed
+ok 29 - inactive aria-modal markup does not strand the menu closed
+  ---
+  duration_ms: 0.819354
+  type: 'test'
+  ...
+# Subtest: delayed close from the old opening does not disturb a new opening
+ok 30 - delayed close from the old opening does not disturb a new opening
+  ---
+  duration_ms: 1.881142
+  type: 'test'
+  ...
+# Subtest: empty resolved navigation is not reported as a complete directory
+ok 31 - empty resolved navigation is not reported as a complete directory
+  ---
+  duration_ms: 0.560314
+  type: 'test'
+  ...
+# Subtest: disabled source group cannot leak a child into the menu
+ok 32 - disabled source group cannot leak a child into the menu
+  ---
+  duration_ms: 0.934837
+  type: 'test'
+  ...
+# Subtest: language repaint preserves focused category
+ok 33 - language repaint preserves focused category
+  ---
+  duration_ms: 1.081739
+  type: 'test'
+  ...
+# Subtest: source withdrawal is reflected before context-menu navigation
+ok 34 - source withdrawal is reflected before context-menu navigation
+  ---
+  duration_ms: 0.753064
+  type: 'test'
+  ...
+# Subtest: an empty live source opens an explanation, not a dead button
+ok 35 - an empty live source opens an explanation, not a dead button
+  ---
+  duration_ms: 1.114478
+  type: 'test'
+  ...
+# Subtest: invalid host sibling is never treated as the common product header
+ok 36 - invalid host sibling is never treated as the common product header
+  ---
+  duration_ms: 0.15258
+  type: 'test'
+  ...
+# Subtest: source section names survive so a large research group is not a flat wall
+ok 37 - source section names survive so a large research group is not a flat wall
+  ---
+  duration_ms: 0.72406
+  type: 'test'
+  ...
+# Subtest: opening prepares the current source group rather than unrelated countries
+ok 38 - opening prepares the current source group rather than unrelated countries
+  ---
+  duration_ms: 3.280369
+  type: 'test'
+  ...
+# Subtest: research page starts with its own source group while all destinations remain reachable
+ok 39 - research page starts with its own source group while all destinations remain reachable
+  ---
+  duration_ms: 0.799284
+  type: 'test'
+  ...
+# Subtest: a source link changing its tab behavior is disabled until refreshed
+ok 40 - a source link changing its tab behavior is disabled until refreshed
+  ---
+  duration_ms: 0.621796
+  type: 'test'
+  ...
+# Subtest: the renderer does not create more than one active source-driven menu in a document
+ok 41 - the renderer does not create more than one active source-driven menu in a document
+  ---
+  duration_ms: 0.57113
+  type: 'test'
+  ...
+# Subtest: missing required component markup preserves original navigation without throwing
+ok 42 - missing required component markup preserves original navigation without throwing
+  ---
+  duration_ms: 0.294804
+  type: 'test'
+  ...
+# Subtest: source blueprint shapes survive but executable SVG nodes do not
+ok 43 - source blueprint shapes survive but executable SVG nodes do not
+  ---
+  duration_ms: 1.13568
+  type: 'test'
+  ...
+# Subtest: closed native dropdown presentation is not confused with withdrawn access
+ok 44 - closed native dropdown presentation is not confused with withdrawn access
+  ---
+  duration_ms: 0.926355
+  type: 'test'
+  ...
+# Subtest: explicitly hidden non-panel source sections are not projected
+ok 45 - explicitly hidden non-panel source sections are not projected
+  ---
+  duration_ms: 0.884152
+  type: 'test'
+  ...
+# Subtest: new-tab destination explains that behavior accessibly
+ok 46 - new-tab destination explains that behavior accessibly
+  ---
+  duration_ms: 0.894597
+  type: 'test'
+  ...
+# Subtest: source section topic reaches rendered results without a copied taxonomy
+ok 47 - source section topic reaches rendered results without a copied taxonomy
+  ---
+  duration_ms: 2.600726
+  type: 'test'
+  ...
+# Subtest: Chinese topic composition keeps the unfinished query out of results
+ok 48 - Chinese topic composition keeps the unfinished query out of results
+  ---
+  duration_ms: 1.154488
+  type: 'test'
+  ...
+# Subtest: topic redraw cannot revive a withdrawn destination
+ok 49 - topic redraw cannot revive a withdrawn destination
+  ---
+  duration_ms: 0.834567
+  type: 'test'
+  ...
+# Subtest: old pilot hosts gain one collapsed chooser without another category list
+ok 50 - old pilot hosts gain one collapsed chooser without another category list
+  ---
+  duration_ms: 0.902048
+  type: 'test'
+  ...
+# Subtest: global query and Clear retain the prior Research category
+ok 51 - global query and Clear retain the prior Research category
+  ---
+  duration_ms: 1.666839
+  type: 'test'
+  ...
+# Subtest: whitespace query does not mislabel the current category as a global search
+ok 52 - whitespace query does not mislabel the current category as a global search
+  ---
+  duration_ms: 1.71983
+  type: 'test'
+  ...
+# Subtest: choosing a category during search clears only the directory query
+ok 53 - choosing a category during search clears only the directory query
+  ---
+  duration_ms: 1.822884
+  type: 'test'
+  ...
+# Subtest: All destinations from a scrolled mobile footer restores visible-control focus
+ok 54 - All destinations from a scrolled mobile footer restores visible-control focus
+  ---
+  duration_ms: 1.839029
+  type: 'test'
+  ...
+# Subtest: empty-state recovery chooses all destinations and focuses search
+ok 55 - empty-state recovery chooses all destinations and focuses search
+  ---
+  duration_ms: 1.821943
+  type: 'test'
+  ...
+# Subtest: first keyboard Escape closes the chooser, next cancel closes the original dialog
+ok 56 - first keyboard Escape closes the chooser, next cancel closes the original dialog
+  ---
+  duration_ms: 0.722187
+  type: 'test'
+  ...
+# Subtest: native cancel has the same two-level disclosure ownership
+ok 57 - native cancel has the same two-level disclosure ownership
+  ---
+  duration_ms: 0.663419
+  type: 'test'
+  ...
+# Subtest: toggle collapse repairs category focus even without pointer focus transfer
+ok 58 - toggle collapse repairs category focus even without pointer focus transfer
+  ---
+  duration_ms: 0.639843
+  type: 'test'
+  ...
+# Subtest: repeated Escape cannot consume both levels during one physical press
+ok 59 - repeated Escape cannot consume both levels during one physical press
+  ---
+  duration_ms: 0.944743
+  type: 'test'
+  ...
+# Subtest: expanded locale repaint preserves stable group focus and expansion
+ok 60 - expanded locale repaint preserves stable group focus and expansion
+  ---
+  duration_ms: 0.963601
+  type: 'test'
+  ...
+# Subtest: global Chinese label leaves the original category available after Clear
+ok 61 - global Chinese label leaves the original category available after Clear
+  ---
+  duration_ms: 1.180137
+  type: 'test'
+  ...
+# Subtest: a locale repaint does not restore focus into a collapsed category region
+ok 62 - a locale repaint does not restore focus into a collapsed category region
+  ---
+  duration_ms: 1.887352
+  type: 'test'
+  ...
+# Subtest: desktop retains the visible existing categories and footer focus
+ok 63 - desktop retains the visible existing categories and footer focus
+  ---
+  duration_ms: 0.709939
+  type: 'test'
+  ...
+# Subtest: mobile to desktop repairs a hidden toggle to its retained category
+ok 64 - mobile to desktop repairs a hidden toggle to its retained category
+  ---
+  duration_ms: 0.855738
+  type: 'test'
+  ...
+# Subtest: desktop to mobile repairs only a newly hidden category focus
+ok 65 - desktop to mobile repairs only a newly hidden category focus
+  ---
+  duration_ms: 0.777861
+  type: 'test'
+  ...
+# Subtest: viewport transition retains result focus and requests nearest visibility
+ok 66 - viewport transition retains result focus and requests nearest visibility
+  ---
+  duration_ms: 0.713114
+  type: 'test'
+  ...
+# Subtest: viewport changes do not steal unrelated or closed-dialog focus
+ok 67 - viewport changes do not steal unrelated or closed-dialog focus
+  ---
+  duration_ms: 0.83685
+  type: 'test'
+  ...
+# Subtest: viewport callback uses the current query rather than a queued event value
+ok 68 - viewport callback uses the current query rather than a queued event value
+  ---
+  duration_ms: 0.703369
+  type: 'test'
+  ...
+# Subtest: an IME-origin Escape survives compositionend before native cancel
+ok 69 - an IME-origin Escape survives compositionend before native cancel
+  ---
+  duration_ms: 1.094407
+  type: 'test'
+  ...
+# Subtest: an IME Escape without native cancel cannot swallow the next ordinary Escape
+ok 70 - an IME Escape without native cancel cannot swallow the next ordinary Escape
+  ---
+  duration_ms: 0.609538
+  type: 'test'
+  ...
+# Subtest: repeated IME-origin Escape retains its owner after compositionend
+ok 71 - repeated IME-origin Escape retains its owner after compositionend
+  ---
+  duration_ms: 1.533309
+  type: 'test'
+  ...
+# Subtest: an IME Process keyup ends the composition-Escape reservation
+ok 72 - an IME Process keyup ends the composition-Escape reservation
+  ---
+  duration_ms: 0.643789
+  type: 'test'
+  ...
+# Subtest: another key ends a composition-Escape reservation after a lost keyup
+ok 73 - another key ends a composition-Escape reservation after a lost keyup
+  ---
+  duration_ms: 0.579071
+  type: 'test'
+  ...
+# Subtest: locale and viewport changes do not render an unfinished composition
+ok 74 - locale and viewport changes do not render an unfinished composition
+  ---
+  duration_ms: 0.821326
+  type: 'test'
+  ...
+# Subtest: the inline chooser does not intercept unrelated pointer actions
+ok 75 - the inline chooser does not intercept unrelated pointer actions
+  ---
+  duration_ms: 0.625522
+  type: 'test'
+  ...
+# Subtest: mobile category and locale redraw cannot revive withdrawal before click
+ok 76 - mobile category and locale redraw cannot revive withdrawal before click
+  ---
+  duration_ms: 1.167077
+  type: 'test'
+  ...
+# Subtest: mobile category and locale redraw cannot revive withdrawal before auxclick
+ok 77 - mobile category and locale redraw cannot revive withdrawal before auxclick
+  ---
+  duration_ms: 1.251864
+  type: 'test'
+  ...
+# Subtest: mobile category and locale redraw cannot revive withdrawal before contextmenu
+ok 78 - mobile category and locale redraw cannot revive withdrawal before contextmenu
+  ---
+  duration_ms: 0.907185
+  type: 'test'
+  ...
+# Subtest: real close resets the chooser and explicit reopen refreshes the source once
+ok 79 - real close resets the chooser and explicit reopen refreshes the source once
+  ---
+  duration_ms: 1.868102
+  type: 'test'
+  ...
+# Subtest: every source category remains present in the one expanded chooser
+ok 80 - every source category remains present in the one expanded chooser
+  ---
+  duration_ms: 1.494621
+  type: 'test'
+  ...
+# Subtest: uses source destinations rather than a hardcoded product catalog
+ok 81 - uses source destinations rather than a hardcoded product catalog
+  ---
+  duration_ms: 2.053191
+  type: 'test'
+  ...
+# Subtest: preserves deep prefix and meaningful fragment
+ok 82 - preserves deep prefix and meaningful fragment
+  ---
+  duration_ms: 0.223526
+  type: 'test'
+  ...
+# Subtest: distinct fragments remain distinct tasks
+ok 83 - distinct fragments remain distinct tasks
+  ---
+  duration_ms: 0.224658
+  type: 'test'
+  ...
+# Subtest: deduplicates exact targets without conflating different regional pages
+ok 84 - deduplicates exact targets without conflating different regional pages
+  ---
+  duration_ms: 0.197407
+  type: 'test'
+  ...
+# Subtest: server-disabled entries never get invented back into the menu
+ok 85 - server-disabled entries never get invented back into the menu
+  ---
+  duration_ms: 0.109245
+  type: 'test'
+  ...
+# Subtest: blank labels and malformed records are omitted
+ok 86 - blank labels and malformed records are omitted
+  ---
+  duration_ms: 0.144388
+  type: 'test'
+  ...
+# Subtest: rejects unsafe href "javascript:alert(1)"
+ok 87 - rejects unsafe href "javascript:alert(1)"
+  ---
+  duration_ms: 0.145289
+  type: 'test'
+  ...
+# Subtest: rejects unsafe href "data:text/html,x"
+ok 88 - rejects unsafe href "data:text/html,x"
+  ---
+  duration_ms: 0.115784
+  type: 'test'
+  ...
+# Subtest: rejects unsafe href "file:///etc/passwd"
+ok 89 - rejects unsafe href "file:///etc/passwd"
+  ---
+  duration_ms: 0.108223
+  type: 'test'
+  ...
+# Subtest: rejects unsafe href "https://evil.invalid/tool"
+ok 90 - rejects unsafe href "https://evil.invalid/tool"
+  ---
+  duration_ms: 0.242084
+  type: 'test'
+  ...
+# Subtest: rejects unsafe href "https://user:pass@www.mastermind-x.com/a.html"
+ok 91 - rejects unsafe href "https://user:pass@www.mastermind-x.com/a.html"
+  ---
+  duration_ms: 0.190077
+  type: 'test'
+  ...
+# Subtest: rejects unsafe href "//evil.invalid"
+ok 92 - rejects unsafe href "//evil.invalid"
+  ---
+  duration_ms: 0.101873
+  type: 'test'
+  ...
+# Subtest: rejects unsafe href "../a.html\\n"
+ok 93 - rejects unsafe href "../a.html\\n"
+  ---
+  duration_ms: 0.08637
+  type: 'test'
+  ...
+# Subtest: rejects unsafe href "https://app.mastermind-x.com.evil.invalid"
+ok 94 - rejects unsafe href "https://app.mastermind-x.com.evil.invalid"
+  ---
+  duration_ms: 0.841778
+  type: 'test'
+  ...
+# Subtest: retains approved cross-product target semantics and isolation
+ok 95 - retains approved cross-product target semantics and isolation
+  ---
+  duration_ms: 0.248003
+  type: 'test'
+  ...
+# Subtest: same-site links do not acquire forced new-tab behavior
+ok 96 - same-site links do not acquire forced new-tab behavior
+  ---
+  duration_ms: 0.122294
+  type: 'test'
+  ...
+# Subtest: snapshot cannot be changed by later provider-object mutation
+ok 97 - snapshot cannot be changed by later provider-object mutation
+  ---
+  duration_ms: 0.093881
+  type: 'test'
+  ...
+# Subtest: search spans every category and both languages
+ok 98 - search spans every category and both languages
+  ---
+  duration_ms: 0.366903
+  type: 'test'
+  ...
+# Subtest: query text is inert and not an instruction or HTML
+ok 99 - query text is inert and not an instruction or HTML
+  ---
+  duration_ms: 0.147362
+  type: 'test'
+  ...
+# Subtest: normalizes unicode, spacing and case without changing destinations
+ok 100 - normalizes unicode, spacing and case without changing destinations
+  ---
+  duration_ms: 0.122654
+  type: 'test'
+  ...
+# Subtest: empty query selects only the chosen scope
+ok 101 - empty query selects only the chosen scope
+  ---
+  duration_ms: 0.097277
+  type: 'test'
+  ...
+# Subtest: initial selection balances available owner groups instead of deleting deeper items
+ok 102 - initial selection balances available owner groups instead of deleting deeper items
+  ---
+  duration_ms: 0.306421
+  type: 'test'
+  ...
+# Subtest: source refresh must not rewrite the selected destination identity
+ok 103 - source refresh must not rewrite the selected destination identity
+  ---
+  duration_ms: 0.109645
+  type: 'test'
+  ...
+# Subtest: same canonical URL survives a relative spelling change
+ok 104 - same canonical URL survives a relative spelling change
+  ---
+  duration_ms: 0.074001
+  type: 'test'
+  ...
+# Subtest: topic search includes the source-authored English section heading
+ok 105 - topic search includes the source-authored English section heading
+  ---
+  duration_ms: 0.641185
+  type: 'test'
+  ...
+# Subtest: topic search includes the Chinese section heading and normalizes width
+ok 106 - topic search includes the Chinese section heading and normalizes width
+  ---
+  duration_ms: 0.138889
+  type: 'test'
+  ...
+# Subtest: all query terms can span a tool name and its source topic
+ok 107 - all query terms can span a tool name and its source topic
+  ---
+  duration_ms: 0.168604
+  type: 'test'
+  ...
+# Subtest: topic search remains global while leaving the selected market untouched
+ok 108 - topic search remains global while leaving the selected market untouched
+  ---
+  duration_ms: 0.195003
+  type: 'test'
+  ...
+# Subtest: long bilingual labels cannot truncate the later section search field
+ok 109 - long bilingual labels cannot truncate the later section search field
+  ---
+  duration_ms: 0.187342
+  type: 'test'
+  ...
+# Subtest: topic matching does not reintroduce withdrawn or untrusted destinations
+ok 110 - topic matching does not reintroduce withdrawn or untrusted destinations
+  ---
+  duration_ms: 0.093
+  type: 'test'
+  ...
+# Subtest: topic search does not index hrefs, tier badges or absent headings
+ok 111 - topic search does not index hrefs, tier badges or absent headings
+  ---
+  duration_ms: 0.128894
+  type: 'test'
+  ...
+# Subtest: withdrawn destination stays unavailable after language
+ok 112 - withdrawn destination stays unavailable after language
+  ---
+  duration_ms: 7.651971
+  type: 'test'
+  ...
+# Subtest: withdrawn destination stays unavailable after search
+ok 113 - withdrawn destination stays unavailable after search
+  ---
+  duration_ms: 3.031975
+  type: 'test'
+  ...
+# Subtest: withdrawn destination stays unavailable after clear
+ok 114 - withdrawn destination stays unavailable after clear
+  ---
+  duration_ms: 1.974592
+  type: 'test'
+  ...
+# Subtest: withdrawn destination stays unavailable after category
+ok 115 - withdrawn destination stays unavailable after category
+  ---
+  duration_ms: 2.237689
+  type: 'test'
+  ...
+# Subtest: withdrawn destination stays unavailable after all
+ok 116 - withdrawn destination stays unavailable after all
+  ---
+  duration_ms: 1.309612
+  type: 'test'
+  ...
+# Subtest: withdrawn destination stays unavailable after refresh
+ok 117 - withdrawn destination stays unavailable after refresh
+  ---
+  duration_ms: 1.728162
+  type: 'test'
+  ...
+# Subtest: render directly revalidates href without observer delivery
+ok 118 - render directly revalidates href without observer delivery
+  ---
+  duration_ms: 1.504044
+  type: 'test'
+  ...
+# Subtest: render directly revalidates target without observer delivery
+ok 119 - render directly revalidates target without observer delivery
+  ---
+  duration_ms: 1.929485
+  type: 'test'
+  ...
+# Subtest: render directly revalidates hidden without observer delivery
+ok 120 - render directly revalidates hidden without observer delivery
+  ---
+  duration_ms: 1.121839
+  type: 'test'
+  ...
+# Subtest: render directly revalidates group-disabled without observer delivery
+ok 121 - render directly revalidates group-disabled without observer delivery
+  ---
+  duration_ms: 1.872579
+  type: 'test'
+  ...
+# Subtest: click cannot use a withdrawn link before observer flush
+ok 122 - click cannot use a withdrawn link before observer flush
+  ---
+  duration_ms: 2.346853
+  type: 'test'
+  ...
+# Subtest: auxclick cannot use a withdrawn link before observer flush
+ok 123 - auxclick cannot use a withdrawn link before observer flush
+  ---
+  duration_ms: 1.055799
+  type: 'test'
+  ...
+# Subtest: contextmenu cannot use a withdrawn link before observer flush
+ok 124 - contextmenu cannot use a withdrawn link before observer flush
+  ---
+  duration_ms: 1.412136
+  type: 'test'
+  ...
+# Subtest: click preserves valid native navigation
+ok 125 - click preserves valid native navigation
+  ---
+  duration_ms: 0.867376
+  type: 'test'
+  ...
+# Subtest: auxclick preserves valid native navigation
+ok 126 - auxclick preserves valid native navigation
+  ---
+  duration_ms: 1.764817
+  type: 'test'
+  ...
+# Subtest: contextmenu preserves valid native navigation
+ok 127 - contextmenu preserves valid native navigation
+  ---
+  duration_ms: 0.907446
+  type: 'test'
+  ...
+# Subtest: language change keeps keyboard focus on the same destination
+ok 128 - language change keeps keyboard focus on the same destination
+  ---
+  duration_ms: 1.69298
+  type: 'test'
+  ...
+# Subtest: a withdrawn focused destination returns to menu heading during repaint
+ok 129 - a withdrawn focused destination returns to menu heading during repaint
+  ---
+  duration_ms: 0.932534
+  type: 'test'
+  ...
+# Subtest: typing keeps focus in search instead of moving it to a result
+ok 130 - typing keeps focus in search instead of moving it to a result
+  ---
+  duration_ms: 2.429228
+  type: 'test'
+  ...
+# Subtest: menu refresh after close cannot leave stale destinations mounted
+ok 131 - menu refresh after close cannot leave stale destinations mounted
+  ---
+  duration_ms: 1.208079
+  type: 'test'
+  ...
+# Subtest: unavailable snapshot is refreshed only on explicit reopen
+ok 132 - unavailable snapshot is refreshed only on explicit reopen
+  ---
+  duration_ms: 1.347749
+  type: 'test'
+  ...
+# Subtest: withdrawn state survives source toggle until the menu is reopened
+ok 133 - withdrawn state survives source toggle until the menu is reopened
+  ---
+  duration_ms: 1.603724
+  type: 'test'
+  ...
+# Subtest: unavailable row is removed from sequential keyboard destinations
+ok 134 - unavailable row is removed from sequential keyboard destinations
+  ---
+  duration_ms: 0.787706
+  type: 'test'
+  ...
+# Subtest: an unrelated valid destination stays navigable during withdrawal
+ok 135 - an unrelated valid destination stays navigable during withdrawal
+  ---
+  duration_ms: 0.979294
+  type: 'test'
+  ...
+# Subtest: cleared search preserves the applied category after withdrawal
+ok 136 - cleared search preserves the applied category after withdrawal
+  ---
+  duration_ms: 1.600419
+  type: 'test'
+  ...
+# Subtest: count explains displayed snapshot rows rather than calling all of them usable
+ok 137 - count explains displayed snapshot rows rather than calling all of them usable
+  ---
+  duration_ms: 2.108013
+  type: 'test'
+  ...
+# Subtest: locale preserves unavailable count and snapshot ordering
+ok 138 - locale preserves unavailable count and snapshot ordering
+  ---
+  duration_ms: 1.602483
+  type: 'test'
+  ...
+1..138
+# tests 138
+# suites 0
+# pass 138
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 213.727794
