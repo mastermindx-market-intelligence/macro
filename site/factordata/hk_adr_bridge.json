@@ -5,22 +5,12 @@
   "expected_hk_session": "2026-11-06",
   "freshness_verdict": "ok",
   "adr_freshness": {
-    "FXI": {
-      "asof": "2026-11-06",
-      "lag_days": 0,
-      "state": "fresh"
-    },
     "KWEB": {
       "asof": "2026-11-06",
       "lag_days": 0,
       "state": "fresh"
     },
-    "TCOM": {
-      "asof": "2026-11-06",
-      "lag_days": 0,
-      "state": "fresh"
-    },
-    "BABA": {
+    "JD": {
       "asof": "2026-11-06",
       "lag_days": 0,
       "state": "fresh"
@@ -30,7 +20,17 @@
       "lag_days": 0,
       "state": "fresh"
     },
-    "JD": {
+    "FXI": {
+      "asof": "2026-11-06",
+      "lag_days": 0,
+      "state": "fresh"
+    },
+    "BABA": {
+      "asof": "2026-11-06",
+      "lag_days": 0,
+      "state": "fresh"
+    },
+    "TCOM": {
       "asof": "2026-11-06",
       "lag_days": 0,
       "state": "fresh"
