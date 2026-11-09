@@ -9,9 +9,9 @@
     },
     {
       "path": "agentos/discoveries/DSC-EXPECTATIONS-EXPLORER-PERIOD-BINDING-GAP-20261109.md",
-      "bytes": 2651,
-      "git_blob_sha": "534578f5262f71b3892ec0bf464121132d2390c9",
-      "sha256": "4cd2d2861e4a8e1829cde6405a1a3ecfec65b68a252746b7ac3628818d9cb130"
+      "bytes": 2916,
+      "git_blob_sha": "73be2a9e4b1fdac824fb0bc6e50ccbe027d15173",
+      "sha256": "33a3efed45b0f1f7cce0b447efca1f08d2409e8288e8437d6998bb6b267e6101"
     },
     {
       "path": "agentos/discoveries/DSC-OPTIONS-VOLATILITY-OWNER-AND-SAVE-BOUNDARY-20261109.md",
@@ -21,9 +21,9 @@
     },
     {
       "path": "agentos/discoveries/DSC-HUB-EDGE-FALLBACK-NEEDS-COMPONENT-COVERAGE-20261109.md",
-      "bytes": 2163,
-      "git_blob_sha": "c4e44081e40c646a170763a0a5c7d8eb42693635",
-      "sha256": "627fc87f54657e0920e19b47985b3f0ffa900495db06740eea695fcd1b0a4c1a"
+      "bytes": 2335,
+      "git_blob_sha": "289407167c5e74e0ee5b9cecbb48688dc73e9cc7",
+      "sha256": "c0c04b958d0a7a3a9de786b2c66942daea3b588d5983de17e54df81a1e88f50e"
     },
     {
       "path": "research/design_candidates/paper_audit_20261108/followup/RESULTS.md",

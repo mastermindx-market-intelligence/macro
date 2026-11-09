@@ -3,7 +3,7 @@ key: HUB-EDGE-FALLBACK-NEEDS-COMPONENT-COVERAGE-20261109
 claim: >
   At Macro b5674d8ef898e503d6164922654f5ff89be9981c, engine/intel_hub.py returns edge score 0.4 with zero components on its no-component branch while compact summaries omit the component count needed to identify that fallback.
 falsifier: >
-  Read the no-component return, full command construction and _compact at the same pin or a later qualified change, and show a generation-matched compact field that establishes edge_components for the displayed score.
+  Inspect engine/intel_hub.py:453 (no-component return), engine/intel_hub.py:665 (full-command edge_components) and engine/intel_hub.py:1101 (_compact) at Macro b5674d8ef898e503d6164922654f5ff89be9981c, or their equivalents at a later qualified change. Falsify the compact-coverage gap by showing a generation-matched compact field that establishes edge_components for the displayed score.
 so_what: >
   Bind a default-value qualifier to the matching full command record and zero component count, never infer it from a displayed score of 40, and keep Opportunity, Edge, Stage and published order separate in the interface.
 kind: landmine

@@ -9,7 +9,7 @@ so_what: >
 kind: landmine
 verified_at: 2026-11-09
 verified_by: >
-  Exact-pin builder/template reads and Paper file 01M5EX8RTPR7YEZD2A144XED2S source mapping 47W-0/480-0; source ruling R1 and final readback in research/design_candidates/paper_audit_20261108/followup/.
+  At Macro b5674d8ef898e503d6164922654f5ff89be9981c, scripts/build_expectation_surface.py:153 defines the comparable pair and :177 enforces known equal period ends; templates/expectation_surface.html.j2:1676 selects the horizon and :1691 searches previous averages without that period check. Paper file 01M5EX8RTPR7YEZD2A144XED2S maps these findings at 47W-0/480-0; source ruling R1 and final readback are in research/design_candidates/paper_audit_20261108/followup/.
 scope:
   - scripts/build_expectation_surface.py
   - templates/expectation_surface.html.j2
