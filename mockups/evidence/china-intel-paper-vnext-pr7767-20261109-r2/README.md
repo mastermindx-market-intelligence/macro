@@ -4,7 +4,7 @@ Operation: `pr7767-proof-01a1a7fb-m149`. Original PR: [#7767](https://github.com
 
 ## Captured source
 
-This is actual local rendering of the revised Paper workspace, not production deployment evidence. The operation-owned workspace is based on accepted receiver `071ed19f5ce87927f078f94f3e126c24d8a0307e`; the producer honestly records that Git HEAD and dirty source. The later selected integration receiver `448f681b2dcacd2639674b91afc6a812437e402f` differs only in the marketing-press-wire workflow timeout (10 to 30), outside these page, data, renderer and capture inputs.
+This is actual local rendering of the revised Paper workspace, not production deployment evidence. The operation-owned workspace is based on accepted receiver `071ed19f5ce87927f078f94f3e126c24d8a0307e`. The producer records the nearest checkout HEAD. The table below binds the modified source bytes actually rendered and tested; the manifest's own nearest-checkout caveat remains in force. The later selected integration receiver `448f681b2dcacd2639674b91afc6a812437e402f` differs only in the marketing-press-wire workflow timeout (10 to 30), outside these page, data, renderer and capture inputs.
 
 | Source | Git blob | SHA256 |
 |---|---|---|
