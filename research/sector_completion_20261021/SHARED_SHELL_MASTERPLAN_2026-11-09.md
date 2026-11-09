@@ -70,7 +70,7 @@ The premium quality comes from clear comparisons, coherent data and deep investi
 
 The parent masterplan is approximately 160 KB and contains 12 backend packets, 23 delivery tasks and 15 end-to-end journeys. The capability CSV contains **92 inherited Central requirements, 28 Cycles requirements and 14 upgrades: 134 rows in total**.
 
-Producer and route fields are populated for all 134. Actual Paper node/state, assigned owner, accepted candidate SHA, evidence link and final disposition are blank in all 134 at the inspected pin. That proves an incomplete acceptance ledger; it does not prove that all 134 capabilities are unimplemented. Accepted source and prior evidence must be mapped back into those rows. [S01][S02][S03]
+Producer and route fields are populated for all 134. Actual Paper node/state, assigned owner, accepted candidate SHA, evidence link and final disposition are blank in all 134 at the inspected pin. That proves an incomplete acceptance ledger; it does not prove that all 134 capabilities are unimplemented. Accepted source and prior evidence must be mapped back into those rows. [S01] [S02] [S03]
 
 ### 2.2 Layer-by-layer disposition
 
@@ -92,7 +92,7 @@ Producer and route fields are populated for all 134. Actual Paper node/state, as
 
 ### 2.3 The live route gap is confirmed
 
-Current Macro overrides declare signed-in, Beta-only terminal:sectors. Terminal's generated route catalog still references an older Macro inventory and has 13,987 legacy paths and 17 native paths; /sectors, /intelligence and /prophet are absent. The /sectors page exists on Terminal [#1244](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1244)'s candidate, where it uses readShellMember and IntelligenceToolMount kind=sectors, but not on the inspected master. [S04][S05][S06]
+Current Macro overrides declare signed-in, Beta-only terminal:sectors. Terminal's generated route catalog still references an older Macro inventory and has 13,987 legacy paths and 17 native paths; /sectors, /intelligence and /prophet are absent. The /sectors page exists on Terminal [#1244](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1244)'s candidate, where it uses readShellMember and IntelligenceToolMount kind=sectors, but not on the inspected master. [S04] [S05] [S06]
 
 A read-only live check on 9 November independently rendered **404 — Page not found** at https://beta.mastermind-x.com/sectors. Discover rendered an account gate in the current browser. This establishes the missing public entrance observation and the authentication limit of this census; it does not establish authenticated behavior or deployed commit identity.
 
@@ -220,7 +220,7 @@ Preserve the native formulas and distinguish:
 - Membership changes, missing observations and cohort-normalization changes versus actual market movement.
 - ETF fund flows versus price/volume activity proxies; no relabeling the latter as capital migration.
 
-Current source explicitly records no demonstrated forward-return edge for Pulse heating/hot classifications. Central's US trend gate is drawdown/risk control, not a directional forecast. Current-membership baskets are not survivor-clean historical portfolios. Preserve historical hazard qualification, current MODEL parity requirements, PRIOR cells, sizing multipliers of 1.0 and the stopped lead-lag claims. A conditional grader hit rate is not a trading win rate. [S11][S12][S03]
+Current source explicitly records no demonstrated forward-return edge for Pulse heating/hot classifications. Central's US trend gate is drawdown/risk control, not a directional forecast. Current-membership baskets are not survivor-clean historical portfolios. Preserve historical hazard qualification, current MODEL parity requirements, PRIOR cells, sizing multipliers of 1.0 and the stopped lead-lag claims. A conditional grader hit rate is not a trading win rate. [S11] [S12] [S03]
 
 No new “confidence” percentage or fused opportunity score enters the design without a defined owner, target, calibration and evaluation. A finite negative or underpowered result can close a research task while leaving the prediction unavailable.
 
@@ -263,7 +263,7 @@ The current shared registry and mounts contain only ai_semiconductors. Module ex
 | Healthcare | FDA supply consumer [#7930](https://github.com/mastermindx-market-intelligence/macro/pull/7930) merged | Regulatory supply status is not the full GLP-1 economic thesis | Preserve five-part explanation and display authority; do not infer revenue from regulatory status alone |
 | Industrials | Exponent/Pentair program and 56 inherited obligations | Current carrier/served frontier needs reconciliation; historical [#8250](https://github.com/mastermindx-market-intelligence/macro/pull/8250) lookup unresolved | Named source-to-cash mechanism, evidence, counterexample and actual return journey |
 
-The evidence for Finance and Technology holds is in their existing registration adapters. Do not manufacture a theme anchor to fit an unsupported entry kind. Extend the existing closed registry grammar for theme-, company- and sector-oriented entries through its current owner, with the exact composer, schema, source selector, owner bundle and permitted view. [S16][S17]
+The evidence for Finance and Technology holds is in their existing registration adapters. Do not manufacture a theme anchor to fit an unsupported entry kind. Extend the existing closed registry grammar for theme-, company- and sector-oriented entries through its current owner, with the exact composer, schema, source selector, owner bundle and permitted view. [S16] [S17]
 
 ### 4.3 A reusable industry research anatomy
 
@@ -361,7 +361,7 @@ Where a taxonomy bridge is unavailable, show the two named populations independe
 
 ## 6. State, interaction and visual contract
 
-The design follows the existing Macro design doctrine and product design system at the pinned Macro SHA. The 8 November human-first amendment is controlling: product content, user explanation and builder documentation have different destinations. [S19][S20]
+The design follows the existing Macro design doctrine and product design system at the pinned Macro SHA. The 8 November human-first amendment is controlling: product content, user explanation and builder documentation have different destinations. [S19] [S20]
 
 ### Product versus depth
 
@@ -495,7 +495,7 @@ This is a proposed migration map. No redirects were installed in Round 1.
 
 Preserve SectorCentralDiscovery, SectorCompanyTable, SectorIndustrySummary, SectorIndustryMatrix, SectorGroupBrowser, SectorRotationMap, SectorLeadershipDossier, SectorConstituentEvidence and SectorIntradayComparison where their actual contracts fit.
 
-Reuse the single authenticated gateway, strict dossier parser, selection/cancellation guards, current return serializer, company route, exposure-origin and Portfolio-context handoffs. Reconcile donor-specific access and same-generation assumptions before composing them. [S09][S18][S21]
+Reuse the single authenticated gateway, strict dossier parser, selection/cancellation guards, current return serializer, company route, exposure-origin and Portfolio-context handoffs. Reconcile donor-specific access and same-generation assumptions before composing them. [S09] [S18] [S21]
 
 ### 8.3 Safe retirement sequence
 
