@@ -1,7 +1,19 @@
 # Paper audit and upgrade — 8–9 November 2026
 
 
-## Latest applied work — quote validity and small-price clarity
+## Latest applied work — asset identity and reading hierarchy
+
+[PR #10901](https://github.com/mastermindx-market-intelligence/Macro/pull/10901) is now `ce97e52d0cd131de2a1ca7e750574fcdc9482adb`, assets `bc279c50ec6b`. Fallback identity appears once; the inspector emphasizes its quote and groups the explicitly labeled asset observation date beneath it.
+
+**21 affected cases pass**: 15 server-price checks and six native browser cases. Six contexts/pages, zero errors or outside traffic; eight captures inspected. Search, routes, data, comparison cohort, return focus, storage and a non-asset Coverage list are preserved. All 22 text/source/evidence files and eight PNGs match readback.
+
+Paper Markets has eight source-aligned text corrections; Build and the quote companion record the implementation. One identity-rule paragraph is added. Full JSX inverses preserve all existing geometry/structure; three roots finished and full captures inspected. See [§71](WORKFLOW_CONTINUATION_20261108.md), [receipt](PAPER_CRYPTO_ASSET_READING_20261109.json) and [Markets capture](PAPER_CRYPTO_ASSET_MARKETS_20261109.jpg).
+
+Continuing into the Chinese mobile reference and builder guide. The quote companion's canvas coordinates remain unreported; all previous proof scopes and holds remain.
+
+
+
+## Prior applied work — quote validity and small-price clarity
 
 [PR #10901](https://github.com/mastermindx-market-intelligence/Macro/pull/10901) is now `0c895f7bf5585f152f7bc0c6fc5eb23b6ec057c6`, assets `4165f78946a7`. Invalid quotes read Unavailable / 暂无; positive sub-cent prices retain useful precision and an explicit bound below 0.00000001. Independent asset evidence and real zero relative changes remain usable.
 

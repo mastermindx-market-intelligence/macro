@@ -3315,3 +3315,56 @@ File `01M6Y3F0NXNDPAKJMJGCAD759Z`, existing page `p-3-0`:
 Next: remove redundant fallback presentation such as BTC · BTC, preserving canonical names, identity keys, routes, search and symbol-only comparison headers. Then assess stronger inspector hierarchy against the existing data and navigation contract.
 
 Producer history integrity, missing trend votes and emitted paired-window receipts remain separate owner/model work. Prior accepted proof retains its source scope. PRs remain Draft/unarmed/unmerged. H5/model, alerts, hosted/independent acceptance, public-route cutover, admission/release and all denied/unknown-effect action families remain held. Native historical/synthetic proof is not current-market freshness or production acceptance.
+
+
+## 71. Crypto asset reading — single identity, grouped quote/date and source-aligned Markets labels (2026-11-09)
+
+**Implemented, verified and saved; continuing into Chinese reference and builder-navigation clarity.** Dependent Draft [PR #10901](https://github.com/mastermindx-market-intelligence/Macro/pull/10901) advances from `0c895f7bf5585f152f7bc0c6fc5eb23b6ec057c6` to **`ce97e52d0cd131de2a1ca7e750574fcdc9482adb`**, tree `112421b363a35eac149234bcc7f44d685ced880a`, assets `bc279c50ec6b`.
+
+### Implementation and ownership
+
+Overview, Markets and the inspector now show a fallback ticker once. A missing/non-string/blank name or trim/case-equivalent symbol name falls back to the original symbol. Distinct names remain intact, including Ethereum · ETH and Solana · SOL. A shared Jinja display macro and a pure JavaScript title helper own presentation only; source keys, route attributes, search corpus, cohort ordering and symbol-only comparison headings remain unchanged. Markets coin initials are excluded from accessible button names.
+
+The asset inspector now emphasizes Price with 30px/38px, weight 600, tabular numerals. Its explicitly labeled observation date follows with an 8px gap. The quote row has no lower divider; the date retains its lower divider before the other measures. Comparison basis remains first, and supporting fields remain ordered and unchanged.
+
+The existing `definition()` helper returns the list it already appends. The asset caller marks its own Price/date rows on that exact list, avoiding the separate definition list inside Comparison basis. Three scoped CSS rules establish hierarchy; generic styles remain unchanged. No new state/controller, navigation path, focusable control, source fetch, model or animation.
+
+### Native evidence
+
+Parent baseline, PID 16319: **15 passed / six expected browser failures**, 7.16s pytest / 7.672s subprocess. The failures show the prior 14px undifferentiated quote and duplicate/invalid fallback display.
+
+Candidate, PID 23358: **21 passed in 12.59s**, 12.849s subprocess / 13.31s wrapper. Scope: 15 existing server-price cases and six browser cases, including four extended quote cases and two new identity workflows. Six fresh contexts/pages, zero page errors or external/WebSocket traffic.
+
+The quote workflows preserve all price strings and supporting fields while verifying actual 30px/38px/600 typography, intact lower bound, 8px date gap, explicit date label and normal date sizing. Eighteen asset Inspect→Close journeys retain opener focus and untouched storage.
+
+The identity workflows verify Overview and Markets fallback labels, accessible names without decorative initials, retained named assets, ticker/name search, same-asset open and return, preserved query/focus, complete cohort and symbol-only comparison headers. A non-asset Coverage list remains at 14px without asset classes. Raw asset JSON remains exact.
+
+Eight captures were inspected: four quote states, two fallback inspectors and two Overview sections, across English 390px dark/fine-pointer and Chinese 320px light/touch. This is a focused 21-case run, not a complete-suite claim. Earlier 102-contract/eight-browser quote proof retains its exact source scope.
+
+### Exact source conservation
+
+Publication receipt, PID 34449, exit 0: eight changed source/served/test paths and 13 unchanged inputs. The builder, projection, contract tests, retained view and shared assets stay exact. Reversing the three product transformations and browser-test changes recovers the parent.
+
+Retained candidate pages change only two asset references, two decorative-initial accessibility attributes and one extra leading newline from the Jinja macro. Ordinary Ethereum/Solana visible content remains exact. Served JS/CSS match their templates.
+
+**22 text/source/evidence files and eight PNG binaries** match source commit readback. [Build contract and complete proof](https://github.com/mastermindx-market-intelligence/Macro/tree/ce97e52d0cd131de2a1ca7e750574fcdc9482adb/research/design_candidates/crypto_snapshot_safety_20261109).
+
+### Applied Paper work
+
+File `01M6Y3F0NXNDPAKJMJGCAD759Z`:
+
+- Markets reference `8E-0`: eight text corrections remove calendar-day and shared-window implications. Price change, Asset/BTC ratio change and 90-step rule match the current meaning; missing paired-window qualification is explicit. Solana · SOL matches the retained named identity. All historical values, risk/structure fields and existing geometry remain.
+- Build `2ZJ-0`: one implementation/proof note changes.
+- Quote companion `3N8-0`: three source/status texts change and one identity-rule paragraph `3O8-0` is added, taking 31 nodes to 32.
+- The full JSX inverse recovers all three exact before-images after reversing only those stated text/addition changes. All existing styles, hierarchy and order are preserved. Proposed roots `2XH-0` and `2YI-0` remain byte-exact.
+- All three roots finished. Full 1440×870, 1440×1200 and 1440×560 captures were inspected and saved as JPEG evidence. The Markets bar/reference panel is not a claim that a new native chart was implemented.
+
+The quote companion's rendered geometry/page membership remain established, but its canvas coordinates are still unreported; exact page placement/spacing is not claimed. No held style effect or alternate carrier was used.
+
+Receipt: `PAPER_CRYPTO_ASSET_READING_20261109.json`. Captures: `PAPER_CRYPTO_ASSET_MARKETS_20261109.jpg`, `PAPER_CRYPTO_ASSET_BUILD_20261109.jpg`, `PAPER_CRYPTO_ASSET_QUOTES_20261109.jpg`.
+
+### Next safe phase
+
+The Chinese mobile Markets specimen in `HX-0` still uses 30/90-calendar-day wording and ambiguous BTC-relative-zero language. The internal guide also still calls implemented candidate comparison/saved-case UI merely proposed. Correct those retained-reference and builder-navigation labels, while preserving actual paired-window receipt and qualified historical-review proposals.
+
+All prior Draft, model/H5, alert, hosted/independent acceptance, public-route cutover, admission/release and denied/unknown-effect boundaries remain. This is local historical/synthetic proof, not production acceptance or current-market freshness.
