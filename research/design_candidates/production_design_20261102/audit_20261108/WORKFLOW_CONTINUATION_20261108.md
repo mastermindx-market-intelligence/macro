@@ -2677,3 +2677,46 @@ All **171 Build,18 EN,18 ZH,21 EN320 and20 zero-state div identities, parents an
 PR10893 remains Draft/unarmed. Its publication does not inherit PR10705's source adoption, bypass the incumbent calendar semantic-proof refusal, or claim production entitlement/deployment. Wider D04/F01/F02/programme acceptance and all other holds are unchanged. PR10617 remains Draft.
 
 The next supported design improvement replaces the card's repeated recent win-rate chip with a matched Recent/Older baseline-delta display using existing supplied fields. Preserve monthly-rate samples, method, horizon, ranking, free/gated identity and source protocol; distinguish positive/negative/exact-zero/unavailable comparisons without inventing a calculation owner. Continue in this healthy mission after durable readback.
+
+
+## 55. Confluence paired historical comparisons — 9 November 2026
+
+### Applied product behavior
+
+[Dependent Draft PR10893](https://github.com/mastermindx-market-intelligence/Macro/pull/10893) now has head `22fa830d390c0fa0c3f633325ec17c766b4e3bef`. Each card pairs the supplied recent and older baseline differences with their existing monthly rates and samples. The repeated recent ten-block meter and one-sided comparison chip are removed. The common heading states **Versus random entry · percentage points / 较随机入场 · 个百分点**; the existing native method disclosure explains the same-stock, same-period random-date baseline.
+
+The two values are independent `edge_test_pp` and `edge_train_pp` fields. They are never reconstructed from rounded rates or baseline levels. Positive and negative signs are preserved; exact zero is neutral; missing remains unavailable. Values below 0.1 percentage points retain two significant digits, including very small signed values. When only the recent comparison is missing, the summary names that missing period without concealing a known older value.
+
+The semantic definition list binds both periods to one visible unit heading. Display rank supplies the heading ID because source combination IDs may contain spaces; source IDs remain untouched. Shared grid rows align labels, headline readings and sample rows when one label wraps. Rank, source identity, samples, horizon, company actions and protected hydration keep their existing owners. No data-calculation or authentication controller is added.
+
+[Implementation and before/after captures](https://github.com/mastermindx-market-intelligence/Macro/blob/22fa830d390c0fa0c3f633325ec17c766b4e3bef/research/design_candidates/confluence_compatibility_20261109/PAIRED_COMPARISONS.md) and [full validation](https://github.com/mastermindx-market-intelligence/Macro/blob/22fa830d390c0fa0c3f633325ec17c766b4e3bef/research/design_candidates/confluence_compatibility_20261109/PAIRED_COMPARISONS_VALIDATION.json) retain exact source, reports, logs and qualification.
+
+### Focused proof and source conservation
+
+- **92 page tests passed** on final reviewed files (native PID90648, pytest11.17 seconds; process12.73 seconds).
+- **16 browser workflows /16 contexts passed**, zero page errors, Chrome157.0.8103.39 (PID90408,22.30 seconds). Fourteen render controlled synthetic inputs; two browse the actual saved current-input HTML/protected-JSON pair.
+- **48 card observations** check independent values/signs/missingness, visible percentage-point units, resolved accessible heading IDs, aligned rows and widths. A source ID containing a space is exercised. Existing native method focus/open/close and 44px target remain qualified.
+- Saved-pair cases use controlled auth to prove matching hydration and sign-out without changing public comparisons. Free-company keyboard navigation is intercepted locally; no live account or external app journey is claimed.
+- Six final native card crops were visually inspected. Seven published PNGs, including the original failing-before comparison, read back with exact blob and base64 identities. The first small-value crop depicts the zero card; tiny signed values are checked numerically and geometrically on its other cards.
+- The builder and protected JSON are byte-exact. The saved protected JSON still equals the actual producer. The full source receipt remains `4f8c3dcd8508a55978f4b27d7c4d34828bc1044881ed404120cb353b1d4dc7c1`, built `2026-11-08T11:31:29Z`, with256 universe/11 eligible/3 displayed combinations.
+- The saved HTML changes only its style and ledger regions. All bytes outside those regions, including original carriage returns, remain exact. Auth/protocol JavaScript is unchanged. Seven published source/text files read back exactly; PR head/body/Draft state were freshly reconciled.
+
+The initial baseline's16 failures are expected missing-paired-cell acceptance failures, not16 distinct defects. An earlier14-case compatibility regression passed before the final display alignment, heading-ID and verifier corrections; its evidence retains its own hashes and is not restamped as final-head proof.
+
+The sparse verification package cannot import `engine.marketing.state`. Rather than expand unrelated dependencies, both old/new rendering contexts explicitly reuse the exact tagged CTA parsed from parent saved HTML. The old rendered style/ledger match the parent exactly; the new rendered components supply the two replacements. This is a bounded component projection and actual saved-pair browser proof, not a claim that the complete sparse site's positive renderer reproduced all bytes unaided.
+
+### Applied Paper and builder contract
+
+[R2 anatomy](https://app.paper.design/file/01M6Y3DCDDW541ZR38J1V52A9Y/p-2-0) now includes an independent comparison cell for each period in **24 cards across eight desktop/mobile, dark/light, EN/ZH variants**. All48 period containers receive three-node fragments, totaling144 new nodes. Values remain explicitly **Not loaded / 未载入**; captured source numbers are not presented as live anatomy data.
+
+Thirty-four intended text refinements preserve the existing history/sample/absence qualifications, identify percentage-point units and replace the remaining misleading recent-validation labels with historical-reading/comparison language. All original node IDs, parents and styles remain exact in each of the eight roots. The additions use the existing tokens and typography.
+
+The existing [Build map](https://app.paper.design/file/01M6Y3DCDDW541ZR38J1V52A9Y/p-3-0), root2AG-0, changes exactly ten text nodes while preserving all171 div IDs, parents and styles. It explains independent supplied fields, sign/zero/missingness rules, shared alignment, safe presentation IDs, method ownership and the source/proof distinctions above. Original control guidance remains intact.
+
+All four public-state roots272-0/274-0/276-0/278-0 and the complete newer R4 subtree2I3-0 remain byte-exact. Token hash remains6234666b. EN/ZH mobile and desktop cards and the comparison/proof Build modules were visually inspected; text is readable and unclipped. Text, Build and exact-nine-root finish operations returned **APPLIED_RESPONSE_OBSERVED**. [Full before/after Paper receipt](PAPER_CONFLUENCE_PAIRED_COMPARISONS_20261109.json) retains the recoverable original and final cards, Build map, preserved subtrees, node deltas and logical operation results.
+
+### Continue with the card reading path
+
+The comparison rail now makes a concrete desktop spacing issue visible: a tall right column leaves unused space below title/history while the signal legs and company action sit farther down. The next bounded improvement moves the existing signal-leg list into the header grid next to title/history, preserving natural DOM/keyboard order. Qualify the current four-leg combination at narrow, tablet, breakpoint and desktop widths before publishing. Keep the source protocol, data, text, tooltip ownership and company destinations exact.
+
+PR10893 and this audit remain Draft/unmerged. Incumbent PR10705, its admission refusal and all wider D04/F01/F02, model, protected-style and release holds are unchanged. This completed phase does not establish deployment, live entitlement, full shared-shell/font rendering, spoken assistive technology or animation behavior.

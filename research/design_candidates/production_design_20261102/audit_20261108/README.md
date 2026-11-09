@@ -1,10 +1,12 @@
 # Paper audit and upgrade — 8–9 November 2026
 
-## Latest implementation — Confluence compatibility and actions
+## Latest implementation — Confluence paired comparisons
 
-[Dependent Draft PR10893](https://github.com/mastermindx-market-intelligence/Macro/pull/10893) at `f51b60de88474ff4e5df4359b6b94b6d7f6574a5` closes the cached-reader version gap, corrects page-reload/application labels and adds actual successful-render overwrite proof. **82 page tests and14 browser workflows /14 contexts pass**, with four native EN/ZH action-card captures inspected. The production-input pair is separately conserved and matched to the producer; browser cases use actual templates with synthetic data and controlled auth/HTTP.
+[Dependent Draft PR10893](https://github.com/mastermindx-market-intelligence/Macro/pull/10893) at `22fa830d390c0fa0c3f633325ec17c766b4e3bef` now pairs the supplied Recent/Older random-entry differences with their rates and samples, replacing duplicated recent-only decoration. Missing, exact-zero and very small signed values remain distinct; shared rows align both periods and a visible heading names percentage-point units. **92 page tests and16 browser workflows /16 contexts pass**, with48 card observations and six final native captures inspected. Two browser cases use the actual saved current-input pair;14 use controlled synthetic inputs.
 
-Twenty intended Paper text nodes align the four public states and current Build map. All node identities, parents and styles are preserved; the full newer R4 subtree stays byte-exact. [§54](WORKFLOW_CONTINUATION_20261108.md) and [exact Paper receipt](PAPER_CONFLUENCE_COMPATIBILITY_20261109.json) distinguish source, fixture/browser proof and release boundaries. The incumbent PR10705 branch and admission are unchanged. PR10893 stays Draft/unarmed; no production or whole-programme acceptance is claimed.
+Paper now has **48 comparison cells across24 cards/eight variants**, plus34 precise text refinements and ten Build-map updates. All original card/Build identities, parents and styles are preserved; four public states and the complete newer R4 subtree stay byte-exact. [§55](WORKFLOW_CONTINUATION_20261108.md) and [full Paper receipt](PAPER_CONFLUENCE_PAIRED_COMPARISONS_20261109.json) bind source, implementation proof and qualifications. The builder, protected JSON and auth/protocol script remain exact. PR10893 stays Draft/unarmed and does not inherit incumbent PR10705 admission.
+
+The preceding [§54 compatibility increment](WORKFLOW_CONTINUATION_20261108.md) retains its own82-test/14-browser evidence and [Paper receipt](PAPER_CONFLUENCE_COMPATIBILITY_20261109.json). Continue with a responsive card reading path that brings existing signal criteria beside the desktop identity and preserves natural keyboard order.
 
 ## Applied design improvements
 
