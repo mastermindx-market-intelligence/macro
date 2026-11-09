@@ -1,32 +1,32 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "VTOL-BULL-20261026",
-  "asof": "2026-11-02",
+  "asof": "2026-11-09",
   "phase": "triggered_pre_t1",
   "detection_phase": "triggered_pre_t1",
-  "management_confidence": 61.9,
-  "raw_confidence": 61.8,
-  "delta_vs_base": 1.9,
+  "management_confidence": 32.8,
+  "raw_confidence": 32.4,
+  "delta_vs_base": -27.2,
   "recommended_action": "hold",
   "human_state": "Needs Follow-Through",
   "components": {
-    "validity": 100.0,
+    "validity": 3.5,
     "progress": 0.0,
-    "pace": 99.7,
+    "pace": 75.9,
     "retention": 50.0,
-    "overlay": 55.9
+    "overlay": 39.0
   },
   "geometry": {
-    "dist_to_stop_r": 1.0,
+    "dist_to_stop_r": 0.128,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 6.7,
-    "p1": 0.0,
-    "p2": 0.0,
+    "horizon_pct_used": 22.2,
+    "p1": -0.5816,
+    "p2": -0.2908,
     "p3": null,
-    "move_r": 0.0,
+    "move_r": -0.872,
     "mfe_r": 0.0,
-    "mae_r": 0.0
+    "mae_r": -1.011
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -40,11 +40,11 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 1.6784667948854803e-06,
-  "_mae": 0.0,
+  "_mae": -5.309999694824221,
   "_max_p1": 2.1313864062037845e-07,
   "_first_trigger_ts": "2026-10-31",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 3,
-  "tau": 0.0667
+  "days_elapsed": 10,
+  "tau": 0.2222
 }

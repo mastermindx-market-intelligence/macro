@@ -1,0 +1,209 @@
+{
+  "schema": "shared-shell.locale-quality-generation-custody.v1",
+  "task": "P12.T41.S3",
+  "at": "2026-11-03T20:33:41.849842+00:00",
+  "base": "f87eee9fd5961b572e5b0278960b5b12fe14a172",
+  "method": "ONE bounded read-only native VM assembly/explicit primary artifact/published bootstrap/source-run transport pass. No intl_run/main/collector/engine/provider/browser/SSH call.",
+  "normal_interfaces": {
+    "AM": "scripts.build_am_edition.render_html_with_reason(payload)\u2192lib.pages.write_page; actual retained production17,664B payload approved and emitted unchanged as_of/body",
+    "Intl": "lib.intl_library_mount.render_international_pages(template, vm, catalogue=None, chart_sources=None)\u2192native macro/stocks output; build_intl.py caller supplies fullVM aftermany native computations",
+    "Intl_normal_main_boundary": "Calls intl_run.run\u2192writesregimehistories/latest; countrybuilders; stocklibrary; writesIntlRisk/FlowRegime; then supplies actualUUID/evaluated-at-boundworkspace and privatechartSources. Not invoked to discover inputs."
+  },
+  "qualified_primary_cut": [
+    {
+      "path": "data/intl/latest.json",
+      "bytes": 82232,
+      "sha256": "ea655647448fef8050cec3c73dd946e9d066cb1d06d6a58bb8d935894f673a65",
+      "keys": [
+        "date",
+        "summary",
+        "records",
+        "rankings",
+        "heatmap",
+        "periphery"
+      ]
+    },
+    {
+      "path": "data/intl_risk/latest.json",
+      "bytes": 41529,
+      "sha256": "2364626569378f7bb8a70e67482dec065f61ead38004f013698ab25f195ec5b7",
+      "keys": [
+        "built",
+        "timing_sec",
+        "em_stress",
+        "vulnerability",
+        "spillover",
+        "corr_tightening",
+        "two_tier",
+        "cb_desk",
+        "smile",
+        "inversion_board",
+        "swap_lines_bn",
+        "top_transmitters_display",
+        "emb_ief_spark_svg",
+        "spillover_spark_svg",
+        "contagion_links"
+      ]
+    },
+    {
+      "path": "data/flow_regime/latest.json",
+      "bytes": 11041,
+      "sha256": "4f6d571412ac8dbbce746710537cf508acca45d35dbbadabf4add7edb3e971a3",
+      "keys": [
+        "as_of",
+        "regime",
+        "blocs",
+        "emp_watch",
+        "discriminator",
+        "swap_lines",
+        "cross_refs",
+        "coverage",
+        "disclosures"
+      ]
+    },
+    {
+      "path": "data/intl_macro/provenance.json",
+      "bytes": 14315,
+      "sha256": "50c3cab8065204cbf606ef35a87e863b0fa4b1cfb21b817d088d6452c18c0aa5",
+      "keys": [
+        "built",
+        "schema",
+        "series"
+      ]
+    },
+    {
+      "path": "data/run_status.json",
+      "bytes": 106639,
+      "sha256": "176eb1e4a9cee78542e643d43cad2b4d55cd506c6bdab2273831034384befc3b",
+      "keys": [
+        "last_run",
+        "sources",
+        "circuit_breaker",
+        "circuit_breaker_probe",
+        "stale_series",
+        "tushare"
+      ]
+    },
+    {
+      "path": "site/factordata/intl_setups.json",
+      "bytes": 235898,
+      "sha256": "3c84cf19f7efc2f74cbaa235067c2ff2eaa57c7b20911418d94e1a4d2a483477",
+      "keys": [
+        "as_of",
+        "buy",
+        "laggards"
+      ]
+    },
+    {
+      "path": "config/intl_library_catalogue.json",
+      "bytes": 12245,
+      "sha256": "efb38991184357909b1f8c55c6753efad4f2e8b56616d2d526d9318e8a94895c",
+      "keys": [
+        "bindings",
+        "public_copy_decision"
+      ]
+    }
+  ],
+  "existing_published_bootstrap": [
+    {
+      "name": "INTL_PERF",
+      "present": true,
+      "sha256": "e67458401e4c94232d5c9928392adfe85f7a9c22752af21f35fd32241fb8f1b5",
+      "bytes": 51004,
+      "shape": [
+        "bench_note",
+        "correlation",
+        "global_read",
+        "horizons",
+        "leaderboard",
+        "risk_appetite",
+        "rrg"
+      ],
+      "boundary": "Existing published client subset, not full private native VM"
+    },
+    {
+      "name": "INTL_RANKS",
+      "present": true,
+      "sha256": "5f46386c9913873158bd9417e81cf8485327230c5b99658c42416c781dc25143",
+      "bytes": 1835,
+      "shape": "list",
+      "boundary": "Existing published client subset, not full private native VM"
+    },
+    {
+      "name": "im-config",
+      "present": true,
+      "sha256": "b7ab5ed1fdda176a456ae2835bab98d414fcc0e725f23aa9c18002b6b4eb74e6",
+      "bytes": 717,
+      "shape": [
+        "anchor_ids",
+        "bases",
+        "default_basis",
+        "default_horizon",
+        "horizons",
+        "library_group_ids",
+        "markets",
+        "source_reference"
+      ],
+      "boundary": "Existing published client subset, not full private native VM"
+    }
+  ],
+  "VM_field_custody": {
+    "established_retained": "latest and its records/summary/rankings/heatmap/periphery; setups; risk desk; approved catalogue; public performance/rank boot subsets and config; full CGL data/contagion_links/latest.json is also an actual persisted native primary (snapshot() writes it, so snapshot itself was NOT called). Intl stock libraries have explicit retained parquet inputs as recorded.",
+    "not_established_as_a_complete_same_natural_call": "full intl_workspace.panels+generation/evaluated-at-boundsourceevidence, exactprivatechart_sources tuple (closesDataFrame+production_inputs), fullrates/sectorboard/turnstate caller context bound to the same emitted naturalrun. Publishedconfig and individual artifact timestamps/hashes are not a complete same-call proof.",
+    "partial_artifact_limits": "IntlRisk contagion_links is a summary; live run-status/provenance and primary parquet presence do not establish that they were consumed together by the same render. No absentlatest-field\u21d2absentallinputs inference, no globalartifact-absenceclaim."
+  },
+  "existing_run_retention": {
+    "engine_render": ".github/workflows/engine-render.yml band/brun already retains perbuilder log/rc/sec under RUNNER_TEMP/band, printslogs; no current privateIntl pre-render VM capture in producer/thatretainedcut.",
+    "private_artifact_transport": "daily.yml already uses pinned actions/upload-artifact v4.6.2 (ea165f8d\u2026); existing privateActionsartifact transport can retain an opt-in producer context in the SAME ordinary normal run, without newjob/collectiondispatch. No claim existingsame-jobuploadalreadycapturesIntlVM.",
+    "local_RUNNER_TEMP_present": false,
+    "host_boundary": "No additional host reader; Compatibility49953 remains sole custody. Do not reconstruct cleaned/historicalunretainedVM or trigger newrun for evidence."
+  },
+  "minimal_enabling_source_proposal": {
+    "status": "PROPOSED_ONLY_NOT_IMPLEMENTED",
+    "seam": "Optionalprivatecapture at build_intl.py actual call boundary immediatelybefore render_international_pages; keep nativepure renderer pure.",
+    "capture": "Freeze the actual already-assembled vm, approvedcatalogue, source revision and original built/generation/evaluated-at identities; private bounded typedserialization plus exactprivatechart DataFrame/source-evidence references or bytes. Refuse unsupportedtypes ratherthan default=str/fakingunknowns.",
+    "storage_transport": "Use existing producer RUNNER_TEMP/band scratch and existing private Actions artifact transport; defaultOFF/noextraenginecall/provider/collector. Mode0600 and refuse any site/publicwebroot destination. No publicJSON or registry. Capture only SAMENATURALinvocation.",
+    "consumer": "Small pure native replay entry consumes acceptedmanifest and byte-matchingprivateinputcut, invokes SAME render_international_pages then SAME write_page with clocks/identity unmodified. No model/rights/admission reevaluation or fabricatedfreshness.",
+    "negative_controls": [
+      "Flagoff performsno write/extra source/engine/provider call; captureon leaves normalrender output and callcounts unchanged.",
+      "Alteredbytes/source/clock/generation or incompletechartcut refuses replay ratherthan substituteNone/syntheticdata.",
+      "Public/site destination refused; no environment/credential/privatefield export by broadobjectdump.",
+      "Unsupportedvalues/serialization failure truthfully declinescapture, never promotes rendered source/PIT/currentdata.",
+      "Samefinitecapturedcall native before/after proof preserves every value/source/clock/rights outside three approved tooltipattr changes."
+    ],
+    "boundary_note": "This is an optional capture/replay interface at an existing native call boundary, NOT a proposal for a new collection or retention system. Existing versioned raw store/public boot artifacts are retained; the unresolved interface is complete coherent native render-call custody. No new retention machinery is declared mandatory."
+  },
+  "current_result": "Local exact three-source composition + normalAMemission available. FullIntl normalemission/sourcejoin and ONE fullsameguard deferred until actualqualifiedVM/inputcut or this bounded enablingseam is accepted. No fullguard attempt performed.",
+  "browser": "ExplicitlocalChromiumchild-sandbox refusal preserved: zero launches/engine/profile/flag/hostcapturealternatives; nativefocus/tasteunqualified.",
+  "additional_native_closure_primary_artifacts": [
+    {
+      "path": "data/contagion_links/latest.json",
+      "present": true,
+      "bytes": 22522,
+      "sha256": "f3ac9bc3689d4def7eaa08e3fc5d27f5cde518026150220d9c5fdcd41bc95a7e",
+      "keys": [
+        "schema",
+        "built",
+        "params",
+        "matrix",
+        "severity",
+        "pressure",
+        "data_sessions",
+        "gaps",
+        "timing_sec"
+      ]
+    },
+    {
+      "path": "data/intl_search/closes.parquet",
+      "present": true,
+      "bytes": 8345632,
+      "sha256": "ca0af0bad4389c8ac3a117795c61fe9f51248eb224e3fa56388279d07a9505e4"
+    },
+    {
+      "path": "data/intl_search/members.parquet",
+      "present": true,
+      "bytes": 37169,
+      "sha256": "1558df98ced2ed5e9076be3bae72116adf646076d35d110497a4e2bc321d0723"
+    }
+  ]
+}
