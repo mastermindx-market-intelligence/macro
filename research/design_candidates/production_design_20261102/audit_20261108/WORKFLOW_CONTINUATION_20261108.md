@@ -4,7 +4,7 @@
 
 This is the canonical continuation of the [first audit and build plan](AUDIT_AND_BUILD_PLAN.md), on the existing [Macro programme PR #10617](https://github.com/mastermindx-market-intelligence/macro/pull/10617). The Chairman requested further autonomous implementation, correction and enhancement across Paper. The work continues in the foreground; this saved milestone is not a completion claim or a request to resume.
 
-Eight additional files have received applied changes with native visual checks: Guide, Prophet, Market Memory, Policy Monitor, Market Ontology, Sector Intelligence, the Options W3 mobile companion and Risk Radar. Options now has a six-state Watch/review amendment plus eleven source-matched Flow/Volatility screen and recovery states, with exact builder contracts. Risk Radar now gives calibration qualification priority across ten variants. GMI’s existing file now has distinct theme/source disclosures, four expanded receipt specimens and a locale-state build amendment. Bounded work continues on the Company R3 mobile composition. The seven-file first pass remains accepted work for this mission and is not repeated here.
+Ten additional files have received applied changes with native visual checks: Guide, Prophet, Market Memory, Policy Monitor, Market Ontology, Sector Intelligence, the Options W3 mobile companion, Risk Radar, Confluence Screener and Crypto Intelligence. The existing GMI and Terminal files also received deeper source-matched receipt and Company R3 amendments. Crypto now includes eight saved-case, historical-return and recovery states with an explicit storage/navigation build contract. The seven-file first pass remains accepted work for this mission and is not repeated here.
 
 The root session is the only canvas writer among this session’s agents; independent live writers retain their own targets. Read-only design, international-language and architecture advisers contributed bounded judgments. Mutations use fresh snapshot guards and distinct operation identities beginning `paper-estate-cont-20261108-`. Initial changes used the Mastermind Paper connector; after its transport repeatedly timed out on reads, new operations continued through the authorized Studio Direct Paper owner. Completed operations were read back, never replayed; the detailed transport ruling below preserves that boundary. No runtime release, merge, hold change, message to another person, or live-model qualification has been performed.
 
@@ -603,6 +603,124 @@ Across all eight anatomy boards plus their retained-study destinations, final JS
 Native screenshots checked the four new state compositions, final Chinese and 320px wording, corrected zero specimen, representative desktop/mobile anatomy views, desktop/mobile retained controls, both protected-failure variants, authority map and Build sheet. No clipping was observed in the inspected 320px and Chinese views. Twenty-eight exact affected roots were released. The original governed-reference page was not edited.
 
 This is applied Paper consolidation and a precise source repair/build plan. No runtime source patch, test execution, model run, auth change, merge, release or deployment was performed.
+
+
+## 13. Crypto Intelligence: saved identity, historical return and safe recovery
+
+**Applied Paper amendment:** [Saved case and historical return](https://app.paper.design/file/01M6Y3F0NXNDPAKJMJGCAD759Z/p-4-0), in the existing Crypto R4 file `01M6Y3F0NXNDPAKJMJGCAD759Z`. Eight states, a ten-module Build sheet, a 30-day saved-list fixture and three previously empty interaction-scorecard rows are now present. This is design and source diagnosis; runtime implementation remains pending.
+
+### Source identity and observed defects
+
+The existing [Macro PR #9580](https://github.com/mastermindx-market-intelligence/macro/pull/9580) was read at actual head `5e496c24c962e85a4f7f514dd43dc61443b95cab`: open, Draft and unmerged. Relevant files were read at that same head:
+
+- [Browser owner](https://github.com/mastermindx-market-intelligence/macro/blob/5e496c24c962e85a4f7f514dd43dc61443b95cab/templates/crypto_intelligence_r4.js), blob `ff46d4408d243bcebb8e6cac95167b4a6ef933c4`.
+- [Companion CSS](https://github.com/mastermindx-market-intelligence/macro/blob/5e496c24c962e85a4f7f514dd43dc61443b95cab/templates/crypto_intelligence_r4.css), blob `e44434af0ea057a8d2cb34aa2d09b82988fd785c`.
+- [Existing browser tests](https://github.com/mastermindx-market-intelligence/macro/blob/5e496c24c962e85a4f7f514dd43dc61443b95cab/tests/test_crypto_intelligence_r4_browser.py), blob `1b8dd18839de3bb125f99a31d433d44d650ef9a0`.
+- [Candidate view data](https://github.com/mastermindx-market-intelligence/macro/blob/5e496c24c962e85a4f7f514dd43dc61443b95cab/site/crypto_intelligence_r4.json), blob `024278d4143ee076f4253cd295230636818e97bd`.
+- [Builder](https://github.com/mastermindx-market-intelligence/macro/blob/5e496c24c962e85a4f7f514dd43dc61443b95cab/scripts/build_crypto_intelligence_r4.py), blob `64105d836bfe13492749425bea65a3f3749e0494`, and [existing build packet](https://github.com/mastermindx-market-intelligence/macro/blob/5e496c24c962e85a4f7f514dd43dc61443b95cab/research/CRYPTO_INTELLIGENCE_R4_BUILD_PACKET.md), blob `b936eb0a8bf2d448f91196b3b4b1c6999550e25f`.
+
+The candidate already owns local snapshots under `mmx.crypto.r4.scenarios.v1`, native disclosures, hash routes, the dialog, toasts and language updates. The amendment extends those owners.
+
+Source inspection found four consequential gaps:
+
+1. Saved-list actions open a revision without passing its saved horizon. Historical review later changes the horizon, but returning to the saved parent is not explicitly modeled.
+2. A missing `memory-saved` lookup falls back to the **current** horizon and `data.as_of`. A nonexistent saved case can therefore appear to have current context.
+3. `stored()` returns an empty list on access, parse or collection-shape failure. The mutation owner then uses that filtered/sliced result as a write source, which can erase unreadable or unrecognized retained content.
+4. `save(s)` toggles intent according to the fresh lookup. A stale Remove action can append the case again, with newly captured evidence; a stale Save can remove an already saved case. Duplicate revisions lose only the first matching entry. The named parent return and locale rerender also need a semantic focus target because `renderDrawer()` replaces inner DOM nodes.
+
+These are source findings, not reproduced browser failures. The historical build packet’s earlier test claims are not this session’s test evidence.
+
+### Applied states and existing-board changes
+
+| State | Root | Purpose and visible behavior |
+|---|---|---|
+| 09 · Saved 30-day case, EN | `3BC-0` | Original cutoff and condition first; original case details and evidence disclosed on demand; Historical review and a separate local Remove action. |
+| 10 · Historical review | `3BE-0` | Same saved title, 30-day horizon and cutoff; “No qualified comparison yet”; “← Saved case” names the verified parent destination. |
+| 11 · Saved version unavailable | `3BG-0` | No borrowed asset, horizon, date or condition. Open saved snapshots is primary; Open current outlook is an explicit separate action. |
+| 12 · Original evidence at 320px | `3BI-0` | The same saved-item route with its native evidence disclosure expanded; six captured readings and their own quality/date captions. |
+| 13 · Saved 30-day case, ZH | `3BK-0` | Matching hierarchy and frozen meaning. Daily-close wording uses “高于” rather than implying a crossing event. |
+| 14 · Older expired 7-day case | `3BM-0` | Original condition and cutoff retained; distinct expiry date; “Source details not saved” explains a missing digest without treating the record as missing. |
+| 15 · Detached historical review | `3BO-0` | Same saved context; “Open saved case” replaces the current entry when there is no verified immediate parent. |
+| 16 · Saved collection unreadable | `3JY-0` | “Saved snapshots couldn’t be read. No changes were made.” A deliberate Try reading again uses the same reader; current outlook remains separate. |
+| Build | `3IP-0` | Ten modules covering sources, identity, navigation, horizon, evidence, focus, operations, recovery, tests and delivery. |
+
+Page header `3B8-0` declares historical source fixtures, not personal saved records. The original interaction board `G5-0` retains its 7-day item `H4-0`; new 30-day fixture `3KD-0` sits beside it in the same Saved snapshots owner. The 7-day item maps to state 14, and the 30-day item maps to state 09. Only the original explanatory pointer `G9-0` was changed.
+
+The original Build authority board `QI-0` previously had an empty interaction scorecard. Rows `3KG-0`, `3KN-0` and `3KU-0` now distinguish saved-case restoration, parent return, and read/remove recovery. The UI column explicitly says the runtime amendment is pending. Only its pointer `QM-0` was changed; the public-route cutover gate `QQ-0` remains intact.
+
+### Exact fixture meaning
+
+The 30-day case is `r4-display:2026-10-17:30:continuation`, BTC, Upside test. Its original cutoff is **17 October 2026**, expiry **16 November 2026**, and condition is a daily close above **$86,595**, followed by stronger spot demand. The level basis is 60 prior daily closes from 18 August through 16 October, with a low of $64,681. It must not inherit the 7-day high of $86,507. The illustrative saved-at value uses the existing test anchor of 18 October 2026 at 12:00 UTC; it does not prove a user action.
+
+The older 7-day case is `r4-display:2026-10-17:7:failure`, Downside test. It retains the original daily-close threshold below **$81,566** and expiry **24 October 2026**. Its absent `issue_evidence` digest does not erase its original condition or cutoff.
+
+The six evidence rows come from the candidate’s captured-evidence projection:
+
+| Reading | Captured state | Captured quality | Saved snapshot date |
+|---|---|---|---|
+| Price structure | Bullish | Snapshot only | 17 Oct 2026 |
+| Demand & capital | Updates pending | Stale at capture | 17 Oct 2026 |
+| Leverage | Low | Observed | 17 Oct 2026 |
+| Holders & network | Positive | Snapshot only | 17 Oct 2026 |
+| Macro conditions | Headwind | Snapshot only | 17 Oct 2026 |
+| Participation | Coverage incomplete | Insufficient | 15 Oct 2026 |
+
+Family dates are `snapshot_as_of`, not verified observation timestamps. Bitcoin’s cutoff remains 17 October; the broader-market clock remains 15 October. Source paths are internal field provenance, not publisher URLs. No current freshness, probabilities, validated performance or model allocation is inferred.
+
+### Navigation and rendering contract
+
+- Resolve one usable saved record by **exact revision** before render and again before an action. Validate retained authority, supported saved horizon, cutoff and original case fields. A missing digest alone is a supported legacy limitation.
+- Pass validated `s.horizon_days` when opening a saved-list item. A 30-day case entered from a 7-day view remains 30-day through review and parent return; closing the managed drawer journey restores the 7-day ancestor.
+- When the existing history metadata identifies an immediate saved-item parent for the **same** revision, parent return goes back one entry. A review opened from a detached saved-item can still have that valid parent; `detachedOrigin` alone does not disqualify it.
+- With a usable record but no verified immediate parent, Open saved case replaces the current entry through the existing update owner. A missing or ambiguous record opens the unavailable state. An unreadable collection uses state 16, not an empty list.
+- Close retains the existing whole-journey exit semantics. It is not the implementation of the parent action. Do not add another router, navigation stack, saved-case store or lifecycle.
+- Capture semantic action/disclosure identities against the panel key and exact saved revision before rerender. Restore disclosures before reading position; focus the recreated Historical review control on parent return. Preserve the outer opener separately.
+- Locale changes create neither a new history entry nor a storage write. Restore state only when the same saved case still resolves; otherwise focus the unavailable message. Outer Close restores only a connected, visible opener in the active view, with that view’s heading as fallback.
+- The existing dialog is the scroll container, with a sticky header. Do not create a second scrolling body. The inspected native frames establish content fit at 320px/390px, not runtime scrolling. Keep native disclosure semantics, 44px parent/Close/disclosure targets, 48px primary actions and existing reduced-motion handling.
+
+The interface keeps the condition visible and defers longer sequence, invalidation, counter-evidence, expiry and level-basis explanations to Original case details. Evidence remains a single disclosure. The seven initially reviewed screen bodies needed no added explanatory paragraph; the storage-read state addresses a distinct subsequently verified source gap.
+
+### Explicit snapshot operations and recovery
+
+The existing mutation function should take the **intent chosen by the user**:
+
+| Intent and fresh state | Required behavior |
+|---|---|
+| Save; absent | Apply existing eligibility, then append the dated snapshot. |
+| Save; already present | Already saved; preserve the original saved-at and evidence. |
+| Remove; present | Remove every exact match for the revision and preserve unrelated entries. |
+| Remove; already absent | Idempotent completion with no write and no evidence capture. |
+| Either; unreadable collection | No write; show collection unavailable. |
+
+A ready/unavailable result belongs inside the existing reader. Preserve the full valid collection for mutation separately from the displayed filtered/capped set. Do not silently clean up unrelated legacy or unrecognized entries during removal. Retain the existing capacity policy for an actual new save; no migration is added.
+
+After a write, verify the intended postcondition before claiming success. Unconfirmed outcomes have a separate message and no automatic replay. A fresh local-storage read is not an atomic cross-tab transaction; implementation must not claim a compare-and-swap guarantee it does not provide.
+
+Recovery copy distinguishes a requested version from collection access, an already absent removal, and an unconfirmed write. Missing or unreadable saved content must never be automatically replaced with current context. The same existing reader may be invoked deliberately by Try reading again; no retry service or background owner is introduced.
+
+### Focused implementation proof still owed
+
+Extend the existing browser tests rather than create a parallel harness. They already cover a route/viewport matrix, a 30-day deep link, original saved evidence, missing current scenario, legacy digest and short mobile evidence scroll. Additional proof must include:
+
+- A saved 30-day case entered from a 7-day view → review → one-level parent → full Close to 7 days.
+- Detached saved-item with a known parent versus truly detached review.
+- Missing, malformed and duplicate revisions with no current-context fallback.
+- Access, parse and collection-shape failures with zero storage writes.
+- Stale Remove without re-addition; stale Save without deletion, renewal or evidence replacement; duplicate removal preserving unrelated entries.
+- Failed write/readback with no false success or automatic replay.
+- English/Chinese disclosure, reading position and semantic focus continuity; a locale change after removal; 320px/390px keyboard, scroll and reduced-motion behavior.
+
+No tests were executed and no functional browser proof is claimed in this design pass. Existing sign-in/release gates were not bypassed.
+
+### Native checks, preservation and release
+
+All eight state compositions were inspected as native screenshots. Final Chinese and legacy copy, the 320px evidence disclosure, original interaction board, filled authority scorecard and Build sheet were checked; the focus/storage modules were also inspected individually. No clipping was observed in those views.
+
+Final JSX preserves **all 64 original interaction-board IDs** with only `G9-0` changed, plus the two-node 30-day item. It preserves **all 37 original Build-board IDs** with only `QM-0` changed, plus the three six-node scorecard rows. Original source drawer `GB-0`, old saved item `H4-0`, expiry notice `H8-0`, alert gate `HE-0` and public-route gate `QQ-0` retain their original text, styles and parents. Scenario page `BB-0` is byte-identical in JSX.
+
+The newer relative-comparison page `p-3-0` was not targeted. Its original basic-info fields and artboard metadata were unchanged; the only basic-info difference was the addition of this session’s new page to the file’s page list. The archive was not edited.
+
+Twelve exact affected roots were released: `3B8-0, 3BC-0, 3BE-0, 3BG-0, 3BI-0, 3BK-0, 3BM-0, 3BO-0, 3JY-0, 3IP-0, G5-0, QI-0`. All issued mutations returned observed applied responses. No runtime source patch, personal storage mutation, model run, message, auth change, merge, release or deployment occurred.
 
 ## Active next phase: next demonstrated workflow gap
 
