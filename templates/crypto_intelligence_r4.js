@@ -14,6 +14,12 @@
   function t(en, cn) { return zh() ? cn : en; }
   function field(value, name) { return value[name + (zh() ? "_zh" : "_en")] || ""; }
   function money(value) { return typeof value === "number" && isFinite(value) ? "$" + value.toLocaleString("en-US", { maximumFractionDigits: value < 1000 ? 2 : 0 }) : t("Unavailable", "暂无"); }
+  function assetMoney(value) {
+    if (typeof value !== "number" || !isFinite(value) || value <= 0) return t("Unavailable", "暂无");
+    if (value < 0.00000001) return "<$0.00000001";
+    if (value < 0.01) return "$" + value.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 8, useGrouping: false });
+    return money(value);
+  }
   function pct(value) { return typeof value === "number" && isFinite(value) ? (value > 0 ? "+" : "") + value.toFixed(1) + "%" : t("Unavailable", "暂无"); }
   function node(tag, text, className) {
     var element = document.createElement(tag);
@@ -539,7 +545,7 @@
       title.textContent = asset ? asset.name + " · " + asset.symbol : t("Asset unavailable", "资产暂不可用");
       if (asset) {
         comparisonBasis(asset);
-        definition([[t("Price", "价格"), money(asset.price)], [t("Asset observation date", "资产观测日期"), asset.as_of],
+        definition([[t("Price", "价格"), assetMoney(asset.price)], [t("Asset observation date", "资产观测日期"), asset.as_of],
           [t("Price change", "价格涨跌"), pct(asset.change_30d_pct)],
           [t("Asset/BTC ratio change", "资产/BTC比值变化"), pct(asset.relative_90d_pct)],
           [t("Relative state", "相对状态"), field(asset, "relative") || t("Unavailable", "暂无")],

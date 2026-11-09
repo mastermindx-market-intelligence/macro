@@ -1,6 +1,20 @@
 # Crypto R4: safe saved cases and clear asset comparisons
 
-## Current phase — footer actions clear the shared launcher
+## Current phase — honest quote availability and useful small prices
+
+Asset quotes now require finite positive numbers. Invalid quotes read **Unavailable / 暂无**; positive sub-cent quotes retain up to eight decimals, with **<$0.00000001** below the display limit. Other asset evidence and genuine zero percentage changes remain intact.
+
+**102 contract + eight browser cases have passing coverage across two runs:** initial108 passed; final17 passed after isolating decimal rounding from caller settings, with15 overlapping server-price cases. Eight native contexts/pages, zero errors or external/WebSocket traffic. Six captured inspector states inspected. This is not a complete browser-suite rerun.
+
+The existing projection, builder and two presentation consumers own the repair. Nine source/served/test paths change;12 other inputs remain exact. Generic money behavior stays unchanged. New Paper component3N8-0 illustrates both states, with builder rules outside the product UI.
+
+- [Quote contract, build ownership and precision examples](QUOTE_CLARITY.md)
+- [Exact validation and limitations](QUOTE_CLARITY_VALIDATION.json)
+- [Native publication receipt](quote/PUBLICATION_RECEIPT.json) and [six inspected captures](quote/captures)
+
+Next: remove redundant fallback names without changing asset identity or navigation.
+
+## Prior phase — footer actions clear the shared launcher
 
 The existing Crypto content owner now reserves **96px plus the safe-area bottom inset**, making the final model/methods control and its keyboard focus outline fully reachable above the unchanged shared launcher.
 
@@ -13,7 +27,7 @@ One CSS declaration and the candidate pages' asset-version references change. Se
 - [Parent](footer/PARENT_READBACK.json) and [candidate](footer/CANDIDATE_READBACK.json) measurements
 - [Readback script](footer/READBACK.py) and [inspected viewport captures](footer/captures)
 
-Next: qualify asset quotes and show useful small positive prices without rounding them to zero.
+The current quote-clarity phase above implements that consumer correction.
 
 ## Prior phase — clear Overview fields and aligned section headings
 

@@ -1,0 +1,22 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+_ test_quote_clarity_formatting_is_independent_of_caller_decimal_context[2-True] _
+tests/test_crypto_intelligence_r4.py:531: in test_quote_clarity_formatting_is_independent_of_caller_decimal_context
+    assert asset_money(0.000123455) == "$0.00012346"
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+scripts/build_crypto_intelligence_r4.py:51: in asset_money
+    rounded = Decimal(str(number)).quantize(Decimal("0.00000001"), rounding=ROUND_HALF_UP)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   decimal.InvalidOperation: [<class 'decimal.InvalidOperation'>]
+_ test_quote_clarity_formatting_is_independent_of_caller_decimal_context[28-False] _
+tests/test_crypto_intelligence_r4.py:532: in test_quote_clarity_formatting_is_independent_of_caller_decimal_context
+    assert (context.prec, context.rounding, dict(context.traps), dict(context.flags)) == before
+E   AssertionError: assert (28, 'ROUND_D...: False, ...}) == (28, 'ROUND_D...: False, ...})
+E     
+E     At index 3 diff: {<class 'decimal.InvalidOperation'>: False, <class 'decimal.FloatOperation'>: False, <class 'decimal.DivisionByZero'>: False, <class 'decimal.Overflow'>: False, <class 'decimal.Underflow'>: False, <class 'decimal.Subnormal'>: False, <class 'decimal.Inexact'>: True, <class 'decimal.Rounded'>: True, <class 'decimal.Clamped'>: False} != {<class 'decimal.InvalidOperation'>: False, <class 'decimal.FloatOperation'>: False, <class 'decimal.DivisionByZero'>: False, <class 'decimal.Overflow'>: False, <class 'decimal.Underflow'>: False, <class 'decimal.Subnormal'...
+E     
+E     ...Full output truncated (2 lines hidden), use '-vv' to show
+=========================== short test summary info ============================
+FAILED tests/test_crypto_intelligence_r4.py::test_quote_clarity_formatting_is_independent_of_caller_decimal_context[2-True]
+FAILED tests/test_crypto_intelligence_r4.py::test_quote_clarity_formatting_is_independent_of_caller_decimal_context[28-False]
+2 failed in 0.14s

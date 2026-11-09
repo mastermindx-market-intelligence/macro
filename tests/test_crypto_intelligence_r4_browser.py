@@ -1320,6 +1320,10 @@ def comparison_page(browser, page_url, request, tmp_path):
             from lib.crypto_intelligence_view import build_view
             from test_crypto_intelligence_r4 import relative_integrity_inputs
             view = build_view(*relative_integrity_inputs())
+        elif variant in ("quote-invalid", "quote-small"):
+            from lib.crypto_intelligence_view import build_view
+            from test_crypto_intelligence_r4 import quote_clarity_inputs
+            view = build_view(*quote_clarity_inputs(variant))
         elif variant in ("missing", "empty"):
             view["assets"] = []
             view["contracts"]["asset_states"] = "accepted" if variant == "empty" else "missing_or_schema_mismatch"
@@ -1803,4 +1807,38 @@ def test_r4_relative_integrity_leaders_filter_uses_only_qualified_projection(com
     page.wait_for_function("location.hash==='#markets?filter=leaders'&&!document.getElementById('cri-dialog').open")
     assert rows.evaluate_all("nodes=>nodes.map(n=>n.dataset.assetRow)")==["XRP"]
     assert len(view["assets"])==4
+    _comparison_storage_untouched(page)
+
+
+@pytest.mark.parametrize("lang,width,touch", [("en", 390, False), ("zh", 320, True)])
+@pytest.mark.parametrize("variant", ["quote-invalid", "quote-small"])
+def test_r4_quote_clarity_server_and_inspector_agree_without_losing_asset_context(comparison_page, lang, width, touch, variant):
+    page, view = comparison_page(lang, width, variant, start="#markets", touch=touch)
+    unavailable = "Unavailable" if lang == "en" else "暂无"
+    expected = ([unavailable, "$104.19", unavailable, "$2,413"] if variant == "quote-invalid" else
+                ["$0.001", "<$0.00000001", "$0.00000002", "$0.00000003", "$0.01"])
+    rows = page.locator("#cri-market-table tbody tr")
+    assert rows.count() == len(expected) == len(view["assets"])
+    assert rows.evaluate_all("nodes=>nodes.map(n=>n.dataset.assetRow)") == [a["symbol"] for a in view["assets"]]
+    assert page.evaluate("document.documentElement.scrollWidth<=innerWidth")
+    for index, (asset, price) in enumerate(zip(view["assets"], expected)):
+        row = rows.nth(index)
+        assert row.locator("td").nth(1).inner_text() == price
+        opener = row.locator(".cri-asset")
+        opener.click()
+        page.wait_for_function("(symbol)=>document.getElementById('cri-dialog').open&&document.getElementById('cri-dialog-body').dataset.panel==='asset:'+symbol", arg=asset["symbol"])
+        readings = page.locator("#cri-dialog-body > dl dd")
+        assert readings.nth(0).inner_text() == price
+        assert readings.nth(1).inner_text() == asset["as_of"]
+        assert readings.nth(4).inner_text() == asset["relative_" + lang]
+        assert readings.nth(5).inner_text() == asset["trend_" + lang]
+        assert readings.nth(6).inner_text() == asset["risk_" + lang]
+        assert page.locator("#cri-dialog-body").evaluate("n=>n.scrollWidth<=n.clientWidth")
+        if (variant == "quote-invalid" and index == 0) or (variant == "quote-small" and index == 1):
+            _capture(page, variant + "-" + lang + "-" + str(width))
+        page.locator("#cri-dialog-close").click()
+        page.wait_for_function("location.hash==='#markets'&&!document.getElementById('cri-dialog').open")
+        assert opener.evaluate("n=>document.activeElement===n")
+    assert page.locator('[data-asset-row="SOL"] td').nth(3).inner_text() == "0.0%"
+    assert page.evaluate("JSON.parse(document.getElementById('cri-data').textContent).assets") == view["assets"]
     _comparison_storage_untouched(page)

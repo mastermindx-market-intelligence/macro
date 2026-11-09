@@ -287,9 +287,11 @@ def build_view(cockpit: dict, class_state: dict, asset_states: dict, chart: dict
             relative_copy = (relative.get("state") or "Unavailable", relative.get("state_zh") or "暂无")
         elif covered and relative.get("state") == "Building history":
             relative_copy = ("Building history", "积累历史中")
+        asset_price = finite(item.get("price"))
+        asset_price = asset_price if asset_price is not None and asset_price > 0 else None
         assets.append({
             "symbol": symbol, "name": {"ETH": "Ethereum", "SOL": "Solana"}.get(symbol, symbol),
-            "as_of": item.get("as_of"), "price": finite(item.get("price")),
+            "as_of": item.get("as_of"), "price": asset_price,
             "change_30d_pct": finite(item.get("change_30d_pct")) if covered else None,
             "relative_90d_pct": relative_value,
             "trend_en": ((item.get("trend") or {}).get("state") or "Unavailable") if covered else "Unavailable",

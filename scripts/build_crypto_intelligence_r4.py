@@ -6,6 +6,7 @@ The existing builders remain the source owners. Candidate acceptance precedes cu
 from __future__ import annotations
 
 import argparse
+from decimal import Context, Decimal, ROUND_HALF_UP
 import hashlib
 import json
 from pathlib import Path
@@ -39,6 +40,21 @@ def money(value) -> str:
     return "$" + format(number, ",.2f" if abs(number) < 1000 else ",.0f")
 
 
+def asset_money(value) -> str | None:
+    """Format asset quotes without converting missing or small values to zero."""
+    number = finite(value)
+    if number is None or number <= 0:
+        return None
+    if number < 0.00000001:
+        return "<$0.00000001"
+    if number < 0.01:
+        rounded = Decimal(str(number)).quantize(
+            Decimal("0.00000001"), context=Context(prec=28, rounding=ROUND_HALF_UP),
+        )
+        return "$" + format(rounded, "f").rstrip("0").rstrip(".")
+    return money(number)
+
+
 def pct(value) -> str:
     number = finite(value)
     if number is None:
@@ -66,7 +82,7 @@ def render_view(view: dict, site: Path) -> list[Path]:
     outputs = []
     for filename, default_view in (("crypto-r4.html", "overview"), ("vector-r4.html", "bitcoin")):
         rendered = env.get_template("crypto_intelligence_r4.html.j2").render(
-            view=view, charts=charts, money=money, pct=pct, default_view=default_view, version=version,
+            view=view, charts=charts, money=money, asset_money=asset_money, pct=pct, default_view=default_view, version=version,
         )
         # Jinja-only lines can otherwise emit indentation as trailing whitespace.
         # Do not collapse content or block boundaries: preserve each original line.

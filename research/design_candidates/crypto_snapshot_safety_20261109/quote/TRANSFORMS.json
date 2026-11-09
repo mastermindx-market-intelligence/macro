@@ -1,0 +1,65 @@
+{
+  "source": {
+    "lib/crypto_intelligence_view.py": [
+      {
+        "before": "        assets.append({\n",
+        "after": "        asset_price = finite(item.get(\"price\"))\n        asset_price = asset_price if asset_price is not None and asset_price > 0 else None\n        assets.append({\n"
+      },
+      {
+        "before": "\"as_of\": item.get(\"as_of\"), \"price\": finite(item.get(\"price\")),",
+        "after": "\"as_of\": item.get(\"as_of\"), \"price\": asset_price,"
+      }
+    ],
+    "scripts/build_crypto_intelligence_r4.py": [
+      {
+        "before": "import argparse\n",
+        "after": "import argparse\nfrom decimal import Decimal, ROUND_HALF_UP\n"
+      },
+      {
+        "before": "def pct(value) -> str:\n",
+        "after": "def asset_money(value) -> str | None:\n    \"\"\"Format asset quotes without converting missing or small values to zero.\"\"\"\n    number = finite(value)\n    if number is None or number <= 0:\n        return None\n    if number < 0.00000001:\n        return \"<$0.00000001\"\n    if number < 0.01:\n        rounded = Decimal(str(number)).quantize(Decimal(\"0.00000001\"), rounding=ROUND_HALF_UP)\n        return \"$\" + format(rounded, \"f\").rstrip(\"0\").rstrip(\".\")\n    return money(number)\n\n\ndef pct(value) -> str:\n"
+      },
+      {
+        "before": "view=view, charts=charts, money=money, pct=pct, default_view=default_view, version=version,",
+        "after": "view=view, charts=charts, money=money, asset_money=asset_money, pct=pct, default_view=default_view, version=version,"
+      },
+      {
+        "before": "from decimal import Decimal, ROUND_HALF_UP",
+        "after": "from decimal import Context, Decimal, ROUND_HALF_UP"
+      },
+      {
+        "before": "rounded = Decimal(str(number)).quantize(Decimal(\"0.00000001\"), rounding=ROUND_HALF_UP)",
+        "after": "rounded = Decimal(str(number)).quantize(\n            Decimal(\"0.00000001\"), context=Context(prec=28, rounding=ROUND_HALF_UP),\n        )"
+      }
+    ],
+    "templates/crypto_intelligence_r4.html.j2": [
+      {
+        "before": "<td data-label=\"Price\" data-label-zh=\"价格\">{{ money(asset.price) }}</td>",
+        "after": "<td data-label=\"Price\" data-label-zh=\"价格\">{{ asset_money(asset.price) or t('Unavailable','暂无') }}</td>"
+      }
+    ],
+    "templates/crypto_intelligence_r4.js": [
+      {
+        "before": "  function pct(value) {",
+        "after": "  function assetMoney(value) {\n    if (typeof value !== \"number\" || !isFinite(value) || value <= 0) return t(\"Unavailable\", \"暂无\");\n    if (value < 0.00000001) return \"<$0.00000001\";\n    if (value < 0.01) return \"$\" + value.toLocaleString(\"en-US\", { minimumFractionDigits: 0, maximumFractionDigits: 8, useGrouping: false });\n    return money(value);\n  }\n  function pct(value) {"
+      },
+      {
+        "before": "[t(\"Price\", \"价格\"), money(asset.price)]",
+        "after": "[t(\"Price\", \"价格\"), assetMoney(asset.price)]"
+      }
+    ]
+  },
+  "tests": {
+    "contract_import": {
+      "before": "from datetime import date, timedelta\n",
+      "after": "from datetime import date, timedelta\nimport json\n"
+    },
+    "contract_addition": "\n\n# Quote validity is independent of comparison/risk availability.\n@pytest.mark.parametrize(\"kind\", [\n    \"missing\", \"null\", \"zero\", \"negative_zero\", \"negative\", \"true\", \"false\",\n    \"nan\", \"positive_infinity\", \"negative_infinity\", \"numeric_string\", \"mapping\", \"list\",\n])\ndef test_quote_clarity_invalid_price_preserves_other_asset_evidence(kind):\n    args = inputs()\n    baseline = build_view(*args)\n    item = args[2][\"assets\"][\"ETH\"]\n    values = {\"null\": None, \"zero\": 0, \"negative_zero\": -0.0, \"negative\": -1.0,\n              \"true\": True, \"false\": False, \"nan\": float(\"nan\"),\n              \"positive_infinity\": float(\"inf\"), \"negative_infinity\": float(\"-inf\"),\n              \"numeric_string\": \"0.001\", \"mapping\": {}, \"list\": []}\n    if kind == \"missing\":\n        item.pop(\"price\")\n    else:\n        item[\"price\"] = values[kind]\n    view = build_view(*args)\n    asset = view[\"assets\"][0]\n    assert asset[\"price\"] is None\n    assert {k: v for k, v in asset.items() if k != \"price\"} == {\n        k: v for k, v in baseline[\"assets\"][0].items() if k != \"price\"\n    }\n    assert {k: v for k, v in view.items() if k != \"assets\"} == {\n        k: v for k, v in baseline.items() if k != \"assets\"\n    }\n    assert asset[\"relative_90d_pct\"] == 0.0 and asset[\"change_30d_pct\"] == 0.0\n    assert (\"price\" not in item) if kind == \"missing\" else item[\"price\"] is values[kind]\n\n\n@pytest.mark.parametrize(\"value\", [5e-324, 0.00000001, 0.001, 104.19, 2413.2])\ndef test_quote_clarity_positive_price_remains_a_supplied_number(value):\n    args = inputs()\n    args[2][\"assets\"][\"ETH\"][\"price\"] = value\n    source = deepcopy(args)\n    asset = build_view(*args)[\"assets\"][0]\n    assert asset[\"price\"] == value and asset[\"price\"] > 0\n    assert asset[\"available\"] is True and args == source\n\n\n@pytest.mark.parametrize(\"value,expected\", [\n    (None, \"Unavailable暂无\"), (0, \"Unavailable暂无\"), (-1, \"Unavailable暂无\"),\n    (5e-324, \"<$0.00000001\"), (0.000000009, \"<$0.00000001\"),\n    (0.00000001, \"$0.00000001\"), (0.000000015, \"$0.00000002\"),\n    (0.000000025, \"$0.00000003\"), (0.000123455, \"$0.00012346\"),\n    (0.001, \"$0.001\"), (0.009999994, \"$0.00999999\"),\n    (0.009999995, \"$0.01\"), (0.01, \"$0.01\"),\n    (104.19, \"$104.19\"), (2413.2, \"$2,413\"),\n])\ndef test_quote_clarity_server_price_cell_is_explicit_and_never_false_zero(tmp_path, value, expected):\n    from html.parser import HTMLParser\n    from scripts.build_crypto_intelligence_r4 import render_view\n\n    class PriceCells(HTMLParser):\n        def __init__(self):\n            super().__init__()\n            self.active = False\n            self.parts = []\n            self.cells = []\n\n        def handle_starttag(self, tag, attrs):\n            if tag == \"td\" and dict(attrs).get(\"data-label\") == \"Price\":\n                self.active = True\n                self.parts = []\n\n        def handle_data(self, data):\n            if self.active:\n                self.parts.append(data)\n\n        def handle_endtag(self, tag):\n            if tag == \"td\" and self.active:\n                self.cells.append(\"\".join(self.parts))\n                self.active = False\n\n    view = build_view(*inputs())\n    # Exercise the server consumer of a retained view as well as projection output.\n    view[\"assets\"][0][\"price\"] = value\n    view[\"history\"][\"state\"] = \"unavailable\"\n    render_view(view, tmp_path)\n    markup = (tmp_path / \"crypto-r4.html\").read_text()\n    parser = PriceCells()\n    parser.feed(markup)\n    assert parser.cells == [expected]\n    if expected.startswith(\"<\"):\n        assert \"&lt;$0.00000001\" in markup\n    assert json.loads((tmp_path / \"crypto_intelligence_r4.json\").read_text())[\"assets\"][0][\"price\"] == value\n\n\ndef quote_clarity_inputs(variant):\n    args = relative_integrity_inputs()\n    if variant == \"quote-invalid\":\n        prices = {\"ETH\": 0, \"SOL\": 104.19, \"BTC\": -1, \"XRP\": 2413.2}\n    elif variant == \"quote-small\":\n        prices = {\"ETH\": 0.001, \"SOL\": 0.000000009, \"BTC\": 0.000000015,\n                  \"XRP\": 0.000000025, \"EDGE\": 0.009999995}\n        args[2][\"assets\"][\"EDGE\"] = deepcopy(args[2][\"assets\"][\"XRP\"])\n    else:\n        raise AssertionError(variant)\n    for symbol, price in prices.items():\n        args[2][\"assets\"][symbol][\"price\"] = price\n    return args\n",
+    "context_addition": "\n\n@pytest.mark.parametrize(\"precision,trap_rounding\", [(2, True), (28, False)])\ndef test_quote_clarity_formatting_is_independent_of_caller_decimal_context(precision, trap_rounding):\n    from decimal import Inexact, Rounded, ROUND_DOWN, localcontext\n    from scripts.build_crypto_intelligence_r4 import asset_money\n\n    with localcontext() as context:\n        context.prec = precision\n        context.rounding = ROUND_DOWN\n        context.traps[Inexact] = trap_rounding\n        context.traps[Rounded] = trap_rounding\n        context.clear_flags()\n        before = (context.prec, context.rounding, dict(context.traps), dict(context.flags))\n        assert asset_money(0.000123455) == \"$0.00012346\"\n        assert (context.prec, context.rounding, dict(context.traps), dict(context.flags)) == before\n",
+    "browser_fixture": {
+      "before": "        elif variant in (\"missing\", \"empty\"):\n",
+      "after": "        elif variant in (\"quote-invalid\", \"quote-small\"):\n            from lib.crypto_intelligence_view import build_view\n            from test_crypto_intelligence_r4 import quote_clarity_inputs\n            view = build_view(*quote_clarity_inputs(variant))\n        elif variant in (\"missing\", \"empty\"):\n"
+    },
+    "browser_addition": "\n\n@pytest.mark.parametrize(\"lang,width,touch\", [(\"en\", 390, False), (\"zh\", 320, True)])\n@pytest.mark.parametrize(\"variant\", [\"quote-invalid\", \"quote-small\"])\ndef test_r4_quote_clarity_server_and_inspector_agree_without_losing_asset_context(comparison_page, lang, width, touch, variant):\n    page, view = comparison_page(lang, width, variant, start=\"#markets\", touch=touch)\n    unavailable = \"Unavailable\" if lang == \"en\" else \"暂无\"\n    expected = ([unavailable, \"$104.19\", unavailable, \"$2,413\"] if variant == \"quote-invalid\" else\n                [\"$0.001\", \"<$0.00000001\", \"$0.00000002\", \"$0.00000003\", \"$0.01\"])\n    rows = page.locator(\"#cri-market-table tbody tr\")\n    assert rows.count() == len(expected) == len(view[\"assets\"])\n    assert rows.evaluate_all(\"nodes=>nodes.map(n=>n.dataset.assetRow)\") == [a[\"symbol\"] for a in view[\"assets\"]]\n    assert page.evaluate(\"document.documentElement.scrollWidth<=innerWidth\")\n    for index, (asset, price) in enumerate(zip(view[\"assets\"], expected)):\n        row = rows.nth(index)\n        assert row.locator(\"td\").nth(1).inner_text() == price\n        opener = row.locator(\".cri-asset\")\n        opener.click()\n        page.wait_for_function(\"(symbol)=>document.getElementById('cri-dialog').open&&document.getElementById('cri-dialog-body').dataset.panel==='asset:'+symbol\", arg=asset[\"symbol\"])\n        readings = page.locator(\"#cri-dialog-body > dl dd\")\n        assert readings.nth(0).inner_text() == price\n        assert readings.nth(1).inner_text() == asset[\"as_of\"]\n        assert readings.nth(4).inner_text() == asset[\"relative_\" + lang]\n        assert readings.nth(5).inner_text() == asset[\"trend_\" + lang]\n        assert readings.nth(6).inner_text() == asset[\"risk_\" + lang]\n        assert page.locator(\"#cri-dialog-body\").evaluate(\"n=>n.scrollWidth<=n.clientWidth\")\n        if (variant == \"quote-invalid\" and index == 0) or (variant == \"quote-small\" and index == 1):\n            _capture(page, variant + \"-\" + lang + \"-\" + str(width))\n        page.locator(\"#cri-dialog-close\").click()\n        page.wait_for_function(\"location.hash==='#markets'&&!document.getElementById('cri-dialog').open\")\n        assert opener.evaluate(\"n=>document.activeElement===n\")\n    assert page.locator('[data-asset-row=\"SOL\"] td').nth(3).inner_text() == \"0.0%\"\n    assert page.evaluate(\"JSON.parse(document.getElementById('cri-data').textContent).assets\") == view[\"assets\"]\n    _comparison_storage_untouched(page)\n"
+  }
+}

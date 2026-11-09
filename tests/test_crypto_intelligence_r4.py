@@ -1,6 +1,7 @@
 """Contract-focused R4 checks: missing data, temporal honesty, and authority."""
 from copy import deepcopy
 from datetime import date, timedelta
+import json
 
 import pytest
 
@@ -410,3 +411,122 @@ def test_relative_integrity_malformed_optional_container_preserves_asset(relativ
     assert (asset["relative_en"], asset["relative_zh"]) == ("Unavailable", "暂无")
     assert asset["available"] is True and asset["price"] == 2400.0
     assert args == source
+
+
+# Quote validity is independent of comparison/risk availability.
+@pytest.mark.parametrize("kind", [
+    "missing", "null", "zero", "negative_zero", "negative", "true", "false",
+    "nan", "positive_infinity", "negative_infinity", "numeric_string", "mapping", "list",
+])
+def test_quote_clarity_invalid_price_preserves_other_asset_evidence(kind):
+    args = inputs()
+    baseline = build_view(*args)
+    item = args[2]["assets"]["ETH"]
+    values = {"null": None, "zero": 0, "negative_zero": -0.0, "negative": -1.0,
+              "true": True, "false": False, "nan": float("nan"),
+              "positive_infinity": float("inf"), "negative_infinity": float("-inf"),
+              "numeric_string": "0.001", "mapping": {}, "list": []}
+    if kind == "missing":
+        item.pop("price")
+    else:
+        item["price"] = values[kind]
+    view = build_view(*args)
+    asset = view["assets"][0]
+    assert asset["price"] is None
+    assert {k: v for k, v in asset.items() if k != "price"} == {
+        k: v for k, v in baseline["assets"][0].items() if k != "price"
+    }
+    assert {k: v for k, v in view.items() if k != "assets"} == {
+        k: v for k, v in baseline.items() if k != "assets"
+    }
+    assert asset["relative_90d_pct"] == 0.0 and asset["change_30d_pct"] == 0.0
+    assert ("price" not in item) if kind == "missing" else item["price"] is values[kind]
+
+
+@pytest.mark.parametrize("value", [5e-324, 0.00000001, 0.001, 104.19, 2413.2])
+def test_quote_clarity_positive_price_remains_a_supplied_number(value):
+    args = inputs()
+    args[2]["assets"]["ETH"]["price"] = value
+    source = deepcopy(args)
+    asset = build_view(*args)["assets"][0]
+    assert asset["price"] == value and asset["price"] > 0
+    assert asset["available"] is True and args == source
+
+
+@pytest.mark.parametrize("value,expected", [
+    (None, "Unavailable暂无"), (0, "Unavailable暂无"), (-1, "Unavailable暂无"),
+    (5e-324, "<$0.00000001"), (0.000000009, "<$0.00000001"),
+    (0.00000001, "$0.00000001"), (0.000000015, "$0.00000002"),
+    (0.000000025, "$0.00000003"), (0.000123455, "$0.00012346"),
+    (0.001, "$0.001"), (0.009999994, "$0.00999999"),
+    (0.009999995, "$0.01"), (0.01, "$0.01"),
+    (104.19, "$104.19"), (2413.2, "$2,413"),
+])
+def test_quote_clarity_server_price_cell_is_explicit_and_never_false_zero(tmp_path, value, expected):
+    from html.parser import HTMLParser
+    from scripts.build_crypto_intelligence_r4 import render_view
+
+    class PriceCells(HTMLParser):
+        def __init__(self):
+            super().__init__()
+            self.active = False
+            self.parts = []
+            self.cells = []
+
+        def handle_starttag(self, tag, attrs):
+            if tag == "td" and dict(attrs).get("data-label") == "Price":
+                self.active = True
+                self.parts = []
+
+        def handle_data(self, data):
+            if self.active:
+                self.parts.append(data)
+
+        def handle_endtag(self, tag):
+            if tag == "td" and self.active:
+                self.cells.append("".join(self.parts))
+                self.active = False
+
+    view = build_view(*inputs())
+    # Exercise the server consumer of a retained view as well as projection output.
+    view["assets"][0]["price"] = value
+    view["history"]["state"] = "unavailable"
+    render_view(view, tmp_path)
+    markup = (tmp_path / "crypto-r4.html").read_text()
+    parser = PriceCells()
+    parser.feed(markup)
+    assert parser.cells == [expected]
+    if expected.startswith("<"):
+        assert "&lt;$0.00000001" in markup
+    assert json.loads((tmp_path / "crypto_intelligence_r4.json").read_text())["assets"][0]["price"] == value
+
+
+def quote_clarity_inputs(variant):
+    args = relative_integrity_inputs()
+    if variant == "quote-invalid":
+        prices = {"ETH": 0, "SOL": 104.19, "BTC": -1, "XRP": 2413.2}
+    elif variant == "quote-small":
+        prices = {"ETH": 0.001, "SOL": 0.000000009, "BTC": 0.000000015,
+                  "XRP": 0.000000025, "EDGE": 0.009999995}
+        args[2]["assets"]["EDGE"] = deepcopy(args[2]["assets"]["XRP"])
+    else:
+        raise AssertionError(variant)
+    for symbol, price in prices.items():
+        args[2]["assets"][symbol]["price"] = price
+    return args
+
+
+@pytest.mark.parametrize("precision,trap_rounding", [(2, True), (28, False)])
+def test_quote_clarity_formatting_is_independent_of_caller_decimal_context(precision, trap_rounding):
+    from decimal import Inexact, Rounded, ROUND_DOWN, localcontext
+    from scripts.build_crypto_intelligence_r4 import asset_money
+
+    with localcontext() as context:
+        context.prec = precision
+        context.rounding = ROUND_DOWN
+        context.traps[Inexact] = trap_rounding
+        context.traps[Rounded] = trap_rounding
+        context.clear_flags()
+        before = (context.prec, context.rounding, dict(context.traps), dict(context.flags))
+        assert asset_money(0.000123455) == "$0.00012346"
+        assert (context.prec, context.rounding, dict(context.traps), dict(context.flags)) == before

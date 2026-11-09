@@ -1,0 +1,32 @@
+{
+  "command": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_crypto_intelligence_r4.py",
+    "tests/test_crypto_intelligence_r4_browser.py",
+    "-k",
+    "quote_clarity",
+    "--tb=short",
+    "--junitxml=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/quote-clarity-baseline/junit.xml",
+    "--basetemp=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/quote-clarity-baseline/pytest-temp"
+  ],
+  "exit_code": 1,
+  "seconds": 11.402,
+  "source_parent": "af9322f8e870be16f6f29fc38b8b573267347bd6",
+  "runtime_asset_version": "0bad44b2e1ef",
+  "tests": {
+    "tests/test_crypto_intelligence_r4.py": {
+      "bytes": 22243,
+      "sha256": "e9770802017262d3425286bead1b099cd8b2d0512b42d5b61206a9fe79b3ace6",
+      "blob": "8ac9c51f3d18e7831555aa6154c2d07267f8b36b"
+    },
+    "tests/test_crypto_intelligence_r4_browser.py": {
+      "bytes": 101427,
+      "sha256": "6a2d2466382479123ed2d3c54790b4b2bf638e7ceda87056293efbb7e4de46a1",
+      "blob": "17c285916597455631c36e4a8147c3e06366187f"
+    }
+  },
+  "other_inputs_exact": 19
+}
