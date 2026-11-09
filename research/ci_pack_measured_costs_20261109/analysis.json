@@ -357,6 +357,7 @@
     "exec_p90_s": 12.0
    }
   },
+  "by_class_pickup_mean_note": "raw-job pickup means are artifact-skewed: some jobs report started_at < created_at (re-attempt/endpoint timestamps), so the pack (-86.0 s) and small_control (-181.3 s) means are negative and meaningless as centers; decisions in this receipt cite only the nearest-rank quantiles (p50/p90) and max, which the negative tail cannot move",
   "regime_split_pack_jobs": {
    "saturated_hours": {
     "hours": "2026-11-09T01-14Z",
@@ -1284,7 +1285,7 @@
   "basis": {
    "criterion": "total runner-minutes (incl. per-pack setup) must not grow under observed saturation",
    "runner_delta_12_vs_7_s": 1515,
-   "queue_adjusted_wall_12_edge_saturated_s": "601-640 (optimistic independent-draw bootstrap)",
+   "queue_adjusted_wall_12_edge_saturated_s": "611-650 s (optimistic independent-draw bootstrap; adopted-7 minus 12-pack queue-adjusted walls: 619/650/611 s)",
    "pack_start_spread_saturated": "p50 274 s / p90 971 s / max 39790 s vs 1 s idle"
   },
   "lanes_same_population": {

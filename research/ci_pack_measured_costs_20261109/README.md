@@ -332,5 +332,11 @@ correspondingly noisy. The saturation reconstruction sees only runs created
 from 04Z (downward bias stated above). `merge-on-green.yml` run counts are
 2,122 over 48 h; its `sweep` pickup here is the 04–14Z block only. Run-level
 `run_started_at` proved unusable for control-workflow pickup (set at run
-creation); control numbers above are job-level. No conclusions rest on any
-single hour; the regime split is stable across the whole window.
+creation); control numbers above are job-level. Some raw jobs report
+`started_at < created_at` (re-attempt/endpoint artifacts), which is why the
+recorded raw-job pickup **means** are negative (pack −86.0 s, small-control
+−181.3 s) despite a p50 of +2 s — the means are artifact-skewed and are not
+cited anywhere; every decision number in this receipt is a nearest-rank
+quantile (p50/p90) or a max, which the negative tail cannot move. No
+conclusions rest on any single hour; the regime split is stable across the
+whole window.
