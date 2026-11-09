@@ -3148,10 +3148,11 @@
       "escapeActivity": "restore Activity opener in Headlines",
       "headlinesAction": "restore valid reading anchor/scroll, otherwise feed heading",
       "review": "navigation never marks reviewed"
-    }
+    },
+    "buildPointer": "40S-0"
   },
   "internationalResults": {
-    "status": "PLANNED",
+    "status": "RESULTS_NATIVE_VERIFIED_HELP_IN_PROGRESS",
     "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
     "destinations": [
       "cross_market_correlation",
@@ -3170,7 +3171,3185 @@
       "3OZ-0"
     ],
     "newlyDiscoveredOrigin": "3OZ-0",
-    "numericFixtureVerified": false
+    "numericFixtureVerified": false,
+    "pageId": "p-O-0",
+    "gallery": "RVI-0",
+    "methodsPage": "p-P-0",
+    "methodsGallery": "S89-0",
+    "designVariants": [
+      {
+        "tool": "correlation",
+        "locale": "en",
+        "theme": "light",
+        "state": "unavailable",
+        "frame": "RVP-0",
+        "header": [
+          {
+            "id": "RVP-0",
+            "name": "Cross-market correlation · EN light",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "RVQ-0",
+            "name": "Return to research origin",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "RVR-0",
+            "name": "Frame",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "RVS-0",
+            "name": "Japan research",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "RVT-0",
+            "name": "Cross-market correla…",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "RVU-0",
+            "name": "Global markets · Wee…",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          }
+        ],
+        "groups": [
+          [
+            {
+              "id": "RVW-0",
+              "name": "Result qualification",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ]
+        ],
+        "methodAction": "RVY-0",
+        "backLabel": "← Challenge the conclusion"
+      },
+      {
+        "tool": "correlation",
+        "locale": "zh",
+        "theme": "light",
+        "state": "unavailable",
+        "frame": "RW1-0",
+        "header": [
+          {
+            "id": "RW1-0",
+            "name": "Cross-market correlation · ZH light",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "RW2-0",
+            "name": "Return to research origin",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "RW3-0",
+            "name": "Frame",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "RW4-0",
+            "name": "日本研究",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "RW5-0",
+            "name": "跨市场相关性",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "RW6-0",
+            "name": "全球市场 · 美元周收益",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          }
+        ],
+        "groups": [
+          [
+            {
+              "id": "RW8-0",
+              "name": "Result qualification",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ]
+        ],
+        "methodAction": "RWA-0",
+        "backLabel": "← 检验结论"
+      },
+      {
+        "tool": "correlation",
+        "locale": "en",
+        "theme": "dark",
+        "state": "unavailable",
+        "frame": "RWD-0",
+        "header": [
+          {
+            "id": "RWD-0",
+            "name": "Cross-market correlation · EN dark",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "RWE-0",
+            "name": "Return to research origin",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "RWF-0",
+            "name": "Frame",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "RWG-0",
+            "name": "Japan research",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "RWH-0",
+            "name": "Cross-market correla…",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "RWI-0",
+            "name": "Global markets · Wee…",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          }
+        ],
+        "groups": [
+          [
+            {
+              "id": "RWK-0",
+              "name": "Result qualification",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ]
+        ],
+        "methodAction": "RWM-0",
+        "backLabel": "← Challenge the conclusion"
+      },
+      {
+        "tool": "correlation",
+        "locale": "zh",
+        "theme": "dark",
+        "state": "unavailable",
+        "frame": "RWP-0",
+        "header": [
+          {
+            "id": "RWP-0",
+            "name": "Cross-market correlation · ZH dark",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "RWQ-0",
+            "name": "Return to research origin",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "RWR-0",
+            "name": "Frame",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "RWS-0",
+            "name": "日本研究",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "RWT-0",
+            "name": "跨市场相关性",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "RWU-0",
+            "name": "全球市场 · 美元周收益",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          }
+        ],
+        "groups": [
+          [
+            {
+              "id": "RWW-0",
+              "name": "Result qualification",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ]
+        ],
+        "methodAction": "RWY-0",
+        "backLabel": "← 检验结论"
+      },
+      {
+        "tool": "recovery",
+        "locale": "en",
+        "theme": "light",
+        "state": "partial",
+        "frame": "RX3-0",
+        "header": [
+          {
+            "id": "RX3-0",
+            "name": "Recovery evidence · EN light",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "RX4-0",
+            "name": "Return to research origin",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "RX5-0",
+            "name": "Frame",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "RX6-0",
+            "name": "Japan · Recovery pha…",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "RX7-0",
+            "name": "Recovery evidence",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          }
+        ],
+        "groups": [
+          [
+            {
+              "id": "RX9-0",
+              "name": "Result qualification",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ],
+          [
+            {
+              "id": "RXB-0",
+              "name": "Supporting evidence",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ],
+          [
+            {
+              "id": "RXD-0",
+              "name": "Price repair",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RXE-0",
+              "name": "Price repair",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RXF-0",
+              "name": "Supported",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ],
+          [
+            {
+              "id": "RXH-0",
+              "name": "Peer breadth · 5 sessions",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RXI-0",
+              "name": "Peer breadth · 5 ses…",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RXJ-0",
+              "name": "Following through",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ],
+          [
+            {
+              "id": "RXL-0",
+              "name": "External risk",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RXM-0",
+              "name": "External risk",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RXN-0",
+              "name": "Unavailable",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ]
+        ],
+        "methodAction": "RZV-0",
+        "backLabel": "← Check the recovery"
+      },
+      {
+        "tool": "recovery",
+        "locale": "zh",
+        "theme": "light",
+        "state": "partial",
+        "frame": "RXS-0",
+        "header": [
+          {
+            "id": "RXS-0",
+            "name": "Recovery evidence · ZH light",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "RXT-0",
+            "name": "Return to research origin",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "RXU-0",
+            "name": "Frame",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "RXV-0",
+            "name": "日本 · 修复阶段",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "RXW-0",
+            "name": "修复证据",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          }
+        ],
+        "groups": [
+          [
+            {
+              "id": "RXY-0",
+              "name": "Result qualification",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ],
+          [
+            {
+              "id": "RY0-0",
+              "name": "Supporting evidence",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ],
+          [
+            {
+              "id": "RY2-0",
+              "name": "Price repair",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RY3-0",
+              "name": "价格修复",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RY4-0",
+              "name": "有支持",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ],
+          [
+            {
+              "id": "RY6-0",
+              "name": "Peer breadth · 5 sessions",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RY7-0",
+              "name": "同业广度 · 5个交易日",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RY8-0",
+              "name": "持续跟进",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ],
+          [
+            {
+              "id": "RYA-0",
+              "name": "External risk",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RYB-0",
+              "name": "外部风险",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RYC-0",
+              "name": "不可用",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ]
+        ],
+        "methodAction": "RZY-0",
+        "backLabel": "← 检查修复"
+      },
+      {
+        "tool": "recovery",
+        "locale": "en",
+        "theme": "dark",
+        "state": "partial",
+        "frame": "RYH-0",
+        "header": [
+          {
+            "id": "RYH-0",
+            "name": "Recovery evidence · EN dark",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "RYI-0",
+            "name": "Return to research origin",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "RYJ-0",
+            "name": "Frame",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "RYK-0",
+            "name": "Japan · Recovery pha…",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "RYL-0",
+            "name": "Recovery evidence",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          }
+        ],
+        "groups": [
+          [
+            {
+              "id": "RYN-0",
+              "name": "Result qualification",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ],
+          [
+            {
+              "id": "RYP-0",
+              "name": "Supporting evidence",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ],
+          [
+            {
+              "id": "RYR-0",
+              "name": "Price repair",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RYS-0",
+              "name": "Price repair",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RYT-0",
+              "name": "Supported",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ],
+          [
+            {
+              "id": "RYV-0",
+              "name": "Peer breadth · 5 sessions",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RYW-0",
+              "name": "Peer breadth · 5 ses…",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RYX-0",
+              "name": "Following through",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ],
+          [
+            {
+              "id": "RYZ-0",
+              "name": "External risk",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RZ0-0",
+              "name": "External risk",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RZ1-0",
+              "name": "Unavailable",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ]
+        ],
+        "methodAction": "S01-0",
+        "backLabel": "← Check the recovery"
+      },
+      {
+        "tool": "recovery",
+        "locale": "zh",
+        "theme": "dark",
+        "state": "partial",
+        "frame": "RZ6-0",
+        "header": [
+          {
+            "id": "RZ6-0",
+            "name": "Recovery evidence · ZH dark",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "RZ7-0",
+            "name": "Return to research origin",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "RZ8-0",
+            "name": "Frame",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "RZ9-0",
+            "name": "日本 · 修复阶段",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "RZA-0",
+            "name": "修复证据",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          }
+        ],
+        "groups": [
+          [
+            {
+              "id": "RZC-0",
+              "name": "Result qualification",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ],
+          [
+            {
+              "id": "RZE-0",
+              "name": "Supporting evidence",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ],
+          [
+            {
+              "id": "RZG-0",
+              "name": "Price repair",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RZH-0",
+              "name": "价格修复",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RZI-0",
+              "name": "有支持",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ],
+          [
+            {
+              "id": "RZK-0",
+              "name": "Peer breadth · 5 sessions",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RZL-0",
+              "name": "同业广度 · 5个交易日",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RZM-0",
+              "name": "持续跟进",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ],
+          [
+            {
+              "id": "RZO-0",
+              "name": "External risk",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RZP-0",
+              "name": "外部风险",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RZQ-0",
+              "name": "不可用",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ]
+        ],
+        "methodAction": "S04-0",
+        "backLabel": "← 检查修复"
+      },
+      {
+        "tool": "risk",
+        "locale": "en",
+        "theme": "light",
+        "state": "unavailable",
+        "frame": "S09-0",
+        "header": [
+          {
+            "id": "S09-0",
+            "name": "Risk track record · EN light",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S0A-0",
+            "name": "Return to research origin",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S0B-0",
+            "name": "Frame",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S0C-0",
+            "name": "Japan · Forward reco…",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S0D-0",
+            "name": "Risk track record",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          }
+        ],
+        "groups": [
+          [
+            {
+              "id": "S0F-0",
+              "name": "Result qualification",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ]
+        ],
+        "methodAction": "S0H-0",
+        "backLabel": "← Challenge the conclusion"
+      },
+      {
+        "tool": "risk",
+        "locale": "zh",
+        "theme": "light",
+        "state": "unavailable",
+        "frame": "S0K-0",
+        "header": [
+          {
+            "id": "S0K-0",
+            "name": "Risk track record · ZH light",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S0L-0",
+            "name": "Return to research origin",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S0M-0",
+            "name": "Frame",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S0N-0",
+            "name": "日本 · 前瞻记录",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S0O-0",
+            "name": "预警表现",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          }
+        ],
+        "groups": [
+          [
+            {
+              "id": "S0Q-0",
+              "name": "Result qualification",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ]
+        ],
+        "methodAction": "S0S-0",
+        "backLabel": "← 检验结论"
+      },
+      {
+        "tool": "risk",
+        "locale": "en",
+        "theme": "dark",
+        "state": "unavailable",
+        "frame": "S0V-0",
+        "header": [
+          {
+            "id": "S0V-0",
+            "name": "Risk track record · EN dark",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S0W-0",
+            "name": "Return to research origin",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S0X-0",
+            "name": "Frame",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S0Y-0",
+            "name": "Japan · Forward reco…",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S0Z-0",
+            "name": "Risk track record",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          }
+        ],
+        "groups": [
+          [
+            {
+              "id": "S11-0",
+              "name": "Result qualification",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ]
+        ],
+        "methodAction": "S13-0",
+        "backLabel": "← Challenge the conclusion"
+      },
+      {
+        "tool": "risk",
+        "locale": "zh",
+        "theme": "dark",
+        "state": "unavailable",
+        "frame": "S16-0",
+        "header": [
+          {
+            "id": "S16-0",
+            "name": "Risk track record · ZH dark",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S17-0",
+            "name": "Return to research origin",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S18-0",
+            "name": "Frame",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S19-0",
+            "name": "日本 · 前瞻记录",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S1A-0",
+            "name": "预警表现",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          }
+        ],
+        "groups": [
+          [
+            {
+              "id": "S1C-0",
+              "name": "Result qualification",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ]
+        ],
+        "methodAction": "S1E-0",
+        "backLabel": "← 检验结论"
+      },
+      {
+        "tool": "links",
+        "locale": "en",
+        "theme": "light",
+        "state": "unavailable",
+        "frame": "S1J-0",
+        "header": [
+          {
+            "id": "S1J-0",
+            "name": "Economic links · EN light",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S1K-0",
+            "name": "Return to research origin",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S1L-0",
+            "name": "Frame",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S1M-0",
+            "name": "Japan",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S1N-0",
+            "name": "Economic links",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S1O-0",
+            "name": "Trade · Supply · Fin…",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          }
+        ],
+        "groups": [
+          [
+            {
+              "id": "S1Q-0",
+              "name": "Result qualification",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ]
+        ],
+        "methodAction": "S1S-0",
+        "backLabel": "← Trace the pressure"
+      },
+      {
+        "tool": "links",
+        "locale": "zh",
+        "theme": "light",
+        "state": "unavailable",
+        "frame": "S1V-0",
+        "header": [
+          {
+            "id": "S1V-0",
+            "name": "Economic links · ZH light",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S1W-0",
+            "name": "Return to research origin",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S1X-0",
+            "name": "Frame",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S1Y-0",
+            "name": "日本",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S1Z-0",
+            "name": "经济联系",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S20-0",
+            "name": "贸易 · 供应 · 融资",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          }
+        ],
+        "groups": [
+          [
+            {
+              "id": "S22-0",
+              "name": "Result qualification",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ]
+        ],
+        "methodAction": "S24-0",
+        "backLabel": "← 追踪压力"
+      },
+      {
+        "tool": "links",
+        "locale": "en",
+        "theme": "dark",
+        "state": "unavailable",
+        "frame": "S27-0",
+        "header": [
+          {
+            "id": "S27-0",
+            "name": "Economic links · EN dark",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S28-0",
+            "name": "Return to research origin",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S29-0",
+            "name": "Frame",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S2A-0",
+            "name": "Japan",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S2B-0",
+            "name": "Economic links",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S2C-0",
+            "name": "Trade · Supply · Fin…",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          }
+        ],
+        "groups": [
+          [
+            {
+              "id": "S2E-0",
+              "name": "Result qualification",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ]
+        ],
+        "methodAction": "S2G-0",
+        "backLabel": "← Trace the pressure"
+      },
+      {
+        "tool": "links",
+        "locale": "zh",
+        "theme": "dark",
+        "state": "unavailable",
+        "frame": "S2J-0",
+        "header": [
+          {
+            "id": "S2J-0",
+            "name": "Economic links · ZH dark",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S2K-0",
+            "name": "Return to research origin",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S2L-0",
+            "name": "Frame",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S2M-0",
+            "name": "日本",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S2N-0",
+            "name": "经济联系",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S2O-0",
+            "name": "贸易 · 供应 · 融资",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          }
+        ],
+        "groups": [
+          [
+            {
+              "id": "S2Q-0",
+              "name": "Result qualification",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ]
+        ],
+        "methodAction": "S2S-0",
+        "backLabel": "← 追踪压力"
+      },
+      {
+        "tool": "correlation",
+        "designKey": "correlation-insufficient",
+        "locale": "en",
+        "theme": "light",
+        "state": "insufficient_observations",
+        "frame": "S2X-0",
+        "header": [
+          {
+            "id": "S2X-0",
+            "name": "Cross-market correlation · EN light",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S2Y-0",
+            "name": "Return to research origin",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S2Z-0",
+            "name": "Frame",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S30-0",
+            "name": "Japan research",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S31-0",
+            "name": "Cross-market correla…",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S32-0",
+            "name": "Global markets · Wee…",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          }
+        ],
+        "groups": [
+          [
+            {
+              "id": "S34-0",
+              "name": "Result qualification",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ]
+        ],
+        "methodAction": "S36-0",
+        "backLabel": "← Challenge the conclusion"
+      },
+      {
+        "tool": "correlation",
+        "designKey": "correlation-insufficient",
+        "locale": "zh",
+        "theme": "dark",
+        "state": "insufficient_observations",
+        "frame": "S39-0",
+        "header": [
+          {
+            "id": "S39-0",
+            "name": "Cross-market correlation · ZH dark",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S3A-0",
+            "name": "Return to research origin",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S3B-0",
+            "name": "Frame",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S3C-0",
+            "name": "日本研究",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S3D-0",
+            "name": "跨市场相关性",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S3E-0",
+            "name": "全球市场 · 美元周收益",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          }
+        ],
+        "groups": [
+          [
+            {
+              "id": "S3G-0",
+              "name": "Result qualification",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ]
+        ],
+        "methodAction": "S3I-0",
+        "backLabel": "← 检验结论"
+      },
+      {
+        "tool": "recovery",
+        "designKey": "recovery-unavailable",
+        "locale": "en",
+        "theme": "light",
+        "state": "unavailable",
+        "frame": "S3L-0",
+        "header": [
+          {
+            "id": "S3L-0",
+            "name": "Recovery evidence · EN light",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S3M-0",
+            "name": "Return to research origin",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S3N-0",
+            "name": "Frame",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S3O-0",
+            "name": "Japan",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S3P-0",
+            "name": "Recovery evidence",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          }
+        ],
+        "groups": [
+          [
+            {
+              "id": "S3R-0",
+              "name": "Result qualification",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ]
+        ],
+        "methodAction": "S3T-0",
+        "backLabel": "← Check the recovery"
+      },
+      {
+        "tool": "recovery",
+        "designKey": "recovery-unavailable",
+        "locale": "zh",
+        "theme": "dark",
+        "state": "unavailable",
+        "frame": "S3W-0",
+        "header": [
+          {
+            "id": "S3W-0",
+            "name": "Recovery evidence · ZH dark",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S3X-0",
+            "name": "Return to research origin",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S3Y-0",
+            "name": "Frame",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S3Z-0",
+            "name": "日本",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S40-0",
+            "name": "修复证据",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          }
+        ],
+        "groups": [
+          [
+            {
+              "id": "S42-0",
+              "name": "Result qualification",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ]
+        ],
+        "methodAction": "S44-0",
+        "backLabel": "← 检查修复"
+      },
+      {
+        "tool": "recovery",
+        "designKey": "recovery-not-applicable",
+        "locale": "en",
+        "theme": "light",
+        "state": "not_applicable",
+        "frame": "S49-0",
+        "header": [
+          {
+            "id": "S49-0",
+            "name": "Recovery evidence · EN light",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S4A-0",
+            "name": "Return to research origin",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S4B-0",
+            "name": "Frame",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S4C-0",
+            "name": "Japan · Uptrend",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S4D-0",
+            "name": "Recovery evidence",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          }
+        ],
+        "groups": [
+          [
+            {
+              "id": "S4F-0",
+              "name": "Result qualification",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ]
+        ],
+        "methodAction": "S4H-0",
+        "backLabel": "← Check the recovery"
+      },
+      {
+        "tool": "recovery",
+        "designKey": "recovery-not-applicable",
+        "locale": "zh",
+        "theme": "dark",
+        "state": "not_applicable",
+        "frame": "S4K-0",
+        "header": [
+          {
+            "id": "S4K-0",
+            "name": "Recovery evidence · ZH dark",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S4L-0",
+            "name": "Return to research origin",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S4M-0",
+            "name": "Frame",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S4N-0",
+            "name": "日本 · 上升趋势",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S4O-0",
+            "name": "修复证据",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          }
+        ],
+        "groups": [
+          [
+            {
+              "id": "S4Q-0",
+              "name": "Result qualification",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ]
+        ],
+        "methodAction": "S4S-0",
+        "backLabel": "← 检查修复"
+      },
+      {
+        "tool": "risk",
+        "designKey": "risk-accruing",
+        "locale": "en",
+        "theme": "light",
+        "state": "accruing",
+        "frame": "S4V-0",
+        "header": [
+          {
+            "id": "S4V-0",
+            "name": "Risk track record · EN light",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S4W-0",
+            "name": "Return to research origin",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S4X-0",
+            "name": "Frame",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S4Y-0",
+            "name": "Japan · Forward reco…",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S4Z-0",
+            "name": "Risk track record",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          }
+        ],
+        "groups": [
+          [
+            {
+              "id": "S51-0",
+              "name": "Result qualification",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ],
+          [
+            {
+              "id": "S53-0",
+              "name": "Records are graded a…",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ]
+        ],
+        "methodAction": "S55-0",
+        "backLabel": "← Challenge the conclusion"
+      },
+      {
+        "tool": "risk",
+        "designKey": "risk-accruing",
+        "locale": "zh",
+        "theme": "dark",
+        "state": "accruing",
+        "frame": "S58-0",
+        "header": [
+          {
+            "id": "S58-0",
+            "name": "Risk track record · ZH dark",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S59-0",
+            "name": "Return to research origin",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S5A-0",
+            "name": "Frame",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S5B-0",
+            "name": "日本 · 前瞻记录",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S5C-0",
+            "name": "预警表现",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          }
+        ],
+        "groups": [
+          [
+            {
+              "id": "S5E-0",
+              "name": "Result qualification",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ],
+          [
+            {
+              "id": "S5G-0",
+              "name": "记录在21个交易日后进行评估。",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ]
+        ],
+        "methodAction": "S5I-0",
+        "backLabel": "← 检验结论"
+      },
+      {
+        "tool": "risk",
+        "designKey": "risk-empty",
+        "locale": "en",
+        "theme": "light",
+        "state": "empty",
+        "frame": "S5N-0",
+        "header": [
+          {
+            "id": "S5N-0",
+            "name": "Risk track record · EN light",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S5O-0",
+            "name": "Return to research origin",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S5P-0",
+            "name": "Frame",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S5Q-0",
+            "name": "Japan · Forward reco…",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S5R-0",
+            "name": "Risk track record",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          }
+        ],
+        "groups": [
+          [
+            {
+              "id": "S5T-0",
+              "name": "Result qualification",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ]
+        ],
+        "methodAction": "S5V-0"
+      },
+      {
+        "tool": "risk",
+        "designKey": "risk-empty",
+        "locale": "zh",
+        "theme": "dark",
+        "state": "empty",
+        "frame": "S5Y-0",
+        "header": [
+          {
+            "id": "S5Y-0",
+            "name": "Risk track record · ZH dark",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S5Z-0",
+            "name": "Return to research origin",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S60-0",
+            "name": "Frame",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S61-0",
+            "name": "日本 · 前瞻记录",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S62-0",
+            "name": "预警表现",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          }
+        ],
+        "groups": [
+          [
+            {
+              "id": "S64-0",
+              "name": "Result qualification",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ]
+        ],
+        "methodAction": "S66-0"
+      },
+      {
+        "tool": "links",
+        "designKey": "links-empty",
+        "locale": "en",
+        "theme": "light",
+        "state": "empty",
+        "frame": "S69-0",
+        "header": [
+          {
+            "id": "S69-0",
+            "name": "Economic links · EN light",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S6A-0",
+            "name": "Return to research origin",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S6B-0",
+            "name": "Frame",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S6C-0",
+            "name": "Japan",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S6D-0",
+            "name": "Economic links",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S6E-0",
+            "name": "Trade · Supply · Fin…",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          }
+        ],
+        "groups": [
+          [
+            {
+              "id": "S6G-0",
+              "name": "Result qualification",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ]
+        ],
+        "methodAction": "S6I-0"
+      },
+      {
+        "tool": "links",
+        "designKey": "links-empty",
+        "locale": "zh",
+        "theme": "dark",
+        "state": "empty",
+        "frame": "S6L-0",
+        "header": [
+          {
+            "id": "S6L-0",
+            "name": "Economic links · ZH dark",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S6M-0",
+            "name": "Return to research origin",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S6N-0",
+            "name": "Frame",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S6O-0",
+            "name": "日本",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S6P-0",
+            "name": "经济联系",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S6Q-0",
+            "name": "贸易 · 供应 · 融资",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          }
+        ],
+        "groups": [
+          [
+            {
+              "id": "S6S-0",
+              "name": "Result qualification",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ]
+        ],
+        "methodAction": "S6U-0"
+      },
+      {
+        "tool": "links",
+        "designKey": "links-restricted",
+        "locale": "en",
+        "theme": "light",
+        "state": "restricted",
+        "frame": "S6Z-0",
+        "header": [
+          {
+            "id": "S6Z-0",
+            "name": "Economic links · EN light",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S70-0",
+            "name": "Return to research origin",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S71-0",
+            "name": "Frame",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S72-0",
+            "name": "Japan",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S73-0",
+            "name": "Economic links",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S74-0",
+            "name": "Trade · Supply · Fin…",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          }
+        ],
+        "groups": [
+          [
+            {
+              "id": "S76-0",
+              "name": "Result qualification",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ]
+        ],
+        "methodAction": "S78-0"
+      },
+      {
+        "tool": "links",
+        "designKey": "links-restricted",
+        "locale": "zh",
+        "theme": "dark",
+        "state": "restricted",
+        "frame": "S7B-0",
+        "header": [
+          {
+            "id": "S7B-0",
+            "name": "Economic links · ZH dark",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S7C-0",
+            "name": "Return to research origin",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S7D-0",
+            "name": "Frame",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S7E-0",
+            "name": "日本",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S7F-0",
+            "name": "经济联系",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S7G-0",
+            "name": "贸易 · 供应 · 融资",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          }
+        ],
+        "groups": [
+          [
+            {
+              "id": "S7I-0",
+              "name": "Result qualification",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ]
+        ],
+        "methodAction": "S7K-0"
+      },
+      {
+        "tool": "risk",
+        "designKey": "risk-history-origin",
+        "locale": "en",
+        "theme": "light",
+        "state": "unavailable",
+        "frame": "S7N-0",
+        "header": [
+          {
+            "id": "S7N-0",
+            "name": "Risk track record · EN light",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S7O-0",
+            "name": "Return to research origin",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S7P-0",
+            "name": "Frame",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S7Q-0",
+            "name": "Japan · Forward reco…",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S7R-0",
+            "name": "Risk track record",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          }
+        ],
+        "groups": [
+          [
+            {
+              "id": "S7T-0",
+              "name": "Result qualification",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ]
+        ],
+        "methodAction": "S7V-0"
+      },
+      {
+        "tool": "risk",
+        "designKey": "risk-history-origin",
+        "locale": "zh",
+        "theme": "dark",
+        "state": "unavailable",
+        "frame": "S7Y-0",
+        "header": [
+          {
+            "id": "S7Y-0",
+            "name": "Risk track record · ZH dark",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S7Z-0",
+            "name": "Return to research origin",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S80-0",
+            "name": "Frame",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S81-0",
+            "name": "日本 · 前瞻记录",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S82-0",
+            "name": "预警表现",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          }
+        ],
+        "groups": [
+          [
+            {
+              "id": "S84-0",
+              "name": "Result qualification",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ]
+        ],
+        "methodAction": "S86-0"
+      }
+    ],
+    "visualQA": [
+      {
+        "nodeId": "RVN-0",
+        "verdict": "PASS: 390px EN/ZH light/dark; global analysis scope visible alongside originating Japan context; clear unavailable result and method action, readable type/contrast, no clipping."
+      },
+      {
+        "nodeId": "RX1-0",
+        "verdict": "PASS after removing duplicate footer divider: aligned evidence rows, clear missing-risk qualification, both languages/themes fit with readable contrast. Illustrative state, no empirical market claim."
+      },
+      {
+        "nodeId": "S07-0",
+        "verdict": "PASS: null forward record is clearly unavailable with no fabricated zero/sample/accuracy; EN/ZH and both themes fit with clear method/limits action."
+      },
+      {
+        "nodeId": "S1H-0",
+        "verdict": "PASS: economic-link evidence is unavailable without invented relationships or values; scope is visible, native EN/ZH and themes fit."
+      },
+      {
+        "nodeId": "S2V-0",
+        "verdict": "PASS: insufficient overlapping returns is distinct from unavailable recovery assessment; readable EN/light and ZH/dark, no fake values or clipping."
+      },
+      {
+        "nodeId": "S47-0",
+        "verdict": "PASS: known uptrend gives not-applicable; qualified immature ledger gives accruing. No conflation with missing primary state/ledger; layouts fit both sampled locale/themes. Return labels corrected to immediate subgroup."
+      },
+      {
+        "nodeId": "S5L-0",
+        "verdict": "PASS: empty results are scoped to recorded warnings / available sources; immediate subgroup return labels fit and are distinct, no fabricated counts."
+      },
+      {
+        "nodeId": "S6X-0",
+        "verdict": "PASS: restricted evidence exposes no unauthorized records; History return is distinct from subgroup returns; text/controls fit both sampled locale/themes."
+      }
+    ],
+    "methodVariants": [
+      {
+        "topic": "tool-correlation",
+        "locale": "en",
+        "theme": "light",
+        "frame": "S8G-0",
+        "head": [
+          {
+            "id": "S8G-0",
+            "name": "Correlation method · EN light",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S8H-0",
+            "name": "Return to selected tool",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S8I-0",
+            "name": "Topic title",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          }
+        ],
+        "groups": [
+          [
+            {
+              "id": "S8K-0",
+              "name": "Return basis",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "S8L-0",
+              "name": "Return basis",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "S8M-0",
+              "name": "Uses weekly USD retu…",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ],
+          [
+            {
+              "id": "S8O-0",
+              "name": "Matching history",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "S8P-0",
+              "name": "Matching history",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "S8Q-0",
+              "name": "A pair needs enough …",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ],
+          [
+            {
+              "id": "S8S-0",
+              "name": "Interpretation",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "S8T-0",
+              "name": "Interpretation",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "S8U-0",
+              "name": "Correlation describe…",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ]
+        ]
+      },
+      {
+        "topic": "tool-correlation",
+        "locale": "zh",
+        "theme": "dark",
+        "frame": "S8W-0",
+        "head": [
+          {
+            "id": "S8W-0",
+            "name": "Correlation method · ZH dark",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S8X-0",
+            "name": "Return to selected tool",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "S8Y-0",
+            "name": "Topic title",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          }
+        ],
+        "groups": [
+          [
+            {
+              "id": "S90-0",
+              "name": "Return basis",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "S91-0",
+              "name": "收益口径",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "S92-0",
+              "name": "使用以周五为周结束日的美元周收益。",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ],
+          [
+            {
+              "id": "S94-0",
+              "name": "Matching history",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "S95-0",
+              "name": "匹配历史",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "S96-0",
+              "name": "一对市场需要足够的重叠周收益数据。缺失值…",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ],
+          [
+            {
+              "id": "S98-0",
+              "name": "Interpretation",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "S99-0",
+              "name": "如何理解",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "S9A-0",
+              "name": "相关性描述该样本内的共同变动，不能据此确…",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ]
+        ]
+      }
+    ],
+    "originBindings": [
+      {
+        "id": "P7-0",
+        "text": "Open risk-radar track record →",
+        "parent": "P6-0",
+        "tool": "risk_track_record",
+        "designTool": "risk",
+        "board": "L9-0",
+        "page": "p-4-0",
+        "origin": "History & scenarios",
+        "variant": "risk-history-origin",
+        "context": "Japan / JP",
+        "returnFocus": "P6-0",
+        "restore": "immediate originating subgroup or History view, valid scroll and invoking control; existing subgroup action handles next return to Library/search",
+        "runtimeWired": false
+      },
+      {
+        "id": "2Z2-0",
+        "text": "Open risk-radar track record →",
+        "parent": "2Z1-0",
+        "tool": "risk_track_record",
+        "designTool": "risk",
+        "board": "2XD-0",
+        "page": "p-4-0",
+        "origin": "History & scenarios",
+        "variant": "risk-history-origin",
+        "context": "Japan / JP",
+        "returnFocus": "2Z1-0",
+        "restore": "immediate originating subgroup or History view, valid scroll and invoking control; existing subgroup action handles next return to Library/search",
+        "runtimeWired": false
+      },
+      {
+        "id": "39H-0",
+        "text": "Inspect economic links & evidence →",
+        "parent": "39G-0",
+        "tool": "trade_supply_links",
+        "designTool": "links",
+        "board": "38A-0",
+        "page": "p-5-0",
+        "origin": "Trace the pressure",
+        "context": "Japan / JP",
+        "returnFocus": "39G-0",
+        "restore": "immediate originating subgroup or History view, valid scroll and invoking control; existing subgroup action handles next return to Library/search",
+        "runtimeWired": false
+      },
+      {
+        "id": "3EO-0",
+        "text": "Inspect economic links & evidence →",
+        "parent": "3EN-0",
+        "tool": "trade_supply_links",
+        "designTool": "links",
+        "board": "3DH-0",
+        "page": "p-5-0",
+        "origin": "Trace the pressure",
+        "context": "Japan / JP",
+        "returnFocus": "3EN-0",
+        "restore": "immediate originating subgroup or History view, valid scroll and invoking control; existing subgroup action handles next return to Library/search",
+        "runtimeWired": false
+      },
+      {
+        "id": "3II-0",
+        "text": "Inspect economic links & evidence →",
+        "parent": "3IH-0",
+        "tool": "trade_supply_links",
+        "designTool": "links",
+        "board": "3HB-0",
+        "page": "p-5-0",
+        "origin": "Trace the pressure",
+        "context": "Japan / JP",
+        "returnFocus": "3IH-0",
+        "restore": "immediate originating subgroup or History view, valid scroll and invoking control; existing subgroup action handles next return to Library/search",
+        "runtimeWired": false
+      },
+      {
+        "id": "3KZ-0",
+        "text": "Open recovery evidence →",
+        "parent": "3KY-0",
+        "tool": "recovery_quality",
+        "designTool": "recovery",
+        "board": "3JZ-0",
+        "page": "p-5-0",
+        "origin": "Check the recovery",
+        "context": "Japan / JP",
+        "returnFocus": "3KY-0",
+        "restore": "immediate originating subgroup or History view, valid scroll and invoking control; existing subgroup action handles next return to Library/search",
+        "runtimeWired": false
+      },
+      {
+        "id": "3OS-0",
+        "text": "Inspect correlations & method →",
+        "parent": "3OR-0",
+        "tool": "cross_market_correlation",
+        "designTool": "correlation",
+        "board": "3NZ-0",
+        "page": "p-5-0",
+        "origin": "Challenge the conclusion",
+        "context": "Japan / JP",
+        "returnFocus": "3OR-0",
+        "restore": "immediate originating subgroup or History view, valid scroll and invoking control; existing subgroup action handles next return to Library/search",
+        "runtimeWired": false
+      },
+      {
+        "id": "3OZ-0",
+        "text": "Open warning outcomes & limits →",
+        "parent": "3OY-0",
+        "tool": "risk_track_record",
+        "designTool": "risk",
+        "board": "3NZ-0",
+        "page": "p-5-0",
+        "origin": "Challenge the conclusion",
+        "context": "Japan / JP",
+        "returnFocus": "3OY-0",
+        "restore": "immediate originating subgroup or History view, valid scroll and invoking control; existing subgroup action handles next return to Library/search",
+        "runtimeWired": false
+      }
+    ],
+    "illustrationBoundary": "All frames are explicit design-state illustrations. No current numeric market fixture or qualified live reading is claimed. Supported price/breadth with missing risk is a constructed qualification case.",
+    "qualificationRequirements": {
+      "recoveryNotApplicable": "Qualified, recognized, known primary state outside recovery for the selected identity/snapshot. Empty assessment object alone is insufficient.",
+      "recoveryUnavailable": "Primary state missing, malformed or unqualified, or assessment absent.",
+      "recoveryPartial": "Qualified primary recovery with incomplete supporting evidence. Missing risk never becomes benign/clear risk.",
+      "riskUnavailable": "Missing ledger, failed read, unresolved identity or insufficient source qualification.",
+      "riskAccruing": "Successfully read qualified ledger contains recorded observations and no mature outcomes yet. Scorecard grant_reason=accruing alone is insufficient.",
+      "riskEmptyWarnings": "Successful qualified query proves selected-period coverage and no alert rows, including immature rows. n_alerts counts graded alerts and cannot establish this.",
+      "riskPendingWarningOutcomes": "Mature observations may exist while recorded warning rows remain ungraded; needs distinct no-warning-outcomes-yet treatment, not no-recorded-warnings.",
+      "correlationInsufficient": "A qualified reason establishes insufficient overlapping return history; null/missing binding alone does not prove this.",
+      "linksEmpty": "Successful rights-qualified documented-relationship query has no matching records in the available sources; no global no-exposure conclusion.",
+      "linksRestricted": "Rights qualification permits only the shown request context/metadata, with no unauthorized relationship records."
+    },
+    "incumbentResolver": "lib/intl_library_view.py::resolve_intl_tool",
+    "runtimeNavigationVerified": false,
+    "backendAdaptersImplemented": false
   },
   "runtimeNavigationVerified": false,
   "runtimeImplementationChanged": false,
@@ -4550,6 +7729,1200 @@
       "state": "APPLIED_RESPONSE_OBSERVED",
       "before": "cb61fc8cfbec4c19fd54e69234e7fc7b769f9fe125beebb0ebc76c34180c6959",
       "after": "59c397658d7d604f684d079ac760bede28baa9605b68a481ea683ccded483405"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "operationId": "clarity-depth-news-build-pointer-01",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "59c397658d7d604f684d079ac760bede28baa9605b68a481ea683ccded483405",
+      "after": "59c397658d7d604f684d079ac760bede28baa9605b68a481ea683ccded483405"
+    },
+    {
+      "tool": "move_nodes",
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "operationId": "clarity-depth-news-build-pointer-first-01",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "59c397658d7d604f684d079ac760bede28baa9605b68a481ea683ccded483405",
+      "after": "59c397658d7d604f684d079ac760bede28baa9605b68a481ea683ccded483405"
+    },
+    {
+      "tool": "finish_working_on_nodes",
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "operationId": "clarity-depth-news-release-01",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "59c397658d7d604f684d079ac760bede28baa9605b68a481ea683ccded483405",
+      "after": "59c397658d7d604f684d079ac760bede28baa9605b68a481ea683ccded483405"
+    },
+    {
+      "tool": "create_page",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-results-page-01",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-results-gallery-01",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-correlation-row",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-correlation-en-light-header",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-correlation-en-light-status",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-correlation-en-light-method",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-correlation-zh-light-header",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-correlation-zh-light-status",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-correlation-zh-light-method",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-correlation-en-dark-header",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-correlation-en-dark-status",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-correlation-en-dark-method",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-correlation-zh-dark-header",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-correlation-zh-dark-status",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-correlation-zh-dark-method",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-recovery-row",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-recovery-en-light-header",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-recovery-en-light-status",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-recovery-en-light-evidence-group",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-recovery-en-light-evidence-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-recovery-en-light-evidence-1",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-recovery-en-light-evidence-2",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-recovery-en-light-method",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-recovery-zh-light-header",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-recovery-zh-light-status",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-recovery-zh-light-evidence-group",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-recovery-zh-light-evidence-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-recovery-zh-light-evidence-1",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-recovery-zh-light-evidence-2",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-recovery-zh-light-method",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-recovery-en-dark-header",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-recovery-en-dark-status",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-recovery-en-dark-evidence-group",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-recovery-en-dark-evidence-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-recovery-en-dark-evidence-1",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-recovery-en-dark-evidence-2",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-recovery-en-dark-method",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-recovery-zh-dark-header",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-recovery-zh-dark-status",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-recovery-zh-dark-evidence-group",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-recovery-zh-dark-evidence-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-recovery-zh-dark-evidence-1",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-recovery-zh-dark-evidence-2",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-recovery-zh-dark-method",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-recovery-divider-en-light",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-recovery-divider-zh-light",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-recovery-divider-en-dark",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-recovery-divider-zh-dark",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "set_text_content",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-fixture-label-01",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-risk-row",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-risk-en-light-header",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-risk-en-light-status",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-risk-en-light-method",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-risk-zh-light-header",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-risk-zh-light-status",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-risk-zh-light-method",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-risk-en-dark-header",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-risk-en-dark-status",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-risk-en-dark-method",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-risk-zh-dark-header",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-risk-zh-dark-status",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-risk-zh-dark-method",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-links-row",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-links-en-light-header",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-links-en-light-status",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-links-en-light-method",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-links-zh-light-header",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-links-zh-light-status",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-links-zh-light-method",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-links-en-dark-header",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-links-en-dark-status",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-links-en-dark-method",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-links-zh-dark-header",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-links-zh-dark-status",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-links-zh-dark-method",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-special-row-1",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-correlation-insufficient-en-light-header",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-correlation-insufficient-en-light-status",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-correlation-insufficient-en-light-method",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-correlation-insufficient-zh-dark-header",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-correlation-insufficient-zh-dark-status",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-correlation-insufficient-zh-dark-method",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-recovery-unavailable-en-light-header",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-recovery-unavailable-en-light-status",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-recovery-unavailable-en-light-method",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-recovery-unavailable-zh-dark-header",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-recovery-unavailable-zh-dark-status",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-recovery-unavailable-zh-dark-method",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-special-row-2",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-recovery-not-applicable-en-light-header",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-recovery-not-applicable-en-light-status",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-recovery-not-applicable-en-light-method",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-recovery-not-applicable-zh-dark-header",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-recovery-not-applicable-zh-dark-status",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-recovery-not-applicable-zh-dark-method",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-risk-accruing-en-light-header",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-risk-accruing-en-light-status",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-risk-accruing-en-light-body",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-risk-accruing-en-light-method",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-risk-accruing-zh-dark-header",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-risk-accruing-zh-dark-status",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-risk-accruing-zh-dark-body",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-risk-accruing-zh-dark-method",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "set_text_content",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-contextual-return-labels-01",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-special-row-3",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-risk-empty-en-light-header",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-risk-empty-en-light-status",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-risk-empty-en-light-method",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-risk-empty-zh-dark-header",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-risk-empty-zh-dark-status",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-risk-empty-zh-dark-method",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-links-empty-en-light-header",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-links-empty-en-light-status",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-links-empty-en-light-method",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-links-empty-zh-dark-header",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-links-empty-zh-dark-status",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-links-empty-zh-dark-method",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-special-row-4",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-links-restricted-en-light-header",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-links-restricted-en-light-status",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-links-restricted-en-light-method",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-links-restricted-zh-dark-header",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-links-restricted-zh-dark-status",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-links-restricted-zh-dark-method",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-risk-history-origin-en-light-header",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-risk-history-origin-en-light-status",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-risk-history-origin-en-light-method",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-risk-history-origin-zh-dark-header",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-risk-history-origin-zh-dark-status",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-result-risk-history-origin-zh-dark-method",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6"
+    },
+    {
+      "tool": "create_page",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-tool-method-page-01",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "135bae5fc45e5fd9cbcb13996e3164303b322d08fd55de46ae2d262a7079e6e6",
+      "after": "714181077cd1086d0f5d4b9ae93a0679074db9a62c3d98a3114ba2da5b68f8c5"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-tool-method-gallery-01",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "714181077cd1086d0f5d4b9ae93a0679074db9a62c3d98a3114ba2da5b68f8c5",
+      "after": "714181077cd1086d0f5d4b9ae93a0679074db9a62c3d98a3114ba2da5b68f8c5"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-correlation-method-row",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "714181077cd1086d0f5d4b9ae93a0679074db9a62c3d98a3114ba2da5b68f8c5",
+      "after": "714181077cd1086d0f5d4b9ae93a0679074db9a62c3d98a3114ba2da5b68f8c5"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-tool-correlation-en-light-head",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "714181077cd1086d0f5d4b9ae93a0679074db9a62c3d98a3114ba2da5b68f8c5",
+      "after": "714181077cd1086d0f5d4b9ae93a0679074db9a62c3d98a3114ba2da5b68f8c5"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-tool-correlation-en-light-row-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "714181077cd1086d0f5d4b9ae93a0679074db9a62c3d98a3114ba2da5b68f8c5",
+      "after": "714181077cd1086d0f5d4b9ae93a0679074db9a62c3d98a3114ba2da5b68f8c5"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-tool-correlation-en-light-row-1",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "714181077cd1086d0f5d4b9ae93a0679074db9a62c3d98a3114ba2da5b68f8c5",
+      "after": "714181077cd1086d0f5d4b9ae93a0679074db9a62c3d98a3114ba2da5b68f8c5"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-tool-correlation-en-light-row-2",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "714181077cd1086d0f5d4b9ae93a0679074db9a62c3d98a3114ba2da5b68f8c5",
+      "after": "714181077cd1086d0f5d4b9ae93a0679074db9a62c3d98a3114ba2da5b68f8c5"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-tool-correlation-zh-dark-head",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "714181077cd1086d0f5d4b9ae93a0679074db9a62c3d98a3114ba2da5b68f8c5",
+      "after": "714181077cd1086d0f5d4b9ae93a0679074db9a62c3d98a3114ba2da5b68f8c5"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-tool-correlation-zh-dark-row-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "714181077cd1086d0f5d4b9ae93a0679074db9a62c3d98a3114ba2da5b68f8c5",
+      "after": "714181077cd1086d0f5d4b9ae93a0679074db9a62c3d98a3114ba2da5b68f8c5"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-tool-correlation-zh-dark-row-1",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "714181077cd1086d0f5d4b9ae93a0679074db9a62c3d98a3114ba2da5b68f8c5",
+      "after": "714181077cd1086d0f5d4b9ae93a0679074db9a62c3d98a3114ba2da5b68f8c5"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-tool-correlation-zh-dark-row-2",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "714181077cd1086d0f5d4b9ae93a0679074db9a62c3d98a3114ba2da5b68f8c5",
+      "after": "714181077cd1086d0f5d4b9ae93a0679074db9a62c3d98a3114ba2da5b68f8c5"
+    }
+  ],
+  "residualEntryScreenTriage": [
+    {
+      "nodeId": "P8-0",
+      "text": "Research status follows the owning engine",
+      "reason": "Builder ownership instruction in product footer"
+    },
+    {
+      "nodeId": "38R-0",
+      "text": "Three tools. Three different questions.",
+      "reason": "Describes the page structure rather than the research task"
+    },
+    {
+      "nodeId": "3KG-0",
+      "text": "A rebound is a start—not a verdict.",
+      "reason": "Redundant slogan alongside specific subgroup scope"
+    },
+    {
+      "nodeId": "3OG-0",
+      "text": "Look for the evidence that could change your mind.",
+      "reason": "Redundant motivational context alongside concrete subgroup scope"
+    },
+    {
+      "nodeId": "3OP-0",
+      "text": "Does the relationship hold across regimes?",
+      "reason": "Current destination supports pooled weekly USD correlation; preserve regime ambition in Build and align default user promise with the supported analysis"
+    },
+    {
+      "nodeId": "3OQ-0",
+      "text": "Co-movement across currencies, windows and regimes",
+      "reason": "Unsupported currency/regime promise belongs in the future implementation plan"
+    },
+    {
+      "nodeId": "3OW-0",
+      "text": "Did the warning help when it mattered?",
+      "reason": "Observed forward outcomes do not establish counterfactual user benefit"
+    },
+    {
+      "nodeId": "3OX-0",
+      "text": null,
+      "reason": "Review forward-result scope and preserve deeper sample/false-alarm/drawdown details in the guide"
     }
   ]
 }
