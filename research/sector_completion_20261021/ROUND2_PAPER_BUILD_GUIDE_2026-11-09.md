@@ -1,5 +1,28 @@
 # Sector Intelligence — Round 2 Paper build guide
 
+## Round 3 consumption amendment — 9 November 2026
+
+The original Round 2 design record below is preserved. Its 47 editable roots, screenshots, fixture dates and extraction manifest remain unchanged. Current implementation planning is [masterplan revision 0.3](https://github.com/mastermindx-market-intelligence/macro/blob/469ca65e127baae8eb2dfd3552c4c0a2aceaedcb/research/sector_completion_20261021/SHARED_SHELL_MASTERPLAN_2026-11-09.md) and the [Round 3 architecture contract](https://github.com/mastermindx-market-intelligence/macro/blob/851331e6aa2cfc9a60fd8de536059c35a08ac94f/research/sector_completion_20261021/ROUND3_ARCHITECTURE_CONTRACT_2026-11-09.md). Round 3 did not edit Paper or implement these actions.
+
+The source inspection resolves the ten R3-01 through R3-10 agenda items at the architecture level:
+
+- Route/data: compose the existing Macro generation API/reader, Terminal gateway/parser and Shared Shell entrance. Current candidates are unmerged; source mounting does not prove deployed binding.
+- Navigation: add the four jobs to the current codec, preserve old aliases and the 1024/8192-character public/full return bounds, and extend logical-anchor restoration without another state store.
+- Research: extend the existing registry with explicit versioned theme/company_profile/sector_profile contracts. Real input, identity/rights, evidence and renderer witnesses must admit each available vertical.
+- Saves: reuse Investigation v2, immutable revisions, CAS, exact operation receipts and its actor-scoped journal. Admit narrow Sector/GMI reference types; do not build a separate Saved Research service.
+- Recovery: A01/A06/MS01 retain Check save status as the primary uncertain-save action. The existing owner also supports exact same-operation replay; exposing it requires original-status reconciliation and proof of the installed same-actor/fingerprint contract. Any added control is a Round 4 design delta, not an existing Paper behavior or a new operation.
+- Account/effects: expected-actor checks and access-generation retirement belong in incumbent owners. Watch membership, note sync, saved investigation, alert activation and delivery remain separate outcomes.
+- Analytical truth: use the actual producer ordinal for the named horizon; distinguish relative wealth, rising/priced and breadth. Keep reconstruction explicit, evolve turn knowledge, and preserve current hazard parity refusal.
+- Revisit: original saved references remain fixed; source corrections, newer observations, membership and unavailable history are distinct. Add Sector/GMI resolvers to the existing evidence-diff owner.
+- Retained depth: #10777 does not contain #10707's captureView/applyView dossier component. Preserve its unique behavior and the deeper native calls, confluence, flow and Cycles controls.
+- Coverage/quality: the contract maps all 134 stable IDs and 24 anchors, freezes proposed implementation latency profiles, and specifies responsive/accessibility/source/rights/recovery falsifiers. Mapping and targets are not accepted implementation evidence.
+
+The historical 430px/missing-state defects and every inherited row remain open until their own evidence is reconciled. A07 is a depth atlas, not complete design coverage for every linked destination. The original CSV is also being changed by #10780, so the architecture appendix supplies a stable-ID planning join without overwriting that writer.
+
+**Next intended round:** Round 4 final masterplan, exact packets, remaining design deltas and final source-linked Fable/T3 handoff. The “next Round 3” language below records the original design-round checkpoint and is superseded by this amendment. No implementation dispatch, release hold change or runtime admission occurred.
+
+## Original Round 2 design record
+
 Status: ROUND_2_COMPLETE — editable Paper design baseline reviewed; application capability remains SPEC_ONLY / incumbent implementation state unchanged. This is not production acceptance.
 Parent: research/sector_completion_20261021/SHARED_SHELL_MASTERPLAN_2026-11-09.md, revision 0.2.
 Program: Macro #7646 / WS:SECTOR-INTELLIGENCE-COMPLETION.
