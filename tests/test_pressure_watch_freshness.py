@@ -74,14 +74,25 @@ def test_index_supplies_an_independent_exchange_session_reference():
     assert "expected_source_session" in ast.unparse(expected)
 
 
-def pressure_step():
+def pressure_steps():
     workflow = yaml.safe_load((ROOT / ".github/workflows/daily.yml").read_text())
-    return next(step for step in workflow["jobs"]["engine"]["steps"]
-                if step.get("name", "").startswith("Price Pressure lobe"))["run"]
+    steps = workflow["jobs"]["engine"]["steps"]
+    restore = next(step for step in steps
+                   if step.get("id") == "shared_daily_stock_restore")
+    pressure = next(step for step in steps
+                    if step.get("name", "").startswith("Price Pressure lobe"))
+    assert pressure["env"]["PP_SOURCE"] == "${{ steps.shared_daily_stock_restore.outputs.status }}"
+    assert sum(step.get("run", "").count(
+        "python -m scripts.fetch_r2 --dirs massive_stock_day --workers 24")
+        for step in steps) == 1
+    return restore, pressure
 
 
-@pytest.mark.parametrize("fail_store", [False, True])
-def test_warm_runner_syncs_current_bars_and_failed_restore_cannot_publish(tmp_path, fail_store):
+@pytest.mark.parametrize("fail_store,source_status", [
+    (False, None), (True, None), (False, ""), (False, "unknown"),
+])
+def test_warm_runner_syncs_current_bars_and_failed_restore_cannot_publish(
+        tmp_path, fail_store, source_status):
     store = tmp_path / "data/massive_stock_day"
     store.mkdir(parents=True)
     (store / "SPY.parquet").write_bytes(b"existing stale runner file")
@@ -95,14 +106,27 @@ def test_warm_runner_syncs_current_bars_and_failed_restore_cannot_publish(tmp_pa
                       'printf "completed-record\\n" > data/price_pressure/latest.json; fi\n')
     python.chmod(0o755)
     calls = tmp_path / "calls"
+    output = tmp_path / "step-output"
     env = {**os.environ, "PATH": str(bin_dir) + os.pathsep + os.environ["PATH"],
-           "CALL_LOG": str(calls), "FAIL_STORE": str(int(fail_store))}
-    result = subprocess.run(["/bin/bash", "-e", "-c", pressure_step()],
-                            cwd=tmp_path, env=env, text=True, capture_output=True, timeout=10)
+           "CALL_LOG": str(calls), "FAIL_STORE": str(int(fail_store)),
+           "GITHUB_OUTPUT": str(output)}
+    restore, pressure = pressure_steps()
+    restored = subprocess.run(["/bin/bash", "-e", "-c", restore["run"]],
+                              cwd=tmp_path, env=env, text=True,
+                              capture_output=True, timeout=10)
+    assert restored.returncode == 0, restored.stderr
+    outputs = dict(line.split("=", 1) for line in output.read_text().splitlines())
+    assert outputs["status"] == ("failed" if fail_store else "ok")
+    # Missing output (including a timed-out step) and unknown values fail closed.
+    selected_status = outputs["status"] if source_status is None else source_status
+    result = subprocess.run(["/bin/bash", "-e", "-c", pressure["run"]],
+                            cwd=tmp_path, env={**env, "PP_SOURCE": selected_status},
+                            text=True, capture_output=True, timeout=10)
     assert result.returncode == 0, result.stderr
     invoked = calls.read_text()
-    assert "scripts.fetch_r2 --dirs massive_stock_day" in invoked
-    if fail_store:
+    assert invoked.count("scripts.fetch_r2 --dirs massive_stock_day") == 1
+    assert "scripts.build_ticker_pages --pressure-only" in invoked
+    if selected_status != "ok":
         assert "scripts.build_price_pressure" not in invoked
         assert "scripts.publish_r2" not in invoked
     else:

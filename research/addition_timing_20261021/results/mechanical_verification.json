@@ -1,0 +1,24 @@
+{
+  "synthetic_checks": [
+    "genuine_month_end_and_partial_month",
+    "flat_prices_and_cost_budget_identity",
+    "waiting_cash_interest_exact",
+    "overnight_gap_before_funding_and_flow_nav_invariance",
+    "dated_money_weighted_return_known_example",
+    "prefix_invariance_without_false_cutoff_deadline",
+    "month_end_prefix_uses_fixed_calendar",
+    "same_open_funding_and_duplicate_nomination",
+    "signal_at_deadline_tie",
+    "pending_fee_separation_and_executed_waiting_identity"
+  ],
+  "observed_run": {
+    "accounts_independently_rebuilt": 36,
+    "daily_cash_and_holdings_identity": true,
+    "max_dollar_reconstruction_error": 1.4551915228366852e-10,
+    "funding_identity": true,
+    "chronology_and_one_purchase_per_budget": true,
+    "common_maturity_clock": true,
+    "mature_months_per_account": 76,
+    "price_files_hash_verified": 31
+  }
+}

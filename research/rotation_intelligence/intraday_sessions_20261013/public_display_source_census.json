@@ -1,0 +1,60 @@
+{
+  "anchor_schema": {
+    "SPY": {
+      "basis": "regular",
+      "delayMin": 421.0,
+      "has_open": false,
+      "keys": [
+        "basis",
+        "changePct",
+        "currency",
+        "delayMin",
+        "hi",
+        "lo",
+        "prevClose",
+        "price",
+        "source",
+        "ts",
+        "vol"
+      ],
+      "source": "yahoo",
+      "synthetic": null,
+      "ts": 1792008000000
+    }
+  },
+  "cache_control": "no-store",
+  "content_type": "application/json",
+  "http_status": 200,
+  "missing_anchors": [
+    "XLB",
+    "XLC",
+    "XLE",
+    "XLF",
+    "XLI",
+    "XLK",
+    "XLP",
+    "XLRE",
+    "XLU",
+    "XLV",
+    "XLY"
+  ],
+  "opening_anchor_qualified": false,
+  "present_anchors": [
+    "SPY"
+  ],
+  "production_rotation_verified": false,
+  "quoted_symbol_count": 365,
+  "requested_at": "2026-10-15T03:01:32.963720+00:00",
+  "response_bytes": 70310,
+  "response_sha256": "0b017feb7ada21d34351473f96db2a054d3c6109cf4e29800b090158082e1627",
+  "root_keys": [
+    "asof",
+    "meta",
+    "quotes",
+    "sessions",
+    "source",
+    "ts"
+  ],
+  "scope": "single allowed public display quote endpoint; schema/clock inventory only",
+  "url": "https://www.mastermind-x.com/live/quotes.json"
+}

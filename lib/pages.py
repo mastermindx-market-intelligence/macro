@@ -741,7 +741,33 @@ def write_page(path: Path | str, html: str, *, encoding: str | None = None) -> P
     """Write a site HTML page with the data-base shim injected (depth-aware,
     idempotent). ALL builders must write site/**/*.html through this — a raw
     write_text drops the shim whenever the builder runs standalone."""
+    from lib.shared_shell import inject_shared_shell_text
+
     p = Path(path)
-    p.write_text(inject_text(html, dbase_prefix(p)), encoding=encoding)
+    prefix = dbase_prefix(p)
+    rendered = inject_text(html, prefix)
+    rendered = inject_shared_shell_text(rendered, prefix, site_dir=_site_root(),
+                                        response_kind="coming_soon" if p.name == "coming-soon.html" else "content")
+    p.write_text(rendered, encoding=encoding)
     _ensure_shim_asset()
+    return p
+
+
+_DOCUMENT_RE = re.compile(r"<!doctype\b|<html[\s>]|<head[\s>]", re.IGNORECASE)
+
+
+def write_unshimmed_html(path: Path | str, text: str, *, encoding: str | None = None) -> Path:
+    """Write HTML that must stay byte-for-byte: a detached fragment, or a throwaway
+    page outside the site dir (evidence fixtures, headless render wrappers).
+
+    write_page is wrong for both. It prepends the shim to a fragment, which has no
+    <head> to hold it, and it touches site assets for a page no reader loads. This
+    is not a way round write_page: a whole document under the site dir is refused,
+    so a shipped page still has to go through it."""
+    p = Path(path)
+    resolved = p.resolve()
+    root = _site_root()
+    if (resolved == root or root in resolved.parents) and _DOCUMENT_RE.search(text):
+        raise ValueError(f"{p}: a whole page under the site dir must go through write_page")
+    p.write_text(text, encoding=encoding)
     return p

@@ -1,0 +1,13 @@
+{
+  "source": "3cfc492d4c321c54ef0ce1bbe079a48b4862768a",
+  "reviewer": "Assigned root parent; source qualification only, not independent customer acceptance",
+  "reviewed_at": "2026-10-14T12:28:43.520310+00:00",
+  "visual_evidence": "12 rest-cell first-viewport captures inspected in desktop/tablet/mobile contact sheets; full dark EN desktop and light ZH mobile inspected at native viewport size",
+  "dark_treatment": "Existing dark material, light text, cyan heading and subdued separators retain hierarchy; source status and financial values remain distinct.",
+  "light_treatment": "Existing cool canvas and white research panel, hairline separators, dark text and blue interaction treatment remain readable; no dark overlay introduced.",
+  "locale_responsive": "EN and ZH share order and semantics; native quantities/units remain literal. Mobile stacks finance and keeps first LMT 4101 value in the first viewport. Tablet/desktop two-column finance remains legible. Existing summary rail scrolls within its container; per-cell document overflow is false.",
+  "interaction": "All 12 real interpretation-focus cells applied; all 24 cells loaded six themes and the investor module without failed modules, console errors or failed responses.",
+  "pixel_comparison": "None of 24 images byte/pixel-identical to prior capture; variable nav/search/chat and capture state do not establish a regression or static parity. Do not reuse prior image hashes as current proof. Actual source pin delta is separately retained.",
+  "verdict": "PASS bounded source/browser qualification; installed entitlement, two-subject workflow, independent investor acceptance and long-run timing robustness remain open",
+  "performance": "Fresh current-stage ten samples pass p95/max 2858.300000011921ms; prior V14 3686.5ms miss preserved, original cause not established."
+}
