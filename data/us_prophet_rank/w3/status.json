@@ -88,13 +88,13 @@
   "first_lawful_comparison_read": "PENDING until 20 matured H=10 sessions",
   "honest_n_floor": 20,
   "last_run": {
-    "board_as_of": "2026-11-05",
+    "board_as_of": "2026-11-06",
     "coverage": {
       "identical": 0,
       "matured": 0,
       "revisions_refused": 0,
-      "stamps": 1,
-      "written": 8
+      "stamps": 0,
+      "written": 0
     },
     "dry_run": false,
     "failures": [],
@@ -102,20 +102,21 @@
       "identical": 0,
       "matured": 0,
       "revisions_refused": 0,
-      "stamps": 1,
-      "written": 8
+      "stamps": 0,
+      "written": 0
     },
-    "n_coverage_rows": 8,
-    "n_family_rows": 8,
+    "n_coverage_rows": 0,
+    "n_family_rows": 0,
     "n_paired_rows": 2166,
     "paired": {
-      "identical": 2054,
+      "identical": 2123,
       "matured": 0,
       "revisions_refused": 0,
-      "stamps": 1,
-      "written": 69
+      "stamps": 0,
+      "written": 0
     },
     "reconstruction_refused": [
+      "2026-11-06",
       "2026-07-31",
       "2026-08-05",
       "2026-08-06",
@@ -141,19 +142,19 @@
       "2026-10-29",
       "2026-10-30"
     ],
-    "require_stamp": "2026-11-05",
+    "require_stamp": "2026-11-06",
     "same_stamp_revisions_refused": [],
     "sessions_written": {
-      "identical": 33,
+      "identical": 34,
       "matured": 0,
       "refused": 0,
-      "written": 1
+      "written": 0
     }
   },
   "latest_session": {
-    "liveness": "unmatured",
-    "reason": "paired observation accrued; H=10 outcome pending (not zero)",
-    "stamp_date": "2026-11-05"
+    "liveness": "session_missing",
+    "reason": "candidate session missing from the durable store; not pulled from Pages",
+    "stamp_date": "2026-11-06"
   },
   "matured_h10_sessions": 1,
   "missing_sessions": [
@@ -172,10 +173,14 @@
     {
       "reason": "candidate session missing from the durable store; not pulled from Pages",
       "stamp_date": "2026-10-30"
+    },
+    {
+      "reason": "candidate session missing from the durable store; not pulled from Pages",
+      "stamp_date": "2026-11-06"
     }
   ],
   "n_degraded_or_unpaired": 20,
-  "n_missing": 4,
+  "n_missing": 5,
   "paired_sessions_accrued": 34,
   "same_stamp_revisions_refused": [
     {

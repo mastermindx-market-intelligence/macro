@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "SEDG-BULL-20260827",
-  "asof": "2026-11-06",
+  "asof": "2026-11-09",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 11.7,
@@ -14,23 +14,23 @@
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 32.8
+    "overlay": 39.0
   },
   "geometry": {
-    "dist_to_stop_r": -2.18,
+    "dist_to_stop_r": -1.61,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 157.8,
-    "p1": -2.1199,
-    "p2": -1.06,
+    "horizon_pct_used": 164.4,
+    "p1": -1.74,
+    "p2": -0.87,
     "p3": null,
-    "move_r": -3.18,
+    "move_r": -2.61,
     "mfe_r": 1.409,
     "mae_r": -3.18
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "Phase: overtime \u2192 invalidated",
+  "change_reason": "",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
@@ -45,8 +45,8 @@
   "_first_trigger_ts": "2026-09-03",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 71,
-  "tau": 1.5778,
+  "days_elapsed": 74,
+  "tau": 1.6444,
   "closed": true,
   "outcome": "INVALIDATED"
 }
