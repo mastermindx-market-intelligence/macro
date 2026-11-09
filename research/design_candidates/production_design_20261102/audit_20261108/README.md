@@ -43,7 +43,15 @@ Run `node --test ranked-search-state-reference.test.mjs` in this directory. The 
 
 The [Catalyst selection reference](catalyst-selection-state-reference.mjs) and [its tests](catalyst-selection-state-reference.test.mjs) separate an explicit case from filtered results and qualify asynchronous copy status against existing-owner attempt/read tokens. They preserve canonical source rows, reject invalid resolved inputs and clear all detail/copy output for non-resolved reads. They introduce no URL, clipboard, read or retry lifecycle.
 
-Run `node --test catalyst-selection-state-reference.test.mjs`. The exact saved pair passed **22 offline checks on Node v24.22.1**. The corresponding native EN390/ZH320 copy-failure states expose the exact prepared case URL for manual selection. URL construction, React integration, focus and real clipboard effects remain host checks. See continuation §21 for hashes, current-expression reproduction, native roots and proof limits.
+Run `node --test catalyst-selection-state-reference.test.mjs`. The exact saved pair passed **22 offline checks on Node v24.22.1**. The corresponding native EN390/ZH320 copy-failure states expose the exact prepared case URL for manual selection. The pair itself does not prove URL construction, React integration, focus or clipboard effects. Continuation §23 records the separate actual-component and fixture-browser follow-up; live acceptance remains distinct. See continuation §21 for hashes, current-expression reproduction, native roots and proof limits.
+
+## Implemented Catalyst follow-up
+
+The selected-case/copy correction now has an actual Terminal implementation in [PR1354](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1354), head **45472fcedad31292d660d54731d4da472ca04f1e**. Explicit selection survives filters and zero results; absent saved cases do not substitute another detail; clipboard feedback and exact manual fallback stay bound to the current case/read attempt.
+
+**46 component tests and 18 targeted browser cases passed**, with a clean complete-source TypeScript check. Desktop, tablet and mobile EN/ZH—including 320px Chinese—were exercised. [The source-bound explanation, manifest, check output and seven original captures](https://github.com/mastermindx-market-intelligence/mastermind-terminal/tree/45472fcedad31292d660d54731d4da472ca04f1e/docs/verification/catalyst-selection-copy-20261109) are committed with the source. These are synthetic fixture results, not live data/entitlement/deployment proof.
+
+PR1354 is Ready and its exact-head native auto-merge is enrolled. The observed CI jobs remain queued; protected merge and applicable deployment/live proof remain pending. See continuation §23 for source custody, architecture and the preserved historical test denial.
 
 ## Assignment and source
 
@@ -56,7 +64,8 @@ Canonical programme: [Macro PR #10617](https://github.com/mastermindx-market-int
 - GMI public-candidate comparison: PR #10676 at `80d6ff71b9913524c4a381b543ec7a53383f50dc`; existing Draft/release holds and S03–S05 work preserved.
 - Crypto R4 candidate comparison: PR #9580 at `5e496c24c962e85a4f7f514dd43dc61443b95cab`; open Draft/unmerged, original alert and public-cutover gates preserved.
 - All Tools affected-source refresh: Macro `4bd1948ac0d9ecf40301caf70cbf8cf1619fd2c4`; compact selector remains a proposed presentation extension of the current embedded owner.
-- Catalyst affected-source refresh: Terminal `3e2f8db782b0ba2f98343edf5199a4b8ce921ec9`; selection/filter/copy defects are source-demonstrated, with seven explicitly marked test-fixture designs and 22 passing isolated-reference checks.
+- Catalyst design-source refresh: Terminal `3e2f8db782b0ba2f98343edf5199a4b8ce921ec9`; selection/filter/copy defects are source-demonstrated, with seven explicitly marked test-fixture designs and 22 passing isolated-reference checks.
+- Catalyst implementation base: protected Terminal `929e008f689bc834662f52f845d070db3fc8eb00`; follow-up PR1354 at `45472fcedad31292d660d54731d4da472ca04f1e` has 46 component and 18 fixture-browser checks passed.
 - Current Options and Company comparison source: Terminal `cfe14c49f2e0166c0ded5e6f23a274bb663d0fd3`; accepted W3 originals are preserved.
 - Existing programme preimage: `c9361d089d0fd296280accfcfe2dfcd0b71770f0`.
 - GitHub identity observed: `mastermidx4`.
@@ -71,8 +80,8 @@ The principal retained the only canvas writer role among this session’s agents
 
 ## Implementation boundary
 
-These are applied design changes and build guidance. Runtime code, data feeds, functional navigation, production browser proof and release acceptance remain separate implementation work.
+Most of this programme remains applied design work and build guidance. Catalyst now also has the bounded source implementation and actual-component/fixture-browser proof described above. Data feeds, live entitlement, production browser proof, broader feature acceptance and protected release are separate claims.
 
 Start with the data-meaning and source-status fixes, then answer evidence/save viability, then responsive navigation and motion. Reuse incumbent owners; do not create parallel identity, state, query, save, monitoring or retry lifecycles. The detailed report names proof requirements and unknown entry points rather than inventing an API.
 
-The programme PR remains open and draft. No release hold was changed, no approval was invented, and no merge or deployment was attempted.
+The design programme PR remains open and Draft, with its holds preserved. The separate Catalyst PR1354 is Ready with exact-head native auto-merge enabled under observed repository protection. No approval was invented; at this milestone no merge or deployment was observed.
