@@ -1332,3 +1332,33 @@ The same authorized M2 carrier was verified by its actual hardware family. Its e
 The actual current release owner requires `--target-sha` and a clean source-audit entrance gate; the older introductory DEPLOY text must not be treated as permission to build a moving branch. PR1354 remains open at its original candidate with native auto-merge enabled and required CI still running, with no completed failure observed. No deployment was issued.
 
 The connected Chrome automation attempt was blocked by an open extension UI before a new Catalyst tab was created. That page/user-presence boundary was not bypassed through another browser or carrier. Real-account browser proof remains owed after the control is available and the candidate is actually served. This blocks that proof lane only; independent source/design work continues.
+
+
+## 26. GMI — implement source-receipt continuity in the existing candidate
+
+The preserved p7 Build contract now has a concrete frontend implementation on [the original GMI PR10676](https://github.com/mastermindx-market-intelligence/Macro/pull/10676), branch **claude/gmi-product-upgrade-20261103**. Parent **80d6ff71b9913524c4a381b543ec7a53383f50dc** advanced by one qualified source commit to **cc47f34daf1850392521018c40380258e61b33a6** through exact-head GitHub CAS. Native readback remains **OPEN, Draft, no labels and auto-merge null**. No release action was taken.
+
+The pre-fix locale observer rebuilt every evidence card, losing open native receipts and potentially removing the focused summary/action. The fix keeps one synchronous capture within the existing renderer, keyed to exact theme/receipt/source-key/source-hash identity. All duplicate receipt-ID group members and missing identities are ineligible. Exact current matches retain open/closed state across card reordering. Focus moves only when the old focused node was removed and no surviving control has acquired it; source/company role and complete post-navigation destination must still match. Otherwise it falls back to the corresponding summary or existing topic heading. Ordinary selection/history, URLs, filters, admission, data and shared theme ownership remain unchanged.
+
+### Source and proof
+
+Exactly five paths change relative to the original parent:
+
+| Path | Published blob |
+| --- | --- |
+| `templates/gmi.js` and identical `site/gmi.js` | **0a5a6b51f7c836e34523a476751fc3eca054302d** |
+| `research/theme_graph/gmi_design_20261021/verify_product_browser.py` | **d880b4aabd7f203bcbcd24e045e393067571b122** |
+| `research/theme_graph/gmi_design_20261021/DESIGN_RECORD.md` (§11.19 appended) | **36bb6e85ebbdb86090b20d5054d1361794dfb7ac** |
+| `research/theme_graph/gmi_design_20261021/LOCALE_RECEIPT_VALIDATION_20261109.json` | **58a737f345a3b82ca1077e04087b7e588d1b93eb** |
+
+All five published texts were read back exactly. The original JavaScript failed the same open-receipt/reorder assertion at desktop 1440px and mobile 390px. The repaired JavaScript and exact added test function passed **two named cases across 32 fresh anonymous Chrome contexts**, zero page errors, exit 0. The tests challenge reordered/closed receipts, EN↔ZH, changed/missing/duplicate identities, withdrawal, exact action focus, changed/removed links, surviving controls and normal history. JavaScript and Python verifier syntax pass. The normal verifier now exposes the cases through its existing `--case` owner.
+
+The executed bounded harness used extracted committed GMI component DOM and test-only receipt clones, with all external networking blocked. It did not exercise the full CSS/shared-shell visual matrix, signed-in account, current data, public-admission grant or deployment. Earlier 92-case / 91-PNG / ten-board proof remains historical unchanged evidence. Natural successor-head hosted CI had not yet appeared in the bounded initial read; no checks were manually triggered or rerun.
+
+### Paper source alignment
+
+File **01M5H6EARN9YHQV17JC6ZG9BRY**, p7, existing Build **7M9-0** now names this implemented source and proof at **7MA-0, 7MV-0, 7MZ-0, 7N3-0 and 7NF-0**. All 24 original node IDs and parents remain; geometry and typography remain unchanged. The rich-text paragraph break in **7NF-0** adds the native `whiteSpace: pre-wrap` text setting. The entire Build screenshot was inspected and the exact owned root finished. Product boards and source facts were preserved.
+
+### Original-carrier boundary
+
+The current PR source and §11.8 expressly permit disjoint frontend continuation while original model run **gmi-product-upgrade-20261103-model01** remains **EFFECT_UNKNOWN / ROOT_UNVERIFIED**. The model/presentation/worker paths and result were not read as a recovery workaround, edited, consumed or reissued. All Draft/no-merge/no-Ready/no-un-draft/no-enqueue/no-relabel/no-deploy and public-purpose restrictions remain. This is implemented candidate behavior with bounded proof, not production delivery.
