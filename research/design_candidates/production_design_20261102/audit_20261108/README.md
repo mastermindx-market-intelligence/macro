@@ -2,9 +2,9 @@
 
 ## Applied design improvements
 
-Applied and visually checked focused improvements in thirteen existing Paper files. The work combines clearer reading paths, less repeated content, truthful source/status language, source-linked implementation guidance and an editable motion storyboard.
+Applied and visually checked focused improvements in fourteen existing Paper files. The work combines clearer reading paths, less repeated content, truthful source/status language, source-linked implementation guidance and an editable motion storyboard.
 
-**Read the [first audit and build plan](AUDIT_AND_BUILD_PLAN.md) and the [workflow continuation](WORKFLOW_CONTINUATION_20261108.md)** for exact changes, source findings, node identities, acceptance criteria and implementation sequence. The continuation includes Guide, Prophet, Market Memory, Policy Monitor, Market Ontology and Sector Intelligence; the accepted Options journey is the active next audit.
+**Read the [first audit and build plan](AUDIT_AND_BUILD_PLAN.md) and the [workflow continuation](WORKFLOW_CONTINUATION_20261108.md)** for exact changes, source findings, node identities, acceptance criteria and implementation sequence. The continuation includes Guide, Prophet, Market Memory, Policy Monitor, Market Ontology, Sector Intelligence and a six-state Options Watch/review amendment. Flow and Volatility are the active source-fit audit.
 
 | Surface | Open the revised design | Main outcome |
 |---|---|---|
@@ -21,6 +21,7 @@ Applied and visually checked focused improvements in thirteen existing Paper fil
 | Policy Monitor | [Current designs](https://app.paper.design/file/01M6Q4WK0EMPV1G2KDGGRQBC1B/p-1-0) · [Mobile disclosures](https://app.paper.design/file/01M6Q4WK0EMPV1G2KDGGRQBC1B/p-3-0) | Qualified stance and absolute election date; shorter mobile defaults with preserved details. |
 | Market Ontology | [Overview](https://app.paper.design/file/01M3P1X4FR6BRTB13KA736Y1HT/p-1-0) · [Detail states](https://app.paper.design/file/01M3P1X4FR6BRTB13KA736Y1HT/p-2-0) · [Build](https://app.paper.design/file/01M3P1X4FR6BRTB13KA736Y1HT/p-6-0) | Focused path overview, four named detail states, precise lookback measures and return/motion contract. |
 | Sector Intelligence | [Comparison](https://app.paper.design/file/01M6FAXA774QT1VRDMAG7DFQ2W/p-4-0) · [Expanded context](https://app.paper.design/file/01M6FAXA774QT1VRDMAG7DFQ2W/p-8-0) · [Cycles](https://app.paper.design/file/01M6FAXA774QT1VRDMAG7DFQ2W/p-2-0) · [Build](https://app.paper.design/file/01M6FAXA774QT1VRDMAG7DFQ2W/p-5-0) | Dossier actions first; whole-market disclosure; eight coherent timing qualification states with historical chart data preserved. |
+| Options Watch/review | [Amendment states](https://app.paper.design/file/01M5FNCKAND6CBSJNYM5FZWR8Y/p-2-0) · [Build](https://app.paper.design/file/01M5FNCKAND6CBSJNYM5FZWR8Y/p-3-0) | Explicit firing/revision binding, optional firing review, receipt detail and distinct unavailable/uncertain/saved recovery states. |
 
 The [motion reference HTML](expectation-surface-motion-reference.html) demonstrates the intended selection, pending, failure/retry, details-return and reduced-motion state model using explicit fixtures. JavaScript syntax was checked; browser execution was not verified in this session.
 
@@ -38,11 +39,11 @@ Canonical programme: [Macro PR #10617](https://github.com/mastermindx-market-int
 
 ## Coverage and boundaries
 
-The initial resource inventory returned 35 files and two folders. Applied native improvements now cover thirteen existing files, with exact board coverage and verification limits in the two reports. Additional Options designs are being compared with their current owners. This is not a claim that every artboard across the estate was certified.
+The initial resource inventory returned 35 files and two folders. Applied native improvements now cover fourteen existing files, with exact board coverage and verification limits in the two reports. The accepted Options Flow and Volatility boards are being compared with their current owners. This is not a claim that every artboard across the estate was certified.
 
 Existing useful states, product-specific visual language, source controls and live/uncertain work were preserved. Redundant content was relocated with node identities intact. No archive/delete operation was performed. The original MASTERMIND PAGES migration, Canonical Design System and International R14 freeze remain protected.
 
-The principal retained the single canvas writer role. Three bounded read-only advisors contributed architecture and design judgment. The first pass’s read-only connection interruption recovered on the same native carrier. During Sector continuation, repeated connector read timeouts were isolated from the healthy Studio owner; completed operations were read back and new logical edits continued through its schema-qualified Paper adapter, without replaying any unknown or denied effect. The International rename’s uncertain response was reconciled by reading the original target without replay. Exact working indicators for completed changes were released, including Sector’s 22 affected root boards.
+The principal retained the only canvas writer role among this session’s agents. Concurrent updates to the original Options mobile board were observed and preserved; this session’s amendment stays on separate pages. Three bounded read-only advisors contributed architecture and design judgment. The first pass’s read-only connection interruption recovered on the same native carrier. During Sector continuation, repeated connector read timeouts were isolated from the healthy Studio owner; completed operations were read back and new logical edits continued through its schema-qualified Paper adapter, without replaying any unknown or denied effect. The International rename’s uncertain response was reconciled by reading the original target without replay. Exact working indicators for completed changes were released, including Sector’s 22 affected root boards and the Options amendment’s eight owned roots.
 
 ## Implementation boundary
 
