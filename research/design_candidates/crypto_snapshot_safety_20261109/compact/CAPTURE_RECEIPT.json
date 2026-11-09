@@ -1,0 +1,185 @@
+{
+  "source_parent": "32ad0bc508b50afefa3dc485f970423733a42c54",
+  "runtime_version": "1bbbd2258e94",
+  "runs": {
+    "compact-matrix-baseline": {
+      "result": {
+        "command": [
+          "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "-m",
+          "pytest",
+          "-q",
+          "tests/test_crypto_intelligence_r4_browser.py",
+          "-k",
+          "test_r4_compact_matrix",
+          "--tb=short",
+          "--junitxml=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/compact-matrix-baseline/junit.xml",
+          "--basetemp=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/compact-matrix-baseline/pytest-temp"
+        ],
+        "exit_code": 1,
+        "seconds": 17.85,
+        "source_parent": "32ad0bc508b50afefa3dc485f970423733a42c54",
+        "runtime_version": "d4393a5d0e55",
+        "test_sha256": "5cd38f29f5a3d151dac67ed306b4199d2a10c9de938d0cf5d6db639e35a15609"
+      },
+      "observations": {
+        "contexts": 8,
+        "pages": 8,
+        "page_errors": [],
+        "blocked_external_requests": 0,
+        "blocked_websockets": 0,
+        "browser": "157.0.8103.39"
+      }
+    },
+    "compact-matrix-baseline-correction": {
+      "result": {
+        "command": [
+          "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "-m",
+          "pytest",
+          "-q",
+          "tests/test_crypto_intelligence_r4_browser.py",
+          "-k",
+          "compact_matrix_larger_cohort",
+          "--tb=short",
+          "--junitxml=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/compact-matrix-baseline-correction/junit.xml",
+          "--basetemp=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/compact-matrix-baseline-correction/pytest-temp"
+        ],
+        "exit_code": 0,
+        "seconds": 4.198,
+        "runtime_version": "d4393a5d0e55",
+        "source_parent": "32ad0bc508b50afefa3dc485f970423733a42c54",
+        "test_sha256": "07502af8e1aceff8ce6170ac63cedf8a9ea20ba73653fbb628663961e633093c"
+      },
+      "observations": {
+        "contexts": 2,
+        "pages": 2,
+        "page_errors": [],
+        "blocked_external_requests": 0,
+        "blocked_websockets": 0,
+        "browser": "157.0.8103.39"
+      }
+    },
+    "compact-matrix-final": {
+      "result": {
+        "command": [
+          "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "-m",
+          "pytest",
+          "-q",
+          "tests/test_crypto_intelligence_r4_browser.py",
+          "-k",
+          "test_r4_compact_matrix or comparison_full_cohort",
+          "--tb=short",
+          "--junitxml=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/compact-matrix-final/junit.xml",
+          "--basetemp=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/compact-matrix-final/pytest-temp"
+        ],
+        "exit_code": 0,
+        "seconds": 9.768,
+        "source_parent": "32ad0bc508b50afefa3dc485f970423733a42c54",
+        "runtime_version": "1bbbd2258e94",
+        "test_sha256": "07502af8e1aceff8ce6170ac63cedf8a9ea20ba73653fbb628663961e633093c"
+      },
+      "observations": {
+        "contexts": 12,
+        "pages": 12,
+        "page_errors": [],
+        "blocked_external_requests": 0,
+        "blocked_websockets": 0,
+        "browser": "157.0.8103.39"
+      }
+    }
+  },
+  "font_and_text_checks": [
+    {
+      "name": "three-en-320.json",
+      "text_and_font_unchanged": true,
+      "parent_scroll_width": 490,
+      "candidate_scroll_width": 371,
+      "client_width": 280,
+      "measure_width": 98
+    },
+    {
+      "name": "three-zh-320.json",
+      "text_and_font_unchanged": true,
+      "parent_scroll_width": 490,
+      "candidate_scroll_width": 371,
+      "client_width": 280,
+      "measure_width": 98
+    },
+    {
+      "name": "two-en-320.json",
+      "text_and_font_unchanged": true,
+      "parent_scroll_width": 370,
+      "candidate_scroll_width": 280,
+      "client_width": 280,
+      "measure_width": 98
+    },
+    {
+      "name": "two-en-390.json",
+      "text_and_font_unchanged": true,
+      "parent_scroll_width": 370,
+      "candidate_scroll_width": 350,
+      "client_width": 350,
+      "measure_width": 98
+    },
+    {
+      "name": "two-relative-en-320.json",
+      "text_and_font_unchanged": true,
+      "parent_scroll_width": 370,
+      "candidate_scroll_width": 280,
+      "client_width": 280,
+      "measure_width": 98
+    },
+    {
+      "name": "two-relative-zh-320.json",
+      "text_and_font_unchanged": true,
+      "parent_scroll_width": 370,
+      "candidate_scroll_width": 280,
+      "client_width": 280,
+      "measure_width": 98
+    },
+    {
+      "name": "two-zh-320.json",
+      "text_and_font_unchanged": true,
+      "parent_scroll_width": 370,
+      "candidate_scroll_width": 280,
+      "client_width": 280,
+      "measure_width": 98
+    },
+    {
+      "name": "two-zh-390.json",
+      "text_and_font_unchanged": true,
+      "parent_scroll_width": 370,
+      "candidate_scroll_width": 350,
+      "client_width": 350,
+      "measure_width": 98
+    }
+  ],
+  "captures": [
+    {
+      "name": "compact-null-en-320.png",
+      "bytes": 33386,
+      "sha256": "02bcbc215476b4ab1a5cf1194edf486469c4d2293902d33c8e8aea794db8b358",
+      "blob": "a101f8452df26d39b3c34777aa1ffd77d5f2438d"
+    },
+    {
+      "name": "compact-three-zh-320.png",
+      "bytes": 29835,
+      "sha256": "da9675815b71d80c328a41b9e2fdd62c43ceac54b9a06186034a21ad21801f9a",
+      "blob": "a967bf821685f9213f8e544b39f2d4c7676b250e"
+    },
+    {
+      "name": "compact-two-en-320.png",
+      "bytes": 31603,
+      "sha256": "3f8ddad89b86a6cb1d3b7d234adf304b4137cce1d2cb83f62a18b6b06f4e3716",
+      "blob": "7404bab0af5d5b506c635f649031b58640f7dbc2"
+    },
+    {
+      "name": "compact-two-zh-320.png",
+      "bytes": 28528,
+      "sha256": "cf634e22e01dea40b02d99c6162a487356ac7c166fa14dbab173a58e8bafca73",
+      "blob": "2038e3f719510c6a530aaeff4119827a891b25b6"
+    }
+  ]
+}

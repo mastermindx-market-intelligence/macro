@@ -1,6 +1,20 @@
 # Crypto R4: safe saved cases and clear asset comparisons
 
-## Current phase — honest comparison basis and usable asset workflows
+## Current phase — complete comparison readings on narrow screens
+
+The two-asset matrix now fits at **320px and 390px** with complete dates and the original type size. The measure column is 98px, asset columns are at least 91px, and cells use 8px side padding below 401px. Larger cohorts retain native keyboard scrolling and sticky measure context.
+
+**12 affected browser cases passed** (eight new and four existing), with twelve contexts/pages and zero errors or external/WebSocket traffic. Native before/after measurements preserve every cell's text, font size and family across eight variants. Four new crops were inspected, including null/zero history and the three-asset far edge.
+
+Runtime changes are confined to CSS and the saved pages' two asset-version references. Sixteen other inputs remain exact. The earlier 161-case complete proof remains scoped to its prior runtime; this is a focused twelve-case run.
+
+- [Layout decisions and builder acceptance](COMPACT_MATRIX.md)
+- [Exact source, validation and qualifications](COMPACT_MATRIX_VALIDATION.json)
+- [Candidate JUnit](compact/CANDIDATE_RESULTS.xml), [native measurements](compact/METRICS.json) and [inspected captures](compact/captures)
+
+Next: repair null/directional-state consistency in the existing projection while retaining finite zero and supplied non-directional history. Paired-window receipt fields remain proposed.
+
+## Prior phase — honest comparison basis and usable asset workflows
 
 The interface now names the reported measures accurately: **Asset/BTC ratio change** and **Price change**. One native **Comparison basis** disclosure separates the calculation rule from missing paired-window metadata. Markets starts in the supplied asset order, comparison explicitly includes all snapshot assets, and null relative history keeps other usable asset readings visible.
 
@@ -16,7 +30,7 @@ Published values, dates, view JSON, producer and model remain unchanged. The exi
 - [Parent baseline](comparison/BASELINE.txt), [corrected Reset proof](comparison/RESET_BASELINE.txt) and [corrected pointer proof](comparison/POINTER_BASELINE.txt)
 - [Inspected native captures](comparison/captures)
 
-Next: evaluate a compact two-asset matrix at 320/390px while preserving native scrolling for larger cohorts. Public-route, H5/model, alert, hosted/independent visual and release holds remain unchanged.
+The compact phase above completes the measured narrow-matrix refinement. Public-route, H5/model, alert, hosted/independent visual and release holds remain unchanged.
 
 ## Prior phase — original-condition-first saved cases
 

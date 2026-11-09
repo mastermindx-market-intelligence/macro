@@ -224,6 +224,14 @@ html[data-lang=zh] .cri :is(h1,h2,h3,.cri-kicker,.cri-case-label){letter-spacing
 .cri-comparison-table th:first-child{width:130px}
 }
 
+/* Fit the current two-asset matrix without hiding values; larger cohorts still scroll. */
+@media(max-width:400px){
+.cri-comparison-table th,.cri-comparison-table td{padding-left:8px;padding-right:8px}
+.cri-comparison-table th:first-child{width:98px;min-width:98px}
+.cri-comparison-table td{min-width:91px}
+.cri-comparison-table tbody tr:first-child td{white-space:nowrap}
+}
+
 /* Keep desktop dismissal clear of the shared navigation hover controls. */
 @media(min-width:761px){.cri-dialog{height:calc(100dvh - 104px);max-height:calc(100dvh - 104px);margin:80px 24px 24px auto;border:1px solid var(--line);border-radius:var(--r-panel,14px)}}
 /* A narrow fine pointer can otherwise reveal the shared Settings hover target under Close. */

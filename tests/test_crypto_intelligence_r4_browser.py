@@ -1313,6 +1313,9 @@ def comparison_page(browser, page_url, request, tmp_path):
             btc = dict(eth, symbol="BTC", name="Bitcoin", price=100.0, relative_90d_pct=None,
                        relative_en="Building history", relative_zh="积累历史中")
             view["assets"] = [sol, eth, btc]
+        elif variant == "two-relative":
+            view["assets"][0]["relative_90d_pct"] = 0.0
+            view["assets"][1].update(relative_90d_pct=None, relative_en="Building history", relative_zh="积累历史中")
         elif variant in ("missing", "empty"):
             view["assets"] = []
             view["contracts"]["asset_states"] = "accepted" if variant == "empty" else "missing_or_schema_mismatch"
@@ -1406,15 +1409,15 @@ def test_r4_comparison_full_cohort_keeps_filtered_origin_and_narrow_context(comp
     wrap = page.locator(".cri-comparison-scroll")
     if width <= 390:
         assert page.locator("#cri-dialog").evaluate("node=>Math.abs(node.getBoundingClientRect().width-innerWidth)<1")
-        assert wrap.evaluate("node=>node.scrollWidth>node.clientWidth")
-        sticky = rows.nth(1).locator("th")
-        left_before = sticky.bounding_box()["x"]
-        wrap.focus()
-        page.keyboard.press("ArrowRight")
-        page.wait_for_function("document.querySelector('.cri-comparison-scroll').scrollLeft>0")
-        assert abs(sticky.bounding_box()["x"] - left_before) < 1
-        assert wrap.evaluate("node=>document.activeElement===node")
-        wrap.evaluate("node=>node.scrollLeft=0")
+        if wrap.evaluate("node=>node.scrollWidth>node.clientWidth"):
+            sticky = rows.nth(1).locator("th")
+            left_before = sticky.bounding_box()["x"]
+            wrap.focus()
+            page.keyboard.press("ArrowRight")
+            page.wait_for_function("document.querySelector('.cri-comparison-scroll').scrollLeft>0")
+            assert abs(sticky.bounding_box()["x"] - left_before) < 1
+            assert wrap.evaluate("node=>document.activeElement===node")
+            wrap.evaluate("node=>node.scrollLeft=0")
     if touch:
         assert page.locator("#cri-dialog").evaluate("node=>Math.abs(node.getBoundingClientRect().height-innerHeight)<1")
     summary = basis.locator("summary")
@@ -1639,4 +1642,99 @@ def test_r4_comparison_pointer_close_keeps_settings_clear_and_owner_usable(compa
     page.locator("#settings-open").click()
     assert page.locator("#settings-open").get_attribute("aria-expanded") == "true"
     assert page.evaluate("document.documentElement.scrollWidth<=innerWidth")
+    _comparison_storage_untouched(page)
+
+
+
+def _compact_matrix_metrics(page, name):
+    metrics = page.locator(".cri-comparison-scroll").evaluate("""wrap=>{
+      const box=wrap.getBoundingClientRect(),table=wrap.querySelector('table');
+      function reading(cell) {
+        const target=cell.firstChild, range=document.createRange();
+        range.selectNodeContents(target);
+        const boxes=[...range.getClientRects()].map(b=>({left:b.left,right:b.right,width:b.width,top:b.top,height:b.height}));
+        const style=getComputedStyle(cell);
+        return {text:target.textContent,boxes,fontSize:style.fontSize,fontFamily:style.fontFamily,
+          cellWidth:cell.getBoundingClientRect().width,paddingLeft:style.paddingLeft,paddingRight:style.paddingRight};
+      }
+      return {viewport:innerWidth,left:box.left,right:box.right,clientWidth:wrap.clientWidth,scrollWidth:wrap.scrollWidth,
+        headers:[...table.querySelectorAll('thead th')].slice(1).map(reading),
+        rows:[...table.querySelectorAll('tbody tr')].map(row=>[...row.querySelectorAll('td')].map(reading)),
+        measureWidth:table.querySelector('tbody th').getBoundingClientRect().width,
+        bodyWidth:document.body.scrollWidth};
+    }""")
+    if os.environ.get("MMX_CRYPTO_COMPACT_METRICS"):
+        out=Path(os.environ["MMX_CRYPTO_COMPACT_METRICS"])
+        out.mkdir(parents=True,exist_ok=True)
+        (out/(name+".json")).write_text(json.dumps(metrics,ensure_ascii=False,indent=2)+"\n")
+    return metrics
+
+
+@pytest.mark.parametrize("lang,width,touch", [
+    ("en",320,False),("en",390,False),("zh",320,True),("zh",390,True)
+])
+def test_r4_compact_matrix_two_assets_fit_with_complete_dates_and_values(comparison_page,lang,width,touch):
+    page,view=comparison_page(lang,width,touch=touch)
+    page.locator('[data-view="markets"] [data-open="comparison"]').click()
+    page.evaluate("()=>document.fonts.ready")
+    metrics=_compact_matrix_metrics(page,f"two-{lang}-{width}")
+    assert metrics["scrollWidth"] <= metrics["clientWidth"]+1,metrics
+    assert metrics["bodyWidth"] <= width
+    assert [x["text"] for x in metrics["headers"]] == ["ETH","SOL"]
+    assert [x["text"] for x in metrics["rows"][0]] == [a["as_of"] for a in view["assets"]]
+    assert [x["text"] for x in metrics["rows"][1]] == ["+2.6%","+8.8%"]
+    assert [x["text"] for x in metrics["rows"][2]] == ["+0.7%","+7.6%"]
+    # Dates, signed readings and asset headers stay whole; labels may wrap.
+    for cell in metrics["headers"]+[cell for row in metrics["rows"][:3] for cell in row]:
+        assert len(cell["boxes"]) == 1,cell
+        assert metrics["left"] <= cell["boxes"][0]["left"] <= cell["boxes"][0]["right"] <= metrics["right"]+0.5,cell
+    assert page.evaluate("JSON.parse(document.getElementById('cri-data').textContent).assets") == view["assets"]
+    if width==320:
+        _capture(page,f"compact-two-{lang}-{width}")
+    _comparison_storage_untouched(page)
+
+
+@pytest.mark.parametrize("lang,touch", [("en",False),("zh",True)])
+def test_r4_compact_matrix_two_assets_keep_null_zero_and_history_readable(comparison_page,lang,touch):
+    page,_=comparison_page(lang,320,"two-relative",touch=touch)
+    page.locator('[data-view="markets"] [data-open="comparison"]').click()
+    page.evaluate("()=>document.fonts.ready")
+    metrics=_compact_matrix_metrics(page,f"two-relative-{lang}-320")
+    assert metrics["scrollWidth"] <= metrics["clientWidth"]+1,metrics
+    assert metrics["rows"][1][0]["text"]=="0.0%"
+    missing=metrics["rows"][1][1]
+    assert missing["text"]==("Unavailable" if lang=="en" else "暂无")
+    assert len(missing["boxes"])==1,missing
+    assert missing["boxes"][0]["right"] <= metrics["right"]+0.5
+    state=page.locator(".cri-comparison-table tbody tr").nth(1).locator(".cri-measure-state")
+    assert state.inner_text()==("Building history" if lang=="en" else "积累历史中")
+    assert state.evaluate("node=>node.scrollWidth<=node.clientWidth")
+    if lang=="en":
+        _capture(page,"compact-null-en-320")
+    _comparison_storage_untouched(page)
+
+
+@pytest.mark.parametrize("lang,touch", [("en",False),("zh",True)])
+def test_r4_compact_matrix_larger_cohort_keeps_native_scroll_and_measure_context(comparison_page,lang,touch):
+    page,view=comparison_page(lang,320,"mixed",touch=touch)
+    page.locator('[data-view="markets"] [data-open="comparison"]').click()
+    page.evaluate("()=>document.fonts.ready")
+    wrap=page.locator(".cri-comparison-scroll")
+    metrics=_compact_matrix_metrics(page,f"three-{lang}-320")
+    assert metrics["scrollWidth"] > metrics["clientWidth"]
+    assert [x["text"] for x in metrics["headers"]] == [a["symbol"] for a in view["assets"]]
+    sticky=page.locator(".cri-comparison-table tbody tr").nth(1).locator("th")
+    initial=sticky.bounding_box()["x"]
+    wrap.focus()
+    for _ in range(16):
+        page.keyboard.press("ArrowRight")
+    page.wait_for_function("(()=>{const w=document.querySelector('.cri-comparison-scroll');return w.scrollLeft+w.clientWidth>=w.scrollWidth-1})()")
+    assert abs(sticky.bounding_box()["x"]-initial)<1
+    assert wrap.evaluate("node=>document.activeElement===node")
+    last=page.locator(".cri-comparison-table thead th").last
+    assert last.inner_text()=="BTC"
+    assert last.bounding_box()["x"]+last.bounding_box()["width"] <= wrap.bounding_box()["x"]+wrap.bounding_box()["width"]+1
+    assert page.evaluate("document.documentElement.scrollWidth<=innerWidth")
+    if lang=="zh":
+        _capture(page,"compact-three-zh-320")
     _comparison_storage_untouched(page)
