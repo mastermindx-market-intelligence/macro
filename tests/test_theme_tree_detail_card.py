@@ -317,3 +317,35 @@ for(const mobile of [false,true]){
 console.log('real rendered multi-parent selection: click, replace, fresh-frame return, close, neutral controls and bridge replay PASS');
 """], input=json.dumps(packet), capture_output=True, text=True, timeout=30)
     assert result.returncode == 0, result.stdout + result.stderr
+
+
+def test_theme_hover_ignores_touch_compatibility_mouse_events():
+    """Run the emitted hover handler for touch and for a mouse in both languages."""
+    import subprocess
+
+    html = _html()
+    scripts = re.findall(r"<script>(.*?)</script>", html, re.S)
+    script = next(s for s in scripts if "Multi-parent tip on micro chips" in s)
+    result = subprocess.run(["node", "-e", r"""
+const {runInNewContext} = require('node:vm'), assert = require('node:assert/strict');
+const script = require('node:fs').readFileSync(0, 'utf8');
+const listeners = {};
+let tip, lang='en';
+const chip={closest:()=>chip,getAttribute:key=>({'data-tt-tip-en':'Two branches','data-tt-tip-zh':'两个分支'})[key]};
+const document={
+  createElement:()=>({style:{}}), body:{appendChild:el=>{tip=el;}},
+  documentElement:{getAttribute:()=>lang}, addEventListener:(type,fn)=>{listeners[type]=fn;},
+};
+runInNewContext(script,{document,window:{innerWidth:390,innerHeight:844}});
+const emit=(type,pointerType)=>listeners[type]?.({target:chip,pointerType,clientX:130,clientY:450});
+emit('pointerover','touch');emit('pointermove','touch');
+emit('mouseover');emit('mousemove');
+assert.equal(tip,undefined);
+for(const [locale,text] of [['en','Two branches'],['zh','两个分支']]){
+  lang=locale;
+  emit('pointerover','mouse');emit('pointermove','mouse');
+  assert.equal(tip.style.display,'block');assert.equal(tip.textContent,text);
+  emit('pointerout','mouse');assert.equal(tip.style.display,'none');
+}
+"""], input=script, capture_output=True, text=True, timeout=30)
+    assert result.returncode == 0, result.stdout + result.stderr
