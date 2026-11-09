@@ -1448,3 +1448,34 @@ The existing S06 Build **7M9-0** in **01M5H6EARN9YHQV17JC6ZG9BRY**, p7, now reco
 Original model01 **EFFECT_UNKNOWN / ROOT_UNVERIFIED**, no-consume/no-retry/no-replacement and all Draft/admission/release holds remain. No Ready, un-draft, relabel, enqueue, merge or deployment was performed.
 
 The parallel Catalyst delivery made actual CI progress at **04:13:08 UTC**: desktop-2/3/4 and tablet-3 passed, leaving seven browser shards running with no completed failure. Exact head **45472fcedad31292d660d54731d4da472ca04f1e** and the existing native auto-merge request remain unchanged; behind-base status is not evidence of a merge conflict. Protected delivery and real live-account/browser proof are still owed.
+
+
+## 29. GMI — qualify unavailable-page recovery against existing serving owners
+
+**Source audit and Paper amendment completed on 9 November 2026.** Module 05 now closes a concrete implementation ambiguity: a removed issuer document cannot recover through its own JavaScript, and a missing route or bridge response does not by itself prove source withdrawal.
+
+### Qualified architecture, not installed-state proof
+
+The frontend candidate remains PR10676 at **696f370a3b47c2abc893a7c111b5669cce66d654**. The serving comparison uses protected Macro **071ed19f5ce87927f078f94f3e126c24d8a0307e** and protected Terminal **4e868da4d84add6be69a19b1abc848763870aa25**. Their relevant source was read directly.
+
+| Boundary | Exact existing owner and source finding | Implementation consequence |
+| --- | --- | --- |
+| Issuer removal | Candidate `scripts/build_gmi_explorer.py`, blob **900253d42a7b1d43ad41aa493e8032444c4570de**, removes regular generated issuer files absent from the current public model and refuses nonregular outputs. | Keep this retirement rule. An empty-card template does not establish a response for a URL whose file no longer exists. |
+| Publication of deletion | Macro `app/deploy/update.sh`, blob **61cf9f858e2c797e80acc2263d10558c6c4b7024**, publishes the guarded source tree to `site.served` through its existing `rsync --delete` owner. | A local renderer deletion alone does not prove live removal. The actual publisher must propagate it. No publisher command was run for this audit. |
+| Standalone HTML | Macro `app/deploy/Caddyfile`, blob **875696b1579b287724360c8f607838ac38bcadcc**. Its `@open_html` route runs the existing gate and then the static file server rooted at `/opt/macro/site.served`; HTML errors retain their real status. | After an allowed gate and an actually published deletion, the ordinary missing-file response applies. Do not infer a custom GMI recovery document or a registration paywall from a registry label. |
+| Current Terminal eligibility | `terminal/lib/sharedShellRoutes.generated.json`, blob **25b0573cbac3e4b565d71c5aa9e7435b0964c5d1**, has zero GMI entries in `legacyPaths` or `directory`. Six older GMI paths appear only in exclusions as `unregistered`. The catchall page, blob **7fde5de99560264bb936922da70d092a99836de6**, calls `notFound()` when the feature or path is not admitted. | Signing in or retrying cannot add an absent path to this source catalogue. Do not present the separately proposed registry adoption as current Terminal behavior. Installed flags and network responses were not inspected here. |
+| Admitted shared-shell document | `LegacyPageHost.tsx`, blob **f5f336a17b1590d5e3804b550d8c2d5fb841f641**, qualifies the service generation/registry before navigation and uses the existing 15-second readiness deadline. Missing readiness reaches failure with Retry / Open original; a generation/registry mismatch reaches refresh. | These are existing shell recovery owners for a separately admitted route. A missing bridge is not proof of research withdrawal. Access restriction, routing ineligibility and transport/document failure need distinct evidence. |
+
+The standalone conclusion is conditional on the actual gate and publisher. No live HTTP status, deployed hash, auth setting or catalogue adoption was claimed. The separately held registry proposal remains an incumbent owner's work.
+
+### Applied builder decision
+
+In Paper **01M5H6EARN9YHQV17JC6ZG9BRY**, p7, existing root **7M9-0**, only heading **7N6-0** and body **7N7-0** changed. Module 05 now says **Keep recovery at the serving boundary** and names the distinctions above. Future recovery must retain only the permitted `gmi_return` context; it cannot depend on code in a removed document, invent an immutable source snapshot, or recreate an issuer tombstone as a shortcut.
+
+All **27 node identities and parent relationships** are unchanged. All prior style declarations are retained; Paper's text operation adds `whiteSpace: pre-wrap` to **7N7-0** for the three paragraph breaks. The native screenshot was inspected: readable text, intact module container, no clipping. The exact owned root was finished. No product artboard, renderer, registry, server, auth or release behavior changed in this phase.
+
+### Continuing delivery
+
+The separate Catalyst read at **04:23:15 UTC** shows six further responsive-shard successes: desktop-1/5, tablet-1/2 and mobile-1/3. Run42556255347 has **17 successful jobs and mobile-2 still running**, with no completed failure. PR1354 remains Ready/open at exact head **45472fcedad31292d660d54731d4da472ca04f1e**, mergeable but behind the advancing base. Its original native auto-merge request remains present; GraphQL reports **mergeQueueEntry null**, so enrollment must not be described as queue admission. No rerun, rearm, merge or deployment occurred.
+
+The next independent source lane is the accepted Shared Tools mobile chooser. Current Macro at **071ed19f** still has the original embedded controller, byte-identical within the two separately owned outer-navigation PRs7601/10261. The chooser patch must preserve those owners and the documented P0B capture/release hold. No release evidence may be substituted across that denied capture family.
