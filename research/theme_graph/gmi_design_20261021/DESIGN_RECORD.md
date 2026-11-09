@@ -1011,3 +1011,52 @@ The first candidate run was stopped after six failures: its test incorrectly req
 The renderer's recorded verifier hashes precede that test-only correction. The validation file separately binds the exact final verifier and harness hashes used by PID33720. `verify_search_clear_component.py` extracts the named canonical verifier functions and owns no product behavior.
 
 These results establish the anonymous component's rendered, DOM, accessibility-tree and interaction behavior. Synthetic composition events do not prove OS IME behavior. Spoken screen-reader output, full shared shell/fonts, live account/public serving and deployment remain separate. Original Draft/model01/release holds remain. No Tools, original Paper style hold, navigation, publication or release owner was changed.
+
+## 11.28. Reach the full index through one clear header — 9 November 2026
+
+### Remove the repeated introduction, preserve the page's owners
+
+At parent `16a87f43743fe3a9bae02db7e3d64969871d8cd9`, the full index rendered a large GMI brand and generic introduction, a Snapshot date and product navigation, then a second breadcrumb/title/total sentence and Read as of date before search. Both dates derive from the same `model.asof`. The extra introduction displaced the user's primary task while adding no distinct freshness information.
+
+The existing `page_key == 'index'` now selects a compact variant of `_gmi_product_header.html.j2`. It retains **GMI Explorer** as a real secondary link with its existing `.gmi-product-name` hook and a minimum 44 px target. The sole H1 becomes **All micro-themes / 全部细分主题** in that header. The index's legacy `head()` call/import is removed; its noninteractive breadcrumb, repeated count sentence and second date go with it. The total remains in search and the explicitly labelled Full index footer.
+
+The complete snapshot/stale subtree, `data-gmi-snapshot` value, Brain slot, navigation markup, active index destination and following index content remain exact. No generic head/base template or renderer context was changed. The non-index branch produces identical HTML, including its existing introductory paragraph. No production JavaScript was changed.
+
+### Layout and navigation contract
+
+Desktop uses a 32 px H1 and 24/16 px header block padding. At ≤820 px, the title is 24 px and padding is 16/12 px. Chinese title tracking stays natural at every width. The smaller brand keeps a 44 px-high link target. Title and stale qualification can grow vertically; there is no fixed header height or single-line truncation.
+
+The existing 72 px right reservation and Brain slot positioning remain at ≤820 px. Index-specific navigation and contextual-return bottom margins are 16 px. These rules are scoped through the index header's adjacent siblings, so they reach the return holder that the existing `refreshJourney()` inserts immediately after navigation.
+
+The brand retains its contextual research destination. Theme-return and company-return cases preserve complete qualified fragments, including one upstream research return. Direct entry has no fabricated back action. Initial focus remains on the document, and native Tab moves from brand through an occupied Brain slot to product navigation. Search, clear, result feedback, category shortcuts and index history continue using their existing owners.
+
+| Direct entry, light theme, empty Brain slot | Previous search top | Current search top | Vertical saving |
+| --- | ---: | ---: | ---: |
+| 1440 px, EN or ZH | 364.78 px | 218.80 px | 145.98 px |
+| 390 px, EN | 467.44 px | 282.80 px | 184.64 px |
+| 390 px, ZH | 437.19 px | 271.30 px | 165.89 px |
+| 320 px, EN | 508.69 px | 282.80 px | 225.89 px |
+| 320 px, ZH | 455.94 px | 271.30 px | 184.64 px |
+
+These are measured coordinates within the anonymous generated-main fixture, not a claim about the full shared-shell viewport. Across **66 matched entry/language/width/theme/stale/Brain states**, the saving ranges from **145.98 to 233.89 px**. The comparison keeps the same return and launcher conditions on both sides.
+
+### Exact source and affected proof
+
+| Artifact | Git blob |
+| --- | --- |
+| Shared product header | **207ad3b122a9db95f4c017413207385275dfee3f** |
+| Index template | **0b4a23d3818c27f62778074969270640ef48780a** |
+| Paired stylesheet | **5b9c70ed21a5c94dc565258304d061dbabf0bb56** |
+| Generated index | **3c6d1512da13534cb23882626c748ca4e269a973** |
+| Canonical browser verifier | **1bccdb51065c550a7214e0a2cf7c42728807179c** |
+| Extracting header harness | **dec19d9e0bce3cfc0ac6ee2d96e24ec0f064a466** |
+
+The production renderer reproduced the exact parent explorer/index from 48 checked inputs and the same accepted e644fa48… model. Only **gmi-index.html and gmi.css** change among nine outputs. All six other generated HTML pages and gmi.js remain byte-identical. The actual 261,797-byte index was reconstructed from the renderer's checked span and verified against complete SHA-256 and Git-blob identities. Source self-check also confirms exact snapshot/slot/nav markup, exact index content after the removed introduction, and unchanged pre-existing CSS and canonical verification definitions.
+
+Baseline PID264 records **11 original-layout observations / 11 contexts**, exit0 in 31.01 seconds. Those passes verify the baseline's repeated introduction/date and measurement setup; they are not new-header acceptance. Candidate PID3454 passes **23 cases / 23 fresh anonymous contexts**, Chrome157.0.8103.39, zero page errors, exit0 in 47.29 seconds.
+
+Eleven candidate header cases cover EN/ZH at 1440/390/320, three crowded stale states including 768 px, and two dark cases. Each uses direct, research-return and company-return entry with an empty and populated Brain slot. Checks include one H1 and date, exact snapshot identity, stale visibility, full destination fragments, 44 px navigation and brand targets, 72 px reservation, no collision/overflow, no load-time focus movement, native Tab order and existing search/clear behavior. Four actually JavaScript-disabled cases retain 371 links, native disclosures and the static title/date. Six existing filtered-index cases and two Clear-search cases pass against the new geometry. Seven native header captures were inspected.
+
+The Brain button and November 9/20 clocks are explicit fixtures. They exercise the existing docking event and seven-day stale condition without claiming the shared Brain's runtime or a changed public snapshot. No-JavaScript markup does not generate stale qualification, Brain docking or a contextual return; tests deliberately preserve that boundary.
+
+`INDEX_HEADER_VALIDATION_20261109.json` and `verify_index_header_component.py` retain commands, inputs, all measurements and source hashes. Anonymous component proof does not establish full shared shell/fonts, live accounts/public serving, spoken assistive-technology output or deployment. Original Draft/model01/release holds remain; no Tools, navigation or release owner was changed.

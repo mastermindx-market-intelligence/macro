@@ -753,3 +753,15 @@ html[data-lang="zh"] .gmi-topic-heading h1{letter-spacing:0}
 .gmi-permission-state>.gmi-empty-symbol{display:flex;margin-bottom:var(--sp-3,12px)}
 .gmi-permission-state>.gmi-eyebrow{display:block;margin-bottom:var(--sp-3,12px)}
 @media(max-width:520px){.gmi-product .gmi-cov-mkt{min-width:44px}.gmi-product .gmi-cov-top{gap:var(--sp-2,8px)}}
+
+/* The full index has one title and one snapshot; keep the shared header owners. */
+.gmi-product-head--index{padding-top:var(--sp-6,24px);padding-bottom:var(--sp-4,16px)}
+.gmi-product .gmi-product-head--index .gmi-product-name{display:inline-flex;align-items:center;min-height:44px;font-size:var(--fs-sm,14px);font-weight:600;line-height:20px;letter-spacing:0}
+.gmi-product-index-title{margin:0;color:var(--text);font-size:32px;font-weight:700;line-height:1.15;letter-spacing:-.02em}
+html[data-lang="zh"] .gmi-product-index-title{letter-spacing:0}
+.gmi-product-head--index+.gmi-product-nav,.gmi-product-head--index+.gmi-product-nav+.gmi-return-context{margin-bottom:var(--sp-4,16px)}
+@media(max-width:820px){
+  .gmi-product-head--index{display:block;padding-top:var(--sp-4,16px);padding-bottom:var(--sp-3,12px)}
+  .gmi-product-index-title{font-size:24px;line-height:1.2}
+  .gmi-product-head--index .gmi-snapshot{margin-top:var(--sp-2,8px);align-items:flex-start;flex-direction:row;flex-wrap:wrap;gap:var(--sp-3,12px);white-space:normal}
+}

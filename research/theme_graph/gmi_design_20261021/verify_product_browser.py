@@ -1977,6 +1977,144 @@ with sync_playwright() as pw:
     check('search-clear-tree-390-en-dark',lambda:search_clear_paths('tree',390,'en','dark'))
     check('search-clear-index-320-zh-dark',lambda:search_clear_paths('index',320,'zh','dark'))
 
+    def index_header_geometry(p):
+        """Measure real header/search geometry without changing product state."""
+        return p.evaluate('''()=>{
+          const rect=n=>{if(!n)return null;const r=n.getBoundingClientRect();return {left:r.left,right:r.right,top:r.top+scrollY,bottom:r.bottom+scrollY,width:r.width,height:r.height};};
+          const header=document.querySelector('.gmi-product-head'),title=document.querySelector('h1');
+          return {header:rect(header),title:rect(title),brand:rect(document.querySelector('.gmi-product-name')),
+            snapshot:rect(document.querySelector('[data-gmi-snapshot]')),nav:rect(document.querySelector('.gmi-product-nav')),
+            returned:rect(document.querySelector('.gmi-return-context')),search:rect(document.querySelector('[data-gmi-filter="index"]').closest('.gmi-search')),
+            brain:rect(document.querySelector('#gmi-brain-slot #mmb-boot')),
+            rightPadding:parseFloat(getComputedStyle(header).paddingRight),titleSize:parseFloat(getComputedStyle(title).fontSize),
+            titleTracking:getComputedStyle(title).letterSpacing,overflow:document.documentElement.scrollWidth>innerWidth};
+        }''')
+
+    def index_header_paths(width, language, theme='light', stale=False, consolidated=True):
+        """Compare real entry states, preserving snapshot, return and Brain owners."""
+        research='gmi.html#'+urlencode({'theme':'theme:hbm_packaging','scope':'core','evidence':'1','lens':'chain','q':'Micron'})
+        company='gmi-companies.html#'+urlencode({'gmi_return':research,'q':'Micron'})
+        entries=(('direct',''),('research',research),('company',company))
+        with context(width,theme,language,reduced_motion='reduce') as c:
+            # This clock is a fixture: it tests the existing seven-day qualification.
+            c.add_init_script('Date.now=()=>Date.UTC(2026,10,'+('20' if stale else '9')+');')
+            for entry,returned in entries:
+                params={'lens':'chain','fixture_key':'retained'}
+                if returned:params['gmi_return']=returned
+                p=page_for(c,'gmi-index.html?fixture=index-header#'+urlencode(params))
+                initial_url=p.url
+                title=p.locator('h1')
+                expect(title).to_have_count(1)
+                expect(title).to_have_text('All micro-themes全部细分主题')
+                assert title.inner_text().strip()==('All micro-themes' if language=='en' else '全部细分主题')
+                assert p.locator('.gmi-head').count()==(0 if consolidated else 1)
+                assert p.locator('.gmi-product-head > div:first-child > p').count()==(0 if consolidated else 1)
+                if consolidated:expect(title).to_have_class('gmi-product-index-title')
+                snapshot=p.locator('[data-gmi-snapshot]')
+                expect(snapshot).to_have_attribute('data-gmi-snapshot','2026-11-03')
+                date='3 Nov 2026' if language=='en' else '2026年11月3日'
+                assert snapshot.inner_text().count(date)==1
+                assert p.locator('main').inner_text().count(date)==(1 if consolidated else 2)
+                if stale:expect(p.locator('.gmi-snapshot-stale')).to_be_visible()
+                else:expect(p.locator('.gmi-snapshot-stale')).not_to_be_visible()
+                assert p.evaluate('document.activeElement===document.body')
+                assert parse_qs(urlsplit(p.url).fragment)=={k:[v] for k,v in params.items()}
+                assert p.locator('#gmi-brain-slot').count()==1
+                assert p.locator('#gmi-brain-slot').evaluate('(n)=>n.childElementCount')==0
+                brand=p.locator('.gmi-product-name')
+                if returned:
+                    action=p.locator('[data-gmi-return]')
+                    expect(action).to_be_visible()
+                    expected_label=('Back to company results' if entry=='company' else 'Back to theme research') if language=='en' else ('返回公司结果' if entry=='company' else '返回主题研究')
+                    assert action.inner_text().strip()==expected_label
+                    actual=urlsplit(action.get_attribute('href'))
+                    wanted=urlsplit(returned)
+                    assert actual.path.split('/')[-1]==wanted.path and parse_qs(actual.fragment)==parse_qs(wanted.fragment)
+                    assert p.locator('.gmi-product-nav').evaluate('(n)=>n.nextElementSibling.classList.contains("gmi-return-context")')
+                    b=urlsplit(brand.get_attribute('href'));w=urlsplit(research)
+                    assert b.path.split('/')[-1]==w.path and parse_qs(b.fragment)==parse_qs(w.fragment)
+                else:
+                    expect(p.locator('[data-gmi-return]')).to_have_count(0)
+                    assert brand.get_attribute('href')=='gmi.html'
+                for brain in ('empty','fixture'):
+                    if brain=='fixture':
+                        p.evaluate('''()=>{
+                          const b=document.createElement('button');b.id='mmb-boot';b.type='button';b.textContent='Brain';
+                          b.setAttribute('aria-label','Brain fixture');b.setAttribute('data-header-fixture','');
+                          b.style.cssText='width:44px;height:44px;min-width:44px;min-height:44px;padding:0;border:1px solid var(--line);border-radius:12px;background:var(--panel2);color:var(--text);font:11px var(--font-ui)';
+                          window.__headerBrainFixture=b;document.body.append(b);dispatchEvent(new Event('mm-brain-ready'));
+                        }''')
+                        assert p.locator('#gmi-brain-slot #mmb-boot').count()==1
+                        assert p.evaluate('document.querySelector("#gmi-brain-slot #mmb-boot")===window.__headerBrainFixture')
+                    g=index_header_geometry(p)
+                    assert not g['overflow'],g
+                    assert g['nav']['top']>=g['header']['bottom']-0.5,g
+                    assert g['search']['top']>=(g['returned'] or g['nav'])['bottom'],g
+                    if consolidated:
+                        assert g['brand']['height']>=44 and g['brand']['width']>=44,g
+                        assert g['titleSize']==(24 if width<=820 else 32),g
+                        assert abs(g['search']['height']-44)<0.5,g
+                    if consolidated and language=='zh':assert g['titleTracking'] in ('0px','normal'),g
+                    if width<=820:
+                        assert g['rightPadding']==72,g
+                        if g['brain']:
+                            assert g['brain']['height']>=44 and g['brain']['width']>=44,g
+                            # The desktop title has its own lower header; the new H1 shares the reserved column.
+                            if consolidated:assert g['title']['right']<=g['brain']['left']-1,g
+                            assert g['snapshot']['right']<=g['brain']['left']-1,g
+                    targets=p.locator('.gmi-product-nav a').evaluate_all('(ns)=>ns.map(n=>{const r=n.getBoundingClientRect();return {left:r.left,right:r.right,height:r.height};})')
+                    assert len(targets)==5 and all(n['left']>=0 and n['right']<=width+0.1 and n['height']>=44 for n in targets),targets
+                    report.setdefault('index_header',[]).append({'width':width,'language':language,'theme':theme,'stale_fixture':stale,'entry':entry,'brain':brain,'consolidated':consolidated,'geometry':g})
+                    if entry=='direct' and brain=='empty' and not stale and (width,language) in ((390,'en'),(320,'zh')):
+                        path=args.out/f'index-header-{width}-{language}-{theme}.png';p.screenshot(path=str(path));report['screenshots'].append(path.name)
+                    if consolidated and stale and entry=='company' and brain=='fixture':
+                        path=args.out/f'index-header-composite-{width}-{language}.png';p.screenshot(path=str(path));report['screenshots'].append(path.name)
+                assert p.url==initial_url
+                brand.focus();p.keyboard.press('Tab');expect(p.locator('#mmb-boot')).to_be_focused()
+                p.keyboard.press('Tab');expect(p.locator('.gmi-product-tabs a').first).to_be_focused()
+                if consolidated:
+                    search=p.locator('[data-gmi-filter="index"]');search.focus();search.fill('HBM')
+                    expect(p.locator('[data-gmi-index-feedback]')).to_be_visible()
+                    expect(p.locator('[data-gmi-search-clear]')).to_be_visible()
+                    p.locator('[data-gmi-search-clear]').click();expect(search).to_be_focused();expect(search).to_have_value('')
+                    assert parse_qs(urlsplit(p.url).fragment)=={k:[v] for k,v in params.items()}
+                p.close()
+
+    def index_header_static(width, language):
+        """Static navigation is useful without promising JS-derived stale/return/Brain effects."""
+        with context(width,'light',language,java_script_enabled=False,reduced_motion='reduce') as c:
+            p=page_for(c,'gmi-index.html#gmi_return=gmi.html%23theme%3Dtheme%253Ahbm_packaging')
+            title=p.locator('h1');expect(title).to_have_count(1);expect(title).to_have_class('gmi-product-index-title')
+            assert title.inner_text().strip()==('All micro-themes' if language=='en' else '全部细分主题')
+            date='3 Nov 2026' if language=='en' else '2026年11月3日'
+            assert p.locator('main').inner_text().count(date)==1
+            expect(p.locator('[data-gmi-snapshot]')).to_have_attribute('data-gmi-snapshot','2026-11-03')
+            expect(p.locator('.gmi-snapshot-stale')).not_to_be_visible()
+            expect(p.locator('[data-gmi-return]')).to_have_count(0)
+            assert p.locator('#gmi-brain-slot').evaluate('(n)=>n.childElementCount')==0
+            assert p.locator('.gmi-product-name').get_attribute('href')=='gmi.html'
+            links=p.locator('a.gmi-irow-name');assert links.count()==371
+            assert links.evaluate_all('(ns)=>ns.every(n=>n.getAttribute("href"))')
+            group=p.locator('.gmi-index-group').first;assert group.evaluate('(n)=>n.open')
+            group.locator('summary').click();assert not group.evaluate('(n)=>n.open')
+            group.locator('summary').click();assert group.evaluate('(n)=>n.open')
+            expect(p.locator('[data-gmi-search-clear]')).not_to_be_visible()
+            g=index_header_geometry(p)
+            assert not g['overflow'] and g['brand']['height']>=44
+            gmi_navigation_fit(p,width,language)
+            report.setdefault('index_header_static',[]).append({'width':width,'language':language,'native_links':371,'geometry':g,'no_dynamic_return_or_brain':True})
+
+    for width in (1440,390,320):
+        for language in ('en','zh'):
+            check(f'index-header-{width}-{language}',lambda w=width,l=language:index_header_paths(w,l))
+    for width,language in ((320,'en'),(390,'zh'),(768,'en')):
+        check(f'index-header-composite-{width}-{language}',lambda w=width,l=language:index_header_paths(w,l,stale=True))
+    for width,language in ((390,'en'),(320,'zh')):
+        check(f'index-header-dark-{width}-{language}',lambda w=width,l=language:index_header_paths(w,l,'dark'))
+    for width in (1440,320):
+        for language in ('en','zh'):
+            check(f'index-header-static-{width}-{language}',lambda w=width,l=language:index_header_static(w,l))
+
     browser.close()
 server.shutdown()
 report['pass'] = all(c['result']=='PASS' for c in report['cases']) and not report['page_errors']
