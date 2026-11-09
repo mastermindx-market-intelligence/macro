@@ -1,0 +1,1392 @@
+{
+  "phase": "Qualified index return for unsupported native Browse",
+  "date": "2026-11-09",
+  "repository": "mastermindx-market-intelligence/Macro",
+  "branch": "claude/gmi-product-upgrade-20261103",
+  "pr": 10676,
+  "parent": "1015aa9501ad9cb4d6519b9c89b791c8f7bcf167",
+  "status": "source-bound component proof; Draft and original release holds unchanged",
+  "behavior": {
+    "existing_fallback_branch_only": true,
+    "refreshes_existing_journey": true,
+    "navigates_existing_qualified_index_href": true,
+    "new_url_or_modal_owner": false,
+    "ordinary_path_unchanged": true,
+    "return_qualification_unchanged": true,
+    "main_selector_unchanged": true
+  },
+  "boundary": {
+    "fault": "showModal unavailable on one initialized dialog instance only",
+    "prototype_untouched": true,
+    "nondefault_selected_topic": true,
+    "qualified_return_compared_to_existing_owner": true,
+    "unqualified_fixture_parameter_dropped": true,
+    "actual_index_and_return_link_activated": true,
+    "native_open_works_after_return": true,
+    "legacy_browser_support_claimed": false
+  },
+  "native_root": "/Volumes/Mastermind/agent-workspaces/verify/gmi-dialog-return-20261109-i86fvpcx",
+  "processes": {
+    "prepare": {
+      "pid": 10361,
+      "exit_code": 0,
+      "runtime_seconds": 0.66
+    },
+    "patch": {
+      "pid": 18633,
+      "exit_code": 0,
+      "runtime_seconds": 0.2
+    },
+    "harness_scope_update": {
+      "pid": 24722
+    },
+    "baseline": {
+      "pid": 24930,
+      "exit_code": 1,
+      "runtime_seconds": 11.83,
+      "cases": 4,
+      "contexts": 4,
+      "expected_fallback_failures": 2,
+      "supported_path_passes": 2,
+      "page_errors": 0
+    },
+    "candidate": {
+      "pid": 26102,
+      "exit_code": 0,
+      "runtime_seconds": 27.08,
+      "cases": 12,
+      "contexts": 12,
+      "page_errors": 0,
+      "browser": "157.0.8103.39"
+    },
+    "export": {
+      "pid": 31453,
+      "bytes": 41108,
+      "sha256": "e848ae02d187146e748d4e5b729711ab5e8e2be3fbdfb7b092ab89810f11825d",
+      "blob": "c5eebed1c0e67413f89e1ec4182ae02926b22aa7"
+    }
+  },
+  "commands": {
+    "prepare": "python3 - <<'PY'\nfrom pathlib import Path\nfrom bs4 import BeautifulSoup\nimport json,hashlib,shutil,tempfile\nprevious=Path('/Volumes/Mastermind/agent-workspaces/verify/gmi-primary-clear-20261109-hzhiwlz2')\nsource=json.loads((previous/'input-bindings.json').read_text())\nsoup=BeautifulSoup((previous/'candidate/gmi.html').read_text(),'html.parser')\ndialog=soup.select_one('[data-browse-dialog]')\nassert dialog.find_parent('main') is not None\nroot=Path(tempfile.mkdtemp(prefix='gmi-dialog-return-20261109-',dir='/Volumes/Mastermind/agent-workspaces/verify'))\n(root/'templates').mkdir()\nfor name in ('theme.css','gmi.js'):shutil.copy2(previous/'templates'/name,root/'templates'/name)\nfor lane in ('baseline','candidate'):shutil.copytree(previous/'candidate',root/lane)\nshutil.copy2(previous/'verify_product_browser.py',root/'baseline-verify_product_browser.py')\nshutil.copy2(previous/'verify_product_browser.py',root/'verify_product_browser.py')\ndef meta(p):\n b=p.read_bytes();return {'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest(),'blob':hashlib.sha1(b'blob '+str(len(b)).encode()+b'\\0'+b).hexdigest()}\nbinding={'source_head':'1015aa9501ad9cb4d6519b9c89b791c8f7bcf167','source_root':str(previous),'retained_model_sha256':source['model_sha256'],'dialog_is_inside_main':True,'inputs':{p.name:meta(p) for p in sorted((root/'baseline').iterdir()) if p.is_file()},'theme_css':meta(root/'templates/theme.css'),'canonical_verifier':meta(root/'verify_product_browser.py')}\nassert binding['inputs']['gmi.js']['blob']=='da28f4622372c072225b140cf59d61385570b364'\nassert binding['inputs']['gmi.html']['blob']=='a7fcc7db25acbe1cf85dbf63807bbceedc3b4a8a'\nassert binding['canonical_verifier']['blob']=='114602419856b6898a2da9366b8a6b6c85beb32a'\n(root/'input-bindings.json').write_text(json.dumps(binding,ensure_ascii=False,indent=2)+'\\n')\nprint(json.dumps({'root':str(root),'source_head':binding['source_head'],'dialog_inside_main':True,'baseline_files':len(binding['inputs'])}),flush=True)\nPY",
+    "patch": "python3 - <<'PY'\nfrom pathlib import Path\nimport json,ast,hashlib\nv=json.loads(\"{\\\"root\\\":\\\"/Volumes/Mastermind/agent-workspaces/verify/gmi-dialog-return-20261109-i86fvpcx\\\",\\\"old\\\":\\\"if(typeof dialog.showModal!=='function'){location.href='gmi-index.html';return;}\\\",\\\"replacement\\\":\\\"if(typeof dialog.showModal!=='function'){refreshJourney();location.href=browse.querySelector('.gmi-browse-index').href;return;}\\\"}\");r=Path(v['root']);s=(r/'baseline/gmi.js').read_text();assert s.count(v['old'])==1\ncandidate=s.replace(v['old'],v['replacement']);(r/'candidate/gmi.js').write_text(candidate);(r/'templates/gmi.js').write_text(candidate)\nt=(r/'baseline-verify_product_browser.py').read_text();marker='\\n    browser.close()\\nserver.shutdown()';assert t.count(marker)==1\nt=t.replace(marker,(r/'dialog-return-definitions.py').read_text()+marker);ast.parse(t);ast.parse((r/'verify_dialog_return_component.py').read_text());(r/'verify_product_browser.py').write_text(t)\ndef meta(p):\n b=p.read_bytes();return {'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest(),'blob':hashlib.sha1(b'blob '+str(len(b)).encode()+b'\\0'+b).hexdigest()}\nunchanged=[p.name for p in sorted((r/'baseline').iterdir()) if p.is_file() and p.name!='gmi.js'];assert all((r/'baseline'/name).read_bytes()==(r/'candidate'/name).read_bytes() for name in unchanged)\nchecks={'one_existing_branch':True,'journey_owner_unchanged':True,'unchanged_outputs':unchanged,'sources':{name:meta(r/name) for name in ('templates/gmi.js','candidate/gmi.js','verify_product_browser.py','verify_dialog_return_component.py')}}\n(r/'source-checks.json').write_text(json.dumps(checks,indent=2)+'\\n');print(json.dumps(checks),flush=True)\nPY",
+    "harness_scope": "python3 - <<'PY'\nfrom pathlib import Path\nimport ast,json,hashlib\nr=Path('/Volumes/Mastermind/agent-workspaces/verify/gmi-dialog-return-20261109-i86fvpcx');p=r/'verify_dialog_return_component.py';ast.parse(p.read_text());b=p.read_bytes();meta={'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest(),'blob':hashlib.sha1(b'blob '+str(len(b)).encode()+b'\\0'+b).hexdigest()};s=json.loads((r/'source-checks.json').read_text());s['sources'][p.name]=meta;(r/'source-checks.json').write_text(json.dumps(s,indent=2)+'\\n');print(json.dumps(s),flush=True)\nPY",
+    "baseline": "PYTHONDONTWRITEBYTECODE=1 python3 '/Volumes/Mastermind/agent-workspaces/verify/gmi-dialog-return-20261109-i86fvpcx/verify_dialog_return_component.py' --root '/Volumes/Mastermind/agent-workspaces/verify/gmi-dialog-return-20261109-i86fvpcx' --executable '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' --baseline",
+    "candidate": "PYTHONDONTWRITEBYTECODE=1 python3 '/Volumes/Mastermind/agent-workspaces/verify/gmi-dialog-return-20261109-i86fvpcx/verify_dialog_return_component.py' --root '/Volumes/Mastermind/agent-workspaces/verify/gmi-dialog-return-20261109-i86fvpcx' --executable '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'",
+    "export": "python3 - <<'PY'\nfrom pathlib import Path\nimport json,hashlib\nr=Path('/Volumes/Mastermind/agent-workspaces/verify/gmi-dialog-return-20261109-i86fvpcx')\ndef meta(p):\n b=p.read_bytes();return {'path':str(p),'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest(),'blob':hashlib.sha1(b'blob '+str(len(b)).encode()+b'\\0'+b).hexdigest()}\nnames={'input_bindings':'input-bindings.json','source_checks':'source-checks.json','baseline_browser':'baseline-proof/browser-report.json','candidate_browser':'candidate-proof/browser-report.json'}\nv={k:json.loads((r/n).read_text()) for k,n in names.items()};v['receipt_files']={k:meta(r/n) for k,n in names.items()}\nb=v['baseline_browser'];c=v['candidate_browser']\nassert len(b['cases'])==4 and [x['result'] for x in b['cases']]==['FAIL','FAIL','PASS','PASS'] and not b['page_errors']\nassert c['pass'] and len(c['cases'])==12 and c['contexts']==12 and not c['page_errors']\nassert all(x.get('pass') for x in c['dialog_return_journeys']) and len(c['dialog_return_journeys'])==10\nv['screenshot_hashes']=[meta(p) for p in sorted((r/'candidate-proof').glob('dialog-fallback-*.png'))]\np=r/'dialog-return-native-receipts.json';p.write_text(json.dumps(v,ensure_ascii=False,separators=(',',':'))+'\\n')\nprint(json.dumps({'receipt':meta(p),'cases':len(c['cases']),'contexts':c['contexts'],'journeys':len(c['dialog_return_journeys']),'screenshots':len(v['screenshot_hashes'])}),flush=True)\nPY"
+  },
+  "source_self_check": {
+    "strings": {
+      "one_existing_branch": true,
+      "all_other_js_exact": true,
+      "refreshJourney_unchanged": true,
+      "new_url_owner": false,
+      "ordinary_dialog_unchanged": true,
+      "unproven_selector_gap_rejected": true
+    },
+    "ast": {
+      "prior_definitions": 111,
+      "all_prior_ast_exact": true,
+      "new_top_level_helpers": 1,
+      "new_qualified_definitions": 1,
+      "syntax": "PASS",
+      "native_cloud_hashes_exact": true
+    },
+    "native": {
+      "one_existing_branch": true,
+      "journey_owner_unchanged": true,
+      "unchanged_outputs": [
+        "gmi-companies.html",
+        "gmi-coverage.html",
+        "gmi-index.html",
+        "gmi-issuer-mu.html",
+        "gmi-relationships.html",
+        "gmi-states.html",
+        "gmi.css",
+        "gmi.html"
+      ],
+      "sources": {
+        "templates/gmi.js": {
+          "bytes": 56306,
+          "sha256": "c6d7011f82f6c2c09e40a20f05d6cbc13bfef8d5d82c7a70439ff4656c742838",
+          "blob": "15b39754aa170a97cd9468a4823142718ff6284a"
+        },
+        "candidate/gmi.js": {
+          "bytes": 56306,
+          "sha256": "c6d7011f82f6c2c09e40a20f05d6cbc13bfef8d5d82c7a70439ff4656c742838",
+          "blob": "15b39754aa170a97cd9468a4823142718ff6284a"
+        },
+        "verify_product_browser.py": {
+          "bytes": 276430,
+          "sha256": "dd3798db26a5a90a7b89dc23b9d66ad11fb508518229fcd2cc0326f0c04eedb7",
+          "blob": "47f22a4796eedca910daa803911608d6259e2376"
+        },
+        "verify_dialog_return_component.py": {
+          "bytes": 6681,
+          "sha256": "fdfcc8065c57ea420b12bcb102f563729f966b608fa3c0436aab9583969ee1a9",
+          "blob": "8aef2b1abbf221e673541c4adf9c5d60a184213f"
+        }
+      }
+    }
+  },
+  "native_receipts": {
+    "input_bindings": {
+      "source_head": "1015aa9501ad9cb4d6519b9c89b791c8f7bcf167",
+      "source_root": "/Volumes/Mastermind/agent-workspaces/verify/gmi-primary-clear-20261109-hzhiwlz2",
+      "retained_model_sha256": "e644fa48a2bb6e6affe8d1fda74556d9db5f82acadffdad839e1efe8f095359f",
+      "dialog_is_inside_main": true,
+      "inputs": {
+        "gmi-companies.html": {
+          "bytes": 65156,
+          "sha256": "fda702382d62068f8f39874bcd07bbb915ddacee6a3d4f734b337b58f3e47d3c",
+          "blob": "c4b1c81c92c270411c6698a473b55354a05dc8a5"
+        },
+        "gmi-coverage.html": {
+          "bytes": 75416,
+          "sha256": "893408143f6c0cb1db08084ad9c7c57b56386421f3a3958f1879a87f9035b745",
+          "blob": "5df5c79f27a467894d125da61d3cf88b3969edf9"
+        },
+        "gmi-index.html": {
+          "bytes": 262285,
+          "sha256": "3e6e6f4846598bc6240f3aa69c5523a5500e7f79f7838e655ea7ecd7800536d4",
+          "blob": "d0cff23fec423c3480ea12ee200c272396fd53a0"
+        },
+        "gmi-issuer-mu.html": {
+          "bytes": 65585,
+          "sha256": "22cc39aca77961584fad494ab0afa788b287636f7e3c5cfaecba7dbda2172bdd",
+          "blob": "3a4515417dbc651737c954799fa6f234d7a178da"
+        },
+        "gmi-relationships.html": {
+          "bytes": 61988,
+          "sha256": "86243e69c432370eb83600a45cda897e29a1a63697f55e3a72ccffcf9468c377",
+          "blob": "8a693c57b649b300a5c3e53e9d24cfa9c92987c7"
+        },
+        "gmi-states.html": {
+          "bytes": 64663,
+          "sha256": "3b3c22bd3c57dc34586ac5b9d0800cab9d6c3259f56c9cdc5c2021117a65187e",
+          "blob": "6f31a9ea9deb80794422096fd4233a566502de6e"
+        },
+        "gmi.css": {
+          "bytes": 75903,
+          "sha256": "2b78466300f695abd0cb13fd22bd51e969eff0d68dbff9c22e8eac33ce375ba4",
+          "blob": "fcfa6cf06646f0406ca366d5f015205c72176bce"
+        },
+        "gmi.html": {
+          "bytes": 973514,
+          "sha256": "7231f4e9abff833dd7517b8b2d38b0554821491c430e092e95840e0e69b544f1",
+          "blob": "a7fcc7db25acbe1cf85dbf63807bbceedc3b4a8a"
+        },
+        "gmi.js": {
+          "bytes": 56259,
+          "sha256": "b1410990aa6e235a2ec4fa28057befec51865edb89c66dea9e4db669b67dac1d",
+          "blob": "da28f4622372c072225b140cf59d61385570b364"
+        }
+      },
+      "theme_css": {
+        "bytes": 227583,
+        "sha256": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757",
+        "blob": "619436f58d37a222d1db7021ba9d52bb3a05a7fa"
+      },
+      "canonical_verifier": {
+        "bytes": 269678,
+        "sha256": "10a87693a8053f5ca0c2084fcb7df7ca0c64708ce501cc40ec6aab08b73f2c38",
+        "blob": "114602419856b6898a2da9366b8a6b6c85beb32a"
+      }
+    },
+    "source_checks": {
+      "one_existing_branch": true,
+      "journey_owner_unchanged": true,
+      "unchanged_outputs": [
+        "gmi-companies.html",
+        "gmi-coverage.html",
+        "gmi-index.html",
+        "gmi-issuer-mu.html",
+        "gmi-relationships.html",
+        "gmi-states.html",
+        "gmi.css",
+        "gmi.html"
+      ],
+      "sources": {
+        "templates/gmi.js": {
+          "bytes": 56306,
+          "sha256": "c6d7011f82f6c2c09e40a20f05d6cbc13bfef8d5d82c7a70439ff4656c742838",
+          "blob": "15b39754aa170a97cd9468a4823142718ff6284a"
+        },
+        "candidate/gmi.js": {
+          "bytes": 56306,
+          "sha256": "c6d7011f82f6c2c09e40a20f05d6cbc13bfef8d5d82c7a70439ff4656c742838",
+          "blob": "15b39754aa170a97cd9468a4823142718ff6284a"
+        },
+        "verify_product_browser.py": {
+          "bytes": 276430,
+          "sha256": "dd3798db26a5a90a7b89dc23b9d66ad11fb508518229fcd2cc0326f0c04eedb7",
+          "blob": "47f22a4796eedca910daa803911608d6259e2376"
+        },
+        "verify_dialog_return_component.py": {
+          "bytes": 6681,
+          "sha256": "fdfcc8065c57ea420b12bcb102f563729f966b608fa3c0436aab9583969ee1a9",
+          "blob": "8aef2b1abbf221e673541c4adf9c5d60a184213f"
+        }
+      }
+    },
+    "baseline_browser": {
+      "generated_at": "2026-11-09T09:40:14.316358+00:00",
+      "baseline": true,
+      "scope": "Qualified index return when primary Browse cannot open its native dialog.\n\nUse actual generated main sections, paired product JS and shared theme/GMI CSS.\nFault-inject only one initialized dialog instance; retain the ordinary native\npath as a regression. External requests are blocked. No historical-browser,\nfull shared-shell/fonts, native OS IME, AT speech, account or release claim.",
+      "script_sha256": "b1410990aa6e235a2ec4fa28057befec51865edb89c66dea9e4db669b67dac1d",
+      "gmi_css_sha256": "2b78466300f695abd0cb13fd22bd51e969eff0d68dbff9c22e8eac33ce375ba4",
+      "verifier_sha256": "dd3798db26a5a90a7b89dc23b9d66ad11fb508518229fcd2cc0326f0c04eedb7",
+      "inputs": {
+        "source_head": "1015aa9501ad9cb4d6519b9c89b791c8f7bcf167",
+        "source_root": "/Volumes/Mastermind/agent-workspaces/verify/gmi-primary-clear-20261109-hzhiwlz2",
+        "retained_model_sha256": "e644fa48a2bb6e6affe8d1fda74556d9db5f82acadffdad839e1efe8f095359f",
+        "dialog_is_inside_main": true,
+        "inputs": {
+          "gmi-companies.html": {
+            "bytes": 65156,
+            "sha256": "fda702382d62068f8f39874bcd07bbb915ddacee6a3d4f734b337b58f3e47d3c",
+            "blob": "c4b1c81c92c270411c6698a473b55354a05dc8a5"
+          },
+          "gmi-coverage.html": {
+            "bytes": 75416,
+            "sha256": "893408143f6c0cb1db08084ad9c7c57b56386421f3a3958f1879a87f9035b745",
+            "blob": "5df5c79f27a467894d125da61d3cf88b3969edf9"
+          },
+          "gmi-index.html": {
+            "bytes": 262285,
+            "sha256": "3e6e6f4846598bc6240f3aa69c5523a5500e7f79f7838e655ea7ecd7800536d4",
+            "blob": "d0cff23fec423c3480ea12ee200c272396fd53a0"
+          },
+          "gmi-issuer-mu.html": {
+            "bytes": 65585,
+            "sha256": "22cc39aca77961584fad494ab0afa788b287636f7e3c5cfaecba7dbda2172bdd",
+            "blob": "3a4515417dbc651737c954799fa6f234d7a178da"
+          },
+          "gmi-relationships.html": {
+            "bytes": 61988,
+            "sha256": "86243e69c432370eb83600a45cda897e29a1a63697f55e3a72ccffcf9468c377",
+            "blob": "8a693c57b649b300a5c3e53e9d24cfa9c92987c7"
+          },
+          "gmi-states.html": {
+            "bytes": 64663,
+            "sha256": "3b3c22bd3c57dc34586ac5b9d0800cab9d6c3259f56c9cdc5c2021117a65187e",
+            "blob": "6f31a9ea9deb80794422096fd4233a566502de6e"
+          },
+          "gmi.css": {
+            "bytes": 75903,
+            "sha256": "2b78466300f695abd0cb13fd22bd51e969eff0d68dbff9c22e8eac33ce375ba4",
+            "blob": "fcfa6cf06646f0406ca366d5f015205c72176bce"
+          },
+          "gmi.html": {
+            "bytes": 973514,
+            "sha256": "7231f4e9abff833dd7517b8b2d38b0554821491c430e092e95840e0e69b544f1",
+            "blob": "a7fcc7db25acbe1cf85dbf63807bbceedc3b4a8a"
+          },
+          "gmi.js": {
+            "bytes": 56259,
+            "sha256": "b1410990aa6e235a2ec4fa28057befec51865edb89c66dea9e4db669b67dac1d",
+            "blob": "da28f4622372c072225b140cf59d61385570b364"
+          }
+        },
+        "theme_css": {
+          "bytes": 227583,
+          "sha256": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757",
+          "blob": "619436f58d37a222d1db7021ba9d52bb3a05a7fa"
+        },
+        "canonical_verifier": {
+          "bytes": 269678,
+          "sha256": "10a87693a8053f5ca0c2084fcb7df7ca0c64708ce501cc40ec6aab08b73f2c38",
+          "blob": "114602419856b6898a2da9366b8a6b6c85beb32a"
+        }
+      },
+      "cases": [
+        {
+          "name": "baseline-dialog-return-unavailable-390-en",
+          "result": "FAIL",
+          "error": "Traceback (most recent call last):\n  File \"/Volumes/Mastermind/agent-workspaces/verify/gmi-dialog-return-20261109-i86fvpcx/verify_dialog_return_component.py\", line 92, in <module>\n    try:action();result={'name':name,'result':'PASS'}\n        ~~~~~~^^\n  File \"/Volumes/Mastermind/agent-workspaces/verify/gmi-dialog-return-20261109-i86fvpcx/verify_dialog_return_component.py\", line 84, in <lambda>\n    actions=[(f'baseline-dialog-return-{mode}-{w}-{l}',lambda w=w,l=l,m=mode:browse_dialog_return(w,l,m)) for mode in ('unavailable','supported') for w,l in ((390,'en'),(320,'zh'))]\n                                                                             ~~~~~~~~~~~~~~~~~~~~^^^^^^^\n  File \"/Volumes/Mastermind/agent-workspaces/verify/gmi-dialog-return-20261109-i86fvpcx/verify_product_browser.py\", line 3842, in browse_dialog_return\n    assert landed.get('gmi_return')==[expected_return],{'expected_return':expected_return,'actual_index_url':p.url}\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: {'expected_return': 'gmi.html#theme=theme%3Aaerospace_components_aftermarket&category=theme%3Asemiconductors_hardware&scope=core&evidence=1&lens=chain&q=Micron', 'actual_index_url': 'http://127.0.0.1:51005/case-1/gmi-index.html'}\n",
+          "contexts": 1
+        },
+        {
+          "name": "baseline-dialog-return-unavailable-320-zh",
+          "result": "FAIL",
+          "error": "Traceback (most recent call last):\n  File \"/Volumes/Mastermind/agent-workspaces/verify/gmi-dialog-return-20261109-i86fvpcx/verify_dialog_return_component.py\", line 92, in <module>\n    try:action();result={'name':name,'result':'PASS'}\n        ~~~~~~^^\n  File \"/Volumes/Mastermind/agent-workspaces/verify/gmi-dialog-return-20261109-i86fvpcx/verify_dialog_return_component.py\", line 84, in <lambda>\n    actions=[(f'baseline-dialog-return-{mode}-{w}-{l}',lambda w=w,l=l,m=mode:browse_dialog_return(w,l,m)) for mode in ('unavailable','supported') for w,l in ((390,'en'),(320,'zh'))]\n                                                                             ~~~~~~~~~~~~~~~~~~~~^^^^^^^\n  File \"/Volumes/Mastermind/agent-workspaces/verify/gmi-dialog-return-20261109-i86fvpcx/verify_product_browser.py\", line 3842, in browse_dialog_return\n    assert landed.get('gmi_return')==[expected_return],{'expected_return':expected_return,'actual_index_url':p.url}\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: {'expected_return': 'gmi.html#theme=theme%3Aaerospace_components_aftermarket&category=theme%3Asemiconductors_hardware&scope=core&evidence=1&lens=chain&q=Micron', 'actual_index_url': 'http://127.0.0.1:51005/case-2/gmi-index.html'}\n",
+          "contexts": 1
+        },
+        {
+          "name": "baseline-dialog-return-supported-390-en",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "baseline-dialog-return-supported-320-zh",
+          "result": "PASS",
+          "contexts": 1
+        }
+      ],
+      "contexts": 4,
+      "screenshots": [],
+      "page_errors": [],
+      "browser": "157.0.8103.39",
+      "expected_cases": 4,
+      "dialog_return_journeys": [
+        {
+          "width": 390,
+          "language": "en",
+          "capability": "unavailable",
+          "selected": "theme:aerospace_components_aftermarket",
+          "default": "theme:hbm_packaging",
+          "dialog_inside_main_before": true,
+          "before_url": "http://127.0.0.1:51005/case-1/gmi.html#theme=theme%3Aaerospace_components_aftermarket&q=Micron&category=theme%3Asemiconductors_hardware&scope=core&evidence=1&lens=chain&fixture_only=discard-on-qualified-return",
+          "qualified_href": "http://127.0.0.1:51005/case-1/gmi-index.html#gmi_return=gmi.html%23theme%3Dtheme%253Aaerospace_components_aftermarket%26category%3Dtheme%253Asemiconductors_hardware%26scope%3Dcore%26evidence%3D1%26lens%3Dchain%26q%3DMicron",
+          "qualified_return": "gmi.html#theme=theme%3Aaerospace_components_aftermarket&category=theme%3Asemiconductors_hardware&scope=core&evidence=1&lens=chain&q=Micron",
+          "qualified_state": {
+            "theme": [
+              "theme:aerospace_components_aftermarket"
+            ],
+            "category": [
+              "theme:semiconductors_hardware"
+            ],
+            "scope": [
+              "core"
+            ],
+            "evidence": [
+              "1"
+            ],
+            "lens": [
+              "chain"
+            ],
+            "q": [
+              "Micron"
+            ]
+          },
+          "index_url": "http://127.0.0.1:51005/case-1/gmi-index.html"
+        },
+        {
+          "width": 320,
+          "language": "zh",
+          "capability": "unavailable",
+          "selected": "theme:aerospace_components_aftermarket",
+          "default": "theme:hbm_packaging",
+          "dialog_inside_main_before": true,
+          "before_url": "http://127.0.0.1:51005/case-2/gmi.html#theme=theme%3Aaerospace_components_aftermarket&q=Micron&category=theme%3Asemiconductors_hardware&scope=core&evidence=1&lens=chain&fixture_only=discard-on-qualified-return",
+          "qualified_href": "http://127.0.0.1:51005/case-2/gmi-index.html#gmi_return=gmi.html%23theme%3Dtheme%253Aaerospace_components_aftermarket%26category%3Dtheme%253Asemiconductors_hardware%26scope%3Dcore%26evidence%3D1%26lens%3Dchain%26q%3DMicron",
+          "qualified_return": "gmi.html#theme=theme%3Aaerospace_components_aftermarket&category=theme%3Asemiconductors_hardware&scope=core&evidence=1&lens=chain&q=Micron",
+          "qualified_state": {
+            "theme": [
+              "theme:aerospace_components_aftermarket"
+            ],
+            "category": [
+              "theme:semiconductors_hardware"
+            ],
+            "scope": [
+              "core"
+            ],
+            "evidence": [
+              "1"
+            ],
+            "lens": [
+              "chain"
+            ],
+            "q": [
+              "Micron"
+            ]
+          },
+          "index_url": "http://127.0.0.1:51005/case-2/gmi-index.html"
+        },
+        {
+          "width": 390,
+          "language": "en",
+          "capability": "supported",
+          "selected": "theme:aerospace_components_aftermarket",
+          "default": "theme:hbm_packaging",
+          "dialog_inside_main_before": true,
+          "before_url": "http://127.0.0.1:51005/case-3/gmi.html#theme=theme%3Aaerospace_components_aftermarket&q=Micron&category=theme%3Asemiconductors_hardware&scope=core&evidence=1&lens=chain&fixture_only=discard-on-qualified-return",
+          "dialog_link_inside_main_when_open": true,
+          "qualified_href": "http://127.0.0.1:51005/case-3/gmi-index.html#gmi_return=gmi.html%23theme%3Dtheme%253Aaerospace_components_aftermarket%26category%3Dtheme%253Asemiconductors_hardware%26scope%3Dcore%26evidence%3D1%26lens%3Dchain%26q%3DHBM",
+          "qualified_return": "gmi.html#theme=theme%3Aaerospace_components_aftermarket&category=theme%3Asemiconductors_hardware&scope=core&evidence=1&lens=chain&q=HBM",
+          "qualified_state": {
+            "theme": [
+              "theme:aerospace_components_aftermarket"
+            ],
+            "category": [
+              "theme:semiconductors_hardware"
+            ],
+            "scope": [
+              "core"
+            ],
+            "evidence": [
+              "1"
+            ],
+            "lens": [
+              "chain"
+            ],
+            "q": [
+              "HBM"
+            ]
+          },
+          "index_url": "http://127.0.0.1:51005/case-3/gmi-index.html#gmi_return=gmi.html%23theme%3Dtheme%253Aaerospace_components_aftermarket%26category%3Dtheme%253Asemiconductors_hardware%26scope%3Dcore%26evidence%3D1%26lens%3Dchain%26q%3DHBM",
+          "returned_url": "http://127.0.0.1:51005/case-3/gmi.html#theme=theme%3Aaerospace_components_aftermarket&category=theme%3Asemiconductors_hardware&scope=core&evidence=1&lens=chain&q=HBM",
+          "query": "HBM",
+          "title": "Aerospace components and aftermarket",
+          "native_open_after_return": true,
+          "pass": true
+        },
+        {
+          "width": 320,
+          "language": "zh",
+          "capability": "supported",
+          "selected": "theme:aerospace_components_aftermarket",
+          "default": "theme:hbm_packaging",
+          "dialog_inside_main_before": true,
+          "before_url": "http://127.0.0.1:51005/case-4/gmi.html#theme=theme%3Aaerospace_components_aftermarket&q=Micron&category=theme%3Asemiconductors_hardware&scope=core&evidence=1&lens=chain&fixture_only=discard-on-qualified-return",
+          "dialog_link_inside_main_when_open": true,
+          "qualified_href": "http://127.0.0.1:51005/case-4/gmi-index.html#gmi_return=gmi.html%23theme%3Dtheme%253Aaerospace_components_aftermarket%26category%3Dtheme%253Asemiconductors_hardware%26scope%3Dcore%26evidence%3D1%26lens%3Dchain%26q%3DHBM",
+          "qualified_return": "gmi.html#theme=theme%3Aaerospace_components_aftermarket&category=theme%3Asemiconductors_hardware&scope=core&evidence=1&lens=chain&q=HBM",
+          "qualified_state": {
+            "theme": [
+              "theme:aerospace_components_aftermarket"
+            ],
+            "category": [
+              "theme:semiconductors_hardware"
+            ],
+            "scope": [
+              "core"
+            ],
+            "evidence": [
+              "1"
+            ],
+            "lens": [
+              "chain"
+            ],
+            "q": [
+              "HBM"
+            ]
+          },
+          "index_url": "http://127.0.0.1:51005/case-4/gmi-index.html#gmi_return=gmi.html%23theme%3Dtheme%253Aaerospace_components_aftermarket%26category%3Dtheme%253Asemiconductors_hardware%26scope%3Dcore%26evidence%3D1%26lens%3Dchain%26q%3DHBM",
+          "returned_url": "http://127.0.0.1:51005/case-4/gmi.html#theme=theme%3Aaerospace_components_aftermarket&category=theme%3Asemiconductors_hardware&scope=core&evidence=1&lens=chain&q=HBM",
+          "query": "HBM",
+          "title": "航空航天零部件与售后市场",
+          "native_open_after_return": true,
+          "pass": true
+        }
+      ],
+      "complete": true,
+      "pass": false
+    },
+    "candidate_browser": {
+      "generated_at": "2026-11-09T09:40:23.769868+00:00",
+      "baseline": false,
+      "scope": "Qualified index return when primary Browse cannot open its native dialog.\n\nUse actual generated main sections, paired product JS and shared theme/GMI CSS.\nFault-inject only one initialized dialog instance; retain the ordinary native\npath as a regression. External requests are blocked. No historical-browser,\nfull shared-shell/fonts, native OS IME, AT speech, account or release claim.",
+      "script_sha256": "c6d7011f82f6c2c09e40a20f05d6cbc13bfef8d5d82c7a70439ff4656c742838",
+      "gmi_css_sha256": "2b78466300f695abd0cb13fd22bd51e969eff0d68dbff9c22e8eac33ce375ba4",
+      "verifier_sha256": "dd3798db26a5a90a7b89dc23b9d66ad11fb508518229fcd2cc0326f0c04eedb7",
+      "inputs": {
+        "source_head": "1015aa9501ad9cb4d6519b9c89b791c8f7bcf167",
+        "source_root": "/Volumes/Mastermind/agent-workspaces/verify/gmi-primary-clear-20261109-hzhiwlz2",
+        "retained_model_sha256": "e644fa48a2bb6e6affe8d1fda74556d9db5f82acadffdad839e1efe8f095359f",
+        "dialog_is_inside_main": true,
+        "inputs": {
+          "gmi-companies.html": {
+            "bytes": 65156,
+            "sha256": "fda702382d62068f8f39874bcd07bbb915ddacee6a3d4f734b337b58f3e47d3c",
+            "blob": "c4b1c81c92c270411c6698a473b55354a05dc8a5"
+          },
+          "gmi-coverage.html": {
+            "bytes": 75416,
+            "sha256": "893408143f6c0cb1db08084ad9c7c57b56386421f3a3958f1879a87f9035b745",
+            "blob": "5df5c79f27a467894d125da61d3cf88b3969edf9"
+          },
+          "gmi-index.html": {
+            "bytes": 262285,
+            "sha256": "3e6e6f4846598bc6240f3aa69c5523a5500e7f79f7838e655ea7ecd7800536d4",
+            "blob": "d0cff23fec423c3480ea12ee200c272396fd53a0"
+          },
+          "gmi-issuer-mu.html": {
+            "bytes": 65585,
+            "sha256": "22cc39aca77961584fad494ab0afa788b287636f7e3c5cfaecba7dbda2172bdd",
+            "blob": "3a4515417dbc651737c954799fa6f234d7a178da"
+          },
+          "gmi-relationships.html": {
+            "bytes": 61988,
+            "sha256": "86243e69c432370eb83600a45cda897e29a1a63697f55e3a72ccffcf9468c377",
+            "blob": "8a693c57b649b300a5c3e53e9d24cfa9c92987c7"
+          },
+          "gmi-states.html": {
+            "bytes": 64663,
+            "sha256": "3b3c22bd3c57dc34586ac5b9d0800cab9d6c3259f56c9cdc5c2021117a65187e",
+            "blob": "6f31a9ea9deb80794422096fd4233a566502de6e"
+          },
+          "gmi.css": {
+            "bytes": 75903,
+            "sha256": "2b78466300f695abd0cb13fd22bd51e969eff0d68dbff9c22e8eac33ce375ba4",
+            "blob": "fcfa6cf06646f0406ca366d5f015205c72176bce"
+          },
+          "gmi.html": {
+            "bytes": 973514,
+            "sha256": "7231f4e9abff833dd7517b8b2d38b0554821491c430e092e95840e0e69b544f1",
+            "blob": "a7fcc7db25acbe1cf85dbf63807bbceedc3b4a8a"
+          },
+          "gmi.js": {
+            "bytes": 56259,
+            "sha256": "b1410990aa6e235a2ec4fa28057befec51865edb89c66dea9e4db669b67dac1d",
+            "blob": "da28f4622372c072225b140cf59d61385570b364"
+          }
+        },
+        "theme_css": {
+          "bytes": 227583,
+          "sha256": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757",
+          "blob": "619436f58d37a222d1db7021ba9d52bb3a05a7fa"
+        },
+        "canonical_verifier": {
+          "bytes": 269678,
+          "sha256": "10a87693a8053f5ca0c2084fcb7df7ca0c64708ce501cc40ec6aab08b73f2c38",
+          "blob": "114602419856b6898a2da9366b8a6b6c85beb32a"
+        }
+      },
+      "cases": [
+        {
+          "name": "dialog-return-unavailable-390-en",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "dialog-return-unavailable-320-zh",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "dialog-return-unavailable-320-en",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "dialog-return-unavailable-390-zh",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "dialog-return-unavailable-820-en",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "dialog-return-supported-390-en",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "dialog-return-supported-320-zh",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "dialog-return-supported-320-en",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "dialog-return-supported-390-zh",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "dialog-return-supported-820-en",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "primary-escape-regression-390-en",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "primary-escape-regression-320-zh",
+          "result": "PASS",
+          "contexts": 1
+        }
+      ],
+      "contexts": 12,
+      "screenshots": [
+        "dialog-fallback-index-390-en.png",
+        "dialog-fallback-returned-390-en.png",
+        "dialog-fallback-index-320-zh.png",
+        "dialog-fallback-returned-320-zh.png",
+        "primary-search-390-en.png",
+        "primary-search-320-zh.png"
+      ],
+      "page_errors": [],
+      "browser": "157.0.8103.39",
+      "expected_cases": 12,
+      "dialog_return_journeys": [
+        {
+          "width": 390,
+          "language": "en",
+          "capability": "unavailable",
+          "selected": "theme:aerospace_components_aftermarket",
+          "default": "theme:hbm_packaging",
+          "dialog_inside_main_before": true,
+          "before_url": "http://127.0.0.1:51129/case-1/gmi.html#theme=theme%3Aaerospace_components_aftermarket&q=Micron&category=theme%3Asemiconductors_hardware&scope=core&evidence=1&lens=chain&fixture_only=discard-on-qualified-return",
+          "qualified_href": "http://127.0.0.1:51129/case-1/gmi-index.html#gmi_return=gmi.html%23theme%3Dtheme%253Aaerospace_components_aftermarket%26category%3Dtheme%253Asemiconductors_hardware%26scope%3Dcore%26evidence%3D1%26lens%3Dchain%26q%3DMicron",
+          "qualified_return": "gmi.html#theme=theme%3Aaerospace_components_aftermarket&category=theme%3Asemiconductors_hardware&scope=core&evidence=1&lens=chain&q=Micron",
+          "qualified_state": {
+            "theme": [
+              "theme:aerospace_components_aftermarket"
+            ],
+            "category": [
+              "theme:semiconductors_hardware"
+            ],
+            "scope": [
+              "core"
+            ],
+            "evidence": [
+              "1"
+            ],
+            "lens": [
+              "chain"
+            ],
+            "q": [
+              "Micron"
+            ]
+          },
+          "index_url": "http://127.0.0.1:51129/case-1/gmi-index.html#gmi_return=gmi.html%23theme%3Dtheme%253Aaerospace_components_aftermarket%26category%3Dtheme%253Asemiconductors_hardware%26scope%3Dcore%26evidence%3D1%26lens%3Dchain%26q%3DMicron",
+          "returned_url": "http://127.0.0.1:51129/case-1/gmi.html#theme=theme%3Aaerospace_components_aftermarket&category=theme%3Asemiconductors_hardware&scope=core&evidence=1&lens=chain&q=Micron",
+          "query": "Micron",
+          "title": "Aerospace components and aftermarket",
+          "native_open_after_return": true,
+          "pass": true
+        },
+        {
+          "width": 320,
+          "language": "zh",
+          "capability": "unavailable",
+          "selected": "theme:aerospace_components_aftermarket",
+          "default": "theme:hbm_packaging",
+          "dialog_inside_main_before": true,
+          "before_url": "http://127.0.0.1:51129/case-2/gmi.html#theme=theme%3Aaerospace_components_aftermarket&q=Micron&category=theme%3Asemiconductors_hardware&scope=core&evidence=1&lens=chain&fixture_only=discard-on-qualified-return",
+          "qualified_href": "http://127.0.0.1:51129/case-2/gmi-index.html#gmi_return=gmi.html%23theme%3Dtheme%253Aaerospace_components_aftermarket%26category%3Dtheme%253Asemiconductors_hardware%26scope%3Dcore%26evidence%3D1%26lens%3Dchain%26q%3DMicron",
+          "qualified_return": "gmi.html#theme=theme%3Aaerospace_components_aftermarket&category=theme%3Asemiconductors_hardware&scope=core&evidence=1&lens=chain&q=Micron",
+          "qualified_state": {
+            "theme": [
+              "theme:aerospace_components_aftermarket"
+            ],
+            "category": [
+              "theme:semiconductors_hardware"
+            ],
+            "scope": [
+              "core"
+            ],
+            "evidence": [
+              "1"
+            ],
+            "lens": [
+              "chain"
+            ],
+            "q": [
+              "Micron"
+            ]
+          },
+          "index_url": "http://127.0.0.1:51129/case-2/gmi-index.html#gmi_return=gmi.html%23theme%3Dtheme%253Aaerospace_components_aftermarket%26category%3Dtheme%253Asemiconductors_hardware%26scope%3Dcore%26evidence%3D1%26lens%3Dchain%26q%3DMicron",
+          "returned_url": "http://127.0.0.1:51129/case-2/gmi.html#theme=theme%3Aaerospace_components_aftermarket&category=theme%3Asemiconductors_hardware&scope=core&evidence=1&lens=chain&q=Micron",
+          "query": "Micron",
+          "title": "航空航天零部件与售后市场",
+          "native_open_after_return": true,
+          "pass": true
+        },
+        {
+          "width": 320,
+          "language": "en",
+          "capability": "unavailable",
+          "selected": "theme:aerospace_components_aftermarket",
+          "default": "theme:hbm_packaging",
+          "dialog_inside_main_before": true,
+          "before_url": "http://127.0.0.1:51129/case-3/gmi.html#theme=theme%3Aaerospace_components_aftermarket&q=Micron&category=theme%3Asemiconductors_hardware&scope=core&evidence=1&lens=chain&fixture_only=discard-on-qualified-return",
+          "qualified_href": "http://127.0.0.1:51129/case-3/gmi-index.html#gmi_return=gmi.html%23theme%3Dtheme%253Aaerospace_components_aftermarket%26category%3Dtheme%253Asemiconductors_hardware%26scope%3Dcore%26evidence%3D1%26lens%3Dchain%26q%3DMicron",
+          "qualified_return": "gmi.html#theme=theme%3Aaerospace_components_aftermarket&category=theme%3Asemiconductors_hardware&scope=core&evidence=1&lens=chain&q=Micron",
+          "qualified_state": {
+            "theme": [
+              "theme:aerospace_components_aftermarket"
+            ],
+            "category": [
+              "theme:semiconductors_hardware"
+            ],
+            "scope": [
+              "core"
+            ],
+            "evidence": [
+              "1"
+            ],
+            "lens": [
+              "chain"
+            ],
+            "q": [
+              "Micron"
+            ]
+          },
+          "index_url": "http://127.0.0.1:51129/case-3/gmi-index.html#gmi_return=gmi.html%23theme%3Dtheme%253Aaerospace_components_aftermarket%26category%3Dtheme%253Asemiconductors_hardware%26scope%3Dcore%26evidence%3D1%26lens%3Dchain%26q%3DMicron",
+          "returned_url": "http://127.0.0.1:51129/case-3/gmi.html#theme=theme%3Aaerospace_components_aftermarket&category=theme%3Asemiconductors_hardware&scope=core&evidence=1&lens=chain&q=Micron",
+          "query": "Micron",
+          "title": "Aerospace components and aftermarket",
+          "native_open_after_return": true,
+          "pass": true
+        },
+        {
+          "width": 390,
+          "language": "zh",
+          "capability": "unavailable",
+          "selected": "theme:aerospace_components_aftermarket",
+          "default": "theme:hbm_packaging",
+          "dialog_inside_main_before": true,
+          "before_url": "http://127.0.0.1:51129/case-4/gmi.html#theme=theme%3Aaerospace_components_aftermarket&q=Micron&category=theme%3Asemiconductors_hardware&scope=core&evidence=1&lens=chain&fixture_only=discard-on-qualified-return",
+          "qualified_href": "http://127.0.0.1:51129/case-4/gmi-index.html#gmi_return=gmi.html%23theme%3Dtheme%253Aaerospace_components_aftermarket%26category%3Dtheme%253Asemiconductors_hardware%26scope%3Dcore%26evidence%3D1%26lens%3Dchain%26q%3DMicron",
+          "qualified_return": "gmi.html#theme=theme%3Aaerospace_components_aftermarket&category=theme%3Asemiconductors_hardware&scope=core&evidence=1&lens=chain&q=Micron",
+          "qualified_state": {
+            "theme": [
+              "theme:aerospace_components_aftermarket"
+            ],
+            "category": [
+              "theme:semiconductors_hardware"
+            ],
+            "scope": [
+              "core"
+            ],
+            "evidence": [
+              "1"
+            ],
+            "lens": [
+              "chain"
+            ],
+            "q": [
+              "Micron"
+            ]
+          },
+          "index_url": "http://127.0.0.1:51129/case-4/gmi-index.html#gmi_return=gmi.html%23theme%3Dtheme%253Aaerospace_components_aftermarket%26category%3Dtheme%253Asemiconductors_hardware%26scope%3Dcore%26evidence%3D1%26lens%3Dchain%26q%3DMicron",
+          "returned_url": "http://127.0.0.1:51129/case-4/gmi.html#theme=theme%3Aaerospace_components_aftermarket&category=theme%3Asemiconductors_hardware&scope=core&evidence=1&lens=chain&q=Micron",
+          "query": "Micron",
+          "title": "航空航天零部件与售后市场",
+          "native_open_after_return": true,
+          "pass": true
+        },
+        {
+          "width": 820,
+          "language": "en",
+          "capability": "unavailable",
+          "selected": "theme:aerospace_components_aftermarket",
+          "default": "theme:hbm_packaging",
+          "dialog_inside_main_before": true,
+          "before_url": "http://127.0.0.1:51129/case-5/gmi.html#theme=theme%3Aaerospace_components_aftermarket&q=Micron&category=theme%3Asemiconductors_hardware&scope=core&evidence=1&lens=chain&fixture_only=discard-on-qualified-return",
+          "qualified_href": "http://127.0.0.1:51129/case-5/gmi-index.html#gmi_return=gmi.html%23theme%3Dtheme%253Aaerospace_components_aftermarket%26category%3Dtheme%253Asemiconductors_hardware%26scope%3Dcore%26evidence%3D1%26lens%3Dchain%26q%3DMicron",
+          "qualified_return": "gmi.html#theme=theme%3Aaerospace_components_aftermarket&category=theme%3Asemiconductors_hardware&scope=core&evidence=1&lens=chain&q=Micron",
+          "qualified_state": {
+            "theme": [
+              "theme:aerospace_components_aftermarket"
+            ],
+            "category": [
+              "theme:semiconductors_hardware"
+            ],
+            "scope": [
+              "core"
+            ],
+            "evidence": [
+              "1"
+            ],
+            "lens": [
+              "chain"
+            ],
+            "q": [
+              "Micron"
+            ]
+          },
+          "index_url": "http://127.0.0.1:51129/case-5/gmi-index.html#gmi_return=gmi.html%23theme%3Dtheme%253Aaerospace_components_aftermarket%26category%3Dtheme%253Asemiconductors_hardware%26scope%3Dcore%26evidence%3D1%26lens%3Dchain%26q%3DMicron",
+          "returned_url": "http://127.0.0.1:51129/case-5/gmi.html#theme=theme%3Aaerospace_components_aftermarket&category=theme%3Asemiconductors_hardware&scope=core&evidence=1&lens=chain&q=Micron",
+          "query": "Micron",
+          "title": "Aerospace components and aftermarket",
+          "native_open_after_return": true,
+          "pass": true
+        },
+        {
+          "width": 390,
+          "language": "en",
+          "capability": "supported",
+          "selected": "theme:aerospace_components_aftermarket",
+          "default": "theme:hbm_packaging",
+          "dialog_inside_main_before": true,
+          "before_url": "http://127.0.0.1:51129/case-6/gmi.html#theme=theme%3Aaerospace_components_aftermarket&q=Micron&category=theme%3Asemiconductors_hardware&scope=core&evidence=1&lens=chain&fixture_only=discard-on-qualified-return",
+          "dialog_link_inside_main_when_open": true,
+          "qualified_href": "http://127.0.0.1:51129/case-6/gmi-index.html#gmi_return=gmi.html%23theme%3Dtheme%253Aaerospace_components_aftermarket%26category%3Dtheme%253Asemiconductors_hardware%26scope%3Dcore%26evidence%3D1%26lens%3Dchain%26q%3DHBM",
+          "qualified_return": "gmi.html#theme=theme%3Aaerospace_components_aftermarket&category=theme%3Asemiconductors_hardware&scope=core&evidence=1&lens=chain&q=HBM",
+          "qualified_state": {
+            "theme": [
+              "theme:aerospace_components_aftermarket"
+            ],
+            "category": [
+              "theme:semiconductors_hardware"
+            ],
+            "scope": [
+              "core"
+            ],
+            "evidence": [
+              "1"
+            ],
+            "lens": [
+              "chain"
+            ],
+            "q": [
+              "HBM"
+            ]
+          },
+          "index_url": "http://127.0.0.1:51129/case-6/gmi-index.html#gmi_return=gmi.html%23theme%3Dtheme%253Aaerospace_components_aftermarket%26category%3Dtheme%253Asemiconductors_hardware%26scope%3Dcore%26evidence%3D1%26lens%3Dchain%26q%3DHBM",
+          "returned_url": "http://127.0.0.1:51129/case-6/gmi.html#theme=theme%3Aaerospace_components_aftermarket&category=theme%3Asemiconductors_hardware&scope=core&evidence=1&lens=chain&q=HBM",
+          "query": "HBM",
+          "title": "Aerospace components and aftermarket",
+          "native_open_after_return": true,
+          "pass": true
+        },
+        {
+          "width": 320,
+          "language": "zh",
+          "capability": "supported",
+          "selected": "theme:aerospace_components_aftermarket",
+          "default": "theme:hbm_packaging",
+          "dialog_inside_main_before": true,
+          "before_url": "http://127.0.0.1:51129/case-7/gmi.html#theme=theme%3Aaerospace_components_aftermarket&q=Micron&category=theme%3Asemiconductors_hardware&scope=core&evidence=1&lens=chain&fixture_only=discard-on-qualified-return",
+          "dialog_link_inside_main_when_open": true,
+          "qualified_href": "http://127.0.0.1:51129/case-7/gmi-index.html#gmi_return=gmi.html%23theme%3Dtheme%253Aaerospace_components_aftermarket%26category%3Dtheme%253Asemiconductors_hardware%26scope%3Dcore%26evidence%3D1%26lens%3Dchain%26q%3DHBM",
+          "qualified_return": "gmi.html#theme=theme%3Aaerospace_components_aftermarket&category=theme%3Asemiconductors_hardware&scope=core&evidence=1&lens=chain&q=HBM",
+          "qualified_state": {
+            "theme": [
+              "theme:aerospace_components_aftermarket"
+            ],
+            "category": [
+              "theme:semiconductors_hardware"
+            ],
+            "scope": [
+              "core"
+            ],
+            "evidence": [
+              "1"
+            ],
+            "lens": [
+              "chain"
+            ],
+            "q": [
+              "HBM"
+            ]
+          },
+          "index_url": "http://127.0.0.1:51129/case-7/gmi-index.html#gmi_return=gmi.html%23theme%3Dtheme%253Aaerospace_components_aftermarket%26category%3Dtheme%253Asemiconductors_hardware%26scope%3Dcore%26evidence%3D1%26lens%3Dchain%26q%3DHBM",
+          "returned_url": "http://127.0.0.1:51129/case-7/gmi.html#theme=theme%3Aaerospace_components_aftermarket&category=theme%3Asemiconductors_hardware&scope=core&evidence=1&lens=chain&q=HBM",
+          "query": "HBM",
+          "title": "航空航天零部件与售后市场",
+          "native_open_after_return": true,
+          "pass": true
+        },
+        {
+          "width": 320,
+          "language": "en",
+          "capability": "supported",
+          "selected": "theme:aerospace_components_aftermarket",
+          "default": "theme:hbm_packaging",
+          "dialog_inside_main_before": true,
+          "before_url": "http://127.0.0.1:51129/case-8/gmi.html#theme=theme%3Aaerospace_components_aftermarket&q=Micron&category=theme%3Asemiconductors_hardware&scope=core&evidence=1&lens=chain&fixture_only=discard-on-qualified-return",
+          "dialog_link_inside_main_when_open": true,
+          "qualified_href": "http://127.0.0.1:51129/case-8/gmi-index.html#gmi_return=gmi.html%23theme%3Dtheme%253Aaerospace_components_aftermarket%26category%3Dtheme%253Asemiconductors_hardware%26scope%3Dcore%26evidence%3D1%26lens%3Dchain%26q%3DHBM",
+          "qualified_return": "gmi.html#theme=theme%3Aaerospace_components_aftermarket&category=theme%3Asemiconductors_hardware&scope=core&evidence=1&lens=chain&q=HBM",
+          "qualified_state": {
+            "theme": [
+              "theme:aerospace_components_aftermarket"
+            ],
+            "category": [
+              "theme:semiconductors_hardware"
+            ],
+            "scope": [
+              "core"
+            ],
+            "evidence": [
+              "1"
+            ],
+            "lens": [
+              "chain"
+            ],
+            "q": [
+              "HBM"
+            ]
+          },
+          "index_url": "http://127.0.0.1:51129/case-8/gmi-index.html#gmi_return=gmi.html%23theme%3Dtheme%253Aaerospace_components_aftermarket%26category%3Dtheme%253Asemiconductors_hardware%26scope%3Dcore%26evidence%3D1%26lens%3Dchain%26q%3DHBM",
+          "returned_url": "http://127.0.0.1:51129/case-8/gmi.html#theme=theme%3Aaerospace_components_aftermarket&category=theme%3Asemiconductors_hardware&scope=core&evidence=1&lens=chain&q=HBM",
+          "query": "HBM",
+          "title": "Aerospace components and aftermarket",
+          "native_open_after_return": true,
+          "pass": true
+        },
+        {
+          "width": 390,
+          "language": "zh",
+          "capability": "supported",
+          "selected": "theme:aerospace_components_aftermarket",
+          "default": "theme:hbm_packaging",
+          "dialog_inside_main_before": true,
+          "before_url": "http://127.0.0.1:51129/case-9/gmi.html#theme=theme%3Aaerospace_components_aftermarket&q=Micron&category=theme%3Asemiconductors_hardware&scope=core&evidence=1&lens=chain&fixture_only=discard-on-qualified-return",
+          "dialog_link_inside_main_when_open": true,
+          "qualified_href": "http://127.0.0.1:51129/case-9/gmi-index.html#gmi_return=gmi.html%23theme%3Dtheme%253Aaerospace_components_aftermarket%26category%3Dtheme%253Asemiconductors_hardware%26scope%3Dcore%26evidence%3D1%26lens%3Dchain%26q%3DHBM",
+          "qualified_return": "gmi.html#theme=theme%3Aaerospace_components_aftermarket&category=theme%3Asemiconductors_hardware&scope=core&evidence=1&lens=chain&q=HBM",
+          "qualified_state": {
+            "theme": [
+              "theme:aerospace_components_aftermarket"
+            ],
+            "category": [
+              "theme:semiconductors_hardware"
+            ],
+            "scope": [
+              "core"
+            ],
+            "evidence": [
+              "1"
+            ],
+            "lens": [
+              "chain"
+            ],
+            "q": [
+              "HBM"
+            ]
+          },
+          "index_url": "http://127.0.0.1:51129/case-9/gmi-index.html#gmi_return=gmi.html%23theme%3Dtheme%253Aaerospace_components_aftermarket%26category%3Dtheme%253Asemiconductors_hardware%26scope%3Dcore%26evidence%3D1%26lens%3Dchain%26q%3DHBM",
+          "returned_url": "http://127.0.0.1:51129/case-9/gmi.html#theme=theme%3Aaerospace_components_aftermarket&category=theme%3Asemiconductors_hardware&scope=core&evidence=1&lens=chain&q=HBM",
+          "query": "HBM",
+          "title": "航空航天零部件与售后市场",
+          "native_open_after_return": true,
+          "pass": true
+        },
+        {
+          "width": 820,
+          "language": "en",
+          "capability": "supported",
+          "selected": "theme:aerospace_components_aftermarket",
+          "default": "theme:hbm_packaging",
+          "dialog_inside_main_before": true,
+          "before_url": "http://127.0.0.1:51129/case-10/gmi.html#theme=theme%3Aaerospace_components_aftermarket&q=Micron&category=theme%3Asemiconductors_hardware&scope=core&evidence=1&lens=chain&fixture_only=discard-on-qualified-return",
+          "dialog_link_inside_main_when_open": true,
+          "qualified_href": "http://127.0.0.1:51129/case-10/gmi-index.html#gmi_return=gmi.html%23theme%3Dtheme%253Aaerospace_components_aftermarket%26category%3Dtheme%253Asemiconductors_hardware%26scope%3Dcore%26evidence%3D1%26lens%3Dchain%26q%3DHBM",
+          "qualified_return": "gmi.html#theme=theme%3Aaerospace_components_aftermarket&category=theme%3Asemiconductors_hardware&scope=core&evidence=1&lens=chain&q=HBM",
+          "qualified_state": {
+            "theme": [
+              "theme:aerospace_components_aftermarket"
+            ],
+            "category": [
+              "theme:semiconductors_hardware"
+            ],
+            "scope": [
+              "core"
+            ],
+            "evidence": [
+              "1"
+            ],
+            "lens": [
+              "chain"
+            ],
+            "q": [
+              "HBM"
+            ]
+          },
+          "index_url": "http://127.0.0.1:51129/case-10/gmi-index.html#gmi_return=gmi.html%23theme%3Dtheme%253Aaerospace_components_aftermarket%26category%3Dtheme%253Asemiconductors_hardware%26scope%3Dcore%26evidence%3D1%26lens%3Dchain%26q%3DHBM",
+          "returned_url": "http://127.0.0.1:51129/case-10/gmi.html#theme=theme%3Aaerospace_components_aftermarket&category=theme%3Asemiconductors_hardware&scope=core&evidence=1&lens=chain&q=HBM",
+          "query": "HBM",
+          "title": "Aerospace components and aftermarket",
+          "native_open_after_return": true,
+          "pass": true
+        }
+      ],
+      "primary_escape_observations": [
+        {
+          "width": 390,
+          "language": "en",
+          "theme": "dark",
+          "narrow": true,
+          "composition_proof": "synthetic KeyboardEvent contract; no OS-native IME claim",
+          "guards": [
+            {
+              "kind": "composing",
+              "stage": "nonempty",
+              "flags": {
+                "isTrusted": false,
+                "isComposing": true,
+                "keyCode": 27,
+                "initially_prevented": false,
+                "finally_prevented": false,
+                "dispatch_accepted": true
+              },
+              "state_unchanged": true
+            },
+            {
+              "kind": "legacy229",
+              "stage": "nonempty",
+              "flags": {
+                "isTrusted": false,
+                "isComposing": false,
+                "keyCode": 229,
+                "initially_prevented": false,
+                "finally_prevented": false,
+                "dispatch_accepted": true
+              },
+              "state_unchanged": true
+            },
+            {
+              "kind": "consumed",
+              "stage": "nonempty",
+              "flags": {
+                "isTrusted": false,
+                "isComposing": false,
+                "keyCode": 27,
+                "initially_prevented": true,
+                "finally_prevented": true,
+                "dispatch_accepted": false
+              },
+              "state_unchanged": true
+            },
+            {
+              "kind": "composing",
+              "stage": "empty",
+              "flags": {
+                "isTrusted": false,
+                "isComposing": true,
+                "keyCode": 27,
+                "initially_prevented": false,
+                "finally_prevented": false,
+                "dispatch_accepted": true
+              },
+              "state_unchanged": true
+            },
+            {
+              "kind": "legacy229",
+              "stage": "empty",
+              "flags": {
+                "isTrusted": false,
+                "isComposing": false,
+                "keyCode": 229,
+                "initially_prevented": false,
+                "finally_prevented": false,
+                "dispatch_accepted": true
+              },
+              "state_unchanged": true
+            },
+            {
+              "kind": "consumed",
+              "stage": "empty",
+              "flags": {
+                "isTrusted": false,
+                "isComposing": false,
+                "keyCode": 27,
+                "initially_prevented": true,
+                "finally_prevented": true,
+                "dispatch_accepted": false
+              },
+              "state_unchanged": true
+            }
+          ],
+          "real_consumed_nonempty_unchanged": true,
+          "before_clear": {
+            "value": "HBM",
+            "selection": [
+              1,
+              2
+            ],
+            "url": "http://127.0.0.1:51129/case-11/gmi.html#scope=core&lens=chain&theme=theme%3Ahbm_packaging&category=theme%3Asemiconductors_hardware&q=HBM",
+            "history_length": 2,
+            "category": "theme:semiconductors_hardware",
+            "scope": "core",
+            "evidence": false,
+            "lens": "chain",
+            "visible": [
+              "theme:hbm_packaging",
+              "theme:conventional_dram",
+              "theme:nand_enterprise_storage"
+            ],
+            "title": "HBM & advanced packaging",
+            "focus_is_field": true,
+            "dialog_open": true,
+            "same_nodes": true,
+            "browse_at_home": false,
+            "writes": [],
+            "cancel": 0,
+            "close": 0,
+            "bubble": 0,
+            "sequence": []
+          },
+          "after_clear": {
+            "value": "",
+            "selection": [
+              0,
+              0
+            ],
+            "url": "http://127.0.0.1:51129/case-11/gmi.html#scope=core&lens=chain&theme=theme%3Ahbm_packaging&category=theme%3Asemiconductors_hardware",
+            "history_length": 2,
+            "category": "theme:semiconductors_hardware",
+            "scope": "core",
+            "evidence": false,
+            "lens": "chain",
+            "visible": [
+              "theme:hbm_packaging",
+              "theme:ai_interconnect_silicon",
+              "theme:conventional_dram",
+              "theme:custom_asic_silicon",
+              "theme:etch_deposition_equipment",
+              "theme:gpu_merchant_accelerators",
+              "theme:lithography_tools",
+              "theme:nand_enterprise_storage",
+              "theme:process_metrology_inspection",
+              "theme:wafer_fab_subsystems"
+            ],
+            "title": "HBM & advanced packaging",
+            "focus_is_field": true,
+            "dialog_open": true,
+            "same_nodes": true,
+            "browse_at_home": false,
+            "writes": [
+              "replaceState"
+            ],
+            "cancel": 0,
+            "close": 0,
+            "bubble": 0,
+            "sequence": []
+          },
+          "real_consumed_empty_unchanged": true,
+          "native_clear_then_cancel": true,
+          "native_cancel_prevention_then_recovery": true,
+          "final_native_sequence": [
+            "cancel",
+            "close",
+            "cancel",
+            "cancel",
+            "close"
+          ],
+          "pass": true
+        },
+        {
+          "width": 320,
+          "language": "zh",
+          "theme": "light",
+          "narrow": true,
+          "composition_proof": "synthetic KeyboardEvent contract; no OS-native IME claim",
+          "guards": [
+            {
+              "kind": "composing",
+              "stage": "nonempty",
+              "flags": {
+                "isTrusted": false,
+                "isComposing": true,
+                "keyCode": 27,
+                "initially_prevented": false,
+                "finally_prevented": false,
+                "dispatch_accepted": true
+              },
+              "state_unchanged": true
+            },
+            {
+              "kind": "legacy229",
+              "stage": "nonempty",
+              "flags": {
+                "isTrusted": false,
+                "isComposing": false,
+                "keyCode": 229,
+                "initially_prevented": false,
+                "finally_prevented": false,
+                "dispatch_accepted": true
+              },
+              "state_unchanged": true
+            },
+            {
+              "kind": "consumed",
+              "stage": "nonempty",
+              "flags": {
+                "isTrusted": false,
+                "isComposing": false,
+                "keyCode": 27,
+                "initially_prevented": true,
+                "finally_prevented": true,
+                "dispatch_accepted": false
+              },
+              "state_unchanged": true
+            },
+            {
+              "kind": "composing",
+              "stage": "empty",
+              "flags": {
+                "isTrusted": false,
+                "isComposing": true,
+                "keyCode": 27,
+                "initially_prevented": false,
+                "finally_prevented": false,
+                "dispatch_accepted": true
+              },
+              "state_unchanged": true
+            },
+            {
+              "kind": "legacy229",
+              "stage": "empty",
+              "flags": {
+                "isTrusted": false,
+                "isComposing": false,
+                "keyCode": 229,
+                "initially_prevented": false,
+                "finally_prevented": false,
+                "dispatch_accepted": true
+              },
+              "state_unchanged": true
+            },
+            {
+              "kind": "consumed",
+              "stage": "empty",
+              "flags": {
+                "isTrusted": false,
+                "isComposing": false,
+                "keyCode": 27,
+                "initially_prevented": true,
+                "finally_prevented": true,
+                "dispatch_accepted": false
+              },
+              "state_unchanged": true
+            }
+          ],
+          "real_consumed_nonempty_unchanged": true,
+          "before_clear": {
+            "value": "HBM",
+            "selection": [
+              1,
+              2
+            ],
+            "url": "http://127.0.0.1:51129/case-12/gmi.html#scope=core&lens=chain&theme=theme%3Ahbm_packaging&category=theme%3Asemiconductors_hardware&evidence=1&q=HBM",
+            "history_length": 2,
+            "category": "theme:semiconductors_hardware",
+            "scope": "core",
+            "evidence": true,
+            "lens": "chain",
+            "visible": [
+              "theme:hbm_packaging"
+            ],
+            "title": "HBM 与先进封装",
+            "focus_is_field": true,
+            "dialog_open": true,
+            "same_nodes": true,
+            "browse_at_home": false,
+            "writes": [],
+            "cancel": 0,
+            "close": 0,
+            "bubble": 0,
+            "sequence": []
+          },
+          "after_clear": {
+            "value": "",
+            "selection": [
+              0,
+              0
+            ],
+            "url": "http://127.0.0.1:51129/case-12/gmi.html#scope=core&lens=chain&theme=theme%3Ahbm_packaging&category=theme%3Asemiconductors_hardware&evidence=1",
+            "history_length": 2,
+            "category": "theme:semiconductors_hardware",
+            "scope": "core",
+            "evidence": true,
+            "lens": "chain",
+            "visible": [
+              "theme:hbm_packaging"
+            ],
+            "title": "HBM 与先进封装",
+            "focus_is_field": true,
+            "dialog_open": true,
+            "same_nodes": true,
+            "browse_at_home": false,
+            "writes": [
+              "replaceState"
+            ],
+            "cancel": 0,
+            "close": 0,
+            "bubble": 0,
+            "sequence": []
+          },
+          "real_consumed_empty_unchanged": true,
+          "native_clear_then_cancel": true,
+          "native_cancel_prevention_then_recovery": true,
+          "final_native_sequence": [
+            "cancel",
+            "close",
+            "cancel",
+            "cancel",
+            "close"
+          ],
+          "pass": true
+        }
+      ],
+      "complete": true,
+      "pass": true
+    },
+    "receipt_files": {
+      "input_bindings": {
+        "path": "/Volumes/Mastermind/agent-workspaces/verify/gmi-dialog-return-20261109-i86fvpcx/input-bindings.json",
+        "bytes": 2426,
+        "sha256": "3f0d5ee11f6e00520e1d6ff0dee52e7217bc603040106f6816bdf1032553c842",
+        "blob": "a316169557267363e27cb2045f1d4012f3a50c4b"
+      },
+      "source_checks": {
+        "path": "/Volumes/Mastermind/agent-workspaces/verify/gmi-dialog-return-20261109-i86fvpcx/source-checks.json",
+        "bytes": 1110,
+        "sha256": "8288386dd10c01b3e869511b60c8a16c644fdfc73d3ea7232b3aa45121e36cc7",
+        "blob": "90323cf706c94926af17d069dc3e8f4344c68f8d"
+      },
+      "baseline_browser": {
+        "path": "/Volumes/Mastermind/agent-workspaces/verify/gmi-dialog-return-20261109-i86fvpcx/baseline-proof/browser-report.json",
+        "bytes": 12933,
+        "sha256": "d6415b1992b3856516a3e79cca4db379b82de1a941b086ead2689cb223a12014",
+        "blob": "8d05f83b9bf94bd1ce2cb299bc97cb72fb2724e1"
+      },
+      "candidate_browser": {
+        "path": "/Volumes/Mastermind/agent-workspaces/verify/gmi-dialog-return-20261109-i86fvpcx/candidate-proof/browser-report.json",
+        "bytes": 32627,
+        "sha256": "7be7ff3c5866e463f4b0c54b01d368f6e3ccf395bd8f829331433cbaa20b38fc",
+        "blob": "b6ceb52400a0ca849fe6ba0247cfe1068fe45052"
+      }
+    },
+    "screenshot_hashes": [
+      {
+        "path": "/Volumes/Mastermind/agent-workspaces/verify/gmi-dialog-return-20261109-i86fvpcx/candidate-proof/dialog-fallback-index-320-zh.png",
+        "bytes": 93650,
+        "sha256": "71c2132d2e233dcf03efe9aba1159473da08509a1a6ae9685cca7f73ac0c136a",
+        "blob": "8c4391a10e0d8d056bea2f0e09e14bd6d266bd69"
+      },
+      {
+        "path": "/Volumes/Mastermind/agent-workspaces/verify/gmi-dialog-return-20261109-i86fvpcx/candidate-proof/dialog-fallback-index-390-en.png",
+        "bytes": 111407,
+        "sha256": "d730f6f84cd7f9286b765bdef2f3d7567a3d7fc5870109e8334a42d49b07a343",
+        "blob": "e80166f8943cc5817e47ae104e0e5f2046c68e2c"
+      },
+      {
+        "path": "/Volumes/Mastermind/agent-workspaces/verify/gmi-dialog-return-20261109-i86fvpcx/candidate-proof/dialog-fallback-returned-320-zh.png",
+        "bytes": 47702,
+        "sha256": "0323a92a40223b9dc345ec077fa208f4c1b1a9b8315e39b1f14e0f9c3496bc3c",
+        "blob": "1cafbe2cbb4dbdd2d721cad802c7d126e5a96e18"
+      },
+      {
+        "path": "/Volumes/Mastermind/agent-workspaces/verify/gmi-dialog-return-20261109-i86fvpcx/candidate-proof/dialog-fallback-returned-390-en.png",
+        "bytes": 54707,
+        "sha256": "816f3cfb6abc53a21137626436cf6218fb6ae5b286638bdbe12a7ab475b52d65",
+        "blob": "7e41b6b16639b08462491d643b779e78b32f2806"
+      }
+    ]
+  },
+  "paper": {
+    "file": "01M5H6EARN9YHQV17JC6ZG9BRY",
+    "page": "p-7-0",
+    "root": "7M9-0",
+    "extend_existing_module": "7NB-0",
+    "modules": 18,
+    "new_ui_specimens": false,
+    "native_captures_inspected": [
+      "dialog-fallback-index-320-zh.png",
+      "dialog-fallback-index-390-en.png",
+      "dialog-fallback-returned-320-zh.png",
+      "dialog-fallback-returned-390-en.png"
+    ]
+  },
+  "limits": [
+    "Controlled capability-fault proof, not certification for a historical browser",
+    "Actual generated-main/CSS/JS component proof; full shared-shell/fonts excluded",
+    "Native OS IME and spoken assistive technology not established",
+    "No live account/admission, current hosted CI, deployment or release acceptance",
+    "Original model01 EFFECT_UNKNOWN/ROOT_UNVERIFIED and release holds unchanged"
+  ]
+}

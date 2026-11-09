@@ -1554,3 +1554,34 @@ Extend existing Build module11 body **7YQ-0** with raw-value visibility, query-o
 A transient DESKTOP_BUSY preflight sent no Paper call and no mutation. A same-carrier read-only inspection subsequently proved CONNECTED with the same file and a fresh snapshot; only then was the never-issued page operation applied. No active writer was interrupted, no lock was cleared and no alternate carrier was used.
 
 PR10676 remains Draft with original model01 `EFFECT_UNKNOWN/ROOT_UNVERIFIED` and all release holds. Component proof excludes full shared shell/fonts, spoken AT, native OS IME, live account/admission, hosted current-head CI and deployment. This action adds no source-emission authority or release acceptance.
+
+
+## 11.37 · Preserve research when native Browse is unavailable — 9 Nov 2026
+
+### Confirmed fallback defect
+
+At parent `1015aa9501ad9cb4d6519b9c89b791c8f7bcf167`, the initialized primary Browse opener has an explicit fallback for a missing `dialog.showModal` method. It navigates to bare `gmi-index.html`, dropping the existing qualified return to the selected research and filters. The same document already has a native full-index anchor maintained by `refreshJourney()`.
+
+The correction stays within that single branch: refresh the existing journey links, then navigate using `browse.querySelector('.gmi-browse-index').href`. Keep validation, permitted return fields, query bounds and URL construction with `safeReturn()`/`refreshJourney()`. No additional URL builder, modal fallback, observer, state or history owner is introduced. The ordinary native-dialog opening path remains byte-exact.
+
+A separate hypothesis that native top-layer presentation moved the index link outside `main` was rejected before source changes. The emitted dialog is inside the map body block within `main`; native top-layer display does not itself change this ancestry. The ordinary-path baseline passes and runtime checks verify that the opened dialog's index link still belongs to `main`. The journey selector remains unchanged.
+
+### Consumer proof and precise boundary
+
+The test uses a valid explicit **nondefault** selected topic, query, category, scope, evidence-only and lens. It reads the incumbent index anchor's qualified destination before activation. An extra unqualified fixture field is intentionally absent from that projection. Expected return is the owner's permitted state, not a raw copy of every hash key.
+
+The capability fault changes **only the current dialog instance's** `showModal` property to unavailable. The prototype remains intact. The real Browse opener navigates to the index, whose existing Back to theme research / 返回主题研究 action returns to that qualified selected topic and filter state. After navigation creates a new document, normal native opening and search focus work again.
+
+Ordinary supported cases independently open Browse without navigation/history growth, edit query/evidence state through real controls, follow its native index link and return. These are regression paths; no ordinary selector or lifecycle repair is claimed. This is controlled missing-capability proof, not compatibility certification for a particular historical browser.
+
+Final PID **26102**, exit0: **12 cases / 12 fresh anonymous contexts**, Chrome **157.0.8103.39**, zero page errors, **27.08 s**. Ten round trips cover unavailable/supported paths at EN/ZH390 and320 plus EN820; two existing EN390/ZH320 primary Escape cases retain guard/clear/native-dismissal behavior. Baseline PID **24930**, exit1, **11.83 s**, records exactly two missing-return failures and two passing supported-path round trips. Four final index/returned-Browse captures were inspected.
+
+The new canonical `browse_dialog_return` helper is extracted by `verify_dialog_return_component.py`. All **111 prior qualified verifier definitions remain AST-exact**. Only the paired JS changes in the product: all seven HTML pages and CSS remain byte-exact to the parent. No model/renderer regeneration or new public fact is involved.
+
+Paired JS blob **15b39754aa170a97cd9468a4823142718ff6284a**, SHA256 **c6d7011f82f6c2c09e40a20f05d6cbc13bfef8d5d82c7a70439ff4656c742838**. [DIALOG_RETURN_VALIDATION_20261109.json](DIALOG_RETURN_VALIDATION_20261109.json) binds baseline and final cases, exact inputs/outputs, commands and limits.
+
+### Builder guidance
+
+Extend existing Build module06 body **7NB-0** with this native-capability fallback: reuse the qualified full-index destination, retain the ordinary dialog owner and distinguish valid-payload capability failure from failed topic data. The existing index and Browse workflow specimens already show these destinations; no duplicate UI or extra explanatory product text is needed. The eighteen-module guide and current product styles remain intact.
+
+Original model01 `EFFECT_UNKNOWN/ROOT_UNVERIFIED`, Draft and all release holds remain. The focused proof does not establish legacy-browser support, full shared shell/fonts, native OS IME, spoken AT, live account/admission, hosted current-head CI or deployment.

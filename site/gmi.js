@@ -634,7 +634,7 @@ search.addEventListener('keydown',function(event){
   if(event.defaultPrevented||event.isComposing||event.keyCode===229){event.stopPropagation();return;}
   if(search.value){event.preventDefault();event.stopPropagation();search.value='';updateFilters();}
 });
-openButton.addEventListener('click',function(){if(typeof dialog.showModal!=='function'){location.href='gmi-index.html';return;}document.querySelector('[data-browse-slot]').append(browse);dialog.showModal();search.focus();});
+openButton.addEventListener('click',function(){if(typeof dialog.showModal!=='function'){refreshJourney();location.href=browse.querySelector('.gmi-browse-index').href;return;}document.querySelector('[data-browse-slot]').append(browse);dialog.showModal();search.focus();});
 document.querySelector('[data-browse-close]').addEventListener('click',function(){dialog.close();});dialog.addEventListener('close',function(){home.append(browse);(mobile.matches?openButton:search).focus({preventScroll:true});});mobile.addEventListener('change',function(e){if(!e.matches&&dialog.open)dialog.close();});
 document.addEventListener('keydown',function(event){if(event.key!=='/'||event.ctrlKey||event.metaKey||event.altKey)return;var a=document.activeElement;if(a&&(a.isContentEditable||/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)))return;event.preventDefault();event.stopImmediatePropagation();if(mobile.matches)openButton.click();else search.focus();},true);
 /* Disabled-button blur may land on body; later user focus or pointer intent

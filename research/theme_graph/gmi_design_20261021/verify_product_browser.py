@@ -3787,6 +3787,90 @@ with sync_playwright() as pw:
     for language in ('en','zh'):
         check(f'primary-clear-unenhanced-{language}',lambda l=language:primary_clear_unenhanced(l))
 
+    def browse_dialog_return(width,language,capability):
+        """Round trip through the incumbent index link under an instance-only capability fault."""
+        with context(width,'dark' if language=='en' else 'light',language,reduced_motion='reduce' if width==320 else 'no-preference') as c:
+            p=page_for(c,'gmi.html')
+            data=json.loads(p.locator('#gmi-topic-data').text_content())
+            default=p.locator('[data-gmi-explorer]').get_attribute('data-default-theme')
+            selected=next(t for t in data['topics'] if t['id']!=default and t['tier']=='core')
+            hbm=next(t for t in data['topics'] if t['id']==default)
+            params={'theme':selected['id'],'q':'Micron','category':hbm['category'],'scope':'core','evidence':'1','lens':'chain','fixture_only':'discard-on-qualified-return'}
+            browse_focus_hash(p,urlencode(params))
+            expect(p.locator('[data-gmi-ready]')).to_have_count(1)
+            expect(p.locator('#gmi-topic-title')).to_have_text(selected[language],use_inner_text=True)
+            dialog=p.locator('[data-browse-dialog]');opener=p.locator('[data-browse-open]')
+            assert dialog.evaluate('(n)=>!!n.closest("main")')
+            assert p.evaluate('matchMedia("(max-width:820px)").matches')
+            observed={'width':width,'language':language,'capability':capability,'selected':selected['id'],'default':default,
+                      'dialog_inside_main_before':True,'before_url':p.url}
+            report.setdefault('dialog_return_journeys',[]).append(observed)
+            link=p.locator('.gmi-browse-index')
+            if capability=='supported':
+                before=p.url;length=p.evaluate('history.length')
+                opener.click();expect(dialog).to_be_visible();expect(p.locator('[data-topic-search]')).to_be_focused()
+                assert p.url==before and p.evaluate('history.length')==length
+                assert link.evaluate('(n)=>!!n.closest("main")&&!!n.closest("dialog[open]")')
+                observed['dialog_link_inside_main_when_open']=True
+                p.locator('[data-topic-search]').fill('HBM')
+                # Real controls update the existing journey owner while Browse is open.
+                p.locator('[data-evidence-only]').uncheck()
+                p.locator('[data-evidence-only]').check()
+                expect(p.locator('#gmi-topic-title')).to_have_text(selected[language],use_inner_text=True)
+            expected_href=link.get_attribute('href')
+            expected_return=parse_qs(urlsplit(expected_href).fragment)['gmi_return'][0]
+            expected_state=parse_qs(urlsplit(expected_return).fragment)
+            assert expected_state['theme']==[selected['id']] and selected['id']!=default
+            assert expected_state['q']==['HBM' if capability=='supported' else 'Micron']
+            assert expected_state['category']==[hbm['category']] and expected_state['scope']==['core']
+            assert expected_state['evidence']==['1'] and expected_state['lens']==['chain']
+            assert 'fixture_only' not in expected_state
+            observed.update({'qualified_href':expected_href,'qualified_return':expected_return,'qualified_state':expected_state})
+            if capability=='unavailable':
+                # Only this initialized document's dialog instance loses the capability.
+                dialog.evaluate('(n)=>Object.defineProperty(n,"showModal",{value:undefined,configurable:true})')
+                assert dialog.evaluate('(n)=>typeof n.showModal')=='undefined'
+                assert p.evaluate('typeof HTMLDialogElement.prototype.showModal')=='function'
+                if language=='en':opener.click()
+                else:opener.focus();p.keyboard.press('Enter')
+            else:
+                if language=='en':link.click()
+                else:link.focus();p.keyboard.press('Enter')
+            p.wait_for_url(re.compile(r'/gmi-index\.html(?:#.*)?$'),wait_until='domcontentloaded')
+            landed=parse_qs(urlsplit(p.url).fragment)
+            observed['index_url']=p.url
+            assert landed.get('gmi_return')==[expected_return],{'expected_return':expected_return,'actual_index_url':p.url}
+            back=p.locator('[data-gmi-return]');expect(back).to_be_visible()
+            expect(back).to_have_text('Back to theme research' if language=='en' else '返回主题研究')
+            assert parse_qs(urlsplit(back.get_attribute('href')).fragment)==expected_state
+            assert back.bounding_box()['height']>=44
+            assert not p.evaluate('document.documentElement.scrollWidth>innerWidth')
+            if capability=='unavailable' and (width,language) in ((390,'en'),(320,'zh')):
+                path=args.out/f'dialog-fallback-index-{width}-{language}.png';p.screenshot(path=str(path),full_page=False);report['screenshots'].append(path.name)
+            back.focus();p.keyboard.press('Enter')
+            expect(p.locator('[data-gmi-ready]')).to_have_count(1)
+            assert parse_qs(urlsplit(p.url).fragment)==expected_state
+            expect(p.locator('#gmi-topic-title')).to_have_text(selected[language],use_inner_text=True)
+            expect(p.locator('[data-topic-search]')).to_have_value(expected_state['q'][0])
+            expect(p.locator('[data-topic-category-filter]')).to_have_value(hbm['category'])
+            expect(p.locator('input[name="gmi-scope"][value="core"]')).to_be_checked()
+            expect(p.locator('[data-evidence-only]')).to_be_checked()
+            assert p.locator('html').get_attribute('data-gmi-lens')=='chain'
+            # The instance-only fault ends with that document; normal opening still works.
+            assert p.locator('[data-browse-dialog]').evaluate('(n)=>typeof n.showModal')=='function'
+            before=p.url;p.locator('[data-browse-open]').click()
+            expect(p.locator('[data-browse-dialog]')).to_be_visible()
+            expect(p.locator('[data-topic-search]')).to_be_focused()
+            assert p.url==before
+            observed.update({'returned_url':p.url,'query':p.locator('[data-topic-search]').input_value(),
+                             'title':p.locator('#gmi-topic-title').inner_text(),'native_open_after_return':True,'pass':True})
+            if capability=='unavailable' and (width,language) in ((390,'en'),(320,'zh')):
+                path=args.out/f'dialog-fallback-returned-{width}-{language}.png';p.screenshot(path=str(path),full_page=False);report['screenshots'].append(path.name)
+
+    for capability in ('unavailable','supported'):
+        for width,language in ((390,'en'),(320,'zh'),(320,'en'),(390,'zh'),(820,'en')):
+            check(f'dialog-return-{capability}-{width}-{language}',lambda w=width,l=language,c=capability:browse_dialog_return(w,l,c))
+
     browser.close()
 server.shutdown()
 report['pass'] = all(c['result']=='PASS' for c in report['cases']) and not report['page_errors']
