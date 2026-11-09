@@ -4531,6 +4531,7 @@ def test_workspace_runtime_contracts_can_start_the_ci_that_validates_them() -> N
 # ---------------------------------------------------------------------------
 
 CURATED_EXCLUSIVE = {
+    "public-site-figma-baseline-contracts",
     "press-account-claim-consumer",
     # GDELT leaf suites own their exact import/read closure.
     "gdelt-news-leaves",
@@ -5616,9 +5617,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_943),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_964),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_701),
+    ("templates/index.html", 137, 5_947),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_968),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_705),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5626,6 +5627,23 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-09 (PR #7217, financial-bridge regression enrollment):
+    Natural contract run42547747036/job128936325119 measured H0be13427e611
+    against base0997d488f73e on tested merge8e49046b6459: index137jobs
+    5943->5947, free137jobs5964->5968, Prophet131jobs5701->5705,
+    all ten packs and no newly selected owner. Existing unrun-brain-gateway
+    gains its mandatory financial-bridge suite: commands6->7, literal test
+    references51->52, command characters2345->2402, length//800 term2->3.
+    The unchanged estimator therefore increases that owner110->114.
+    Fund exactly these four measured static-weight units on all three probes.
+    Keep both the new suite and every existing suite, owner and selection rule.
+    Current main's separately landed Figma exclusive owner matches none of
+    these three probe paths. Preserve its complete block and curated member.
+    Job ceilings137/138/131, ten packs, timeouts, runtime and admission caps
+    stay unchanged. No unmerged sibling allowance or runtime estimate is
+    imported. This is exact measured-cost composition; successor CI must
+    qualify the new tree, and all older provenance below remains historical.
 
     2026-11-08 (PR #10837, explicit synthetic harness enrollment, recomposed on
     current main 005baca8b092abe82acb4462eb6710af8f59a1c8): natural

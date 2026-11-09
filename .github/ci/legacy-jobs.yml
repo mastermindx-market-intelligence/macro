@@ -331,6 +331,7 @@ jobs:
     # Keep generated-site identities even when absent from a local sparse checkout.
     # Canonical closure and ancestor tests enforce this exact curated scope.
     paths:
+      - engine/neuralweb/brain_financial_bridge.py
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
@@ -2502,6 +2503,7 @@ jobs:
     # C19 WP32 P5/P6: generation-correction identity coherence + warm-cache denial silence on a synthetic ticker (offline).
     timeout-minutes: 10
     paths:
+      - engine/neuralweb/brain_financial_bridge.py
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
@@ -3579,6 +3581,7 @@ jobs:
     # C19 WP22: DHI non-AAPL integrated-answer traversal on the published event workspace (offline).
     timeout-minutes: 10
     paths:
+      - engine/neuralweb/brain_financial_bridge.py
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "scripts/company_intelligence_publication_evidence.py"
@@ -8179,6 +8182,7 @@ jobs:
     # opaque fallback patterns to this hermetic job.
     scope: exclusive
     paths:
+      - engine/neuralweb/brain_financial_bridge.py
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "engine/neuralweb/options_selection_context.py"
@@ -12432,6 +12436,7 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      - engine/neuralweb/brain_financial_bridge.py
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
@@ -17022,6 +17027,7 @@ jobs:
     # Dynamic Ontology assets and canonical navigation are included explicitly.
     scope: exclusive
     paths:
+      - engine/neuralweb/brain_financial_bridge.py
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       # TTI-D1: bind the existing synthetic minute reader/resolver suite to
@@ -31247,6 +31253,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - engine/neuralweb/brain_financial_bridge.py
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
@@ -41050,6 +41057,7 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - engine/neuralweb/brain_financial_bridge.py
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
@@ -44444,6 +44452,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - engine/neuralweb/brain_financial_bridge.py
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
@@ -45720,6 +45729,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - engine/neuralweb/brain_financial_bridge.py
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "contracts/capital_structure_projection.schema.json"
@@ -51045,6 +51055,7 @@ jobs:
     # The qledger-cluster-honest-ci code owner retains grader/readiness suites.
     scope: exclusive
     paths:
+      - engine/neuralweb/brain_financial_bridge.py
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "admin/press_audience.py"
@@ -53252,3 +53263,57 @@ jobs:
         run: pip install pandas numpy pyyaml jsonschema
       - name: fail-closed signal builder entrypoint and healthy controls
         run: python -m unittest tests/test_build_signal_quality_fail_closed.py -v
+  public-site-figma-baseline-contracts:
+    # PR #7220 (public-site Figma baseline) CI-ownership repair, 2026-11-06: the three
+    # suites the branch shipped had no CI run-step owner — contract-delta flagged
+    # exactly those three as introduced unwired suites, and this job is that one
+    # owner. scope: exclusive — paths: is the measured import/read closure. The
+    # suites exercise pure contracts (36 capture targets, matrix sealing, generated
+    # JS parsed by node) and never launch a browser, touch Figma or the network.
+    if: ${{ false }}
+    gate: code
+    scope: exclusive
+    # paths: is the planner's measured closure for this job's own commands, not a
+    # guess: the three suites, their ancestor init, the four tools/figma modules,
+    # and the eleven frozen site/ source files capture_reference_matrix.py names
+    # when it verifies the source before capture (a change to any of them must
+    # re-run these contracts).
+    paths:
+      - tests/__init__.py
+      - tests/test_public_site_figma_capture_jobs.py
+      - tests/test_public_site_figma_import_plan.py
+      - tests/test_public_site_figma_reference_matrix.py
+      - tools/figma/__init__.py
+      - tools/figma/public_site_baseline/__init__.py
+      - tools/figma/public_site_baseline/build_import_plan.py
+      - tools/figma/public_site_baseline/capture_reference_matrix.py
+      - tools/figma/public_site_baseline/reference_matrix.py
+      - site/adtest.js
+      - site/index.html
+      - site/landing.css
+      - site/mm_brain.js
+      - site/onboard.css
+      - site/onboard.js
+      - site/products/market-dashboards.html
+      - site/products/market-terminal.html
+      - site/products/mastermind-ai.html
+      - site/scene-motion.css
+      - site/scene-motion.js
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: install test deps
+        run: pip install pytest playwright
+      - name: capture job matrix contracts
+        run: python -m pytest tests/test_public_site_figma_capture_jobs.py -q
+      - name: import plan contracts (generated JS parsed by node)
+        run: python -m pytest tests/test_public_site_figma_import_plan.py -q
+      - name: reference matrix sealing contracts
+        run: python -m pytest tests/test_public_site_figma_reference_matrix.py -q
