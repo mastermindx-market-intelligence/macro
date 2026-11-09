@@ -5851,9 +5851,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_943),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_964),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_701),
+    ("templates/index.html", 137, 5_958),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_979),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_716),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5861,6 +5861,112 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-09 (PR #6867, preserve lifecycle and landed ownership-ledger steps):
+    both contributions share data-base-shim. Keep all original command bytes,
+    the landed F09 token and both complete histories. Canonical metadata loads
+    current main at 6 commands/11 test tokens/627 joined characters, weight28;
+    the union is 7/15/814, weight38. Crossing the 800-character bucket adds one
+    unit to the original measured lifecycle+9, so the current marginal is+10.
+    Fund 5958/5979/5716 from 5948/5969/5706; retain 137/138/131 jobs, ten packs
+    and all selectors/assertions/admission limits. The old +9 measurements
+    below stay historical. This is source accounting, not a new timing or
+    whole-tree planner run; the combined successor needs its own natural CI.
+
+    2026-11-09 (PR #10226, reconcile the actual #10192 landing):
+    #10192 merged as7bdfb249486d409ee8634501842c31f51af74c7c.
+    Receiving main9a13c64 already contains both accepted filer postimages,
+    its single test enrollment and its +2 allowance. Retain them unchanged.
+    Only the accepted ledger step remains: commands5->6, test paths10->11,
+    joined characters576->627, owner weight25->28. Add only ledger+3:
+    5945/5966/5703->5948/5969/5706. Preserve400 owners,399 other blocks,
+    jobs137/138/131,ten packs and all current controls/history. The two
+    original #10226 paragraphs below remain historical, not new funding.
+    This is source accounting, not a new planner or timing measurement;
+    the successor still requires its own natural CI qualification.
+
+    2026-11-08 (PR #10226, second current-main conflict composition):
+    retain the accepted four filer/ledger objects and the original two
+    data-base-shim command enrollments. This owner is still byte-identical
+    to its prior base on main8251e41; PR10192 remains unmerged, so its own
+    filer+2 and ledger+3 union is still +5, counted once. Current main has
+    separately landed #10180 B17 coverage and its measured +3 contribution.
+    Preserve that accepted source and complete dated note; compose +5 onto
+    current5923/5944/5681 to yield5928/5949/5686. Keep jobs137/138/131,
+    ten packs, all commands/selectors/timeouts and runtime/admission limits.
+    The prior H6b52c699 had own CLEAR120 jobs/380 semantic proof steps;
+    that proof does not certify this new combined source. Natural new-head
+    CI must qualify it. This is exact source arithmetic, not a new full-tree
+    planner or timing measurement. Both historical paragraphs remain below.
+    Recheck actual10192 settlement before publication; do not double fund it.
+
+    2026-11-08 (PR #10226, filer/ledger current-owner accounting):
+    retain all four accepted filer/ledger source and test postimages.
+    Current main16b9445 has neither component command enrollment;
+    PR10192 is still unmerged at the composition's dependency read.
+    Removing the two accepted command additions from H's data-base-shim
+    reproduces the entire current owner. Preserve395 owners and394
+    other blocks. The existing estimator counts5->6 run commands,
+    9->11 test paths,541->627 joined command characters, weight23->28:
+    ledger+3 and filer+2, total+5 for the same selected owner.
+    Compose only this carrier's union onto5920/5941/5678, yielding
+    5925/5946/5683. Keep jobs137/138/131,ten packs and every current
+    selector, dependency, runtime and admission control. Original H
+    packing is outside its five-path diff, so no H note is transplanted.
+    All current history and landed7352/10735 accounting remain.
+    This is static source arithmetic, not a new paired planner or
+    current-tree failure claim. Natural own CI must qualify the result.
+    If10192 actually lands before publication, retain that new baseline
+    and add only ledger+3; do not enroll or fund the filer twice.
+
+    2026-11-09 (PR #6867, preserving current F09 receiver): retain the
+    landed beneficial-ownership argument in the existing Shared Shell step
+    and append the original lifecycle enrollment after its Node handshake.
+    Current owner weight 25 -> 34 keeps exactly the original +9 contribution;
+    carry ceilings 5945/5966/5703 -> 5954/5975/5712, retaining job ceilings
+    137/138/131, ten packs and every assertion, selector and runtime limit.
+    Both original lifecycle history entries and all main provenance remain
+    at their existing anchors. This is source-derived accounting, not a new
+    paired planner measurement; natural successor CI must qualify this head.
+
+    F09 C3 current-main conflict repair (2026-11-09): retain the complete
+    historical paired measurement below and current main's independent history.
+    The data-base-shim preimage and current weight estimator still establish
+    only +2 from the accepted suite token, with no new selected owner. Apply
+    that contribution to 5943/5964/5701 -> 5945/5966/5703; keep 137/138/131 jobs
+    and ten packs. This is source accounting, not a new planner execution.
+
+    2026-11-08 (PR #10192, accepted F09 suite accounting on current main):
+    own contract-delta run42241879921/job127973971361 compared exact base
+    4b2a019bf31317b994c6f07329565a62c38f7670 with head
+    e287b58381b87d1d1495b3c6f77a194e3eb7d582: index5912->5914,
+    free-content5927->5929, Prophet5668->5670, unchanged selected jobs and
+    ten packs, three introduced findings and zero inherited. Its existing
+    data-base-shim owner adds only tests/test_beneficial_ownership.py to the
+    SharedShell command. Current catalog4f2c0d2fee46d9839560f0f958f3322e5eb9ce1a
+    retains that exact base owner; current runner computes23->25 from five
+    commands and9->10 test-path tokens in the same text-size bucket.
+    Compose only this measured +2 coverage cost onto current ceilings:
+    index5920->5922, free-content5941->5943, Prophet5678->5680.
+    Mainc9e06966920fa3b4b46341d344f90978f1fcd225 has actually landed #7352;
+    its independent +2 free-content benchmark allowance and history are
+    retained. The previous F09 candidate03f5407 conflicted with that landing;
+    this composition includes both actual source contributions once. Keep
+    selected-job ceilings137/138/131, ten packs, all assertions, selectors,
+    suites, runtime deadlines and existing provenance. No unmerged sibling
+    funding. This is source-composition arithmetic, not a new planner run;
+    old exact-base descendant UNKNOWN is unchanged, and new own CI is owed.
+
+    2026-11-09 (#6867 preserving conflict repair on main 15364780e3f3):
+    keep all 400 accepted owners and the registry/admission test additions.
+    The full data-base-shim owner preimage and runner 47164044 are unchanged
+    from the qualified 73efd50f receiver. Its original lifecycle enrollment
+    still adds exactly nine estimator units; retain the 5952/5973/5710
+    ceilings below and add no second allowance for isolated admission.
+    Preserve the nine accepted product/test/research postimages, all prior
+    provenance, job ceilings137/138/131, ten packs and admission limits.
+    This is static preserving composition, not a new full-tree measurement;
+    natural current-head CI must qualify the integrated source.
 
     2026-11-09 (PR #10870, dependency-coverage correction): the separate
     admission job conservatively owns tools/xguerrilla/** because pytest
@@ -5888,6 +5994,21 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     timeouts and admission/concurrency controls stay. This is measured planner
     accounting, not an elapsed-time claim; natural successor CI must qualify
     the repaired source.
+
+    2026-11-08 (PR #6867, intraday lifecycle and ledger regression coverage):
+    natural contract job 128831388767 measured head
+    f218bb91b29683dd662eb573127620aae9e2c9d6 against base
+    cc44807949756df7b2359cb2342bf89b580d863f on tested merge
+    eebf82d4e21638dda150cbb8fda0b5a923467fba (the exact head tree).
+    The existing CODE data-base-shim owner gained one intended pytest step
+    for lifecycle JS, timing lifecycle, stance and TestAppendLedger.
+    Actual probes were index137/5943->5952, free137/5964->5973 and
+    Prophet131/5701->5710, all ten packs and no newly selected jobs.
+    Fund exactly the measured +9 per probe. Preserve job ceilings137/138/131,
+    ten packs, every existing suite/assertion, owner classification,
+    selectors, dependencies, timeouts and admission/concurrency controls.
+    This is measured planner weight, not an execution-time estimate.
+    All earlier landed contributions and provenance remain below.
 
     2026-11-08 (PR #10837, explicit synthetic harness enrollment, recomposed on
     current main 005baca8b092abe82acb4462eb6710af8f59a1c8): natural
