@@ -45,13 +45,17 @@ The [Catalyst selection reference](catalyst-selection-state-reference.mjs) and [
 
 Run `node --test catalyst-selection-state-reference.test.mjs`. The exact saved pair passed **22 offline checks on Node v24.22.1**. The corresponding native EN390/ZH320 copy-failure states expose the exact prepared case URL for manual selection. The pair itself does not prove URL construction, React integration, focus or clipboard effects. Continuation §23 records the separate actual-component and fixture-browser follow-up; live acceptance remains distinct. See continuation §21 for hashes, current-expression reproduction, native roots and proof limits.
 
-## Implemented Catalyst follow-up
+## Implemented source follow-ups
 
 The selected-case/copy correction now has an actual Terminal implementation in [PR1354](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1354), head **45472fcedad31292d660d54731d4da472ca04f1e**. Explicit selection survives filters and zero results; absent saved cases do not substitute another detail; clipboard feedback and exact manual fallback stay bound to the current case/read attempt.
 
 **46 component tests and 18 targeted browser cases passed**, with a clean complete-source TypeScript check. Desktop, tablet and mobile EN/ZH—including 320px Chinese—were exercised. [The source-bound explanation, manifest, check output and seven original captures](https://github.com/mastermindx-market-intelligence/mastermind-terminal/tree/45472fcedad31292d660d54731d4da472ca04f1e/docs/verification/catalyst-selection-copy-20261109) are committed with the source. These are synthetic fixture results, not live data/entitlement/deployment proof.
 
 PR1354 is Ready and its exact-head native auto-merge is enrolled. The observed CI jobs remain queued; protected merge and applicable deployment/live proof remain pending. See continuation §23 for source custody, architecture and the preserved historical test denial.
+
+GMI’s existing [Draft PR10676](https://github.com/mastermindx-market-intelligence/Macro/pull/10676) now implements source-receipt continuity through EN/ZH redraws. Exact theme/record/source identity preserves the right open cards and focused action across reordering; changed, missing or duplicated identities do not inherit old state. Both 1440px and 390px cases pass across 32 fresh anonymous Chrome contexts using the actual candidate JavaScript and extracted committed component DOM. Continuation §26 and the original candidate’s DESIGN_RECORD §11.19 bind the five changed paths, exact tests and limits. All model and release holds remain; no production or full shared-shell acceptance is claimed. Its existing Paper Build is synchronized with this source.
+
+Catalyst’s existing Paper Build now also describes the implemented code and executed proof, with its original nine-module structure preserved. Continuation §25 records the live-server read-only preflight and the separate Chrome-extension UI obstacle to real-account browser proof.
 
 The existing Market Memory inspection Build now also names its actual Macro consumer, two source-copy sites, panel/focus handlers, URL owner and asset-delivery path. Continuation §24 records the applied seven-module contract and preserves active PR10796; its application return control remains to be implemented on the qualified incumbent carrier.
 
@@ -65,7 +69,7 @@ Canonical programme: [Macro PR #10617](https://github.com/mastermindx-market-int
 
 - Protected procedure pin: Mastermind `5c3d3885234358aefb97ecdbc59be0864df14f8b`.
 - Product source/doctrine pin: Macro `338a10852dcefa5d2bd07e5c6be0955c2b1e83fd`.
-- GMI public-candidate comparison: PR #10676 at `80d6ff71b9913524c4a381b543ec7a53383f50dc`; existing Draft/release holds and S03–S05 work preserved.
+- GMI implementation follow-up: original PR #10676 advanced from `80d6ff71b9913524c4a381b543ec7a53383f50dc` to `cc47f34daf1850392521018c40380258e61b33a6`; the locale-receipt repair passes two named cases across 32 anonymous browser contexts, with all existing Draft/model/release holds preserved.
 - Crypto R4 candidate comparison: PR #9580 at `5e496c24c962e85a4f7f514dd43dc61443b95cab`; open Draft/unmerged, original alert and public-cutover gates preserved.
 - All Tools affected-source refresh: Macro `4bd1948ac0d9ecf40301caf70cbf8cf1619fd2c4`; compact selector remains a proposed presentation extension of the current embedded owner.
 - Catalyst design-source refresh: Terminal `3e2f8db782b0ba2f98343edf5199a4b8ce921ec9`; selection/filter/copy defects are source-demonstrated, with seven explicitly marked test-fixture designs and 22 passing isolated-reference checks.
@@ -84,7 +88,7 @@ The principal retained the only canvas writer role among this session’s agents
 
 ## Implementation boundary
 
-Most of this programme remains applied design work and build guidance. Catalyst now also has the bounded source implementation and actual-component/fixture-browser proof described above. Data feeds, live entitlement, production browser proof, broader feature acceptance and protected release are separate claims.
+Most of this programme remains applied design work and build guidance. Catalyst now has the bounded source implementation and actual-component/fixture-browser proof described above. GMI also has the locale/receipt source repair on its original held candidate, with bounded actual-JavaScript/browser proof. Data feeds, live entitlement, production browser proof, broader feature acceptance and protected release are separate claims.
 
 Start with the data-meaning and source-status fixes, then answer evidence/save viability, then responsive navigation and motion. Reuse incumbent owners; do not create parallel identity, state, query, save, monitoring or retry lifecycles. The detailed report names proof requirements and unknown entry points rather than inventing an API.
 
