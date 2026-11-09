@@ -29854,25 +29854,16 @@ jobs:
     # which re-selected that job for ordinary code PRs and pushed all three
     # packing probes 2 weight-seconds over their composed ceilings
     # (contract-delta: 3 introduced, 0 inherited). Curated here instead:
-    # scope: exclusive + exact paths, so the job is selected ONLY by edits to
-    # the files below and the probes' aggregates return to their base values.
-    # paths: is the suite's measured import/read closure — conftest.py puts
-    # tools/ on sys.path so the package imports as `xguerrilla`, admission.py
-    # imports .net and .persona, both import yaml, and `import xguerrilla`
-    # executes the package __init__ — plus ADMISSION.md, the call-site
-    # contract this suite qualifies. No per-job weight field exists in the
-    # schema: the pack estimator derives it from the commands (2 run steps +
-    # 2 x 1 tests/test_ reference + 0 length units = 4), and this job is never
-    # selected by the three probes, so no ceiling moves.
+    # scope: exclusive owns this package conservatively. Pytest's ancestor
+    # conftest imports profiles -> runtime_boundary and inserts tools/ into
+    # sys.path; the static resolver cannot infer that package alias. Keep
+    # existing and future package-local dependencies covered, including
+    # dependencies reached only through pytest collection.
+    # The three unrelated packing probes still do not select this job.
+    # No job-count, weight, pack, timeout, or concurrency ceiling changes.
     scope: exclusive
     paths:
-      - "tools/xguerrilla/__init__.py"
-      - "tools/xguerrilla/admission.py"
-      - "tools/xguerrilla/net.py"
-      - "tools/xguerrilla/persona.py"
-      - "tools/xguerrilla/ADMISSION.md"
-      - "tools/xguerrilla/tests/conftest.py"
-      - "tools/xguerrilla/tests/test_admission.py"
+      - "tools/xguerrilla/**"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

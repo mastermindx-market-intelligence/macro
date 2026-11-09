@@ -5333,7 +5333,7 @@ CURATED_EXCLUSIVE = {
     "options-scenario-contract",
     # xguerrilla admission chain: one gate:code exclusive home for the
     # tools/xguerrilla admission suite, selected only by edits to its own
-    # import closure, so the three packing probes keep their base aggregates
+    # package, so the three packing probes keep their base aggregates
     # with no ceiling moved.
     "xguerrilla-admission",
 }
@@ -5353,6 +5353,46 @@ def test_the_curated_exclusive_set_is_actually_declared() -> None:
     """The set this file pins must be the set the manifest declares."""
     declared = {job.job_id for job in PACK.load_legacy_jobs(MANIFEST) if job.exclusive}
     assert declared == CURATED_EXCLUSIVE, sorted(declared ^ CURATED_EXCLUSIVE)
+
+
+@pytest.mark.parametrize("dependency", [
+    "tools/xguerrilla/__init__.py",  # ci-trigger-closure: data
+    "tools/xguerrilla/admission.py",  # ci-trigger-closure: data
+    "tools/xguerrilla/net.py",  # ci-trigger-closure: data
+    "tools/xguerrilla/persona.py",  # ci-trigger-closure: data
+    "tools/xguerrilla/ADMISSION.md",  # ci-trigger-closure: data
+    "tools/xguerrilla/tests/conftest.py",  # ci-trigger-closure: data
+    "tools/xguerrilla/tests/test_admission.py",  # ci-trigger-closure: data
+    "tools/xguerrilla/profiles.py",  # ci-trigger-closure: data
+    "tools/xguerrilla/runtime_boundary.py",  # ci-trigger-closure: data
+    "tools/xguerrilla/future_package_helper.py",  # ci-trigger-closure: data
+    "tools/xguerrilla/internal/future_dependency.py",  # ci-trigger-closure: data
+])
+def test_xguerrilla_admission_scope_keeps_collection_and_future_dependencies(
+    dependency: str,
+) -> None:
+    """Conftest's tools/ alias must not hide package-local input changes."""
+    job = next(job for job in PACK.load_legacy_jobs(MANIFEST, gate="code")
+               if job.job_id == "xguerrilla-admission")
+    scoped, _ = PACK.infer_job_scopes([job])
+    selected, reason = PACK.select_jobs(scoped, [dependency])
+    assert [item.job_id for item in selected] == [job.job_id], (dependency, reason)
+    commands = "\n".join(step["run"] for step in job.definition["steps"] if "run" in step)
+    assert "python -m pytest tools/xguerrilla/tests/test_admission.py -q" in commands
+
+
+@pytest.mark.parametrize("probe", [
+    "templates/index.html",  # ci-trigger-closure: data
+    "scripts/build_free_content.py",  # ci-trigger-closure: data
+    "engine/prophet/plan_book.py",  # ci-trigger-closure: data
+])
+def test_xguerrilla_admission_scope_does_not_select_packing_probes(probe: str) -> None:
+    """Conservative package ownership preserves the three packing shapes."""
+    job = next(job for job in PACK.load_legacy_jobs(MANIFEST, gate="code")
+               if job.job_id == "xguerrilla-admission")
+    scoped, _ = PACK.infer_job_scopes([job])
+    selected, reason = PACK.select_jobs(scoped, [probe])
+    assert not selected, reason
 
 
 def test_eval_os_acceptance_runs_on_ordinary_code_prs() -> None:
@@ -5631,6 +5671,13 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-09 (PR #10870, dependency-coverage correction): the separate
+    admission job conservatively owns tools/xguerrilla/** because pytest
+    conftest's tools/ package alias escapes static closure resolution. Its
+    existing collection dependencies and future package-local helpers select
+    the suite; all three packing probes remain outside that package. Every
+    command and all packing ceilings below remain unchanged.
 
     2026-11-09 (PR #10870, one synthetic admission suite): natural contract
     run 42536598947 / job 128902154215 measured head
