@@ -1,0 +1,247 @@
+{
+  "schema": "mastermind.p0_evidence.v2",
+  "generated_at": "2026-10-20T10:09:00Z",
+  "tool": {
+    "name": "Native CUA Chrome3; actual visible Settings controls and element crops",
+    "provenance": "Hosted CUA API, no local module hash. Exact native screenshot bytes retained; CAPTURE.md describes controlled preview."
+  },
+  "honesty": {
+    "access": "Controlled anonymous local page preview of exact partial with native-data fixture. Not authenticated production acceptance.",
+    "authority": "Historical physical-flow context only; no mass balance, forecast or position authority.",
+    "gaps": "Existing floating Ask Mastermind launcher crosses a small part of some mobile crops. Final helper and full bake qualified separately; these images do not prove the data pipeline.",
+    "locale_mapping": "The observed document language zh-CN is the actual Simplified Chinese state; locale/applied_locale use the repository evidence-axis key zh. Original capture bytes, source bindings and state identity are unchanged."
+  },
+  "source_sha256": {
+    "templates/commodities.html.j2": "866f5f7eb1a5b00aafd4752e69e3f489f9584cae71a1b26a56480aa3ea47599c",
+    "templates/_petroleum_flow_context.html.j2": "30c7a120180971b12b0ab0b840c93dcf03312817383deaef7e6d0061fc5d81d4",
+    "mockups/evidence/f09-petroleum-flow/context.json": "b29ec2927ed7c2e7af01a7659aec41a7ac2e3daa3d292c9f2f6b5b3728fc84a5"
+  },
+  "axes": {
+    "access": [
+      "anonymous"
+    ],
+    "themes": [
+      "dark",
+      "light"
+    ],
+    "locales": [
+      "en",
+      "zh"
+    ],
+    "viewports": {
+      "desktop": [
+        1440,
+        900
+      ],
+      "mobile": [
+        390,
+        844
+      ]
+    },
+    "force_states": [
+      {
+        "name": "source_keyboard_focus",
+        "kind": "focus",
+        "action": "press Enter on #petroleum-flow summary"
+      },
+      {
+        "name": "missing_coverage",
+        "kind": "custom",
+        "action": "render controlled unavailable fixture then navigate normally"
+      }
+    ]
+  },
+  "pages": [
+    {
+      "page_id": "commodities.html#petroleum-flow",
+      "route": "/commodities.html#petroleum-flow",
+      "states": [
+        {
+          "access": "anonymous",
+          "locale": "en",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "captured": true,
+          "file": "en-dark-390.jpg",
+          "sha256": "8b92d9d888d56f303b42d2e635188ac07b02d4154e46b6d4b545808a0e79bad0",
+          "bytes": 37856,
+          "width": 350,
+          "height": 701,
+          "force_state": null,
+          "mime_type": "image/jpeg"
+        },
+        {
+          "access": "anonymous",
+          "locale": "en",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "captured": true,
+          "file": "en-dark-1440.jpg",
+          "sha256": "313273c45618acd9fea6c639f4f0092b4e81516fd623bafcc7c333399dc7553d",
+          "bytes": 42507,
+          "width": 1140,
+          "height": 450,
+          "force_state": null,
+          "mime_type": "image/jpeg"
+        },
+        {
+          "access": "anonymous",
+          "locale": "en",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "captured": true,
+          "file": "en-light-1440.jpg",
+          "sha256": "bd73615a5d198c852a2c553303d74b1a5c98e02104a9853d0839e912df3f7e6f",
+          "bytes": 49084,
+          "width": 1140,
+          "height": 450,
+          "force_state": null,
+          "mime_type": "image/jpeg"
+        },
+        {
+          "access": "anonymous",
+          "locale": "en",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "captured": true,
+          "file": "en-light-390.jpg",
+          "sha256": "a81866671db77152b724a5abb1eae45785ae7a26cd3b615dc5a52a61417de464",
+          "bytes": 42563,
+          "width": 350,
+          "height": 701,
+          "force_state": null,
+          "mime_type": "image/jpeg"
+        },
+        {
+          "access": "anonymous",
+          "locale": "zh",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "captured": true,
+          "file": "zh-light-390.jpg",
+          "sha256": "fd98e9cf2fb77b479fd063f339fb597ad45a01a64bcd263bcd57eca4d8a4fe8f",
+          "bytes": 30554,
+          "width": 350,
+          "height": 582,
+          "force_state": null,
+          "mime_type": "image/jpeg",
+          "browser_document_lang": "zh-CN"
+        },
+        {
+          "access": "anonymous",
+          "locale": "zh",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "captured": true,
+          "file": "zh-light-1440.jpg",
+          "sha256": "43e37d0eb3707416e89d886eb30eeba7570bcbddfd39223249b14fcf3c30dcbe",
+          "bytes": 37986,
+          "width": 1140,
+          "height": 450,
+          "force_state": null,
+          "mime_type": "image/jpeg",
+          "browser_document_lang": "zh-CN"
+        },
+        {
+          "access": "anonymous",
+          "locale": "zh",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "captured": true,
+          "file": "zh-dark-1440.jpg",
+          "sha256": "6605a441850226f10e1f753c9225612c091b7d8dec08de38d141be3d5ef7eaa6",
+          "bytes": 32965,
+          "width": 1140,
+          "height": 450,
+          "force_state": null,
+          "mime_type": "image/jpeg",
+          "browser_document_lang": "zh-CN"
+        },
+        {
+          "access": "anonymous",
+          "locale": "zh",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "captured": true,
+          "file": "zh-dark-390.jpg",
+          "sha256": "3a2584bb1f38a8d4c195b2df5399c5cddd45380bf7c4d43e4ecbdafb9f9d007c",
+          "bytes": 27635,
+          "width": 350,
+          "height": 582,
+          "force_state": null,
+          "mime_type": "image/jpeg",
+          "browser_document_lang": "zh-CN"
+        },
+        {
+          "access": "anonymous",
+          "locale": "zh",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "captured": true,
+          "file": "zh-dark-sources.jpg",
+          "sha256": "b1238e6450ae2941b9164a88b480f2358550377d4fc3236da86c868a3a44cfaf",
+          "bytes": 43111,
+          "width": 350,
+          "height": 802,
+          "force_state": "source_keyboard_focus",
+          "mime_type": "image/jpeg",
+          "browser_document_lang": "zh-CN"
+        },
+        {
+          "access": "anonymous",
+          "locale": "en",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "captured": true,
+          "file": "en-dark-missing.jpg",
+          "sha256": "7d8dc65f56a61a078a7db2bf9c805f36df9054c5860aae6c9957d4e9a0f19664",
+          "bytes": 14774,
+          "width": 350,
+          "height": 270,
+          "force_state": "missing_coverage",
+          "mime_type": "image/jpeg"
+        }
+      ]
+    }
+  ]
+}

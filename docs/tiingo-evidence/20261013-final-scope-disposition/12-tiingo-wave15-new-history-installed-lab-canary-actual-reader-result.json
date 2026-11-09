@@ -1,0 +1,55 @@
+{
+  "schema": "tiingo.new_history_actual_installed_research_lab_canary/v1",
+  "settled_at_utc": "2026-10-13T01:37:45.074832+00:00",
+  "scope_sha256": "3e5d85c116e6d2a705ccb811806fe7f748cd0b14e865c414ba2bf31d3397f0e6",
+  "launcher_sha256": "381f3b12c4d80313acd518ac2d5571fe09bf3286009645a00dd15af64e5a809c",
+  "implementation_revision": "0b204cde017b88a9fec03ddb583f6b5e02ea4886",
+  "qualified_vendor_symbol": "SAPIF",
+  "qualified_source_receipt_id": "dd265e8576220935c49f547c7b317707d4bef99c298e4aeeba650f12ac971360",
+  "actual_adjusted_history_rows": 4787,
+  "source_window": [
+    "2007-07-16",
+    "2026-10-09"
+  ],
+  "original_describe_result_sha256": "52c41c50a5221df795a723c40daccaf86de5de86095fefe1339ab9950a8dc972",
+  "original_lab_result_sha256": "f70fcc0f3cc0552861945c9548c2fc4af93e07a07238cea7281e7a9efbb13d87",
+  "source_ref": "tiingo:normalized/eod-bars/2026-10-13/0cc23b9909722be22f7ebb8a528078f765b6fc9c546569ca6ea75509874d5988.parquet",
+  "source_file_version": "statv1:3f45a93537c8a2b3bd73bf76b034f7275292c14b8f72c051e5c0bdca141fd2e5",
+  "run": {
+    "schema_version": "mastermind.web_lab_run/v1",
+    "run_id": "run-20261013T013743Z-647c616e45de",
+    "state": "SUCCEEDED",
+    "exit_code": 0,
+    "request_sha256": "9ff9ea748883061dcefa0d1bdacb36751f6fb8c33784366d527cea8a2482c0bc",
+    "process_id": 71837,
+    "failure_code": null,
+    "completed_at": "2026-10-13T01:37:44.999023+00:00",
+    "execution": "synchronous_bounded_existing_lab_recipe",
+    "wall_limit_seconds": 60,
+    "artifact_files": [
+      "request.json",
+      "status.json",
+      "worker.stdout",
+      "worker.stderr",
+      "result.json"
+    ],
+    "ledger_owner": "engine.trial_ledger.TrialLedger.with_declared_budget",
+    "production_ledger_written": false
+  },
+  "source_before_after_hashes_unchanged": true,
+  "trial_budget": 1,
+  "metrics_or_market_rows_copied_to_acceptance": false,
+  "raw_adjusted_and_action_evidence_from_qualified_source": {
+    "split_events": 1,
+    "dividend_events": 69,
+    "raw_adjusted_different_dates": 4768
+  },
+  "production_trial_ledger_written": false,
+  "research_only": true,
+  "canonical_identity_admitted": false,
+  "pit_backtest_eligible": false,
+  "selector_or_runtime_changed": false,
+  "provider_requests": 0,
+  "credentials_read": false,
+  "programme_acceptance_claimed": false
+}

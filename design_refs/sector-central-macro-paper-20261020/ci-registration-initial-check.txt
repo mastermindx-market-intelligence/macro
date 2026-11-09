@@ -1,0 +1,12 @@
+..F                                                                      [100%]
+=================================== FAILURES ===================================
+______________ test_exclusive_curation_narrows_ordinary_code_prs _______________
+tests/test_ci_pack.py:5888: in test_exclusive_curation_narrows_ordinary_code_prs
+    assert not breaches, [
+E   AssertionError: [(('scripts/build_free_content.py', 'weight', 5670, 5664), 'scoped to 1 changed file(s): 134/329 jobs (2 unscoped always-on, 132 scoped matches)')]
+E   assert not [('scripts/build_free_content.py', 'weight', 5670, 5664)]
+
+NOTE: sparse worktree — mockups, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_ci_pack.py::test_exclusive_curation_narrows_ordinary_code_prs
+1 failed, 2 passed in 121.93s (0:02:01)
