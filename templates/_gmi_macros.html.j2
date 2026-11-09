@@ -44,7 +44,7 @@
 {% if scope == 'index' -%}
 <p class="gmi-index-feedback" data-gmi-index-feedback role="status" aria-live="polite" aria-atomic="true" hidden><span data-gmi-index-count hidden><span class="l-en" data-gmi-index-count-en></span><span class="l-zh" data-gmi-index-count-zh></span></span><span data-gmi-nomatch="{{ scope }}" hidden>{{ t("No micro-theme matches that search.", "没有匹配该搜索的细分主题。") }}</span></p>
 {%- else -%}
-<p class="mx-empty gmi-empty-inline" data-gmi-nomatch="{{ scope }}" hidden>{{ t("No micro-theme matches that search.", "没有匹配该搜索的细分主题。") }}</p>
+<div data-gmi-tree-status role="status" aria-live="polite" aria-atomic="true"><p class="mx-empty gmi-empty-inline" data-gmi-nomatch="{{ scope }}" hidden>{{ t("No micro-theme matches that search.", "没有匹配该搜索的细分主题。") }}</p></div>
 {%- endif %}
 {%- endmacro %}
 

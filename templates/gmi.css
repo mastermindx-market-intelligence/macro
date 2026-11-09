@@ -340,6 +340,8 @@ html[data-theme="light"] .gmi-mini{ background:var(--panel2); }
 .gmi-page .gmi-search:focus-within{ border-color:var(--link); box-shadow:var(--gmi-select); }
 /* shared W2 conversions of specimen inline styles (R7) */
 .gmi-empty-inline{ padding:8px 0; text-align:left; }
+/* Keep the live region mounted without adding a second panel gap while empty. */
+[data-gmi-tree-status]:has(> [data-gmi-nomatch][hidden]){ margin-block-end:calc(-1 * var(--sp-3,12px)); }
 .gmi-cells--mini{ display:flex; flex-wrap:wrap; gap:3px; --gmi-cell:var(--gmi-cell-mini); }
 .gmi-list{ margin:0; padding:0; list-style:none; display:flex; flex-direction:column; }
 .gmi-list li{ display:flex; gap:10px; align-items:baseline; padding:8px 0; border-top:1px solid var(--gmi-hair); font-size:var(--fs-sm); }

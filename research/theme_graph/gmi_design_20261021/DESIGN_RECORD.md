@@ -915,3 +915,31 @@ The earlier candidate also passed all eight cases in 18 contexts. A source-only 
 [ANSWER_FILTER_RECOVERY_VALIDATION_20261109.json](ANSWER_FILTER_RECOVERY_VALIDATION_20261109.json) binds source/render hashes, actual generated diff, canonical test definitions, bounded harness, native receipts and two inspected phone captures. The tree/index code, receipt renderer, selection owner, copy/URL owner and copy event handlers are byte-identical to the parent. Their accepted historical suites are not claimed as rerun. Complete JavaScript and canonical Python syntax pass.
 
 The browser fixture uses actual generated main content and complete GMI/shared theme CSS in light mode with reduced motion, a dedicated loopback origin and blocked external requests. Full shared shell, fonts, live account, public admission, operating-system clipboard and assistive-technology speech remain separate qualifications. Original model01 **EFFECT_UNKNOWN / ROOT_UNVERIFIED**, Draft and release holds remain.
+
+## 11.25. Persistent tree no-match feedback — 9 November 2026
+
+### Observed defect and existing owner
+
+At parent `11aed18841b996babe1b81c0b4eb0ebd7f27a797`, the tree's no-match paragraph was visually correct but had no persistent status container. The browser could reach zero visible tree rows and move from search to See all without an equivalent status role/content in that path. Desktop English and phone Chinese baseline cases reproduce the missing container. The existing `search_box()` macro, `noMatch()` helper and tree input/render remain the owners.
+
+The non-index macro now wraps that same hidden bilingual paragraph in one always-mounted `data-gmi-tree-status` container with `role="status"`, `aria-live="polite"` and `aria-atomic="true"`. Its paragraph stays hidden until the existing tree render finds no matches. `noMatch()` assigns `hidden` only when the requested value changes. This avoids redundant visibility mutations during successive unmatched queries; it adds no query state, event owner, observer, timer or copied translation.
+
+The container is present before feedback occurs, following the procedure in [W3C ARIA22](https://www.w3.org/WAI/WCAG22/Techniques/aria/ARIA22). The existing language owner selects the visible EN/ZH span; no clear/repopulate cycle is introduced to force announcements. An empty result is feedback, so focus remains in search. Matching and cleared queries remove the paragraph's content from the rendered/accessibility status while preserving the container. Actually disabled JavaScript keeps the paragraph hidden and leaves the original native links intact.
+
+### Preserve the panel's spacing
+
+The parent `.gmi-panel` is a column flex layout with a 12 px gap. The first persistent wrapper introduced a second gap while its child was hidden: the source-bound native comparison measured 12 → 24 px at both 1440 and 320 px for initial, matching and cleared queries. Both versions already measured 89 px across the visible no-match message in the English fixture.
+
+The final paired CSS has one scoped rule: `[data-gmi-tree-status]:has(> [data-gmi-nomatch][hidden])` offsets only that extra empty flex gap using the same `--sp-3` token. It does not hide the live region, change the original paragraph's padding/margins or affect the index. The source comment explains why the offset exists. The verifier compares actual geometry against the original parent gap and the existing visible message height/margins in every language/width case, including static loading.
+
+### Source, render and affected proof
+
+Current exact blobs: JavaScript **ae2aee39d3adbaff4687bd0efcca0a8b5e70ea9b**; CSS **bbf4395ff8e119d7d6161703693c6f4b03142029**; shared macro **ea0a7e36538c1df65e5b1280c3d86e050fb8f30f**; generated explorer **7427ca297e76cfd2fb07d3cf39713803e7f7f7e8**; canonical verifier **31a3d3895e5c3847e2da456d5c1a848e9bb63144**. Template/site assets remain identical. Every other JavaScript function is byte-identical to the parent; the index macro branch is exact, and the CSS diff contains only the scoped empty-gap rule/comment.
+
+The existing production renderer reproduced the current explorer and index from 48 checked inputs and the same accepted model. The candidate changes only explorer HTML and paired GMI assets among nine outputs. The HTML diff is one wrapper line; all six other generated HTML files remain exact. The actual renderer's changed byte span was transported with baseline/replacement/candidate SHA-256 and final Git blob checks; the reconstructed explorer exactly matches the renderer's 972,414 bytes. No model was generated, and no fenced model01 output was read.
+
+Final focused proof uses 8 cases / 8 fresh anonymous Chrome157.0.8103.39 contexts: EN/ZH at 1440/390/320 px, plus two truly JavaScript-disabled cases. It verifies stable container/message identity, one visibility change per actual transition, zero redundant writes for successive no-match input, correct rendered and accessibility-snapshot language, retained focus/URL/answer identity, zero/one tree entry, Tab to See all, clear/re-entry, exact original spacing, native static links, 44 px navigation and no overflow. Two phone captures were inspected. The initial behavior-only pass and the spacing falsifier remain in the receipt; they are not represented as the final proof.
+
+`TREE_STATUS_VALIDATION_20261109.json` records the exact inputs, source hashes, baseline failures, initial/final candidates, measured spacing regression/correction and native receipts. `verify_tree_status_component.py` extracts the named functions from the canonical verifier and serves only the actual generated main/JSON plus complete shared theme/GMI CSS on an isolated loopback origin, with external requests blocked. It owns no product behavior.
+
+These checks establish the bounded DOM, accessibility-tree and interaction contract. They do not establish spoken screen-reader behavior, the full shared shell/fonts, live account/public admission, system clipboard or deployment. Original Draft, model01 **EFFECT_UNKNOWN / ROOT_UNVERIFIED** and release holds remain; no Tools receipt or navigation owner changed.

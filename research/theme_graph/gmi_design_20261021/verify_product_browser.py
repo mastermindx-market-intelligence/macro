@@ -1523,6 +1523,137 @@ with sync_playwright() as pw:
     for language in ('en','zh'):
         check(f'answer-filter-recovery-guards-{language}',lambda l=language:answer_filter_recovery_guards(l))
 
+    def tree_status_spacing(p, empty):
+        """The persistent live region must preserve the original panel spacing."""
+        geometry=p.locator('.gmi-tree').evaluate("""n=>{
+          const search=document.querySelector('[data-gmi-filter="tree"]').closest('.gmi-search');
+          const panel=n.closest('.gmi-panel');
+          const m=document.querySelector('[data-gmi-nomatch="tree"]');
+          const s=getComputedStyle(m);
+          return {gap:panel.getBoundingClientRect().top-search.getBoundingClientRect().bottom,
+            messageHeight:m.getBoundingClientRect().height,parentGap:parseFloat(getComputedStyle(search.parentElement).gap),
+            messageMargins:parseFloat(s.marginTop)+parseFloat(s.marginBottom)};
+        }""")
+        expected=(geometry['parentGap']*2+geometry['messageHeight']+geometry['messageMargins']) if empty else geometry['parentGap']
+        assert abs(geometry['gap']-expected)<0.5,geometry
+        return geometry
+
+    def tree_status_feedback(width, language):
+        """Persistent empty-search status, stable focus and one visibility update per transition."""
+        with context(width,'light',language,reduced_motion='reduce') as c:
+            p=page_for(c,'gmi.html?fixture=tree-status#theme=theme%3Ahbm_packaging&lens=chain')
+            p.locator('.gmi-advanced > summary').click()
+            tree=p.locator('.gmi-tree')
+            search=p.locator('input[data-gmi-filter="tree"]')
+            status=p.locator('[data-gmi-tree-status]')
+            message=p.locator('[data-gmi-nomatch="tree"]')
+            assert status.count()==1,'Tree no-match message has no persistent status owner'
+            expect(status).to_have_attribute('role','status')
+            expect(status).to_have_attribute('aria-live','polite')
+            expect(status).to_have_attribute('aria-atomic','true')
+            assert status.evaluate('(n)=>!n.hidden&&!n.hasAttribute("aria-hidden")')
+            expect(message).not_to_be_visible()
+            assert not status.inner_text().strip()
+            initial_geometry=tree_status_spacing(p,False)
+            original_url=p.url
+            original_title=p.locator('#gmi-topic-title').inner_text()
+            p.evaluate("""()=>{
+              window.__treeStatusOwner=document.querySelector('[data-gmi-tree-status]');
+              window.__treeStatusMessage=document.querySelector('[data-gmi-nomatch="tree"]');
+              window.__treeStatusChanges=[];
+              window.__treeStatusObserver=new MutationObserver(records=>{
+                window.__treeStatusChanges.push(...records.map(r=>({attribute:r.attributeName,old:r.oldValue})));
+              });
+              window.__treeStatusObserver.observe(window.__treeStatusMessage,{attributes:true,attributeFilter:['hidden'],attributeOldValue:true});
+              window.__treeStatusCards=[...document.querySelector('[data-topic-connections]').children];
+              const receipt=document.querySelector('.gmi-evidence-receipt');
+              if(receipt)receipt.open=true;
+            }""")
+            def stable(changes,empty):
+                assert p.evaluate("""()=>window.__treeStatusOwner===document.querySelector('[data-gmi-tree-status]')&&window.__treeStatusMessage===document.querySelector('[data-gmi-nomatch="tree"]')""")
+                assert p.evaluate('window.__treeStatusChanges.length')==changes
+                tree_status_spacing(p,empty)
+                assert p.url==original_url
+                expect(search).to_be_focused()
+                zeros=tree.locator('[role="treeitem"][tabindex="0"]:visible').count()
+                assert zeros==(0 if empty else 1)
+                assert tree.locator('[role="treeitem"]:visible').count()>0 if not empty else tree.locator('[role="treeitem"]:visible').count()==0
+
+            search.fill('hbm')
+            expect(message).not_to_be_visible()
+            stable(0,False)
+            search.fill('zz-no-tree-status-match')
+            expect(message).to_be_visible()
+            expected='No micro-theme matches that search.' if language=='en' else '没有匹配该搜索的细分主题。'
+            expect(status).to_have_text(re.compile(re.escape(expected)))
+            assert status.inner_text().strip()==expected
+            ax=status.aria_snapshot()
+            assert 'status' in ax and expected in ax,ax
+            inactive='没有匹配该搜索的细分主题。' if language=='en' else 'No micro-theme matches that search.'
+            assert inactive not in ax,ax
+            stable(1,True)
+            empty_geometry=tree_status_spacing(p,True)
+            search.fill('zz-another-no-tree-status-match')
+            stable(1,True)
+            assert p.evaluate("""()=>window.__treeStatusCards.every((n,i)=>document.querySelector('[data-topic-connections]').children[i]===n)""")
+            expect(p.locator('#gmi-topic-title')).to_have_text(original_title)
+            expect(p.locator('.gmi-evidence-receipt')).to_have_attribute('open','')
+            other='zh' if language=='en' else 'en'
+            p.evaluate('(language)=>document.documentElement.setAttribute("data-lang",language)',other)
+            translated='没有匹配该搜索的细分主题。' if other=='zh' else 'No micro-theme matches that search.'
+            assert status.inner_text().strip()==translated
+            assert translated in status.aria_snapshot()
+            stable(1,True)
+            p.evaluate('(language)=>document.documentElement.setAttribute("data-lang",language)',language)
+            expect(p.locator('#gmi-topic-title')).to_have_text(original_title)
+            assert status.inner_text().strip()==expected
+            stable(1,True)
+            if (width,language) in ((390,'en'),(320,'zh')):
+                path=args.out/f'tree-status-{width}-{language}.png'
+                p.locator('.gmi-advanced').screenshot(path=str(path))
+                report['screenshots'].append(path.name)
+            search.press('Tab')
+            expect(p.locator('.gmi-trow--more')).to_be_focused()
+            search.fill('')
+            expect(message).not_to_be_visible()
+            assert not status.inner_text().strip()
+            stable(2,False)
+            search.fill('zz-no-tree-status-match')
+            expect(message).to_be_visible()
+            stable(3,True)
+            search.fill('hbm')
+            expect(message).not_to_be_visible()
+            stable(4,False)
+            gmi_navigation_fit(p,width,language)
+            report.setdefault('tree_status',[]).append({'width':width,'language':language,'hidden_mutations':4,'status_identity_retained':True,'empty_accessibility_snapshot':ax,'focus_and_url_retained':True,'initial_geometry':initial_geometry,'empty_geometry':empty_geometry})
+            p.evaluate('window.__treeStatusObserver.disconnect()')
+
+    def tree_status_static(language):
+        """No false no-results status when the actual page scripts are disabled."""
+        with context(320,'light',language,java_script_enabled=False,reduced_motion='reduce') as c:
+            p=page_for(c,'gmi.html?fixture=tree-status-static')
+            p.locator('.gmi-advanced > summary').click()
+            status=p.locator('[data-gmi-tree-status]')
+            assert status.count()==1
+            expect(status).to_have_attribute('role','status')
+            assert status.evaluate('(n)=>!n.hidden')
+            expect(p.locator('[data-gmi-nomatch="tree"]')).not_to_be_visible()
+            assert not status.inner_text().strip()
+            ax=status.aria_snapshot()
+            assert 'No micro-theme matches' not in ax and '没有匹配' not in ax
+            geometry=tree_status_spacing(p,False)
+            links=p.locator('.gmi-tree a[data-topic-select]')
+            assert links.count()==371
+            assert links.evaluate_all('(nodes)=>nodes.every(n=>n.getAttribute("href")&&n.getAttribute("tabindex")===null)')
+            assert p.evaluate('typeof window.__treeStatusOwner')=='undefined'
+            report.setdefault('tree_status_static',[]).append({'language':language,'native_links':links.count(),'status_empty':True,'java_script_enabled':False,'geometry':geometry})
+
+    for width in (1440,390,320):
+        for language in ('en','zh'):
+            check(f'tree-status-{width}-{language}',lambda w=width,l=language:tree_status_feedback(w,l))
+    for language in ('en','zh'):
+        check(f'tree-status-static-{language}',lambda l=language:tree_status_static(l))
+
     browser.close()
 server.shutdown()
 report['pass'] = all(c['result']=='PASS' for c in report['cases']) and not report['page_errors']

@@ -56,7 +56,7 @@ if(!all&&window.matchMedia('(max-width:640px)').matches){gs.forEach(function(g,i
 (function(){
 function norm(s){return String(s||'').toLowerCase().replace(/\s+/g,' ').trim();}
 function hit(el,q){return norm(el.getAttribute('data-gmi-q')).indexOf(q)!==-1;}
-function noMatch(scope,on){[].forEach.call(document.querySelectorAll('[data-gmi-nomatch="'+scope+'"]'),function(p){p.hidden=!on;});}
+function noMatch(scope,on){var hidden=!on;[].forEach.call(document.querySelectorAll('[data-gmi-nomatch="'+scope+'"]'),function(p){if(p.hidden!==hidden)p.hidden=hidden;});}
 
 /* ---- tree ---- */
 var tree=document.querySelector('.gmi-tree');

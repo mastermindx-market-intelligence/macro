@@ -1,0 +1,1366 @@
+{
+  "schema": "mastermind.gmi.tree_status_validation.v1",
+  "recorded_at": "2026-11-09T05:59:00.265Z",
+  "repository": "mastermindx-market-intelligence/Macro",
+  "pull_request": 10676,
+  "parent_head": "11aed18841b996babe1b81c0b4eb0ebd7f27a797",
+  "source_law_pin": "5c3d3885234358aefb97ecdbc59be0864df14f8b",
+  "status": "FRONTEND_IMPLEMENTED_COMPONENT_VERIFIED_RELEASE_HELD",
+  "sources": [
+    {
+      "path": "templates/gmi.js",
+      "bytes": 48716,
+      "sha256": "555a04b845721f5ccce732266f0b012f6f9d7a0df7dd0672d0ba7186f9b34b31",
+      "git_blob": "ae2aee39d3adbaff4687bd0efcca0a8b5e70ea9b"
+    },
+    {
+      "path": "site/gmi.js",
+      "bytes": 48716,
+      "sha256": "555a04b845721f5ccce732266f0b012f6f9d7a0df7dd0672d0ba7186f9b34b31",
+      "git_blob": "ae2aee39d3adbaff4687bd0efcca0a8b5e70ea9b"
+    },
+    {
+      "path": "templates/gmi.css",
+      "bytes": 68279,
+      "sha256": "b98325982922312368b3cef13c34f90f2247a336848aef0f4b7d7b10258ebe3d",
+      "git_blob": "bbf4395ff8e119d7d6161703693c6f4b03142029"
+    },
+    {
+      "path": "site/gmi.css",
+      "bytes": 68279,
+      "sha256": "b98325982922312368b3cef13c34f90f2247a336848aef0f4b7d7b10258ebe3d",
+      "git_blob": "bbf4395ff8e119d7d6161703693c6f4b03142029"
+    },
+    {
+      "path": "templates/_gmi_macros.html.j2",
+      "bytes": 6713,
+      "sha256": "b504d2ebd9ebb794817131c8a46e644b030e9b15632cdbc000430b9867bbdaab",
+      "git_blob": "ea0a7e36538c1df65e5b1280c3d86e050fb8f30f"
+    },
+    {
+      "path": "site/gmi.html",
+      "bytes": 972414,
+      "sha256": "7d41aa095742b2640bbe9eb0da456624e0408c9bc7584e4634d1511fcc7ee588",
+      "git_blob": "7427ca297e76cfd2fb07d3cf39713803e7f7f7e8"
+    },
+    {
+      "path": "research/theme_graph/gmi_design_20261021/verify_product_browser.py",
+      "bytes": 99544,
+      "sha256": "2c0566338a00c20680834ab944a1f43d132422fd1c7c1792bafae764e4d99803",
+      "git_blob": "31a3d3895e5c3847e2da456d5c1a848e9bb63144"
+    },
+    {
+      "path": "research/theme_graph/gmi_design_20261021/verify_tree_status_component.py",
+      "bytes": 6589,
+      "sha256": "959cb62c7678f8c2e9fe497449c13f4c4fca6bc9cc946128332d4fe1ed014a2f",
+      "git_blob": "fef9830b091969e4d9f4e8df63ee791a75a91ea5"
+    }
+  ],
+  "source_self_check": {
+    "javascript_syntax": "PASS",
+    "python_syntax": "PASS",
+    "all_js_except_noMatch_identical": true,
+    "all_css_except_empty_gap_rule_identical": true,
+    "index_macro_identical": true,
+    "generated_transport_exact": true
+  },
+  "changes": [
+    "Persistent polite/atomic status wrapper reuses the existing bilingual tree no-match paragraph.",
+    "Existing noMatch helper changes hidden only on actual transitions.",
+    "One scoped CSS rule preserves the existing empty flex gap without hiding the status owner.",
+    "No state, locale observer, timer, focus, query, URL, selection or receipt owner added."
+  ],
+  "production_render": {
+    "root": "/Volumes/Mastermind/agent-workspaces/verify/gmi-tree-status-20261109-8z72l60c",
+    "bindings": {
+      "source_root": "/Volumes/Mastermind/agent-workspaces/verify/gmi-answer-recovery-20261109-40k_mi6g",
+      "inputs": [
+        {
+          "path": "config.yml",
+          "blob": "5be75249c98033d7ee0fbe55928713b1f50af627",
+          "sha256": "701229b33bbd6260c561023e2c2611a8fca24bc2c97e784cf97d55aa0357b402",
+          "bytes": 496073
+        },
+        {
+          "path": "scripts/build_gmi_explorer.py",
+          "blob": "900253d42a7b1d43ad41aa493e8032444c4570de",
+          "sha256": "7a2fd1287f20d1e5b166afa34587ad1da0cfad0191e2e8bd1fdb8ac232c77618",
+          "bytes": 15159
+        },
+        {
+          "path": "lib/shared_shell.py",
+          "blob": "cffbeba3f8fdcf7a9413d9428aec0154d97d9614",
+          "sha256": "eb1f06843b556968f15a0478d756e8312a3b6f4f4c8cb3daf047a6c438f79c1c",
+          "bytes": 5407
+        },
+        {
+          "path": "lib/config.py",
+          "blob": "b6fc888269876242597da354aaa726c20ed95802",
+          "sha256": "fa22ec934ec5294072b6bb4bf081d787f3f8ad5da4702ce3f4818b1674dbd53f",
+          "bytes": 1131
+        },
+        {
+          "path": "lib/pages.py",
+          "blob": "db175c463a31828263b57a3287afba661439a765",
+          "sha256": "9ec5d5ceeff55e5e269c5de26d1f54b9d72db1a755940f7029f47d98820014ba",
+          "bytes": 38933
+        },
+        {
+          "path": "lib/site_assets.py",
+          "blob": "03d7ce6137a30b990435cb1fee2090e61c2e95e3",
+          "sha256": "61ed68657b38b006962c653553bcd1d2e25f4ce918ce98ab30f99e7cdc09b275",
+          "bytes": 7180
+        },
+        {
+          "path": "templates/_site_nav.html.j2",
+          "blob": "d5c449e9ec498c49007c2de0ced1757a7f36b12d",
+          "sha256": "2a1f60a27bfdb2c86ab6aa60e6efd1b40515f94d1afc6d38692047f1de3d0376",
+          "bytes": 3684
+        },
+        {
+          "path": "templates/gmi_relationships.html.j2",
+          "blob": "53b8a697a17064367964b566788d553b7b27a4e0",
+          "sha256": "fa1a7e78f0ec60750a94e76b6b764331b995ecb1204fa3f6ffc62e1d1cf3ed3a",
+          "bytes": 2754
+        },
+        {
+          "path": "templates/_navlinks.html.j2",
+          "blob": "70fee6eabeb2cfe6d92590da42aa8c3e3733e837",
+          "sha256": "da495f935455e24d117bc556d82c634b0229c9604c8fb2ad711f9542a3f29a83",
+          "bytes": 54533
+        },
+        {
+          "path": "templates/_gmi_theme_data.html.j2",
+          "blob": "0520256ae0a2f61a33702070686be769d8640124",
+          "sha256": "ce5d5e782ad08972600619b52a509f37a4acd9b0a40f2a9f2e0ad2859254ff33",
+          "bytes": 2153
+        },
+        {
+          "path": "templates/theme.css",
+          "blob": "619436f58d37a222d1db7021ba9d52bb3a05a7fa",
+          "sha256": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757",
+          "bytes": 227583
+        },
+        {
+          "path": "templates/gmi.css",
+          "blob": "dbd070549d2ea64d692774508a34e9a7a3ac8928",
+          "sha256": "ae6fa7f1045848c8c71e15bd0f167111ab72fa47383153646a24f6e35ff068ec",
+          "bytes": 68091
+        },
+        {
+          "path": "templates/_gmi_product_header.html.j2",
+          "blob": "c7b10dbfecc66deacfe9b8fbbb2ce72932299695",
+          "sha256": "1d57d38808dd046f932eea591293837cd2d92e02a7621e1b2b98d532103ecda9",
+          "bytes": 1680
+        },
+        {
+          "path": "templates/_interfonts.html.j2",
+          "blob": "f6e84eb856ce66f732aacafe883d5c26c5d1e27e",
+          "sha256": "40ba62a3d1efa51de70993bedd5fb7ec96fcc1190f58515d765b267b2afd32cd",
+          "bytes": 1587
+        },
+        {
+          "path": "templates/_gmi_taxonomy.html.j2",
+          "blob": "99ade053147ecb6f42a9b1119af4f522df5c05b7",
+          "sha256": "32b6aba86b7375c13ada8e25fa31689923b696c12358f7a28f1ab17e9e8a70ce",
+          "bytes": 12905
+        },
+        {
+          "path": "templates/_gmi_base.html.j2",
+          "blob": "1d76c899cb2ce05b66e7d37d19b53e212e814b4d",
+          "sha256": "134ae16113ea8e7a4e35b34ca3dfb3ac565c38fa6fb9f5ad24d88b784e30ffa2",
+          "bytes": 2852
+        },
+        {
+          "path": "templates/_gmi_macros.html.j2",
+          "blob": "101dea0d4a6c3dbf8b6a30b46413be1119b83000",
+          "sha256": "13c5ea8f90fe643a3a97763106ff584b44ab2d0aa66745024318d41343033e35",
+          "bytes": 6629
+        },
+        {
+          "path": "templates/shared_shell_bridge.js",
+          "blob": "00ee9b9fa4d1fba67359d3d6b95c7937aed150b7",
+          "sha256": "071ef7202d8886228342c00f0e7a3026eaba1d0103c4dcf1e6d204a7da77451b",
+          "bytes": 51296
+        },
+        {
+          "path": "templates/gmi.js",
+          "blob": "812c1374f9d65a2675f5d73696de212c62fe0717",
+          "sha256": "525fcb8447616282fe3d68efe6b4082fc1a3e49544a263b0de79a5a1e2253aff",
+          "bytes": 48677
+        },
+        {
+          "path": "templates/_all_tools_menu.html.j2",
+          "blob": "3259b4e5c6305fd2f9a33bea65141efb0528680a",
+          "sha256": "d4427b10f930677a285269f20070f1140f451a86228aeb185b19f5820ab1bf17",
+          "bytes": 3436
+        },
+        {
+          "path": "templates/shared_shell.css",
+          "blob": "88a0fd9e836fbffac36722dac04189c6eb24af9b",
+          "sha256": "b1918ccaa2294f18c0fd5bca123e38267251c7e9d9a7c4fce1f296ef9e4c3c1e",
+          "bytes": 467
+        },
+        {
+          "path": "templates/gmi_map.html.j2",
+          "blob": "b4f2a69ce7588d1b51296329d54d38cbcbeab4a5",
+          "sha256": "aca5fdc0b4e5b796d0a0e3794cb09fd740b9a7277a5ad1f81c07b5a181df39da",
+          "bytes": 5998
+        },
+        {
+          "path": "templates/gmi_states.html.j2",
+          "blob": "2e2f66e8f9588403a58434ae6fa80bfa181845bf",
+          "sha256": "7f399348ed2b5a9b750c90b4268c7580329ec692c6f126b6231b6c650aad01d4",
+          "bytes": 3413
+        },
+        {
+          "path": "templates/theme.js",
+          "blob": "21a1fb1627ac34badc6078cff486f98486e9b773",
+          "sha256": "918e7acece23ab6df8211305a938e569f0de4184c0fd9c0b2f1e56c50e3cac4d",
+          "bytes": 400176
+        },
+        {
+          "path": "templates/_seo_head.html.j2",
+          "blob": "1a0f1a7cd3a8499e9d873171171d374424f9ddd8",
+          "sha256": "eda59eeb5f7cf0fb83a1a6430ff523939ee43cd214fe2b4aebba7ca4561bbbee",
+          "bytes": 2335
+        },
+        {
+          "path": "templates/gmi_companies.html.j2",
+          "blob": "afb542f5740a4147c5ef0d05aaae25481d8d6851",
+          "sha256": "1a278db0e7e9742f694e7a55606f917d5737b84d516ff7ea22e8270c4988fc04",
+          "bytes": 6829
+        },
+        {
+          "path": "templates/gmi_issuer.html.j2",
+          "blob": "35b06fd42b3ef485564b504fcacecacb89383c49",
+          "sha256": "79397fc32d29c6101b19f0e2c6638e19d1708bd5497be74b44dbd0764d28c375",
+          "bytes": 3124
+        },
+        {
+          "path": "templates/data_base.js",
+          "blob": "9e7cc392f0bad0e269d26903432faa39d94a1b62",
+          "sha256": "2aaceaf98a0f534aa342bdc6e64c831a2261a04fafebab4becf50f2d7c82620a",
+          "bytes": 2367
+        },
+        {
+          "path": "templates/gmi_coverage.html.j2",
+          "blob": "417a1e5ad85e66796201a1879e520db53bc9fbfc",
+          "sha256": "e06d5027e2254c11d71079c6c12d9c464d957b671992f9e163bc85fd5685a2e3",
+          "bytes": 8490
+        },
+        {
+          "path": "templates/_gmi_product_macros.html.j2",
+          "blob": "3e82a587bb0ad17f536d0513d85a1c0a66304999",
+          "sha256": "3315bd43243d52975eee75f42320528c5be69e40581c1b9e284e16e2b222b157",
+          "bytes": 7539
+        },
+        {
+          "path": "templates/_gmi_head.html.j2",
+          "blob": "5fe310cbe1a4a988f60f8b400e47a2de82ff06ef",
+          "sha256": "c0ad57713ab06c77beb85c70a898b2530d480caa24fc32da4c3b6a731c331589",
+          "bytes": 947
+        },
+        {
+          "path": "templates/gmi_index.html.j2",
+          "blob": "de23d434e99adac9665b36a50992b653b72e8c14",
+          "sha256": "4a505b97052c3c1519bdc206cd09d2cc01ba787466afb82c32961f25a5298b91",
+          "bytes": 3579
+        },
+        {
+          "path": "engine/theme_graph/store.py",
+          "blob": "853bc3bb557aaf32251de0eb053bcff55604e68c",
+          "sha256": "7e9488741f4fe58343fd7f9255a4d694a3bda1cb081a35239ecda277d8ee8221",
+          "bytes": 25211
+        },
+        {
+          "path": "engine/theme_graph/identity_resolution.py",
+          "blob": "e3510e69645a96872e7080efe028633ff6836324",
+          "sha256": "5672ccebaac97633482efe73a2ed8d0d87d579ef8f1d5f4ebcaf2840482814c7",
+          "bytes": 40467
+        },
+        {
+          "path": "engine/theme_graph/change_report.py",
+          "blob": "354a48be5a56416b941fecb9942401a7f0fb7f1c",
+          "sha256": "50620da7b694bb1c929b3d2dd93a26fc1e40dc7253c4f3aa1b23b307ab905bed",
+          "bytes": 10059
+        },
+        {
+          "path": "engine/theme_graph/membership_evidence.py",
+          "blob": "3785874c443ffcd4cde2db31b1f11cafc184d7d5",
+          "sha256": "47c28abc14a27e5e3550885a415527a7da466204b54ae620e540230cbf3b8c89",
+          "bytes": 80400
+        },
+        {
+          "path": "engine/theme_graph/rights.py",
+          "blob": "d801f2e231e8a0dbf05d30e96fd0024ae70bd63b",
+          "sha256": "0a18ac0c2f5b40048352625f608b208755c2500b1943df30b850d51092b44c15",
+          "bytes": 16362
+        },
+        {
+          "path": "engine/theme_graph/probation.py",
+          "blob": "eac18b9804411c10ee8cede2d5d6f9aae2a84f1f",
+          "sha256": "02cfbb4cf0d38923aa9f06d3c0a4e4699591137bd202e268dab2cda22807b6a6",
+          "bytes": 58797
+        },
+        {
+          "path": "engine/theme_graph/identity.py",
+          "blob": "c27fb161bf401ca05387c4f07ac8e0220b801b2a",
+          "sha256": "550ae9eb7975062f129340e47b6d70f26bd747ef59a546958768478090f6548f",
+          "bytes": 10722
+        },
+        {
+          "path": "lib/dataos/temporal.py",
+          "blob": "094b149a8b9158f19cb99c4005568c12db96ed41",
+          "sha256": "4415404186f0b0d2870f42d9e4a0b95be87937863adf30cf015ed34e8bf92b67",
+          "bytes": 12847
+        },
+        {
+          "path": "lib/dataos/registry.py",
+          "blob": "65b0d69036da97760f20241468f2549b21d9c686",
+          "sha256": "0d575b03848c59e98bdd320243f896b41b201047d0c0c23559467b99185fb404",
+          "bytes": 41942
+        },
+        {
+          "path": "lib/dataos/__init__.py",
+          "blob": "1ddadafd88a59dfc90a7d68c3ae0897da1aae661",
+          "sha256": "86afe285932523c2ee7a1cb25ed0a57b3e7010fbd661aa27ea622530cb82fa30",
+          "bytes": 11768
+        },
+        {
+          "path": "lib/dataos/nulls.py",
+          "blob": "8e7f09ac172f326bab1678ac626fa1d5dc5aa0ab",
+          "sha256": "2556e7d0b2ac609306e512a61071a024b7b0b7eb0ec4ef3efaf22ce9f4387d49",
+          "bytes": 7737
+        },
+        {
+          "path": "lib/dataos/quality.py",
+          "blob": "967b943443d9507c5c0078f62848c38c3d2af48a",
+          "sha256": "a462b3264a5ec05467331c0a224bfd37c26e66012c376ed28922e4e45fa5f877",
+          "bytes": 36845
+        },
+        {
+          "path": "lib/dataos/identity.py",
+          "blob": "fb99fd182ac506a158c63ab434f09374cdbbd4f8",
+          "sha256": "47914bca76cf80101c25fcbd7c29455dd99fbc697373e5183fca505376f6e507",
+          "bytes": 111096
+        },
+        {
+          "path": "lib/dataos/price.py",
+          "blob": "be127fa853a6aafbf0bcb33b58783316ac972faa",
+          "sha256": "40aad993988e03f3c9ff4c2a221cdaeecc3569054d4a93fc0565657fce109e15",
+          "bytes": 10509
+        },
+        {
+          "path": "scripts/gmi_explorer/present.py",
+          "blob": "c5ae61d80a484c07d583831577db52881843061b",
+          "sha256": "3c8b76894628c1a09234c059a9fccf31d52adc47eee03d6e16f580a07c452257",
+          "bytes": 3841
+        },
+        {
+          "path": "scripts/gmi_explorer/model.py",
+          "blob": "2614997dd87bf7d7e2d0b61b283c6b364801e1b1",
+          "sha256": "19a760f597f7a7d99b72c2c72073757ff3a94eac123af30c4a6d370d78952dfa",
+          "bytes": 29457
+        }
+      ],
+      "model_sha256": "e644fa48a2bb6e6affe8d1fda74556d9db5f82acadffdad839e1efe8f095359f",
+      "source_head": "11aed18841b996babe1b81c0b4eb0ebd7f27a797"
+    },
+    "baseline": {
+      "source_head": "11aed18841b996babe1b81c0b4eb0ebd7f27a797",
+      "input_count": 48,
+      "model_sha256": "e644fa48a2bb6e6affe8d1fda74556d9db5f82acadffdad839e1efe8f095359f",
+      "explorer_exact": true,
+      "index_exact": true,
+      "outputs": {
+        "gmi-companies.html": "014cd2e2660f353b2b90982b1cdf0e2c426fecf8939b3265834bffd6ebd960fc",
+        "gmi-coverage.html": "b9233025f8a8eb2c7963e84ffccffcdde3d0e18ca1a362480fa26b4c8d6a578c",
+        "gmi-index.html": "471e9f56f60f49d54b1ffb468c686c56fce4302730bfe23f62458f9caec60474",
+        "gmi-issuer-mu.html": "22cc39aca77961584fad494ab0afa788b287636f7e3c5cfaecba7dbda2172bdd",
+        "gmi-relationships.html": "dfaa6cf417b30c3d0f7955f16e03b69c44c3bd072ccffb23dc54c82177c15ddf",
+        "gmi-states.html": "3b3c22bd3c57dc34586ac5b9d0800cab9d6c3259f56c9cdc5c2021117a65187e",
+        "gmi.css": "ae6fa7f1045848c8c71e15bd0f167111ab72fa47383153646a24f6e35ff068ec",
+        "gmi.html": "de5701860deea03f07ab8be94d193c93d1e438bcbd201e89e0c99388b0f615d1",
+        "gmi.js": "525fcb8447616282fe3d68efe6b4082fc1a3e49544a263b0de79a5a1e2253aff"
+      }
+    },
+    "candidate": {
+      "source_head": "11aed18841b996babe1b81c0b4eb0ebd7f27a797",
+      "model_sha256": "e644fa48a2bb6e6affe8d1fda74556d9db5f82acadffdad839e1efe8f095359f",
+      "changed": [
+        "gmi.css",
+        "gmi.html",
+        "gmi.js"
+      ],
+      "outputs": {
+        "gmi-companies.html": "014cd2e2660f353b2b90982b1cdf0e2c426fecf8939b3265834bffd6ebd960fc",
+        "gmi-coverage.html": "b9233025f8a8eb2c7963e84ffccffcdde3d0e18ca1a362480fa26b4c8d6a578c",
+        "gmi-index.html": "471e9f56f60f49d54b1ffb468c686c56fce4302730bfe23f62458f9caec60474",
+        "gmi-issuer-mu.html": "22cc39aca77961584fad494ab0afa788b287636f7e3c5cfaecba7dbda2172bdd",
+        "gmi-relationships.html": "dfaa6cf417b30c3d0f7955f16e03b69c44c3bd072ccffb23dc54c82177c15ddf",
+        "gmi-states.html": "3b3c22bd3c57dc34586ac5b9d0800cab9d6c3259f56c9cdc5c2021117a65187e",
+        "gmi.css": "b98325982922312368b3cef13c34f90f2247a336848aef0f4b7d7b10258ebe3d",
+        "gmi.html": "7d41aa095742b2640bbe9eb0da456624e0408c9bc7584e4634d1511fcc7ee588",
+        "gmi.js": "555a04b845721f5ccce732266f0b012f6f9d7a0df7dd0672d0ba7186f9b34b31"
+      },
+      "candidate_explorer_blob": "7427ca297e76cfd2fb07d3cf39713803e7f7f7e8",
+      "paired_assets_exact": true,
+      "all_other_outputs_unchanged": true,
+      "candidate_inputs": {
+        "templates/gmi.js": {
+          "sha256": "555a04b845721f5ccce732266f0b012f6f9d7a0df7dd0672d0ba7186f9b34b31",
+          "blob": "ae2aee39d3adbaff4687bd0efcca0a8b5e70ea9b"
+        },
+        "templates/gmi.css": {
+          "sha256": "b98325982922312368b3cef13c34f90f2247a336848aef0f4b7d7b10258ebe3d",
+          "blob": "bbf4395ff8e119d7d6161703693c6f4b03142029"
+        },
+        "templates/_gmi_macros.html.j2": {
+          "sha256": "b504d2ebd9ebb794817131c8a46e644b030e9b15632cdbc000430b9867bbdaab",
+          "blob": "ea0a7e36538c1df65e5b1280c3d86e050fb8f30f"
+        },
+        "verify_product_browser.py": {
+          "sha256": "2c0566338a00c20680834ab944a1f43d132422fd1c7c1792bafae764e4d99803",
+          "blob": "31a3d3895e5c3847e2da456d5c1a848e9bb63144"
+        },
+        "verify_tree_status_component.py": {
+          "sha256": "959cb62c7678f8c2e9fe497449c13f4c4fca6bc9cc946128332d4fe1ed014a2f",
+          "blob": "fef9830b091969e4d9f4e8df63ee791a75a91ea5"
+        }
+      }
+    },
+    "generated_diff": "--- a/site/gmi.html\n+++ b/site/gmi.html\n@@ -532,7 +532,7 @@\n <section class=\"gmi-panel\">\n <div class=\"mx-sec\"><h2><span class=\"l-en\">Browse the tree</span><span class=\"l-zh\">浏览主题树</span></h2></div>\n <div class=\"gmi-search\" role=\"search\"><svg viewBox=\"0 0 24 24\" width=\"18\" height=\"18\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><circle cx=\"11\" cy=\"11\" r=\"6.5\"/><path d=\"M16 16l4.5 4.5\"/></svg><input class=\"gmi-search-in\" type=\"search\" data-gmi-filter=\"tree\" placeholder=\"Search 371 micro-themes\" aria-label=\"Search 371 micro-themes\" data-ph-en=\"Search 371 micro-themes\" data-ph-zh=\"搜索 371 个细分主题\" data-aria-en=\"Search 371 micro-themes\" data-aria-zh=\"搜索 371 个细分主题\" autocomplete=\"off\" spellcheck=\"false\"><kbd aria-hidden=\"true\">/</kbd></div>\n-<p class=\"mx-empty gmi-empty-inline\" data-gmi-nomatch=\"tree\" hidden><span class=\"l-en\">No micro-theme matches that search.</span><span class=\"l-zh\">没有匹配该搜索的细分主题。</span></p>\n+<div data-gmi-tree-status role=\"status\" aria-live=\"polite\" aria-atomic=\"true\"><p class=\"mx-empty gmi-empty-inline\" data-gmi-nomatch=\"tree\" hidden><span class=\"l-en\">No micro-theme matches that search.</span><span class=\"l-zh\">没有匹配该搜索的细分主题。</span></p></div>\n <div class=\"gmi-panel gmi-panel--flush gmi-panel--bare\">\n <div class=\"gmi-tree\" role=\"tree\">\n \n",
+    "exact_byte_transport": {
+      "baseline_sha256": "de5701860deea03f07ab8be94d193c93d1e438bcbd201e89e0c99388b0f615d1",
+      "candidate_sha256": "7d41aa095742b2640bbe9eb0da456624e0408c9bc7584e4634d1511fcc7ee588",
+      "candidate_blob": "7427ca297e76cfd2fb07d3cf39713803e7f7f7e8",
+      "candidate_bytes": 972414,
+      "operations": [
+        {
+          "tag": "replace",
+          "start": 534,
+          "end": 535,
+          "old_sha256": "2362667d07c0cf817cf4bbfff2520864033ab5e940e4a25a6996b1aa3643a345",
+          "replacement_base64": "PGRpdiBkYXRhLWdtaS10cmVlLXN0YXR1cyByb2xlPSJzdGF0dXMiIGFyaWEtbGl2ZT0icG9saXRlIiBhcmlhLWF0b21pYz0idHJ1ZSI+PHAgY2xhc3M9Im14LWVtcHR5IGdtaS1lbXB0eS1pbmxpbmUiIGRhdGEtZ21pLW5vbWF0Y2g9InRyZWUiIGhpZGRlbj48c3BhbiBjbGFzcz0ibC1lbiI+Tm8gbWljcm8tdGhlbWUgbWF0Y2hlcyB0aGF0IHNlYXJjaC48L3NwYW4+PHNwYW4gY2xhc3M9ImwtemgiPuayoeacieWMuemFjeivpeaQnOe0oueahOe7huWIhuS4u+mimOOAgjwvc3Bhbj48L3A+PC9kaXY+Cg=="
+        }
+      ]
+    },
+    "commands": {
+      "baseline": "python3 - <<'PY'\nfrom pathlib import Path\nimport hashlib,json,os,sys\nr=Path('/Volumes/Mastermind/agent-workspaces/verify/gmi-tree-status-20261109-8z72l60c');manifest=json.loads((r/'input-bindings.json').read_text())\nfor x in manifest['inputs']:\n raw=(r/x['path']).read_bytes();assert hashlib.sha1(b'blob '+str(len(raw)).encode()+b'\\0'+raw).hexdigest()==x['blob'],x['path']\nassert hashlib.sha256((r/'accepted-model.json').read_bytes()).hexdigest()==manifest['model_sha256']\nos.chdir(r);sys.path.insert(0,str(r));sys.dont_write_bytecode=True\nfrom scripts.build_gmi_explorer import render_site\nrender_site(json.loads((r/'accepted-model.json').read_text()),r/'baseline')\nassert (r/'baseline/gmi.html').read_bytes()==(r/'prior-generated/gmi.html').read_bytes()\nassert (r/'baseline/gmi-index.html').read_bytes()==(r/'prior-generated/gmi-index.html').read_bytes()\nrecord={'source_head':manifest['source_head'],'input_count':len(manifest['inputs']),'model_sha256':manifest['model_sha256'],'explorer_exact':True,'index_exact':True,'outputs':{p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted((r/'baseline').glob('*')) if p.is_file()}}\n(r/'baseline-render-receipt.json').write_text(json.dumps(record,indent=2)+'\\n');print(json.dumps(record),flush=True)\nPY",
+      "candidate": "python3 - <<'PY'\nfrom pathlib import Path\nimport hashlib,json,os,sys,difflib,ast\nr=Path('/Volumes/Mastermind/agent-workspaces/verify/gmi-tree-status-20261109-8z72l60c');base=json.loads((r/'baseline-render-receipt.json').read_text());manifest=json.loads((r/'input-bindings.json').read_text())\nassert base['explorer_exact'] and base['index_exact'];assert hashlib.sha256((r/'accepted-model.json').read_bytes()).hexdigest()==manifest['model_sha256']\nfor row in manifest['inputs']:\n if row['path'] in ('templates/gmi.js','templates/gmi.css','templates/_gmi_macros.html.j2'):continue\n raw=(r/row['path']).read_bytes();assert hashlib.sha1(b'blob '+str(len(raw)).encode()+b'\\0'+raw).hexdigest()==row['blob'],row['path']\nfor name in ['verify_product_browser.py','verify_tree_status_component.py']:ast.parse((r/name).read_text())\nos.chdir(r);sys.path.insert(0,str(r));sys.dont_write_bytecode=True\nfrom scripts.build_gmi_explorer import render_site\nrender_site(json.loads((r/'accepted-model.json').read_text()),r/'candidate')\nhashes={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted((r/'candidate').glob('*')) if p.is_file()}\nchanged=[n for n,h in hashes.items() if base['outputs'][n]!=h];assert set(changed)=={'gmi.html','gmi.js','gmi.css'},changed\nfor name in ('gmi.js','gmi.css'):assert (r/'candidate'/name).read_bytes()==(r/'templates'/name).read_bytes()\nraw=(r/'candidate/gmi.html').read_bytes()\nrecord={'source_head':manifest['source_head'],'model_sha256':manifest['model_sha256'],'changed':changed,'outputs':hashes,'candidate_explorer_blob':hashlib.sha1(b'blob '+str(len(raw)).encode()+b'\\0'+raw).hexdigest(),'paired_assets_exact':True,'all_other_outputs_unchanged':True,'candidate_inputs':{n:{'sha256':hashlib.sha256((r/n).read_bytes()).hexdigest(),'blob':hashlib.sha1(b'blob '+str((r/n).stat().st_size).encode()+b'\\0'+(r/n).read_bytes()).hexdigest()} for n in ('templates/gmi.js','templates/gmi.css','templates/_gmi_macros.html.j2','verify_product_browser.py','verify_tree_status_component.py')}}\n(r/'candidate-render-receipt.json').write_text(json.dumps(record,indent=2)+'\\n')\n(r/'generated-explorer.diff').write_text(''.join(difflib.unified_diff((r/'baseline/gmi.html').read_text().splitlines(True),(r/'candidate/gmi.html').read_text().splitlines(True),fromfile='a/site/gmi.html',tofile='b/site/gmi.html')))\nprint(json.dumps(record),flush=True)\nPY",
+      "transport": "python3 - <<'PY'\nfrom pathlib import Path\nimport hashlib,json,difflib,base64\nr=Path('/Volumes/Mastermind/agent-workspaces/verify/gmi-tree-status-20261109-8z72l60c');a=(r/'baseline/gmi.html').read_bytes();b=(r/'candidate/gmi.html').read_bytes();al=a.splitlines(keepends=True);bl=b.splitlines(keepends=True)\nops=[{'tag':t,'start':i,'end':j,'old_sha256':hashlib.sha256(b''.join(al[i:j])).hexdigest(),'replacement_base64':base64.b64encode(b''.join(bl[k:l])).decode()} for t,i,j,k,l in difflib.SequenceMatcher(None,al,bl,autojunk=False).get_opcodes() if t!='equal']\nassert len(ops)==1 and ops[0]['end']-ops[0]['start']==1\nrecord={'baseline_sha256':hashlib.sha256(a).hexdigest(),'candidate_sha256':hashlib.sha256(b).hexdigest(),'candidate_blob':hashlib.sha1(b'blob '+str(len(b)).encode()+b'\\0'+b).hexdigest(),'candidate_bytes':len(b),'operations':ops}\n(r/'generated-explorer-transport.json').write_text(json.dumps(record)+'\\n');print(json.dumps(record),flush=True)\nPY"
+    },
+    "baseline_process": {
+      "pid": 32748,
+      "exit": 0,
+      "runtime_seconds": 1.28
+    },
+    "final_process": {
+      "pid": 53009,
+      "exit": 0,
+      "runtime_seconds": 1.7
+    }
+  },
+  "browser": {
+    "scope": "Bounded GMI tree empty-search status proof using exact generated HTML, JS and CSS inputs.\n\nThis harness uses an anonymous Chrome context and blocks every external request.\nIt extracts committed main content; it does not exercise the shared shell, login,\npublic admission, live serving or release. It observes persistent status semantics and actual focus/visibility transitions. No screen-reader speech or operating-system clipboard claim is made.",
+    "baseline": {
+      "pid": 37457,
+      "exit": 1,
+      "runtime_seconds": 4.83,
+      "expected_failure": true,
+      "result": {
+        "generated_at": "2026-11-09T05:54:28.703030+00:00",
+        "baseline": true,
+        "case_family": "all",
+        "scope": "Bounded GMI tree empty-search status proof using exact generated HTML, JS and CSS inputs.\n\nThis harness uses an anonymous Chrome context and blocks every external request.\nIt extracts committed main content; it does not exercise the shared shell, login,\npublic admission, live serving or release. It observes persistent status semantics and actual focus/visibility transitions. No screen-reader speech or operating-system clipboard claim is made.",
+        "script_sha256": "525fcb8447616282fe3d68efe6b4082fc1a3e49544a263b0de79a5a1e2253aff",
+        "gmi_css_sha256": "ae6fa7f1045848c8c71e15bd0f167111ab72fa47383153646a24f6e35ff068ec",
+        "verifier_sha256": "553af5579e5d07c18975ac99b50586c4c6faed88a640c25c92894eaa1bcbfa03",
+        "cases": [
+          {
+            "name": "tree-status-1440-en",
+            "result": "FAIL",
+            "error": "Traceback (most recent call last):\n  File \"/Volumes/Mastermind/agent-workspaces/verify/gmi-tree-status-20261109-8z72l60c/verify_tree_status_component.py\", line 113, in <module>\n    action()\n    ~~~~~~^^\n  File \"/Volumes/Mastermind/agent-workspaces/verify/gmi-tree-status-20261109-8z72l60c/verify_tree_status_component.py\", line 105, in <lambda>\n    actions.extend((f'tree-status-{w}-{l}',lambda w=w,l=l:tree_status_feedback(w,l)) for w,l in matrix)\n                                                          ~~~~~~~~~~~~~~~~~~~~^^^^^\n  File \"/Volumes/Mastermind/agent-workspaces/verify/gmi-tree-status-20261109-8z72l60c/verify_product_browser.py\", line 1535, in tree_status_feedback\n    assert status.count()==1,'Tree no-match message has no persistent status owner'\n           ^^^^^^^^^^^^^^^^^\nAssertionError: Tree no-match message has no persistent status owner\n",
+            "contexts": 1
+          },
+          {
+            "name": "tree-status-390-zh",
+            "result": "FAIL",
+            "error": "Traceback (most recent call last):\n  File \"/Volumes/Mastermind/agent-workspaces/verify/gmi-tree-status-20261109-8z72l60c/verify_tree_status_component.py\", line 113, in <module>\n    action()\n    ~~~~~~^^\n  File \"/Volumes/Mastermind/agent-workspaces/verify/gmi-tree-status-20261109-8z72l60c/verify_tree_status_component.py\", line 105, in <lambda>\n    actions.extend((f'tree-status-{w}-{l}',lambda w=w,l=l:tree_status_feedback(w,l)) for w,l in matrix)\n                                                          ~~~~~~~~~~~~~~~~~~~~^^^^^\n  File \"/Volumes/Mastermind/agent-workspaces/verify/gmi-tree-status-20261109-8z72l60c/verify_product_browser.py\", line 1535, in tree_status_feedback\n    assert status.count()==1,'Tree no-match message has no persistent status owner'\n           ^^^^^^^^^^^^^^^^^\nAssertionError: Tree no-match message has no persistent status owner\n",
+            "contexts": 1
+          }
+        ],
+        "contexts": 2,
+        "screenshots": [],
+        "page_errors": [],
+        "browser": "157.0.8103.39",
+        "pass": false
+      }
+    },
+    "initial_candidate": {
+      "pid": 39091,
+      "exit": 0,
+      "runtime_seconds": 14.02,
+      "result": {
+        "generated_at": "2026-11-09T05:54:51.122545+00:00",
+        "baseline": false,
+        "case_family": "all",
+        "scope": "Bounded GMI tree empty-search status proof using exact generated HTML, JS and CSS inputs.\n\nThis harness uses an anonymous Chrome context and blocks every external request.\nIt extracts committed main content; it does not exercise the shared shell, login,\npublic admission, live serving or release. It observes persistent status semantics and actual focus/visibility transitions. No screen-reader speech or operating-system clipboard claim is made.",
+        "script_sha256": "555a04b845721f5ccce732266f0b012f6f9d7a0df7dd0672d0ba7186f9b34b31",
+        "gmi_css_sha256": "ae6fa7f1045848c8c71e15bd0f167111ab72fa47383153646a24f6e35ff068ec",
+        "verifier_sha256": "553af5579e5d07c18975ac99b50586c4c6faed88a640c25c92894eaa1bcbfa03",
+        "cases": [
+          {
+            "name": "tree-status-1440-en",
+            "result": "PASS",
+            "contexts": 1
+          },
+          {
+            "name": "tree-status-1440-zh",
+            "result": "PASS",
+            "contexts": 1
+          },
+          {
+            "name": "tree-status-390-en",
+            "result": "PASS",
+            "contexts": 1
+          },
+          {
+            "name": "tree-status-390-zh",
+            "result": "PASS",
+            "contexts": 1
+          },
+          {
+            "name": "tree-status-320-en",
+            "result": "PASS",
+            "contexts": 1
+          },
+          {
+            "name": "tree-status-320-zh",
+            "result": "PASS",
+            "contexts": 1
+          },
+          {
+            "name": "tree-status-static-en",
+            "result": "PASS",
+            "contexts": 1
+          },
+          {
+            "name": "tree-status-static-zh",
+            "result": "PASS",
+            "contexts": 1
+          }
+        ],
+        "contexts": 8,
+        "screenshots": [
+          "tree-status-390-en.png",
+          "tree-status-320-zh.png"
+        ],
+        "page_errors": [],
+        "browser": "157.0.8103.39",
+        "navigation_geometry": [
+          {
+            "width": 1440,
+            "language": "en",
+            "route": "/case-1/gmi.html",
+            "targets": [
+              {
+                "text": "Theme research",
+                "left": 32,
+                "right": 164.78125,
+                "height": 44
+              },
+              {
+                "text": "Company evidence",
+                "left": 168.78125,
+                "right": 318.953125,
+                "height": 44
+              },
+              {
+                "text": "Relationships",
+                "left": 322.953125,
+                "right": 439.4375,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "width": 1440,
+            "language": "zh",
+            "route": "/case-2/gmi.html",
+            "targets": [
+              {
+                "text": "主题研究",
+                "left": 32,
+                "right": 116,
+                "height": 44
+              },
+              {
+                "text": "公司证据",
+                "left": 120,
+                "right": 204,
+                "height": 44
+              },
+              {
+                "text": "公司关系",
+                "left": 208,
+                "right": 292,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "width": 390,
+            "language": "en",
+            "route": "/case-3/gmi.html",
+            "targets": [
+              {
+                "text": "Theme research",
+                "left": 16,
+                "right": 132.65625,
+                "height": 44
+              },
+              {
+                "text": "Company evidence",
+                "left": 136.65625,
+                "right": 253.328125,
+                "height": 55.5
+              },
+              {
+                "text": "Relationships",
+                "left": 257.328125,
+                "right": 374,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "width": 390,
+            "language": "zh",
+            "route": "/case-4/gmi.html",
+            "targets": [
+              {
+                "text": "主题研究",
+                "left": 16,
+                "right": 132.65625,
+                "height": 44
+              },
+              {
+                "text": "公司证据",
+                "left": 136.65625,
+                "right": 253.328125,
+                "height": 44
+              },
+              {
+                "text": "公司关系",
+                "left": 257.328125,
+                "right": 374,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "width": 320,
+            "language": "en",
+            "route": "/case-5/gmi.html",
+            "targets": [
+              {
+                "text": "Theme research",
+                "left": 16,
+                "right": 109.328125,
+                "height": 55.5
+              },
+              {
+                "text": "Company evidence",
+                "left": 113.328125,
+                "right": 206.671875,
+                "height": 55.5
+              },
+              {
+                "text": "Relationships",
+                "left": 210.671875,
+                "right": 304,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "width": 320,
+            "language": "zh",
+            "route": "/case-6/gmi.html",
+            "targets": [
+              {
+                "text": "主题研究",
+                "left": 16,
+                "right": 109.328125,
+                "height": 44
+              },
+              {
+                "text": "公司证据",
+                "left": 113.328125,
+                "right": 206.671875,
+                "height": 44
+              },
+              {
+                "text": "公司关系",
+                "left": 210.671875,
+                "right": 304,
+                "height": 44
+              }
+            ]
+          }
+        ],
+        "tree_status": [
+          {
+            "width": 1440,
+            "language": "en",
+            "hidden_mutations": 4,
+            "status_identity_retained": true,
+            "empty_accessibility_snapshot": "- status:\n  - paragraph: No micro-theme matches that search.",
+            "focus_and_url_retained": true
+          },
+          {
+            "width": 1440,
+            "language": "zh",
+            "hidden_mutations": 4,
+            "status_identity_retained": true,
+            "empty_accessibility_snapshot": "- status:\n  - paragraph: 没有匹配该搜索的细分主题。",
+            "focus_and_url_retained": true
+          },
+          {
+            "width": 390,
+            "language": "en",
+            "hidden_mutations": 4,
+            "status_identity_retained": true,
+            "empty_accessibility_snapshot": "- status:\n  - paragraph: No micro-theme matches that search.",
+            "focus_and_url_retained": true
+          },
+          {
+            "width": 390,
+            "language": "zh",
+            "hidden_mutations": 4,
+            "status_identity_retained": true,
+            "empty_accessibility_snapshot": "- status:\n  - paragraph: 没有匹配该搜索的细分主题。",
+            "focus_and_url_retained": true
+          },
+          {
+            "width": 320,
+            "language": "en",
+            "hidden_mutations": 4,
+            "status_identity_retained": true,
+            "empty_accessibility_snapshot": "- status:\n  - paragraph: No micro-theme matches that search.",
+            "focus_and_url_retained": true
+          },
+          {
+            "width": 320,
+            "language": "zh",
+            "hidden_mutations": 4,
+            "status_identity_retained": true,
+            "empty_accessibility_snapshot": "- status:\n  - paragraph: 没有匹配该搜索的细分主题。",
+            "focus_and_url_retained": true
+          }
+        ],
+        "tree_status_static": [
+          {
+            "language": "en",
+            "native_links": 371,
+            "status_empty": true,
+            "java_script_enabled": false
+          },
+          {
+            "language": "zh",
+            "native_links": 371,
+            "status_empty": true,
+            "java_script_enabled": false
+          }
+        ],
+        "pass": true
+      },
+      "render": {
+        "source_head": "11aed18841b996babe1b81c0b4eb0ebd7f27a797",
+        "model_sha256": "e644fa48a2bb6e6affe8d1fda74556d9db5f82acadffdad839e1efe8f095359f",
+        "changed": [
+          "gmi.html",
+          "gmi.js"
+        ],
+        "outputs": {
+          "gmi-companies.html": "014cd2e2660f353b2b90982b1cdf0e2c426fecf8939b3265834bffd6ebd960fc",
+          "gmi-coverage.html": "b9233025f8a8eb2c7963e84ffccffcdde3d0e18ca1a362480fa26b4c8d6a578c",
+          "gmi-index.html": "471e9f56f60f49d54b1ffb468c686c56fce4302730bfe23f62458f9caec60474",
+          "gmi-issuer-mu.html": "22cc39aca77961584fad494ab0afa788b287636f7e3c5cfaecba7dbda2172bdd",
+          "gmi-relationships.html": "dfaa6cf417b30c3d0f7955f16e03b69c44c3bd072ccffb23dc54c82177c15ddf",
+          "gmi-states.html": "3b3c22bd3c57dc34586ac5b9d0800cab9d6c3259f56c9cdc5c2021117a65187e",
+          "gmi.css": "ae6fa7f1045848c8c71e15bd0f167111ab72fa47383153646a24f6e35ff068ec",
+          "gmi.html": "7d41aa095742b2640bbe9eb0da456624e0408c9bc7584e4634d1511fcc7ee588",
+          "gmi.js": "555a04b845721f5ccce732266f0b012f6f9d7a0df7dd0672d0ba7186f9b34b31"
+        },
+        "candidate_explorer_blob": "7427ca297e76cfd2fb07d3cf39713803e7f7f7e8",
+        "paired_assets_exact": true,
+        "all_other_outputs_unchanged": true,
+        "candidate_inputs": {
+          "templates/gmi.js": {
+            "sha256": "555a04b845721f5ccce732266f0b012f6f9d7a0df7dd0672d0ba7186f9b34b31",
+            "blob": "ae2aee39d3adbaff4687bd0efcca0a8b5e70ea9b"
+          },
+          "templates/_gmi_macros.html.j2": {
+            "sha256": "b504d2ebd9ebb794817131c8a46e644b030e9b15632cdbc000430b9867bbdaab",
+            "blob": "ea0a7e36538c1df65e5b1280c3d86e050fb8f30f"
+          },
+          "verify_product_browser.py": {
+            "sha256": "553af5579e5d07c18975ac99b50586c4c6faed88a640c25c92894eaa1bcbfa03",
+            "blob": "7f5ca5cba48eccb86c2668d97b17d321c7ca2981"
+          },
+          "verify_tree_status_component.py": {
+            "sha256": "780a3cee5d2138eb579d112a478575cdc409ea057137829b60b14b706b46a090",
+            "blob": "26bda97d005f2f3696c8682530e57f0b6072e729"
+          }
+        }
+      }
+    },
+    "spacing_falsifier": {
+      "pid": 49059,
+      "exit": 0,
+      "runtime_seconds": 7.68,
+      "measurements": [
+        {
+          "version": "baseline",
+          "width": 1440,
+          "state": "initial",
+          "gap": 12,
+          "messageHeight": 0,
+          "parentGap": "12px"
+        },
+        {
+          "version": "baseline",
+          "width": 1440,
+          "state": "matching",
+          "gap": 12,
+          "messageHeight": 0,
+          "parentGap": "12px"
+        },
+        {
+          "version": "baseline",
+          "width": 1440,
+          "state": "empty",
+          "gap": 89,
+          "messageHeight": 37,
+          "parentGap": "12px"
+        },
+        {
+          "version": "baseline",
+          "width": 1440,
+          "state": "clear",
+          "gap": 12,
+          "messageHeight": 0,
+          "parentGap": "12px"
+        },
+        {
+          "version": "baseline",
+          "width": 320,
+          "state": "initial",
+          "gap": 12,
+          "messageHeight": 0,
+          "parentGap": "12px"
+        },
+        {
+          "version": "baseline",
+          "width": 320,
+          "state": "matching",
+          "gap": 12,
+          "messageHeight": 0,
+          "parentGap": "12px"
+        },
+        {
+          "version": "baseline",
+          "width": 320,
+          "state": "empty",
+          "gap": 89,
+          "messageHeight": 37,
+          "parentGap": "12px"
+        },
+        {
+          "version": "baseline",
+          "width": 320,
+          "state": "clear",
+          "gap": 12,
+          "messageHeight": 0,
+          "parentGap": "12px"
+        },
+        {
+          "version": "candidate",
+          "width": 1440,
+          "state": "initial",
+          "gap": 24,
+          "messageHeight": 0,
+          "parentGap": "12px"
+        },
+        {
+          "version": "candidate",
+          "width": 1440,
+          "state": "matching",
+          "gap": 24,
+          "messageHeight": 0,
+          "parentGap": "12px"
+        },
+        {
+          "version": "candidate",
+          "width": 1440,
+          "state": "empty",
+          "gap": 89,
+          "messageHeight": 37,
+          "parentGap": "12px"
+        },
+        {
+          "version": "candidate",
+          "width": 1440,
+          "state": "clear",
+          "gap": 24,
+          "messageHeight": 0,
+          "parentGap": "12px"
+        },
+        {
+          "version": "candidate",
+          "width": 320,
+          "state": "initial",
+          "gap": 24,
+          "messageHeight": 0,
+          "parentGap": "12px"
+        },
+        {
+          "version": "candidate",
+          "width": 320,
+          "state": "matching",
+          "gap": 24,
+          "messageHeight": 0,
+          "parentGap": "12px"
+        },
+        {
+          "version": "candidate",
+          "width": 320,
+          "state": "empty",
+          "gap": 89,
+          "messageHeight": 37,
+          "parentGap": "12px"
+        },
+        {
+          "version": "candidate",
+          "width": 320,
+          "state": "clear",
+          "gap": 24,
+          "messageHeight": 0,
+          "parentGap": "12px"
+        }
+      ],
+      "source": "\"\"\"Bounded GMI tree empty-search status proof using exact generated HTML, JS and CSS inputs.\n\nThis harness uses an anonymous Chrome context and blocks every external request.\nIt extracts committed main content; it does not exercise the shared shell, login,\npublic admission, live serving or release. It observes persistent status semantics and actual focus/visibility transitions. No screen-reader speech or operating-system clipboard claim is made.\n\"\"\"\nimport argparse\nimport ast\nfrom datetime import datetime, timezone\nimport hashlib\nimport http.server\nimport json\nimport re\nfrom pathlib import Path\nimport threading\nimport traceback\nfrom urllib.parse import parse_qs, urlencode, urlsplit\nfrom bs4 import BeautifulSoup\nfrom playwright.sync_api import sync_playwright, expect\n\nparser=argparse.ArgumentParser()\nparser.add_argument('--root',type=Path,required=True)\nparser.add_argument('--executable',required=True)\nparser.add_argument('--baseline',action='store_true')\nparser.add_argument('--case-family',choices=('all','feedback','static'),default='all')\nparser.add_argument('--case',default='')\nargs=parser.parse_args()\nargs.out=args.root/('baseline-proof' if args.baseline else 'candidate-proof')\nargs.out.mkdir(exist_ok=True)\nsource=args.root/('baseline' if args.baseline else 'candidate')\nscript=(source/'gmi.js').read_text()\nstyle=(args.root/'templates/theme.css').read_text()+'\\n'+(source/'gmi.css').read_text()\nparts={}\nfor name in ('gmi.html',):\n    soup=BeautifulSoup((source/name).read_text(),'html.parser')\n    main=soup.select_one('main#main')\n    assert main is not None\n    extra=[]\n    for selector in ('#gmi-topic-data','[data-gmi-announcement]','[data-browse-dialog]'):\n        node=soup.select_one(selector)\n        if node is not None and main not in node.parents:\n            extra.append(str(node))\n    parts[name]=str(main)+''.join(extra)\nreport={'generated_at':datetime.now(timezone.utc).isoformat(),'baseline':args.baseline,'case_family':args.case_family,'scope':__doc__.strip(),\n        'script_sha256':hashlib.sha256(script.encode()).hexdigest(),\n        'gmi_css_sha256':hashlib.sha256((source/'gmi.css').read_bytes()).hexdigest(),\n        'verifier_sha256':hashlib.sha256((args.root/'verify_product_browser.py').read_bytes()).hexdigest(),\n        'inputs':json.loads((args.root/'input-bindings.json').read_text()),\n        'cases':[],'contexts':0,'screenshots':[],'page_errors':[]}\n\n# Real loopback serving also covers Chrome's first modified-click navigation,\n# which is not observed by the fictional-origin route interceptor on this host.\ndocuments={}\nclass Fixture(http.server.BaseHTTPRequestHandler):\n    def do_GET(self):\n        body=documents.get(urlsplit(self.path).path)\n        if body is None:\n            self.send_error(404);return\n        payload=body.encode()\n        self.send_response(200)\n        self.send_header('Content-Type','text/html; charset=utf-8')\n        self.send_header('Content-Length',str(len(payload)))\n        self.end_headers();self.wfile.write(payload)\n    def log_message(self,*args):\n        pass\nserver=http.server.ThreadingHTTPServer(('127.0.0.1',0),Fixture)\nthreading.Thread(target=server.serve_forever,daemon=True).start()\nbase=f'http://127.0.0.1:{server.server_port}'\ncontext_routes={}\n\nwith sync_playwright() as pw:\n    browser=pw.chromium.launch(executable_path=args.executable,headless=True)\n    report['browser']=browser.version\n\n    def context(width=1440,theme='light',language='en',**kwargs):\n        c=browser.new_context(viewport={'width':width,'height':1000 if width>800 else 844},device_scale_factor=1,**kwargs)\n        report['contexts']+=1\n        prefix='/case-'+str(report['contexts'])+'/'\n        context_routes[c]=prefix\n        for name,part in parts.items():\n            documents[prefix+name]='<!doctype html><html data-lang=\"'+language+'\" data-theme=\"'+theme+'\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><style>'+style+'</style></head><body class=\"page-macro gmi-page gmi-product\">'+part+'<script>'+script+'</script></body></html>'\n        def serve(route):\n            if not route.request.url.startswith(base+'/'):\n                return route.abort()\n            route.continue_()\n        c.route('**/*',serve)\n        c.on('page',lambda p:p.on('pageerror',lambda e:report['page_errors'].append(str(e))))\n        return c\n\n    def page_for(c,route='gmi.html'):\n        p=c.new_page()\n        p.goto(base+context_routes[c]+route,wait_until='networkidle')\n        return p\n\n    report['geometry']=[]\n    for version in ('baseline','candidate'):\n        source=args.root/version\n        script=(source/'gmi.js').read_text()\n        style=(args.root/'templates/theme.css').read_text()+'\\n'+(source/'gmi.css').read_text()\n        soup=BeautifulSoup((source/'gmi.html').read_text(),'html.parser')\n        main=soup.select_one('main#main')\n        extra=[]\n        for selector in ('#gmi-topic-data','[data-gmi-announcement]','[data-browse-dialog]'):\n            node=soup.select_one(selector)\n            if node is not None and main not in node.parents:extra.append(str(node))\n        parts={'gmi.html':str(main)+''.join(extra)}\n        for width in (1440,320):\n            with context(width,'light','en',reduced_motion='reduce') as c:\n                p=page_for(c)\n                p.locator('.gmi-advanced > summary').click()\n                search=p.locator('[data-gmi-filter=\"tree\"]')\n                for state,value in (('initial',None),('matching','hbm'),('empty','zz-no-match'),('clear','')):\n                    if value is not None:search.fill(value)\n                    geometry=p.locator('.gmi-tree').evaluate(\"\"\"n=>{\n                      const search=document.querySelector('[data-gmi-filter=\"tree\"]').closest('.gmi-search');\n                      const panel=n.closest('.gmi-panel');\n                      const m=document.querySelector('[data-gmi-nomatch=\"tree\"]');\n                      return {gap:panel.getBoundingClientRect().top-search.getBoundingClientRect().bottom,\n                        messageHeight:m.getBoundingClientRect().height,parentGap:getComputedStyle(search.parentElement).gap};\n                    }\"\"\")\n                    report['geometry'].append({'version':version,'width':width,'state':state,**geometry})\n    browser.close()\nserver.shutdown();server.server_close()\n(args.root/'initial-status-spacing.json').write_text(json.dumps(report['geometry'],indent=2)+'\\n')\nprint(json.dumps(report['geometry']),flush=True)\n",
+      "finding": "Persistent empty flex item added 12px; scoped margin correction restores original spacing. No-match layout already matched."
+    },
+    "final_candidate": {
+      "pid": 54529,
+      "exit": 0,
+      "runtime_seconds": 16.21,
+      "result": {
+        "generated_at": "2026-11-09T05:57:53.204310+00:00",
+        "baseline": false,
+        "case_family": "all",
+        "scope": "Bounded GMI tree empty-search status proof using exact generated HTML, JS and CSS inputs.\n\nThis harness uses an anonymous Chrome context and blocks every external request.\nIt extracts committed main content; it does not exercise the shared shell, login,\npublic admission, live serving or release. It observes persistent status semantics and actual focus/visibility transitions. No screen-reader speech or operating-system clipboard claim is made.",
+        "script_sha256": "555a04b845721f5ccce732266f0b012f6f9d7a0df7dd0672d0ba7186f9b34b31",
+        "gmi_css_sha256": "b98325982922312368b3cef13c34f90f2247a336848aef0f4b7d7b10258ebe3d",
+        "verifier_sha256": "2c0566338a00c20680834ab944a1f43d132422fd1c7c1792bafae764e4d99803",
+        "cases": [
+          {
+            "name": "tree-status-1440-en",
+            "result": "PASS",
+            "contexts": 1
+          },
+          {
+            "name": "tree-status-1440-zh",
+            "result": "PASS",
+            "contexts": 1
+          },
+          {
+            "name": "tree-status-390-en",
+            "result": "PASS",
+            "contexts": 1
+          },
+          {
+            "name": "tree-status-390-zh",
+            "result": "PASS",
+            "contexts": 1
+          },
+          {
+            "name": "tree-status-320-en",
+            "result": "PASS",
+            "contexts": 1
+          },
+          {
+            "name": "tree-status-320-zh",
+            "result": "PASS",
+            "contexts": 1
+          },
+          {
+            "name": "tree-status-static-en",
+            "result": "PASS",
+            "contexts": 1
+          },
+          {
+            "name": "tree-status-static-zh",
+            "result": "PASS",
+            "contexts": 1
+          }
+        ],
+        "contexts": 8,
+        "screenshots": [
+          "tree-status-390-en.png",
+          "tree-status-320-zh.png"
+        ],
+        "page_errors": [],
+        "browser": "157.0.8103.39",
+        "navigation_geometry": [
+          {
+            "width": 1440,
+            "language": "en",
+            "route": "/case-1/gmi.html",
+            "targets": [
+              {
+                "text": "Theme research",
+                "left": 32,
+                "right": 164.78125,
+                "height": 44
+              },
+              {
+                "text": "Company evidence",
+                "left": 168.78125,
+                "right": 318.953125,
+                "height": 44
+              },
+              {
+                "text": "Relationships",
+                "left": 322.953125,
+                "right": 439.4375,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "width": 1440,
+            "language": "zh",
+            "route": "/case-2/gmi.html",
+            "targets": [
+              {
+                "text": "主题研究",
+                "left": 32,
+                "right": 116,
+                "height": 44
+              },
+              {
+                "text": "公司证据",
+                "left": 120,
+                "right": 204,
+                "height": 44
+              },
+              {
+                "text": "公司关系",
+                "left": 208,
+                "right": 292,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "width": 390,
+            "language": "en",
+            "route": "/case-3/gmi.html",
+            "targets": [
+              {
+                "text": "Theme research",
+                "left": 16,
+                "right": 132.65625,
+                "height": 44
+              },
+              {
+                "text": "Company evidence",
+                "left": 136.65625,
+                "right": 253.328125,
+                "height": 55.5
+              },
+              {
+                "text": "Relationships",
+                "left": 257.328125,
+                "right": 374,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "width": 390,
+            "language": "zh",
+            "route": "/case-4/gmi.html",
+            "targets": [
+              {
+                "text": "主题研究",
+                "left": 16,
+                "right": 132.65625,
+                "height": 44
+              },
+              {
+                "text": "公司证据",
+                "left": 136.65625,
+                "right": 253.328125,
+                "height": 44
+              },
+              {
+                "text": "公司关系",
+                "left": 257.328125,
+                "right": 374,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "width": 320,
+            "language": "en",
+            "route": "/case-5/gmi.html",
+            "targets": [
+              {
+                "text": "Theme research",
+                "left": 16,
+                "right": 109.328125,
+                "height": 55.5
+              },
+              {
+                "text": "Company evidence",
+                "left": 113.328125,
+                "right": 206.671875,
+                "height": 55.5
+              },
+              {
+                "text": "Relationships",
+                "left": 210.671875,
+                "right": 304,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "width": 320,
+            "language": "zh",
+            "route": "/case-6/gmi.html",
+            "targets": [
+              {
+                "text": "主题研究",
+                "left": 16,
+                "right": 109.328125,
+                "height": 44
+              },
+              {
+                "text": "公司证据",
+                "left": 113.328125,
+                "right": 206.671875,
+                "height": 44
+              },
+              {
+                "text": "公司关系",
+                "left": 210.671875,
+                "right": 304,
+                "height": 44
+              }
+            ]
+          }
+        ],
+        "tree_status": [
+          {
+            "width": 1440,
+            "language": "en",
+            "hidden_mutations": 4,
+            "status_identity_retained": true,
+            "empty_accessibility_snapshot": "- status:\n  - paragraph: No micro-theme matches that search.",
+            "focus_and_url_retained": true,
+            "initial_geometry": {
+              "gap": 12,
+              "messageHeight": 0,
+              "parentGap": 12,
+              "messageMargins": 28
+            },
+            "empty_geometry": {
+              "gap": 89,
+              "messageHeight": 37,
+              "parentGap": 12,
+              "messageMargins": 28
+            }
+          },
+          {
+            "width": 1440,
+            "language": "zh",
+            "hidden_mutations": 4,
+            "status_identity_retained": true,
+            "empty_accessibility_snapshot": "- status:\n  - paragraph: 没有匹配该搜索的细分主题。",
+            "focus_and_url_retained": true,
+            "initial_geometry": {
+              "gap": 12,
+              "messageHeight": 0,
+              "parentGap": 12,
+              "messageMargins": 28
+            },
+            "empty_geometry": {
+              "gap": 89,
+              "messageHeight": 37,
+              "parentGap": 12,
+              "messageMargins": 28
+            }
+          },
+          {
+            "width": 390,
+            "language": "en",
+            "hidden_mutations": 4,
+            "status_identity_retained": true,
+            "empty_accessibility_snapshot": "- status:\n  - paragraph: No micro-theme matches that search.",
+            "focus_and_url_retained": true,
+            "initial_geometry": {
+              "gap": 12,
+              "messageHeight": 0,
+              "parentGap": 12,
+              "messageMargins": 28
+            },
+            "empty_geometry": {
+              "gap": 89,
+              "messageHeight": 37,
+              "parentGap": 12,
+              "messageMargins": 28
+            }
+          },
+          {
+            "width": 390,
+            "language": "zh",
+            "hidden_mutations": 4,
+            "status_identity_retained": true,
+            "empty_accessibility_snapshot": "- status:\n  - paragraph: 没有匹配该搜索的细分主题。",
+            "focus_and_url_retained": true,
+            "initial_geometry": {
+              "gap": 12,
+              "messageHeight": 0,
+              "parentGap": 12,
+              "messageMargins": 28
+            },
+            "empty_geometry": {
+              "gap": 89,
+              "messageHeight": 37,
+              "parentGap": 12,
+              "messageMargins": 28
+            }
+          },
+          {
+            "width": 320,
+            "language": "en",
+            "hidden_mutations": 4,
+            "status_identity_retained": true,
+            "empty_accessibility_snapshot": "- status:\n  - paragraph: No micro-theme matches that search.",
+            "focus_and_url_retained": true,
+            "initial_geometry": {
+              "gap": 12,
+              "messageHeight": 0,
+              "parentGap": 12,
+              "messageMargins": 28
+            },
+            "empty_geometry": {
+              "gap": 89,
+              "messageHeight": 37,
+              "parentGap": 12,
+              "messageMargins": 28
+            }
+          },
+          {
+            "width": 320,
+            "language": "zh",
+            "hidden_mutations": 4,
+            "status_identity_retained": true,
+            "empty_accessibility_snapshot": "- status:\n  - paragraph: 没有匹配该搜索的细分主题。",
+            "focus_and_url_retained": true,
+            "initial_geometry": {
+              "gap": 12,
+              "messageHeight": 0,
+              "parentGap": 12,
+              "messageMargins": 28
+            },
+            "empty_geometry": {
+              "gap": 89,
+              "messageHeight": 37,
+              "parentGap": 12,
+              "messageMargins": 28
+            }
+          }
+        ],
+        "tree_status_static": [
+          {
+            "language": "en",
+            "native_links": 371,
+            "status_empty": true,
+            "java_script_enabled": false,
+            "geometry": {
+              "gap": 12,
+              "messageHeight": 0,
+              "parentGap": 12,
+              "messageMargins": 28
+            }
+          },
+          {
+            "language": "zh",
+            "native_links": 371,
+            "status_empty": true,
+            "java_script_enabled": false,
+            "geometry": {
+              "gap": 12,
+              "messageHeight": 0,
+              "parentGap": 12,
+              "messageMargins": 28
+            }
+          }
+        ],
+        "pass": true
+      }
+    },
+    "commands": {
+      "baseline": "python3 '/Volumes/Mastermind/agent-workspaces/verify/gmi-tree-status-20261109-8z72l60c/verify_tree_status_component.py' --root '/Volumes/Mastermind/agent-workspaces/verify/gmi-tree-status-20261109-8z72l60c' --executable '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' --baseline",
+      "final": "python3 '/Volumes/Mastermind/agent-workspaces/verify/gmi-tree-status-20261109-8z72l60c/verify_tree_status_component.py' --root '/Volumes/Mastermind/agent-workspaces/verify/gmi-tree-status-20261109-8z72l60c' --executable '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'",
+      "spacing_probe": "python3 '/Volumes/Mastermind/agent-workspaces/verify/gmi-tree-status-20261109-8z72l60c/probe_status_spacing.py' --root '/Volumes/Mastermind/agent-workspaces/verify/gmi-tree-status-20261109-8z72l60c' --executable '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'"
+    },
+    "captures": [
+      {
+        "name": "tree-status-320-zh.png",
+        "bytes": 99931,
+        "sha256": "ec7e782977d51b29bcc2113c928625f1ecb1f1d6062ba89a4a93b2fe93463324",
+        "visual_review": "PASS; final bytes equal the inspected initial no-match captures, correct EN390/ZH320 wording and layout."
+      },
+      {
+        "name": "tree-status-390-en.png",
+        "bytes": 98226,
+        "sha256": "27b6c4433f21d2ab778c441ec3b95d086acb865f96bd1cbf2a03a3a967e268dd",
+        "visual_review": "PASS; final bytes equal the inspected initial no-match captures, correct EN390/ZH320 wording and layout."
+      }
+    ],
+    "harness": {
+      "path": "research/theme_graph/gmi_design_20261021/verify_tree_status_component.py",
+      "canonical_functions": [
+        "gmi_navigation_fit",
+        "tree_status_spacing",
+        "tree_status_feedback",
+        "tree_status_static"
+      ]
+    }
+  },
+  "references": [
+    {
+      "url": "https://www.w3.org/WAI/WCAG22/Techniques/aria/ARIA22",
+      "accessed": "2026-11-09",
+      "applied": "Persistent status container is present before feedback occurs; explicit atomic semantics."
+    }
+  ],
+  "retained_boundaries": [
+    "Original model01 EFFECT_UNKNOWN / ROOT_UNVERIFIED fence remains; no consumption, retry, replacement or settlement claim.",
+    "PR10676 remains Draft; no Ready, relabel, auto-merge, enqueue, merge or deploy.",
+    "Native proof is anonymous generated-component DOM/accessibility-tree/focus/geometry evidence, not spoken screen-reader acceptance.",
+    "Full shared shell, fonts, account, public serving, system clipboard and deployment remain separate.",
+    "Accepted historical tree/index/copy/locale suites are not represented as fresh reruns.",
+    "Tools pinned-family denial and receipts/navigation integration remain untouched."
+  ]
+}
