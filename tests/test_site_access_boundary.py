@@ -77,6 +77,23 @@ def _caddy_public_exclusions() -> set[str]:
     return set(shlex.split(match.group(1)))
 
 
+def _caddy_site_block(host: str) -> str:
+    match = re.search(rf"^{re.escape(host)} \{{\n(.*?)^\}}", CADDY, flags=re.S | re.M)
+    assert match, f"Caddy site block missing for {host}"
+    return match.group(1)
+
+
+@pytest.mark.parametrize("host", ["www.mastermind-x.com", "mastermind-x.com"])
+def test_flagship_origin_tls_stays_browser_trusted(host):
+    """Public flagship origins must never expose Caddy's private local CA."""
+    body = _caddy_site_block(host)
+    assert "tls internal" not in body, (
+        f"{host} can be reached if the CDN is bypassed or DNS is stale; "
+        "tls internal exposes Caddy Local Authority and causes "
+        "NET::ERR_CERT_AUTHORITY_INVALID"
+    )
+
+
 def test_caddy_public_boundary_matches_policy_exactly():
     expected = set(NON_POLICY_ROUTES) | {"*.html"}
     expected.update(POLICY["public"]["exact"])
@@ -913,3 +930,65 @@ def test_portfolio_state_cache_migration_covers_every_served_consumer():
             assert url == bare + "?v=" + digest, (page.relative_to(SITE), url)
             consumers.add(str(page.relative_to(SITE)))
     assert {"watchlist.html", "ontology.html"} <= consumers
+
+
+def test_the_child_bio_ref_route_is_one_301_onto_the_public_shell():
+    """Bio policy BL-2/BL-7 (t_4f2e5457): the bio's only link is ours.
+
+    Every child bio carries `https://www.mastermind-x.com/x/<child-id>`. The
+    edge owns that hop: one 301 onto the public home shell with the child id as
+    `?ref=`. BL-7 makes a destination move ANOTHER 301 here — never a bio
+    rewrite in flight — so the route must stay a redirect and must not become a
+    file rewrite (a `.html` target would be a second hard-coded destination).
+    """
+    matcher = re.search(r"@x_ref\s*\{(.*?)\n\t\}", CADDY, re.S)
+    assert matcher, "@x_ref matcher missing from the Caddyfile"
+    assert ("path_regexp x_ref "
+            "^/x/(?P<id>[a-z0-9][a-z0-9.]{2,30}[a-z0-9])/?$") in matcher.group(1)
+    assert "not path *..*" in matcher.group(1)
+    assert 'redir @x_ref "/?ref={re.x_ref.id}" 301' in CADDY
+    assert not re.search(r"^\s*redir @x_ref [^\n]*\.html", CADDY, re.M)
+
+    # The target must be a page the registration wall serves publicly, or the
+    # bio link would bounce a logged-out reader to /?signin=1. Ownership stays
+    # with tests/test_regwall.py ("the ONLY guard on regwall.PUBLIC_PATHS"):
+    # reaching app/regwall.py from HERE — import or path literal, both are
+    # closure edges for the site-access-boundary job — would drag the whole
+    # app/ tree into a deliberately narrow job. This test owns the Caddyfile
+    # side: one 301 onto "/"; test_regwall.py owns "/" being public.
+
+
+def test_the_x_ref_matcher_and_the_bio_validator_accept_the_same_ids():
+    """The edge matcher and tools.xguerrilla.validators.BIO_PATH_RE must agree.
+
+    Registry child ids are dotted (mila.lifts, wren.mp4, desk.and.dusk), so a
+    character class updated on one side and not the other sends a correct bio
+    link to a 401 at the edge — or refuses the correct bio — with every
+    synthetic-id test still green. Compile the Caddyfile's own pattern with
+    Python's re (RE2-compatible subset here) and require shape agreement with
+    the validator on both a dotted real id and the degenerate rejects.
+    """
+    from tools.xguerrilla.validators import BIO_PATH_RE
+
+    patterns = re.findall(r"path_regexp x_ref (\S+)", CADDY)
+    assert len(patterns) == 1, patterns
+    edge = re.compile(patterns[0])
+    matcher = re.search(r"@x_ref\s*\{(.*?)\n\t\}", CADDY, re.S)
+    assert matcher and "not path *..*" in matcher.group(1)
+
+    def edge_accepts(path):
+        # Caddy ANDs the RE2 shape with the negative substring path matcher.
+        return bool(edge.fullmatch(path)) and ".." not in path
+
+    accepted = ("mila.lifts", "wren.mp4", "harperbuilds", "ab12cd34", "a.bc", "ab.c",
+                "a." + "b" * 29, "a." + "b" * 30)
+    rejected = ("ab1", "AB12CD34", "with-dash", "a..b", ".lead", "trail.", "x" * 33,
+                "a." + "b" * 31, ".".join(["a"] * 32))
+    for child in accepted:
+        assert edge_accepts(f"/x/{child}"), child
+        assert edge_accepts(f"/x/{child}/"), child
+        assert BIO_PATH_RE.fullmatch(f"/x/{child}"), child
+    for bad in rejected:
+        assert not edge_accepts(f"/x/{bad}"), bad
+        assert not edge_accepts(f"/x/{bad}/"), bad
+        assert not BIO_PATH_RE.fullmatch(f"/x/{bad}"), bad
