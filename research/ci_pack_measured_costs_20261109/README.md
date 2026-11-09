@@ -252,7 +252,7 @@ job starting; runs with ≥4 started pack jobs):
 Policy: **a narrowed PR lane activates at most 7 packs — the legacy width —
 and measured seconds balance those packs** (`NARROWED_PR_MAX_ACTIVE_PACKS`).
 Same population (the three probe selections, 137/137/131 jobs, weights
-14,099/14,575/13,380 s), three configurations, walls via
+14,099/14,575/13,880 s), three configurations, walls via
 `predicted_pack_walls_seconds` (setup + measured seconds):
 
 | lane | config | packs | predicted wall | runner-total | queue-adj. wall (saturated*) |
