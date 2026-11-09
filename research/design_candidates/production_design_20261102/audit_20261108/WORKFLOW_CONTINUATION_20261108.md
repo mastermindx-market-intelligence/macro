@@ -1702,3 +1702,32 @@ Tools Build **31M-0** was read and preserved: its existing seven modules already
 ### Next bounded improvement
 
 The tree now correctly hides every result and retains search focus at zero matches, but its existing no-match paragraph has no persistent status semantics. The next safe source change is to qualify a single polite feedback owner around that existing bilingual message, preserve current visual wording/focus/URL behavior, and test actual zero-match transitions without claiming spoken assistive-technology acceptance from DOM checks alone. That work is not implemented by this section.
+
+## 34. Tree feedback retains a status owner and its original spacing — 9 November 2026
+
+[GMI Draft PR10676](https://github.com/mastermindx-market-intelligence/Macro/pull/10676) is now **37c7cf217f9d63605843a8b1e860f3e4139486b4**, parent `11aed18841b996babe1b81c0b4eb0ebd7f27a797`, tree `ccae83ff86fba741acc9024941eef1cf43b27d98`. All ten files were read back exactly after the original-carrier compare-and-swap. Original model and release boundaries remain.
+
+The existing tree no-match paragraph now lives inside one persistent polite/atomic status region. Its bilingual wording, focus and search behavior remain. The existing `noMatch()` helper skips unchanged visibility writes, so another unmatched keystroke does not repeatedly republish the same state. No new state, observer, timer or announcement owner was added. Actually disabled JavaScript keeps the paragraph hidden and preserves the 371 native theme links.
+
+The first candidate passed its eight behavior cases, but bounded layout review identified an extra flex item gap. Native comparison measured **12 → 24 px** in normal/matching/cleared states at 1440 and 320 px. A scoped CSS rule now offsets only that empty wrapper gap while leaving the status mounted. **Final actual gaps are 12 px normally and the original 89 px with the no-match paragraph visible** across all six EN/ZH width cases. The visible message's padding/margins are intact. The initial candidate and measured regression are retained, not erased from the proof.
+
+| Current file | Exact blob |
+| --- | --- |
+| Paired GMI JavaScript | **ae2aee39d3adbaff4687bd0efcca0a8b5e70ea9b** |
+| Paired GMI CSS | **bbf4395ff8e119d7d6161703693c6f4b03142029** |
+| _gmi_macros.html.j2 | **ea0a7e36538c1df65e5b1280c3d86e050fb8f30f** |
+| Actual generated explorer | **7427ca297e76cfd2fb07d3cf39713803e7f7f7e8** |
+| Canonical verifier | **31a3d3895e5c3847e2da456d5c1a848e9bb63144** |
+| Bounded extracting harness | **fef9830b091969e4d9f4e8df63ee791a75a91ea5** |
+| DESIGN_RECORD through §11.25 | **14cf4d35d732dde13b16a76d9521358ff8e554ff** |
+| TREE_STATUS_VALIDATION_20261109.json | **60d2cca04798412ff36a064f4b0b8cb2c9953d38** |
+
+The qualified renderer reproduced the current explorer/index from 48 exact inputs and the unchanged accepted model. It then changed one explorer wrapper line plus paired GMI assets; six other generated HTML outputs remain exact. Actual renderer bytes were transported as one checked changed span, with baseline/span/candidate SHA-256 and final Git blob equality. No independent generated-page edit or model regeneration occurred.
+
+The final native run, PID54529, passed **8 cases / 8 fresh anonymous contexts**, zero page errors, exit0, 16.21 seconds on Chrome157.0.8103.39. It checks stable status/message identity; exactly one hidden mutation per transition; repeated zero results; correct EN/ZH rendered and accessibility-tree content; locale changes; retained focus, answer identity and URL; zero/one tree entry; Tab to See all; clear/re-entry; original geometry; navigation targets/no overflow; and actually disabled-JavaScript fallback. Final phone capture bytes equal the two inspected captures. Two baseline cases fail for the missing persistent owner. The [structured receipt](https://github.com/mastermindx-market-intelligence/Macro/blob/37c7cf217f9d63605843a8b1e860f3e4139486b4/research/theme_graph/gmi_design_20261021/TREE_STATUS_VALIDATION_20261109.json) records source, rendering, initial/final runs and the spacing falsifier. The adjacent committed harness extracts the canonical test definitions.
+
+Paper [GMI p7](https://app.paper.design/file/01M5H6EARN9YHQV17JC6ZG9BRY/p-7-0), Build **7M9-0**, retains **eleven modules / 36 IDs**. Four text nodes update source identity, the tree status/spacing contract and bounded proof. All IDs, parent relationships, order, styles and unrelated text remain exact. The full native screenshot was inspected and the exact root finished, APPLIED_RESPONSE_OBSERVED. **PAPER_TREE_STATUS_20261109.json** records the bounded readback.
+
+DOM/accessibility-tree checks do not establish spoken screen-reader behavior or full shell/fonts/account/live-serving acceptance. Catalyst remains merged with its one refused/reconciled production attempt; Tools retains its capture and integration boundaries. No release retry or alternate browser path occurred.
+
+The next source-backed improvement is the index feedback host: it starts hidden, updates nested counts/no-match text, then reveals the role-bearing paragraph. A persistent outer status owner can reuse those existing bilingual spans and render functions while preserving the same empty-gap contract. This section does not claim that next amendment is implemented.
