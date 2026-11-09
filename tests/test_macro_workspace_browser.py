@@ -229,6 +229,9 @@ def test_unavailable_states_are_useful_and_do_not_fabricate_history(page, site_u
     expect(page.locator("h1:visible")).to_have_count(1)
     expect(page.locator("#macro-outlook-title")).to_be_visible()
     assert "unavailable" in page.locator("#regime-radar").inner_text()
+    expect(page.locator("#sx-evidence .macro-card-unavailable")).to_have_text(
+        "Priorities are unavailable. Open the evidence for source context.当前重点暂不可用。打开依据查看来源背景。"
+    )
     expect(page.locator(".macro-history-range")).to_have_count(0)
     expect(page.locator("#sx-v5-sentiment .mx5-sentiment-dial-wrap")).to_have_count(0)
     load(page, site_url, "history-unavailable.html")

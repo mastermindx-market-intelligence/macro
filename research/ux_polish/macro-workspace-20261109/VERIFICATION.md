@@ -24,6 +24,8 @@ The fixture inputs are identified in `tests/fixtures/macro_workspace/SOURCE.md`.
 
 The shared navigation cold-load shift remains with held carrier #10261 (approximately 0.723 baseline versus 0.702 candidate in the same local laboratory). The frozen rate-card semantic discrepancy remains with #10493. Neither is concealed by a new page controller or an assertion of full production readiness.
 
+The first source-bound full-page capture revealed an empty priorities card when all contributing observations were absent. A final bilingual unavailable message now fills that specific state while retaining the evidence action. The affected browser and incumbent priorities suites passed **8/8** in 5.87 seconds. Earlier captures remain intermediate; the release packet is recaptured after this correction.
+
 ## Next proof
 
 Commit source; recapture EW, W9 and the full workspace from that commit; bind actual input bytes and screenshot hashes; run the required receipt/visual guards; publish a ready PR through the existing merge controller. Then obtain the merged SHA, covering Jinja render, and actual live browser proof. Source/CI alone are insufficient.

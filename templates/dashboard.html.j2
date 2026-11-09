@@ -9067,6 +9067,9 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
         </div>
         {% endif %}
 
+        {% if not market_state and not macro_catalysts and not _wtd_dislo and not _wtd_pl_active %}
+        <p class="macro-card-unavailable"><span class="l-en">Priorities are unavailable. Open the evidence for source context.</span><span class="l-zh">当前重点暂不可用。打开依据查看来源背景。</span></p>
+        {% endif %}
       </div>{# /mx5-action-list #}
       <div class="macro-card-actions"><button type="button" class="gbtn macro-detail-button" aria-haspopup="dialog" aria-controls="dlg-evidence" onclick="mx5OpenDlg('dlg-evidence')"><span class="l-en">View the evidence</span><span class="l-zh">查看依据</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></button></div>
     </div>{# /sxg-face WTD #}
