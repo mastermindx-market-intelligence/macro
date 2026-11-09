@@ -281,11 +281,31 @@ def _excluded_cte(*, focus_visitors: bool = False) -> str:
         f"excl_geo_ips as ({geo_body}), "
         f"excl_ips as ({ips_body}), "
         f"excl_vids as ({vids_body}), "
-        "excl_seed as (select distinct e.visitor_id from public.analytics_events e "
-        "  where e.visitor_id is not null and (e.user_id in (select id from excl_users) "
-        "  or e.ip in (select ip from excl_geo_ips) or e.ip in (select ip from excl_ips) "
-        "  or e.visitor_id in (select visitor_id from excl_vids) "
-        f"  or e.ip in ({','.join(_LOOPBACK_IPS)}))), "
+        # The seed is the same shape as `excl_link` below, and had the same defect: an OR
+        # across FIVE different columns is not a join Postgres can hash or merge on, so it
+        # planned the only thing left — one seq scan of the entire store evaluating four
+        # hashed subplans per row. Measured on production 2026-11-09 (302,456 rows / 192 MB)
+        # this CTE alone was 7,056ms, the largest remaining term in the Visitors fold after
+        # `ident` got its index. `a or b` over a set we only read as DISTINCT visitor_id is
+        # `a` UNION `b`, and each arm on its own is a plain membership test that an index can
+        # drive (visitor_user / ip / visitor / ip respectively), so the same rows now come
+        # back from five short index probes. Same rows: both forms read the same predicate
+        # over the same table, and UNION de-duplicates exactly as `select distinct` did.
+        "excl_seed as ("
+        "  select e.visitor_id from public.analytics_events e "
+        "    where e.user_id in (select id from excl_users) and e.visitor_id is not null "
+        "  union "
+        "  select e.visitor_id from public.analytics_events e "
+        "    where e.ip in (select ip from excl_geo_ips) and e.visitor_id is not null "
+        "  union "
+        "  select e.visitor_id from public.analytics_events e "
+        "    where e.ip in (select ip from excl_ips) and e.visitor_id is not null "
+        "  union "
+        "  select e.visitor_id from public.analytics_events e "
+        "    where e.visitor_id in (select visitor_id from excl_vids) "
+        "  union "
+        "  select e.visitor_id from public.analytics_events e "
+        f"    where e.ip in ({','.join(_LOOPBACK_IPS)}) and e.visitor_id is not null), "
         # An OR across two DIFFERENT join keys is not a join Postgres can hash or merge,
         # so it planned the only thing left: a nested loop evaluating the predicate for
         # every (event x anchor) pair. Measured on production 2026-08-26 — 58,702 rows
@@ -620,10 +640,22 @@ def _query(sql: str, timeout_cap_s: float | None = None):
         timeout = max(1.0, min(float(_QUERY_TIMEOUT_S), remaining))
     if timeout_cap_s is not None:
         timeout = min(timeout, max(0.5, float(timeout_cap_s)))
-    r = requests.post(
-        f"{_API}/projects/{ref}/database/query",
-        headers={"Authorization": f"Bearer {pat}", "Content-Type": "application/json"},
-        json={"query": sql}, timeout=timeout)
+    try:
+        r = requests.post(
+            f"{_API}/projects/{ref}/database/query",
+            headers={"Authorization": f"Bearer {pat}", "Content-Type": "application/json"},
+            json={"query": sql}, timeout=timeout)
+    except requests.exceptions.Timeout:
+        # urllib3's own wording ("HTTPSConnectionPool(host='api.supabase.com', port=443):
+        # Read timed out. (read timeout=9.0)") was reaching the operator verbatim. It names
+        # the TRANSPORT, which is the wrong place to look: measured on production 2026-11-09,
+        # a bare `select 1` through this endpoint answers in 1.4s while one full-store scan
+        # takes 9-31s — so a read timeout here is the STATEMENT outrunning the budget, not the
+        # network. Say that, and say which budget.
+        raise TimeoutError(
+            f"analytics query did not finish within {timeout:.1f}s "
+            "(Supabase Management API) — a full-store scan outran the panel budget; "
+            "narrow the window and retry") from None
     if not (200 <= r.status_code < 300):   # the query endpoint answers 201 on success
         raise RuntimeError(f"HTTP {r.status_code}: {r.text[:200]}")
     return r.json()

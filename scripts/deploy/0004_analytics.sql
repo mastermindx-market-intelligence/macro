@@ -26,6 +26,42 @@ create index if not exists analytics_events_type    on public.analytics_events (
 create index if not exists analytics_events_ticker  on public.analytics_events (ticker, created_at desc) where ticker is not null;
 create index if not exists analytics_events_site    on public.analytics_events (site, created_at desc);
 create index if not exists analytics_events_ip      on public.analytics_events (ip) where ip is not null;
+
+-- Identity + soft-attribution coverage. The admin analytics panels resolve a cookie to the
+-- account it belongs to (`ident`), and annotate anonymous cookies with the most likely account
+-- (`cand`). `ident` is the ONE classifier that is deliberately full-history — "a cookie that
+-- ever appeared on a signed-in event" is the documented merge rule, so it cannot be narrowed
+-- to the panel's window without silently splitting one person into several.
+--
+-- Without an index on the pair it reads, that rule has to seq-scan the entire store. Measured
+-- on production 2026-11-09 against 302,456 rows / 192 MB:
+--     ident (full history) 13,506 ms   <- 81% of the 16.7s Visitors fold
+--     bots  (windowed)      4,189 ms
+--     excluded (windowed)   1,198 ms
+--     cand  chain (windowed)  169 ms
+-- `ident` is prepended to sessions(), visitors(), visitor() and overview(), so that one scan
+-- was the floor under every analytics tab and pushed Visitors/Sessions past the 9s query
+-- budget the admin API enforces. Both columns are in the index, so the whole group-by becomes
+-- an index-only scan and — being partial — it never touches the unsigned-in bulk of the store.
+create index if not exists analytics_events_visitor_user
+  on public.analytics_events (visitor_id, user_id)
+  where visitor_id is not null and user_id is not null;
+-- `excl_seed` (the operator's own cookies) and the `excluded` anti-join match on user_id or ip
+-- and then only ever READ visitor_id off the matched row. Both indexes therefore carry it as a
+-- trailing column: without that, each probe is an index scan plus a heap fetch per row, and the
+-- operator's own account alone holds 56,593 such events (measured 2026-11-09 — 2,704ms of the
+-- 3,137ms seed, against 131ms for the index-only `ident` scan of the same rows).
+create index if not exists analytics_events_user
+  on public.analytics_events (user_id, visitor_id) where user_id is not null;
+create index if not exists analytics_events_ip_visitor
+  on public.analytics_events (ip, visitor_id) where ip is not null;
+
+-- NOTE on fingerprints: covering indexes for the `fp` half of `excl_link` were tried and
+-- REVERTED. They made each probe index-only, but they also flipped the planner from a hash
+-- join to nested-loop index probes over a low-selectivity key, and `excluded` regressed from
+-- 7.6s to ~33s. An index that changes the join strategy is not a free win; measure before
+-- re-adding one here.
+
 alter table public.analytics_events enable row level security;
 
 create table if not exists public.ip_geo (
