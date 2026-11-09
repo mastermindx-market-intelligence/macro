@@ -1,0 +1,1107 @@
+{
+  "schema": "paper-company-entry-readback-v1",
+  "date": "2026-11-09",
+  "source": {
+    "pr": 10676,
+    "head": "49d47033f4d758af2ec7212fccee04d762fec956",
+    "tree": "aadcf4ceae8b41819d1a92d1c7ec4b149027675d",
+    "parent": "9bdc486c6b7622d9f306d29e9d12d572ed88415c",
+    "files": [
+      {
+        "path": "templates/_gmi_product_header.html.j2",
+        "sha": "b3b860d924408c4d4de0dcb7ad7ea38f7f1e0788",
+        "exact": true,
+        "expectedLength": 1931,
+        "readLength": 1931
+      },
+      {
+        "path": "templates/gmi_companies.html.j2",
+        "sha": "729e2a4a93246d87e9203abd84efdc16fb6f1aea",
+        "exact": true,
+        "expectedLength": 5741,
+        "readLength": 5741
+      },
+      {
+        "path": "templates/gmi.js",
+        "sha": "1facd1b2edcb062422ff65f22689edd7ae160cf8",
+        "exact": true,
+        "expectedLength": 52009,
+        "readLength": 52009
+      },
+      {
+        "path": "site/gmi.js",
+        "sha": "1facd1b2edcb062422ff65f22689edd7ae160cf8",
+        "exact": true,
+        "expectedLength": 52009,
+        "readLength": 52009
+      },
+      {
+        "path": "templates/gmi.css",
+        "sha": "dba2809660f0f16d25325db4bb401674758529a2",
+        "exact": true,
+        "expectedLength": 71505,
+        "readLength": 71505
+      },
+      {
+        "path": "site/gmi.css",
+        "sha": "dba2809660f0f16d25325db4bb401674758529a2",
+        "exact": true,
+        "expectedLength": 71505,
+        "readLength": 71505
+      },
+      {
+        "path": "site/gmi-companies.html",
+        "sha": "c4b1c81c92c270411c6698a473b55354a05dc8a5",
+        "exact": true,
+        "expectedLength": 61351,
+        "readLength": 61351
+      },
+      {
+        "path": "research/theme_graph/gmi_design_20261021/verify_product_browser.py",
+        "sha": "89f32143b6b61e0c12bf1534452550a4e416e1d1",
+        "exact": true,
+        "expectedLength": 173326,
+        "readLength": 173326
+      },
+      {
+        "path": "research/theme_graph/gmi_design_20261021/verify_company_entry_component.py",
+        "sha": "b21ada78f14a4df72a49e9f3b74fcb4efd35e2d6",
+        "exact": true,
+        "expectedLength": 12958,
+        "readLength": 12958
+      },
+      {
+        "path": "research/theme_graph/gmi_design_20261021/DESIGN_RECORD.md",
+        "sha": "7b3dcc87bb882a5ea9add34074fa84a0575aceb9",
+        "exact": true,
+        "expectedLength": 166125,
+        "readLength": 166125
+      },
+      {
+        "path": "research/theme_graph/gmi_design_20261021/COMPANY_ENTRY_VALIDATION_20261109.json",
+        "sha": "421444de7834eb16edaaff208877d719559db905",
+        "exact": true,
+        "expectedLength": 361789,
+        "readLength": 361789
+      }
+    ],
+    "draft": true,
+    "merged": false
+  },
+  "prior_paper_record": {
+    "audit_head": "724f8454a6e7828bc60a2ff7983fecdd75864a74",
+    "receipt": "PAPER_CATEGORY_PICKER_20261109.json"
+  },
+  "file_id": "01M5H6EARN9YHQV17JC6ZG9BRY",
+  "company_page": {
+    "id": "p-9-0",
+    "name": "Companies · Evidence and recovery",
+    "url": "https://app.paper.design/file/01M5H6EARN9YHQV17JC6ZG9BRY/p-9-0",
+    "order": [
+      "p-1-0",
+      "p-8-0",
+      "p-9-0",
+      "p-7-0",
+      "p-6-0",
+      "p-4-0",
+      "p-2-0",
+      "p-3-0",
+      "p-5-0"
+    ],
+    "original_page_relative_order_preserved": true,
+    "creation": [
+      {
+        "file": {
+          "id": "01M5H6EARN9YHQV17JC6ZG9BRY",
+          "name": "GMI Explorer · Product system"
+        },
+        "contentHash": {
+          "tokens": "ac191fd9"
+        }
+      },
+      {
+        "pageId": "p-9-0",
+        "name": "Companies · Evidence and recovery",
+        "icon": "design"
+      }
+    ],
+    "original_duplicate_results": [
+      [
+        {
+          "file": {
+            "id": "01M5H6EARN9YHQV17JC6ZG9BRY",
+            "name": "GMI Explorer · Product system"
+          },
+          "contentHash": {
+            "tokens": "ac191fd9"
+          }
+        },
+        {
+          "duplicatedNodes": [
+            {
+              "sourceId": "7YS-0",
+              "newId": "88M-0",
+              "name": "I01 · Full index · Day · EN · 390px",
+              "component": "Frame",
+              "worldX": 470,
+              "worldY": 0,
+              "x": 470,
+              "y": 0,
+              "descendantIdMap": {
+                "828-0": "88N-0",
+                "829-0": "8B7-0",
+                "82E-0": "8AQ-0",
+                "82F-0": "88O-0",
+                "83W-0": "8A2-0",
+                "882-0": "89V-0",
+                "85M-0": "88P-0",
+                "85N-0": "89Q-0",
+                "865-0": "89N-0",
+                "869-0": "89H-0",
+                "86G-0": "89B-0",
+                "86N-0": "895-0",
+                "86U-0": "88Z-0",
+                "871-0": "88W-0",
+                "875-0": "88T-0",
+                "879-0": "88Q-0",
+                "87A-0": "88S-0",
+                "87B-0": "88R-0",
+                "876-0": "88V-0",
+                "877-0": "88U-0",
+                "872-0": "88Y-0",
+                "873-0": "88X-0",
+                "86V-0": "892-0",
+                "86Y-0": "891-0",
+                "86Z-0": "890-0",
+                "86W-0": "894-0",
+                "86X-0": "893-0",
+                "86O-0": "898-0",
+                "86R-0": "897-0",
+                "86S-0": "896-0",
+                "86P-0": "89A-0",
+                "86Q-0": "899-0",
+                "86H-0": "89E-0",
+                "86K-0": "89D-0",
+                "86L-0": "89C-0",
+                "86I-0": "89G-0",
+                "86J-0": "89F-0",
+                "86A-0": "89K-0",
+                "86D-0": "89J-0",
+                "86E-0": "89I-0",
+                "86B-0": "89M-0",
+                "86C-0": "89L-0",
+                "866-0": "89P-0",
+                "867-0": "89O-0",
+                "85O-0": "89U-0",
+                "85P-0": "89T-0",
+                "85Q-0": "89R-0",
+                "85R-0": "89S-0",
+                "883-0": "89Y-0",
+                "887-0": "89W-0",
+                "888-0": "89X-0",
+                "884-0": "8A1-0",
+                "885-0": "89Z-0",
+                "886-0": "8A0-0",
+                "83X-0": "8AJ-0",
+                "84G-0": "8A3-0",
+                "84H-0": "8AE-0",
+                "84M-0": "8AB-0",
+                "84P-0": "8A8-0",
+                "84S-0": "8A4-0",
+                "84T-0": "8A6-0",
+                "84V-0": "8A5-0",
+                "84U-0": "8A7-0",
+                "84Q-0": "8AA-0",
+                "84R-0": "8A9-0",
+                "84N-0": "8AD-0",
+                "84O-0": "8AC-0",
+                "84I-0": "8AG-0",
+                "84L-0": "8AF-0",
+                "84J-0": "8AI-0",
+                "84K-0": "8AH-0",
+                "83Y-0": "8AN-0",
+                "841-0": "8AM-0",
+                "842-0": "8AK-0",
+                "843-0": "8AL-0",
+                "83Z-0": "8AP-0",
+                "840-0": "8AO-0",
+                "82R-0": "8B0-0",
+                "82Z-0": "8AR-0",
+                "830-0": "8AW-0",
+                "834-0": "8AS-0",
+                "835-0": "8AV-0",
+                "836-0": "8AT-0",
+                "837-0": "8AU-0",
+                "831-0": "8AY-0",
+                "833-0": "8AX-0",
+                "832-0": "8AZ-0",
+                "82S-0": "8B5-0",
+                "82U-0": "8B3-0",
+                "82W-0": "8B1-0",
+                "82X-0": "8B2-0",
+                "82V-0": "8B4-0",
+                "82T-0": "8B6-0",
+                "82A-0": "8BB-0",
+                "82B-0": "8BA-0",
+                "82C-0": "8B8-0",
+                "82D-0": "8B9-0"
+              }
+            },
+            {
+              "sourceId": "811-0",
+              "newId": "8BC-0",
+              "name": "I02 · 筛选与返回 · Noir · ZH · 320px",
+              "component": "Frame",
+              "worldX": 470,
+              "worldY": 980,
+              "x": 470,
+              "y": 980,
+              "descendantIdMap": {
+                "82H-0": "8BD-0",
+                "82I-0": "8DK-0",
+                "82O-0": "8D3-0",
+                "82P-0": "8BE-0",
+                "83R-0": "8CZ-0",
+                "845-0": "8C9-0",
+                "88A-0": "8C2-0",
+                "85Y-0": "8BG-0",
+                "87X-0": "8BF-0",
+                "85Z-0": "8BX-0",
+                "87D-0": "8BU-0",
+                "87H-0": "8BQ-0",
+                "87M-0": "8BN-0",
+                "87Q-0": "8BH-0",
+                "87R-0": "8BK-0",
+                "87U-0": "8BJ-0",
+                "87V-0": "8BI-0",
+                "87S-0": "8BM-0",
+                "87T-0": "8BL-0",
+                "87N-0": "8BP-0",
+                "87O-0": "8BO-0",
+                "87I-0": "8BT-0",
+                "87J-0": "8BS-0",
+                "87K-0": "8BR-0",
+                "87E-0": "8BW-0",
+                "87F-0": "8BV-0",
+                "860-0": "8C1-0",
+                "861-0": "8C0-0",
+                "862-0": "8BY-0",
+                "863-0": "8BZ-0",
+                "88B-0": "8C5-0",
+                "88F-0": "8C3-0",
+                "88G-0": "8C4-0",
+                "88C-0": "8C8-0",
+                "88D-0": "8C6-0",
+                "88E-0": "8C7-0",
+                "846-0": "8CR-0",
+                "84E-0": "8CQ-0",
+                "84X-0": "8CA-0",
+                "84Y-0": "8CL-0",
+                "853-0": "8CI-0",
+                "856-0": "8CF-0",
+                "859-0": "8CB-0",
+                "85A-0": "8CD-0",
+                "85C-0": "8CC-0",
+                "85B-0": "8CE-0",
+                "857-0": "8CH-0",
+                "858-0": "8CG-0",
+                "854-0": "8CK-0",
+                "855-0": "8CJ-0",
+                "84Z-0": "8CN-0",
+                "852-0": "8CM-0",
+                "850-0": "8CP-0",
+                "851-0": "8CO-0",
+                "847-0": "8CW-0",
+                "84A-0": "8CV-0",
+                "84B-0": "8CS-0",
+                "84C-0": "8CT-0",
+                "84D-0": "8CU-0",
+                "848-0": "8CY-0",
+                "849-0": "8CX-0",
+                "83S-0": "8D1-0",
+                "83U-0": "8D0-0",
+                "83T-0": "8D2-0",
+                "839-0": "8DD-0",
+                "83H-0": "8D4-0",
+                "83I-0": "8D9-0",
+                "83M-0": "8D5-0",
+                "83N-0": "8D8-0",
+                "83O-0": "8D6-0",
+                "83P-0": "8D7-0",
+                "83J-0": "8DB-0",
+                "83L-0": "8DA-0",
+                "83K-0": "8DC-0",
+                "83A-0": "8DI-0",
+                "83C-0": "8DG-0",
+                "83E-0": "8DE-0",
+                "83F-0": "8DF-0",
+                "83D-0": "8DH-0",
+                "83B-0": "8DJ-0",
+                "82J-0": "8DP-0",
+                "82K-0": "8DO-0",
+                "82L-0": "8DL-0",
+                "82M-0": "8DN-0",
+                "82N-0": "8DM-0"
+              }
+            }
+          ]
+        }
+      ],
+      [
+        {
+          "file": {
+            "id": "01M5H6EARN9YHQV17JC6ZG9BRY",
+            "name": "GMI Explorer · Product system"
+          },
+          "contentHash": {
+            "tokens": "ac191fd9"
+          }
+        },
+        {
+          "duplicatedNodes": [
+            {
+              "sourceId": "7YS-0",
+              "newId": "8DQ-0",
+              "name": "I01 · Full index · Day · EN · 390px",
+              "component": "Frame",
+              "worldX": 0,
+              "worldY": 980,
+              "x": 0,
+              "y": 980,
+              "descendantIdMap": {
+                "828-0": "8DR-0",
+                "829-0": "8GB-0",
+                "82E-0": "8FU-0",
+                "82F-0": "8DS-0",
+                "83W-0": "8F6-0",
+                "882-0": "8EZ-0",
+                "85M-0": "8DT-0",
+                "85N-0": "8EU-0",
+                "865-0": "8ER-0",
+                "869-0": "8EL-0",
+                "86G-0": "8EF-0",
+                "86N-0": "8E9-0",
+                "86U-0": "8E3-0",
+                "871-0": "8E0-0",
+                "875-0": "8DX-0",
+                "879-0": "8DU-0",
+                "87A-0": "8DW-0",
+                "87B-0": "8DV-0",
+                "876-0": "8DZ-0",
+                "877-0": "8DY-0",
+                "872-0": "8E2-0",
+                "873-0": "8E1-0",
+                "86V-0": "8E6-0",
+                "86Y-0": "8E5-0",
+                "86Z-0": "8E4-0",
+                "86W-0": "8E8-0",
+                "86X-0": "8E7-0",
+                "86O-0": "8EC-0",
+                "86R-0": "8EB-0",
+                "86S-0": "8EA-0",
+                "86P-0": "8EE-0",
+                "86Q-0": "8ED-0",
+                "86H-0": "8EI-0",
+                "86K-0": "8EH-0",
+                "86L-0": "8EG-0",
+                "86I-0": "8EK-0",
+                "86J-0": "8EJ-0",
+                "86A-0": "8EO-0",
+                "86D-0": "8EN-0",
+                "86E-0": "8EM-0",
+                "86B-0": "8EQ-0",
+                "86C-0": "8EP-0",
+                "866-0": "8ET-0",
+                "867-0": "8ES-0",
+                "85O-0": "8EY-0",
+                "85P-0": "8EX-0",
+                "85Q-0": "8EV-0",
+                "85R-0": "8EW-0",
+                "883-0": "8F2-0",
+                "887-0": "8F0-0",
+                "888-0": "8F1-0",
+                "884-0": "8F5-0",
+                "885-0": "8F3-0",
+                "886-0": "8F4-0",
+                "83X-0": "8FN-0",
+                "84G-0": "8F7-0",
+                "84H-0": "8FI-0",
+                "84M-0": "8FF-0",
+                "84P-0": "8FC-0",
+                "84S-0": "8F8-0",
+                "84T-0": "8FA-0",
+                "84V-0": "8F9-0",
+                "84U-0": "8FB-0",
+                "84Q-0": "8FE-0",
+                "84R-0": "8FD-0",
+                "84N-0": "8FH-0",
+                "84O-0": "8FG-0",
+                "84I-0": "8FK-0",
+                "84L-0": "8FJ-0",
+                "84J-0": "8FM-0",
+                "84K-0": "8FL-0",
+                "83Y-0": "8FR-0",
+                "841-0": "8FQ-0",
+                "842-0": "8FO-0",
+                "843-0": "8FP-0",
+                "83Z-0": "8FT-0",
+                "840-0": "8FS-0",
+                "82R-0": "8G4-0",
+                "82Z-0": "8FV-0",
+                "830-0": "8G0-0",
+                "834-0": "8FW-0",
+                "835-0": "8FZ-0",
+                "836-0": "8FX-0",
+                "837-0": "8FY-0",
+                "831-0": "8G2-0",
+                "833-0": "8G1-0",
+                "832-0": "8G3-0",
+                "82S-0": "8G9-0",
+                "82U-0": "8G7-0",
+                "82W-0": "8G5-0",
+                "82X-0": "8G6-0",
+                "82V-0": "8G8-0",
+                "82T-0": "8GA-0",
+                "82A-0": "8GF-0",
+                "82B-0": "8GE-0",
+                "82C-0": "8GC-0",
+                "82D-0": "8GD-0"
+              }
+            },
+            {
+              "sourceId": "811-0",
+              "newId": "8GG-0",
+              "name": "I02 · 筛选与返回 · Noir · ZH · 320px",
+              "component": "Frame",
+              "worldX": 940,
+              "worldY": 0,
+              "x": 940,
+              "y": 0,
+              "descendantIdMap": {
+                "82H-0": "8GH-0",
+                "82I-0": "8IO-0",
+                "82O-0": "8I7-0",
+                "82P-0": "8GI-0",
+                "83R-0": "8I3-0",
+                "845-0": "8HD-0",
+                "88A-0": "8H6-0",
+                "85Y-0": "8GK-0",
+                "87X-0": "8GJ-0",
+                "85Z-0": "8H1-0",
+                "87D-0": "8GY-0",
+                "87H-0": "8GU-0",
+                "87M-0": "8GR-0",
+                "87Q-0": "8GL-0",
+                "87R-0": "8GO-0",
+                "87U-0": "8GN-0",
+                "87V-0": "8GM-0",
+                "87S-0": "8GQ-0",
+                "87T-0": "8GP-0",
+                "87N-0": "8GT-0",
+                "87O-0": "8GS-0",
+                "87I-0": "8GX-0",
+                "87J-0": "8GW-0",
+                "87K-0": "8GV-0",
+                "87E-0": "8H0-0",
+                "87F-0": "8GZ-0",
+                "860-0": "8H5-0",
+                "861-0": "8H4-0",
+                "862-0": "8H2-0",
+                "863-0": "8H3-0",
+                "88B-0": "8H9-0",
+                "88F-0": "8H7-0",
+                "88G-0": "8H8-0",
+                "88C-0": "8HC-0",
+                "88D-0": "8HA-0",
+                "88E-0": "8HB-0",
+                "846-0": "8HV-0",
+                "84E-0": "8HU-0",
+                "84X-0": "8HE-0",
+                "84Y-0": "8HP-0",
+                "853-0": "8HM-0",
+                "856-0": "8HJ-0",
+                "859-0": "8HF-0",
+                "85A-0": "8HH-0",
+                "85C-0": "8HG-0",
+                "85B-0": "8HI-0",
+                "857-0": "8HL-0",
+                "858-0": "8HK-0",
+                "854-0": "8HO-0",
+                "855-0": "8HN-0",
+                "84Z-0": "8HR-0",
+                "852-0": "8HQ-0",
+                "850-0": "8HT-0",
+                "851-0": "8HS-0",
+                "847-0": "8I0-0",
+                "84A-0": "8HZ-0",
+                "84B-0": "8HW-0",
+                "84C-0": "8HX-0",
+                "84D-0": "8HY-0",
+                "848-0": "8I2-0",
+                "849-0": "8I1-0",
+                "83S-0": "8I5-0",
+                "83U-0": "8I4-0",
+                "83T-0": "8I6-0",
+                "839-0": "8IH-0",
+                "83H-0": "8I8-0",
+                "83I-0": "8ID-0",
+                "83M-0": "8I9-0",
+                "83N-0": "8IC-0",
+                "83O-0": "8IA-0",
+                "83P-0": "8IB-0",
+                "83J-0": "8IF-0",
+                "83L-0": "8IE-0",
+                "83K-0": "8IG-0",
+                "83A-0": "8IM-0",
+                "83C-0": "8IK-0",
+                "83E-0": "8II-0",
+                "83F-0": "8IJ-0",
+                "83D-0": "8IL-0",
+                "83B-0": "8IN-0",
+                "82J-0": "8IT-0",
+                "82K-0": "8IS-0",
+                "82L-0": "8IP-0",
+                "82M-0": "8IR-0",
+                "82N-0": "8IQ-0"
+              }
+            }
+          ]
+        }
+      ]
+    ]
+  },
+  "views": [
+    {
+      "key": "C01",
+      "root": "88M-0",
+      "shell": "88N-0",
+      "w": 390,
+      "lang": "en",
+      "theme": "day",
+      "state": "matching",
+      "name": "C01 · Company match · EN390 Day",
+      "viewport_height": 844,
+      "jsx": "(\n    <div id=\"88M-0\" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', fontSize: '12px', fontSynthesis: 'none', lineHeight: '16px', MozOsxFontSmoothing: 'grayscale', overflow: 'visible', overflowWrap: 'anywhere', WebkitFontSmoothing: 'antialiased' }}>\n      <div id=\"8IU-0\" style={{ backgroundColor: 'var(--color-gmi-day-canvas)', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', height: '844px', overflow: 'clip', width: '390px' }}>\n        <div id=\"8IV-0\" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', paddingBottom: '12px', paddingLeft: '16px', paddingRight: '88px', paddingTop: '16px' }}>\n          <div id=\"8IW-0\" style={{ alignContent: 'center', boxSizing: 'border-box', color: 'var(--color-gmi-day-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', fontWeight: 600, lineHeight: '20px', minHeight: '44px' }}>\n            GMI Explorer\n          </div>\n          <div id=\"8IX-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-day-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '24px', fontWeight: 700, lineHeight: '29px' }}>\n            Company evidence\n          </div>\n          <div id=\"8IY-0\" style={{ boxSizing: 'border-box', display: 'flex', paddingTop: '8px' }}>\n            <div id=\"8IZ-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-day-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '12px', lineHeight: '18px' }}>\n              Snapshot · 3 Nov 2026\n            </div>\n          </div>\n        </div>\n        <div id=\"8J0-0\" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', paddingInline: '16px' }}>\n          <div id=\"8S0-0\" style={{ boxSizing: 'border-box', display: 'flex', gap: '4px' }}>\n            <div id=\"8S1-0\" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexGrow: '1', justifyContent: 'center', minHeight: '44px', minWidth: '0px', paddingBlock: '8px', paddingInline: '4px' }}>\n              <div id=\"8S2-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-day-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '13px', fontWeight: 600, lineHeight: '20px', textAlign: 'center' }}>\n                Theme research\n              </div>\n            </div>\n            <div id=\"8S3-0\" style={{ alignItems: 'center', backgroundColor: 'var(--color-gmi-day-surface)', borderColor: 'var(--color-gmi-day-line)', borderRadius: '8px', borderStyle: 'solid', borderWidth: '1px', boxShadow: '#1822300D 0px 1px 2px', boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexGrow: '1', justifyContent: 'center', minHeight: '44px', minWidth: '0px', paddingBlock: '8px', paddingInline: '4px' }}>\n              <div id=\"8S4-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-day-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '13px', fontWeight: 600, lineHeight: '20px', textAlign: 'center' }}>\n                Company evidence\n              </div>\n            </div>\n            <div id=\"8S5-0\" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexGrow: '1', justifyContent: 'center', minHeight: '44px', minWidth: '0px', paddingBlock: '8px', paddingInline: '4px' }}>\n              <div id=\"8S6-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-day-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '13px', fontWeight: 600, lineHeight: '20px', textAlign: 'center' }}>\n                Relationships\n              </div>\n            </div>\n          </div>\n          <div id=\"8K1-0\" style={{ alignItems: 'center', borderBottomColor: 'var(--color-gmi-day-line)', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '4px', justifyContent: 'space-between', paddingBottom: '16px', paddingTop: '8px' }}>\n            <div id=\"8K2-0\" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '8px', minHeight: '44px', paddingBlock: '8px', paddingInline: '4px' }}>\n              <svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\" id=\"8K3-0\" style={{ flexShrink: '0', display: 'inline-block' }}>\n                <path d=\"M9 6.5h11M9 12h11M9 17.5h11M4.5 6.5h.01M4.5 12h.01M4.5 17.5h.01\" fill=\"none\" stroke=\"#5D6B7E\" strokeWidth=\"1.8\" strokeLinecap=\"round\" />\n              </svg>\n              <div id=\"8K5-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-day-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '12px', lineHeight: '18px' }}>\n                Full index\n              </div>\n            </div>\n            <div id=\"8K6-0\" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '8px', minHeight: '44px', paddingBlock: '8px', paddingInline: '4px' }}>\n              <div id=\"8K7-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-day-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '12px', lineHeight: '18px' }}>\n                Coverage &amp; methodology\n              </div>\n              <svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\" id=\"8K8-0\" style={{ flexShrink: '0', display: 'inline-block' }}>\n                <path d=\"M4.5 12h15M13.5 6l6 6-6 6\" fill=\"none\" stroke=\"#5D6B7E\" strokeWidth=\"1.8\" strokeLinecap=\"round\" strokeLinejoin=\"round\" />\n              </svg>\n            </div>\n          </div>\n        </div>\n        <div id=\"8J1-0\" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '20px', padding: '16px' }}>\n          <div id=\"8LW-0\" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '20px' }}>\n            <div id=\"8LX-0\" style={{ alignItems: 'center', backgroundColor: 'var(--color-gmi-day-surface)', borderColor: 'var(--color-gmi-day-line)', borderRadius: '8px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '8px', minHeight: '44px', paddingBlock: '10px', paddingInline: '12px' }}>\n              <svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\" id=\"8LY-0\" style={{ flexShrink: '0', display: 'inline-block' }}>\n                <circle cx=\"11\" cy=\"11\" r=\"6.5\" fill=\"none\" stroke=\"#5D6B7E\" strokeWidth=\"1.8\" />\n                <path d=\"M16 16l4.5 4.5\" fill=\"none\" stroke=\"#5D6B7E\" strokeWidth=\"1.8\" strokeLinecap=\"round\" />\n              </svg>\n              <div id=\"8M1-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-day-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '13px', lineHeight: '20px' }}>\n                Micron\n              </div>\n            </div>\n            <div id=\"8M2-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-day-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '13px', lineHeight: '20px' }}>\n              1 matching company\n            </div>\n          </div>\n          <div id=\"8MS-0\" style={{ backgroundColor: 'var(--color-gmi-day-surface)', borderColor: 'var(--color-gmi-day-line)', borderRadius: '12px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', padding: '24px', width: '358px' }}>\n            <div id=\"8MT-0\" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '16px' }}>\n              <div id=\"8MU-0\" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '16px' }}>\n                <div id=\"8MV-0\" style={{ alignItems: 'center', backgroundColor: 'var(--color-gmi-day-raised)', borderRadius: '10px', boxSizing: 'border-box', display: 'flex', flexShrink: 0, height: '48px', justifyContent: 'center', minWidth: '48px', width: '48px' }}>\n                  <div id=\"8MW-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-day-text)', fontFamily: 'var(--font-gmi-mono)', fontSize: '14px', lineHeight: '20px' }}>\n                    MU\n                  </div>\n                </div>\n                <div id=\"8MX-0\" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '8px', minWidth: '0px' }}>\n                  <div id=\"8MY-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-day-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '11px', fontWeight: 600, letterSpacing: '0.08em', lineHeight: '16px' }}>\n                    MU · NASDAQ\n                  </div>\n                  <div id=\"8MZ-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-day-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '18px', fontWeight: 600, lineHeight: '24px' }}>\n                    Micron Technology\n                  </div>\n                </div>\n              </div>\n              <div id=\"8N0-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-day-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '13px', lineHeight: '22px' }}>\n                1 documented product connection\n              </div>\n            </div>\n            <div id=\"8N1-0\" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', paddingTop: '12px' }}>\n              <div id=\"8NG-0\" style={{ borderTopColor: 'var(--color-gmi-day-line)', borderTopStyle: 'solid', borderTopWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', paddingTop: '20px' }}>\n                <div id=\"8NH-0\" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px' }}>\n                  <div id=\"8NI-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-day-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '13px', lineHeight: '22px' }}>\n                    HBM &amp; advanced packaging\n                  </div>\n                  <div id=\"8NJ-0\" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', flexWrap: 'wrap', gap: '8px' }}>\n                    <div id=\"8NK-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-day-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '12px', lineHeight: '18px' }}>\n                      Source · 26 Feb 2024\n                    </div>\n                    <div id=\"8NL-0\" style={{ borderColor: 'var(--color-gmi-day-line)', borderRadius: '2px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', paddingBlock: '4px', paddingInline: '8px' }}>\n                      <div id=\"8NM-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-day-caution)', fontFamily: 'var(--font-gmi-ui)', fontSize: '12px', fontWeight: 600, lineHeight: '18px' }}>\n                        Planned\n                      </div>\n                    </div>\n                  </div>\n                </div>\n                <div id=\"8NN-0\" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '8px', paddingTop: '20px' }}>\n                  <div id=\"8NO-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-day-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '18px', fontWeight: 600, lineHeight: '25px' }}>\n                    24GB 8H HBM3E\n                  </div>\n                  <div id=\"8NP-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-day-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '13px', lineHeight: '22px' }}>\n                    Platform named in the source: NVIDIA H200\n                  </div>\n                </div>\n                <div id=\"8NQ-0\" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '4px', paddingTop: '20px' }}>\n                  <div id=\"8NR-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-day-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '13px', lineHeight: '22px' }}>\n                    Company source\n                  </div>\n                  <div id=\"8NS-0\" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '8px', minHeight: '44px' }}>\n                    <div id=\"8NT-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-day-accent)', fontFamily: 'var(--font-gmi-ui)', fontSize: '13px', lineHeight: '22px' }}>\n                      Read the source\n                    </div>\n                    <svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\" id=\"8NU-0\" style={{ flexShrink: '0', display: 'inline-block' }}>\n                      <path d=\"M14 4.5h5.5V10M19.5 4.5L11 13M17.5 14v5.5h-13v-13H10\" fill=\"none\" stroke=\"#245BFF\" strokeWidth=\"1.8\" strokeLinecap=\"round\" strokeLinejoin=\"round\" />\n                    </svg>\n                  </div>\n                </div>\n              </div>\n            </div>\n            <div id=\"8N2-0\" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '20px', paddingTop: '12px' }}>\n              <div id=\"8NX-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-day-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '13px', lineHeight: '22px' }}>\n                Historical source context — current delivery and revenue exposure are not established.\n              </div>\n              <div id=\"8NY-0\" style={{ alignItems: 'center', borderColor: 'var(--color-gmi-day-line)', borderRadius: '8px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '8px', justifyContent: 'center', minHeight: '44px', paddingBlock: '10px', paddingInline: '16px' }}>\n                <div id=\"8NZ-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-day-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '13px', fontWeight: 600, lineHeight: '20px' }}>\n                  Open company evidence\n                </div>\n                <svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\" id=\"8O0-0\" style={{ flexShrink: '0', display: 'inline-block' }}>\n                  <path d=\"M4.5 12h15M13.5 6l6 6-6 6\" fill=\"none\" stroke=\"#1C2430\" strokeWidth=\"1.8\" strokeLinecap=\"round\" strokeLinejoin=\"round\" />\n                </svg>\n              </div>\n            </div>\n          </div>\n          <div id=\"8P4-0\" style={{ backgroundColor: 'var(--color-gmi-day-raised)', borderColor: 'var(--color-gmi-day-line)', borderRadius: '12px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '20px', padding: '24px' }}>\n            <div id=\"8P5-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-day-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '18px', fontWeight: 600, lineHeight: '25px' }}>\n              What this evidence tells you\n            </div>\n            <div id=\"8P6-0\" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '8px' }}>\n              <div id=\"8P7-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-day-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', fontWeight: 600, lineHeight: '21px' }}>\n                A documented product connection\n              </div>\n              <div id=\"8P8-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-day-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '13px', lineHeight: '23px' }}>\n                Read the product, named platform and lifecycle together with the source date.\n              </div>\n            </div>\n            <div id=\"8P9-0\" style={{ borderTopColor: 'var(--color-gmi-day-line)', borderTopStyle: 'solid', borderTopWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '8px', paddingTop: '20px' }}>\n              <div id=\"8PA-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-day-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', fontWeight: 600, lineHeight: '21px' }}>\n                Not a live exposure map\n              </div>\n              <div id=\"8PB-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-day-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '13px', lineHeight: '23px' }}>\n                These records do not establish current delivery, revenue exposure or complete company coverage.\n              </div>\n            </div>\n            <div id=\"8PC-0\" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '8px' }}>\n              <div id=\"8PD-0\" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '8px', minHeight: '44px' }}>\n                <div id=\"8PE-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-day-accent)', fontFamily: 'var(--font-gmi-ui)', fontSize: '13px', lineHeight: '22px' }}>\n                  Coverage &amp; methodology\n                </div>\n                <svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\" id=\"8PF-0\" style={{ flexShrink: '0', display: 'inline-block' }}>\n                  <path d=\"M4.5 12h15M13.5 6l6 6-6 6\" fill=\"none\" stroke=\"#245BFF\" strokeWidth=\"1.8\" strokeLinecap=\"round\" strokeLinejoin=\"round\" />\n                </svg>\n              </div>\n              <div id=\"8PH-0\" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '8px', minHeight: '44px' }}>\n                <div id=\"8PI-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-day-accent)', fontFamily: 'var(--font-gmi-ui)', fontSize: '13px', lineHeight: '22px' }}>\n                  Explore all themes\n                </div>\n                <svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\" id=\"8PJ-0\" style={{ flexShrink: '0', display: 'inline-block' }}>\n                  <path d=\"M4.5 12h15M13.5 6l6 6-6 6\" fill=\"none\" stroke=\"#245BFF\" strokeWidth=\"1.8\" strokeLinecap=\"round\" strokeLinejoin=\"round\" />\n                </svg>\n              </div>\n            </div>\n          </div>\n        </div>\n      </div>\n    </div>\n  )"
+    },
+    {
+      "key": "C02",
+      "root": "8GG-0",
+      "shell": "8GH-0",
+      "w": 320,
+      "lang": "zh",
+      "theme": "night",
+      "state": "catalogue",
+      "name": "C02 · Company catalogue · ZH320 Noir",
+      "viewport_height": 844,
+      "jsx": "(\n    <div id=\"8GG-0\" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', fontSize: '12px', fontSynthesis: 'none', lineHeight: '16px', MozOsxFontSmoothing: 'grayscale', overflow: 'visible', overflowWrap: 'anywhere', WebkitFontSmoothing: 'antialiased' }}>\n      <div id=\"8J3-0\" style={{ backgroundColor: 'var(--color-gmi-night-canvas)', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', height: '844px', overflow: 'clip', width: '320px' }}>\n        <div id=\"8J4-0\" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', paddingBottom: '12px', paddingLeft: '16px', paddingRight: '88px', paddingTop: '16px' }}>\n          <div id=\"8J5-0\" style={{ alignContent: 'center', boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', fontWeight: 600, lineHeight: '20px', minHeight: '44px' }}>\n            GMI Explorer\n          </div>\n          <div id=\"8J6-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-zh)', fontSize: '24px', fontWeight: 600, lineHeight: '29px' }}>\n            公司证据\n          </div>\n          <div id=\"8J7-0\" style={{ boxSizing: 'border-box', display: 'flex', paddingTop: '8px' }}>\n            <div id=\"8J8-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-zh)', fontSize: '12px', lineHeight: '18px' }}>\n              快照日期 · 2026年11月3日\n            </div>\n          </div>\n        </div>\n        <div id=\"8J9-0\" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', paddingInline: '16px' }}>\n          <div id=\"8S8-0\" style={{ boxSizing: 'border-box', display: 'flex', gap: '4px' }}>\n            <div id=\"8S9-0\" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexGrow: '1', justifyContent: 'center', minHeight: '44px', minWidth: '0px', paddingBlock: '8px', paddingInline: '4px' }}>\n              <div id=\"8SA-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-zh)', fontSize: '13px', fontWeight: 600, lineHeight: '20px', textAlign: 'center' }}>\n                主题研究\n              </div>\n            </div>\n            <div id=\"8SB-0\" style={{ alignItems: 'center', backgroundColor: 'var(--color-gmi-night-raised)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '8px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexGrow: '1', justifyContent: 'center', minHeight: '44px', minWidth: '0px', paddingBlock: '8px', paddingInline: '4px' }}>\n              <div id=\"8SC-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-zh)', fontSize: '13px', fontWeight: 600, lineHeight: '20px', textAlign: 'center' }}>\n                公司证据\n              </div>\n            </div>\n            <div id=\"8SD-0\" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexGrow: '1', justifyContent: 'center', minHeight: '44px', minWidth: '0px', paddingBlock: '8px', paddingInline: '4px' }}>\n              <div id=\"8SE-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-zh)', fontSize: '13px', fontWeight: 600, lineHeight: '20px', textAlign: 'center' }}>\n                公司关系\n              </div>\n            </div>\n          </div>\n          <div id=\"8KI-0\" style={{ alignItems: 'center', borderBottomColor: 'var(--color-gmi-night-line)', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '4px', justifyContent: 'space-between', paddingBottom: '16px', paddingTop: '8px' }}>\n            <div id=\"8KJ-0\" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '8px', minHeight: '44px', paddingBlock: '8px', paddingInline: '4px' }}>\n              <svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\" id=\"8KK-0\" style={{ flexShrink: '0', display: 'inline-block' }}>\n                <path d=\"M9 6.5h11M9 12h11M9 17.5h11M4.5 6.5h.01M4.5 12h.01M4.5 17.5h.01\" fill=\"none\" stroke=\"#929BAA\" strokeWidth=\"1.8\" strokeLinecap=\"round\" />\n              </svg>\n              <div id=\"8KM-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-zh)', fontSize: '12px', lineHeight: '18px' }}>\n                完整索引\n              </div>\n            </div>\n            <div id=\"8KN-0\" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '8px', minHeight: '44px', paddingBlock: '8px', paddingInline: '4px' }}>\n              <div id=\"8KO-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-zh)', fontSize: '12px', lineHeight: '18px' }}>\n                覆盖与方法\n              </div>\n              <svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\" id=\"8KP-0\" style={{ flexShrink: '0', display: 'inline-block' }}>\n                <path d=\"M4.5 12h15M13.5 6l6 6-6 6\" fill=\"none\" stroke=\"#929BAA\" strokeWidth=\"1.8\" strokeLinecap=\"round\" strokeLinejoin=\"round\" />\n              </svg>\n            </div>\n          </div>\n        </div>\n        <div id=\"8JA-0\" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '20px', padding: '16px' }}>\n          <div id=\"8M4-0\" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '20px' }}>\n            <div id=\"8M5-0\" style={{ alignItems: 'center', backgroundColor: 'var(--color-gmi-night-surface)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '8px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '8px', minHeight: '44px', paddingBlock: '10px', paddingInline: '12px' }}>\n              <svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\" id=\"8M6-0\" style={{ flexShrink: '0', display: 'inline-block' }}>\n                <circle cx=\"11\" cy=\"11\" r=\"6.5\" fill=\"none\" stroke=\"#929BAA\" strokeWidth=\"1.8\" />\n                <path d=\"M16 16l4.5 4.5\" fill=\"none\" stroke=\"#929BAA\" strokeWidth=\"1.8\" strokeLinecap=\"round\" />\n              </svg>\n              <div id=\"8M9-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-zh)', fontSize: '13px', lineHeight: '20px' }}>\n                搜索公司、代码或产品\n              </div>\n            </div>\n            <div id=\"8MA-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-zh)', fontSize: '13px', lineHeight: '20px' }}>\n              有收录证据的公司：1 家\n            </div>\n          </div>\n          <div id=\"8N4-0\" style={{ backgroundColor: 'var(--color-gmi-night-surface)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '12px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', padding: '24px', width: '288px' }}>\n            <div id=\"8N5-0\" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '16px' }}>\n              <div id=\"8N6-0\" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '16px' }}>\n                <div id=\"8N7-0\" style={{ alignItems: 'center', backgroundColor: 'var(--color-gmi-night-raised)', borderRadius: '10px', boxSizing: 'border-box', display: 'flex', flexShrink: 0, height: '48px', justifyContent: 'center', minWidth: '48px', width: '48px' }}>\n                  <div id=\"8N8-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-mono)', fontSize: '14px', lineHeight: '20px' }}>\n                    MU\n                  </div>\n                </div>\n                <div id=\"8N9-0\" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '8px', minWidth: '0px' }}>\n                  <div id=\"8NA-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '11px', fontWeight: 600, letterSpacing: '0.08em', lineHeight: '16px' }}>\n                    MU · NASDAQ\n                  </div>\n                  <div id=\"8NB-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '18px', fontWeight: 600, lineHeight: '24px' }}>\n                    Micron Technology\n                  </div>\n                </div>\n              </div>\n              <div id=\"8NC-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-zh)', fontSize: '13px', lineHeight: '22px' }}>\n                已收录 1 条产品关联\n              </div>\n            </div>\n            <div id=\"8ND-0\" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', paddingTop: '12px' }}>\n              <div id=\"8O3-0\" style={{ borderTopColor: 'var(--color-gmi-night-line)', borderTopStyle: 'solid', borderTopWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', paddingTop: '20px' }}>\n                <div id=\"8O4-0\" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px' }}>\n                  <div id=\"8O5-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-zh)', fontSize: '13px', lineHeight: '22px' }}>\n                    HBM 与先进封装\n                  </div>\n                  <div id=\"8O6-0\" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', flexWrap: 'wrap', gap: '8px' }}>\n                    <div id=\"8O7-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-zh)', fontSize: '12px', lineHeight: '18px' }}>\n                      来源 · 2024年2月26日\n                    </div>\n                    <div id=\"8O8-0\" style={{ borderColor: 'var(--color-gmi-night-line)', borderRadius: '2px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', paddingBlock: '4px', paddingInline: '8px' }}>\n                      <div id=\"8O9-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-caution)', fontFamily: 'var(--font-gmi-zh)', fontSize: '12px', fontWeight: 600, lineHeight: '18px' }}>\n                        计划中\n                      </div>\n                    </div>\n                  </div>\n                </div>\n                <div id=\"8OA-0\" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '8px', paddingTop: '20px' }}>\n                  <div id=\"8OB-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '18px', fontWeight: 600, lineHeight: '25px' }}>\n                    24GB 8H HBM3E\n                  </div>\n                  <div id=\"8OC-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-zh)', fontSize: '13px', lineHeight: '22px' }}>\n                    来源记载的平台：NVIDIA H200\n                  </div>\n                </div>\n                <div id=\"8OD-0\" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '4px', paddingTop: '20px' }}>\n                  <div id=\"8OE-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-zh)', fontSize: '13px', lineHeight: '22px' }}>\n                    公司来源\n                  </div>\n                  <div id=\"8OF-0\" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '8px', minHeight: '44px' }}>\n                    <div id=\"8OG-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-accent)', fontFamily: 'var(--font-gmi-zh)', fontSize: '13px', lineHeight: '22px' }}>\n                      阅读来源\n                    </div>\n                    <svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\" id=\"8OH-0\" style={{ flexShrink: '0', display: 'inline-block' }}>\n                      <path d=\"M14 4.5h5.5V10M19.5 4.5L11 13M17.5 14v5.5h-13v-13H10\" fill=\"none\" stroke=\"#79AEFF\" strokeWidth=\"1.8\" strokeLinecap=\"round\" strokeLinejoin=\"round\" />\n                    </svg>\n                  </div>\n                </div>\n              </div>\n            </div>\n            <div id=\"8NE-0\" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '20px', paddingTop: '12px' }}>\n              <div id=\"8OK-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-zh)', fontSize: '13px', lineHeight: '22px' }}>\n                历史来源背景：尚未证实当前交付或营收敞口。\n              </div>\n              <div id=\"8OL-0\" style={{ alignItems: 'center', borderColor: 'var(--color-gmi-night-line)', borderRadius: '8px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '8px', justifyContent: 'center', minHeight: '44px', paddingBlock: '10px', paddingInline: '16px' }}>\n                <div id=\"8OM-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-zh)', fontSize: '13px', fontWeight: 600, lineHeight: '20px' }}>\n                  查看公司证据\n                </div>\n                <svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\" id=\"8ON-0\" style={{ flexShrink: '0', display: 'inline-block' }}>\n                  <path d=\"M4.5 12h15M13.5 6l6 6-6 6\" fill=\"none\" stroke=\"#D7DCE4\" strokeWidth=\"1.8\" strokeLinecap=\"round\" strokeLinejoin=\"round\" />\n                </svg>\n              </div>\n            </div>\n          </div>\n          <div id=\"8PM-0\" style={{ backgroundColor: 'var(--color-gmi-night-raised)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '12px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '20px', padding: '24px' }}>\n            <div id=\"8PN-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-zh)', fontSize: '18px', fontWeight: 600, lineHeight: '25px' }}>\n              如何理解这些证据\n            </div>\n            <div id=\"8PO-0\" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '8px' }}>\n              <div id=\"8PP-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-zh)', fontSize: '14px', fontWeight: 600, lineHeight: '21px' }}>\n                有据可查的产品关联\n              </div>\n              <div id=\"8PQ-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-zh)', fontSize: '13px', lineHeight: '23px' }}>\n                结合来源日期，查看产品、所述平台及其所处阶段。\n              </div>\n            </div>\n            <div id=\"8PR-0\" style={{ borderTopColor: 'var(--color-gmi-night-line)', borderTopStyle: 'solid', borderTopWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '8px', paddingTop: '20px' }}>\n              <div id=\"8PS-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-zh)', fontSize: '14px', fontWeight: 600, lineHeight: '21px' }}>\n                并非实时敞口图谱\n              </div>\n              <div id=\"8PT-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-zh)', fontSize: '13px', lineHeight: '23px' }}>\n                这些记录并不证实当前交付、营收敞口或完整的公司覆盖。\n              </div>\n            </div>\n            <div id=\"8PU-0\" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '8px' }}>\n              <div id=\"8PV-0\" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '8px', minHeight: '44px' }}>\n                <div id=\"8PW-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-accent)', fontFamily: 'var(--font-gmi-zh)', fontSize: '13px', lineHeight: '22px' }}>\n                  覆盖与方法\n                </div>\n                <svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\" id=\"8PX-0\" style={{ flexShrink: '0', display: 'inline-block' }}>\n                  <path d=\"M4.5 12h15M13.5 6l6 6-6 6\" fill=\"none\" stroke=\"#79AEFF\" strokeWidth=\"1.8\" strokeLinecap=\"round\" strokeLinejoin=\"round\" />\n                </svg>\n              </div>\n              <div id=\"8PZ-0\" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '8px', minHeight: '44px' }}>\n                <div id=\"8Q0-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-accent)', fontFamily: 'var(--font-gmi-zh)', fontSize: '13px', lineHeight: '22px' }}>\n                  浏览全部主题\n                </div>\n                <svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\" id=\"8Q1-0\" style={{ flexShrink: '0', display: 'inline-block' }}>\n                  <path d=\"M4.5 12h15M13.5 6l6 6-6 6\" fill=\"none\" stroke=\"#79AEFF\" strokeWidth=\"1.8\" strokeLinecap=\"round\" strokeLinejoin=\"round\" />\n                </svg>\n              </div>\n            </div>\n          </div>\n        </div>\n      </div>\n    </div>\n  )"
+    },
+    {
+      "key": "C03",
+      "root": "8DQ-0",
+      "shell": "8DR-0",
+      "w": 390,
+      "lang": "en",
+      "theme": "day",
+      "state": "no-match",
+      "name": "C03 · No company match · EN390 Day",
+      "viewport_height": 844,
+      "jsx": "(\n    <div id=\"8DQ-0\" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', fontSize: '12px', fontSynthesis: 'none', lineHeight: '16px', MozOsxFontSmoothing: 'grayscale', overflow: 'visible', overflowWrap: 'anywhere', WebkitFontSmoothing: 'antialiased' }}>\n      <div id=\"8JC-0\" style={{ backgroundColor: 'var(--color-gmi-day-canvas)', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', height: '844px', overflow: 'clip', width: '390px' }}>\n        <div id=\"8JD-0\" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', paddingBottom: '12px', paddingLeft: '16px', paddingRight: '88px', paddingTop: '16px' }}>\n          <div id=\"8JE-0\" style={{ alignContent: 'center', boxSizing: 'border-box', color: 'var(--color-gmi-day-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', fontWeight: 600, lineHeight: '20px', minHeight: '44px' }}>\n            GMI Explorer\n          </div>\n          <div id=\"8JF-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-day-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '24px', fontWeight: 700, lineHeight: '29px' }}>\n            Company evidence\n          </div>\n          <div id=\"8JG-0\" style={{ boxSizing: 'border-box', display: 'flex', paddingTop: '8px' }}>\n            <div id=\"8JH-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-day-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '12px', lineHeight: '18px' }}>\n              Snapshot · 3 Nov 2026\n            </div>\n          </div>\n        </div>\n        <div id=\"8JI-0\" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', paddingInline: '16px' }}>\n          <div id=\"8SG-0\" style={{ boxSizing: 'border-box', display: 'flex', gap: '4px' }}>\n            <div id=\"8SH-0\" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexGrow: '1', justifyContent: 'center', minHeight: '44px', minWidth: '0px', paddingBlock: '8px', paddingInline: '4px' }}>\n              <div id=\"8SI-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-day-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '13px', fontWeight: 600, lineHeight: '20px', textAlign: 'center' }}>\n                Theme research\n              </div>\n            </div>\n            <div id=\"8SJ-0\" style={{ alignItems: 'center', backgroundColor: 'var(--color-gmi-day-surface)', borderColor: 'var(--color-gmi-day-line)', borderRadius: '8px', borderStyle: 'solid', borderWidth: '1px', boxShadow: '#1822300D 0px 1px 2px', boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexGrow: '1', justifyContent: 'center', minHeight: '44px', minWidth: '0px', paddingBlock: '8px', paddingInline: '4px' }}>\n              <div id=\"8SK-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-day-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '13px', fontWeight: 600, lineHeight: '20px', textAlign: 'center' }}>\n                Company evidence\n              </div>\n            </div>\n            <div id=\"8SL-0\" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexGrow: '1', justifyContent: 'center', minHeight: '44px', minWidth: '0px', paddingBlock: '8px', paddingInline: '4px' }}>\n              <div id=\"8SM-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-day-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '13px', fontWeight: 600, lineHeight: '20px', textAlign: 'center' }}>\n                Relationships\n              </div>\n            </div>\n          </div>\n          <div id=\"8KZ-0\" style={{ alignItems: 'center', borderBottomColor: 'var(--color-gmi-day-line)', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '4px', justifyContent: 'space-between', paddingBottom: '16px', paddingTop: '8px' }}>\n            <div id=\"8L0-0\" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '8px', minHeight: '44px', paddingBlock: '8px', paddingInline: '4px' }}>\n              <svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\" id=\"8L1-0\" style={{ flexShrink: '0', display: 'inline-block' }}>\n                <path d=\"M9 6.5h11M9 12h11M9 17.5h11M4.5 6.5h.01M4.5 12h.01M4.5 17.5h.01\" fill=\"none\" stroke=\"#5D6B7E\" strokeWidth=\"1.8\" strokeLinecap=\"round\" />\n              </svg>\n              <div id=\"8L3-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-day-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '12px', lineHeight: '18px' }}>\n                Full index\n              </div>\n            </div>\n            <div id=\"8L4-0\" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '8px', minHeight: '44px', paddingBlock: '8px', paddingInline: '4px' }}>\n              <div id=\"8L5-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-day-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '12px', lineHeight: '18px' }}>\n                Coverage &amp; methodology\n              </div>\n              <svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\" id=\"8L6-0\" style={{ flexShrink: '0', display: 'inline-block' }}>\n                <path d=\"M4.5 12h15M13.5 6l6 6-6 6\" fill=\"none\" stroke=\"#5D6B7E\" strokeWidth=\"1.8\" strokeLinecap=\"round\" strokeLinejoin=\"round\" />\n              </svg>\n            </div>\n          </div>\n        </div>\n        <div id=\"8JJ-0\" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '20px', padding: '16px' }}>\n          <div id=\"8LQ-0\" style={{ boxSizing: 'border-box', display: 'flex' }}>\n            <div id=\"8LR-0\" style={{ alignItems: 'center', backgroundColor: 'var(--color-gmi-day-surface)', borderColor: 'var(--color-gmi-day-line)', borderRadius: '8px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '8px', minHeight: '44px', paddingBlock: '10px', paddingInline: '16px' }}>\n              <svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\" id=\"8LS-0\" style={{ display: 'inline-block', flexShrink: 0 }}>\n                <path d=\"M19.5 12h-15M10.5 6l-6 6 6 6\" fill=\"none\" stroke=\"#1C2430\" strokeWidth=\"1.8\" strokeLinecap=\"round\" strokeLinejoin=\"round\" />\n              </svg>\n              <div id=\"8LU-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-day-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '13px', lineHeight: '20px' }}>\n                Back to theme research\n              </div>\n            </div>\n          </div>\n          <div id=\"8MC-0\" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '20px' }}>\n            <div id=\"8MD-0\" style={{ alignItems: 'center', backgroundColor: 'var(--color-gmi-day-surface)', borderColor: 'var(--color-gmi-day-line)', borderRadius: '8px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '8px', minHeight: '44px', paddingBlock: '10px', paddingInline: '12px' }}>\n              <svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\" id=\"8ME-0\" style={{ flexShrink: '0', display: 'inline-block' }}>\n                <circle cx=\"11\" cy=\"11\" r=\"6.5\" fill=\"none\" stroke=\"#5D6B7E\" strokeWidth=\"1.8\" />\n                <path d=\"M16 16l4.5 4.5\" fill=\"none\" stroke=\"#5D6B7E\" strokeWidth=\"1.8\" strokeLinecap=\"round\" />\n              </svg>\n              <div id=\"8MH-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-day-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '13px', lineHeight: '20px' }}>\n                TSLA\n              </div>\n            </div>\n            <div id=\"8MI-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-day-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '13px', lineHeight: '20px' }}>\n              0 matching companies\n            </div>\n          </div>\n          <div id=\"8OQ-0\" style={{ backgroundColor: 'var(--color-gmi-day-surface)', borderColor: 'var(--color-gmi-day-line)', borderRadius: '14px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', padding: '20px' }}>\n            <div id=\"8OR-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-day-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '24px', fontWeight: 700, lineHeight: '30px' }}>\n              No matching company\n            </div>\n            <div id=\"8OS-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-day-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', lineHeight: '24px' }}>\n              Try a company name, ticker or product. This catalogue includes only the evidence currently on file.\n            </div>\n            <div id=\"8OT-0\" style={{ boxSizing: 'border-box', display: 'flex' }}>\n              <div id=\"8OU-0\" style={{ alignItems: 'center', backgroundColor: 'var(--color-gmi-day-raised)', borderColor: 'var(--color-gmi-day-line)', borderRadius: '8px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', justifyContent: 'center', minHeight: '44px', paddingBlock: '10px', paddingInline: '16px' }}>\n                <div id=\"8OV-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-day-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '13px', fontWeight: 600, lineHeight: '20px' }}>\n                  Clear search\n                </div>\n              </div>\n            </div>\n          </div>\n          <div id=\"8Q4-0\" style={{ backgroundColor: 'var(--color-gmi-day-raised)', borderColor: 'var(--color-gmi-day-line)', borderRadius: '12px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '20px', padding: '24px' }}>\n            <div id=\"8Q5-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-day-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '18px', fontWeight: 600, lineHeight: '25px' }}>\n              What this evidence tells you\n            </div>\n            <div id=\"8Q6-0\" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '8px' }}>\n              <div id=\"8Q7-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-day-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', fontWeight: 600, lineHeight: '21px' }}>\n                A documented product connection\n              </div>\n              <div id=\"8Q8-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-day-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '13px', lineHeight: '23px' }}>\n                Read the product, named platform and lifecycle together with the source date.\n              </div>\n            </div>\n            <div id=\"8Q9-0\" style={{ borderTopColor: 'var(--color-gmi-day-line)', borderTopStyle: 'solid', borderTopWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '8px', paddingTop: '20px' }}>\n              <div id=\"8QA-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-day-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', fontWeight: 600, lineHeight: '21px' }}>\n                Not a live exposure map\n              </div>\n              <div id=\"8QB-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-day-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '13px', lineHeight: '23px' }}>\n                These records do not establish current delivery, revenue exposure or complete company coverage.\n              </div>\n            </div>\n            <div id=\"8QC-0\" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '8px' }}>\n              <div id=\"8QD-0\" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '8px', minHeight: '44px' }}>\n                <div id=\"8QE-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-day-accent)', fontFamily: 'var(--font-gmi-ui)', fontSize: '13px', lineHeight: '22px' }}>\n                  Coverage &amp; methodology\n                </div>\n                <svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\" id=\"8QF-0\" style={{ flexShrink: '0', display: 'inline-block' }}>\n                  <path d=\"M4.5 12h15M13.5 6l6 6-6 6\" fill=\"none\" stroke=\"#245BFF\" strokeWidth=\"1.8\" strokeLinecap=\"round\" strokeLinejoin=\"round\" />\n                </svg>\n              </div>\n              <div id=\"8QH-0\" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '8px', minHeight: '44px' }}>\n                <div id=\"8QI-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-day-accent)', fontFamily: 'var(--font-gmi-ui)', fontSize: '13px', lineHeight: '22px' }}>\n                  Explore all themes\n                </div>\n                <svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\" id=\"8QJ-0\" style={{ flexShrink: '0', display: 'inline-block' }}>\n                  <path d=\"M4.5 12h15M13.5 6l6 6-6 6\" fill=\"none\" stroke=\"#245BFF\" strokeWidth=\"1.8\" strokeLinecap=\"round\" strokeLinejoin=\"round\" />\n                </svg>\n              </div>\n            </div>\n          </div>\n        </div>\n      </div>\n    </div>\n  )"
+    },
+    {
+      "key": "C04",
+      "root": "8BC-0",
+      "shell": "8BD-0",
+      "w": 320,
+      "lang": "zh",
+      "theme": "night",
+      "state": "empty-fixture",
+      "name": "C04 · Empty catalogue fixture · ZH320 Noir",
+      "viewport_height": 844,
+      "jsx": "(\n    <div id=\"8BC-0\" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', fontSize: '12px', fontSynthesis: 'none', lineHeight: '16px', MozOsxFontSmoothing: 'grayscale', overflow: 'visible', overflowWrap: 'anywhere', WebkitFontSmoothing: 'antialiased' }}>\n      <div id=\"8JL-0\" style={{ backgroundColor: 'var(--color-gmi-night-canvas)', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', height: '844px', overflow: 'clip', width: '320px' }}>\n        <div id=\"8JM-0\" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', paddingBottom: '12px', paddingLeft: '16px', paddingRight: '88px', paddingTop: '16px' }}>\n          <div id=\"8JN-0\" style={{ alignContent: 'center', boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', fontWeight: 600, lineHeight: '20px', minHeight: '44px' }}>\n            GMI Explorer\n          </div>\n          <div id=\"8JO-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-zh)', fontSize: '24px', fontWeight: 600, lineHeight: '29px' }}>\n            公司证据\n          </div>\n          <div id=\"8JP-0\" style={{ boxSizing: 'border-box', display: 'flex', paddingTop: '8px' }}>\n            <div id=\"8JQ-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-zh)', fontSize: '12px', lineHeight: '18px' }}>\n              快照日期 · 2026年11月3日\n            </div>\n          </div>\n        </div>\n        <div id=\"8JR-0\" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', paddingInline: '16px' }}>\n          <div id=\"8SO-0\" style={{ boxSizing: 'border-box', display: 'flex', gap: '4px' }}>\n            <div id=\"8SP-0\" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexGrow: '1', justifyContent: 'center', minHeight: '44px', minWidth: '0px', paddingBlock: '8px', paddingInline: '4px' }}>\n              <div id=\"8SQ-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-zh)', fontSize: '13px', fontWeight: 600, lineHeight: '20px', textAlign: 'center' }}>\n                主题研究\n              </div>\n            </div>\n            <div id=\"8SR-0\" style={{ alignItems: 'center', backgroundColor: 'var(--color-gmi-night-raised)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '8px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexGrow: '1', justifyContent: 'center', minHeight: '44px', minWidth: '0px', paddingBlock: '8px', paddingInline: '4px' }}>\n              <div id=\"8SS-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-zh)', fontSize: '13px', fontWeight: 600, lineHeight: '20px', textAlign: 'center' }}>\n                公司证据\n              </div>\n            </div>\n            <div id=\"8ST-0\" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexGrow: '1', justifyContent: 'center', minHeight: '44px', minWidth: '0px', paddingBlock: '8px', paddingInline: '4px' }}>\n              <div id=\"8SU-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-zh)', fontSize: '13px', fontWeight: 600, lineHeight: '20px', textAlign: 'center' }}>\n                公司关系\n              </div>\n            </div>\n          </div>\n          <div id=\"8LG-0\" style={{ alignItems: 'center', borderBottomColor: 'var(--color-gmi-night-line)', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '4px', justifyContent: 'space-between', paddingBottom: '16px', paddingTop: '8px' }}>\n            <div id=\"8LH-0\" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '8px', minHeight: '44px', paddingBlock: '8px', paddingInline: '4px' }}>\n              <svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\" id=\"8LI-0\" style={{ flexShrink: '0', display: 'inline-block' }}>\n                <path d=\"M9 6.5h11M9 12h11M9 17.5h11M4.5 6.5h.01M4.5 12h.01M4.5 17.5h.01\" fill=\"none\" stroke=\"#929BAA\" strokeWidth=\"1.8\" strokeLinecap=\"round\" />\n              </svg>\n              <div id=\"8LK-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-zh)', fontSize: '12px', lineHeight: '18px' }}>\n                完整索引\n              </div>\n            </div>\n            <div id=\"8LL-0\" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '8px', minHeight: '44px', paddingBlock: '8px', paddingInline: '4px' }}>\n              <div id=\"8LM-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-zh)', fontSize: '12px', lineHeight: '18px' }}>\n                覆盖与方法\n              </div>\n              <svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\" id=\"8LN-0\" style={{ flexShrink: '0', display: 'inline-block' }}>\n                <path d=\"M4.5 12h15M13.5 6l6 6-6 6\" fill=\"none\" stroke=\"#929BAA\" strokeWidth=\"1.8\" strokeLinecap=\"round\" strokeLinejoin=\"round\" />\n              </svg>\n            </div>\n          </div>\n        </div>\n        <div id=\"8JS-0\" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '20px', padding: '16px' }}>\n          <div id=\"8MK-0\" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '20px' }}>\n            <div id=\"8ML-0\" style={{ alignItems: 'center', backgroundColor: 'var(--color-gmi-night-surface)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '8px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '8px', minHeight: '44px', paddingBlock: '10px', paddingInline: '12px' }}>\n              <svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\" id=\"8MM-0\" style={{ flexShrink: '0', display: 'inline-block' }}>\n                <circle cx=\"11\" cy=\"11\" r=\"6.5\" fill=\"none\" stroke=\"#929BAA\" strokeWidth=\"1.8\" />\n                <path d=\"M16 16l4.5 4.5\" fill=\"none\" stroke=\"#929BAA\" strokeWidth=\"1.8\" strokeLinecap=\"round\" />\n              </svg>\n              <div id=\"8MP-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-zh)', fontSize: '13px', lineHeight: '20px' }}>\n                搜索公司、代码或产品\n              </div>\n            </div>\n            <div id=\"8MQ-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-zh)', fontSize: '13px', lineHeight: '20px' }}>\n              有收录证据的公司：0 家\n            </div>\n          </div>\n          <div id=\"8OX-0\" style={{ backgroundColor: 'var(--color-gmi-night-surface)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '14px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', padding: '20px' }}>\n            <div id=\"8OY-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-zh)', fontSize: '24px', fontWeight: 600, lineHeight: '30px' }}>\n              暂无公司证据\n            </div>\n            <div id=\"8OZ-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-zh)', fontSize: '14px', lineHeight: '24px' }}>\n              此快照暂无可用的经审核产品关联。完整的主题分类体系仍可浏览。\n            </div>\n            <div id=\"8P0-0\" style={{ boxSizing: 'border-box', display: 'flex', paddingTop: '4px' }}>\n              <div id=\"8P1-0\" style={{ alignItems: 'center', backgroundColor: 'var(--color-gmi-night-raised)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '8px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', justifyContent: 'center', minHeight: '44px', paddingBlock: '10px', paddingInline: '16px' }}>\n                <div id=\"8P2-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-zh)', fontSize: '13px', fontWeight: 600, lineHeight: '20px' }}>\n                  探索主题\n                </div>\n              </div>\n            </div>\n          </div>\n          <div id=\"8QM-0\" style={{ backgroundColor: 'var(--color-gmi-night-raised)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '12px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '20px', padding: '24px' }}>\n            <div id=\"8QN-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-zh)', fontSize: '18px', fontWeight: 600, lineHeight: '25px' }}>\n              如何理解这些证据\n            </div>\n            <div id=\"8QO-0\" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '8px' }}>\n              <div id=\"8QP-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-zh)', fontSize: '14px', fontWeight: 600, lineHeight: '21px' }}>\n                有据可查的产品关联\n              </div>\n              <div id=\"8QQ-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-zh)', fontSize: '13px', lineHeight: '23px' }}>\n                结合来源日期，查看产品、所述平台及其所处阶段。\n              </div>\n            </div>\n            <div id=\"8QR-0\" style={{ borderTopColor: 'var(--color-gmi-night-line)', borderTopStyle: 'solid', borderTopWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '8px', paddingTop: '20px' }}>\n              <div id=\"8QS-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-zh)', fontSize: '14px', fontWeight: 600, lineHeight: '21px' }}>\n                并非实时敞口图谱\n              </div>\n              <div id=\"8QT-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-zh)', fontSize: '13px', lineHeight: '23px' }}>\n                这些记录并不证实当前交付、营收敞口或完整的公司覆盖。\n              </div>\n            </div>\n            <div id=\"8QU-0\" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '8px' }}>\n              <div id=\"8QV-0\" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '8px', minHeight: '44px' }}>\n                <div id=\"8QW-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-accent)', fontFamily: 'var(--font-gmi-zh)', fontSize: '13px', lineHeight: '22px' }}>\n                  覆盖与方法\n                </div>\n                <svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\" id=\"8QX-0\" style={{ flexShrink: '0', display: 'inline-block' }}>\n                  <path d=\"M4.5 12h15M13.5 6l6 6-6 6\" fill=\"none\" stroke=\"#79AEFF\" strokeWidth=\"1.8\" strokeLinecap=\"round\" strokeLinejoin=\"round\" />\n                </svg>\n              </div>\n              <div id=\"8QZ-0\" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '8px', minHeight: '44px' }}>\n                <div id=\"8R0-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-accent)', fontFamily: 'var(--font-gmi-zh)', fontSize: '13px', lineHeight: '22px' }}>\n                  浏览全部主题\n                </div>\n                <svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\" id=\"8R1-0\" style={{ flexShrink: '0', display: 'inline-block' }}>\n                  <path d=\"M4.5 12h15M13.5 6l6 6-6 6\" fill=\"none\" stroke=\"#79AEFF\" strokeWidth=\"1.8\" strokeLinecap=\"round\" strokeLinejoin=\"round\" />\n                </svg>\n              </div>\n            </div>\n          </div>\n        </div>\n      </div>\n    </div>\n  )"
+    },
+    {
+      "key": "C05",
+      "root": "8R4-0",
+      "name": "C05 · Company evidence card · Complete EN",
+      "jsx": "(\n    <div id=\"8R4-0\" style={{ backgroundColor: 'var(--color-gmi-day-surface)', borderColor: 'var(--color-gmi-day-line)', borderRadius: '12px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', fontSize: '12px', fontSynthesis: 'none', gap: '12px', lineHeight: '16px', MozOsxFontSmoothing: 'grayscale', overflowWrap: 'anywhere', padding: '24px', WebkitFontSmoothing: 'antialiased', width: '358px' }}>\n      <div id=\"8RS-0\" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '16px' }}>\n        <div id=\"8RU-0\" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '16px' }}>\n          <div id=\"8RY-0\" style={{ alignItems: 'center', backgroundColor: 'var(--color-gmi-day-raised)', borderRadius: '10px', boxSizing: 'border-box', display: 'flex', flexShrink: 0, height: '48px', justifyContent: 'center', minWidth: '48px', width: '48px' }}>\n            <div id=\"8RZ-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-day-text)', fontFamily: 'var(--font-gmi-mono)', fontSize: '14px', lineHeight: '20px' }}>\n              MU\n            </div>\n          </div>\n          <div id=\"8RV-0\" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '8px', minWidth: '0px' }}>\n            <div id=\"8RX-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-day-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '11px', fontWeight: 600, letterSpacing: '0.08em', lineHeight: '16px' }}>\n              MU · NASDAQ\n            </div>\n            <div id=\"8RW-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-day-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '18px', fontWeight: 600, lineHeight: '24px' }}>\n              Micron Technology\n            </div>\n          </div>\n        </div>\n        <div id=\"8RT-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-day-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '13px', lineHeight: '22px' }}>\n          1 documented product connection\n        </div>\n      </div>\n      <div id=\"8RB-0\" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', paddingTop: '12px' }}>\n        <div id=\"8RC-0\" style={{ borderTopColor: 'var(--color-gmi-day-line)', borderTopStyle: 'solid', borderTopWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', paddingTop: '20px' }}>\n          <div id=\"8RM-0\" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px' }}>\n            <div id=\"8RR-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-day-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '13px', lineHeight: '22px' }}>\n              HBM &amp; advanced packaging\n            </div>\n            <div id=\"8RN-0\" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', flexWrap: 'wrap', gap: '8px' }}>\n              <div id=\"8RQ-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-day-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '12px', lineHeight: '18px' }}>\n                Source · 26 Feb 2024\n              </div>\n              <div id=\"8RO-0\" style={{ borderColor: 'var(--color-gmi-day-line)', borderRadius: '2px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', paddingBlock: '4px', paddingInline: '8px' }}>\n                <div id=\"8RP-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-day-caution)', fontFamily: 'var(--font-gmi-ui)', fontSize: '12px', fontWeight: 600, lineHeight: '18px' }}>\n                  Planned\n                </div>\n              </div>\n            </div>\n          </div>\n          <div id=\"8RJ-0\" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '8px', paddingTop: '20px' }}>\n            <div id=\"8RL-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-day-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '18px', fontWeight: 600, lineHeight: '25px' }}>\n              24GB 8H HBM3E\n            </div>\n            <div id=\"8RK-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-day-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '13px', lineHeight: '22px' }}>\n              Platform named in the source: NVIDIA H200\n            </div>\n          </div>\n          <div id=\"8RD-0\" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '4px', paddingTop: '20px' }}>\n            <div id=\"8RI-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-day-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '13px', lineHeight: '22px' }}>\n              Company source\n            </div>\n            <div id=\"8RE-0\" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '8px', minHeight: '44px' }}>\n              <div id=\"8RH-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-day-accent)', fontFamily: 'var(--font-gmi-ui)', fontSize: '13px', lineHeight: '22px' }}>\n                Read the source\n              </div>\n              <svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\" id=\"8RF-0\" style={{ flexShrink: '0', display: 'inline-block' }}>\n                <path d=\"M14 4.5h5.5V10M19.5 4.5L11 13M17.5 14v5.5h-13v-13H10\" fill=\"none\" stroke=\"#245BFF\" strokeWidth=\"1.8\" strokeLinecap=\"round\" strokeLinejoin=\"round\" />\n              </svg>\n            </div>\n          </div>\n        </div>\n      </div>\n      <div id=\"8R5-0\" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '20px', paddingTop: '12px' }}>\n        <div id=\"8RA-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-day-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '13px', lineHeight: '22px' }}>\n          Historical source context — current delivery and revenue exposure are not established.\n        </div>\n        <div id=\"8R6-0\" style={{ alignItems: 'center', borderColor: 'var(--color-gmi-day-line)', borderRadius: '8px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '8px', justifyContent: 'center', minHeight: '44px', paddingBlock: '10px', paddingInline: '16px' }}>\n          <div id=\"8R9-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-day-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '13px', fontWeight: 600, lineHeight: '20px' }}>\n            Open company evidence\n          </div>\n          <svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\" id=\"8R7-0\" style={{ flexShrink: '0', display: 'inline-block' }}>\n            <path d=\"M4.5 12h15M13.5 6l6 6-6 6\" fill=\"none\" stroke=\"#1C2430\" strokeWidth=\"1.8\" strokeLinecap=\"round\" strokeLinejoin=\"round\" />\n          </svg>\n        </div>\n      </div>\n    </div>\n  )"
+    }
+  ],
+  "build": {
+    "root": "7M9-0",
+    "page": "p-7-0",
+    "module": "8SW-0",
+    "modules": 15,
+    "div_nodes": 48,
+    "intentional_text_updates": [
+      {
+        "nodeId": "7MV-0",
+        "html": "Candidate #10676 @49d47033 preserves the existing scripts/build_gmi_explorer.py admission of one exact Micron product observation. The card contains published_date, public URL, bilingual source label, receipt, source key/hash, planned lifecycle, product and platform. 26 Feb 2024 is a date-only publication. First recorded remains a separate theme_links.first_seen value; retrieval and review timestamps are not card fields. Do not infer current delivery, amount or revenue exposure."
+      },
+      {
+        "nodeId": "7MZ-0",
+        "html": "Implemented in templates/gmi.js and identical site/gmi.js · current blob 1facd1b2edcb062422ff65f22689edd7ae160cf8 · PR10676 @49d47033f4d758af2ec7212fccee04d762fec956. Only the locale observer passes sync(true). A one-render capture matches exact theme + receipt + source key + source text hash; every member of a duplicate receipt-ID group is ineligible. Native details restore only exact current matches, regardless of order, then discard the capture. No storage, request, URL field or research-state owner was added; evidence=1 remains the existing filter."
+      },
+      {
+        "nodeId": "7NE-0",
+        "html": "15 · Proof and release boundary"
+      },
+      {
+        "nodeId": "7NF-0",
+        "html": "Company entry passes 29 named cases in 29 fresh anonymous contexts: 11 header scenarios, six company focus/count paths, four with JavaScript actually disabled, two real-renderer empty-catalogue fixtures, two source-context cases, two real issuer/return journeys and two category-picker regressions. Native Clear click/Enter/Space, focus before hide, real back/forward, localized count scope, whitespace, repeated-write suppression and surviving focus pass. Nine final company captures were inspected.<br /><br />Across 44 matched header layouts, search begins 145.98–215.14 px sooner. Company evidence already had one snapshot; it remains separate from each source date. Baseline records 11 original-header observations and two expected Reset focus failures. The final count wording supersedes a preserved earlier 29-case pass. C04 and the 44 px Brain/stale clocks are explicit fixtures.<br /><br />Earlier category proof at 9bdc486c remains 24 cases; earlier index-header proof at 20179e31 remains 23 cases/66 matched layouts. These are dated, exact-source receipts, not claims of a newly rerun whole application. Current company rendering changes only company HTML and paired JS/CSS; all six other HTML pages, including index/issuer, remain exact.<br /><br />PR10676 @49d47033 stays Draft with original model/release holds. All eleven files read back exactly; DESIGN_RECORD §§11.19–11.30 and dated receipts separate the proof. Anonymous component/browser checks do not establish full shared shell/fonts, OS-native select popup, spoken AT, shared Brain runtime, live account/admission, current hosted CI or deployment."
+      }
+    ],
+    "jsx": "(\n    <div id=\"7M9-0\" style={{ backgroundColor: 'var(--color-gmi-night-canvas)', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', fontSynthesis: 'none', gap: '20px', MozOsxFontSmoothing: 'grayscale', overflowWrap: 'anywhere', padding: '32px', WebkitFontSmoothing: 'antialiased', width: '1080px' }}>\n      <div id=\"7MA-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-accent)', fontFamily: 'var(--font-gmi-ui)', fontSize: '12px', fontWeight: 600, letterSpacing: '0.06em', lineHeight: '18px' }}>\n        S06 · BUILD · RECEIPTS, KEYBOARD &amp; SEARCH IMPLEMENTED · 09 NOV 2026\n      </div>\n      <div id=\"7MB-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '28px', fontWeight: 600, lineHeight: '36px' }}>\n        Research that keeps your place.\n      </div>\n      <div id=\"7MP-0\" style={{ backgroundColor: 'var(--color-gmi-night-surface)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '14px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', padding: '24px' }}>\n        <div id=\"7MQ-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '18px', fontWeight: 600, lineHeight: '26px' }}>\n          01 · Keep the two native disclosures distinct\n        </div>\n        <div id=\"7MR-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', lineHeight: '22px' }}>\n          Source receipt / 来源凭证 uses .gmi-evidence-receipt: the selected card’s Record, Source key and Source text hash. Theme details / 主题详情 uses .gmi-topic-receipt: taxonomy paths, Core/Extended scope and value-chain position. Keep the current publication date, planned lifecycle, source link, company action, related topics and coverage intact. No inspector, extra route or request is needed to open either disclosure.\n        </div>\n      </div>\n      <div id=\"7MT-0\" style={{ backgroundColor: 'var(--color-gmi-night-surface)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '14px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', padding: '24px' }}>\n        <div id=\"7MU-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '18px', fontWeight: 600, lineHeight: '26px' }}>\n          02 · Exact public fields; separate clocks\n        </div>\n        <div id=\"7MV-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', lineHeight: '22px' }}>\n          Candidate #10676 @49d47033 preserves the existing scripts/build_gmi_explorer.py admission of one exact Micron product observation. The card contains published_date, public URL, bilingual source label, receipt, source key/hash, planned lifecycle, product and platform. 26 Feb 2024 is a date-only publication. First recorded remains a separate theme_links.first_seen value; retrieval and review timestamps are not card fields. Do not infer current delivery, amount or revenue exposure.\n        </div>\n      </div>\n      <div id=\"7MX-0\" style={{ backgroundColor: 'var(--color-gmi-night-surface)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '14px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', padding: '24px' }}>\n        <div id=\"7MY-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '18px', fontWeight: 600, lineHeight: '26px' }}>\n          03 · Preserve locale state inside the existing renderer\n        </div>\n        <div id=\"7MZ-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', lineHeight: '22px' }}>\n          Implemented in templates/gmi.js and identical site/gmi.js · current blob 1facd1b2edcb062422ff65f22689edd7ae160cf8 · PR10676 @49d47033f4d758af2ec7212fccee04d762fec956. Only the locale observer passes sync(true). A one-render capture matches exact theme + receipt + source key + source text hash; every member of a duplicate receipt-ID group is ineligible. Native details restore only exact current matches, regardless of order, then discard the capture. No storage, request, URL field or research-state owner was added; evidence=1 remains the existing filter.\n        </div>\n      </div>\n      <div id=\"7N1-0\" style={{ backgroundColor: 'var(--color-gmi-night-surface)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '14px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', padding: '24px' }}>\n        <div id=\"7N2-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '18px', fontWeight: 600, lineHeight: '26px' }}>\n          04 · Preserve receipt focus across languages\n        </div>\n        <div id=\"7N3-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', lineHeight: '22px' }}>\n          On a locale-only receipt redraw, keep focus on any surviving control. Restore only a previously focused node that was removed, and only while focus remains on the body. Source/company actions must match both role and the complete destination after the existing navigation rewrite. A changed or missing action falls back to that receipt’s summary; an absent, changed or ambiguous record uses the current focusable topic heading. Native summary keeps Enter/Space and ordinary Tab behavior; disclosure state grants no source, selection or navigation authority.\n        </div>\n      </div>\n      <div id=\"7N5-0\" style={{ backgroundColor: 'var(--color-gmi-night-surface)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '14px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', padding: '24px' }}>\n        <div id=\"7N6-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '18px', fontWeight: 600, lineHeight: '26px' }}>\n          05 · Keep recovery at the serving boundary\n        </div>\n        <div id=\"7N7-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', lineHeight: '22px', whiteSpace: 'pre-wrap' }}>\n          gmi_return carries only the qualified theme/company catalogue context, a bounded query and at most one upstream theme return; it does not capture an immutable source snapshot, exact opener or scroll. Keep stale-issuer deletion. Once the guarded publisher propagates that deletion, standalone HTML reaches the normal missing-file response after the existing access gate. Do not create a replacement issuer page.<br />At the inspected Terminal source, no GMI route is admitted; the existing route boundary uses notFound(). For a separately admitted route, a missing qualified bridge reaches the existing 15-second failure boundary with Retry / Open original; a registry mismatch uses refresh. Neither proves withdrawal. Access restrictions, missing files and routing eligibility need distinct evidence.<br />Future recovery belongs to the existing serving/shell owner, must retain only permitted return context and cannot depend on JavaScript in a deleted document. Qualified against Macro @071ed19f and Terminal @4e868da4. Installed flags, live responses and the separately held registry proposal remain unverified.\n        </div>\n      </div>\n      <div id=\"7N9-0\" style={{ backgroundColor: 'var(--color-gmi-night-surface)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '14px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', padding: '24px' }}>\n        <div id=\"7NA-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '18px', fontWeight: 600, lineHeight: '26px' }}>\n          06 · Responsive implementation and useful motion\n        </div>\n        <div id=\"7NB-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', lineHeight: '22px' }}>\n          Both GMI stylesheets retain a 44 px minimum for native summaries. The production macro renders Theme details / 主题详情 separately from Source receipt / 来源凭证, including without JavaScript. Receipt identifiers remain exact. Primary navigation labels now wrap at narrow widths; the 320 px English document fits its viewport with 44 px targets. Category shortcuts also measure at least 44 px. Their mobile sticky-header and destination offsets are paired at 61 px, keeping headers visible below the rail. Preserve native expansion and immediate reduced-motion behavior. The answer-side recovery bar wraps at 320 px and retains a 44 px action.\n        </div>\n      </div>\n      <div id=\"7NH-0\" style={{ backgroundColor: 'var(--color-gmi-night-surface)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '14px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', padding: '24px' }}>\n        <div id=\"7NJ-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '18px', fontWeight: 600, lineHeight: '26px' }}>\n          07 · Copy belongs to its initiating view\n        </div>\n        <div id=\"7NI-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', lineHeight: '22px', whiteSpace: 'pre-wrap' }}>\n          One attempt captures the complete normalized URL and selected theme. Pending shows Copying… / 正在复制…. Success, failure and finally may update only that same current attempt. Selection, filter URL changes, history, lens changes and page exit retire it, even after an A→B→A return. Each success timer belongs to its own attempt; an old completion cannot enable a newer action.<br />A current failure shows the captured URL in the existing manual fallback. Later focus, pointer intent or window blur relinquishes automatic focus; body focus alone grants nothing. Locale-only redraws preserve the current URL and translate owned feedback. A prior system clipboard write cannot be cancelled; no corrective write, queue, retry or persistence was added.\n        </div>\n      </div>\n      <div id=\"7NK-0\" style={{ backgroundColor: 'var(--color-gmi-night-surface)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '14px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', padding: '24px' }}>\n        <div id=\"7NM-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '18px', fontWeight: 600, lineHeight: '26px' }}>\n          08 · One keyboard entry; predictable filtering\n        </div>\n        <div id=\"7NL-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', lineHeight: '22px', whiteSpace: 'pre-wrap' }}>\n          The enhanced tree has one sequential row entry, with arrows moving among visible rows. Hidden and empty categories cannot retain a Tab stop. Its existing bilingual heading supplies the accessible name. Native theme links keep their destinations and modified-click behavior; information buttons and See all stay separately reachable. Without JavaScript, the original 371 link attributes remain.<br /><br />Plain Enter/Space on a leaf delegates to the existing topic-selection owner. Preserve parent expansion, modifiers, IME and repeat handling. Before search hides active row content, focus the search input; before collapse hides a descendant, focus its nearest visible ancestor. Preserve surviving and unrelated focus. Clearing a zero-result search restores expansion and uses the first visible row as the next entry.<br /><br />Index shortcuts follow their filtered groups. Hidden, detached or unowned targets cannot replace the parameter fragment; reject stale observer entries before changing current-link state. Return focus before the index hides an active row, category or shortcut. Query, lens, open state and return context keep their existing owners.<br /><br />The tree’s existing no-match paragraph now sits inside one persistent polite, atomic status region. Keep focus in search, preserve its bilingual text and skip unchanged visibility writes. Clear hides the paragraph while the status owner remains mounted. A scoped CSS rule offsets the extra empty flex gap: normal spacing stays 12 px; the visible message keeps its original margins. No second announcer, timer, locale observer or query state is needed.\n        </div>\n      </div>\n      <div id=\"7NN-0\" style={{ backgroundColor: 'var(--color-gmi-night-surface)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '14px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', padding: '24px' }}>\n        <div id=\"7NP-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '18px', fontWeight: 600, lineHeight: '26px' }}>\n          09 · Count the results the user can see\n        </div>\n        <div id=\"7NO-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', lineHeight: '22px', whiteSpace: 'pre-wrap' }}>\n          The existing indexRender pass derives one compact status plus category and subgroup counts from its matching rows. HBM shows 2 results / 2 个结果, category counts of two, and one result in each visible subgroup. At zero, use the existing no-match wording in the same live-status region. The query is already visible; do not repeat it in a paragraph.<br /><br />Generated data-gmi-total attributes restore the original totals on Clear. Keep the footer explicitly labelled Full index / 完整索引. Hide the static core/extended breakdown while searching: tier and held/admitted review status are separate dimensions, so never infer one from the other. Existing bilingual spans handle language changes. Matching-row counts do not establish company evidence, completeness, freshness or admission.<br /><br />The index now keeps one persistent polite/atomic wrapper around its existing visual feedback paragraph. Move the status role off the hidden paragraph; retain its count/no-match spans and language owner. indexHidden still releases owned focus before a hide request, then skips unchanged visibility writes. Repeated equivalent searches and duplicate language notifications make no feedback mutations. The whole paragraph controls empty-gap compensation: 12 px normally and after Clear; zero-result feedback retains its space.\n        </div>\n      </div>\n      <div id=\"7SR-0\" style={{ backgroundColor: 'var(--color-gmi-night-surface)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '14px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', padding: '24px' }}>\n        <div id=\"7ST-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '18px', fontWeight: 600, lineHeight: '26px' }}>\n          10 · Recover without leaving the answer\n        </div>\n        <div id=\"7SS-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', lineHeight: '22px', whiteSpace: 'pre-wrap' }}>\n          Show “This topic is outside your filters.” / “当前主题不在筛选范围内。” with Clear filters / 清除筛选 only when a valid selected topic is excluded. Invalid-topic and failed-data states keep their own explanations, without this unrelated action. Generated markup starts hidden when JavaScript is unavailable.<br /><br />Join the existing data-topic-reset handler. Clear Browse query/category/scope/evidence, retain the selected theme, and use the current replace-URL path to preserve lens and return context and retire copy feedback. Do not select or rerender the answer: retain evidence-node identity, exact source fields and open receipts.<br /><br />The answer-side caller returns focus to the visible topic heading; existing drawer/sidebar callers keep search focus. Before hiding a focused recovery action, focus that heading. Native modal behavior stays intact. Reuse current panel/button tokens, allow wrapping, expose the notice before changing its status text, and skip unchanged text writes. No extra timer, storage or announcement owner is needed.\n        </div>\n      </div>\n      <div id=\"7YP-0\" style={{ backgroundColor: 'var(--color-gmi-night-surface)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '14px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', padding: '24px' }}>\n        <div id=\"7YR-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '18px', fontWeight: 600, lineHeight: '26px' }}>\n          11 · Clear the search; keep the research\n        </div>\n        <div id=\"7YQ-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', lineHeight: '22px', whiteSpace: 'pre-wrap' }}>\n          The tree and full index share one localized Clear search / 清空搜索 icon button. It is hidden until JavaScript binds the existing input path. Keep the field 44 px high and the action 44 × 44 px. Replace the slash hint while the raw input is nonempty, including whitespace. Suppress the browser cancel only under the enhanced class.<br /><br />Click and native Enter/Space focus the input, empty its value and dispatch the current input event once. Ordinary Escape uses that same helper; consumed, composing and keyCode229 events do nothing. The existing search, URL and expansion owners perform the reset. Do not clear primary Browse filters, select a different answer or redraw evidence.<br /><br />Index initial/history restoration synchronizes the button from the restored value. Before hiding a focused clear action, return focus to search; preserve unrelated focus. Keep lens, qualified return, other hash keys and current disclosures. Use the existing locale owner. No second filter state, announcement cycle, timer or navigation owner is needed. S06G contains editable EN Day / ZH Noir 320 px states; implementation proof also covers 390 and 1440 px.\n        </div>\n      </div>\n      <div id=\"87Z-0\" style={{ backgroundColor: 'var(--color-gmi-night-surface)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '14px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', padding: '24px' }}>\n        <div id=\"881-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '18px', fontWeight: 600, lineHeight: '26px' }}>\n          12 · The index starts with its task\n        </div>\n        <div id=\"880-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', lineHeight: '22px', whiteSpace: 'pre-wrap' }}>\n          Use the existing page_key=index branch in _gmi_product_header.html.j2. Keep GMI Explorer as a small real link with its .gmi-product-name hook and 44 px target; place the sole All micro-themes / 全部细分主题 H1 beside the one exact dated snapshot. Remove only the index’s repeated head() introduction, breadcrumb, count sentence and same-clock date. Other pages keep their existing header output.<br /><br />Preserve the full snapshot/stale subtree, Brain slot, navigation and the qualified return inserted after navigation. Keep the 72 px mobile Brain reservation. Use a 32 px title on desktop and 24 px at ≤820, natural Chinese spacing, no fixed height and 16 px navigation/return gaps. The brand still restores the qualified research destination; company return may contain one upstream theme return.<br /><br />Without JavaScript, keep the server-rendered title/date, ordinary links and native disclosures. Do not fabricate stale qualification, Brain docking or a contextual return. The Index · Search and navigation page shows an EN390 default viewport and ZH320 filtered company-return/stale state. Two visible results and Full index: 371 stay distinct. These are editable design states; the existing source owns query, count, history and navigation.\n        </div>\n      </div>\n      <div id=\"88I-0\" style={{ backgroundColor: 'var(--color-gmi-night-surface)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '14px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', padding: '24px' }}>\n        <div id=\"88J-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '18px', fontWeight: 600, lineHeight: '26px' }}>\n          13 · Choose a category, then go\n        </div>\n        <div id=\"88K-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', lineHeight: '22px', whiteSpace: 'pre-wrap' }}>\n          At the existing ≤640 px breakpoint, show a native Category / 类别 select and a separate Go / 前往 button. Keep the select and Go 44 px high, Go 44 px wide, an 8 px gap and the existing 61 px sticky strip. Desktop and no-JS keep the original anchor track. The authored custom wrapper starts hidden; unavailable scripts must not leave an inert control.<br /><br />Selection is a pending destination, not the category in view. Typeahead and selection never navigate. Go revalidates and invokes the retained category link, preserving query, lens, qualified return, other hash keys and history. Keep the selected ID for repeat jumps. Derive options from the existing visible groups and active-language labels/counts; available zero-count categories stay eligible. Filtering removes unavailable options; a lost choice resets to the prompt without a first-category fallback.<br /><br />Retain valid choices through locale/count changes and avoid rebuilding equivalent options. Passive IntersectionObserver updates only the existing anchor current state. Before disabling focused Go, focus the select; before zero-match nav hiding, the existing index owner focuses search. On resize, reveal incoming controls, transfer only owned focus with preventScroll, carry a focused desktop link’s ID to mobile, then hide outgoing controls. If all destinations are stale, recover to existing search. No new URL, storage, locale, observer or navigation owner.\n        </div>\n      </div>\n      <div id=\"8SW-0\" style={{ backgroundColor: 'var(--color-gmi-night-surface)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '14px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', padding: '24px' }}>\n        <div id=\"8SX-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '18px', fontWeight: 600, lineHeight: '26px' }}>\n          14 · Company entry keeps evidence and focus\n        </div>\n        <div id=\"8SY-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', lineHeight: '22px', whiteSpace: 'pre-wrap' }}>\n          Use exactly page_key=companies in the shared header. Keep the small 44 px GMI Explorer link, one Company evidence / 公司证据 H1, the original snapshot/stale owner, active navigation, utility links and 72 px Brain reservation. Share the existing compact index declarations; issuer and the six other HTML pages remain unchanged. The company page already had one snapshot: remove repeated introduction/breadcrumb/title instructions, not a second date.<br /><br />Keep every source-rendered company, dated product record, planned stage, named platform, source label/link, historical-context footer and company-detail action. Keep the interpretation guide. Remove only the final paragraph that repeats the guide’s qualification. The 26 Feb 2024 source date and 3 Nov 2026 snapshot remain separate.<br /><br />Within the existing company controller, focus search before hiding a card or no-match container that owns focus. Clear search / 清空搜索 focuses search before clearing and invoking updateCompanies once. Skip unchanged hidden values and complete localized count text; preserve unrelated or surviving control focus and the existing URL, history, return and locale owners.<br /><br />A normalized active query says N matching companies / 匹配到 N 家公司. Blank or whitespace-only input retains N companies with evidence on file / 有收录证据的公司：N 家. Count company cards, not product connections. No-match offers Clear search; a genuinely empty catalogue says No company evidence yet / 暂无公司证据, keeps Clear hidden and offers Explore themes.<br /><br />Paper Companies · Evidence and recovery contains C01 EN390 match, C02 ZH320 Noir full catalogue, C03 EN390 no-match with qualified research return, C04 ZH320 Noir empty-catalogue fixture, and C05 the complete EN card. Phone shells are truthful 844 px viewports; content continues below the fold. C04 is a renderer fixture, not a replacement public dataset. C05 exposes both source and company-detail actions without compressing the phone card.\n        </div>\n      </div>\n      <div id=\"7ND-0\" style={{ backgroundColor: 'var(--color-gmi-night-surface)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '14px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', padding: '24px' }}>\n        <div id=\"7NE-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '18px', fontWeight: 600, lineHeight: '26px' }}>\n          15 · Proof and release boundary\n        </div>\n        <div id=\"7NF-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', lineHeight: '22px', whiteSpace: 'pre-wrap' }}>\n          Company entry passes 29 named cases in 29 fresh anonymous contexts: 11 header scenarios, six company focus/count paths, four with JavaScript actually disabled, two real-renderer empty-catalogue fixtures, two source-context cases, two real issuer/return journeys and two category-picker regressions. Native Clear click/Enter/Space, focus before hide, real back/forward, localized count scope, whitespace, repeated-write suppression and surviving focus pass. Nine final company captures were inspected.<br /><br />Across 44 matched header layouts, search begins 145.98–215.14 px sooner. Company evidence already had one snapshot; it remains separate from each source date. Baseline records 11 original-header observations and two expected Reset focus failures. The final count wording supersedes a preserved earlier 29-case pass. C04 and the 44 px Brain/stale clocks are explicit fixtures.<br /><br />Earlier category proof at 9bdc486c remains 24 cases; earlier index-header proof at 20179e31 remains 23 cases/66 matched layouts. These are dated, exact-source receipts, not claims of a newly rerun whole application. Current company rendering changes only company HTML and paired JS/CSS; all six other HTML pages, including index/issuer, remain exact.<br /><br />PR10676 @49d47033 stays Draft with original model/release holds. All eleven files read back exactly; DESIGN_RECORD §§11.19–11.30 and dated receipts separate the proof. Anonymous component/browser checks do not establish full shared shell/fonts, OS-native select popup, spoken AT, shared Brain runtime, live account/admission, current hosted CI or deployment.\n        </div>\n      </div>\n    </div>\n  )"
+  },
+  "preservation": {
+    "source": [
+      {
+        "path": "templates/_gmi_product_header.html.j2",
+        "sha": "b3b860d924408c4d4de0dcb7ad7ea38f7f1e0788",
+        "exact": true,
+        "expectedLength": 1931,
+        "readLength": 1931
+      },
+      {
+        "path": "templates/gmi_companies.html.j2",
+        "sha": "729e2a4a93246d87e9203abd84efdc16fb6f1aea",
+        "exact": true,
+        "expectedLength": 5741,
+        "readLength": 5741
+      },
+      {
+        "path": "templates/gmi.js",
+        "sha": "1facd1b2edcb062422ff65f22689edd7ae160cf8",
+        "exact": true,
+        "expectedLength": 52009,
+        "readLength": 52009
+      },
+      {
+        "path": "site/gmi.js",
+        "sha": "1facd1b2edcb062422ff65f22689edd7ae160cf8",
+        "exact": true,
+        "expectedLength": 52009,
+        "readLength": 52009
+      },
+      {
+        "path": "templates/gmi.css",
+        "sha": "dba2809660f0f16d25325db4bb401674758529a2",
+        "exact": true,
+        "expectedLength": 71505,
+        "readLength": 71505
+      },
+      {
+        "path": "site/gmi.css",
+        "sha": "dba2809660f0f16d25325db4bb401674758529a2",
+        "exact": true,
+        "expectedLength": 71505,
+        "readLength": 71505
+      },
+      {
+        "path": "site/gmi-companies.html",
+        "sha": "c4b1c81c92c270411c6698a473b55354a05dc8a5",
+        "exact": true,
+        "expectedLength": 61351,
+        "readLength": 61351
+      },
+      {
+        "path": "research/theme_graph/gmi_design_20261021/verify_product_browser.py",
+        "sha": "89f32143b6b61e0c12bf1534452550a4e416e1d1",
+        "exact": true,
+        "expectedLength": 173326,
+        "readLength": 173326
+      },
+      {
+        "path": "research/theme_graph/gmi_design_20261021/verify_company_entry_component.py",
+        "sha": "b21ada78f14a4df72a49e9f3b74fcb4efd35e2d6",
+        "exact": true,
+        "expectedLength": 12958,
+        "readLength": 12958
+      },
+      {
+        "path": "research/theme_graph/gmi_design_20261021/DESIGN_RECORD.md",
+        "sha": "7b3dcc87bb882a5ea9add34074fa84a0575aceb9",
+        "exact": true,
+        "expectedLength": 166125,
+        "readLength": 166125
+      },
+      {
+        "path": "research/theme_graph/gmi_design_20261021/COMPANY_ENTRY_VALIDATION_20261109.json",
+        "sha": "421444de7834eb16edaaff208877d719559db905",
+        "exact": true,
+        "expectedLength": 361789,
+        "readLength": 361789
+      }
+    ],
+    "original_views_preserved": {
+      "indexEN": true,
+      "indexZH": true,
+      "oldCompanyZH": true,
+      "buildBefore": true
+    },
+    "build": {
+      "prior_nodes": 45,
+      "current_nodes": 48,
+      "modules": 15,
+      "prior_nodes_styles_parents_and_unaffected_text_exact": true,
+      "intentional_text_updates": [
+        "7MV-0",
+        "7MZ-0",
+        "7NE-0",
+        "7NF-0"
+      ],
+      "titles": [
+        "01 · Keep the two native disclosures distinct",
+        "02 · Exact public fields; separate clocks",
+        "03 · Preserve locale state inside the existing renderer",
+        "04 · Preserve receipt focus across languages",
+        "05 · Keep recovery at the serving boundary",
+        "06 · Responsive implementation and useful motion",
+        "07 · Copy belongs to its initiating view",
+        "08 · One keyboard entry; predictable filtering",
+        "09 · Count the results the user can see",
+        "10 · Recover without leaving the answer",
+        "11 · Clear the search; keep the research",
+        "12 · The index starts with its task",
+        "13 · Choose a category, then go",
+        "14 · Company entry keeps evidence and focus",
+        "15 · Proof and release boundary"
+      ]
+    },
+    "card_specimen": {
+      "source": "8MS-0",
+      "copy": "8R4-0",
+      "nodes": 28,
+      "content_and_component_styles_exact": true,
+      "root_only_paper_defaults_added": [
+        "fontSize: '12px'",
+        "fontSynthesis: 'none'",
+        "lineHeight: '16px'",
+        "MozOsxFontSmoothing: 'grayscale'",
+        "overflowWrap: 'anywhere'",
+        "WebkitFontSmoothing: 'antialiased'"
+      ]
+    },
+    "views": [
+      {
+        "key": "C01",
+        "root": "88M-0",
+        "div_nodes": 66,
+        "viewport_844": true,
+        "width": true,
+        "old_index_content_removed": true,
+        "company_h1": true,
+        "guide": true
+      },
+      {
+        "key": "C02",
+        "root": "8GG-0",
+        "div_nodes": 66,
+        "viewport_844": true,
+        "width": true,
+        "old_index_content_removed": true,
+        "company_h1": true,
+        "guide": true
+      },
+      {
+        "key": "C03",
+        "root": "8DQ-0",
+        "div_nodes": 47,
+        "viewport_844": true,
+        "width": true,
+        "old_index_content_removed": true,
+        "company_h1": true,
+        "guide": true
+      },
+      {
+        "key": "C04",
+        "root": "8BC-0",
+        "div_nodes": 44,
+        "viewport_844": true,
+        "width": true,
+        "old_index_content_removed": true,
+        "company_h1": true,
+        "guide": true
+      }
+    ],
+    "genuine_empty": {
+      "no_clear": true,
+      "explore": true,
+      "not_match_copy": true
+    }
+  },
+  "canvas_operations": [
+    {
+      "key": "gmiCompanyEntryPaperCreatePage",
+      "tool": "create_page",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "operation_id": "paper-estate-cont-20261108-gmi-company-entry-page-20261109"
+    },
+    {
+      "key": "gmiCompanyEntryPaperPageOrder",
+      "tool": "arrange_pages",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "operation_id": "paper-estate-cont-20261108-gmi-company-page-order-20261109"
+    },
+    {
+      "key": "gmiCompanyEntryPaperRename",
+      "tool": "rename_nodes",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "operation_id": "paper-estate-cont-20261108-company-root-names-20261109"
+    },
+    {
+      "key": "gmiCompanyEntryPaperC03Return",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "operation_id": "paper-estate-cont-20261108-company-c03-return-20261109"
+    },
+    {
+      "key": "gmiCompanyEntryPaperCardSpecimenDuplicate",
+      "tool": "duplicate_nodes",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "operation_id": "paper-estate-cont-20261108-company-card-specimen-20261109"
+    },
+    {
+      "key": "gmiCompanyEntryPaperCardSpecimenRename",
+      "tool": "rename_nodes",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "operation_id": "paper-estate-cont-20261108-company-card-specimen-name-20261109"
+    },
+    {
+      "key": "gmiCompanyEntryPaperBuildModule",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "operation_id": "paper-estate-cont-20261108-company-build-module-20261109"
+    },
+    {
+      "key": "gmiCompanyEntryPaperBuildMove",
+      "tool": "move_nodes",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "operation_id": "paper-estate-cont-20261108-company-build-module-order-20261109"
+    },
+    {
+      "key": "gmiCompanyEntryPaperBuildText",
+      "tool": "set_text_content",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "operation_id": "paper-estate-cont-20261108-company-build-proof-20261109"
+    },
+    {
+      "key": "gmiCompanyEntryPaperFinish",
+      "tool": "finish_working_on_nodes",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "operation_id": "paper-estate-cont-20261108-company-finish-20261109"
+    },
+    {
+      "key": "gmiCompanyEntryPaperC01Shell",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "operation_id": "paper-estate-cont-20261108-company-c01-shell-20261109"
+    },
+    {
+      "key": "gmiCompanyEntryPaperC01Nav",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "operation_id": "paper-estate-cont-20261108-company-c01-nav-20261109"
+    },
+    {
+      "key": "gmiCompanyEntryPaperC01Search",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "operation_id": "paper-estate-cont-20261108-company-c01-search-20261109"
+    },
+    {
+      "key": "gmiCompanyEntryPaperC01Guide",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "operation_id": "paper-estate-cont-20261108-company-c01-guide-20261109"
+    },
+    {
+      "key": "gmiCompanyEntryPaperC01NavFit",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "operation_id": "paper-estate-cont-20261108-company-c01-nav-fit-20261109"
+    },
+    {
+      "key": "gmiCompanyEntryPaperC01CardShell",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "operation_id": "paper-estate-cont-20261108-company-c01-card-shell-20261109"
+    },
+    {
+      "key": "gmiCompanyEntryPaperC01Record",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "operation_id": "paper-estate-cont-20261108-company-c01-record-20261109"
+    },
+    {
+      "key": "gmiCompanyEntryPaperC01Foot",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "operation_id": "paper-estate-cont-20261108-company-c01-foot-20261109"
+    },
+    {
+      "key": "gmiCompanyEntryPaperC02Shell",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "operation_id": "paper-estate-cont-20261108-company-c02-shell-20261109"
+    },
+    {
+      "key": "gmiCompanyEntryPaperC02Nav",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "operation_id": "paper-estate-cont-20261108-company-c02-nav-20261109"
+    },
+    {
+      "key": "gmiCompanyEntryPaperC02Search",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "operation_id": "paper-estate-cont-20261108-company-c02-search-20261109"
+    },
+    {
+      "key": "gmiCompanyEntryPaperC02Guide",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "operation_id": "paper-estate-cont-20261108-company-c02-guide-20261109"
+    },
+    {
+      "key": "gmiCompanyEntryPaperC02NavFit",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "operation_id": "paper-estate-cont-20261108-company-c02-nav-fit-20261109"
+    },
+    {
+      "key": "gmiCompanyEntryPaperC02CardShell",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "operation_id": "paper-estate-cont-20261108-company-c02-card-shell-20261109"
+    },
+    {
+      "key": "gmiCompanyEntryPaperC02Record",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "operation_id": "paper-estate-cont-20261108-company-c02-record-20261109"
+    },
+    {
+      "key": "gmiCompanyEntryPaperC02Foot",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "operation_id": "paper-estate-cont-20261108-company-c02-foot-20261109"
+    },
+    {
+      "key": "gmiCompanyEntryPaperC03Shell",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "operation_id": "paper-estate-cont-20261108-company-c03-shell-20261109"
+    },
+    {
+      "key": "gmiCompanyEntryPaperC03Nav",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "operation_id": "paper-estate-cont-20261108-company-c03-nav-20261109"
+    },
+    {
+      "key": "gmiCompanyEntryPaperC03Search",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "operation_id": "paper-estate-cont-20261108-company-c03-search-20261109"
+    },
+    {
+      "key": "gmiCompanyEntryPaperC03Guide",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "operation_id": "paper-estate-cont-20261108-company-c03-guide-20261109"
+    },
+    {
+      "key": "gmiCompanyEntryPaperC03NavFit",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "operation_id": "paper-estate-cont-20261108-company-c03-nav-fit-20261109"
+    },
+    {
+      "key": "gmiCompanyEntryPaperC03Empty",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "operation_id": "paper-estate-cont-20261108-company-c03-empty-20261109"
+    },
+    {
+      "key": "gmiCompanyEntryPaperC04Shell",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "operation_id": "paper-estate-cont-20261108-company-c04-shell-20261109"
+    },
+    {
+      "key": "gmiCompanyEntryPaperC04Nav",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "operation_id": "paper-estate-cont-20261108-company-c04-nav-20261109"
+    },
+    {
+      "key": "gmiCompanyEntryPaperC04Search",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "operation_id": "paper-estate-cont-20261108-company-c04-search-20261109"
+    },
+    {
+      "key": "gmiCompanyEntryPaperC04Guide",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "operation_id": "paper-estate-cont-20261108-company-c04-guide-20261109"
+    },
+    {
+      "key": "gmiCompanyEntryPaperC04NavFit",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "operation_id": "paper-estate-cont-20261108-company-c04-nav-fit-20261109"
+    },
+    {
+      "key": "gmiCompanyEntryPaperC04Empty",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "operation_id": "paper-estate-cont-20261108-company-c04-empty-20261109"
+    }
+  ],
+  "finish": {
+    "roots": [
+      "88M-0",
+      "8GG-0",
+      "8DQ-0",
+      "8BC-0",
+      "8R4-0",
+      "7M9-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED"
+  },
+  "visual_review": {
+    "views": [
+      "C01",
+      "C02",
+      "C03",
+      "C04",
+      "C05",
+      "BuildModule",
+      "BuildProof"
+    ],
+    "inspected": true,
+    "refinements": [
+      "Primary tabs use 13px native phone sizing; Theme research stays on one line at390.",
+      "Day current tab uses surface and restrained shadow; Noir retains raised surface.",
+      "Four844px viewport shells preserve honest below-fold content; complete card is separately visible."
+    ]
+  },
+  "boundaries": [
+    "Editable Paper specimens illustrate the native source behavior; they are not runnable-browser proof.",
+    "C04 is an explicitly named empty-catalogue fixture outside product copy. No replacement public dataset.",
+    "Original index/current company views and old Build styles/parents remain exact. Only owned duplicate shells and new components are authored.",
+    "Card specimen root gains Paper's normal root font/smoothing/overflow-wrap defaults; its content and component styles match the phone card.",
+    "No original held style/token/archive/delete operation, model fence, shared owner or release boundary changed."
+  ],
+  "pr_description": {
+    "body": "## Why\n\nGMI previously led with taxonomy and admission machinery, leaving readers to infer what a theme meant, what a company connection established, and which source date or lifecycle qualified the claim. This implements the Chairman's resumed product-and-code mandate in the existing frontend and consolidates Paper into one canonical product system.\n\n## What changes\n\n- Lead theme research with a plain-language topic explanation, dated company/product evidence, explicit limits and a concrete next action.\n- Add the searchable company-evidence route. Preserve all 371 microthemes, parent paths, Core/Extended and evidence filters, the full index, taxonomy tree, value-chain lens and coverage arithmetic.\n- Preserve URL/history restoration, responsive mobile browsing, related-topic navigation, keyboard/focus behavior, copy success/denial handling and server-rendered/no-JS/malformed-payload fallbacks.\n- Reuse the existing theme, language, navigation and Brain owners. The original Brain root retains its palette, events and focus lifecycle; styling uses canonical tokens.\n- Restrict public product rendering to the single separately cleared Micron observation, whose source was published on 26 February 2024, including its receipt, planned lifecycle, product/platform, source identity and visible EN/ZH attribution. ACCEPT/RATIFIED alone does not admit a new public fact.\n- Exclude private graph/correction/raw-source context from Jinja, retire stale issuer output after withdrawal and refuse nonregular/symlink issuer targets.\n- Preserve missing, unknown or malformed knowledge dates as not recorded in EN/ZH; source publication and Planned lifecycle remain independent. Valid recorded first-seen dates retain their existing display.\n- Include generated pages, incumbent GMI CI registration, production-render regression tests, dated browser evidence and editable Paper workflow/build views.\n- Bring the full index directly to search with one title/date, a 44 px Clear search action, coherent filtered counts, and a mobile Category + Go control that preserves research context and repeat navigation.\n- Bring company evidence to search sooner, distinguish matching counts from catalogue coverage, and recover keyboard focus before results disappear.\n\nThe canonical design home is [GMI Explorer · Product system](https://app.paper.design/file/01M5H6EARN9YHQV17JC6ZG9BRY/p-1-0). Start index work on [Index · Search and navigation](https://app.paper.design/file/01M5H6EARN9YHQV17JC6ZG9BRY/p-8-0); [Companies · Evidence and recovery](https://app.paper.design/file/01M5H6EARN9YHQV17JC6ZG9BRY/p-9-0) covers the company workflow; the [source receipt page and 15-module Build](https://app.paper.design/file/01M5H6EARN9YHQV17JC6ZG9BRY/p-7-0) carry the current interaction/source contracts. Original product views and historical references remain preserved; the dated ten-board evidence below describes the earlier product set.\n\n## Current source and focused verification — 9 November 2026\n\nCurrent head: [`49d47033f4d758af2ec7212fccee04d762fec956`](https://github.com/mastermindx-market-intelligence/Macro/commit/49d47033f4d758af2ec7212fccee04d762fec956). The PR remains **Draft and unmerged**, with the release/model holds below unchanged.\n\nThe latest change brings company evidence directly to its task: a compact Company evidence / 公司证据 header, the existing search, a correctly scoped company count and dated source cards. Active searches report **matching companies**; an unfiltered catalogue retains **companies with evidence on file**. Clear search and history/filter changes move owned focus to search before hiding a card or no-match container. Existing URL, history, locale, return and card owners remain in place.\n\nThe company page already had one snapshot. This change removes repeated introduction/breadcrumb/title instructions and the final duplicate qualification, while preserving the 3 November 2026 snapshot, each source's separate publication date, complete card evidence and interpretation guide. Genuine empty-catalogue behavior remains separate from no matching results.\n\n| Evidence | Exact scope |\n|---|---|\n| Latest company-entry matrix | **29 cases / 29 fresh anonymous contexts**, Chrome157.0.8103.39, zero page errors: 11 header scenarios, six company focus/count paths, four actually without JavaScript, two production-rendered empty-catalogue fixtures, two source-context cases, two real issuer/return journeys and two category-picker regressions |\n| Real interaction and layout | Native Clear click/Enter/Space, focus before hide, real back/forward, repeated-write suppression, localized active/blank/whitespace count scope and surviving focus; **44 matched layouts**, with **145.98–215.14 px** less space before search; nine final company captures inspected |\n| Production renderer and source | 48 checked inputs and the existing accepted e644fa48… model; all nine parent outputs reproduced exactly; final rendered changes limited to company HTML and paired JS/CSS, with all six other HTML pages byte-identical; all eleven changed files published and read back exactly |\n| Earlier category navigation at `9bdc486c` | 24 cases: pending native Category select + explicit Go, retained anchors, typeahead, repeat navigation, empty categories, filtering/locale, stale targets and responsive focus. Desktop and no-JS keep native links |\n| Earlier index header at `20179e31` | 23 cases, 66 matched layouts, 145.98–233.89 px less space before search; one title/date, complete returns and the existing Brain reservation. These are retained dated measurements |\n| Earlier Clear at `16a87f43` | 36 cases / 42 fresh contexts covering tree/index activation, filtering, locale, focus, URL and native fallback. Earlier evidence remains tied to its recorded source |\n| Paper readback | Four company phones distinguish match, catalogue, no-match and genuine-empty fixture; a complete card exposes below-fold source/issuer actions. Build has **15 modules / 48 nodes**. Original index/company views and all 45 prior Build node IDs/styles/parents remain exact outside four intentional source/proof text changes |\n\nRead [DESIGN_RECORD §§11.19–11.30](https://github.com/mastermindx-market-intelligence/Macro/blob/49d47033f4d758af2ec7212fccee04d762fec956/research/theme_graph/gmi_design_20261021/DESIGN_RECORD.md), [company-entry validation](https://github.com/mastermindx-market-intelligence/Macro/blob/49d47033f4d758af2ec7212fccee04d762fec956/research/theme_graph/gmi_design_20261021/COMPANY_ENTRY_VALIDATION_20261109.json), [category validation](https://github.com/mastermindx-market-intelligence/Macro/blob/9bdc486c6b7622d9f306d29e9d12d572ed88415c/research/theme_graph/gmi_design_20261021/CATEGORY_PICKER_VALIDATION_20261109.json), [index-header comparison](https://github.com/mastermindx-market-intelligence/Macro/blob/20179e319a3f5219488fda4f1642a49e77ed8b13/research/theme_graph/gmi_design_20261021/INDEX_HEADER_VALIDATION_20261109.json) and [Clear validation](https://github.com/mastermindx-market-intelligence/Macro/blob/16a87f43743fe3a9bae02db7e3d64969871d8cd9/research/theme_graph/gmi_design_20261021/SEARCH_CLEAR_VALIDATION_20261109.json). Baseline company proof retains two expected Reset focus failures. An earlier 29-case candidate pass is explicitly superseded by the final filtered-count wording proof.\n\nThese are exact-source rendering and anonymous component results. Empty catalogue, Brain launcher and stale clocks are explicit fixtures. No current-head hosted CI, OS-native select popup, spoken assistive-technology, full shared shell/fonts, shared Brain runtime, live-account, public-admission or deployment acceptance is claimed.\n\n## Release blocker — keep draft\n\n**Keep Draft and all no-merge/no-Ready/no-un-draft/no-enqueue/no-relabel holds. No auto-merge or deployment is authorized while these holds remain.**\n\nOriginal model run `gmi-product-upgrade-20261103-model01` remains **EFFECT_UNKNOWN / ROOT_UNVERIFIED**, with root `gmi-paper-makeover-20261103-sol`, parent `gmi-product-upgrade-20261103-sol`, original controller PID `38742` and lease `868f3981b9bd`. Its current status denies result consumption, retry and dispatch. No applicable settlement action is exposed; the original installed runtime owner must reconcile this same run/process/lease and publish eligible terminal evidence. This continuation has not consumed its result, reassigned its work or modified its fenced model/presentation/test paths.\n\nThe current product specimen does not grant broader source-emission rights, qualification, internal graph use or relationship publication. A qualified public-data projection remains with the incumbent owner. Release also requires concluded current-head CI and the protected deployment/live-verification path. The existing hourly observer reports attention facts only; it is not an engineering worker or release authority.\n\n## Route integration and serving boundaries\n\nCompanies is integrated with the incumbent builder, normal render workflow, shared-document injection, standalone navigation and canonical/social metadata. This establishes the standalone GMI path. Parent Shared Shell catalogue admission remains with its existing cross-repository census/export owner; no derived catalogue rows were hand-added.\n\nThe existing GMI sitemap exclusion and `X-Robots-Tag: noindex, noarchive` remain intentional. Indexing promotion must coordinate the serving and sitemap owners. Changing access classification does not grant public-fact permission.\n\n\n**Cross-PR catalogue integration remains owed:** [PR #10696 comment 6626264216](https://github.com/mastermindx-market-intelligence/macro/pull/10696#issuecomment-6626264216) records the earlier omitted companies route; the later November 4 source record below captures the exporter admission condition. These dated observations do not settle current consumer admission. The incumbent registry/export owner must qualify the exact combined source and original consumer-admission hold without inferring access or public-fact rights. Both source lanes touch registry tests; this writer does not take over the parallel owner branch.\n\n<details>\n<summary>November 4 verification and integration — historical evidence</summary>\n\n## November 4 verification record — historical head\n\nRecorded head: `be851458055efbffa1f2db61da12b7744502479a` (GMI source repair plus then-current main integration; Draft at that observation).\n\n| Evidence | Result and scope |\n|---|---|\n| Existing eight-suite GMI CI command, executed locally on the candidate source | **186 passed in 109.89 seconds**, exit 0 |\n| Bound source/data/template/test inputs | **130 checked**, no unexpected differences; two intended builder/test overrides for this repair |\n| Knowledge-clock regression | **7 failures and 1 positive control reproduced before repair**; all eight cases now pass through the production renderer with EN/ZH tooltip and independent publication/lifecycle checks |\n| Output-target symlink hardening | **9 reproduced failures → 9 green** for six fixed HTML pages, paired CSS/JS and site directory; disposable red test overwrote outside sentinel, corrected preflight refuses before any generated write |\n| Attribution and public-boundary regression | Six altered-label cases, incomplete/unqualified facts, stale issuer retirement and symlink refusal remain covered |\n| Same-input renderer comparison | **9/9 HTML/CSS/JS outputs byte-identical** for the accepted specimen |\n| Accepted real Chrome browser proof | **92/92 passed**, zero recorded page exceptions; committed browser inputs unchanged |\n| Accepted visual evidence | 91 original PNGs retained; accepted design work was not recaptured |\n| GitHub publication readback | All four intended code/evidence blobs match; one commit ahead of the parent with no unexpected paths |\n| Hosted CI observed November 4 | [CI 41898455221](https://github.com/mastermindx-market-intelligence/macro/actions/runs/41898455221) was **in progress** at the recorded integrated head; no completed hosted result was accepted in this observation |\n| Hosted fences observed November 4 | [Fences 41898455029](https://github.com/mastermindx-market-intelligence/macro/actions/runs/41898455029) concluded **SUCCESS** at the recorded integrated head |\n\n\nThat November 4 continuation also guarded fixed GMI output targets. A controlled symlink test previously overwrote a disposable file outside the intended output directory. The new renderer refuses pre-existing output symlinks before its page and asset writes. All 186 GMI tests passed and all nine accepted specimen files remained byte-identical. This is not a claim of race-free filesystem hardening or a production incident. [Exact source-bound validation](https://github.com/mastermindx-market-intelligence/macro/blob/d6500a8398d11d717ca4af7015d557c61fb084b1/research/theme_graph/gmi_design_20261021/PUBLIC_OUTPUT_SYMLINK_VALIDATION_20261104.json).\n\nThe repair removes a confirmed fallback that displayed the source publication date as “first seen” when knowledge time was missing. Invalid KNOWN values previously either broke rendering or displayed an impossible date. The builder now validates the recorded clock and the tooltip displays “first seen not recorded” / “首次收录时间未记录” when needed. A valid known knowledge date stays distinct from the 26 February 2024 publication date. These new states are covered by production-render tests; the accepted browser matrix was preserved, not rerun.\n\nThe parent head `71d7124f6634c4080ad4d926826d4a24dd60b68b` passed [fences 41793928552](https://github.com/mastermindx-market-intelligence/macro/actions/runs/41793928552); its [CI 41793928668](https://github.com/mastermindx-market-intelligence/macro/actions/runs/41793928668) was still executing when last observed. The earlier integration head `f328fe875d48db8392533ff649271d687961219d` passed [CI 41777490547](https://github.com/mastermindx-market-intelligence/macro/actions/runs/41777490547) and [fences 41777490350](https://github.com/mastermindx-market-intelligence/macro/actions/runs/41777490350). Historical results do not substitute for current-head hosted checks.\n\nThe three S1 regressions introduced by withholding incomplete/unreviewed issuer pages remain repaired without weakening production admission. Template-only escaping and bilingual missing-value behavior remain separately covered. No model-owner or presentation-subtree file was changed by this continuation.\n\nEvidence: [knowledge-clock validation](https://github.com/mastermindx-market-intelligence/macro/blob/0a7e8e66f7ac63ed297548026936c096531d3167/research/theme_graph/gmi_design_20261021/PUBLIC_KNOWLEDGE_CLOCK_VALIDATION_20261104.json), [regression alignment](https://github.com/mastermindx-market-intelligence/macro/blob/0a7e8e66f7ac63ed297548026936c096531d3167/research/theme_graph/gmi_design_20261021/PUBLIC_BOUNDARY_VALIDATION_20261104.json), [attribution validation](https://github.com/mastermindx-market-intelligence/macro/blob/0a7e8e66f7ac63ed297548026936c096531d3167/research/theme_graph/gmi_design_20261021/PUBLIC_ATTRIBUTION_VALIDATION_20261104.json), [browser report](https://github.com/mastermindx-market-intelligence/macro/blob/0a7e8e66f7ac63ed297548026936c096531d3167/mockups/evidence/gmi-product-20261103/browser-report.json), and [DESIGN_RECORD §§11.13–11.15](https://github.com/mastermindx-market-intelligence/macro/blob/0a7e8e66f7ac63ed297548026936c096531d3167/research/theme_graph/gmi_design_20261021/DESIGN_RECORD.md).\n\nThese are source/render checks and preserved anonymous-browser proof. Authenticated backend behavior, live external-source availability, production performance, deployment and live URL acceptance are not claimed. Clipboard denial and malformed payload are explicit injected faults.\n\n## November 4 integration continuation — historical source record\n\n- **Source repair:** `30b298f39c3c68468770cd2cf12cedc11d53c29a` restored the existing page-registry AST scanner's 7/7 GMI routes with zero unresolved sites after the output-symlink guard. Original hosted failure [41801221560](https://github.com/mastermindx-market-intelligence/macro/actions/runs/41801221560) was precisely one `product-experience-registry` regression; verified exact regression case green locally, full 186-case GMI suite green, all nine accepted HTML/CSS/JS specimen bytes identical.\n- **Actual base conflict resolved:** [merge source `be851458055e`](https://github.com/mastermindx-market-intelligence/macro/commit/be851458055efbffa1f2db61da12b7744502479a) composed the reviewed GMI semantic head with protected main `affa0fd2e68723efc9e2cbc0e7c791ab70f5a53d` and its newer infrastructure. Compared to that main source there are exactly 154 intended GMI paths; `.github/ci/legacy-jobs.yml` preserves mainline bytes and adds the four previously reviewed GMI test/dependency manifest deltas. Six static GMI pages took the redesign source version, **preserving their honest November 3 as-of labels** rather than relabeling older evidence with the mainline November 4 render-sync clocks. No model data or public permission was promoted.\n- **Gates observed November 4:** [fences 41898455029](https://github.com/mastermindx-market-intelligence/macro/actions/runs/41898455029) **SUCCESS**; [CI 41898455221](https://github.com/mastermindx-market-intelligence/macro/actions/runs/41898455221) **IN_PROGRESS**, so hosted source qualification is not yet asserted. The PR is Draft/open/mergeable and remains deliberately unmerged.\n- **Shared Shell release condition:** The exact current registry/exporter sources from independent [P12.T9 PR #10696](https://github.com/mastermindx-market-intelligence/macro/pull/10696) auto-admit an anonymous/live `macro:gmi_companies` row to `legacyPaths` unless `shared_shell:admission_withheld` is present. Exact pure-source test: unmarked => admitted, marked => `consumer_admission_withheld`. [Owner handoff comment #6640275440](https://github.com/mastermindx-market-intelligence/macro/pull/10696#issuecomment-6640275440) binds the fail-closed follow-up and ordering; this PR does **not** seize the registry writer or insert an unqualified audience.\n- **Model/runtime:** `gmi-product-upgrade-20261103-model01` remains Fabric `EFFECT_UNKNOWN / ROOT_UNVERIFIED` (result consumption, retry and replacement not authorized). Executive Session Bridge owner currently reports `backend_unavailable`. This does not block independent GMI frontend testing but continues to block model-dependent public-fact promotion.\n- **Accepted and held:** Ten Paper boards, 92 real-Chrome browser cases and 91 original screenshots remain preserved, not redone. Protected source rights, shared-consumer purpose, noindex, authenticated live path, deployment and user acceptance remain separate gates. Do not merge, enqueue, Ready/un-draft, relabel, deploy or invent approval from this source/CI improvement.\n\n</details>\n",
+    "checks": {
+      "body_exact": true,
+      "head": "49d47033f4d758af2ec7212fccee04d762fec956",
+      "draft": true,
+      "merged": false,
+      "release_hold_verbatim": true
+    }
+  }
+}

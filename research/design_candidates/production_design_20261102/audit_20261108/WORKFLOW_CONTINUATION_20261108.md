@@ -1909,3 +1909,53 @@ The PR body still called the November 4 `be851458…` revision its current head 
 The original release/model hold section is **verbatim preserved** and appears before the historical detail. The existing exact Micron specimen is identified by its 26 February 2024 source publication date; rendered-output comparison is distinguished from the ten-file publication. Readback confirms the body equals the intended text, the head is unchanged, the PR remains Draft and unmerged, and no base/state/reviewer/label/merge setting was changed. The structured Paper receipt includes that exact current body and checks.
 
 This closes the category implementation and builder-clarity phase without treating a saved phase as the parent mission's completion. Subsequent work must continue on qualified existing surfaces while respecting the independent release, capture, model and active-writer fences.
+
+## 39. GMI: company entry, scoped results and focus-safe recovery
+
+### Applied source and evidence
+
+The original Draft [PR10676](https://github.com/mastermindx-market-intelligence/Macro/pull/10676) advances from **9bdc486c6b7622d9f306d29e9d12d572ed88415c** to **49d47033f4d758af2ec7212fccee04d762fec956**, tree **aadcf4ceae8b41819d1a92d1c7ec4b149027675d**. All eleven files read back exactly; DESIGN_RECORD now includes §11.30 and the source-bound `COMPANY_ENTRY_VALIDATION_20261109.json`.
+
+The existing companies-only header branch now presents the task title, retained snapshot/navigation and search without the generic introduction, repeated title region, noninteractive breadcrumb or instruction sentence. The company page already had one page-level snapshot; this change does not remove a second company date. It shares the existing compact index declarations, preserves the issuer title path and leaves all six other generated HTML pages byte-identical.
+
+The company controller now releases owned focus to search before hiding a card or no-match container. Explicit Clear search focuses search before invoking its existing update owner. Query, history, return and locale owners remain exact. Equivalent hidden/count writes are skipped, and unrelated surviving focus is preserved. Active queries report **matching companies / 匹配到 N 家公司**; blank or whitespace-only input retains the on-file catalogue qualification. Counts are company cards, not product connections.
+
+Every card's identity, product, source publication date, planned lifecycle, platform, source label/link/unavailable state, historical-context footer and issuer action remains unchanged. The guide remains complete. Only its repeated final standalone qualification is removed. The 26 February 2024 source date remains independent from the 3 November 2026 snapshot.
+
+### Proof with explicit limits
+
+The renderer uses 48 checked source inputs and the same accepted **e644fa48…** model. It reproduces all nine parent outputs exactly; final outputs differ only in company HTML and paired CSS/JS. The actual company page is **65,156 bytes**, blob **c4b1c81c92c270411c6698a473b55354a05dc8a5**. Current paired JS is **1facd1b2edcb062422ff65f22689edd7ae160cf8**; paired CSS is **dba2809660f0f16d25325db4bb401674758529a2**.
+
+Baseline PID42094 records eleven original-header observations and two expected Reset focus failures, exit1 in 25.42 seconds. Final PID66703 passes **29 cases / 29 fresh anonymous contexts**, zero page errors, Chrome157.0.8103.39, exit0 in 46.77 seconds. The earlier 29-case pass is preserved and explicitly superseded by the final filtered-count wording proof.
+
+The final matrix covers eleven header scenarios, six focus/count paths, four actual no-JavaScript cases, two genuinely empty-catalogue fixtures, two source-context checks, two real issuer/return journeys and two category-picker regressions. It checks native click/Enter/Space, real back/forward, source and issuer focus, empty-container focus, unrelated controls, repeated-write suppression, exact locale/count scope, whitespace and identity preservation.
+
+**44 matched layouts** show search starting **145.984375–215.140625 px sooner**. EN390 saves 188.390625 px and ZH320 saves 188.390625 px in direct light entry. Nine final company captures were inspected. Brain launcher/stale clocks are explicit fixtures; no shared Brain runtime or changed snapshot is inferred.
+
+The actual empty-catalogue view is rendered from an in-memory deep copy with issuers=[], SHA256 **d7425eff920310d8febecd53672fe95173e1c60815e554e51d5e34dc7eb22269**. No replacement public model is saved. No evidence yet offers Explore themes with Reset hidden; no-match retains the query and Clear search. The final transported receipt reconstructs native-verified identical geometry arrays and matches normalized sorted-JSON SHA256 **d871e29941e34e7e43eb0ba0c146f1927ed6d4fffb15ac5cd1eea81422b6b74d**.
+
+Source self-check reproduces the unchanged parents outside the enumerated edits. All 44 existing suite definitions remain exact. Local reverse-diff/inventory diagnostics were corrected to target the final template block and actual Playwright-scope definitions; product/test bytes were unchanged. These are local component/rendering results, not current hosted CI, full shell/fonts, spoken AT, live account/admission or deployment acceptance.
+
+### Editable Paper workflow and builder handoff
+
+A new [Companies · Evidence and recovery](https://app.paper.design/file/01M5H6EARN9YHQV17JC6ZG9BRY/p-9-0) page sits after the Index page. Existing pages retain their relative order. Four owned duplicates were authored incrementally into current company states; the original Index and prior company reference remain exact.
+
+| Root | Purpose | Editable div nodes |
+| --- | --- | ---: |
+| **88M-0** | C01 · EN390 Day; Micron query and one matching company | 66 |
+| **8GG-0** | C02 · ZH320 Noir; full catalogue and on-file count | 66 |
+| **8DQ-0** | C03 · EN390 Day; TSLA no-match, qualified research return and Clear search | 47 |
+| **8BC-0** | C04 · ZH320 Noir; genuine-empty catalogue fixture, Explore themes and no Clear | 44 |
+| **8R4-0** | C05 · Complete EN company card, including both below-fold actions | 28 |
+
+The phone shells are 844 px viewports, with complete card/guide content continuing below the fold. C05 preserves the card rather than shrinking it to fit. Its root receives Paper's normal root text/smoothing defaults; its component styles, structure and content otherwise match the phone card. The lifecycle stays beside its source date. Primary tabs use native 13 px phone sizing and the light current tab uses the source's surface treatment. Five product specimens plus the new Build/proof modules were visually inspected.
+
+The source-receipt Build **7M9-0** now has **15 modules / 48 div nodes**. New module 14, **8SW-0**, describes exact company header ownership, count meaning, focus-before-hide, empty-state differences and the five specimens. Proof becomes module 15. All 45 prior nodes, parents and styles remain exact; only the four intentional source/proof text nodes **7MV,7MZ,7NE,7NF** change. Original Index roots **7YS/811** and prior company **6Y9** read back exactly.
+
+`PAPER_COMPANY_ENTRY_20261109.json` binds final editable JSX, observed mutation receipts, source readback, preservation checks and visual scope. The exact five product roots and Build root were finished.
+
+### Current description and next safe phase
+
+PR10676's description now links the current **49d47033f4d758af2ec7212fccee04d762fec956** source, company proof, new Paper page and fifteen-module Build. It keeps previous category/header/Clear results tied to their dated heads. Its original release/model-hold section remains verbatim; readback confirms the exact intended body, current head, Draft status and unmerged state.
+
+This phase does not settle the parent mission. Bounded source review identifies the next independent defect: `refreshJourney()` can remove a focused qualified return link without first recovering focus. The existing Relationships restriction panel also lacks a direct company-evidence recovery action despite explaining that it is available, and its heading overstates clearance status. These can be improved through the existing return/navigation/template owners without consuming the fenced relationship model or changing publication authority. Original release, capture, model, active-writer and protected-style fences remain.
