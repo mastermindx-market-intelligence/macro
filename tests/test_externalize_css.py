@@ -1003,3 +1003,102 @@ def test_final_pair_sync_rebinds_public_alias_and_shell_gate_refuses_stale_bytes
     with pytest.raises(ValueError, match="Shared Shell bundle bindings"):
         check_shell(site, check=True)
     assert {p: p.read_bytes() for p in site.rglob("*") if p.is_file()} == before
+
+
+
+@pytest.fixture
+def optimized_shared_bundle_lesson(tmp_path):
+    from scripts.optimize_assets import make_optimizer
+
+    site = tmp_path / "site"
+    lesson = site / "learn/options/page.html"
+    lesson.parent.mkdir(parents=True)
+    (site / "theme.js").write_text(_BIG_JS)
+    (site / "onboard.js").write_text(_BIG_JS.replace("var a", "var b"))
+    lesson.write_text(
+        '<html><head><script data-mmx-shared-bundle="theme" src="../../theme.js"></script>'
+        '<script data-mmx-shared-bundle="onboard" src="../../onboard.js" defer></script></head></html>'
+    )
+    assert externalize(site) == 1
+    optimize = make_optimizer(site)
+    optimized = optimize(lesson.read_text(), lesson.parent)
+    lesson.write_text(optimized)
+    return site, lesson, optimized
+
+
+def test_raw_classic_bundle_stays_bound_after_optimizer_adds_defer(optimized_shared_bundle_lesson):
+    from lib.shared_shell import reconcile_shared_bundles
+
+    site, lesson, optimized = optimized_shared_bundle_lesson
+    # The ordinary optimizer appends defer after already-emitted data attributes.
+    first_marked = optimized.split('data-mmx-shared-bundle="theme"', 1)[1].split("</script>", 1)[0]
+    assert first_marked.index("data-mmx-shared-onboard") < first_marked.index("defer")
+    assert reconcile_shared_bundles(site) == []
+    assert reconcile_shared_bundles(site, fix=True) == []
+    assert lesson.read_text() == optimized
+
+    root_attr = 'data-mmx-shared-root="../../"'
+    for invalid_attrs in (
+        root_attr + " " + root_attr,
+        root_attr + " DATA-MMX-SHARED-ROOT='../../'",
+        "data-mmx-shared-root=../../",
+    ):
+        invalid = optimized.replace(root_attr, invalid_attrs, 1)
+        lesson.write_text(invalid)
+        assert reconcile_shared_bundles(site) == ["learn/options/page.html"]
+        assert reconcile_shared_bundles(site, fix=True) == ["learn/options/page.html"]
+        assert lesson.read_text() == invalid
+
+
+def test_bundle_binding_ignores_attribute_text_inside_a_quoted_value(optimized_shared_bundle_lesson):
+    from html.parser import HTMLParser
+    from lib.shared_shell import reconcile_shared_bundles
+
+    site, lesson, optimized = optimized_shared_bundle_lesson
+    root_attr = 'data-mmx-shared-root="../../"'
+    note = "data-note='prefix " + root_attr + " suffix'"
+    fake = optimized.replace(root_attr, note, 1)
+    lesson.write_text(fake)
+    assert reconcile_shared_bundles(site) == ["learn/options/page.html"]
+    assert reconcile_shared_bundles(site, fix=True) == []
+    repaired = lesson.read_text()
+    assert note in repaired and repaired != fake
+    assert reconcile_shared_bundles(site) == []
+
+    class MarkedScripts(HTMLParser):
+        def __init__(self):
+            super().__init__()
+            self.roots = []
+
+        def handle_starttag(self, tag, attrs):
+            if tag == "script" and ("data-mmx-shared-bundle", "theme") in attrs:
+                self.roots.extend(value for key, value in attrs if key == "data-mmx-shared-root")
+
+    parser = MarkedScripts()
+    parser.feed(repaired)
+    assert parser.roots == ["../../"]
+
+
+def test_bundle_binding_refuses_an_attribute_glued_to_src(optimized_shared_bundle_lesson):
+    from lib.shared_shell import reconcile_shared_bundles
+
+    site, lesson, optimized = optimized_shared_bundle_lesson
+    first_src_end = optimized.index('"', optimized.index('src="../../assets/js/') + len('src="'))
+    glued = optimized[:first_src_end + 1] + 'DATA-MMX-SHARED-ROOT="../"' + optimized[first_src_end + 1:]
+    lesson.write_text(glued)
+    assert reconcile_shared_bundles(site) == ["learn/options/page.html"]
+    assert reconcile_shared_bundles(site, fix=True) == ["learn/options/page.html"]
+    assert lesson.read_text() == glued
+
+
+def test_bundle_binding_requires_html_whitespace_at_attribute_boundaries(optimized_shared_bundle_lesson):
+    from lib.shared_shell import reconcile_shared_bundles
+
+    site, lesson, optimized = optimized_shared_bundle_lesson
+    root_attr = ' data-mmx-shared-root="../../"'
+    assert root_attr in optimized
+    glued = optimized.replace(root_attr, '\u00a0' + root_attr.lstrip(), 1)
+    lesson.write_text(glued)
+    assert reconcile_shared_bundles(site) == ["learn/options/page.html"]
+    assert reconcile_shared_bundles(site, fix=True) == ["learn/options/page.html"]
+    assert lesson.read_text() == glued

@@ -143,10 +143,18 @@ MIN_BYTES = 1024  # smaller inline blocks are cheaper than a request
 _JS_SUBDIR = ("assets", "js")
 _SHARED_ROLES = ("theme", "onboard")
 SHARED_BUNDLE_ROOT_PAGES = ("forex.html", "news.html")
-_SHARED_TAG_RE = re.compile(r"<script\b([^>]*)>(\s*)</script>", re.IGNORECASE)
-SHARED_ROLE_RE = re.compile(r'\sdata-mmx-shared-bundle="(theme|onboard)"')
-_SHARED_SRC_RE = re.compile(r'(?<![\w-])src\s*=\s*"([^"]*)"')
-_SHARED_BINDING_RE = re.compile(r'\sdata-mmx-shared-(?:root|theme|onboard)="[^"]*"')
+_HTML_SPACE = " \t\n\r\f"
+_SHARED_TAG_RE = re.compile(
+    r"""<script(?=[ \t\n\r\f>])((?:[^'">]|"[^"]*"|'[^']*')*)>([ \t\n\r\f]*)</script>""",
+    re.ASCII | re.IGNORECASE,
+)
+SHARED_ROLE_RE = re.compile(r'[ \t\n\r\f]data-mmx-shared-bundle="(theme|onboard)"')
+_SCRIPT_ATTR_RE = re.compile(
+    r"""[ \t\n\r\f]+([^ \t\n\r\f"'=<>`/]+)"""
+    r"""(?:[ \t\n\r\f]*=[ \t\n\r\f]*(?:"([^"]*)"|'[^']*'|[^ \t\n\r\f"'=<>`]+))?"""
+)
+_SHARED_ATTRS = {"src", "data-mmx-shared-bundle", "data-mmx-shared-root",
+                 "data-mmx-shared-theme", "data-mmx-shared-onboard"}
 _SHARED_ALIAS_RE = re.compile(r"assets/js/([0-9a-f]{8})\.js\?v=\1")
 
 
@@ -187,19 +195,43 @@ def bind_shared_bundles(text: str, prefix: str, urls: dict[str, str]) -> str:
     def replace_tag(match):
         nonlocal bound_tags
         attrs, body = match.groups()
-        role = SHARED_ROLE_RE.search(attrs)
-        src = _SHARED_SRC_RE.search(attrs)
-        if role is None or src is None or not src[1].startswith(prefix):
+        if not SHARED_ROLE_RE.search(attrs):
             return match[0]
-        path = src[1][len(prefix):]
-        if (not re.fullmatch(rf"{role[1]}\.js(?:\?v=[0-9a-f]{{8}})?", path)
+
+        owned = {}
+        offset = 0
+        for token in _SCRIPT_ATTR_RE.finditer(attrs):
+            if token.start() != offset:
+                raise ValueError("malformed shared bundle script attributes")
+            offset = token.end()
+            name = token[1].lower()
+            if name not in _SHARED_ATTRS:
+                continue
+            if name in owned:
+                raise ValueError("duplicate shared bundle binding")
+            if token[2] is None:
+                raise ValueError("malformed shared bundle binding")
+            owned[name] = token
+        if attrs[offset:].strip(_HTML_SPACE):
+            raise ValueError("malformed shared bundle script attributes")
+
+        role = owned.get("data-mmx-shared-bundle")
+        src = owned.get("src")
+        if role is None or role[2] not in urls or src is None or not src[2].startswith(prefix):
+            raise ValueError("malformed shared bundle script tag")
+        path = src[2][len(prefix):]
+        if (not re.fullmatch(rf"{role[2]}\.js(?:\?v=[0-9a-f]{{8}})?", path)
                 and not _SHARED_ALIAS_RE.fullmatch(path)):
-            return match[0]
+            raise ValueError("malformed shared bundle script tag")
         bound_tags += 1
-        attrs = attrs[:src.start(1)] + prefix + urls[role[1]] + attrs[src.end(1):]
-        attrs = _SHARED_BINDING_RE.sub("", attrs)
-        attrs += f' data-mmx-shared-root="{prefix or "./"}"'
-        attrs += "".join(f' data-mmx-shared-{name}="{prefix}{urls[name]}"' for name in _SHARED_ROLES)
+        values = {"src": prefix + urls[role[2]], "data-mmx-shared-root": prefix or "./"}
+        values.update((f"data-mmx-shared-{name}", prefix + urls[name]) for name in _SHARED_ROLES)
+        changes = [(token.start(2), token.end(2), values.pop(name))
+                   for name, token in owned.items() if name in values]
+        # Replace values in place, even when the optimizer appended defer.
+        for start, end, value in sorted(changes, reverse=True):
+            attrs = attrs[:start] + value + attrs[end:]
+        attrs += "".join(f' {name}="{value}"' for name, value in values.items())
         return f"<script{attrs}>{body}</script>"
 
     updated = _SHARED_TAG_RE.sub(replace_tag, text)
