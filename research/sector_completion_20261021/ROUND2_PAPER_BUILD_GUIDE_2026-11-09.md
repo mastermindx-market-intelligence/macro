@@ -92,3 +92,28 @@ The first visual critique corrected unsupported concentration wording, made both
 Watches entries, saved research, and control outcomes are interaction specimens, not observations of the Chairman's personal account. Industry directory entries express the target design; only the semiconductor registration is connected in the pinned source. Builder must complete real registrations and access/consumer proof before exposing promised content.
 
 Next: responsive and locale/theme compositions; comparison/source/snapshot depth; complete material state atlas and accessible help destinations; exact node manifest and Round 2 closeout in the existing masterplan.
+
+
+## Desktop and mobile core milestone
+
+Nine full-width and nine 390px compositions now exist on Product p-B-0: Brief, Explore, dossier, Research, Watches, Cycles, comparison, source reader and saved research. Every composition was inspected through its actual Paper screenshot. Mobile dossier and Cycles navigation uses a section selector to avoid squeezed or broken tab labels. Comparison color legends are explicit. The source-reader pair demonstrates Light EN, including readable status bar and neutral hierarchy. Saved views distinguish capture date from observation date and preserve the original question/basis; latest observation in this specimen remains 6 November rather than inventing a newer record.
+
+Current node manifest (further states and variants follow):
+- S01 | HDT-0 | S01 · Brief · 1440 · Dark EN · source snapshot
+- S02 | HLG-0 | S02 · Explore · 1440 · Dark EN · source snapshot
+- S03 | HTT-0 | S03 · Health Care dossier · 1440 · Dark EN
+- S04 | HZR-0 | S04 · Research · GMI evidence · 1440 · Dark EN
+- S05 | I5T-0 | S05 · Watches & saved research · 1440 · Dark EN · interaction specimen
+- S06 | IC8-0 | S06 · Cycles · historical specimen · 1440 · Dark EN
+- S07 | IK4-0 | S07 · Compare · exact common basis · 1440 · Dark EN
+- S08 | IQ2-0 | S08 · Source reader · 1440 · Light EN
+- M01 | IUW-0 | M01 · Brief · 390 · Dark EN
+- M02 | IZM-0 | M02 · Explore · 390 · Dark EN
+- M03 | J36-0 | M03 · Dossier · 390 · Dark EN
+- M04 | J82-0 | M04 · Research · 390 · Dark EN
+- M05 | JBX-0 | M05 · Watches · 390 · Dark EN · interaction specimen
+- M06 | JGM-0 | M06 · Cycles · 390 · Dark EN · historical specimen
+- M07 | JL2-0 | M07 · Compare · 390 · Dark EN
+- M08 | JPE-0 | M08 · Source reader · 390 · Light EN
+- S09 | JSF-0 | S09 · Saved research · 1440 · Dark EN · interaction specimen
+- M09 | JY2-0 | M09 · Saved research · 390 · Dark EN · interaction specimen
