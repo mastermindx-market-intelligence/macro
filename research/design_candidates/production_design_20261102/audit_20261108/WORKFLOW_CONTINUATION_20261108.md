@@ -2765,3 +2765,36 @@ All four public states and the complete newer R4 subtree 2I3-0 remain byte-exact
 The next bounded copy pass has two grounded corrections: the visible locked-card sentence currently promises names through a free-trial link although entitlement remains controlled by an eligible plan; a retained empty-ticker fallback calls a snapshot “today” and infers rarity from an empty list. Correct those descriptions without changing access or source-selection behavior. The latter is latent under current eligibility, which excludes rows with no active tickers; do not present it as an observed production path.
 
 PR10893 and this audit remain Draft/unmerged. PR10705's head, admission and calendar semantic-proof refusal remain unchanged, as do all wider programme, model, protected-style, independent-writer and release holds. The parent mission continues after this saved phase.
+
+
+## 57. Confluence access explanation and latent snapshot fallback — 9 November 2026
+
+[Dependent Draft PR10893](https://github.com/mastermindx-market-intelligence/Macro/pull/10893) now has head `d752f398271dd444697e662a4dab29529dcb8a45`. The visible locked-card explanation now says **Matching names require an eligible plan / 查看匹配名称需具备相应方案权限。** This matches the existing lower explanation and protected-access owner. The existing trial CTA and exact tagged application destination remain unchanged; following the link does not itself establish entitlement or hydrate names.
+
+The retained free-card empty-ticker fallback now says **No stock matches this combination in this snapshot / 此快照中暂无股票匹配此组合。** It no longer labels a snapshot as today's market state or infers historical rarity from an empty matching list.
+
+Current eligibility excludes combinations without active tickers, so the empty-card fallback is **latent under the current valid-source selector**. An explicit render-only context clears the first card's active list/count to inspect this branch. No such fixture is published as current data and no new availability rule is introduced.
+
+### Exact correction and proof
+
+Only four template text literals change. The actual saved source renders two gated cards, so four text nodes change in saved HTML. Reversing the substitutions restores both parent files byte-for-byte. Actual old/new rendered ledgers match their respective saved pages. All CSS, structure, scripts, data, values, ranks, tooltips, hrefs and source clocks remain exact. Builder, page-test file and protected JSON are unchanged; the protected artifact still equals its actual producer.
+
+**92 existing page tests pass**, PID53326, 4.98 seconds pytest/5.46 seconds process. No test mirroring the four text literals was added.
+
+Two native **visual inspections**, EN 390px dark and ZH 320px light, show the changed actual saved-page explanations with zero page errors or document/card overflow and intact 44px CTAs. These are not a new functional browser suite. Both PNGs and all five changed source/text files read back exactly.
+
+[Copy contract and captures](https://github.com/mastermindx-market-intelligence/Macro/blob/d752f398271dd444697e662a4dab29529dcb8a45/research/design_candidates/confluence_compatibility_20261109/COPY_CLARITY.md) and [source/inspection validation](https://github.com/mastermindx-market-intelligence/Macro/blob/d752f398271dd444697e662a4dab29529dcb8a45/research/design_candidates/confluence_compatibility_20261109/COPY_CLARITY_VALIDATION.json) retain exact substitutions, source identities, latent-path qualification, commands and observations. The prior 20-case layout proof remains at 27d50dc0; comparison/auth and compatibility proofs retain their earlier heads.
+
+### Paper builder alignment
+
+The R2 anatomy already uses neutral locked/public-evidence copy, so no customer frame changes in this increment. Exactly ten text nodes in existing Build root 2AG-0 now explain eligible-plan access, the unchanged trial destination, latent fallback reach and current evidence. All 171 div IDs, parents and styles stay exact. The full R4 subtree 2I3-0 remains byte-exact at 39,643 characters; token hash remains 6234666b. The protected-access module was visually inspected and the exact Build root finished.
+
+[Full Build before/after receipt](PAPER_CONFLUENCE_COPY_CLARITY_20261109.json) includes source readback, operation results and proof scope. Current R2 geometry remains documented by the prior complete responsive-layout receipt.
+
+### Next grounded visual improvements
+
+The narrow Chinese source inspection exposes an existing flex-wrap issue: the locked-state icon occupies a separate row because the text block has a 180px minimum width. Correct the narrow grouping while retaining text, href, native focus and primary target size.
+
+Read-only design judgment also identifies a useful explanatory figure inside the existing card method disclosure: show a per-month share followed by an equal-weight average across months. It should replace the first prose paragraph, preserve the next-close/21-trading-day outcome definition and pooled-rate distinction, add no sample values and remain complete without motion or JavaScript. Keep the hero's abstract convergence motif static; animated activity would not explain a new fact and could make retained data seem live.
+
+PR10893 and the audit remain Draft/unmerged. Incumbent PR10705 admission, shared-navigation ownership and all wider source, model, programme and release boundaries remain.
