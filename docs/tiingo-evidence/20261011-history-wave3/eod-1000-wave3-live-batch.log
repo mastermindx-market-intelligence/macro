@@ -1,0 +1,53 @@
+{"schema": "tiingo_attended_eod_batch.v1", "observed_at_utc": "2026-10-11T20:46:57.412141+00:00", "source_logic_sha": "bddd8da1f5c5225b258ff4d6d35ce72fca5a09fb", "calling_carrier_sha": "6eccb5aa3d3f640b8aea8dc61653bc0b4b5e9bde", "catalogue_sha256": "015cda96b828344e26f5937f426cbc40a7b8fe2edc9a023a342a3743799abcf0", "reacquired_catalogue": false, "selection_scope": "third additional 1000 exact-identifier USD stocks/ETFs on US exchanges in digest-bound catalogue pages; acquisition only", "request_cap": 1000, "completed_symbols_excluded": 2555, "full_catalogue_candidate_count_before_exchange_filter": 47960, "account_hourly_allocation": 20000, "account_daily_allocation": 150000, "account_monthly_bandwidth_gb": 100, "preflight_free_gib": 257.1897392272949, "largest_observed_full_eod_response_bytes": 4087908, "conservative_batch_bandwidth_gb_at_largest_observed_response": 4.087908, "free_reserve_gib": 35, "canonical_identity_admitted": false, "pit_backtest_eligible": false, "attended_bounded_process": true, "persistent_queue_created": false}
+{"phase": "progress", "elapsed_seconds": 52.183, "attempted": 25, "ok": 25, "new": 25, "failed": 0, "row_hints": 44885, "bytes": 10251290, "errors": []}
+{"phase": "progress", "elapsed_seconds": 119.567, "attempted": 50, "ok": 50, "new": 50, "failed": 0, "row_hints": 116510, "bytes": 26967372, "errors": []}
+{"phase": "progress", "elapsed_seconds": 185.55, "attempted": 75, "ok": 75, "new": 75, "failed": 0, "row_hints": 189029, "bytes": 44011247, "errors": []}
+{"phase": "progress", "elapsed_seconds": 271.43, "attempted": 100, "ok": 100, "new": 100, "failed": 0, "row_hints": 247546, "bytes": 57446304, "errors": []}
+{"phase": "progress", "elapsed_seconds": 317.743, "attempted": 125, "ok": 125, "new": 125, "failed": 0, "row_hints": 286610, "bytes": 66349896, "errors": []}
+{"phase": "progress", "elapsed_seconds": 367.215, "attempted": 150, "ok": 150, "new": 150, "failed": 0, "row_hints": 325879, "bytes": 75191483, "errors": []}
+{"phase": "progress", "elapsed_seconds": 409.286, "attempted": 175, "ok": 175, "new": 175, "failed": 0, "row_hints": 354235, "bytes": 81768404, "errors": []}
+{"phase": "progress", "elapsed_seconds": 457.803, "attempted": 200, "ok": 200, "new": 200, "failed": 0, "row_hints": 397410, "bytes": 91539952, "errors": []}
+{"phase": "progress", "elapsed_seconds": 518.31, "attempted": 225, "ok": 225, "new": 225, "failed": 0, "row_hints": 435916, "bytes": 100197234, "errors": []}
+{"phase": "progress", "elapsed_seconds": 567.216, "attempted": 250, "ok": 250, "new": 250, "failed": 0, "row_hints": 482111, "bytes": 110812565, "errors": []}
+{"phase": "progress", "elapsed_seconds": 611.823, "attempted": 275, "ok": 275, "new": 275, "failed": 0, "row_hints": 520553, "bytes": 119378882, "errors": []}
+{"phase": "progress", "elapsed_seconds": 662.188, "attempted": 300, "ok": 300, "new": 300, "failed": 0, "row_hints": 567936, "bytes": 129926329, "errors": []}
+{"phase": "progress", "elapsed_seconds": 717.817, "attempted": 325, "ok": 325, "new": 325, "failed": 0, "row_hints": 612697, "bytes": 139583458, "errors": []}
+{"phase": "progress", "elapsed_seconds": 777.709, "attempted": 350, "ok": 350, "new": 350, "failed": 0, "row_hints": 659048, "bytes": 150343356, "errors": []}
+{"phase": "progress", "elapsed_seconds": 826.307, "attempted": 375, "ok": 375, "new": 375, "failed": 0, "row_hints": 700824, "bytes": 159773644, "errors": []}
+{"phase": "progress", "elapsed_seconds": 890.294, "attempted": 400, "ok": 400, "new": 400, "failed": 0, "row_hints": 739858, "bytes": 168672627, "errors": []}
+{"phase": "progress", "elapsed_seconds": 959.294, "attempted": 425, "ok": 425, "new": 425, "failed": 0, "row_hints": 795519, "bytes": 181384829, "errors": []}
+{"phase": "progress", "elapsed_seconds": 1002.567, "attempted": 450, "ok": 450, "new": 450, "failed": 0, "row_hints": 835123, "bytes": 190217696, "errors": []}
+{"phase": "progress", "elapsed_seconds": 1058.824, "attempted": 475, "ok": 475, "new": 475, "failed": 0, "row_hints": 879873, "bytes": 200504055, "errors": []}
+{"phase": "progress", "elapsed_seconds": 1126.183, "attempted": 500, "ok": 500, "new": 500, "failed": 0, "row_hints": 936981, "bytes": 213736821, "errors": []}
+{"phase": "progress", "elapsed_seconds": 1170.619, "attempted": 525, "ok": 525, "new": 525, "failed": 0, "row_hints": 969564, "bytes": 220941979, "errors": []}
+{"phase": "progress", "elapsed_seconds": 1248.952, "attempted": 550, "ok": 550, "new": 550, "failed": 0, "row_hints": 1021912, "bytes": 233041568, "errors": []}
+{"phase": "progress", "elapsed_seconds": 1304.499, "attempted": 575, "ok": 575, "new": 575, "failed": 0, "row_hints": 1060737, "bytes": 241459284, "errors": []}
+{"phase": "progress", "elapsed_seconds": 1355.389, "attempted": 600, "ok": 600, "new": 600, "failed": 0, "row_hints": 1084272, "bytes": 246607204, "errors": []}
+{"phase": "progress", "elapsed_seconds": 1421.22, "attempted": 625, "ok": 625, "new": 625, "failed": 0, "row_hints": 1149102, "bytes": 261075688, "errors": []}
+{"phase": "progress", "elapsed_seconds": 1470.314, "attempted": 650, "ok": 650, "new": 650, "failed": 0, "row_hints": 1178594, "bytes": 267482590, "errors": []}
+{"phase": "progress", "elapsed_seconds": 1526.311, "attempted": 675, "ok": 675, "new": 675, "failed": 0, "row_hints": 1219940, "bytes": 276624297, "errors": []}
+{"phase": "progress", "elapsed_seconds": 1579.683, "attempted": 700, "ok": 700, "new": 700, "failed": 0, "row_hints": 1268925, "bytes": 287525342, "errors": []}
+{"phase": "progress", "elapsed_seconds": 1640.786, "attempted": 725, "ok": 725, "new": 725, "failed": 0, "row_hints": 1336826, "bytes": 303867375, "errors": []}
+{"phase": "progress", "elapsed_seconds": 1694.781, "attempted": 750, "ok": 750, "new": 750, "failed": 0, "row_hints": 1385025, "bytes": 314613048, "errors": []}
+{"phase": "progress", "elapsed_seconds": 1789.922, "attempted": 775, "ok": 775, "new": 775, "failed": 0, "row_hints": 1454571, "bytes": 330956092, "errors": []}
+{"phase": "progress", "elapsed_seconds": 1896.766, "attempted": 800, "ok": 800, "new": 800, "failed": 0, "row_hints": 1522297, "bytes": 346972860, "errors": []}
+{"phase": "progress", "elapsed_seconds": 1958.096, "attempted": 825, "ok": 825, "new": 825, "failed": 0, "row_hints": 1574501, "bytes": 358820555, "errors": []}
+{"phase": "progress", "elapsed_seconds": 2010.009, "attempted": 850, "ok": 850, "new": 850, "failed": 0, "row_hints": 1640104, "bytes": 373694494, "errors": []}
+{"phase": "progress", "elapsed_seconds": 2059.868, "attempted": 875, "ok": 875, "new": 875, "failed": 0, "row_hints": 1687720, "bytes": 384187913, "errors": []}
+{"phase": "progress", "elapsed_seconds": 2115.11, "attempted": 900, "ok": 900, "new": 900, "failed": 0, "row_hints": 1752563, "bytes": 399007061, "errors": []}
+{"phase": "progress", "elapsed_seconds": 2172.367, "attempted": 925, "ok": 925, "new": 925, "failed": 0, "row_hints": 1802756, "bytes": 410169750, "errors": []}
+{"phase": "progress", "elapsed_seconds": 2216.953, "attempted": 950, "ok": 950, "new": 950, "failed": 0, "row_hints": 1834870, "bytes": 417300333, "errors": []}
+{"phase": "progress", "elapsed_seconds": 2273.948, "attempted": 975, "ok": 975, "new": 975, "failed": 0, "row_hints": 1889121, "bytes": 429448693, "errors": []}
+{"phase": "progress", "elapsed_seconds": 2351.934, "attempted": 1000, "ok": 1000, "new": 1000, "failed": 0, "row_hints": 1938218, "bytes": 440364083, "errors": []}
+{
+  "attempted": 1000,
+  "bytes": 440364083,
+  "elapsed_seconds": 2351.934,
+  "errors": [],
+  "failed": 0,
+  "free_gib": 256.8630065917969,
+  "new": 1000,
+  "ok": 1000,
+  "phase": "settled",
+  "row_hints": 1938218
+}

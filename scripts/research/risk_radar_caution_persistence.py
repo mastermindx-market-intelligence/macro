@@ -200,7 +200,7 @@ def build_result() -> dict:
     subs = subscore_series(sigs, calib)
     idx = sigs.index
     known = subs.notna().any(axis=1)
-    state = state_series(subs, calib).reindex(idx).where(known)
+    state = state_series(subs, calib, sigs=sigs).reindex(idx).where(known)
     spy = _spy(drop_missing=False)
     labels = native_forward_labels(spy, idx, 21, .05)
     canonical = {

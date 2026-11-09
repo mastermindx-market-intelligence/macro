@@ -1,0 +1,202 @@
+{
+  "store_rows": 16472,
+  "store_series": 54,
+  "rows": [
+    {
+      "series": "AWHMAN",
+      "role": "(custom)",
+      "present": true,
+      "earliest_vintage": "1997-01-10",
+      "latest_vintage": "2026-09-04",
+      "n_vintages": 356,
+      "n_periods": 357,
+      "verdict": "OK"
+    },
+    {
+      "series": "PERMIT",
+      "role": "(custom)",
+      "present": true,
+      "earliest_vintage": "1999-09-17",
+      "latest_vintage": "2026-09-17",
+      "n_vintages": 321,
+      "n_periods": 325,
+      "verdict": "OK"
+    },
+    {
+      "series": "NEWORDER",
+      "role": "(custom)",
+      "present": true,
+      "earliest_vintage": "1997-03-26",
+      "latest_vintage": "2026-08-26",
+      "n_vintages": 354,
+      "n_periods": 354,
+      "verdict": "OK"
+    },
+    {
+      "series": "CMRMTSPL",
+      "role": "(custom)",
+      "present": true,
+      "earliest_vintage": "2013-06-24",
+      "latest_vintage": "2026-08-26",
+      "n_vintages": 155,
+      "n_periods": 160,
+      "verdict": "THIN"
+    },
+    {
+      "series": "INDPRO",
+      "role": "(custom)",
+      "present": true,
+      "earliest_vintage": "1997-01-17",
+      "latest_vintage": "2026-09-18",
+      "n_vintages": 356,
+      "n_periods": 357,
+      "verdict": "OK"
+    },
+    {
+      "series": "ISRATIO",
+      "role": "(custom)",
+      "present": true,
+      "earliest_vintage": "1997-04-15",
+      "latest_vintage": "2026-09-16",
+      "n_vintages": 354,
+      "n_periods": 354,
+      "verdict": "OK"
+    },
+    {
+      "series": "MNFCTRIRSA",
+      "role": "(custom)",
+      "present": true,
+      "earliest_vintage": "2013-07-15",
+      "latest_vintage": "2026-09-16",
+      "n_vintages": 159,
+      "n_periods": 159,
+      "verdict": "THIN"
+    },
+    {
+      "series": "AMTMUO",
+      "role": "(custom)",
+      "present": true,
+      "earliest_vintage": "2011-07-05",
+      "latest_vintage": "2026-09-02",
+      "n_vintages": 181,
+      "n_periods": 183,
+      "verdict": "THIN"
+    },
+    {
+      "series": "AMTMVS",
+      "role": "(custom)",
+      "present": true,
+      "earliest_vintage": "2011-07-05",
+      "latest_vintage": "2026-09-02",
+      "n_vintages": 181,
+      "n_periods": 183,
+      "verdict": "THIN"
+    },
+    {
+      "series": "CAPUTLG3344S",
+      "role": "(custom)",
+      "present": true,
+      "earliest_vintage": "2022-09-15",
+      "latest_vintage": "2026-09-18",
+      "n_vintages": 48,
+      "n_periods": 49,
+      "verdict": "SHALLOW"
+    },
+    {
+      "series": "CAPUTLG334S",
+      "role": "(custom)",
+      "present": true,
+      "earliest_vintage": "2015-03-16",
+      "latest_vintage": "2026-09-18",
+      "n_vintages": 138,
+      "n_periods": 139,
+      "verdict": "SHALLOW"
+    },
+    {
+      "series": "CAPUTLG331S",
+      "role": "(custom)",
+      "present": true,
+      "earliest_vintage": "2015-03-16",
+      "latest_vintage": "2026-09-18",
+      "n_vintages": 138,
+      "n_periods": 139,
+      "verdict": "SHALLOW"
+    },
+    {
+      "series": "PCU334413334413",
+      "role": "(custom)",
+      "present": true,
+      "earliest_vintage": "2015-05-14",
+      "latest_vintage": "2026-09-10",
+      "n_vintages": 136,
+      "n_periods": 137,
+      "verdict": "SHALLOW"
+    },
+    {
+      "series": "PCU331110331110",
+      "role": "(custom)",
+      "present": true,
+      "earliest_vintage": "2015-05-14",
+      "latest_vintage": "2026-09-10",
+      "n_vintages": 136,
+      "n_periods": 137,
+      "verdict": "SHALLOW"
+    },
+    {
+      "series": "IPG2211S",
+      "role": "(custom)",
+      "present": true,
+      "earliest_vintage": "2015-03-16",
+      "latest_vintage": "2026-09-18",
+      "n_vintages": 138,
+      "n_periods": 139,
+      "verdict": "SHALLOW"
+    },
+    {
+      "series": "CAPUTLG2211S",
+      "role": "(custom)",
+      "present": true,
+      "earliest_vintage": "2015-03-16",
+      "latest_vintage": "2026-09-18",
+      "n_vintages": 138,
+      "n_periods": 139,
+      "verdict": "SHALLOW"
+    },
+    {
+      "series": "WPU0543",
+      "role": "(custom)",
+      "present": true,
+      "earliest_vintage": "2015-04-14",
+      "latest_vintage": "2026-09-10",
+      "n_vintages": 137,
+      "n_periods": 138,
+      "verdict": "SHALLOW"
+    }
+  ],
+  "summary": {
+    "ok": [
+      "AWHMAN",
+      "PERMIT",
+      "NEWORDER",
+      "INDPRO",
+      "ISRATIO"
+    ],
+    "thin_or_shallow": [
+      "CMRMTSPL",
+      "MNFCTRIRSA",
+      "AMTMUO",
+      "AMTMVS",
+      "CAPUTLG3344S",
+      "CAPUTLG334S",
+      "CAPUTLG331S",
+      "PCU334413334413",
+      "PCU331110331110",
+      "IPG2211S",
+      "CAPUTLG2211S",
+      "WPU0543"
+    ],
+    "absent": []
+  },
+  "alfred_probe": {},
+  "note": "Base-effect on ABSENT series (notably core PCE/CPI) has no point-in-time path in the local store today; route those latest-revision with revised=True (the base period is a settled historical print, so a deterministic base signal is still defensible) and label them in the UI. See plan \u00a72 S3."
+}

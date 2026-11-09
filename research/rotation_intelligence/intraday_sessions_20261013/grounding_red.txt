@@ -1,0 +1,41 @@
+F...........F                                                            [100%]
+=================================== FAILURES ===================================
+_______ test_intraday_comparisons_survive_flat_daily_leaders_and_render ________
+
+tmp_path = PosixPath('/private/tmp/rotation-9196-grounding-red/test_intraday_comparisons_surv0')
+
+    def test_intraday_comparisons_survive_flat_daily_leaders_and_render(tmp_path):
+        pulse = {'mode':'live', 'as_of_quotes':'2026-10-13T15:29:00+00:00', 'baskets':[
+            {'id':'ai_semiconductors', 'live_ew_chg_pct':0,
+             'intraday_comparison':_observation_comparison(-1.960784)},
+            {'id':'us_sector_health', 'live_ew_chg_pct':0,
+             'intraday_comparison':_observation_comparison(1.010101)},
+        ]}
+        root = make_root(tmp_path, basket_pulse=pulse)
+        packet = mp.build_packet(root)
+>       assert packet['leaders']['up'] == [] and packet['leaders']['down'] == []
+               ^^^^^^^^^^^^^^^^^
+E       KeyError: 'leaders'
+
+tests/test_market_packet.py:1789: KeyError
+___ test_intraday_comparison_is_bounded_and_does_not_forward_trade_authority ___
+
+tmp_path = PosixPath('/private/tmp/rotation-9196-grounding-red/test_intraday_comparison_is_bo0')
+
+    def test_intraday_comparison_is_bounded_and_does_not_forward_trade_authority(tmp_path):
+        comparison = _observation_comparison(confidence=0.99, buy=True, target=999)
+        pulse = {'mode':'delayed','baskets':[
+            {'id':f'group_{i}', 'live_ew_chg_pct':0,'intraday_comparison':comparison}
+            for i in range(20)]}
+        packet = mp.build_packet(make_root(tmp_path, basket_pulse=pulse))
+>       assert len(packet['leaders']['intraday']) <= 2 * mp.LEADERS_PER_SIDE
+                   ^^^^^^^^^^^^^^^^^
+E       KeyError: 'leaders'
+
+tests/test_market_packet.py:1822: KeyError
+
+NOTE: sparse worktree — data, mockups, site, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_market_packet.py::test_intraday_comparisons_survive_flat_daily_leaders_and_render
+FAILED tests/test_market_packet.py::test_intraday_comparison_is_bounded_and_does_not_forward_trade_authority
+2 failed, 11 passed, 178 deselected in 2.29s

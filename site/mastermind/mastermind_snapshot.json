@@ -1,4 +1,12 @@
 {
+  "lifecycle_source": {
+    "repository": "mastermindx-market-intelligence/Mastermind",
+    "path": "portfolio/registry.py",
+    "commit": "42ba5c76eb7ce1fdf44f3b44f332928668939df4",
+    "blob": "f5eb632d8f2d8dfcdbe11abb19076f9d746b38fe",
+    "recorded_at": "2026-08-11T22:13:49Z",
+    "effective_at": null
+  },
   "schema": "mastermind_snapshot.v1",
   "generated_at": "2026-07-29T22:25:01Z",
   "default_book": "autonomous",

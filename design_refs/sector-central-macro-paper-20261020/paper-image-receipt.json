@@ -1,0 +1,19 @@
+{
+  "scope": "Unedited screenshots read from the actual Paper file; reference observations only, not candidate browser proof or design approval",
+  "screenshots": [
+    {
+      "file": "paper-dossier-6L4C-0.jpg",
+      "bytes": 206579,
+      "sha256": "bbace2ad537cd91539a7086510b48893c4e74eb490e8a1796383275da53bee18",
+      "format": "image/jpeg",
+      "original_paper_bytes": true
+    },
+    {
+      "file": "paper-research-mobile-6LSO-0.jpg",
+      "bytes": 142693,
+      "sha256": "5055c6865dca94b4df7fbdb35fb2383b09fd2de2ac97b51f2127c11f7458fd59",
+      "format": "image/jpeg",
+      "original_paper_bytes": true
+    }
+  ]
+}

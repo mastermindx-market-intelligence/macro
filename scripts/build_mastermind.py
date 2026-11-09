@@ -28,9 +28,9 @@ from lib.pages import write_page  # noqa: E402
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
 log = logging.getLogger("build_mastermind")
 
-# Shared nav/theme assets + the page's own renderer. The tier-gated snapshot JSON is
-# produced by the governed cross-repository publication lane, not here.
-ASSETS = ("theme.css", "theme.js", "mastermind.js")
+# Shared nav/theme assets + the page's own renderer. The snapshot JSON is produced by
+# the governed Portfolio publisher, not here.
+ASSETS = ("theme.css", "theme.js", "mastermind.js", "mm_brain.js", "mm_brain_visuals.js", "mm_brain_visuals.css", "mm_brain_presentation.js", "mm_brain_markdown.js", "mm_brain_finance.js", "mm_brain_finance.css", "mm_brain_finance_math_v1.js", "mm_brain_math.js")
 
 
 def main() -> int:

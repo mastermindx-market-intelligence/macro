@@ -21,10 +21,12 @@
       empty: "No book has been published yet.",
       off: "The Portfolio snapshot is unavailable. The live Portfolio product may still be current.",
       leadership: "Leadership", conviction: "Conviction", none: "—",
-      open: "Open", closed: "Closed", active: "Active", archived: "Archived",
+      open: "Open", closed: "Closed", active: "Active", archived: "Archived", unknownLifecycle: "Status unavailable",
       archivedBook: "Archived book", supersededBy: "Superseded by", archivedReason: "Reason",
       fresh: "Snapshot current", stale: "Stale snapshot", unknownFreshness: "Snapshot time unavailable",
-      generated: "Generated", staleDetail: "These are last-known bytes; verify the live Portfolio dashboard before relying on them.",
+      generated: "Data snapshot", staleDetail: "These are last-known bytes; verify the live Portfolio dashboard before relying on them.",
+      lifecycleRecorded: "Book status source recorded",
+      lifecycleDetail: "This source date does not update the holdings snapshot or establish when live book status changed.",
       signinTitle: "Sign in to view the Portfolio snapshot",
       signinBody: "The page shell is public, but the portfolio payload is protected.",
       signinAction: "Sign in",
@@ -46,10 +48,12 @@
       empty: "尚未发布账本。",
       off: "Portfolio 快照暂不可用；实时 Portfolio 产品仍可能保持最新。",
       leadership: "领涨", conviction: "信念", none: "—",
-      open: "开市", closed: "休市", active: "运行中", archived: "已归档",
+      open: "开市", closed: "休市", active: "运行中", archived: "已归档", unknownLifecycle: "状态不可用",
       archivedBook: "已归档账本", supersededBy: "后继账本", archivedReason: "原因",
       fresh: "快照为当前版本", stale: "快照已过期", unknownFreshness: "快照时间不可用",
-      generated: "生成时间", staleDetail: "这是最后已知数据；使用前请在实时 Portfolio 面板核实。",
+      generated: "数据快照时间", staleDetail: "这是最后已知数据；使用前请在实时 Portfolio 面板核实。",
+      lifecycleRecorded: "账本状态来源记录时间",
+      lifecycleDetail: "该来源日期不会更新持仓快照，也不能说明实时账本状态何时发生变化。",
       signinTitle: "登录以查看 Portfolio 快照",
       signinBody: "页面外壳公开，但组合数据受保护。",
       signinAction: "登录",
@@ -102,10 +106,21 @@
     };
   }
 
+  function accessHref(value, fallback, pathname) {
+    if (typeof value !== "string" || !/^\/(?!\/)/.test(value) || /[\\\u0000-\u0020]/.test(value)) return fallback;
+    try {
+      var parsed = new URL(value, "https://www.mastermind-x.com");
+      if (parsed.origin === "https://www.mastermind-x.com" && parsed.pathname === pathname) {
+        return parsed.pathname + parsed.search;
+      }
+    } catch (e) { /* retain the intended local action */ }
+    return fallback;
+  }
+
   function accessState(status, body, lang) {
     body = body && typeof body === "object" ? body : {};
-    if (Number(status) === 401) return { kind: "signin", href: body.signin_url || "/?signin=1" };
-    if (Number(status) === 403) return { kind: "upgrade", href: body.upgrade_url || "/plans.html?upgrade=1&plan=pro" };
+    if (Number(status) === 401) return { kind: "signin", href: accessHref(body.signin_url, "/?signin=1", "/") };
+    if (Number(status) === 403) return { kind: "upgrade", href: accessHref(body.upgrade_url, "/plans.html?upgrade=1&plan=pro", "/plans.html") };
     return { kind: "unavailable", href: "" };
   }
 
@@ -113,9 +128,11 @@
     book = book && typeof book === "object" ? book : {};
     var L = LBL[language(lang)];
     var archived = book.archived === true || book.active === false || book.status === "archived";
+    var active = !archived && (book.active === true || book.status === "active");
     return {
       archived: archived,
-      label: archived ? L.archived : L.active,
+      active: active,
+      label: archived ? L.archived : (active ? L.active : L.unknownLifecycle),
       supersededBy: archived ? (book.superseded_by || "") : "",
       reason: archived ? (book.archived_reason || "") : ""
     };
@@ -195,16 +212,29 @@
     if (!SNAP) { state.innerHTML = ""; return; }
     var L = tt(), freshness = snapshotFreshness(SNAP.generated_at, Date.now());
     var stamp = formatStamp(SNAP.generated_at);
+    var dataTime = stamp ? " · " + esc(L.generated + ": ") + '<time class="mm-data-time" datetime="' +
+      esc(SNAP.generated_at) + '">' + esc(stamp) + "</time>" : "";
     if (freshness.state === "fresh") {
       state.innerHTML = '<div class="mm-notice mm-notice-fresh"><strong>' + esc(L.fresh) + "</strong>" +
-        (stamp ? " · " + esc(L.generated + ": " + stamp) : "") + "</div>";
+        dataTime + "</div>";
     } else if (freshness.state === "stale") {
       state.innerHTML = '<div class="mm-notice mm-notice-stale"><strong>' + esc(L.stale) + "</strong>" +
-        (stamp ? " · " + esc(L.generated + ": " + stamp) : "") +
+        dataTime +
         '<div class="sm">' + esc(L.staleDetail) + "</div></div>";
     } else {
       state.innerHTML = '<div class="mm-notice mm-notice-stale"><strong>' + esc(L.unknownFreshness) + "</strong>" +
         '<div class="sm">' + esc(L.staleDetail) + "</div></div>";
+    }
+    // Optional provenance describes the lifecycle overlay, never a newer holdings clock.
+    var source = SNAP.lifecycle_source;
+    if (source && source.repository === "mastermindx-market-intelligence/Mastermind" &&
+        source.path === "portfolio/registry.py" && /^[0-9a-f]{40}$/.test(source.commit || "") &&
+        typeof source.recorded_at === "string" && isFinite(Date.parse(source.recorded_at))) {
+      var href = "https://github.com/" + source.repository + "/blob/" + source.commit + "/" + source.path;
+      state.innerHTML += '<p class="muted sm mm-lifecycle-source"><a href="' + esc(href) +
+        '" target="_blank" rel="noopener">' + esc(L.lifecycleRecorded) + '</a>: <time class="mm-lifecycle-time" datetime="' +
+        esc(source.recorded_at) + '">' + esc(formatStamp(source.recorded_at)) + "</time>. " +
+        esc(L.lifecycleDetail) + "</p>";
     }
   }
 
@@ -350,11 +380,11 @@
     var byId = {};
     books.forEach(function (b) { byId[b.id] = b; });
     if (ACTIVE && byId[ACTIVE]) return ACTIVE;
-    if (SNAP.default_book && byId[SNAP.default_book] && !bookLifecycle(byId[SNAP.default_book], curLang()).archived) {
+    if (SNAP.default_book && byId[SNAP.default_book] && bookLifecycle(byId[SNAP.default_book], curLang()).active) {
       return SNAP.default_book;
     }
     for (var i = 0; i < books.length; i++) {
-      if (!bookLifecycle(books[i], curLang()).archived) return books[i].id;
+      if (bookLifecycle(books[i], curLang()).active) return books[i].id;
     }
     return books.length ? books[0].id : null;
   }
