@@ -412,7 +412,7 @@ html[data-theme="light"] .cs-tipped:hover,html[data-theme="light"] .cs-tipped:fo
         </div>
         {% else %}
         <div class="lc-foot" style="border-top:0;padding-top:6px;margin-top:8px">
-          <span class="chip"><span class="l-en">No stock matches this one today — it fires rarely.</span><span class="l-zh">今日无股票匹配此组合——它触发较少。</span></span>
+          <span class="chip"><span class="l-en">No stock matches this combination in this snapshot.</span><span class="l-zh">此快照中暂无股票匹配此组合。</span></span>
         </div>
         {% endif %}
       {% else %}
@@ -428,8 +428,8 @@ html[data-theme="light"] .cs-tipped:hover,html[data-theme="light"] .cs-tipped:fo
               <span class="l-zh">{{ c.active_count }} 只股票在此快照匹配</span>
             </b>
             <span class="sub">
-              <span class="l-en">Unlock this line-up's matching tickers with the free trial.</span>
-              <span class="l-zh">开启免费试用即可查看此组合匹配的股票。</span>
+              <span class="l-en">Matching names require an eligible plan.</span>
+              <span class="l-zh">查看匹配名称需具备相应方案权限。</span>
             </span>
           </span>
           <a class="btn" href="{{ cta_url }}"><span class="l-en">Start free trial</span><span class="l-zh">开始免费试用</span></a>

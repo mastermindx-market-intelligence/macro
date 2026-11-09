@@ -1,6 +1,10 @@
 # Confluence compatibility and truthful actions
 
-## Current continuation: responsive card reading path
+## Current continuation: access and snapshot copy
+
+The locked explanation now names the existing eligible-plan requirement. A retained empty-match fallback describes only its snapshot and no longer infers today’s market state or rarity. [COPY_CLARITY.md](COPY_CLARITY.md) records the four text substitutions, exact inverse/source checks, **92 existing page tests** and two native visual inspections. Access, trial CTA, hrefs, source selection, layout and scripts remain unchanged.
+
+## Previous continuation: responsive card reading path
 
 The existing criteria now share the desktop header grid with identity and paired evidence, stacking below 768px. [RESPONSIVE_LAYOUT.md](RESPONSIVE_LAYOUT.md) gives the exact layout/keyboard contract, before/after captures and **92 page tests /20 browser cases in 20 contexts**. Current saved 960/1440px cards bring company actions up 107.1875px without smaller text or controls. Two 960px cases retain an explicitly measured parent shared-navigation overflow; all card descendants remain contained.
 
