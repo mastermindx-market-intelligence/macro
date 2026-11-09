@@ -1,21 +1,32 @@
 ---
-key: "MERGE-ARM-EXPIRY-14D-20261109"
-question: "What expiry rule does this record establish for a merge arm after fourteen days without a PR update?"
-answer: "A merge-on-green auto-merge arm EXPIRES after 14 days without a PR update. An expired arm is disarmed (never a PR close); one tracking comment linking this DEC is posted; re-arming is the author's explicit act after refreshing the branch onto current main."
-rationale: "The original ruling attributes queue delay to stale armed PRs and cites #10873. Its reported counts and throughput remain historical claims of that source; this schema repair does not independently reproduce them or establish a controller change."
+key: MERGE-ARM-EXPIRY-14D-20261109
+question: "How should stale merge-on-green arms be retired without closing their pull requests?"
+answer: >-
+  Disarm open auto-merge requests that have had no PR update for more than
+  14 days and whose heads are behind or conflicting. Preserve the PR, add
+  one tracking comment linked to this decision, and require the author to
+  refresh the branch onto current main before explicitly re-arming.
+rationale: >-
+  The original Meta-CEO ruling reports about 200 armed PRs, a throughput
+  of about 2-4 merges per hour, and an oldest arm of 48 days. It identifies
+  stale arms holding queue position as an arm-hygiene problem. This
+  frontmatter repair records that published rationale without independently
+  re-verifying those measurements or changing the sweep procedure.
 alternatives:
   - option: "(not recorded)"
-    why_not: "The original ruling does not record rejected alternatives. This metadata repair does not reconstruct an unrecorded decision history."
+    why_not: >-
+      The original published ruling does not document an alternatives
+      comparison; this schema repair does not infer one.
 evidence:
-  - "Original authored ruling: https://github.com/mastermindx-market-intelligence/Macro/blob/6e21083a349da8750ff738cb8d701c92743b5cd6/agentos/decisions/DEC-MERGE-ARM-EXPIRY-14D-20261109.md ; blob bccd707f939993af9e9b1ae641648a75f9149c10"
-  - "Original authority attribution: Meta-CEO ruling, card t_b5022936; executed by mastermind-ceo (delivery owner)"
-  - "Observed missing-frontmatter failure: https://github.com/mastermindx-market-intelligence/Macro/actions/runs/42574058849/job/129017692345"
-  - "Metadata-only repair and limitations: https://github.com/mastermindx-market-intelligence/Macro/pull/7254#issuecomment-6731531428"
+  - "https://github.com/mastermindx-market-intelligence/macro/commit/6e21083a349da8750ff738cb8d701c92743b5cd6"
+  - "Original ruling: Meta-CEO card t_b5022936"
 affects:
-  - ".github/workflows/merge-on-green.yml"
-confidence: "low"
-reversibility: "easy"
-decided_by: "Meta-CEO ruling, card t_b5022936; executed by mastermind-ceo (delivery owner)"
+  - "WS:CI-MERGE-CONTROL-PLANE"
+# These two metadata judgments are recorded by the H4 schema-repair owner.
+# They were not specified in the original published ruling.
+confidence: medium
+reversibility: easy
+decided_by: meta-ceo
 decided_at: 2026-11-09
 ---
 
