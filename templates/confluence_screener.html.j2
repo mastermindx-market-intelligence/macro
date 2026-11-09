@@ -12,29 +12,33 @@
    Bilingual (EN/ZH) via the local t() macro + .l-en/.l-zh spans.
    Self-contained <style>; links theme.css for the token system.
    Doctrine: plain words on the glance tier (the word "confluence"
-   stays in the slug, never in copy); "X wins per 10" idiom; every
+   stays in the slug, never in copy); paired monthly win averages; every
    panel answers "so what do I do" (here: watch / research, not buy).
 
-   Context contract (builder passes EXACTLY this):
+   Builder context includes:
      generated_utc, asof, source_status, source_generation, source_built,
       universe_n, split_date,
-     n_active_total, cta_url, premium_payload_url,
+     n_active_total, cta_url, premium_payload_url, premium_payload_schema,
+     baseline_test_pct, baseline_train_pct,
      combos = [ { rank, combo_id, name_en, name_zh,
        legs: [ {en, zh, tf} ],          # tf "D" | "W"
        wr_test_pct, wr_train_pct,
        n_test, months_test, n_train, months_train,
        n_fires, first_fire, last_fire, fires_per_year,
-       edge_test_pp, consistent, is_free,
+       edge_test_pp, edge_train_pp, consistent, is_free,
        active_tickers: [ {ticker, name} ],   # [] for gated combos
        active_count } ]                       # length 0-3
    ===================================================================== #}
 {% macro t(en, zh='') -%}
 <span class="l-en">{{ en }}</span><span class="l-zh">{{ zh if zh else en }}</span>
 {%- endmacro %}
-{# Segmented "wins per 10" bar: fills round(v/10) of 10 cells. `tone` = free|gated #}
-{% macro wins_bar(pct, tone='free') -%}
-{% set _filled = ((pct or 0) / 10)|round|int %}
-<span class="w10 tone-{{ tone }}" aria-hidden="true">{% for i in range(10) %}<i class="{{ 'on' if i < _filled else '' }}"></i>{% endfor %}</span>
+{# Display supplied percentage-point deltas without rounding a nonzero sign to zero. #}
+{% macro comparison_delta(value) -%}
+{%- if value is none -%}{{ t('Unavailable', '暂无数据') }}
+{%- elif value == 0 -%}0.0
+{%- elif value|abs < 0.1 -%}{{ '%+.2g'|format(value) }}
+{%- else -%}{{ '%+.1f'|format(value) }}
+{%- endif -%}
 {%- endmacro %}
 <!DOCTYPE html>
 <html lang="en">
@@ -93,7 +97,10 @@ a{color:var(--ink-link, var(--link));text-decoration:none}
   padding:20px 22px 18px;transition:border-color .16s,box-shadow .16s,transform .16s}
 .lc:hover{border-color:var(--line);background:var(--panel)}
 .lc.free{border-color:var(--line)}
-.lc-top{display:grid;grid-template-columns:auto 1fr auto;gap:16px;align-items:start}
+.lc-top{display:grid;grid-template-columns:auto minmax(0,1fr) auto;grid-template-rows:auto 1fr;
+  grid-template-areas:"rank title wr" ". legs wr";gap:16px;align-items:start}
+.lc-rank{grid-area:rank}.lc-title-wrap{grid-area:title}.lc-wr{grid-area:wr}
+.lc-top>.legs{grid-area:legs;margin:0;min-width:0}
 /* rank chip — rank_score IS a real ordering, so the numeral carries information */
 .lc-rank{font-family:var(--font-mono);font-size:13px;font-weight:700;color:var(--muted);
   border:1px solid var(--line);border-radius:9px;padding:5px 9px;line-height:1;letter-spacing:.02em;white-space:nowrap;margin-top:2px}
@@ -103,12 +110,19 @@ a{color:var(--ink-link, var(--link));text-decoration:none}
 /* win-rate hero block — the number is the type hero, honestly paired with the older era */
 .lc-title-wrap{min-width:0}
 .lc-wr{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--sp-2,8px) var(--sp-3,12px);width:310px;min-width:0;text-align:left}
-.lc-era{display:flex;flex-direction:column;gap:var(--sp-2,8px);min-width:0}
+.lc-era{display:grid;grid-template-rows:subgrid;grid-row:span 3;min-width:0}
 .lc-era-label,.lc-sample,.lc-wr-unit{font-size:var(--fs-sm,12.5px);color:var(--muted);line-height:1.45}
 .lc-era-label{font-weight:600}
 .lc-wr-big,.lc-wr-old{font:700 var(--fs-h1,28px)/1.1 var(--font-mono);color:var(--text);font-variant-numeric:tabular-nums}
 .lc-rate-denominator{font-size:var(--fs-sm,12.5px);color:var(--muted);font-weight:500}
 .lc-wr-unit{grid-column:1/-1;border-top:1px solid var(--line);padding-top:var(--sp-2,8px)}
+.lc-baseline-heading{grid-column:1/-1;font-size:var(--fs-sm,12.5px);line-height:1.45;color:var(--muted);margin-top:var(--sp-2,8px)}
+.lc-baselines{grid-column:1/-1;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--sp-3,12px);margin:0;min-width:0}
+.lc-baseline-value{margin:0;font:600 20px/1.3 var(--font-mono);font-variant-numeric:tabular-nums;color:var(--text)}
+.lc-baseline-value[data-state="positive"]{color:var(--ink-up,var(--up))}
+.lc-baseline-value[data-state="negative"]{color:var(--ink-down,var(--down))}
+.lc-baseline-value[data-state="missing"]{font:500 var(--fs-body,14px)/1.5 var(--font-ui);color:var(--muted);overflow-wrap:anywhere}
+.lc-comparison-period{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 .lc-method{margin-top:var(--sp-3,12px);border-top:1px solid var(--line);font-size:var(--fs-sm,12.5px);color:var(--muted)}
 .lc-method summary{min-height:44px;display:flex;align-items:center;gap:var(--sp-2,8px);cursor:pointer;color:var(--text);font-weight:600;list-style:none}
 .lc-method summary::-webkit-details-marker{display:none}
@@ -128,24 +142,18 @@ html[data-theme="light"] .confluence-access{background:var(--panel);box-shadow:v
 
 /* the line-up leg stack */
 .legs{display:flex;flex-direction:column;gap:7px;margin:16px 0 4px}
-.leg{display:grid;grid-template-columns:26px 1fr;gap:11px;align-items:center}
+.leg{display:grid;grid-template-columns:26px minmax(0,1fr);gap:11px;align-items:center}
 .leg-tf{font-family:var(--font-mono);font-size:10.5px;font-weight:700;text-align:center;border-radius:6px;padding:3px 0;line-height:1}
 .leg-tf.d{background:color-mix(in srgb,var(--muted) 20%,transparent);color:var(--muted)}
 .leg-tf.w{background:color-mix(in srgb,var(--info) 20%,transparent);color:var(--ink-info, var(--info))}
-.leg-txt{font-size:13px;color:var(--text);line-height:1.35;display:flex;align-items:center;gap:9px}
+.leg-txt{min-width:0;font-size:13px;color:var(--text);line-height:1.35;display:flex;align-items:center;gap:9px}
+.leg-txt>span{min-width:0;overflow-wrap:anywhere}
 .leg-txt::before{content:"";flex:none;width:6px;height:6px;border-radius:50%;background:color-mix(in srgb,var(--up) 70%,transparent);box-shadow:0 0 0 3px color-mix(in srgb,var(--up) 14%,transparent)}
-
-/* wins-per-10 segmented bar */
-.w10{display:inline-flex;gap:3px;vertical-align:middle}
-.w10 i{width:10px;height:10px;border-radius:3px;background:color-mix(in srgb,var(--muted) 26%,transparent)}
-.w10.tone-free i.on{background:var(--up)}
-.w10.tone-gated i.on{background:color-mix(in srgb,var(--muted) 60%,transparent)}
 
 /* footer receipts row */
 .lc-foot{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;margin-top:16px;padding-top:14px;border-top:1px solid var(--line)}
 .chip{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--muted)}
 .chip.ok{color:var(--ink-up, var(--up))}
-.chip .w10{margin-left:2px}
 .tickers{display:flex;flex-wrap:wrap;gap:7px;align-items:center}
 .tkr{display:inline-flex;align-items:baseline;gap:6px;font-family:var(--font-mono);font-weight:700;font-size:13px;color:var(--text);
   background:color-mix(in srgb,var(--up) 12%,transparent);border:1px solid color-mix(in srgb,var(--up) 26%,transparent);
@@ -198,14 +206,17 @@ html[data-lang="zh"] .tkr{background:color-mix(in srgb,var(--down) 12%,transpare
 /* focus visibility */
 a:focus-visible,.btn:focus-visible,summary:focus-visible{outline:2px solid var(--info);outline-offset:2px;border-radius:8px}
 
+/* Card reading order stacks before the fixed evidence rail crowds the signal criteria. */
+@media(max-width:767px){
+  .lc-top{grid-template-columns:auto minmax(0,1fr);grid-template-rows:auto auto auto;
+    grid-template-areas:"rank title" "legs legs" "wr wr"}
+  .lc-wr{width:100%;gap:var(--sp-3,12px)}
+}
 /* responsive */
 @media(max-width:640px){
   .hero-inner{grid-template-columns:1fr}
   .hero-motif{display:none}
   .hero-state{font-size:26px}
-  .lc-top{grid-template-columns:auto 1fr;grid-template-areas:"rank title" "wr wr"}
-  .lc-rank{grid-area:rank}.lc-title-wrap{grid-area:title}.lc-wr{grid-area:wr;text-align:left;margin-top:6px}
-  .lc-wr{width:100%;gap:var(--sp-3,12px)}
   .lc{padding:var(--sp-4,16px)}
   .hero{padding:var(--sp-5,20px)}
   .hero-eyebrow{overflow-wrap:anywhere}
@@ -246,7 +257,7 @@ html[data-theme="light"] .cs-tipped:hover,html[data-theme="light"] .cs-tipped:fo
   <section class="empty" aria-labelledby="confluence-data-title" data-source-state="unavailable">
     <h1 id="confluence-data-title">{{ t('Data unavailable', '数据暂不可用') }}</h1>
     <p>{{ t('We could not verify this source. The number of matching line-ups is unknown.', '无法核实此源数据，匹配的信号组合数量未知。') }}</p>
-    <button type="button" class="btn ghost" id="confluence-reload-page">{{ t('Check again', '重新检查') }}</button>
+    <button type="button" class="btn ghost" id="confluence-reload-page">{{ t('Reload page', '重新加载页面') }}</button>
   </section>
   {% elif _n_today > 0 %}
   {# ================= HERO ================= #}
@@ -317,30 +328,6 @@ html[data-theme="light"] .cs-tipped:hover,html[data-theme="light"] .cs-tipped:fo
             {% endif %}
           </div>
         </div>
-        <div class="lc-wr">
-          <div class="lc-era">
-            <div class="lc-era-label">{{ t('Recent (' ~ split_date[:4] ~ '+)', '近年（' ~ split_date[:4] ~ '起）') }}</div>
-            <div class="lc-wr-big mono">{{ (c.wr_test_pct / 10)|round(1) }}<span class="lc-rate-denominator">/10</span></div>
-            <div class="lc-sample">{{ t(c.months_test ~ ' months · ' ~ c.n_test ~ ' fires', c.months_test ~ ' 个月 · ' ~ c.n_test ~ ' 次触发') }}</div>
-          </div>
-          <div class="lc-era">
-            <div class="lc-era-label">{{ t('Older (before ' ~ split_date[:4] ~ ')', '更早（' ~ split_date[:4] ~ '前）') }}</div>
-            <div class="lc-wr-old">{{ (c.wr_train_pct / 10)|round(1) }}<span class="lc-rate-denominator">/10</span></div>
-            <div class="lc-sample">{{ t(c.months_train ~ ' months · ' ~ c.n_train ~ ' fires', c.months_train ~ ' 个月 · ' ~ c.n_train ~ ' 次触发') }}</div>
-          </div>
-          <div class="lc-wr-unit">{{ t('Monthly win average · 21 trading days', '月均胜率 · 21 个交易日') }}</div>
-        </div>
-      </div>
-
-      <details class="lc-method">
-        <summary>{{ t('How these readings are calculated', '这些读数如何计算') }}</summary>
-        <p>{{ t('Within each month, calculate the share of fires whose next-close entry finished higher after 21 trading days. Then average those monthly proportions equally. This is not the fraction of winning months or the pooled win rate.', '先在每个月内计算触发后于下一收盘价入场、21 个交易日后上涨的比例，再对各月比例等权平均。这不是盈利月份占比，也不是所有触发次数合并后的胜率。') }}</p>
-        <p>{{ t('Recent is the test period, with fire dates from ' ~ split_date ~ '. Older is the training period, before that date. These recipes were searched historically; neither label establishes untouched prospective validation.', '近年为测试期，触发日期自 ' ~ split_date ~ ' 起；更早为该日期之前的训练期。组合由历史搜索得出，这些标签不代表未经查看的前瞻验证。') }}</p>
-        <p>{{ t('Random-entry monthly win average · 21 trading days · recent: ', '随机入场月均胜率 · 21 个交易日 · 近年：') }}{{ ('%.1f'|format(baseline_test_pct / 10)) ~ '/10' if baseline_test_pct is not none else t('unavailable', '暂无数据') }}{{ t(' · older: ', ' · 更早：') }}{{ ('%.1f'|format(baseline_train_pct / 10)) ~ '/10' if baseline_train_pct is not none else t('unavailable', '暂无数据') }}. {{ t('Comparison points describe win-rate differences, not investment returns.', '比较百分点指胜率差值，并非投资收益率。') }}</p>
-        <p>{{ t('A sighting starts when the full combination changes from false to true. Consecutive days that remain true add no sightings. Yearly frequency averages sightings over the first-to-last span. D and W label daily and weekly bars; indicator lookback is separate.', '完整组合由不成立变为成立时计为一次触发，连续成立的日期不重复计数。年均频率按首次至末次的时间跨度计算。D 和 W 分别表示日线与周线，指标回看窗口是另一属性。') }}</p>
-        <p>{{ t('Source ordering uses a Wilson-based ranking heuristic on the recent monthly win average, minus the random-entry baseline. It is a ranking heuristic, not a statistical-significance result.', '源数据排序使用近期月均胜率的 Wilson 近似值并减去随机入场基准。这是排序方法，不是统计显著性结果。') }}</p>
-      </details>
-
       {# the line-up: each leg lined up, timeframe-tagged #}
       <div class="legs">
         {% for leg in c.legs %}
@@ -359,19 +346,41 @@ html[data-theme="light"] .cs-tipped:hover,html[data-theme="light"] .cs-tipped:fo
         {% endfor %}
       </div>
 
+        <div class="lc-wr">
+          <div class="lc-era">
+            <div class="lc-era-label">{{ t('Recent (' ~ split_date[:4] ~ '+)', '近年（' ~ split_date[:4] ~ '起）') }}</div>
+            <div class="lc-wr-big mono">{{ (c.wr_test_pct / 10)|round(1) }}<span class="lc-rate-denominator">/10</span></div>
+            <div class="lc-sample">{{ t(c.months_test ~ ' months · ' ~ c.n_test ~ ' fires', c.months_test ~ ' 个月 · ' ~ c.n_test ~ ' 次触发') }}</div>
+          </div>
+          <div class="lc-era">
+            <div class="lc-era-label">{{ t('Older (before ' ~ split_date[:4] ~ ')', '更早（' ~ split_date[:4] ~ '前）') }}</div>
+            <div class="lc-wr-old">{{ (c.wr_train_pct / 10)|round(1) }}<span class="lc-rate-denominator">/10</span></div>
+            <div class="lc-sample">{{ t(c.months_train ~ ' months · ' ~ c.n_train ~ ' fires', c.months_train ~ ' 个月 · ' ~ c.n_train ~ ' 次触发') }}</div>
+          </div>
+          <div class="lc-wr-unit">{{ t('Monthly win average · 21 trading days', '月均胜率 · 21 个交易日') }}</div>
+          <div class="lc-baseline-heading" id="baseline-unit-{{ c.rank }}">{{ t('Versus random entry · percentage points', '较随机入场 · 个百分点') }}</div>
+          <dl class="lc-baselines" aria-labelledby="baseline-unit-{{ c.rank }}">
+            {% for period, value, label_en, label_zh in [('recent', c.edge_test_pp, 'Recent comparison', '近年比较'), ('older', c.edge_train_pp, 'Older comparison', '更早比较')] %}
+            <div>
+              <dt class="lc-comparison-period">{{ t(label_en, label_zh) }}</dt>
+              <dd class="lc-baseline-value" data-period="{{ period }}" data-state="{{ 'missing' if value is none else 'positive' if value > 0 else 'negative' if value < 0 else 'zero' }}">{{ comparison_delta(value) }}</dd>
+            </div>
+            {% endfor %}
+          </dl>
+        </div>
+      </div>
+
+      <details class="lc-method">
+        <summary>{{ t('How these readings are calculated', '这些读数如何计算') }}</summary>
+        <p>{{ t('Within each month, calculate the share of fires whose next-close entry finished higher after 21 trading days. Then average those monthly proportions equally. This is not the fraction of winning months or the pooled win rate.', '先在每个月内计算触发后于下一收盘价入场、21 个交易日后上涨的比例，再对各月比例等权平均。这不是盈利月份占比，也不是所有触发次数合并后的胜率。') }}</p>
+        <p>{{ t('Recent is the test period, with fire dates from ' ~ split_date ~ '. Older is the training period, before that date. These recipes were searched historically; neither label establishes untouched prospective validation.', '近年为测试期，触发日期自 ' ~ split_date ~ ' 起；更早为该日期之前的训练期。组合由历史搜索得出，这些标签不代表未经查看的前瞻验证。') }}</p>
+        <p>{{ t('Random-entry monthly win average · 21 trading days · recent: ', '随机入场月均胜率 · 21 个交易日 · 近年：') }}{{ ('%.1f'|format(baseline_test_pct / 10)) ~ '/10' if baseline_test_pct is not none else t('unavailable', '暂无数据') }}{{ t(' · older: ', ' · 更早：') }}{{ ('%.1f'|format(baseline_train_pct / 10)) ~ '/10' if baseline_train_pct is not none else t('unavailable', '暂无数据') }}. {{ t('The baseline enters the same stocks on random dates over the same period. Comparison points describe win-rate differences, not investment returns.', '基准是在同一时期对相同股票随机选择日期入场。比较百分点指胜率差值，并非投资收益率。') }}</p>
+        <p>{{ t('A sighting starts when the full combination changes from false to true. Consecutive days that remain true add no sightings. Yearly frequency averages sightings over the first-to-last span. D and W label daily and weekly bars; indicator lookback is separate.', '完整组合由不成立变为成立时计为一次触发，连续成立的日期不重复计数。年均频率按首次至末次的时间跨度计算。D 和 W 分别表示日线与周线，指标回看窗口是另一属性。') }}</p>
+        <p>{{ t('Source ordering uses a Wilson-based ranking heuristic on the recent monthly win average, minus the random-entry baseline. It is a ranking heuristic, not a statistical-significance result.', '源数据排序使用近期月均胜率的 Wilson 近似值并减去随机入场基准。这是排序方法，不是统计显著性结果。') }}</p>
+      </details>
+
       <div class="lc-foot">
-        <span class="chip ok" tabindex="0"
-              data-tip-en="Ten blocks summarize the recent monthly win average, rounded to the nearest tenth. They are not ten individual trades."
-              data-tip-zh="十格概括近年月均胜率，四舍五入到十分之一；并非十笔独立交易。">{{ wins_bar(c.wr_test_pct, 'free' if c.is_free else 'gated') }}
-          <span class="l-en">{{ (c.wr_test_pct/10)|round(1) }} in 10 recently</span>
-          <span class="l-zh">近年 {{ (c.wr_test_pct/10)|round(1) }}/10</span></span>
         {% if c.edge_test_pp is not none %}
-        <span class="chip cs-tipped" tabindex="0"
-              data-tip-en="Against a baseline of entering the same stocks on random dates over the same period. Points are percentage points of win rate, not return."
-              data-tip-zh="对照基准为：同期在相同股票上随机选日入场。此处的「个百分点」指胜率的百分点，而非收益率。">
-          <span class="l-en">{{ '%+.1f'|format(c.edge_test_pp) }} percentage points vs random entry</span>
-          <span class="l-zh">较随机入场 {{ '%+.1f'|format(c.edge_test_pp) }} 个百分点</span>
-        </span>
         {% if c.edge_train_pp is not none and c.edge_train_pp > 0 and c.edge_test_pp > 0 %}
         <span class="chip ok">{{ t('Above baseline in both periods', '两期均高于基准') }}</span>
         {% elif c.edge_test_pp <= 0 %}
@@ -381,6 +390,8 @@ html[data-theme="light"] .cs-tipped:hover,html[data-theme="light"] .cs-tipped:fo
         {% else %}
         <span class="chip">{{ t('Older-period comparison unavailable', '更早时期比较暂无数据') }}</span>
         {% endif %}
+        {% elif c.edge_train_pp is not none %}
+        <span class="chip">{{ t('Recent-period comparison unavailable', '近年时期比较暂无数据') }}</span>
         {% else %}
         <span class="chip">{{ t('Random-entry comparison unavailable', '随机入场比较暂无数据') }}</span>
         {% endif %}
@@ -401,7 +412,7 @@ html[data-theme="light"] .cs-tipped:hover,html[data-theme="light"] .cs-tipped:fo
         </div>
         {% else %}
         <div class="lc-foot" style="border-top:0;padding-top:6px;margin-top:8px">
-          <span class="chip"><span class="l-en">No stock matches this one today — it fires rarely.</span><span class="l-zh">今日无股票匹配此组合——它触发较少。</span></span>
+          <span class="chip"><span class="l-en">No stock matches this combination in this snapshot.</span><span class="l-zh">此快照中暂无股票匹配此组合。</span></span>
         </div>
         {% endif %}
       {% else %}
@@ -417,8 +428,8 @@ html[data-theme="light"] .cs-tipped:hover,html[data-theme="light"] .cs-tipped:fo
               <span class="l-zh">{{ c.active_count }} 只股票在此快照匹配</span>
             </b>
             <span class="sub">
-              <span class="l-en">Unlock this line-up's matching tickers with the free trial.</span>
-              <span class="l-zh">开启免费试用即可查看此组合匹配的股票。</span>
+              <span class="l-en">Matching names require an eligible plan.</span>
+              <span class="l-zh">查看匹配名称需具备相应方案权限。</span>
             </span>
           </span>
           <a class="btn" href="{{ cta_url }}"><span class="l-en">Start free trial</span><span class="l-zh">开始免费试用</span></a>
@@ -467,7 +478,7 @@ html[data-theme="light"] .cs-tipped:hover,html[data-theme="light"] .cs-tipped:fo
     <p><span class="l-en">This source contains no active line-ups with historical readings for both periods. Check the next update.</span>
       <span class="l-zh">此源数据没有同时具备两段历史读数的活跃信号组合。请查看下次更新。</span></p>
     <div style="margin-top:18px">
-      <a class="btn ghost" href="{{ cta_url }}"><span class="l-en">Get notified when setups fire</span><span class="l-zh">布局触发时通知我</span></a>
+      <a class="btn ghost" href="{{ cta_url }}"><span class="l-en">Open Mastermind</span><span class="l-zh">打开 Mastermind</span></a>
     </div>
   </div>
   {% endif %}
@@ -489,6 +500,7 @@ html[data-theme="light"] .cs-tipped:hover,html[data-theme="light"] .cs-tipped:fo
   /* A generation receipt joins two projections; only the existing protected
      endpoint authorizes names. Never commit part of a paid response. */
   var PREMIUM_PAYLOAD = {{ premium_payload_url | tojson }};
+  var PAYLOAD_SCHEMA = {{ premium_payload_schema | tojson }};
   var SOURCE_RECEIPT = {{ source_generation | tojson }};
   var rows = Array.prototype.map.call(document.querySelectorAll('[data-confluence-combo]'), function(wall){
     return {
@@ -600,7 +612,7 @@ html[data-theme="light"] .cs-tipped:hover,html[data-theme="light"] .cs-tipped:fo
   }
 
   function prepareRows(payload){
-    if(!payload || payload.schema !== 'tier_payload.v1' || payload.page !== 'confluence_screener' ||
+    if(!payload || payload.schema !== PAYLOAD_SCHEMA || payload.page !== 'confluence_screener' ||
        payload.gated !== true || payload.required_tier !== 'essential' ||
        payload.source_status !== 'available' || !Array.isArray(payload.combos)){
       throw new Error('invalid');

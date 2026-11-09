@@ -1,0 +1,161 @@
+{
+  "schema": "confluence_copy_clarity.v1",
+  "parent": "27d50dc00f0f35d06f4df7f3f6b49faffe211428",
+  "source_receipt": {
+    "parent": "27d50dc00f0f35d06f4df7f3f6b49faffe211428",
+    "changes": [
+      [
+        "Unlock this line-up's matching tickers with the free trial.",
+        "Matching names require an eligible plan."
+      ],
+      [
+        "开启免费试用即可查看此组合匹配的股票。",
+        "查看匹配名称需具备相应方案权限。"
+      ],
+      [
+        "No stock matches this one today — it fires rarely.",
+        "No stock matches this combination in this snapshot."
+      ],
+      [
+        "今日无股票匹配此组合——它触发较少。",
+        "此快照中暂无股票匹配此组合。"
+      ]
+    ],
+    "template_inverse_exact": true,
+    "saved_page_inverse_exact": true,
+    "actual_render_ledger_matches_saved_page": true,
+    "saved_page_changed_text_nodes": 4,
+    "all_other_bytes_exact": true,
+    "unchanged_files": [
+      "scripts/build_confluence_screener.py",
+      "tests/test_confluence_screener_page.py",
+      "site/premiumdata/confluence_screener.json"
+    ],
+    "protected_payload_matches_actual_producer": true,
+    "source_generation": {
+      "schema": "confluence_source.v1",
+      "generated_utc": "2026-11-08T11:31:29Z",
+      "sha256": "4f8c3dcd8508a55978f4b27d7c4d34828bc1044881ed404120cb353b1d4dc7c1"
+    },
+    "tagged_cta_exact": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+    "latent_fallback": {
+      "template_only_context": true,
+      "actual_current_selector_reaches_empty_tickers": false,
+      "visible_text": "01 Weekly reclaims 21-day line + weekly RSI-21 washed out + RSI-21 washed out + ribbon flips up 周线站上21日线 + 周线RSI-21超卖 + RSI-21超卖 + 均线带翻多 Seen 94 times since 1974 · about 1.8 a year · last 2026-11-06 自 1974 年出现 94 次 · 约每年 1.8 次 · 最近 2026-11-06 W MA Buy (21) 均线买入 (21) D RSI-21 Oversold Entry RSI-21 超卖入场 W RSI-21 Oversold Entry RSI-21 超卖入场 D Trend Ribbon — Flip to Uptrend 趋势带 — 翻转为上升趋势 Recent (2018+) 近年（2018起） 9.1 /10 14 months · 22 fires 14 个月 · 22 次触发 Older (before 2018) 更早（2018前） 5.8 /10 57 months · 71 fires 57 个月 · 71 次触发 Monthly win average · 21 trading days 月均胜率 · 21 个交易日 Versus random entry · percentage points 较随机入场 · 个百分点 Recent comparison 近年比较 +34.3 Older comparison 更早比较 +1.7 How these readings are calculated 这些读数如何计算 Within each month, calculate the share of fires whose next-close entry finished higher after 21 trading days. Then average those monthly proportions equally. This is not the fraction of winning months or the pooled win rate. 先在每个月内计算触发后于下一收盘价入场、21 个交易日后上涨的比例，再对各月比例等权平均。这不是盈利月份占比，也不是所有触发次数合并后的胜率。 Recent is the test period, with fire dates from 2018-01-01. Older is the training period, before that date. These recipes were searched historically; neither label establishes untouched prospective validation. 近年为测试期，触发日期自 2018-01-01 起；更早为该日期之前的训练期。组合由历史搜索得出，这些标签不代表未经查看的前瞻验证。 Random-entry monthly win average · 21 trading days · recent: 随机入场月均胜率 · 21 个交易日 · 近年： 5.7/10 · older: · 更早： 5.6/10. The baseline enters the same stocks on random dates over the same period. Comparison points describe win-rate differences, not investment returns. 基准是在同一时期对相同股票随机选择日期入场。比较百分点指胜率差值，并非投资收益率。 A sighting starts when the full combination changes from false to true. Consecutive days that remain true add no sightings. Yearly frequency averages sightings over the first-to-last span. D and W label daily and weekly bars; indicator lookback is separate. 完整组合由不成立变为成立时计为一次触发，连续成立的日期不重复计数。年均频率按首次至末次的时间跨度计算。D 和 W 分别表示日线与周线，指标回看窗口是另一属性。 Source ordering uses a Wilson-based ranking heuristic on the recent monthly win average, minus the random-entry baseline. It is a ranking heuristic, not a statistical-significance result. 源数据排序使用近期月均胜率的 Wilson 近似值并减去随机入场基准。这是排序方法，不是统计显著性结果。 Above baseline in both periods 两期均高于基准 No stock matches this combination in this snapshot. 此快照中暂无股票匹配此组合。",
+      "note": "Only the render context is altered to inspect the retained fallback. Current eligible selection excludes rows without active tickers; no synthetic page is published as current data."
+    },
+    "files": {
+      "templates/confluence_screener.html.j2": {
+        "bytes": 50752,
+        "sha256": "4ca8af9d8b762ee6c682895c2d54012ab82756a6e3700d4b0cd57c9c6fbffd8f",
+        "blob": "6a6056a72391c82088761aab49e1e8dd03e76e09"
+      },
+      "site/confluence_screener.html": {
+        "bytes": 119240,
+        "sha256": "89bc0f854bf734479441ff36c6ab6f6a7d5259f40330841e1e765000c27fcb28",
+        "blob": "2701226b6cf50a3628726c5a49a2c444814df2e8"
+      },
+      "scripts/build_confluence_screener.py": {
+        "bytes": 19003,
+        "sha256": "b5aa86624a18a17fd985870d9baaaa8cb745b0baffa6d4c17b6e198b6668d50a",
+        "blob": "b3db0ced7bc46607f728764c6f9f00dd851f9012"
+      },
+      "tests/test_confluence_screener_page.py": {
+        "bytes": 39299,
+        "sha256": "d1877abe2a29d2c5d7412566eface17f81c62fdd980dff178efa2d0c5e657257",
+        "blob": "906eb06bc02fb37140fa403b425316bc8341ac87"
+      },
+      "site/premiumdata/confluence_screener.json": {
+        "bytes": 542,
+        "sha256": "11a76bb62e26bd344ef29c198b7791df95b4140d18328f46f54b343f78aa4e7d",
+        "blob": "ed039512de9bf2fe3c838b6d562d0ef5da72658f"
+      }
+    }
+  },
+  "page_tests": {
+    "passed": 92,
+    "pid": 53326,
+    "pytest_seconds": 4.98,
+    "process_seconds": 5.46,
+    "command": "python3 - <<'PY'\nfrom pathlib import Path\nimport json,subprocess,sys\nr=Path('/Volumes/Mastermind/agent-workspaces/verify/confluence-compat-20261109-klbmhv4a')\np=subprocess.run([sys.executable,'-B','-m','pytest','-q','tests/test_confluence_screener_page.py','--disable-warnings','--basetemp',str(r/'pytest-copy-current-render')],cwd=r,text=True,capture_output=True)\n(r/'copy-current-page-tests-output.txt').write_text(p.stdout+p.stderr);print(p.stdout);print(p.stderr);print(json.dumps({'exit':p.returncode}));raise SystemExit(p.returncode)\nPY",
+    "output": "........................................................................ [ 78%]\n....................                                                     [100%]\n92 passed in 4.98s"
+  },
+  "visual_inspection": {
+    "schema": "confluence_copy_visual_inspection.v1",
+    "browser": "157.0.8103.39",
+    "contexts": 2,
+    "observations": [
+      {
+        "width": 390,
+        "lang": "en",
+        "theme": "dark",
+        "locked_cards": [
+          {
+            "text": "1 stock in this snapshot\nMatching names require an eligible plan.\nStart free trial",
+            "explanation": "Matching names require an eligible plan.",
+            "href": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+            "label": "Start free trial",
+            "overflow": false,
+            "width": 316,
+            "buttonHeight": 44
+          },
+          {
+            "text": "1 stock in this snapshot\nMatching names require an eligible plan.\nStart free trial",
+            "explanation": "Matching names require an eligible plan.",
+            "href": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+            "label": "Start free trial",
+            "overflow": false,
+            "width": 316,
+            "buttonHeight": 44
+          }
+        ],
+        "document_overflow": false,
+        "capture": {
+          "file": "locked-390-en.png",
+          "bytes": 8253,
+          "sha256": "84a02caee9894d06d88e3620bffb9cee5da9693e7afe23d4ebfc35e3b689970f",
+          "blob": "f51a0b049f0db92ad891fc82bf523962a8bee195"
+        }
+      },
+      {
+        "width": 320,
+        "lang": "zh",
+        "theme": "light",
+        "locked_cards": [
+          {
+            "text": "1 只股票在此快照匹配\n查看匹配名称需具备相应方案权限。\n开始免费试用",
+            "explanation": "查看匹配名称需具备相应方案权限。",
+            "href": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+            "label": "开始免费试用",
+            "overflow": false,
+            "width": 246,
+            "buttonHeight": 44
+          },
+          {
+            "text": "1 只股票在此快照匹配\n查看匹配名称需具备相应方案权限。\n开始免费试用",
+            "explanation": "查看匹配名称需具备相应方案权限。",
+            "href": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+            "label": "开始免费试用",
+            "overflow": false,
+            "width": 246,
+            "buttonHeight": 44
+          }
+        ],
+        "document_overflow": false,
+        "capture": {
+          "file": "locked-320-zh.png",
+          "bytes": 10732,
+          "sha256": "43af88f680707507ba8ae39069216306b68c90de0cc54ffcdcef2dc2e06e3f37",
+          "blob": "eb2b7638901c175cc2459341f3ece9e52f387351"
+        }
+      }
+    ],
+    "page_errors": [],
+    "scope": "Visual inspection of the two changed actual saved-page locked explanations. No new functional browser-test claim, live entitlement, external navigation or deployment.",
+    "pid": 53500,
+    "process_seconds": 4.13,
+    "command": "python3 - <<'PY'\nfrom pathlib import Path\nimport hashlib,http.server,json,socketserver,threading\nfrom urllib.parse import urlsplit\nfrom playwright.sync_api import sync_playwright\nr=Path(\"/Volumes/Mastermind/agent-workspaces/verify/confluence-compat-20261109-klbmhv4a\");out=r/'copy-visual-inspection';out.mkdir(exist_ok=True)\nclass H(http.server.SimpleHTTPRequestHandler):\n def __init__(self,*a,**kw):super().__init__(*a,directory=str(r/'site'),**kw)\n def log_message(self,*a):pass\ns=socketserver.ThreadingTCPServer(('127.0.0.1',0),H);threading.Thread(target=s.serve_forever,daemon=True).start();origin='http://127.0.0.1:'+str(s.server_address[1]);observations=[];errors=[]\ntry:\n with sync_playwright() as pw:\n  b=pw.chromium.launch(headless=True,executable_path='/Applications/Google Chrome.app/Contents/MacOS/Google Chrome');version=b.version\n  for width,lang,theme in ((390,'en','dark'),(320,'zh','light')):\n   c=b.new_context(viewport={'width':width,'height':844},device_scale_factor=1,is_mobile=True,has_touch=True,reduced_motion='reduce');c.route('**/*',lambda route:route.continue_() if urlsplit(route.request.url).hostname=='127.0.0.1' else route.abort())\n   c.add_init_script(\"localStorage.setItem('lang',\"+json.dumps(lang)+\");localStorage.setItem('theme',\"+json.dumps(theme)+\");\")\n   page=c.new_page();page.on('pageerror',lambda e:errors.append(str(e)));page.goto(origin+'/confluence_screener.html',wait_until='load')\n   filename='locked-'+str(width)+'-'+lang+'.png';page.locator('.locked').first.screenshot(path=str(out/filename))\n   obs=page.locator('.locked').evaluate_all(\"\"\"nodes=>nodes.map(n=>({text:n.innerText,explanation:n.querySelector('.sub').innerText,href:n.querySelector('a').getAttribute('href'),label:n.querySelector('a').innerText,overflow:n.scrollWidth>n.clientWidth+1,width:n.getBoundingClientRect().width,buttonHeight:n.querySelector('a').getBoundingClientRect().height}))\"\"\")\n   data=(out/filename).read_bytes();observations.append({'width':width,'lang':lang,'theme':theme,'locked_cards':obs,'document_overflow':page.evaluate('document.documentElement.scrollWidth>innerWidth+1'),'capture':{'file':filename,'bytes':len(data),'sha256':hashlib.sha256(data).hexdigest(),'blob':hashlib.sha1(b'blob '+str(len(data)).encode()+b'\\0'+data).hexdigest()}});c.close()\n  b.close()\nfinally:s.shutdown();s.server_close()\nreport={'schema':'confluence_copy_visual_inspection.v1','browser':version,'contexts':2,'observations':observations,'page_errors':errors,'scope':'Visual inspection of the two changed actual saved-page locked explanations. No new functional browser-test claim, live entitlement, external navigation or deployment.'}\n(out/'inspection.json').write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\\n');print(json.dumps(report,ensure_ascii=False))\nPY",
+    "root_visual_review": "Both EN390 and ZH320 changed locked explanations are readable and the existing 44px CTA remains intact. Chinese320 retains an existing wrap that isolates the icon; this is identified for a separate bounded layout follow-up, not concealed as perfect visual consistency."
+  },
+  "scope": "Four template text literals, four saved-page text nodes across two gated cards. No access, trial, source-selection, data, CSS, script, href or lifecycle change. The latent fallback is exercised only by explicit template context; current eligibility excludes empty active-ticker rows."
+}

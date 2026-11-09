@@ -1,0 +1,1150 @@
+{
+  "schema": "confluence_responsive_layout_validation.v1",
+  "parent": "22fa830d390c0fa0c3f633325ec17c766b4e3bef",
+  "native_root": "/Volumes/Mastermind/agent-workspaces/verify/confluence-compat-20261109-klbmhv4a",
+  "source_files": {
+    "templates/confluence_screener.html.j2": {
+      "bytes": 50793,
+      "sha256": "debed69f5c82a00606e387aad087dd548ce74d7c9d98c90b0ac8661b8327805e",
+      "blob": "91a2f2d92e09ce63c6946bb730a920d7f292f8e1"
+    },
+    "site/confluence_screener.html": {
+      "bytes": 119296,
+      "sha256": "e198a8761b1f501c726ae7e7ced814e7cb68c91fca35014dcccb022c98770d63",
+      "blob": "ac64aa9a594b04682c8a0bc596c6b5033110ddff"
+    },
+    "scripts/verify_confluence_layout_browser.py": {
+      "bytes": 16135,
+      "sha256": "86e6a0afc366ec584bcca24cf9702f3b5ee45ef4c4b82fb1c88215a303ca3cea",
+      "blob": "d76541551146d3abbb0c6c1911b354f99c931776"
+    }
+  },
+  "unchanged_files": {
+    "scripts/build_confluence_screener.py": {
+      "bytes": 19003,
+      "sha256": "b5aa86624a18a17fd985870d9baaaa8cb745b0baffa6d4c17b6e198b6668d50a",
+      "blob": "b3db0ced7bc46607f728764c6f9f00dd851f9012"
+    },
+    "tests/test_confluence_screener_page.py": {
+      "bytes": 39299,
+      "sha256": "d1877abe2a29d2c5d7412566eface17f81c62fdd980dff178efa2d0c5e657257",
+      "blob": "906eb06bc02fb37140fa403b425316bc8341ac87"
+    },
+    "site/premiumdata/confluence_screener.json": {
+      "bytes": 542,
+      "sha256": "11a76bb62e26bd344ef29c198b7791df95b4140d18328f46f54b343f78aa4e7d",
+      "blob": "ed039512de9bf2fe3c838b6d562d0ef5da72658f"
+    }
+  },
+  "source_conservation": {
+    "parent": "22fa830d390c0fa0c3f633325ec17c766b4e3bef",
+    "template_inverse_exact": true,
+    "moved_leg_block_exact": true,
+    "leg_block_occurrences": 1,
+    "parent_components_exact": true,
+    "served_changed_regions": [
+      "page_style",
+      "ledger"
+    ],
+    "served_inverse_exact": true,
+    "all_inline_scripts_exact": true,
+    "all_card_content_attributes_links_exact": true,
+    "protected_payload_matches_actual_producer": true,
+    "unchanged_files": [
+      "scripts/build_confluence_screener.py",
+      "tests/test_confluence_screener_page.py",
+      "site/premiumdata/confluence_screener.json"
+    ],
+    "source_generation": {
+      "schema": "confluence_source.v1",
+      "generated_utc": "2026-11-08T11:31:29Z",
+      "sha256": "4f8c3dcd8508a55978f4b27d7c4d34828bc1044881ed404120cb353b1d4dc7c1"
+    },
+    "cta_preserved_from_parent": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+    "render_context_note": "Both contexts reuse the parent saved tagged CTA because the sparse marketing initializer has a missing state dependency. Only source-bound style/ledger regions are projected.",
+    "served_bytes": 119296,
+    "served_sha256": "e198a8761b1f501c726ae7e7ced814e7cb68c91fca35014dcccb022c98770d63",
+    "template_blob": "91a2f2d92e09ce63c6946bb730a920d7f292f8e1"
+  },
+  "parent_snapshot": {
+    "head": "22fa830d390c0fa0c3f633325ec17c766b4e3bef",
+    "files": {
+      "templates/confluence_screener.html.j2": {
+        "blob": "633aff6b95c85833a348929f84364f28f2051d0d",
+        "bytes": 50435,
+        "sha256": "d447f2ea4ac4b2ba688adf65146853825acf51d0ac5703f3a0228154f7402ccf"
+      },
+      "scripts/build_confluence_screener.py": {
+        "blob": "b3db0ced7bc46607f728764c6f9f00dd851f9012",
+        "bytes": 19003,
+        "sha256": "b5aa86624a18a17fd985870d9baaaa8cb745b0baffa6d4c17b6e198b6668d50a"
+      },
+      "tests/test_confluence_screener_page.py": {
+        "blob": "906eb06bc02fb37140fa403b425316bc8341ac87",
+        "bytes": 39299,
+        "sha256": "d1877abe2a29d2c5d7412566eface17f81c62fdd980dff178efa2d0c5e657257"
+      },
+      "site/confluence_screener.html": {
+        "blob": "a668d61141a6cb62df18b1f1a35cc5fe7a69d733",
+        "bytes": 118938,
+        "sha256": "7cfa44694cca31a80f2cbf434eab21ab3d991a5f0ab42ca30c47f8e9ac7f2d2e"
+      },
+      "site/premiumdata/confluence_screener.json": {
+        "blob": "ed039512de9bf2fe3c838b6d562d0ef5da72658f",
+        "bytes": 542,
+        "sha256": "11a76bb62e26bd344ef29c198b7791df95b4140d18328f46f54b343f78aa4e7d"
+      }
+    }
+  },
+  "runs": {
+    "page_tests": {
+      "pid": 77728,
+      "passed": 92,
+      "pytest_seconds": 8.08,
+      "process_seconds": 9.01,
+      "output": "........................................................................ [ 78%]\n....................                                                     [100%]\n92 passed in 8.08s\n",
+      "output_meta": {
+        "bytes": 179,
+        "sha256": "d4178346b3eebcb4c4eb0ce40d9798acfc16fb4ec503af85899407d7e55550b0",
+        "blob": "0c5a963e8b3e45ef735cf3541806fa52d70d79cc"
+      },
+      "command": "python3 - <<'PY'\nfrom pathlib import Path\nimport json,subprocess,sys\nr=Path('/Volumes/Mastermind/agent-workspaces/verify/confluence-compat-20261109-klbmhv4a')\np=subprocess.run([sys.executable,'-B','-m','pytest','-q','tests/test_confluence_screener_page.py','--disable-warnings','--basetemp',str(r/'pytest-layout-candidate-render')],cwd=r,text=True,capture_output=True)\n(r/'layout-candidate-page-tests-output.txt').write_text(p.stdout+p.stderr);print(p.stdout);print(p.stderr);print(json.dumps({'exit':p.returncode}));raise SystemExit(p.returncode)\nPY"
+    },
+    "initial_browser": {
+      "pid": 77322,
+      "process_seconds": 26.18,
+      "command": "python3 -B '/Volumes/Mastermind/agent-workspaces/verify/confluence-compat-20261109-klbmhv4a/scripts/verify_confluence_layout_browser.py' --out '/Volumes/Mastermind/agent-workspaces/verify/confluence-compat-20261109-klbmhv4a/layout-candidate-proof' --baseline-page '/Volumes/Mastermind/agent-workspaces/verify/confluence-compat-20261109-klbmhv4a/layout-parent/site/confluence_screener.html' --browser-executable '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'",
+      "projection": {
+        "meta": {
+          "bytes": 1408034,
+          "sha256": "d910fa8e5bcf37e19914c9ba6700ba3d7a5c67d35382e7ebb99c1255a0fc6f91",
+          "blob": "8b3d59bb5251e259354c7d5f4a6127fa43503a4c"
+        },
+        "passed": 18,
+        "failed": 2,
+        "contexts": 20,
+        "browser": "157.0.8103.39",
+        "cases": [
+          {
+            "name": "served-320-en",
+            "status": "PASS",
+            "error": null,
+            "before_overflow": false,
+            "after_overflow": false
+          },
+          {
+            "name": "served-320-zh",
+            "status": "PASS",
+            "error": null,
+            "before_overflow": false,
+            "after_overflow": false
+          },
+          {
+            "name": "served-390-en",
+            "status": "PASS",
+            "error": null,
+            "before_overflow": false,
+            "after_overflow": false
+          },
+          {
+            "name": "served-390-zh",
+            "status": "PASS",
+            "error": null,
+            "before_overflow": false,
+            "after_overflow": false
+          },
+          {
+            "name": "served-640-en",
+            "status": "PASS",
+            "error": null,
+            "before_overflow": false,
+            "after_overflow": false
+          },
+          {
+            "name": "served-640-zh",
+            "status": "PASS",
+            "error": null,
+            "before_overflow": false,
+            "after_overflow": false
+          },
+          {
+            "name": "served-641-en",
+            "status": "PASS",
+            "error": null,
+            "before_overflow": false,
+            "after_overflow": false
+          },
+          {
+            "name": "served-641-zh",
+            "status": "PASS",
+            "error": null,
+            "before_overflow": false,
+            "after_overflow": false
+          },
+          {
+            "name": "served-767-en",
+            "status": "PASS",
+            "error": null,
+            "before_overflow": false,
+            "after_overflow": false
+          },
+          {
+            "name": "served-767-zh",
+            "status": "PASS",
+            "error": null,
+            "before_overflow": false,
+            "after_overflow": false
+          },
+          {
+            "name": "served-768-en",
+            "status": "PASS",
+            "error": null,
+            "before_overflow": false,
+            "after_overflow": false
+          },
+          {
+            "name": "served-768-zh",
+            "status": "PASS",
+            "error": null,
+            "before_overflow": false,
+            "after_overflow": false
+          },
+          {
+            "name": "served-960-en",
+            "status": "FAIL",
+            "error": "Candidate document overflows",
+            "before_overflow": true,
+            "after_overflow": true
+          },
+          {
+            "name": "served-960-zh",
+            "status": "FAIL",
+            "error": "Candidate document overflows",
+            "before_overflow": true,
+            "after_overflow": true
+          },
+          {
+            "name": "served-1440-en",
+            "status": "PASS",
+            "error": null,
+            "before_overflow": false,
+            "after_overflow": false
+          },
+          {
+            "name": "served-1440-zh",
+            "status": "PASS",
+            "error": null,
+            "before_overflow": false,
+            "after_overflow": false
+          },
+          {
+            "name": "stress-320-en",
+            "status": "PASS",
+            "error": null,
+            "before_overflow": false,
+            "after_overflow": false
+          },
+          {
+            "name": "stress-320-zh",
+            "status": "PASS",
+            "error": null,
+            "before_overflow": false,
+            "after_overflow": false
+          },
+          {
+            "name": "stress-768-en",
+            "status": "PASS",
+            "error": null,
+            "before_overflow": true,
+            "after_overflow": false
+          },
+          {
+            "name": "stress-768-zh",
+            "status": "PASS",
+            "error": null,
+            "before_overflow": false,
+            "after_overflow": false
+          }
+        ],
+        "projection_note": "The original full report remains at its native path/hash; this projection omits repeated geometry, conserved card text and successful interaction details. The final full report is retained below."
+      },
+      "harness_source": "#!/usr/bin/env python3\n\"\"\"Compare the saved Confluence card layout with its exact parent in real Chromium.\"\"\"\nfrom __future__ import annotations\n\nimport argparse\nimport hashlib\nimport http.server\nimport json\nimport socketserver\nimport threading\nimport traceback\nfrom datetime import datetime, timezone\nfrom pathlib import Path\nfrom urllib.parse import parse_qs, urlsplit\n\nfrom playwright.sync_api import expect, sync_playwright\n\nROOT = Path(__file__).resolve().parents[1]\n\nMEASURE = r\"\"\"() => {\n  const rect=n=>{const r=n.getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height,right:r.right,bottom:r.bottom}};\n  return {overflow:document.documentElement.scrollWidth>innerWidth+1,cards:[...document.querySelectorAll('.lc')].map(c=>{\n    const one=s=>c.querySelector(s), box=s=>rect(one(s));\n    const font=s=>getComputedStyle(one(s)).fontSize;\n    return {box:rect(c),top:box('.lc-top'),title:box('.lc-title-wrap'),legs:box('.legs'),wr:box('.lc-wr'),\n      method:box('.lc-method'),summary:box('.lc-method summary'),action:rect(c.querySelector('a')),\n      titleGap:box('.legs').y-box('.lc-title-wrap').bottom,\n      directChildren:[...one('.lc-top').children].map(n=>n.className),\n      legsCount:c.querySelectorAll('.legs').length,legCount:c.querySelectorAll('.leg').length,\n      legRows:[...c.querySelectorAll('.leg')].map(n=>({box:rect(n),badge:rect(n.querySelector('.leg-tf')),\n        text:rect(n.querySelector('.leg-txt')),client:n.querySelector('.leg-txt').clientWidth,\n        scroll:n.querySelector('.leg-txt').scrollWidth,content:n.innerText})),\n      rates:[...c.querySelectorAll('.lc-wr-big,.lc-wr-old')].map(rect),samples:[...c.querySelectorAll('.lc-sample')].map(rect),\n      values:[...c.querySelectorAll('.lc-baseline-value')].map(n=>({box:rect(n),text:n.innerText,state:n.dataset.state})),\n      fonts:{title:font('.lc-title'),leg:font('.leg-txt'),rate:font('.lc-wr-big'),sample:font('.lc-sample'),action:getComputedStyle(c.querySelector('a')).fontSize},\n      hrefs:[...c.querySelectorAll('a')].map(n=>n.getAttribute('href')),\n      publicText:[...c.querySelectorAll('.lc-title-wrap,.legs,.lc-wr,.lc-method,.lc-foot')].map(n=>n.textContent.trim()).sort()\n    };\n  })};\n}\"\"\"\n\n\ndef meta(path):\n    data = path.read_bytes()\n    return {\"bytes\": len(data), \"sha256\": hashlib.sha256(data).hexdigest(),\n            \"blob\": hashlib.sha1(b\"blob \"+str(len(data)).encode()+b\"\\0\"+data).hexdigest()}\n\n\ndef main():\n    parser = argparse.ArgumentParser()\n    parser.add_argument(\"--out\", required=True, type=Path)\n    parser.add_argument(\"--baseline-page\", required=True, type=Path)\n    parser.add_argument(\"--browser-executable\")\n    args = parser.parse_args()\n    out = args.out.resolve()\n    out.mkdir(parents=True, exist_ok=True)\n    baseline = args.baseline_page.resolve()\n    pages = {\"before\": baseline.read_bytes(), \"after\": (ROOT/\"site/confluence_screener.html\").read_bytes()}\n\n    class Handler(http.server.SimpleHTTPRequestHandler):\n        def __init__(self, *a, **kw):\n            super().__init__(*a, directory=str(ROOT/\"site\"), **kw)\n\n        def do_GET(self):\n            parsed = urlsplit(self.path)\n            if parsed.path.startswith(\"/premiumdata/\"):\n                self.send_response(403); self.end_headers(); return\n            version = parse_qs(parsed.query).get(\"layout_version\", [None])[0]\n            if parsed.path == \"/confluence_screener.html\" and version in pages:\n                data = pages[version]\n                self.send_response(200)\n                self.send_header(\"Content-Type\", \"text/html; charset=utf-8\")\n                self.send_header(\"Content-Length\", str(len(data)))\n                self.end_headers(); self.wfile.write(data); return\n            super().do_GET()\n\n        def log_message(self, *_):\n            pass\n\n    server = socketserver.ThreadingTCPServer((\"127.0.0.1\", 0), Handler)\n    threading.Thread(target=server.serve_forever, daemon=True).start()\n    origin = \"http://127.0.0.1:\"+str(server.server_address[1])\n    plan = [(width, lang, False) for width in (320, 390, 640, 641, 767, 768, 960, 1440) for lang in (\"en\", \"zh\")]\n    plan += [(width, lang, True) for width in (320, 768) for lang in (\"en\", \"zh\")]\n    captures, cases, errors = [], [], []\n    capture_keys = {(320, \"en\", False), (320, \"zh\", False), (641, \"en\", False),\n                    (768, \"zh\", False), (1440, \"en\", False), (1440, \"zh\", False), (768, \"en\", True)}\n    try:\n        with sync_playwright() as pw:\n            options = {\"headless\": True}\n            if args.browser_executable:\n                options[\"executable_path\"] = args.browser_executable\n            browser = pw.chromium.launch(**options)\n            version = browser.version\n            for width, lang, stress in plan:\n                name = (\"stress\" if stress else \"served\")+\"-\"+str(width)+\"-\"+lang\n                theme = \"dark\" if lang == \"en\" else \"light\"\n                case = {\"name\": name, \"width\": width, \"lang\": lang, \"theme\": theme, \"synthetic_label_stress\": stress}\n                context = browser.new_context(viewport={\"width\": width, \"height\": 900}, device_scale_factor=1,\n                    is_mobile=width <= 500, has_touch=width <= 500, reduced_motion=\"reduce\")\n                context.route(\"**/*\", lambda route: route.continue_() if urlsplit(route.request.url).hostname == \"127.0.0.1\" else route.abort())\n                context.add_init_script(\"localStorage.setItem('lang',\"+json.dumps(lang)+\");localStorage.setItem('theme',\"+json.dumps(theme)+\");\")\n                page = context.new_page()\n                page.set_default_timeout(6000)\n                local_errors = []\n                page.on(\"pageerror\", lambda error: (local_errors.append(str(error)), errors.append(str(error))))\n                try:\n                    for state in (\"before\", \"after\"):\n                        page.goto(origin+\"/confluence_screener.html?layout_version=\"+state, wait_until=\"load\")\n                        if stress:\n                            page.evaluate(\"\"\"() => {\n                              document.querySelector('.leg-txt .l-en').textContent='LongUnbrokenCriterionIdentifierForResponsiveContainment'.repeat(3);\n                              document.querySelector('.leg-txt .l-zh').textContent='较长期均线趋势与周线确认条件同时成立且必须完整显示'.repeat(3);\n                            }\"\"\")\n                        case[state] = page.evaluate(MEASURE)\n                        if (width, lang, stress) in capture_keys and (state == \"after\" or width == 1440):\n                            filename = state+\"-\"+name+\".png\"\n                            page.locator('.lc').first.screenshot(path=str(out/filename))\n                            captures.append({\"file\": filename, \"state\": state, \"width\": width, \"lang\": lang, \"stress\": stress})\n                    before, after = case[\"before\"], case[\"after\"]\n                    assert not after[\"overflow\"], \"Candidate document overflows\"\n                    assert len(before[\"cards\"]) == len(after[\"cards\"]) == 3\n                    assert max(c[\"legCount\"] for c in after[\"cards\"]) == 4, \"Expected actual four-leg combination\"\n                    for index, (old, new) in enumerate(zip(before[\"cards\"], after[\"cards\"])):\n                        assert new[\"directChildren\"] == [\"lc-rank cs-tipped\", \"lc-title-wrap\", \"legs\", \"lc-wr\"], new[\"directChildren\"]\n                        assert new[\"legsCount\"] == 1 and new[\"legCount\"] == old[\"legCount\"]\n                        assert new[\"fonts\"] == old[\"fonts\"] and new[\"hrefs\"] == old[\"hrefs\"]\n                        assert new[\"publicText\"] == old[\"publicText\"]\n                        assert new[\"summary\"][\"height\"] >= old[\"summary\"][\"height\"] >= 44\n                        assert new[\"action\"][\"height\"] >= old[\"action\"][\"height\"]-1\n                        assert 15 <= new[\"titleGap\"] <= 17, {\"card\": index, \"titleGap\": new[\"titleGap\"]}\n                        for row in new[\"legRows\"]:\n                            assert row[\"scroll\"] <= row[\"client\"]+1, row\n                            assert row[\"text\"][\"right\"] <= new[\"legs\"][\"right\"]+1, row\n                            assert row[\"badge\"][\"width\"] >= 25 and row[\"badge\"][\"height\"] > 10, row\n                        assert new[\"wr\"][\"right\"] <= new[\"top\"][\"right\"]+1\n                        assert new[\"legs\"][\"bottom\"] <= new[\"method\"][\"y\"]+1\n                        assert new[\"wr\"][\"bottom\"] <= new[\"method\"][\"y\"]+1\n                        for key in (\"rates\", \"samples\"):\n                            assert abs(new[key][0][\"y\"]-new[key][1][\"y\"]) < 1\n                        assert [v[\"text\"] for v in new[\"values\"]] == [v[\"text\"] for v in old[\"values\"]]\n                        assert abs(new[\"values\"][0][\"box\"][\"y\"]-new[\"values\"][1][\"box\"][\"y\"]) < 1\n                        if width < 768:\n                            assert abs(new[\"legs\"][\"width\"]-new[\"top\"][\"width\"]) < 1\n                            assert abs(new[\"wr\"][\"width\"]-new[\"top\"][\"width\"]) < 1\n                            assert new[\"wr\"][\"y\"] >= new[\"legs\"][\"bottom\"]+15\n                        else:\n                            assert abs(new[\"legs\"][\"x\"]-new[\"title\"][\"x\"]) < 1\n                            assert new[\"legs\"][\"right\"]+15 <= new[\"wr\"][\"x\"]\n                            assert abs(new[\"wr\"][\"width\"]-310) < 1\n                        new[\"card_height_reduction\"] = old[\"box\"][\"height\"]-new[\"box\"][\"height\"]\n                        new[\"action_upward\"] = (old[\"action\"][\"y\"]-old[\"box\"][\"y\"])-(new[\"action\"][\"y\"]-new[\"box\"][\"y\"])\n                        if width >= 960 and not stress:\n                            assert new[\"card_height_reduction\"] > 60 and new[\"action_upward\"] > 60, new\n                    card = page.locator('.lc').first\n                    sequence = [card.locator('.lc-since')]+[card.locator('.leg-tf').nth(i) for i in range(card.locator('.leg-tf').count())]+[card.locator('.lc-method summary')]\n                    card.locator('.lc-rank').focus()\n                    focus = []\n                    for target in sequence:\n                        page.keyboard.press('Tab')\n                        expect(target).to_be_focused()\n                        details = target.evaluate(\"\"\"n=>({class:n.className,text:n.innerText,visible:n.matches(':focus-visible'),outline:getComputedStyle(n).outlineStyle,outlineWidth:getComputedStyle(n).outlineWidth})\"\"\")\n                        assert details[\"visible\"] and details[\"outline\"] != \"none\" and float(details[\"outlineWidth\"].replace('px','')) > 0, details\n                        focus.append(details)\n                    summary = card.locator('.lc-method summary')\n                    summary.press('Enter')\n                    expect(card.locator('.lc-method')).to_have_attribute('open', '')\n                    opened = page.evaluate(\"\"\"()=>{const cards=[...document.querySelectorAll('.lc')];const c=cards[0];return {methodBottom:c.querySelector('.lc-method').getBoundingClientRect().bottom,footerTop:c.querySelector('.lc-foot').getBoundingClientRect().top,cardBottom:c.getBoundingClientRect().bottom,nextTop:cards[1].getBoundingClientRect().top}}\"\"\")\n                    assert opened[\"methodBottom\"] <= opened[\"footerTop\"] and opened[\"cardBottom\"] < opened[\"nextTop\"]\n                    if width in (767, 768) and not stress:\n                        badge = card.locator('.leg-tf').last\n                        badge.focus()\n                        badge.evaluate(\"n=>window.__layoutFocusedNode=n\")\n                        page.set_viewport_size({\"width\": 768 if width == 767 else 767, \"height\": 900})\n                        assert badge.evaluate(\"n=>n===window.__layoutFocusedNode && n===document.activeElement\")\n                        expect(card.locator('.lc-method')).to_have_attribute('open', '')\n                        page.set_viewport_size({\"width\": width, \"height\": 900})\n                        summary.focus()\n                        case[\"resize\"] = {\"same_focused_node\": True, \"open_disclosure_preserved\": True, \"crossed\": [767, 768]}\n                    summary.press('Enter')\n                    expect(card.locator('.lc-method')).not_to_have_attribute('open', '')\n                    page.keyboard.press('Tab')\n                    company = card.locator('a.tkr').first\n                    expect(company).to_be_focused()\n                    destination = company.get_attribute('href')\n                    page.route('**/stocks/*', lambda route: route.fulfill(content_type='text/html', body='<h1>Local company navigation proof</h1>'))\n                    company.press('Enter')\n                    page.wait_for_url('**/'+destination)\n                    assert not local_errors, local_errors\n                    case.update(status='PASS', focus_order=focus, opened_method=opened, company_destination=destination)\n                except Exception as error:\n                    case.update(status='FAIL', error=str(error), trace=traceback.format_exc(limit=3))\n                finally:\n                    context.close()\n                cases.append(case)\n            browser.close()\n    finally:\n        server.shutdown(); server.server_close()\n    assert len(cases) == len(plan) == 20\n    for capture in captures:\n        capture.update(meta(out/capture['file']))\n    report = {\"schema\": \"confluence_responsive_layout_browser/v1\", \"observed_at\": datetime.now(timezone.utc).isoformat(),\n        \"browser\": version, \"contexts\": len(cases), \"page_observations\": len(cases)*2, \"cases\": cases, \"captures\": captures,\n        \"page_errors\": errors, \"passed\": sum(c['status']=='PASS' for c in cases), \"failed\": sum(c['status']=='FAIL' for c in cases),\n        \"sources\": {p: meta(ROOT/p) for p in ('templates/confluence_screener.html.j2','site/confluence_screener.html','site/premiumdata/confluence_screener.json','scripts/verify_confluence_layout_browser.py')},\n        \"baseline_page\": meta(baseline), \"scope\": \"Sixteen actual saved-page before/after comparisons and four explicitly synthetic long-label stress cases. Local HTTP, blocked external requests, no auth changes; company navigation intercepted locally. Shared shell/font completeness, live entitlement, spoken AT and deployment are not claimed.\"}\n    (out/'browser-report.json').write_text(json.dumps(report, ensure_ascii=False, indent=2)+'\\n')\n    print(json.dumps({\"passed\": report['passed'], \"failed\": report['failed'], \"contexts\": len(cases), \"page_errors\": len(errors),\n        \"report\": str(out/'browser-report.json'), \"failures\": [{\"name\": c['name'], \"error\": c['error'][:500]} for c in cases if c['status']=='FAIL']}, ensure_ascii=False))\n    return 1 if report['failed'] else 0\n\n\nif __name__ == '__main__':\n    raise SystemExit(main())\n"
+    },
+    "overflow_diagnosis": {
+      "pid": 82901,
+      "process_seconds": 7.17,
+      "observations": [
+        {
+          "lang": "en",
+          "state": "before",
+          "width": 960,
+          "scroll": 1288,
+          "nodes": [
+            {
+              "tag": "DIV",
+              "id": "",
+              "class": "nav-dd-menu",
+              "x": 667.40625,
+              "right": 994.171875,
+              "width": 326.765625,
+              "display": "block",
+              "parent": "nav-dd nav-sub",
+              "text": ""
+            },
+            {
+              "tag": "A",
+              "id": "",
+              "class": "",
+              "x": 674.40625,
+              "right": 987.171875,
+              "width": 312.765625,
+              "display": "block",
+              "parent": "nav-dd-menu",
+              "text": ""
+            },
+            {
+              "tag": "SPAN",
+              "id": "",
+              "class": "d",
+              "x": 686.40625,
+              "right": 975.171875,
+              "width": 288.765625,
+              "display": "block",
+              "parent": "",
+              "text": ""
+            },
+            {
+              "tag": "A",
+              "id": "",
+              "class": "",
+              "x": 674.40625,
+              "right": 987.171875,
+              "width": 312.765625,
+              "display": "block",
+              "parent": "nav-dd-menu",
+              "text": ""
+            },
+            {
+              "tag": "SPAN",
+              "id": "",
+              "class": "d",
+              "x": 686.40625,
+              "right": 975.171875,
+              "width": 288.765625,
+              "display": "block",
+              "parent": "",
+              "text": ""
+            },
+            {
+              "tag": "A",
+              "id": "",
+              "class": "",
+              "x": 674.40625,
+              "right": 987.171875,
+              "width": 312.765625,
+              "display": "block",
+              "parent": "nav-dd-menu",
+              "text": ""
+            },
+            {
+              "tag": "SPAN",
+              "id": "",
+              "class": "d",
+              "x": 686.40625,
+              "right": 975.171875,
+              "width": 288.765625,
+              "display": "block",
+              "parent": "",
+              "text": ""
+            },
+            {
+              "tag": "SPAN",
+              "id": "",
+              "class": "l-en",
+              "x": 686.40625,
+              "right": 975.171875,
+              "width": 288.765625,
+              "display": "inline",
+              "parent": "d",
+              "text": ""
+            },
+            {
+              "tag": "DIV",
+              "id": "",
+              "class": "nav-dd-menu",
+              "x": 781.453125,
+              "right": 1135.484375,
+              "width": 354.03125,
+              "display": "block",
+              "parent": "nav-dd nav-sub",
+              "text": ""
+            },
+            {
+              "tag": "A",
+              "id": "",
+              "class": "",
+              "x": 788.453125,
+              "right": 1128.484375,
+              "width": 340.03125,
+              "display": "block",
+              "parent": "nav-dd-menu",
+              "text": ""
+            },
+            {
+              "tag": "SPAN",
+              "id": "",
+              "class": "d",
+              "x": 800.453125,
+              "right": 1116.484375,
+              "width": 316.03125,
+              "display": "block",
+              "parent": "",
+              "text": ""
+            },
+            {
+              "tag": "SPAN",
+              "id": "",
+              "class": "l-en",
+              "x": 800.453125,
+              "right": 974.046875,
+              "width": 173.59375,
+              "display": "inline",
+              "parent": "d",
+              "text": ""
+            },
+            {
+              "tag": "A",
+              "id": "",
+              "class": "",
+              "x": 788.453125,
+              "right": 1128.484375,
+              "width": 340.03125,
+              "display": "block",
+              "parent": "nav-dd-menu",
+              "text": ""
+            },
+            {
+              "tag": "SPAN",
+              "id": "",
+              "class": "d",
+              "x": 800.453125,
+              "right": 1116.484375,
+              "width": 316.03125,
+              "display": "block",
+              "parent": "",
+              "text": ""
+            },
+            {
+              "tag": "SPAN",
+              "id": "",
+              "class": "l-en",
+              "x": 800.453125,
+              "right": 1096.46875,
+              "width": 296.015625,
+              "display": "inline",
+              "parent": "d",
+              "text": ""
+            },
+            {
+              "tag": "A",
+              "id": "",
+              "class": "",
+              "x": 788.453125,
+              "right": 1128.484375,
+              "width": 340.03125,
+              "display": "block",
+              "parent": "nav-dd-menu",
+              "text": ""
+            },
+            {
+              "tag": "SPAN",
+              "id": "",
+              "class": "d",
+              "x": 800.453125,
+              "right": 1116.484375,
+              "width": 316.03125,
+              "display": "block",
+              "parent": "",
+              "text": ""
+            },
+            {
+              "tag": "SPAN",
+              "id": "",
+              "class": "l-en",
+              "x": 800.453125,
+              "right": 1095.828125,
+              "width": 295.375,
+              "display": "inline",
+              "parent": "d",
+              "text": ""
+            },
+            {
+              "tag": "A",
+              "id": "",
+              "class": "",
+              "x": 788.453125,
+              "right": 1128.484375,
+              "width": 340.03125,
+              "display": "block",
+              "parent": "nav-dd-menu",
+              "text": ""
+            },
+            {
+              "tag": "SPAN",
+              "id": "",
+              "class": "d",
+              "x": 800.453125,
+              "right": 1116.484375,
+              "width": 316.03125,
+              "display": "block",
+              "parent": "",
+              "text": ""
+            },
+            {
+              "tag": "SPAN",
+              "id": "",
+              "class": "l-en",
+              "x": 800.453125,
+              "right": 1084,
+              "width": 283.546875,
+              "display": "inline",
+              "parent": "d",
+              "text": ""
+            },
+            {
+              "tag": "A",
+              "id": "",
+              "class": "",
+              "x": 788.453125,
+              "right": 1128.484375,
+              "width": 340.03125,
+              "display": "block",
+              "parent": "nav-dd-menu",
+              "text": ""
+            },
+            {
+              "tag": "SPAN",
+              "id": "",
+              "class": "d",
+              "x": 800.453125,
+              "right": 1116.484375,
+              "width": 316.03125,
+              "display": "block",
+              "parent": "",
+              "text": ""
+            },
+            {
+              "tag": "SPAN",
+              "id": "",
+              "class": "l-en",
+              "x": 800.453125,
+              "right": 1001.796875,
+              "width": 201.34375,
+              "display": "inline",
+              "parent": "d",
+              "text": ""
+            },
+            {
+              "tag": "A",
+              "id": "",
+              "class": "",
+              "x": 788.453125,
+              "right": 1128.484375,
+              "width": 340.03125,
+              "display": "block",
+              "parent": "nav-dd-menu",
+              "text": ""
+            }
+          ]
+        },
+        {
+          "lang": "en",
+          "state": "after",
+          "width": 960,
+          "scroll": 1288,
+          "nodes": [
+            {
+              "tag": "DIV",
+              "id": "",
+              "class": "nav-dd-menu",
+              "x": 667.40625,
+              "right": 994.171875,
+              "width": 326.765625,
+              "display": "block",
+              "parent": "nav-dd nav-sub",
+              "text": ""
+            },
+            {
+              "tag": "A",
+              "id": "",
+              "class": "",
+              "x": 674.40625,
+              "right": 987.171875,
+              "width": 312.765625,
+              "display": "block",
+              "parent": "nav-dd-menu",
+              "text": ""
+            },
+            {
+              "tag": "SPAN",
+              "id": "",
+              "class": "d",
+              "x": 686.40625,
+              "right": 975.171875,
+              "width": 288.765625,
+              "display": "block",
+              "parent": "",
+              "text": ""
+            },
+            {
+              "tag": "A",
+              "id": "",
+              "class": "",
+              "x": 674.40625,
+              "right": 987.171875,
+              "width": 312.765625,
+              "display": "block",
+              "parent": "nav-dd-menu",
+              "text": ""
+            },
+            {
+              "tag": "SPAN",
+              "id": "",
+              "class": "d",
+              "x": 686.40625,
+              "right": 975.171875,
+              "width": 288.765625,
+              "display": "block",
+              "parent": "",
+              "text": ""
+            },
+            {
+              "tag": "A",
+              "id": "",
+              "class": "",
+              "x": 674.40625,
+              "right": 987.171875,
+              "width": 312.765625,
+              "display": "block",
+              "parent": "nav-dd-menu",
+              "text": ""
+            },
+            {
+              "tag": "SPAN",
+              "id": "",
+              "class": "d",
+              "x": 686.40625,
+              "right": 975.171875,
+              "width": 288.765625,
+              "display": "block",
+              "parent": "",
+              "text": ""
+            },
+            {
+              "tag": "SPAN",
+              "id": "",
+              "class": "l-en",
+              "x": 686.40625,
+              "right": 975.171875,
+              "width": 288.765625,
+              "display": "inline",
+              "parent": "d",
+              "text": ""
+            },
+            {
+              "tag": "DIV",
+              "id": "",
+              "class": "nav-dd-menu",
+              "x": 781.453125,
+              "right": 1135.484375,
+              "width": 354.03125,
+              "display": "block",
+              "parent": "nav-dd nav-sub",
+              "text": ""
+            },
+            {
+              "tag": "A",
+              "id": "",
+              "class": "",
+              "x": 788.453125,
+              "right": 1128.484375,
+              "width": 340.03125,
+              "display": "block",
+              "parent": "nav-dd-menu",
+              "text": ""
+            },
+            {
+              "tag": "SPAN",
+              "id": "",
+              "class": "d",
+              "x": 800.453125,
+              "right": 1116.484375,
+              "width": 316.03125,
+              "display": "block",
+              "parent": "",
+              "text": ""
+            },
+            {
+              "tag": "SPAN",
+              "id": "",
+              "class": "l-en",
+              "x": 800.453125,
+              "right": 974.046875,
+              "width": 173.59375,
+              "display": "inline",
+              "parent": "d",
+              "text": ""
+            },
+            {
+              "tag": "A",
+              "id": "",
+              "class": "",
+              "x": 788.453125,
+              "right": 1128.484375,
+              "width": 340.03125,
+              "display": "block",
+              "parent": "nav-dd-menu",
+              "text": ""
+            },
+            {
+              "tag": "SPAN",
+              "id": "",
+              "class": "d",
+              "x": 800.453125,
+              "right": 1116.484375,
+              "width": 316.03125,
+              "display": "block",
+              "parent": "",
+              "text": ""
+            },
+            {
+              "tag": "SPAN",
+              "id": "",
+              "class": "l-en",
+              "x": 800.453125,
+              "right": 1096.46875,
+              "width": 296.015625,
+              "display": "inline",
+              "parent": "d",
+              "text": ""
+            },
+            {
+              "tag": "A",
+              "id": "",
+              "class": "",
+              "x": 788.453125,
+              "right": 1128.484375,
+              "width": 340.03125,
+              "display": "block",
+              "parent": "nav-dd-menu",
+              "text": ""
+            },
+            {
+              "tag": "SPAN",
+              "id": "",
+              "class": "d",
+              "x": 800.453125,
+              "right": 1116.484375,
+              "width": 316.03125,
+              "display": "block",
+              "parent": "",
+              "text": ""
+            },
+            {
+              "tag": "SPAN",
+              "id": "",
+              "class": "l-en",
+              "x": 800.453125,
+              "right": 1095.828125,
+              "width": 295.375,
+              "display": "inline",
+              "parent": "d",
+              "text": ""
+            },
+            {
+              "tag": "A",
+              "id": "",
+              "class": "",
+              "x": 788.453125,
+              "right": 1128.484375,
+              "width": 340.03125,
+              "display": "block",
+              "parent": "nav-dd-menu",
+              "text": ""
+            },
+            {
+              "tag": "SPAN",
+              "id": "",
+              "class": "d",
+              "x": 800.453125,
+              "right": 1116.484375,
+              "width": 316.03125,
+              "display": "block",
+              "parent": "",
+              "text": ""
+            },
+            {
+              "tag": "SPAN",
+              "id": "",
+              "class": "l-en",
+              "x": 800.453125,
+              "right": 1084,
+              "width": 283.546875,
+              "display": "inline",
+              "parent": "d",
+              "text": ""
+            },
+            {
+              "tag": "A",
+              "id": "",
+              "class": "",
+              "x": 788.453125,
+              "right": 1128.484375,
+              "width": 340.03125,
+              "display": "block",
+              "parent": "nav-dd-menu",
+              "text": ""
+            },
+            {
+              "tag": "SPAN",
+              "id": "",
+              "class": "d",
+              "x": 800.453125,
+              "right": 1116.484375,
+              "width": 316.03125,
+              "display": "block",
+              "parent": "",
+              "text": ""
+            },
+            {
+              "tag": "SPAN",
+              "id": "",
+              "class": "l-en",
+              "x": 800.453125,
+              "right": 1001.796875,
+              "width": 201.34375,
+              "display": "inline",
+              "parent": "d",
+              "text": ""
+            },
+            {
+              "tag": "A",
+              "id": "",
+              "class": "",
+              "x": 788.453125,
+              "right": 1128.484375,
+              "width": 340.03125,
+              "display": "block",
+              "parent": "nav-dd-menu",
+              "text": ""
+            }
+          ]
+        },
+        {
+          "lang": "zh",
+          "state": "before",
+          "width": 960,
+          "scroll": 1004,
+          "nodes": [
+            {
+              "tag": "SPAN",
+              "id": "",
+              "class": "nm-tx",
+              "x": 628.109375,
+              "right": 1003.96875,
+              "width": 375.859375,
+              "display": "inline",
+              "parent": "mega-item nm-feat",
+              "text": ""
+            },
+            {
+              "tag": "SPAN",
+              "id": "",
+              "class": "item-title nm-t",
+              "x": 827.046875,
+              "right": 1003.96875,
+              "width": 176.921875,
+              "display": "inline",
+              "parent": "nm-tx",
+              "text": ""
+            },
+            {
+              "tag": "SPAN",
+              "id": "",
+              "class": "l-zh",
+              "x": 827.046875,
+              "right": 975.25,
+              "width": 148.203125,
+              "display": "inline",
+              "parent": "item-title nm-t",
+              "text": ""
+            },
+            {
+              "tag": "SPAN",
+              "id": "",
+              "class": "nm-tier",
+              "x": 975.25,
+              "right": 1003.96875,
+              "width": 28.71875,
+              "display": "inline",
+              "parent": "item-title nm-t",
+              "text": ""
+            }
+          ]
+        },
+        {
+          "lang": "zh",
+          "state": "after",
+          "width": 960,
+          "scroll": 1004,
+          "nodes": [
+            {
+              "tag": "SPAN",
+              "id": "",
+              "class": "nm-tx",
+              "x": 628.109375,
+              "right": 1003.96875,
+              "width": 375.859375,
+              "display": "inline",
+              "parent": "mega-item nm-feat",
+              "text": ""
+            },
+            {
+              "tag": "SPAN",
+              "id": "",
+              "class": "item-title nm-t",
+              "x": 827.046875,
+              "right": 1003.96875,
+              "width": 176.921875,
+              "display": "inline",
+              "parent": "nm-tx",
+              "text": ""
+            },
+            {
+              "tag": "SPAN",
+              "id": "",
+              "class": "l-zh",
+              "x": 827.046875,
+              "right": 975.25,
+              "width": 148.203125,
+              "display": "inline",
+              "parent": "item-title nm-t",
+              "text": ""
+            },
+            {
+              "tag": "SPAN",
+              "id": "",
+              "class": "nm-tier",
+              "x": 975.25,
+              "right": 1003.96875,
+              "width": 28.71875,
+              "display": "inline",
+              "parent": "item-title nm-t",
+              "text": ""
+            }
+          ]
+        }
+      ]
+    },
+    "final_browser": {
+      "pid": 86061,
+      "process_seconds": 25.16,
+      "command": "python3 -B '/Volumes/Mastermind/agent-workspaces/verify/confluence-compat-20261109-klbmhv4a/scripts/verify_confluence_layout_browser.py' --out '/Volumes/Mastermind/agent-workspaces/verify/confluence-compat-20261109-klbmhv4a/layout-reviewed-proof' --baseline-page '/Volumes/Mastermind/agent-workspaces/verify/confluence-compat-20261109-klbmhv4a/layout-parent/site/confluence_screener.html' --browser-executable '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'",
+      "passed": 20,
+      "failed": 0,
+      "contexts": 20,
+      "page_observations": 40,
+      "card_observations": 120,
+      "page_errors": 0,
+      "real_saved_pair_cases": 16,
+      "synthetic_long_label_cases": 4,
+      "browser": "157.0.8103.39",
+      "native_report_meta": {
+        "bytes": 1672097,
+        "sha256": "df8be270bb3af1559f1786c651fc2e9a693f695679f0c9537ba5f3ad6bc0d792",
+        "blob": "a13286dc729b3816710c892f709915f5fef0a799"
+      },
+      "part_files": {
+        "en": {
+          "path": "/workspace/scratch/80f6cfc448fd/confluence-compat/LAYOUT_BROWSER_EN.json",
+          "characters": 493923,
+          "bytes": 545271,
+          "sha256": "83055da24979b1988e691e332133494e84ff5c178524e8e19d248869c276f591",
+          "blob": "e2b536d05f97eb6513f1f7ec9495ae8156a3ac89"
+        },
+        "zh": {
+          "path": "/workspace/scratch/80f6cfc448fd/confluence-compat/LAYOUT_BROWSER_ZH.json",
+          "characters": 365282,
+          "bytes": 420218,
+          "sha256": "a6219d58a2f3a6c070073c760631a454b029193e59d211c6139dc854497ecc35",
+          "blob": "8b319637bbc8be41de7150995a2a7464f358ef7f"
+        }
+      },
+      "limitations": [
+        {
+          "name": "served-960-en",
+          "value": {
+            "unchanged": true,
+            "scrollWidth": 1288,
+            "viewport": 960,
+            "owner": "hidden shared .site-nav menus"
+          }
+        },
+        {
+          "name": "served-960-zh",
+          "value": {
+            "unchanged": true,
+            "scrollWidth": 1004,
+            "viewport": 960,
+            "owner": "hidden shared .site-nav menus"
+          }
+        }
+      ]
+    }
+  },
+  "native_export": {
+    "bytes": 1171743,
+    "sha256": "a4f525a1e2bab1f7e25805c9cb979781afedae870597cb1d1d18b15c11fc84bb"
+  },
+  "transfer": {
+    "encoding": "gzip+base64",
+    "semantic_json_sha256": "1d12490547b6a7de6d3d51f3a21465e3de241c59fcb85174c83deb609c07139c",
+    "uncompressed_bytes": 963370,
+    "sha256": "46db843e8a5d92b8face67009a8a87ac9d68c195e55333cf0e99b48ee79fa704",
+    "bytes": 297967
+  },
+  "template_inverse_manifest": {
+    "css_changes": [
+      [
+        ".lc-top{display:grid;grid-template-columns:auto 1fr auto;gap:16px;align-items:start}",
+        ".lc-top{display:grid;grid-template-columns:auto minmax(0,1fr) auto;grid-template-rows:auto 1fr;\n  grid-template-areas:\"rank title wr\" \". legs wr\";gap:16px;align-items:start}\n.lc-rank{grid-area:rank}.lc-title-wrap{grid-area:title}.lc-wr{grid-area:wr}\n.lc-top>.legs{grid-area:legs;margin:0;min-width:0}"
+      ],
+      [
+        ".leg{display:grid;grid-template-columns:26px 1fr;gap:11px;align-items:center}",
+        ".leg{display:grid;grid-template-columns:26px minmax(0,1fr);gap:11px;align-items:center}"
+      ],
+      [
+        ".leg-txt{font-size:13px;color:var(--text);line-height:1.35;display:flex;align-items:center;gap:9px}",
+        ".leg-txt{min-width:0;font-size:13px;color:var(--text);line-height:1.35;display:flex;align-items:center;gap:9px}\n.leg-txt>span{min-width:0;overflow-wrap:anywhere}"
+      ],
+      [
+        "/* responsive */\n@media(max-width:640px){",
+        "/* Card reading order stacks before the fixed evidence rail crowds the signal criteria. */\n@media(max-width:767px){\n  .lc-top{grid-template-columns:auto minmax(0,1fr);grid-template-rows:auto auto auto;\n    grid-template-areas:\"rank title\" \"legs legs\" \"wr wr\"}\n  .lc-wr{width:100%;gap:var(--sp-3,12px)}\n}\n/* responsive */\n@media(max-width:640px){"
+      ],
+      [
+        "  .lc-top{grid-template-columns:auto 1fr;grid-template-areas:\"rank title\" \"wr wr\"}\n  .lc-rank{grid-area:rank}.lc-title-wrap{grid-area:title}.lc-wr{grid-area:wr;text-align:left;margin-top:6px}\n  .lc-wr{width:100%;gap:var(--sp-3,12px)}\n",
+        ""
+      ]
+    ],
+    "moved_block": "      {# the line-up: each leg lined up, timeframe-tagged #}\n      <div class=\"legs\">\n        {% for leg in c.legs %}\n        <div class=\"leg\">\n          {% if leg.tf == 'W' %}\n          <span class=\"leg-tf w\" tabindex=\"0\"\n                data-tip-en=\"This leg is evaluated on weekly bars. Its indicator lookback and trigger frequency are separate properties.\"\n                data-tip-zh=\"此条件在周线数据上计算；指标回看窗口和触发频率是不同的属性。\">W</span>\n          {% else %}\n          <span class=\"leg-tf d\" tabindex=\"0\"\n                data-tip-en=\"This leg is evaluated on daily bars. The indicator itself may use a longer lookback.\"\n                data-tip-zh=\"此条件在日线数据上计算；指标本身可能使用更长的回看窗口。\">D</span>\n          {% endif %}\n          <span class=\"leg-txt\"><span class=\"l-en\">{{ leg.en }}</span><span class=\"l-zh\">{{ leg.zh }}</span></span>\n        </div>\n        {% endfor %}\n      </div>\n\n",
+    "inverse_exact": true
+  },
+  "native_visual_inspection": {
+    "reviewer": "/root",
+    "captures": [
+      "after-served-320-en.png",
+      "after-served-320-zh.png",
+      "after-served-641-en.png",
+      "after-served-768-zh.png",
+      "before-served-1440-en.png",
+      "after-served-1440-en.png",
+      "before-served-1440-zh.png",
+      "after-served-1440-zh.png",
+      "after-stress-768-en.png"
+    ],
+    "observations": "Before/after desktop cards remove unused upper-left space and bring the action closer. EN/ZH narrow/tablet cards keep criteria, paired rates/samples/deltas, method and action readable. The explicit long-token stress case wraps without clipping. First-card crops do not replace full-page, live-account, spoken-AT or animation proof."
+  },
+  "captures": [
+    {
+      "file": "after-served-320-en.png",
+      "state": "after",
+      "width": 320,
+      "lang": "en",
+      "stress": false,
+      "bytes": 51270,
+      "sha256": "7bf2de55e8ece27a769b9a1557fbad9a102a085ac11217b3a39a7cdd0ea64623",
+      "blob": "0d34b71870531aaac2d43cd907719e97c8fcc834"
+    },
+    {
+      "file": "after-served-320-zh.png",
+      "state": "after",
+      "width": 320,
+      "lang": "zh",
+      "stress": false,
+      "bytes": 49707,
+      "sha256": "8eb3529fb893f719725c9368122652b7f1c3b9bd360956ac0809deb9ea9f1302",
+      "blob": "d44c4a2b7ac08b16fbd9fdff1646475ecd7a22d1"
+    },
+    {
+      "file": "after-served-641-en.png",
+      "state": "after",
+      "width": 641,
+      "lang": "en",
+      "stress": false,
+      "bytes": 57857,
+      "sha256": "fbbd1a75e864208e0c6b07b89ba1f1360814e7bdf4fde2cb384cfcbd8afcd182",
+      "blob": "f4cb5859c52bc2380ceec0bd039066b4b27e3eba"
+    },
+    {
+      "file": "after-served-768-zh.png",
+      "state": "after",
+      "width": 768,
+      "lang": "zh",
+      "stress": false,
+      "bytes": 55372,
+      "sha256": "5c47833e481bea7da5283aabce0667640bbb01bbe2e9137cb0e9da689eacc852",
+      "blob": "7546ca4fd5b0ccec87da82c2c14302d60cfe47e6"
+    },
+    {
+      "file": "before-served-1440-en.png",
+      "state": "before",
+      "width": 1440,
+      "lang": "en",
+      "stress": false,
+      "bytes": 58040,
+      "sha256": "b2fe30b9ceca2e9287ef7fc880e1fa9e3a7ebb75d233c5f714b3b003df5547e9",
+      "blob": "88576b37014ab675bc6c6fbc06fa4d5f608f8c76"
+    },
+    {
+      "file": "after-served-1440-en.png",
+      "state": "after",
+      "width": 1440,
+      "lang": "en",
+      "stress": false,
+      "bytes": 56556,
+      "sha256": "c21a725cb85d35eedd2703a61842f0f6715dbea471db681e05587e96004ad852",
+      "blob": "a3e0c6ff176acfafa6352892ec3a53056085ac9a"
+    },
+    {
+      "file": "before-served-1440-zh.png",
+      "state": "before",
+      "width": 1440,
+      "lang": "zh",
+      "stress": false,
+      "bytes": 56271,
+      "sha256": "4a88a6aad5ea6375b47638aa970421b41512db39d0ff9bd56a6e0a5ad98a78ae",
+      "blob": "0b4a68049a100b8670453fd6851d9321fa76c614"
+    },
+    {
+      "file": "after-served-1440-zh.png",
+      "state": "after",
+      "width": 1440,
+      "lang": "zh",
+      "stress": false,
+      "bytes": 55011,
+      "sha256": "a248acc80ed0aaf48d3ff0b556c776eb06cc3c78d920295cf7cf90d779e0b609",
+      "blob": "6e302b1dc0fc7c8250142810a9a0c48936d12c05"
+    },
+    {
+      "file": "after-stress-768-en.png",
+      "state": "after",
+      "width": 768,
+      "lang": "en",
+      "stress": true,
+      "bytes": 70448,
+      "sha256": "0e806ba3eec090675346032f91e24a49caedc6646daa454edde92bf5f22dd04a",
+      "blob": "9dc0d656f5668aa0d66103767a431695f708c931"
+    }
+  ],
+  "scope": "Reversible template layout only. Hidden shared-navigation overflow at960px remains identical to parent and explicitly qualified, with separate full card-descendant containment. Other product/admission/release holds remain."
+}
