@@ -366,7 +366,7 @@ fetch('../policy_lever.json',{cache:'no-cache'})
 
 <footer>
   <span class="l-en">Research dashboard, not investment advice. Theme and member scores help prioritize what to study; they are not a buy list or an order.</span><span class="l-zh">研究看板，非投资建议。主题与成分股评分用于安排研究优先级，不是买入清单或下单指令。</span>
-  <span class="l-en">Generated</span><span class="l-zh">生成于</span> <span>2026-11-08 16:20 UTC</span>.
+  <span class="l-en">Generated</span><span class="l-zh">生成于</span> <span>2026-11-09 18:02 UTC</span>.
 </footer>
 
 <script>
@@ -1657,7 +1657,15 @@ function anatomyPanelHtml(th){
   return html;
 }
 
-// ── staleness banner (TS-R6): shown when basket detail as_of predates today's session
+// Intl spans exchange calendars. Report the supplied price date without inferring a due session.
+function pricePanelDateHtml(panelAsOf){
+  var date=typeof panelAsOf==='string'?panelAsOf.slice(0,10):'';
+  return '<div class="disc" data-price-panel-date>'
+    +(date?L('Price panel dated '+esc(date),'价格面板日期：'+esc(date))
+           :L('Price panel date unavailable','价格面板日期不可用'))+'</div>';
+}
+
+// ── staleness banner (TS-R6): existing non-Intl session disclosure
 function stalenessBannerHtml(detailAsOf){
   if(!detailAsOf) return '';
   // Compare detail as_of date to today in ET so 19:00–24:00 UTC (next UTC day) does
@@ -1792,8 +1800,8 @@ function injectFtrWidgets(pulse, turnWatch){
 
   var detailAsOf=(DETAIL.as_of||'').slice(0,10);
 
-  // Staleness banner: shown when basket data predates today's session (TS-R6)
-  var bannerHtml=stalenessBannerHtml(detailAsOf);
+  // Keep the mixed-market panel clock separate from the optional theme clock.
+  var bannerHtml=DETAIL.region==='intl'?pricePanelDateHtml(DETAIL.price_panel_as_of):stalenessBannerHtml(detailAsOf);
   if(bannerHtml){
     var bannerEl=document.createElement('div');
     bannerEl.className='ftr-stale-banner';
