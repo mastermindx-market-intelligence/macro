@@ -1,0 +1,3852 @@
+{
+  "jobs": {
+    "admin-analytics-pages": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 4.7,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 6.1
+        }
+      ]
+    },
+    "admin-js-no-undef": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 13.4
+        }
+      ]
+    },
+    "admin-live-runs": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 12.6,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 3.6
+        }
+      ]
+    },
+    "admin-research-tools": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 4.5
+        }
+      ]
+    },
+    "agentos-knowledge-contracts": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 418.5
+        }
+      ]
+    },
+    "aibrief-countdown-pr": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 5.3,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 2.8
+        }
+      ]
+    },
+    "all-exports-resolve": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 7.2
+        }
+      ]
+    },
+    "altdata-brain-govern": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 13.9,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 5.0
+        }
+      ]
+    },
+    "altdata-new-sources": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 5.6
+        }
+      ]
+    },
+    "am-edition-producer": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 3.1,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 9.6
+        }
+      ]
+    },
+    "attested-history-guards": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-08-14",
+          "run_id": "legacy-observed-command-seconds",
+          "test_seconds": 60.0
+        },
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 18.8,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 46.9
+        }
+      ]
+    },
+    "basket-staleness-warn": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 8.9,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 5.0
+        }
+      ]
+    },
+    "bea-gvc-current-descriptive-consumer": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 9.6,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 33.0
+        }
+      ]
+    },
+    "billing-emails": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 17.6,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 32.7
+        }
+      ]
+    },
+    "billing-offers": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 11.4,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 4.8
+        }
+      ]
+    },
+    "biocatalyst-contracts": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 194.3
+        }
+      ]
+    },
+    "biocatalyst-deploy-integration": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 10.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 42.8
+        }
+      ]
+    },
+    "biocatalyst-evidence": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 10.2,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 126.3
+        }
+      ]
+    },
+    "biocatalyst-history": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-08-14",
+          "run_id": "legacy-observed-command-seconds",
+          "test_seconds": 172.0
+        },
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 11.4,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 204.5
+        }
+      ]
+    },
+    "biocatalyst-regulatory": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 27.6
+        }
+      ]
+    },
+    "biocatalyst-serving": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-08-14",
+          "run_id": "legacy-observed-command-seconds",
+          "test_seconds": 272.0
+        },
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 10.1,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 300.6
+        }
+      ]
+    },
+    "biocatalyst-worker": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-08-14",
+          "run_id": "legacy-observed-command-seconds",
+          "test_seconds": 274.0
+        },
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 8.4,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 202.7
+        }
+      ]
+    },
+    "board-contradictions": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 15.8
+        }
+      ]
+    },
+    "board-shadow-substrate": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 19.5,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 10.4
+        }
+      ]
+    },
+    "bot-session-recovery-browser": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 6.9,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 19.3
+        }
+      ]
+    },
+    "breakdown-control-seed-determinism": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 23.2
+        }
+      ]
+    },
+    "broad-etf-flows": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 9.8,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 3.7
+        }
+      ]
+    },
+    "c19-short-pressure-availability": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 2.4
+        }
+      ]
+    },
+    "c19-wp11-reader-pins": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 2.2
+        }
+      ]
+    },
+    "c19-wp13-debt-maturity-as-of": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 2.8,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 1.9
+        }
+      ]
+    },
+    "c19-wp15-operating-driver-pins": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 3.2
+        }
+      ]
+    },
+    "c19-wp19-integrated-answer-pins": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 11.6,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 3.7
+        }
+      ]
+    },
+    "c19-wp22-dhi-traversal": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 13.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 4.6
+        }
+      ]
+    },
+    "c19-wp24-consumer-states": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 8.5,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 2.1
+        }
+      ]
+    },
+    "c19-wp24-dtc-map": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 13.3,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 2.9
+        }
+      ]
+    },
+    "c19-wp24-superseded-generations": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 3.4
+        }
+      ]
+    },
+    "c19-wp28-cs-leg-qualification": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 17.5,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 5.1
+        }
+      ]
+    },
+    "c19-wp29-hk-southbound-two-period": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 3.2
+        }
+      ]
+    },
+    "c19-wp31-incremental-information": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 14.1,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 17.8
+        }
+      ]
+    },
+    "c19-wp32-integrated-answer-correction-denial-pins": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 19.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 7.4
+        }
+      ]
+    },
+    "calculator-input-integrity": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 3.3
+        }
+      ]
+    },
+    "capability-broker": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-08-14",
+          "run_id": "legacy-observed-command-seconds",
+          "test_seconds": 74.0
+        }
+      ]
+    },
+    "capital-structure-intelligence": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-08-14",
+          "run_id": "legacy-observed-command-seconds",
+          "test_seconds": 247.0
+        }
+      ]
+    },
+    "catalyst-loop-integrated": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 12.2,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 17.6
+        }
+      ]
+    },
+    "catalyst-opportunity": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 6.6,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 3.0
+        }
+      ]
+    },
+    "cbf-regime": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 8.3,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 2.3
+        }
+      ]
+    },
+    "ccw-w1-data-spine": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 16.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 9.5
+        }
+      ]
+    },
+    "ccw-w2-gspread-engine": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 3.9
+        }
+      ]
+    },
+    "ccw-w3-credit-momentum": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 10.5,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 7.4
+        }
+      ]
+    },
+    "ccw-w4-credit-desk": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 17.1,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 19.8
+        }
+      ]
+    },
+    "ccw-w6-study-s1": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 4.4
+        }
+      ]
+    },
+    "chart-render": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 6.0
+        }
+      ]
+    },
+    "chart-render-data": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 7.1
+        }
+      ]
+    },
+    "china-altdata-catalysts": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 9.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 6.7
+        }
+      ]
+    },
+    "china-board-breadth": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 9.5,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 3.9
+        }
+      ]
+    },
+    "china-mechanics-display": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 13.8,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 6.7
+        }
+      ]
+    },
+    "china-native-collectors": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 12.4,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 128.8
+        }
+      ]
+    },
+    "china-native-w2": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 10.3,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 10.5
+        }
+      ]
+    },
+    "china-radar-record": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 13.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 9.5
+        }
+      ]
+    },
+    "china-search-universe": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 15.7,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 8.0
+        }
+      ]
+    },
+    "china-sector-desk-gate": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 9.7,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 8.5
+        }
+      ]
+    },
+    "china-strategies-income-tile": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 3.3,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 2.9
+        }
+      ]
+    },
+    "ci-control-plane-census": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-04",
+          "run_id": "legacy-observed-command-seconds",
+          "test_seconds": 530.0
+        },
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 2.8,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 365.9
+        }
+      ]
+    },
+    "ci-control-plane-contracts": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-04",
+          "run_id": "legacy-observed-command-seconds",
+          "test_seconds": 815.0
+        },
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 2.9,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 543.4
+        }
+      ]
+    },
+    "ci-control-plane-structure": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-04",
+          "run_id": "legacy-observed-command-seconds",
+          "test_seconds": 150.0
+        },
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 3.9,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 113.0
+        }
+      ]
+    },
+    "cn-reversal-sleeve-display": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 10.4
+        }
+      ]
+    },
+    "cn-standout-audit": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 13.6,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 14.2
+        }
+      ]
+    },
+    "codex-research-engine": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 10.5
+        }
+      ]
+    },
+    "collect-identity": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 6.4,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 4.3
+        }
+      ]
+    },
+    "collector-registry": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 8.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 33.7
+        }
+      ]
+    },
+    "commodities-research-workspace": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 12.7,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 21.3
+        }
+      ]
+    },
+    "commodity-strategies-grid-fields": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 2.6
+        }
+      ]
+    },
+    "company-intelligence-private-runtime": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 4.5,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 2.9
+        }
+      ]
+    },
+    "company-intelligence-relationships": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 4.4,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 189.8
+        }
+      ]
+    },
+    "company-relationship-candidates": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 26.3
+        }
+      ]
+    },
+    "conflict-markers": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 1.4
+        }
+      ]
+    },
+    "consumer-cyclical-economic-change": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 5.4,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 8.9
+        }
+      ]
+    },
+    "conviction-profile": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 11.7,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 123.3
+        }
+      ]
+    },
+    "covenant-headroom": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 9.7,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 3.5
+        }
+      ]
+    },
+    "crypto-assistant-context": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 17.6,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 2.6
+        }
+      ]
+    },
+    "crypto-shelves": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 1.6
+        }
+      ]
+    },
+    "crypto-vector-r2-organs": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 18.3,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 38.1
+        }
+      ]
+    },
+    "cycle-forward-log": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 14.7,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 126.2
+        }
+      ]
+    },
+    "cycle-grading-stats": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 12.2,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 2.7
+        }
+      ]
+    },
+    "cycle-ontology-js": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 6.9,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 1.4
+        }
+      ]
+    },
+    "cycle-pattern-authority": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 8.0
+        }
+      ]
+    },
+    "cycles-payload-split": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 1.8
+        }
+      ]
+    },
+    "dag-conformance": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 4.4,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 36.4
+        }
+      ]
+    },
+    "dashboard-render-contract": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 12.6,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 255.0
+        }
+      ]
+    },
+    "data-base-shim": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 49.3
+        }
+      ]
+    },
+    "dataos-acceptance": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 4.4
+        }
+      ]
+    },
+    "dataos-foundation": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 16.4
+        }
+      ]
+    },
+    "dataos-identity-seams": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 12.9,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 19.7
+        }
+      ]
+    },
+    "dataos-prospective-reference": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 13.5,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 69.5
+        }
+      ]
+    },
+    "dataos-verification": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 53.7
+        }
+      ]
+    },
+    "dataos-web-workspace": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 11.4
+        }
+      ]
+    },
+    "defense-rail-laws": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 14.8,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 322.9
+        }
+      ]
+    },
+    "deploy-git-history": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 5.0
+        }
+      ]
+    },
+    "deploy-git-store-maintenance": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 3.8,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 11.6
+        }
+      ]
+    },
+    "design-governance": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 33.8
+        }
+      ]
+    },
+    "dislocation-p0-a1-blind-harvest": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 18.8,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 24.6
+        }
+      ]
+    },
+    "earnings-economic-dossier": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-10-19",
+          "run_id": "legacy-observed-command-seconds",
+          "test_seconds": 1070.0
+        },
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 4.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 731.7
+        }
+      ]
+    },
+    "earnings-economic-private-publication": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 3.2,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 147.0
+        }
+      ]
+    },
+    "earnings-economic-source-selection": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 4.1,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 69.9
+        }
+      ]
+    },
+    "earnings-release-identity": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 10.9,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 17.5
+        }
+      ]
+    },
+    "earnings-worker-systemd": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 1.9
+        }
+      ]
+    },
+    "engine-render-guards": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-08-14",
+          "run_id": "legacy-observed-command-seconds",
+          "test_seconds": 875.0
+        }
+      ]
+    },
+    "entry-radar-identity-snapshot": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 5.4,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 4.1
+        }
+      ]
+    },
+    "entry-radar-rs-pullback-calendar": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 6.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 13.2
+        }
+      ]
+    },
+    "eval-os-a1": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 13.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 24.9
+        }
+      ]
+    },
+    "ew-p4-descriptive-ui": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 10.6
+        }
+      ]
+    },
+    "express-render-guards": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-08-14",
+          "run_id": "legacy-observed-command-seconds",
+          "test_seconds": 150.0
+        }
+      ]
+    },
+    "fif-kernel-guards": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-10-19",
+          "run_id": "legacy-observed-command-seconds",
+          "test_seconds": 1630.0
+        },
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 20.2,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 4700.5
+        }
+      ]
+    },
+    "fif-saved-research-notifications": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 5.5,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 9.0
+        }
+      ]
+    },
+    "finance-intelligence": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 4.4,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 141.0
+        }
+      ]
+    },
+    "flow-cohorts": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 14.5,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 4.4
+        }
+      ]
+    },
+    "flow-signal-cohorts": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 16.8,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 20.1
+        }
+      ]
+    },
+    "flow-signals-ledger": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 18.1,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 6.5
+        }
+      ]
+    },
+    "flow-surface": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-08-14",
+          "run_id": "legacy-observed-command-seconds",
+          "test_seconds": 267.0
+        }
+      ]
+    },
+    "font-ui-defined": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-08-14",
+          "run_id": "legacy-observed-command-seconds",
+          "test_seconds": 96.0
+        },
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 5.1
+        }
+      ]
+    },
+    "forex-r26-consumer": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 16.3,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 46.9
+        }
+      ]
+    },
+    "ftr-tape-surfaces": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 4.8,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 10.2
+        }
+      ]
+    },
+    "gdelt-news-leaves": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 14.4,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 17.2
+        }
+      ]
+    },
+    "geo-enrich-credential-boundary": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 3.1
+        }
+      ]
+    },
+    "gh-annotation-line-start": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 3.1,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 6.8
+        }
+      ]
+    },
+    "global-liquidity-transmission": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 10.5,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 9.7
+        }
+      ]
+    },
+    "global-liquidity-transmission-contracts": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 7.3,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 40.1
+        }
+      ]
+    },
+    "gmi-classification-axes": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 16.2,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 12.0
+        }
+      ]
+    },
+    "gmi-explorer": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 14.6,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 68.0
+        }
+      ]
+    },
+    "gmi-source-diagnostic-kernel": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 11.9
+        }
+      ]
+    },
+    "govrev-company-bridge": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 5.5
+        }
+      ]
+    },
+    "govrev-program-ontology": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 9.2,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 4.3
+        }
+      ]
+    },
+    "grader-manifest": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 1.9
+        }
+      ]
+    },
+    "grey-deer-ew-forecast-reader": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 2.0
+        }
+      ]
+    },
+    "grey-deer-observed-moves": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 13.4,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 3.3
+        }
+      ]
+    },
+    "grey-deer-pboc-liquidity": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 1.9
+        }
+      ]
+    },
+    "grey-deer-pullback-forward": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 11.9,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 11.7
+        }
+      ]
+    },
+    "grey-deer-pullback-stage1": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 18.5,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 60.7
+        }
+      ]
+    },
+    "group-earnings-pulse": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 14.9,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 11.8
+        }
+      ]
+    },
+    "group-linked-outsiders": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 5.5
+        }
+      ]
+    },
+    "group-pulse": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 7.2
+        }
+      ]
+    },
+    "group-read-surface": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 7.7,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 8.1
+        }
+      ]
+    },
+    "healthcare-fda-supply": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 34.3
+        }
+      ]
+    },
+    "hk-confirming-turn": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 3.8
+        }
+      ]
+    },
+    "hk-context-chips": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 8.7,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 2.4
+        }
+      ]
+    },
+    "hk-cycle-ontology": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 9.9,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 3.8
+        }
+      ]
+    },
+    "hk-integration-seams": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 2.4
+        }
+      ]
+    },
+    "hk-leadership": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 8.4,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 3.6
+        }
+      ]
+    },
+    "hk-robustness-w5": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 13.9,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 18.0
+        }
+      ]
+    },
+    "hkrv-w3-banner": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 12.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 24.1
+        }
+      ]
+    },
+    "house-law-registry-code": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 67.4
+        }
+      ]
+    },
+    "hub-a11y": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-08-14",
+          "run_id": "legacy-observed-command-seconds",
+          "test_seconds": 37.0
+        }
+      ]
+    },
+    "industrials-result-cash": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 4.9,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 19.0
+        }
+      ]
+    },
+    "inflation-finite-outputs": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 1.3
+        }
+      ]
+    },
+    "information-to-price-eval-receipts": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 17.4,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 8.8
+        }
+      ]
+    },
+    "inline-js": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-08-14",
+          "run_id": "legacy-observed-command-seconds",
+          "test_seconds": 124.0
+        }
+      ]
+    },
+    "institutional-13f-ingestion-contracts": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 9.3,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 3.9
+        }
+      ]
+    },
+    "integrated-answer-v0": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 17.6,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 22.0
+        }
+      ]
+    },
+    "intelligence-registry": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 12.4,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 109.1
+        }
+      ]
+    },
+    "international-dislocation-explorer": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 10.9,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 404.9
+        }
+      ]
+    },
+    "international-global-correction": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 2.5
+        }
+      ]
+    },
+    "international-global-replay": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 16.2,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 3.7
+        }
+      ]
+    },
+    "international-global-universe": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 13.2,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 11.8
+        }
+      ]
+    },
+    "international-global-watch": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 3.0
+        }
+      ]
+    },
+    "international-gs-closure": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 3.7
+        }
+      ]
+    },
+    "international-transmission-board": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 11.6,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 136.2
+        }
+      ]
+    },
+    "international-transmission-evidence": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 18.6,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 3.6
+        }
+      ]
+    },
+    "international-workspace-browser": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 12.7,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 964.3
+        }
+      ]
+    },
+    "international-workspace-foundation": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 9.9,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 47.0
+        }
+      ]
+    },
+    "international-workspace-pure-js": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 1.8
+        }
+      ]
+    },
+    "ird-substrate-engines": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 17.5,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 19.8
+        }
+      ]
+    },
+    "k3d-economic-propagation-contracts": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 3.3,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 7.9
+        }
+      ]
+    },
+    "leader-radar-unit": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 9.9,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 35.8
+        }
+      ]
+    },
+    "leadership-measured-read": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 19.3,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 4.0
+        }
+      ]
+    },
+    "leadership-rotation-contract": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 16.9,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 4.0
+        }
+      ]
+    },
+    "leadership-rotation-countercases": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 11.5,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 5.8
+        }
+      ]
+    },
+    "leadership-rotation-science": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 19.2,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 82.6
+        }
+      ]
+    },
+    "lens-tap-boundary": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 2.7,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 1.9
+        }
+      ]
+    },
+    "live-flow-recovery-guards": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 10.8,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 9.0
+        }
+      ]
+    },
+    "local-projections": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 8.5,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 8.3
+        }
+      ]
+    },
+    "lr-rotation-evidence-modes": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 16.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 5.4
+        }
+      ]
+    },
+    "macro-signals-conditions": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 6.6
+        }
+      ]
+    },
+    "market-memory-contract": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-08-14",
+          "run_id": "legacy-observed-command-seconds",
+          "test_seconds": 416.0
+        }
+      ]
+    },
+    "market-memory-e0-contract": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 13.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 11.1
+        }
+      ]
+    },
+    "market-ontology-f09-petroleum-flow": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 11.5,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 4.9
+        }
+      ]
+    },
+    "market-ontology-f09-usgs-mcs": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 5.3
+        }
+      ]
+    },
+    "market-os-macro-suite-pages": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 6.6,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 165.0
+        }
+      ]
+    },
+    "market-os-macro-workspaces": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 5.3,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 31.2
+        }
+      ]
+    },
+    "marketing-engine": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-08-14",
+          "run_id": "legacy-observed-command-seconds",
+          "test_seconds": 250.0
+        }
+      ]
+    },
+    "marketing-media-pipeline": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 3.4,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 6.5
+        }
+      ]
+    },
+    "marketing-scoring-optional": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 11.3,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 4.4
+        }
+      ]
+    },
+    "marketing-social-publisher": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 12.1,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 115.9
+        }
+      ]
+    },
+    "markets-regime-strip": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 10.3,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 5.0
+        }
+      ]
+    },
+    "mastermindx-selector-capture-attestation": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 3.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 6.0
+        }
+      ]
+    },
+    "meta-ceo-fabric-contracts": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 3.0
+        }
+      ]
+    },
+    "metab-throttle-ux": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 8.1
+        }
+      ]
+    },
+    "microstructure-pressure-response-r0": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 4.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 5.4
+        }
+      ]
+    },
+    "mining-economic-dossier": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 2.9,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 8.1
+        }
+      ]
+    },
+    "momoedge-browser-observe": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 8.3
+        }
+      ]
+    },
+    "narrative-radar-display": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 3.1,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 5.4
+        }
+      ]
+    },
+    "neural-web": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-08-14",
+          "run_id": "legacy-observed-command-seconds",
+          "test_seconds": 37.0
+        }
+      ]
+    },
+    "neural-web-core": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-08-14",
+          "run_id": "legacy-observed-command-seconds",
+          "test_seconds": 89.0
+        }
+      ]
+    },
+    "news-impact-contracts": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 9.2,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 78.6
+        }
+      ]
+    },
+    "news-v91-vertical-proofs": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 14.4,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 51.1
+        }
+      ]
+    },
+    "no-client-supplied-identity": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 7.2
+        }
+      ]
+    },
+    "no-module-leak": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 3.3,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 31.4
+        }
+      ]
+    },
+    "nw-lobe-unfreeze": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 14.3,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 810.2
+        }
+      ]
+    },
+    "nyse-calendar-freshness": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 9.8,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 69.0
+        }
+      ]
+    },
+    "ohlc-origin-delivery": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 14.4,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 3.9
+        }
+      ]
+    },
+    "ontology-explorer": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 13.1,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 319.1
+        }
+      ]
+    },
+    "options-alpha-candidate-feed": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 9.8,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 15.6
+        }
+      ]
+    },
+    "options-catalyst-links": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 14.1,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 19.5
+        }
+      ]
+    },
+    "options-matrix-code": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 12.5,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 20.7
+        }
+      ]
+    },
+    "options-nbbo-cohort": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 4.2,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 20.5
+        }
+      ]
+    },
+    "options-payoff-lab-consumer": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 7.7
+        }
+      ]
+    },
+    "options-pilot-chronology-code": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 29.8
+        }
+      ]
+    },
+    "options-r1-rotation-relative-trend": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 11.3,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 4.4
+        }
+      ]
+    },
+    "options-r1-sector-holdings-coverage": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 16.7,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 7.3
+        }
+      ]
+    },
+    "options-scenario-contract": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 10.2,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 7.1
+        }
+      ]
+    },
+    "options-signal-campaign-v2": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 5.2,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 13.8
+        }
+      ]
+    },
+    "options-skew-engine": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 18.4
+        }
+      ]
+    },
+    "p08-synthetic-composition": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 8.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 2.6
+        }
+      ]
+    },
+    "p0b-receipt-closure": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 4.8,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 20.6
+        }
+      ]
+    },
+    "path-prune-lint": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 3.2,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 44.2
+        }
+      ]
+    },
+    "pb-d-event-quality": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 6.7,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 13.3
+        }
+      ]
+    },
+    "pick-lab-cn-render": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 5.4
+        }
+      ]
+    },
+    "pick-lab-liquidity": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 8.2
+        }
+      ]
+    },
+    "prelaunch-hardening": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 16.7,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 48.6
+        }
+      ]
+    },
+    "press-account-claim-consumer": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 3.1
+        }
+      ]
+    },
+    "price-basis-census": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 21.7
+        }
+      ]
+    },
+    "product-experience-capture": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 3.4
+        }
+      ]
+    },
+    "product-experience-registry": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 19.2
+        }
+      ]
+    },
+    "prophet-lab": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 24.7,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 143.8
+        }
+      ]
+    },
+    "prophet-us-b4-prereg-registration": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 1.8
+        }
+      ]
+    },
+    "public-render-fastlane": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 4.6,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 29.6
+        }
+      ]
+    },
+    "public-site-figma-baseline-contracts": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 6.1,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 6.3
+        }
+      ]
+    },
+    "push-retry-policy": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 13.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 121.6
+        }
+      ]
+    },
+    "qledger-cluster-honest-ci": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 54.1
+        }
+      ]
+    },
+    "quant-q01-arbfree-surface": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 18.9,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 10.6
+        }
+      ]
+    },
+    "quant-q02-american-exercise": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 18.6,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 9.4
+        }
+      ]
+    },
+    "quant-q03-share-basis": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 19.2,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 3.4
+        }
+      ]
+    },
+    "quant-q04-sign-uncertainty": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 13.2,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 2.4
+        }
+      ]
+    },
+    "quant-q05-exec-sensitivity": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 10.7,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 2.1
+        }
+      ]
+    },
+    "quant-q06-sparse-cal": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 16.5,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 3.1
+        }
+      ]
+    },
+    "quant-q07-fitted-har-vol": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 2.7
+        }
+      ]
+    },
+    "quant-q08-cov-shrinkage": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 4.0
+        }
+      ]
+    },
+    "quant-q09-venue-concentration": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 17.2,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 2.8
+        }
+      ]
+    },
+    "quant-q10-offex-residual": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 12.0
+        }
+      ]
+    },
+    "quant-q11-episode-duration": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 12.1,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 2.7
+        }
+      ]
+    },
+    "quant-q12-parity-forward": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 2.9
+        }
+      ]
+    },
+    "quant-q13-rn-tail-density": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 3.4
+        }
+      ]
+    },
+    "quant-q14-horizon-vrp": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 2.2
+        }
+      ]
+    },
+    "quant-q15-noise-robust-rv": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 3.9
+        }
+      ]
+    },
+    "quant-q16-delayed-aci": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 4.3
+        }
+      ]
+    },
+    "quant-q17-stable-whitening": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 3.4
+        }
+      ]
+    },
+    "quant-q18-async-session-cov": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 2.7
+        }
+      ]
+    },
+    "quant-q19-first-passage-ambiguity": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 2.0
+        }
+      ]
+    },
+    "quant-q20-spa-challenger": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 5.9
+        }
+      ]
+    },
+    "ratio-lens": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 15.8,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 10.3
+        }
+      ]
+    },
+    "rc-r14-china-rotation-events": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 8.6,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 5.0
+        }
+      ]
+    },
+    "rebase-css-autoresolve": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 6.5
+        }
+      ]
+    },
+    "recurring-briefs": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 4.7
+        }
+      ]
+    },
+    "reference-integrity": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 13.9,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 36.2
+        }
+      ]
+    },
+    "regen-hk-g1-fixture-guard": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 8.8
+        }
+      ]
+    },
+    "regime-history-surfaces": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 22.5,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 10.0
+        }
+      ]
+    },
+    "regime-outlook-mapping": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 10.4,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 11.4
+        }
+      ]
+    },
+    "regional-baskets-scorecard": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 5.7
+        }
+      ]
+    },
+    "regwall-boundary": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 5.1,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 3.2
+        }
+      ]
+    },
+    "research-codegen-runtime-qualification": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 5.2,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 10.9
+        }
+      ]
+    },
+    "research-factory-authority": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 14.4,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 87.3
+        }
+      ]
+    },
+    "research-price-panel": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 11.9,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 140.5
+        }
+      ]
+    },
+    "research-record-claims": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 2.9,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 4.3
+        }
+      ]
+    },
+    "research-screener": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 2.9,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 3.0
+        }
+      ]
+    },
+    "research-vault": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 7.4,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 416.9
+        }
+      ]
+    },
+    "research-vault-api": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 10.9,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 19.0
+        }
+      ]
+    },
+    "research-vault-source-lineage": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 10.2,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 22.4
+        }
+      ]
+    },
+    "ric-d0-fed-path-provenance": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 3.6
+        }
+      ]
+    },
+    "ric-e0-retrospective-runners": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 13.7,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 102.8
+        }
+      ]
+    },
+    "ric-f0-a10-canonical-calendar": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 2.7
+        }
+      ]
+    },
+    "ric-w2-surface": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 2.2
+        }
+      ]
+    },
+    "ric-y0-yield-momentum": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 13.5,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 8.2
+        }
+      ]
+    },
+    "ric-y1-curve-accounting": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 3.2
+        }
+      ]
+    },
+    "rlt-rebalance-calendar-pulse": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 12.3,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 3.7
+        }
+      ]
+    },
+    "robotics-theme-research": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 14.9,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 59.4
+        }
+      ]
+    },
+    "rotation-observation-delivery": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 15.5
+        }
+      ]
+    },
+    "ruling-graph": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 4.5,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 14.5
+        }
+      ]
+    },
+    "sa-w4-improvement-lanes": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 8.3,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 3.5
+        }
+      ]
+    },
+    "sanctions-map-page": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 14.8,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 20.8
+        }
+      ]
+    },
+    "sector-basket-links": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 5.1,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 3.0
+        }
+      ]
+    },
+    "sector-cycles-page": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 10.9,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 5.6
+        }
+      ]
+    },
+    "self-mod-fence": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 244.0
+        }
+      ]
+    },
+    "semiconductor-b-boundary": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 11.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 56.7
+        }
+      ]
+    },
+    "serving-observability": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 2.8
+        }
+      ]
+    },
+    "session-anchor-era": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 26.4,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 39.6
+        }
+      ]
+    },
+    "signal-builder-fail-closed": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 11.1,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 19.2
+        }
+      ]
+    },
+    "signal-gate-pair-coherence": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 26.4,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 24.2
+        }
+      ]
+    },
+    "single-name-coverage-profiles": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 5.2,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 4.4
+        }
+      ]
+    },
+    "site-access-boundary": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 5.2,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 75.3
+        }
+      ]
+    },
+    "site-gate": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 6.3
+        }
+      ]
+    },
+    "site20-s4-chart-brief-js": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 1.9
+        }
+      ]
+    },
+    "skew-accrual-lane": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 17.2,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 28.4
+        }
+      ]
+    },
+    "sni-acceptance-evidence": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 384.6
+        }
+      ]
+    },
+    "sni-program-guards": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 16.3,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 38.7
+        }
+      ]
+    },
+    "sni-public-exposure-scan": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 2.4
+        }
+      ]
+    },
+    "sni-s1-residual": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 49.3
+        }
+      ]
+    },
+    "sni-s2-event-response": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 15.5
+        }
+      ]
+    },
+    "sni-shared-and-drafts": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 15.6,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 13.0
+        }
+      ]
+    },
+    "stock-dashboard-first-frame": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 5.5,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 117.0
+        }
+      ]
+    },
+    "stock-identity-method-projection": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 8.4,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 2.7
+        }
+      ]
+    },
+    "stock-liquidity-profile": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 11.2,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 6.3
+        }
+      ]
+    },
+    "synapse-read-gate": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 19.1,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 268.7
+        }
+      ]
+    },
+    "technology-ex-semis-boundary": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 15.3,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 8.4
+        }
+      ]
+    },
+    "theme-research-shared-shell": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 3.8,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 3.3
+        }
+      ]
+    },
+    "ths-factorwatch-build-notes": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 3.2,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 6.2
+        }
+      ]
+    },
+    "ticker-news-qbus": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 11.3,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 83.1
+        }
+      ]
+    },
+    "uk-policy-desk": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 3.2,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 4.0
+        }
+      ]
+    },
+    "unrun-brain-desks": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 24.9,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 138.3
+        }
+      ]
+    },
+    "unrun-brain-gateway": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 29.4,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 379.8
+        }
+      ]
+    },
+    "unrun-cell-b-v2-buyback-census": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 2.3
+        }
+      ]
+    },
+    "unrun-dark-guards": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 51.9
+        }
+      ]
+    },
+    "unrun-factor-research": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 27.8,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 258.5
+        }
+      ]
+    },
+    "unrun-government-revenue-candidate-projection": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 18.3,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 327.9
+        }
+      ]
+    },
+    "unrun-government-revenue-grader": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-08-14",
+          "run_id": "legacy-observed-command-seconds",
+          "test_seconds": 322.0
+        }
+      ]
+    },
+    "unrun-grading-board": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 15.6,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 147.8
+        }
+      ]
+    },
+    "unrun-import-hygiene": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 17.2,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 85.4
+        }
+      ]
+    },
+    "unrun-inline-js-guard": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 21.5,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 3.2
+        }
+      ]
+    },
+    "unrun-market-plumbing": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-08-14",
+          "run_id": "legacy-observed-command-seconds",
+          "test_seconds": 114.0
+        }
+      ]
+    },
+    "unrun-marketing-desk": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 8.3
+        }
+      ]
+    },
+    "unrun-oracle-desk": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 18.8,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 11.4
+        }
+      ]
+    },
+    "unrun-picks-boards": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-08-14",
+          "run_id": "legacy-observed-command-seconds",
+          "test_seconds": 245.0
+        }
+      ]
+    },
+    "unrun-scoring-engine": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 16.1,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 66.5
+        }
+      ]
+    },
+    "unrun-subsector-themes": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-08-14",
+          "run_id": "legacy-observed-command-seconds",
+          "test_seconds": 134.0
+        }
+      ]
+    },
+    "unrun-template-chips": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 43.3
+        }
+      ]
+    },
+    "validated-claims": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-08-14",
+          "run_id": "legacy-observed-command-seconds",
+          "test_seconds": 39.0
+        }
+      ]
+    },
+    "validated-claims-contract": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 14.4,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 81.3
+        }
+      ]
+    },
+    "validated-claims-source": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 20.3
+        }
+      ]
+    },
+    "washout-turn-organ": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 16.9,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 231.4
+        }
+      ]
+    },
+    "workflow-yaml": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-09-25",
+          "run_id": "legacy-observed-command-seconds",
+          "test_seconds": 90.0
+        },
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 8.7,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 36.6
+        }
+      ]
+    },
+    "wri-risk-core": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 12.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 55.0
+        }
+      ]
+    },
+    "yahoo-daily-archive-refresh": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 18.7,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 11.2
+        }
+      ]
+    },
+    "zh-filing-term": {
+      "samples": [
+        {
+          "attempt": 1,
+          "dependency_install_seconds": 0.0,
+          "observed": "2026-11-08",
+          "run_id": "42559449303",
+          "test_seconds": 8.8
+        }
+      ]
+    }
+  },
+  "provenance": {
+    "description": "Per-logical-job hosted timing samples ingested by scripts/update_measured_job_seconds.py from natural run timing artifacts. Consumed (freshness-windowed, headroom-scaled) as the pack planner's balancing weights; never proof authority.",
+    "refreshed_at": "2026-11-09",
+    "sources": [
+      {
+        "attempt": 1,
+        "captured": "2026-11-09",
+        "run_id": "42559449303",
+        "runner": "hosted-ubuntu-latest"
+      },
+      {
+        "attempt": 1,
+        "captured": "2026-11-09",
+        "note": "one-time migration seed of the frozen OBSERVED_COMMAND_SECONDS hand-entered hosted seconds (scripts/run_ci_pack.py), dated per that dict's provenance comments; command-only timings with no dependency-install component",
+        "run_id": "legacy-observed-command-seconds",
+        "runner": "hosted-ubuntu-latest"
+      }
+    ]
+  },
+  "schema": 1
+}

@@ -5703,12 +5703,27 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_945),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_966),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_703),
+    # 2026-11-09 measured-cost migration (Macro #6351 lane B / Mastermind
+    # #1607): the weight axis changed SCALE, from the frozen mixed heuristic
+    # (seconds for ~30 hand-entered dominators, text-shape "units" for the
+    # rest) to conservative observed seconds from .github/ci/
+    # measured-job-seconds.json (run 42559449303 samples + the frozen dict
+    # seeded as dated legacy samples). Selection is unchanged — jobs stay
+    # 137/137/131, no entrant or exit on any probe — and the new weight
+    # ceilings are the exact values the production
+    # packing_probe_measurements returns on this source: 14,099 / 14,575 /
+    # 13,880. The packs axis now reads the honest count under true seconds:
+    # each selection needs more than 10x600 s of work, so it saturates at
+    # the twelve-pack fleet cap and PACKING_PROBE_MAX_PACKS moves 10 -> 12.
+    # The weight axis carries the growth sensitivity from here. Full
+    # history, method and receipts: research/ci_pack_measured_costs_20261109/.
+    ("templates/index.html", 137, 14_099),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 14_575),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 13_880),
 )
-# Twelve packs per shape was the pre-curation measurement.
-PACKING_PROBE_MAX_PACKS = 10
+# Twelve packs per shape was the pre-curation measurement; under measured
+# seconds these selections saturate the twelve-pack fleet cap honestly.
+PACKING_PROBE_MAX_PACKS = 12
 
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
