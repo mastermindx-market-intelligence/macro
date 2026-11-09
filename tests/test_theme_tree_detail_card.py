@@ -173,3 +173,95 @@ def test_card_chrome_is_bilingual_and_accessible():
     assert 'id="tt-detail"' in html and 'aria-live="polite"' in html
     assert 'aria-controls="tt-detail"' in html
     assert "Watch instead" in html and "可替代观察" in html
+
+
+def test_return_selection_identifies_rendered_occurrence_and_restores_actual_script(tmp_path):
+    """Run the real card script across fresh documents, including a shared micro."""
+    import subprocess
+    import pandas as pd
+    from bs4 import BeautifulSoup
+
+    nodes, edges = _fixtures()
+    edges = pd.concat([edges, _mk_edges(
+        {"src": "theme:t2", "dst": "theme:micro1", "edge_id": "multi-parent"},
+    )], ignore_index=True)
+    (tmp_path / "site/basket").mkdir(parents=True)
+    (tmp_path / "site/basket/grid.html").write_text("retained proxy fixture")
+    html = render(REPO, ctx=compose(tmp_path, nodes=nodes, edges=edges))
+    soup = BeautifulSoup(html, "html.parser")
+    chips = [dict(c.attrs) for c in soup.select(".tt-chip[data-node]")]
+    shared = [c for c in chips if c["data-node"] == "theme:micro1"]
+    assert len(shared) == 2
+    assert len({c.get("data-tt-selection") for c in shared}) == 2
+    script = next(x.string for x in soup.find_all("script")
+                  if x.string and "Micro-theme detail card (U2)" in x.string)
+    assert any(i["href"] == "basket/grid.html"
+               for i in _blob(html)["theme:micro1"]["instruments"])
+    packet = {"script": script, "chips": chips, "data": _blob(html),
+              "selected": chips.index(shared[1])}
+    result = subprocess.run(["node", "-e", r"""
+const vm = require('node:vm'), assert = require('node:assert/strict');
+const input = JSON.parse(require('node:fs').readFileSync(0, 'utf8'));
+function boot(url, ambiguous=false, data=input.data) {
+  let active=null, replacements=0;
+  class El {
+    constructor(attrs={}) { this.attrs={...attrs}; this.children=[]; this.hidden=false; this.parentElement=null;
+      this.classList={add(){},remove(){}}; }
+    getAttribute(k){return this.attrs[k] ?? null;} setAttribute(k,v){this.attrs[k]=String(v);}
+    appendChild(c){this.children.push(c); c.parentElement=this;return c;}
+    get firstChild(){return this.children[0]||null;} removeChild(c){this.children.splice(this.children.indexOf(c),1);}
+    focus(){active=this;}
+    closest(q){if(q==='details')return this.tagName==='DETAILS'?this:this.parentElement?.closest(q)||null;
+      if(q==='[data-close]')return this.attrs['data-close']!==undefined?this:null;
+      return this.attrs['data-node']?this:null;}
+  }
+  const chips=input.chips.map(attrs=>{const c=new El(attrs), p=new El();p.tagName='DETAILS';p.open=false;c.parentElement=p;return c;});
+  if(ambiguous)chips.push(new El({...chips[input.selected].attrs}));
+  const fields={}; for(const k of ['name','paths','breadth','list','note','close'])fields['.tt-detail-'+k]=new El();
+  fields['.tt-detail-close'].attrs['data-close']='';
+  const card=new El();card.hidden=true;card.querySelector=q=>fields[q];
+  card.querySelectorAll=q=>[new El(),new El()];
+  const devents={},wevents={},location={href:url};
+  const document={body:new El(),getElementById:id=>id==='tt-detail-data'?{textContent:JSON.stringify(data)}:card,
+    querySelectorAll:q=>chips,createElement:()=>new El(),createTextNode:t=>({textContent:t}),
+    addEventListener:(k,f)=>{(devents[k]??=[]).push(f);}};
+  const history={state:{preserved:true},replaceState(s,t,u){assert.equal(s.preserved,true);location.href=new URL(u,location.href).href;replacements++;},
+    pushState(){throw Error('selection must not create a history entry');}};
+  const window={location,history,addEventListener:(k,f)=>{(wevents[k]??=[]).push(f);}};
+  vm.runInNewContext(input.script,{document,window,URL});
+  return {card,chips,fields,location,get active(){return active;},get replacements(){return replacements;},
+    click(target){for(const f of devents.click||[])f({target});},
+    event(k){for(const f of wevents[k]||[])f({type:k});}};
+}
+const original='https://macro.example/theme_tree.html?keep=1#branch';
+let page=boot(original);assert.equal(page.card.hidden,true);
+const selected=page.chips[input.selected];page.click(selected);
+assert.equal(page.card.hidden,false);assert.equal(selected.getAttribute('aria-expanded'),'true');
+assert.equal(page.active,page.fields['.tt-detail-close']);
+const returnedURL=page.location.href;const parsed=new URL(returnedURL);
+assert.equal(parsed.searchParams.get('keep'),'1');assert.equal(parsed.hash,'#branch');
+assert.equal(parsed.searchParams.get('tt-selection'),selected.getAttribute('data-tt-selection'));
+assert.equal(page.replacements,1);
+page.event('mmx:shell-location');assert.equal(page.replacements,1);assert.equal(page.active,page.fields['.tt-detail-close']);
+// A proxy navigation followed by Back creates a new frame at the retained URL.
+page=boot(returnedURL);assert.equal(page.card.hidden,false);
+assert.equal(page.chips[input.selected].getAttribute('aria-expanded'),'true');
+assert.equal(page.chips.filter(c=>c.getAttribute('aria-expanded')==='true').length,1);
+assert.equal(page.chips[input.selected].parentElement.open,true);
+assert.equal(page.active,page.chips[input.selected]);assert.equal(page.replacements,0);
+page.click(page.fields['.tt-detail-close']);assert.equal(page.card.hidden,true);
+assert.equal(new URL(page.location.href).searchParams.has('tt-selection'),false);
+assert.equal(new URL(page.location.href).searchParams.get('keep'),'1');
+assert.equal(page.active,page.chips[input.selected]);assert.equal(page.replacements,1);
+const duplicate=new URL(returnedURL);duplicate.searchParams.append('tt-selection','extra');
+for(const bad of [original,original.replace('#branch','&tt-selection=missing#branch'),duplicate.href]){
+  const neutral=boot(bad);assert.equal(neutral.card.hidden,true);assert.equal(neutral.replacements,0);
+}
+assert.equal(boot(returnedURL,true).card.hidden,true);
+const absent={...input.data};delete absent[selected.getAttribute('data-node')];
+assert.equal(boot(returnedURL,false,absent).card.hidden,true);
+page=boot(returnedURL);page.location.href=original;page.event('popstate');assert.equal(page.card.hidden,true);
+page.location.href=returnedURL;page.event('mmx:shell-location');assert.equal(page.card.hidden,false);
+console.log('real rendered multi-parent selection: click, replace, fresh-frame return, close, neutral controls and bridge replay PASS');
+"""], input=json.dumps(packet), capture_output=True, text=True, timeout=30)
+    assert result.returncode == 0, result.stdout + result.stderr
