@@ -2720,3 +2720,48 @@ All four public-state roots272-0/274-0/276-0/278-0 and the complete newer R4 sub
 The comparison rail now makes a concrete desktop spacing issue visible: a tall right column leaves unused space below title/history while the signal legs and company action sit farther down. The next bounded improvement moves the existing signal-leg list into the header grid next to title/history, preserving natural DOM/keyboard order. Qualify the current four-leg combination at narrow, tablet, breakpoint and desktop widths before publishing. Keep the source protocol, data, text, tooltip ownership and company destinations exact.
 
 PR10893 and this audit remain Draft/unmerged. Incumbent PR10705, its admission refusal and all wider D04/F01/F02, model, protected-style and release holds are unchanged. This completed phase does not establish deployment, live entitlement, full shared-shell/font rendering, spoken assistive technology or animation behavior.
+
+
+## 56. Confluence responsive reading path and native keyboard sequence — 9 November 2026
+
+### Implemented source and measured effect
+
+[Dependent Draft PR10893](https://github.com/mastermindx-market-intelligence/Macro/pull/10893) now has head `27d50dc00f0f35d06f4df7f3f6b49faffe211428`. The existing complete signal-leg wrapper/loop moves once, byte-for-byte, into the card header after title/history and before paired comparisons. Desktop criteria now occupy the formerly unused space beside the tall evidence rail. Below 768px, criteria and comparisons each span the card width.
+
+The card-specific breakpoint is separate from the existing 640px hero/padding rules. A shrinkable middle grid column and criterion text contain long tokens without truncation or smaller type. Grid rows keep a 16px title-to-criteria gap; the existing 310px comparison rail, content, tooltips, data and company destinations are preserved.
+
+On the actual saved source, all three cards at 960px and 1440px reduce height and bring their company action upward by **107.1875px**. At 768px the reduction is 80.015625px EN /101.609375px ZH. These are measurements of the recorded pages/browser configuration, not universal future-data guarantees.
+
+The natural keyboard sequence is now rank explanation → history explanation → ordered D/W badges → native method summary → company links. No CSS order override, positive tabindex, duplicated list or new interaction controller is introduced.
+
+[Responsive build contract and before/after captures](https://github.com/mastermindx-market-intelligence/Macro/blob/27d50dc00f0f35d06f4df7f3f6b49faffe211428/research/design_candidates/confluence_compatibility_20261109/RESPONSIVE_LAYOUT.md) bind the current source. [Validation](https://github.com/mastermindx-market-intelligence/Macro/blob/27d50dc00f0f35d06f4df7f3f6b49faffe211428/research/design_candidates/confluence_compatibility_20261109/LAYOUT_VALIDATION.json) links complete EN/ZH case objects, original order indices, initial diagnostics, source conservation and commands.
+
+### Focused verification and honest surrounding limitation
+
+- **92 existing page tests pass**: PID77728,8.08 seconds pytest/9.01 seconds process. The test file is byte-exact; no test mirroring the layout implementation was added.
+- **20 browser cases /20 contexts pass**, PID86061,25.16 seconds, Chrome157.0.8103.39, zero page errors. These comprise 16 actual saved-page before/after pairs at 320/390/640/641/767/768/960/1440px in EN/ZH and four explicit synthetic long-label stress pairs.
+- **40 page observations /120 card observations** verify one criteria list, preserved text/links/type/target sizes, aligned period rows, full card-descendant containment, intended placement and action movement.
+- Native Tab/Enter reaches each ordered badge, opens/closes the method and activates the exact company destination through local interception. Four 767/768px cases preserve the same focused node and open disclosure across resizing.
+- Nine native captures were visually inspected and published. All nine PNGs and all eight changed source/text files read back with exact content/blob identities.
+
+The initial 18/20 run failed both 960px global document-overflow assertions. Direct diagnosis showed **the same pre-existing hidden shared-navigation overflow** in parent and candidate: 1288px EN /1004px ZH scroll width at a 960px viewport. The final verifier requires identical offending element identities/classes/horizontal geometry, hidden visibility and exact extent, and separately requires every card descendant to stay contained. Any new offender fails. No navigation patch or overflow-hiding CSS is introduced.
+
+Thus the qualified result is 20 passing card-layout cases **with unchanged shared-navigation overflow in two cases**, not zero document overflow or complete shared-shell acceptance. The original 18/20 report keeps its own hash and an explicitly described projection; complete final case objects are partitioned by language without dropping observations.
+
+Reversing the leg move and local CSS restores parent `22fa830d`'s template exactly. Reversing only the saved page's style/ledger regions restores every parent byte. All card content, attributes, methods, footers, links and inline scripts are exact. The builder, page-test file and protected JSON are byte-exact, and the payload still matches the actual producer. Both render contexts reuse the parent tagged CTA for the already-qualified sparse marketing dependency reason; this is bounded component projection followed by actual saved-page proof.
+
+### Applied Paper, including recovered partial operation
+
+The [eight R2 variants](https://app.paper.design/file/01M6Y3DCDDW541ZR38J1V52A9Y/p-2-0) now place criteria before comparisons in all 24 cards. Existing criteria groups are moved/reordered rather than recreated. All 1454 original div IDs, text and styles remain exact; 16 original parent changes follow the criteria placement and eight further cards reorder within their existing parent. Two first Chinese desktop rank badges gain alignment frames and zero-size anchors, adding four nodes and two intentional rank-parent changes.
+
+The first rank-wrapper attempt exposed a precise Paper behavior: an empty imported div became a Rectangle, which cannot receive children. The batch's outer response said APPLIED_RESPONSE_OBSERVED, while its nested result listed successful empty-wrapper moves and two rejected rank moves. Original targets were read before recovery. Only those newly created empty rectangles were replaced by child-bearing Frames; the original rank nodes then moved into the observed frame parents. Final readback proves the compact badge geometry and original node/style/text conservation. The mutation helper now checks nested per-node errors as well as the outer state. No original design node was deleted or replaced.
+
+The existing [Build map](https://app.paper.design/file/01M6Y3DCDDW541ZR38J1V52A9Y/p-3-0), 2AG-0, changes exactly ten text nodes while preserving 171 IDs, parents and styles. It explains grid areas, 768px stacking, 640px separation, wrapping, native keyboard order, precise proof and the shared-navigation limitation. Desktop Paper anatomy keeps its compact inline criterion treatment; it is not a pixel-identical production four-row list.
+
+All four public states and the complete newer R4 subtree 2I3-0 remain byte-exact. Token hash 6234666b remains unchanged. Final desktop/mobile EN/ZH examples and the Build layout/proof modules were visually inspected. Exactly the eight R2 roots and Build root were finished. [Full before/after Paper and recovery receipt](PAPER_CONFLUENCE_RESPONSIVE_LAYOUT_20261109.json).
+
+### Continuing source clarity
+
+The next bounded copy pass has two grounded corrections: the visible locked-card sentence currently promises names through a free-trial link although entitlement remains controlled by an eligible plan; a retained empty-ticker fallback calls a snapshot “today” and infers rarity from an empty list. Correct those descriptions without changing access or source-selection behavior. The latter is latent under current eligibility, which excludes rows with no active tickers; do not present it as an observed production path.
+
+PR10893 and this audit remain Draft/unmerged. PR10705's head, admission and calendar semantic-proof refusal remain unchanged, as do all wider programme, model, protected-style, independent-writer and release holds. The parent mission continues after this saved phase.
