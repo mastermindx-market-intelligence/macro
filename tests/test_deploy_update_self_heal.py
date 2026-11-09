@@ -1845,6 +1845,9 @@ def test_admin_restart_expectations_are_disjoint():
     (["--caddy-www-automatic-tls", "a" * 40, "b" * 64], False, 0, True),
     (["--caddy-www-automatic-tls", "a" * 40, "b" * 64], True, 75, False),
     (["--caddy-www-automatic-tls", "a" * 40, "short"], False, 2, False),
+    (["--caddy-www-restore-tls", "a" * 40, "b" * 64], False, 0, True),
+    (["--caddy-www-restore-tls", "a" * 40, "b" * 64], True, 75, False),
+    (["--caddy-www-restore-tls", "a" * 40, "short"], False, 2, False),
 ])
 def test_www_tls_attended_dispatch_uses_same_lock_and_skips_ordinary_update(
         tmp_path, args, busy, expected_status, driver_called):
@@ -1875,6 +1878,7 @@ cmp() { [ "$1" = -s ] && [[ "$2" == /proc/*/fd/255 ]] && [ "$3" = /opt/macro/app
     if driver_called:
         assert "ordinary update" not in completed.stdout
         assert log.read_text().splitlines() == [
-            "/opt/macro/app/deploy/reconcile-caddy-autosave.py", "--www-automatic-tls", "a" * 40, "b" * 64]
+            "/opt/macro/app/deploy/reconcile-caddy-autosave.py", args[0].replace("--caddy-", "--", 1),
+            *args[1:]]
     elif expected_status == 0:
         assert "ordinary update" in completed.stdout

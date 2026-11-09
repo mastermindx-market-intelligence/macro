@@ -206,6 +206,10 @@ def qualified_www_tls_source(revision: str, active_digest: str, source: bytes, a
         raise ValueError("exact protected revision and active SHA-256 required for www TLS")
     if hashlib.sha256(canonical(active)).hexdigest() != active_digest:
         raise ValueError("www TLS active preimage digest changed")
+    require_www_tls_revision(revision, source)
+
+
+def require_www_tls_revision(revision: str, source: bytes, *, runtime: bool = False):
     git = ("/usr/bin/env", "GIT_NO_LAZY_FETCH=1", "GIT_OPTIONAL_LOCKS=0",
            "GIT_TERMINAL_PROMPT=0", "/usr/bin/git", "-C", str(APP))
     for ref in ("HEAD", "origin/main"):
@@ -213,6 +217,50 @@ def qualified_www_tls_source(revision: str, active_digest: str, source: bytes, a
             raise ValueError("www TLS source is not the exact current protected revision")
     if run(*git, "show", f"{revision}:app/deploy/Caddyfile") != source:
         raise ValueError("www TLS checkout differs from the protected Caddyfile")
+    if runtime:
+        for name in ("update.sh", "reconcile-caddy-autosave.py",
+                     "macro_caddy_overlay.py", "macro_caddy_publication.py"):
+            path = f"app/deploy/{name}"
+            if read_regular(APP / path) != run(*git, "show", f"{revision}:{path}"):
+                raise ValueError("www TLS recovery runtime differs from protected source")
+
+
+def restore_committed_www_tls(revision, forward_op, installed, source, api, active):
+    from macro_caddy_overlay import restore_www_internal_tls
+    from macro_caddy_publication import native_config_digest, publish, read_committed_tip
+
+    if not re.fullmatch(r"[0-9a-f]{40}", revision) or not re.fullmatch(r"[0-9a-f]{64}", forward_op):
+        raise ValueError("exact protected revision and committed www publication ID required")
+    require_www_tls_revision(revision, source, runtime=True)
+    record = read_committed_tip(STATE, forward_op)
+    postimage = record["candidate"]
+    before = record["source_before"]
+    if installed != source or installed != record["source_after"]:
+        raise ValueError("www recovery source differs from the committed postimage")
+    if canonical(active) != canonical(postimage) or canonical(read_autosave()) != canonical(postimage):
+        raise ValueError("www recovery active or autosave differs from the committed postimage")
+    candidate = restore_www_internal_tls(
+        adapt(before), adapt(installed), postimage,
+        lambda native: native_config_digest(native) == record["preimage_digest"],
+    )
+    validate(candidate)
+
+    def source_preimage():
+        require_www_tls_revision(revision, source, runtime=True)
+        if read_regular(APP / "app/deploy/Caddyfile") != source:
+            raise ValueError("www TLS checkout Caddyfile changed before recovery")
+        return read_regular(INSTALLED)
+
+    receipt = publish(state_dir=STATE, api=api, expected_preimage=postimage,
+                      candidate=candidate, source_before=installed, source_after=before,
+                      read_autosave=read_autosave, install_source=install_source,
+                      required_committed_tip=forward_op, read_installed_source=source_preimage)
+    require_completed(receipt)
+    print(json.dumps({"result": receipt["status"], "op_id": receipt["op_id"],
+                      "restored_from_op_id": forward_op, "www_tls_policy": "internal_restored",
+                      "source_sha256": hashlib.sha256(read_regular(INSTALLED)).hexdigest(),
+                      "native_sha256": hashlib.sha256(canonical(candidate)).hexdigest()}))
+    return receipt
 
 
 def read_autosave() -> dict:
@@ -229,6 +277,8 @@ def main():
     scope.add_argument("--source-baseline", help="attended prior protected source revision")
     scope.add_argument("--www-automatic-tls", nargs=2, metavar=("PROTECTED_SHA", "ACTIVE_SHA256"),
                        help="attended literal www internal-to-automatic transition only")
+    scope.add_argument("--www-restore-tls", nargs=2, metavar=("PROTECTED_SHA", "COMMITTED_OP_ID"),
+                       help="attended inverse of the named committed www TLS transition")
     scope.add_argument("--pending-check", action="store_true",
                         help="read-only updater gate: zero for pending/invalid journal, one for clean")
     args = parser.parse_args()
@@ -249,7 +299,8 @@ def main():
     if "FLOCK  ADVISORY  WRITE" not in Path("/proc/self/fdinfo/9").read_text():
         raise ValueError("incumbent updater flock is not held")
     require_autosave_mode()
-    if not args.www_automatic_tls:
+    attended_tls = args.www_automatic_tls or args.www_restore_tls
+    if not attended_tls:
         STATE.mkdir(mode=0o700, exist_ok=True)
     info = STATE.lstat()
     if not stat.S_ISDIR(info.st_mode) or info.st_uid != 0 or info.st_mode & 0o077:
@@ -257,7 +308,7 @@ def main():
     status = journal_status(STATE)
     if not status.get("ok"):
         raise ValueError("publication journal custody is unresolved")
-    if args.www_automatic_tls and status.get("pending_op_ids"):
+    if attended_tls and status.get("pending_op_ids"):
         raise ValueError("www TLS transition requires a clean existing publication journal")
     installed = read_regular(INSTALLED)
     api = NativeAPI()
@@ -276,6 +327,8 @@ def main():
         return receipt
     from macro_caddy_overlay import plan_routes, plan_www_automatic_tls
     source = read_regular(APP / "app/deploy/Caddyfile")
+    if args.www_restore_tls:
+        return restore_committed_www_tls(*args.www_restore_tls, installed, source, api, active)
     if args.www_automatic_tls:
         revision, active_digest = args.www_automatic_tls
         qualified_www_tls_source(revision, active_digest, source, active)

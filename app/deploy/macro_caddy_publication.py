@@ -76,7 +76,7 @@ import time
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional, Tuple
 
-__all__ = ["publish", "journal_status", "JOURNAL_SCHEMA"]
+__all__ = ["publish", "journal_status", "read_committed_tip", "native_config_digest", "JOURNAL_SCHEMA"]
 
 JOURNAL_SCHEMA = "mm.macro_caddy_publication.journal.v1"
 
@@ -215,6 +215,14 @@ def _validate_doc(value: Any) -> Tuple[Optional[str], Optional[Dict[str, str]]]:
     return _sha256_hex(canon), None
 
 
+def native_config_digest(value: dict) -> str:
+    """Hash a bounded native document using the journal's exact encoding."""
+    digest, err = _validate_doc(value)
+    if err is not None or digest is None:
+        raise ValueError("invalid native config digest input")
+    return digest
+
+
 def _validate_source(value: Any, label: str) -> Tuple[Optional[bytes], Optional[Dict[str, str]]]:
     if not isinstance(value, bytes):
         return None, _error("invalid_source_bytes", "%s must be captured bytes" % label)
@@ -249,12 +257,12 @@ def _fsync_dir(path: Path) -> None:
         os.close(fd)
 
 
-def _ensure_private_dir(state_dir: Path) -> Tuple[Optional[Tuple[int, int]], Optional[Dict[str, str]]]:
+def _ensure_private_dir(state_dir: Path, *, create: bool = True) -> Tuple[Optional[Tuple[int, int]], Optional[Dict[str, str]]]:
     """Create/validate the private journal directory.  Returns ((dev, ino), error)."""
     try:
         if os.path.islink(str(state_dir)):
             return None, _error("state_dir_symlink")
-        if not state_dir.exists():
+        if create and not state_dir.exists():
             os.mkdir(str(state_dir), _DIR_MODE)
         st = os.lstat(str(state_dir))
     except OSError as exc:
@@ -578,6 +586,33 @@ def _captured_from_intent(record: Dict[str, Any]) -> Tuple[Optional[Dict[str, An
     return candidate, before, after
 
 
+def read_committed_tip(state_dir: Path, forward_op: str) -> Dict[str, Any]:
+    """Return the verified private transition under the updater's FD9 lock."""
+    state_path = Path(state_dir)
+    identity, err = _ensure_private_dir(state_path, create=False)
+    if err is not None:
+        raise ValueError("publication journal custody is unresolved")
+    journal = _Journal(state_path)
+    if journal.custody_errors or journal.pending_ops():
+        raise ValueError("www recovery requires a clean existing publication journal")
+    tip, err = _closed_history_tip(journal)
+    if err is not None:
+        raise ValueError("publication journal history is unresolved")
+    receipt = _receipt_for(journal, forward_op)
+    if tip != forward_op or receipt is None or receipt.get("closure") != "committed":
+        raise ValueError("www recovery requires the original committed publication tip")
+    record = journal.intents[forward_op]
+    candidate, before, after = _captured_from_intent(record)
+    if (candidate is None or before is None or after is None
+            or native_config_digest(candidate) != record["candidate_digest"]):
+        raise ValueError("recorded www publication bytes are unverified")
+    if _intent_unchanged(state_path, identity, journal.intent_paths[forward_op],
+                         (receipt["intent_dev"], receipt["intent_ino"]), record) is not None:
+        raise ValueError("recorded www publication custody changed")
+    return {"candidate": candidate, "source_before": before, "source_after": after,
+            "preimage_digest": record["preimage_digest"]}
+
+
 def _reconcile_pending(state_dir: Path, journal: _Journal, pending_id: str,
                        state_identity: Tuple[int, int],
                        api: Any, read_autosave: Callable[[], Any],
@@ -681,6 +716,8 @@ def publish(
     source_after: bytes,
     read_autosave: Callable[[], Any],
     install_source: Callable[[bytes, bytes], Any],
+    required_committed_tip: Optional[str] = None,
+    read_installed_source: Optional[Callable[[], bytes]] = None,
 ) -> Dict[str, Any]:
     """Run one bounded Caddy publication transaction and return its result.
 
@@ -697,6 +734,12 @@ def publish(
     for name, fn in (("read_autosave", read_autosave), ("install_source", install_source)):
         if not callable(fn):
             return _result(S_REFUSED, None, [_error("invalid_api_surface", name)])
+
+    if required_committed_tip is not None and (
+            not isinstance(required_committed_tip, str)
+            or not re.fullmatch(r"[0-9a-f]{64}", required_committed_tip)
+            or not callable(read_installed_source)):
+        return _result(S_REFUSED, None, [_error("invalid_committed_tip_guard")])
 
     preimage_digest, err = _validate_doc(expected_preimage)
     if err is not None:
@@ -721,7 +764,7 @@ def publish(
     if not isinstance(state_dir, (str, Path)):
         return _result(S_REFUSED, op_id, [_error("invalid_state_dir")])
     state_path = Path(state_dir)
-    identity, err = _ensure_private_dir(state_path)
+    identity, err = _ensure_private_dir(state_path, create=required_committed_tip is None)
     if err is not None:
         return _result(S_REFUSED, op_id, [err])
 
@@ -737,6 +780,18 @@ def publish(
     tip, err = _closed_history_tip(journal)
     if err is not None:
         return _result(S_HELD, op_id, [err], effect_state=E_UNCERTAIN)
+
+    if required_committed_tip is not None:
+        required = _receipt_for(journal, required_committed_tip)
+        if pending_id is not None:
+            return _result(S_HELD, pending_id, [_error("required_committed_tip_pending")],
+                           effect_state=E_UNCERTAIN)
+        if (tip != required_committed_tip or required is None or required.get("closure") != "committed"
+                or required.get("candidate_digest") != preimage_digest
+                or required.get("preimage_digest") != candidate_digest
+                or required.get("source_after_digest") != _sha256_hex(before)
+                or required.get("source_before_digest") != _sha256_hex(after)):
+            return _result(S_REFUSED, op_id, [_error("required_committed_tip_changed")])
 
     # Pending remains the same captured operation regardless of a caller's
     # desired content or closed history. No new generation exists on this path.
@@ -837,6 +892,25 @@ def publish(
         return _result(S_REFUSED, op_id, [_error("etag_stale")])
     if not _native_equal(config2, expected_preimage):
         return _result(S_REFUSED, op_id, [_error("preimage_drift_concurrent")])
+
+    if required_committed_tip is not None:
+        try:
+            read_committed_tip(state_path, required_committed_tip)
+        except (OSError, ValueError):
+            return _result(S_HELD, op_id, [_error("required_committed_tip_recheck_failed")],
+                           effect_state=E_UNCERTAIN)
+        try:
+            installed = read_installed_source()
+        except Exception as exc:
+            return _result(S_REFUSED, op_id, [_error("installed_source_read_failed", type(exc).__name__)])
+        if installed != before:
+            return _result(S_REFUSED, op_id, [_error("installed_source_preimage_changed")])
+        try:
+            autosave_recheck = read_autosave()
+        except Exception as exc:
+            return _result(S_REFUSED, op_id, [_error("autosave_recheck_failed", type(exc).__name__)])
+        if not _native_equal(autosave_recheck, expected_preimage):
+            return _result(S_REFUSED, op_id, [_error("autosave_preimage_mismatch_concurrent")])
 
     # ---- durable intent BEFORE the sole conditional write --------------------
     intent = _build_intent(

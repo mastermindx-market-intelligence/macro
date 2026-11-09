@@ -15,7 +15,7 @@ import sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "app/deploy"))
 
-from macro_caddy_overlay import ReconcileRefusal, plan_routes, plan_www_automatic_tls
+from macro_caddy_overlay import ReconcileRefusal, plan_routes, plan_www_automatic_tls, restore_www_internal_tls
 
 MMX_NOT = {
     "header": {"Referer": ["https://beta.mastermind-x.com/*"]},
@@ -840,3 +840,30 @@ def test_www_automatic_tls_refuses_mixed_source(www_tls_transition, mutate):
     mutate(after)
     with pytest.raises(ReconcileRefusal, match="outside the exact www"):
         plan_www_automatic_tls(before, after, active)
+
+
+@pytest.mark.parametrize("change,message", [
+    ("absent", "did not match"),
+    ("ambiguous", "preimage is ambiguous"),
+    ("wrong_source", "changes outside"),
+    ("wrong_postimage", "final www automatic subject"),
+    ("oversized", "subject position bound"),
+])
+def test_www_inverse_requires_unique_preimage_and_forward_replay(www_tls_transition, change, message):
+    before, after, active = www_tls_transition
+    postimage = plan_www_automatic_tls(before, after, active)
+    matches = lambda candidate: candidate == active
+    if change == "absent":
+        matches = lambda _: False
+    elif change == "ambiguous":
+        matches = lambda _: True
+    elif change == "wrong_source":
+        _tls_policies(after)[0]["subjects"].append("different.example")
+    elif change == "wrong_postimage":
+        _tls_policies(postimage)[1]["subjects"].reverse()
+    else:
+        _tls_policies(postimage)[0]["subjects"].extend(f"extra{i}.example" for i in range(64))
+    retained = copy.deepcopy(postimage)
+    with pytest.raises(ReconcileRefusal, match=message):
+        restore_www_internal_tls(before, after, postimage, matches)
+    assert postimage == retained

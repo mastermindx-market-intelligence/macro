@@ -46,7 +46,7 @@ import copy
 import json
 import re
 
-__all__ = ["ReconcileRefusal", "plan_routes", "plan_www_automatic_tls"]
+__all__ = ["ReconcileRefusal", "plan_routes", "plan_www_automatic_tls", "restore_www_internal_tls"]
 
 # Adapter-generated group names that may be renumbered between generations.
 _GENERATED_GROUP_RE = re.compile(r"^group[0-9]+$")
@@ -706,3 +706,31 @@ def plan_www_automatic_tls(previous_source, candidate_source, active):
             raise ReconcileRefusal("active TLS subject group or order diverged from the source")
     _move_www_to_automatic(groups, "active")
     return result
+
+
+def restore_www_internal_tls(previous_source, candidate_source, postimage, matches_preimage):
+    """Recover the single removed subject position and prove the exact forward replay."""
+    restored = copy.deepcopy(postimage)
+    internal, automatic = _www_tls_subject_groups(restored, "recorded postimage")
+    if automatic[-1] != _WWW_TLS_SUBJECT or len(automatic) == 1:
+        raise ReconcileRefusal("recorded postimage lacks the final www automatic subject")
+    # The forward move discarded only this position. Bound the number of
+    # full-config hashes independently of input size.
+    if len(internal) >= 64:
+        raise ReconcileRefusal("www recovery exceeds the subject position bound")
+    automatic.pop()
+    matched = None
+    for position in range(len(internal) + 1):
+        internal.insert(position, _WWW_TLS_SUBJECT)
+        if matches_preimage(restored):
+            if matched is not None:
+                raise ReconcileRefusal("www recovery preimage is ambiguous")
+            matched = position
+        internal.pop(position)
+    if matched is None:
+        raise ReconcileRefusal("www recovery did not match the recorded native preimage")
+    internal.insert(matched, _WWW_TLS_SUBJECT)
+    replay = plan_www_automatic_tls(previous_source, candidate_source, restored)
+    if json.dumps(replay, sort_keys=True) != json.dumps(postimage, sort_keys=True):
+        raise ReconcileRefusal("www recovery does not replay to the recorded postimage")
+    return restored

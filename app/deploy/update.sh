@@ -20,8 +20,12 @@ if [ "$#" -ne 0 ]; then
 	     [[ "$2" =~ ^[0-9a-f]{40}$ && "$3" =~ ^[0-9a-f]{64}$ ]]; then
 		CADDY_WWW_TLS=1
 		CADDY_RECONCILE_ARGS=(--www-automatic-tls "$2" "$3")
+	elif [ "$#" -eq 3 ] && [ "$1" = --caddy-www-restore-tls ] &&
+	     [[ "$2" =~ ^[0-9a-f]{40}$ && "$3" =~ ^[0-9a-f]{64}$ ]]; then
+		CADDY_WWW_TLS=1
+		CADDY_RECONCILE_ARGS=(--www-restore-tls "$2" "$3")
 	else
-		echo "macro-update: expected --caddy-source-baseline <protected-40-SHA> or --caddy-www-automatic-tls <protected-40-SHA> <active-64-SHA256>" >&2
+		echo "macro-update: expected --caddy-source-baseline <protected-40-SHA> or --caddy-www-automatic-tls <protected-40-SHA> <active-64-SHA256> or --caddy-www-restore-tls <protected-40-SHA> <committed-64-op-id>" >&2
 		exit 2
 	fi
 fi
