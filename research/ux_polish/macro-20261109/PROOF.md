@@ -56,3 +56,7 @@ Existing held/draft navigation lanes (#7601, #10261, #10879), the focus-helper l
 Latest fetched main at local review: `7bdfb249486d409ee8634501842c31f51af74c7c`. Its changes on our two shared CI files are in separate hunks: existing Shared Shell suite accounting and its protected packing provenance. Preserve them through ordinary integration; no production component changed since the acquired base.
 
 Publication uses the original managed workspace's exact-head commit/push carrier, then a ready PR and the existing merge-on-green owner armed last. Macro main is currently unprotected, so native auto-merge must not be used as a CI wait. After merge, verify a successful covering render for the Jinja change, served paired bytes and restamped references, and real live search/dialog journeys. Do not cancel or duplicate the shared render lane. Source/CI/merge/deployment/live acceptance are separate states.
+
+## CI follow-up — 2026-11-09
+
+The first hosted run exposed receipt closure, shifted citations and a test synchronization race. [CI_REPAIR.md](CI_REPAIR.md) records the exact diagnosis, genuine recaptures and focused repairs on this same carrier. The runtime source remains the original verified implementation; merge/render/live acceptance are still separate predicates.

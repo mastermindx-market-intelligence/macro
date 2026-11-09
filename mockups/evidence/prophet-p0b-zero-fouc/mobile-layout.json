@@ -569,14 +569,14 @@
     "site/logo_config.js": "b37d33d3194c191b1bb64db3f5c33d17c7dc06a74892e4aa8ea4d50320aae215",
     "site/mtf.js": "b62aea2f86b81a2d06e156c9e8f63f43804cd183868f209f3c450cdf2b39a1c0",
     "site/nav_market.js": "d6a0ffd9c7fcc4f201f73b3e226934cc1709950452894e68cf921d60a90f1587",
-    "site/navigation-refresh.css": "edfd821b3a6267c762fe452f7da74c0517d2f4435705f3148d5ab2be89105fae",
+    "site/navigation-refresh.css": "8275c9a26b949f6d3da654ae349a3df8a08355655b8086932a0fa75285392f21",
     "site/product-nav-icons.css": "432f6a454755566f63e843a269bee842e672d0934f10d957b6c386dcc1a824ea",
     "site/stock-dashboard.css": "3906781820560cb6b11a3fbc61239babcbf43fa0d6ef61d7ae08b1f9b8eac1a0",
     "site/stock-logos.js": "cc29be531bc08e655464b6c0d384e1a46041aeb31caf7d982e926681fda7cb49",
     "site/stocktable.js": "eedfe64934bec3f37aa878ac4b45695f30293cd2ba28a9307c2ebe1fba19b964",
     "site/tablesort.js": "62f1b5ef9c2a26c292424aa407dbcffd0dbd9d5f6e4b0443c6e9b4ca74368a42",
     "site/theme.css": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757",
-    "site/theme.js": "aa83d371263aa05e866a6a79a9f425f4c16b1cdedc8845ae78f1f8ee52ff3b71"
+    "site/theme.js": "850c6148e52389b5490b403c2b2e196f1edfa5f2682fdb1da93a77f9b0e821a9"
   },
   "viewport": {
     "width": 390,
@@ -15596,33 +15596,5 @@
       "screenshot_width": 390,
       "pass": true
     }
-  ],
-  "source_composition": {
-    "recorded_at": "2026-11-07",
-    "kind": "metadata_only",
-    "source_head": "cdc1eaa6b263806118cb3057a14b722d1fe18bca",
-    "source_receipt": {
-      "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json",
-      "git_blob_sha": "4a2c9d435ccf85a5cef0a73f599d8e1b7b88a411",
-      "sha256": "f48a73964b8d898bdb3ba37ea8c3ba3ebe3d4cdf42dc55b37b194589fa9e18de"
-    },
-    "capture_generated_at": "2026-11-05T08:31:02.001090+00:00",
-    "captured_fixture_receipt": {
-      "path": "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json",
-      "sha256": "949339f37416890fba72a9831dcdecac0235533fdc4baf7737b080ddd90ef1d3"
-    },
-    "captured_construction_inputs": {
-      "templates/_risk_radar_card.html.j2": "61c410f540c0bcd2db90c6244725a0cd20576fa5b3ca8afc2991efed19882c7d"
-    },
-    "composed_base_head": "7fdd55fe2947fb597b3f5ac47993f956cfb5c842",
-    "current_fixture_receipt": {
-      "path": "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json",
-      "sha256": "9063fd33a84ea466cdcf910a3b5beadd846701e49c8b30a81b0e6f14bb169840"
-    },
-    "current_construction_inputs": {
-      "templates/_risk_radar_card.html.j2": "59be92c3718219838fb679abc32077020973b0a7c863ef477f200729bc5109a7"
-    },
-    "qualification": "The accepted source capture is reused at the rendered HTML and loaded browser asset boundary. All three rendered owner-case HTML digests, input HTML, verifier, browser, fonts, measurements and screenshots are preserved. The accepted theme.js from that capture is composed unchanged; fixture and construction hashes above bind current accepted main metadata. These file-integrity bindings are not a new browser execution or a new canonical-build or production proof.",
-    "new_browser_execution": false
-  }
+  ]
 }

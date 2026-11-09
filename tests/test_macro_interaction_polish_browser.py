@@ -194,6 +194,10 @@ def test_late_library_keeps_selected_identity_and_focused_result(make, index, fo
     assert len(f.held) == 1
     f.held.pop().fulfill(content_type="application/json",
                          body=json.dumps([{"t": "A000", "n": "Alpha Earlier", "v": 99999}]))
+    # The old selection already exists before fulfillment. Wait for the actual
+    # 27-row repaint before comparing its identity, focus and ARIA binding.
+    expect(f.page.locator(".search-drop-title")).to_contain_text("27 matches")
+    expect(f.page.locator(".ticker-dropdown")).to_have_attribute("aria-busy", "false")
     ticker = f"A{index + 1:03}"
     selected = f.page.get_by_role("option", name=f"Open {ticker} in Terminal", exact=True)
     expect(selected).to_have_attribute("aria-selected", "true")

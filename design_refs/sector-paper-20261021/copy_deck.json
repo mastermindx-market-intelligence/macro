@@ -294,7 +294,7 @@
     "stance_title": {"en": "Stance", "zh": "立场", "role": "label", "source": "NEW (SIC-V2 wave-2 proposal) — SIC-V2-C01 (face label for the doctrine stance chip; the engine string moves to the drawer under cycles.stance_label)"},
     "fixture_chip": {"en": "Fixture", "zh": "示例数据", "role": "chip", "source": "NEW (SIC-V2 wave-2 proposal) — labeled fixture (house law: fixtures must be explicitly labeled)"},
     "search_placeholder": {"en": "Search any stock — US, China, HK, Canada & more…", "zh": "搜索任意股票 — 美股、A 股、港股、加股等…", "role": "placeholder", "source": "templates/_site_nav.html.j2:19-20 (placeholder + data-ph-zh) — PRC-031"},
-    "nav_toggle_aria": {"en": "Toggle navigation menu", "zh": "切换导航菜单", "role": "aria", "source": "templates/theme.js:1549 (EN); ZH NEW (SIC-V2 wave-2 proposal)"}
+    "nav_toggle_aria": {"en": "Toggle navigation menu", "zh": "切换导航菜单", "role": "aria", "source": "templates/theme.js:1724 (EN); ZH NEW (SIC-V2 wave-2 proposal)"}
   },
   "states": {
     "title": {"en": "States", "zh": "状态", "role": "h1", "source": "NEW"},
@@ -318,7 +318,7 @@
     "empty_body": {"en": "Events appear here once Mastermind records one.", "zh": "Mastermind 记录后将自动出现。", "role": "state_body", "source": "templates/sector_central.html.j2:3842"},
     "no_access_title": {"en": "Sign in to view", "zh": "登录后可查看", "role": "state_title", "source": "NEW"},
     "no_access_body": {"en": "Sign in with access to view these observations.", "zh": "请使用有权限的账户登录查看。", "role": "state_body", "source": "templates/sector_central.html.j2:1991 (the ZH at that line is written as JS unicode escapes in the template; the deck test decodes them)"},
-    "no_access_action": {"en": "Sign in", "zh": "登录", "role": "state_action", "source": "templates/theme.js:2206"},
+    "no_access_action": {"en": "Sign in", "zh": "登录", "role": "state_action", "source": "templates/theme.js:2299"},
     "loading_title": {"en": "Loading…", "zh": "加载中…", "role": "state_title", "source": "templates/sector_central.html.j2:2432"},
     "loading_body": {"en": "Loading history…", "zh": "历史加载中…", "role": "state_body", "source": "templates/sector_central.html.j2:3764"},
     "offline_title": {"en": "Offline: changes kept locally", "zh": "离线 · 更改已存在本地", "role": "state_title", "source": "templates/watchlist.js:868"},
