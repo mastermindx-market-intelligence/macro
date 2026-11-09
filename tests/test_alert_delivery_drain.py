@@ -1744,3 +1744,145 @@ def test_decide_row_reads_the_injected_clock_and_never_the_wall_clock(monkeypatc
         suppression=drain.TypedRead(drain.READ_OK, []),
         now_utc=datetime(2026, 10, 21, 23, 0, tzinfo=timezone.utc))
     assert (d.action, d.reason) == ("suppress", "rotation_observation_expired")
+
+
+# --------------------------------------------------------------------------- #
+# B21 stale-mandatory-fact guard (contract §5 item 2): a row minted
+# fresh and deferred past its session end must never be SENT with an older
+# value. not_after is the session END instant, so equality is already stale --
+# the same boundary the producer's `<=` enforces at mint.
+# --------------------------------------------------------------------------- #
+_B21_ABSENT = object()
+
+
+def _b21_row(not_after=_B21_ABSENT):
+    """The existing B21-shaped payload plus the stale bound, or minus it."""
+    payload = dict(_row()["payload"])
+    if not_after is not _B21_ABSENT:
+        payload["not_after"] = not_after
+    return _row(payload=payload)
+
+
+def _decide(row, *, now=None, ent=None):
+    return drain.decide_row(
+        row, user_state=drain.READ_OK,
+        record={"email": "u@example.com", "user_metadata": dict(OPTED_IN_USER["user_metadata"])},
+        ent=ent if ent is not None else drain.TypedRead(drain.READ_OK_ZERO, []),
+        suppression=drain.TypedRead(drain.READ_OK_ZERO, []),
+        now_utc=now if now is not None else _now())
+
+
+def test_decide_row_suppresses_stale_mandatory_fact():
+    decision = _decide(_b21_row("2026-09-05T14:30:00Z"),
+                       now=_now("2026-09-05T14:30:01+00:00"))
+    assert decision.action == "suppress"
+    assert decision.reason == "mandatory_fact_stale"
+    assert decision.to_email == "u@example.com"
+    assert decision.lang == "en"
+
+
+def test_decide_row_not_after_equal_to_now_is_stale():
+    """Equality is stale: not_after is the session END instant, the
+    same boundary the producer's `<=` enforces at mint."""
+    decision = _decide(_b21_row("2026-09-05T14:30:00Z"),
+                       now=_now("2026-09-05T14:30:00+00:00"))
+    assert decision.action == "suppress"
+    assert decision.reason == "mandatory_fact_stale"
+
+
+@pytest.mark.parametrize("bound", [
+    "2026-09-05T15:00:01Z",
+    "2026-09-05T15:00:01+00:00",
+    "2026-09-05T15:00:01.1Z",
+    "2026-09-05T15:00:01.123456+00:00",
+])
+def test_decide_row_future_not_after_falls_through(bound):
+    decision = _decide(_b21_row(bound),
+                       now=_now("2026-09-05T15:00:00+00:00"))
+    assert decision.action == "send"
+    assert decision.reason == "ok"
+
+
+def test_decide_row_without_not_after_is_unchanged():
+    """Absent key => no change in behaviour for that row (fif rows carry none)."""
+    with_bound = _decide(_b21_row("2026-10-22T20:00:00Z"))
+    without_key = _decide(_b21_row())
+    assert without_key == with_bound
+    assert (without_key.action, without_key.reason) == ("send", "ok")
+
+
+@pytest.mark.parametrize(
+    "bad",
+    ["2026-09-05T14:30:00",            # naive: no offset, no Z
+     "2026-09-05T14:30:00+08:00",      # non-UTC offset
+     1757097600,                       # non-string
+     "",                              # empty
+     None,                            # explicit null is not an absent key
+     "20260905T14:30:00Z",             # basic date
+     "2026-W36-6T14:30:00Z",           # ISO week date
+     "2026-09-05T143000Z",             # basic clock
+     "2026-09-05T14:30:00,5Z",         # comma fraction
+     "2026-09-05T14:30:00.1234567Z",    # exceeds producer precision
+     "2026-02-30T14:30:00Z"],          # invalid Gregorian date
+)
+def test_decide_row_unparsable_not_after_is_unevaluable(bad):
+    decision = _decide(_b21_row(bad))
+    assert decision.action == "unevaluable"
+    assert decision.reason == "not_after_unparsable"
+
+
+def test_stale_check_precedes_quiet_hours_defer():
+    """A stale row inside quiet hours is suppressed, never deferred: the bound
+    check runs after entitlement and before the quiet-hours branch."""
+    meta = dict(OPTED_IN_USER["user_metadata"], tz="UTC", quiet_hours="14:00-16:00")
+    decision = drain.decide_row(
+        _b21_row("2026-09-05T14:30:00Z"), user_state=drain.READ_OK,
+        record={"email": "u@example.com", "user_metadata": meta},
+        ent=drain.TypedRead(drain.READ_OK_ZERO, []),
+        suppression=drain.TypedRead(drain.READ_OK_ZERO, []), now_utc=_now())
+    assert decision.action == "suppress"
+    assert decision.reason == "mandatory_fact_stale"
+    assert decision.deliver_after is None
+
+
+def test_stale_check_runs_after_entitlement():
+    ent = drain.TypedRead(drain.READ_OK, [{"tier": "pro", "status": "canceled",
+                                           "current_period_end": None}])
+    decision = _decide(_b21_row("2026-09-05T14:30:00Z"), ent=ent)
+    assert decision.action == "suppress"
+    assert decision.reason == "entitlement_lapsed"
+
+
+def test_run_marks_stale_row_suppressed_with_typed_last_error(monkeypatch):
+    """Through the run loop: the incumbent typed-suppress path, verbatim -- no
+    SMTP call, counted in suppressed_n, out of the selection predicate."""
+    row = _b21_row("2026-09-05T14:30:00Z")
+    fake = FakeTables(outbox=[row])
+    _patch(monkeypatch, fake, users={"u1": OPTED_IN_USER})
+    sends = []
+
+    result = drain.drain(send_fn=lambda **kw: sends.append(kw) or "sent",
+                         now_utc=_now(), limit=10)
+
+    assert sends == []
+    assert result.suppressed_n == 1
+    assert result.fired_n == 0
+    assert fake.patches == [(row["id"], {"status": "suppressed",
+                                         "last_error": "mandatory_fact_stale"})]
+    assert fake.outbox[0]["status"] == "suppressed"
+
+
+def test_b21_bound_does_not_replace_options_private_admission():
+    row = _b21_row("2026-09-05T14:30:00Z")
+    row["payload"]["category"] = "options_exposure_node"
+    record = {"email": "u@example.com", "user_metadata": dict(
+        OPTED_IN_USER["user_metadata"], alert_categories=["options_exposure_node"])}
+    ent = drain.TypedRead(drain.READ_OK, [{
+        "tier": "essential", "status": "active",
+        "current_period_end": "2026-10-01T00:00:00Z",
+    }])
+    decision = drain.decide_row(
+        row, user_state=drain.READ_OK, record=record, ent=ent,
+        suppression=drain.TypedRead(drain.READ_OK_ZERO, []), now_utc=_now())
+    assert (decision.action, decision.reason) == (
+        "unevaluable", "options_exposure_node_admission_unavailable")

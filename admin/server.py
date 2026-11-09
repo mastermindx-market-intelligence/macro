@@ -1069,7 +1069,7 @@ class Handler(BaseHTTPRequestHandler):
                 return self._json(personas.roster())
             # Press (D14 Media Network W1) inspector — read-only, fail-soft.
             if path == "/api/press/overview":
-                return self._json(press.overview())
+                return self._json(press.overview(audience_query=users._query))
             # W-AI: Mastermind AI response log — batch-evaluatable corpus of every
             # user-facing answer (Macro brain + Terminal copilot), ingested from R2.
             if path == "/api/mastermind_ai/response_logs":

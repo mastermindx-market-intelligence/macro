@@ -104,9 +104,10 @@ reads) and a direct reading of the two PNGs:
   with 初现 (Early sign) and the 接近高点 (Near its high) flag, 0700.HK /
   Tencent with 已破位 (Broke down). The 保存时 / 今晚 column headers are NOT
   visible in this cell, on purpose: the shipped ≤720px reduction clips the
-  whole `.hold thead` and hides `.hold .c-wsv, .hold .c-ton`
-  (templates/watchlist.html.j2:476-482) — the same demotion that routed this
-  PR's change to hover evidence in the Portfolio-mode receipt. The desktop
+  whole `.hold thead`, hides `.hold .c-wsv, .hold .c-ton`, and hides the
+  saved-value footnote `.wl-night-foot` together with the two cells it
+  explains (templates/watchlist.html.j2:467-483) — the same demotion that
+  routed this PR's change to hover evidence in the Portfolio-mode receipt. The desktop
   cells carry the two-column proof; no mobile cell can show the headers by
   design.
 
@@ -122,7 +123,11 @@ What the two new columns show, and why:
   初现 (`stg s-early`), 0700.HK "Broke down" / 已破位 (`stg s-invalid`).
   `tonightCell()` renders the row's existing state label when the row has one
   and falls back to "Unavailable" / "暂不可用" only when `r.st` is empty
-  (templates/watchlist.js near lines 1127-1131). The nightly payload
+  (templates/watchlist.js near lines 1127-1131). Because `tonightCell()` draws
+  the row's state with the same `stageCell(stageOf(r.st))` the Signal column
+  uses, "Tonight" repeats the Signal label whenever the nightly payload
+  carries no separate tonight stage for the ticker — a documented limitation
+  of this receipt, not a defect fixed here. The nightly payload
   resolves from the scratch site (the full tracked `site/` copy carries the
   payload JSONs the page fetches), so both rows have a current stage. Those
   stages are the payload's own values for these tickers on the captured
@@ -132,7 +137,7 @@ Gaps (recorded, not captured):
 
 - The saved-decision half of the pair stays "Not supplied" in every cell:
   snapshots exist only for a signed-in list, which cannot be produced from
-  static output. The two-column history law is therefore proven here with a
+  static output. The two-column history law is therefore shown here with a
   real Tonight column beside the designed anonymous absence in When-you-saved.
 - Signed-in access tiers and loading, empty, stale and error states remain
   manifest gaps, as in the Portfolio-mode receipt.
