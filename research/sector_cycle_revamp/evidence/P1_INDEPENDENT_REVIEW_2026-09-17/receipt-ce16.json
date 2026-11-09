@@ -1,0 +1,28 @@
+{
+  "operation": "sector-cycle-p1-native-independent-review-20260917-sol-001",
+  "native_session_id": "ef35b9c5-78c0-4dbe-b89f-2528909b1ddd",
+  "reviewed_source_head": "ce16dc6dc58acf8d9006ab0095c2714702b6bbbe",
+  "parent_verified_source_before_after": true,
+  "parent_verified_tracked_worktree_clean_before_after": true,
+  "source_frozen_during_review": true,
+  "native_model": "claude-opus-5",
+  "tools": [
+    "Read",
+    "Grep",
+    "Glob"
+  ],
+  "permission_mode": "plan",
+  "mcp_servers": [],
+  "exit_code": 0,
+  "verdict": "PARTIAL",
+  "result_sha256": "d04e9f1a9de2369df37c686b07ead469e6b2f5d1bd4c22ba35380627ffd6162d",
+  "profile_declared_max_turns": 24,
+  "reported_native_turns": 37,
+  "declared_turn_cap_proven": false,
+  "reported_accounting_usd": 4.3727975,
+  "accounting_is_new_cash_charge_claim": false,
+  "return_consumed_comment": 5720929262,
+  "terminal_child": true,
+  "watcher": "none",
+  "raw_event_or_reasoning_transcript_published": false
+}

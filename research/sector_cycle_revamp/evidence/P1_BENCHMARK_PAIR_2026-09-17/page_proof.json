@@ -1,0 +1,232 @@
+{
+  "scope": "local real-input build plus controlled benchmark-gap browser test; not production acceptance",
+  "group_pulse_sha256": "f27700a287f4c70c762a49f10d802fab56eb734c227890f1afbf85a67560d133",
+  "template_sha256": "4ef29bb8c603d44ba97125999e7f35e9d2c5090cd82527afb00c6eedf9a61739",
+  "real_input_generation": {
+    "pages": 49,
+    "groups": 49,
+    "as_of": "2026-09-16",
+    "projection_digest": "5135a92cb652e6fd2aed841b35e63777d188ee9ed92f42995475b77d96345f92",
+    "companion_bytes": 2602710,
+    "rendered_detail_bytes": 14334238,
+    "compute_seconds": 28.73,
+    "render_and_validate_seconds": 1.912,
+    "timing_scope": "one current local build, not incremental overhead or production budget proof"
+  },
+  "controlled_generation": {
+    "pages": 1,
+    "groups": 1,
+    "as_of": "2026-09-15",
+    "projection_digest": "cb86052bdbc2b325a15c497766d7889a1c0d3eca4d59bb4dab7529d5b3587614",
+    "companion_bytes": 20554,
+    "rendered_detail_bytes": 225629
+  },
+  "controlled_positive_generation": {
+    "pages": 1,
+    "groups": 1,
+    "as_of": "2026-09-15",
+    "projection_digest": "d87c72f8a8fa4263f30c6420ad4914ba28cf66110dba78b11cdb04d067076aae",
+    "companion_bytes": 20325,
+    "rendered_detail_bytes": 225156
+  },
+  "controlled_positive_browser_states": [
+    {
+      "locale": "en",
+      "theme": "dark",
+      "width": 1440,
+      "fixture_member": "A",
+      "benchmark_return": 0.034145590380454394,
+      "raw_value": 0.25,
+      "relative_value": 0.2158544096195456,
+      "scope": "controlled positive test fixture; not market data",
+      "screenshots": [
+        {
+          "file": "benchmark-positive-raw_daily_change-en-dark-1440.png",
+          "sha256": "9814ed2133f90eb4505700210867c227aae0c90e8ca8869ec101ad321a1179e1"
+        },
+        {
+          "file": "benchmark-positive-benchmark_relative_daily_change-en-dark-1440.png",
+          "sha256": "059f99f8ea718195cac6fc192b694deafd9739cf1efdbf9b0216507c3a193700"
+        }
+      ],
+      "raw_daily_change_display": "+25.0%",
+      "benchmark_relative_daily_change_display": "+21.6 pp"
+    },
+    {
+      "locale": "zh",
+      "theme": "light",
+      "width": 390,
+      "fixture_member": "A",
+      "benchmark_return": 0.034145590380454394,
+      "raw_value": 0.25,
+      "relative_value": 0.2158544096195456,
+      "scope": "controlled positive test fixture; not market data",
+      "screenshots": [
+        {
+          "file": "benchmark-positive-raw_daily_change-zh-light-390.png",
+          "sha256": "fbb01f3344ba7394fe680b6630bf9b9af03449860f28f5d685e38665e67d70d7"
+        },
+        {
+          "file": "benchmark-positive-benchmark_relative_daily_change-zh-light-390.png",
+          "sha256": "7274bd76e49b58557045bd235c085481abc93310aa8a0c189c3d6115e94b35aa"
+        }
+      ],
+      "raw_daily_change_display": "+25.0%",
+      "benchmark_relative_daily_change_display": "+21.6 个百分点"
+    }
+  ],
+  "controlled_browser_states": [
+    {
+      "locale": "en",
+      "theme": "dark",
+      "width": 1440,
+      "raw_members_observed": 6,
+      "relative_members_observed": 0,
+      "catalogue_members": 6,
+      "script_errors": [],
+      "missing_reason_geometry": {
+        "scroll_width": 1304,
+        "client_width": 1304,
+        "why_left": 756.3125,
+        "why_right": 1372,
+        "left": 67,
+        "right": 1373
+      },
+      "screenshot": "benchmark-unavailable-en-dark-1440.png",
+      "sha256": "7f98298070f4a4329d653610e86027eed2a9fe97e40a32f1e83c142933382296"
+    },
+    {
+      "locale": "en",
+      "theme": "dark",
+      "width": 390,
+      "raw_members_observed": 6,
+      "relative_members_observed": 0,
+      "catalogue_members": 6,
+      "script_errors": [],
+      "missing_reason_geometry": {
+        "scroll_width": 340,
+        "client_width": 340,
+        "why_left": 37,
+        "why_right": 341.21875,
+        "left": 24,
+        "right": 366
+      },
+      "screenshot": "benchmark-unavailable-en-dark-390.png",
+      "sha256": "867e5ce1123a3062bd6ee3f537ad624ef73aa484ea32221cc4b5bf36f0714027"
+    },
+    {
+      "locale": "en",
+      "theme": "light",
+      "width": 1440,
+      "raw_members_observed": 6,
+      "relative_members_observed": 0,
+      "catalogue_members": 6,
+      "script_errors": [],
+      "missing_reason_geometry": {
+        "scroll_width": 1304,
+        "client_width": 1304,
+        "why_left": 756.3125,
+        "why_right": 1372,
+        "left": 67,
+        "right": 1373
+      },
+      "screenshot": "benchmark-unavailable-en-light-1440.png",
+      "sha256": "33dbbddedf3c33be3019b8e2ac9f6a4ef5f0b0b0a4e61e75030e102050ec7515"
+    },
+    {
+      "locale": "en",
+      "theme": "light",
+      "width": 390,
+      "raw_members_observed": 6,
+      "relative_members_observed": 0,
+      "catalogue_members": 6,
+      "script_errors": [],
+      "missing_reason_geometry": {
+        "scroll_width": 340,
+        "client_width": 340,
+        "why_left": 37,
+        "why_right": 341.21875,
+        "left": 24,
+        "right": 366
+      },
+      "screenshot": "benchmark-unavailable-en-light-390.png",
+      "sha256": "dfa614b44c414ce2ec845152d1582cd0bb95f7f65525538220885ca1fe84ddc2"
+    },
+    {
+      "locale": "zh",
+      "theme": "dark",
+      "width": 1440,
+      "raw_members_observed": 6,
+      "relative_members_observed": 0,
+      "catalogue_members": 6,
+      "script_errors": [],
+      "missing_reason_geometry": {
+        "scroll_width": 1304,
+        "client_width": 1304,
+        "why_left": 800.203125,
+        "why_right": 1372,
+        "left": 67,
+        "right": 1373
+      },
+      "screenshot": "benchmark-unavailable-zh-dark-1440.png",
+      "sha256": "70785e5938a39923397f7365e0fb775b7a6f24da7222ce97eabf5bd3a9863c5c"
+    },
+    {
+      "locale": "zh",
+      "theme": "dark",
+      "width": 390,
+      "raw_members_observed": 6,
+      "relative_members_observed": 0,
+      "catalogue_members": 6,
+      "script_errors": [],
+      "missing_reason_geometry": {
+        "scroll_width": 340,
+        "client_width": 340,
+        "why_left": 37,
+        "why_right": 320.703125,
+        "left": 24,
+        "right": 366
+      },
+      "screenshot": "benchmark-unavailable-zh-dark-390.png",
+      "sha256": "c7cc48908835097629cc71daaf8defb508c335c519d88b65f32d7f7be22130ec"
+    },
+    {
+      "locale": "zh",
+      "theme": "light",
+      "width": 1440,
+      "raw_members_observed": 6,
+      "relative_members_observed": 0,
+      "catalogue_members": 6,
+      "script_errors": [],
+      "missing_reason_geometry": {
+        "scroll_width": 1304,
+        "client_width": 1304,
+        "why_left": 800.203125,
+        "why_right": 1372,
+        "left": 67,
+        "right": 1373
+      },
+      "screenshot": "benchmark-unavailable-zh-light-1440.png",
+      "sha256": "760f388ef882c722565d0a306527bc78c6ccab1b34f83a259b8d83890a541b5a"
+    },
+    {
+      "locale": "zh",
+      "theme": "light",
+      "width": 390,
+      "raw_members_observed": 6,
+      "relative_members_observed": 0,
+      "catalogue_members": 6,
+      "script_errors": [],
+      "missing_reason_geometry": {
+        "scroll_width": 340,
+        "client_width": 340,
+        "why_left": 37,
+        "why_right": 320.703125,
+        "left": 24,
+        "right": 366
+      },
+      "screenshot": "benchmark-unavailable-zh-light-390.png",
+      "sha256": "df37f455e50b36143253e22bd3c7cc9b3157f91f49a9f6c75d49801e1fcc9e69"
+    }
+  ]
+}

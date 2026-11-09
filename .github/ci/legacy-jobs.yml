@@ -6241,6 +6241,7 @@ jobs:
     # suites read can still start this job.
     scope: exclusive
     paths:
+      - "engine/group_member_observations.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "engine/entry_radar/__init__.py"
@@ -24401,6 +24402,7 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
+      - engine/group_member_observations.py
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
       - engine/entry_radar/replay/identity_observation_snapshot.py
@@ -32382,6 +32384,10 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - engine/company_intelligence/contracts.py
+      - engine/group_member_observations.py
+      - lib/dataos/nulls.py
+      - engine/company_intelligence/__init__.py
       - app/__init__.py
       - app/deploy/ohlc_origin_known_hosts
       - scripts/publish_ohlc.py
@@ -34025,6 +34031,7 @@ jobs:
     # no named closure file was removed.
     scope: exclusive
     paths:
+      - engine/group_member_observations.py
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "engine/intraday_greeks.py"
       - "engine/options_nbbo_cohort.py"
@@ -35303,6 +35310,10 @@ jobs:
     # it); the ceilings stay fixed.
     # The ancestor inits are declared so this job adds no census rows.
     paths:
+      - engine/company_intelligence/contracts.py
+      - engine/group_member_observations.py
+      - lib/dataos/nulls.py
+      - engine/company_intelligence/__init__.py
       - "app/__init__.py"
       - "app/deploy/ohlc_origin_known_hosts"
       - "collectors/__init__.py"
@@ -37417,6 +37428,7 @@ jobs:
     # the declared-scope coverage audit re-checks them on every load.
     scope: exclusive
     paths:
+      - "engine/group_member_observations.py"
       - "engine/theme_graph/activity_history_bridge.py"
       - "engine/prophet_early_leadership_evidence.py"
       - "contracts/theme_graph/theme_state.v1.schema.json"
@@ -40554,6 +40566,7 @@ jobs:
     # 846 tracked / 74 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - engine/group_member_observations.py
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "engine/intraday_greeks.py"
       - "engine/options_nbbo_cohort.py"
@@ -42692,7 +42705,7 @@ jobs:
     # it landed in existing organs (engine/coiled.py's washout_ctx_detail and
     # engine/group_flow.py's sign_agreement).
     #
-    # Three suites, three different failure classes, deliberately in one job because
+    # Complementary suites cover different failure classes in one job because
     # they guard ONE contract and a partial heal cannot merge a pack anyway:
     #
     #   contract   the frozen group_pulse.v1 shape — a golden object assembled
@@ -42738,7 +42751,8 @@ jobs:
           python -m pytest
           tests/test_group_pulse_contract.py
           tests/test_group_pulse_episodes.py
-          tests/test_group_pulse_tripwire.py -q -rs
+          tests/test_group_pulse_tripwire.py
+          tests/test_group_member_observations.py -q -rs
 
   group-read-surface:
     # GR1 of the Group Reads program: the USER-FACING basket read surfaces —
@@ -42778,8 +42792,8 @@ jobs:
     #
     # The surface probes import engine/group_pulse.py to exercise its published
     # denominator/arc contract, so NumPy and pandas are real import dependencies.
-    # No pyarrow or network — it otherwise reads two templates, one plain-copy JS
-    # asset, and shells node.
+    # Jinja2 and pyarrow also support the member-detail binding probes. These tests
+    # use local fixtures, templates and shipped JS under node, with no network.
     if: ${{ false }}  # executed inside ci-pack — NOT a disabled gate; see the ci-pack job.
     gate: code
     timeout-minutes: 6
@@ -42793,9 +42807,12 @@ jobs:
         with:
           node-version: "20"
       - name: install minimal deps
-        run: pip install pytest numpy pandas pyyaml
+        run: pip install pytest numpy pandas pyyaml jinja2 pyarrow
       - name: basket read band + board group-pulse column (GR1)
-        run: python -m pytest tests/test_group_read_surface.py tests/test_sector_central_measured_panel.py tests/test_sector_intraday_comparison.py -q -rs
+        run: >-
+          python -m pytest tests/test_group_read_surface.py
+          tests/test_sector_central_measured_panel.py tests/test_sector_intraday_comparison.py
+          tests/test_theme_detail_member_observations.py -q -rs
 
   leadership-rotation-countercases:
     # LEADERSHIP-ROTATION T20 (O8 independent challenge): one integrated counter-case suite driving SYNTHETIC
@@ -43120,6 +43137,11 @@ jobs:
     # Pin the measured import closure; unrelated template changes do not select GR3.
     scope: exclusive
     paths:
+      - engine/company_intelligence/contracts.py
+      - engine/group_member_observations.py
+      - lib/dataos/nulls.py
+      - engine/company_intelligence/__init__.py
+      - lib/dataos/__init__.py
       - "collectors/yahoo.py"
       - "config/delisted_symbols.yml"
       - "lib/delisted_symbols.py"

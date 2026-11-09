@@ -1,5 +1,5 @@
 schema: house_law_checks.v1
-updated: "2026-10-21"
+updated: "2026-11-09"
 
 # Canonical registry of every house law and its enforcement status.
 # Maintained by scripts/check_house_law_registry.py (meta-guard).
@@ -4282,3 +4282,26 @@ checks:
       `python3 scripts/check_tushare_compliance_resurrection.py`. Promotion to
       hard needs a `run:` step in a `gate: code` job — an UPGRADE, no ruling
       required.
+
+  - law_id: site.group_member_observations
+    summary: >
+      Bind each rendered US group detail to the exact member-observation projection and Group Pulse bytes, generation clocks, group keys, member counts and legacy metrics.
+    source_ref:
+      - scripts/check_group_member_observations.py
+      - engine/group_member_observations.py
+      - scripts/build_theme_detail.py
+      - tests/test_theme_detail_member_observations.py
+    severity: manual
+    check_script: scripts/check_group_member_observations.py
+    ci_wiring: []
+    selftest: false
+    selftest_exempt_reason: >
+      No --selftest flag; the CLI accepts --site-root and --quiet. The existing tests/test_theme_detail_member_observations.py suite exercises evaluate and current_run_errors with isolated fixtures in the group-read-surface CODE job.
+    allowlist: null
+    ratchet: null
+    known_limits:
+      - The guard CLI is not directly invoked by a workflow job; the group-read-surface CODE suite proves its fixture behavior, not coherence of the published population.
+      - Requires the actual pulse, companion bundle and rendered detail files from one generation. Historical fixtures or source CI do not satisfy current population or publication proof.
+    owner_program: sector-cycle-revamp
+    notes: >
+      Registered during the source CI repair. Operator CLI: python3 scripts/check_group_member_observations.py --site-root site. Current-invocation publication integration and source-linked population proof remain with the existing producer/publication owner; manual registration does not release those holds.

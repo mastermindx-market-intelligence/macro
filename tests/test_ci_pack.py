@@ -5703,7 +5703,7 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_943),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("templates/index.html", 137, 5_945),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("scripts/build_free_content.py", 138, 5_964),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 131, 5_701),
 )
@@ -5713,6 +5713,24 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-09 (PR #7252, member-observation regression enrollment):
+    Natural contract run42550236384/job128943954186 measured H8e7295392676
+    against base4bd1948ac0d9 on tested mergee97aff63da81: the homepage
+    probe remains137jobs/tenpacks with no newly selected owner, weight
+    5943->5945. Free-content and Prophet probes remain unchanged.
+    Existing group-read-surface gains the mandatory member-detail suite,
+    raising its unchanged estimator weight8->10. Its unchanged original
+    test already claims a templates-root subprocess; the unchanged closure
+    classifier/selector maps that to templates/**, selecting the homepage
+    probe before this enrollment. The separate group-pulse suite also
+    gains two units but is not selected by these ordinary probes.
+    Fund only the measured homepage +2; retain both suites, their owners,
+    all selectors and current main's Figma owner/curated member. Preserve
+    job ceilings137/138/131, ten packs, the other two weight ceilings,
+    all timeouts and runtime/admission caps. No unmerged sibling funding
+    or runtime claim is imported. Successor CI must qualify this tree;
+    every prior provenance paragraph below remains historical.
 
     2026-11-09 (PR #10870, dependency-coverage correction): the separate
     admission job conservatively owns tools/xguerrilla/** because pytest
