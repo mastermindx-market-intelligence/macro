@@ -1316,6 +1316,10 @@ def comparison_page(browser, page_url, request, tmp_path):
         elif variant == "two-relative":
             view["assets"][0]["relative_90d_pct"] = 0.0
             view["assets"][1].update(relative_90d_pct=None, relative_en="Building history", relative_zh="积累历史中")
+        elif variant == "projected-relative":
+            from lib.crypto_intelligence_view import build_view
+            from test_crypto_intelligence_r4 import relative_integrity_inputs
+            view = build_view(*relative_integrity_inputs())
         elif variant in ("missing", "empty"):
             view["assets"] = []
             view["contracts"]["asset_states"] = "accepted" if variant == "empty" else "missing_or_schema_mismatch"
@@ -1737,4 +1741,66 @@ def test_r4_compact_matrix_larger_cohort_keeps_native_scroll_and_measure_context
     assert page.evaluate("document.documentElement.scrollWidth<=innerWidth")
     if lang=="zh":
         _capture(page,"compact-three-zh-320")
+    _comparison_storage_untouched(page)
+
+
+@pytest.mark.parametrize("lang,width,touch", [("en",390,False),("zh",320,True)])
+def test_r4_relative_integrity_projection_reaches_overview_inspector_and_comparison(comparison_page,lang,width,touch):
+    page,view=comparison_page(lang,width,"projected-relative",start="#overview",touch=touch)
+    unavailable="Unavailable" if lang=="en" else "暂无"
+    history="Building history" if lang=="en" else "积累历史中"
+    leading="Leading Bitcoin" if lang=="en" else "领先比特币"
+    tracking="Tracking Bitcoin" if lang=="en" else "跟随比特币"
+    watch=page.locator('[data-view="overview"] .cri-watch-row')
+    assert unavailable in watch.nth(0).inner_text()
+    assert leading not in watch.nth(0).inner_text()
+    assert tracking in watch.nth(1).inner_text()
+    page.locator('.cri-tabs [data-route="markets"]').click()
+    page.wait_for_function("location.hash==='#markets'")
+    eth=page.locator('[data-asset-row="ETH"]')
+    assert eth.locator("td").nth(3).inner_text()==unavailable
+    assert eth.locator("td").nth(3).locator(".cri-measure-state").count()==0
+    assert page.locator('[data-asset-row="SOL"] td').nth(3).inner_text()=="0.0%"
+    btc=page.locator('[data-asset-row="BTC"]')
+    assert history in btc.locator("td").nth(3).inner_text()
+    assert leading not in btc.locator("td").nth(3).inner_text()
+    eth.locator(".cri-asset").click()
+    _wait_drawer(page,"asset:ETH","Ethereum · ETH")
+    body=page.locator("#cri-dialog-body")
+    assert body.locator(":scope > dl dd").nth(3).inner_text()==unavailable
+    assert body.locator(":scope > dl dd").nth(4).inner_text()==unavailable
+    assert "$2,400" in body.inner_text()
+    assert ("Advancing" if lang=="en" else "上行") in body.inner_text()
+    assert ("Stressed" if lang=="en" else "承压") in body.inner_text()
+    if lang=="en":
+        _capture(page,"relative-unavailable-en-390")
+    page.locator("#cri-dialog-close").click()
+    btc.locator(".cri-asset").click()
+    _wait_drawer(page,"asset:BTC","BTC · BTC")
+    assert page.locator("#cri-dialog-body > dl dd").nth(4).inner_text()==history
+    if lang=="zh":
+        _capture(page,"relative-history-zh-320")
+    page.locator("#cri-dialog-close").click()
+    page.locator('[data-view="markets"] [data-open="comparison"]').click()
+    row=page.locator(".cri-comparison-table tbody tr").nth(1)
+    assert row.locator("td").nth(0).inner_text()==unavailable
+    assert row.locator("td").nth(1).inner_text()=="0.0%"
+    assert history in row.locator("td").nth(2).inner_text()
+    assert leading not in row.locator("td").nth(2).inner_text()
+    assert row.locator("td").nth(3).inner_text()=="+10.0%"
+    assert page.evaluate("JSON.parse(document.getElementById('cri-data').textContent).assets")==view["assets"]
+    _comparison_storage_untouched(page)
+
+
+@pytest.mark.parametrize("lang",["en","zh"])
+def test_r4_relative_integrity_leaders_filter_uses_only_qualified_projection(comparison_page,lang):
+    page,view=comparison_page(lang,390,"projected-relative",start="#markets?filter=leaders")
+    rows=page.locator("#cri-market-table tbody tr:visible")
+    assert rows.evaluate_all("nodes=>nodes.map(n=>n.dataset.assetRow)")==["XRP"]
+    page.locator('[data-view="markets"] [data-open="comparison"]').click()
+    assert page.locator(".cri-comparison-table thead th").all_text_contents()[1:]==["ETH","SOL","BTC","XRP"]
+    page.locator("#cri-dialog-close").click()
+    page.wait_for_function("location.hash==='#markets?filter=leaders'&&!document.getElementById('cri-dialog').open")
+    assert rows.evaluate_all("nodes=>nodes.map(n=>n.dataset.assetRow)")==["XRP"]
+    assert len(view["assets"])==4
     _comparison_storage_untouched(page)

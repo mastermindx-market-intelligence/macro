@@ -1,6 +1,21 @@
 # Crypto R4: safe saved cases and clear asset comparisons
 
-## Current phase — complete comparison readings on narrow screens
+## Current phase — qualified relative values and bilingual states
+
+The existing projection now prevents a missing/invalid relative value from retaining a Leading, Lagging or Tracking label in either language. Finite zero stays valid. Explicit Building history remains the canonical bilingual pair; malformed optional relative containers retain the otherwise usable asset.
+
+**67 contract cases and four browser paths have passing coverage across two runs.** The initial 69-pass/two-failure run exposed a test selector that included collapsed calculation definitions; the two corrected inspector paths then passed with unchanged product source. Both leaders-filter paths, all contract cases and two synthetic native drawer crops are verified.
+
+Eighteen other runtime inputs, including all saved frontend artifacts, remain exact. Producer policy and model authority are unchanged.
+
+- [Qualification rule, ownership and remaining build work](RELATIVE_INTEGRITY.md)
+- [Exact validation](RELATIVE_INTEGRITY_VALIDATION.json)
+- [Initial candidate JUnit](relative/CANDIDATE_RESULTS.xml) and [corrected affected JUnit](relative/FOCUSED_RESULTS.xml)
+- [Inspected synthetic captures](relative/captures)
+
+Next: clarify the Overview's comparison/risk field labels while retaining its compact row and inspection action. Producer numeric validity, missing trend votes and paired-window receipt fields remain separate work.
+
+## Prior phase — complete comparison readings on narrow screens
 
 The two-asset matrix now fits at **320px and 390px** with complete dates and the original type size. The measure column is 98px, asset columns are at least 91px, and cells use 8px side padding below 401px. Larger cohorts retain native keyboard scrolling and sticky measure context.
 
@@ -12,7 +27,7 @@ Runtime changes are confined to CSS and the saved pages' two asset-version refer
 - [Exact source, validation and qualifications](COMPACT_MATRIX_VALIDATION.json)
 - [Candidate JUnit](compact/CANDIDATE_RESULTS.xml), [native measurements](compact/METRICS.json) and [inspected captures](compact/captures)
 
-Next: repair null/directional-state consistency in the existing projection while retaining finite zero and supplied non-directional history. Paired-window receipt fields remain proposed.
+The current integrity phase above implements that qualification repair. Paired-window receipt fields remain proposed.
 
 ## Prior phase — honest comparison basis and usable asset workflows
 

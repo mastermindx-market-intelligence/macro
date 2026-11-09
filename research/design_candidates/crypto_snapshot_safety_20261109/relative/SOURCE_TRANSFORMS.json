@@ -1,0 +1,36 @@
+{
+  "projection": [
+    {
+      "before": "        assets.append({\n",
+      "after": "        relative = item.get(\"relative\")\n        relative = relative if isinstance(relative, dict) else {}\n        relative_value = finite(relative.get(\"change_90d_pct\")) if covered else None\n        # Qualify both locales together; missing evidence never implies direction.\n        relative_copy = (\"Unavailable\", \"暂无\")\n        if covered and relative_value is not None:\n            relative_copy = (relative.get(\"state\") or \"Unavailable\", relative.get(\"state_zh\") or \"暂无\")\n        elif covered and relative.get(\"state\") == \"Building history\":\n            relative_copy = (\"Building history\", \"积累历史中\")\n        assets.append({\n"
+    },
+    {
+      "before": "            \"relative_90d_pct\": finite((item.get(\"relative\") or {}).get(\"change_90d_pct\")) if covered else None,",
+      "after": "            \"relative_90d_pct\": relative_value,"
+    },
+    {
+      "before": "            \"relative_en\": ((item.get(\"relative\") or {}).get(\"state\") or \"Unavailable\") if covered else \"Unavailable\",\n            \"relative_zh\": ((item.get(\"relative\") or {}).get(\"state_zh\") or \"暂无\") if covered else \"暂无\",",
+      "after": "            \"relative_en\": relative_copy[0], \"relative_zh\": relative_copy[1],"
+    }
+  ],
+  "browser_fixture": {
+    "before": "        elif variant in (\"missing\", \"empty\"):\n",
+    "after": "        elif variant == \"projected-relative\":\n            from lib.crypto_intelligence_view import build_view\n            from test_crypto_intelligence_r4 import relative_integrity_inputs\n            view = build_view(*relative_integrity_inputs())\n        elif variant in (\"missing\", \"empty\"):\n"
+  },
+  "browser_selector_corrections": [
+    {
+      "before": "assert body.locator(\"dd\").nth(3).inner_text()==unavailable",
+      "after": "assert body.locator(\":scope > dl dd\").nth(3).inner_text()==unavailable"
+    },
+    {
+      "before": "assert body.locator(\"dd\").nth(4).inner_text()==unavailable",
+      "after": "assert body.locator(\":scope > dl dd\").nth(4).inner_text()==unavailable"
+    },
+    {
+      "before": "assert page.locator(\"#cri-dialog-body dd\").nth(4).inner_text()==history",
+      "after": "assert page.locator(\"#cri-dialog-body > dl dd\").nth(4).inner_text()==history"
+    }
+  ],
+  "parent_projection_blob": "44d47c10fd9e39762d5304fc0bacbc29bf511e41",
+  "inverse_exact": true
+}

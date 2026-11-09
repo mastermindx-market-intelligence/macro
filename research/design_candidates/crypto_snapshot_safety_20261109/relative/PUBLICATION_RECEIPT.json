@@ -1,0 +1,65 @@
+{
+  "source_parent": "6ab9a6d09052aa66c556b26d371c5d59620622ee",
+  "runtime_asset_version": "1bbbd2258e94",
+  "files": {
+    "lib/crypto_intelligence_view.py": {
+      "bytes": 22546,
+      "sha256": "31c2e78441e3f582e89c14ec1eff70982a456bc1dfff2625a4ad2b7dbf0cf91e",
+      "blob": "a940f672db768a8142f26f4e46a6c7e22a3bfd5f"
+    },
+    "tests/test_crypto_intelligence_r4.py": {
+      "bytes": 18002,
+      "sha256": "6a875ad1dc61f3f6a09b4fcd7d59279871b8953a05ec36cad906903be93717c0",
+      "blob": "88488cd27a2510ce64497ec6e24de4e59a79ec13"
+    },
+    "tests/test_crypto_intelligence_r4_browser.py": {
+      "bytes": 98724,
+      "sha256": "a739c5da623c3998278a866391deb20231c32f22b20a0d08e8b72203c0d095fe",
+      "blob": "de01b0bae02b39ddbd32b946b4d141732f5bb415"
+    }
+  },
+  "unchanged_inputs": [
+    "templates/crypto_intelligence_r4.js",
+    "site/crypto-r4.html",
+    "site/vector-r4.html",
+    "site/crypto_intelligence_r4.js",
+    "site/crypto_intelligence_r4.css",
+    "site/crypto_intelligence_r4.json",
+    "templates/crypto_intelligence_r4.html.j2",
+    "templates/crypto_intelligence_r4.css",
+    "scripts/build_crypto_intelligence_r4.py",
+    "site/theme.js",
+    "site/theme.css",
+    "site/illus.js",
+    "site/illus.css",
+    "site/navigation-refresh.css",
+    "site/logo_config.js",
+    "site/stock-logos.js",
+    "site/live_config.js",
+    "site/live.js"
+  ],
+  "verification": {
+    "first_run_passed": 69,
+    "first_run_failed": 2,
+    "focused_passed": 2,
+    "unique_passing_cases": 71,
+    "contract_cases": 67,
+    "browser_cases": 4,
+    "single_all_passing_run": false,
+    "correction_only_changes_test_selectors": true
+  },
+  "captures": [
+    {
+      "name": "relative-history-zh-320.png",
+      "bytes": 26385,
+      "sha256": "df6d863dd7eb763e5057556be079a0a169c18dbcca438cadeb32cc29ee280fda",
+      "blob": "2ce20a46f205537e9363bb074fbf9b2484dea88e"
+    },
+    {
+      "name": "relative-unavailable-en-390.png",
+      "bytes": 29360,
+      "sha256": "7b227e44689703aa98e006af7d19120410ed9cfce8908ab77e0f81a6a1c5c8aa",
+      "blob": "611aa5c9eb5ed0e8ee1f2f0e42c501df58f85b0d"
+    }
+  ]
+}

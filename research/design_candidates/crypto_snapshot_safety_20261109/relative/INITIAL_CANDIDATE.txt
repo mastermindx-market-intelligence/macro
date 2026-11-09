@@ -1,0 +1,20 @@
+...................................................................FF..  [100%]
+=================================== FAILURES ===================================
+_ test_r4_relative_integrity_projection_reaches_overview_inspector_and_comparison[en-390-False] _
+tests/test_crypto_intelligence_r4_browser.py:1770: in test_r4_relative_integrity_projection_reaches_overview_inspector_and_comparison
+    assert body.locator("dd").nth(3).inner_text()==unavailable
+E   AssertionError: assert '2026-10-15' == 'Unavailable'
+E     
+E     - Unavailable
+E     + 2026-10-15
+_ test_r4_relative_integrity_projection_reaches_overview_inspector_and_comparison[zh-320-True] _
+tests/test_crypto_intelligence_r4_browser.py:1770: in test_r4_relative_integrity_projection_reaches_overview_inspector_and_comparison
+    assert body.locator("dd").nth(3).inner_text()==unavailable
+E   AssertionError: assert '2026-10-15' == '暂无'
+E     
+E     - 暂无
+E     + 2026-10-15
+=========================== short test summary info ============================
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_relative_integrity_projection_reaches_overview_inspector_and_comparison[en-390-False]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_relative_integrity_projection_reaches_overview_inspector_and_comparison[zh-320-True]
+2 failed, 69 passed in 6.72s
