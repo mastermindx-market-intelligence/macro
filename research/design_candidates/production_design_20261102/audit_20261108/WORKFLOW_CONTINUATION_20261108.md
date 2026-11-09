@@ -3128,3 +3128,43 @@ Applied responses, snapshot guards, before/after JSX and exact checks are in [PA
 Next: a bounded compact-matrix refinement at 320/390px. The current native scrolling matrix is coherent and verified; its initial 320px viewport partly hides the second current asset. Investigate a 100px measure column, 90px asset columns and 8px horizontal cell padding at the narrow breakpoint. Keep the existing font size, full unbroken dates and values, automatic table layout and sticky/keyboard-scroll behavior for larger cohorts. If measured text cannot fit, retain scrolling rather than clip or shrink. No new data or layout-state owner is needed.
 
 Current source head is `32ad0bc508b50afefa3dc485f970423733a42c54`; keep producer/model/data and proposed receipt fields unchanged. All H5/model, alert, hosted/independent visual, public-route cutover, release/admission, denied-capture and unknown-effect worker boundaries remain. The wider mission continues in the same session.
+
+
+## 66. Crypto compact comparison matrix — implemented and measured
+
+### Source and visible outcome
+
+Dependent Draft [PR #10901](https://github.com/mastermindx-market-intelligence/Macro/pull/10901) now has head `6ab9a6d09052aa66c556b26d371c5d59620622ee`, tree `e94e432c9b1f4a2faa76cc0692e30ff9187ce88f`, parent `32ad0bc508b50afefa3dc485f970423733a42c54`. Asset version: `1bbbd2258e94`.
+
+The current two-asset matrix now fits at both 320px and 390px with complete dates, signed readings and the original 12.5px font. At 320px, its 280px reading area holds a 98px measure column and two 91px asset columns. Horizontal cell padding is 8px below 401px. Date cells stay unbroken. The native auto-sized table can still overflow when intrinsic content requires it; there is no clipping, smaller type or asset-count-specific layout controller.
+
+Larger cohorts retain native horizontal scrolling, a sticky measure column and keyboard focus. The three-asset fixture measures 371px inside a 280px region and reaches its final asset through native ArrowRight input. Null, genuine zero and supplied Building history remain visibly distinct.
+
+### Exact proof and qualifications
+
+- Parent baseline: **8 failed / 122 deselected**, 17.49s pytest / 17.850s subprocess. Six failures demonstrate that the two-asset table is 370px inside a 280/350px region. Two are insufficient-arrow harness failures, not product defects.
+- Corrected larger-cohort parent check: **2 passed / 128 deselected**, 3.91s / 4.198s. Sixteen native arrow inputs replace the insufficient five; runtime remains the exact parent.
+- Candidate: **12 passed / 118 deselected**, 9.50s / 9.768s, **12 contexts / 12 pages**, Chrome 157.0.8103.39, zero page errors or external/WebSocket traffic. Eight new compact cases plus four existing full-cohort cases.
+- Before/after native Range measurements retain exact cell text, font size and family across eight variants. Headers, dates and signed two-asset readings stay whole and inside the viewport. No page-width overflow.
+- **Four new native crops inspected:** English and Chinese two-asset layouts, English null/zero/history, Chinese larger-cohort far edge. Both themes and fine-pointer/touch cases are represented.
+- Runtime changes are one narrow CSS block, its served copy and two version references in each saved page. The CSS change and both page changes invert exactly to the parent. **Sixteen other inputs remain exact**, including JS, template, projection, JSON, builder, producer-related runtime boundary and shared assets.
+- **15 source/evidence text files and four PNG binaries read back exactly** at the published head.
+- The earlier **161-case complete run** is retained at its own parent/runtime. This phase ran twelve affected cases; it does not claim a new full-suite run.
+- A metadata-only script first selected all captures, including four retained cohort crops, and stopped before writing. The corrected compact-* selection completed. No runtime/test replay occurred.
+- The initial cloud 100/90 layout estimate was revised to 98/91 before candidate upload after measuring the date at 74.421875px. No truncated-date runtime was accepted.
+
+[COMPACT_MATRIX.md](https://github.com/mastermindx-market-intelligence/Macro/blob/6ab9a6d09052aa66c556b26d371c5d59620622ee/research/design_candidates/crypto_snapshot_safety_20261109/COMPACT_MATRIX.md) gives the concrete layout rules, owner map and future-content acceptance. [Validation, original baseline, corrected harness proof, raw metrics and captures](https://github.com/mastermindx-market-intelligence/Macro/tree/6ab9a6d09052aa66c556b26d371c5d59620622ee/research/design_candidates/crypto_snapshot_safety_20261109/compact) preserve the evidence.
+
+### Paper builder alignment
+
+Crypto file `01M6Y3F0NXNDPAKJMJGCAD759Z`, page `p-3-0`, Build `2ZJ-0`: **four text updates** record compact geometry, the projection/template-asset ownership split, the CSS source path and focused verification. All **72 node IDs, parents, internal order and styles** are retained; intended and untouched texts match. Proposed frames `2XH-0` and `2YI-0` remain byte-identical.
+
+The JSX serializer encodes literal braces in the file-extension shorthand as entities; readback decodes these two entities for exact intended-text comparison. No mutation retry was needed. The Build root is finished and the entire 1440×1200 screenshot inspected. Applied responses, guards, JSX and checks: [PAPER_CRYPTO_COMPACT_MATRIX_20261109.json](PAPER_CRYPTO_COMPACT_MATRIX_20261109.json).
+
+### Immediate continuation
+
+Read-only exact-source review identified a concrete projection inconsistency: `finite()` can turn an invalid relative change into null while the independent state fields retain a directional label. Next, repair only that projection qualification in the existing owner. Keep genuine finite zero, supplied non-directional Building history, asset membership and usable price/trend/risk evidence. Cover both languages and preserve producer/model policy.
+
+The producer's numeric-input validation and 30-observation trend-vote questions are separate findings; no histories have been fetched and no assertion is made that retained real inputs contain the counterexample. Paired-window dates/counts/Bitcoin-basis receipts remain unimplemented.
+
+The source and Paper phase is saved and read back. Continue the parent mission in this healthy session. H5/model, alerts, independent/hosted visual, public-route cutover, release/admission, denied-capture and unknown-effect worker boundaries remain.

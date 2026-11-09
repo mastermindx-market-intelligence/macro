@@ -1,6 +1,18 @@
 # Paper audit and upgrade — 8–9 November 2026
 
-## Current implementation — Crypto comparison basis and asset workflow (§65)
+## Current implementation — Crypto compact comparison matrix (§66)
+
+[Dependent Draft PR #10901](https://github.com/mastermindx-market-intelligence/Macro/pull/10901), head `6ab9a6d09052aa66c556b26d371c5d59620622ee`, fits the current two-asset table at 320/390px with full dates and unchanged typography. At 320px, a 98px measure column plus two 91px assets fills the existing 280px region. Larger cohorts retain native keyboard scrolling and sticky measure context.
+
+**12 affected browser cases passed**, twelve contexts/pages, zero errors or external/WebSocket traffic. Native before/after metrics preserve all cell text, font sizes and families across eight variants. Four new native crops inspected. The prior 161-case complete proof remains scoped to its source; this phase is a focused twelve-case run.
+
+**15 text/source/evidence files and four PNG binaries read back exactly.** CSS and saved-page version references are the only runtime changes; sixteen other inputs stay exact. [Builder rules and evidence](https://github.com/mastermindx-market-intelligence/Macro/tree/6ab9a6d09052aa66c556b26d371c5d59620622ee/research/design_candidates/crypto_snapshot_safety_20261109).
+
+Paper Build `2ZJ-0` has four text refinements across **72 conserved nodes/styles**; both proposed comparison frames remain byte-identical. Finished ownership and full screenshot inspected. Receipt: [PAPER_CRYPTO_COMPACT_MATRIX_20261109.json](PAPER_CRYPTO_COMPACT_MATRIX_20261109.json).
+
+**Next:** fix null/directional-state consistency in the existing projection, retaining zero and supplied non-directional history. Paired-window receipts and all release/model/alert/visual/route holds remain.
+
+## Previous implementation — Crypto comparison basis and asset workflow (§65)
 
 [Dependent Draft PR #10901](https://github.com/mastermindx-market-intelligence/Macro/pull/10901), head `32ad0bc508b50afefa3dc485f970423733a42c54`, now uses accurate ratio/price-change labels and a single bilingual basis disclosure. Source-order discovery, full-snapshot comparison, null/zero handling, distinct missing/empty/filter states and precise focus/return behavior are implemented without changing values, dates, producer or view JSON.
 
