@@ -1683,8 +1683,13 @@ def _manifest_identity_case(monkeypatch, *, later=False, mixed_source=False):
     job = b"jobs: {self-mod-fence: {steps: [{name: live, run: echo guard}]}}"
     import hashlib
     oid = hashlib.sha1(b"blob " + str(len(job)).encode() + b"\0" + job).hexdigest()
-    fresh._proof_input_entry = lambda commit, path: ("blob", "100644", oid if path == ".github/ci/legacy-jobs.yml" else MOG.FENCE_MANIFEST_READER_CONTRACT[path])
+    entries = dict(MOG.FENCE_MANIFEST_READER_CONTRACT)
+    entries.update((path, min(versions)) for path, versions in MOG.FENCE_RESOURCE_SELECTOR_CONTRACTS.items())
+    entries[".github/ci/legacy-jobs.yml"] = oid
+    fresh._proof_input_entry = lambda commit, path: ("blob", "100644", entries[path])
     fresh._blob = lambda blob: job
+    fresh._commit_tree_sha = lambda commit: commit
+    fresh._root_tree = lambda tree: {}
     runs = [_check("ci-pack-5", "success", details=True), _check("ci-gate", "success", details=True), _check("fence-pack", "success")]
     for i, check in enumerate(runs): check.update(head_sha=HEAD, id=i+1)
     loaded = _loaded("verified original")
@@ -1910,10 +1915,7 @@ def test_original_reader_handoff_preserves_freshness_and_fail_closed(monkeypatch
             else original_entry(commit, path))
         # The actual advertised-to-tested interval also includes these CI-owned
         # source/assertion edits; clearing only its first manifest hit is not a fix.
-        fresh._commit_files[HANDOFF_COVERED_DEFINITION][0].extend([
-            "engine/stock_identity/replay/naive.py", "engine/track_scoring.py",  # ci-trigger-closure: data — changed-file names passed to freshness, never source reads
-            "scripts/build_opportunity_timeline.py", "tests/test_first_party_import_names.py",  # ci-trigger-closure: data — changed-file names only
-            "tests/test_stock_identity_input_boundaries.py", "tests/test_track_scoring.py"])  # ci-trigger-closure: data — changed-file names only
+        fresh._commit_files[HANDOFF_COVERED_DEFINITION][0].extend(sorted(MOG.FENCE_QUALIFIED_NONINPUT_PATHS))
         fresh.gates[0]["patterns"].extend(["scripts/**", "tests/**"])
     if control == "overlapping-owner":
         fresh.gates.append({"workflow": "independent.yml", "patterns": ["engine/**", "scripts/**", "tests/**"]})
@@ -2003,3 +2005,128 @@ def test_matching_actual_old_base_does_not_exempt_later_exposure_source(monkeypa
     assert before[0] is True
     assert MOG._reconcile_original_proof_base(HANDOFF_REPO, pull, checks, "read", fresh, before,
                                              semantic_evidence=loaded) == before
+
+
+@pytest.mark.parametrize("path", [
+    "scripts/check_grader_manifest.py",  # ci-trigger-closure: data — simulated changed-file name, not a source read
+    "scripts/check_capability_redline.py",  # ci-trigger-closure: data — simulated changed-file name
+    "scripts/agentos.py",  # ci-trigger-closure: data — simulated changed-file name
+    "scripts/sync_chat_nav.py",  # ci-trigger-closure: data — simulated changed-file name
+    "lib/config.py",  # ci-trigger-closure: data — transitive input name
+    "scripts/metabolism_dispatch.py",  # ci-trigger-closure: data — redline-scanned input name
+    "scripts/grade_thematic.py",  # ci-trigger-closure: data — manifest-hashed input name
+    "templates/_navlinks.html.j2",  # ci-trigger-closure: data — rendered transitive input name
+    "config/grader_manifest.yml",  # ci-trigger-closure: data — guard configuration input name
+])
+def test_original_ci_coverage_never_exempts_independent_fence_input(monkeypatch, path):
+    fresh, runs, loaded = _manifest_identity_case(monkeypatch)
+    fresh.gates[0]["patterns"] += ["scripts/**", "lib/**", "templates/**", "config/**"]
+    fresh._pr_files[9] = [path]
+    fresh._commit_files["d" * 40] = ([path], False)
+    before = fresh.stale_for(_pull(), runs)
+    assert before[0] is True
+    answer = MOG._reconcile_original_proof_base("acme/widgets", _pull(), runs, "read", fresh,
+                                               before, semantic_evidence=loaded)
+    assert answer[0] is True
+
+
+@pytest.mark.parametrize("path", [
+    "scripts/yaml.py",  # ci-trigger-closure: data — import-shadowing changed-path fixture
+    "tests/yaml.py",  # ci-trigger-closure: data — import-shadowing fixture
+    "scripts/agentos_project_plan_contract.py",  # ci-trigger-closure: data — dynamic input fixture
+    "tests/test_new_independent_assertions.py",  # ci-trigger-closure: data — unknown assertion fixture
+    "engine/new_product.py",  # ci-trigger-closure: data — unknown product path fixture
+    "engine/__init__.py",  # ci-trigger-closure: data — package bootstrap fixture
+    "templates/track_scoring.py",  # ci-trigger-closure: data — resource namespace fixture
+])
+def test_original_ci_coverage_never_exempts_unqualified_or_dynamic_path(monkeypatch, path):
+    fresh, runs, loaded = _manifest_identity_case(monkeypatch)
+    fresh.gates[0]["patterns"] += ["scripts/**", "tests/**", "templates/**"]
+    fresh._pr_files[9] = [path]
+    fresh._commit_files["d" * 40] = ([path], False)
+    before = fresh.stale_for(_pull(), runs)
+    assert before[0] is True
+    assert MOG._reconcile_original_proof_base("acme/widgets", _pull(), runs, "read", fresh,
+                                             before, semantic_evidence=loaded)[0] is True
+
+
+@pytest.mark.parametrize("path", [
+    "scripts/check_grader_manifest.py",  # ci-trigger-closure: data — consumer identity fixture
+    "scripts/check_capability_redline.py",  # ci-trigger-closure: data — consumer identity fixture
+    "scripts/agentos.py",  # ci-trigger-closure: data — consumer identity fixture
+    "scripts/sync_chat_nav.py",  # ci-trigger-closure: data — consumer identity fixture
+    "lib/config.py",  # ci-trigger-closure: data — transitive identity fixture
+    "scripts/agentos_project_plan_contract.py",  # ci-trigger-closure: data — dynamically selected consumer identity
+    "scripts/check_template_site_sync.py",  # ci-trigger-closure: data — dynamically selected consumer identity
+    "config/grader_manifest.yml",  # ci-trigger-closure: data — read-boundary configuration fixture
+    "config.yml",  # ci-trigger-closure: data — dynamic resource selector fixture
+])
+@pytest.mark.parametrize("version", ["equal-unknown", "mixed"])
+def test_original_qualified_noninputs_require_known_consumer_and_selector_versions(monkeypatch, path, version):
+    fresh, runs, loaded = _manifest_identity_case(monkeypatch)
+    original_entry = fresh._proof_input_entry
+    fresh._proof_input_entry = lambda commit, rel: (
+        ("blob", "100644", "2" * 40) if rel == path and (version == "equal-unknown" or commit == "d" * 40)
+        else original_entry(commit, rel))
+    assert MOG._reconcile_original_proof_base("acme/widgets", _pull(), runs, "read", fresh,
+                                             (True, "stale"), semantic_evidence=loaded)[0] is None
+
+
+@pytest.mark.parametrize("alias", ["journal-leaf", "journal-ancestor", "render-input",
+                                   "tested-tree", "truncated", "missing-rows"])
+def test_original_coverage_does_not_reuse_a_fence_with_indirect_inputs(monkeypatch, alias):
+    fresh, runs, loaded = _manifest_identity_case(monkeypatch)
+    target = "scripts/grade_us_board.py"  # ci-trigger-closure: data — retained scanner alias target fixture
+    fresh.gates[0]["patterns"].append("scripts/**")
+    fresh._pr_files[9] = [target]
+    fresh._commit_files["d" * 40] = ([target], False)
+    tree = lambda char: ("tree", "040000", char * 40)
+    link = ("blob", "120000", "7" * 40)
+    fresh._commit_tree_sha = lambda commit: commit
+    root_frame = TREE if alias == "tested-tree" else HEAD
+    fresh._root_tree = lambda oid: {
+        root_frame: {"data": tree("1"), "templates": tree("4")},
+        "1" * 40: {"metabolism": tree("2")},
+        "2" * 40: {"journal": link if alias == "journal-ancestor" else tree("3")},
+    }.get(oid, {})
+
+    def request(method, url, *_args, **_kwargs):
+        assert method == "GET"
+        oid = url.split("/")[-1].split("?")[0]
+        assert oid in {"3" * 40, "4" * 40}
+        if alias == "missing-rows":
+            return 200, {"truncated": False}
+        path = None
+        if oid == "3" * 40 and alias in {"journal-leaf", "tested-tree"}:
+            path = "one.json"
+        elif oid == "4" * 40 and alias == "render-input":
+            path = "_navlinks.html.j2"
+        rows = [{"path": path, "type": link[0], "mode": link[1], "sha": link[2]}] if path else []
+        return 200, {"tree": rows, "truncated": alias == "truncated"}
+
+    monkeypatch.setattr(MOG, "_request", request)
+    before = fresh.stale_for(_pull(), runs)
+    assert before[0] is True
+    assert MOG._reconcile_original_proof_base("acme/widgets", _pull(), runs, "read", fresh,
+                                             before, semantic_evidence=loaded)[0] is None
+
+
+def test_original_fence_projection_defers_at_the_existing_sweep_read_limit(monkeypatch):
+    fresh, runs, loaded = _manifest_identity_case(monkeypatch)
+    fresh._root_tree = MOG.ProofFreshness._root_tree.__get__(fresh)
+    fresh._commit_file_page_reads = MOG.COMMIT_FILE_PAGE_READ_CAP - 1
+    reads = []
+
+    def request(method, url, *_args):
+        assert method == "GET"
+        reads.append(url)
+        return 200, {"tree": [{"path": "data", "type": "tree", "mode": "040000", "sha": "1" * 40}],
+                     "truncated": False}
+
+    monkeypatch.setattr(MOG, "_request", request)
+    answer = MOG._reconcile_original_proof_base("acme/widgets", _pull(), runs, "read", fresh,
+                                                (True, "stale"), semantic_evidence=loaded)
+    assert answer[0] is None
+    assert len(reads) == 1
+    assert fresh._commit_file_page_reads == MOG.COMMIT_FILE_PAGE_READ_CAP
+    assert not fresh._fence_projection_in_progress

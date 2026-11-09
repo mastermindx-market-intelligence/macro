@@ -360,7 +360,8 @@ MAX_PULL_CAP = 128
 # live bucket is partly spent. These are deliberately pessimistic: the merge writes
 # normally charge MERGE_TOKEN, not READ_TOKEN, but counting them here makes an
 # admitted window affordable even on the fallback token.
-# Extra commit-file pagination reads shared by every PR and commit in one sweep.
+# Extra commit-file pagination and optional proof projection reads share this
+# existing reserve across every PR and commit in one sweep.
 # Exhaustion keeps the affected inventory incomplete; it never clears a proof.
 COMMIT_FILE_PAGE_READ_CAP = 100
 # 87 measured + 5 for the adaptive hosted-pool census (one queued-run read, one
@@ -2516,24 +2517,156 @@ def _commit_identity(payload: Any) -> tuple[str, str, tuple[str, ...]] | None:
 
 # Frozen input-reader contract for the bounded legacy-manifest optimization.
 # Unknown versions defer; these are not new required-check/release source pins.
+# The extra entries are frozen Git-object identity data. The controller asks
+# the existing Git-tree reader for their immutable entry IDs; the local unit
+# suites supply those entry identities and never import/open these working-tree
+# files. Unknown or mixed versions defer. This does not narrow any guard's
+# own always-on execution or its source/input invalidation below.
 FENCE_MANIFEST_READER_CONTRACT = {
-    'tests/test_self_mod_fence.py': '126d2ccb403b3c28c48e7f2ed2113b01e3af04e1',
-    'scripts/check_self_mod_fence.py': 'b8968ba17dd0ade03820113aa5b7f23bb318aecf',
-    'scripts/run_ci_pack.py': '3cbed58986d571e40af59eb03464e9419e8055a5',
-    '.github/workflows/fences.yml': 'e997b23a40d5767ccb7eea203af64754e769ae5c',
-    'tests/test_fence_checkout_contract.py': '6a38496b36c1d08793c2f725d785e887c5261a9e',
-    'tests/conftest.py': 'b2d40ef0eebddcfa3b4292a0d1cd296563222cdc',
-    'scripts/ci_authority_paths.py': '1403e7dce4cbc83178f3dc515fe2404b84655a94',
-    'scripts/ci_semantic_proof.py': 'df7e5007413584d8593bfeb69dd9b479daa99147',
-    'scripts/ci_scope_dependencies.py': '4c4779479f5bb41741fe7a5db114dfe304350a8a',
-    'scripts/audit_unrun_tests.py': '9ae74b91a276733b2b1a310cb652a847ad5f7dc0',
-    'scripts/workflow_run_source.py': 'b55fe2447f6a50dc6f6d160537961e77145078cb',
-    'scripts/__init__.py': 'dafbbd0c3a49c56a2635c0d3d8918302d10689a6',
-    'tests/__init__.py': 'e69de29bb2d1d6434b8b29ae775ad8c2e48c5391',
-    'tests/test_ci_canary_workflows.py': '672aed321ca9dc3617372468b280073db14ec2c6',
-    'tests/test_ship_loop_hold_wrapper.py': '1dc6c1a5d980c0b5590aa63b5ddd08dcd1dcd35d',
-    'scripts/ship_loop_hold_wrapper.py': '650fffa773105b0a7cd212326e93f74c6507bbb5',
     '.claude/hooks/ship_loop_guard.py': '9ec39a302354a96d0bec910b0aa71a24b590ebed',
+    '.github/workflows/ci.yml': 'a9c409efa499d621c6a91196fcefc313ceee16b7',
+    '.github/workflows/fences.yml': 'e997b23a40d5767ccb7eea203af64754e769ae5c',
+    'config/grader_manifest.yml': '9de7fc29e444aa51810dcbbf32cf4b5398683487',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/__init__.py': 'e69de29bb2d1d6434b8b29ae775ad8c2e48c5391',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/ai_desk.py': 'f171e4e61d5da2cb002e7d5be692ffa31e6f852f',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/ai_desk_scorer.py': 'd949a7d9deda72bc497f52bae7abd7eca6b59adc',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/altdata_ledger.py': 'a84ea31856ca93503251d086c03d85713b11e6e9',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/altdata_models.py': 'e21181a42a2aeb88235bf1636ae35066b679779b',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/altdata_picks.py': 'bb39683083d4b6b929f605d0767fd34a9e0e5b26',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/altdata_signals.py': 'dae7b2db43a0552e8871808f935fc7fd4e280081',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/basket_breadth_divergence.py': '0ad5ecbfc6a0b983d43bf3d591904878e7bb004f',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/canon.py': '32116817bbb4c844c2c811905eb8d778482342c6',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/catalyst_tone.py': '0540c15eefbff8944730c3ea6e1df1b9c5fe9b84',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/china_altdata.py': '1665966a51112807f09b6c7336f49940eb752f32',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/china_basket_spine.py': '800b92b32ec7ba97846cc7c55b2ce002265cb68b',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/china_conviction.py': '48979da38779abd67b6ed9b3d836026861ffade3',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/china_crowding.py': 'a9cb119591533a7d7ed870ce28aa28dc5fe0c8ec',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/china_discovery.py': '68d76d702c127856be1074c46cfb6ad688b91896',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/china_event_calendar.py': '4c9a4001fba9fe3f298c950967ec95067676fd59',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/china_extras.py': '11219d650fc06f685b5effbd14f809b97cdcad74',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/china_intel_bus.py': '366f0284b836a4414fb7db5f45001d164652b6f7',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/china_news.py': '431584da650851b68302852454d2137c62312e96',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/china_news_intel.py': '92596a431ee13f507f6f888851ac70b3067e8821',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/china_radar.py': '89021977826ffb7a16aaab48c64bdeee0ee9c149',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/china_radar_ledger.py': '16a7adde202ab6cfdb0e8190ab8d4b3950be3f90',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/china_signal_lab.py': '9c0c79a02841f432ae556f97790df84071261e21',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/china_validation.py': 'dc1d68689858253766576ab6b5513d44ba88f58d',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/cn_newswires.py': '1791a5f39bf0e4d3824aa1ade239ecbb32b3e3c2',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/codex_lane/runner.py': '3a298b4f0dde85d42f3e65a7a7412eeda4059b2c',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/codex_provider.py': '09f17919cf7ceaa55425394f1ac7dc6b397e0b05',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/context_index/fusion.py': '069e29f6d3f11d162f9bb7ad9a0f4fd681841735',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/context_index/gitinfo.py': 'd0791be64557cdcd366d413ef74ba36f9481fee7',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/context_index/lexical.py': '5744fcc4cb77f2e44224efc57a681b18e55cc639',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/context_index/packet.py': '60e9bd003a3638bb0bfed923667f117560fa9d16',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/context_index/structured.py': '674178ee9933dc41bc3b165f9f2f8acb50de4e90',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/desk_ledger.py': '379028a7bf1fbf4ec96c86e39eeb0339b1d69381',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/desk_scorer.py': 'fdffc74187f5f322981a7f39ccb9d5519a1450fc',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/entity_resolver.py': '6c21d72d1a15ae01db72562d403940681e3808db',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/event_calendar.py': '8c611c96a8b3157f5be659215df8b1b38e7894a1',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/forward_calendar_context.py': '788e07b751748897a37dfe3ade594874a1ec8d04',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/gdelt_client.py': '27f194c1002021331572635b3b9faab1d3b58775',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/indicators_m2.py': '5645e2612bc31fc2e900844109a445b011b4ab36',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/ledger_lane.py': '1e519c921d2f2028a6fc2bee5372cdb84133c209',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/llm_auth.py': '7294dec2759716416059155ba727392064ab99aa',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/macro_surprise.py': 'fa2f5f086f437b5c46ce0c52a6c56cea7f14a7cb',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/manager_lag.py': '245d772414a77b0a2a101f36ca69fd86f816c73c',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/manager_quality.py': '1a754add0d605db21324b7f57690b5920c61dd2b',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/manager_trades.py': 'f072775da4a5f2966b10c572f077ca69d7be817d',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/marketing/__init__.py': '43080bba5ba2a0649a4ae0a7a18a1493cb5f39b2',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/marketing/accounts.py': '8af0b7119cd4cb9e0bcb8591ae6ac216e1aacd8d',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/marketing/authority.py': 'b106235bcbf842dc793680585e9b1f2144910682',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/marketing/campaign_compiler.py': 'dac1dc7c8da5db071700bdce104befc27a97ec81',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/marketing/chart_render.py': '2de10f26bfebde3a5baf28756823a8e4a7e19c92',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/marketing/charter.py': '150e34351754dcbc2aad5a796752c2bd88735109',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/marketing/claims.py': 'ecc812e3cd5d2b0a9675ceed600542e300dfa107',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/marketing/cmo.py': '9c401b07af2080ddb4dcb706de67369d27cf6fd8',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/marketing/departments.py': '1f3d42cb9afae285cada2606dc4138962d3cd3bc',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/marketing/economics.py': 'd2b9da7d075f1dc1f1e67cec2ed931e826a055ff',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/marketing/events.py': '2773e8872a3f14599d0c6b5c5fd0680b6bbba6fe',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/marketing/ledgers.py': 'fa7759742dfb9cab8605d8104e93fc9f37951d70',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/marketing/logo_cache.py': '43685a6ccd37403e93f91e88f4eb845253e5d82e',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/marketing/opportunity_bus.py': '624fc8d229e61de1f92d2142a34fe56c8382eb30',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/marketing/publication.py': '5b466cda88cdb05f37461a2184c07347734aceee',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/marketing/share_cards.py': '7571bfa85e551f3778f1c68d42302b8928cb2e5a',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/marketing/source_authority.py': 'caa2395e2373c3ec9f0e49760861401251f9a996',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/marketing/state.py': '4acc5934c0c23316e6893cb50fde0b0199948bab',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/master_brain.py': '67bf21c6bb387505bd4c8b237804ba664181ff38',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/metabolism/__init__.py': 'e69de29bb2d1d6434b8b29ae775ad8c2e48c5391',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/metabolism/budget_gate.py': '3b4ba5a2ee35e5effbc1bc03051ac5ba04f5b21e',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/name_resolver.py': '61913365c8e95021c2079b27cbdc33913dff1fe3',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/narrative_crossmarket.py': '5d71faf075d1f3f3735e72498de6214097825761',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/neuralweb/__init__.py': 'ffdf5aa13745cfc47e2e3e535fcacdc1e8eda10c',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/neuralweb/brief_context.py': 'fb91c6fc3bf098291e954c0bbd142ff3fe856b43',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/neuralweb/capability_broker.py': 'b744dd39c5e025a1085d6865154aa0390197daff',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/neuralweb/key_pool.py': '87a19b9794e19a32ac436ea8fbab7ecb2df528ff',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/neuralweb/read.py': '44f4182d4248f3eb854b0607f657a7e6f5de99bd',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/news_common.py': '71e153136d66dad02239325a6927510a965d7026',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/news_translate.py': 'fd334ddea268070ad954a21d9f0debb79931f99e',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/ollama_provider.py': '5703930982326c17ebbe6a591f68f0b8b2c11f06',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/opex.py': '2184566e4a478a4eebc0a19e8fa98c4e585dded2',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/passport.py': '978ce05b9135089469220a81bad24272690e1892',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/pooling.py': 'a75dfac3814b50296f18272ed845544c5e56d63d',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/provider_health.py': '2447897c9a9ae146431a6da976261b86f45a8671',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/qbus.py': '11f0948a7f7b54b7c67e502f479daae594a30f97',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/qkernel.py': 'e037e2b1fe6c473a8fc487ee5f54770eb6282d19',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/rebalance_calendar.py': '4f83cf8366f6fa35f780f597841515abe09d3a5e',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/regime_label.py': 'fb5a5714694b532d3404938eb4d2e634c9904944',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/smart_money.py': 'e811b8896bffee82d337f5c392ceb3916b66c7d4',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/spine.py': '9d1c49373c63618cc4d9ed0f636e73896c9b48d5',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/ticker_shape.py': 'bd9e4a25b439fc0d5ea991026148c782b499cec4',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/trial_ledger.py': 'b9b444015549a691b9ab917590cc920ef6c8bb89',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/tushare_freshness.py': '695b10dedff29ce3ba28b22b4c7958e65624b564',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/validation.py': 'c9a09740cd630f920e52fd21b88ff36ff31366b6',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'lib/__init__.py': 'e69de29bb2d1d6434b8b29ae775ad8c2e48c5391',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'lib/ai_costs.py': '87e15773e8e235ddf8fd11d39d142301c0c5424e',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'lib/closes_panel.py': 'f36b47e9d10590c3d750cbce7f5646f504794b64',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'lib/cn_calendar.py': '72a9cf8b4ee4f32a542b77b530d40af8caa99a1a',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'lib/config.py': 'b6fc888269876242597da354aaa726c20ed95802',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'lib/dataos/identity.py': 'fb99fd182ac506a158c63ab434f09374cdbbd4f8',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'lib/exchange_holidays.py': '8b97e9109999754e57f94e10bc1737801878c6a2',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'lib/filing_value_units.py': '40f562467fb3f7cc21fba779a05763a10b9a7cc7',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'lib/hk_calendar.py': '5ffb5af434657c3c48cec4dc8f99f1d55cb588f9',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'lib/market_session.py': 'fb6e8237796faf704ef5c04561104580a461fc14',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'lib/nyse_calendar.py': '0ece6439ffe4b081ee7a268fe99b69e1de1216a3',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'lib/pages.py': 'db175c463a31828263b57a3287afba661439a765',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'lib/pr_linkage_validator.py': '46abbe3a57f279e96d37c797af3fe9be6641d3bd',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'lib/shared_shell.py': 'cffbeba3f8fdcf7a9413d9428aec0154d97d9614',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'lib/site_assets.py': '03d7ce6137a30b990435cb1fee2090e61c2e95e3',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'lib/store.py': '3a0985944f534be7d771c926d73eb49f53aba140',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'lib/ticker_aliases.py': '7d1aacd5c32209f9e47461f50287db25e2404a65',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'lib/tsx_calendar.py': 'e4db47f618a7e6a0048d25369d2a39460d4f16a6',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'lib/us_cash_calendar.py': '08fbfa49293d7fce66581fe998359f6001da8867',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'scripts/__init__.py': 'dafbbd0c3a49c56a2635c0d3d8918302d10689a6',
+    'scripts/agentos.py': '94fe2e7290797119cbb7f9890580e950012616d7',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'scripts/agentos_project_plan_contract.py': '84ff653fe948a138efb1ad0e0e3b7e44c9058e89',  # ci-trigger-closure: data — dynamic consumer Git identity, not a local source read
+    'scripts/agentos_ship_capture.py': 'da9b09796fd790212975bf57c53f6173e3e23b22',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'scripts/audit_stranded_work.py': 'cfe7c2bd98bf363e7fa91bb5ca272c5e6e777599',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'scripts/audit_unrun_tests.py': '9ae74b91a276733b2b1a310cb652a847ad5f7dc0',
+    'scripts/check_capability_redline.py': 'dba8879122e4772b567f8cd0f4736bc110b8029c',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'scripts/check_grader_manifest.py': 'a9086ea25bad50258dddddf4d70731cfc4301ef6',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'scripts/check_self_mod_fence.py': 'b8968ba17dd0ade03820113aa5b7f23bb318aecf',
+    'scripts/check_template_site_sync.py': 'bec2af6bd5abb7a21ebb57b8beb416445bcb0e81',  # ci-trigger-closure: data — dynamic consumer Git identity, not a local source read
+    'scripts/ci_apt_cold_acquisition.py': '7d402b92c83b837fd38b965b9974b44696ff3f60',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'scripts/ci_apt_native_plan.py': '2a98c8ec5e4adee68d77d9aeddb5837e1b7440f6',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'scripts/ci_apt_native_stage.py': '2446beea8a43546c78251fdf32d8e648982229f4',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'scripts/ci_apt_transaction_contract.py': 'beb8ad4e1ab758c4da5634b2c2a50fab50aee840',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'scripts/ci_authority_paths.py': '1403e7dce4cbc83178f3dc515fe2404b84655a94',
+    'scripts/ci_browser_dependency_capture.py': '78f544a102c9c0cf2b5306ccc3592c4b23fe8302',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'scripts/ci_browser_dependency_inputs.py': 'fa076c97c9fe389adf7ae1f032cf56490c4e06a9',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'scripts/ci_browser_native_setup.py': 'bfa98a4396d600cd393d6e578a722f2a83cf3307',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'scripts/ci_scope_dependencies.py': '4c4779479f5bb41741fe7a5db114dfe304350a8a',
+    'scripts/ci_semantic_proof.py': 'df7e5007413584d8593bfeb69dd9b479daa99147',
+    'scripts/run_ci_pack.py': '3cbed58986d571e40af59eb03464e9419e8055a5',
+    'scripts/ship_loop_hold_wrapper.py': '650fffa773105b0a7cd212326e93f74c6507bbb5',
+    'scripts/sync_chat_nav.py': 'b355fb8754a6d3a29c0188e09005d1056503752d',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'scripts/workflow_run_source.py': 'b55fe2447f6a50dc6f6d160537961e77145078cb',
+    'scripts/worktree_sparse.py': '75297acb10d0cef4d01730a59fdcad19c7cfd3e6',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'tests/__init__.py': 'e69de29bb2d1d6434b8b29ae775ad8c2e48c5391',
+    'tests/conftest.py': 'b2d40ef0eebddcfa3b4292a0d1cd296563222cdc',
+    'tests/test_ci_canary_workflows.py': '672aed321ca9dc3617372468b280073db14ec2c6',
+    'tests/test_fence_checkout_contract.py': '6a38496b36c1d08793c2f725d785e887c5261a9e',
+    'tests/test_self_mod_fence.py': '126d2ccb403b3c28c48e7f2ed2113b01e3af04e1',
+    'tests/test_ship_loop_hold_wrapper.py': '1dc6c1a5d980c0b5590aa63b5ddd08dcd1dcd35d',
 }
 
 
@@ -2546,6 +2679,56 @@ FENCE_MANIFEST_RENDERER_CONTRACTS = frozenset({
     "3cbed58986d571e40af59eb03464e9419e8055a5",
     "471640444ecdda2496a14ffa38f66e4d0b9c5202",
 })
+
+
+# Finite non-input boundary for the immutable independent consumer versions above.
+# These product modules/assertions are neither selected nor imported, hashed,
+# scanned, loaded by pathname, or used for import resolution by those invocations.
+# This is not a general Python exemption: unknown paths, including new modules,
+# dynamic inputs, package initializers, configuration and resources stay stale.
+# A new consumer version must requalify the boundary before reuse is possible.
+FENCE_QUALIFIED_NONINPUT_PATHS = frozenset({
+    'engine/stock_identity/replay/naive.py',  # ci-trigger-closure: data — remote changed-path comparison, not a local source read
+    'engine/stock_identity/replay/sea.py',  # ci-trigger-closure: data — remote changed-path comparison, not a local source read
+    'engine/stock_identity/replay/starter.py',  # ci-trigger-closure: data — remote changed-path comparison, not a local source read
+    'engine/track_scoring.py',  # ci-trigger-closure: data — remote changed-path comparison, not a local source read
+    'scripts/build_opportunity_timeline.py',  # ci-trigger-closure: data — remote changed-path comparison, not a local source read
+    'scripts/grade_us_board.py',  # ci-trigger-closure: data — remote changed-path comparison, not a local source read
+    'tests/test_first_party_import_names.py',  # ci-trigger-closure: data — remote changed-path comparison, not a local source read
+    'tests/test_opportunity_timeline.py',  # ci-trigger-closure: data — remote changed-path comparison, not a local source read
+    'tests/test_stock_identity_input_boundaries.py',  # ci-trigger-closure: data — remote changed-path comparison, not a local source read
+    'tests/test_track_ledger_emitters.py',  # ci-trigger-closure: data — remote changed-path comparison, not a local source read
+    'tests/test_track_scoring.py',  # ci-trigger-closure: data — remote changed-path comparison, not a local source read
+})
+
+# The only config variation in the qualified reader frames changes four intl
+# publication flags. Both retain the same storage/asset read selectors; neither
+# introduces Python loading. Unknown selectors fail closed, even if CI passed.
+FENCE_RESOURCE_SELECTOR_CONTRACTS = {
+    "config.yml": frozenset({
+        "5be75249c98033d7ee0fbe55928713b1f50af627",
+        "fca6b562fbf8253a34308d0aeb9cebd79d19239b",
+    }),
+}
+
+# Materialized inputs of the pinned independent fence workflow. Directories
+# include their descendants because imports, Jinja includes and journal globs
+# can resolve names not present in the code contract. Exact off-sparse Git
+# reads (such as the HOLD delegate) use regular entries checked separately.
+FENCE_ALIAS_SELECTOR_PATHS = (
+    ".github/", "agentos/", "config/", "lib/", "scripts/", "templates/", "tests/",
+    "engine/metabolism/", "engine/neuralweb/",
+    "engine/foresight_leadlag.py",  # ci-trigger-closure: data — remote Git-entry selector
+    "engine/theme_placebo.py",  # ci-trigger-closure: data — remote Git-entry selector
+    "engine/qledger_falsifier.py",  # ci-trigger-closure: data — remote Git-entry selector
+    "site/chat.html",  # ci-trigger-closure: data — remote Git-entry selector
+    "data/neuralweb/capability_audit.jsonl",  # ci-trigger-closure: data — remote Git-entry selector
+    "data/metabolism/key_ledger.jsonl",  # ci-trigger-closure: data — remote Git-entry selector
+    "data/metabolism/journal/",
+    "data/ai_costs/usage.jsonl",  # ci-trigger-closure: data — remote Git-entry selector
+    "config.yml",  # ci-trigger-closure: data — remote Git-entry selector
+    "CLAUDE.md", "AGENTS.md", ".cursor/rules/ship-loop-terminal-states.mdc",  # ci-trigger-closure: data — remote Git-entry selectors
+)
 
 
 def _semantic_manifest_input_is_current(
@@ -2607,8 +2790,10 @@ def _semantic_manifest_input_is_current(
     if len(bases) != 1:
         return False
     old = next(iter(bases))
+    tested = evidence.get("tested_tree_sha")
     return (old in positions and positions[evidence["base_sha"]] <= positions[old]
-            and freshness._fence_manifest_inputs_unchanged(old, evidence["base_sha"], head))
+            and _is_full_sha(tested)
+            and freshness._qualified_fence_projection(old, evidence["base_sha"], head, tested))
 
 
 def _reconcile_original_proof_base(
@@ -2651,7 +2836,7 @@ def _reconcile_original_proof_base(
             if (gate is not None and gate.clear
                     and _semantic_manifest_input_is_current(repo, pull, runs, freshness, evidence)):
                 answer = freshness.stale_for(pull, runs, semantic_ci_base=evidence["base_sha"])
-                return answer[0], "authenticated CI covers its manifest definition input and CI-only owned source; " + answer[1]
+                return answer[0], "authenticated CI covers its manifest definition input and qualified CI-only source; " + answer[1]
             return None, (
                 "original CI execution base contradicts advertised check associations; "
                 "independent anchor execution bindings remain required"
@@ -2720,6 +2905,7 @@ class ProofFreshness:
         self._proof_bound_sha: str | None = None
         self.commit_file_reads = 0
         self._commit_file_page_reads = 0
+        self._fence_projection_in_progress = False
 
     # -- construction ---------------------------------------------------------
 
@@ -2919,6 +3105,7 @@ class ProofFreshness:
         cached = self._root_trees.get(tree_sha)
         if cached is not None:
             return cached
+        self._charge_fence_projection_read()
         status, payload = _request(
             "GET",
             f"{GITHUB_API}/repos/{self.repo}/git/trees/{tree_sha}",
@@ -2928,17 +3115,18 @@ class ProofFreshness:
             raise _read_failed(status, payload, f"root tree {tree_sha[:12]} unreadable")
         if payload.get("truncated") is True:
             raise RuntimeError(f"root tree {tree_sha[:12]} was truncated")
+        rows = payload.get("tree")
+        if not isinstance(rows, list):
+            raise RuntimeError(f"root tree {tree_sha[:12]} is incomplete")
         entries: dict[str, tuple[str, str, str]] = {}
-        for raw in payload.get("tree") or []:
-            entry = raw or {}
-            path = str(entry.get("path") or "")
-            if not path:
-                continue
-            entries[path] = (
-                str(entry.get("type") or ""),
-                str(entry.get("mode") or ""),
-                str(entry.get("sha") or ""),
-            )
+        for entry in rows:
+            if not isinstance(entry, dict):
+                raise RuntimeError(f"root tree {tree_sha[:12]} contains a malformed entry")
+            path, kind, mode, oid = (entry.get(key) for key in ("path", "type", "mode", "sha"))
+            if (not isinstance(path, str) or not path or "/" in path or path in entries
+                    or not isinstance(kind, str) or not isinstance(mode, str) or not _is_full_sha(oid)):
+                raise RuntimeError(f"root tree {tree_sha[:12]} contains a malformed entry")
+            entries[path] = (kind, mode, oid)
         if not entries:
             raise RuntimeError(f"root tree {tree_sha[:12]} had no usable entries")
         self._root_trees[tree_sha] = entries
@@ -2948,6 +3136,7 @@ class ProofFreshness:
         cached = self._commit_tree_shas.get(commit_sha)
         if cached:
             return cached
+        self._charge_fence_projection_read()
         status, payload = _request(
             "GET",
             f"{GITHUB_API}/repos/{self.repo}/git/commits/{commit_sha}",
@@ -2968,6 +3157,7 @@ class ProofFreshness:
         cached = self._recursive_trees.get(tree_sha)
         if cached is not None:
             return cached
+        self._charge_fence_projection_read()
         status, payload = _request(
             "GET",
             f"{GITHUB_API}/repos/{self.repo}/git/trees/{tree_sha}?recursive=1",
@@ -2977,19 +3167,18 @@ class ProofFreshness:
             raise _read_failed(
                 status, payload, f"recursive tree {tree_sha[:12]} unreadable"
             )
-        if payload.get("truncated") is True:
-            raise RuntimeError(f"recursive tree {tree_sha[:12]} was truncated")
+        rows = payload.get("tree")
+        if payload.get("truncated") is not False or not isinstance(rows, list):
+            raise RuntimeError(f"recursive tree {tree_sha[:12]} is incomplete")
         entries: dict[str, tuple[str, str, str]] = {}
-        for raw in payload.get("tree") or []:
-            entry = raw or {}
-            path = str(entry.get("path") or "")
-            if not path:
-                continue
-            entries[path] = (
-                str(entry.get("type") or ""),
-                str(entry.get("mode") or ""),
-                str(entry.get("sha") or ""),
-            )
+        for entry in rows:
+            if not isinstance(entry, dict):
+                raise RuntimeError(f"recursive tree {tree_sha[:12]} contains a malformed entry")
+            path, kind, mode, oid = (entry.get(key) for key in ("path", "type", "mode", "sha"))
+            if (not isinstance(path, str) or not path or path in entries
+                    or not isinstance(kind, str) or not isinstance(mode, str) or not _is_full_sha(oid)):
+                raise RuntimeError(f"recursive tree {tree_sha[:12]} contains a malformed entry")
+            entries[path] = (kind, mode, oid)
         self._recursive_trees[tree_sha] = entries
         return entries
 
@@ -2997,6 +3186,7 @@ class ProofFreshness:
         cached = self._blobs.get(blob_sha)
         if cached is not None:
             return cached
+        self._charge_fence_projection_read()
         status, payload = _request(
             "GET",
             f"{GITHUB_API}/repos/{self.repo}/git/blobs/{blob_sha}",
@@ -3458,6 +3648,51 @@ class ProofFreshness:
             tree = entry[2]
         raise ValueError("original proof input path unavailable")
 
+    def _fence_alias_inputs_are_regular(self, commit: str) -> bool:
+        """Refuse link traversal in the pinned fence checkout projection."""
+        root = self._commit_tree_sha(commit)
+        directory = ("tree", "040000")
+        regular = {("blob", "100644"), ("blob", "100755")}
+        for selector in FENCE_ALIAS_SELECTOR_PATHS:
+            parts = selector.rstrip("/").split("/")
+            tree = root
+            for index, part in enumerate(parts):
+                entry = self._root_tree(tree).get(part)
+                if entry is None:
+                    break  # An absent sparse path cannot supply an alias.
+                kind, mode, oid = entry
+                if not _is_full_sha(oid):
+                    return False
+                if index < len(parts) - 1 or selector.endswith("/"):
+                    if (kind, mode) != directory:
+                        return False
+                    tree = oid
+                elif (kind, mode) not in regular:
+                    return False
+            else:
+                if selector.endswith("/") and any(
+                    (kind, mode) not in regular and (kind, mode) != directory
+                    for kind, mode, _ in self._recursive_tree(tree).values()
+                ):
+                    return False
+        return True
+
+    def _charge_fence_projection_read(self) -> None:
+        if not self._fence_projection_in_progress:
+            return
+        if self._commit_file_page_reads >= COMMIT_FILE_PAGE_READ_CAP:
+            raise RuntimeError("optional proof projection exhausted the shared sweep read reserve")
+        self._commit_file_page_reads += 1
+
+    def _qualified_fence_projection(self, advertised: str, sealed: str, head: str, tested: str) -> bool:
+        self._fence_projection_in_progress = True
+        try:
+            return (self._fence_manifest_inputs_unchanged(advertised, sealed, head)
+                    and all(self._fence_alias_inputs_are_regular(frame)
+                            for frame in (advertised, sealed, head, tested)))
+        finally:
+            self._fence_projection_in_progress = False
+
     def _fence_manifest_inputs_unchanged(self, advertised: str, sealed: str, head: str) -> bool:
         """Preserve the existing fence reader and its whole self-mod-fence job.
 
@@ -3472,6 +3707,9 @@ class ProofFreshness:
             qualified = (FENCE_MANIFEST_RENDERER_CONTRACTS
                          if path == "scripts/run_ci_pack.py" else {expected_blob})
             if len(set(entries)) != 1 or entries[0][2] not in qualified:
+                return False
+        for path, qualified in FENCE_RESOURCE_SELECTOR_CONTRACTS.items():
+            if any(self._proof_input_entry(commit, path)[2] not in qualified for commit in frames):
                 return False
         import yaml
         jobs = []
@@ -3577,8 +3815,9 @@ class ProofFreshness:
                         and positions[commit["sha"]] >= positions[semantic_ci_base]):
                     # The existing authenticated reader bound this CI execution
                     # to the sealed base, not the lazy PR-association snapshot.
-                    # Reuse that base ONLY for CI's exclusive ownership. The
-                    # caller also qualified the independent fence's exact input
+                    # Reuse that base ONLY for the finite qualified non-input
+                    # boundary under CI's exclusive ownership. The caller also
+                    # qualified the independent fence's exact input
                     # projection; no other anchor receives a new execution base.
                     remaining = []
                     for name in files:
@@ -3586,7 +3825,8 @@ class ProofFreshness:
                             continue
                         owners = {gate.get("workflow") for gate in self.gates
                                   if ownership_matches(name, gate.get("patterns"))}
-                        if (name.startswith(CI_DEFINITION_TREES)
+                        if (name not in FENCE_QUALIFIED_NONINPUT_PATHS
+                                or name.startswith(CI_DEFINITION_TREES)
                                 or name in self.ci_definition_files
                                 or owners != {"ci.yml"}):
                             remaining.append(name)
