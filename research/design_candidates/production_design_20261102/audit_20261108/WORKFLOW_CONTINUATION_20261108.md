@@ -2067,3 +2067,60 @@ Build **7M9-0** now has **17 modules / 54 div nodes**. New module **9O4-0**, tit
 [PAPER_COVERAGE_CLARITY_20261109.json](PAPER_COVERAGE_CLARITY_20261109.json) retains final editable JSX, observed operation identities, exact source readbacks and preservation checks. PR10676's current description now leads with **e0d75500**, the 28 render/24 browser checks and seventeen-module Build. Its historical evidence stays dated and its release/model holds stay verbatim.
 
 The parent mission continues in the same foreground session. The next source-proven defect is failed topic-payload recovery: the old error branch wires a button that unready-state CSS hides, and it leaves the starting answer without clearly identifying that fallback. The next phase will use a visible native index action and the existing journey owner, including failed-page hash/history/lens/locale refresh. No held capture, protected-style, model01 or release lane is reopened.
+
+
+## 42 · GMI failed research remains understandable and recoverable — 9 November 2026
+
+### Applied source and reader workflow
+
+The existing [Draft PR10676](https://github.com/mastermindx-market-intelligence/Macro/pull/10676) now points to **60cd0e21fd5f8d08f19248198780efc5cf12937d**, tree **9a96e3c7f7a7ff8658f4913699e0173026ca7460**, through the original GitHub authoring carrier and an exact-parent compare-and-swap from **e0d7550087c564529270c12049ae62782d5b0101**. All **eight files** read back exactly. Draft/unmerged status, current PR description and the original release/model hold section were read back unchanged.
+
+The old failed-payload catch attached recovery to a Browse control hidden until readiness. The notice also did not explain that the visible answer was the starting topic, and the early return missed the normal history/lens refresh. Baseline browser checks reproduced the ambiguous/missing inline recovery and stale global index context.
+
+The revised notice says **Interactive research could not load. The starting topic is shown below. / 交互研究未能加载。下方显示起始主题。** A visible native **Open the full index / 打开完整索引** action appears in that same notice region. Readers retain the dated source evidence, company/source actions, product facts, Evidence coverage, Source receipt, Theme details and census disclosures. Only the empty Related topics section is hidden in the failed-data state. The answer is never claimed to match a requested nondefault topic that failed to load.
+
+The existing `restoreCompanies → refreshJourney` order captures the native anchor before payload parsing. Failure-only hashchange/popstate and language/lens observation reuse that same journey projection. The lens control's existing replaceState is observed through its existing attribute; no extra history writer, retry, route owner or public-data process is introduced. Qualified native navigation carries the current request, while absent/rejected context restores the original href. Locale changes keep the focused anchor and answer identity.
+
+Normal filter recovery, valid-payload missing topics and no-JavaScript remain distinct. The new action is hidden outside the payload-failure branch. Missing-bundle and earlier-exception recovery are not claimed by this catch; static native navigation remains available.
+
+### Exact proof and diagnostic interpretation
+
+[DESIGN_RECORD §11.33](https://github.com/mastermindx-market-intelligence/Macro/blob/60cd0e21fd5f8d08f19248198780efc5cf12937d/research/theme_graph/gmi_design_20261021/DESIGN_RECORD.md) and [PAYLOAD_RECOVERY_VALIDATION_20261109.json](https://github.com/mastermindx-market-intelligence/Macro/blob/60cd0e21fd5f8d08f19248198780efc5cf12937d/research/theme_graph/gmi_design_20261021/PAYLOAD_RECOVERY_VALIDATION_20261109.json) retain commands, source/model bindings, final evidence and earlier diagnostics.
+
+| Proof | Result |
+|---|---|
+| Final renderer PID16628 | Exit0, 1.75 s; only explorer HTML and paired JS changed. Six other HTML pages and CSS exact |
+| Final browser PID22269 | **20 cases / 22 fresh anonymous contexts**, Chrome157.0.8103.39, zero page errors, 29.70 s |
+| Layout/fault matrix | EN/ZH at 1440/390/320, two dark scenarios, eight schema defects; eight final captures inspected |
+| Native journey | Actual hash/Back/Forward, lens replaceState, locale/focus identity, bounded/rejected context, second-page native href, Enter navigation and real index return |
+| Available disclosures | Source receipt and Theme details operate with Enter/Space while focus, URL and history remain stable |
+| Boundary states | Normal Clear filters/answer focus, distinct missing-topic notice and actual JavaScript-disabled native index |
+| Source preservation | All **86 existing verifier function definitions** by qualified lexical path/occurrence remain AST-exact; four new test helpers plus two nested helpers added |
+
+Paired JS is blob **34b2ad1110ace6a667e87e7164ff74bde701eb85**, SHA256 **74db8222c79911a06add34d076e69d7e838aa67a21740522d8c31b60e4f58896**. Explorer HTML is blob **9c142c6854de795372cc2b256d74eab6071cf3ea**, SHA256 **8cdbadf83bcfb49153f4c0f258f72541349d0eb34becbf34772f00d2ccfe676d**. Removing its one added anchor reconstructs the exact canonical parent explorer and unchanged public JSON.
+
+The first candidate passed 16 cases before a rejected-context test predicate timed out. A bounded diagnostic showed both hrefs already restored to exactly `gmi-index.html`, with the same expected history writes. A direct href assertion replaces that predicate; no unproven serialization cause or product regression is claimed. The pre-related 20-case green run is preserved separately. Visual review then found the empty Related block; the final source hides only that block and strengthens assertions for available coverage/disclosures. Final acceptance is the later PID22269 run.
+
+The 48-input rendering baseline and accepted model **e644fa48a2bb6e6affe8d1fda74556d9db5f82acadffdad839e1efe8f095359f** remain bound. No model regeneration, private model result consumption, producer change, public admission or publication decision occurs.
+
+### Editable Paper and future-builder guidance
+
+[Research · Load recovery](https://app.paper.design/file/01M5H6EARN9YHQV17JC6ZG9BRY/p-C-0) follows the Coverage page. The new editable flow group **9Z7-0** holds:
+
+| Specimen | Root | Purpose |
+|---|---|---|
+| F01 | 9O9-0 | EN390 Noir failure view; truthful 844 px phone viewport |
+| F02 | 9QM-0 | ZH390 Day failure view; truthful 844 px phone viewport |
+| F03 | 9Z9-0 | Complete retained starting-topic evidence and disclosures |
+
+Final captures show the specimens in flow without overlap. Full below-fold content appears alongside the phones. Original source-receipt seeds **7NQ-0** and **7PZ-0** remain byte-exact; token hash is **ac191fd9**. Page order is read back exactly.
+
+Build **7M9-0** reaches **18 modules / 57 div nodes**. New module **A1B-0**, title **A1C-0**, body **A1D-0**, specifies the native anchor, explicit starting-answer meaning, existing journey owner, history/lens event handling, empty-section condition and boundaries for no-JS or earlier exceptions. All **54 old IDs, styles and parent relationships** and unaffected text remain exact; only four intended source/proof references change. New guidance and the proof module were captured and inspected. Exact working indicators were released.
+
+[PAPER_PAYLOAD_RECOVERY_20261109.json](PAPER_PAYLOAD_RECOVERY_20261109.json) preserves editable JSX, all 48 observed operation identities, source readbacks and preservation checks. The PR description now leads with **60cd0e21**, the final 20-case matrix and eighteen-module Build while keeping earlier coverage/return/company/index evidence dated.
+
+### Continuation and limits
+
+Local verification uses actual generated main content and production GMI JS/CSS, blocks external requests and explicitly fixtures Brain/stale state. It is not full shared-shell/font, spoken assistive-technology, authenticated account/admission, current hosted CI, deployment or release acceptance. The original model01 unknown-effect fence and every release hold remain. Catalyst, Tools, protected-style and other held lanes remain untouched.
+
+The next bounded source issue is the primary theme search's Escape handler: it still clears a composing or already-handled event while tree/index searches have guards. Continue with the exact event contract, preserving input/URL/results/focus for guarded events and the mobile first-Escape-clear/second-Escape-close behavior. This is new primary-search work; accepted tree/index behavior is not reopened. The parent mission continues in the same foreground session.
