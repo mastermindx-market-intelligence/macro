@@ -4,13 +4,15 @@ import copy
 import hashlib
 import json
 import os
+import shlex
 from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
+import yaml
 
 from scripts import ci_browser_native_setup as SETUP
-from scripts.ci_apt_native_plan import QUALIFIED_DRIVER
+from scripts.ci_apt_native_plan import DIRECT_PACKAGES, QUALIFIED_DRIVER
 from scripts.ci_apt_cold_acquisition import AcquisitionResult
 
 
@@ -67,6 +69,23 @@ def test_invalid_or_elapsed_original_deadline_never_launches_even_bootstrap(monk
     assert result['outcome']=='failed' and result['timeout_settlement'] is None
 
 
+def test_brain_browser_dependency_enrollment_matches_the_native_distribution_pin():
+    manifest_path = Path(__file__).resolve().parents[1] / ".github" / "ci" / "legacy-jobs.yml"
+    job = yaml.safe_load(manifest_path.read_bytes())["jobs"]["unrun-brain-gateway"]
+    install = next(step["run"] for step in job["steps"] if step.get("name") == "install minimal deps")
+    requirements = shlex.split(install)
+    pins = [spec for spec in requirements if spec.startswith("playwright==")]
+    assert "playwright" not in requirements and len(pins) == 1
+    assert SETUP.qualified_direct_packages(
+        distribution_version=pins[0].split("==", 1)[1],
+        driver_version="1.64.0-beta-1791568591000",
+        bundle_sha256=QUALIFIED_DRIVER,
+        os_id="ubuntu",
+        os_version="24.04",
+        machine="x86_64",
+    ) == DIRECT_PACKAGES
+
+
 def test_native_apply_then_exact_vendor_browser_uses_same_env_and_remaining_original_total(monkeypatch):
     events=runtime(monkeypatch);env={'PATH':'/isolated/bin','ORIGINAL':'same'};calls=[]
     def browser(command,**kwargs):calls.append((command,kwargs));return observed()
@@ -106,6 +125,71 @@ def test_unknown_never_falls_back_retries_installs_or_cleans_beyond_original_bou
  (b'CI_APT_NATIVE_RESULT={"mode":"download","index":0,"outcome":"passed","settlement":"settled"}\n',73)])
 def test_response_loss_partial_foreign_identity_and_exit_contradiction_cannot_admit_archive(raw,code):
     with pytest.raises(SETUP.NativeUnknown):SETUP.parsed_result(code,raw,mode='download',index=0)
+
+
+@pytest.mark.parametrize(
+    "fault",
+    [
+        "capture_nonzero", "capture_unframed", "distribution_version",
+        "driver_version", "bundle_sha256", "os_id", "os_version", "machine",
+    ],
+)
+def test_preinstall_source_refusal_retains_only_safe_gate_discriminators(monkeypatch, fault):
+    events = runtime(monkeypatch)
+    source = {
+        "observed_version": "1.64.1",
+        "driver_version": "1.64.0-beta-1791568591000",
+        "input_sha256": {"driver_bundle": QUALIFIED_DRIVER},
+    }
+    host = {"ID": "ubuntu", "VERSION_ID": "24.04"}
+    untrusted = "private-observed-value"
+    values = {
+        "distribution_version": (source, "observed_version"),
+        "driver_version": (source, "driver_version"),
+        "bundle_sha256": (source["input_sha256"], "driver_bundle"),
+        "os_id": (host, "ID"),
+        "os_version": (host, "VERSION_ID"),
+    }
+    if fault in values:
+        mapping, key = values[fault]
+        mapping[key] = untrusted
+    monkeypatch.setattr(SETUP.platform, "freedesktop_os_release", lambda: host)
+    if fault == "machine":
+        monkeypatch.setattr(SETUP.platform, "machine", lambda: untrusted)
+
+    if fault == "capture_nonzero":
+        response = (73, untrusted.encode())
+    elif fault == "capture_unframed":
+        response = (0, untrusted.encode())
+    else:
+        response = (0, b"CI_BROWSER_DEPENDENCY_INPUTS=" + json.dumps(source).encode())
+    captures = []
+
+    def observe(argv, **kwargs):
+        captures.append((argv, kwargs))
+        return response
+
+    monkeypatch.setattr(SETUP, "observe_command", observe)
+    result = SETUP.run_native_setup(
+        deadline=600,
+        command_env={},
+        expected_sources=sources(),
+        browser_stream=lambda *_a, **_k: pytest.fail("browser launch after preinstall refusal"),
+    )
+
+    assert len(captures) == 1 and captures[0][1]["deadline"] == 600
+    assert not events
+    assert result["outcome"] == "failed" and result["returncode"] == 1
+    assert result["failure_signature"] is None and result["timeout_settlement"] is None
+    detail = result["detail"]
+    assert "DEPENDENCY_SOURCE_UNQUALIFIED" in detail
+    assert "installation=never_started; browser=never_started; retained=None" in detail
+    assert untrusted not in detail
+    if fault.startswith("capture_"):
+        assert f"source_stage={fault};" in detail
+        assert "tuple_fields=" not in detail
+    else:
+        assert f"source_stage=tuple_mismatch; tuple_fields={fault};" in detail
 
 
 def test_finite_mapping_has_no_current_source_or_missing_file_fallback(monkeypatch):
