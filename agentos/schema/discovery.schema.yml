@@ -21,6 +21,22 @@ optional:
   cited_by:      {type: list, note: auto-maintained by the generator; drives GC}
   superseded_by: {type: string}
   expires:       {type: date, note: default verified_at + 90d if never cited; FLAGGED, never auto-deleted}
+  project_correction:
+    type: object
+    additional_keys: false
+    note: Source provenance only. The canonical validator checks complete reciprocal workstream scope; this marker grants no action or verification authority.
+    required:
+      schema: {const: agentos.project_discovery_correction.v1}
+      work_ref: {type: string, pattern: 'WS:<UPPER-KEBAB>'}
+      supersedes: {type: string, pattern: 'DSC:<UPPER-KEBAB>'}
+      actor_ref: {type: string, pattern: 'workspace:<64 lowercase hex>'}
+      request_sha256: {type: string, pattern: '64 lowercase hex'}
+      corrected_on: {type: date, note: Retained correction date; never a substitute for verified_at.}
+      source_commit: {type: string, pattern: '40 lowercase hex'}
+      predecessor_sha256: {type: string, pattern: '64 lowercase hex'}
+      reference_closure_sha256: {type: string, pattern: '64 lowercase hex', note: Identifies the retained original capture; not self-authenticating.}
+      correction_reason: {type: string, max_utf8_bytes: 2048}
+      evidence: {type: list, max_items: 8, item_max_utf8_bytes: 1024}
   evaluation_finding:
     type: object
     note: Optional Evaluation OS evidence; no verified-discovery admission is inferred.

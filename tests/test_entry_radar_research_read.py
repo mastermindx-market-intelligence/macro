@@ -217,7 +217,7 @@ def test_script_entrypoint_carries_cases_to_published_reader(tmp_path, monkeypat
         return SimpleNamespace(payload=payload, health=health, committed=True, timings={}, exit_code=0)
 
     monkeypatch.setattr(script.LP, 'assert_published_spec_hashes', lambda: None)
-    monkeypatch.setattr(script.LP, 'load_pack', lambda _: None)
+    monkeypatch.setattr(script.LP, 'load_pack', lambda _, *, receipt=None: None)
     monkeypatch.setattr(script.LL.LiveEpisodeLedger, 'load',
                         lambda _: SimpleNamespace(save=lambda: writes.append('save')))
     monkeypatch.setattr(script.LL, 'EventSpool', lambda: None)

@@ -1,0 +1,11 @@
+{
+  "status": "failed",
+  "surface": "market",
+  "error": "AssertionError()",
+  "source_hashes": {
+    "scripts/verify_d06_macro.py": "576a8351a747e67b7c48aa63306ed6e411c792dc709388d4242d1fb27b6ed8f3",
+    "templates/market_structure.html.j2": "300c1b6865e9f519ca0fbd0fc3a95a17c96e0f1bce06c9ee59013350a7f8f056",
+    "templates/stage_analysis.html.j2": "fe8307c9ceb5b6f562ec3d51541f516c1f0a92ce00dba5611b9d98ef8fa2f72b",
+    "templates/spvector.html.j2": "8c6ea6ddfcd23fd4444230db9cecf65b60613338dbfac344a7641e1755d8c15f"
+  }
+}
