@@ -1,101 +1,77 @@
 {% extends "_gmi_base.html.j2" %}
-{% from "_gmi_macros.html.j2" import t, tip, ic, mark, d, asof, sec, tip_core, tip_ext, tip_adm with context %}
-{% from "_gmi_head.html.j2" import head %}
-{% block title %}GMI Explorer — Coverage &amp; receipts{% endblock %}
-{% block seo %}{% set seo_title = 'GMI Explorer — Coverage & receipts | Mastermind' %}{% set seo_desc = 'How many companies are admitted to a theme, out of honest denominators, and the plain-word reason for every company not yet admitted.' %}{% set seo_path = 'gmi-coverage.html' %}{% include "_seo_head.html.j2" %}{% endblock %}
+{% from "_gmi_macros.html.j2" import t, ic, mark, d, sec with context %}
+{% block title %}GMI Explorer — Coverage &amp; methodology{% endblock %}
+{% block seo %}{% set seo_title = 'GMI Explorer — Coverage & methodology | Mastermind' %}{% set seo_desc = 'Core-theme company coverage by market, with company and listing populations kept separate, count definitions and source clocks.' %}{% set seo_path = 'gmi-coverage.html' %}{% include "_seo_head.html.j2" %}{% endblock %}
 {% block body %}
-{#- S4 coverage & receipts (specimen s4_coverage). Every number is the model's;
-    Stack parts read the proof's per-market
-    remainder_by_reason in config/gmi_reason_codes.yml order (= the
-    model.reason_words insertion order); classes are s1..sN. -#}
-{% set N = model.coverage.us.numerator_issuers + model.coverage.cn.numerator_issuers %}
-{% if N == 0 %}
-{% set sub_en = 'No company is admitted to a theme yet. Here is why.' %}
-{% set sub_zh = '尚无公司获准纳入任何主题。原因如下。' %}
-{% elif N == 1 %}
-{% set sub_en = 'Only 1 company is admitted to a theme so far. Here is why.' %}
-{% set sub_zh = '目前仅有 1 家公司获准纳入主题。原因如下。' %}
-{% else %}
-{% set sub_en = 'Only ' ~ N ~ ' companies are admitted to a theme so far. Here is why.' %}
-{% set sub_zh = '目前仅有 ' ~ N ~ ' 家公司获准纳入主题。原因如下。' %}
-{% endif %}
-{{ head([('Research','研究'),('Coverage','覆盖率')], 'Coverage & receipts', '覆盖率与凭证', sub_en, sub_zh, side=asof(model.asof)) }}
-{% if N == 0 %}
-{% set cap_en = 'companies admitted to any theme' %}
-{% set cap_zh = '家公司获准纳入任何主题' %}
-{% elif N == 1 %}
-{% set cap_en = 'company admitted to a theme' %}
-{% set cap_zh = '家公司已获准纳入主题' %}
-{% else %}
-{% set cap_en = 'companies admitted to a theme' %}
-{% set cap_zh = '家公司已获准纳入主题' %}
-{% endif %}
+{# The market proof counts resolved issuers and unresolved securities in one
+   remainder map. Only IDENTITY_NOT_QUALIFIED contains both populations.
+   Split its listing contribution before displaying company reasons. Keep the
+   producer's bounds and admission decisions unchanged; never clamp a mismatch.
+   Template tests account for every reason in the configured word-map order. #}
 {% set core_ids = [] %}
-{% for mid, m in model.micros.items() %}{% if m.tier == 'acceptance' %}{% set _ = core_ids.append(mid) %}{% endif %}{% endfor %}
-{% set EMPTY_N = model.disposition_counts.get('EMPTY', 0) %}
-{% set HELD_N = model.totals.held %}
-{% set ADM_N = model.totals.admitted_micros %}
-{#- the sets note: one specimen-word clause per non-zero population -#}
-{% set note_en = namespace(p=[]) %}
-{% if EMPTY_N == 1 %}{% set _ = note_en.p.append('1 has no admitted company.') %}
-{% elif EMPTY_N %}{% set _ = note_en.p.append(EMPTY_N ~ ' have no admitted company.') %}{% endif %}
-{% if HELD_N == 1 %}{% set _ = note_en.p.append('1 has a link held for review.') %}
-{% elif HELD_N %}{% set _ = note_en.p.append(HELD_N ~ ' have links held for review.') %}{% endif %}
-{% if ADM_N == 1 %}{% set _ = note_en.p.append('1 has an admitted link.') %}
-{% elif ADM_N %}{% set _ = note_en.p.append(ADM_N ~ ' have admitted links.') %}{% endif %}
-{% set note_zh = namespace(p=[]) %}
-{% if EMPTY_N %}{% set _ = note_zh.p.append(EMPTY_N|num ~ '个尚无获准纳入的公司') %}{% endif %}
-{% if HELD_N %}{% set _ = note_zh.p.append(HELD_N|num ~ '个有待审核的关联') %}{% endif %}
-{% if ADM_N %}{% set _ = note_zh.p.append(ADM_N|num ~ '个有已获准纳入的关联') %}{% endif %}
-{%- macro mono(x) -%}{% set m %}<span class="gmi-mono">{{ x }}</span>{% endset %}{{ m }}{%- endmacro -%}
-{# Public coverage never reads internal relationship correction metadata. #}
-<section class="gmi-band" aria-labelledby="cov-h"><div class="gmi-band-card">
-<div class="gmi-big0"><span class="gmi-mag-num" id="cov-h">{{ N }}</span><span class="gmi-mag-cap gmi-mag-cap--wide">{{ t(cap_en, cap_zh) }}</span>{{ tip_adm() }}</div>
-<div class="gmi-cov">
-{%- for mkt, mkt_en, mkt_zh in [('us', 'US', '美国'), ('cn', 'China', '中国')] -%}
-{% set mrow = model.coverage[mkt] %}
-{% set bnds = mrow.denominator.issuer_count_bounds %}
-{% set unres = mrow.denominator.eligible_securities_unresolved_issuer %}
-{% set resolved = mrow.denominator.eligible_issuers_resolved %}
-{% if unres == 0 %}
-{% set tp_en = '' %}{% set tp_zh = '' %}
-{% elif resolved == 0 %}
-{% set tp_en = 'The range is wide because none of the ' ~ (unres|num) ~ ' listed securities is matched to a company yet.' %}
-{% set tp_zh = '区间较宽，因为' ~ (unres|num) ~ '只上市证券均尚未匹配到对应公司。' %}
-{% else %}
-{% set tp_en = 'The count is a range because ' ~ (unres|num) ~ ' listed securities are not yet matched to a company.' %}
-{% set tp_zh = '该数字为区间，因为有' ~ (unres|num) ~ '只上市证券尚未匹配到对应公司。' %}
-{% endif %}
-{% if mrow.numerator_issuers > 0 %}
-{% set note = t('Why the rest are not admitted yet', '其余公司尚未纳入的原因') %}
-{% set fill_w = '%.2f'|format(100 * mrow.numerator_issuers / bnds[1]) %}
-{% set track %}<div class="gmi-track"><span class="gmi-track-fill" style="width:{{ fill_w }}%"></span></div>{% endset %}
-{% else %}
-{% set note = t('Why none is admitted yet', '尚无公司纳入的原因') %}
-{% set track %}<div class="gmi-track"><span class="gmi-track-zero"></span></div>{% endset %}
-{% endif %}
-{#- parts with no reason_words entry cannot render (no plain words; the yml is
-    pinned to the proof's codes) — the page test compares the rendered stack
-    against ALL model remainder values, so a dropped part fails loudly. -#}
-{% set rem = mrow.remainder_by_reason %}
-{% set codes = [] %}
-{% for code in model.reason_words %}{% if code in rem %}{% set _ = codes.append(code) %}{% endif %}{% endfor %}
-<div class="gmi-cov-row"><div class="gmi-cov-top"><span class="gmi-cov-mkt">{{ t(mkt_en, mkt_zh) }}</span>
-<span class="gmi-cov-num">{{ mrow.numerator_issuers }}</span><span class="gmi-cov-den">{{ t('of ' ~ (bnds[0]|num) ~ '–' ~ (bnds[1]|num) ~ ' companies', '/ 共 ' ~ (bnds[0]|num) ~ '–' ~ (bnds[1]|num) ~ ' 家公司') }}{% if unres > 0 %}{{ tip(tp_en, tp_zh) }}{% endif %}</span></div>
-{{ track }}
-<p class="gmi-note gmi-note--flush">{{ note }}</p><div class="gmi-stack" aria-hidden="true">{% for code in codes %}<i class="s{{ loop.index }}" style="flex:{{ rem[code] }} 1 0"></i>{% endfor %}</div><div class="gmi-legend">{% for code in codes %}<span><i class="s{{ loop.index }}"></i><b>{{ rem[code]|num }}</b>{{ t(model.reason_words[code].en, model.reason_words[code].zh) }}</span>{% endfor %}</div></div>
-{%- endfor -%}
-</div>
-</div></section>
-<div class="gmi-cols"><div class="gmi-col-main"><section class="gmi-panel">{{ sec('What is measured', '衡量范围') }}
-<div class="gmi-tally-lab gmi-tally-lab--strong">{{ mark('acc') }}<b class="tnum">{{ model.totals.core|num }}</b>&nbsp;{{ t('core micro-themes', '个核心细分主题') }}{{ tip_core() }}</div>
-<div class="gmi-strip68" aria-hidden="true">{% for mid in core_ids | ordered %}{{ mark(model.micros[mid].kind) }}{% endfor %}</div>
-<p class="gmi-note">{{ t(note_en.p|join(' '), note_zh.p|join('；') ~ '。') }}</p>
-<div class="gmi-tally-lab gmi-tally-lab--wrap">{{ mark('disp') }}<b class="tnum gmi-num-strong">{{ model.totals.extended|num }}</b>&nbsp;{{ t('extended micro-themes are shown on the map but not counted.', '个扩展细分主题在地图上显示，但不计入。') }}{{ tip_ext() }}</div>
-</section><section class="gmi-panel">{{ sec('Corrections log', '更正记录') }}
-<dl class="gmi-dl"><div><dt>{{ t('Relationships', '公司关系') }}</dt><dd class="gmi-muted">{{ t('Public correction history is not available in this snapshot.', '此快照尚无可公开展示的更正历史。') }}</dd></div>
-<div><dt>{{ t('Theme links', '主题关联') }}</dt><dd class="gmi-muted">{{ t('Changes are not tracked yet.', '变更尚未跟踪。') }}</dd></div></dl></section></div><div class="gmi-col-side"><section class="gmi-panel">{{ sec('Accuracy check', '准确性抽查') }}
-<div class="mx-empty gmi-empty-inline"><div class="mx-empty-line">{{ t('Not measured yet', '尚未衡量') }}</div>
-<div class="mx-empty-why">{{ t('This snapshot does not include an accuracy sample or an accuracy rate.', '此快照不包含准确性样本或准确率。') }}</div></div></section></div></div>
-<p class="gmi-foot">{{ t('Sources: company filings; exchange symbol directory, ' ~ (model.asof|de) ~ '; review ledger, ' ~ (model.provenance.built_at_utc[:10]|de) ~ '.', '来源：公司披露文件；交易所证券代码目录（' ~ (model.asof|dz) ~ '）；审核记录（' ~ (model.provenance.built_at_utc[:10]|dz) ~ '）。') }}</p>
+{% set core = namespace(admitted=0, proposed_only=0) %}
+{% for mid, m in model.micros.items() %}
+  {% if m.tier == 'acceptance' %}
+    {% set _ = core_ids.append(mid) %}
+    {% if m.admitted > 0 %}{% set core.admitted = core.admitted + 1 %}{% endif %}
+    {% if m.disposition == 'PROPOSED_ONLY' %}{% set core.proposed_only = core.proposed_only + 1 %}{% endif %}
+  {% endif %}
+{% endfor %}
+<section class="gmi-coverage-overview" aria-labelledby="cov-h">
+  <h2 id="cov-h">{{ t('Core-theme company coverage', '核心主题公司覆盖') }}</h2>
+  <div class="gmi-coverage-markets">
+  {% for mkt, mkt_en, mkt_zh in [('us', 'US', '美国'), ('cn', 'China', '中国')] %}
+    {% set mrow = model.coverage[mkt] %}
+    {% set bnds = mrow.denominator.issuer_count_bounds %}
+    {% set unresolved = mrow.denominator.eligible_securities_unresolved_issuer %}
+    {% set matched = mrow.denominator.eligible_issuers_resolved %}
+    {% set parts = [] %}
+    {% for code in model.reason_words %}
+      {% if code in mrow.remainder_by_reason %}
+        {% set count = mrow.remainder_by_reason[code] - (unresolved if code == 'IDENTITY_NOT_QUALIFIED' else 0) %}
+        {% if count > 0 %}{% set _ = parts.append({'code': code, 'count': count}) %}{% endif %}
+      {% endif %}
+    {% endfor %}
+    <article class="gmi-coverage-market" data-gmi-coverage-market="{{ mkt }}" aria-labelledby="cov-{{ mkt }}-h">
+      <h3 id="cov-{{ mkt }}-h">{{ t(mkt_en, mkt_zh) }}</h3>
+      <div class="gmi-coverage-admitted"><strong>{{ mrow.numerator_issuers|num }}</strong><span>{{ t('admitted companies', '家获准纳入的公司') }}</span></div>
+      <dl class="gmi-coverage-counts">
+        <div class="gmi-coverage-bound"><dt>{{ t('Company count range', '公司数量范围') }}</dt><dd>{{ bnds[0]|num }}{% if bnds[0] != bnds[1] %}–{{ bnds[1]|num }}{% endif %}</dd></div>
+        <div class="gmi-coverage-matched"><dt>{{ t('Matched companies', '已匹配公司') }}</dt><dd>{{ matched|num }}</dd></div>
+        {% if unresolved > 0 %}<div class="gmi-coverage-unmatched"><dt>{{ t('Listings without a company match', '未匹配到公司的上市证券') }}</dt><dd>{{ unresolved|num }}</dd></div>{% endif %}
+      </dl>
+      {% if parts %}
+      <details class="gmi-coverage-reasons">
+        <summary>{{ t((matched - mrow.numerator_issuers)|num ~ (' company not counted' if matched - mrow.numerator_issuers == 1 else ' companies not counted'), (matched - mrow.numerator_issuers)|num ~ ' 家公司未计入') }}{{ ic('arrow', 16) }}</summary>
+        <dl class="gmi-coverage-reason-list">
+        {% for part in parts %}<div><dt>{{ t(model.reason_words[part.code].en, model.reason_words[part.code].zh) }}</dt><dd><b>{{ part.count|num }}</b> {{ t('company' if part.count == 1 else 'companies', '家公司') }}</dd></div>{% endfor %}
+        </dl>
+      </details>
+      {% endif %}
+    </article>
+  {% endfor %}
+  </div>
+</section>
+
+<section class="gmi-panel gmi-coverage-themes" aria-labelledby="cov-themes-h">
+  <h2 id="cov-themes-h">{{ t('Core-theme activity', '核心主题活动') }}</h2>
+  <div class="gmi-coverage-theme-totals">
+    <span><b>{{ core.admitted|num }}</b>{{ t('core theme with admitted activity' if core.admitted == 1 else 'core themes with admitted activity', '个核心主题有获准纳入的活动') }}</span>
+    <span><b>{{ ((core_ids|length) - core.admitted)|num }}</b>{{ t('core theme without admitted activity' if (core_ids|length) - core.admitted == 1 else 'core themes without admitted activity', '个核心主题暂无获准纳入的活动') }}</span>
+  </div>
+  <div class="gmi-strip68" aria-hidden="true">{% for mid in core_ids | ordered %}{{ mark('adm' if model.micros[mid].admitted > 0 else 'acc') }}{% endfor %}</div>
+  <p class="gmi-note gmi-coverage-scope">{{ t((core_ids|length)|num ~ ' core micro-themes counted. ' ~ (model.totals.extended|num) ~ ' extended micro-themes shown separately and excluded from coverage.', '统计 ' ~ (core_ids|length)|num ~ ' 个核心细分主题。' ~ (model.totals.extended|num) ~ ' 个扩展细分主题单独展示，不计入覆盖。') }}</p>
+  {% if core.proposed_only %}<p class="gmi-note gmi-coverage-proposed">{{ t('Of those without admitted activity, ' ~ (core.proposed_only|num) ~ (' has proposals only.' if core.proposed_only == 1 else ' have proposals only.'), '尚无获准纳入活动的主题中，' ~ (core.proposed_only|num) ~ ' 个仅有待审核提议。') }}</p>{% endif %}
+</section>
+
+<details class="gmi-coverage-method">
+  <summary><h2>{{ t('Method & sources', '方法与来源') }}</h2>{{ ic('arrow', 18) }}</summary>
+  <div class="gmi-coverage-method-body">
+    <section><h3>{{ t('What is counted', '计入条件') }}</h3><p>{{ t('Each market counts a company once when its identity qualifies and it has a current, admitted activity link to a core theme. Extended-theme links do not enter this count.', '公司身份核验通过，且与核心主题具有当前有效、获准纳入的活动关联时，才计入相应市场；每家公司仅计一次。扩展主题的关联不计入。') }}</p><p>{{ t('Theme counts measure themes with admitted activity, not distinct companies. Public company evidence has a separate publication check.', '主题计数衡量具有获准活动的主题数量，并非去重后的公司数量。公开公司证据另行经过发布核验。') }}</p></section>
+    <section><h3>{{ t('Why a range', '区间的含义') }}</h3><p>{{ t('Matched companies are linked to company records; identity checks are separate. Unmatched listings cannot yet be counted as distinct companies.', '已匹配表示已关联公司记录；身份核验另行判断。未匹配的上市证券尚不能按独立公司计数。') }}</p><p>{{ t('The source adds between one and the number of unmatched listings to the matched-company count. With no unmatched listings, it reports one exact count.', '来源以已匹配公司数量为基础：存在未匹配证券时，增加 1 至未匹配证券数量，形成区间；没有未匹配证券时，显示确定的公司数量。') }}</p></section>
+    <section class="gmi-coverage-sources"><h3>{{ t('Source clocks', '来源与时间') }}</h3><dl class="gmi-dl"><div><dt>{{ t('Snapshot as of', '快照截至') }}</dt><dd><time datetime="{{ model.asof }}">{{ d(model.asof) }}</time></dd></div><div><dt>{{ t('Coverage model generated', '覆盖模型生成于') }}</dt><dd><time datetime="{{ model.provenance.built_at_utc }}">{{ d(model.provenance.built_at_utc[:10]) }} · {{ model.provenance.built_at_utc[11:16] }} UTC</time></dd></div><div><dt>{{ t('Sources', '来源') }}</dt><dd>{{ t('Company filings · Exchange symbol directory · Review records', '公司披露文件 · 交易所证券代码目录 · 审核记录') }}</dd></div></dl></section>
+    <section class="gmi-coverage-corrections"><h3>{{ t('Corrections log', '更正记录') }}</h3><dl class="gmi-dl"><div><dt>{{ t('Relationships', '公司关系') }}</dt><dd class="gmi-muted">{{ t('Public correction history is not available in this snapshot.', '此快照尚无可公开展示的更正历史。') }}</dd></div><div><dt>{{ t('Theme links', '主题关联') }}</dt><dd class="gmi-muted">{{ t('Changes are not tracked yet.', '变更尚未跟踪。') }}</dd></div></dl></section>
+    <section class="gmi-coverage-accuracy"><h3>{{ t('Accuracy check', '准确性抽查') }}</h3><p><strong>{{ t('Not measured yet', '尚未衡量') }}</strong></p><p>{{ t('This snapshot does not include an accuracy sample or an accuracy rate.', '此快照不包含准确性样本或准确率。') }}</p></section>
+  </div>
+</details>
 {% endblock %}

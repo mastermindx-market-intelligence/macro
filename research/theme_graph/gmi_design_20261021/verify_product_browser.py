@@ -2817,6 +2817,119 @@ with sync_playwright() as pw:
         for language in ('en','zh'):
             check(f'relationship-static-{width}-{language}',lambda w=width,l=language:relationship_entry_static(w,l))
 
+
+    def coverage_entry_geometry(p):
+        return p.evaluate('''()=>{
+          const r=n=>{if(!n)return null;const b=n.getBoundingClientRect();return {left:b.left,right:b.right,top:b.top,bottom:b.bottom,width:b.width,height:b.height};};
+          const h=document.querySelector('.gmi-product-head');
+          const cards=[...document.querySelectorAll('.gmi-coverage-market,.gmi-cov-row')];
+          return {brand:r(document.querySelector('.gmi-product-name')),title:r(document.querySelector('h1')),snapshot:r(document.querySelector('.gmi-snapshot')),nav:r(document.querySelector('.gmi-product-nav')),returned:r(document.querySelector('.gmi-return-context')),first:r(cards[0]),second:r(cards[1]),brain:r(document.querySelector('#gmi-brain-slot #mmb-boot')),rightPadding:parseFloat(getComputedStyle(h).paddingRight),titleSize:parseFloat(getComputedStyle(document.querySelector('h1')).fontSize),overflow:document.documentElement.scrollWidth>innerWidth};
+        }''')
+
+    def coverage_entry_header(width, language, theme='light', crowded=False, upgraded=True):
+        """Separate market units, compact task entry, and unchanged native return ownership."""
+        research='gmi.html#'+urlencode({'theme':'theme:hbm_packaging','scope':'core','evidence':'1','lens':'chain','q':'Micron'})
+        with context(width,theme,language,reduced_motion='reduce') as c:
+            c.add_init_script('Date.now=()=>Date.UTC(2026,10,'+('20' if crowded else '9')+');')
+            for entry,returned in (('direct',''),('research',research)):
+                params={'fixture_key':'coverage-entry'}
+                if returned:params['gmi_return']=returned
+                p=page_for(c,'gmi-coverage.html#'+urlencode(params));initial=p.url
+                title=p.locator('h1');expect(title).to_have_count(1)
+                title_text=('Coverage & methodology' if language=='en' else '覆盖与方法') if upgraded else ('Coverage & receipts' if language=='en' else '覆盖率与凭证')
+                assert title.inner_text().strip()==title_text
+                assert p.locator('.gmi-head').count()==(0 if upgraded else 1)
+                assert p.locator('.gmi-product-head > div:first-child > p').count()==(0 if upgraded else 1)
+                expect(p.locator('[data-gmi-snapshot]')).to_have_attribute('data-gmi-snapshot','2026-11-03')
+                expect(p.locator('.gmi-product-tools a').last).to_have_attribute('aria-current','page')
+                if returned:
+                    back=p.locator('[data-gmi-return]');expect(back).to_be_visible()
+                    assert parse_qs(urlsplit(back.get_attribute('href')).fragment)==parse_qs(urlsplit(research).fragment)
+                else:expect(p.locator('[data-gmi-return]')).to_have_count(0)
+                if crowded:
+                    expect(p.locator('.gmi-snapshot-stale')).to_be_visible()
+                    p.evaluate('''()=>{const b=document.createElement('button');b.id='mmb-boot';b.type='button';b.textContent='Brain';b.style.cssText='width:44px;height:44px;padding:0;border:1px solid var(--line);border-radius:12px;background:var(--panel2);color:var(--text);font:11px var(--font-ui)';document.body.append(b);dispatchEvent(new Event('mm-brain-ready'));}''')
+                else:expect(p.locator('.gmi-snapshot-stale')).not_to_be_visible()
+                g=coverage_entry_geometry(p)
+                assert not g['overflow'] and g['first']['top']>=(g['returned'] or g['nav'])['bottom']-0.5
+                if upgraded:
+                    assert g['brand']['height']>=44 and g['titleSize']==(24 if width<=820 else 32)
+                    if width<=820:
+                        assert g['rightPadding']==72
+                        if g['brain']:assert g['title']['right']<=g['brain']['left']-1 and g['snapshot']['right']<=g['brain']['left']-1
+                        assert g['second']['top']>=g['first']['bottom']+19
+                    else:assert abs(g['first']['top']-g['second']['top'])<=0.5
+                    expect(p.locator('.gmi-coverage-market')).to_have_count(2)
+                    us=p.locator('[data-gmi-coverage-market="us"]');cn=p.locator('[data-gmi-coverage-market="cn"]')
+                    assert us.locator('.gmi-coverage-admitted strong').inner_text()=='1'
+                    assert cn.locator('.gmi-coverage-admitted strong').inner_text()=='0'
+                    assert us.locator('.gmi-coverage-bound dt').inner_text().strip()==('Company count range' if language=='en' else '公司数量范围')
+                    assert us.locator('.gmi-coverage-bound dd').inner_text()=='1,928–1,931'
+                    assert cn.locator('.gmi-coverage-bound dd').inner_text()=='1–1,019'
+                    assert us.locator('.gmi-coverage-matched dd').inner_text()=='1,927'
+                    assert cn.locator('.gmi-coverage-matched dd').inner_text()=='0'
+                    assert us.locator('.gmi-coverage-unmatched dd').inner_text()=='4'
+                    assert cn.locator('.gmi-coverage-unmatched dd').inner_text()=='1,019'
+                    assert us.locator('.gmi-coverage-reasons summary').inner_text().strip()==('1,926 companies not counted' if language=='en' else '1,926 家公司未计入')
+                    assert cn.locator('.gmi-coverage-reasons').count()==0
+                    assert p.locator('.gmi-coverage-theme-totals b').all_inner_texts()==['1','67']
+                    assert p.locator('.gmi-big0,.gmi-track,.gmi-stack').count()==0
+                    assert p.locator('main').inner_text().count('3 Nov 2026' if language=='en' else '2026年11月3日')==1
+                    for summary in p.locator('.gmi-coverage-reasons>summary,.gmi-coverage-method>summary').all():
+                        b=summary.bounding_box();assert b['height']>=44 and b['x']>=0 and b['x']+b['width']<=width+0.5
+                gmi_navigation_fit(p,width,language)
+                assert p.evaluate('document.activeElement===document.body') and p.url==initial
+                report.setdefault('coverage_entry_header',[]).append({'width':width,'language':language,'theme':theme,'crowded':crowded,'entry':entry,'upgraded':upgraded,'geometry':g})
+                if upgraded and entry==('research' if crowded else 'direct') and ((width,language) in ((1440,'en'),(390,'en'),(320,'zh')) or crowded):
+                    path=args.out/f'coverage-entry-{width}-{language}-{theme}.png';p.screenshot(path=str(path),full_page=width>820);report['screenshots'].append(path.name)
+                p.close()
+
+    def coverage_details_interaction(width, language, theme='light', scripts=True, reduced=True):
+        """Native disclosures work with or without JS; changing locale preserves their state."""
+        with context(width,theme,language,java_script_enabled=scripts,reduced_motion='reduce' if reduced else 'no-preference') as c:
+            p=page_for(c,'gmi-coverage.html')
+            method=p.locator('.gmi-coverage-method');reason=p.locator('.gmi-coverage-reasons')
+            ms=method.locator(':scope>summary');rs=reason.locator(':scope>summary')
+            expect(method).not_to_have_attribute('open','');expect(reason).not_to_have_attribute('open','')
+            original=p.url;history=p.evaluate('history.length')
+            ms.focus();ms.press('Enter');expect(method).to_have_attribute('open','');expect(ms).to_be_focused()
+            rs.focus();rs.press('Space');expect(reason).to_have_attribute('open','');expect(rs).to_be_focused()
+            expect(method).to_have_attribute('open','')
+            assert p.locator('.gmi-coverage-reason-list dd b').all_inner_texts()==['722','1,200','4']
+            rows=p.locator('.gmi-coverage-sources .gmi-dl>div')
+            assert rows.nth(0).locator('time').get_attribute('datetime')=='2026-11-03'
+            assert rows.nth(1).locator('time').get_attribute('datetime')=='2026-11-04T02:29:26Z'
+            assert rows.nth(2).locator('time').count()==0
+            if reduced:
+                assert ms.locator('svg').evaluate('(n)=>getComputedStyle(n).transitionDuration')=='0s'
+            assert not p.evaluate('document.documentElement.scrollWidth>innerWidth')
+            assert p.url==original and p.evaluate('history.length')==history
+            for current in ('zh' if language=='en' else 'en',language) if scripts else (language,):
+                if scripts:p.evaluate('(lang)=>{document.documentElement.setAttribute("data-lang",lang);document.dispatchEvent(new Event("langchange"));}',current)
+                expect(method).to_have_attribute('open','');expect(reason).to_have_attribute('open','');expect(rs).to_be_focused()
+                assert rows.nth(1).locator('dt').inner_text().strip()==('Coverage model generated' if current=='en' else '覆盖模型生成于')
+                assert rs.inner_text().strip()==('1,926 companies not counted' if current=='en' else '1,926 家公司未计入')
+                assert p.locator('.gmi-coverage-theme-totals b').all_inner_texts()==['1','67']
+                assert not p.evaluate('document.documentElement.scrollWidth>innerWidth')
+                assert p.url==original and p.evaluate('history.length')==history
+            if scripts and reduced:
+                p.evaluate('scrollTo(0,0)')
+                path=args.out/f'coverage-details-{width}-{language}-{theme}.png';p.screenshot(path=str(path),full_page=True);report['screenshots'].append(path.name)
+            rs.press('Enter');expect(reason).not_to_have_attribute('open','');expect(rs).to_be_focused()
+            ms.focus();ms.press('Space');expect(method).not_to_have_attribute('open','');expect(ms).to_be_focused()
+            assert p.url==original and p.evaluate('history.length')==history
+            report.setdefault('coverage_details',[]).append({'width':width,'language':language,'theme':theme,'scripts':scripts,'reduced_motion':reduced,'native_Enter_Space':True,'reason_companies':[722,1200,4],'unresolved_listings_separate':[4,1019],'separate_source_clocks':True,'focus_open_state_and_URL_retained':True,'overflow':False})
+
+    for width in (1440,390,320):
+        for language in ('en','zh'):
+            check(f'coverage-entry-{width}-{language}',lambda w=width,l=language:coverage_entry_header(w,l))
+    for width,language in ((320,'en'),(390,'zh')):
+        check(f'coverage-crowded-{width}-{language}',lambda w=width,l=language:coverage_entry_header(w,l,'dark',crowded=True))
+    for width,language in ((390,'en'),(320,'zh')):
+        for scripts,reduced in ((True,True),(True,False),(False,True)):
+            check(f'coverage-disclosure-{language}-{scripts}-{reduced}',lambda w=width,l=language,s=scripts,r=reduced:coverage_details_interaction(w,l,'light',s,r))
+
+
     browser.close()
 server.shutdown()
 report['pass'] = all(c['result']=='PASS' for c in report['cases']) and not report['page_errors']

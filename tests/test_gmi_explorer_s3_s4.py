@@ -8,12 +8,13 @@ production path) and pins, per page:
   populated internal variants cannot bypass that publication boundary.
 - Page law on every render: one h1, no ``title=``, no script inside ``main``,
   no reason code, never "validated", inline style only data geometry.
-- S4: hero number == the model's N on every variant; each market's rendered
-  stack equals the model's remainder parts and satisfies
-  parts + numerator == the upper denominator bound. The held variant carries
-  a known one-company artifact (held_variant zeroes the numerator without
-  returning the company to any remainder); the assertion holds against the
-  artifact-corrected bound and prints the numbers — never silently skipped.
+- S4: each market keeps the source numerator and denominator bounds. Resolved
+  company reasons and unresolved listings retain their own units. Together
+  with admitted companies they account for the upper bound. The existing held
+  display fixture's missing-company artifact stays explicit.
+- Core-theme activity totals exclude extended themes and distinguish admitted
+  activity from proposed-only status. Snapshot and model-generation clocks
+  retain their source meanings.
 - The templates carry no typed coverage counts.
 """
 from __future__ import annotations
@@ -27,6 +28,7 @@ import sys
 from pathlib import Path
 
 import pytest
+from bs4 import BeautifulSoup
 
 from scripts.build_gmi_explorer import render_site
 from scripts.gmi_explorer.model import build_model
@@ -87,8 +89,8 @@ def _main(html: str) -> str:
 # ---------------------------------------------------------------- S3 states
 def test_s3_empty_snapshot_explains_publication_status(pages) -> None:
     html = _main(pages[("empty", S3)])
-    assert "No relationships cleared for public display" in html
-    assert "暂无获准公开展示的关系" in html
+    assert "Public relationship view unavailable" in html
+    assert "暂无公开关系视图" in html
     assert "not a statement that no relationships exist" in html
     assert "gmi-spec--on" not in html
     assert "gmi-relgrid" not in html
@@ -96,7 +98,7 @@ def test_s3_empty_snapshot_explains_publication_status(pages) -> None:
 
 def test_s3_internal_edges_do_not_enable_public_rendering(pages) -> None:
     html = _main(pages[("edges", S3)])
-    assert "No relationships cleared for public display" in html
+    assert "Public relationship view unavailable" in html
     assert 'id="excerpt"' not in html
     assert "gmi-relgrid" not in html
     assert "gmi-chain--edges" not in html
@@ -106,7 +108,7 @@ def test_s3_live_envelope_is_withheld_without_public_projection(pages) -> None:
     model = pages["models"]["live"]
     assert model["edges_state"] == "present" and model["edges"]
     html = _main(pages[("live", S3)])
-    assert "No relationships cleared for public display" in html
+    assert "Public relationship view unavailable" in html
     for edge in model["edges"]:
         assert edge["relationship_key"] not in html
     assert "gmi-relgrid" not in html
@@ -125,7 +127,7 @@ def test_s3_held_membership_does_not_change_publication_restriction(proof_model,
     site = tmp_path / "held_edges"
     render_site(held_variant(edges_variant(proof_model)), site)
     html = _main((site / S3).read_text(encoding="utf-8"))
-    assert "No relationships cleared for public display" in html
+    assert "Public relationship view unavailable" in html
     assert "gmi-sm--held" not in html and "gmi-sm--adm" not in html
 
 
@@ -145,51 +147,181 @@ def test_page_law(pages, variant, page) -> None:
 
 # ---------------------------------------------------------------- S4 numbers
 @pytest.mark.parametrize("variant", ["live", "held"])
-def test_s4_hero_number(pages, variant) -> None:
+def test_s4_market_counts_keep_source_bounds(pages, variant) -> None:
     model = pages["models"][variant]
-    n = model["coverage"]["us"]["numerator_issuers"] + model["coverage"]["cn"]["numerator_issuers"]
-    hero = re.search(r'id="cov-h">(\d+)<', pages[(variant, S4)]).group(1)
-    assert int(hero) == n, (hero, n)
+    soup = BeautifulSoup(_main(pages[(variant, S4)]), "html.parser")
+    assert soup.select_one("#cov-h .l-en").get_text() == "Core-theme company coverage"
+    assert not soup.select(".gmi-big0, .gmi-track, .gmi-stack")
+    rows = soup.select("[data-gmi-coverage-market]")
+    assert [r["data-gmi-coverage-market"] for r in rows] == ["us", "cn"]
+    for row in rows:
+        mrow = model["coverage"][row["data-gmi-coverage-market"]]
+        denominator = mrow["denominator"]
+        low, high = denominator["issuer_count_bounds"]
+        expected = f"{low:,}" if low == high else f"{low:,}–{high:,}"
+        assert row.select_one(".gmi-coverage-bound dt .l-en").get_text() == "Company count range"
+        assert row.select_one(".gmi-coverage-bound dt .l-zh").get_text() == "公司数量范围"
+        assert row.select_one(".gmi-coverage-bound dd").get_text() == expected
+        assert int(row.select_one(".gmi-coverage-admitted strong").get_text().replace(",", "")) == mrow["numerator_issuers"]
+        assert int(row.select_one(".gmi-coverage-matched dd").get_text().replace(",", "")) == denominator["eligible_issuers_resolved"]
+        unmatched = row.select_one(".gmi-coverage-unmatched dd")
+        unresolved = denominator["eligible_securities_unresolved_issuer"]
+        assert (unmatched is not None) == (unresolved > 0)
+        if unmatched:
+            assert int(unmatched.get_text().replace(",", "")) == unresolved
 
 
 @pytest.mark.parametrize("variant", ["live", "held"])
-def test_s4_stack_matches_model(pages, variant) -> None:
-    """Rendered stack parts == the model's remainder values, and
-    parts + numerator == the market's upper denominator bound."""
+def test_s4_company_reasons_account_for_separate_listings(pages, variant) -> None:
     model = pages["models"][variant]
-    rows = re.split(r'<div class="gmi-cov-row">', _main(pages[(variant, S4)]))[1:]
-    assert len(rows) == 2, f"one stack row per market, got {len(rows)}"
-    for row, mkt in zip(rows, ("us", "cn")):
-        mrow = model["coverage"][mkt]
-        rendered = [int(v) for v in re.findall(r"flex:(\d+) 1 0", row)]
-        expected = sorted(mrow["remainder_by_reason"].values())
-        assert sorted(rendered) == expected, (mkt, rendered, expected)
-        numerator = mrow["numerator_issuers"]
+    soup = BeautifulSoup(_main(pages[(variant, S4)]), "html.parser")
+    for market in ("us", "cn"):
+        row = soup.select_one(f'[data-gmi-coverage-market="{market}"]')
+        mrow = model["coverage"][market]
+        unresolved = mrow["denominator"]["eligible_securities_unresolved_issuer"]
+        remainder = mrow["remainder_by_reason"]
+        assert set(remainder) <= set(model["reason_words"]), "no source reason may disappear"
+        expected = []
+        for code, words in model["reason_words"].items():
+            if code not in remainder:
+                continue
+            count = remainder[code] - (unresolved if code == "IDENTITY_NOT_QUALIFIED" else 0)
+            assert count >= 0, (market, code, count)
+            if count:
+                expected.append((words["en"], words["zh"], count))
+        rendered = [(part.select_one("dt .l-en").get_text(),
+                     part.select_one("dt .l-zh").get_text(),
+                     int(part.select_one("dd b").get_text().replace(",", "")))
+                    for part in row.select(".gmi-coverage-reason-list > div")]
+        assert rendered == expected, (market, rendered, expected)
+        assert bool(row.select(".gmi-coverage-reasons")) == bool(expected)
+        count = sum(part[2] for part in rendered)
+        total = count + unresolved + mrow["numerator_issuers"]
         upper = mrow["denominator"]["issuer_count_bounds"][1]
-        total = sum(rendered) + numerator
-        if total != upper:
-            # the held-variant artifact: the flipped company left the numerator
-            # without returning to any remainder — hold the page to the
-            # artifact-corrected bound and say so, never silently skip.
-            live_upper_delta = (
-                pages["models"]["live"]["coverage"][mkt]["numerator_issuers"]
-                - pages["models"]["held"]["coverage"][mkt]["numerator_issuers"])
-            assert total + live_upper_delta == upper, (
-                f"{variant}/{mkt}: parts {rendered} + numerator {numerator} "
-                f"= {total}, upper bound {upper}, artifact {live_upper_delta}")
-        if variant == "live":
-            assert total == upper, (mkt, rendered, numerator, upper)
+        artifact = 0
+        if variant == "held":
+            # Existing held_variant removes the admitted company without
+            # returning it to a reason. Do not conceal or repair its data here.
+            artifact = (pages["models"]["live"]["coverage"][market]["numerator_issuers"]
+                        - mrow["numerator_issuers"])
+        assert total + artifact == upper, (variant, market, total, upper, artifact)
+        assert count + artifact == (
+            mrow["denominator"]["eligible_issuers_resolved"] - mrow["numerator_issuers"])
+        for part in row.select(".gmi-coverage-reason-list > div"):
+            assert part.select_one("dd .l-en").get_text() in ("company", "companies")
+            assert part.select_one("dd .l-zh").get_text() == "家公司"
 
 
-def test_s4_legend_words_are_reason_words(pages) -> None:
-    model = pages["models"]["held"]
-    words = {(w["en"], w["zh"]) for w in model["reason_words"].values()}
-    for legend in re.findall(r'<div class="gmi-legend">(.*?)</div></div>', _main(pages[("held", S4)]), re.S):
-        pairs = set(re.findall(
-            r'<span class="l-en">([^<]+)</span><span class="l-zh">([^<]+)</span>', legend))
-        assert pairs, "every stack part carries its plain-word legend"
-        assert pairs <= words, pairs - words
-    assert "REASON_" not in pages[("held", S4)]
+def test_s4_core_activity_counts_use_one_scope(pages) -> None:
+    model = pages["models"]["live"]
+    soup = BeautifulSoup(_main(pages[("live", S4)]), "html.parser")
+    core = [m for m in model["micros"].values() if m["tier"] == "acceptance"]
+    admitted = sum(m["admitted"] > 0 for m in core)
+    counts = [int(n.get_text().replace(",", "")) for n in soup.select(".gmi-coverage-theme-totals b")]
+    assert counts == [admitted, len(core) - admitted]
+    assert all("core theme" in n.get_text() for n in soup.select(".gmi-coverage-theme-totals .l-en"))
+    assert all("核心主题" in n.get_text() for n in soup.select(".gmi-coverage-theme-totals .l-zh"))
+    assert len(soup.select(".gmi-strip68 > .gmi-sm--adm")) == admitted
+    assert len(soup.select(".gmi-strip68 > .gmi-sm--acc")) == len(core) - admitted
+
+
+def test_s4_clocks_describe_the_saved_model(pages) -> None:
+    model = pages["models"]["live"]
+    soup = BeautifulSoup(_main(pages[("live", S4)]), "html.parser")
+    rows = soup.select(".gmi-coverage-sources .gmi-dl > div")
+    assert len(rows) == 3
+    assert rows[0].select_one("dt .l-en").get_text() == "Snapshot as of"
+    assert rows[0].select_one("dd time")["datetime"] == model["asof"]
+    assert rows[1].select_one("dt .l-en").get_text() == "Coverage model generated"
+    assert rows[1].select_one("dd time")["datetime"] == model["provenance"]["built_at_utc"]
+    assert rows[2].select_one("dt .l-en").get_text() == "Sources"
+    assert rows[2].select_one("dd time") is None
+    assert "Review records" in rows[2].select_one("dd .l-en").get_text()
+    assert "review ledger," not in str(soup)
+
+
+@pytest.mark.parametrize("matched,unresolved,numerator,identity,vendor", [
+    (4, 3, 1, 5, 1),
+    (3, 2, 3, 2, 0),
+    (3, 0, 3, 0, 0),
+    (0, 0, 0, 0, 0),
+    (0, 7, 0, 7, 0),
+])
+def test_s4_population_boundaries(proof_model, tmp_path, matched, unresolved, numerator, identity, vendor) -> None:
+    model = copy.deepcopy(proof_model)
+    row = model["coverage"]["us"]
+    row["numerator_issuers"] = numerator
+    row["denominator"] = {
+        "eligible_issuers_resolved": matched,
+        "eligible_securities_unresolved_issuer": unresolved,
+        "issuer_count_bounds": [matched + (1 if unresolved else 0), matched + unresolved],
+    }
+    row["remainder_by_reason"] = {}
+    if identity:
+        row["remainder_by_reason"]["IDENTITY_NOT_QUALIFIED"] = identity
+    if vendor:
+        row["remainder_by_reason"]["VENDOR_MEMBERSHIP_ONLY"] = vendor
+    assert identity - unresolved + vendor == matched - numerator
+    render_site(model, tmp_path)
+    html = (tmp_path / S4).read_text(encoding="utf-8")
+    bound = {("live", S4): html, "models": {"live": model}}
+    test_s4_market_counts_keep_source_bounds(bound, "live")
+    test_s4_company_reasons_account_for_separate_listings(bound, "live")
+    main = _main(html)
+    assert "100%" not in main and "complete coverage" not in main.lower()
+
+
+def test_s4_extended_activity_cannot_change_core_summary(proof_model, tmp_path) -> None:
+    model = copy.deepcopy(proof_model)
+    core = [m for m in model["micros"].values() if m["tier"] == "acceptance"]
+    extended = [m for m in model["micros"].values() if m["tier"] != "acceptance"]
+    assert len(core) >= 5 and extended
+    for micro in core:
+        micro.update(admitted=0, disposition="EMPTY", kind="acc")
+        micro["counts"] = {"admitted": 0, "proposed": 0, "rejected": 0,
+                           "research_records": {}, "vendor_expressing_routes": 0, "vendor_member_companies": 0}
+    cases = [("NATIVE_POPULATED", "adm", 2, 1), ("PROPOSED_ONLY", "held", 0, 2),
+             ("RESEARCH_UNADMITTED", "acc", 0, 0), ("VENDOR_ONLY", "acc", 0, 0)]
+    for micro, (disposition, kind, admitted, proposed) in zip(core, cases):
+        micro.update(disposition=disposition, kind=kind, admitted=admitted)
+        micro["counts"].update(admitted=admitted, proposed=proposed)
+    core[2]["counts"]["research_records"] = {"fixture": 1}
+    core[3]["counts"].update(vendor_expressing_routes=1, vendor_member_companies=2)
+    extended[0].update(admitted=3, disposition=None, kind="adm")
+    extended[0]["counts"]["admitted"] = 3
+    model["totals"]["admitted_micros"] = sum(m["admitted"] > 0 for m in model["micros"].values())
+    model["totals"]["held"] = sum(m["kind"] == "held" for m in model["micros"].values())
+    model["disposition_counts"] = {key: sum(m["disposition"] == key for m in core)
+                                   for key in ("NATIVE_POPULATED", "PROPOSED_ONLY", "RESEARCH_UNADMITTED", "VENDOR_ONLY", "EMPTY")}
+    before_markets = copy.deepcopy(model["coverage"])
+    render_site(model, tmp_path)
+    html = (tmp_path / S4).read_text(encoding="utf-8")
+    bound = {("live", S4): html, "models": {"live": model}}
+    test_s4_core_activity_counts_use_one_scope(bound)
+    soup = BeautifulSoup(_main(html), "html.parser")
+    assert [n.get_text() for n in soup.select(".gmi-coverage-theme-totals b")] == ["1", str(len(core) - 1)]
+    assert "1 has proposals only." in soup.select_one(".gmi-coverage-proposed .l-en").get_text()
+    assert model["coverage"] == before_markets
+    core[4].update(admitted=1, disposition="NATIVE_POPULATED", kind="adm")
+    core[4]["counts"]["admitted"] = 1
+    model["totals"]["admitted_micros"] += 1
+    model["disposition_counts"]["NATIVE_POPULATED"] += 1
+    model["disposition_counts"]["EMPTY"] -= 1
+    render_site(model, tmp_path)
+    changed = (tmp_path / S4).read_text(encoding="utf-8")
+    test_s4_core_activity_counts_use_one_scope({("live", S4): changed, "models": {"live": model}})
+    assert model["coverage"] == before_markets
+
+
+def test_s4_distinct_clock_fixture_survives_rendering(proof_model, tmp_path) -> None:
+    model = copy.deepcopy(proof_model)
+    model["asof"] = "2024-03-09"
+    model["provenance"]["built_at_utc"] = "2025-08-17T06:42:19Z"
+    render_site(model, tmp_path)
+    first = (tmp_path / S4).read_text(encoding="utf-8")
+    test_s4_clocks_describe_the_saved_model({("live", S4): first, "models": {"live": model}})
+    render_site(model, tmp_path)
+    assert (tmp_path / S4).read_text(encoding="utf-8") == first
 
 
 def test_s4_corrections_log_explains_what_is_and_is_not_published(pages) -> None:
