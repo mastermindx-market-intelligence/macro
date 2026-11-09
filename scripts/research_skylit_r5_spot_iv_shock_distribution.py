@@ -167,7 +167,7 @@ def build_distribution(
     frame = frame[
         (frame["root"] == root.upper())
         & frame["date"].ne("NaT")
-        & (frame["date"] < asof)
+        & (frame["date"] < asof_day.isoformat())
     ].copy()
 
     sessions = sorted(frame["date"].dropna().unique().tolist())

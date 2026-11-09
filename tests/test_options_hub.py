@@ -1204,25 +1204,32 @@ def _r5_shock_frame(states):
     return pd.DataFrame(rows)
 
 
-def test_r5_shock_distribution_is_strictly_prior_to_asof():
+@pytest.mark.parametrize("asof", ["2026-09-16", "20260916", "2026-W38-3"])
+def test_r5_shock_distribution_is_strictly_prior_to_asof(asof):
     frame = _r5_shock_frame([
         ("2026-09-14", 100.0, 0.20),
         ("2026-09-15", 101.0, 0.22),
-        # This extreme move is on the as-of session and MUST NOT enter the
-        # distribution available before that session.
+        # Same-session and future states must stay excluded for every accepted
+        # ISO date spelling, before any shocks or coverage are constructed.
         ("2026-09-16", 120.0, 0.50),
+        ("2026-09-17", 150.0, 0.80),
+        ("2026-10-01", 200.0, 1.00),
     ])
     got = r5_shocks.build_distribution(
         frame,
-        asof="2026-09-16",
+        asof=asof,
         root="SPY",
         window_sessions=10,
         min_samples=1,
         calendar_api=_R5ShockCalendar,
     )
     assert got["status"] == "DISTRIBUTION_COMPLETE"
+    assert got["asof"] == "2026-09-16"
     assert got["construction_cutoff_session"] == "2026-09-15"
+    assert got["coverage"]["raw_sessions_before_asof"] == 2
     assert got["n_samples"] == 1
+    assert got["samples"][0]["from_session"] == "2026-09-14"
+    assert got["samples"][0]["to_session"] == "2026-09-15"
     assert got["samples"][0]["spot_pct"] == pytest.approx(1.0)
     assert got["samples"][0]["vol_pts"] == pytest.approx(2.0)
     assert got["outcome_labels_opened"] is False
