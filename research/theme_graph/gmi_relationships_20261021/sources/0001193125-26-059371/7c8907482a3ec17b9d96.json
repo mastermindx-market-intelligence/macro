@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-19T21:11:12Z",
+ "accession": "0001193125-26-059371",
+ "cik": "0001005284",
+ "doc_byte_length": 4060884,
+ "doc_sha256": "b8f3af137eed03c862e9738ebfcaea1e61832607115a769e412b604eab6aeb0c",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-19",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "oled-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 325247,
+  "byte_start": 324960,
+  "normalized": "In 2025, we received a majority of our revenue from three customers domiciled in the Asia-Pacific region, BOE, LG Display and SDC, from each of which we had revenue in excess of 10% of our consolidated revenue. Our business is heavily dependent on our relationships with these customers.",
+  "normalized_sha256": "7c8907482a3ec17b9d96e4f737a7e1a51365ac7affc015a2eb9aebdd52f923dc",
+  "raw": "In 2025, we received a majority of our revenue from three customers domiciled in the Asia-Pacific region, BOE, LG Display and SDC, from each of which we had revenue in excess of 10% of our consolidated revenue. Our business is heavily dependent on our relationships with these customers.",
+  "raw_sha256": "7c8907482a3ec17b9d96e4f737a7e1a51365ac7affc015a2eb9aebdd52f923dc"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1005284/000119312526059371/oled-20251231.htm",
+ "xbrl_contexts": []
+}

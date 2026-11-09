@@ -20,6 +20,7 @@ from engine.government_revenue.entity_resolution import (
     build_recipient_resolution_coverage,
     load_recipient_entity_graph,
 )
+from tests.test_build_government_revenue import _render_dependency_assets
 from tests.test_government_revenue_workspace import reviewed_award_event
 
 
@@ -64,6 +65,7 @@ def _generation(
 """,
         encoding="utf-8",
     )
+    _render_dependency_assets(template_dir)
     workspace = build_procurement_workspace(
         {
             "events": [],
