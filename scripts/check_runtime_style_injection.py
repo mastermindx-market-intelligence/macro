@@ -34,7 +34,9 @@ cannot silently grow:
 `theme.js` (both `templates/` and `site/`) is the canonical theme owner the
 architecture explicitly permits and is, by a wide margin, the single biggest
 entry in the baseline — that is expected and is not debt TP-0 is asking
-anyone to remove. Vendored minified libraries (e.g. `plotly-2.32.0.min.js`)
+anyone to remove. The public theme/onboard aliases are counted through their
+named site owner only when the emitter's exact hashed path and raw bytes agree.
+All other assets stay in the ordinary per-file ratchet. Vendored minified libraries (e.g. `plotly-2.32.0.min.js`)
 are IN SCOPE and frozen like anything else: no vendor exemption class is
 carved out, because an exemption class is exactly the bypass shape this guard
 exists to close. A future vendor upgrade that changes its injection count is
@@ -65,11 +67,14 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import stat
 import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
+
+from lib.shared_shell import _JS_SUBDIR, _SHARED_ROLES, hashed_js_url
 
 BASELINE_PATH_REL = "config/runtime_style_injection_allowlist.json"
 BASELINE_SCHEMA = "mastermind.runtime_style_allowlist.v1"
@@ -107,12 +112,45 @@ def file_counts(text: str) -> dict[str, int]:
     return {name: n for name, n in counts.items() if n}
 
 
+class SharedAliasIntegrityError(ValueError):
+    """An expected public alias is present but cannot be bound to its named owner."""
+
+
+def _verified_shared_aliases(root: Path) -> set[Path]:
+    site = root / "site"
+    js_root = site.joinpath(*_JS_SUBDIR)
+    aliases = set()
+    if site.is_symlink():
+        return aliases
+    for role in _SHARED_ROLES:
+        source = site / f"{role}.js"
+        if source.is_symlink() or not source.is_file():
+            continue
+        raw = source.read_bytes()
+        url = hashed_js_url(js_root, raw, write=False)
+        if url is None:
+            continue
+        alias = site / url.split("?", 1)[0]
+        try:
+            mode = alias.lstat().st_mode
+        except FileNotFoundError:
+            continue  # The named bundles also exist in generations without aliases.
+        if (not stat.S_ISREG(mode) or js_root.is_symlink() or js_root.parent.is_symlink()
+                or alias.read_bytes() != raw):
+            raise SharedAliasIntegrityError(
+                f"{alias.relative_to(root)} is not the regular byte-exact alias of {source.relative_to(root)}"
+            )
+        aliases.add(alias)
+    return aliases
+
+
 def discover_counts(root: Path) -> dict[str, dict[str, int]]:
-    """relpath (posix, e.g. "site/theme.js") -> nonzero pattern counts, for every
-    injecting `.js` file under `templates/` and `site/`. Clean files (no injection
-    signature at all) are simply absent from the result."""
+    """Count every injecting JS owner under templates/ and site/."""
+    aliases = _verified_shared_aliases(root)
     out: dict[str, dict[str, int]] = {}
     for path in iter_js_files(root):
+        if path in aliases:
+            continue
         text = path.read_text(encoding="utf-8", errors="replace")
         counts = file_counts(text)
         if counts:
@@ -240,11 +278,11 @@ def _sparse_refusal(root: Path) -> str | None:
     return remedy_line(absent) if absent else None
 
 
-def _emit_baseline(root: Path, generated_from: str) -> dict:
+def _emit_baseline(discovered: dict[str, dict[str, int]], generated_from: str) -> dict:
     return {
         "schema": BASELINE_SCHEMA,
         "generated_from": generated_from,
-        "files": discover_counts(root),
+        "files": discovered,
     }
 
 
@@ -314,7 +352,7 @@ def selftest() -> int:
             return 1
 
         # 4. --emit-baseline never guesses a sha.
-        emitted = _emit_baseline(tmp, "deadbeefcafe")
+        emitted = _emit_baseline(discovered2, "deadbeefcafe")
         if emitted["generated_from"] != "deadbeefcafe" or emitted["schema"] != BASELINE_SCHEMA:
             print(f"selftest FAIL: --emit-baseline shape wrong: {emitted}")
             return 1
@@ -357,29 +395,35 @@ def main(argv: list[str] | None = None) -> int:
 
     root = ROOT
 
+    if args.emit_baseline and not args.generated_from:
+        print(
+            "::error title=runtime-style-injection-emit-baseline::--emit-baseline requires "
+            "--generated-from SHA (e.g. --generated-from \"$(git rev-parse HEAD)\") — this "
+            "script never guesses or substitutes a commit sha itself.",
+            flush=True,
+        )
+        return 2
+
+    if not args.emit_baseline:
+        refusal = _sparse_refusal(root)
+        if refusal:
+            print(f"runtime style injection guard REFUSED: {refusal}")
+            return 1
+
+        baseline = _load_baseline(root)
+        if baseline is None:
+            return 1
+
+    try:
+        discovered = discover_counts(root)
+    except SharedAliasIntegrityError as error:
+        print(f"::error title=runtime-style-injection-alias-integrity::{error}", flush=True)
+        return 1
+
     if args.emit_baseline:
-        if not args.generated_from:
-            print(
-                "::error title=runtime-style-injection-emit-baseline::--emit-baseline requires "
-                "--generated-from SHA (e.g. --generated-from \"$(git rev-parse HEAD)\") — this "
-                "script never guesses or substitutes a commit sha itself.",
-                flush=True,
-            )
-            return 2
-        baseline = _emit_baseline(root, args.generated_from)
-        print(json.dumps(baseline, indent=2, sort_keys=True))
+        print(json.dumps(_emit_baseline(discovered, args.generated_from), indent=2, sort_keys=True))
         return 0
 
-    refusal = _sparse_refusal(root)
-    if refusal:
-        print(f"runtime style injection guard REFUSED: {refusal}")
-        return 1
-
-    baseline = _load_baseline(root)
-    if baseline is None:
-        return 1
-
-    discovered = discover_counts(root)
     violations, stale = evaluate(discovered, baseline.get("files", {}))
 
     # R2 (binding deviation from the TP-0 plan's "::notice" wording — see the
