@@ -1,0 +1,5 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/commodities.html.j2
+  - templates/_petroleum_flow_context.html.j2
+manifest: mockups/evidence/f09-petroleum-flow/manifest.json

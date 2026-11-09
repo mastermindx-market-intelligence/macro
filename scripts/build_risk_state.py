@@ -117,10 +117,12 @@ def _spliced_frames(quotes, max_chg, stale_after, now, session_open):
     quote that won ``_usable()``, never a builder wall clock. GD-3R1 amendment F3:
     a quote flagged ``quote_ts_synthetic`` (engine.live_quotes — its own ``quote_ts``
     did NOT come from a real market timestamp, e.g. a day/prev-close basis or a
-    fallback to the snapshot's refresh clock) still SPLICES normally (pricing/
-    staleness unaffected) but its clock is recorded as ``None`` here — Sol's
-    cannot-be-established -> null law — so a synthetic (builder/snapshot) wall
-    clock can never enter the event-time receipt."""
+    fallback to the snapshot's refresh clock) never puts that clock in the
+    event-time receipt. Since #8606 ``live_overlay.staleness()`` calls such a
+    quote stale (rule 6: a synthetic quote clock is no actionable live cash
+    update), so ``_usable()`` refuses it and the symbol reads its nightly close.
+    The ``None`` mapping below stays as a second fence — Sol's
+    cannot-be-established -> null law."""
     spliced, live_close, nightly_close, quote_clocks = {}, {}, {}, {}
     for name, sym in SPLICE.items():
         close = live_overlay.read_close(name)
@@ -212,6 +214,7 @@ def _verdict_block(ms: dict | None) -> dict:
         "verdict": ms.get("verdict"), "score": ms.get("score"), "raw_score": ms.get("raw_score"),
         "color": ms.get("color"), "label_en": ms.get("label_en"), "label_zh": ms.get("label_zh"),
         "headline_en": ms.get("headline_en"), "headline_zh": ms.get("headline_zh"),
+        "participation_scope": ms.get("participation_scope"),
         "radar": {k: (ms.get("radar") or {}).get(k)
                   for k in ("state", "state_ungated", "top_score", "label_en", "label_zh",
                             "context_gate", "amp", "ceiling")},
@@ -239,6 +242,41 @@ def _debounce(prev: dict, live_verdict: str | None, baseline_verdict: str | None
     return {"verdict": shown, "pending": {"verdict": live_verdict, "ticks": n,
             "needs": ticks_required}, "band_changed": False,
             "in_order": (order.index(live_verdict) if live_verdict in order else None)}
+
+
+def _display_participation_copy(verdict: str, snapshot: dict | None) -> dict:
+    """Project copy for the debounced display verdict from one real source snapshot."""
+    source = snapshot if isinstance(snapshot, dict) else {}
+    components = source.get("components") or []
+    market = source.get("market") or "us"
+    kwargs = {
+        "market": market,
+        "asof": source.get("asof"),
+        "input_vintages": source.get("input_vintages") or {},
+    }
+    scope = market_state._participation_scope(verdict, components, **kwargs)
+    headline_en, headline_zh = market_state._headline_for(verdict, components, **kwargs)
+    return {
+        "headline_en": headline_en,
+        "headline_zh": headline_zh,
+        "participation_scope": scope,
+    }
+
+
+def _display_participation_copy_for_sources(
+    verdict: str,
+    *,
+    live_active: bool,
+    live_snapshot: dict | None,
+    nightly_snapshot: dict | None,
+) -> dict:
+    """Select the full measurement owner, then project the debounced display verdict."""
+    source = (
+        live_snapshot if live_active and isinstance(live_snapshot, dict)
+        else nightly_snapshot if isinstance(nightly_snapshot, dict)
+        else live_snapshot
+    )
+    return _display_participation_copy(verdict, source)
 
 
 def build(offline: bool = False) -> dict:
@@ -366,6 +404,15 @@ def build(offline: bool = False) -> dict:
     disp_label = {"RISK_ON": ("Risk-on", "风险偏好", "green"),
                   "MIXED": ("Mixed", "混合", "yellow"),
                   "RISK_OFF": ("Risk-off", "避险", "red")}.get(disp_verdict, ("—", "—", "yellow"))
+    # Project from the full source snapshot that owns the measurement, but
+    # against the debounced DISPLAY verdict. Never reconstruct breadth from the
+    # stripped transport block and never re-date settled breadth intraday.
+    display_copy = _display_participation_copy_for_sources(
+        disp_verdict,
+        live_active=live_active,
+        live_snapshot=live_ms,
+        nightly_snapshot=nightly_ms,
+    )
     display = {
         "verdict": disp_verdict,
         "label_en": disp_label[0], "label_zh": disp_label[1], "color": disp_label[2],
@@ -378,6 +425,7 @@ def build(offline: bool = False) -> dict:
                             else live_blk.get("raw_score"))),
         "band_changed": deb.get("band_changed", False),
         "pending": deb.get("pending"),
+        **display_copy,
     }
 
     out = {

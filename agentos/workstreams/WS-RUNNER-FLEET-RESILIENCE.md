@@ -23,6 +23,9 @@ owns_paths:
   - ".github/workflows/trusted-ci-executor.yml"
   - "ops/runner-host/**"
   - "tests/test_runner_policy.py"
+  - "scripts/check_runner_policy.py"
+  - "scripts/check_runner_queue_hostage.py"
+  - "tests/test_runner_queue_hostage.py"
   - "tests/test_ci_canary_tools.py"
   - "tests/test_ci_cache_update.py"
   - "tests/test_ci_canary_workflows.py"
@@ -109,6 +112,7 @@ discoveries:
   - DSC:REUSABLE-WORKFLOW-CALL-AND-HOST-HOOK-USE-DIFFERENT-REF-SHAPES
   - DSC:SEALED-PC-CI-REPLAY-AND-PORTABILITY-NEED-EXPLICIT-RUNTIME-BINDINGS
   - DSC:PC-CI-CACHE-FULL-ESTATE-SCAN-JAMS-TRUSTED-POOL
+  - DSC:DELABELLING-AN-ONLINE-RUNNER-IS-INVISIBLE-TO-EVERY-LIVENESS-INSTRUMENT
 artifacts:
   - research/RUNNER_FLEET_RESILIENCE_ARCHITECTURE_FREEZE_2026-08-20.md
   - research/RUNNER_FLEET_RESILIENCE_M0_ADVERSARIAL_AMENDMENT_2026-08-20.md
@@ -118,12 +122,34 @@ artifacts:
   - agentos/discoveries/DSC-PRIVATE-CI-HOSTED-MINUTES-REQUIRE-TWO-LEVER-CUTOVER.md
   - agentos/discoveries/DSC-PERSISTENT-RUNNER-TEMP-PACKS-CAN-BREACH-THE-HOST-DISK-GUARD.md
   - agentos/discoveries/DSC-REUSABLE-WORKFLOW-CALL-AND-HOST-HOOK-USE-DIFFERENT-REF-SHAPES.md
+  - research/RENDER_LANE_OUTAGE_2026_09_25_POSTMORTEM.md
+  - scripts/check_runner_queue_hostage.py
+  - agentos/discoveries/DSC-DELABELLING-AN-ONLINE-RUNNER-IS-INVISIBLE-TO-EVERY-LIVENESS-INSTRUMENT.md
 landmines:
   - >
-    pc-render-1 (the W3-accepted runner identity) is no longer in the repo
-    runner registry; render-linux is currently carried by pc-render-2/3/4
-    (census 2026-08-25). Do not cite pc-render-1 as live render capacity
-    without a fresh census.
+    `render-linux` has ZERO carriers as of the 2026-09-25 live census, and that is
+    the current cause of the wedged page-bake lanes. The 2026-08-25 census in this
+    slot said the opposite of today's state in BOTH halves and is superseded:
+    pc-render-1 is back and is org runner id 15, online and idle, but its custom
+    labels were stripped to `{self-hosted, Linux, X64}` inside
+    2026-09-23T12:05:04Z-12:05:09Z; pc-render-2/3/4 are absent from the live pool
+    entirely. Re-census before citing ANY render capacity - the direction of this
+    landmine has now flipped twice in a month. See
+    DSC:DELABELLING-AN-ONLINE-RUNNER-IS-INVISIBLE-TO-EVERY-LIVENESS-INSTRUMENT and
+    research/RENDER_LANE_OUTAGE_2026_09_25_POSTMORTEM.md.
+  - >
+    A runner can lose a label while staying `online`/`idle` under its original id,
+    so "the host is up" and "the label is declared" are both compatible with a lane
+    that can never run. The only positive observation of absence is live job state:
+    `queued`, no `runner_name`, self-hosted `runs-on`, past any honest wait. That is
+    `scripts/check_runner_queue_hostage.py`; `check_runner_policy.py` R11-R15 are
+    declaration hygiene and cannot see a death nobody wrote down.
+  - >
+    On a wedged coalescing lane the `cancelled` runs are NOT a `cancel-in-progress`
+    livelock. render.yml and engine-render.yml have carried
+    `cancel-in-progress: false` since the 2026-07-17 starvation postmortem; a
+    superseded PENDING run concludes `cancelled` exactly as a killed in-flight run
+    does. Check `startedAt`/`runner_name` before diagnosing.
   - >
     `parked` is not an exclusion label; positive label matching still routes jobs to
     that listener. See .github/runner-policy.yml.
@@ -208,12 +234,7 @@ next_action: >
   or prove a lower exact peak before the one-root canary. Generic macstudio remains
   forbidden.
   The M2 temporary-pack incident is recovered with 303.6 GB unallocated and zero Git
-  garbage. The separate PC shared-cache updater contention is production-repaired: the
-  root timer now completes ordinary cycles in about 1-2 seconds under a bounded service
-  instead of scanning the full estate at a 14.2 GiB peak. Keep the source carrier open
-  until exact-head CI, merge, and exact merged-byte host installation are complete. The
-  remaining three-slot queue is a separate capacity constraint, not permission to
-  reintroduce cancellation sweeps or activate pc-ci-4.
+  garbage; measure the producer before extending the existing runner lifecycle.
   The private-readiness baseline in
   DSC:PRIVATE-CI-HOSTED-MINUTES-REQUIRE-TWO-LEVER-CUTOVER proves that moving packs
   alone cannot meet the 50,000-minute allowance; after PC and cutover acceptance,
@@ -266,6 +287,11 @@ through `WS:CI-MERGE-CONTROL-PLANE`; W1-A supplies environment/capacity proof on
 W1-B is the separately reviewed route cutover.
 
 ## PC shared-cache contention repair — 2026-09-16
+
+This dated section preserves the September 16 host observations. The current #7222
+source integration does not establish a new host installation or live acceptance; the
+current frontmatter next action and later recovery records remain authoritative for
+ongoing work.
 
 The three trusted PC listeners remained online and continued completing packs during the
 September 16 jam; their aggregate cgroup recorded no OOM kill. The apparent matrix deaths

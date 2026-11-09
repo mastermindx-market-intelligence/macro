@@ -1,0 +1,57 @@
+{
+  "schema": "mastermind.risk_radar_caution_persistence_evidence.v2",
+  "status": "corrected_post_replay_parity",
+  "rerun_protocol_commit": "e9ff3d234df1f50137bfa38a50995a70f06c1164",
+  "invalidator_merge": "7c6e35163c9f67087ffe174a7ab3810f47ce6a45",
+  "protected_skillpack": {
+    "repo": "mastermindx-market-intelligence/Mastermind",
+    "commit": "4ca1b97e65de9d4ba8c868b9d708fb7620a8a76f",
+    "version": "1.0.1",
+    "bootstrap_major": 1
+  },
+  "authority": {
+    "status": "descriptive_only",
+    "live_model_changed": false,
+    "probability_changed": false,
+    "gate_changed": false,
+    "policy_changed": false
+  },
+  "selected_result": {
+    "full": {
+      "persistent_event_rate": 0.20777666999002992,
+      "persistent_lift_vs_base": 1.176970058014063,
+      "persistent_recall": 0.7206085753803596,
+      "persistent_fire_rate": 0.6122573556342327
+    },
+    "since_2020": {
+      "persistent_event_rate": 0.23975588491717523,
+      "persistent_lift_vs_base": 1.3586166811973261,
+      "persistent_recall": 0.935374149659864,
+      "persistent_fire_rate": 0.6884753901560624
+    },
+    "event_view": {
+      "n_events": 110,
+      "persistent_by_t0": 99,
+      "persistent_left_censored_n": 76,
+      "persistent_exact_lead_n": 23,
+      "persistent_median_lead_uncensored_sessions": 12.0
+    }
+  },
+  "verification": {
+    "owning_suites": "205 passed",
+    "agentos": "0 errors; inherited warnings only",
+    "diff_check": "pass",
+    "result_sha256": "38893ded96b84da5d2ddbb3c96f766e2e626a56919ddf3b63577bc3c752b7e1e",
+    "script_sha256": "cd8fc22a403b7a9332d407d4de6eb381568ba0572d1b0aa92ddc756c2fe14c4e",
+    "report_sha256": "8fbe6d4b248cc4370e93629f8be239920f792f166ed3080a1a9a24eabf483355",
+    "run_log_sha256": "e3878c1937b4081d043c69f4fbe501e34a6c7e56680b0fcc3975a4d4dbd29277",
+    "tests_log_sha256": "ce15ca51a20d3aa93785dc02c7496c7ed029a12d4d36e9440baa4b22435c1596",
+    "agentos_log_sha256": "e4dff7b7d21d4523cd8bb4075bb4a02616e8dd33330f2871f751947d53ec8f4c"
+  },
+  "product_ceiling": "neutral duration context only; not a new prominent warning badge",
+  "pre_parity": {
+    "pr": 7608,
+    "verification_ref": "verification.pre_parity.json",
+    "status": "superseded_by_7632"
+  }
+}
