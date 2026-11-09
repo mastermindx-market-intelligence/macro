@@ -1,8 +1,10 @@
 # Prophet production masterplan
 
-## Turn 2 of 4 - reviewed Paper candidate and architecture handoff
+## Turn 3 of 4 - source-bound architecture and production contracts
 
-**Version:** 2.0 working masterplan, 9 November 2026. **Capability state:** DESIGN_CANDIDATE_REVIEWED_WITH_ONE_HELD_FRAGMENT. Turn 1 census/architecture is retained. Turn 2 adds 23 editable Paper canvases: 22 reviewed candidates, references or state canvases and one partial held mobile Plans canvas. The four-turn programme and production product remain incomplete.
+**Version:** 3.0 working masterplan, 9 November 2026, America/Vancouver. **Capability state:** SOURCE_BOUND_ARCHITECTURE_FOR_TURN4. Turn 3 binds the reviewed Paper design to 38 explicit owner contracts, fresh Macro/Terminal source and affected candidate heads. All 29 build units, 24 research packets, 12 decisions and 36 requirements remain mapped. The 23-canvas design remains a reviewed candidate with one partial held mobile Plans root. This is architecture and implementation planning, not a declaration of production or scientific acceptance.
+
+**Turn 3 navigation:** [architecture hardening][S30], [exact contract and programme registry][S31], [readable crosswalk][S32], [backend source appendix][S33], [experience source appendix][S34], [intelligence and 24-Q appendix][S35]. Section 14 contains the integrated hardening; Appendices D and E make the contracts and retained endpoints directly reviewable.
 
 **Turn 2 navigation:** [Paper candidate][S27], [design review and implementation contract][S25], [exact operation/target manifest][S26]. Section 13 contains the complete Turn 2 review, actual coverage, numerical fixtures and next architecture obligations. These designs do not establish live behavior, scientific acceptance or release readiness.
 
@@ -32,10 +34,10 @@ This is not a declaration that Prophet is production-ready. Source merge, curren
 | --- | --- | --- |
 | 1 - completed | Evidence-backed progress census, architecture v1, retained scope, production contracts, implementation sequence and exact Paper brief | Version 1 and continuation saved/read back; historical source census retained |
 | 2 - candidate reviewed | Editable flagship candidate, responsive journeys, critical states and exact source manifest | 22 reviewed candidate/reference/state canvases; one partial mobile Plans canvas fenced by unknown effect; section 13 records remaining limits |
-| 3 - hardening | Reconcile design with exact owner interfaces, failure/correction cases, science, migration, performance and real acceptance | Every designed promise has an owner, dependency, proof and honest unsupported state |
+| 3 - architecture hardened | Fresh source review, 38 design-to-owner contracts, retained B/Q/D/R map, exact implementation gaps and meaningful proof | Source-bound specification saved/read back; PDF and continuation verified; product implementation remains owed |
 | 4 - final package | Frozen masterplan, design manifest, decisions, source disposition and bounded Fable work packets | Reviewable implementation commission for the actual T3 target; pickup/START only if observed |
 
-The user's four-turn sequence is an explicit editorial boundary. Turn 2 completes the bounded design review with one precise partial exception. No unattended continuation, Fable dispatch or production release has occurred in either completed editorial turn.
+The user's four-turn sequence is an explicit editorial boundary. Turn 2 completed its bounded design review with one precise partial exception. Turn 3 hardens architecture against that candidate. Turn 4 freezes the final commission. No unattended continuation, Fable dispatch or production release is implied by an editorial turn.
 
 ### 1.2 Product completion, beyond the design package
 
@@ -50,10 +52,12 @@ The full roadmap retains eight sleeves and four-market architecture. R6's US-fir
 | Reference | Revision or observed identity | Use |
 | --- | --- | --- |
 | Mastermind protected master | `3652d8907df1738de551dd3032b42aa2a2acb482` | INDEX, applicable delivery, continuity, execution, Paper and closeout procedure; schema 1.0.1 / bootstrap major 1 |
-| Macro canonical source | `36ff39c98dfee8190d0a3f7aaaef9df86921226e` | Backend, strategy contracts, effective R6, original wave records and design doctrine |
-| Terminal source | `1377853d02fdb0295c0848d7127fdee4ca36714b` | ProphetView and existing application semantics |
+| Retained Turn 1 Macro census | `36ff39c98dfee8190d0a3f7aaaef9df86921226e` | Historical backend/PR census, effective R6 and original wave records |
+| Turn 3 Macro main | `9a13c64bf69f782332afa29efb09fe48ee30b857` | Fresh owner code, source/consumer contracts and affected candidate reconciliation |
+| Retained Turn 1 Terminal | `1377853d02fdb0295c0848d7127fdee4ca36714b` | Historical application census |
+| Turn 3 Terminal master | `1c0bf028cf72539a4d3fcb17fa137ee474d764f9` | Fresh BFF/hooks, account/list and migration source; legacy Plan semantics |
 | Rich-opportunity implementation | Macro #9495, `d42d83307948141c05967d7081a6cc7cbeb24a90` | Incumbent product implementation; Draft/HOLD, not released by this plan |
-| D03 design programme | #10617, `ea5d491ef182bdf8a597c7c5acb4b49ae276e8d7` | Current programme head; D03 Phase 2A blob `c5f7899e07d7a54b869e60b8090bfafa95b8e74e` unchanged from inspected prior revision |
+| D03 design programme | #10617, `927c667714e04ba82db60c15852213ce8660cc9f` | Turn 3 observed head; Phase 2A blob `c5f7899e07d7a54b869e60b8090bfafa95b8e74e` unchanged from the retained prior inspection |
 | F01 shared shell | #10645, `dce261d07ebc993e8a9579cca2200e445b6636d4` | Draft; operative candidate.4, candidate.5 proposed; final joint v1 unreleased |
 | Paper | PROPHET file `01M3NT5Y3G5HTJHVR0K5W2MDJM` | Direct current inventory and selected native screenshots; mutable document, not immutable approval |
 
@@ -62,6 +66,8 @@ Primary predecessors include the effective R6 plan, its build/research/decision/
 The Turn 1 census was bounded: native PR metadata was checked for the material work listed in Appendix A, with specific owner-code reads and three advisory architecture analyses. Selected then-current Paper boards were inspected; it was not an all-artboard audit. No application test suite, live production request, signed-in user journey, experiment, merge, deployment or Paper mutation was performed in Turn 1.
 
 Turn 2 refreshed design doctrine and the master design system at Macro cdfb627f4fcf8fe9cd536cfcb4f8a0dba4fa9d93, reused the protected procedure pin and created the exact Paper candidate recorded in section 13. That refresh updates design facts only; the backend/PR census above remains its dated observation, not a newly verified production state. [S25], [S26], [S28], [S29]
+
+Turn 3 refreshed affected main/candidate facts and mapped actual fields, symbols, clocks and error meanings. It did not repeat the entire earlier census or execute production tests. Section 14 distinguishes source-present, candidate-only, proposed extension and installed/scientific proof. The Q docket is unchanged at blob `47fd83c4b403476a59015cc8fdfb272d6a0d8814`; no packet was registered or dispatched. [S30], [S31], [S33], [S34], [S35]
 
 Older prose sometimes says a PR is pending after native metadata says merged. This plan uses the observed native state for that claim. Conversely, an open PR's synthetic merge reference is not a merge. The dated workstream ledger is preserved as a historical plan register; it is not silently upgraded into a current completion percentage.
 
@@ -87,9 +93,9 @@ The V4 ledger records 30 original waves: five done, seven in progress and eighte
 
 ### 2.3 The critical integration gaps
 
-**Current entry truth.** At the inspected main source, B3's factual projection retains `UNAVAILABLE_DATA / B4_NOT_AVAILABLE`; native assessments report `REVIEW_REQUIRED / B4_NATIVE_OWNER_READ_UNAVAILABLE`. Authority flags remain false. The evaluator is built; the present owner-fact path and consumer are incomplete. Fixing that adapter is a product capability, not a reason to relabel a green chart as ready. [S07], [S08]
+**Current entry truth.** The existing same-read join deliberately leaves geometry and metrics unwired; the actual Today producer supplies no B4, Plan, evidence, assembly or quote inputs to Daily Brief. Useful research can survive as a partial read, while current entry remains unavailable. Turn 3 also identifies assembly-versus-pass clock ordering and price/basis invalidation precedence that must be resolved before integration. These are source-level findings, not reproduced deployed defects. [T301], [T302], [T303]
 
-**Efficient coherent reads.** #10824 narrows native expansion by session but still reads, decodes and hashes every part. Its reported component result of 7.232418 seconds and 1,228.484 MiB peak RSS is not endpoint p95. #9369 introduces detached batches and entry/exit generation checks; its source mapping still has material repeated scanning. Integrate incumbent work, profile the real consumer, then extend the existing generation index if necessary. Do not introduce an unqualified cross-request trust cache or another read queue. [PR10824], [PR9369]
+**Efficient coherent reads.** #10824 avoids irrelevant row expansion but still reads, decodes and hashes every part. #9369 reduces repeated validation through detached batches and entry/exit generation checks while retaining O(bindings × generation rows) projection work. B03 already has a bounded attested cache. Integrate incumbent work, profile the real consumer, then extend the same owner if justified. Prior component figures are not current endpoint p95, memory or concurrency proof. [T305], [T331], [T332]
 
 **Identity and correction.** #8004's issuer/security boundary, #10176's withdrawn/stale/current/unknown projection, #10509's board/index epochs and #10202's exact served-byte settlement remain open work. A matching file digest or newer quote alone does not settle the whole product generation. [PR8004], [PR10176], [PR10509], [PR10202]
 
@@ -273,7 +279,7 @@ This table describes one composed system. It creates no new source-of-truth data
 
 The shared view references security, issuer and listing identity; market/currency/price basis; observation and nullable episode relationship; exact episode generation; strategy and horizon definition; policy/model version and scientific status; evidence references and cutoff; maturity; B4 state/reasons; original/current plan relations; user-owner references; and outcome lineage.
 
-These are required semantics, not an invented current API schema. Turn 3 maps every field to exact incumbent producers and makes only the smallest necessary versioned extensions. The existing daily-brief endpoint `GET /api/prophet/daily-brief/v1`, episode earnings endpoint `GET /api/prophet/lab/v1/episodes/{episode_id}/earnings`, private observation owner and effective-ledger PERF candidate remain the integration seams; this plan does not mint a universal opportunity endpoint. [S09], [PR8189], [PR7399]
+These are required semantics, not an invented current API schema. Section 14 and the 38-contract registry map the actual fields and owner seams, distinguish narrower existing behavior, and specify the smallest necessary versioned extensions. The existing daily-brief endpoint `GET /api/prophet/daily-brief/v1`, episode earnings endpoint `GET /api/prophet/lab/v1/episodes/{episode_id}/earnings`, private observation owner and effective-ledger PERF candidate remain the integration seams; this plan does not mint a universal opportunity endpoint. [S09], [PR8189], [PR7399]
 
 Counts declare their population, exclusions, filters and source generation. A full-field count, featured-card count, episode count, entry-state count and plan count are not interchangeable. Missing required identity or incompatible generation prevents current-action presentation. Missing optional evidence reduces coverage without deleting useful facts.
 
@@ -288,7 +294,7 @@ Four independent axes should remain visible where relevant:
 
 Freshness/integrity qualifies those axes. D03's selection priority, momentum, invalidation and clock meanings remain distinct attributes. None should be compressed into one green pill or one numerical confidence score.
 
-The existing B4 states are `NOT_READY`, `APPROACHING_ENTRY`, `ENTRY_OPEN`, `WAIT_PULLBACK`, `RAN_DONT_CHASE`, `INVALIDATED` and `UNAVAILABLE_DATA`. Its nine gate dimensions are owner confluence, risk ceiling, liquidity/fillability, gap/velocity, source health, corporate-action basis, session eligibility, event status and structural invalidation. Human labels must map to actual owner outcomes, not silently replace them.
+The existing B4 states are `NOT_READY`, `APPROACHING_ENTRY`, `ENTRY_OPEN`, `WAIT_PULLBACK`, `RAN_DONT_CHASE`, `INVALIDATED` and `UNAVAILABLE_DATA`. Its nine gate dimensions are owner confluence, risk ceiling, liquidity/fillability, gap/velocity, source health, corporate-action basis, session eligibility, event status and structural invalidation. Human labels must map to actual owner outcomes, not silently replace them. The separate optional structural-invalidation gate may remain UNKNOWN; BREACHED is non-waivable and the registered tactical numeric invalidation is mandatory. Do not require all nine dimensions to equal PASS. A same-read EVALUATED wrapper may contain nested UNAVAILABLE_DATA and is not readiness. [T301], [T302]
 
 | Condition | Useful presentation | Inference to prohibit |
 | --- | --- | --- |
@@ -311,7 +317,7 @@ Market session and corporate-action basis come from the incumbent owners. Displa
 
 ### 6.5 Atomic reads, corrections and caching
 
-Consume `NativeFactualAssessmentResult.verified_pair()` or its accepted owner successor. The pair verifies identity, digest, generation, session, assembly time and the exact episode/security relation. Detach the result before the caller can mutate it. Batch validation occurs at entry and exit; a generation-wide failure returns no mixed partial batch, while row-local failures remain ordered unavailable records.
+Consume `NativeFactualAssessmentResult.verified_pair()` or its accepted owner successor. The pair verifies identity, digest, generation, session, assembly time and the exact episode/security relation. Detach the result before the caller can mutate it. The incumbent #9369 batch candidate validates at entry and exit; a generation-wide failure must return no mixed partial batch, while row-local failures remain ordered unavailable records. Candidate presence does not establish installed batch adoption.
 
 Preserve safe old information as explicitly dated history. Retracted or withdrawn material must not remain current-action evidence in a cache. Cache identity must include actual source/model versions and entitlement partition through the existing cache owner; a convenient TTL is not a substitute for generation validity.
 
@@ -482,7 +488,7 @@ F01 candidate.4 is a provisional shared-shell reference; the final joint v1 is n
 
 ### 9.1 Targets to calibrate against actual measurements
 
-These are proposed engineering targets carried forward for turn 3, not current measured Prophet capability and not a claim of a completed benchmark.
+These remain proposed engineering targets after Turn 3, not current measured Prophet capability or a completed benchmark. The browser thresholds match the primary Core Web Vitals guidance; server and operational targets still need actual baseline and qualification. [T333]
 
 | Dimension | Proposed target / rule | How to qualify it |
 | --- | --- | --- |
@@ -571,7 +577,7 @@ This packet does not block independent product/source work. It does block any pu
 
 ### Packet 6 - attention, outcomes and portfolio context
 
-**R6:** B21/B22/B24. **Incumbents:** Terminal issues #691/#692, #7399 effective ledger, existing Alerts/WatchStore/Portfolio/Risk and #10704 scenario ownership.
+**R6:** B21/B22/B24. **Incumbents:** Terminal issues #691/#692, existing native effective ledger plus #7399 candidate PERF consumer, Alerts/WatchStore/Portfolio/Risk and #10704 scenario ownership.
 
 Finish producer lifecycle and current/history separation, correction-aware material alerts, qualified Track Record and shared exposure context. Preserve all five outcome layers. Extend supported durable Pass/thesis/milestone actions only at the existing owner and only with exact readback semantics.
 
@@ -605,7 +611,7 @@ The user has named Fable-led implementation on T3 after this four-turn round. Th
 - Design all three core economic jobs deeply while retaining the other five catalogue families and later instruments.
 - Retain advanced forecast, ranking, management and portfolio goals with their independent evidence requirements.
 - Preserve US-first production acceptance and four-market interface/capability coverage.
-- Defer actual Paper composition to turn 2 and Fable-led implementation to the final authorized handoff.
+- Preserve the completed Turn 2 candidate and exact held fragment; adopt Turn 3's source-bound contracts; freeze the Fable-led commission in Turn 4.
 
 These are this draft's design decisions. They do not constitute accepted model/policy promotion, adopted shared-shell law, repository release approval or a change to protected scientific registration.
 
@@ -641,33 +647,31 @@ These are this draft's design decisions. They do not constitute accepted model/p
 | Regional visual parity implies scientific parity | Invalid clocks, basis or copied policy | Market-native owners; explicit capability map and later region-specific acceptance |
 | Source unavailable becomes global paralysis | Useful independent discovery/dossier/UI work stalls | Fable/assigned principal; use the existing branch activation gates and honest unsupported states |
 
-### 11.4 Turn-3 hardening questions
+### 11.4 Turn 3 decisions and Turn 4 freeze frontier
 
-Turn 3 should inspect the concrete Paper candidate and answer: Does every favourable status have actual source fields? Can every important caveat be noticed without reading Build? Can all six jobs be reached without losing identity? Are dated evidence and live overlays coherent? Are advanced heads and durable actions honestly supported or specified? Does each original B/Q/D/R obligation still have a home? Which fields require a bounded incumbent extension, and which should simply be removed from the default view?
+Turn 3 answered the designed-promise questions with 38 source-bound contracts, all 23 canvas mappings and the complete retained programme. Section 14 records the exact source findings and architectural decisions. The registry distinguishes existing fields from proposed extensions, including one verified owner bundle, truthful evaluation clocks, policy-specific terms, canonical return keys, checked Save integration, actual Follow capability and independent Record axes. [S30], [S31], [S32]
 
-The result should be a closed design-to-owner contract and dependency map, not another broad re-audit of accepted history. Refresh affected PR heads, actual controls and disputed facts only.
+Turn 4 consolidates these into final bounded briefs. Freeze the exact evaluation/term version; population/filter and Record envelope; D05 dated-thesis versus notes and Save custody; B21 initial and retained extension slices; incumbent candidate disposition; and actual T3 execution/rollback proof. Owner implementation and scientific qualification remain real dependencies. The final plan must not relabel those gaps as completed capability or reopen accepted design without a concrete reason.
 
 ## 12. Continuation and truthful closeout
 
-**Before Turn 1:** useful Prophet architecture, source work and Paper studies existed across several dated programmes; stale prose and merged-source status could be confused; there was no consolidated four-turn production-design contract.
+**Before this round:** useful architecture, backend source and Paper studies existed across dated programmes; source presence, candidate work and installed behavior could be confused.
 
-**After Turn 2:** the retained source-backed census and architecture now have a concrete editable design candidate, a selected composition, three deep intelligence investigations, responsive specimens, 18 action/availability state specimens, explicit owner dependencies and a complete exact-target manifest. The full review is included in section 13 and available separately at [S25].
+**After Turn 3:** one retained masterplan now joins the source-backed census, editable Paper candidate, three deep intelligence investigations and 38 precise implementation contracts. All 29 B units, 24 Q packets, 12 D decisions and 36 R requirements remain mapped with their dependencies. The complete Turn 2 review is in section 13, current hardening in section 14, contract/program crosswalk in Appendix D and full Q endpoint/falsifier matrix in Appendix E.
 
-**Finalization:** CHECKPOINTED_CONTINUATION for the four-turn programme. **Turn 1 bounded outcome complete:** true. **Turn 2 candidate review complete with recorded partial exception:** true after exact source persistence/readback. **All Turn 2 requested design coverage complete:** false; the mobile Plans target is held and static coverage limits are explicit. **Parent mission complete:** false. The boundary is the Chairman's explicit four-turn sequence, not an inference that a phase or visual review means product completion.
+**Finalization boundary:** CHECKPOINTED_CONTINUATION for the four-turn commission after source/artifact readback and verification recorded in AgentOS. Turns 1 and 3 have bounded editorial outcomes; Turn 2 remains a reviewed design candidate with one precise partial exception. **Parent mission complete:** false. The boundary is the Chairman's explicit four-turn sequence, not a claim that a phase or design review means product completion.
 
-**Production status:** not newly implemented, tested, installed or accepted here. **Paper:** 23 canvases on p-F-0; 22 reviewed candidate/reference/specimen roots; one partial held root. **Fable/T3:** not dispatched, acknowledged or started. **Advisory work:** two bounded C3 judgment roles in Turn 2, with no Paper/source mutation grants and no required independent approval ceremony.
+**Production status:** no new implementation, runtime acceptance or scientific promotion is claimed here. **Paper:** 23 canvases; 22 reviewed roots; one partial held root; no Turn 3 mutations. **Fable/T3:** no dispatch, acknowledgment or START. Three bounded C3 architecture reasoning roles supplied source analysis and precision checks; they had no external mutation/experiment grants and supplied no mandatory independent approval.
 
-**Durable homes:** this same versioned masterplan, the full Turn 2 review, the operation/target manifest and the dated Agent OS continuation on the isolated editorial branch. They remain unmerged proposals and records. No Linear completion, release-hold change or external Slack/email message is implied.
+**Durable homes:** the same versioned masterplan, Turn 2 review/manifest, Turn 3 hardening report/contract registry/crosswalk/source appendices and the dated AgentOS continuation on the owned editorial branch. They remain unmerged proposals and records. No Linear completion, release-hold change or Slack/email message is implied.
 
-**New held effect:** `prophet-four-turn-t2-20261109-mplans-tabs`, original Paper target `1EF3-0` in partial root `1EEH-0`. Two reads found the intended tabs absent; this does not prove terminal no-effect. No retry, replacement, re-home or carrier switch. The manifest preserves the original intent, observation and fence. Independent completed desktop Plans/Record do not settle this mobile operation.
+**Held effect:** `prophet-four-turn-t2-20261109-mplans-tabs`, original Paper target `1EF3-0` in partial root `1EEH-0`. Its original transport timeout lacks a terminal receipt; two earlier absence reads did not establish no effect. No retry, replacement, new carrier, finish or held-subtree mutation. Original manifest and intent remain retained. Desktop Plans/Record do not settle the mobile operation.
 
-**Other retained effects:** #9495 original implementation/security/release conditions and ambiguous effects; Paper ZE5-0 palette effect; F01 atlas/readme effects and unreleased shared-shell state. Neither editorial turn replayed, settled or transferred these.
+**Other retained effects:** #9495 original implementation/security/release conditions and ambiguous effects; Paper ZE5-0 palette effect; F01 atlas/readme effects and unreleased shared-shell state. This architecture turn did not poll, replay, settle or transfer them.
 
-**Do not redo:** accepted B1 bounded history, unchanged merged source and valid existing proof, D03 clock/count/Save semantics, rejected visual-direction ruling, original scientific registrations, existing provider-rights decisions and the now-reviewed disjoint Paper compositions absent a concrete changed requirement.
+**Do not redo:** accepted B1 bounded history, unchanged merged source and valid proof, D03 clock/count/Save semantics, rejected visual-direction ruling, original research registrations and provider-rights decisions, and reviewed Paper compositions without changed requirements. Refresh only affected facts when resuming implementation.
 
-**One primary next action:** Turn 3 binds the concrete p-F-0 designs to exact incumbent identity, data, correction, science, persistence, performance, migration and release interfaces. Resolve the eight retained D03 gaps and the management/cohort clocks exposed in review; preserve honest unavailable states until their owners qualify them.
-
-**Subsequent action:** Turn 4 freezes the complete source/design implementation commission for the actual eligible Fable-led T3 team. Dispatch and pickup/START remain distinct future facts. No autonomous background progress is claimed.
+**One primary next action:** Turn 4 freezes the final source/design implementation commission for the actual eligible Fable-led T3 target. Use this exact v3 source and registry, preserve original owner/candidate custody, make each bounded slice concrete, and retain production/scientific acceptance as explicit work. A future delivery or ACK is not pickup/START, deployment or acceptance. No autonomous background progress is claimed.
 
 ## 13. Turn 2 Paper candidate, review and build contract
 
@@ -871,6 +875,294 @@ Verified here: editable exact Paper targets; selected direction and retained alt
 Not performed here: production code implementation, live market verification, application tests, authenticated persistence, browser interaction, scientific run/promotion, merge, deployment, release, Slack/email message or Fable pickup/START. Two bounded C3 judgment roles supported review; neither supplied a mandatory independent approval or mutated the designs.
 
 Turn 2 closes at the Chairman's explicit editorial boundary with a concrete design candidate and an exact partial exception. The next turn is architecture hardening against these designs. The final Fable-led T3 commission follows Turn 4. No background work or autonomous future pickup is implied.
+
+## 14. Turn 3 source-bound architecture hardening
+
+**Version:** 3.0 architecture candidate, 9 November 2026, America/Vancouver. **State:** SOURCE_BOUND_ARCHITECTURE_FOR_TURN4; implementation, installed acceptance and scientific promotion are not established by this document. This is the third of the Chairman's four editorial turns. Turn 4 freezes the complete commission for a Fable-led team on the designated T3. No dispatch or release is performed here.
+
+**Parent:** `prophet-production-design-four-turn-20261109-sol-001`, existing `WS:PROPHET-US-V4-RECOVERY` and `WS:PROPHET-US-ENTRY-TIMING`. The contract IDs below are document references, not new runtime entities, owners, workstreams or admission decisions. Preserve R6 B00–B28, Q01–Q24, D01–D12, R01–R36 and activation branches A01–A05.
+
+### 14.1 Outcome and evidence boundary
+
+The design can be implemented through the existing Prophet owners. The important work is to finish their joins and consumer contracts, selectively integrate the open candidates, and prove the resulting user journeys. The architecture is now grounded in what the actual source accepts and returns, including useful capabilities that already exist and precise differences between those capabilities and the Paper specimens.
+
+This revision makes twelve material decisions:
+
+1. Extend the existing same-read B4 join and give evaluation and presentation one verified request-local owner bundle.
+2. Separate live-pass provenance, evidence cutoff, factual assembly and actual evaluation clocks before connecting native geometry.
+3. Qualify quote/basis comparability before any price-derived invalidation; preserve authoritative lifecycle and retraction separately.
+4. Project policy-specific terms without inventing a separate entry stop, chase boundary or validity interval.
+5. Reuse the original Plan source resolver; retain original provenance and current management as different claims.
+6. Integrate the Save adapter with its required WatchStore account safeguards; keep observed membership distinct from an uncertain insert's outcome.
+7. Extend the existing transient Compare owner into aligned, ordered comparison across supported view and filter changes.
+8. Complete the existing B21 email chain; retain assessment-change, B4-change and in-app notifications as explicit, unimplemented extensions.
+9. Build Record from native plans, B1 and the effective ledger; a terminal-only projection cannot supply an originating cohort or unresolved count.
+10. Close the Earnings per-share provenance gap and prove independent peer production, while retaining Cycle's actual candidate status.
+11. Fix F04 and W07 availability semantics at their incumbent owners.
+12. Tie completion to the entitled served path, ordinary refresh, truthful failure states and rollback, while preserving independent research-to-watch activation.
+
+**Exact source baseline**
+
+| Source | Pinned revision | Meaning in this review |
+| --- | --- | --- |
+| Mastermind protected procedure | `3652d8907df1738de551dd3032b42aa2a2acb482` | Reused governing pin; current Chairman instructions and Web review waiver apply |
+| Macro main | `9a13c64bf69f782332afa29efb09fe48ee30b857` | Fresh backend, producer, presentation and persistence source |
+| Terminal master | `1c0bf028cf72539a4d3fcb17fa137ee474d764f9` | Fresh application, BFF, account and migration source |
+| Rich product #9495 | `d42d83307948141c05967d7081a6cc7cbeb24a90` | Open Draft/HOLD; substantial candidate source, not merged or installed acceptance |
+| D03 #10617 | `927c667714e04ba82db60c15852213ce8660cc9f` | Open Draft; Prophet Phase 2A blob remains `c5f7899e07d7a54b869e60b8090bfafa95b8e74e` |
+| F01 #10645 | `dce261d07ebc993e8a9579cca2200e445b6636d4` | Open Draft; candidate.4 provisional, candidate.5 proposed, final joint v1 unreleased |
+| Masterplan v2 | `1b44fbe5bf307d624c242a346c81cf8fc877c46c` | Preserved Turn 1 census and Turn 2 review |
+| Paper PROPHET | `01M3NT5Y3G5HTJHVR0K5W2MDJM`, page `p-F-0` | Read-only inventory: 23 canvases, 3,308 nodes; 22 reviewed roots and one held partial |
+
+The source dossier appendices contain exact paths, symbols and blobs. Main source, candidate source, schema migration source, installed bytes, runtime configuration, customer behavior and scientific acceptance remain separate evidence levels. No production request, database mutation, notification, browser persistence test, experiment, merge or deployment was run in Turn 3. Component timings in older PR bodies are not fresh endpoint measurements. Historical proof at an older head is not automatically proof for a changed head.
+
+**Affected candidate frontier**
+
+| Candidate | Observed head | Integration implication |
+| --- | --- | --- |
+| #8004 issuer/security binding | `9f66ea9f4dbd9f9f894a9e8be4ebf9f5030433bc` | Open; reconcile existing identity owner work, not a new ticker map |
+| #10176 withdrawal projection | `228c25d37617a7217c8f65f1613ade701a2fe01a` | Open Draft; current/withdrawn/stale/unknown semantics remain owned work |
+| #10509 board/index epochs | `a40a1c5dfde7bae01e4bc852c182a0d230f048be` | Open Draft; exact publication generation is still material |
+| #10202 settlement manifest | `e0c522c968e0f8367e0c313b9b39ef8fa2c9ff3a` | Open Draft/HOLD; do not substitute a digest for full served-byte settlement |
+| #9369 request batching | `858e11a4d17f2d9387af720d01c6d84dcc80b49d` | Open Draft; fewer validations, repeated projection scans remain |
+| #10824 native read expansion | `0a5fdea7148065ea5d14d099a439308bd2cddcec` | Open; avoids irrelevant row expansion, still reads/decodes/hashes parts |
+| #10809 revision-read cost | `b7678072fd17a90806178f298a42e200a524b97c` | Open; prior accepted-head evidence has narrower scope than this current head |
+| #8308 Cycle equity | `6b4b5ae5e2307453f2ddc0f2c0dbebe676c793b5` | Open; Cycle equity module absent from inspected main |
+| #7399 PERF | `41ca935449b6668c60e0b5ba2a0863703e072d8c` | Open Draft; consumer absent main and terminal-ledger-only even in candidate |
+| #10579 writer security | `f690d45e2321f637290d693ddcb446817427dd89` | Open Draft; specific identity/release hold affecting #9495 remains intact |
+
+These observations refresh affected facts only. Appendix A's broader census remains its dated Turn 1 observation. Adoption requires reconciling current ownership and exact diff; this document neither takes over a live writer nor approves an entire candidate by association.
+
+### 14.2 One coherent read, with explicit authority boundaries
+
+**Existing integration seam**
+
+`engine/prophet_b4_same_read.py::evaluate_same_read_entry_availability` already obtains a native factual result, consumes `NativeFactualAssessmentResult.verified_pair()`, binds native quote/basis inputs to the same source relation, and reattests owner bytes. It deliberately passes empty `entry_rows_by_symbol` and `metric_inputs` because those native contracts are not qualified there. Creating another join service would duplicate this responsibility. [T301], [T302]
+
+The actual Today producer, `scripts/build_stock_library.py::read_today_candidate_projection`, separately builds B3 and calls `compose_daily_brief` with `entry_availability`, `plan`, `evidence`, `assembly` and `quote` all `None`. After source and generation guards succeed, the outer result is `PARTIAL / DAILY_BRIEF_OWNER_INPUTS_UNAVAILABLE`, retaining available candidate identity, native provenance and factual `REVIEW_REQUIRED` assessment. Individual rows or B3 reads can still be unavailable. The nested entry decision is unavailable. This is useful research data; HTTP 200 does not turn it into cleared entry. [T303], [T304]
+
+**Implementation decision:** evolve the incumbent gathering seam into one detached, verified request-local bundle consumed by B4 and the presentation compositor. Preserve native verification, source/generation binding and final reattestation. Do not call the current helper inside every Today row merely to rebuild B3. Do not accept a caller-supplied `prevalidated:true`, reconstructed raw B3 JSON or loose receipt as native proof. Keep public schemas closed or version the specific changed projection deliberately. An internal bundle is not a new public opportunity API or cache authority.
+
+**Response and population contracts**
+
+| Layer | Existing behavior | Required consumer treatment |
+| --- | --- | --- |
+| Daily Brief request | Auth first; exact `source_sha256`, `pair_id`, `selection_receipt`; optional `candidate_generation_id` | Retain the caller's exact source binding; no filesystem path or newest-generation substitution |
+| Outer response | AVAILABLE/PARTIAL → 200; source/selection mismatch → 409; owner UNAVAILABLE → 503; optional candidate-generation mismatch currently 503 | Preserve the typed owner envelope; do not infer readiness or empty data from status code |
+| Query / route boundary | Malformed, unknown or repeated query → 400 `INVALID_QUERY`; admission overlap, import/read/serialization failure → generic 503 `DAILY_BRIEF_UNAVAILABLE` | Generic route failure has less context than a typed unavailable owner response; never fabricate missing rows or expose internal paths |
+| Factual assessment | REVIEW_REQUIRED; assembly time does not renew input freshness; model thesis/review lineage unavailable | Label as factual/review-required until its owner supplies a qualified assessment |
+| B4 decision | Independent deterministic state and blockers | Missing mandatory input means unavailable entry, while useful research stays visible |
+| B03 observations | Full source population, nullable episode relationship, exact ticker/security search before paging | Observations are not admitted episodes; no cap-displaced loss; no invented readiness denominator |
+| Plan relation | Exact original-source resolver exists; current Today producer supplies neither Plan input nor current-management assessment | Adapt original proof and independently qualify current management; retained provenance cannot confer current action |
+
+B03 currently accepts ticker/security, offset/limit and snapshot constraints, not family or entry-state filters. Its source/matched/returned counts are not all-family readiness counts. Extend the existing read-model owner to support needed filter semantics before enabling Paper controls. Counts must name the universe, entitlement partition, filters, strategy/horizon/role, snapshot, coverage, exclusions and evaluated population. Unknown is null with a reason; it is not a successful zero. Selected Today buys, all source observations, admitted candidates and B4-evaluated rows are different populations. [T305]
+
+Same-read `state=EVALUATED` means a B4 row exists; nested `availability.state` may still be `UNAVAILABLE_DATA`. Neither EVALUATED nor a CURRENT quote means ready. Missing evaluation and evaluated-unavailable results are separate counts. [T301], [T302]
+
+**Identity grain**
+
+Navigation and comparison retain listing/security identity, issuer and epoch where supplied, source observation/event and receipt, exact published selection, nullable episode, episode generation and strategy. A DOM occurrence is a rendering identity, not a durable episode key. A pre-B1 row remains lawful without an episode. Save retains account/list/security membership. Portfolio exposure retains its existing issuer/instrument semantics. These grains must not be collapsed to ticker or to one new Prophet ID.
+
+Exact query/source mismatches preserve the current safe context and explain why it cannot be refreshed coherently. A dated snapshot can remain inspectable only if the source is actually retained and current rights and entitlement permit it. Read-only presentation does not create a right to retain or disclose the data.
+
+### 14.3 Clocks, entry terms and corrections
+
+**Resolve the clock incompatibility before connecting geometry**
+
+The current source has a consequential ordering conflict: B3 records actual assembly time with microseconds; the same-read helper uses the stored `live_pass_ts` as B4 `decision_at`; the runtime composer requires pass time to equal decision time; the evaluator rejects a candidate projection generated after the decision. A stored pass normally precedes a new B3 assembly. After the missing geometry and metric owner adapters are supplied, that otherwise ordinary read can encounter a future-projection refusal. The missing adapters can currently mask this later condition. This is a source-level seam finding, not a reproduced production failure. [T301], [T302], [T306]
+
+**Decision:** preserve live-pass provenance, evidence eligibility cut, factual assembly, native read completion and actual evaluation completion separately. The native reader already exposes `read_completed_at` and `quote_age_at_own_read_min`; it currently truncates completion to seconds, while B3 retains fractional seconds. The evaluation owner must choose a genuine evaluation time after its required inputs are available, re-age/requalify the inputs and gates at that time, preserve timestamp precision, and enforce future-known exclusion for a historical cut. Do not rename an old pass or rewrite B3's assembly time to satisfy an equality.
+
+| Clock | Meaning | What a refresh may change |
+| --- | --- | --- |
+| Economic event / effective time | When the economic event or asserted economic effect occurred, only where the owner supplies that meaning | New owner-supported event/revision; unknown remains unknown |
+| Source public availability | When that particular source version became publicly usable | Actual publication/availability receipt, never borrowed from fiscal period or event date |
+| Owner known / recorded | When that owner observed or persisted the source | Actual new owner observation; not a borrowed event date |
+| Evidence cutoff | Latest knowledge permitted for the declared assessment | A newly issued assessment with its own evidence membership |
+| Live market pass | The stored producer's market pass | Only a new real pass |
+| Factual assembly / publication | When the read or artifact was composed/published | A real assembly/publication; freshness remains independently qualified |
+| B4 evaluation / quote | Actual evaluation time and the quote used in that decision | A new qualified evaluation; a later display quote alone changes neither decision nor assessment |
+| Original Plan / management | Original terms and the management owner's latest assessment | Original terms remain retained; management advances only on an owner-issued result |
+
+**Gate and price precedence**
+
+B4 currently checks inactive lifecycle, retraction, then `structural_invalidation == BREACHED` or `price <= invalidation`, before its quote-freshness and corporate-action-basis checks. The native quote reader already refuses stale/basis problems; independent geometry comparability is still unwired. Before joining it, qualify numerical price/geometry comparability explicitly. An owner-issued lifecycle termination, retraction or qualified BREACHED fact can retain its priority. An incomparable or stale numerical price must not become a confident new breach. [T302], [T306]
+
+Numeric invalidation is mandatory for the registered tactical policy. The separate optional structural-invalidation gate may be UNKNOWN without deadlocking eligibility; BREACHED remains non-waivable. Therefore “all nine gates must PASS” is an incorrect implementation rule. Follow the exact registered policy's mandatory facts, not the number of pills in a design.
+
+**Policy-specific terms**
+
+| Paper specimen term | Current source | Versioned extension / honest absence |
+| --- | --- | --- |
+| Entry zone | B4 publishes low/high and basis | Keep owner geometry, receipt, units and policy |
+| Chase boundary | Input consumes `chase_above`; output exposes `chase_state` | Publish the owner's accepted numeric term if applicable; never reverse-engineer it from a state |
+| Entry stop | Composer maps `entry_signal.stop` into structural invalidation; no separate output term | Require the policy owner to define a distinct stop before displaying one |
+| Structural invalidation | Numeric price/kind/basis plus optional structural gate | Preserve actual meaning; unavailable and not-applicable differ |
+| Valid through | Session eligibility and market session exist, not an explicit interval | Define owner expiry/revalidation semantics; a session string is not a fabricated expiry timestamp |
+| Strategy horizon | Early Leadership `2_15_SESSIONS`, role `new_entry` | Never turn this into an Earnings/Cycle holding law |
+
+These extensions preserve the intended Ready surface while preventing illustrative fields from silently rewriting policy. The registry marks each as an implementation obligation, with unavailable or not-applicable rendering until qualified. [T302], [T307]
+
+**Correction and refresh invariants**
+
+One assembled read fixes source SHA, pair/selection, B1 generation, relevant identity receipts and quote/live owner bytes. A material change during assembly refuses the mixed view. Row-local failure remains an ordered unavailable row; generation-wide integrity failure cannot publish a mixed partial batch.
+
+Corrections append evidence and change the current disposition without overwriting the original decision. B03's present lineage is `CURRENT_RECEIPT_ONLY`, with prior receipt and correction availability null; a before/after comparison requires retained revisions from the existing source/history owner. A newer quote cannot renew an older assessment, Plan or B4 decision. A dated fallback remains historical, not current readiness. Existing exact-identity fallback rules remain intact.
+
+### 14.4 Complete the designed user actions
+
+**Compare, evidence and return**
+
+Current #9495 comparison selects two or three live DOM cards inside one Today or Screener grid. “Compare selected” hides other cards in native order; changing grids clears selection. It does not implement the aligned Paper comparison or cross-filter retained selection. Extend that transient owner with exact resolved object references and chosen order separate from source rank. Preserve selection across legitimate table/grid/filter changes, show off-filter selected objects explicitly, and explain an obsolete or unauthorized selection without resolving to a newer same-ticker row. Mobile compares a deliberate pair from the retained set. [T308]
+
+Existing `PVSetupReturn` and `USProphetSource` preserve exact live source nodes and native link, source stamps (`data-source-digest`, `data-as-of`, `data-board-asof`), target Plan, Sources tab, Plan-link focus, dialog scroll and page scroll. This guarded DOM/source-stamp return is a valuable foundation; it does not itself verify the complete B1/selection-pair identity. Canonical listing/occurrence/selection-generation keys are part of the new presentation contract. Exercise a changed Today binding as well as replaced nodes. The Plan target is resolved before leaving; missing or withheld targets leave the investigation intact. Browser history/reload restoration is a new explicit serialization contract, not a claim that current in-memory state is durable. Chart points need stable source/event references, accessible tabular values and a return path to the same selected evidence point; a generated explanation must not invent a source event. [T308]
+
+The original Plan resolver already exists: `scripts/build_prophet.py::read_plan_candidate_source(plan_id, expected_plan_sha256?, expected_candidate_generation_id?)`, schema `prophet.plan_candidate_source_read/v1`. It verifies retained original board bytes, ordinal, row receipt and native B1 relation, including terminal/superseded original lineage. It intentionally reports `current_action_status=UNAVAILABLE`. Adapt this proof into the versioned presentation relation; Daily Brief v1 currently supports only related-security Plan references. Keep original provenance, target access and current management separate. [T309]
+
+**Save, notes and thesis**
+
+Main WatchStore already has checked Save and observation-only `symbols.inspect`. Candidate `prophet_save.js` depends on `checkedSession` and account-scope guards that are present in its candidate WatchStore but absent from fresh main. The adapter itself is absent main. Integrate the required owner additions selectively; copying the adapter alone leaves it unusable, while replacing the whole owner file risks losing newer changes. Capture account scope before enqueueing, and fence late private results after account change. [T310], [T311], [T312]
+
+The actual promise is security membership in a user-selected writable list. Confirmation needs owner readback and reopening that destination after ordinary refresh. This does not save a dated thesis, create a model plan, enable Follow or create a holding. Existing annotation fields and per-field compare-and-swap are reusable user-note capabilities, not immutable decision records. D05 still owns the explicit thesis, Pass/reason, milestone and dated investigation contract. [T342], [T343]
+
+`symbols.inspect` always returns `writeRetryAllowed:false`. A present membership proves the desired membership now; it does not resolve attribution or terminal outcome of the earlier uncertain insert. Not-confirmed is not proof of no effect. The candidate's uncertainty custody is page-lifetime memory. Reload-resilient recovery must extend the existing checked Save owner with the original operation reference, immutable target and authoritative reconciliation; it must not fall back to the legacy retry outbox or create another attempt while the original effect remains unresolved. A new attempt requires authoritative no-effect reconciliation and permission from the existing owner. The Terminal schema owner has `0009_watchlist_symbol_unique.sql` and `wls_watchlist_symbol(watchlist_id,symbol)`. Source migration presence is not a fresh installed-schema check; an old Macro comment saying no unique index must not override the actual schema owner. [T310], [T312], [T313]
+
+**Follow: actual initial capability and retained extensions**
+
+Main `engine/prophet_journey_notifications.py` is the existing pure B21 producer. It declares `prophet.b21.journey_notifications/v1`, category `prophet_research_journey`, designated list `Prophet Research`, channel `email` and tier `essential`. Eligible kinds are `episode_terminal`, `emergence_triggered`, `corrected_material`, `retracted`, `superseded`. It does no IO. It does not currently emit general assessment changes, OPENED events, quote-refresh events or B4 availability changes. [T314]
+
+The Prophet category is absent from the current preference allowlist. Complete B21's existing preference/enrollment/IO/UI work around the pure producer and existing `not_after` drain guard. Preserve logical dedupe across generation/definition rereads and correction linkage to the original event. Use `public.alert_outbox`, the existing drain, mailer, suppression and entitlement owners. Do not add a subscription table, watcher, delivery queue, scheduler or auth plane. [T315], [T316], [T339], [T340], [T341]
+
+| User-visible state | Required fact |
+| --- | --- |
+| Preference saved | Actual metadata persistence and account preference readback; `ok:true` or HTTP 200 alone is insufficient |
+| Following this security | Deliberate designated-list membership and supported opted-in category/channel, each independently confirmed, with the corresponding producer/delivery capability admitted and available |
+| Follow configured · notifications unavailable | Enrollment persists, but the relevant producer or delivery capability is unavailable; do not imply active monitoring |
+| Event detected | Eligible source-owner event with exact episode/receipt and logical identity |
+| Queued | Existing outbox row; not a send receipt |
+| Email sent | Existing transport's observed acceptance; not inbox arrival or reading |
+| In-app delivered/read | A separately implemented, qualified capability; no inference from email or outbox resolution |
+
+The Paper design's in-app confirmation and broader event choices remain retained implementation obligations, not initial enabled controls. Never silently change the user's in-app choice to email. Ordinary Save into an arbitrary list must not enroll Follow. Preference success with membership failure, or the reverse, shows the exact partial result. Unknown delivery effects remain on the original carrier and existing quarantine path.
+
+**Current, History and Record**
+
+Current attention, model-plan lifecycle, current entry and actual user holdings are distinct. Terminal's legacy ProphetView BEST uses management confidence; active count uses `phase != invalidated`; PERF is a placeholder. Preserve the managed macro/options scope until a qualified replacement proves parity. It cannot become the new research ordering or current-attention definition by changing a label. [T317]
+
+Native `prophet_integrity.py` already owns effective plans and ledger, append-only correction validation and quarantine. #7399 adds a useful terminal-ledger PERF consumer; it is not main and does not supply original eligible populations, unresolved plans, period-basis cohorts or strategy/model/policy-vintage joins. Extend the existing plan/B1/integrity consumer rather than building another evaluation store. [T318], [T319]
+
+Record must expose separate entry disposition, outcome maturity/availability and integrity disposition under its declared population and cutoff. Entry distinguishes proved entry, explicit no-entry and unverified entry. Outcomes distinguish qualified terminal evidence, unresolved/not-yet-mature and missing or unsupported evidence. Integrity separately records inclusion, corrections, quarantine and any owner-supported retraction. Reconcile counts within each declared axis; do not sum overlapping labels into a cohort denominator. An entered plan may still be unresolved or quarantined. A null entry clock is neither explicit NO_ENTRY nor proved entry; absence of a terminal row does not imply zero unresolved plans. Retraction requires its actual entity, generation and effective time: a source/B1 retraction cannot automatically become a retroactive Plan exclusion or rewritten outcome. Retain original versus effective corrections, reconstructed records, source cut, period basis and policy vintage. Raw unweighted underlying returns are not portfolio returns, options P&L, excess returns or alpha. T1/T2 closing outcomes are not ever-hit frequencies. The displayed filter must not secretly reconstruct the historical denominator. [T318], [T319]
+
+### 14.5 Deeper intelligence without overstating qualification
+
+**Three initial economic investigations**
+
+| Investigation | Existing capability | Required source-bound enhancement |
+| --- | --- | --- |
+| Early Leadership | Compiler checks issuer/security/theme joins, exclusion assertions, matched membership/window/basis and coverage | Prove the peer producer actually excludes the candidate's issuer and all listings; show coverage and confirmed exposure versus membership-only context |
+| Quality Earnings | Comparable facts, expectation/revision arithmetic and one admitted D5 vector; fixed Q06 comparator | Bind per-share evidence to issuer/event/time/basis; keep release, call and filing knowledge separate; do not imply a generic consensus feed |
+| Cycle Capture | #8308 candidate funding and original-equity scenario mechanics | Integrate accepted candidate and qualified sources; preserve financing assumptions, early breach, dilution and original-security claims |
+
+Early Leadership's descriptive stock/peer/market decomposition remains useful even when the stock trails its peers. Equal-weight peer return, median return and positive share remain null for singleton/empty qualifying peers. Partial pricing stays partial. The current compiler validates exclusion assertions; acceptance must vary the candidate's own return and add another listing of its issuer at the producer, then demonstrate unchanged excluded-peer confirmation. Current membership is not historical membership; theme membership alone is not economic exposure. [T320]
+
+For Earnings, `per_share_bridge` is unbound scalar arithmetic. `factual_dossier` validates its schema/kind/non-authority but lacks the issuer/event/time matching imposed on other children. Qualify income and shares through the incumbent Earnings/D5 owner before attaching the bridge: fiscal periods, GAAP/adjusted basis, currency, units, basic/diluted share basis, revision and availability. A same-period restatement is a correction, not growth; post-release expectations are not pre-release surprise. [T321]
+
+Native D5 source admission requires `source_available_at`, `observed_at` and `generated_at` all at or before the episode's original decision cut, `candidate_episode.opened_at`, verified against the exact B1 cut. A later factual assembly or live B4 reevaluation does not advance that original evidence membership. A current/landmark interpretation needs an explicit owner contract while retaining the original view. `source_effective_at` and `captured_at` are intentionally named nulls here, not aliases to fill from a nearby date. Later revision receipts remain separate from the decision version. `OBSERVED_UNPROJECTABLE` cannot become current. The dossier's original-source-vintage reconstruction is explicitly not an original as-run recommendation. These distinctions must be visible in the deep evidence view, with a concise explanation above it. [T322], [T323]
+
+Cycle needs a dated funding path, accessible/restricted cash, minimum operating floor, financing fees, debt and share changes, and value reaching the original security. A later rescue cannot erase an earlier breach. A surviving business may leave old shares with no value. New capital contributions belong in the scenario return denominator. Canceled original securities need qualified distribution mappings; an assumed replacement share must not be silently spliced into history. Financing cash must not be counted twice in enterprise-to-equity conversion. Conditional scenario arithmetic is not financing access, calibrated survival probability or accepted core/add/exit management. [T324]
+
+**Explain, compare scenarios and show what changed**
+
+The advanced experience has four useful layers: a concise owner-supported thesis; the strongest supporting and opposing evidence; the next observable condition or disconfirming event; and deep source/assumption inspection. Use the existing Brain/explanation path only as a cited synthesis consumer. It may summarize qualified owner facts, disclose unavailable inputs and compare explicit scenarios. It cannot generate B4 facts, approve sources, infer a personal position or turn narrative confidence into ranking, sizing or management authority.
+
+Material-change explanations require real original/current source references and a qualified revision. Distinguish changed evidence, changed model/policy, changed price and changed user context. A quote tick is not a new published assessment. Scenario controls retain units, baseline, source dates, assumption versus observation and sensitivity limits; resetting returns to the original owner scenario. If probability is unqualified, show conditional outcomes without probability labels. Context reuses GMI/theme and Portfolio/Risk with common issuer exposure counted once.
+
+**Scientific qualification stays separate**
+
+Current strategy source declares Early Leadership `CONTROL_ONLY / SHADOW_ONLY`, Earnings `SPEC_ONLY_FACTUAL_EVIDENCE_BUILDING`, Cycle `SPEC_ONLY`. Early Leadership's `2_15_SESSIONS` is the frozen new-entry identity, not a holding or exit rule; H10/H5/H15 are research endpoints. Earnings H42 with H21/H63 support and Cycle H252 with H126/H504 support remain research proposals rather than printed holding durations. Ranking answers a declared attention task; B4 answers current policy availability; management answers an existing Plan's accepted policy. Each has its own definition, evidence, version and qualification. [T307]
+
+All 24 Q packets are unchanged at blob `47fd83c4b403476a59015cc8fdfb272d6a0d8814`, still `SPECIFIED_NOT_REGISTERED_OR_DISPATCHED`, with protected-outcome permission false. The full endpoint/falsifier matrix accompanies this report. Preserve same-origin comparisons including never-confirmers/no-fill/no-entry, origin versus landmark cohorts, source/model vintage, selected top-K calibration, abstention coverage, overlapping/dependent observations, fair baselines and compute budgets, cost/fill realism and failure-inclusive original equity. A source repair or polished explanation does not promote a head. Missing evidence means unsupported; rejection needs an actual owner disposition or an already binding killed-mechanism ruling. [T325]
+
+### 14.6 Production truth, access and performance
+
+**F04 and W07**
+
+F04's current template treats missing `dislocation` as false and renders “Closed — no dislocation yet.” Its health owner has no dislocation input. Extend that existing health/presentation contract with typed source availability and nullable market verdict. Qualified explicit false may be closed; missing, empty, malformed, unknown or stale input may not. Avoid copy implying continuous detection without a current owner fact. [T326], [T327]
+
+W07's loader collapses missing, malformed, non-dict and stale to `None`; the template then uses warm mode. The age check is six calendar days despite a session-based comment; tape-lag sessions are a separate concept. Resolve clock semantics at the incumbent owner. Preserve valid empty cohort, insufficient evidence, unsupported identity, source failure and stale data as distinct states with actual denominator and as-of. No second Winner Health analytics engine is needed. [T328], [T329]
+
+**Account and source isolation**
+
+Terminal already has a thin authenticated observations BFF, strict decoder and one `useProphetObservation(active,userId)` hook in TerminalShell. It preserves Macro authority, private no-store, bounded request/body size, auth/symbol invalidation and visibility-based refresh. Extend that seam; do not introduce another session, fetch/cache or polling authority. [T330], [T336], [T337], [T338]
+
+Authenticate and establish actual entitlement before protected owner reads. Invalidate private detail, comparison, returned selections, source inspectors and in-flight responses on account change. A late account-A response cannot populate account B. Counts, facets, anonymous DOM, JSON, exports, notifications and telemetry must not leak withheld rows. Treat source/provider text and generated explanations as untrusted content for rendering and instruction handling. Preserve escaped text, existing source-link handling and receipt-bound references; never execute source instructions or let a narrative bypass an owner gate.
+
+Public immutable assets and private owner reads have different cache contracts. Do not show cached READY during revalidation of a withdrawn source. Existing B03 already owns one immutable relation-cache entry capped at 4 MiB and keyed to full byte attestation/receipt, with reattestation on reuse. Extend its owner if profiling justifies it; do not add another trust cache or TTL-based bypass. [T305]
+
+**Performance and accessibility acceptance**
+
+#9369 reduces repeated full native validation through entry/exit batch checks, but retains O(bindings × generation rows) projection work. #10824 still reads, decodes and hashes all parts before filtering expansion. Measure the actual entitled endpoint, payload, concurrency, peak memory and ordinary-refresh path after integration. Reuse unchanged exact evidence and broaden tests only for concrete risks. An optimization must preserve corruption/change detection and the complete observation population. [T331], [T332]
+
+Retain the plan's proposed server/render budgets as targets to calibrate, not measured SLOs. The browser target is Core Web Vitals at the 75th percentile, separately for mobile and desktop: LCP ≤2.5 seconds, INP ≤200 ms and CLS ≤0.1. Collect real-user evidence through the incumbent telemetry owner after rollout; a local fixture cannot establish those population metrics. [T333]
+
+Progressively render useful verified research, then deeper evidence. Skeletons retain layout; unknown values are not zero; stale and missing states explain a next useful step. Keep visible keyboard focus, meaningful headings/table semantics, text alternatives for chart values, source focus return and reduced-motion behavior. Prove EN/ZH and light/dark at the designed desktop/mobile sizes, 320 CSS-pixel reflow, 200% text zoom and 400% page zoom where applicable. WCAG's two-dimensional content exception permits a genuinely necessary table/chart viewport, not whole-page horizontal overflow. Sticky navigation or banners must not entirely obscure the focused control. These are implementation acceptance requirements; Paper screenshots alone do not prove them. [T334], [T335]
+
+### 14.7 Dependency-preserving implementation and cutover
+
+The seven existing packets remain the delivery groupings. The machine-readable registry maps every contract and all original B/Q/D/R identities into them. It is documentation, not a second work scheduler. Candidate dispositions and actual release holds are verified at implementation time; no extra reviewer seat or blanket independent-review ceremony is introduced.
+
+| Packet | Concrete end-to-end increment | Critical dependency / proof |
+| --- | --- | --- |
+| P1 source-to-consumer substrate | One verified request-local read; exact identity/clocks; typed correction and publication outcomes | Current incumbent diffs, owner fields, corruption/change refusal and real endpoint profile |
+| P2 research-to-watch | Entitled row → Setup/Sources → aligned Compare → exact Plan/return → checked Save | Preserve #9495 hold, selectively integrate WatchStore, prove membership/readback and uncertain-outcome behavior |
+| P3 entry mechanics | Native geometry/gates/metrics → deterministic B4 → applicable terms and honest current assessment | Clock/price precedence cases, actual policy qualification, no model waiver; research journey need not wait |
+| P4 three intelligence journeys | Independent peers; comparable Earnings/per-share; source-backed Cycle funding/original equity | Existing compiler/D5/candidate owners and exact missing states; scenario is not science promotion |
+| P5 forecasts and management | Individually accepted heads, task ranking and policy versions | Existing Q protocols, rights, registration, protected-outcome controls, calibration/cost/management acceptance |
+| P6 attention and outcomes | Actual supported Follow → owner event → existing transport receipt; complete Record and Portfolio context | Category/enrollment/IO proof, original/effective cohort joins, no automatic opt-in or holdings inference |
+| P7 integrated production | Accessible responsive served journeys, ordinary refresh, telemetry, compatible rollout and rollback | Actual source/served identities, bounded rollout controls, retained legacy/options/data history, all advertised obligations dispositioned |
+
+P1 and P2 can advance under original A01/A02/A04 while live B4 or some scientific families remain unqualified. A03 historical policy-free research and A05 qualified offline model work retain their independent prerequisites. These branches avoid making one unavailable optional family a global product blockade. They do not erase D03/D06/D07/D08, live-entry, management or release gates. Partial release is a milestone, not full programme acceptance.
+
+**Migration rules**
+
+Resolve current writer and source carrier before changing an incumbent candidate. Integrate exact required slices against current main; preserve later work and every unresolved effect. #9495's writer-security hold requires the actual selected GitHub identity to be eligible, distinct from excluded author/coauthor identities, before its allowed release actions. Fable's name alone does not prove eligible identity. Required CI, CODEOWNERS/security/release controls still bind; the current Web waiver removes invented review ceremony, not actual controls.
+
+Reuse shared card/detail templates and authenticated hydration. Preserve the legacy managed macro and options lanes until the new consumer proves their claimed parity. Version actual changed projections; keep compatibility readers until installed consumers are reconciled. Do not run a schema migration simply because its source file exists; inspect the actual migration state through its owner when implementation needs it.
+
+Rollout uses existing flags, publication and deployment controls. A bounded cohort proves the source generation reaches the entitled screen after normal refresh. Rollback restores the prior accepted presentation/reader while retaining user memberships, original Plans, appended corrections and event receipts. It does not rewind financial history, erase queued/uncertain effects or restamp assessments. The exact rollback unit and compatibility window are recorded before rollout.
+
+**Acceptance cases that decide completion**
+
+| Case | Observable result required |
+| --- | --- |
+| Still-fresh same-session market pass preceding new B3, other owners qualified | Truthful distinct clocks; qualified evaluation without false future-clock refusal, including fractional-second boundary; stale/cross-session inputs still refuse |
+| Price below invalidation with stale/incomparable basis | No unsupported numeric breach; actual owner retraction or lifecycle termination remains visible |
+| Source/B1/quote changes during composition | Coherent old or new result, or explicit refusal; never a mixed readiness view |
+| Same ticker, different listing/episode/generation | Correct selection, comparison, original Plan and return; no substitution |
+| Missing optional dossier, mandatory entry input absent | Useful research retained; current entry unavailable with the exact missing reason |
+| Source correction while detail/Compare is open | Original version remains dated if retained/authorized; current disposition and changed selection are explicit |
+| Save response lost | One original attempted effect; exact membership read cannot authorize replay; reload/account-change custody is honest |
+| Concurrent Macro/Terminal Save | Existing schema/owner converges on one membership without losing unrelated list/order data |
+| Follow partial preference/list failure | Separate readbacks; no false Following, no channel remap; quote ticks do not become events |
+| Supported Follow event | Actual eligible source event → existing outbox → authorized transport → exact receipt, including expiry/suppression/unknown states |
+| Peers include candidate alias or later membership | Producer qualification fails or excludes it; descriptive evidence does not become entry approval |
+| Earnings later filing, revision or mismatched shares | No future-knowledge/comparability leak; original and effective facts remain inspectable |
+| Cycle survives after financing but old equity fails | Earlier breach, contribution denominator and original-security value remain correct |
+| Terminal-only Record with absent outcome rows | No invented zero unresolved or all-eligible denominator; no-entry/missing-entry clocks remain distinct |
+| F04/W07 missing, stale, malformed, valid empty | Exact availability and reason; no false Closed, zero winners or success-rate claim |
+| Account switch or access loss during reads | Private content, counts and late results do not cross accounts or survive lost entitlement |
+| Ordinary refresh and rollback | Served version/source still coherent; user/history/effect custody preserved; incumbent observer proves the result |
+| Keyboard/zoom/mobile/EN-ZH | Investigation, source focus, selected pair, state copy and actions remain understandable and operable |
+
+These are future discriminating proof obligations, not tests claimed executed here. Each worker return names exact source head, changed contract, affected checks, actual consumer path, served version/generation, observed outcomes, unresolved effects and next dependency. Reuse existing proof where the relevant inputs are unchanged; never reuse stale-head evidence as current approval.
+
+### 14.8 Turn 4 freeze frontier and preserved design custody
+
+Turn 3 resolves the architectural choices above and records the remaining owner decisions explicitly. Turn 4 must consolidate them into final bounded briefs: the exact evaluation/term projection version; source-backed population/filter and Record envelope; D05 dated-thesis versus note persistence; B21 initial capability and retained notification extension slices; selected candidate integration/disposition; and deployment/rollback acceptance tied to the real T3 target. These are implementation specifications and release dependencies, not requests to reopen the completed design direction.
+
+Paper remains the reviewed candidate at page `p-F-0`. Its richer controls are target behavior; this source-bound contract governs what can be enabled and what must show unavailable until implemented. No Paper mutation occurred in this architecture turn. The original mobile Plans operation `prophet-four-turn-t2-20261109-mplans-tabs`, target `1EF3-0` inside `1EEH-0`, remains EFFECT_UNKNOWN after its original transport timeout. No retry, replacement, new carrier, finish or mutation of that subtree is authorized by this document. Two earlier absence reads did not establish terminal no-effect. Original manifest and HTML remain retained. Older ZE5/F01/#9495 effects and holds remain on their original carriers.
+
+Turn 3 completes when this report, the exact contract/program registry, source dossiers and masterplan v3 are saved/read back; the updated PDF is visually checked; and AgentOS carries the exact Turn 4 continuation. The overall four-turn commission and production product remain incomplete. Turn 4 follows the Chairman's next editorial turn. A future handoff is not pickup, START, deployment or acceptance.
 
 ## Appendix A. Native PR census
 
@@ -1092,3 +1384,230 @@ Immutable source references bind technical claims to the inspected revisions. PR
 [S27]: https://app.paper.design/file/01M3NT5Y3G5HTJHVR0K5W2MDJM/p-F-0
 [S28]: https://github.com/mastermindx-market-intelligence/macro/blob/cdfb627f4fcf8fe9cd536cfcb4f8a0dba4fa9d93/docs/DESIGN_DOCTRINE.md
 [S29]: https://github.com/mastermindx-market-intelligence/macro/blob/cdfb627f4fcf8fe9cd536cfcb4f8a0dba4fa9d93/research/MASTER_PRODUCT_DESIGN_SYSTEM_V1.md
+
+## Appendix D. Complete Turn 3 contract and programme crosswalk
+
+This is an editorial implementation map, not a runtime registry, trial admission or dispatch. All entries are specified source-bound work; their inclusion does not claim implementation or production acceptance. The JSON companion contains exact fields, sources, clocks, identity, failure/correction behavior and discriminating proof for each contract.
+
+### Design-to-owner contracts
+
+| Contract | Existing capability and gap | Required extension / proof | Packet |
+| --- | --- | --- | --- |
+| T3C01 · Exact subject and occurrence | Native B1 and Today selection relations exist; ticker and DOM occurrence are not durable identity. | Carry existing listing/issuer/epoch and occurrence/source references through consumers; version presentation only where fields are genuinely absent. Proof: Two listings and two episodes with one display ticker remain distinct in selection, Plan relation and return. | P1, P2 |
+| T3C02 · Separate actual clocks | Actual clocks are present but present join uses pass time as decision time; unsupplied presentation clocks remain unavailable. | Publish each owner-named clock, preserve precision, define genuine evaluation completion and historical cutoff explicitly. Proof: Stable prior pass plus newly assembled B3 and fractional-second boundary succeeds only with truthful ordered clocks. | P1, P3 |
+| T3C03 · Strategy and horizon authority | Eight families retained; three initial research experiences are not three accepted live policies. | Carry owner strategy, horizon role, entry/management version and qualification; expose multiple matches without a universal score. Proof: High research rank with unavailable entry and separately managed Plan renders all three meanings correctly. | P1, P3, P4, P5 |
+| T3C04 · One verified owner composition | Same-read helper and Today each build B3; helper closed result lacks all presentation inputs. | Evolve existing gatherer to one verified request-local bundle, shared by deterministic evaluation and presentation; closed schema retained or explicitly versioned. Proof: One actual endpoint invocation demonstrates one B3 bundle, final attestation and useful partial facts without claiming readiness. | P1, P3 |
+| T3C05 · Native B4 inputs and applicable terms | Geometry/metric maps are deliberately empty in same-read path; output lacks distinct entry stop, numeric chase boundary and explicit validity interval. | Qualify incumbent geometry/metrics/gates; project applicable owner terms and expiry/revalidation semantics without creating universal mandatory fields. Proof: Qualified Ready terms reconcile to owner facts; policies lacking a distinct stop show honest applicability. | P3 |
+| T3C06 · Evaluation clock implementation | Stored pass normally precedes new B3 assembly; geometry/metric refusal currently can mask later incompatibility. | Separate pass provenance from actual evaluation; qualify/re-age inputs at real evaluation; retain full precision or declared precision rules. Proof: Still-fresh same-session pass before new B3 with otherwise qualified owners; preserve genuine stale/cross-session refusal, historical future-known exclusion and same-second precision boundary. | P1, P3 |
+| T3C07 · Qualified price-derived invalidation | Source checks numeric price breach before freshness/basis; native quote reader already rejects own stale/basis faults. This is a seam risk, not reproduced deployed defect. | Qualify numeric quote/geometry comparability before price-derived breach; preserve authoritative lifecycle/retraction/BREACHED priority. Proof: Below-threshold stale quote and unknown geometry basis; independent authoritative retraction still visible. | P3 |
+| T3C08 · Evidence availability and precise status | Outer read, row status, B4, source integrity and scientific qualification are different. | Render source reason and useful retained fields progressively; preserve generic private failures without leaking paths. Proof: Mandatory entry missing but factual research visible; source failure not zero results; busy route not false empty. | P1, P2 |
+| T3C09 · Search and population readiness | Full-population exact search exists; family/current-entry filters and aggregate readiness are not supplied. | Extend incumbent population/filter owner; declare universe, entitlement, filters, strategy, coverage and evaluated state denominator before UI enables controls. Count missing evaluation separately from evaluated UNAVAILABLE_DATA. Proof: Cap-displaced and unresolved ticker found; filter before pagination; counts reconcile on complete entitled population. | P1, P2 |
+| T3C10 · Aligned comparison and selection | Paper aligned and cross-filter comparison is not implemented. | Extend existing transient owner with exact references, chosen order distinct from rank and explicit off-filter selection; mobile chosen pair. Proof: Table/grid/filter changes retain correct selected order; generation change explains recovery; mobile pair is deliberate. | P2 |
+| T3C11 · Chart and source point continuity | Existing detail/source section and source evidence provide foundation; cross-chart point contract needs explicit extension. | Bind selected chart/event point to exact evidence and return focus; provide tabular values and cited explanation. Proof: Keyboard chart-to-source and return reopens exact dated evidence; no ticker-only jump. | P2, P4 |
+| T3C12 · Exact original Plan relation | Exact original resolver exists; Daily Brief only related-security relation and actual Today supplies no Plan. | Adapt original resolver to versioned presentation; resolve accessible current target separately; management remains independently qualified. Proof: Original terminal/superseded lineage retained; current same ticker does not replace original; no current-entry inference. | P2, P6 |
+| T3C13 · Safe return and retained snapshot | Strong guarded DOM/source-stamp same-page return exists; it does not itself verify complete B1/selection-pair identity or supply durable reload snapshots. | Add canonical listing/occurrence/selection-generation keys and existing-route serialization only for retained authorized snapshots; explicit open-current versus dated view. Proof: Real Sources→accessible Plan→Return restores same subject, source tab, focus and scroll; changed-board branch honest. Include a changed Today binding without node replacement, since journeyUsable currently checks sourceStamp while Compare additionally includes Today bindings. | P2 |
+| T3C14 · Checked security Save | Adapter and required owner methods must be integrated together selectively. | Preserve newer main WatchStore while integrating required candidate account guards; confirm selected actual writable list and reopened membership. Proof: Entitled Save→actual list→ordinary refresh→reopen same membership; account switch while queued/writing fails safely. | P2 |
+| T3C15 · Uncertain Save reconciliation | Present membership proves current postcondition, not original insert outcome; no durable reload custody currently. | Extend existing checked owner with original-operation reference and bounded durable reconciliation if reload-safe recovery is promised; no new retry queue. Proof: Lost response with/without observed membership, reload, tab loss and concurrent membership preserve one original write and truthful outcome. | P2, P6 |
+| T3C16 · Notes, thesis and user intent | Membership and notes are narrower than dated thesis/Pass/milestone/position. | D05 freezes minimal existing-owner dated investigation contract, correction/history and readback; label unsupported actions until implemented. Proof: Save security and save dated thesis can be explained and reopened separately; corrections preserve original intent. | P2, P6 |
+| T3C17 · Follow preference and enrollment | Pure B21 subscription projection exists; current allowed category and complete IO/UI chain not established. | Finish existing preference and deliberate list enrollment with separate readbacks; capability-derived UI and explicit opt-in. Active Following additionally requires admitted/available producer and delivery capability; otherwise show Follow configured, notifications unavailable. Proof: Preference success/list failure and reverse; actual stored category, quiet hours and opt-in read back. | P6 |
+| T3C18 · Material event eligibility | No general assessment-change, OPENED, quote refresh or B4 transition event in current closed producer. | Retain current kinds for first supported integration; broader assessment/B4 events require minimal versioned owner extension and exact correction/dedupe rules. Proof: Genuine eligible transition produces one event; unchanged reread, quote tick and B4 refresh do not; correction keeps original reference. | P6 |
+| T3C19 · Delivery and in-app capability | In-app delivered/read specimen exceeds current source capability. | Complete B21 existing IO/runner/receipt UI; retain in-app as explicit downstream owner extension rather than new delivery plane. Proof: Authorized real source event traverses existing transport to receipt; no sent claim on queued or read claim on SMTP acceptance. | P6 |
+| T3C20 · Current and history lifecycle | Legacy managed macro/options scope does not define new research Current or History population. | Use producer lifecycle and separately defined attention relevance; preserve options/legacy parity and original policy. Proof: No new-entry WAIT/RAN treated as exit; original managed plan persists through new research assessment. | P6, P7 |
+| T3C21 · Qualified Record and denominator | Integrity owner exists; candidate consumer does not establish original cohort/unresolved/period/strategy-vintage joins. | Join existing plans/B1/effective ledger; define separate entry disposition, outcome maturity/availability and integrity axes, cohort cut and mutually exclusive cells within each. Proof: Entered-unresolved, no-entry, missing clock, quarantine, correction and reconstructed plan reconcile without double counting; raw return not alpha. | P6 |
+| T3C22 · Independent Early Leadership evidence | Compiler verifies strong assertions and joins but does not prove producer exclusion from a handcrafted payload. | Expose descriptive evidence and uncertainty; prove existing peer producer exclusion and historically valid membership. Proof: Change candidate return or add alias listing without changing excluded-peer result; future membership and mismatched basis fail. | P4, P5 |
+| T3C23 · Comparable Earnings events and revisions | Factual reconstruction is not original as-run recommendation or generic consensus feed. | Keep release/call/filing and original/later correction separate; explicit current/landmark extension before advancing original D5 evidence membership. Proof: Late filing/generation, post-release forecast, same-period restatement and changing analyst roster cannot improve original signal. | P4, P5 |
+| T3C24 · Source-qualified per-share bridge | Scalar helper existence is not source-admitted diluted-share evidence. | Qualify comparable income and share observations through incumbent Earnings/D5 before bridge attachment. Proof: Mixed basic/diluted or corrected shares, wrong issuer and late capture rejected; valid bridge reconciles source EPS. | P4 |
+| T3C25 · Cycle funding path | Useful funding mechanics are an incumbent candidate, not merged live sourcing or financing access. | Reconcile candidate and qualify existing capital/source owners; preserve timing and observed versus scenario assumptions. Proof: Late financing after initial breach; missing restricted cash; fees/debt conversion and path floor all reconcile. | P4 |
+| T3C26 · Cycle original-equity sensitivity | Conditional math is not calibrated survival probability or accepted holding/core/add/exit. | Preserve actual security claim, funding/dilution assumptions and scenario reset; source-backed sensitivity without invented probability. Proof: Business survives but original shares receive zero; contribution-funded recovery uses full cost; no retrospective trough selection. | P4, P5 |
+| T3C27 · Context and portfolio relation | Context can inform research; saved security is not a holding and source hash is not entitlement. | Compose existing context and authorized portfolio references; issuer/common-factor exposure counted once; sizing stays downstream qualified. Proof: Multiple sleeves/listings do not double count exposure; descriptive theme does not waive B4. | P4, P6 |
+| T3C28 · Foresight availability truth | Missing evidence currently rendered as negative market verdict. | Extend existing health/presentation with typed source availability and nullable qualified verdict; no new detector. Proof: Seven-way availability fixture and real page preserve source reason and qualified true/false distinction. | P1, P7 |
+| T3C29 · Winner Health availability truth | Warm mode collapses valid null and technical/source failures. | Typed loader/presentation reason, coverage and clock semantics through existing analytics owner. Proof: Valid empty versus stale/malformed renders distinct asof/coverage; no invented winner count/rate. | P1, P7 |
+| T3C30 · Private authenticated transport | Existing single-symbol observation transport is not complete all-family Screener API. | Reuse auth/read seam; extend native population contract as needed; invalidate private state before account replacement. Proof: Late A response under B, signout during detail/save, revoked source and protected counts all remain private. | P1, P2, P7 |
+| T3C31 · Correction and served generation | Receipt and source hashes do not alone prove entire served-generation settlement; candidates #10176/#10509/#10202 remain open. | Integrate exact incumbent correction/publication work; retain original versus current disposition and byte-bound final guards. Proof: Mid-read source mutation refuses mixed result; original/corrected/withdrawn view and cache invalidation match same generation. | P1, P7 |
+| T3C32 · Performance without lost integrity | Component optimizations and old PR figures do not establish actual endpoint p95/memory/concurrency. | Integrate incumbent batches then profile actual route; optimize same owner indexes if needed with corruption/population equivalence. Proof: Representative signed-in endpoint/ordinary refresh meets calibrated budgets while changed/corrupt bytes still refuse. | P1, P7 |
+| T3C33 · Qualified forecasts and task ranking | Source-quality and UI usefulness do not establish predictive/economic value. | Retain separate heads, declared task ranking, uncertainty/coverage and per-head qualification through existing research owner. Proof: Strong matched controls, selected top-K calibration, costs, abstention and model-vintage checks before promotion. | P5 |
+| T3C34 · Strategy-native management | Entry availability cannot tell existing holder to exit; Cycle and Earnings policies remain separate qualification. | Qualify tactical/earnings and cycle core/add/exit independently; preserve legacy policy and full outcome lineage. Proof: Freeze entry for management comparison, no unreachable fills/retrospective exits; legacy record unaffected by new strategy. | P3, P5, P6 |
+| T3C35 · Accessible responsive interaction | Screenshots establish candidate layouts, not keyboard semantics, performance or full live state coverage. | Implement EN/ZH/light/dark, 320 reflow, 200% text/400% page zoom where applicable, chart values, focus return and reduced motion. Proof: Real user journey with keyboard and zoom, selected pair on mobile, meaningful empty/denied/degraded states and field telemetry. | P2, P7 |
+| T3C36 · Compatible rollout and rollback | This plan does not release #9495/#10202 or settle original unknown effects. | Integrate bounded incumbent diffs, preserve later main and actual holds; existing rollout controls with exact version and rollback unit. Proof: Entitled journey after ordinary refresh and rollback proves served parity without data/history loss. | P7 |
+| T3C37 · Cited explanation and material changes | Narrative can explain evidence; no inspected universal model or policy authority supplied by explanation. | Bind explanation to allowed owner facts, counterevidence and next condition; distinguish evidence/model/price changes and explicit assumption sensitivity. Proof: Each claim resolves to allowed cited evidence; changing source invalidates explanation; generated text cannot set entry/size. | P4 |
+| T3C38 · Research and roadmap preservation | Docket source unchanged; this is proposed work, not trial registry or dispatch. | Preserve original endpoints/DNR/activation branches, accept explicit qualified/unsupported/rejected dispositions through actual owners; finish retained advertised capabilities. Proof: All original identities/dependencies mapped; no protected outcome read, unauthorized dispatch or renamed killed mechanism. | P1, P5, P7 |
+
+### Original build-unit preservation
+
+Dependencies and research IDs below are copied from the original source. Packet grouping is editorial; original prerequisites and independent activation branches remain controlling. Historical staffing/reviewer boilerplate does not override current Chairman instructions or actual repository controls.
+
+| Unit | Retained outcome | Original prerequisites | Contracts / packets |
+| --- | --- | --- | --- |
+| B00 | Bind and review the integrated master specification | D10 | T3C36, T3C38; P1, P5, P7 |
+| B01 | Complete owed-session and source-bound delivery | B00, D10, Q01, Q02 | T3C01, T3C02, T3C31; P1, P2, P3, P7 |
+| B02 | Preserve canonical episodes and qualify extra anchors | B00, D02, D10, Q01, Q03 | T3C01, T3C09, T3C31; P1, P2, P7 |
+| B03 | Deliver the lossless searchable opportunity field | B00, B02, D10, Q02, Q03, Q24 | T3C01, T3C09, T3C30, T3C32; P1, P2, P7 |
+| B04 | Bind the episode evidence dossier | B00, B02, D03, D07, D10, Q01, Q13, Q14 | T3C02, T3C04, T3C08, T3C11, T3C22, T3C23, T3C24, T3C31, T3C37; P1, P2, P3, P4, P5, P7 |
+| B05 | Close B4 source validity and mandatory-fact integration | B00, B01, B02, D01, D04, D08, D10, Q01, Q15, Q18 | T3C02, T3C03, T3C04, T3C05, T3C06, T3C07; P1, P3, P4, P5 |
+| B06 | Make policy capture and labels decision-clean | B00, B01, B02, D06, D08, D10, Q01, Q02, Q04, Q15, Q18 | T3C05, T3C07, T3C21; P3, P6 |
+| B07 | Ship the first research-to-watch journey | B03, B04, B05, B20, D05, D09, Q19, Q24 | T3C09, T3C10, T3C13, T3C14, T3C15, T3C16, T3C17; P1, P2, P6 |
+| B08 | Expand comparable event and expectation sources | B00, B04, D03, D07, Q01, Q06, Q14 | T3C23, T3C24; P4, P5 |
+| B09 | Qualify group history and peer evidence | B00, B04, D03, Q05, Q13 | T3C22, T3C27; P4, P5, P6 |
+| B10 | Build qualified Early Leadership research comparisons | B02, B06, B09, D02, D06, D07, Q03, Q05, Q09, Q10, Q12 | T3C03, T3C22, T3C33; P1, P3, P4, P5 |
+| B11 | Expose a qualified ranking/head challenger | B07, B10, D06, D07, Q09, Q10, Q11, Q12, Q13, Q14, Q20 | T3C22, T3C33; P4, P5 |
+| B12 | Qualify genuinely earlier entry | B02, B05, B06, D01, D02, D04, D06, D08, Q03, Q04, Q15, Q18 | T3C05, T3C07; P3 |
+| B13 | Bind tactical management and original decisions | B06, B07, D04, D05, Q16, Q19 | T3C12, T3C16, T3C20, T3C21, T3C34; P2, P3, P5, P6, P7 |
+| B14 | Deliver the Earnings research journey | B03, B04, B08, B20, D02, D09, Q06, Q24 | T3C03, T3C23, T3C24, T3C37; P1, P3, P4, P5 |
+| B15 | Qualify Earnings models, entry and holding | B05, B06, B14, D01, D04, D06, D07, D08, Q06, Q09, Q11, Q13, Q15, Q16, Q20 | T3C23, T3C24, T3C33, T3C34; P3, P4, P5, P6 |
+| B16 | Qualify a Cycle source-readiness pilot | B00, D03, Q01, Q07 | T3C03, T3C25; P1, P3, P4, P5 |
+| B17 | Deliver funding and per-share Cycle dossiers | B03, B04, B16, B20, D02, D05, D09, Q07, Q08, Q24 | T3C25, T3C26, T3C37; P4, P5 |
+| B18 | Run failure-inclusive Cycle policy research | B06, B16, D03, D06, D07, Q07, Q08, Q09, Q11, Q12, Q17, Q20 | T3C25, T3C26, T3C33; P4, P5 |
+| B19 | Qualify Cycle core/add/exit behavior | B05, B17, B18, D01, D04, D05, D06, D08, Q08, Q15, Q17 | T3C26, T3C34; P3, P4, P5, P6 |
+| B20 | Build the shared flagship workspace and design system views | B00, D09, D10, Q24 | T3C01, T3C02, T3C03, T3C04, T3C05, T3C08, T3C09, T3C10, T3C11, T3C12, T3C13, T3C14, T3C16, T3C20, T3C27, T3C28, T3C29, T3C30, T3C35, T3C37; P1, P2, P3, P4, P5, P6, P7 |
+| B21 | Integrate meaningful alerts and durable user actions | B07, B20, D05, D11, Q19, Q24 | T3C14, T3C15, T3C16, T3C17, T3C18, T3C19; P2, P6 |
+| B22 | Deliver a truthful unified track record | B06, B07, D11, Q02, Q11, Q19 | T3C12, T3C20, T3C21, T3C29, T3C31; P1, P2, P6, P7 |
+| B23 | Qualify reliability and operating budgets | B01, B05, B07, D11, Q15, Q22, Q24 | T3C02, T3C04, T3C06, T3C08, T3C15, T3C18, T3C19, T3C28, T3C29, T3C30, T3C31, T3C32, T3C35, T3C36; P1, P2, P3, P6, P7 |
+| B24 | Expose coherent portfolio context across sleeves | B07, B13, B14, B17, D05, D08, Q21 | T3C16, T3C27; P2, P4, P6 |
+| B25 | Independent full-stack release adjudication | B11, B12, B13, B15, B19, B21, B22, B23, B24, D09, D10, D11, D12, Q11, Q21, Q22, Q24 | T3C33, T3C34, T3C35, T3C36, T3C38; P1, P2, P3, P5, P6, P7 |
+| B26 | Execute phased flagship cutover and rollback proof | B25, D10, D11, Q22, Q24 | T3C20, T3C31, T3C35, T3C36; P1, P2, P6, P7 |
+| B27 | Disposition retained sleeves and instrument roadmap | B00, B06, D12, Q23 | T3C03, T3C38; P1, P3, P4, P5, P7 |
+| B28 | Accept US program scope and prepare market-native reuse | B26, B27, D11, D12, Q23, Q24 | T3C36, T3C38; P1, P5, P7 |
+
+### Requirement preservation
+
+| Requirement | Original acceptance intent | Original build / research | Delivery grouping |
+| --- | --- | --- | --- |
+| R01 | Complete early field including suppressions and displaced rows | B02, B03, B07, Q02, Q03 | P1, P2, P6, P7 |
+| R02 | Canonical identity, episode generation, correction and re-arm | B02, B04, B06, Q01, Q03 | P1, P2, P3, P4, P5, P6, P7 |
+| R03 | Actual source/observed/decision/publication clocks | B01, B05, B06, B23, Q01, Q15 | P1, P2, P3, P4, P5, P6, P7 |
+| R04 | Coverage, rights and usable historical vintages | B04, B08, B09, B16, Q01, Q06, Q07, Q14 | P1, P2, P3, P4, P5, P6, P7 |
+| R05 | Clear qualitative intelligence and counterevidence | B04, B08, B17, Q06, Q08, Q14, Q20 | P1, P2, P3, P4, P5, P7 |
+| R06 | Early Leadership, real independent peer support | B09, B10, B11, B12, Q03, Q04, Q05 | P1, P3, P4, P5, P6 |
+| R07 | Earnings issuer economics and matched expectation revisions | B08, B14, B15, Q06 | P1, P3, P4, P5, P6 |
+| R08 | Cycle economic turn, survival and original-share capture | B16, B17, B18, B19, Q07, Q08, Q17 | P1, P3, P4, P5, P6 |
+| R09 | Additional sleeves and instruments retained explicitly | B27, B28, Q23 | P1, P3, P4, P5, P7 |
+| R10 | Origin and current-landmark predictions remain distinct | B06, B11, B13, B15, B19, Q09, Q16, Q17 | P2, P3, P4, P5, P6, P7 |
+| R11 | Multi-head forecasts, strong transparent and ambitious challengers | B10, B11, B15, B18, Q09, Q10, Q20 | P1, P3, P4, P5, P6 |
+| R12 | Context conditioning and graph research without double-counting | B04, B09, B11, Q05, Q12, Q13, Q14 | P1, P2, P3, P4, P5, P6, P7 |
+| R13 | Calibration, missingness and selective prediction | B11, B15, B18, B22, Q11, Q12 | P1, P2, P3, P4, P5, P6, P7 |
+| R14 | B4 deterministic current entry with no model waiver | B05, B07, B12, B15, B19, Q04, Q15, Q18 | P1, P2, P3, P4, P5, P6 |
+| R15 | Realistic fills, quote basis, sessions, latency and costs | B05, B06, B12, Q15, Q18 | P1, P3, P4, P5, P6 |
+| R16 | Explicit tactical, earnings and core/add holding laws | B13, B15, B19, Q16, Q17 | P2, P3, P4, P5, P6, P7 |
+| R17 | Same-origin full-opportunity comparisons and original controls | B06, B10, B12, B15, B18, Q02, Q04, Q15 | P1, P3, P4, P5, P6 |
+| R18 | Failure-inclusive labels and honest path metrics | B06, B18, B22, Q01, Q02, Q08, Q09 | P1, P2, P3, P4, P5, P6, P7 |
+| R19 | Dependence, temporal leakage, multiplicity and power | B06, B10, B11, B15, B18, Q01, Q09, Q10, Q11, Q20 | P1, P3, P4, P5, P6 |
+| R20 | Action Desk and Early Radar user tasks | B03, B07, B20, Q19, Q24 | P1, P2, P3, P4, P5, P6, P7 |
+| R21 | All Candidates and Theme/Propagation tasks | B03, B04, B09, B20, Q03, Q05, Q13, Q24 | P1, P2, P3, P4, P5, P6, P7 |
+| R22 | Track Record and Health/Receipts tasks | B22, B23, B20, Q02, Q22, Q24 | P1, P2, P3, P4, P5, P6, P7 |
+| R23 | Two art directions, EN/ZH, mobile/desktop and accessibility | B07, B14, B17, B20, B25, Q24 | P1, P2, P3, P4, P5, P6, P7 |
+| R24 | Watch, thesis, plan and positions have truthful persistence | B07, B13, B19, B21, B24, Q19 | P1, P2, P3, P4, P5, P6, P7 |
+| R25 | Meaningful alerts with current revalidation and correction | B21, B23, Q19, Q22 | P1, P2, P3, P6, P7 |
+| R26 | Portfolio context, correlated exposure and no duplicate holdings | B24, Q21 | P2, P4, P6 |
+| R27 | Field performance, reliability, cost and latency budgets | B23, B26, Q15, Q22, Q24 | P1, P2, P3, P6, P7 |
+| R28 | Post-launch drift, learning and safe versioned rollback | B22, B23, B26, Q22 | P1, P2, P3, P6, P7 |
+| R29 | Onboarding, useful comprehension and truthful commercial claims | B20, B25, B28, Q24 | P1, P2, P3, P4, P5, P6, P7 |
+| R30 | Concrete 24-packet scientific program and rejected hypotheses | B00, B06, B27, Q01, Q23 | P1, P3, P4, P5, P6, P7 |
+| R31 | Bounded build slices and exact existing carriers | B00, B01, B02, B03, B04, B05 | P1, P2, P3, P4, P5, P7 |
+| R32 | Astra principal research, justified Fable and least-scarce fabric | B00, B25 | P1, P2, P3, P5, P6, P7 |
+| R33 | Independent exact-head review and real entitled browser proof | B25, B26, Q24 | P1, P2, P3, P5, P6, P7 |
+| R34 | Legacy episodes, grades, strategies and positions preserved | B06, B13, B19, B22, B26, Q01, Q02 | P1, P2, P3, P4, P5, P6, P7 |
+| R35 | Declared economic/statistical gates before outcome selection | B06, B10, B11, B15, B18, Q09, Q10, Q11, Q18 | P1, P3, P4, P5, P6 |
+| R36 | Complete US first, market-native later adaptation | B27, B28, Q23, Q24 | P1, P3, P4, P5, P7 |
+
+### Original decision preservation
+
+All substantive decisions remain with existing owners. Source-bound Turn3 decisions narrow implementation; they do not register science, waive a hold or confer release authority.
+
+| Decision | Retained question | Consumers | Packets |
+| --- | --- | --- | --- |
+| D01 | Source-session validity and revocation | B05, B12, B15, B19 | P1, P3, P4, P5, P6 |
+| D02 | Independent expert anchors and episode admission | B02, B10, B12, B14, B17 | P1, P2, P3, P4, P5, P7 |
+| D03 | Real source histories and rights | B04, B08, B09, B16, B18 | P1, P2, P3, P4, P5, P6, P7 |
+| D04 | Distinct strategy, entry and holding versions | B05, B12, B13, B15, B19 | P1, P2, P3, P4, P5, P6, P7 |
+| D05 | Durable user decision/thesis mapping | B07, B13, B17, B19, B21, B24 | P1, P2, P3, P4, P5, P6, P7 |
+| D06 | Economic margins, endpoints and formal-read law | B06, B10, B11, B12, B15, B18, B19 | P1, P3, P4, P5, P6 |
+| D07 | Source and model-vintage eligibility | B04, B08, B10, B11, B15, B18 | P1, P2, P3, P4, P5, P6, P7 |
+| D08 | Fill, costs, latency and capacity assumptions | B05, B06, B12, B15, B19, B24 | P1, P2, P3, P4, P5, P6 |
+| D09 | Visual architecture and user comprehension | B07, B14, B17, B20, B25 | P1, P2, P3, P4, P5, P6, P7 |
+| D10 | Exact source custody, worker admission and independence | B00, B01, B02, B03, B04, B05, B06, B20, B25, B26 | P1, P2, P3, P4, P5, P6, P7 |
+| D11 | Release, telemetry and safe rollback | B21, B22, B23, B25, B26, B28 | P1, P2, P3, P5, P6, P7 |
+| D12 | Final US capability and claim boundary | B25, B27, B28 | P1, P2, P3, P4, P5, P6, P7 |
+
+
+## Appendix E. All 24 retained research endpoints and falsifiers
+
+The table condenses the unchanged source docket [T325]; it does not register or dispatch packets. All statuses remain specified/not registered/not dispatched. All protected-outcome permissions remain false. “Unavailable/blocked” means missing supporting fact or authority for a claim; “rejected” requires an actual owner disposition or an already-killed mechanism. A falsifier listed below is a prospective test, not a declaration that the feature has failed.
+
+| Q | Endpoint / build consumers | Critical falsifier or boundary |
+|---|---|---|
+| Q01 | Evidence eligibility by source/date: as-run, PIT replay or diagnostic; B01/B02/B04/B06/B08/B16 | Current body, later membership, future label or unproved clock invalidates PIT claim; missing compulsory input blocks affected claims. |
+| Q02 | Identify largest attributable pipeline capability loss; B03/B06/B10/B22 | Hindsight-selected winners or reversal under original-time joins yields measurement repair, not a trading rule. |
+| Q03 | Separately supported additional observation/nomination species; B02/B03/B10/B12 | Late duplicates, illiquid noise or future-confirmation selection; visibility expansion does not widen admission. |
+| Q04 | Bounded same-origin timeframe/entry policy; B06/B12/B13 | Retain never-confirmers/no-pullback/no-entry and latency; H10 primary/H5/H15 supporting are proposals, no adapter waiver. |
+| Q05 | Independent group contribution and uncertainty; B09/B10/B11 | Candidate self-confirmation, current membership/popularity or ordinary beta explains lift. |
+| Q06 | Particular comparable fact/expectation features and event species; B08/B14/B15 | Restatement, accounting mismatch, contributor/horizon roll, earned gap or selected events; H42 primary/H21/H63 support proposed. |
+| Q07 | One qualified cycle proving domain or same-rule alternative; B16/B17/B18 | Revised series, coarse proxy, survivor selection or future-known trough. |
+| Q08 | Source-backed survival/per-share view and qualified features; B17/B18/B19 | Failed/canceled original equity excluded; scenarios are assumptions until calibrated. |
+| Q09 | Individually qualified remaining-payoff/adverse-tail/timing heads; B10/B11/B15/B18 | Incoherent competing events, poor selected-cohort calibration, hindsight path order; abstain unsupported heads. |
+| Q10 | Ranking artifact for a declared task; B10/B11 | Changed population/information, post-outcome objective or erased net benefit; margin is relevance, not probability. |
+| Q11 | Qualified uncertainty/calibration/abstention; B11/B15/B18/B22 | Pooled reliability hides top-K failure, inadequate adverse-event N or hidden abstention coverage. |
+| Q12 | Bounded context interaction/conditioning feature; B10/B11/B15/B18 | Tiny cells, ticker memory, recent-expert chasing or unestimable interactions; no universal regime authority. |
+| Q13 | Dated incremental economic relation features; B04/B09/B11/B15 | Graph lift explained by degree, membership, time or sector exposure. |
+| Q14 | Named incremental specialist capability or predictive benefit; B04/B08/B11 | Duplicate evidence, late disclosures, coverage selection, inferred government/investor intent. |
+| Q15 | Reproducible fill/cost/latency convention and feasibility; B05/B06/B12/B15/B19 | Same-bar knowledge, false fills, absent spread or invented intrabar order; no capacity claim without separate model. |
+| Q16 | Accepted tactical/earnings management version; B13/B15 | Post-outcome exits, transfer of losers between sleeves or unreachable prices; immutable legacy handling. |
+| Q17 | Qualified cycle core/add/exit or narrower unsupported/rejected claim; B18/B19 | Permanent impairment extended, mechanical averaging down, survivor-only history. |
+| Q18 | Existing #7751 B4 policy adjudication only; B05/B06/B12 | Preserve immutable pre-B4 population, duplicate aliases and existing evidence era; no extra N or automatic threshold promotion. |
+| Q19 | Product feedback/notification contract; B07/B21/B22 | Forced interruption, misleading actionability, duplicate/unrecorded effects; clicks are not circular alpha labels. |
+| Q20 | Specific representation/head or documented null; B11/B15/B18 | Model hindsight, weak baseline, unfair feature aggregation, memorization or untenable cost. |
+| Q21 | Feasible portfolio-context research; B24/B25 | Double-counted issuer/cycle exposures or unlimited overlapping capital; sizing/personalization need separate acceptance. |
+| Q22 | Operational review/fallback and ordinary refresh; B23/B25/B26 | Input failure mislabeled alpha drift, stale actionability hidden, historical forecast overwritten. |
+| Q23 | Sequenced disposition of all retained later sleeves/instruments; B27/B28 | Renamed killed rule or inadequate instrument/data distinction; US-first, no automatic leverage/options/short/region transfer. |
+| Q24 | Comprehensible accessible research→save→review experience; B07/B20/B21/B22/B25/B26 | User confuses research with entry, save with position, or misses horizon/conditions; product acceptance is independent of alpha. |
+
+### Turn 3 reference definitions
+
+[T301]: https://github.com/mastermindx-market-intelligence/macro/blob/9a13c64bf69f782332afa29efb09fe48ee30b857/engine/prophet_b4_same_read.py
+[T302]: https://github.com/mastermindx-market-intelligence/macro/blob/9a13c64bf69f782332afa29efb09fe48ee30b857/engine/prophet_entry_availability.py
+[T303]: https://github.com/mastermindx-market-intelligence/macro/blob/9a13c64bf69f782332afa29efb09fe48ee30b857/scripts/build_stock_library.py
+[T304]: https://github.com/mastermindx-market-intelligence/macro/blob/9a13c64bf69f782332afa29efb09fe48ee30b857/app/prophet_daily_brief.py
+[T305]: https://github.com/mastermindx-market-intelligence/macro/blob/9a13c64bf69f782332afa29efb09fe48ee30b857/engine/prophet_early_observations.py
+[T306]: https://github.com/mastermindx-market-intelligence/macro/blob/9a13c64bf69f782332afa29efb09fe48ee30b857/engine/prophet_entry_availability_sources.py
+[T307]: https://github.com/mastermindx-market-intelligence/macro/blob/9a13c64bf69f782332afa29efb09fe48ee30b857/engine/prophet_strategy_definition.py
+[T308]: https://github.com/mastermindx-market-intelligence/macro/blob/d42d83307948141c05967d7081a6cc7cbeb24a90/templates/theme.js
+[T309]: https://github.com/mastermindx-market-intelligence/macro/blob/9a13c64bf69f782332afa29efb09fe48ee30b857/scripts/build_prophet.py
+[T310]: https://github.com/mastermindx-market-intelligence/macro/blob/9a13c64bf69f782332afa29efb09fe48ee30b857/templates/watchstore.js
+[T311]: https://github.com/mastermindx-market-intelligence/macro/blob/d42d83307948141c05967d7081a6cc7cbeb24a90/templates/watchstore.js
+[T312]: https://github.com/mastermindx-market-intelligence/macro/blob/d42d83307948141c05967d7081a6cc7cbeb24a90/templates/prophet_save.js
+[T313]: https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/1c0bf028cf72539a4d3fcb17fa137ee474d764f9/supabase/migrations/0009_watchlist_symbol_unique.sql
+[T314]: https://github.com/mastermindx-market-intelligence/macro/blob/9a13c64bf69f782332afa29efb09fe48ee30b857/engine/prophet_journey_notifications.py
+[T315]: https://github.com/mastermindx-market-intelligence/macro/blob/9a13c64bf69f782332afa29efb09fe48ee30b857/lib/user_prefs.py
+[T316]: https://github.com/mastermindx-market-intelligence/macro/blob/9a13c64bf69f782332afa29efb09fe48ee30b857/app/account_prefs.py
+[T317]: https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/1c0bf028cf72539a4d3fcb17fa137ee474d764f9/terminal/components/prophet/ProphetView.tsx
+[T318]: https://github.com/mastermindx-market-intelligence/macro/blob/9a13c64bf69f782332afa29efb09fe48ee30b857/engine/prophet_integrity.py
+[T319]: https://github.com/mastermindx-market-intelligence/macro/blob/41ca935449b6668c60e0b5ba2a0863703e072d8c/app/hub.py
+[T320]: https://github.com/mastermindx-market-intelligence/macro/blob/9a13c64bf69f782332afa29efb09fe48ee30b857/engine/prophet_early_leadership_evidence.py
+[T321]: https://github.com/mastermindx-market-intelligence/macro/blob/9a13c64bf69f782332afa29efb09fe48ee30b857/engine/sue.py
+[T322]: https://github.com/mastermindx-market-intelligence/macro/blob/9a13c64bf69f782332afa29efb09fe48ee30b857/engine/prophet_lab/intelligence_vector.py
+[T323]: https://github.com/mastermindx-market-intelligence/macro/blob/9a13c64bf69f782332afa29efb09fe48ee30b857/engine/prophet_lab/earnings_dossier.py
+[T324]: https://github.com/mastermindx-market-intelligence/macro/blob/6b4b5ae5e2307453f2ddc0f2c0dbebe676c793b5/engine/prophet_cycle_equity.py
+[T325]: https://github.com/mastermindx-market-intelligence/macro/blob/9a13c64bf69f782332afa29efb09fe48ee30b857/research/prophet_v4/r6_fable_meta_ceo_handoff/effective/RESEARCH_DOCKET.json
+[T326]: https://github.com/mastermindx-market-intelligence/macro/blob/9a13c64bf69f782332afa29efb09fe48ee30b857/templates/foresight.html.j2
+[T327]: https://github.com/mastermindx-market-intelligence/macro/blob/9a13c64bf69f782332afa29efb09fe48ee30b857/engine/foresight_health.py
+[T328]: https://github.com/mastermindx-market-intelligence/macro/blob/9a13c64bf69f782332afa29efb09fe48ee30b857/scripts/build_winner_health_page.py
+[T329]: https://github.com/mastermindx-market-intelligence/macro/blob/9a13c64bf69f782332afa29efb09fe48ee30b857/templates/winner_health.html.j2
+[T330]: https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/1c0bf028cf72539a4d3fcb17fa137ee474d764f9/terminal/components/TerminalShell.tsx
+[T331]: https://github.com/mastermindx-market-intelligence/macro/blob/858e11a4d17f2d9387af720d01c6d84dcc80b49d/engine/prophet_candidate_state.py
+[T332]: https://github.com/mastermindx-market-intelligence/macro/blob/0a5fdea7148065ea5d14d099a439308bd2cddcec/engine/us_candidate_episode_intake.py
+[T333]: https://web.dev/articles/vitals
+[T334]: https://www.w3.org/WAI/WCAG22/Understanding/reflow.html
+[T335]: https://www.w3.org/WAI/WCAG22/Understanding/focus-not-obscured-minimum.html
+[T336]: https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/1c0bf028cf72539a4d3fcb17fa137ee474d764f9/terminal/lib/prophetObservationsServer.ts
+[T337]: https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/1c0bf028cf72539a4d3fcb17fa137ee474d764f9/terminal/lib/useProphetObservation.ts
+[T338]: https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/1c0bf028cf72539a4d3fcb17fa137ee474d764f9/terminal/lib/prophetObservations.ts
+[T339]: https://github.com/mastermindx-market-intelligence/macro/blob/9a13c64bf69f782332afa29efb09fe48ee30b857/engine/alert_delivery_drain.py
+[T340]: https://github.com/mastermindx-market-intelligence/macro/blob/9a13c64bf69f782332afa29efb09fe48ee30b857/scripts/drain_alert_outbox.py
+[T341]: https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/1c0bf028cf72539a4d3fcb17fa137ee474d764f9/terminal/app/api/alerts/receipts/route.ts
+[T342]: https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/1c0bf028cf72539a4d3fcb17fa137ee474d764f9/terminal/lib/watchlistAnnotations.ts
+[T343]: https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/1c0bf028cf72539a4d3fcb17fa137ee474d764f9/supabase/migrations/0033_watchlist_annotations.sql
+[S30]: https://github.com/mastermindx-market-intelligence/macro/blob/1205531c81f9a78306905faf1fa0be61cd976357/research/design_candidates/prophet_production_20261109/TURN3_ARCHITECTURE_HARDENING.md
+[S31]: https://github.com/mastermindx-market-intelligence/macro/blob/9b883de5efe4e53895df5932ce576bd809fc8824/research/design_candidates/prophet_production_20261109/TURN3_CONTRACT_REGISTRY.json
+[S32]: https://github.com/mastermindx-market-intelligence/macro/blob/b4044501deef95b17d317e18952cddddbc110e15/research/design_candidates/prophet_production_20261109/TURN3_CONTRACT_CROSSWALK.md
+[S33]: https://github.com/mastermindx-market-intelligence/macro/blob/7812073f8bb0a4dd2dc585ceab2f70f9f6cec6a4/research/design_candidates/prophet_production_20261109/TURN3_BACKEND_SOURCE_APPENDIX.md
+[S34]: https://github.com/mastermindx-market-intelligence/macro/blob/7c27b31dbb11c01f22566f275969f72a13100165/research/design_candidates/prophet_production_20261109/TURN3_EXPERIENCE_SOURCE_APPENDIX.md
+[S35]: https://github.com/mastermindx-market-intelligence/macro/blob/266735bd841f42141ad191ca0e197429acad6ba2/research/design_candidates/prophet_production_20261109/TURN3_INTELLIGENCE_SOURCE_APPENDIX.md
