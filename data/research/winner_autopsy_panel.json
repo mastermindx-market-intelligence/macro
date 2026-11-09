@@ -1,6 +1,6 @@
 {
   "schema": "winner_autopsy_panel.v1",
-  "generated_at": "2026-11-08T10:03:17Z",
+  "generated_at": "2026-11-09T10:18:51Z",
   "display_only": true,
   "horizon_role": "hold_thesis",
   "census": {
@@ -2070,7 +2070,7 @@
   },
   "watch": {
     "available": true,
-    "as_of": "2026-11-08",
+    "as_of": "2026-11-09",
     "state_counts": {
       "breakaway": 180,
       "emerging": 1697,
@@ -6656,18 +6656,19 @@
         }
       },
       {
-        "ticker": "ATDS",
+        "ticker": "IVPR",
         "sector": "",
         "benchmark": "SPY",
         "state": "emerging",
         "excess_21d_pp": 104.99,
         "excess_42d_pp": 103.32,
-        "new_high_63d": false,
-        "dollar_vol_z21": -0.18,
+        "new_high_63d": true,
+        "dollar_vol_z21": 2.73,
         "days_in_state": 0,
         "gex_state": null,
         "hazards": [
-          "extended_after_vertical_move"
+          "extended_after_vertical_move",
+          "chase_risk_elevated"
         ],
         "context": {
           "context_only": true,
@@ -6694,19 +6695,18 @@
         }
       },
       {
-        "ticker": "IVPR",
+        "ticker": "ATDS",
         "sector": "",
         "benchmark": "SPY",
         "state": "emerging",
         "excess_21d_pp": 104.99,
         "excess_42d_pp": 103.32,
-        "new_high_63d": true,
-        "dollar_vol_z21": 2.73,
+        "new_high_63d": false,
+        "dollar_vol_z21": -0.18,
         "days_in_state": 0,
         "gex_state": null,
         "hazards": [
-          "extended_after_vertical_move",
-          "chase_risk_elevated"
+          "extended_after_vertical_move"
         ],
         "context": {
           "context_only": true,
@@ -23718,6 +23718,23 @@
         }
       },
       {
+        "ticker": "MSTZ",
+        "sector": "",
+        "benchmark": "SPY",
+        "state": "emerging",
+        "excess_21d_pp": 24.04,
+        "excess_42d_pp": -20.21,
+        "new_high_63d": false,
+        "dollar_vol_z21": -1.25,
+        "days_in_state": 0,
+        "gex_state": null,
+        "hazards": [],
+        "context": {
+          "context_only": true,
+          "note": ""
+        }
+      },
+      {
         "ticker": "GAU",
         "sector": "",
         "benchmark": "SPY",
@@ -23731,23 +23748,6 @@
         "hazards": [
           "chase_risk_elevated"
         ],
-        "context": {
-          "context_only": true,
-          "note": ""
-        }
-      },
-      {
-        "ticker": "MSTZ",
-        "sector": "",
-        "benchmark": "SPY",
-        "state": "emerging",
-        "excess_21d_pp": 24.04,
-        "excess_42d_pp": -20.21,
-        "new_high_63d": false,
-        "dollar_vol_z21": -1.25,
-        "days_in_state": 0,
-        "gex_state": null,
-        "hazards": [],
         "context": {
           "context_only": true,
           "note": ""
@@ -33065,65 +33065,14 @@
         }
       },
       {
-        "ticker": "AVNI",
+        "ticker": "CETXP",
         "sector": "",
         "benchmark": "SPY",
         "state": "emerging",
         "excess_21d_pp": 4.99,
-        "excess_42d_pp": 103.32,
+        "excess_42d_pp": 36.51,
         "new_high_63d": false,
-        "dollar_vol_z21": 0.0,
-        "days_in_state": 0,
-        "gex_state": null,
-        "hazards": [],
-        "context": {
-          "context_only": true,
-          "note": ""
-        }
-      },
-      {
-        "ticker": "GLPGF",
-        "sector": "",
-        "benchmark": "SPY",
-        "state": "emerging",
-        "excess_21d_pp": 4.99,
-        "excess_42d_pp": 25.08,
-        "new_high_63d": true,
-        "dollar_vol_z21": null,
-        "days_in_state": 0,
-        "gex_state": null,
-        "hazards": [],
-        "context": {
-          "context_only": true,
-          "note": ""
-        }
-      },
-      {
-        "ticker": "RWAX",
-        "sector": "",
-        "benchmark": "SPY",
-        "state": "emerging",
-        "excess_21d_pp": 4.99,
-        "excess_42d_pp": 103.32,
-        "new_high_63d": true,
-        "dollar_vol_z21": 0.97,
-        "days_in_state": 0,
-        "gex_state": null,
-        "hazards": [],
-        "context": {
-          "context_only": true,
-          "note": ""
-        }
-      },
-      {
-        "ticker": "SELXF",
-        "sector": "",
-        "benchmark": "SPY",
-        "state": "emerging",
-        "excess_21d_pp": 4.99,
-        "excess_42d_pp": 203.32,
-        "new_high_63d": false,
-        "dollar_vol_z21": -0.34,
+        "dollar_vol_z21": -0.25,
         "days_in_state": 0,
         "gex_state": null,
         "hazards": [],
@@ -33150,14 +33099,14 @@
         }
       },
       {
-        "ticker": "CETXP",
+        "ticker": "NPACY",
         "sector": "",
         "benchmark": "SPY",
         "state": "emerging",
         "excess_21d_pp": 4.99,
-        "excess_42d_pp": 36.51,
-        "new_high_63d": false,
-        "dollar_vol_z21": -0.25,
+        "excess_42d_pp": 39.77,
+        "new_high_63d": true,
+        "dollar_vol_z21": -0.24,
         "days_in_state": 0,
         "gex_state": null,
         "hazards": [],
@@ -33167,14 +33116,65 @@
         }
       },
       {
-        "ticker": "NPACY",
+        "ticker": "RWAX",
         "sector": "",
         "benchmark": "SPY",
         "state": "emerging",
         "excess_21d_pp": 4.99,
-        "excess_42d_pp": 39.77,
+        "excess_42d_pp": 103.32,
         "new_high_63d": true,
-        "dollar_vol_z21": -0.24,
+        "dollar_vol_z21": 0.97,
+        "days_in_state": 0,
+        "gex_state": null,
+        "hazards": [],
+        "context": {
+          "context_only": true,
+          "note": ""
+        }
+      },
+      {
+        "ticker": "GLPGF",
+        "sector": "",
+        "benchmark": "SPY",
+        "state": "emerging",
+        "excess_21d_pp": 4.99,
+        "excess_42d_pp": 25.08,
+        "new_high_63d": true,
+        "dollar_vol_z21": null,
+        "days_in_state": 0,
+        "gex_state": null,
+        "hazards": [],
+        "context": {
+          "context_only": true,
+          "note": ""
+        }
+      },
+      {
+        "ticker": "AVNI",
+        "sector": "",
+        "benchmark": "SPY",
+        "state": "emerging",
+        "excess_21d_pp": 4.99,
+        "excess_42d_pp": 103.32,
+        "new_high_63d": false,
+        "dollar_vol_z21": 0.0,
+        "days_in_state": 0,
+        "gex_state": null,
+        "hazards": [],
+        "context": {
+          "context_only": true,
+          "note": ""
+        }
+      },
+      {
+        "ticker": "SELXF",
+        "sector": "",
+        "benchmark": "SPY",
+        "state": "emerging",
+        "excess_21d_pp": 4.99,
+        "excess_42d_pp": 203.32,
+        "new_high_63d": false,
+        "dollar_vol_z21": -0.34,
         "days_in_state": 0,
         "gex_state": null,
         "hazards": [],
