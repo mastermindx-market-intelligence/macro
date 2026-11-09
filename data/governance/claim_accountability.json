@@ -1,6 +1,6 @@
 {
   "schema": "claim_accountability.v1",
-  "generated_at": "2026-11-08T13:38:24.859375+00:00",
+  "generated_at": "2026-11-09T05:39:25.328002+00:00",
   "global": {
     "n_claims": 118459,
     "n_grades": 219939,
@@ -216,8 +216,8 @@
       "n_claims": 6998,
       "falsifier_coverage": 0.040583,
       "n_with_falsifier": 284,
-      "hit_gradeable_share": 0.948271,
-      "n_hit_gradeable": 6636,
+      "hit_gradeable_share": 0.947985,
+      "n_hit_gradeable": 6634,
       "hit_gradeable_note": "direction=0 claims are not hit-gradeable (graded on excess only); this does not contradict the R2 audit CLOSED verdict",
       "maturity_mix": {
         "graded_5d_count": 10510,
@@ -827,8 +827,8 @@
       "n_claims": 6998,
       "falsifier_coverage": 0.040583,
       "n_with_falsifier": 284,
-      "hit_gradeable_share": 0.948271,
-      "n_hit_gradeable": 6636,
+      "hit_gradeable_share": 0.947985,
+      "n_hit_gradeable": 6634,
       "hit_gradeable_note": "direction=0 claims are not hit-gradeable (graded on excess only); this does not contradict the R2 audit CLOSED verdict",
       "maturity_mix": {
         "graded_5d_count": 10510,
@@ -1144,7 +1144,7 @@
     }
   },
   "track_record_ref": {
-    "generated_at": "2026-11-08T13:33:20.336892+00:00",
+    "generated_at": "2026-11-09T05:34:41.790106+00:00",
     "grade_horizons": [
       5,
       21,
