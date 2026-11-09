@@ -3001,3 +3001,40 @@ Storage safety is complete for this bounded phase. The parent mission remains ac
 Required next proof: a 30-day saved case opened from a 7-day view → review → parent → Close restores the exact 7-day ancestor; native Back/Forward; detached saved-item with a real review parent; truly detached review; a record becoming missing/unreadable before return; locale changes with no history/storage effects; visible-opener fallback; 320/390 target fit and reentrant focus. The original full Close semantics must remain intact. A frozen status derived from today’s expiry must not be mislabeled as the original-cutoff status.
 
 No H5/model authority, collector, alert, public-route cutover, hosted deployment, release/admission or independent visual approval changed. Earlier absolute holds, denied capture families and EFFECT_UNKNOWN workers remain fenced. This phase is **verify → save/readback → continue**, not mission finalization.
+
+
+## 63. Crypto saved-case navigation and reading continuity — implemented, verified and Paper-aligned (9 November 2026)
+
+### Outcome and source
+
+Dependent Draft [PR #10901](https://github.com/mastermindx-market-intelligence/Macro/pull/10901) advances from storage commit `2c04fc37d239f4bf27b6efaed98b229256ea337e` to **`95ac76db194b8952aef0e63c4bcb30a220da78e0`**, tree `6b4a3e738c09f3ce6a620d9183354d160da03790`. Parent PR #9580 remains unchanged at `5e496c24c962e85a4f7f514dd43dc61443b95cab`. Asset version: `7d9cb01e7600`.
+
+A 30-day saved case opened from a 7-day ancestor now remains its original case through Historical review, explicit parent return, native Back/Forward and locale changes. Close restores the original outer 7-day route. Verified immediate parents use one native Back; detached destinations say Open and replace the exact saved case. Legacy parent horizon repair stays in the same entry.
+
+The existing history entry stores reading state with panel/revision/horizon/cutoff scope, disclosure keys, semantic focus and scroll. Rendered URL plus complete metadata identity distinguishes same-URL entries. Explicit actions capture current scroll; native history uses the last settled scrollend position. No parallel router, history stack, saved store or background observer was introduced.
+
+Parent activation and arrival each re-read the exact record. A bounded pending intent prevents duplicate parent activation and supports precise arrival focus. Missing/duplicate/unreadable versions never inherit current fields. Every storage-bearing drawer preflights before replacing its subtree and yields to newer navigation, language or focused control. Close falls back to the restored view's heading when its opener is hidden or removed.
+
+### Proof and honest failure classification
+
+Parent baseline PID 77982: **16 failed / 40 deselected**, 18.61s pytest / 19.470s subprocess. These share horizon, parent-control, disclosure/locale and outer-focus defects; not 16 independent bugs.
+
+Initial candidate PID 46688: **93 passed / 7 failed** from 100 cases, 64.19s pytest / 64.777s subprocess. All 39 contract cases passed. Browser observation: **62 contexts / 68 pages**, Chrome 157.0.8103.39, zero page errors, outside-origin requests or WebSockets.
+
+Six failures came from a focus assertion mistakenly placed in the old initial-unavailable-deep-link test. It was moved to the intended missing/duplicate parent-recheck recovery. The seventh fixture removal ran after the destination render: diagnostic PID 59811 preserved the ordering (nonempty storage read → Upside test render → late capture observer → empty fixture write → redundant hashchange). This is not evidence of a production return race. The corrected injection writes [] with the captured native setter immediately before delegating one real native history.back, after the parent's first validation.
+
+Only the harness changed. PID 73760: **10 passed / 51 deselected**, 14.45s pytest / 15.405s subprocess, **10 contexts / 10 pages**, zero page errors or outside-origin/WebSocket traffic. JUnit case-identity comparison confirms **100 unique cases with passing coverage: 39 contract + 61 browser**, with three passing parent-recheck overlaps. No single-run 100-pass claim.
+
+Three native navigation crops (1440 EN, 390 ZH, 320 EN) were inspected. They intentionally retain saved reading positions; content can begin beneath the fixed header. Header actions meet ≥44px and viewport/drawer overflow assertions pass. These crops do not establish hosted/independent visual approval or full-viewport desktop toast placement.
+
+Twenty-nine JS transformations and one CSS transformation invert exactly to the prior commit. Template/served assets match; two saved pages change only asset-version references; fourteen other input files are unchanged. Node syntax passes. Nineteen source/evidence files and three PNG binaries were read back exactly at the published head. Detailed builder contract and raw evidence: [NAVIGATION.md](https://github.com/mastermindx-market-intelligence/Macro/blob/95ac76db194b8952aef0e63c4bcb30a220da78e0/research/design_candidates/crypto_snapshot_safety_20261109/NAVIGATION.md) and [NAVIGATION_VALIDATION.json](https://github.com/mastermindx-market-intelligence/Macro/blob/95ac76db194b8952aef0e63c4bcb30a220da78e0/research/design_candidates/crypto_snapshot_safety_20261109/NAVIGATION_VALIDATION.json).
+
+### Actual Paper amendment
+
+File `01M6Y3F0NXNDPAKJMJGCAD759Z`, page `p-4-0`, Build `3IP-0`: **11 text nodes updated**, **34 existing nodes retained**, all IDs/parents/order/styles and untargeted texts exact. Applied response, fresh JSX readback and finish are preserved in [PAPER_CRYPTO_NAVIGATION_20261109.json](PAPER_CRYPTO_NAVIGATION_20261109.json). Three changed note crops inspected. The notes explain precise ownership, parent-vs-Close semantics, incoming-history protection, storage preflight and temporal status limits for the future builder.
+
+### Immediate continuation
+
+Implement the accepted frozen-case hierarchy: original condition first; native Original case details and Original evidence disclosures; compact review qualifications; separated recovery actions. Keep original sequence, invalidation, counter-evidence, expiry, prior-close basis and captured source clocks/quality. Today's computed expiry must remain distinct from progress at the original cutoff. Keep the existing current-scenario layout and proven saved navigation/storage intact.
+
+H5/model, alert, hosted/independent visual acceptance, route-cutover, release/admission and all earlier denied/unknown-effect fences remain unchanged. This is **verify → save/readback → continue**, not mission finalization.

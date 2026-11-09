@@ -1,6 +1,16 @@
 # Paper audit and upgrade — 8–9 November 2026
 
-## Current implementation — Crypto saved-snapshot safety (§62)
+## Current implementation — Crypto saved-case navigation (§63)
+
+Dependent Draft [PR #10901](https://github.com/mastermindx-market-intelligence/Macro/pull/10901), head `95ac76db194b8952aef0e63c4bcb30a220da78e0`, now preserves original saved horizons, named parent returns, native Back/Forward, same-URL history entries, locale reading state and outer Close focus. The existing owners re-read the exact case before movement and arrival and yield to newer navigation/focus.
+
+**39 contract + 61 browser cases have passing coverage across two runs:** initial 93 passed / 7 failed, followed by corrected affected 10 passed / 51 deselected. Seven initial failures were classified as harness mistakes and retained; runtime was unchanged. Initial 62 contexts / 68 pages and correction 10 / 10 had zero page errors or external/WebSocket requests. Three native navigation crops were inspected.
+
+Paper Build `3IP-0` has 11 applied text changes; all 34 node IDs/parents/order/styles conserved, exact readback and finished ownership. [PAPER_CRYPTO_NAVIGATION_20261109.json](PAPER_CRYPTO_NAVIGATION_20261109.json) records the source, raw verification and Paper evidence. Nineteen source/text files and three capture binaries have exact commit readback.
+
+**Active next work:** original-condition-first frozen-case layout, compact review and recovery action spacing. Keep today's expiry distinct from original-cutoff progress. Existing release, H5/model, alerts, hosted/independent visual and route-cutover holds remain. The mission continues autonomously.
+
+## Previous implementation — Crypto saved-snapshot safety (§62)
 
 Dependent Draft [PR #10901](https://github.com/mastermindx-market-intelligence/Macro/pull/10901), head `2c04fc37d239f4bf27b6efaed98b229256ea337e`, now repairs explicit Save/Remove intent, full-collection preservation, exact saved-version resolution, truthful write confirmation and newer-focus ownership. Parent PR #9580 remains unchanged at `5e496c24c962e85a4f7f514dd43dc61443b95cab`.
 
@@ -8,7 +18,7 @@ Passing coverage: **40 browser cases / 41 contexts / 47 pages / zero page errors
 
 Paper Crypto Build `3IP-0` and unavailable-state `3JY-0` have nine applied text updates, exact readback, 48 original nodes/parents/order/styles preserved and both roots finished. [PAPER_CRYPTO_SNAPSHOT_SAFETY_20261109.json](PAPER_CRYPTO_SNAPSHOT_SAFETY_20261109.json) records source, Paper and verification evidence. Source/evidence files and ten native capture paths were read back at the exact published commit.
 
-**Active next work:** saved 30-day horizon from a 7-day ancestor, explicit review → same-case parent return, same-revision reading-state restoration and the accepted original-condition-first layout. H5/model, alerts, release/admission, independent/hosted visual acceptance and public-route cutover remain held. The mission continues autonomously.
+**Next work recorded at §62:** saved 30-day horizon from a 7-day ancestor, explicit review → same-case parent return, same-revision reading-state restoration and the accepted original-condition-first layout. H5/model, alerts, release/admission, independent/hosted visual acceptance and public-route cutover remain held. The mission continues autonomously.
 
 ## Previous implementation — metadata truth and heading navigation
 
