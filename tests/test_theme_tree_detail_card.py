@@ -320,7 +320,7 @@ console.log('real rendered multi-parent selection: click, replace, fresh-frame r
 
 
 def test_theme_hover_ignores_touch_compatibility_mouse_events():
-    """Run the emitted hover handler for touch and for a mouse in both languages."""
+    """Run the emitted hover handler for touch and bounded bilingual mouse hover."""
     import subprocess
 
     html = _html()
@@ -330,14 +330,21 @@ def test_theme_hover_ignores_touch_compatibility_mouse_events():
 const {runInNewContext} = require('node:vm'), assert = require('node:assert/strict');
 const script = require('node:fs').readFileSync(0, 'utf8');
 const listeners = {};
-let tip, lang='en';
+let tip, tipWidth=270, lang='en';
+const window={innerWidth:390,innerHeight:844};
 const chip={closest:()=>chip,getAttribute:key=>({'data-tt-tip-en':'Two branches','data-tt-tip-zh':'两个分支'})[key]};
 const document={
-  createElement:()=>({style:{}}), body:{appendChild:el=>{tip=el;}},
+  createElement:()=>({style:{}, getBoundingClientRect:()=>({width:tipWidth})}),
+  body:{appendChild:el=>{tip=el;}},
   documentElement:{getAttribute:()=>lang}, addEventListener:(type,fn)=>{listeners[type]=fn;},
 };
-runInNewContext(script,{document,window:{innerWidth:390,innerHeight:844}});
-const emit=(type,pointerType)=>listeners[type]?.({target:chip,pointerType,clientX:130,clientY:450});
+runInNewContext(script,{document,window});
+const emit=(type,pointerType,clientX=130)=>listeners[type]?.({target:chip,pointerType,clientX,clientY:450});
+function assertHorizontalBounds(expectedLeft){
+  const left=Number.parseFloat(tip.style.left);
+  assert.equal(left,expectedLeft);
+  assert(left>=8 && left+tipWidth<=window.innerWidth-8);
+}
 emit('pointerover','touch');emit('pointermove','touch');
 emit('mouseover');emit('mousemove');
 assert.equal(tip,undefined);
@@ -345,7 +352,17 @@ for(const [locale,text] of [['en','Two branches'],['zh','两个分支']]){
   lang=locale;
   emit('pointerover','mouse');emit('pointermove','mouse');
   assert.equal(tip.style.display,'block');assert.equal(tip.textContent,text);
+  assertHorizontalBounds(8);
+  emit('pointermove','mouse',389);assertHorizontalBounds(106);
+  emit('pointermove','mouse',8);assertHorizontalBounds(21);
   emit('pointerout','mouse');assert.equal(tip.style.display,'none');
 }
+window.innerWidth=320;
+emit('pointerover','mouse');assertHorizontalBounds(8);
+emit('pointerout','mouse');assert.equal(tip.style.display,'none');
+window.innerWidth=390;tipWidth=200;
+emit('pointerover','mouse');assertHorizontalBounds(143);
+emit('pointermove','mouse',133);assertHorizontalBounds(146);
+emit('pointerout','mouse');assert.equal(tip.style.display,'none');
 """], input=script, capture_output=True, text=True, timeout=30)
     assert result.returncode == 0, result.stdout + result.stderr

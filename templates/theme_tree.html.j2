@@ -558,7 +558,7 @@ html[data-theme="light"] .tt-ticker-profile{background:var(--panel);box-shadow:n
 </script>
 <script>
 (function(){
-  // Multi-parent tip on micro chips — stays a hover pop, no inline style mutation.
+  // Multi-parent tip on micro chips.
   var _tip=null;
   function _makeTip(){
     if(_tip)return _tip;
@@ -568,6 +568,15 @@ html[data-theme="light"] .tt-ticker-profile{background:var(--panel);box-shadow:n
     return _tip;
   }
   function _lang(){return (document.documentElement.getAttribute('data-lang')||'')==='zh'?'zh':'en';}
+  function _position(tip,e){
+    var inset=8,width=tip.getBoundingClientRect().width;
+    var right=window.innerWidth-width-inset;
+    var x=e.clientX+13,y=e.clientY+14;
+    if(x>right)x=e.clientX-width-13;
+    x=Math.max(inset,Math.min(x,right));
+    if(y+90>window.innerHeight)y=e.clientY-90;
+    tip.style.left=x+'px';tip.style.top=y+'px';
+  }
   document.addEventListener('pointerover',function(e){
     if(e.pointerType!=='mouse')return;
     var el=e.target.closest('[data-tt-tip-en]');
@@ -577,14 +586,12 @@ html[data-theme="light"] .tt-ticker-profile{background:var(--panel);box-shadow:n
     var tip=_makeTip();
     tip.textContent=_lang()==='zh'?zh:en;
     tip.style.display='block';
+    _position(tip,e);
   });
   document.addEventListener('pointermove',function(e){
     if(e.pointerType!=='mouse')return;
     if(!_tip||_tip.style.display==='none')return;
-    var x=e.clientX+13,y=e.clientY+14;
-    if(x+280>window.innerWidth)x=e.clientX-280;
-    if(y+90>window.innerHeight)y=e.clientY-90;
-    _tip.style.left=x+'px';_tip.style.top=y+'px';
+    _position(_tip,e);
   });
   document.addEventListener('pointerout',function(e){
     if(e.pointerType!=='mouse')return;
@@ -750,7 +757,7 @@ html[data-theme="light"] .tt-ticker-profile{background:var(--panel);box-shadow:n
 })();
 </script>
 <style>
-.tt-tip{position:fixed;z-index:999;background:var(--panel);border:1px solid var(--line);border-radius:var(--r-ctl,8px);padding:7px 11px;font-size:12px;max-width:270px;pointer-events:none;line-height:1.5;display:none;color:var(--text);box-shadow:var(--popover-shadow)}
+.tt-tip{position:fixed;z-index:999;background:var(--panel);border:1px solid var(--line);border-radius:var(--r-ctl,8px);padding:7px 11px;font-size:12px;width:max-content;max-width:min(270px,calc(100% - 16px));overflow-wrap:anywhere;pointer-events:none;line-height:1.5;display:none;color:var(--text);box-shadow:var(--popover-shadow)}
 </style>
 </body>
 </html>
