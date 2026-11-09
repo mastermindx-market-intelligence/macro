@@ -1,0 +1,160 @@
+{
+  "account_entitlement_proven": false,
+  "caveats": [
+    "Catalogue also contains reserved symbols, inactive and reused identifiers: candidates are an offline preflight, not permaTicker/entitlement qualification.",
+    "One initial full-history EOD request per eligible symbol is a vendor-documented strategy hypothesis, not a guarantee of result size, pagination, throttling or exchange-level coverage.",
+    "Daily bulk EOD delta and periodic full adjustment refreshes after split/dividend corrections remain unimplemented.",
+    "All estimates exclude EOD revision/adjustment refreshes, historical fundamental statements, intraday/BOATS firehose, news, retries, storage amplification, measured response bytes and rate/rights constraints.",
+    "Source writer remains blocked by previously recorded safety checks; this artifact neither repairs nor authorizes it."
+  ],
+  "computed_at_utc": "2026-10-11T08:45:22.192978+00:00",
+  "execution_authorized": false,
+  "full_history_downloaded": false,
+  "historical_universe_asof_safe": false,
+  "network_calls_performed": 0,
+  "planner_code_constants_observed": {
+    "eod_window_days": 366,
+    "max_symbols_per_plan": 12000,
+    "max_task_count_per_plan": 120000
+  },
+  "public_catalogue_observed_at_utc": "2026-10-09T20:38:54.536319+00:00",
+  "public_catalogue_sha256": "015cda96b828344e26f5937f426cbc40a7b8fe2edc9a023a342a3743799abcf0",
+  "raw_archive_exists": false,
+  "reference_family": "end_of_day_raw_and_adjusted_bars",
+  "requested_history_window": {
+    "end": "2026-10-09",
+    "start": "1960-01-01"
+  },
+  "schema": "mastermind.tiingo.public_eod_full_backfill_sizing.v1",
+  "scopes": {
+    "all_currencies_and_assets": {
+      "caveat": "Public metadata is not endpoint entitlement or an active EOD security census. The one-history-call comparison is a documented strategy hypothesis, not a guaranteed downloadable request count. Vendor throttles, payload limits, adjustment refreshes, retry costs, raw storage and actual bytes are unmeasured.",
+      "current_366_day_chunk_requests": 1090365,
+      "downloaded_history": false,
+      "eligible_public_catalogue_records": 104137,
+      "entitlement_confirmed": false,
+      "execution_authorized": false,
+      "groups": [
+        {
+          "asset_type": "ETF",
+          "currency": "CNY",
+          "current_366_day_requests": 773,
+          "eligible_records": 753
+        },
+        {
+          "asset_type": "ETF",
+          "currency": "USD",
+          "current_366_day_requests": 63074,
+          "eligible_records": 8288
+        },
+        {
+          "asset_type": "Mutual Fund",
+          "currency": "USD",
+          "current_366_day_requests": 566144,
+          "eligible_records": 48978
+        },
+        {
+          "asset_type": "Stock",
+          "currency": "AUD",
+          "current_366_day_requests": 2,
+          "eligible_records": 2
+        },
+        {
+          "asset_type": "Stock",
+          "currency": "CNY",
+          "current_366_day_requests": 70896,
+          "eligible_records": 6394
+        },
+        {
+          "asset_type": "Stock",
+          "currency": "HKD",
+          "current_366_day_requests": 919,
+          "eligible_records": 50
+        },
+        {
+          "asset_type": "Stock",
+          "currency": "USD",
+          "current_366_day_requests": 388557,
+          "eligible_records": 39672
+        }
+      ],
+      "network": false,
+      "one_call_guaranteed_by_vendor": false,
+      "ratio_current_chunks_to_full_history_hypothesis": 10.47,
+      "refresh_for_corporate_action_changes_unmodeled": true,
+      "scope": "ELIGIBLE_UNAMBIGUOUS_PUBLIC_CATALOGUE_EOD_METADATA_ONLY",
+      "single_full_history_request_hypothesis": 104137,
+      "vendor_guidance": "https://www.tiingo.com/kb/article/the-fastest-method-to-ingest-tiingo-end-of-day-stock-api-data/"
+    },
+    "usd_all_assets": {
+      "caveat": "Public metadata is not endpoint entitlement or an active EOD security census. The one-history-call comparison is a documented strategy hypothesis, not a guaranteed downloadable request count. Vendor throttles, payload limits, adjustment refreshes, retry costs, raw storage and actual bytes are unmeasured.",
+      "current_366_day_chunk_requests": 1017775,
+      "downloaded_history": false,
+      "eligible_public_catalogue_records": 96938,
+      "entitlement_confirmed": false,
+      "execution_authorized": false,
+      "groups": [
+        {
+          "asset_type": "ETF",
+          "currency": "USD",
+          "current_366_day_requests": 63074,
+          "eligible_records": 8288
+        },
+        {
+          "asset_type": "Mutual Fund",
+          "currency": "USD",
+          "current_366_day_requests": 566144,
+          "eligible_records": 48978
+        },
+        {
+          "asset_type": "Stock",
+          "currency": "USD",
+          "current_366_day_requests": 388557,
+          "eligible_records": 39672
+        }
+      ],
+      "network": false,
+      "one_call_guaranteed_by_vendor": false,
+      "ratio_current_chunks_to_full_history_hypothesis": 10.499,
+      "refresh_for_corporate_action_changes_unmodeled": true,
+      "scope": "ELIGIBLE_UNAMBIGUOUS_PUBLIC_CATALOGUE_EOD_METADATA_ONLY",
+      "single_full_history_request_hypothesis": 96938,
+      "vendor_guidance": "https://www.tiingo.com/kb/article/the-fastest-method-to-ingest-tiingo-end-of-day-stock-api-data/"
+    },
+    "usd_stocks_only": {
+      "caveat": "Public metadata is not endpoint entitlement or an active EOD security census. The one-history-call comparison is a documented strategy hypothesis, not a guaranteed downloadable request count. Vendor throttles, payload limits, adjustment refreshes, retry costs, raw storage and actual bytes are unmeasured.",
+      "current_366_day_chunk_requests": 388557,
+      "downloaded_history": false,
+      "eligible_public_catalogue_records": 39672,
+      "entitlement_confirmed": false,
+      "execution_authorized": false,
+      "groups": [
+        {
+          "asset_type": "Stock",
+          "currency": "USD",
+          "current_366_day_requests": 388557,
+          "eligible_records": 39672
+        }
+      ],
+      "network": false,
+      "one_call_guaranteed_by_vendor": false,
+      "ratio_current_chunks_to_full_history_hypothesis": 9.794,
+      "refresh_for_corporate_action_changes_unmodeled": true,
+      "scope": "ELIGIBLE_UNAMBIGUOUS_PUBLIC_CATALOGUE_EOD_METADATA_ONLY",
+      "single_full_history_request_hypothesis": 39672,
+      "vendor_guidance": "https://www.tiingo.com/kb/article/the-fastest-method-to-ingest-tiingo-end-of-day-stock-api-data/"
+    }
+  },
+  "source_catalogue_keyless_public": true,
+  "storage_observed": {
+    "free_gib": 335.59,
+    "free_gib_above_current_guard": 300.59,
+    "full_backfill_sizing_by_bytes_proven": false,
+    "ingest_guard_min_free_gib": 35.0,
+    "retention_projection_established": false,
+    "volume": "/Volumes/Mastermind"
+  },
+  "vendor_daily_bulk_delta_reference": "https://www.tiingo.com/documentation/end-of-day",
+  "vendor_public_approach_reference": "https://www.tiingo.com/kb/article/the-fastest-method-to-ingest-tiingo-end-of-day-stock-api-data/",
+  "vendor_single_query_success_proven": false
+}

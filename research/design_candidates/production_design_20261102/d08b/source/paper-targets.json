@@ -1,0 +1,98 @@
+{
+  "fileId": "01M3NSZGE8JWN2EZCSF0DT05RM",
+  "fileName": "Terminal",
+  "pages": {
+    "candidate": {
+      "id": "p-12-0",
+      "name": "D08B · Exposure & Volatility · Candidate R1"
+    },
+    "readme": {
+      "id": "p-14-0",
+      "name": "00 · Read me & Build contract · D08B"
+    }
+  },
+  "boardRoots": {
+    "B01": "1NZL-0",
+    "B02": "1OD3-0",
+    "B03": "1OD4-0",
+    "B04": "1OMF-0",
+    "B05": "1P0P-0",
+    "B06": "1P85-0",
+    "B07": "1PBQ-0",
+    "B08": "1PG1-0",
+    "B09": "1PI4-0",
+    "B00": "1PVF-0",
+    "B10": "1Q0P-0",
+    "B11": "1Q35-0",
+    "B12": "1QA0-0",
+    "B13": "1QC6-0",
+    "B14": "1QGP-0",
+    "B15": "1QXD-0",
+    "B16": "1REL-0",
+    "B17": "1RIU-0"
+  },
+  "captureReceipts": [
+    {
+      "key": "B00",
+      "nodeId": "1PVF-0",
+      "started": "2026-11-04T01:28:54.805Z",
+      "finished": "2026-11-04T01:29:48.559Z",
+      "mimeType": "image/jpeg",
+      "bytesApprox": 218073
+    },
+    {
+      "key": "B01",
+      "nodeId": "1NZL-0",
+      "finished": "2026-11-04T01:30:05.841Z",
+      "mimeType": "image/jpeg",
+      "capture": "sequential bounded read"
+    },
+    {
+      "key": "B01",
+      "nodeId": "1NZL-0",
+      "finished": "2026-11-04T01:35:19.033Z",
+      "mimeType": "image/jpeg",
+      "capture": "sequential after contrast-only correction"
+    },
+    {
+      "key": "B02",
+      "nodeId": "1OD3-0",
+      "finished": "2026-11-04T01:35:21.004Z",
+      "mimeType": "image/jpeg",
+      "capture": "sequential after contrast-only correction"
+    },
+    {
+      "key": "B04",
+      "nodeId": "1OMF-0",
+      "finished": "2026-11-04T01:35:24.038Z",
+      "mimeType": "image/jpeg",
+      "capture": "sequential after contrast-only correction"
+    },
+    {
+      "key": "B08",
+      "nodeId": "1PG1-0",
+      "finished": "2026-11-04T01:35:27.790Z",
+      "mimeType": "image/jpeg",
+      "capture": "sequential after contrast-only correction"
+    },
+    {
+      "key": "B14",
+      "nodeId": "1QGP-0",
+      "finished": "2026-11-04T01:35:29.494Z",
+      "mimeType": "image/jpeg",
+      "capture": "sequential after contrast-only correction"
+    }
+  ],
+  "catalog": {
+    "version": "0.5.18",
+    "sha256": "03cb81e960dab705b21b0695f3886d39c4792df629a6419163efef52338182e4"
+  },
+  "sourcePins": {
+    "Mastermind": "910803421beca53ca25145392725ab2d84c7a8e9",
+    "assignment": "6e1862867193ec6486a22001a0e4fb515da20448",
+    "D08": "d0516e1bad9cb5982d43d20c4167d0355cb70e2c",
+    "F01F02Candidate4": "8926b16af4e0c3e5310cdb4cf057390ec04d18ff",
+    "Terminal": "2ded360882b9c721e690907ff363b553781fb920",
+    "Macro": "df691495abb1c2ba8f61e5624126cb17ad14e056"
+  }
+}
