@@ -1,5 +1,7 @@
 ## Definition of done
 
+GitHub-native source authoring may use authorized branch/commit/PR tools without a local checkout. Preserve the governing pin, exact-head checks, source/effect custody and the incumbent release route. Host/worktree controls apply to local work. Verification follows the assigned effect; a source-only or instruction change does not require an unrelated application deployment.
+
 DONE for ordinary substantive, verified work is the full delivery chain, which is
 never abandoned partway and never handed back to the operator to finish:
 
@@ -7,9 +9,9 @@ never abandoned partway and never handed back to the operator to finish:
 2. push;
 3. open a pull request;
 4. check CI and resolve genuine failures;
-5. same-day squash-merge and delete the remote branch;
-6. deploy or wait for the repository's normal deploy lane, then verify the change
-   on the real live URL.
+5. enroll the qualified exact head through the existing controller and verify its merge;
+6. verify the assigned real consumer; when deployment is part of that effect, use
+   the repository's normal deploy lane and verify the live result.
 
 **One session owns all six for ordinary work.** There is no earlier "worker done" state — the rule
 that let a session terminate on an armed pull request was REMOVED by the project
@@ -42,8 +44,8 @@ is not a continuation path, and going silent on the holding authority is not a l
 stop: the task/wave boundary, the PR merge hold, the reasoning-session yield, the child
 STOP and program completion are five distinct facts, and none may be inferred from another.
 
-`merge-on-green` remains available and is still the recommended way to get the
-merge PERFORMED for ordinary work — arming it means you do not have to run the merge yourself. It
+`merge-on-green` is the incumbent controller that performs the merge for qualified
+ordinary work. Author enrollment through that controller
 is not a reason to stop: keep the session alive until the pull request is merged
 and the change is verified live. The only holds are an explicit operator request
 to hold, a genuine non-spurious failing check, or a real deployment blocker.
@@ -74,8 +76,8 @@ that way). One PR per pack stays — different packs still get separate heal PRs
 
 **Missing hole (2026-08-14, #5715/#5717 deadlock then #5689 absorbed both):**
 if TWO (or more) packs are red on main AND required `ci-gate` needs every pack
-green AND `gh pr merge --admin` is refused by the repository ruleset, two
-whole-pack PRs still cannot land. Then ONE PR labelled `main-red-repair` must
+green, separate whole-pack PRs with incomplete aggregate proof cannot land through
+the existing release route. Then ONE PR labelled `main-red-repair` must
 carry every pack heal that `ci-gate` is blocking. Do not wait. Do not open a
 second `main-red-repair`. That is not a repeal of one-PR-per-pack; it is the
 mutual-block exception.
@@ -97,8 +99,9 @@ group and cancel the PR's own proof run — the merged head then carried
 every ship-loop session pinned on the next full-CI dispatch (measured 2026-07-28:
 100 ci.yml runs in 8h, 6 successes). ci.yml now fences merged-close events into
 their own concurrency group so a fast merge no longer destroys its own evidence,
-but the discipline stands: wait for the packs to conclude (green, or spurious-only
-red) before squash-merging. Do NOT arm `gh pr merge --auto --squash` as the wait:
+but the discipline stands: wait for the binding checks to conclude with an accepted
+verdict before the incumbent controller merges. Non-binding contexts come only from
+its current classifier, not a manual exception list. Do NOT arm `gh pr merge --auto --squash` as the wait:
 main carries no branch protection, so auto-merge has no required checks to gate on
 and merges IMMEDIATELY (verified PR #3889, 2026-07-28 — merged ~1 min after arming
 with packs still pending). That "no protection" is the NORMAL state, not a law of
@@ -111,8 +114,11 @@ fail, `gh api repos/{owner}/{repo}/rulesets` is the FIRST diagnostic, and any
 deliberate freeze must ship a DEC record plus an expiry plan
 (research/PROPHET_OUTAGE_2026_08_17_POSTMORTEM.md).
 
-**ARM `merge-on-green`, THEN STAY.** After opening an ordinary pull request, run
-`gh pr edit <n> --add-label merge-on-green`.
+**ARM `merge-on-green`, THEN STAY.** Push the complete owned candidate, refresh its
+exact head/checks/holds and qualify the incumbent arming predicate before running
+`gh pr edit <n> --add-label merge-on-green`. The current
+`can_arm_merge_on_green` predicate requires a clean concluded binding verdict;
+do not add the label while binding checks are pending.
 **Arm LAST — never push into an already-armed pull request (measured #8163, 2026-09-29).**
 The window between the sweeper deciding to merge and the merge completing is invisible from a
 session, so a commit pushed onto an armed PR can land on the far side of it. Measured: the
@@ -147,28 +153,27 @@ post-merge state — you are comparing your local `origin/<branch>` against a fr
 late push is genuinely required, disarm, push, re-arm under the disarming rule below; and treat
 `MERGED` as a fact about a pull request, never about your bytes.
 `DSC:A-PUSH-TO-AN-ARMED-PR-CAN-LAND-AFTER-ITS-MERGE-AND-NOTHING-ERRORS`.
-**Current topology (2026-08-21): `.github/workflows/merge-on-green.yml` still runs on
-`[self-hosted, macOS, ARM64, merge-control]` on the M2; it is NOT yet GitHub-hosted.**
-W1-A's read-only hosted canary is merged, but production authority stays on the M2 until
-its required post-merge canary receipts accept W1-B. Do not reason from the planned hosted
-cutover as though it already happened. The sweeper runs every 10 minutes and squash-merges
-the pull request once every check has CONCLUDED clean, with the known-spurious
-`Workers Builds: macro` X excluded. A genuine red or a merge conflict gets the
+**Current topology:** `.github/workflows/merge-on-green.yml` runs the incumbent
+`scripts/merge_on_green.py` on GitHub-hosted `ubuntu-latest`. The earlier M2-only
+topology and W1 canary cutover are historical. The sweeper merges an armed head
+only when its current binding-check, freshness and admission verdicts qualify. A genuine red or a merge conflict gets the
 `merge-blocked` label plus ONE explanatory comment instead of a merge; the
 `merge-on-green` label stays armed, so a rerun that greens the head merges on the
 next sweep.
 
-Arming it is a BACKSTOP that saves you the merge command — it is not an exit. The
+That release automation does not complete the assignment. The
 sweeper cannot fix a red, cannot resolve a conflict, and cannot verify the change
 live; those are yours, and you will not learn they are needed if you have already
 stopped. For ordinary work, `ship_loop_guard.py` blocks a session whose pull request
 is armed but not merged, and NAMES the reds the sweeper would refuse, so the answer
 to "am I done" is "is it merged". A ratified `HOLD-FOR-SOL` is the explicit exception:
-its answer is `PARKED`, never `SHIPPED`, and the forbidden merge is not retried. Merging
-by hand on concluded-green stays fully valid and is often faster than waiting a sweep.
+its answer is `PARKED`, never `SHIPPED`, and the forbidden merge is not retried. The assigned author may enroll its own qualified head; no second armer is required.
+The incumbent controller performs the merge. Do not replace it with direct/admin
+merge or bypass binding CI, reviews, security controls or holds.
 After any accidental fast merge, the surviving PR proof run is the merge's evidence —
-watch it to conclusion. `--admin` remains only for the spurious Workers X, docs-only
-pull requests that trigger no pack checks, and genuine wedges — never to outrun CI.
+watch it to conclusion. `--admin` is not a docs, spurious-check or recovery shortcut.
+Diagnose the exact controller/check failure within its existing owner and keep the
+governing release controls; this guide grants no bypass authority.
 
 **A RECORDED HOLD IS A MERGE BARRIER (Sol 2026-08-19, #5974/#5953).** A hold stated in a
 PR's body or comments (HOLD-FOR-SOL / "do not merge") binds EVERY merge path — the sweeper,
