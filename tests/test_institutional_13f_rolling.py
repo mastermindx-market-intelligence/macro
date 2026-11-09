@@ -29,6 +29,7 @@ from engine.institutional_census.rolling import (
     SYNTHETIC_INFOTABLE_SK_BASE,
     Institutional13FRollingError,
     PacedFetch,
+    _normalize_accepted_at,
     decode_framed_evidence,
     project_catalog_rows,
     run_rolling_ingestion,
@@ -1001,3 +1002,53 @@ def test_receipts_bound_and_redact_exception_details(
         "abcdefghijklmnopqrstuvwxyz0123456789",
     ):
         assert leaked not in fatal_encoded
+
+
+def test_atom_acceptance_clock_drift_is_refused_and_isolated(tmp_path: Path) -> None:
+    """A Latest Filings ``<updated>`` one second off the filing's own
+    acceptance record is refused for that accession; nothing is published."""
+
+    inner = _FixtureFetch([ACCESSION])
+
+    def drifted_fetch(url: str) -> bytes:
+        body = inner(url)
+        if "browse-edgar" in url:
+            body = body.replace(
+                ACCEPTED_AT.encode(), b"2026-08-07T17:25:17-04:00"
+            )
+        return body
+
+    receipt = _run(LocalStore(tmp_path / "store"), drifted_fetch, _FakeMonotonic())
+    assert receipt["status"] in {"failed", "partial_failure"}
+    assert receipt["counts"]["new_filings_published"] == 0
+    details = [
+        detail
+        for detail in receipt["failures"]["details"]
+        if detail.get("accession") == ACCESSION
+    ]
+    assert [detail["stage"] for detail in details] == ["filing_fetch_parse"]
+    assert "filing acceptance timestamp mismatch" in details[0]["error"]
+
+
+def test_normalize_accepted_at_compares_instants_not_strings() -> None:
+    def discovery(accepted_at: str) -> FilingDiscovery:
+        return FilingDiscovery(
+            accession=ACCESSION,
+            cik=CIK,
+            form="13F-HR/A",
+            filing_date="2026-08-07",
+            accepted_at=accepted_at,
+            index_url=_index_url(ACCESSION),
+        )
+
+    submission = {"accepted_at": ACCEPTED_AT}
+    assert (
+        _normalize_accepted_at(
+            discovery=discovery("2026-08-07T21:25:16Z"), submission=submission
+        )
+        == "2026-08-07T21:25:16Z"
+    )
+    with pytest.raises(Institutional13FRollingError, match="acceptance mismatch"):
+        _normalize_accepted_at(
+            discovery=discovery("2026-08-07T17:25:17-04:00"), submission=submission
+        )

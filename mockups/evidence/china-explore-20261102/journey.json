@@ -1,0 +1,272 @@
+{
+  "source_head": "4cd6d08918e9fed5b847c526ec090121ead3884b",
+  "scope": "Anonymous verification of the pinned candidate, not production or hosted CI.",
+  "chromium": "151.0.7922.34",
+  "html_sha256": "0346337b78bf748463c54ad35af64f7b3ccd9ed1ece4b6517b4eb27a8eac72ae",
+  "rows": [
+    {
+      "width": 1440,
+      "height": 900,
+      "locale": "en",
+      "theme": "dark",
+      "visible_themes": 22,
+      "full_names": 22,
+      "contained_sparklines": 22,
+      "document_width": 1440,
+      "keyboard_focus": {
+        "visible": true,
+        "width": "2px",
+        "style": "solid",
+        "active": true
+      },
+      "details_opened": true,
+      "narrative_cards_checked": 6,
+      "holdings_hash": "#b-cn_baijiu",
+      "visible_member_rows": 7,
+      "page_errors": [],
+      "failed_resources": []
+    },
+    {
+      "width": 1440,
+      "height": 900,
+      "locale": "en",
+      "theme": "light",
+      "visible_themes": 22,
+      "full_names": 22,
+      "contained_sparklines": 22,
+      "document_width": 1440,
+      "keyboard_focus": {
+        "visible": true,
+        "width": "2px",
+        "style": "solid",
+        "active": true
+      },
+      "details_opened": true,
+      "narrative_cards_checked": 6,
+      "holdings_hash": "#b-cn_baijiu",
+      "visible_member_rows": 7,
+      "page_errors": [],
+      "failed_resources": []
+    },
+    {
+      "width": 1440,
+      "height": 900,
+      "locale": "zh",
+      "theme": "dark",
+      "visible_themes": 22,
+      "full_names": 22,
+      "contained_sparklines": 22,
+      "document_width": 1440,
+      "keyboard_focus": {
+        "visible": true,
+        "width": "2px",
+        "style": "solid",
+        "active": true
+      },
+      "details_opened": true,
+      "narrative_cards_checked": 6,
+      "holdings_hash": "#b-cn_baijiu",
+      "visible_member_rows": 7,
+      "page_errors": [],
+      "failed_resources": []
+    },
+    {
+      "width": 1440,
+      "height": 900,
+      "locale": "zh",
+      "theme": "light",
+      "visible_themes": 22,
+      "full_names": 22,
+      "contained_sparklines": 22,
+      "document_width": 1440,
+      "keyboard_focus": {
+        "visible": true,
+        "width": "2px",
+        "style": "solid",
+        "active": true
+      },
+      "details_opened": true,
+      "narrative_cards_checked": 6,
+      "holdings_hash": "#b-cn_baijiu",
+      "visible_member_rows": 7,
+      "page_errors": [],
+      "failed_resources": []
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "locale": "en",
+      "theme": "dark",
+      "visible_themes": 22,
+      "full_names": 22,
+      "contained_sparklines": 22,
+      "document_width": 390,
+      "keyboard_focus": {
+        "visible": true,
+        "width": "2px",
+        "style": "solid",
+        "active": true
+      },
+      "details_opened": true,
+      "narrative_cards_checked": 6,
+      "holdings_hash": "#b-cn_baijiu",
+      "visible_member_rows": 7,
+      "page_errors": [],
+      "failed_resources": []
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "locale": "en",
+      "theme": "light",
+      "visible_themes": 22,
+      "full_names": 22,
+      "contained_sparklines": 22,
+      "document_width": 390,
+      "keyboard_focus": {
+        "visible": true,
+        "width": "2px",
+        "style": "solid",
+        "active": true
+      },
+      "details_opened": true,
+      "narrative_cards_checked": 6,
+      "holdings_hash": "#b-cn_baijiu",
+      "visible_member_rows": 7,
+      "page_errors": [],
+      "failed_resources": []
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "locale": "zh",
+      "theme": "dark",
+      "visible_themes": 22,
+      "full_names": 22,
+      "contained_sparklines": 22,
+      "document_width": 390,
+      "keyboard_focus": {
+        "visible": true,
+        "width": "2px",
+        "style": "solid",
+        "active": true
+      },
+      "details_opened": true,
+      "narrative_cards_checked": 6,
+      "holdings_hash": "#b-cn_baijiu",
+      "visible_member_rows": 7,
+      "page_errors": [],
+      "failed_resources": []
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "locale": "zh",
+      "theme": "light",
+      "visible_themes": 22,
+      "full_names": 22,
+      "contained_sparklines": 22,
+      "document_width": 390,
+      "keyboard_focus": {
+        "visible": true,
+        "width": "2px",
+        "style": "solid",
+        "active": true
+      },
+      "details_opened": true,
+      "narrative_cards_checked": 6,
+      "holdings_hash": "#b-cn_baijiu",
+      "visible_member_rows": 7,
+      "page_errors": [],
+      "failed_resources": []
+    },
+    {
+      "width": 320,
+      "height": 760,
+      "locale": "en",
+      "theme": "dark",
+      "visible_themes": 22,
+      "full_names": 22,
+      "contained_sparklines": 22,
+      "document_width": 320,
+      "keyboard_focus": {
+        "visible": true,
+        "width": "2px",
+        "style": "solid",
+        "active": true
+      },
+      "details_opened": true,
+      "narrative_cards_checked": 6,
+      "holdings_hash": "#b-cn_baijiu",
+      "visible_member_rows": 7,
+      "page_errors": [],
+      "failed_resources": []
+    },
+    {
+      "width": 320,
+      "height": 760,
+      "locale": "en",
+      "theme": "light",
+      "visible_themes": 22,
+      "full_names": 22,
+      "contained_sparklines": 22,
+      "document_width": 320,
+      "keyboard_focus": {
+        "visible": true,
+        "width": "2px",
+        "style": "solid",
+        "active": true
+      },
+      "details_opened": true,
+      "narrative_cards_checked": 6,
+      "holdings_hash": "#b-cn_baijiu",
+      "visible_member_rows": 7,
+      "page_errors": [],
+      "failed_resources": []
+    },
+    {
+      "width": 320,
+      "height": 760,
+      "locale": "zh",
+      "theme": "dark",
+      "visible_themes": 22,
+      "full_names": 22,
+      "contained_sparklines": 22,
+      "document_width": 320,
+      "keyboard_focus": {
+        "visible": true,
+        "width": "2px",
+        "style": "solid",
+        "active": true
+      },
+      "details_opened": true,
+      "narrative_cards_checked": 6,
+      "holdings_hash": "#b-cn_baijiu",
+      "visible_member_rows": 7,
+      "page_errors": [],
+      "failed_resources": []
+    },
+    {
+      "width": 320,
+      "height": 760,
+      "locale": "zh",
+      "theme": "light",
+      "visible_themes": 22,
+      "full_names": 22,
+      "contained_sparklines": 22,
+      "document_width": 320,
+      "keyboard_focus": {
+        "visible": true,
+        "width": "2px",
+        "style": "solid",
+        "active": true
+      },
+      "details_opened": true,
+      "narrative_cards_checked": 6,
+      "holdings_hash": "#b-cn_baijiu",
+      "visible_member_rows": 7,
+      "page_errors": [],
+      "failed_resources": []
+    }
+  ]
+}
