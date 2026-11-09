@@ -1030,3 +1030,71 @@ The existing scrolled Research references **`2VN-0` and `2YC-0` are byte-identic
 
 No application tests or browser interactions were executed for this proposal. The existing All Tools test/browser owners still owe the combined Research → query → Clear, query → Show all, query → China, locale, source withdrawal, modified-link, Escape, close/reopen, focus and enlarged-text proof. No deployment, opt-in expansion or release acceptance was performed.
 
+
+## 20. Catalyst — selected-case identity survives filtering
+
+**Applied and visually checked, 9 November 2026.** This is the twenty-second existing Paper file improved: [Catalyst Intelligence — Decision Desk and Integration](https://app.paper.design/file/01M6Y2VTQBVC9NA39HNG1DYWFH/p-2-0). Five new interaction specimens and a seven-module Build sheet are on [Proposed · Selected case and filters](https://app.paper.design/file/01M6Y2VTQBVC9NA39HNG1DYWFH/p-3-0).
+
+### Current-source defect
+
+Root independently fetched Terminal **`3e2f8db782b0ba2f98343edf5199a4b8ce921ec9`**. The current component is byte-identical to the earlier comparison at `cfe14c49...`:
+
+| Source | Git blob | Role |
+|---|---|---|
+| [CatalystOpportunityView.tsx](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3e2f8db782b0ba2f98343edf5199a4b8ce921ec9/terminal/components/catalyst-opportunity/CatalystOpportunityView.tsx) | `1f8cc491040ebbf11851bca2759316406a55276b` | Existing local filters, explicit selection, URL history, detail and clipboard action. |
+| [CatalystOpportunityWorkspace.tsx](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3e2f8db782b0ba2f98343edf5199a4b8ce921ec9/terminal/components/catalyst-opportunity/CatalystOpportunityWorkspace.tsx) | `337293b231a70a17dbb0ebe6887d7f3384b98133` | Existing identity/revision-bound read, access denial and refresh lifecycle. |
+| [catalystOpportunityView.test.tsx](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3e2f8db782b0ba2f98343edf5199a4b8ce921ec9/terminal/lib/__tests__/catalystOpportunityView.test.tsx) | `b7416197c82185a4fdf972a0f037ddf4a32b944b` | Existing component and workspace test owner. |
+| [catalystOpportunity.json test fixture](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3e2f8db782b0ba2f98343edf5199a4b8ce921ec9/terminal/lib/__tests__/fixtures/catalystOpportunity.json) | `e438c093a553615737d0527fff709b07a88290bc` | Exact test identities, values, source date and coverage used for these new specimens. |
+| [catalystOpportunityLex.ts](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3e2f8db782b0ba2f98343edf5199a4b8ce921ec9/terminal/lib/catalystOpportunityLex.ts) | `6a92843dce3b0751c685add5871fe324d7dd3c49` | Existing EN/ZH terminology and absence/source/access distinctions. |
+| [catalystOpportunity.ts](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3e2f8db782b0ba2f98343edf5199a4b8ce921ec9/terminal/lib/catalystOpportunity.ts) | `222a1852f69f321baefd3f76f0f7cab7cfbfcc60` | Current view types and decoder; eligible cases remain distinct from coverage inventory. |
+
+The component derives `watches` from local filters and then selects `watches.find(row => row.theme_id === selectedId) || watches[0] || null`. Its missing-selection notice instead checks the full `view.cases`. An explicit Defense selection followed by the Energy filter can therefore display Energy detail while the URL still names Defense, without an absence notice. Copy case link then uses the substituted detail. The whole detail also sits inside the nonempty-results branch, so a zero-match query hides a still-eligible selected case.
+
+These are source-demonstrated paths, not an executed browser reproduction. The existing tests separately cover filtering, selection, history, basic copy and missing-case notice. The missing-case assertion checks only the notice, not the absence of substitute detail. Combined identity and stale-copy behavior remain unproved.
+
+### Applied states and fixture identity
+
+| Root | Specimen | Intended result |
+|---|---|---|
+| `10J-0` | 01 · 1440px desktop | Energy list with one result; explicitly selected Defense detail remains visible with an outside-filter notice and one Clear filters action. |
+| `117-0` | 02 · 390px EN | Energy filter plus query `solar` yields zero list matches; the selected Defense detail and copy action remain visible. |
+| `11D-0` | 03 · 320px ZH | Same zero-match/selected-case distinction with readable percentage-point units. |
+| `11J-0` | 04 · 390px EN | Explicit case absent from a successfully resolved eligible snapshot; show an absence notice and an Energy alternative requiring Inspect evidence. No substitute detail or enabled case-copy action. |
+| `11P-0` | 05 · 320px ZH | Same explicit-absence behavior in Chinese. |
+| `10D-0` | Build | Seven modules bind selection, URL, copy status, authorization, fixture variants and focused proof to the current consumer. |
+
+All new numerical examples come from the **existing test fixture**, with date **16 October 2026**. Defense is `theme_id=defense`, `rel_5d=0.0165` → **+1.65 pp**, and `pct50=0.6` → **60%**. Energy is `theme_id=energy_complex`, **+6.21 pp** from `0.0621`, and **75%** from `0.75`. They are explicitly marked as interaction/test specimens, not market evidence.
+
+The two absence designs describe a **test-only derived variant**: remove Defense from eligible cases, keep its coverage inventory row with `watch=false`, set `watch_count=1`, and use a distinct read/generation context. They do not invent a new source observation date. This is not a claim that the real dated source had that state. The original 14 October source-bound Paper examples and their separate Defense economics were preserved.
+
+### Builder correction
+
+The repair remains within the existing component:
+
+- Resolve an explicit valid `selectedId` from the full current authorized `view.cases`. Derive the filtered list independently.
+- Use the first filtered row as the initial default only when no explicit selection exists.
+- Keep detail outside the filtered-empty ternary, while retaining the existing successful authorized-view boundary. Zero list results do not erase an eligible explicit case.
+- An explicit case absent from a successfully resolved current snapshot gets the absence notice, no alternative detail and no enabled copy action. Loading, unavailable reads and denied access must not be reclassified as absence.
+- Filter, query and Clear change the list. Only explicit Inspect evidence changes selected case/URL. Browser history restores the explicit case even when current filters exclude it.
+- A new authorized snapshot may update the selected theme’s date, values, summary and cautions together. Never retain an old unauthorized payload or combine generations.
+
+Copy case link carries `tab=catalysts&case=<theme_id>`; it does **not** pin historical source generation. The current asynchronous copy status can also arrive after a different case has been selected. The Build contract therefore binds status to the copy attempt and current selection/authorized-read context, retiring obsolete success/failure after a newer attempt, selection, snapshot, loading or access change. It does not claim to cancel an issued clipboard write, retry automatically or copy a replacement case.
+
+No second state, route, identity, fetch, cache or refresh owner is introduced. The current workspace already clears prior-account/read data and holds access denial under its identity/revision. Independent Defense evidence stays with its existing lane.
+
+### Native verification and preservation
+
+Native screenshots cover the desktop, both zero-result phones, both absent-case phones, the original contract after its pointer amendment, and the seven-module Build sheet. Numeric units, source dates and 44px actions fit; the Chinese pp suffix uses a smaller inline label rather than losing the unit.
+
+Static readback confirms one Clear filters and one Copy case link in each zero-result specimen, and no copy action in either absence specimen. These are design-tree checks, not interaction tests.
+
+Original discovery `LK-0`, phone discovery `QE-0` and independent Defense `O3-0` are **byte-identical**. The original contract `T5-0` retains all **41 parsed div nodes**. Only `U4-0` gains the current pointer **p-3-0 / 10D-0**, with the expected native `whiteSpace:pre-wrap` serialization for its new line. All prior source/access conditions remain.
+
+Another writer created **p-4-0 / R2 · Manual review condition flow** during this phase. One attempted header addition returned **DOCUMENT_CHANGED** before applying. The original target `10J-0` was read back and contained only its original cloned header; no addition had appeared. The new page was the observed document difference. Root made a fresh, separately evaluated header addition on the same owned target/carrier after that readback. No unknown effect was replayed; p-4-0 and the other writer’s manual-review work were not touched.
+
+The **seven exact affected roots** were released with an observed applied response. No runtime component patch, application test, browser interaction, clipboard effect, account request, merge or deployment was performed in this Paper phase.
+
+### Required focused proof
+
+The existing consumer/test owner should cover Select Defense → Energy filter → copy → Clear → Back/Forward; zero-match query; missing eligible case with inventory retained; no-explicit-case default; coherent same-theme snapshot replacement; loading/access clearing; copy A then choose B; two copy attempts completing in reverse order; and refresh/access change during copy. Keyboard and responsive checks must keep filter focus stable, retain explicit Inspect heading focus, and move focus from a removed detail only when its focused control actually disappears.
+
