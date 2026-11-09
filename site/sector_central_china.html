@@ -62,19 +62,19 @@
 <link rel="prefetch" href="mm_charts.js?v=244eb769" as="script">
 <link rel="prefetch" href="sector_cycles.js?v=41cb03e6" as="script">
 <link rel="prefetch" href="sector_cycles_china_series_data.js?v=b0d64b94" as="script">
-<link rel="prefetch" href="sector_cycles_china_narr_data.js?v=99673bb1" as="script">
+<link rel="prefetch" href="sector_cycles_china_narr_data.js?v=87f5a79f" as="script">
 <link rel="prefetch" href="sector_cycles_china_dna_data.js?v=ea6c6a47" as="script">
 <link rel="prefetch" href="subsector_rotation.js?v=454792b8" as="script">
 
 <link rel="prefetch" href="subsectors_china.js?v=68c6aa10" as="script">
 
-<link rel="preload" href="sector_central_china_data.js?v=007f004a" as="script">
+<link rel="preload" href="sector_central_china_data.js?v=c349afc4" as="script">
 <link rel="stylesheet" href="assets/css/f78fcff3.css?v=f78fcff3">
 <link rel="stylesheet" href="assets/css/d57821bb.css?v=d57821bb">
 
-<link rel="stylesheet" href="assets/css/99c711ee.css?v=99c711ee">
+<link rel="stylesheet" href="assets/css/b116bf75.css?v=b116bf75">
 <link rel="stylesheet" href="macro-desk.css?v=23dc8daa">
-<link rel="stylesheet" href="assets/css/123a9527.css?v=123a9527">
+<link rel="stylesheet" href="assets/css/1f0455bd.css?v=1f0455bd">
 <link rel="stylesheet" href="assets/css/e5fb69a9.css?v=e5fb69a9">
 <link rel="preload" as="style" href="product-nav-icons.css?v=432f6a45">
 <link rel="preload" as="style" href="navigation-refresh.css?v=edfd821b">
@@ -449,7 +449,7 @@
         
         
         
-        <a class="tc-chip dn" href="basket_china/cn_rare_earth.html"><span class="l-en">Rare Earth &amp; Magnets</span><span class="l-zh">稀土永磁</span></a>
+        <a class="tc-chip dn" href="basket_china/cn_metals.html"><span class="l-en">Industrial Metals</span><span class="l-zh">有色金属</span></a>
         
         
       </div>
@@ -10641,10 +10641,9 @@
 
   
   <div class="si-changed">
-    <span class="si-changed-l"><span class="l-en">What changed</span><span class="l-zh">最新变化</span></span>
-    <span class="tc-chip"><span class="l-en">Leadership is now steady — it was under strain.</span><span class="l-zh">领涨格局转为稳定 — 此前为承压。</span></span>
-    <span class="tc-chip"><span class="l-en">Banks is the one losing the lead now — that changed this session.</span><span class="l-zh">银行 成为失去领先的一方 — 本时段刚变化。</span></span>
+    <span class="si-changed-l"><span class="l-en">What&#39;s holding</span><span class="l-zh">维持不变</span></span>
     <span class="tc-chip"><span class="l-en">Held for 1 day.</span><span class="l-zh">已持续 1 天。</span></span>
+    <span class="tc-chip"><span class="l-en">Banks → Banks</span><span class="l-zh">银行 → 银行</span></span>
   </div>
 
   </section>
@@ -10849,12 +10848,12 @@ _rcCnObs.observe(document.documentElement,{attributes:true,attributeFilter:['dat
   </section>
 
   <section class="si-view" data-view="explore">
-    <p class="si-view-read" id="si-read-explore" hidden></p>
   <section class="si-sec" id="si-explore">
-    <div class="si-sec-h">
-      <h2><span class="l-en">Explore — every basket in depth</span><span class="l-zh">深入探索 — 每个篮子的深读</span></h2>
-      <span class="si-sec-sub"><span class="l-en">The performance table, overlay chart, categories, entry radar and forming narratives.</span><span class="l-zh">表现一览、叠加图表、类别分组、入场雷达与成形叙事。</span></span>
-    </div>
+    <header class="explore-heading">
+      <h2><span class="l-en">Explore</span><span class="l-zh">深入探索</span></h2>
+      <span id="si-read-explore" hidden></span>
+    </header>
+  
   
   
   
@@ -10864,37 +10863,42 @@ _rcCnObs.observe(document.documentElement,{attributes:true,attributeFilter:['dat
 
 
   <section id="theme-desk-section" style="margin-top:6px">
-    <h2><span class="l-en">Theme Rotation Desk</span><span class="l-zh">主题轮动台</span>
-      <span class="sect-tag"><span class="l-en">scored · labeled · actionable</span><span class="l-zh">评分 · 标注 · 可执行</span></span></h2>
-    <p class="sub"><span class="l-en">Each theme gets a 0–100 score, a trend label and an action read based on trend, breadth, impulse, macro support and crowding.</span><span class="l-zh">每个主题按趋势、广度、脉冲、宏观支持与拥挤度给出 0–100 分、趋势标签和操作结论。</span></p>
+    
+    <h2><span class="l-en">Theme rankings</span><span class="l-zh">主题排名</span></h2>
+    <p id="theme-desk-status" class="muted" role="status"><span class="l-en">Loading themes…</span><span class="l-zh">正在加载主题…</span></p>
+    <details class="explore-guide"><summary><span class="l-en">How rankings work</span><span class="l-zh">评分说明</span></summary>
+    
     <div class="mctx" id="macro-ctx"></div>
     <p class="muted" id="theme-disclaimer" style="font-size:11.5px;margin:0 0 11px"></p>
+    </details>
     
     <div id="gr-order"></div>
     
-    <div class="desk" id="theme-desk" data-showmore-rows="3"></div>
+    <div class="desk" id="theme-desk" data-layout="china-explore" data-showmore-rows="3"></div>
   </section>
 
   <section id="concentration-section">
-    <h2><span class="l-en">Market concentration &amp; theme leadership</span><span class="l-zh">市场集中度与主题领导力</span>
-      <span class="sect-tag"><span class="l-en">who owns the advance vs the decline</span><span class="l-zh">谁主导上涨 vs 谁在下跌</span></span></h2>
-    <p class="sub"><span class="l-en">Shows whether leadership is broad or narrow, and which themes own the advance or the decline.</span><span class="l-zh">显示上涨是广泛还是集中，以及哪些主题主导上涨或下跌。</span></p>
+    
+    <h2><span class="l-en">Market leadership</span><span class="l-zh">市场领涨主题</span></h2>
+    
     <div id="concentration"></div>
   </section>
 
   <section id="rotation-section">
-    <h2><span class="l-en">5-Day Theme Rotation</span><span class="l-zh">5日主题轮动</span>
-      <span class="sect-tag"><span class="l-en">weekly climbers &amp; fallers</span><span class="l-zh">本周上升与下降</span></span></h2>
-    <p class="sub"><span class="l-en">Weekly movers ranked by 5-day return versus S&amp;P 500, plus the change in 20-day relative-strength rank.</span><span class="l-zh">按相对标普 500的 5 日回报排序，并显示 20 日相对强度排名变化。</span></p>
-    <div class="rotwrap" id="rotation"></div>
+    
+    <h2><span class="l-en">Weekly movers</span><span class="l-zh">本周排名变化</span></h2>
+    <p class="sub"><span class="l-en">5-day returns vs CSI 300 and changes in rank.</span><span class="l-zh">相对沪深300的5日收益与排名变化。</span></p>
+    
+    <div id="rotation"></div>
   </section>
 
   <section id="impulse-section">
-    <h2><span class="l-en">Impulse &amp; Extremes</span><span class="l-zh">脉冲与极值</span>
-      <span class="sect-tag"><span class="l-en">across the thematic universe</span><span class="l-zh">覆盖全部主题成分</span></span></h2>
-    <p class="sub"><span class="l-en">Daily breadth across basket members: big movers and new 52-week highs or lows.</span><span class="l-zh">篮子成分的日度广度：大涨大跌个股，以及 52 周新高/新低。</span></p>
+    
+    <h2><span class="l-en">Big moves and 52-week records</span><span class="l-zh">大幅波动与52周新高新低</span></h2>
+    
     <div class="scards" id="scorecards"></div>
   </section>
+  
 
   
   <div id="entry-radar"></div>
@@ -10928,7 +10932,6 @@ _rcCnObs.observe(document.documentElement,{attributes:true,attributeFilter:['dat
 
     <section id="table-section">
       <h2><span class="idx">01</span><span class="l-en">Performance table</span><span class="l-zh">表现一览</span></h2>
-      <p class="sub"><span class="l-en">Every basket, sortable. Switch between plain return, return against the CSI 300, and how unusual the move is for that basket. Filter by category, or click one to see what is in it.</span><span class="l-zh">所有篮子都在这里，可以排序。可以在原始涨跌、相对沪深300、以及这波对它自己来说算不算反常之间切换。可以按类别筛选，点开就能看成分股。</span></p>
       <div class="cat-filter-bar" id="tbl-cat-filter"></div>
       <div class="chartbar"><span></span><span class="tabs" id="btbl-mode" role="group"></span></div>
       <div class="panel"><div class="ts"><table id="btable"></table></div></div>
@@ -10937,7 +10940,7 @@ _rcCnObs.observe(document.documentElement,{attributes:true,attributeFilter:['dat
 
     <section id="chart-section">
       <h2><span class="idx">02</span><span class="l-en">Performance</span><span class="l-zh">走势对比</span></h2>
-      <p class="sub"><span class="l-en">Every line starts at 0% so they can be compared directly. Use the legend to show or hide a basket.</span><span class="l-zh">所有曲线都从 0% 起画，方便直接比较。用图例可以显示或隐藏某个篮子。</span></p>
+      <p class="sub"><span class="l-en">Select themes to compare.</span><span class="l-zh">选择要比较的主题。</span></p>
       <div class="chartbar">
         <span class="tabs" id="chart-scope" role="group"></span>
         <span class="tabs" id="chart-modes" role="group"></span>
@@ -11002,7 +11005,7 @@ _rcCnObs.observe(document.documentElement,{attributes:true,attributeFilter:['dat
 
     <div id="sc-app"><div class="empty"><span class="l-en">Loading…</span><span class="l-zh">加载中…</span></div></div>
 
-    <div class="sc-foot"><span class="l-en">Built</span><span class="l-zh">生成于</span> 2026-11-07 14:32 UTC</div>
+    <div class="sc-foot"><span class="l-en">Built</span><span class="l-zh">生成于</span> 2026-11-08 14:30 UTC</div>
   </section>
 
   <footer>
@@ -11017,7 +11020,7 @@ _rcCnObs.observe(document.documentElement,{attributes:true,attributeFilter:['dat
 </div>
 
 
-<script data-sync src="sector_central_china_data.js?v=007f004a"></script>
+<script data-sync src="sector_central_china_data.js?v=c349afc4"></script>
 <script>
 (function(){
   "use strict";
@@ -11176,7 +11179,9 @@ _rcCnObs.observe(document.documentElement,{attributes:true,attributeFilter:['dat
    assigned, never re-declared inside the wrapper, or the desk silently renders nothing. */
 var BASKETS = null, CHART = null, THEME = null;
 function __csiInitPage(payload){
-  BASKETS = payload; CHART = payload.chart || {};
+  BASKETS = payload;
+  const chartData=payload.chart||{};
+  CHART={...chartData, dates:chartData.dates||[], bench:chartData.bench||[], baskets:chartData.baskets||{}};
 
 THEME = BASKETS.theme_intel || null;
 window.BASKET_BASE = 'basket_china/';
@@ -11282,7 +11287,7 @@ function winZ(levels,col){ const n=parseInt(col,10); if(!n||!levels) return null
   const hr=[]; for(let i=li-252;i<=li;i++) hr.push((levels[i]!=null&&levels[i-n]!=null)?levels[i]/levels[i-n]-1:null);
   const cur=hr[hr.length-1]; const base=hr.slice(0,-1).filter(v=>v!=null); if(cur==null||base.length<200) return null;
   const m=base.reduce((a,b)=>a+b,0)/base.length; const sd=Math.sqrt(base.reduce((a,b)=>a+(b-m)**2,0)/(base.length-1)); return sd>0?(cur-m)/sd:null; }
-const ratio = a => a.map((v,i)=>(v!=null&&CHART.bench[i]!=null)?v/CHART.bench[i]:null);
+const ratio = a => (a||[]).map((v,i)=>(v!=null&&CHART.bench[i]>0)?v/CHART.bench[i]:null);
 
 function sparkSvg(values,{w=92,h=26,color=''}={}){
   const vs=(values||[]).filter(v=>v!=null); if(vs.length<2) return '';
@@ -11413,7 +11418,7 @@ function chartSets(){
     .map(b=>({key:b.id,label:bn(b),color:colorOf[b.id]||'#888',levels:sourceLevels(b.id)}));
   return chartMode==='abs' ? [...sets,{key:'bench',label:BENCH(),color:BENCH_COLOR(),levels:CHART.bench}] : sets;
 }
-function rangeStart(dates){ if(chartRange==='ytd'){ const y=dates[dates.length-1].slice(0,4); const i=dates.findIndex(d=>d.startsWith(y)); return i<=0?0:i-1; }
+function rangeStart(dates){ if(!dates.length) return 0; if(chartRange==='ytd'){ const y=dates[dates.length-1].slice(0,4); const i=dates.findIndex(d=>d.startsWith(y)); return i<=0?0:i-1; }
   return chartRange?Math.max(0,dates.length-chartRange):0; }
 function chartOpts(){ return { autoSize:true,
   layout:{ background:{type:'solid',color:'transparent'}, textColor:cssv('--muted')||'#9aa4b2', fontSize:11 },
@@ -11553,13 +11558,22 @@ function renderCards(){
         return `<div class="card" style="--c:${colorOf[b.id]}" data-id="${b.id}">
           <div class="nm"><span class="dot" style="background:${colorOf[b.id]}"></span>${nameLink(b)}${sxBadge}${scoreBadge}${turnChip}</div>
           <div class="meta">${b.n_members}${memberW}${since} ${esc(b.created)}${ref}</div>
-          <div class="th">${esc(bth(b))}</div>
           <div class="perf">${kpi(hzLabel(bhz),b.perf?.[bhz])}${kpi('YTD',b.perf?.ytd)}<span class="spark">${sparkSvg(spk,{w:96,h:30,color:colorOf[b.id]})}</span></div>
+          <a class="holdings-link" href="#b-${encodeURIComponent(b.id)}">${_bl('Holdings','成分股')}</a>
         </div>`; }).join('');
     return cards?`<h3 class="cat">${esc(catLabel(cat))}</h3><div class="cards">${cards}</div>`:'';
   }).join('');
   el.querySelectorAll('.card').forEach(c=>c.onclick=()=>openBasket(c.dataset.id));
   el.querySelectorAll('a[data-nav="detail"]').forEach(a=>a.onclick=e=>e.stopPropagation());
+  el.querySelectorAll('.holdings-link').forEach(a=>a.onclick=e=>{
+    e.stopPropagation();
+    if(e.metaKey||e.ctrlKey||e.shiftKey||e.altKey) return;
+    e.preventDefault();
+    if(location.hash!==a.hash) location.hash=a.hash;
+    const id=a.closest('.card').dataset.id;
+    openBasket(id);
+    document.getElementById('b-'+id)?.querySelector('summary')?.focus({preventScroll:true});
+  });
 }
 const SIG_TIER_ORDER = {T1:0, T2:1, T3:2};
 function memRows(b){
@@ -11599,7 +11613,7 @@ function detailSection(b){
     ${scoreRow}<p class="th">${esc(bth(b))}</p>
     <div class="kpirow">${kr('20d','20d')}${kr('60d','60d')}${kr('MTD','mtd')}${kr('YTD','ytd')}${kr(zh?'全程':'Full','full')}</div>
     ${ref}${overlapHtml}<div>${warns.join(' ')}</div>
-    <details open><summary>${zh?'成分':'Members'} (${b.n_members}) &amp; ${zh?'变更记录':'changelog'}</summary>
+    <details><summary>${zh?'成分':'Members'} (${b.n_members}) &amp; ${zh?'变更记录':'changelog'}</summary>
       <div class="ts"><table><thead><tr><th>${memHdr[0]}</th><th>${memHdr[1]}</th><th class="num">${memHdr[2]}</th><th class="num">${memHdr[3]}</th><th class="num">${memHdr[4]}</th><th class="num">${memHdr[5]}</th></tr></thead><tbody>${memRows(b)}</tbody></table></div>
       <ul class="clog">${clog}</ul>
     </details></div>`;
@@ -11749,7 +11763,9 @@ window.ratio = ratio; window.sparkSvg = sparkSvg; window.sparkTail = sparkTail;
 if(document.readyState!=='loading') boot(); else document.addEventListener('DOMContentLoaded',boot);
 }
 (function(){
-  function fail(){ var el=document.getElementById('table-section');
+  function fail(){ var rankings=document.getElementById('theme-desk-status');
+    if(rankings){ rankings.hidden=false; rankings.innerHTML='<span class="l-en">Theme data could not load.</span><span class="l-zh">主题数据加载失败。</span>'; }
+    var el=document.getElementById('table-section');
     if(el) el.insertAdjacentHTML('beforebegin','<p class="muted sm" style="margin:12px 2px">'+
       '<span class="l-en">Basket data is unavailable right now — the rest of the page still works.</span>'+
       '<span class="l-zh">篮子数据暂不可用 — 页面其余部分不受影响。</span></p>'); }

@@ -160,6 +160,8 @@ def _render_packet(lines: list[str], i: int, pkt: dict, *, private_source_refere
             raise ValueError("PRIVATE_SOURCE_REFERENCE_REFUSED")
         attached = pkt.get("engineering_evidence", {})
         keys = ("schema", "identity", "accounting", "attempts", "controls")
+        if type(attached) is dict and "prospective_readiness" in attached:
+            keys = (*keys, "prospective_readiness")
         if type(attached) is not dict or set(attached) != set(keys) | {"authority", "scope", "physical_acceptance", "scientific_acceptance"}:
             raise ValueError("PRIVATE_SOURCE_REFERENCE_REFUSED")
         checked = diagnostic_review_packet(pkt["diagnostic"],
@@ -185,6 +187,8 @@ def _render_packet(lines: list[str], i: int, pkt: dict, *, private_source_refere
             from engine.research_factory.review_queue import diagnostic_review_packet
             attached = pkt["engineering_evidence"]
             keys = ("schema", "identity", "accounting", "attempts", "controls")
+            if type(attached) is dict and "prospective_readiness" in attached:
+                keys = (*keys, "prospective_readiness")
             flags = {"authority": "display_only", "scope": "SYNTHETIC_ENGINEERING_ONLY",
                      "physical_acceptance": False, "scientific_acceptance": "UNQUALIFIED"}
             if (type(attached) is not dict or len(attached) != len(keys) + len(flags)
@@ -195,6 +199,12 @@ def _render_packet(lines: list[str], i: int, pkt: dict, *, private_source_refere
                 raise ValueError("INVALID_DIAGNOSTIC_ENGINEERING_EVIDENCE")
             checked = diagnostic_review_packet(pkt["diagnostic"],
                 engineering_evidence={key: attached[key] for key in keys})["engineering_evidence"]
+            if "prospective_readiness" in checked:
+                readiness = checked["prospective_readiness"]
+                lines.extend(["Freeze proposal: UNQUALIFIED; authoritative issuer unavailable.",
+                    f"Label readiness: unknown={readiness['unknown_count']}, "
+                    f"unqualified={readiness['unqualified_count']}, refused={readiness['refused_count']}; "
+                    "pending=0, mature=0. Source contract only.", ""])
             lines.extend(["", "**Engineering controls — synthetic receipts only**", "",
                           "| Control | Observation | Evidence SHA-256 |",
                           "| --- | --- | --- |"])
@@ -426,6 +436,8 @@ def _private_source_review(args):
         seen.add(packet["diagnostic_id"])
         evidence = packet["engineering_evidence"]
         keys = ("schema", "identity", "accounting", "attempts", "controls")
+        if type(evidence) is dict and "prospective_readiness" in evidence:
+            keys = (*keys, "prospective_readiness")
         checked = diagnostic_review_packet(packet["diagnostic"],
             engineering_evidence={key: evidence[key] for key in keys},
             private_source_reference=reference, source_repository=args.source_repository)
