@@ -1,0 +1,280 @@
+{
+  "kind": "illustrative_design_fixture",
+  "sourceNamespace": "D08B:fixture-chain",
+  "sourceSession": "2026-11-02",
+  "oiPositionSession": null,
+  "availableAt": null,
+  "scaleBasis": "full-admitted-snapshot",
+  "rows": [
+    {
+      "root": "SPY",
+      "expiry": "2026-11-06",
+      "strike": 740,
+      "side": "C",
+      "volume": 1332,
+      "oi": 3700,
+      "doi": -148
+    },
+    {
+      "root": "SPY",
+      "expiry": "2026-11-06",
+      "strike": 740,
+      "side": "P",
+      "volume": 1755,
+      "oi": 4875,
+      "doi": 195
+    },
+    {
+      "root": "SPY",
+      "expiry": "2026-11-06",
+      "strike": 745,
+      "side": "C",
+      "volume": 2079,
+      "oi": 5775,
+      "doi": 231
+    },
+    {
+      "root": "SPY",
+      "expiry": "2026-11-06",
+      "strike": 745,
+      "side": "P",
+      "volume": 2502,
+      "oi": 6950,
+      "doi": 278
+    },
+    {
+      "root": "SPY",
+      "expiry": "2026-11-06",
+      "strike": 750,
+      "side": "C",
+      "volume": 2826,
+      "oi": 7850,
+      "doi": -320
+    },
+    {
+      "root": "SPY",
+      "expiry": "2026-11-06",
+      "strike": 750,
+      "side": "P",
+      "volume": 3249,
+      "oi": 9025,
+      "doi": -361
+    },
+    {
+      "root": "SPY",
+      "expiry": "2026-11-06",
+      "strike": 755,
+      "side": "C",
+      "volume": 3573,
+      "oi": 9925,
+      "doi": -397
+    },
+    {
+      "root": "SPY",
+      "expiry": "2026-11-06",
+      "strike": 755,
+      "side": "P",
+      "volume": 3996,
+      "oi": 11100,
+      "doi": 444
+    },
+    {
+      "root": "SPY",
+      "expiry": "2026-11-06",
+      "strike": 760,
+      "side": "C",
+      "volume": 4320,
+      "oi": 12000,
+      "doi": 480
+    },
+    {
+      "root": "SPY",
+      "expiry": "2026-11-06",
+      "strike": 760,
+      "side": "P",
+      "volume": 4743,
+      "oi": 13175,
+      "doi": 527
+    },
+    {
+      "root": "SPY",
+      "expiry": "2026-11-20",
+      "strike": 740,
+      "side": "C",
+      "volume": 1917,
+      "oi": 5325,
+      "doi": 213
+    },
+    {
+      "root": "SPY",
+      "expiry": "2026-11-20",
+      "strike": 740,
+      "side": "P",
+      "volume": 2340,
+      "oi": 6500,
+      "doi": 260
+    },
+    {
+      "root": "SPY",
+      "expiry": "2026-11-20",
+      "strike": 745,
+      "side": "C",
+      "volume": 2664,
+      "oi": 7400,
+      "doi": 296
+    },
+    {
+      "root": "SPY",
+      "expiry": "2026-11-20",
+      "strike": 745,
+      "side": "P",
+      "volume": 3087,
+      "oi": 8575,
+      "doi": -343
+    },
+    {
+      "root": "SPY",
+      "expiry": "2026-11-20",
+      "strike": 750,
+      "side": "C",
+      "volume": 3411,
+      "oi": 9475,
+      "doi": -379
+    },
+    {
+      "root": "SPY",
+      "expiry": "2026-11-20",
+      "strike": 750,
+      "side": "P",
+      "volume": 3834,
+      "oi": 10650,
+      "doi": 426
+    },
+    {
+      "root": "SPY",
+      "expiry": "2026-11-20",
+      "strike": 755,
+      "side": "C",
+      "volume": 4158,
+      "oi": 11550,
+      "doi": 462
+    },
+    {
+      "root": "SPY",
+      "expiry": "2026-11-20",
+      "strike": 755,
+      "side": "P",
+      "volume": 4581,
+      "oi": 12725,
+      "doi": 509
+    },
+    {
+      "root": "SPY",
+      "expiry": "2026-11-20",
+      "strike": 760,
+      "side": "C",
+      "volume": 4905,
+      "oi": 13625,
+      "doi": 545
+    },
+    {
+      "root": "SPY",
+      "expiry": "2026-11-20",
+      "strike": 760,
+      "side": "P",
+      "volume": 5328,
+      "oi": 14800,
+      "doi": -592
+    },
+    {
+      "root": "SPY",
+      "expiry": "2026-12-18",
+      "strike": 740,
+      "side": "C",
+      "volume": 2502,
+      "oi": 6950,
+      "doi": 0
+    },
+    {
+      "root": "SPY",
+      "expiry": "2026-12-18",
+      "strike": 740,
+      "side": "P",
+      "volume": 2925,
+      "oi": 8125,
+      "doi": null
+    },
+    {
+      "root": "SPY",
+      "expiry": "2026-12-18",
+      "strike": 745,
+      "side": "C",
+      "volume": 3249,
+      "oi": 9025,
+      "doi": -361
+    },
+    {
+      "root": "SPY",
+      "expiry": "2026-12-18",
+      "strike": 745,
+      "side": "P",
+      "volume": 3672,
+      "oi": 10200,
+      "doi": 408
+    },
+    {
+      "root": "SPY",
+      "expiry": "2026-12-18",
+      "strike": 750,
+      "side": "C",
+      "volume": 3996,
+      "oi": 11100,
+      "doi": 444
+    },
+    {
+      "root": "SPY",
+      "expiry": "2026-12-18",
+      "strike": 750,
+      "side": "P",
+      "volume": 4419,
+      "oi": 12275,
+      "doi": 491
+    },
+    {
+      "root": "SPY",
+      "expiry": "2026-12-18",
+      "strike": 755,
+      "side": "C",
+      "volume": 4743,
+      "oi": 13175,
+      "doi": 527
+    },
+    {
+      "root": "SPY",
+      "expiry": "2026-12-18",
+      "strike": 755,
+      "side": "P",
+      "volume": 5166,
+      "oi": 14350,
+      "doi": -574
+    },
+    {
+      "root": "SPY",
+      "expiry": "2026-12-18",
+      "strike": 760,
+      "side": "C",
+      "volume": 5490,
+      "oi": 15250,
+      "doi": -610
+    },
+    {
+      "root": "SPY",
+      "expiry": "2026-12-18",
+      "strike": 760,
+      "side": "P",
+      "volume": 5913,
+      "oi": 16425,
+      "doi": 657
+    }
+  ]
+}
