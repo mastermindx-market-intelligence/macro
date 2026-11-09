@@ -68,6 +68,6 @@
   {% endblock %}
 </footer>
 {% block body_scripts %}{% endblock %}
-<script src="theme.js"></script>
+<script{% block theme_script_attributes %}{% endblock %} src="theme.js"></script>
 </body>
 </html>

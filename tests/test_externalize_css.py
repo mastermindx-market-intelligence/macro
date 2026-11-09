@@ -955,7 +955,8 @@ def test_selected_linked_bundles_are_published_and_restamped(tmp_path):
     assert "forex.html" in find_dangling(site)[onboard_url.split("?")[0]]
 
 
-def test_final_pair_sync_rebinds_public_alias_and_shell_gate_refuses_stale_bytes(tmp_path):
+@pytest.mark.parametrize("page_name", ["forex.html", "news.html"])
+def test_final_pair_sync_rebinds_public_alias_and_shell_gate_refuses_stale_bytes(tmp_path, page_name):
     import hashlib
     from scripts.check_site_asset_refs import find_dangling, main as check_refs
     from scripts.check_template_site_sync import check
@@ -974,22 +975,22 @@ def test_final_pair_sync_rebinds_public_alias_and_shell_gate_refuses_stale_bytes
     template.write_text(_BIG_JS.replace("var a", "var c"))
     (site / "data_base.js").touch()
     copy_shared_shell_asset(site)
-    forex = site / "forex.html"
-    forex.write_text('<html><head><script data-mmx-shared-bundle="theme" src="theme.js" defer></script></head></html>')
+    page = site / page_name
+    page.write_text('<html><head><script data-mmx-shared-bundle="theme" src="theme.js" defer></script></head></html>')
     untouched = site / "other.html"
     untouched.write_text('<script src="theme.js" defer></script>')
     # The early generic check sees the actual fresh, marked Jinja source.
     assert check_refs([str(site)]) == 0
     assert externalize(site) == 1
-    old = forex.read_bytes()
+    old = page.read_bytes()
 
     assert check(tmp_path, fix=True) == ["onboard.js"]
     assert named.read_bytes() == template.read_bytes()
     digest = hashlib.sha256(named.read_bytes()).hexdigest()[:8]
     target = f"assets/js/{digest}.js"
-    assert f'data-mmx-shared-onboard="{target}?v={digest}"' in forex.read_text()
+    assert f'data-mmx-shared-onboard="{target}?v={digest}"' in page.read_text()
     assert (site / target).read_bytes() == named.read_bytes()
-    assert old != forex.read_bytes()
+    assert old != page.read_bytes()
     assert untouched.read_text() == '<script src="theme.js" defer></script>'
     assert check_refs([str(site)]) == 0
     check_shell(site, check=True)

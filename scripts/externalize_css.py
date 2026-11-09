@@ -60,6 +60,7 @@ from lib.pages import (  # noqa: E402
 )
 from lib.shared_shell import (  # noqa: E402
     MIN_BYTES,
+    SHARED_BUNDLE_ROOT_PAGES,
     SHARED_ROLE_RE,
     bind_shared_bundles,
     hashed_js_url,
@@ -255,7 +256,7 @@ def externalize(site_dir: Path) -> int:
         except Exception as e:  # noqa: BLE001
             log.warning("externalize js failed for %s (%s)", html.name, e)
         relative = html.relative_to(site_dir)
-        if (relative.parts[0] == "learn" or relative == Path("forex.html")) and SHARED_ROLE_RE.search(new):
+        if (relative.parts[0] == "learn" or relative.as_posix() in SHARED_BUNDLE_ROOT_PAGES) and SHARED_ROLE_RE.search(new):
             if shared_urls is None:
                 shared_urls = shared_bundle_urls(site_dir, js_root)
             if shared_urls:

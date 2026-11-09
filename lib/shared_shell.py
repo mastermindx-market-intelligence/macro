@@ -142,6 +142,7 @@ log = logging.getLogger(__name__)
 MIN_BYTES = 1024  # smaller inline blocks are cheaper than a request
 _JS_SUBDIR = ("assets", "js")
 _SHARED_ROLES = ("theme", "onboard")
+SHARED_BUNDLE_ROOT_PAGES = ("forex.html", "news.html")
 _SHARED_TAG_RE = re.compile(r"<script\b([^>]*)>(\s*)</script>", re.IGNORECASE)
 SHARED_ROLE_RE = re.compile(r'\sdata-mmx-shared-bundle="(theme|onboard)"')
 _SHARED_SRC_RE = re.compile(r'(?<![\w-])src\s*=\s*"([^"]*)"')
@@ -211,7 +212,8 @@ def reconcile_shared_bundles(site_dir: Path, *, fix: bool = False) -> list[str]:
     """Rebind opted-in pages after the last named copy, or report mismatches read-only."""
     urls = None
     invalid = []
-    for html in [site_dir / "forex.html", *sorted((site_dir / "learn").rglob("*.html"))]:
+    root_pages = [site_dir / page for page in SHARED_BUNDLE_ROOT_PAGES]
+    for html in [*root_pages, *sorted((site_dir / "learn").rglob("*.html"))]:
         if not html.is_file():
             continue
         rel = html.relative_to(site_dir)
