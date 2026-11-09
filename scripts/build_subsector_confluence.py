@@ -402,6 +402,7 @@ def render_index_pages(ns: str, site: Path, env=None, generated_utc: str | None 
     generated_utc = generated_utc or datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
     d = _index_dirs(ns)
     meta = INDEX_DESKS[ns]
+    back_href = f"../subsectors.html?desk={ns}"
     try:
         out = json.loads((site / d["board"]).read_text())
     except Exception as e:  # noqa: BLE001
@@ -421,12 +422,12 @@ def render_index_pages(ns: str, site: Path, env=None, generated_utc: str | None 
             "group": g, "kind": g.get("kind", "subsector"),
             "kind_label_en": klab_en, "kind_label_zh": klab_zh,
             "as_of": g.get("as_of"), "ohlc_dir": d["ohlc"], "sig_dir": d["sig"],
-            "back": "../subsectors.html", "stock_base": "../stock.html#",
+            "back": back_href, "stock_base": "../stock.html#",
             "generated_utc": generated_utc,
         }
         html = tmpl.render(detail_json=json.dumps(_clean(detail), separators=(",", ":"), allow_nan=False),
                            group_name=g.get("label", key), chart_key=g.get("chart_key"),
-                           has_signals=bool(g.get("has_signals")), back_href="../subsectors.html",
+                           has_signals=bool(g.get("has_signals")), back_href=back_href,
                            generated_utc=generated_utc)
         write_page(out_dir / f"{key}.html", html)
         live.add(key)

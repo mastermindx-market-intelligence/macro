@@ -11,6 +11,108 @@ import pytest
 from engine import subsector_confluence as sc
 
 
+def _execute_return_board(href, lang):
+    """Execute the actual desk consumer with finite fixture feeds and a minimal DOM."""
+    import json
+    from pathlib import Path
+    import shutil
+    import subprocess
+
+    node = shutil.which("node")
+    assert node, "node is required for the authored desk-return contract"
+    script = r"""
+const fs = require('node:fs'), vm = require('node:vm');
+const input = JSON.parse(fs.readFileSync(0, 'utf8'));
+const tabs = ['subsectors', 'baskets', 'nasdaq', 'russell'].map(name => ({
+  name, on: name === 'subsectors', getAttribute: () => name,
+  classList: {toggle(key, value) { tabs.find(t => t.name === name).on = value; }},
+  addEventListener(event, callback) { this.click = callback; }
+}));
+const app = {innerHTML: '', addEventListener() {}, querySelectorAll() { return []; }};
+const date = {innerHTML: ''};
+const document = {
+  readyState: 'complete', documentElement: {getAttribute: () => input.lang},
+  querySelectorAll: () => tabs,
+  getElementById: id => id === 'sc-app' ? app : id === 'sc-asof' ? date : null
+};
+const feeds = {
+  'marketdata/subsector_confluence.json': {ok: true, as_of: '2026-11-06', subsectors: []},
+  'marketdata/subsector_confluence_nasdaq.json': {ok: true, as_of: '2026-11-05', subsectors: []},
+  'marketdata/subsector_confluence_russell.json': {ok: true, as_of: null, subsectors: []}
+};
+const absent = ['marketdata/basket_confluence.json', 'marketdata/index_leadership.json',
+                'marketdata/nasdaq_internals.json'];
+vm.runInNewContext(fs.readFileSync(input.source, 'utf8'), {
+  document, location: new URL(input.href, 'https://example.invalid/'), URLSearchParams,
+  fetch: async url => {
+    if (!(url in feeds) && !absent.includes(url)) throw Error('Unexpected fixture read: ' + url);
+    return {ok: url in feeds, json: async () => feeds[url]};
+  }
+}, {timeout: 3000});
+setImmediate(() => process.stdout.write(JSON.stringify({
+  active: tabs.filter(t => t.on).map(t => t.name), date: date.innerHTML, html: app.innerHTML
+})));
+"""
+    result = subprocess.run(
+        [node, "-e", script], input=json.dumps({
+            "source": str(Path(__file__).resolve().parents[1] / "templates/subsectors.js"),
+            "href": href, "lang": lang,
+        }), capture_output=True, text=True, timeout=10,
+    )
+    assert result.returncode == 0, result.stderr
+    return json.loads(result.stdout)
+
+
+@pytest.mark.parametrize("desk,date", [("nasdaq", "2026-11-05"), ("russell", "—")])
+@pytest.mark.parametrize("lang", ["en", "zh"])
+def test_index_detail_authored_return_preserves_desk(tmp_path, desk, date, lang):
+    import json
+    import re
+    from html.parser import HTMLParser
+    from scripts import build_subsector_confluence as builder
+
+    group = {"key": "advertising-agencies", "label": "Advertising Agencies",
+             "kind": "subsector", "as_of": "2026-10-14", "members": [{"ticker": "ABC"}]}
+    data_dir = tmp_path / "marketdata"
+    data_dir.mkdir()
+    (data_dir / f"subsector_confluence_{desk}.json").write_text(json.dumps({"subsectors": [group]}))
+    assert builder.render_index_pages(desk, tmp_path, generated_utc="2026-11-09 00:00 UTC") == 1
+    html = (tmp_path / f"subsector_{desk}/advertising-agencies.html").read_text()
+    detail = json.loads(re.search(r"^const DETAIL = (\{.*\});$", html, re.M).group(1))
+    expected = f"../subsectors.html?desk={desk}"
+    assert detail["back"] == expected
+    assert detail["group"] == group
+    assert detail["as_of"] == group["as_of"]
+    assert detail["ohlc_dir"] == f"subsectorohlc_{desk}"
+    assert detail["sig_dir"] == f"subsector_signals_{desk}"
+
+    class Links(HTMLParser):
+        def __init__(self):
+            super().__init__()
+            self.targets = []
+
+        def handle_starttag(self, tag, attrs):
+            attrs = dict(attrs)
+            if tag == "a" and {"back", "nav-context-link"}.intersection(attrs.get("class", "").split()):
+                self.targets.append(attrs.get("href"))
+
+    links = Links()
+    links.feed(html)
+    assert links.targets == [expected, expected]
+    board = _execute_return_board(expected, lang)
+    assert board["active"] == [desk]
+    assert ("截至 " if lang == "zh" else "as of ") + date in board["date"]
+    assert 'href="subsector/' not in board["html"]  # Never substitute S&P rows for an empty desk.
+
+
+@pytest.mark.parametrize("query", ["", "?desk=unknown", "?desk=", "?desk=baskets",
+                                  "?desk=russell&desk=nasdaq", "?desk=russell&desk=russell"])
+def test_index_return_unknown_or_ambiguous_desk_keeps_default(query):
+    board = _execute_return_board("/subsectors.html" + query, "en")
+    assert board["active"] == ["subsectors"]
+    assert "as of 2026-11-06" in board["date"]
+
+
 # ----------------------------------------------------------------- pure logic ----
 
 def test_us_subsector_js_honesty_has_no_live_or_shishi():
