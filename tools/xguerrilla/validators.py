@@ -73,7 +73,7 @@ BIO_HOST = "www.mastermind-x.com"
 #: Registry ids are dotted (desk.and.dusk, mila.lifts, wren.mp4): a bare
 #: [a-z0-9] class refuses 4 of the 5 registered children, so the shape admits
 #: interior single dots only — 4-32 chars, no leading/trailing/double dot.
-BIO_PATH_RE = re.compile(r"^/x/[a-z0-9](?:\.?[a-z0-9]){3,31}$")
+BIO_PATH_RE = re.compile(r"^/x/(?!.*\.\.)[a-z0-9][a-z0-9.]{2,30}[a-z0-9]$")
 #: Hosts that resolve to somebody else's estate. Refused even when they redirect
 #: to us: with posts and replies URL-free (BL-9) the bio is the single hop, so
 #: BL-3 requires that hop to be org-controlled end to end.
@@ -376,20 +376,21 @@ def _bio_link_violations(
             f"bio link {link!r} has a trailing slash — the canonical form ends "
             f"at the child id (BL-10)"
         )
-    elif not BIO_PATH_RE.match(path):
+    elif not BIO_PATH_RE.fullmatch(path):
         out.append(
             f"bio link path {path!r} is not the settled destination shape "
-            f"^/x/[a-z0-9](?:\\.?[a-z0-9]){{3,31}}$ (BL-2)"
+            f"/x/<4-32 lowercase letters/digits with single interior dots> (BL-2)"
         )
 
-    if BIO_PATH_RE.match(path):
+    if BIO_PATH_RE.fullmatch(path):
         slug = path[len("/x/"):]
         if child_id is not None:
             wanted = str(child_id or "").strip()
-            if not re.fullmatch(r"[a-z0-9](?:\.?[a-z0-9]){3,31}", wanted):
+            if not BIO_PATH_RE.fullmatch(f"/x/{wanted}"):
                 out.append(
                     f"child_id {child_id!r} is not a valid attribution key "
-                    f"([a-z0-9](?:\\.?[a-z0-9]){{3,31}}) — the path cannot bind to it"
+                    f"(4-32 lowercase letters/digits with single interior dots) — "
+                    f"the path cannot bind to it"
                 )
             elif path != f"/x/{wanted}":
                 out.append(

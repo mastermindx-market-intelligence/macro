@@ -416,9 +416,22 @@ def test_every_registered_persona_handle_passes_the_bio_shape():
 
 
 def test_the_dot_admitting_shape_still_refuses_degenerate_forms():
-    for bad in ("a..b", ".lead", "ab1", "a" * 33):
+    for bad in ("a..b", ".lead", "ab1", "a" * 33,
+                ".".join(["a"] * 17), ".".join(["a"] * 32)):
         problems = validate_bio(_bio(bad))
         assert any("destination shape" in p for p in problems), (bad, problems)
+
+
+@pytest.mark.parametrize("child", ["a.bc", "ab.c", "a." + "b" * 29, "a." + "b" * 30])
+def test_bio_id_length_counts_interior_dots(child):
+    assert BIO_PATH_RE.fullmatch(f"/x/{child}")
+    assert validate_bio(_bio(child), child_id=child, known_ids={child}) == []
+
+
+@pytest.mark.parametrize("child", ["a..b", "trail.", "a." + "b" * 31, ".".join(["a"] * 32)])
+def test_invalid_dotted_child_id_cannot_bind_even_to_a_valid_link(child):
+    problems = validate_bio(_bio(), child_id=child)
+    assert any("not a valid attribution key" in p for p in problems), problems
 
 
 def test_a_url_in_the_display_name_is_refused():
@@ -435,4 +448,3 @@ def test_links_in_text_sees_every_spelling_that_resolves():
         "mastermind-x.com/x/ab12cd34"]
     # A number is not a host: version strings must survive the matcher.
     assert links_in_text("shipped 2.0.1 today") == []
-

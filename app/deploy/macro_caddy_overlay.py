@@ -17,7 +17,8 @@ Supported edit envelope (everything else refuses, fail closed):
   when every occurrence is carried by the semantically identical block
   (normalized content at its own position, group value normalized out) — the
   shape produced by inserting or removing routes that carry no group
-  reference; any other move still refuses;
+  reference, while preserving all grouped-block ancestors and their options;
+  any other move still refuses;
 * adapter-generated ``group`` names matching ``group[0-9]+`` are compared
   modulo their numeric suffix and remapped onto the existing active group
   names at the same document-order occurrence, so opaque active IDs are
@@ -35,7 +36,7 @@ Intentionally unsupported (ReconcileRefusal, never guessed around):
   generated (``group[0-9]+``) and opaque group names, or inconsistent
   renumbering of generated names;
 * unrelated same-host drift: an active host route whose normalized full
-  content does not equal the FULL previous source host route;
+  content equals neither the FULL previous nor candidate source host route;
 * ambiguous active targets: zero or multiple active routes for one host set.
 """
 
@@ -123,6 +124,28 @@ def _set_at_path(node, path, value):
 def _subtree(node, path):
     for part in path:
         node = node[part]
+    return node
+
+
+def _group_ancestor_projection(node):
+    """Retain grouped blocks and ancestors, ignoring only groupless route siblings.
+
+    Group-bearing blocks are opaque: their complete normalized content remains
+    protected. Other handler/matcher lists, options, nesting and order remain.
+    """
+    if isinstance(node, dict):
+        if isinstance(node.get("group"), str):
+            return _normalize(node)
+        return {
+            key: [
+                _group_ancestor_projection(item) for item in value
+                if not (isinstance(item, dict) and not _group_occurrences(item))
+            ] if key == "routes" and isinstance(value, list)
+            else _group_ancestor_projection(value)
+            for key, value in node.items()
+        }
+    if isinstance(node, list):
+        return [_group_ancestor_projection(item) for item in node]
     return node
 
 
@@ -300,13 +323,26 @@ def _remap_candidate_groups(listen_key, host_key, prev_route, cand_route, active
     reverse = {}
     active_names = {}
     active_reverse = {}
+    # The caller proved the FULL active route equals one source generation.
+    # On a repeat application, bind positions to the candidate generation.
+    active_source_occs = (
+        cand_occs if _canonical_route(active_route) == _canonical_route(cand_route)
+        else prev_occs
+    )
+    if any(prev[0] != cand[0] for prev, cand in zip(prev_occs, cand_occs)):
+        if _group_ancestor_projection(prev_route) != _group_ancestor_projection(cand_route):
+            raise ReconcileRefusal(
+                "host route %s on listen %s: changed group topology (group "
+                "ancestors moved between generations)"
+                % (list(host_key), list(listen_key))
+            )
     for position, (prev_occ, cand_occ, active_occ) in enumerate(
         zip(prev_occs, cand_occs, active_occs)
     ):
         prev_path, prev_value = prev_occ
         cand_path, cand_value = cand_occ
         active_path, active_value = active_occ
-        if prev_path != active_path:
+        if active_source_occs[position][0] != active_path:
             raise ReconcileRefusal(
                 "host route %s on listen %s: active group occurrence %d drifted to "
                 "a different position (internal isolation guard)"

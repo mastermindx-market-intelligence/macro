@@ -926,7 +926,8 @@ def test_the_child_bio_ref_route_is_one_301_onto_the_public_shell():
     matcher = re.search(r"@x_ref\s*\{(.*?)\n\t\}", CADDY, re.S)
     assert matcher, "@x_ref matcher missing from the Caddyfile"
     assert ("path_regexp x_ref "
-            "^/x/(?P<id>[a-z0-9](?:\\.?[a-z0-9]){3,31})/?$") in matcher.group(1)
+            "^/x/(?P<id>[a-z0-9][a-z0-9.]{2,30}[a-z0-9])/?$") in matcher.group(1)
+    assert "not path *..*" in matcher.group(1)
     assert 'redir @x_ref "/?ref={re.x_ref.id}" 301' in CADDY
     assert not re.search(r"^\s*redir @x_ref [^\n]*\.html", CADDY, re.M)
 
@@ -954,12 +955,22 @@ def test_the_x_ref_matcher_and_the_bio_validator_accept_the_same_ids():
     patterns = re.findall(r"path_regexp x_ref (\S+)", CADDY)
     assert len(patterns) == 1, patterns
     edge = re.compile(patterns[0])
+    matcher = re.search(r"@x_ref\s*\{(.*?)\n\t\}", CADDY, re.S)
+    assert matcher and "not path *..*" in matcher.group(1)
 
-    accepted = ("mila.lifts", "wren.mp4", "harperbuilds", "ab12cd34")
-    rejected = ("ab1", "AB12CD34", "with-dash", "a..b", ".lead", "x" * 33)
+    def edge_accepts(path):
+        # Caddy ANDs the RE2 shape with the negative substring path matcher.
+        return bool(edge.fullmatch(path)) and ".." not in path
+
+    accepted = ("mila.lifts", "wren.mp4", "harperbuilds", "ab12cd34", "a.bc", "ab.c",
+                "a." + "b" * 29, "a." + "b" * 30)
+    rejected = ("ab1", "AB12CD34", "with-dash", "a..b", ".lead", "trail.", "x" * 33,
+                "a." + "b" * 31, ".".join(["a"] * 32))
     for child in accepted:
-        assert edge.fullmatch(f"/x/{child}"), child
+        assert edge_accepts(f"/x/{child}"), child
+        assert edge_accepts(f"/x/{child}/"), child
         assert BIO_PATH_RE.fullmatch(f"/x/{child}"), child
     for bad in rejected:
-        assert not edge.fullmatch(f"/x/{bad}"), bad
+        assert not edge_accepts(f"/x/{bad}"), bad
+        assert not edge_accepts(f"/x/{bad}/"), bad
         assert not BIO_PATH_RE.fullmatch(f"/x/{bad}"), bad
