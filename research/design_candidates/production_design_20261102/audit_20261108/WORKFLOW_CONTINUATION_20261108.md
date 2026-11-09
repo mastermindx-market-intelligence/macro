@@ -3454,3 +3454,51 @@ Receipt: `PAPER_CRYPTO_SCENARIO_RECOVERY_20261109.json`. Captures: `PAPER_CRYPTO
 Make native route destinations preserve the same horizon/context as ordinary activation. Repair focused in-section navigation so its active control survives the outgoing view becoming hidden. Use the existing route/address/apply owners and qualify synchronous focus callbacks; do not introduce another navigation controller.
 
 Expired current-card qualification and same-case return from valid current review remain distinct subsequent work. All prior H5/model, alert, qualified-result, hosted/independent visual acceptance, public-route cutover, admission/release and denied/unknown-effect boundaries remain. Local historical/synthetic proof is not production acceptance.
+
+
+## 74. Crypto native navigation — matching link context and continuous focus ownership (2026-11-09)
+
+**Implemented, verified and saved; continuing into expired current-card qualification.** Dependent Draft [PR #10901](https://github.com/mastermindx-market-intelligence/Macro/pull/10901) advances from `059b9a6acd6d84726e20781b52a66e0c2a5ec651` to **`e70fc60183c83565497c431c433b0594423cc7cb`**, tree `b45408a8854c150b6b891b8a96f3f1ced992f733`, assets `f15feec04ead`.
+
+### Product and architecture
+
+Native hrefs now preserve the same horizon, chart window, Markets search/filter/sort and extra parameters as ordinary route activation. The existing apply loop copies normalized parameters, removes only panel and uses the existing address serializer. Current path/query remain intact; copying or opening a link does not change the origin's state.
+
+The existing route-click branch now respects consumed, modified and nonprimary actions. For an owned action whose outgoing view contains focus, it focuses the existing destination tab before writing history or hiding the view. It continues only if URL, locale, history signature/length and intended visible focus still belong to that action. Newer navigation, language, history or focus choices win; a removed target cancels stale continuation.
+
+Persistent navigation keeps its focus. No new router, history primitive, focus registry, listener owner, storage write or data/model calculation. This is a bounded owned-link repair, not a claim of general focus restoration for arbitrary hash/Back/Forward transitions.
+
+### Native proof
+
+- Main parent baseline, PID 56462: **10 failed / 11 passed**, 13.44s pytest / 13.830s subprocess, 21 contexts/pages.
+- Additional same-URL history baseline, PID 65188: **two failed**, 3.44s pytest / 3.782s subprocess, two contexts/pages.
+- Candidate, PID 69813: **23 passed**, 13.15s pytest / 13.408s subprocess, 23 contexts and 25 pages.
+
+All runs have zero page errors, external requests and WebSocket traffic. The baseline case union exactly matches the 23 candidate cases.
+
+Two real native Meta-click journeys prove the second page receives the copied route's complete context and the origin stays unchanged. Ordinary activation reaches the same destination. Keyboard handoff is observed while the old view is still visible and before history changes; only one view remains visible afterward.
+
+Six newer-choice cases cover destination, locale, focus, removed control, same-URL history replacement and same-URL history push. Six consumed/modifier probes verify application noninterference while canceling their native default after the application listener; only Meta-click is claimed as a complete native new-tab gesture. Existing horizon/drawer/chart behavior and six missing-case recovery cases also pass.
+
+Two new EN390/ZH320 viewport captures were inspected. Four recovery captures are byte-identical to their previously inspected files and are referenced in place.
+
+Publication readback, PID 74938, exit 0: **five changed source/served/test paths, 16 unchanged inputs**. Product/test inverses recover the parent; retained HTML changes only two asset-version references per page. **28 text/source/evidence files and two new PNGs** match source commit readback.
+
+[Builder contract](https://github.com/mastermindx-market-intelligence/Macro/blob/e70fc60183c83565497c431c433b0594423cc7cb/research/design_candidates/crypto_snapshot_safety_20261109/NATIVE_NAVIGATION.md) · [Exact proof and capture references](https://github.com/mastermindx-market-intelligence/Macro/tree/e70fc60183c83565497c431c433b0594423cc7cb/research/design_candidates/crypto_snapshot_safety_20261109/route-context). This is focused affected proof, not a complete browser-suite rerun.
+
+### Applied Paper build row
+
+File `01M6Y3F0NXNDPAKJMJGCAD759Z`, page `p-1-0`, scorecard `QI-0`:
+
+- Existing source note QM-0 now binds e70fc60.
+- New six-node **Navigation scorecard 3OA-0** clones the existing scorecard row's exact typography/layout and sits after 3KU-0 under RA-0, index 5. It identifies the current routing owner, retained context, focus handoff and stale-action cancellation.
+- All 55 existing nodes retain exact styles, IDs, order and parents. All six new styles match their seed. Removing the new row and reversing QM's text recovers the full original JSX exactly.
+- Root finished; full 1440×1200 screenshot inspected. Normal wrapping fits the fourth row, with no overlap/clipping. Existing release/alert boundaries remain explicit.
+
+Receipt: `PAPER_CRYPTO_NATIVE_NAVIGATION_20261109.json`. Capture: `PAPER_CRYPTO_NATIVE_NAVIGATION_20261109.jpg`.
+
+### Next safe phase
+
+Expired current-scenario cards still present their original progress and Next check as current until inspection. Qualify lifecycle in those cards using the existing expiry/progress owner, keeping original conditions and historical instructions distinguishable. Validate current, expired and insufficient/unknown states without changing saved/current drawer reading order.
+
+Then add a same-case return from valid current review through the existing history owner. All prior model/H5, alert, qualified-result, hosted/independent acceptance, public-route cutover, admission/release and denied/unknown-effect boundaries remain.

@@ -1,7 +1,17 @@
 # Paper audit and upgrade — 8–9 November 2026
 
 
-## Latest applied work — current-case recovery
+## Latest applied work — native links and keyboard navigation
+
+[PR #10901](https://github.com/mastermindx-market-intelligence/Macro/pull/10901) is now `e70fc60183c83565497c431c433b0594423cc7cb`, assets `f15feec04ead`. Copied/native route links preserve the same context as ordinary activation. In-section navigation hands focus to the persistent destination tab before hiding its old owner, while newer choices retain control.
+
+**23 affected browser cases pass in one run**, across 23 contexts and 25 pages with zero errors or outside traffic. Two real native new-tab journeys pass. Two new viewport captures inspected; four recovery captures match their prior bytes. Five source/served/test files change; 16 inputs remain exact. All 28 text/source/evidence files and two PNGs match readback.
+
+Paper's scorecard gains one concise six-node Navigation row and a current source note. All 55 old nodes/styles/order remain exact; the new row inherits its seed styles and fits the inspected full artboard. See [§74](WORKFLOW_CONTINUATION_20261108.md), [receipt](PAPER_CRYPTO_NATIVE_NAVIGATION_20261109.json) and [scorecard](PAPER_CRYPTO_NATIVE_NAVIGATION_20261109.jpg).
+
+Continuing into expired current-card qualification and same-case review return. Prior proof scopes and all holds remain.
+
+## Prior applied work — current-case recovery
 
 [PR #10901](https://github.com/mastermindx-market-intelligence/Macro/pull/10901) is now `059b9a6acd6d84726e20781b52a66e0c2a5ec651`, assets `29d1c4abafba`. Missing current scenarios and named review targets stay explicitly unavailable. **Browse scenarios** preserves the selected horizon and route context; valid and intentionally generic review remain distinct.
 
