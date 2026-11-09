@@ -1,0 +1,21 @@
+{
+  "consumer_blob": "f4973ba99ab6c66d343485d9999c147ffef0d013",
+  "current_receipt_census": 231,
+  "exit_code": 0,
+  "historical_subject_files": 59,
+  "manifest_after_page_pin": "ab56b70e47999fb6a34308933642fa7af47d9b65",
+  "manifest_before_page_pin": "0112520b07294d21bb48f29ee7811939b98b86a0",
+  "material_paths": [
+    "templates/china.html.j2"
+  ],
+  "owning_receipts": [
+    "mockups/evidence/china-archetype-d/EVIDENCE.yml",
+    "mockups/evidence/china-sector-detail-links-20261109-ledger-final/EVIDENCE.yml",
+    "mockups/evidence/china-sector-detail-links-20261109/EVIDENCE.yml",
+    "mockups/evidence/china-sector-detail-links/EVIDENCE.yml",
+    "mockups/evidence/china-selective-synthesis-7485/EVIDENCE.yml"
+  ],
+  "page_blob": "05a89adbcbeadb9840b74d84394d8421cef9fd58",
+  "seconds": 0.20432496070861816,
+  "status": "PASS"
+}

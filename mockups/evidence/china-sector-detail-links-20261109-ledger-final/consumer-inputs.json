@@ -1,0 +1,2305 @@
+{
+  "accepted_head": "f3ed96830032050bd615bb0902d85f7c485949f6",
+  "all_current_receipt_paths": [
+    "mockups/evidence/a-f01-w4-1/EVIDENCE.yml",
+    "mockups/evidence/a-f02-w2-3-uk-policy/EVIDENCE.yml",
+    "mockups/evidence/a-f03-w2-4c-skew-source-note/EVIDENCE.yml",
+    "mockups/evidence/a-f03-w2-5b-payoff-lab/EVIDENCE.yml",
+    "mockups/evidence/a-f03-w3-2-payoff-catalyst-chip/EVIDENCE.yml",
+    "mockups/evidence/a-f04-w4-1/EVIDENCE.yml",
+    "mockups/evidence/a-f05-1-consequence/EVIDENCE.yml",
+    "mockups/evidence/a-mo-j1a-company-continuation/EVIDENCE.yml",
+    "mockups/evidence/account_alert_prefs/EVIDENCE.yml",
+    "mockups/evidence/aibrief_band/EVIDENCE.yml",
+    "mockups/evidence/am-edition-natural-run/EVIDENCE.yml",
+    "mockups/evidence/am-regime-context/EVIDENCE.yml",
+    "mockups/evidence/am_edition/EVIDENCE.yml",
+    "mockups/evidence/b-f06-4-research-screener/EVIDENCE.yml",
+    "mockups/evidence/b-f07-3-event-bridge/EVIDENCE.yml",
+    "mockups/evidence/b-f09-13-covenant-headroom/EVIDENCE.yml",
+    "mockups/evidence/b-f09-bond-terms/EVIDENCE.yml",
+    "mockups/evidence/b-f09-ipo-terms/EVIDENCE.yml",
+    "mockups/evidence/b-f09-ma-agreement/EVIDENCE.yml",
+    "mockups/evidence/basket-detail-ux/EVIDENCE.yml",
+    "mockups/evidence/bonds-regime-dashboard/EVIDENCE.yml",
+    "mockups/evidence/brain-affordance-r1/EVIDENCE.yml",
+    "mockups/evidence/brain-composer-notice-removal-20260921/EVIDENCE.yml",
+    "mockups/evidence/brain-intelligent-output/EVIDENCE.yml",
+    "mockups/evidence/capital_structure_premium/EVIDENCE.yml",
+    "mockups/evidence/catalyst-partner-pack/EVIDENCE.yml",
+    "mockups/evidence/catalyst-scan-20261010/EVIDENCE.yml",
+    "mockups/evidence/ccb-plnt-card/EVIDENCE.yml",
+    "mockups/evidence/china-archetype-d/EVIDENCE.yml",
+    "mockups/evidence/china-explore-20261102/EVIDENCE.yml",
+    "mockups/evidence/china-gold-basis-proxy/EVIDENCE.yml",
+    "mockups/evidence/china-gold-premium/EVIDENCE.yml",
+    "mockups/evidence/china-policy-watch/EVIDENCE.yml",
+    "mockups/evidence/china-selective-synthesis-7485/EVIDENCE.yml",
+    "mockups/evidence/commodities-r3/overview/EVIDENCE.yml",
+    "mockups/evidence/commodities-r3/physical/EVIDENCE.yml",
+    "mockups/evidence/commodities-r3/relationships/EVIDENCE.yml",
+    "mockups/evidence/commodities-revamp-20261022/EVIDENCE.yml",
+    "mockups/evidence/commodities-w6/EVIDENCE.yml",
+    "mockups/evidence/commodity_coverage/EVIDENCE.yml",
+    "mockups/evidence/credit-source-unavailable/EVIDENCE.yml",
+    "mockups/evidence/credit-window-f09-2/EVIDENCE.yml",
+    "mockups/evidence/crypto-int-engine-20261013/EVIDENCE.yml",
+    "mockups/evidence/crypto-p2-polish-w2-20261013/EVIDENCE.yml",
+    "mockups/evidence/crypto-p3-polish-w3-20261013/EVIDENCE.yml",
+    "mockups/evidence/crypto-p4-terminal-20261013/EVIDENCE.yml",
+    "mockups/evidence/crypto-r2-8901/EVIDENCE.yml",
+    "mockups/evidence/cycle-locked-slot/EVIDENCE.yml",
+    "mockups/evidence/d06-macro-integration-20261104/market_structure/EVIDENCE.yml",
+    "mockups/evidence/debt_maturity/EVIDENCE.yml",
+    "mockups/evidence/defense-a38-saved-cut-20261018/EVIDENCE.yml",
+    "mockups/evidence/defense-evidence-navigation-20261016/EVIDENCE.yml",
+    "mockups/evidence/defense-space-capacity-current-main-20261015/EVIDENCE.yml",
+    "mockups/evidence/defense-v10-local/EVIDENCE.yml",
+    "mockups/evidence/defense-v9-local/EVIDENCE.yml",
+    "mockups/evidence/dossier-premarket-20261023/EVIDENCE.yml",
+    "mockups/evidence/etf-holdings-chip-dates/EVIDENCE.yml",
+    "mockups/evidence/expectation-surface-linkout/EVIDENCE.yml",
+    "mockups/evidence/expectation-surface-nav/EVIDENCE.yml",
+    "mockups/evidence/expectation-surface/EVIDENCE.yml",
+    "mockups/evidence/f01-live-chip-cn-theme-tape/EVIDENCE.yml",
+    "mockups/evidence/f01-live-chip-theme-tape/EVIDENCE.yml",
+    "mockups/evidence/f01-macro-monetary-hub/EVIDENCE.yml",
+    "mockups/evidence/f04-x1-wti-live-trace/EVIDENCE.yml",
+    "mockups/evidence/f06_second_issuer_cockpit/EVIDENCE.yml",
+    "mockups/evidence/f09-critical-minerals/EVIDENCE.yml",
+    "mockups/evidence/f09-holding-research/EVIDENCE.yml",
+    "mockups/evidence/f09-native-covenant/EVIDENCE.yml",
+    "mockups/evidence/f09-petroleum-flow/EVIDENCE.yml",
+    "mockups/evidence/f10-lp-native-consumer/EVIDENCE.yml",
+    "mockups/evidence/f10a1-implication-entry/EVIDENCE.yml",
+    "mockups/evidence/f10x1-research-implication-card/EVIDENCE.yml",
+    "mockups/evidence/finance-t11-conformance/EVIDENCE.yml",
+    "mockups/evidence/finance-t8-page-canvas/EVIDENCE.yml",
+    "mockups/evidence/finance-w10-hint-roster/EVIDENCE.yml",
+    "mockups/evidence/forex-r26-successor-20261021/EVIDENCE.yml",
+    "mockups/evidence/freshness-chip-invariant/EVIDENCE.yml",
+    "mockups/evidence/fundamental_forensics_p2/anonymous/EVIDENCE.yml",
+    "mockups/evidence/fundamental_forensics_p2/degraded/EVIDENCE.yml",
+    "mockups/evidence/fundamental_forensics_p2/keyboard/EVIDENCE.yml",
+    "mockups/evidence/fundamental_forensics_p2/populated/EVIDENCE.yml",
+    "mockups/evidence/fundamental_forensics_p2/unavailable/EVIDENCE.yml",
+    "mockups/evidence/fundamental_forensics_x2s/saved_pinned/EVIDENCE.yml",
+    "mockups/evidence/fundamental_forensics_x2s/saved_unavailable/EVIDENCE.yml",
+    "mockups/evidence/fundamental_forensics_x2s/saved_write_failure/EVIDENCE.yml",
+    "mockups/evidence/funds-w9-20261102/EVIDENCE.yml",
+    "mockups/evidence/global-hero-intl-20260921/EVIDENCE.yml",
+    "mockups/evidence/glossary/EVIDENCE.yml",
+    "mockups/evidence/gmi-explorer-s1-s5/EVIDENCE.yml",
+    "mockups/evidence/help-affordance-r2/EVIDENCE.yml",
+    "mockups/evidence/help_changelog/EVIDENCE.yml",
+    "mockups/evidence/help_directory/EVIDENCE.yml",
+    "mockups/evidence/hk-tier1-shell/EVIDENCE.yml",
+    "mockups/evidence/intelligence-os-a1-20261012/EVIDENCE.yml",
+    "mockups/evidence/intl-gs-r21-served/EVIDENCE.yml",
+    "mockups/evidence/intl-gs-w2a/coverage/EVIDENCE.yml",
+    "mockups/evidence/intl-gs-w2a/interaction/EVIDENCE.yml",
+    "mockups/evidence/intl-gs-w2a/scanner-abstain-focus/EVIDENCE.yml",
+    "mockups/evidence/intl-gs-w2a/scanner-abstain/EVIDENCE.yml",
+    "mockups/evidence/intl-gs-w2a/scanner-specimen/EVIDENCE.yml",
+    "mockups/evidence/intl-gs-w2a/scanner/EVIDENCE.yml",
+    "mockups/evidence/intl-gs-w2b/dossier-abstain/EVIDENCE.yml",
+    "mockups/evidence/intl-gs-w2b/dossier-jp/EVIDENCE.yml",
+    "mockups/evidence/intl-gs-w2b/dossier-specimen/EVIDENCE.yml",
+    "mockups/evidence/intl-gs-w2b/dossier/EVIDENCE.yml",
+    "mockups/evidence/intl-gs-w2b/interaction/EVIDENCE.yml",
+    "mockups/evidence/intl-gs-w2f/shell/EVIDENCE.yml",
+    "mockups/evidence/intl-gs-w2f/states/EVIDENCE.yml",
+    "mockups/evidence/intl-gs-w3u/EVIDENCE.yml",
+    "mockups/evidence/intl-gs-w4b/EVIDENCE.yml",
+    "mockups/evidence/intraday-flow-w11/EVIDENCE.yml",
+    "mockups/evidence/macro-command-p1/EVIDENCE.yml",
+    "mockups/evidence/macro-command-p2/EVIDENCE.yml",
+    "mockups/evidence/macro-command-p3/EVIDENCE.yml",
+    "mockups/evidence/macro-command-p4/EVIDENCE.yml",
+    "mockups/evidence/macro-command-p5/EVIDENCE.yml",
+    "mockups/evidence/macro-vol-weather-risk-detail-7859/EVIDENCE.yml",
+    "mockups/evidence/macro-w9/EVIDENCE.yml",
+    "mockups/evidence/market-memory-history-filings/EVIDENCE.yml",
+    "mockups/evidence/market-memory-history/EVIDENCE.yml",
+    "mockups/evidence/market-memory-paper-20261018/EVIDENCE.yml",
+    "mockups/evidence/market-memory-retained-u1/EVIDENCE.yml",
+    "mockups/evidence/market-memory-transcripts/EVIDENCE.yml",
+    "mockups/evidence/market-structure-w10-r3/EVIDENCE.yml",
+    "mockups/evidence/market_reference_mor1/EVIDENCE.yml",
+    "mockups/evidence/market_reference_w2_1/EVIDENCE.yml",
+    "mockups/evidence/marketontology-r23-r24/EVIDENCE.yml",
+    "mockups/evidence/markets-cyc-stage-mobile/EVIDENCE.yml",
+    "mockups/evidence/mastermind-ai-illustrations/EVIDENCE.yml",
+    "mockups/evidence/mi-l3-leadership-receipt/EVIDENCE.yml",
+    "mockups/evidence/mi-v1-followups-20261007/EVIDENCE.yml",
+    "mockups/evidence/mi-v1-verdict-preservation/EVIDENCE.yml",
+    "mockups/evidence/mo-f02-2/EVIDENCE.yml",
+    "mockups/evidence/mo-paid-006-dossier-page/EVIDENCE.yml",
+    "mockups/evidence/mobile-chrome-touch-floor-r3/EVIDENCE.yml",
+    "mockups/evidence/movers-fixed-notice-20261022/EVIDENCE.yml",
+    "mockups/evidence/nav-interaction-polish-r2/EVIDENCE.yml",
+    "mockups/evidence/news-family-inspection/EVIDENCE.yml",
+    "mockups/evidence/news-intelligence-paper-20260927/EVIDENCE.yml",
+    "mockups/evidence/news-refresh-20261102/EVIDENCE.yml",
+    "mockups/evidence/news-shared-integration-20261020-c3/EVIDENCE.yml",
+    "mockups/evidence/ontology-company-20261019/EVIDENCE.yml",
+    "mockups/evidence/ontology-dollar-path-20261019/EVIDENCE.yml",
+    "mockups/evidence/ontology-drl-research-20261019/EVIDENCE.yml",
+    "mockups/evidence/ontology-exposure-20261019/EVIDENCE.yml",
+    "mockups/evidence/ontology-gap-target-20261019/EVIDENCE.yml",
+    "mockups/evidence/ontology-portfolio-20261019/EVIDENCE.yml",
+    "mockups/evidence/ontology-radar-context-20261019/EVIDENCE.yml",
+    "mockups/evidence/ontology-research-continuation-20261019/EVIDENCE.yml",
+    "mockups/evidence/ontology-supplier-research-20261019/EVIDENCE.yml",
+    "mockups/evidence/ontology-supplier-role-20261019/EVIDENCE.yml",
+    "mockups/evidence/ontology-theme-20261019/EVIDENCE.yml",
+    "mockups/evidence/paid024-layout-20261023/EVIDENCE.yml",
+    "mockups/evidence/paper-international-compare/focus-repair/EVIDENCE.yml",
+    "mockups/evidence/paper-international-compare/states/EVIDENCE.yml",
+    "mockups/evidence/paper-international-generation/states/EVIDENCE.yml",
+    "mockups/evidence/paper-international-history/states/EVIDENCE.yml",
+    "mockups/evidence/paper-international-inspector/states/EVIDENCE.yml",
+    "mockups/evidence/paper-international-library/default/EVIDENCE.yml",
+    "mockups/evidence/paper-international-library/group-focus/EVIDENCE.yml",
+    "mockups/evidence/paper-international-library/group/EVIDENCE.yml",
+    "mockups/evidence/paper-international-macro/states/EVIDENCE.yml",
+    "mockups/evidence/paper-international-overview/EVIDENCE.yml",
+    "mockups/evidence/paper-international-risk/states/EVIDENCE.yml",
+    "mockups/evidence/policy-projection-f09-6b/EVIDENCE.yml",
+    "mockups/evidence/policy-watch-current-analysis-r2/EVIDENCE.yml",
+    "mockups/evidence/policy-watch-r1/EVIDENCE.yml",
+    "mockups/evidence/pr6932-aib-lede/EVIDENCE.yml",
+    "mockups/evidence/pri_ui_c1/EVIDENCE.yml",
+    "mockups/evidence/prophet-b03-20261011/EVIDENCE.yml",
+    "mockups/evidence/prophet-candidate-visibility-20260921/EVIDENCE.yml",
+    "mockups/evidence/prophet-p0b-zero-fouc/EVIDENCE.yml",
+    "mockups/evidence/prophet-packet2-r25-dialog/EVIDENCE.yml",
+    "mockups/evidence/prophet-paper-cards-20261014/EVIDENCE.yml",
+    "mockups/evidence/prophet-r7-wave-a/macro/EVIDENCE.yml",
+    "mockups/evidence/prophet-r7-wave-a/plan-cards/EVIDENCE.yml",
+    "mockups/evidence/prophet-r7-wave-a/receipts/EVIDENCE.yml",
+    "mockups/evidence/prophet-r7-wave-a/watchlist-watchlists-mode/EVIDENCE.yml",
+    "mockups/evidence/prophet-r7-wave-a/watchlist/EVIDENCE.yml",
+    "mockups/evidence/reactive-projection/r1a-intelligence-hub/EVIDENCE.yml",
+    "mockups/evidence/reference-explicit-open-20261024/EVIDENCE.yml",
+    "mockups/evidence/regime-history-finished-periods/EVIDENCE.yml",
+    "mockups/evidence/research-codegen/EVIDENCE.yml",
+    "mockups/evidence/research-vault-desk-chip/EVIDENCE.yml",
+    "mockups/evidence/ric-f1-track-record/EVIDENCE.yml",
+    "mockups/evidence/risk-radar-integration-20260919/EVIDENCE.yml",
+    "mockups/evidence/risk-radar-live-explanations-20260920/EVIDENCE.yml",
+    "mockups/evidence/risk-radar-paper-20261104/EVIDENCE.yml",
+    "mockups/evidence/risk-radar-probability-evidence-depth-20260922/EVIDENCE.yml",
+    "mockups/evidence/risk-radar-workspace-20261017/EVIDENCE.yml",
+    "mockups/evidence/rotation-glance-early-warning/EVIDENCE.yml",
+    "mockups/evidence/rs-leader-highs-watch/EVIDENCE.yml",
+    "mockups/evidence/rs-leader-recovery/EVIDENCE.yml",
+    "mockups/evidence/sanctions-map-mobile-key/EVIDENCE.yml",
+    "mockups/evidence/sanctions_map/EVIDENCE.yml",
+    "mockups/evidence/seasonality-now-chip-narrow/EVIDENCE.yml",
+    "mockups/evidence/sector-central-paper-pivot/EVIDENCE.yml",
+    "mockups/evidence/sector-cycles-phone/EVIDENCE.yml",
+    "mockups/evidence/sector-cycles-wave-china/EVIDENCE.yml",
+    "mockups/evidence/sector-cycles-wave-dossier/EVIDENCE.yml",
+    "mockups/evidence/sector-cycles-wave-platform/EVIDENCE.yml",
+    "mockups/evidence/sector-prophet-context/EVIDENCE.yml",
+    "mockups/evidence/sector-research-entry/EVIDENCE.yml",
+    "mockups/evidence/security_state/EVIDENCE.yml",
+    "mockups/evidence/shared-shell-css-20261019/EVIDENCE.yml",
+    "mockups/evidence/shared-shell-css-20261019/about-footer/EVIDENCE.yml",
+    "mockups/evidence/site20-s5-calculators/EVIDENCE.yml",
+    "mockups/evidence/stage-analysis-w7/EVIDENCE.yml",
+    "mockups/evidence/theme-parity/tp1-canada/EVIDENCE.yml",
+    "mockups/evidence/theme_tree/EVIDENCE.yml",
+    "mockups/evidence/ud-b2-w4b/EVIDENCE.yml",
+    "mockups/evidence/uiux-altdata-news-20260921/EVIDENCE.yml",
+    "mockups/evidence/uiux-basket-load-focus-20260921/EVIDENCE.yml",
+    "mockups/evidence/uiux-basket-resilience-continuation-20260920/EVIDENCE.yml",
+    "mockups/evidence/uiux-basket-sort-20260920/EVIDENCE.yml",
+    "mockups/evidence/uiux-darkpool-native-desk-20260923/EVIDENCE.yml",
+    "mockups/evidence/uiux-government-revenue-mobile-20260920/EVIDENCE.yml",
+    "mockups/evidence/uiux-home-hub-20260920/EVIDENCE.yml",
+    "mockups/evidence/uiux-intelligence-hub-20260920/EVIDENCE.yml",
+    "mockups/evidence/uiux-market-structure-controls-20260920/EVIDENCE.yml",
+    "mockups/evidence/uiux-reports-controls-20260921/EVIDENCE.yml",
+    "mockups/evidence/uiux-transmission-scenarios-20260923/EVIDENCE.yml",
+    "mockups/evidence/unified-dashboard-b2w1/EVIDENCE.yml",
+    "mockups/evidence/unified-dashboard-b2w2/EVIDENCE.yml",
+    "mockups/evidence/unified-dashboard-b2w3/EVIDENCE.yml",
+    "mockups/evidence/unified-subsector-detail/EVIDENCE.yml",
+    "mockups/evidence/us-stocks-compression/EVIDENCE.yml",
+    "mockups/evidence/valuation_assumptions/EVIDENCE.yml",
+    "mockups/evidence/valuation_scenario/EVIDENCE.yml",
+    "mockups/evidence/w9b_f11_8/EVIDENCE.yml",
+    "mockups/evidence/winner-health-run-age-window/EVIDENCE.yml"
+  ],
+  "current_receipt_census": 231,
+  "historical_subject_files": 59,
+  "material_paths": [
+    "templates/china.html.j2"
+  ],
+  "materialized_references": [
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/a-f01-w4-1/EVIDENCE.yml",
+      "sha": "85da0e9c91b6f44db16cc1874e6cecd05200424e",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/a-f02-w2-3-uk-policy/EVIDENCE.yml",
+      "sha": "bee591872510946aed4b6489a3c8dde5abde74ab",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/a-f03-w2-4c-skew-source-note/EVIDENCE.yml",
+      "sha": "41a803bc41a0240b3fa77d998a85a3e8cef55bc3",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/a-f03-w2-5b-payoff-lab/EVIDENCE.yml",
+      "sha": "f2cada4b70f8d4cb7d66fea98c910d1dd541f0dd",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/a-f03-w3-2-payoff-catalyst-chip/EVIDENCE.yml",
+      "sha": "7cc6c683a4b57714259780e70e8802fcf71aeaf5",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/a-f04-w4-1/EVIDENCE.yml",
+      "sha": "0d11241e52b6580539d08917da6c14f7645b17ed",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/a-f05-1-consequence/EVIDENCE.yml",
+      "sha": "927c01feaf81782bf768d5a1aabc01de25652880",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/a-mo-j1a-company-continuation/EVIDENCE.yml",
+      "sha": "672305afa732991e5c5b3ed1a2c512e168052c33",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/account_alert_prefs/EVIDENCE.yml",
+      "sha": "99fec6bdeaf9df9ecab0adf9009e10093a33f736",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/aibrief_band/EVIDENCE.yml",
+      "sha": "4f46e276ff6dd3622c009562fa408d56be508bbe",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/am-edition-natural-run/EVIDENCE.yml",
+      "sha": "439e4b0d0f22fb842f66b62def3fc6fb4b8e03c8",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/am-regime-context/EVIDENCE.yml",
+      "sha": "7cb799f244b3d974fdf6bad0f07ae85d03ca1eef",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/am_edition/EVIDENCE.yml",
+      "sha": "88f818cfd8bfc1c60b4a1b3bf6a4a3c6a1e1f71f",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/b-f06-4-research-screener/EVIDENCE.yml",
+      "sha": "1be21f643a106f9b189713550eda694722e5d15c",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/b-f07-3-event-bridge/EVIDENCE.yml",
+      "sha": "0390ddd84d5c5e506995dab3e56df279cad01b24",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/b-f09-13-covenant-headroom/EVIDENCE.yml",
+      "sha": "7acbbfbd330153a0ec8983f1681724c6e5ad1eac",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/b-f09-bond-terms/EVIDENCE.yml",
+      "sha": "914e511817d565ac293a2e3a80b74d2a85c9a28e",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/b-f09-ipo-terms/EVIDENCE.yml",
+      "sha": "29bac9919156f173af50e9b5d964e2e99ae6963c",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/b-f09-ma-agreement/EVIDENCE.yml",
+      "sha": "96d2e9c205a1044507c9f205957b67e1513ad869",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/basket-detail-ux/EVIDENCE.yml",
+      "sha": "e6c16966149eff0fa0cd58f58af675ae2d422105",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/bonds-regime-dashboard/EVIDENCE.yml",
+      "sha": "3c5e3e472e1dfd3d9cc4790b10f79d6c6d9d034d",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/brain-affordance-r1/EVIDENCE.yml",
+      "sha": "94081e8f8441b625e2aa00b22ec032e6db30b89a",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/brain-composer-notice-removal-20260921/EVIDENCE.yml",
+      "sha": "a4c2cd1b37b1234c564ca117462b0f87dfe062b5",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/brain-intelligent-output/EVIDENCE.yml",
+      "sha": "70788d613f39e1c0ab0474e9258a97b4f59d9248",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/capital_structure_premium/EVIDENCE.yml",
+      "sha": "a0d3b5fb47fca9e95940692c27bc450be65f2e46",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/catalyst-partner-pack/EVIDENCE.yml",
+      "sha": "4ceeb70be74af4a811b3d6a8bfb274577512833f",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/catalyst-scan-20261010/EVIDENCE.yml",
+      "sha": "ea6aa146352edf92f9f9073b28deb07953590081",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/ccb-plnt-card/EVIDENCE.yml",
+      "sha": "f643671f0aa191fc74d51a65439205e60910ea04",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-archetype-d/EVIDENCE.yml",
+      "sha": "566cc905aef0234151295108077fbe39f953d6ee",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-explore-20261102/EVIDENCE.yml",
+      "sha": "2f4eb00f6456392baaf5befcc9c7ec1dfced0fb3",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-gold-basis-proxy/EVIDENCE.yml",
+      "sha": "9511b39eadba0afe198af57f950d4137a0a0a82f",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-gold-premium/EVIDENCE.yml",
+      "sha": "3eba4ce728a0ecf72dac18a67d8e46c1f59cfdbd",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-policy-watch/EVIDENCE.yml",
+      "sha": "b0b49a1516c0396693c11f10208bf5dad5e3c4f1",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-selective-synthesis-7485/EVIDENCE.yml",
+      "sha": "4dda51c6a3c846d415278183ca1fd0c14f3b3590",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/commodities-r3/overview/EVIDENCE.yml",
+      "sha": "c0f307a8b330bbdbfce9a0a8ac0fb4a7c890279a",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/commodities-r3/physical/EVIDENCE.yml",
+      "sha": "f800ee4a3c5281a3e775673ccf92ab3287bb66e1",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/commodities-r3/relationships/EVIDENCE.yml",
+      "sha": "056d9b1a2a9e31364a5a227267ddba09bc31597e",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/commodities-revamp-20261022/EVIDENCE.yml",
+      "sha": "30b7fd87ed568f410cccf00f8a43c00ecffb8677",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/commodities-w6/EVIDENCE.yml",
+      "sha": "250783796fc7d745ae78332305097235342c4889",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/commodity_coverage/EVIDENCE.yml",
+      "sha": "59e1ca8aadedbd6acca636aba9c5aa125efe63dc",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/credit-source-unavailable/EVIDENCE.yml",
+      "sha": "084cd54785d59f80c51ab3ab84099b947ede7754",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/credit-window-f09-2/EVIDENCE.yml",
+      "sha": "19cec475aa42863ffd829bfc26ea8c2e33a11a19",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/crypto-int-engine-20261013/EVIDENCE.yml",
+      "sha": "b7853164f29f90728b61f4bdad4640fd10dd8c23",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/crypto-p2-polish-w2-20261013/EVIDENCE.yml",
+      "sha": "1ac85c8c4843c557511511b0c27ddd961bfdcf67",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/crypto-p3-polish-w3-20261013/EVIDENCE.yml",
+      "sha": "2229570ebb97d6443ae2251a1ab684d18621b6da",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/crypto-p4-terminal-20261013/EVIDENCE.yml",
+      "sha": "d1072fc693312d25e8329dcf5894607e5ad6768a",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/crypto-r2-8901/EVIDENCE.yml",
+      "sha": "867b2c53e5f25336360477bb08deff743c4be16b",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/cycle-locked-slot/EVIDENCE.yml",
+      "sha": "d67c1cc6f141ae44addf00919e8dad41a66c14dc",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/d06-macro-integration-20261104/market_structure/EVIDENCE.yml",
+      "sha": "6f7695ee3c43b00f21b161606aad49e9dfc4668b",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/debt_maturity/EVIDENCE.yml",
+      "sha": "ed53061dc0f3aa8643116b4b05d954e4f9021ac4",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/defense-a38-saved-cut-20261018/EVIDENCE.yml",
+      "sha": "c6f8822b36147fd2d7e2523edcb2a891175600ab",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/defense-evidence-navigation-20261016/EVIDENCE.yml",
+      "sha": "706b3f2c9aaf4e01b849694399fe0f7a0991bed6",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/defense-space-capacity-current-main-20261015/EVIDENCE.yml",
+      "sha": "cd509ba2328398019dfa77703931a9f7ef746fbc",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/defense-v10-local/EVIDENCE.yml",
+      "sha": "ead939abef6134d5ef12573f003b3c7c94ded0c5",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/defense-v9-local/EVIDENCE.yml",
+      "sha": "fbbc741eeff2369e30aa15ee64c30c85f47d68b6",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/dossier-premarket-20261023/EVIDENCE.yml",
+      "sha": "5d7da2482f6d1093d4a3fd311bf62a4772cd62db",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/etf-holdings-chip-dates/EVIDENCE.yml",
+      "sha": "0f9e2ce5541cf2cae4c5ff4d6f91e180b08cfd54",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/expectation-surface-linkout/EVIDENCE.yml",
+      "sha": "fac89474ba7a4cdfd9409a5284e7eaa240f0f3a3",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/expectation-surface-nav/EVIDENCE.yml",
+      "sha": "5d949dbde0e3ccfe1a57d623965b20d822c658ba",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/expectation-surface/EVIDENCE.yml",
+      "sha": "7297ba0bf322f0500a1cd805bba1012e8abeb138",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/f01-live-chip-cn-theme-tape/EVIDENCE.yml",
+      "sha": "43a9a8fc35d508159c8ad725a52b510c8a6133b2",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/f01-live-chip-theme-tape/EVIDENCE.yml",
+      "sha": "57bb6c83417f0cbc2c972fd29e37a23b053c1a66",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/f01-macro-monetary-hub/EVIDENCE.yml",
+      "sha": "09255fb7c44586c5e506b109aabc841e740300f0",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/f04-x1-wti-live-trace/EVIDENCE.yml",
+      "sha": "f0a1ba13e3dcd833927cb3b1384a4d32b3ea4893",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/f06_second_issuer_cockpit/EVIDENCE.yml",
+      "sha": "9c3b2d3bbb2cb59fb804279a84cc4a23ebe75e61",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/f09-critical-minerals/EVIDENCE.yml",
+      "sha": "d13bb6311d84c3e66cc9f80e174d9dd36af2dae3",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/f09-holding-research/EVIDENCE.yml",
+      "sha": "70dc01fec7a9399b31bc6047cd366d9660094b27",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/f09-native-covenant/EVIDENCE.yml",
+      "sha": "fcffff823968bbe8596eeab1d4ea8269f57bb71d",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/f09-petroleum-flow/EVIDENCE.yml",
+      "sha": "3dd3acaf7b3db3719eb195118bd2c3f4643e0d57",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/f10-lp-native-consumer/EVIDENCE.yml",
+      "sha": "54471e3d9a60678bcc60b8a53f08da151208278f",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/f10a1-implication-entry/EVIDENCE.yml",
+      "sha": "6c3a346a0167bef3f32ef636560bedd3eb59a3e4",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/f10x1-research-implication-card/EVIDENCE.yml",
+      "sha": "811fa4b77c486c9efe841b156e7f6a34a7df114b",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/finance-t11-conformance/EVIDENCE.yml",
+      "sha": "d5b10a7239f9e8a33f857cbf9c536b6ac40dbd15",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/finance-t8-page-canvas/EVIDENCE.yml",
+      "sha": "e50949913b346bc37f69b5993b3dca164af23682",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/finance-w10-hint-roster/EVIDENCE.yml",
+      "sha": "117178847170fdb2f5404e8f33fabc412520fd60",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/forex-r26-successor-20261021/EVIDENCE.yml",
+      "sha": "a1243465c60239098f5ee115bb357a0e8de9151d",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/freshness-chip-invariant/EVIDENCE.yml",
+      "sha": "82a9da414edcb8842b0e764f4102ce6089da968e",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/fundamental_forensics_p2/anonymous/EVIDENCE.yml",
+      "sha": "5bb175617f82893035a619a65d53529b5e3c1388",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/fundamental_forensics_p2/degraded/EVIDENCE.yml",
+      "sha": "0ed70f2df9587ba785ceecd77279e9a6843a1b48",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/fundamental_forensics_p2/keyboard/EVIDENCE.yml",
+      "sha": "a889c9323bc48e32b51423ae7b1a13aa0a495b5a",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/fundamental_forensics_p2/populated/EVIDENCE.yml",
+      "sha": "db46a4a5276b3754c9369e770e2c831ce374c50a",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/fundamental_forensics_p2/unavailable/EVIDENCE.yml",
+      "sha": "2fc1745463093bcbb1da99d71b6b2d4b34b06164",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/fundamental_forensics_x2s/saved_pinned/EVIDENCE.yml",
+      "sha": "d97558fb0aec81cca53aaf5681686fe24cf5c852",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/fundamental_forensics_x2s/saved_unavailable/EVIDENCE.yml",
+      "sha": "64bd878b87794505aa4f055c4591ce0dde8f78c6",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/fundamental_forensics_x2s/saved_write_failure/EVIDENCE.yml",
+      "sha": "30d021e28d082ff56f8ffb07770c3d87a7fa6d03",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/funds-w9-20261102/EVIDENCE.yml",
+      "sha": "d603492730cf6fc9d5363d7d2995cf6086ab70b2",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/global-hero-intl-20260921/EVIDENCE.yml",
+      "sha": "a4e383b391549d2c5be39ca82f8e3e62723e6b79",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/glossary/EVIDENCE.yml",
+      "sha": "c5cf52f24c9aa634e85054198913e3fb5b4e5e5a",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/gmi-explorer-s1-s5/EVIDENCE.yml",
+      "sha": "1ca2c2d08d2b0caa13e003454c4a3ac3c4a0e6bf",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/help-affordance-r2/EVIDENCE.yml",
+      "sha": "63ac5b41651a5bbadeafb19de05ea977675c7ad4",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/help_changelog/EVIDENCE.yml",
+      "sha": "9d55a7cfcddc7a29a744a657eba32882b97c601e",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/help_directory/EVIDENCE.yml",
+      "sha": "3f92d01b44aad01bd7f6a9eab6639dbed5dfaa13",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/hk-tier1-shell/EVIDENCE.yml",
+      "sha": "b68c23864cbfd976f0e91957d15d6c68dbe1e3b6",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/intelligence-os-a1-20261012/EVIDENCE.yml",
+      "sha": "ad323426844aacf3e10e9aaf58e6cc2b272b8ebc",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/intl-gs-r21-served/EVIDENCE.yml",
+      "sha": "8367da048deffaa617a1dbb132cc764c2feb9b29",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/intl-gs-w2a/coverage/EVIDENCE.yml",
+      "sha": "a27be192774dd7b86d075bcbea0530d556496320",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/intl-gs-w2a/interaction/EVIDENCE.yml",
+      "sha": "78b0aabb999f806107778adca85f3ea6b9ad1c59",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/intl-gs-w2a/scanner-abstain-focus/EVIDENCE.yml",
+      "sha": "aefc99da1f7e9b487f93e09b98cd0b0f46123a0c",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/intl-gs-w2a/scanner-abstain/EVIDENCE.yml",
+      "sha": "cbc7255eaae479d82668693d784d0d0b1820fecf",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/intl-gs-w2a/scanner-specimen/EVIDENCE.yml",
+      "sha": "d663685c1e4a23966860c49233f0d93b43cf55a4",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/intl-gs-w2a/scanner/EVIDENCE.yml",
+      "sha": "bf92fbf065ba86a2793ed26e3bd3d177aaba8201",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/intl-gs-w2b/dossier-abstain/EVIDENCE.yml",
+      "sha": "2e7ebbd540730b10d2fe7eb887cbfc707c5b45a6",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/intl-gs-w2b/dossier-jp/EVIDENCE.yml",
+      "sha": "2946063f57397f8e8126c79510b2a74131be71ad",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/intl-gs-w2b/dossier-specimen/EVIDENCE.yml",
+      "sha": "1a3bc1d1ce44307e2d5b50a803bcbf22ba8583dd",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/intl-gs-w2b/dossier/EVIDENCE.yml",
+      "sha": "1e1f6cc3640914c8fc998c71394323ed3891596a",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/intl-gs-w2b/interaction/EVIDENCE.yml",
+      "sha": "22c9ff3f4341250138883650ec4f80e911a63e24",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/intl-gs-w2f/shell/EVIDENCE.yml",
+      "sha": "8efa21010436cec8c1fc3be8daa55177daf2599b",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/intl-gs-w2f/states/EVIDENCE.yml",
+      "sha": "7ef5cc57f3ca6ea8eb321d9ef1d53d0b4dbb9f79",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/intl-gs-w3u/EVIDENCE.yml",
+      "sha": "86a1fbb9ff90faa95e902153c67a39b192c6f5e5",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/intl-gs-w4b/EVIDENCE.yml",
+      "sha": "a91015c597af6ebd085243fe8ba7e6e6f15c5543",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/intraday-flow-w11/EVIDENCE.yml",
+      "sha": "c14c749178fecb76f018350c2078bb68aab4b97b",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/macro-command-p1/EVIDENCE.yml",
+      "sha": "9a9540273f4940788cf56aff1f9e68e3ac9043a0",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/macro-command-p2/EVIDENCE.yml",
+      "sha": "2c92648b1c247aebd0549225e4abe5deea6f35c1",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/macro-command-p3/EVIDENCE.yml",
+      "sha": "7208520b23e99a7d71cde1a903176a803e160700",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/macro-command-p4/EVIDENCE.yml",
+      "sha": "a132fcb63ef1fbcc40bf78d0e5f60f4ccb4e5224",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/macro-command-p5/EVIDENCE.yml",
+      "sha": "c69aff5a94ba8417f3c6a4e05d049f8b14737780",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/macro-vol-weather-risk-detail-7859/EVIDENCE.yml",
+      "sha": "a6eafbec6da0a478943ba88d05d076a76aa78bf7",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/macro-w9/EVIDENCE.yml",
+      "sha": "c3a33385b9178e173addeb9f158e2a24ac7eddcc",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/market-memory-history-filings/EVIDENCE.yml",
+      "sha": "3b2e520a16641529766b9c9ca02fc9832f2a2e3e",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/market-memory-history/EVIDENCE.yml",
+      "sha": "97da57c98e901b3beca7e32ff475c50c944eb4c3",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/market-memory-paper-20261018/EVIDENCE.yml",
+      "sha": "915c4ed12d230ffea3b6b87bfbb1485628535518",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/market-memory-retained-u1/EVIDENCE.yml",
+      "sha": "cf6afab8669534b51bc6ecc2e8614b5ac619d64f",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/market-memory-transcripts/EVIDENCE.yml",
+      "sha": "8709ec7567ddb7f292bdaaeb1aa5a6a273c11352",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/market-structure-w10-r3/EVIDENCE.yml",
+      "sha": "7e1190e1920b0c454118d5fe000b1a92d348c7d6",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/market_reference_mor1/EVIDENCE.yml",
+      "sha": "c4f8cd524adc84dde46aa5d5fbed37b27b1c4ae2",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/market_reference_w2_1/EVIDENCE.yml",
+      "sha": "a79623ecec58f1962f3066e61b37944b410b70e2",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/marketontology-r23-r24/EVIDENCE.yml",
+      "sha": "7655be999a3f50085a8630691c24a7fc3f4249e0",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/markets-cyc-stage-mobile/EVIDENCE.yml",
+      "sha": "87d5c998abfca770728de63126900f3e70ba6706",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/mastermind-ai-illustrations/EVIDENCE.yml",
+      "sha": "14017020ae1a98fecd6061267c8ef357acd2a9ef",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/mi-l3-leadership-receipt/EVIDENCE.yml",
+      "sha": "7e73617ffde91533551750eb12e969044398e570",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/mi-v1-followups-20261007/EVIDENCE.yml",
+      "sha": "770dab9a19913357238edb01c6876a54b9175b6b",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/mi-v1-verdict-preservation/EVIDENCE.yml",
+      "sha": "63815a3ae71e1b2d62fe6aaf418d4476d19b6b26",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/mo-f02-2/EVIDENCE.yml",
+      "sha": "590eb12dc9a4102bba780a3f464f61a88aec9d3b",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/mo-paid-006-dossier-page/EVIDENCE.yml",
+      "sha": "833f1ec394f9464d9fa39640c3cd2b1d646f4d16",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/mobile-chrome-touch-floor-r3/EVIDENCE.yml",
+      "sha": "652619a298d21bcf2233d82bbb32b70c2c784bd1",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/movers-fixed-notice-20261022/EVIDENCE.yml",
+      "sha": "4e3d81e74c5cc2839c2f74151243b866c9911f5c",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/nav-interaction-polish-r2/EVIDENCE.yml",
+      "sha": "edd6be68209826f221c6ec8a27c253cecd7cda0f",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/news-family-inspection/EVIDENCE.yml",
+      "sha": "b2df0f1173330cb4cdf6d528e4f5d31e247efc13",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/news-intelligence-paper-20260927/EVIDENCE.yml",
+      "sha": "7a76357dfc6e82f5bde3f3657cb045783997ecfe",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/news-refresh-20261102/EVIDENCE.yml",
+      "sha": "e33f1d4194c3cdf36874b81f6e0d545859d898a3",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/news-shared-integration-20261020-c3/EVIDENCE.yml",
+      "sha": "309617615acbb96d5aebd884c72b42f6bb1a2735",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/ontology-company-20261019/EVIDENCE.yml",
+      "sha": "086834613baf8eaf5257209bce589d14d835cb56",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/ontology-dollar-path-20261019/EVIDENCE.yml",
+      "sha": "35c10f0161adadb9a3c2c38691ccc71e14d28139",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/ontology-drl-research-20261019/EVIDENCE.yml",
+      "sha": "f029d6189695a714b12448fe5f1689e18e222809",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/ontology-exposure-20261019/EVIDENCE.yml",
+      "sha": "929a8a6a19ec5c7c18a78e8b94693b11dd812df9",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/ontology-gap-target-20261019/EVIDENCE.yml",
+      "sha": "68d0be1a9b98ddc51b7ba759fc86adda0dc68eed",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/ontology-portfolio-20261019/EVIDENCE.yml",
+      "sha": "1e23e1953f6a0350edbb11eb2936dfd4d1d7be9a",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/ontology-radar-context-20261019/EVIDENCE.yml",
+      "sha": "32aff82af19fdfbfa2b4ddb6964f77f074be6f85",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/ontology-research-continuation-20261019/EVIDENCE.yml",
+      "sha": "6aaea253c113d402368cbb499d6ccdbd9930a2e3",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/ontology-supplier-research-20261019/EVIDENCE.yml",
+      "sha": "7c2296c7f35e09d9f6b7a25162588c33e2062192",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/ontology-supplier-role-20261019/EVIDENCE.yml",
+      "sha": "f25d596832148a205e0e667a2edc2f0fb29ba4bc",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/ontology-theme-20261019/EVIDENCE.yml",
+      "sha": "cac20e38f220bbe26ce53eb4a561283ededf8de2",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/paid024-layout-20261023/EVIDENCE.yml",
+      "sha": "44a96ae348d5be1304d70ad6af1bbbd1464fcfb4",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/paper-international-compare/focus-repair/EVIDENCE.yml",
+      "sha": "823787fbe3f67709f6e3fd72ffc43acd73fc3bfb",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/paper-international-compare/states/EVIDENCE.yml",
+      "sha": "4c452291b51a2cd264a4c75173381d582266315f",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/paper-international-generation/states/EVIDENCE.yml",
+      "sha": "5f606a7251c23264ac018485adc4c6c3b963d67c",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/paper-international-history/states/EVIDENCE.yml",
+      "sha": "f8397574f6637b7e412750125de03198e9fafcbf",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/paper-international-inspector/states/EVIDENCE.yml",
+      "sha": "d2c5a2a398857347d53cba7564b18e074968ab25",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/paper-international-library/default/EVIDENCE.yml",
+      "sha": "d4ff63e99570dcee6a0b670e60354232095ae85f",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/paper-international-library/group-focus/EVIDENCE.yml",
+      "sha": "e1273cc8185baabf096aedfbd68fc553c8e61e7f",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/paper-international-library/group/EVIDENCE.yml",
+      "sha": "77ac72fec68e562ab545cd60179c6470230f3d9d",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/paper-international-macro/states/EVIDENCE.yml",
+      "sha": "60cfcc43b9425d1725da7fc2d20b0e38d4559df0",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/paper-international-overview/EVIDENCE.yml",
+      "sha": "ceb1b1d4b0bddca11f7f2494f3ce4fcf7859b3a4",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/paper-international-risk/states/EVIDENCE.yml",
+      "sha": "fa7a3eb54f6944d365a1d23a9c304c36a1da8a69",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/policy-projection-f09-6b/EVIDENCE.yml",
+      "sha": "786c3551bb5e593ee80ec92383db75086fb601e6",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/policy-watch-current-analysis-r2/EVIDENCE.yml",
+      "sha": "cbb0f02cd36f7e81449a607395a043b3f53c1ea6",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/policy-watch-r1/EVIDENCE.yml",
+      "sha": "859d255337fa56f5ed8d9b35f57034d220eafa43",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/pr6932-aib-lede/EVIDENCE.yml",
+      "sha": "a2a35249efa9eb6bf1340d2ab952e2ffd03f8a98",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/pri_ui_c1/EVIDENCE.yml",
+      "sha": "6718d7226296257d850cfedf882554c25fcf692b",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/prophet-b03-20261011/EVIDENCE.yml",
+      "sha": "f9807c9eb161f88faaf4ce8d8a5142c984e401b8",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/prophet-candidate-visibility-20260921/EVIDENCE.yml",
+      "sha": "2db1680107c2e7474bc81aee68eb6ca074249214",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/prophet-p0b-zero-fouc/EVIDENCE.yml",
+      "sha": "06aecc594503e4680fb2318f836e9df0cd450258",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/prophet-packet2-r25-dialog/EVIDENCE.yml",
+      "sha": "a10aa32f522a0e750724067c3a1fe3a43a78a593",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/prophet-paper-cards-20261014/EVIDENCE.yml",
+      "sha": "1d7fb3533d6bd9a8f78593b96ecc98e234d5e4ae",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/prophet-r7-wave-a/macro/EVIDENCE.yml",
+      "sha": "2576c040830ff8272430fb59f06e737b0f70dbc2",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/prophet-r7-wave-a/plan-cards/EVIDENCE.yml",
+      "sha": "f4f4831934f226d87d8f544bc5e0e52d9245ccfe",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/prophet-r7-wave-a/receipts/EVIDENCE.yml",
+      "sha": "02d0500bd4959bc4d547a58d8b707bca7161fe94",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/prophet-r7-wave-a/watchlist-watchlists-mode/EVIDENCE.yml",
+      "sha": "3b71b292f66c9a03d91759ff0771310a97c48790",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/prophet-r7-wave-a/watchlist/EVIDENCE.yml",
+      "sha": "3ec14afcf1beff70fca5eb88b6e05e9f4c86ee42",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/reactive-projection/r1a-intelligence-hub/EVIDENCE.yml",
+      "sha": "f5e850bbc19dd209ff8e151e2ff6ebf80d01dadd",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/reference-explicit-open-20261024/EVIDENCE.yml",
+      "sha": "8e91beec7e1366e643e680c2a8ddf8f4c243dddd",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/regime-history-finished-periods/EVIDENCE.yml",
+      "sha": "6470502333d71e0d0c356150b134ca6a29aa4b61",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/research-codegen/EVIDENCE.yml",
+      "sha": "5810361217ef467bad6bf3cd311a469020936ff8",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/research-vault-desk-chip/EVIDENCE.yml",
+      "sha": "e2f6c053412d174a6bfed5c5c7d4d91f8f682e97",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/ric-f1-track-record/EVIDENCE.yml",
+      "sha": "b10f73e81098d6e5b18bfb8a1003adaef369c493",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/risk-radar-integration-20260919/EVIDENCE.yml",
+      "sha": "0aa3e6e8268eb3856f2e400da7b8a009779ccb98",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/risk-radar-live-explanations-20260920/EVIDENCE.yml",
+      "sha": "b67b01b4d186a2a1374797d5cbec9674c5e730f6",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/risk-radar-paper-20261104/EVIDENCE.yml",
+      "sha": "edcb8b45168c4ce0b0bb1f9e37eb7028a14bb8c5",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/risk-radar-probability-evidence-depth-20260922/EVIDENCE.yml",
+      "sha": "fc31281f098d70d69a3fa3f5d851dc0be0c1cc8c",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/risk-radar-workspace-20261017/EVIDENCE.yml",
+      "sha": "6bd7ebefde25e403c274a7bd6a18e2b1f2e54933",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/rotation-glance-early-warning/EVIDENCE.yml",
+      "sha": "569e6c357dab0ae9f097e4ac7ffaf019500116fe",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/rs-leader-highs-watch/EVIDENCE.yml",
+      "sha": "c911dc414572bb66f0ba9d8e4dd0c5bd2e3e2159",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/rs-leader-recovery/EVIDENCE.yml",
+      "sha": "0371367695d1f2932fb686e717b749e20104bf96",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/sanctions-map-mobile-key/EVIDENCE.yml",
+      "sha": "427808769cff4df72188c67f8738aefdc55c6949",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/sanctions_map/EVIDENCE.yml",
+      "sha": "95ab55e55f4f94f868343b4b4ed496fa57f82809",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/seasonality-now-chip-narrow/EVIDENCE.yml",
+      "sha": "04281c892135ff4982e9ea8d05aae9187a71e825",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/sector-central-paper-pivot/EVIDENCE.yml",
+      "sha": "5c4ad7910ee0226d351672db8119353711668905",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/sector-cycles-phone/EVIDENCE.yml",
+      "sha": "58295eb7d652aa0699f13bc772e232342c13b2f5",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/sector-cycles-wave-china/EVIDENCE.yml",
+      "sha": "f3214b341ad690f17282223be9eb54949e50556c",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/sector-cycles-wave-dossier/EVIDENCE.yml",
+      "sha": "a89de2eac204e3bfd5038e4a4ee3503cba831fa6",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/sector-cycles-wave-platform/EVIDENCE.yml",
+      "sha": "1d53d7e6372bddf130b44be4de3df3e3e754924d",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/sector-prophet-context/EVIDENCE.yml",
+      "sha": "f3bf14e4d8cc06420e11251e495b29839952debd",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/sector-research-entry/EVIDENCE.yml",
+      "sha": "2e5a9178b5814835a5ad1c0dcc2e77b7192284a3",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/security_state/EVIDENCE.yml",
+      "sha": "82532145bbc0bc690cb975a4834ff9481f0e623a",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/shared-shell-css-20261019/EVIDENCE.yml",
+      "sha": "419f66b8fa2a785fb1b2bf34d6950f51aa87373f",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/shared-shell-css-20261019/about-footer/EVIDENCE.yml",
+      "sha": "cb6368cffb806fd5d5b5d9e027831e4cff49cf55",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/site20-s5-calculators/EVIDENCE.yml",
+      "sha": "96bffef7a6c765d9a345b2b442773541c094e5d8",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/stage-analysis-w7/EVIDENCE.yml",
+      "sha": "2432660d142452c6643dd956fb222cedfb7154c8",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/theme-parity/tp1-canada/EVIDENCE.yml",
+      "sha": "06ea40359ee8975a828183ce01ae35c16da11141",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/theme_tree/EVIDENCE.yml",
+      "sha": "87d6bfdf3f9051a0d964992488f12926fab0d53a",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/ud-b2-w4b/EVIDENCE.yml",
+      "sha": "85417170125925939e31f54d8257898f4a20b13a",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/uiux-altdata-news-20260921/EVIDENCE.yml",
+      "sha": "c706e82b9e4f5f240cf642067927c9fc904d684d",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/uiux-basket-load-focus-20260921/EVIDENCE.yml",
+      "sha": "c49bfeb1e67a797dbadd54c4d744ecdabd52400c",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/uiux-basket-resilience-continuation-20260920/EVIDENCE.yml",
+      "sha": "8f746c75359943e023390da6a2262b3e2e93caa4",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/uiux-basket-sort-20260920/EVIDENCE.yml",
+      "sha": "1683f074c35e0e4a55db59b434abc99b5309ac10",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/uiux-darkpool-native-desk-20260923/EVIDENCE.yml",
+      "sha": "6e3710855b6d4a3bfd46b0bdbd3a2306820e54b4",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/uiux-government-revenue-mobile-20260920/EVIDENCE.yml",
+      "sha": "7f4bb536de7ea9fac9884f2f6f0f4a75939facb4",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/uiux-home-hub-20260920/EVIDENCE.yml",
+      "sha": "6b2adf8aa42e643670c85f03103bfbf287c563b8",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/uiux-intelligence-hub-20260920/EVIDENCE.yml",
+      "sha": "e2353cf098adf21926a39795ae9639d6e158cadb",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/uiux-market-structure-controls-20260920/EVIDENCE.yml",
+      "sha": "fe935409ca4b1acf5dea78431855c380b4be3feb",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/uiux-reports-controls-20260921/EVIDENCE.yml",
+      "sha": "bdfbd22e34824913fd409c343efcec34455d5896",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/uiux-transmission-scenarios-20260923/EVIDENCE.yml",
+      "sha": "a696f9026b25d46f219f1d7e513ec6b41e9179a9",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/unified-dashboard-b2w1/EVIDENCE.yml",
+      "sha": "f0257d852be176532cfd21fef25e0cf65a650383",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/unified-dashboard-b2w2/EVIDENCE.yml",
+      "sha": "2e982dc752d39b2006e00e7f7a3562a9cc62ee9f",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/unified-dashboard-b2w3/EVIDENCE.yml",
+      "sha": "928d2cf99fa7dd5b009601db1394b6127c5e86a0",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/unified-subsector-detail/EVIDENCE.yml",
+      "sha": "6afd1c5ba85ea4c765d94fece9f5eecebe385472",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/us-stocks-compression/EVIDENCE.yml",
+      "sha": "7be033f4961c5882a3109f54bfb3fc142db75390",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/valuation_assumptions/EVIDENCE.yml",
+      "sha": "d475f1ca5eff94149ab6d96f9bbf3a9efb093dee",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/valuation_scenario/EVIDENCE.yml",
+      "sha": "dd1cf66397314517d878cba6cc0354b10755c1c6",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/w9b_f11_8/EVIDENCE.yml",
+      "sha": "efaf3fd77b72af18b74f017804208c24a05c881e",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/winner-health-run-age-window/EVIDENCE.yml",
+      "sha": "4f21e332a086f9160a8e2ec322fe83b688d2f142",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-sector-detail-links-20261109/EVIDENCE.yml",
+      "sha": "c6ac79a95cb8628686a594e200bf768de1f37edd",
+      "source": "f3ed96830032050bd615bb0902d85f7c485949f6"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-sector-detail-links-20261109/PROOF.md",
+      "sha": "f71bc150fac0160252555aeedfe2d0e15030e86e",
+      "source": "f3ed96830032050bd615bb0902d85f7c485949f6"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-sector-detail-links-20261109/fixture-provenance.json",
+      "sha": "85589032e7c21fbc0280f627b6de10e5cd7739c4",
+      "source": "f3ed96830032050bd615bb0902d85f7c485949f6"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-sector-detail-links-20261109/keyboard-journeys.json",
+      "sha": "ec9689f32ec024efd1403152d7983881b4bd6b76",
+      "source": "f3ed96830032050bd615bb0902d85f7c485949f6"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-sector-detail-links-20261109/keyboard-markets-complete-fixture.json",
+      "sha": "bc5487038845a7e058f75f1910cf27bc1c2adf07",
+      "source": "f3ed96830032050bd615bb0902d85f7c485949f6"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-sector-detail-links-20261109/manifest.json",
+      "sha": "c88588f65f5ca7cc3adf758f2435f66b77bd76bd",
+      "source": "f3ed96830032050bd615bb0902d85f7c485949f6"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-sector-detail-links-20261109/paired-planner.json",
+      "sha": "064641e1639bfb758bab5d330845c45467d50454",
+      "source": "f3ed96830032050bd615bb0902d85f7c485949f6"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-sector-detail-links-20261109/screenshots/2712ddd0f7051938--sector-focus.png",
+      "sha": "663348693c204dcd0d4ed567cbfe4a108d455ab1",
+      "source": "f3ed96830032050bd615bb0902d85f7c485949f6"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-sector-detail-links-20261109/screenshots/362f1fd1600eeb1e.png",
+      "sha": "4670d73c7a39a121492a2dc9d80f9e19ea83fc3e",
+      "source": "f3ed96830032050bd615bb0902d85f7c485949f6"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-sector-detail-links-20261109/screenshots/3c93505b8e4630df--sector-hover.png",
+      "sha": "1db7c40111c0b1a483cbb14020770eb7acc86a38",
+      "source": "f3ed96830032050bd615bb0902d85f7c485949f6"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-sector-detail-links-20261109/screenshots/4df3bb3dd5133537--sector-hover.png",
+      "sha": "192be1f1d40404e2c2a9093d2b25d185bad46b66",
+      "source": "f3ed96830032050bd615bb0902d85f7c485949f6"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-sector-detail-links-20261109/screenshots/593088ea9a3095ba.png",
+      "sha": "a1c10e937e287c4e719b4020977dd5de0b473008",
+      "source": "f3ed96830032050bd615bb0902d85f7c485949f6"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-sector-detail-links-20261109/screenshots/5db26a377cbbabf5--sector-focus.png",
+      "sha": "5cb18bbc877913bcd1f80b1a6be7678074b64e5d",
+      "source": "f3ed96830032050bd615bb0902d85f7c485949f6"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-sector-detail-links-20261109/screenshots/680b55733cd12a74--sector-focus.png",
+      "sha": "3190c2ca1e84b177986b78b704a985223acca3b6",
+      "source": "f3ed96830032050bd615bb0902d85f7c485949f6"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-sector-detail-links-20261109/screenshots/6d2c93e562325d22--sector-focus.png",
+      "sha": "d345cdca0a7bb785543f15c7088fb5d54ba4df3b",
+      "source": "f3ed96830032050bd615bb0902d85f7c485949f6"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-sector-detail-links-20261109/screenshots/721432b99e598746--sector-hover.png",
+      "sha": "9162531e2e4a5e40274d7cafc5e6141fc8361bb1",
+      "source": "f3ed96830032050bd615bb0902d85f7c485949f6"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-sector-detail-links-20261109/screenshots/79726eebae020893--sector-focus.png",
+      "sha": "5fda538ee7519325981c6688f7caed7e8f6acb3d",
+      "source": "f3ed96830032050bd615bb0902d85f7c485949f6"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-sector-detail-links-20261109/screenshots/7ab2e9aa6112ce74--sector-focus.png",
+      "sha": "7086cc9a7fc21c44ece1f6ad9630525d6248b4f2",
+      "source": "f3ed96830032050bd615bb0902d85f7c485949f6"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-sector-detail-links-20261109/screenshots/858fa0642c8522cf.png",
+      "sha": "b185756c061581d65501057871172ff39a642112",
+      "source": "f3ed96830032050bd615bb0902d85f7c485949f6"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-sector-detail-links-20261109/screenshots/8ddb73e83fb05911.png",
+      "sha": "1e18c16427bbfcec2dd821a265afa35aa4904292",
+      "source": "f3ed96830032050bd615bb0902d85f7c485949f6"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-sector-detail-links-20261109/screenshots/8fb6b2a2166c82ef.png",
+      "sha": "98759970c408e9395d49a58cecb44e316f630480",
+      "source": "f3ed96830032050bd615bb0902d85f7c485949f6"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-sector-detail-links-20261109/screenshots/91007ce194516739--sector-focus.png",
+      "sha": "bf06cc1729c673adae0fee34e2a21ce17b415704",
+      "source": "f3ed96830032050bd615bb0902d85f7c485949f6"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-sector-detail-links-20261109/screenshots/98675105b048ad55--sector-hover.png",
+      "sha": "8b52816bc8b3f804bf439477b0711367fa42fa47",
+      "source": "f3ed96830032050bd615bb0902d85f7c485949f6"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-sector-detail-links-20261109/screenshots/b8bf7546ce2e3ce3.png",
+      "sha": "8f601c08fcf6c326f276d8434c96b07ea71283e8",
+      "source": "f3ed96830032050bd615bb0902d85f7c485949f6"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-sector-detail-links-20261109/screenshots/c0f6e1f7da497aab--sector-hover.png",
+      "sha": "04d57a9356b4dde5cd3f74a9766bb1080acfe424",
+      "source": "f3ed96830032050bd615bb0902d85f7c485949f6"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-sector-detail-links-20261109/screenshots/c5e2aa53a6baca37.png",
+      "sha": "f0f317b4b800d328ff74e649c9b87867f14c514d",
+      "source": "f3ed96830032050bd615bb0902d85f7c485949f6"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-sector-detail-links-20261109/screenshots/cc2ccb25c18f2e73--sector-hover.png",
+      "sha": "4479f5a27959eabde62e48d12e8ec0ddaf8b206f",
+      "source": "f3ed96830032050bd615bb0902d85f7c485949f6"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-sector-detail-links-20261109/screenshots/ea2a9b2a7002d777--sector-focus.png",
+      "sha": "88030e2a6eb76c1b16b53f8d5ad01d5c60c198f1",
+      "source": "f3ed96830032050bd615bb0902d85f7c485949f6"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-sector-detail-links-20261109/screenshots/ecef55de0c521f9e--sector-hover.png",
+      "sha": "90cbbe524755f68a2cb3c91f2dd51dfb5b5d18be",
+      "source": "f3ed96830032050bd615bb0902d85f7c485949f6"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-sector-detail-links-20261109/screenshots/f52051674609e677.png",
+      "sha": "cf99657ac287e56c1e9bf56b0278d8e67ead8f81",
+      "source": "f3ed96830032050bd615bb0902d85f7c485949f6"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-sector-detail-links-20261109/screenshots/fcf9bb460b2a4bd7--sector-hover.png",
+      "sha": "782c3e73046fbe96d3f8e805f1c9c01f6ca02ae8",
+      "source": "f3ed96830032050bd615bb0902d85f7c485949f6"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-sector-detail-links-20261109/ux-smell-report.json",
+      "sha": "38a0a98238b5ae72eb388911637231aa18a0c10b",
+      "source": "f3ed96830032050bd615bb0902d85f7c485949f6"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-sector-detail-links/EVIDENCE.yml",
+      "sha": "e50994c0891a96d12da7595a4825359e27069a8a",
+      "source": "f3ed96830032050bd615bb0902d85f7c485949f6"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-sector-detail-links/manifest.json",
+      "sha": "506f37346ea1b4abe2eed99efcbbe106c7b34583",
+      "source": "f3ed96830032050bd615bb0902d85f7c485949f6"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-sector-detail-links/screenshots/16686b5d6d4210b8.png",
+      "sha": "f1e5e98cf2212eec999c5bd79b2bffadb9716e8c",
+      "source": "f3ed96830032050bd615bb0902d85f7c485949f6"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-sector-detail-links/screenshots/1cd45ceae533f306--sector-focus.png",
+      "sha": "486fbdd38dbae7274385e945777e3ef82f2eac74",
+      "source": "f3ed96830032050bd615bb0902d85f7c485949f6"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-sector-detail-links/screenshots/200a8a874cdee1ed--sector-focus.png",
+      "sha": "8e36b544a26ce8bb761bb724099651ab04a42c6b",
+      "source": "f3ed96830032050bd615bb0902d85f7c485949f6"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-sector-detail-links/screenshots/2433afcc5a805467--sector-hover.png",
+      "sha": "5bc510c43ba375b27dd0f231cb6e75663f56887a",
+      "source": "f3ed96830032050bd615bb0902d85f7c485949f6"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-sector-detail-links/screenshots/276eedf0b8949435--sector-hover.png",
+      "sha": "44f002be92388aff9919a478ca7482091f69fab2",
+      "source": "f3ed96830032050bd615bb0902d85f7c485949f6"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-sector-detail-links/screenshots/393cbf9a333aab95--sector-hover.png",
+      "sha": "2985e07ed631203c6daa9587a455c5295d478aa9",
+      "source": "f3ed96830032050bd615bb0902d85f7c485949f6"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-sector-detail-links/screenshots/55b7722dcd2ee307--sector-hover.png",
+      "sha": "ca16fff423e1193910f7990d92c08b8396d3773f",
+      "source": "f3ed96830032050bd615bb0902d85f7c485949f6"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-sector-detail-links/screenshots/5bd4759bb47f2e80--sector-hover.png",
+      "sha": "7a00eeae9ef00527e4f61063c450eaac6b2d59c9",
+      "source": "f3ed96830032050bd615bb0902d85f7c485949f6"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-sector-detail-links/screenshots/6e91efaa3754d874.png",
+      "sha": "9048a3d730ed006113ad2f5941a44277f46a9a62",
+      "source": "f3ed96830032050bd615bb0902d85f7c485949f6"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-sector-detail-links/screenshots/7290916e6e1487ad--sector-focus.png",
+      "sha": "619b7d0450c9ecab04b2e7f796dc38b3f6b731e3",
+      "source": "f3ed96830032050bd615bb0902d85f7c485949f6"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-sector-detail-links/screenshots/734105900b2dddb9--sector-focus.png",
+      "sha": "3a4a1e3dc4d5694127638bab2edf731cd3b4141f",
+      "source": "f3ed96830032050bd615bb0902d85f7c485949f6"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-sector-detail-links/screenshots/7a4c36de146a1f68--sector-focus.png",
+      "sha": "bc72bf3b5abae592be10869b736418583a9d57cd",
+      "source": "f3ed96830032050bd615bb0902d85f7c485949f6"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-sector-detail-links/screenshots/80230bfe1d3c8e94.png",
+      "sha": "6b17816ed10599173b832e9435523ab6d4680ec7",
+      "source": "f3ed96830032050bd615bb0902d85f7c485949f6"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-sector-detail-links/screenshots/874c65f1efde4b4a--sector-focus.png",
+      "sha": "f2c620fe4ebe85e7d36f607ba770f8abf7b40588",
+      "source": "f3ed96830032050bd615bb0902d85f7c485949f6"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-sector-detail-links/screenshots/89fa43c1b4e5263b--sector-focus.png",
+      "sha": "99312039a4a83d19597d44f070d4b6852a75f519",
+      "source": "f3ed96830032050bd615bb0902d85f7c485949f6"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-sector-detail-links/screenshots/9a017ca0fcba99ea.png",
+      "sha": "a03e1df8fa06c46b302004e648cffb9fc8b0eca0",
+      "source": "f3ed96830032050bd615bb0902d85f7c485949f6"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-sector-detail-links/screenshots/a873371961a0aaa9.png",
+      "sha": "125bf1b46fbefbb2aa3d24843421ac8ecd6dc0fe",
+      "source": "f3ed96830032050bd615bb0902d85f7c485949f6"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-sector-detail-links/screenshots/aa0ad464033c6dc3--sector-hover.png",
+      "sha": "f145e1dba5c3ddec4dc2b0b0d38b18810f37df51",
+      "source": "f3ed96830032050bd615bb0902d85f7c485949f6"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-sector-detail-links/screenshots/b0566e6560ccd0ef--sector-hover.png",
+      "sha": "0f31e0cfc103420eff5e9072ac010482ceeb2b06",
+      "source": "f3ed96830032050bd615bb0902d85f7c485949f6"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-sector-detail-links/screenshots/bff370112fdc18c9.png",
+      "sha": "54b87c7a6f6712b6605f1e2f99ff7efcefd0b66f",
+      "source": "f3ed96830032050bd615bb0902d85f7c485949f6"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-sector-detail-links/screenshots/c327b2046f96a6cc--sector-focus.png",
+      "sha": "9add09523fe6c6a75c8dbba8a5ef7bafb34ce2d7",
+      "source": "f3ed96830032050bd615bb0902d85f7c485949f6"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-sector-detail-links/screenshots/e2701fb28fabcf3c.png",
+      "sha": "1664a267610e0ffb3e5bed4805f57b05df5d1d7e",
+      "source": "f3ed96830032050bd615bb0902d85f7c485949f6"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-sector-detail-links/screenshots/f13cc917e96258f9--sector-hover.png",
+      "sha": "1480e7a34821ad85593c6f5c322f5c2dfac70479",
+      "source": "f3ed96830032050bd615bb0902d85f7c485949f6"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-sector-detail-links/screenshots/f2ae151de27d4282.png",
+      "sha": "05bd4c8504b5e81177b178eca6e0d9a6f0d5b497",
+      "source": "f3ed96830032050bd615bb0902d85f7c485949f6"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-sector-detail-links/ux-smell-report.json",
+      "sha": "4c87d2aaf3a764d590c0f1f16d1f4036e3216d42",
+      "source": "f3ed96830032050bd615bb0902d85f7c485949f6"
+    },
+    {
+      "mode": "100644",
+      "path": "scripts/check_ui_visual_evidence.py",
+      "sha": "f4973ba99ab6c66d343485d9999c147ffef0d013",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "scripts/worktree_sparse.py",
+      "sha": "75297acb10d0cef4d01730a59fdcad19c7cfd3e6",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-archetype-d/manifest.json",
+      "sha": "a1d8c8321042d854e9b0ff4490936fff18068090",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-archetype-d/d9a360153726f2ff.png",
+      "sha": "8ca4c9c41c2b1ec1217c0cb4a4ff235f12b727fa",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-archetype-d/a27e21fad0186550.png",
+      "sha": "622454a8ac4eec4fdfd7dd65e58189d1bde1a5d4",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-archetype-d/cecdf10df17d3baf.png",
+      "sha": "a12cfb25b3e4a750632c281b5a4ed081fd499059",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-archetype-d/5a7cc0dfc93c835f.png",
+      "sha": "fa59d33eeab458a8486c79cec7fed176e385a134",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-archetype-d/ea1cbe26899b1e23.png",
+      "sha": "c0fe51a0c62176db46ebcee210ea3ec87011f344",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-archetype-d/96eac8e5941c0df8.png",
+      "sha": "deaf3c84093d47ffd20348528c7f0831b271934a",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-archetype-d/d2d6bac050251ed7.png",
+      "sha": "b1844768361dcb82ce45f3b5f4c85c380929426a",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-archetype-d/d4d1cf1cb1d9f6d4.png",
+      "sha": "c994c212c88a231f4a53c231adafa7ad0ec0fab0",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-archetype-d/8fab5c963f9dd647.png",
+      "sha": "a317bc5655d406f22b75b80836c57bdb986cd1a0",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-archetype-d/e9d25470740fa8d2.png",
+      "sha": "a4bbf2ba7ccdb8f32ff503ead68343aa8d4004a0",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-archetype-d/cb50683480fe3201.png",
+      "sha": "8c364493315ba8ed0f578c002b7681b144a359e1",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-archetype-d/0b9d67d529f917cb.png",
+      "sha": "1a8709e6d47402d69f2dc5a51a39730285b3402a",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-archetype-d/fe7f960a856a7a34.png",
+      "sha": "5079114d0f62e8f3ea49e3ab13ed818cb25b6f03",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-archetype-d/1b87b2cc2fd54822.png",
+      "sha": "bc84ece139c85525a79fa0cecb296fd04c8bfb5a",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-archetype-d/605f3826a5b9768a.png",
+      "sha": "1c6c4af4e622ea68e204d4710c4483b7544cf68f",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-archetype-d/5404a95997ad58d3.png",
+      "sha": "576c61fbf65e5ce156a4be0348bbed0f969e050f",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-archetype-d/b0d5cf671b699907.png",
+      "sha": "92a59fcf3d043450b0e27e1530aa74820731d487",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-archetype-d/5cebbb5ba365da50.png",
+      "sha": "93cdcd7865192e63cc411f9e74df4a336379c30f",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-archetype-d/634fb44b810bfc66.png",
+      "sha": "c088bac2e8d5967c5362d17ed154b875901f9333",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-archetype-d/4de65e06986dc6be.png",
+      "sha": "9eca031292f16beb1878e5be7bae0ec16e165d4b",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-archetype-d/1a3598c5b0c66d00.png",
+      "sha": "fa581522509c64e9e602e4a558907b5f2ccb1e4b",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-archetype-d/5d9960d1750fc2f2.png",
+      "sha": "ff92c75580ea1e5b12d99b9299597a2c3d403233",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-archetype-d/589e8761e9a4ffed.png",
+      "sha": "248f44ec31af19789feb8d7514ead940094516ab",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-archetype-d/0b13355de4bc9b89.png",
+      "sha": "a6781e34bf5b841e133de96b5cc834350bc8f120",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-archetype-d/6bb0b4f370968cec.png",
+      "sha": "4e373df069572493820ace537737d6b48f4a671b",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-archetype-d/81e3717041c0fbc8.png",
+      "sha": "13c2ebbf4be73b3fba5d80407bbf4f8a0d632313",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-archetype-d/1a2c035d37180893.png",
+      "sha": "ce1efdc21437d731a85411376b4881ba004d6207",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-archetype-d/70b16c5197c0af2e.png",
+      "sha": "0ee839b57354b32d563309ad955fd6300aa84ae0",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-archetype-d/89f961f08b0e6033.png",
+      "sha": "e9c0ac6507f763a9810fde053020a2198571c0aa",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-archetype-d/237b5a49c50a4e0d.png",
+      "sha": "de959bee2f77ee1efaac170a72aee7eb9a48d59a",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-archetype-d/76dc546e2eddf970.png",
+      "sha": "27d046a8ddc8fa74cd51d20742e47824ec64c696",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-archetype-d/2b99fdb13473541e.png",
+      "sha": "f5dfc0a9571ba78de5f87e773d84c0748c0426a8",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-archetype-d/472479758de4f353.png",
+      "sha": "d0d8762af8dc94e5ddf550c4966ec541bd63823b",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-archetype-d/7a613a6c4d2f5f73.png",
+      "sha": "00faecddc729b6243c54cb47e0b50f16b739a902",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-archetype-d/ed4321ddd448f263.png",
+      "sha": "8ae0e90b41a8754149df4845ab1820ae30dd2433",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-archetype-d/8449b985d8dc79a8.png",
+      "sha": "b32889def0c99038cd91d338d77196d45d5e6ee4",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-archetype-d/ad7f91d4fb6eabbd.png",
+      "sha": "ac0db0e4a6254aea48f740c76dded10f1678017d",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-archetype-d/1dfe53bce6cb5b1c.png",
+      "sha": "1daff4b14513103cbb90199d01d7f98d4fbe1722",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-archetype-d/0ac1a46beaf0e7fc.png",
+      "sha": "cd77bfde491158d27ac8fc2169639777c84ed704",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-archetype-d/15e4b94c5d01c492.png",
+      "sha": "accadb195426b6da4bb631fc928fd859f17fbe36",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-selective-synthesis-7485/manifest.json",
+      "sha": "f637ffa1b4f93f651182180c362b6d5fc8dc54dd",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-selective-synthesis-7485/6bfdda28b4fa8fab.png",
+      "sha": "440b670b28b94e76a0112d49a78360b1166af4fc",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-selective-synthesis-7485/8e79707cc7ce0d3a.png",
+      "sha": "9b89fe35ceb66d701dc6e8fc3416ae20b98784d1",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-selective-synthesis-7485/f6b6a243244ddc11.png",
+      "sha": "ef379b257cb3eeccd04da6fc5deadcaf7f64f8bb",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-selective-synthesis-7485/f564713011de211b.png",
+      "sha": "36bcd4a15b34e30ad9d7c65554ee2cb93edbbd26",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-selective-synthesis-7485/4ffe23ae61dfa2d3.png",
+      "sha": "7d7a0c874a1be8878db10fcab7dea7e912dbe768",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-selective-synthesis-7485/cf8b83fc430d0783.png",
+      "sha": "bb407ddc95e2cb810b2b295cb28c28857a3b5197",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-selective-synthesis-7485/b461b249a0a129bb.png",
+      "sha": "f978b39aa0624f5b6d4146f1747e1f5c35c79fe8",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    },
+    {
+      "mode": "100644",
+      "path": "mockups/evidence/china-selective-synthesis-7485/c2e7faa5bb705054.png",
+      "sha": "8e461342c24aefb522031c5cdbd664f14c65f173",
+      "source": "75e018ac775dcebb459d43d77a5fe46ae7951efd"
+    }
+  ],
+  "owning_receipts": [
+    "mockups/evidence/china-archetype-d/EVIDENCE.yml",
+    "mockups/evidence/china-sector-detail-links-20261109-ledger-final/EVIDENCE.yml",
+    "mockups/evidence/china-sector-detail-links-20261109/EVIDENCE.yml",
+    "mockups/evidence/china-sector-detail-links/EVIDENCE.yml",
+    "mockups/evidence/china-selective-synthesis-7485/EVIDENCE.yml"
+  ],
+  "receiver": "75e018ac775dcebb459d43d77a5fe46ae7951efd",
+  "schema": "mastermind.visual_consumer_inputs.v1",
+  "scope": "Complete current native receipt census and all referenced bytes for actual owning receipts, plus all59 historical subject files. Unrelated PNGs are not inputs to this scoped consumer."
+}
