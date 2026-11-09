@@ -205,31 +205,63 @@ new exact snapshot written. Refusals exit 2 without replacing the previous lock.
 
 ## Wiring status (what actually calls this module)
 
-Measured on `main` at the rework PR's base, so a reader can re-run the grep rather than trust
-the prose: `git grep -n 'registry\.' -- tools/xguerrilla ':!tools/xguerrilla/tests' ':!tools/xguerrilla/registry.py'`.
+Measured at commit `bdc3debedf` (`xg/pilot-sim-runtime-wiring`, PR #10908), so a reader can
+re-run the grep rather than trust the prose:
+`git grep -n 'registry\.' -- tools/xguerrilla ':!tools/xguerrilla/tests' ':!tools/xguerrilla/registry.py'`
+and `git grep -n '_identity_gates' -- tools/xguerrilla`.
 
-- **Called today:** only the two operator subcommands above (`cli.py` `cmd_registry_check` /
-  `cmd_registry_lock`). `validate_all`, `validate_document`, `check_relock`, `write_lock`,
-  `load_registry`, `load_lock` are therefore exercised on every hand-run gate.
-- **Written, tested, and NOT yet called by any runtime path:** `launchable`,
-  `links_outside_domain`, `validate_bio_against_registry`, `check_revision`, `check_lock`
-  (outside `validate_all`). They are gate inputs the runtime owner has to consume.
-- **Where they belong** is already decided, not by this document: `tools/xguerrilla/ADMISSION.md`
-  §"The one call site (runtime owner)" names `pilot_sim.run_pilot()` after
-  `config.load_personas()` as the single wiring point for the admission chain, and the registry
-  gate rides the same call — `launchable` + `check_revision` belong at the identity stage of
-  that chain, not beside it. Do not add a second copy of either check on the way past.
+- **Called today:** the two operator subcommands above (`cli.py` `cmd_registry_check` /
+  `cmd_registry_lock`) — `validate_all`, `validate_document`, `check_relock`, `write_lock`,
+  `load_registry`, `load_lock` on every hand-run gate — **and the runtime path**
+  `pilot_sim.run_pilot()` (`pilot_sim.py:639`). `run_pilot` loads personas at
+  `pilot_sim.py:666` (`config.load_personas(...)`), then makes **one** call to
+  `_identity_gates(...)` at `pilot_sim.py:680` before any clock, report, supervisor, lease
+  store or driver exists. Gates that execute on every `run_pilot`:
+
+  | gate | called at | shape |
+  |---|---|---|
+  | `registry.check_revision` | `pilot_sim.py:586` | `list[str]` |
+  | `registry.check_lock` (live mutation on top of the revision) | `pilot_sim.py:590` | `list[str]` |
+  | `registry.launchable` (per cohort handle) | `pilot_sim.py:594` | `list[str]` |
+  | `registry.validate_bio_against_registry` | `pilot_sim.py:606` | `list[str]` |
+  | `registry.links_outside_domain` | `pilot_sim.py:607` | `list[str]` |
+  | `admission.preflight` (the whole admission chain) | `pilot_sim.py:620` | raises `AdmissionRefused` |
+
+  (`_identity_gates` is defined at `pilot_sim.py:563`; the seam tests are
+  `tests/test_pilot_sim.py:378` non-admitted refusal, `:405` revision/lock mutation,
+  `:465` each gate reached from the one call site, `:515` admitted cohort clears it.)
+- **Single-call-site invariant:** `_identity_gates` is the *only* runtime consumer of these
+  gates, and `run_pilot` is its only caller (`pilot_sim.py:680` — grep finds exactly those two
+  occurrences outside tests). Registry refusals and the admission chain meet at that one seam
+  on purpose; adding another copy of any check anywhere else on the launch path (a second
+  `launchable` loop, a per-post bio re-check, a `preflight` call beside rather than inside)
+  breaks the invariant. Extend `_identity_gates`; do not add a sibling.
+- **The two plumbing shapes reconciled at that seam:** the registry gates return
+  `list[str]`, so each call `refusals.extend(...)` into one local list
+  (`pilot_sim.py:575`, extended at `:578`, `:580`, `:586`, `:590`, `:594`, `:606`, `:607`).
+  `admission.preflight` instead raises `AdmissionRefused`; its handler
+  (`pilot_sim.py:622-629`) takes `exc.public()` (`:625`) — the JSON-safe
+  `stage`/`code`/`detail`/`remedy` dict, no endpoint or credential — formats it into **one**
+  line, and raises `PilotRefused(refusals + [that line])` so the admission verdict joins the
+  same refusal list rather than becoming a second error path. Otherwise `if refusals: raise
+  PilotRefused(refusals)` (`:631`); success returns `chain.grant`, the `SlotGrant`, which the
+  run only uses for the telemetry admission receipt (`:701-706`). One refusal type, one
+  list-shaped payload, on every path.
 - **What the live post path enforces meanwhile:** `pilot_sim` already runs
   `validators.validate(...)` on every finalised post, whose absolute zero-URL rule
   (`validators.links_in_text`) refuses *any* link; `links_outside_domain` is the registry-side
   defence that matters only once a post is allowed to carry a canonical link at all. There is
-  no bio-writing path in the harness today, so `validate_bio_against_registry` has no sink yet.
+  no bio-writing path in the harness today, so `validate_bio_against_registry` still has no
+  post-time sink — it runs at the run seam (`pilot_sim.py:606`) as a cohort-time gate, not per
+  post.
 - **CI:** the suite runs under the `xguerrilla-identity-registry` job in
   `.github/ci/legacy-jobs.yml`, which is enrolled in `CURATED_EXCLUSIVE` but carries
   `if: ${{ false }}` — enrolment, not execution. Enabling it is a separate CI-weight change.
 
-Until the runtime wiring lands, the honest claim is: the registry is data the *operator gate*
-consumes; the harness consumes `personas/*.yml` (voice) and does not yet read admission state.
+The registry is no longer operator-gate-only: `run_pilot` reads registry state and refuses the
+whole cohort before anything launches. The harness still consumes `personas/*.yml` for voice;
+what changed is that registry admission state is now a precondition of the run, not data sitting
+behind a hand-run CLI.
 
 ## Schema amendments vs the 2026-11-07 draft
 

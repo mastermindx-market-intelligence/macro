@@ -173,10 +173,21 @@ no endpoint and no browser, which is why the suite can run it on a laptop that h
 never run a child. Wiring it is the runtime owner's side of the split — do not add
 a second copy of the checks on the way past.
 
-- **Pilot path.** `pilot_sim.run_pilot()` — after `config.load_personas()` has
-  produced handles and before the `Report`/`SimulationSupervisor`/lease objects
-  and the `driver_for` closure exist. That is the last point where refusing costs
-  nothing.
+- **Pilot path (WIRED).** `pilot_sim.run_pilot()` — `pilot_sim.py:639`. The sequence at
+  `bdc3debedf` is: `config.load_personas(...)` at `pilot_sim.py:666` produces the handles, the
+  one call to `_identity_gates(...)` is `pilot_sim.py:680` (definition `pilot_sim.py:563`), and
+  only then do the `SimClock` (`:685`), the `Report` (`:691`), `SimulationSupervisor` (`:708`),
+  the `SimulationLeaseStore`s (`:709`) and the `driver_for` closure exist. That is the last
+  point where refusing costs nothing, and it is the point the code now uses.
+- **How the two shapes meet there.** `_identity_gates` is the single runtime consumer of both
+  `registry` (`check_revision` `:586`, `check_lock` `:590`, `launchable` `:594`,
+  `validate_bio_against_registry` `:606`, `links_outside_domain` `:607`) and
+  `admission.preflight` (`:620`). The registry gates return `list[str]` and extend one
+  `refusals` list (`pilot_sim.py:575`); `preflight` raises `AdmissionRefused`, whose handler
+  (`:622-629`) folds `exc.public()` (`:625`) into a single line appended to that same list and
+  raises `PilotRefused(refusals + [line])`. Both shapes leave the seam as one list-shaped
+  `PilotRefused`, and success returns the chain's `SlotGrant` (`:632`), used only for the
+  telemetry admission receipt (`:701-706`). Do not add a second copy of either check.
 - **Real runtime.** `drivers.choose.choose()` (which already refuses before
   probing) and immediately before `Driver.start(profile_dir, proxy_url, headless)`
   in `drivers/base.py`. `profiles.init(handle, slot=...)` mints the browser-profile
@@ -185,7 +196,9 @@ a second copy of the checks on the way past.
   `stage_index`, `code`, `detail`, `remedy`. It carries no mailbox address,
   endpoint or credential (handles, domains and account ids are identifiers, not
   secrets). Map it onto the existing CLI exit-code vocabulary rather than
-  inventing a new one.
+  inventing a new one. In the pilot path it is folded into the `PilotRefused` list
+  text (`pilot_sim.py:625-629`), so a refused `run_pilot` raises one exception type with
+  `.refusals: list[str]` — no `AdmissionRefused` escapes to the caller.
 
 Cohort pinning (`net.bind()` binding a cohort to exclusive slots) stays in `net.py`
 and is called by stage 4 — the gate does not grow a second binder.
