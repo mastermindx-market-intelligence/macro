@@ -13316,3 +13316,4 @@
 {"id":"ob-2026-11-09-c6f95ad73b","from":"queued","to":"approved","at":"2026-11-09T10:42:16Z","actor":"publisher-autoapprove","note":"auto-approved (all gates passed)","receipt":null}
 {"id":"ob-2026-11-09-c6f95ad73b","from":"approved","to":"posting","at":"2026-11-09T10:42:21Z","actor":"publisher","note":"in-flight (pre-publish)","receipt":null}
 {"id":"ob-2026-11-09-c6f95ad73b","from":"posting","to":"posted","at":"2026-11-09T10:42:22Z","actor":"publisher","note":"published","receipt":{"backend":"buffer","external_id":"6af1a38e72554a06de3d24e4","external_url":null,"at":"2026-11-09T10:42:14Z","booked_at":"2026-11-09T10:42:14Z"}}
+{"id":"ob-2026-11-07-1a944eec87","from":"queued","to":"quarantined","at":"2026-11-09T10:59:34Z","actor":"nightly_expiry","note":"expired: superseded by tonight's plan","receipt":null}
