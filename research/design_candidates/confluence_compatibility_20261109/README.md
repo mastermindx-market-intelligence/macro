@@ -1,5 +1,9 @@
 # Confluence compatibility and truthful actions
 
+## Current continuation: paired baseline comparisons
+
+The next source increment adds matched Recent/Older baseline differences, preserves unknown and signed-small values, and removes the repeated recent-rate meter. [PAIRED_COMPARISONS.md](PAIRED_COMPARISONS.md) contains the current contract and final 92-test / 16-browser proof. The compatibility-specific 82/14 evidence below belongs to parent f51b60de and remains historical for that increment.
+
 ## What this candidate fixes
 
 An older cached Confluence page accepts `tier_payload.v1` without enforcing the newer full-source receipt. A protected response can therefore supply identities for a changed recipe while that page still shows its older public evidence. This candidate advances **only the Confluence payload** to `tier_payload.v2` and gives the producer and current reader one shared version constant.

@@ -112,12 +112,19 @@ a{color:var(--ink-link, var(--link));text-decoration:none}
 /* win-rate hero block — the number is the type hero, honestly paired with the older era */
 .lc-title-wrap{min-width:0}
 .lc-wr{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--sp-2,8px) var(--sp-3,12px);width:310px;min-width:0;text-align:left}
-.lc-era{display:flex;flex-direction:column;gap:var(--sp-2,8px);min-width:0}
+.lc-era{display:grid;grid-template-rows:subgrid;grid-row:span 3;min-width:0}
 .lc-era-label,.lc-sample,.lc-wr-unit{font-size:var(--fs-sm,12.5px);color:var(--muted);line-height:1.45}
 .lc-era-label{font-weight:600}
 .lc-wr-big,.lc-wr-old{font:700 var(--fs-h1,28px)/1.1 var(--font-mono);color:var(--text);font-variant-numeric:tabular-nums}
 .lc-rate-denominator{font-size:var(--fs-sm,12.5px);color:var(--muted);font-weight:500}
 .lc-wr-unit{grid-column:1/-1;border-top:1px solid var(--line);padding-top:var(--sp-2,8px)}
+.lc-baseline-heading{grid-column:1/-1;font-size:var(--fs-sm,12.5px);line-height:1.45;color:var(--muted);margin-top:var(--sp-2,8px)}
+.lc-baselines{grid-column:1/-1;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--sp-3,12px);margin:0;min-width:0}
+.lc-baseline-value{margin:0;font:600 20px/1.3 var(--font-mono);font-variant-numeric:tabular-nums;color:var(--text)}
+.lc-baseline-value[data-state="positive"]{color:var(--ink-up,var(--up))}
+.lc-baseline-value[data-state="negative"]{color:var(--ink-down,var(--down))}
+.lc-baseline-value[data-state="missing"]{font:500 var(--fs-body,14px)/1.5 var(--font-ui);color:var(--muted);overflow-wrap:anywhere}
+.lc-comparison-period{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 .lc-method{margin-top:var(--sp-3,12px);border-top:1px solid var(--line);font-size:var(--fs-sm,12.5px);color:var(--muted)}
 .lc-method summary{min-height:44px;display:flex;align-items:center;gap:var(--sp-2,8px);cursor:pointer;color:var(--text);font-weight:600;list-style:none}
 .lc-method summary::-webkit-details-marker{display:none}
@@ -144,17 +151,10 @@ html[data-theme="light"] .confluence-access{background:var(--panel);box-shadow:v
 .leg-txt{font-size:13px;color:var(--text);line-height:1.35;display:flex;align-items:center;gap:9px}
 .leg-txt::before{content:"";flex:none;width:6px;height:6px;border-radius:50%;background:color-mix(in srgb,var(--up) 70%,transparent);box-shadow:0 0 0 3px color-mix(in srgb,var(--up) 14%,transparent)}
 
-/* wins-per-10 segmented bar */
-.w10{display:inline-flex;gap:3px;vertical-align:middle}
-.w10 i{width:10px;height:10px;border-radius:3px;background:color-mix(in srgb,var(--muted) 26%,transparent)}
-.w10.tone-free i.on{background:var(--up)}
-.w10.tone-gated i.on{background:color-mix(in srgb,var(--muted) 60%,transparent)}
-
 /* footer receipts row */
 .lc-foot{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;margin-top:16px;padding-top:14px;border-top:1px solid var(--line)}
 .chip{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--muted)}
 .chip.ok{color:var(--ink-up, var(--up))}
-.chip .w10{margin-left:2px}
 .tickers{display:flex;flex-wrap:wrap;gap:7px;align-items:center}
 .tkr{display:inline-flex;align-items:baseline;gap:6px;font-family:var(--font-mono);font-weight:700;font-size:13px;color:var(--text);
   background:color-mix(in srgb,var(--up) 12%,transparent);border:1px solid color-mix(in srgb,var(--up) 26%,transparent);
@@ -580,6 +580,20 @@ html[data-theme="light"] .cs-tipped:hover,html[data-theme="light"] .cs-tipped:fo
             <div class="lc-sample"><span class="l-en">57 months · 71 fires</span><span class="l-zh">57 个月 · 71 次触发</span></div>
           </div>
           <div class="lc-wr-unit"><span class="l-en">Monthly win average · 21 trading days</span><span class="l-zh">月均胜率 · 21 个交易日</span></div>
+          <div class="lc-baseline-heading" id="baseline-unit-1"><span class="l-en">Versus random entry · percentage points</span><span class="l-zh">较随机入场 · 个百分点</span></div>
+          <dl class="lc-baselines" aria-labelledby="baseline-unit-1">
+
+            <div>
+              <dt class="lc-comparison-period"><span class="l-en">Recent comparison</span><span class="l-zh">近年比较</span></dt>
+              <dd class="lc-baseline-value" data-period="recent" data-state="positive">+34.3</dd>
+            </div>
+
+            <div>
+              <dt class="lc-comparison-period"><span class="l-en">Older comparison</span><span class="l-zh">更早比较</span></dt>
+              <dd class="lc-baseline-value" data-period="older" data-state="positive">+1.7</dd>
+            </div>
+
+          </dl>
         </div>
       </div>
 
@@ -587,7 +601,7 @@ html[data-theme="light"] .cs-tipped:hover,html[data-theme="light"] .cs-tipped:fo
         <summary><span class="l-en">How these readings are calculated</span><span class="l-zh">这些读数如何计算</span></summary>
         <p><span class="l-en">Within each month, calculate the share of fires whose next-close entry finished higher after 21 trading days. Then average those monthly proportions equally. This is not the fraction of winning months or the pooled win rate.</span><span class="l-zh">先在每个月内计算触发后于下一收盘价入场、21 个交易日后上涨的比例，再对各月比例等权平均。这不是盈利月份占比，也不是所有触发次数合并后的胜率。</span></p>
         <p><span class="l-en">Recent is the test period, with fire dates from 2018-01-01. Older is the training period, before that date. These recipes were searched historically; neither label establishes untouched prospective validation.</span><span class="l-zh">近年为测试期，触发日期自 2018-01-01 起；更早为该日期之前的训练期。组合由历史搜索得出，这些标签不代表未经查看的前瞻验证。</span></p>
-        <p><span class="l-en">Random-entry monthly win average · 21 trading days · recent: </span><span class="l-zh">随机入场月均胜率 · 21 个交易日 · 近年：</span>5.7/10<span class="l-en"> · older: </span><span class="l-zh"> · 更早：</span>5.6/10. <span class="l-en">Comparison points describe win-rate differences, not investment returns.</span><span class="l-zh">比较百分点指胜率差值，并非投资收益率。</span></p>
+        <p><span class="l-en">Random-entry monthly win average · 21 trading days · recent: </span><span class="l-zh">随机入场月均胜率 · 21 个交易日 · 近年：</span>5.7/10<span class="l-en"> · older: </span><span class="l-zh"> · 更早：</span>5.6/10. <span class="l-en">The baseline enters the same stocks on random dates over the same period. Comparison points describe win-rate differences, not investment returns.</span><span class="l-zh">基准是在同一时期对相同股票随机选择日期入场。比较百分点指胜率差值，并非投资收益率。</span></p>
         <p><span class="l-en">A sighting starts when the full combination changes from false to true. Consecutive days that remain true add no sightings. Yearly frequency averages sightings over the first-to-last span. D and W label daily and weekly bars; indicator lookback is separate.</span><span class="l-zh">完整组合由不成立变为成立时计为一次触发，连续成立的日期不重复计数。年均频率按首次至末次的时间跨度计算。D 和 W 分别表示日线与周线，指标回看窗口是另一属性。</span></p>
         <p><span class="l-en">Source ordering uses a Wilson-based ranking heuristic on the recent monthly win average, minus the random-entry baseline. It is a ranking heuristic, not a statistical-significance result.</span><span class="l-zh">源数据排序使用近期月均胜率的 Wilson 近似值并减去随机入场基准。这是排序方法，不是统计显著性结果。</span></p>
       </details>
@@ -634,19 +648,7 @@ html[data-theme="light"] .cs-tipped:hover,html[data-theme="light"] .cs-tipped:fo
       </div>
 
       <div class="lc-foot">
-        <span class="chip ok" tabindex="0"
-              data-tip-en="Ten blocks summarize the recent monthly win average, rounded to the nearest tenth. They are not ten individual trades."
-              data-tip-zh="十格概括近年月均胜率，四舍五入到十分之一；并非十笔独立交易。">
-<span class="w10 tone-free" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class=""></i></span>
-          <span class="l-en">9.1 in 10 recently</span>
-          <span class="l-zh">近年 9.1/10</span></span>
 
-        <span class="chip cs-tipped" tabindex="0"
-              data-tip-en="Against a baseline of entering the same stocks on random dates over the same period. Points are percentage points of win rate, not return."
-              data-tip-zh="对照基准为：同期在相同股票上随机选日入场。此处的「个百分点」指胜率的百分点，而非收益率。">
-          <span class="l-en">+34.3 percentage points vs random entry</span>
-          <span class="l-zh">较随机入场 +34.3 个百分点</span>
-        </span>
 
         <span class="chip ok"><span class="l-en">Above baseline in both periods</span><span class="l-zh">两期均高于基准</span></span>
 
@@ -700,6 +702,20 @@ html[data-theme="light"] .cs-tipped:hover,html[data-theme="light"] .cs-tipped:fo
             <div class="lc-sample"><span class="l-en">62 months · 86 fires</span><span class="l-zh">62 个月 · 86 次触发</span></div>
           </div>
           <div class="lc-wr-unit"><span class="l-en">Monthly win average · 21 trading days</span><span class="l-zh">月均胜率 · 21 个交易日</span></div>
+          <div class="lc-baseline-heading" id="baseline-unit-2"><span class="l-en">Versus random entry · percentage points</span><span class="l-zh">较随机入场 · 个百分点</span></div>
+          <dl class="lc-baselines" aria-labelledby="baseline-unit-2">
+
+            <div>
+              <dt class="lc-comparison-period"><span class="l-en">Recent comparison</span><span class="l-zh">近年比较</span></dt>
+              <dd class="lc-baseline-value" data-period="recent" data-state="positive">+27.5</dd>
+            </div>
+
+            <div>
+              <dt class="lc-comparison-period"><span class="l-en">Older comparison</span><span class="l-zh">更早比较</span></dt>
+              <dd class="lc-baseline-value" data-period="older" data-state="positive">+7.0</dd>
+            </div>
+
+          </dl>
         </div>
       </div>
 
@@ -707,7 +723,7 @@ html[data-theme="light"] .cs-tipped:hover,html[data-theme="light"] .cs-tipped:fo
         <summary><span class="l-en">How these readings are calculated</span><span class="l-zh">这些读数如何计算</span></summary>
         <p><span class="l-en">Within each month, calculate the share of fires whose next-close entry finished higher after 21 trading days. Then average those monthly proportions equally. This is not the fraction of winning months or the pooled win rate.</span><span class="l-zh">先在每个月内计算触发后于下一收盘价入场、21 个交易日后上涨的比例，再对各月比例等权平均。这不是盈利月份占比，也不是所有触发次数合并后的胜率。</span></p>
         <p><span class="l-en">Recent is the test period, with fire dates from 2018-01-01. Older is the training period, before that date. These recipes were searched historically; neither label establishes untouched prospective validation.</span><span class="l-zh">近年为测试期，触发日期自 2018-01-01 起；更早为该日期之前的训练期。组合由历史搜索得出，这些标签不代表未经查看的前瞻验证。</span></p>
-        <p><span class="l-en">Random-entry monthly win average · 21 trading days · recent: </span><span class="l-zh">随机入场月均胜率 · 21 个交易日 · 近年：</span>5.7/10<span class="l-en"> · older: </span><span class="l-zh"> · 更早：</span>5.6/10. <span class="l-en">Comparison points describe win-rate differences, not investment returns.</span><span class="l-zh">比较百分点指胜率差值，并非投资收益率。</span></p>
+        <p><span class="l-en">Random-entry monthly win average · 21 trading days · recent: </span><span class="l-zh">随机入场月均胜率 · 21 个交易日 · 近年：</span>5.7/10<span class="l-en"> · older: </span><span class="l-zh"> · 更早：</span>5.6/10. <span class="l-en">The baseline enters the same stocks on random dates over the same period. Comparison points describe win-rate differences, not investment returns.</span><span class="l-zh">基准是在同一时期对相同股票随机选择日期入场。比较百分点指胜率差值，并非投资收益率。</span></p>
         <p><span class="l-en">A sighting starts when the full combination changes from false to true. Consecutive days that remain true add no sightings. Yearly frequency averages sightings over the first-to-last span. D and W label daily and weekly bars; indicator lookback is separate.</span><span class="l-zh">完整组合由不成立变为成立时计为一次触发，连续成立的日期不重复计数。年均频率按首次至末次的时间跨度计算。D 和 W 分别表示日线与周线，指标回看窗口是另一属性。</span></p>
         <p><span class="l-en">Source ordering uses a Wilson-based ranking heuristic on the recent monthly win average, minus the random-entry baseline. It is a ranking heuristic, not a statistical-significance result.</span><span class="l-zh">源数据排序使用近期月均胜率的 Wilson 近似值并减去随机入场基准。这是排序方法，不是统计显著性结果。</span></p>
       </details>
@@ -754,19 +770,7 @@ html[data-theme="light"] .cs-tipped:hover,html[data-theme="light"] .cs-tipped:fo
       </div>
 
       <div class="lc-foot">
-        <span class="chip ok" tabindex="0"
-              data-tip-en="Ten blocks summarize the recent monthly win average, rounded to the nearest tenth. They are not ten individual trades."
-              data-tip-zh="十格概括近年月均胜率，四舍五入到十分之一；并非十笔独立交易。">
-<span class="w10 tone-gated" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class=""></i><i class=""></i></span>
-          <span class="l-en">8.4 in 10 recently</span>
-          <span class="l-zh">近年 8.4/10</span></span>
 
-        <span class="chip cs-tipped" tabindex="0"
-              data-tip-en="Against a baseline of entering the same stocks on random dates over the same period. Points are percentage points of win rate, not return."
-              data-tip-zh="对照基准为：同期在相同股票上随机选日入场。此处的「个百分点」指胜率的百分点，而非收益率。">
-          <span class="l-en">+27.5 percentage points vs random entry</span>
-          <span class="l-zh">较随机入场 +27.5 个百分点</span>
-        </span>
 
         <span class="chip ok"><span class="l-en">Above baseline in both periods</span><span class="l-zh">两期均高于基准</span></span>
 
@@ -826,6 +830,20 @@ html[data-theme="light"] .cs-tipped:hover,html[data-theme="light"] .cs-tipped:fo
             <div class="lc-sample"><span class="l-en">56 months · 74 fires</span><span class="l-zh">56 个月 · 74 次触发</span></div>
           </div>
           <div class="lc-wr-unit"><span class="l-en">Monthly win average · 21 trading days</span><span class="l-zh">月均胜率 · 21 个交易日</span></div>
+          <div class="lc-baseline-heading" id="baseline-unit-3"><span class="l-en">Versus random entry · percentage points</span><span class="l-zh">较随机入场 · 个百分点</span></div>
+          <dl class="lc-baselines" aria-labelledby="baseline-unit-3">
+
+            <div>
+              <dt class="lc-comparison-period"><span class="l-en">Recent comparison</span><span class="l-zh">近年比较</span></dt>
+              <dd class="lc-baseline-value" data-period="recent" data-state="positive">+26.0</dd>
+            </div>
+
+            <div>
+              <dt class="lc-comparison-period"><span class="l-en">Older comparison</span><span class="l-zh">更早比较</span></dt>
+              <dd class="lc-baseline-value" data-period="older" data-state="positive">+3.0</dd>
+            </div>
+
+          </dl>
         </div>
       </div>
 
@@ -833,7 +851,7 @@ html[data-theme="light"] .cs-tipped:hover,html[data-theme="light"] .cs-tipped:fo
         <summary><span class="l-en">How these readings are calculated</span><span class="l-zh">这些读数如何计算</span></summary>
         <p><span class="l-en">Within each month, calculate the share of fires whose next-close entry finished higher after 21 trading days. Then average those monthly proportions equally. This is not the fraction of winning months or the pooled win rate.</span><span class="l-zh">先在每个月内计算触发后于下一收盘价入场、21 个交易日后上涨的比例，再对各月比例等权平均。这不是盈利月份占比，也不是所有触发次数合并后的胜率。</span></p>
         <p><span class="l-en">Recent is the test period, with fire dates from 2018-01-01. Older is the training period, before that date. These recipes were searched historically; neither label establishes untouched prospective validation.</span><span class="l-zh">近年为测试期，触发日期自 2018-01-01 起；更早为该日期之前的训练期。组合由历史搜索得出，这些标签不代表未经查看的前瞻验证。</span></p>
-        <p><span class="l-en">Random-entry monthly win average · 21 trading days · recent: </span><span class="l-zh">随机入场月均胜率 · 21 个交易日 · 近年：</span>5.7/10<span class="l-en"> · older: </span><span class="l-zh"> · 更早：</span>5.6/10. <span class="l-en">Comparison points describe win-rate differences, not investment returns.</span><span class="l-zh">比较百分点指胜率差值，并非投资收益率。</span></p>
+        <p><span class="l-en">Random-entry monthly win average · 21 trading days · recent: </span><span class="l-zh">随机入场月均胜率 · 21 个交易日 · 近年：</span>5.7/10<span class="l-en"> · older: </span><span class="l-zh"> · 更早：</span>5.6/10. <span class="l-en">The baseline enters the same stocks on random dates over the same period. Comparison points describe win-rate differences, not investment returns.</span><span class="l-zh">基准是在同一时期对相同股票随机选择日期入场。比较百分点指胜率差值，并非投资收益率。</span></p>
         <p><span class="l-en">A sighting starts when the full combination changes from false to true. Consecutive days that remain true add no sightings. Yearly frequency averages sightings over the first-to-last span. D and W label daily and weekly bars; indicator lookback is separate.</span><span class="l-zh">完整组合由不成立变为成立时计为一次触发，连续成立的日期不重复计数。年均频率按首次至末次的时间跨度计算。D 和 W 分别表示日线与周线，指标回看窗口是另一属性。</span></p>
         <p><span class="l-en">Source ordering uses a Wilson-based ranking heuristic on the recent monthly win average, minus the random-entry baseline. It is a ranking heuristic, not a statistical-significance result.</span><span class="l-zh">源数据排序使用近期月均胜率的 Wilson 近似值并减去随机入场基准。这是排序方法，不是统计显著性结果。</span></p>
       </details>
@@ -880,19 +898,7 @@ html[data-theme="light"] .cs-tipped:hover,html[data-theme="light"] .cs-tipped:fo
       </div>
 
       <div class="lc-foot">
-        <span class="chip ok" tabindex="0"
-              data-tip-en="Ten blocks summarize the recent monthly win average, rounded to the nearest tenth. They are not ten individual trades."
-              data-tip-zh="十格概括近年月均胜率，四舍五入到十分之一；并非十笔独立交易。">
-<span class="w10 tone-gated" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class=""></i><i class=""></i></span>
-          <span class="l-en">8.3 in 10 recently</span>
-          <span class="l-zh">近年 8.3/10</span></span>
 
-        <span class="chip cs-tipped" tabindex="0"
-              data-tip-en="Against a baseline of entering the same stocks on random dates over the same period. Points are percentage points of win rate, not return."
-              data-tip-zh="对照基准为：同期在相同股票上随机选日入场。此处的「个百分点」指胜率的百分点，而非收益率。">
-          <span class="l-en">+26.0 percentage points vs random entry</span>
-          <span class="l-zh">较随机入场 +26.0 个百分点</span>
-        </span>
 
         <span class="chip ok"><span class="l-en">Above baseline in both periods</span><span class="l-zh">两期均高于基准</span></span>
 

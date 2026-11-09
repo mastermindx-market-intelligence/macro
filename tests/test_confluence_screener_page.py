@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import copy
 import json
+from html.parser import HTMLParser
 from pathlib import Path
 
 import pytest
@@ -378,14 +379,6 @@ _TIPS = {
         "This leg is evaluated on weekly bars. Its indicator lookback and trigger frequency are separate properties.",
         "此条件在周线数据上计算；指标回看窗口和触发频率是不同的属性。",
     ),
-    "T7": (
-        "Ten blocks summarize the recent monthly win average, rounded to the nearest tenth. They are not ten individual trades.",
-        "十格概括近年月均胜率，四舍五入到十分之一；并非十笔独立交易。",
-    ),
-    "T8": (
-        "Against a baseline of entering the same stocks on random dates over the same period. Points are percentage points of win rate, not return.",
-        "对照基准为：同期在相同股票上随机选日入场。此处的「个百分点」指胜率的百分点，而非收益率。",
-    ),
     "T10": (
         "Matching large-cap stocks in this source snapshot. Their count is public; names require an entitled response for this same snapshot.",
         "此源数据快照中匹配的大盘股数量。数量公开；名称须来自有权限访问的同一快照。",
@@ -394,7 +387,7 @@ _TIPS = {
 
 
 def test_render_html_retained_lens_tips_en_zh():
-    """Retained legacy tips remain bilingual; rates use native disclosure."""
+    """Retained tips stay bilingual; rates and baseline method use native disclosure."""
     html = _rendered_html()
     for key, (en, zh) in _TIPS.items():
         assert f'data-tip-en="{en}"' in html, f"{key} EN missing"
@@ -404,6 +397,9 @@ def test_render_html_retained_lens_tips_en_zh():
     assert "这些读数如何计算" in html
     assert "not the fraction of winning months or the pooled win rate" in html
     assert "这不是盈利月份占比，也不是所有触发次数合并后的胜率" in html
+    assert "The baseline enters the same stocks on random dates over the same period." in html
+    assert "基准是在同一时期对相同股票随机选择日期入场。" in html
+    assert "in 10 recently" not in html and 'class="w10' not in html
 
 def test_render_html_receipts_and_visible_samples_carry_context():
     """Population/rank receipts and visible sample counts use source values."""
@@ -432,7 +428,7 @@ def test_render_html_honesty_promise_and_dynamic_split():
     assert "Months and fires are shown beside each rate; open “How these readings are calculated” for definitions." in html
     assert "月份与触发次数列在各读数旁；打开「这些读数如何计算」可查看定义。" in html
     assert "coin-flip" not in html
-    assert "percentage points vs random entry" in html
+    assert "Versus random entry · percentage points" in html
     assert "Above baseline only in the recent period" in html
     assert "仅近年高于基准" in html
     src = (_ROOT / "templates" / "confluence_screener.html.j2").read_text(encoding="utf-8")
@@ -495,6 +491,33 @@ def test_gates_receipt_literals_match_minerconfig_defaults():
     )
 
 
+
+def _comparison_cells(card):
+    """Read the independently identified recent/older cells from rendered HTML."""
+    class Cells(HTMLParser):
+        def __init__(self):
+            super().__init__()
+            self.cells, self.current = {}, None
+
+        def handle_starttag(self, tag, attrs):
+            attrs = dict(attrs)
+            if tag == "dd" and attrs.get("data-period") in ("recent", "older"):
+                self.current = [attrs["data-period"], attrs["data-state"], []]
+
+        def handle_data(self, text):
+            if self.current is not None:
+                self.current[2].append(text)
+
+        def handle_endtag(self, tag):
+            if tag == "dd" and self.current is not None:
+                period, state, parts = self.current
+                self.cells[period] = {"state": state, "text": "".join(parts).strip()}
+                self.current = None
+
+    parser = Cells()
+    parser.feed(card)
+    return parser.cells
+
 def test_render_html_measured_comparison_sign_and_period_support():
     html_pos = _rendered_html()
     assert "Above baseline in both periods" in html_pos
@@ -502,8 +525,12 @@ def test_render_html_measured_comparison_sign_and_period_support():
     assert "Above baseline only in the recent period" in html_pos
     assert "仅近年高于基准" in html_pos
     assert "Not above baseline recently" not in html_pos
-    assert "+20.0 percentage points vs random entry" in html_pos
-    for value in (-0.02, 0):
+    first = html_pos.split('<div class="lc free">', 1)[1].split('<div class="lc gated">', 1)[0]
+    assert _comparison_cells(first) == {
+        "recent": {"state": "positive", "text": "+20.0"},
+        "older": {"state": "positive", "text": "+10.0"},
+    }
+    for value, expected in ((-0.02, "-2.0"), (0, "0.0")):
         raw = copy.deepcopy(_make_raw())
         for combo in raw["combos"]["long"]:
             if not combo.get("consistent"):
@@ -512,7 +539,8 @@ def test_render_html_measured_comparison_sign_and_period_support():
         assert "Not above baseline recently" in html
         assert "近年未高于基准" in html
         assert "Above baseline only in the recent period" not in html
-        assert f"{value * 100:+.1f} percentage points vs random entry" in html
+        gated = html.split('<div class="lc gated">', 1)[1].split('<div class="lc gated">', 1)[0]
+        assert _comparison_cells(gated)["recent"]["text"] == expected
         assert "+-" not in html
 
 def test_eligible_population_is_not_the_display_limit():
@@ -667,7 +695,9 @@ def test_optional_evidence_missingness_does_not_erase_valid_rates(field, value):
     card = html.split('<div class="lc free">', 1)[1].split('<div class="lc gated">', 1)[0]
     if field == "edge_wr_test":
         assert first["edge_test_pp"] is None
-        assert "Random-entry comparison unavailable" in card
+        assert "Recent-period comparison unavailable" in card
+        assert "近年时期比较暂无数据" in card
+        assert _comparison_cells(card)["older"] == {"state": "positive", "text": "+10.0"}
         assert "Not above baseline recently" not in card
         assert "Above baseline in both periods" not in card
     elif field == "consistent":
@@ -702,14 +732,20 @@ def test_absent_optional_evidence_is_not_negative_evidence():
     assert "Not above baseline recently" not in card
 
 
-@pytest.mark.parametrize("edge", [0, -0.001, 0.001])
-def test_measured_zero_and_small_signed_comparison_remain_distinct(edge):
+@pytest.mark.parametrize("edge,expected", [
+    (0, "0.0"), (-0.001, "-0.1"), (0.001, "+0.1"),
+    (-0.00004, "-0.004"), (0.00004, "+0.004"),
+    (-1e-12, "-1e-10"), (1e-12, "+1e-10"),
+])
+def test_measured_zero_and_small_signed_comparison_remain_distinct(edge, expected):
     raw = copy.deepcopy(_make_raw())
     raw["combos"]["long"][0].update(edge_wr_test=edge, consistent=False)
     first = build_context(raw, {})["combos"][0]
     assert first["edge_test_pp"] == edge * 100
     card = render_html(_HERE, build_context(raw, {})).split('<div class="lc free">', 1)[1].split('<div class="lc gated">', 1)[0]
-    assert f"{edge * 100:+.1f} percentage points vs random entry" in card
+    comparison = _comparison_cells(card)["recent"]
+    assert comparison["text"] == expected
+    assert comparison["state"] == ("zero" if edge == 0 else "negative" if edge < 0 else "positive")
     assert ("Not above baseline recently" in card) == (edge <= 0)
     assert "Random-entry comparison unavailable" not in card
 
@@ -818,3 +854,41 @@ def test_actual_render_overwrites_stale_protected_rows(tmp_path, monkeypatch, in
         assert 'data-source-state="unavailable"' in html
         assert 'data-source-state="available-empty"' not in html
         assert "number of matching line-ups is unknown" in html
+
+
+@pytest.mark.parametrize("recent,older,expected_recent,expected_older,summary", [
+    (0.2, -0.02, "+20.0", "-2.0", "Above baseline only in the recent period"),
+    (-0.02, 0.2, "-2.0", "+20.0", "Not above baseline recently"),
+    (0, 0, "0.0", "0.0", "Not above baseline recently"),
+    (None, 0.1, "Unavailable暂无数据", "+10.0", "Recent-period comparison unavailable"),
+    (0.2, None, "+20.0", "Unavailable暂无数据", "Older-period comparison unavailable"),
+    (None, None, "Unavailable暂无数据", "Unavailable暂无数据", "Random-entry comparison unavailable"),
+])
+def test_period_comparisons_remain_independent_of_rates_and_each_other(
+    recent, older, expected_recent, expected_older, summary
+):
+    raw = copy.deepcopy(_make_raw())
+    raw["combos"]["long"][0]["id"] = "L 0001"  # Accepted source identity may contain spaces.
+    # A higher older headline rate is not evidence of a positive older delta.
+    raw["combos"]["long"][0]["h21"] = dict(_H21_VALID, wr_mc_train=0.9)
+    raw["combos"]["long"][0].update(edge_wr_test=recent, edge_wr_train=older)
+    # Supplied baseline levels must not manufacture an absent supplied delta.
+    raw["base"] = {"long": {"h21": {"wr_mc_test": 0.5, "wr_mc_train": 0.4}}}
+    ctx = build_context(raw, {})
+    assert ctx["combos"][0]["combo_id"] == "L 0001"
+    assert ctx["combos"][0]["wr_test_pct"] == 70
+    assert ctx["combos"][0]["wr_train_pct"] == 90
+    assert ctx["n_active_total"] == 4 and len(ctx["combos"]) == 3
+    card = render_html(_HERE, ctx).split('<div class="lc free">', 1)[1].split('<div class="lc gated">', 1)[0]
+    cells = _comparison_cells(card)
+    assert set(cells) == {"recent", "older"}
+    assert cells["recent"]["text"] == expected_recent
+    assert cells["older"]["text"] == expected_older
+    assert summary in card
+    assert "Versus random entry · percentage points" in card
+    assert "较随机入场 · 个百分点" in card
+    assert 'aria-labelledby="baseline-unit-1"' in card
+    assert 'id="baseline-unit-1"' in card
+    assert "Recent comparison" in card and "Older comparison" in card
+    assert "12 months · 15 fires" in card and "36 months · 40 fires" in card
+    assert "in 10 recently" not in card
