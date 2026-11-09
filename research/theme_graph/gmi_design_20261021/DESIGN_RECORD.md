@@ -1867,3 +1867,62 @@ Add editable EN390 Noir and ZH320 Day empty-topic views to the canonical Paper p
 Source review found that ordinary topic selection retains current filters/lens through the existing URL writer, while topic anchors advertised to native new-tab/copy-link actions contain only the target theme. The next bounded phase should reproduce this consumer mismatch and use the incumbent journey/URL owners to project an equivalent destination. No extra navigation controller is needed.
 
 PR10676 remains Draft with original model01 **EFFECT_UNKNOWN / ROOT_UNVERIFIED**, no-Ready/no-merge/no-relabel/no-enqueue, consumer-admission and release holds. This source/component evidence does not establish full shared shell/fonts, physical IME, spoken AT, live account, current hosted CI or deployment.
+
+
+## 11.43 · Keep native topic links in the same research context — 9 Nov 2026
+
+### A reproduced mismatch between two ordinary browser paths
+
+At parent **6a90aa1345ad2e61f25699bb51db56c91aca3aee**, normal topic activation changed the selected theme through `writeURL()`, preserving current filters and lens. Browse, Related-topic and taxonomy anchors advertised a theme-only destination. The handler deliberately leaves modified clicks to the browser, so a new tab lost that research context.
+
+Baseline PID **23165**, exit1, **21.73 s**, reproduces **six failures / six contexts**: all three link surfaces at EN1440 and ZH320. Every comparison uses actual ordinary activation and an actual modified native click from equivalent source state. Native clicks are recorded as trusted; each opener remains unchanged. The new tab reaches HBM but loses Micron query, category, core/evidence filters and chain lens. Taxonomy's old page-relative href also drops the current query string.
+
+### One serializer, one href projection owner
+
+Factor the exact existing serialization into **researchHash(targetTheme)**. It starts from the current hash, substitutes the target theme, applies current query/category/scope/evidence and returns a fragment. It preserves raw query text, default-key omission and other existing hash parameters exactly as before. It does not mutate theme, history, copy feedback or selection. The existing `writeURL()` delegates to that helper.
+
+Extend the existing **refreshJourney() / originalHrefs** loop. Apply the topic projection only when:
+
+- the current page is **gmi.html**;
+- the cached original anchor destination resolves to that same local page;
+- the existing **byId** and **state** have initialized;
+- `data-topic-select` identifies a known public topic.
+
+This reuses the incumbent href writer, so a later journey refresh cannot restore a stale theme-only destination over an independent patch. Fragment destinations retain the current pathname and query string, matching ordinary selection. Keep the existing equality check before assigning href.
+
+The initialized-state guard leaves the early company/journey refresh, failed payload and other pages on their existing paths. Foreign-origin, other-directory, unknown-topic and unowned local anchors remain unchanged. New Related-topic anchors are qualified by the existing refresh after answer rendering. No callback registry, second URL state, listener, queue, storage or navigation lifecycle is added.
+
+### Final browser proof
+
+PID **28258**, exit0, **46.73 s**, Chrome **157.0.8103.39**: **16 cases / 18 fresh anonymous contexts**, zero page errors.
+
+| Consumer contract | Result |
+|---|---|
+| Ordinary versus native activation | All **six** actual new-tab destinations and controls match ordinary selection; every opener keeps its URL, title, filters and history |
+| Refreshed destinations | **24 projection observations**, each checking **745** actual topic anchors; zero mismatches |
+| Filter/history/lens | Query, evidence, scope and category changes, real Back/Forward and the existing lens control update native destinations |
+| Independent tree search and locale | Six observed no-op phases make **zero persistent Browse/taxonomy href writes** |
+| Restored native navigation | Two additional actual native activations after history/filter/lens changes preserve the current context |
+| Existing search proof | **20 matching observations / 14 geometry checks** retain matching semantics, original nodes, titles, labels and connection counts |
+| Existing tree proof | Real roving/native-link behavior and two script-disabled contexts retain the original **371** native tree anchors |
+| Existing company and failed-data proof | Two company round trips, eight empty-state observations/two positive HBM controls, and two malformed-payload recoveries pass |
+
+The prior match-hint workflow's old assertion required href bytes to remain fixed while the primary query changed. That assertion now compares each real destination with the current research URL and its target theme. Every existing node, title, label, badge, count and matching check remains. The tree's independent-search href invariance is unchanged and still passes.
+
+Twelve captures were generated; the EN1440 and ZH320 originating Browse views were inspected. This behavior change adds no product control, paragraph or visual density. Actual popup URL/control observations, not those screenshots alone, prove the new-tab destination.
+
+### Source containment and evidence
+
+Two bounded JS replacements—serializer extraction and the existing refresh branch—reverse to the exact parent asset. Paired JS blob **505def7ed08f21b26e4bda4ba60c16aa084cb522**, SHA256 **9b3dc617fdc8768c1717a5f5ad987cc355cb2f336a0cc6e017518f6e50ef7a1a**.
+
+Of **137** prior qualified verifier definitions, **136 remain AST-exact**. Only `search_match_workflow` changes its affected destination assertion; reversing it reconstructs the parent verifier before seven new qualified definitions/registrations. All **47 other bound render inputs**, the accepted model, seven generated HTML pages and CSS remain byte-exact.
+
+[NATIVE_LINKS_VALIDATION_20261109.json](NATIVE_LINKS_VALIDATION_20261109.json) retains exact baseline/final cases, trusted event records, opener and popup state, all projection outcomes, commands, original report hashes and screenshot hashes. Repeated cumulative href-write ID arrays are explicitly represented by exact counts, unique-target counts and ordered hashes. No case or failure is removed.
+
+### Paper and next safe source work
+
+Update current Build module08 with the native destination contract and the single serialization/refresh ownership. Keep existing editable Browse and empty-topic specimens; a second visual control or redundant concept page would add no user value. Current source/proof references remain in the existing eighteen-module guide.
+
+The portfolio review identifies Confluence's previously documented unavailable-versus-valid-empty producer distinction as the next bounded candidate. Refresh current source and incumbent custody first; its existing accepted Paper states and builder contract are the design authority. This is not a claim that the older source defect or writer availability is current.
+
+Original Draft/model01 **EFFECT_UNKNOWN / ROOT_UNVERIFIED**, no-Ready/no-merge/no-relabel/no-enqueue, consumer-admission and release holds remain. Actual modified clicks do not establish context-menu/system clipboard behavior, physical keyboard layouts/OS IME, spoken AT, full shared shell/fonts, live account, current hosted CI or deployment.

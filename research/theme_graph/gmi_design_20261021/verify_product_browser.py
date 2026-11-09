@@ -4181,7 +4181,9 @@ with sync_playwright() as pw:
                 assert parse_qs(urlsplit(p.url).fragment)['theme']==[selected['id']]
                 assert p.evaluate("""()=>window.__searchMatchRows.every((s,i)=>{
                   const n=document.querySelectorAll('[data-topic-results] [data-topic-select]')[i];
-                  return n===s.node&&n.getAttribute('href')===s.href&&n.querySelector('strong')===s.title&&s.title.innerHTML===s.titleHTML&&
+                  const expected=new URL(location.href),params=new URLSearchParams(expected.hash.slice(1));
+                  params.set('theme',s.id);expected.hash=params.toString();
+                  return n===s.node&&n.href===expected.href&&n.querySelector('strong')===s.title&&s.title.innerHTML===s.titleHTML&&
                     n.querySelector(':scope > span > .l-en')===s.en&&n.querySelector(':scope > span > .l-zh')===s.zh&&
                     n.querySelector(':scope > span > b')===s.count&&s.count?.innerHTML===s.countHTML;
                 })""")
@@ -4664,6 +4666,200 @@ with sync_playwright() as pw:
 
     for width,language in ((1440,'en'),(1440,'zh'),(390,'en'),(320,'zh'),(320,'en'),(390,'zh')):
         check(f'empty-topic-{width}-{language}',lambda w=width,l=language:empty_topic_workflow(w,l))
+
+
+    def native_topic_link_state(p):
+        return p.evaluate("""()=>{
+          const value=s=>document.querySelector(s)?.value;
+          return {url:location.href,history:history.length,title:document.querySelector('#gmi-topic-title').textContent,
+            q:value('[data-topic-search]'),category:value('[data-topic-category-filter]'),
+            scope:value('input[name="gmi-scope"]:checked'),evidence:document.querySelector('[data-evidence-only]').checked,
+            lens:document.documentElement.getAttribute('data-gmi-lens'),
+            visibleCount:document.querySelectorAll('[data-topic-results] [data-topic-select]:not([hidden])').length};
+        }""")
+
+    def native_topic_link_start(c):
+        p=page_for(c,'gmi.html?fixture=native-topic-links#theme=theme%3Aconventional_dram&lens=chain')
+        expect(p.locator('[data-gmi-ready]')).to_have_count(1)
+        data=json.loads(p.locator('#gmi-topic-data').text_content())
+        target=next(t for t in data['topics'] if t['id']=='theme:hbm_packaging')
+        fragment=urlencode({'theme':'theme:conventional_dram','q':'Micron','category':target['category'],
+                            'scope':'core','evidence':'1','lens':'chain','fixture_note':'keep this'})
+        p.goto(p.url.split('#')[0]+'#'+fragment,wait_until='networkidle')
+        expect(p.locator('[data-topic-search]')).to_have_value('Micron')
+        expect(p.locator('[data-topic-category-filter]')).to_have_value(target['category'])
+        expect(p.locator('[data-evidence-only]')).to_be_checked()
+        return p,target
+
+    def native_topic_link_target(p,width,surface,identifier='theme:hbm_packaging'):
+        if surface=='browse':
+            if width<=820 and not p.locator('[data-browse-dialog]').evaluate('(n)=>n.open'):
+                p.locator('[data-browse-open]').click()
+            anchor=p.locator('[data-topic-results] [data-topic-select="'+identifier+'"]')
+        elif surface=='related':
+            anchor=p.locator('[data-topic-related] [data-topic-select="'+identifier+'"]')
+        else:
+            details=p.locator('.gmi-advanced')
+            if not details.evaluate('(n)=>n.open'):details.locator(':scope > summary').click()
+            p.locator('input[data-gmi-filter="tree"]').fill('HBM' if identifier=='theme:hbm_packaging' else 'Conventional DRAM (non-HBM)')
+            anchor=p.locator('.gmi-tree a[data-topic-select="'+identifier+'"]:visible').first
+        expect(anchor).to_be_visible()
+        return anchor
+
+    def native_topic_link_close(p,width):
+        if width<=820 and p.locator('[data-browse-dialog]').evaluate('(n)=>n.open'):
+            p.evaluate("""()=>{
+              window.__nativeLinkClosed=false;
+              document.querySelector('[data-browse-dialog]').addEventListener('close',()=>{window.__nativeLinkClosed=true;},{once:true});
+            }""")
+            p.locator('[data-browse-close]').click()
+            p.wait_for_function("""()=>window.__nativeLinkClosed&&!document.querySelector('[data-browse-dialog]').open&&
+              document.querySelector('[data-browse-home]').contains(document.querySelector('[data-gmi-browse]'))""")
+            expect(p.locator('[data-browse-open]')).to_be_focused()
+        elif width<=820:
+            p.wait_for_function("""()=>!document.querySelector('[data-browse-dialog]').open&&
+              document.querySelector('[data-browse-home]').contains(document.querySelector('[data-gmi-browse]'))""")
+
+    def native_topic_link_activation(width,language,surface):
+        with context(width,'dark' if language=='en' else 'light',language) as c:
+            ordinary,target=native_topic_link_start(c)
+            origin=ordinary.url
+            link=native_topic_link_target(ordinary,width,surface)
+            link.evaluate("""n=>n.addEventListener('click',e=>{
+              window.__nativeTopicClick={trusted:e.isTrusted,meta:e.metaKey,ctrl:e.ctrlKey,button:e.button};
+            })""")
+            link.click()
+            expect(ordinary.locator('#gmi-topic-title')).to_have_text(target[language])
+            expected=native_topic_link_state(ordinary)
+            ordinary_event=ordinary.evaluate('window.__nativeTopicClick')
+            assert ordinary_event=={'trusted':True,'meta':False,'ctrl':False,'button':0}
+            p=page_for(c,'gmi.html'+origin.split('/gmi.html',1)[1])
+            expect(p.locator('[data-gmi-ready]')).to_have_count(1)
+            anchor=native_topic_link_target(p,width,surface)
+            before=native_topic_link_state(p)
+            advertised=anchor.evaluate('(n)=>({raw:n.getAttribute("href"),absolute:n.href})')
+            anchor.evaluate("""n=>n.addEventListener('click',e=>{
+              window.__nativeTopicClick={trusted:e.isTrusted,meta:e.metaKey,ctrl:e.ctrlKey,button:e.button};
+            })""")
+            modifier='Meta' if p.evaluate('navigator.platform').startswith('Mac') else 'Control'
+            with c.expect_page() as opened:
+                anchor.click(modifiers=[modifier])
+            popup=opened.value
+            expect(popup.locator('[data-gmi-ready]')).to_have_count(1)
+            expect(popup.locator('#gmi-topic-title')).to_have_text(target[language])
+            actual=native_topic_link_state(popup);after=native_topic_link_state(p)
+            observed={'width':width,'language':language,'surface':surface,'origin':origin,'target':target['id'],
+                      'ordinary':expected,'ordinary_click':ordinary_event,'advertised':advertised,
+                      'native':actual,'native_click':p.evaluate('window.__nativeTopicClick'),
+                      'opener_before':before,'opener_after':after,'opener_unchanged':before==after}
+            report.setdefault('native_topic_link_activations',[]).append(observed)
+            popup.close()
+            assert observed['native_click']['trusted'] and observed['native_click']['meta' if modifier=='Meta' else 'ctrl']
+            assert before==after,'Native activation changed its opener'
+            assert actual['url']==advertised['absolute']
+            assert actual['url']==expected['url'],{'ordinary':expected['url'],'native':actual['url']}
+            for key in ('title','q','category','scope','evidence','lens','visibleCount'):
+                assert actual[key]==expected[key],(key,actual[key],expected[key])
+            if surface=='browse' and (width,language) in ((1440,'en'),(320,'zh')):
+                path=args.out/f'native-topic-link-{surface}-{width}-{language}.png'
+                p.screenshot(path=str(path),full_page=False);report['screenshots'].append(path.name)
+
+    def native_topic_link_refresh(width,language):
+        with context(width,'light',language,reduced_motion='reduce') as c:
+            p,target=native_topic_link_start(c)
+            initial=p.url
+            def projection(phase):
+                value=p.evaluate("""()=>{
+                  const links=[...document.querySelectorAll('main a[data-topic-select][href]:not([data-native-link-control])')];
+                  const entries=links.map(n=>{
+                    const expected=new URL(location.href);expected.hash=new URLSearchParams(location.hash.slice(1)).toString();
+                    const params=new URLSearchParams(expected.hash.slice(1));params.set('theme',n.getAttribute('data-topic-select'));expected.hash=params.toString();
+                    return {id:n.getAttribute('data-topic-select'),href:n.href,expected:expected.href};
+                  });
+                  return {url:location.href,count:entries.length,mismatches:entries.filter(v=>v.href!==v.expected),
+                    links:entries.map(v=>[v.id,v.href]),persistentWrites:[...(window.__nativeTopicHrefWrites||[])]};
+                }""")
+                links=value.pop('links');value['links_sha256']=hashlib.sha256(json.dumps(links,ensure_ascii=False).encode()).hexdigest()
+                value.update({'phase':phase,'width':width,'language':language})
+                report.setdefault('native_topic_link_projections',[]).append(value)
+                assert value['count']>=742 and not value['mismatches'],value
+                return value
+            projection('initial')
+            p.evaluate("""()=>{
+              const persistent=new Set(document.querySelectorAll('[data-topic-results] a[data-topic-select],.gmi-tree a[data-topic-select]'));
+              window.__nativeTopicHrefWrites=[];
+              new MutationObserver(records=>records.forEach(r=>{
+                if(persistent.has(r.target))window.__nativeTopicHrefWrites.push(r.target.getAttribute('data-topic-select'));
+              })).observe(document.querySelector('main'),{subtree:true,attributes:true,attributeFilter:['href']});
+              const main=document.querySelector('main'),specs=[
+                ['foreign','https://example.invalid/gmi.html#theme=theme%3Ahbm_packaging','theme:hbm_packaging'],
+                ['directory','../gmi.html#theme=theme%3Ahbm_packaging','theme:hbm_packaging'],
+                ['unknown','#theme=theme%3Amissing','theme:missing'],
+                ['unowned','#theme=theme%3Ahbm_packaging',null]
+              ];
+              window.__nativeLinkControls=specs.map(([kind,href,id])=>{
+                const a=document.createElement('a');a.hidden=true;a.setAttribute('href',href);a.dataset.nativeLinkControl=kind;
+                if(id)a.dataset.topicSelect=id;main.append(a);return {node:a,href};
+              });
+            }""")
+            p.locator('[data-topic-search]').dispatch_event('input')
+            for locale in ('zh' if language=='en' else 'en',language):
+                p.evaluate('(v)=>document.documentElement.setAttribute("data-lang",v)',locale)
+                expect(p.locator('#gmi-topic-title')).to_have_text('Conventional DRAM (non-HBM)' if locale=='en' else '常规 DRAM（非 HBM）')
+                p.evaluate('()=>new Promise(requestAnimationFrame)')
+                value=projection('locale-'+locale)
+                assert not value['persistentWrites']
+                assert p.url==initial
+                assert p.evaluate('window.__nativeLinkControls.every(v=>v.node.getAttribute("href")===v.href)')
+            anchor=native_topic_link_target(p,width,'browse')
+            anchor.focus();p.keyboard.press('Enter')
+            expect(p.locator('#gmi-topic-title')).to_have_text(target[language])
+            native_topic_link_close(p,width)
+            projection('selected-target')
+            if width<=820:p.locator('[data-browse-open]').click()
+            field=p.locator('[data-topic-search]');field.fill('NVIDIA H200');projection('query-changed')
+            p.locator('[data-evidence-only]').uncheck();projection('evidence-cleared')
+            p.locator('input[name="gmi-scope"][value="all"]').check();projection('scope-all')
+            p.locator('[data-topic-category-filter]').select_option('');projection('category-all')
+            changed=p.url
+            p.go_back();expect(field).to_have_value('Micron')
+            assert p.url==initial;projection('history-back')
+            p.go_forward();expect(field).to_have_value('NVIDIA H200')
+            assert p.url==changed;projection('history-forward')
+            native_topic_link_close(p,width)
+            details=p.locator('.gmi-advanced')
+            if not details.evaluate('(n)=>n.open'):details.locator(':scope>summary').click()
+            p.locator('[data-gmi-set-lens="coverage"]').first.click()
+            expect(p.locator('html')).to_have_attribute('data-gmi-lens','coverage')
+            assert parse_qs(urlsplit(p.url).fragment)['lens']==['coverage']
+            projection('lens-coverage')
+            before_tree=p.url
+            old=p.locator('.gmi-tree a[data-topic-select]').evaluate_all('(ns)=>ns.map(n=>n.getAttribute("href"))')
+            p.evaluate('window.__nativeTopicHrefWrites=[]')
+            p.locator('input[data-gmi-filter="tree"]').fill('Conventional DRAM (non-HBM)')
+            p.evaluate('()=>new Promise(requestAnimationFrame)')
+            assert p.url==before_tree
+            assert p.locator('.gmi-tree a[data-topic-select]').evaluate_all('(ns)=>ns.map(n=>n.getAttribute("href"))')==old
+            assert not projection('independent-tree-search')['persistentWrites']
+            assert p.evaluate('window.__nativeLinkControls.every(v=>v.node.getAttribute("href")===v.href)')
+            link=native_topic_link_target(p,width,'related','theme:conventional_dram')
+            advertised=link.evaluate('(n)=>n.href');before=native_topic_link_state(p)
+            modifier='Meta' if p.evaluate('navigator.platform').startswith('Mac') else 'Control'
+            with c.expect_page() as opened:link.click(modifiers=[modifier])
+            popup=opened.value;expect(popup.locator('[data-gmi-ready]')).to_have_count(1)
+            observed=native_topic_link_state(popup)
+            assert observed['url']==advertised
+            for key in ('q','category','scope','evidence','lens','visibleCount'):assert observed[key]==before[key]
+            assert parse_qs(urlsplit(observed['url']).fragment)['theme']==['theme:conventional_dram']
+            assert native_topic_link_state(p)==before
+            report.setdefault('native_topic_link_restored_activations',[]).append({'width':width,'language':language,'opener':before,'popup':observed,'advertised':advertised,'opener_unchanged':True})
+            popup.close()
+
+    for width,language in ((1440,'en'),(320,'zh')):
+        for surface in ('browse','related','tree'):
+            check(f'native-topic-link-{surface}-{width}-{language}',lambda w=width,l=language,s=surface:native_topic_link_activation(w,l,s))
+    for width,language in ((390,'en'),(320,'zh')):
+        check(f'native-topic-link-refresh-{width}-{language}',lambda w=width,l=language:native_topic_link_refresh(w,l))
 
     browser.close()
 server.shutdown()

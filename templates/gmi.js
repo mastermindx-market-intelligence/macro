@@ -388,7 +388,9 @@ function refreshJourney(){
   document.querySelectorAll('main a[href]:not([data-gmi-return])').forEach(function(a){
     if(!originalHrefs.has(a))originalHrefs.set(a,a.getAttribute('href'));
     var original=originalHrefs.get(a),page=localPage(original),next=original;
-    if(source&&(/^gmi-issuer-[a-z0-9._-]+\.html$/i.test(page)||(page==='gmi-companies.html'&&current!=='gmi-companies.html')||(contextPage(page)&&page!==current))){
+    /* Native topic links project the same state as ordinary selection. */
+    if(current==='gmi.html'&&page===current&&byId&&state&&byId.has(a.getAttribute('data-topic-select')))next=researchHash(a.getAttribute('data-topic-select'));
+    else if(source&&(/^gmi-issuer-[a-z0-9._-]+\.html$/i.test(page)||(page==='gmi-companies.html'&&current!=='gmi-companies.html')||(contextPage(page)&&page!==current))){
       if(page==='gmi-companies.html'&&catalog)next=catalog;
       else{var url=new URL(original,location.href),p=new URLSearchParams(url.hash.slice(1));p.set('gmi_return',source);url.hash=p.toString();next=url.href;}
     }else if(research&&page==='gmi.html'&&a.matches('.gmi-product-name,.gmi-product-tabs a'))next=research;
@@ -526,7 +528,8 @@ function retireCopy(recoverFocus){
   copyAnnouncement=null;
   return renderCopyFeedback(recoverFocus);
 }
-function writeURL(mode){var p=new URLSearchParams(location.hash.slice(1));p.set('theme',state.theme);[['q',state.q],['category',state.category],['scope',state.scope==='all'?'':state.scope],['evidence',state.evidence?'1':'']].forEach(function(pair){if(pair[1])p.set(pair[0],pair[1]);else p.delete(pair[0]);});var next='#'+p.toString();if(next!==location.hash){retireCopy(true);history[mode==='push'?'pushState':'replaceState'](null,'',next);}lastHash=location.hash;refreshJourney();}
+function researchHash(theme){var p=new URLSearchParams(location.hash.slice(1));p.set('theme',theme);[['q',state.q],['category',state.category],['scope',state.scope==='all'?'':state.scope],['evidence',state.evidence?'1':'']].forEach(function(pair){if(pair[1])p.set(pair[0],pair[1]);else p.delete(pair[0]);});return '#'+p.toString();}
+function writeURL(mode){var next=researchHash(state.theme);if(next!==location.hash){retireCopy(true);history[mode==='push'?'pushState':'replaceState'](null,'',next);}lastHash=location.hash;refreshJourney();}
 function matches(t){return(!state.category||t.paths.some(function(path){return path.length&&path[0].id===state.category;}))&&(state.scope==='all'||t.tier===state.scope)&&(!state.evidence||t.connections.length>0)&&(!norm(state.q)||searchText.get(t.id).includes(norm(state.q)));}
 /* Explain only an individually matching admitted field, never a phrase that
    merely spans the flattened search corpus. Keep taxonomy and count owners. */
