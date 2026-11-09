@@ -1,0 +1,192 @@
+FFFFFFFFFFFFFFF..FFFF                                                    [100%]
+=================================== FAILURES ===================================
+_ test_r4_frozen_layout_frontloads_the_complete_condition[en-1440-dark-no-preference] _
+tests/test_crypto_intelligence_r4_browser.py:1033: in test_r4_frozen_layout_frontloads_the_complete_condition
+    assert condition.is_visible(), "The complete original condition must be visible without expanding details."
+E   AssertionError: The complete original condition must be visible without expanding details.
+E   assert False
+E    +  where False = is_visible()
+E    +    where is_visible = <Locator frame=<Frame name= url='http://127.0.0.1:61565/crypto-r4.html?lang=en#scenarios?h=30&panel=saved-item%3Ar4-di...on'> selector='#cri-dialog-body >> internal:text="A daily close above $86,595.00, followed by stronger spot demand."s'>.is_visible
+_ test_r4_frozen_layout_frontloads_the_complete_condition[zh-1440-light-no-preference] _
+tests/test_crypto_intelligence_r4_browser.py:1033: in test_r4_frozen_layout_frontloads_the_complete_condition
+    assert condition.is_visible(), "The complete original condition must be visible without expanding details."
+E   AssertionError: The complete original condition must be visible without expanding details.
+E   assert False
+E    +  where False = is_visible()
+E    +    where is_visible = <Locator frame=<Frame name= url='http://127.0.0.1:61565/crypto-r4.html?lang=zh#scenarios?h=30&panel=saved-item%3Ar4-di...\\u65e5\\u6536\\u76d8\\u7a81\\u7834$86,595.00\\uff0c\\u968f\\u540e\\u73b0\\u8d27\\u9700\\u6c42\\u589e\\u5f3a\\u3002"s'>.is_visible
+_ test_r4_frozen_layout_frontloads_the_complete_condition[en-390-light-no-preference] _
+tests/test_crypto_intelligence_r4_browser.py:1033: in test_r4_frozen_layout_frontloads_the_complete_condition
+    assert condition.is_visible(), "The complete original condition must be visible without expanding details."
+E   AssertionError: The complete original condition must be visible without expanding details.
+E   assert False
+E    +  where False = is_visible()
+E    +    where is_visible = <Locator frame=<Frame name= url='http://127.0.0.1:61565/crypto-r4.html?lang=en#scenarios?h=30&panel=saved-item%3Ar4-di...on'> selector='#cri-dialog-body >> internal:text="A daily close above $86,595.00, followed by stronger spot demand."s'>.is_visible
+_ test_r4_frozen_layout_frontloads_the_complete_condition[zh-390-dark-no-preference] _
+tests/test_crypto_intelligence_r4_browser.py:1033: in test_r4_frozen_layout_frontloads_the_complete_condition
+    assert condition.is_visible(), "The complete original condition must be visible without expanding details."
+E   AssertionError: The complete original condition must be visible without expanding details.
+E   assert False
+E    +  where False = is_visible()
+E    +    where is_visible = <Locator frame=<Frame name= url='http://127.0.0.1:61565/crypto-r4.html?lang=zh#scenarios?h=30&panel=saved-item%3Ar4-di...\\u65e5\\u6536\\u76d8\\u7a81\\u7834$86,595.00\\uff0c\\u968f\\u540e\\u73b0\\u8d27\\u9700\\u6c42\\u589e\\u5f3a\\u3002"s'>.is_visible
+_ test_r4_frozen_layout_frontloads_the_complete_condition[en-320-dark-reduce] __
+tests/test_crypto_intelligence_r4_browser.py:1033: in test_r4_frozen_layout_frontloads_the_complete_condition
+    assert condition.is_visible(), "The complete original condition must be visible without expanding details."
+E   AssertionError: The complete original condition must be visible without expanding details.
+E   assert False
+E    +  where False = is_visible()
+E    +    where is_visible = <Locator frame=<Frame name= url='http://127.0.0.1:61565/crypto-r4.html?lang=en#scenarios?h=30&panel=saved-item%3Ar4-di...on'> selector='#cri-dialog-body >> internal:text="A daily close above $86,595.00, followed by stronger spot demand."s'>.is_visible
+_ test_r4_frozen_layout_frontloads_the_complete_condition[zh-320-light-reduce] _
+tests/test_crypto_intelligence_r4_browser.py:1033: in test_r4_frozen_layout_frontloads_the_complete_condition
+    assert condition.is_visible(), "The complete original condition must be visible without expanding details."
+E   AssertionError: The complete original condition must be visible without expanding details.
+E   assert False
+E    +  where False = is_visible()
+E    +    where is_visible = <Locator frame=<Frame name= url='http://127.0.0.1:61565/crypto-r4.html?lang=zh#scenarios?h=30&panel=saved-item%3Ar4-di...\\u65e5\\u6536\\u76d8\\u7a81\\u7834$86,595.00\\uff0c\\u968f\\u540e\\u73b0\\u8d27\\u9700\\u6c42\\u589e\\u5f3a\\u3002"s'>.is_visible
+___________ test_r4_frozen_expiry_is_distinct_from_original_progress ___________
+tests/test_crypto_intelligence_r4_browser.py:1100: in test_r4_frozen_expiry_is_distinct_from_original_progress
+    state = page.locator(".cri-saved-status").inner_text()
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/sync_api/_generated.py:19446: in inner_text
+    self._sync(self._impl_obj.inner_text(timeout=to_milliseconds(timeout)))
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_locator.py:498: in inner_text
+    return await self._frame.inner_text(
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_frame.py:743: in inner_text
+    return await self._channel.send(
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_connection.py:76: in send
+    return await self._connection.wrap_api_call(
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_connection.py:632: in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+E   playwright._impl._errors.TimeoutError: Locator.inner_text: Timeout 4500ms exceeded.
+E   Call log:
+E     - waiting for locator(".cri-saved-status")
+_ test_r4_frozen_legacy_layout_keeps_the_case_without_inventing_evidence[en-320] _
+tests/test_crypto_intelligence_r4_browser.py:1118: in test_r4_frozen_legacy_layout_keeps_the_case_without_inventing_evidence
+    assert page.locator("#cri-dialog-body").get_by_text(target["condition_" + lang], exact=True).is_visible()
+E   assert False
+E    +  where False = is_visible()
+E    +    where is_visible = <Locator frame=<Frame name= url='http://127.0.0.1:61565/crypto-r4.html?lang=en#scenarios?h=30&panel=saved-item%3Ar4-di...on'> selector='#cri-dialog-body >> internal:text="A daily close above $86,595.00, followed by stronger spot demand."s'>.is_visible
+E    +      where <Locator frame=<Frame name= url='http://127.0.0.1:61565/crypto-r4.html?lang=en#scenarios?h=30&panel=saved-item%3Ar4-di...on'> selector='#cri-dialog-body >> internal:text="A daily close above $86,595.00, followed by stronger spot demand."s'> = get_by_text('A daily close above $86,595.00, followed by stronger spot demand.', exact=True)
+E    +        where get_by_text = <Locator frame=<Frame name= url='http://127.0.0.1:61565/crypto-r4.html?lang=en#scenarios?h=30&panel=saved-item%3Ar4-display%3A2026-10-17%3A30%3Acontinuation'> selector='#cri-dialog-body'>.get_by_text
+E    +          where <Locator frame=<Frame name= url='http://127.0.0.1:61565/crypto-r4.html?lang=en#scenarios?h=30&panel=saved-item%3Ar4-display%3A2026-10-17%3A30%3Acontinuation'> selector='#cri-dialog-body'> = locator('#cri-dialog-body')
+E    +            where locator = <Page url='http://127.0.0.1:61565/crypto-r4.html?lang=en#scenarios?h=30&panel=saved-item%3Ar4-display%3A2026-10-17%3A30%3Acontinuation'>.locator
+_ test_r4_frozen_legacy_layout_keeps_the_case_without_inventing_evidence[zh-390] _
+tests/test_crypto_intelligence_r4_browser.py:1118: in test_r4_frozen_legacy_layout_keeps_the_case_without_inventing_evidence
+    assert page.locator("#cri-dialog-body").get_by_text(target["condition_" + lang], exact=True).is_visible()
+E   assert False
+E    +  where False = is_visible()
+E    +    where is_visible = <Locator frame=<Frame name= url='http://127.0.0.1:61565/crypto-r4.html?lang=zh#scenarios?h=30&panel=saved-item%3Ar4-di...\\u65e5\\u6536\\u76d8\\u7a81\\u7834$86,595.00\\uff0c\\u968f\\u540e\\u73b0\\u8d27\\u9700\\u6c42\\u589e\\u5f3a\\u3002"s'>.is_visible
+E    +      where <Locator frame=<Frame name= url='http://127.0.0.1:61565/crypto-r4.html?lang=zh#scenarios?h=30&panel=saved-item%3Ar4-di...\\u65e5\\u6536\\u76d8\\u7a81\\u7834$86,595.00\\uff0c\\u968f\\u540e\\u73b0\\u8d27\\u9700\\u6c42\\u589e\\u5f3a\\u3002"s'> = get_by_text('日收盘突破$86,595.00，随后现货需求增强。', exact=True)
+E    +        where get_by_text = <Locator frame=<Frame name= url='http://127.0.0.1:61565/crypto-r4.html?lang=zh#scenarios?h=30&panel=saved-item%3Ar4-display%3A2026-10-17%3A30%3Acontinuation'> selector='#cri-dialog-body'>.get_by_text
+E    +          where <Locator frame=<Frame name= url='http://127.0.0.1:61565/crypto-r4.html?lang=zh#scenarios?h=30&panel=saved-item%3Ar4-display%3A2026-10-17%3A30%3Acontinuation'> selector='#cri-dialog-body'> = locator('#cri-dialog-body')
+E    +            where locator = <Page url='http://127.0.0.1:61565/crypto-r4.html?lang=zh#scenarios?h=30&panel=saved-item%3Ar4-display%3A2026-10-17%3A30%3Acontinuation'>.locator
+_ test_r4_saved_review_disclosure_keeps_qualifications_and_locale_focus[en-320] _
+tests/test_crypto_intelligence_r4_browser.py:1139: in test_r4_saved_review_disclosure_keeps_qualifications_and_locale_focus
+    assert target["asset"] in page.locator("#cri-dialog-body").inner_text()
+E   AssertionError: assert 'TEST-ASSET' in 'Upside test · BTC · 30 days · evidence at 2026-10-17\n\nNo qualified comparison yet\n\nA historical match must preser...terexamples\nFailures shown alongside matches\nForecast evaluation\nSimple baselines, held-out periods and calibration'
+E    +  where 'Upside test · BTC · 30 days · evidence at 2026-10-17\n\nNo qualified comparison yet\n\nA historical match must preser...terexamples\nFailures shown alongside matches\nForecast evaluation\nSimple baselines, held-out periods and calibration' = inner_text()
+E    +    where inner_text = <Locator frame=<Frame name= url='http://127.0.0.1:61565/crypto-r4.html?lang=en#scenarios?h=30&panel=memory-saved%3Ar4-display%3A2026-10-17%3A30%3Acontinuation'> selector='#cri-dialog-body'>.inner_text
+E    +      where <Locator frame=<Frame name= url='http://127.0.0.1:61565/crypto-r4.html?lang=en#scenarios?h=30&panel=memory-saved%3Ar4-display%3A2026-10-17%3A30%3Acontinuation'> selector='#cri-dialog-body'> = locator('#cri-dialog-body')
+E    +        where locator = <Page url='http://127.0.0.1:61565/crypto-r4.html?lang=en#scenarios?h=30&panel=memory-saved%3Ar4-display%3A2026-10-17%3A30%3Acontinuation'>.locator
+_ test_r4_saved_review_disclosure_keeps_qualifications_and_locale_focus[zh-390] _
+tests/test_crypto_intelligence_r4_browser.py:1141: in test_r4_saved_review_disclosure_keeps_qualifications_and_locale_focus
+    assert ("No performance result is available for this saved case." if lang == "en" else "此已存情景尚无可用的表现检验结果。") in page.locator("#cri-dialog-body").inner_text()
+E   AssertionError: assert '此已存情景尚无可用的表现检验结果。' in '上行检验 · BTC · 30天 · 证据日期 2026-10-17\n\n暂无合格的历史比较\n\n历史匹配必须保留情景发布时的证据、周期与合格样本。图形相似本身不能证明预测价值。\n\n结果发布前需要\n时点历史\n保留来源可用时间与修订\n独立事件\n重叠预警不算独立案例\n反例\n失败案例与匹配案例并列\n预测检验\n简单基线、留出区间与校准'
+E    +  where '上行检验 · BTC · 30天 · 证据日期 2026-10-17\n\n暂无合格的历史比较\n\n历史匹配必须保留情景发布时的证据、周期与合格样本。图形相似本身不能证明预测价值。\n\n结果发布前需要\n时点历史\n保留来源可用时间与修订\n独立事件\n重叠预警不算独立案例\n反例\n失败案例与匹配案例并列\n预测检验\n简单基线、留出区间与校准' = inner_text()
+E    +    where inner_text = <Locator frame=<Frame name= url='http://127.0.0.1:61565/crypto-r4.html?lang=zh#scenarios?h=30&panel=memory-saved%3Ar4-display%3A2026-10-17%3A30%3Acontinuation'> selector='#cri-dialog-body'>.inner_text
+E    +      where <Locator frame=<Frame name= url='http://127.0.0.1:61565/crypto-r4.html?lang=zh#scenarios?h=30&panel=memory-saved%3Ar4-display%3A2026-10-17%3A30%3Acontinuation'> selector='#cri-dialog-body'> = locator('#cri-dialog-body')
+E    +        where locator = <Page url='http://127.0.0.1:61565/crypto-r4.html?lang=zh#scenarios?h=30&panel=memory-saved%3Ar4-display%3A2026-10-17%3A30%3Acontinuation'>.locator
+_ test_r4_saved_recovery_actions_have_clear_targets_and_spacing[missing-en-320] _
+tests/test_crypto_intelligence_r4_browser.py:1179: in test_r4_saved_recovery_actions_have_clear_targets_and_spacing
+    assert group.count() == 1 and group.locator("button").count() == 2
+E   AssertionError: assert (0 == 1)
+E    +  where 0 = count()
+E    +    where count = <Locator frame=<Frame name= url='http://127.0.0.1:61565/crypto-r4.html?lang=en#scenarios?h=30&panel=saved-item%3Ar4-display%3A2026-10-17%3A30%3Acontinuation'> selector='.cri-drawer-actions'>.count
+_ test_r4_saved_recovery_actions_have_clear_targets_and_spacing[unreadable-en-320] _
+tests/test_crypto_intelligence_r4_browser.py:1179: in test_r4_saved_recovery_actions_have_clear_targets_and_spacing
+    assert group.count() == 1 and group.locator("button").count() == 2
+E   AssertionError: assert (0 == 1)
+E    +  where 0 = count()
+E    +    where count = <Locator frame=<Frame name= url='http://127.0.0.1:61565/crypto-r4.html?lang=en#scenarios?h=30&panel=saved'> selector='.cri-drawer-actions'>.count
+_ test_r4_saved_recovery_actions_have_clear_targets_and_spacing[missing-zh-390] _
+tests/test_crypto_intelligence_r4_browser.py:1179: in test_r4_saved_recovery_actions_have_clear_targets_and_spacing
+    assert group.count() == 1 and group.locator("button").count() == 2
+E   AssertionError: assert (0 == 1)
+E    +  where 0 = count()
+E    +    where count = <Locator frame=<Frame name= url='http://127.0.0.1:61565/crypto-r4.html?lang=zh#scenarios?h=30&panel=saved-item%3Ar4-display%3A2026-10-17%3A30%3Acontinuation'> selector='.cri-drawer-actions'>.count
+_ test_r4_saved_recovery_actions_have_clear_targets_and_spacing[unreadable-zh-390] _
+tests/test_crypto_intelligence_r4_browser.py:1179: in test_r4_saved_recovery_actions_have_clear_targets_and_spacing
+    assert group.count() == 1 and group.locator("button").count() == 2
+E   AssertionError: assert (0 == 1)
+E    +  where 0 = count()
+E    +    where count = <Locator frame=<Frame name= url='http://127.0.0.1:61565/crypto-r4.html?lang=zh#scenarios?h=30&panel=saved'> selector='.cri-drawer-actions'>.count
+_ test_r4_frozen_missing_progress_is_not_reconstructed[en-2026-12-01T12:00:00Z] _
+tests/test_crypto_intelligence_r4_browser.py:1229: in test_r4_frozen_missing_progress_is_not_reconstructed
+    assert page.locator(".cri-saved-status").inner_text().startswith("Expired")
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/sync_api/_generated.py:19446: in inner_text
+    self._sync(self._impl_obj.inner_text(timeout=to_milliseconds(timeout)))
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_locator.py:498: in inner_text
+    return await self._frame.inner_text(
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_frame.py:743: in inner_text
+    return await self._channel.send(
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_connection.py:76: in send
+    return await self._connection.wrap_api_call(
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_connection.py:632: in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+E   playwright._impl._errors.TimeoutError: Locator.inner_text: Timeout 4500ms exceeded.
+E   Call log:
+E     - waiting for locator(".cri-saved-status")
+_ test_r4_frozen_missing_progress_is_not_reconstructed[zh-2026-10-18T12:00:00Z] _
+tests/test_crypto_intelligence_r4_browser.py:1235: in test_r4_frozen_missing_progress_is_not_reconstructed
+    assert page.locator(".cri-saved-status").inner_text() == "原始进展暂无"
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/sync_api/_generated.py:19446: in inner_text
+    self._sync(self._impl_obj.inner_text(timeout=to_milliseconds(timeout)))
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_locator.py:498: in inner_text
+    return await self._frame.inner_text(
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_frame.py:743: in inner_text
+    return await self._channel.send(
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_connection.py:76: in send
+    return await self._connection.wrap_api_call(
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_connection.py:632: in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+E   playwright._impl._errors.TimeoutError: Locator.inner_text: Timeout 4500ms exceeded.
+E   Call log:
+E     - waiting for locator(".cri-saved-status")
+_________ test_r4_frozen_remove_keeps_semantic_focus_across_locale[en] _________
+tests/test_crypto_intelligence_r4_browser.py:1253: in test_r4_frozen_remove_keeps_semantic_focus_across_locale
+    assert page.locator('[data-snapshot-action="remove"]').evaluate("node => document.activeElement===node")
+E   assert False
+E    +  where False = evaluate('node => document.activeElement===node')
+E    +    where evaluate = <Locator frame=<Frame name= url='http://127.0.0.1:61565/crypto-r4.html?lang=en#scenarios?h=30&panel=saved-item%3Ar4-display%3A2026-10-17%3A30%3Acontinuation'> selector='[data-snapshot-action="remove"]'>.evaluate
+E    +      where <Locator frame=<Frame name= url='http://127.0.0.1:61565/crypto-r4.html?lang=en#scenarios?h=30&panel=saved-item%3Ar4-display%3A2026-10-17%3A30%3Acontinuation'> selector='[data-snapshot-action="remove"]'> = locator('[data-snapshot-action="remove"]')
+E    +        where locator = <Page url='http://127.0.0.1:61565/crypto-r4.html?lang=en#scenarios?h=30&panel=saved-item%3Ar4-display%3A2026-10-17%3A30%3Acontinuation'>.locator
+_________ test_r4_frozen_remove_keeps_semantic_focus_across_locale[zh] _________
+tests/test_crypto_intelligence_r4_browser.py:1253: in test_r4_frozen_remove_keeps_semantic_focus_across_locale
+    assert page.locator('[data-snapshot-action="remove"]').evaluate("node => document.activeElement===node")
+E   assert False
+E    +  where False = evaluate('node => document.activeElement===node')
+E    +    where evaluate = <Locator frame=<Frame name= url='http://127.0.0.1:61565/crypto-r4.html?lang=zh#scenarios?h=30&panel=saved-item%3Ar4-display%3A2026-10-17%3A30%3Acontinuation'> selector='[data-snapshot-action="remove"]'>.evaluate
+E    +      where <Locator frame=<Frame name= url='http://127.0.0.1:61565/crypto-r4.html?lang=zh#scenarios?h=30&panel=saved-item%3Ar4-display%3A2026-10-17%3A30%3Acontinuation'> selector='[data-snapshot-action="remove"]'> = locator('[data-snapshot-action="remove"]')
+E    +        where locator = <Page url='http://127.0.0.1:61565/crypto-r4.html?lang=zh#scenarios?h=30&panel=saved-item%3Ar4-display%3A2026-10-17%3A30%3Acontinuation'>.locator
+=========================== short test summary info ============================
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_frozen_layout_frontloads_the_complete_condition[en-1440-dark-no-preference]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_frozen_layout_frontloads_the_complete_condition[zh-1440-light-no-preference]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_frozen_layout_frontloads_the_complete_condition[en-390-light-no-preference]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_frozen_layout_frontloads_the_complete_condition[zh-390-dark-no-preference]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_frozen_layout_frontloads_the_complete_condition[en-320-dark-reduce]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_frozen_layout_frontloads_the_complete_condition[zh-320-light-reduce]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_frozen_expiry_is_distinct_from_original_progress
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_frozen_legacy_layout_keeps_the_case_without_inventing_evidence[en-320]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_frozen_legacy_layout_keeps_the_case_without_inventing_evidence[zh-390]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_saved_review_disclosure_keeps_qualifications_and_locale_focus[en-320]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_saved_review_disclosure_keeps_qualifications_and_locale_focus[zh-390]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_saved_recovery_actions_have_clear_targets_and_spacing[missing-en-320]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_saved_recovery_actions_have_clear_targets_and_spacing[unreadable-en-320]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_saved_recovery_actions_have_clear_targets_and_spacing[missing-zh-390]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_saved_recovery_actions_have_clear_targets_and_spacing[unreadable-zh-390]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_frozen_missing_progress_is_not_reconstructed[en-2026-12-01T12:00:00Z]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_frozen_missing_progress_is_not_reconstructed[zh-2026-10-18T12:00:00Z]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_frozen_remove_keeps_semantic_focus_across_locale[en]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_frozen_remove_keeps_semantic_focus_across_locale[zh]
+19 failed, 2 passed, 61 deselected in 39.56s

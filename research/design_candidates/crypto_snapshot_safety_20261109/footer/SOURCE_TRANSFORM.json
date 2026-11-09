@@ -1,0 +1,4 @@
+{
+  "before": ".cri{max-width:1320px;width:calc(100% - 48px);margin:0 auto;padding:24px 0 64px}",
+  "after": ".cri{max-width:1320px;width:calc(100% - 48px);margin:0 auto;padding:24px 0 calc(96px + env(safe-area-inset-bottom,0px))}"
+}

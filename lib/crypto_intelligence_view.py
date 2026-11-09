@@ -278,17 +278,27 @@ def build_view(cockpit: dict, class_state: dict, asset_states: dict, chart: dict
         covered = coverage.get("available") is True and iso_day(item.get("as_of")) is not None
         if covered and as_of and item["as_of"] > as_of:
             covered = False
+        relative = item.get("relative")
+        relative = relative if isinstance(relative, dict) else {}
+        relative_value = finite(relative.get("change_90d_pct")) if covered else None
+        # Qualify both locales together; missing evidence never implies direction.
+        relative_copy = ("Unavailable", "暂无")
+        if covered and relative_value is not None:
+            relative_copy = (relative.get("state") or "Unavailable", relative.get("state_zh") or "暂无")
+        elif covered and relative.get("state") == "Building history":
+            relative_copy = ("Building history", "积累历史中")
+        asset_price = finite(item.get("price"))
+        asset_price = asset_price if asset_price is not None and asset_price > 0 else None
         assets.append({
             "symbol": symbol, "name": {"ETH": "Ethereum", "SOL": "Solana"}.get(symbol, symbol),
-            "as_of": item.get("as_of"), "price": finite(item.get("price")),
+            "as_of": item.get("as_of"), "price": asset_price,
             "change_30d_pct": finite(item.get("change_30d_pct")) if covered else None,
-            "relative_90d_pct": finite((item.get("relative") or {}).get("change_90d_pct")) if covered else None,
+            "relative_90d_pct": relative_value,
             "trend_en": ((item.get("trend") or {}).get("state") or "Unavailable") if covered else "Unavailable",
             "trend_zh": ((item.get("trend") or {}).get("state_zh") or "暂无") if covered else "暂无",
             "risk_en": ((item.get("risk") or {}).get("state") or "Unavailable") if covered else "Unavailable",
             "risk_zh": ((item.get("risk") or {}).get("state_zh") or "暂无") if covered else "暂无",
-            "relative_en": ((item.get("relative") or {}).get("state") or "Unavailable") if covered else "Unavailable",
-            "relative_zh": ((item.get("relative") or {}).get("state_zh") or "暂无") if covered else "暂无",
+            "relative_en": relative_copy[0], "relative_zh": relative_copy[1],
             "coverage_en": coverage.get("note_en") or "Price history unavailable.",
             "coverage_zh": coverage.get("note_zh") or "暂无价格历史。",
             "available": covered,

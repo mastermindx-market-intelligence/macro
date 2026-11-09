@@ -1,0 +1,51 @@
+{
+  "command": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_crypto_intelligence_r4.py",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_quote_clarity_server_and_inspector_agree_without_losing_asset_context",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_relative_integrity_projection_reaches_overview_inspector_and_comparison",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_relative_integrity_leaders_filter_uses_only_qualified_projection",
+    "--tb=short",
+    "--junitxml=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/quote-clarity-final/junit.xml",
+    "--basetemp=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/quote-clarity-final/pytest-temp"
+  ],
+  "exit_code": 0,
+  "seconds": 15.792,
+  "source_parent": "af9322f8e870be16f6f29fc38b8b573267347bd6",
+  "runtime_asset_version": "4165f78946a7",
+  "source_inputs": {
+    "lib/crypto_intelligence_view.py": {
+      "bytes": 22671,
+      "sha256": "3457d4a183444f6b4d2b8bbed1d5678d30f93e387cd9861f147d58211eb83f73",
+      "blob": "5c90c35c1307d425cb5979aa3ce609e408cfddc6"
+    },
+    "scripts/build_crypto_intelligence_r4.py": {
+      "bytes": 5268,
+      "sha256": "9de0d5e680d2f3f799504f84e67e949cfa783a615b2b7ba26f5573edf17eea68",
+      "blob": "f5106388977021ec7c4c5a1bd2803f4687b9c9ee"
+    },
+    "templates/crypto_intelligence_r4.html.j2": {
+      "bytes": 21405,
+      "sha256": "6b057b0ebea80fafc1f9b6a29f8bf1769e65c9a407c946ef519181045b3cae55",
+      "blob": "4447cc72b9aba39d4703c26d94780761c34c860c"
+    },
+    "templates/crypto_intelligence_r4.js": {
+      "bytes": 65173,
+      "sha256": "d1998085cd44085e4593c7f27f3c74aa82d36b4afc2d65edbc2af79285e05642",
+      "blob": "31fb62cac40d4e50fa42c42468e2890c148cf250"
+    },
+    "tests/test_crypto_intelligence_r4.py": {
+      "bytes": 22243,
+      "sha256": "e9770802017262d3425286bead1b099cd8b2d0512b42d5b61206a9fe79b3ace6",
+      "blob": "8ac9c51f3d18e7831555aa6154c2d07267f8b36b"
+    },
+    "tests/test_crypto_intelligence_r4_browser.py": {
+      "bytes": 101427,
+      "sha256": "6a2d2466382479123ed2d3c54790b4b2bf638e7ceda87056293efbb7e4de46a1",
+      "blob": "17c285916597455631c36e4a8147c3e06366187f"
+    }
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "command": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_return_rejects_stale_reading_identity",
+    "--tb=short",
+    "--junitxml=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/current-return-harness-final/junit.xml",
+    "--basetemp=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/current-return-harness-final/pytest-temp"
+  ],
+  "exit_code": 0,
+  "seconds": 4.23,
+  "source_parent": "bcf8e84957017181dc323ff3c3a9f4b32b218799",
+  "runtime_asset_version": "54f56205be7e",
+  "test_inputs": {
+    "bytes": 157110,
+    "sha256": "fb8e0bfb4e9976061ecdd9350cb115d3d3d42753a66739a109675c30a3484ddb",
+    "blob": "832147c3ede08f31eaefa67fc2866f716aada1c0"
+  },
+  "runtime_unchanged_from_initial_candidate": true
+}

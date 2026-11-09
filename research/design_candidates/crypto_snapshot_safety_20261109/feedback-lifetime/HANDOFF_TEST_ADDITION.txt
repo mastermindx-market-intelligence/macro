@@ -1,0 +1,29 @@
+
+
+
+def test_r4_newer_feedback_inside_handoff_history_write_survives_the_older_handoff(snapshot_page):
+    page = snapshot_page()
+    source = _scenario(page)
+    _seed(page, [_frozen(source)])
+    _open_saved(page, source["revision"])
+    _feedback_node(page)
+    page.evaluate("""() => {
+      const replace=history.replaceState.bind(history);let fired=false;
+      history.replaceState=function(meta,title,url) {
+        const result=replace(meta,title,url);
+        if(!fired && url && new URLSearchParams(new URL(url,location.href).hash.split('?')[1]).get('panel')==='saved') {
+          fired=true;window.__feedbackHandoffReentered=true;
+          document.querySelector('[data-snapshot-action="remove"]').click();
+          window.__newerHandoffMessage=document.getElementById('cri-toast').textContent;
+        }
+        return result;
+      };
+    }""")
+    page.locator('[data-snapshot-action="remove"]').click()
+    page.wait_for_function("window.__feedbackHandoffReentered===true && document.getElementById('cri-dialog-body').dataset.panel==='saved'")
+    assert page.evaluate("window.__newerHandoffMessage") == "This snapshot is no longer saved on this device."
+    assert page.locator("#cri-toast").is_visible()
+    assert page.locator("#cri-toast").text_content() == "This snapshot is no longer saved on this device."
+    assert page.locator("#cri-toast").evaluate("n => n===window.__feedbackNode")
+    assert page.locator("#cri-dialog-close").evaluate("n => document.activeElement===n")
+    assert _entries(page) == [] and _writes(page) == 1

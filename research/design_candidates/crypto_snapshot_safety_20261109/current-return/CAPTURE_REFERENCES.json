@@ -1,0 +1,105 @@
+{
+  "assets": "2698fd4fd4ed",
+  "captures": [
+    {
+      "name": "current-return-review-en-390.png",
+      "path": "current-return-entry-verified/captures/current-return-review-en-390.png",
+      "role": "Final verified UI",
+      "bytes": 41791,
+      "sha256": "6e693eddac3a60b42fbcf6bdde8a65efb5de46b5526861f32897f07a2bb79ea1",
+      "blob": "21c07fa072c928aaca721c27ec562b441c0a9dc2",
+      "width": 390,
+      "height": 520,
+      "repository_path": "research/design_candidates/crypto_snapshot_safety_20261109/current-return/captures/current-return-review-en-390.png",
+      "inspected": true
+    },
+    {
+      "name": "current-return-review-zh-320.png",
+      "path": "current-return-entry-verified/captures/current-return-review-zh-320.png",
+      "role": "Final verified UI",
+      "bytes": 36317,
+      "sha256": "3f10ad246bc94a2be3dddb3e532cc90251507cedea2d88f04dacd23399acd330",
+      "blob": "793cb5e2f77f0ac016576ce22e9328f4f49c59c3",
+      "width": 320,
+      "height": 520,
+      "repository_path": "research/design_candidates/crypto_snapshot_safety_20261109/current-return/captures/current-return-review-zh-320.png",
+      "inspected": true
+    },
+    {
+      "name": "current-return-details-en-390.png",
+      "path": "current-return-entry-verified/captures/current-return-details-en-390.png",
+      "role": "Final verified UI",
+      "bytes": 45142,
+      "sha256": "43cc4d6f3abcd3f85023637dd58be5f009bb9ecd750af4880bf0dc0cf0429b5b",
+      "blob": "ac76fb93b7f6a2f5a62093f0c909cdc9f70b7332",
+      "width": 390,
+      "height": 520,
+      "repository_path": "research/design_candidates/crypto_snapshot_safety_20261109/current-return/captures/current-return-details-en-390.png",
+      "inspected": true
+    },
+    {
+      "name": "current-return-details-zh-320.png",
+      "path": "current-return-entry-verified/captures/current-return-details-zh-320.png",
+      "role": "Final verified UI",
+      "bytes": 42740,
+      "sha256": "a226954219bcbd2f88a167b035755095283d8260db587b09d6df23de3cb1ec88",
+      "blob": "c3119768faf1e37936bd6a70e3b9194e73da2acd",
+      "width": 320,
+      "height": 520,
+      "repository_path": "research/design_candidates/crypto_snapshot_safety_20261109/current-return/captures/current-return-details-zh-320.png",
+      "inspected": true
+    },
+    {
+      "name": "current-return-detached-en-390.png",
+      "path": "current-return-entry-verified/captures/current-return-detached-en-390.png",
+      "role": "Final verified UI",
+      "bytes": 54722,
+      "sha256": "84fef949e19c4556f2618fadc97fbf8974d86d23c4666a777cd422641aeea398",
+      "blob": "9aba471d6ec6d44d27f13a1e67ff1bea0d68de8f",
+      "width": 390,
+      "height": 764,
+      "repository_path": "research/design_candidates/crypto_snapshot_safety_20261109/current-return/captures/current-return-detached-en-390.png",
+      "inspected": true
+    },
+    {
+      "name": "current-return-detached-zh-320.png",
+      "path": "current-return-entry-verified/captures/current-return-detached-zh-320.png",
+      "role": "Final verified UI",
+      "bytes": 49247,
+      "sha256": "6faf02865ac4a64b145ad0c0d5053d53f89378e80bace11ca233b94d69984781",
+      "blob": "195e2b9c04582d8e17fd0c3b53318d3a21796855",
+      "width": 320,
+      "height": 764,
+      "repository_path": "research/design_candidates/crypto_snapshot_safety_20261109/current-return/captures/current-return-detached-zh-320.png",
+      "inspected": true
+    },
+    {
+      "name": "initial-current-return-review-en-390.png",
+      "path": "current-return-final/captures/current-return-review-en-390.png",
+      "role": "Initial candidate before first-reading correction",
+      "bytes": 35364,
+      "sha256": "37a8e68f997e9254847c9ebcc97d53f088874e33cc0b2bcef557cecee9503273",
+      "blob": "72f3c3724812a2606be915ed2768aed5fc64a2af",
+      "width": 390,
+      "height": 520,
+      "repository_path": "research/design_candidates/crypto_snapshot_safety_20261109/current-return/captures/initial-current-return-review-en-390.png",
+      "inspected": true
+    },
+    {
+      "name": "initial-current-return-review-zh-320.png",
+      "path": "current-return-final/captures/current-return-review-zh-320.png",
+      "role": "Initial candidate before first-reading correction",
+      "bytes": 28911,
+      "sha256": "30ab65ab6c2ae44ae6b8fd1f0bdd7bb6f969c28d5b4e082e96c545e36e5b4e24",
+      "blob": "7005d1ce60d97fdf3af15fe710cfca604539dc94",
+      "width": 320,
+      "height": 520,
+      "repository_path": "research/design_candidates/crypto_snapshot_safety_20261109/current-return/captures/initial-current-return-review-zh-320.png",
+      "inspected": true
+    }
+  ],
+  "limits": [
+    "Six final viewport crops; two initial crops document inherited scroll before correction.",
+    "Historical/synthetic native fixture, not hosted acceptance."
+  ]
+}

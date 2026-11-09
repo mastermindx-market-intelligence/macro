@@ -1,0 +1,96 @@
+FFFFFFFFF...F........                                                    [100%]
+=================================== FAILURES ===================================
+_______ test_r4_native_route_destinations_match_ordinary_context[en-390] _______
+tests/test_crypto_intelligence_r4_browser.py:2030: in test_r4_native_route_destinations_match_ordinary_context
+    assert {key: value[0] for key, value in parse_qs(params).items()} == expected
+E   AssertionError: assert {} == {'h': '30', '...tressed', ...}
+E     
+E     Right contains 6 more items:
+E     {'extra': 'kept',
+E      'filter': 'stressed',
+E      'h': '30',
+E      'q': 'eth',
+E      'sort': 'return',
+E      'window': '30'}
+E     Use -v to get more diff
+_______ test_r4_native_route_destinations_match_ordinary_context[zh-320] _______
+tests/test_crypto_intelligence_r4_browser.py:2030: in test_r4_native_route_destinations_match_ordinary_context
+    assert {key: value[0] for key, value in parse_qs(params).items()} == expected
+E   AssertionError: assert {} == {'h': '30', '...tressed', ...}
+E     
+E     Right contains 6 more items:
+E     {'extra': 'kept',
+E      'filter': 'stressed',
+E      'h': '30',
+E      'q': 'eth',
+E      'sort': 'return',
+E      'window': '30'}
+E     Use -v to get more diff
+____ test_r4_in_section_keyboard_route_keeps_a_visible_focus_owner[en-390] _____
+tests/test_crypto_intelligence_r4_browser.py:2070: in test_r4_in_section_keyboard_route_keeps_a_visible_focus_owner
+    assert target.evaluate("n=>document.activeElement===n")
+E   assert False
+E    +  where False = evaluate('n=>document.activeElement===n')
+E    +    where evaluate = <Locator frame=<Frame name= url='http://127.0.0.1:52269/crypto-r4.html?lang=en#markets?h=30&window=30&q=eth&filter=stressed'> selector='.cri-tabs [data-route="markets"]'>.evaluate
+____ test_r4_in_section_keyboard_route_keeps_a_visible_focus_owner[zh-320] _____
+tests/test_crypto_intelligence_r4_browser.py:2070: in test_r4_in_section_keyboard_route_keeps_a_visible_focus_owner
+    assert target.evaluate("n=>document.activeElement===n")
+E   assert False
+E    +  where False = evaluate('n=>document.activeElement===n')
+E    +    where evaluate = <Locator frame=<Frame name= url='http://127.0.0.1:52269/crypto-r4.html?lang=zh#markets?h=30&window=30&q=eth&filter=stressed'> selector='.cri-tabs [data-route="markets"]'>.evaluate
+__________ test_r4_route_focus_handoff_yields_to_a_newer_choice[view] __________
+tests/test_crypto_intelligence_r4_browser.py:2107: in test_r4_route_focus_handoff_yields_to_a_newer_choice
+    assert page.evaluate("__routeChoiceRan")
+E   AssertionError: assert False
+E    +  where False = evaluate('__routeChoiceRan')
+E    +    where evaluate = <Page url='http://127.0.0.1:52269/crypto-r4.html?lang=en#markets?h=30&window=30&extra=kept'>.evaluate
+________ test_r4_route_focus_handoff_yields_to_a_newer_choice[language] ________
+tests/test_crypto_intelligence_r4_browser.py:2107: in test_r4_route_focus_handoff_yields_to_a_newer_choice
+    assert page.evaluate("__routeChoiceRan")
+E   AssertionError: assert False
+E    +  where False = evaluate('__routeChoiceRan')
+E    +    where evaluate = <Page url='http://127.0.0.1:52269/crypto-r4.html?lang=en#markets?h=30&window=30&extra=kept'>.evaluate
+_________ test_r4_route_focus_handoff_yields_to_a_newer_choice[focus] __________
+tests/test_crypto_intelligence_r4_browser.py:2107: in test_r4_route_focus_handoff_yields_to_a_newer_choice
+    assert page.evaluate("__routeChoiceRan")
+E   AssertionError: assert False
+E    +  where False = evaluate('__routeChoiceRan')
+E    +    where evaluate = <Page url='http://127.0.0.1:52269/crypto-r4.html?lang=en#markets?h=30&window=30&extra=kept'>.evaluate
+_________ test_r4_route_focus_handoff_yields_to_a_newer_choice[detach] _________
+tests/test_crypto_intelligence_r4_browser.py:2107: in test_r4_route_focus_handoff_yields_to_a_newer_choice
+    assert page.evaluate("__routeChoiceRan")
+E   AssertionError: assert False
+E    +  where False = evaluate('__routeChoiceRan')
+E    +    where evaluate = <Page url='http://127.0.0.1:52269/crypto-r4.html?lang=en#markets?h=30&window=30&extra=kept'>.evaluate
+__ test_r4_consumed_or_modified_route_click_is_not_replayed_by_app[consumed] ___
+tests/test_crypto_intelligence_r4_browser.py:2142: in test_r4_consumed_or_modified_route_click_is_not_replayed_by_app
+    assert page.url == before_url and page.evaluate("history.length") == before_history
+E   AssertionError: assert ('http://127.0...=30&window=30' == 'http://127.0...=30&window=30'
+E     
+E     Skipping 36 identical leading characters in diff, use -v to show
+E     - l?lang=en#overview?h=30&window=30
+E     ?           ^^ ^^^^^
+E     + l?lang=en#markets?h=30&window=30
+E     ?           ^^^^ ^^)
+_____ test_r4_consumed_or_modified_route_click_is_not_replayed_by_app[alt] _____
+tests/test_crypto_intelligence_r4_browser.py:2142: in test_r4_consumed_or_modified_route_click_is_not_replayed_by_app
+    assert page.url == before_url and page.evaluate("history.length") == before_history
+E   AssertionError: assert ('http://127.0...=30&window=30' == 'http://127.0...=30&window=30'
+E     
+E     Skipping 36 identical leading characters in diff, use -v to show
+E     - l?lang=en#overview?h=30&window=30
+E     ?           ^^ ^^^^^
+E     + l?lang=en#markets?h=30&window=30
+E     ?           ^^^^ ^^)
+=========================== short test summary info ============================
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_native_route_destinations_match_ordinary_context[en-390]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_native_route_destinations_match_ordinary_context[zh-320]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_in_section_keyboard_route_keeps_a_visible_focus_owner[en-390]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_in_section_keyboard_route_keeps_a_visible_focus_owner[zh-320]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_route_focus_handoff_yields_to_a_newer_choice[view]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_route_focus_handoff_yields_to_a_newer_choice[language]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_route_focus_handoff_yields_to_a_newer_choice[focus]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_route_focus_handoff_yields_to_a_newer_choice[detach]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_consumed_or_modified_route_click_is_not_replayed_by_app[consumed]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_consumed_or_modified_route_click_is_not_replayed_by_app[alt]
+10 failed, 11 passed in 13.44s

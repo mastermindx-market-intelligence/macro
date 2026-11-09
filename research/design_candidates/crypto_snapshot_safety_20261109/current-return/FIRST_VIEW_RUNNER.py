@@ -1,0 +1,50 @@
+from pathlib import Path
+import os,subprocess,time,hashlib,json,sys
+r=Path("/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm");phase=r/'current-return-verified';rendered=r/'current-return-verified-rendered'
+assert not phase.exists() and not rendered.exists(),'Verified output already exists'
+expected=json.loads((r/'current-return-parent-input.json').read_text());previous=json.loads((r/'current-return-pre-visual-source-receipt.json').read_text());changes=json.loads((r/'current-return-transforms.json').read_text())
+def meta(b):return {'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest(),'blob':hashlib.sha1(('blob '+str(len(b))+'\0').encode()+b).hexdigest()}
+for path,m in dict(previous['changed'],**previous['unchanged']).items():
+ if path not in ['tests/test_crypto_intelligence_r4_browser.py','templates/crypto_intelligence_r4.js']:assert meta((r/path).read_bytes())==m,path
+inverse={}
+for path,steps in changes['source'].items():
+ text=(r/path).read_text()
+ for step in reversed(steps):
+  assert text.count(step['after'])==step['count'],(path,'inverse occurrence',step['after'][:60])
+  text=text.replace(step['after'],step['before'])
+ inverse[path]=text==(r/'current-return-parent'/path).read_text()
+assert all(inverse.values()),inverse
+test=(r/'tests/test_crypto_intelligence_r4_browser.py').read_text();addition=changes['test_addition']
+assert test.endswith(addition) and test[:-len(addition)]==(r/'current-return-parent/tests/test_crypto_intelligence_r4_browser.py').read_text()
+visual=changes['visual_changes'];assert test.endswith(visual['test_addition']);prior_test=test[:-len(visual['test_addition'])]
+for step in reversed(visual['test_replacements']):
+ assert prior_test.count(step['after'])==step['count'];prior_test=prior_test.replace(step['after'],step['before'])
+assert meta(prior_test.encode())==previous['changed']['tests/test_crypto_intelligence_r4_browser.py']
+prior_source=(r/'templates/crypto_intelligence_r4.js').read_text()
+for step in reversed(visual['source']):
+ assert prior_source.count(step['after'])==step['count'];prior_source=prior_source.replace(step['after'],step['before'])
+assert meta(prior_source.encode())==previous['changed']['templates/crypto_intelligence_r4.js']
+sys.path.insert(0,str(r))
+from scripts.build_crypto_intelligence_r4 import render_view
+view=json.loads((r/'site/crypto_intelligence_r4.json').read_text());render_view(view,rendered)
+version=hashlib.sha256(b''.join((r/'templates'/name).read_bytes() for name in ['crypto_intelligence_r4.html.j2','crypto_intelligence_r4.css','crypto_intelligence_r4.js'])).hexdigest()[:12]
+html={}
+for name in ['crypto-r4.html','vector-r4.html']:
+ text=(rendered/name).read_text();before=(r/'site'/name).read_text()
+ assert text.count(version)==2 and text.replace(version,previous['assets'])==before
+ html[name]=text.replace(version,expected['assets'])==(r/'current-return-parent/site'/name).read_text();assert html[name],name
+assert (rendered/'crypto_intelligence_r4.json').read_bytes()==(r/'site/crypto_intelligence_r4.json').read_bytes()
+for name in ['crypto_intelligence_r4.css','crypto_intelligence_r4.js']:assert (rendered/name).read_bytes()==(r/'templates'/name).read_bytes()
+for name in ['crypto-r4.html','vector-r4.html','crypto_intelligence_r4.js']:(r/'site'/name).write_bytes((rendered/name).read_bytes())
+changed={};unchanged={}
+for path,m in expected['files'].items():
+ current=meta((r/path).read_bytes());(unchanged if current==m else changed)[path]=current
+source={'source_parent':expected['head'],'assets':version,'changed':changed,'unchanged':unchanged,'product_inverse_exact':inverse,'browser_test_inverse_exact':True,'retained_html_except_two_asset_refs_exact':html,'retained_view_exact':True,'served_assets_exact':True,'visual_source_and_test_correction_inverse_exact':True,'test_injection_correction_previously_verified':True}
+(r/'current-return-source-receipt.json').write_text(json.dumps(source,indent=2)+'\n')
+phase.mkdir()
+env=os.environ.copy();env.update(PYTHONPATH=str(r),PYTHONDONTWRITEBYTECODE='1',MMX_CHROMIUM_EXECUTABLE='/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',MMX_CRYPTO_SNAPSHOT_REPORT=str(phase/'observations.json'),MMX_CRYPTO_SNAPSHOT_CAPTURE_DIR=str(phase/'captures'))
+cmd=['/opt/homebrew/opt/python@3.14/bin/python3.14','-m','pytest','-q']+["tests/test_crypto_intelligence_r4_browser.py::test_r4_current_review_returns_to_the_same_case_and_reading","tests/test_crypto_intelligence_r4_browser.py::test_r4_current_review_close_exits_the_managed_journey","tests/test_crypto_intelligence_r4_browser.py::test_r4_detached_current_review_replaces_with_exact_scenario","tests/test_crypto_intelligence_r4_browser.py::test_r4_current_parent_rejects_the_same_id_at_a_different_horizon","tests/test_crypto_intelligence_r4_browser.py::test_r4_current_parent_accepts_the_normalized_default_horizon","tests/test_crypto_intelligence_r4_browser.py::test_r4_current_return_rejects_stale_reading_identity","tests/test_crypto_intelligence_r4_browser.py::test_r4_current_locale_preserves_disclosure_focus_and_reading","tests/test_crypto_intelligence_r4_browser.py::test_r4_current_restore_uses_heading_when_save_becomes_disabled","tests/test_crypto_intelligence_r4_browser.py::test_r4_current_restore_does_not_swap_remove_focus_to_save","tests/test_crypto_intelligence_r4_browser.py::test_r4_current_return_survives_unreadable_saved_storage","tests/test_crypto_intelligence_r4_browser.py::test_r4_current_parent_focus_callback_keeps_the_new_destination","tests/test_crypto_intelligence_r4_browser.py::test_r4_current_parent_double_activation_moves_back_once","tests/test_crypto_intelligence_r4_browser.py::test_r4_current_parent_is_absent_without_a_resolved_case","tests/test_crypto_intelligence_r4_browser.py::test_r4_current_evidence_native_back_restores_the_case_reader","tests/test_crypto_intelligence_r4_browser.py::test_r4_saved_journey_restores_the_exact_outer_horizon","tests/test_crypto_intelligence_r4_browser.py::test_r4_detached_saved_item_still_has_a_real_review_parent","tests/test_crypto_intelligence_r4_browser.py::test_r4_truly_detached_review_opens_exact_saved_case_by_replace","tests/test_crypto_intelligence_r4_browser.py::test_r4_saved_parent_focus_callback_keeps_its_new_destination","tests/test_crypto_intelligence_r4_browser.py::test_r4_saved_parent_rechecks_the_requested_record_before_return","tests/test_crypto_intelligence_r4_browser.py::test_r4_legacy_saved_parent_horizon_is_repaired_in_the_same_entry","tests/test_crypto_intelligence_r4_browser.py::test_r4_saved_locale_keeps_disclosure_focus_and_reading_position","tests/test_crypto_intelligence_r4_browser.py::test_r4_close_falls_back_to_the_restored_active_view_heading","tests/test_crypto_intelligence_r4_browser.py::test_r4_missing_current_case_recovers_without_borrowing_review_context","tests/test_crypto_intelligence_r4_browser.py::test_r4_generic_and_valid_current_reviews_remain_distinct","tests/test_crypto_intelligence_r4_browser.py::test_r4_current_scenario_retains_its_existing_reading_order","tests/test_crypto_intelligence_r4_browser.py::test_r4_newer_focus_during_confirmation_survives","tests/test_crypto_intelligence_r4_browser.py::test_r4_completion_focus_callbacks_keep_their_new_panel","tests/test_crypto_intelligence_r4_browser.py::test_r4_programmatic_save_preserves_unrelated_focus_and_stale_save_stays_safe","tests/test_crypto_intelligence_r4_browser.py::test_r4_current_review_locale_does_not_restart_existing_reading"]+['--tb=short','--junitxml='+str(phase/'junit.xml'),'--basetemp='+str(phase/'pytest-temp')]
+start=time.monotonic();p=subprocess.run(cmd,cwd=r,env=env,capture_output=True,text=True,timeout=120)
+(phase/'stdout.txt').write_text(p.stdout);(phase/'stderr.txt').write_text(p.stderr)
+result={'command':cmd,'exit_code':p.returncode,'seconds':round(time.monotonic()-start,3),'source_parent':expected['head'],'runtime_asset_version':version,'candidate_inputs':changed}
+(phase/'result.json').write_text(json.dumps(result,indent=2)+'\n');print(json.dumps(result));print(p.stdout[-6500:]);print(p.stderr)

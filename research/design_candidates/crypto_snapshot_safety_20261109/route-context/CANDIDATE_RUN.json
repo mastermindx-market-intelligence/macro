@@ -1,0 +1,33 @@
+{
+  "command": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_native_route_destinations_match_ordinary_context",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_in_section_keyboard_route_keeps_a_visible_focus_owner",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_route_focus_handoff_yields_to_a_newer_choice",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_consumed_or_modified_route_click_is_not_replayed_by_app",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_horizon_deep_link_drawer_history_and_chart_window",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_missing_current_case_recovers_without_borrowing_review_context",
+    "--tb=short",
+    "--junitxml=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/route-context-final/junit.xml",
+    "--basetemp=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/route-context-final/pytest-temp"
+  ],
+  "exit_code": 0,
+  "seconds": 13.408,
+  "source_parent": "059b9a6acd6d84726e20781b52a66e0c2a5ec651",
+  "runtime_asset_version": "f15feec04ead",
+  "candidate_inputs": {
+    "templates/crypto_intelligence_r4.js": {
+      "bytes": 67211,
+      "sha256": "ed1301921ebca77074becda5dc74f982e9d1c3ca317687f0675fb68192ebf5dc",
+      "blob": "60459763cebf95fb058a9f380a57cc5fdb0b1643"
+    },
+    "tests/test_crypto_intelligence_r4_browser.py": {
+      "bytes": 120911,
+      "sha256": "29c022d2c6f83d98adb7d013856047bd2c628f858a9543a3676653ce82038265",
+      "blob": "d77df90aec0c4087d68e90529329ffb1c344583f"
+    }
+  }
+}

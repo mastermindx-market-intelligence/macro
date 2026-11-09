@@ -1,6 +1,7 @@
 """Contract-focused R4 checks: missing data, temporal honesty, and authority."""
 from copy import deepcopy
 from datetime import date, timedelta
+import json
 
 import pytest
 
@@ -287,3 +288,245 @@ def test_shadow_failure_does_not_break_existing_crypto_render(tmp_path, monkeypa
     monkeypatch.setattr(candidate, "build", fail)
     legacy._build_r4_shadow(tmp_path)
     assert "existing production routes preserved" in caplog.text
+
+
+# Projection integrity: these are synthetic contracts, not observed market inputs.
+def relative_integrity_inputs():
+    args = inputs()
+    base = deepcopy(args[2]["assets"]["ETH"])
+    base["trend"]["state_zh"] = "上行"
+    base["risk"]["state_zh"] = "承压"
+    states = [
+        ("ETH", float("inf"), "Leading Bitcoin", "领先比特币"),
+        ("SOL", 0.0, "Tracking Bitcoin", "跟随比特币"),
+        ("BTC", None, "Building history", "领先比特币"),
+        ("XRP", 10.0, "Leading Bitcoin", "领先比特币"),
+    ]
+    args[2]["assets"] = {}
+    for symbol, value, state, state_zh in states:
+        item = deepcopy(base)
+        item["relative"] = {"change_90d_pct": value, "state": state, "state_zh": state_zh}
+        args[2]["assets"][symbol] = item
+    return args
+
+
+@pytest.mark.parametrize("kind,state,state_zh", [
+    ("missing", "Leading Bitcoin", "领先比特币"),
+    ("null", "Lagging Bitcoin", "落后比特币"),
+    ("true", "Tracking Bitcoin", "跟随比特币"),
+    ("false", "Leading Bitcoin", "积累历史中"),
+    ("nan", "Tracking Bitcoin", "领先比特币"),
+    ("positive_infinity", "Leading Bitcoin", "领先比特币"),
+    ("negative_infinity", "Lagging Bitcoin", "落后比特币"),
+    ("numeric_string", "Leading Bitcoin", "领先比特币"),
+])
+def test_relative_integrity_unavailable_value_cannot_retain_direction(kind, state, state_zh):
+    args = inputs()
+    baseline = build_view(*args)
+    relative = {"state": state, "state_zh": state_zh}
+    values = {"null": None, "true": True, "false": False, "nan": float("nan"),
+              "positive_infinity": float("inf"), "negative_infinity": float("-inf"), "numeric_string": "0"}
+    if kind != "missing":
+        relative["change_90d_pct"] = values[kind]
+    args[2]["assets"]["ETH"]["relative"] = relative
+    view = build_view(*args)
+    asset = view["assets"][0]
+    assert asset["relative_90d_pct"] is None
+    assert (asset["relative_en"], asset["relative_zh"]) == ("Unavailable", "暂无")
+    # Relative qualification does not remove the asset or its independent evidence.
+    keys = {"relative_90d_pct", "relative_en", "relative_zh"}
+    assert {k: v for k, v in asset.items() if k not in keys} == {
+        k: v for k, v in baseline["assets"][0].items() if k not in keys
+    }
+    assert {k: v for k, v in view.items() if k != "assets"} == {
+        k: v for k, v in baseline.items() if k != "assets"
+    }
+    assert relative["state"] == state and relative["state_zh"] == state_zh
+
+
+@pytest.mark.parametrize("value,state,state_zh", [
+    (0, "Tracking Bitcoin", "跟随比特币"),
+    (0.0, "Tracking Bitcoin", "跟随比特币"),
+    (-0.0, "Tracking Bitcoin", "跟随比特币"),
+    (8.5, "Leading Bitcoin", "领先比特币"),
+    (-8.5, "Lagging Bitcoin", "落后比特币"),
+])
+def test_relative_integrity_finite_readings_keep_supplied_value_and_state(value, state, state_zh):
+    args = inputs()
+    args[2]["assets"]["ETH"]["relative"] = {
+        "change_90d_pct": value, "state": state, "state_zh": state_zh
+    }
+    source = deepcopy(args)
+    asset = build_view(*args)["assets"][0]
+    assert asset["relative_90d_pct"] == value and asset["relative_90d_pct"] is not None
+    assert (asset["relative_en"], asset["relative_zh"]) == (state, state_zh)
+    assert asset["change_30d_pct"] == 0.0 and asset["available"] is True
+    assert args == source
+
+
+@pytest.mark.parametrize("state,state_zh,expected", [
+    ("Building history", "积累历史中", ("Building history", "积累历史中")),
+    ("Building history", None, ("Building history", "积累历史中")),
+    ("Building history", "领先比特币", ("Building history", "积累历史中")),
+    ("Leading Bitcoin", "积累历史中", ("Unavailable", "暂无")),
+    ("building history", "积累历史中", ("Unavailable", "暂无")),
+])
+def test_relative_integrity_null_history_has_one_bilingual_meaning(state, state_zh, expected):
+    args = inputs()
+    args[2]["assets"]["ETH"]["relative"] = {"state": state, "state_zh": state_zh}
+    source = deepcopy(args)
+    asset = build_view(*args)["assets"][0]
+    assert asset["relative_90d_pct"] is None
+    assert (asset["relative_en"], asset["relative_zh"]) == expected
+    assert asset["available"] is True and args == source
+
+
+@pytest.mark.parametrize("damage", ["coverage", "invalid_date", "future_date"])
+@pytest.mark.parametrize("value,state", [(None, "Building history"), (0.0, "Tracking Bitcoin")])
+def test_relative_integrity_existing_eligibility_precedes_history_or_zero(damage, value, state):
+    args = inputs()
+    item = args[2]["assets"]["ETH"]
+    item["relative"] = {"change_90d_pct": value, "state": state, "state_zh": "积累历史中"}
+    if damage == "coverage":
+        item["coverage"]["available"] = False
+    elif damage == "invalid_date":
+        item["as_of"] = "2026-02-30"
+    else:
+        item["as_of"] = "2099-01-01"
+    source = deepcopy(args)
+    asset = build_view(*args)["assets"][0]
+    assert asset["available"] is False
+    assert asset["relative_90d_pct"] is None
+    assert (asset["relative_en"], asset["relative_zh"]) == ("Unavailable", "暂无")
+    assert asset["symbol"] == "ETH" and args == source
+
+
+@pytest.mark.parametrize("relative", [None, [], "Leading Bitcoin", True])
+def test_relative_integrity_malformed_optional_container_preserves_asset(relative):
+    args = inputs()
+    args[2]["assets"]["ETH"]["relative"] = relative
+    source = deepcopy(args)
+    asset = build_view(*args)["assets"][0]
+    assert asset["relative_90d_pct"] is None
+    assert (asset["relative_en"], asset["relative_zh"]) == ("Unavailable", "暂无")
+    assert asset["available"] is True and asset["price"] == 2400.0
+    assert args == source
+
+
+# Quote validity is independent of comparison/risk availability.
+@pytest.mark.parametrize("kind", [
+    "missing", "null", "zero", "negative_zero", "negative", "true", "false",
+    "nan", "positive_infinity", "negative_infinity", "numeric_string", "mapping", "list",
+])
+def test_quote_clarity_invalid_price_preserves_other_asset_evidence(kind):
+    args = inputs()
+    baseline = build_view(*args)
+    item = args[2]["assets"]["ETH"]
+    values = {"null": None, "zero": 0, "negative_zero": -0.0, "negative": -1.0,
+              "true": True, "false": False, "nan": float("nan"),
+              "positive_infinity": float("inf"), "negative_infinity": float("-inf"),
+              "numeric_string": "0.001", "mapping": {}, "list": []}
+    if kind == "missing":
+        item.pop("price")
+    else:
+        item["price"] = values[kind]
+    view = build_view(*args)
+    asset = view["assets"][0]
+    assert asset["price"] is None
+    assert {k: v for k, v in asset.items() if k != "price"} == {
+        k: v for k, v in baseline["assets"][0].items() if k != "price"
+    }
+    assert {k: v for k, v in view.items() if k != "assets"} == {
+        k: v for k, v in baseline.items() if k != "assets"
+    }
+    assert asset["relative_90d_pct"] == 0.0 and asset["change_30d_pct"] == 0.0
+    assert ("price" not in item) if kind == "missing" else item["price"] is values[kind]
+
+
+@pytest.mark.parametrize("value", [5e-324, 0.00000001, 0.001, 104.19, 2413.2])
+def test_quote_clarity_positive_price_remains_a_supplied_number(value):
+    args = inputs()
+    args[2]["assets"]["ETH"]["price"] = value
+    source = deepcopy(args)
+    asset = build_view(*args)["assets"][0]
+    assert asset["price"] == value and asset["price"] > 0
+    assert asset["available"] is True and args == source
+
+
+@pytest.mark.parametrize("value,expected", [
+    (None, "Unavailable暂无"), (0, "Unavailable暂无"), (-1, "Unavailable暂无"),
+    (5e-324, "<$0.00000001"), (0.000000009, "<$0.00000001"),
+    (0.00000001, "$0.00000001"), (0.000000015, "$0.00000002"),
+    (0.000000025, "$0.00000003"), (0.000123455, "$0.00012346"),
+    (0.001, "$0.001"), (0.009999994, "$0.00999999"),
+    (0.009999995, "$0.01"), (0.01, "$0.01"),
+    (104.19, "$104.19"), (2413.2, "$2,413"),
+])
+def test_quote_clarity_server_price_cell_is_explicit_and_never_false_zero(tmp_path, value, expected):
+    from html.parser import HTMLParser
+    from scripts.build_crypto_intelligence_r4 import render_view
+
+    class PriceCells(HTMLParser):
+        def __init__(self):
+            super().__init__()
+            self.active = False
+            self.parts = []
+            self.cells = []
+
+        def handle_starttag(self, tag, attrs):
+            if tag == "td" and dict(attrs).get("data-label") == "Price":
+                self.active = True
+                self.parts = []
+
+        def handle_data(self, data):
+            if self.active:
+                self.parts.append(data)
+
+        def handle_endtag(self, tag):
+            if tag == "td" and self.active:
+                self.cells.append("".join(self.parts))
+                self.active = False
+
+    view = build_view(*inputs())
+    # Exercise the server consumer of a retained view as well as projection output.
+    view["assets"][0]["price"] = value
+    view["history"]["state"] = "unavailable"
+    render_view(view, tmp_path)
+    markup = (tmp_path / "crypto-r4.html").read_text()
+    parser = PriceCells()
+    parser.feed(markup)
+    assert parser.cells == [expected]
+    if expected.startswith("<"):
+        assert "&lt;$0.00000001" in markup
+    assert json.loads((tmp_path / "crypto_intelligence_r4.json").read_text())["assets"][0]["price"] == value
+
+
+def quote_clarity_inputs(variant):
+    args = relative_integrity_inputs()
+    if variant == "quote-invalid":
+        prices = {"ETH": 0, "SOL": 104.19, "BTC": -1, "XRP": 2413.2}
+    elif variant == "quote-small":
+        prices = {"ETH": 0.001, "SOL": 0.000000009, "BTC": 0.000000015,
+                  "XRP": 0.000000025, "EDGE": 0.009999995}
+        args[2]["assets"]["EDGE"] = deepcopy(args[2]["assets"]["XRP"])
+    else:
+        raise AssertionError(variant)
+    for symbol, price in prices.items():
+        args[2]["assets"][symbol]["price"] = price
+    return args
+
+
+@pytest.mark.parametrize("precision,trap_rounding", [(2, True), (28, False)])
+def test_quote_clarity_formatting_is_independent_of_caller_decimal_context(precision, trap_rounding):
+    from decimal import Inexact, Rounded, ROUND_DOWN, localcontext
+    from scripts.build_crypto_intelligence_r4 import asset_money
+
+    with localcontext() as context:
+        context.prec = precision
+        context.rounding = ROUND_DOWN
+        context.traps[Inexact] = trap_rounding
+        context.traps[Rounded] = trap_rounding
+        context.clear_flags()
+        before = (context.prec, context.rounding, dict(context.traps), dict(context.flags))
+        assert asset_money(0.000123455) == "$0.00012346"
+        assert (context.prec, context.rounding, dict(context.traps), dict(context.flags)) == before

@@ -1,0 +1,925 @@
+{
+  "source": {
+    "source_parent": "bbfdd6d9d039f4f08e17c6f1e917e535dd4b2ee4",
+    "assets": "89c2e5bd3fa3",
+    "changed": {
+      "templates/crypto_intelligence_r4.js": {
+        "bytes": 78214,
+        "sha256": "efb87f5e3b9625cd8dff34640542bdd80b20c639c67a4c4f5e9e3c45b415e888",
+        "blob": "d76fa574ef612265a0043989365bd2b6a2f24f5c"
+      },
+      "tests/test_crypto_intelligence_r4_browser.py": {
+        "bytes": 211865,
+        "sha256": "718302bb87138a5ebefc52d1f1cbd138f4c98962456042d99a5a106fe804ed86",
+        "blob": "b8e4d9a2dfcbdf19767c588dc21f8d6207c532d5"
+      },
+      "site/crypto-r4.html": {
+        "bytes": 129566,
+        "sha256": "191fc563e5d0dfd596581dd2caa6b12b7418cb1c8495d6707813fc0fb37ccf07",
+        "blob": "f3e529ac42b7348cd1a256ec273497d908b238c4"
+      },
+      "site/vector-r4.html": {
+        "bytes": 129565,
+        "sha256": "6b538c1641617fa8372f99412f621291aa1c706decf1cffa80dc738d2c0be420",
+        "blob": "68909c75af3f335c7532273a6816ef737ec6de36"
+      },
+      "site/crypto_intelligence_r4.js": {
+        "bytes": 78214,
+        "sha256": "efb87f5e3b9625cd8dff34640542bdd80b20c639c67a4c4f5e9e3c45b415e888",
+        "blob": "d76fa574ef612265a0043989365bd2b6a2f24f5c"
+      }
+    },
+    "unchanged": {
+      "site/crypto_intelligence_r4.css": {
+        "bytes": 23604,
+        "sha256": "e681098d6a63a0a34f61e0f04fc81a178a276c584215fcc2c55bab4574912354",
+        "blob": "e00cb65921101c715200a884c5da7f1aca7285bf"
+      },
+      "templates/crypto_intelligence_r4.css": {
+        "bytes": 23604,
+        "sha256": "e681098d6a63a0a34f61e0f04fc81a178a276c584215fcc2c55bab4574912354",
+        "blob": "e00cb65921101c715200a884c5da7f1aca7285bf"
+      },
+      "templates/crypto_intelligence_r4.html.j2": {
+        "bytes": 23230,
+        "sha256": "76c6a23231e5c9b97ccef4964a04af2d70869a7e93a560adeee27d7cab67c38c",
+        "blob": "6938792268784fca2d19bc0c8eddb634dad2ca88"
+      },
+      "scripts/build_crypto_intelligence_r4.py": {
+        "bytes": 5326,
+        "sha256": "abf594e7c1cf34273f4017f6bfc28333df810eb2cff2f8ee30972335671888c0",
+        "blob": "f276092b8e72925c5d967a1f5066bd940392ceb5"
+      },
+      "tests/test_crypto_intelligence_r4.py": {
+        "bytes": 23038,
+        "sha256": "878131aea7d56e5de7f21641f60bdd2fc43cd345f738dd2b8f111c32c9219fa3",
+        "blob": "4ecf96b6707e474a34ca04437f3afd0e8c8ec8e0"
+      },
+      "lib/crypto_intelligence_view.py": {
+        "bytes": 22671,
+        "sha256": "3457d4a183444f6b4d2b8bbed1d5678d30f93e387cd9861f147d58211eb83f73",
+        "blob": "5c90c35c1307d425cb5979aa3ce609e408cfddc6"
+      },
+      "site/crypto_intelligence_r4.json": {
+        "bytes": 28027,
+        "sha256": "807839328e14080902df593408c9001d958b69be70d74d09fadbdc811d859401",
+        "blob": "024278d4143ee076f4253cd295230636818e97bd"
+      },
+      "site/theme.js": {
+        "bytes": 265200,
+        "sha256": "46939917d2e233cb0d8af828d97b1e3b7d18886fd829f88d0bc08c9f3b643455",
+        "blob": "937779ef5770fa92ef93a5e6b0f7e3415f6a7cf3"
+      },
+      "site/theme.css": {
+        "bytes": 221941,
+        "sha256": "2e8611477fd3499877721f9ce9386b1c3a55e00a2ed87c4187387845775ae64a",
+        "blob": "620895319be7e3f7808439ecbae8c33c2197389f"
+      },
+      "site/illus.js": {
+        "bytes": 2752,
+        "sha256": "8e0a3779784525f15bb4a1b20e50f39ef4d0ddf243827f5ab609cfb08a69c620",
+        "blob": "dfe818277c5068fe665337531f89d4fe7976565b"
+      },
+      "site/illus.css": {
+        "bytes": 14335,
+        "sha256": "cbe6a0b4f83095ed300ee49a5d9f4d03e88005170a4792a7a9f41805a67e5f07",
+        "blob": "cda4f3e53a34c5e996b49bdac5732357ed94b2d5"
+      },
+      "site/navigation-refresh.css": {
+        "bytes": 93481,
+        "sha256": "ef068fe19adab3779512462c40ab67b3e75a997a2dc6edfae2d5a36dd604eb5c",
+        "blob": "276c1986f2a728ca59e0f9e0bc7fe269869fdff0"
+      },
+      "site/logo_config.js": {
+        "bytes": 202,
+        "sha256": "b37d33d3194c191b1bb64db3f5c33d17c7dc06a74892e4aa8ea4d50320aae215",
+        "blob": "523923f9f424a144f4a0cf3e4814e2ea36392474"
+      },
+      "site/stock-logos.js": {
+        "bytes": 16539,
+        "sha256": "cc29be531bc08e655464b6c0d384e1a46041aeb31caf7d982e926681fda7cb49",
+        "blob": "759d78f4dfb11de591d8db5cec36a91ca372fe3c"
+      },
+      "site/live_config.js": {
+        "bytes": 367,
+        "sha256": "52943e92422103557d94066ceb65f4402816322281f95e8bd376293fe14d9c10",
+        "blob": "2ad84da9b70e83cd9825a684d3c846fc81e7366d"
+      },
+      "site/live.js": {
+        "bytes": 50731,
+        "sha256": "f8cda39dd4258a5778864b3b7e0bd8b9cc685bd1f926211a72268883a937a592",
+        "blob": "7e91599afb20a69c4010d5dc36c85439381d529f"
+      }
+    },
+    "product_inverse_exact": {
+      "templates/crypto_intelligence_r4.js": true
+    },
+    "browser_test_inverse_exact": true,
+    "initial_baseline_test_recovered_exact": true,
+    "same_corrected_baseline_test_bytes": true,
+    "harness_corrections_explicit": [
+      {
+        "label": "Do not return an unbound native storage method from Playwright evaluate",
+        "before": "page.evaluate(\"Storage.prototype.getItem=window.__snapshotNativeGet\")",
+        "after": "page.evaluate(\"() => { Storage.prototype.getItem=window.__snapshotNativeGet; }\")",
+        "count": 1
+      },
+      {
+        "label": "Reentrant opener must target the displayed 30-day case, not the hidden seven-day duplicate",
+        "before": "document.querySelector('#crypto-intelligence [data-open=\"scenario:continuation\"]').click();",
+        "after": "document.querySelector('#crypto-intelligence [data-case-horizon=\"30\"] [data-open=\"scenario:continuation\"]').click();",
+        "count": 1
+      }
+    ],
+    "extra_handoff_control_added": true,
+    "retained_html_except_two_asset_refs_exact": {
+      "crypto-r4.html": true,
+      "vector-r4.html": true
+    },
+    "retained_view_exact": true,
+    "retained_css_exact": true,
+    "served_js_exact": true
+  },
+  "runs": {
+    "feedback-lifetime-baseline": {
+      "result": {
+        "command": [
+          "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "-m",
+          "pytest",
+          "-q",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_feedback_retires_on_task_navigation_and_does_not_return_with_back",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_expired_feedback_space_retires_only_when_the_task_changes",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_close_reopen_never_resurrects_transient_feedback",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_locale_change_retires_old_feedback_and_preserves_the_reader",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_frozen_remove_handoff_survives_but_explicit_retry_retires_it",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_same_url_history_traversal_retires_feedback",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_older_apply_does_not_retire_newer_feedback_from_its_preflight",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_superseded_preflight_cannot_clear_its_newer_navigation_result",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_completion_navigation_retires_feedback_without_a_late_reissue",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_remove_feedback_handoff_cannot_follow_a_retargeted_history_write",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_retired_deadline_cannot_hide_a_new_feedback_message",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_confirmed_mutation_preserves_the_reader",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_idempotent_mutation_keeps_reading_without_another_write",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_failed_mutation_does_not_rebuild_or_replay",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_feedback_timeout_keeps_action_geometry_and_reading",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_locale_preserves_disclosure_focus_and_reading",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_saved_locale_keeps_disclosure_focus_and_reading_position",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_newer_focus_during_confirmation_survives",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_mutation_uses_fresh_reading_when_history_persistence_fails",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_mutation_reading_persistence_yields_to_a_newer_choice",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_mutation_inside_a_render_focus_callback_retains_its_new_intent",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_review_returns_to_the_same_case_and_reading",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_confirmed_remove_can_be_followed_by_an_unreadable_list",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_saved_journey_restores_the_exact_outer_horizon",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_saved_parent_focus_callback_keeps_its_new_destination",
+          "--tb=short",
+          "--junitxml=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/feedback-lifetime-baseline/junit.xml",
+          "--basetemp=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/feedback-lifetime-baseline/pytest-temp"
+        ],
+        "exit_code": 1,
+        "seconds": 63.564,
+        "source_parent": "bbfdd6d9d039f4f08e17c6f1e917e535dd4b2ee4",
+        "runtime_asset_version": "4f86c987c57c",
+        "test_sha256": "60ff7ac6f7dcac6a4396a668e84d78617e3ed8b0756711117e1906de6317dea8"
+      },
+      "observations": {
+        "contexts": 66,
+        "pages": 66,
+        "page_errors": [],
+        "blocked_external_requests": 0,
+        "blocked_websockets": 0,
+        "browser": "157.0.8103.39"
+      },
+      "cases": {
+        "tests.test_crypto_intelligence_r4_browser::test_r4_feedback_retires_on_task_navigation_and_does_not_return_with_back[en-390-success-review]": "failed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_feedback_retires_on_task_navigation_and_does_not_return_with_back[en-390-success-demand-evidence]": "failed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_feedback_retires_on_task_navigation_and_does_not_return_with_back[en-390-failure-review]": "failed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_feedback_retires_on_task_navigation_and_does_not_return_with_back[en-390-failure-demand-evidence]": "failed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_feedback_retires_on_task_navigation_and_does_not_return_with_back[zh-320-success-review]": "failed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_feedback_retires_on_task_navigation_and_does_not_return_with_back[zh-320-success-demand-evidence]": "failed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_feedback_retires_on_task_navigation_and_does_not_return_with_back[zh-320-failure-review]": "failed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_feedback_retires_on_task_navigation_and_does_not_return_with_back[zh-320-failure-demand-evidence]": "failed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_expired_feedback_space_retires_only_when_the_task_changes[en-390]": "failed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_expired_feedback_space_retires_only_when_the_task_changes[zh-320]": "failed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_close_reopen_never_resurrects_transient_feedback[en-390-True]": "failed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_close_reopen_never_resurrects_transient_feedback[en-390-False]": "failed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_close_reopen_never_resurrects_transient_feedback[zh-320-True]": "failed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_close_reopen_never_resurrects_transient_feedback[zh-320-False]": "failed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_locale_change_retires_old_feedback_and_preserves_the_reader[en-390]": "failed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_locale_change_retires_old_feedback_and_preserves_the_reader[zh-320]": "failed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_frozen_remove_handoff_survives_but_explicit_retry_retires_it[en-390-False]": "failed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_frozen_remove_handoff_survives_but_explicit_retry_retires_it[en-390-True]": "failed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_frozen_remove_handoff_survives_but_explicit_retry_retires_it[zh-320-False]": "failed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_frozen_remove_handoff_survives_but_explicit_retry_retires_it[zh-320-True]": "failed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_same_url_history_traversal_retires_feedback[en-390]": "failed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_same_url_history_traversal_retires_feedback[zh-320]": "failed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_older_apply_does_not_retire_newer_feedback_from_its_preflight[en-390]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_older_apply_does_not_retire_newer_feedback_from_its_preflight[zh-320]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_superseded_preflight_cannot_clear_its_newer_navigation_result": "failed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_completion_navigation_retires_feedback_without_a_late_reissue[frozen-remove]": "failed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_completion_navigation_retires_feedback_without_a_late_reissue[current-save]": "failed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_remove_feedback_handoff_cannot_follow_a_retargeted_history_write": "failed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_retired_deadline_cannot_hide_a_new_feedback_message": "failed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_confirmed_mutation_preserves_the_reader[en-390-save]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_confirmed_mutation_preserves_the_reader[en-390-remove]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_confirmed_mutation_preserves_the_reader[en-390-remove-expired]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_confirmed_mutation_preserves_the_reader[zh-320-save]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_confirmed_mutation_preserves_the_reader[zh-320-remove]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_confirmed_mutation_preserves_the_reader[zh-320-remove-expired]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_idempotent_mutation_keeps_reading_without_another_write[en-390-save]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_idempotent_mutation_keeps_reading_without_another_write[en-390-remove]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_idempotent_mutation_keeps_reading_without_another_write[zh-320-save]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_idempotent_mutation_keeps_reading_without_another_write[zh-320-remove]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_failed_mutation_does_not_rebuild_or_replay[en-390-read]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_failed_mutation_does_not_rebuild_or_replay[en-390-confirmation]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_failed_mutation_does_not_rebuild_or_replay[zh-320-read]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_failed_mutation_does_not_rebuild_or_replay[zh-320-confirmation]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_feedback_timeout_keeps_action_geometry_and_reading[en-390]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_feedback_timeout_keeps_action_geometry_and_reading[zh-320]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_locale_preserves_disclosure_focus_and_reading[390]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_locale_preserves_disclosure_focus_and_reading[320]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_saved_locale_keeps_disclosure_focus_and_reading_position[1440]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_saved_locale_keeps_disclosure_focus_and_reading_position[320]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_newer_focus_during_confirmation_survives[save]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_newer_focus_during_confirmation_survives[remove]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_mutation_uses_fresh_reading_when_history_persistence_fails[en-390]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_mutation_uses_fresh_reading_when_history_persistence_fails[zh-320]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_mutation_reading_persistence_yields_to_a_newer_choice[focus]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_mutation_reading_persistence_yields_to_a_newer_choice[navigation]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_mutation_reading_persistence_yields_to_a_newer_choice[history]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_mutation_inside_a_render_focus_callback_retains_its_new_intent": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_review_returns_to_the_same_case_and_reading[en-390-7-2026-11-09T12:00:00Z]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_review_returns_to_the_same_case_and_reading[zh-320-7-2026-11-09T12:00:00Z]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_review_returns_to_the_same_case_and_reading[en-1440-30-2026-10-18T12:00:00Z]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_review_returns_to_the_same_case_and_reading[zh-390-30-2026-10-18T12:00:00Z]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_confirmed_remove_can_be_followed_by_an_unreadable_list": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_saved_journey_restores_the_exact_outer_horizon[en-1440]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_saved_journey_restores_the_exact_outer_horizon[zh-390]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_saved_journey_restores_the_exact_outer_horizon[en-320]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_saved_parent_focus_callback_keeps_its_new_destination": "passed"
+      }
+    },
+    "feedback-lifetime-baseline-corrected": {
+      "result": {
+        "command": [
+          "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "-m",
+          "pytest",
+          "-q",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_feedback_retires_on_task_navigation_and_does_not_return_with_back",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_expired_feedback_space_retires_only_when_the_task_changes",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_close_reopen_never_resurrects_transient_feedback",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_locale_change_retires_old_feedback_and_preserves_the_reader",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_frozen_remove_handoff_survives_but_explicit_retry_retires_it",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_same_url_history_traversal_retires_feedback",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_older_apply_does_not_retire_newer_feedback_from_its_preflight",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_superseded_preflight_cannot_clear_its_newer_navigation_result",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_completion_navigation_retires_feedback_without_a_late_reissue",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_remove_feedback_handoff_cannot_follow_a_retargeted_history_write",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_retired_deadline_cannot_hide_a_new_feedback_message",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_newer_feedback_inside_handoff_history_write_survives_the_older_handoff",
+          "--tb=short",
+          "--junitxml=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/feedback-lifetime-baseline-corrected/junit.xml",
+          "--basetemp=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/feedback-lifetime-baseline-corrected/pytest-temp"
+        ],
+        "exit_code": 1,
+        "seconds": 33.545,
+        "source_parent": "bbfdd6d9d039f4f08e17c6f1e917e535dd4b2ee4",
+        "runtime_asset_version": "4f86c987c57c",
+        "test_sha256": "718302bb87138a5ebefc52d1f1cbd138f4c98962456042d99a5a106fe804ed86"
+      },
+      "observations": {
+        "contexts": 30,
+        "pages": 30,
+        "page_errors": [],
+        "blocked_external_requests": 0,
+        "blocked_websockets": 0,
+        "browser": "157.0.8103.39"
+      },
+      "cases": {
+        "tests.test_crypto_intelligence_r4_browser::test_r4_feedback_retires_on_task_navigation_and_does_not_return_with_back[en-390-success-review]": "failed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_feedback_retires_on_task_navigation_and_does_not_return_with_back[en-390-success-demand-evidence]": "failed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_feedback_retires_on_task_navigation_and_does_not_return_with_back[en-390-failure-review]": "failed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_feedback_retires_on_task_navigation_and_does_not_return_with_back[en-390-failure-demand-evidence]": "failed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_feedback_retires_on_task_navigation_and_does_not_return_with_back[zh-320-success-review]": "failed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_feedback_retires_on_task_navigation_and_does_not_return_with_back[zh-320-success-demand-evidence]": "failed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_feedback_retires_on_task_navigation_and_does_not_return_with_back[zh-320-failure-review]": "failed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_feedback_retires_on_task_navigation_and_does_not_return_with_back[zh-320-failure-demand-evidence]": "failed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_expired_feedback_space_retires_only_when_the_task_changes[en-390]": "failed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_expired_feedback_space_retires_only_when_the_task_changes[zh-320]": "failed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_close_reopen_never_resurrects_transient_feedback[en-390-True]": "failed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_close_reopen_never_resurrects_transient_feedback[en-390-False]": "failed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_close_reopen_never_resurrects_transient_feedback[zh-320-True]": "failed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_close_reopen_never_resurrects_transient_feedback[zh-320-False]": "failed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_locale_change_retires_old_feedback_and_preserves_the_reader[en-390]": "failed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_locale_change_retires_old_feedback_and_preserves_the_reader[zh-320]": "failed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_frozen_remove_handoff_survives_but_explicit_retry_retires_it[en-390-False]": "failed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_frozen_remove_handoff_survives_but_explicit_retry_retires_it[en-390-True]": "failed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_frozen_remove_handoff_survives_but_explicit_retry_retires_it[zh-320-False]": "failed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_frozen_remove_handoff_survives_but_explicit_retry_retires_it[zh-320-True]": "failed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_same_url_history_traversal_retires_feedback[en-390]": "failed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_same_url_history_traversal_retires_feedback[zh-320]": "failed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_older_apply_does_not_retire_newer_feedback_from_its_preflight[en-390]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_older_apply_does_not_retire_newer_feedback_from_its_preflight[zh-320]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_superseded_preflight_cannot_clear_its_newer_navigation_result": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_completion_navigation_retires_feedback_without_a_late_reissue[frozen-remove]": "failed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_completion_navigation_retires_feedback_without_a_late_reissue[current-save]": "failed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_remove_feedback_handoff_cannot_follow_a_retargeted_history_write": "failed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_retired_deadline_cannot_hide_a_new_feedback_message": "failed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_newer_feedback_inside_handoff_history_write_survives_the_older_handoff": "passed"
+      }
+    },
+    "feedback-lifetime-verified": {
+      "result": {
+        "command": [
+          "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "-m",
+          "pytest",
+          "-q",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_feedback_retires_on_task_navigation_and_does_not_return_with_back",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_expired_feedback_space_retires_only_when_the_task_changes",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_close_reopen_never_resurrects_transient_feedback",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_locale_change_retires_old_feedback_and_preserves_the_reader",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_frozen_remove_handoff_survives_but_explicit_retry_retires_it",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_same_url_history_traversal_retires_feedback",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_older_apply_does_not_retire_newer_feedback_from_its_preflight",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_superseded_preflight_cannot_clear_its_newer_navigation_result",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_completion_navigation_retires_feedback_without_a_late_reissue",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_remove_feedback_handoff_cannot_follow_a_retargeted_history_write",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_retired_deadline_cannot_hide_a_new_feedback_message",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_confirmed_mutation_preserves_the_reader",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_idempotent_mutation_keeps_reading_without_another_write",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_failed_mutation_does_not_rebuild_or_replay",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_feedback_timeout_keeps_action_geometry_and_reading",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_locale_preserves_disclosure_focus_and_reading",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_saved_locale_keeps_disclosure_focus_and_reading_position",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_newer_focus_during_confirmation_survives",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_mutation_uses_fresh_reading_when_history_persistence_fails",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_mutation_reading_persistence_yields_to_a_newer_choice",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_mutation_inside_a_render_focus_callback_retains_its_new_intent",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_review_returns_to_the_same_case_and_reading",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_confirmed_remove_can_be_followed_by_an_unreadable_list",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_saved_journey_restores_the_exact_outer_horizon",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_saved_parent_focus_callback_keeps_its_new_destination",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_newer_feedback_inside_handoff_history_write_survives_the_older_handoff",
+          "--tb=short",
+          "--junitxml=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/feedback-lifetime-verified/junit.xml",
+          "--basetemp=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/feedback-lifetime-verified/pytest-temp"
+        ],
+        "exit_code": 0,
+        "seconds": 70.145,
+        "source_parent": "bbfdd6d9d039f4f08e17c6f1e917e535dd4b2ee4",
+        "runtime_asset_version": "89c2e5bd3fa3",
+        "test_sha256": "718302bb87138a5ebefc52d1f1cbd138f4c98962456042d99a5a106fe804ed86"
+      },
+      "observations": {
+        "contexts": 67,
+        "pages": 67,
+        "page_errors": [],
+        "blocked_external_requests": 0,
+        "blocked_websockets": 0,
+        "browser": "157.0.8103.39"
+      },
+      "cases": {
+        "tests.test_crypto_intelligence_r4_browser::test_r4_feedback_retires_on_task_navigation_and_does_not_return_with_back[en-390-success-review]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_feedback_retires_on_task_navigation_and_does_not_return_with_back[en-390-success-demand-evidence]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_feedback_retires_on_task_navigation_and_does_not_return_with_back[en-390-failure-review]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_feedback_retires_on_task_navigation_and_does_not_return_with_back[en-390-failure-demand-evidence]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_feedback_retires_on_task_navigation_and_does_not_return_with_back[zh-320-success-review]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_feedback_retires_on_task_navigation_and_does_not_return_with_back[zh-320-success-demand-evidence]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_feedback_retires_on_task_navigation_and_does_not_return_with_back[zh-320-failure-review]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_feedback_retires_on_task_navigation_and_does_not_return_with_back[zh-320-failure-demand-evidence]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_expired_feedback_space_retires_only_when_the_task_changes[en-390]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_expired_feedback_space_retires_only_when_the_task_changes[zh-320]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_close_reopen_never_resurrects_transient_feedback[en-390-True]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_close_reopen_never_resurrects_transient_feedback[en-390-False]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_close_reopen_never_resurrects_transient_feedback[zh-320-True]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_close_reopen_never_resurrects_transient_feedback[zh-320-False]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_locale_change_retires_old_feedback_and_preserves_the_reader[en-390]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_locale_change_retires_old_feedback_and_preserves_the_reader[zh-320]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_frozen_remove_handoff_survives_but_explicit_retry_retires_it[en-390-False]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_frozen_remove_handoff_survives_but_explicit_retry_retires_it[en-390-True]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_frozen_remove_handoff_survives_but_explicit_retry_retires_it[zh-320-False]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_frozen_remove_handoff_survives_but_explicit_retry_retires_it[zh-320-True]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_same_url_history_traversal_retires_feedback[en-390]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_same_url_history_traversal_retires_feedback[zh-320]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_older_apply_does_not_retire_newer_feedback_from_its_preflight[en-390]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_older_apply_does_not_retire_newer_feedback_from_its_preflight[zh-320]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_superseded_preflight_cannot_clear_its_newer_navigation_result": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_completion_navigation_retires_feedback_without_a_late_reissue[frozen-remove]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_completion_navigation_retires_feedback_without_a_late_reissue[current-save]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_remove_feedback_handoff_cannot_follow_a_retargeted_history_write": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_retired_deadline_cannot_hide_a_new_feedback_message": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_confirmed_mutation_preserves_the_reader[en-390-save]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_confirmed_mutation_preserves_the_reader[en-390-remove]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_confirmed_mutation_preserves_the_reader[en-390-remove-expired]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_confirmed_mutation_preserves_the_reader[zh-320-save]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_confirmed_mutation_preserves_the_reader[zh-320-remove]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_confirmed_mutation_preserves_the_reader[zh-320-remove-expired]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_idempotent_mutation_keeps_reading_without_another_write[en-390-save]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_idempotent_mutation_keeps_reading_without_another_write[en-390-remove]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_idempotent_mutation_keeps_reading_without_another_write[zh-320-save]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_idempotent_mutation_keeps_reading_without_another_write[zh-320-remove]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_failed_mutation_does_not_rebuild_or_replay[en-390-read]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_failed_mutation_does_not_rebuild_or_replay[en-390-confirmation]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_failed_mutation_does_not_rebuild_or_replay[zh-320-read]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_failed_mutation_does_not_rebuild_or_replay[zh-320-confirmation]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_feedback_timeout_keeps_action_geometry_and_reading[en-390]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_feedback_timeout_keeps_action_geometry_and_reading[zh-320]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_locale_preserves_disclosure_focus_and_reading[390]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_locale_preserves_disclosure_focus_and_reading[320]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_saved_locale_keeps_disclosure_focus_and_reading_position[1440]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_saved_locale_keeps_disclosure_focus_and_reading_position[320]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_newer_focus_during_confirmation_survives[save]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_newer_focus_during_confirmation_survives[remove]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_mutation_uses_fresh_reading_when_history_persistence_fails[en-390]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_mutation_uses_fresh_reading_when_history_persistence_fails[zh-320]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_mutation_reading_persistence_yields_to_a_newer_choice[focus]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_mutation_reading_persistence_yields_to_a_newer_choice[navigation]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_mutation_reading_persistence_yields_to_a_newer_choice[history]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_mutation_inside_a_render_focus_callback_retains_its_new_intent": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_review_returns_to_the_same_case_and_reading[en-390-7-2026-11-09T12:00:00Z]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_review_returns_to_the_same_case_and_reading[zh-320-7-2026-11-09T12:00:00Z]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_review_returns_to_the_same_case_and_reading[en-1440-30-2026-10-18T12:00:00Z]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_review_returns_to_the_same_case_and_reading[zh-390-30-2026-10-18T12:00:00Z]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_confirmed_remove_can_be_followed_by_an_unreadable_list": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_saved_journey_restores_the_exact_outer_horizon[en-1440]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_saved_journey_restores_the_exact_outer_horizon[zh-390]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_saved_journey_restores_the_exact_outer_horizon[en-320]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_saved_parent_focus_callback_keeps_its_new_destination": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_newer_feedback_inside_handoff_history_write_survives_the_older_handoff": "passed"
+      }
+    }
+  },
+  "case_set_checks": {
+    "initial_cases": 66,
+    "corrected_baseline_cases": 30,
+    "final_cases": 67,
+    "new_cases": 30,
+    "retained_cases": 37,
+    "final_equals_baseline_union": true,
+    "same_corrected_baseline_final_test_bytes": true,
+    "initial_test_module_exactly_recoverable": true
+  },
+  "harness_corrections": [
+    "Return no unbound native Storage method from Playwright evaluate; the assignment itself remains the intended restoration.",
+    "Select the displayed30-day source in a reentrant opener instead of its hidden7-day duplicate.",
+    "Add one separate control for a newer feedback result inside the handoff history write before apply starts."
+  ],
+  "files": {
+    "feedback-lifetime-parent-input.json": {
+      "bytes": 4477,
+      "sha256": "2083b36bfb7b0f3d478cb0f91d40dad8654107395bf256fb200db540b1583487",
+      "blob": "f9c10730c835eb151686aa5a79a401286afb9516"
+    },
+    "feedback-lifetime-parent-receipt.json": {
+      "bytes": 4533,
+      "sha256": "25f742865a7cf0eb7090428b4a9dbefc331cbb2862859f8a37f35222db17a241",
+      "blob": "aa9854f3c7ff339b161ada70ef95ab89e5089939"
+    },
+    "feedback-lifetime-parent-snapshot.py": {
+      "bytes": 1076,
+      "sha256": "0274ebc8f4f46a951f3cb0756c8b9f18b94021add5611e005cfd1583c7337d38",
+      "blob": "078eb5b22e75b5450733b3d334fedaa4768c09f0"
+    },
+    "feedback-lifetime-source-receipt.json": {
+      "bytes": 5649,
+      "sha256": "6bff2d5bc2cab446dcd71d5931b99de9a059f92c27ed43860b285e0ff9e7eda5",
+      "blob": "3d73b36c75363f5cf2ad382f5ff723d28f82d029"
+    },
+    "feedback-lifetime-transforms.json": {
+      "bytes": 37429,
+      "sha256": "4c737ad3939e58e7926cf9a1242dc5b94400a7c34252e26552129a3653fea2f4",
+      "blob": "94681f1c1b1a2a2e93306c47b6bd4ac58f975dff"
+    },
+    "feedback-lifetime-initial-test-addition.txt": {
+      "bytes": 13551,
+      "sha256": "457fd023c5b0bc68df8f96bec72b7ec8dbc2b3914899dcc848f1606d7e54100d",
+      "blob": "61bfad4b6cd7a8e1c8bbf5c1fb4b2c84f3351d3f"
+    },
+    "feedback-lifetime-handoff-test-addition.txt": {
+      "bytes": 1556,
+      "sha256": "981d9552d8daadc481ca6ef5c10f63e64ad55656da1a0d00ba593bfbfe0c650e",
+      "blob": "de592f662fa0f04fcf925299854b7924e6d0f349"
+    },
+    "feedback-lifetime-test-fixes.json": {
+      "bytes": 682,
+      "sha256": "888c159df0454c639417f845ca887236b1daf7734be259b2480ef9432371cc3e",
+      "blob": "69c4bee37a2b41e485334801644daa1cfca6d45d"
+    },
+    "feedback-lifetime-test-addition.txt": {
+      "bytes": 15143,
+      "sha256": "1f79a24257e703f1f1060df017beba3588de5be2d7b33b7e4032bfed269a8275",
+      "blob": "937998f84cffd56d035011550735cc2db2e81652"
+    },
+    "feedback-lifetime-baseline.py": {
+      "bytes": 4600,
+      "sha256": "63567e5668611170c65c340bfeea4823646de22482f89b6350dd91c798265ae2",
+      "blob": "dd899fb1d36dde1a8eb8245925027ea64d7f33cc"
+    },
+    "feedback-lifetime-baseline-corrected.py": {
+      "bytes": 3179,
+      "sha256": "e5731234d122b9e437cfbe3b0e9f224a773aa13f3f61a97399f396f131caa4f5",
+      "blob": "ce04cedb277a9212e01f464ad4d2d3f37a74c0e1"
+    },
+    "feedback-lifetime-verified.py": {
+      "bytes": 7929,
+      "sha256": "6d108a3fd2e72bae1fc787b8a35d33998f038f85d910ff8b37dc9d117fc942e3",
+      "blob": "b3587d1ec7fc7cd4c66183403dc2055578604201"
+    },
+    "feedback-lifetime-publication-readback.py": {
+      "bytes": 5573,
+      "sha256": "712e806626ba09c14e280456c287c5603e1d9309fe649b647a438727bc4c4b5a",
+      "blob": "9ffd2c2eb265f62e26742ffac9be54af2b8fe227"
+    },
+    "feedback-lifetime-baseline/result.json": {
+      "bytes": 3564,
+      "sha256": "6285e0b0ea6923a7363cdd0e0b6bf5601cc389b1aadef725badba672d7194995",
+      "blob": "cf799e5b380f17737d294cb6b14ee66479ffe4f8"
+    },
+    "feedback-lifetime-baseline/observations.json": {
+      "bytes": 148,
+      "sha256": "4b79446fafd9fc799cafb303c830846a4a63db636343d4522f94cc7b085611d9",
+      "blob": "4bc5a945a00f21e00ef6861b42c43d2138a19275"
+    },
+    "feedback-lifetime-baseline/stdout.txt": {
+      "bytes": 26934,
+      "sha256": "9f1e8cdfa3a2d1ba05e06b8f84c9de29dde718cfeca95c7182c576d03db1d903",
+      "blob": "8d9e31b6c6b260ead5ae77957164692962d1d778"
+    },
+    "feedback-lifetime-baseline/stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "feedback-lifetime-baseline/junit.xml": {
+      "bytes": 43460,
+      "sha256": "1847636517703af0ac11cb92cc2d6d9f52c634e7a5a49de834fa27820c4f240b",
+      "blob": "600b3f6191ab390151ecee5d22f7a8b8ef470d6f"
+    },
+    "feedback-lifetime-baseline-corrected/result.json": {
+      "bytes": 2088,
+      "sha256": "3310ed335bc34a68ee240181d620f262a42e80ec2afbbe13cba8f7aa38b0f65c",
+      "blob": "87483701e61a36bc81e68f4283e38bbba6727602"
+    },
+    "feedback-lifetime-baseline-corrected/observations.json": {
+      "bytes": 148,
+      "sha256": "8f78298cde68b5e2c34660122eb3725dac29dc8d04ca6ef9bd6770e1ab38fd7d",
+      "blob": "99e6b4bc1644aae327e55e4fffb1918026a04df8"
+    },
+    "feedback-lifetime-baseline-corrected/stdout.txt": {
+      "bytes": 25401,
+      "sha256": "d85fe641ed8c36535d430700c7e5db24548fa71d3f9328d5bc7c8056941114db",
+      "blob": "5e86d408ccfcdc58ebfea7bf9687c707af13127c"
+    },
+    "feedback-lifetime-baseline-corrected/stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "feedback-lifetime-baseline-corrected/junit.xml": {
+      "bytes": 36583,
+      "sha256": "20c60acb00b88ec383ee9a147514676bf1193bfc480846f9ad02754227693264",
+      "blob": "8cd4229e8fe25a54fd52821e2621f7477c954026"
+    },
+    "feedback-lifetime-verified/result.json": {
+      "bytes": 3696,
+      "sha256": "742c9d4378d08d83739a674b725397fdbcc666ffd0bd886ab513d15c2fc71f37",
+      "blob": "49401b2ceeb5072230311b3036ccb4f2e9fd0050"
+    },
+    "feedback-lifetime-verified/observations.json": {
+      "bytes": 148,
+      "sha256": "9d532448a35f48b446697edb79b0db8bc26333e86c163a2b0e96eb5d1d506086",
+      "blob": "8dd47d352ffeb8fd22619a068ff4c524fa444f95"
+    },
+    "feedback-lifetime-verified/stdout.txt": {
+      "bytes": 110,
+      "sha256": "21b7efbf80bb605a603f92a233fdfccb4e5498b3a97a1d5bd8b8d679621b2c02",
+      "blob": "6740c0c09950ac8a9e44b74925735c4997a0886a"
+    },
+    "feedback-lifetime-verified/stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "feedback-lifetime-verified/junit.xml": {
+      "bytes": 11231,
+      "sha256": "e8dfb0dcc8902bccfb6321d3b33cd3e8d04c0819bf56930b5ff11a8ec0720c86",
+      "blob": "a5499b95e932aa70ad5b9b2ae845057dc6d382c3"
+    }
+  },
+  "captures": [
+    {
+      "name": "feedback-task-review-success-en-390.png",
+      "path": "feedback-lifetime-baseline-corrected/captures/feedback-task-review-success-en-390.png",
+      "run": "feedback-lifetime-baseline-corrected",
+      "new_visual_scope": true,
+      "role": "Parent feedback leakage",
+      "bytes": 57678,
+      "sha256": "3c00102da5be4df2b4f8e81bb0d3a6344ad866647707a77443e1b1f3cdb0fbca",
+      "blob": "a3fe657696a2ae8107b3a9a22b9c2ee327e0ed32",
+      "width": 390,
+      "height": 764
+    },
+    {
+      "name": "feedback-task-review-failure-zh-320.png",
+      "path": "feedback-lifetime-baseline-corrected/captures/feedback-task-review-failure-zh-320.png",
+      "run": "feedback-lifetime-baseline-corrected",
+      "new_visual_scope": true,
+      "role": "Parent feedback leakage",
+      "bytes": 48949,
+      "sha256": "51aa2843a9a5c0007697e68a8de713e5430b134613933cd5c096800ff2253ed0",
+      "blob": "b0e3bf1bca279eb6393f86f320a79dfcfd206ed5",
+      "width": 320,
+      "height": 764
+    },
+    {
+      "name": "current-return-details-en-390.png",
+      "path": "feedback-lifetime-verified/captures/current-return-details-en-390.png",
+      "run": "feedback-lifetime-verified",
+      "new_visual_scope": false,
+      "role": "Retained mutation/navigation regression",
+      "bytes": 45447,
+      "sha256": "3d90867aa847fae05ebbfc50ee69b7a14c4888804b94e11b4739217324cca819",
+      "blob": "052116d9013b0a3568fa705f68b9eb904c1c1036",
+      "width": 390,
+      "height": 520
+    },
+    {
+      "name": "current-return-details-zh-320.png",
+      "path": "feedback-lifetime-verified/captures/current-return-details-zh-320.png",
+      "run": "feedback-lifetime-verified",
+      "new_visual_scope": false,
+      "role": "Retained mutation/navigation regression",
+      "bytes": 43665,
+      "sha256": "378cc72b0f5efb287768442d150f53a589bde578850c8eff9090465bc8aae97c",
+      "blob": "e4863ceba1daecd4ae4f0e4b075498793748db03",
+      "width": 320,
+      "height": 520
+    },
+    {
+      "name": "current-return-review-en-390.png",
+      "path": "feedback-lifetime-verified/captures/current-return-review-en-390.png",
+      "run": "feedback-lifetime-verified",
+      "new_visual_scope": false,
+      "role": "Retained mutation/navigation regression",
+      "bytes": 41791,
+      "sha256": "6e693eddac3a60b42fbcf6bdde8a65efb5de46b5526861f32897f07a2bb79ea1",
+      "blob": "21c07fa072c928aaca721c27ec562b441c0a9dc2",
+      "width": 390,
+      "height": 520
+    },
+    {
+      "name": "current-return-review-zh-320.png",
+      "path": "feedback-lifetime-verified/captures/current-return-review-zh-320.png",
+      "run": "feedback-lifetime-verified",
+      "new_visual_scope": false,
+      "role": "Retained mutation/navigation regression",
+      "bytes": 36317,
+      "sha256": "3f10ad246bc94a2be3dddb3e532cc90251507cedea2d88f04dacd23399acd330",
+      "blob": "793cb5e2f77f0ac016576ce22e9328f4f49c59c3",
+      "width": 320,
+      "height": 520
+    },
+    {
+      "name": "current-save-reading-remove-en-390.png",
+      "path": "feedback-lifetime-verified/captures/current-save-reading-remove-en-390.png",
+      "run": "feedback-lifetime-verified",
+      "new_visual_scope": false,
+      "role": "Retained mutation/navigation regression",
+      "bytes": 45511,
+      "sha256": "bfc7a15e02445c04b494b2389daf46ce192473a560bb3774f6013fb74561ce87",
+      "blob": "0f59849ed3bb09939a3c8a166951e49f1f4ee727",
+      "width": 390,
+      "height": 520
+    },
+    {
+      "name": "current-save-reading-remove-expired-en-390.png",
+      "path": "feedback-lifetime-verified/captures/current-save-reading-remove-expired-en-390.png",
+      "run": "feedback-lifetime-verified",
+      "new_visual_scope": false,
+      "role": "Retained mutation/navigation regression",
+      "bytes": 45567,
+      "sha256": "4b9b3a4de2ce86687b9f74e3c31c414b1814331d413940b2181741cf2cdfc27a",
+      "blob": "c5736f4c7856be8104b835d869d79cffa8c233e8",
+      "width": 390,
+      "height": 520
+    },
+    {
+      "name": "current-save-reading-remove-expired-zh-320.png",
+      "path": "feedback-lifetime-verified/captures/current-save-reading-remove-expired-zh-320.png",
+      "run": "feedback-lifetime-verified",
+      "new_visual_scope": false,
+      "role": "Retained mutation/navigation regression",
+      "bytes": 43675,
+      "sha256": "f54c6d4e3eedba92544253456a058d4fb40c3a733538b62452340ee4bdcdc177",
+      "blob": "3c6eb73f3236722133a16e694aa27f18ae9b06bc",
+      "width": 320,
+      "height": 520
+    },
+    {
+      "name": "current-save-reading-remove-zh-320.png",
+      "path": "feedback-lifetime-verified/captures/current-save-reading-remove-zh-320.png",
+      "run": "feedback-lifetime-verified",
+      "new_visual_scope": false,
+      "role": "Retained mutation/navigation regression",
+      "bytes": 43664,
+      "sha256": "6153ecc602a4751461d5987aed1120754a0a0533dbf30c421eed8b21959b4168",
+      "blob": "4ac199926ae7ac7776b78a3636b465821a6d12a0",
+      "width": 320,
+      "height": 520
+    },
+    {
+      "name": "current-save-reading-save-en-390.png",
+      "path": "feedback-lifetime-verified/captures/current-save-reading-save-en-390.png",
+      "run": "feedback-lifetime-verified",
+      "new_visual_scope": false,
+      "role": "Retained mutation/navigation regression",
+      "bytes": 45445,
+      "sha256": "957968bd1869555905bab8f6c1882485b9ebe9adfc57d4f3f004d417aa4ecd66",
+      "blob": "a2265fb0960d964a6d6fa4057b204496a6e5b019",
+      "width": 390,
+      "height": 520
+    },
+    {
+      "name": "current-save-reading-save-zh-320.png",
+      "path": "feedback-lifetime-verified/captures/current-save-reading-save-zh-320.png",
+      "run": "feedback-lifetime-verified",
+      "new_visual_scope": false,
+      "role": "Retained mutation/navigation regression",
+      "bytes": 44090,
+      "sha256": "6cec076fb4871bf0ef0e4e0a7ba210dd68888dc4affa276e6cf47d148a1d99ef",
+      "blob": "3e0d681418af7a0a732d035d73ddd988a648f8c3",
+      "width": 320,
+      "height": 520
+    },
+    {
+      "name": "feedback-retry-en-390.png",
+      "path": "feedback-lifetime-verified/captures/feedback-retry-en-390.png",
+      "run": "feedback-lifetime-verified",
+      "new_visual_scope": true,
+      "role": "New task/Retry feedback proof",
+      "bytes": 21871,
+      "sha256": "421a11119809cf5a76acb06e25c4ba77913a7316aeca59133d05e6138caa9780",
+      "blob": "3856aeef38799b28a7e0d9c60f32444c6f8c955d",
+      "width": 390,
+      "height": 764
+    },
+    {
+      "name": "feedback-retry-zh-320.png",
+      "path": "feedback-lifetime-verified/captures/feedback-retry-zh-320.png",
+      "run": "feedback-lifetime-verified",
+      "new_visual_scope": true,
+      "role": "New task/Retry feedback proof",
+      "bytes": 19441,
+      "sha256": "bcd310536df6a9cef6c03fbe473f9920b0382437080d64255a425c2f1f39084d",
+      "blob": "934f39f15f38f5d4a96f9ccc31b420d79195136a",
+      "width": 320,
+      "height": 764
+    },
+    {
+      "name": "feedback-task-demand-evidence-failure-en-390.png",
+      "path": "feedback-lifetime-verified/captures/feedback-task-demand-evidence-failure-en-390.png",
+      "run": "feedback-lifetime-verified",
+      "new_visual_scope": true,
+      "role": "New task/Retry feedback proof",
+      "bytes": 47502,
+      "sha256": "2f39ddf97900465dbd1bbbfd4978b711551423e7ed2a22779ad4f42af2571af7",
+      "blob": "b2a415f646689b412d4c4692bf362e512fc0de1a",
+      "width": 390,
+      "height": 764
+    },
+    {
+      "name": "feedback-task-demand-evidence-failure-zh-320.png",
+      "path": "feedback-lifetime-verified/captures/feedback-task-demand-evidence-failure-zh-320.png",
+      "run": "feedback-lifetime-verified",
+      "new_visual_scope": true,
+      "role": "New task/Retry feedback proof",
+      "bytes": 43479,
+      "sha256": "4ff35cef378863a212d7fe720e61c1e750363a1e857e970a85a6866b73ee1521",
+      "blob": "ceaa9381733f337f697dc4f4d26dab73ab5b019f",
+      "width": 320,
+      "height": 764
+    },
+    {
+      "name": "feedback-task-demand-evidence-success-en-390.png",
+      "path": "feedback-lifetime-verified/captures/feedback-task-demand-evidence-success-en-390.png",
+      "run": "feedback-lifetime-verified",
+      "new_visual_scope": true,
+      "role": "New task/Retry feedback proof",
+      "bytes": 47502,
+      "sha256": "2f39ddf97900465dbd1bbbfd4978b711551423e7ed2a22779ad4f42af2571af7",
+      "blob": "b2a415f646689b412d4c4692bf362e512fc0de1a",
+      "width": 390,
+      "height": 764
+    },
+    {
+      "name": "feedback-task-demand-evidence-success-zh-320.png",
+      "path": "feedback-lifetime-verified/captures/feedback-task-demand-evidence-success-zh-320.png",
+      "run": "feedback-lifetime-verified",
+      "new_visual_scope": true,
+      "role": "New task/Retry feedback proof",
+      "bytes": 43479,
+      "sha256": "4ff35cef378863a212d7fe720e61c1e750363a1e857e970a85a6866b73ee1521",
+      "blob": "ceaa9381733f337f697dc4f4d26dab73ab5b019f",
+      "width": 320,
+      "height": 764
+    },
+    {
+      "name": "feedback-task-review-failure-en-390.png",
+      "path": "feedback-lifetime-verified/captures/feedback-task-review-failure-en-390.png",
+      "run": "feedback-lifetime-verified",
+      "new_visual_scope": true,
+      "role": "New task/Retry feedback proof",
+      "bytes": 55105,
+      "sha256": "1c5b4a954a2bcb1e8107927e232936b57c6c16279421513db897886aa49199af",
+      "blob": "5622efd50d2c210b002e606d5150ce33430b84c3",
+      "width": 390,
+      "height": 764
+    },
+    {
+      "name": "feedback-task-review-failure-zh-320.png",
+      "path": "feedback-lifetime-verified/captures/feedback-task-review-failure-zh-320.png",
+      "run": "feedback-lifetime-verified",
+      "new_visual_scope": true,
+      "role": "New task/Retry feedback proof",
+      "bytes": 48819,
+      "sha256": "9e3da83f8d18b8fc563a555fec82acc1f783e91bc8fb5286a34212e1676d03af",
+      "blob": "69acf18e6a428b1373b269248b791f8fbe13835a",
+      "width": 320,
+      "height": 764
+    },
+    {
+      "name": "feedback-task-review-success-en-390.png",
+      "path": "feedback-lifetime-verified/captures/feedback-task-review-success-en-390.png",
+      "run": "feedback-lifetime-verified",
+      "new_visual_scope": true,
+      "role": "New task/Retry feedback proof",
+      "bytes": 55105,
+      "sha256": "1c5b4a954a2bcb1e8107927e232936b57c6c16279421513db897886aa49199af",
+      "blob": "5622efd50d2c210b002e606d5150ce33430b84c3",
+      "width": 390,
+      "height": 764
+    },
+    {
+      "name": "feedback-task-review-success-zh-320.png",
+      "path": "feedback-lifetime-verified/captures/feedback-task-review-success-zh-320.png",
+      "run": "feedback-lifetime-verified",
+      "new_visual_scope": true,
+      "role": "New task/Retry feedback proof",
+      "bytes": 48819,
+      "sha256": "9e3da83f8d18b8fc563a555fec82acc1f783e91bc8fb5286a34212e1676d03af",
+      "blob": "69acf18e6a428b1373b269248b791f8fbe13835a",
+      "width": 320,
+      "height": 764
+    },
+    {
+      "name": "navigation-return-1440-en.png",
+      "path": "feedback-lifetime-verified/captures/navigation-return-1440-en.png",
+      "run": "feedback-lifetime-verified",
+      "new_visual_scope": false,
+      "role": "Retained mutation/navigation regression",
+      "bytes": 55203,
+      "sha256": "55fcb28c45b43c8184ce9d50f59b91e7281606379de3b58627e070b0b74df182",
+      "blob": "8e6081df59377a6cf780588abc1f03c04b5bb85b",
+      "width": 570,
+      "height": 796
+    },
+    {
+      "name": "navigation-return-320-en.png",
+      "path": "feedback-lifetime-verified/captures/navigation-return-320-en.png",
+      "run": "feedback-lifetime-verified",
+      "new_visual_scope": false,
+      "role": "Retained mutation/navigation regression",
+      "bytes": 50017,
+      "sha256": "e75c881f570f077bf129722539cc29387c8d4db867232373b8c5b2a35479946f",
+      "blob": "4346f508202e03c1493699726a91ee130baeb49b",
+      "width": 320,
+      "height": 764
+    },
+    {
+      "name": "navigation-return-390-zh.png",
+      "path": "feedback-lifetime-verified/captures/navigation-return-390-zh.png",
+      "run": "feedback-lifetime-verified",
+      "new_visual_scope": false,
+      "role": "Retained mutation/navigation regression",
+      "bytes": 47223,
+      "sha256": "75df750ebfa88691e95d0f2712640109bbfca50f06f1d33508530aeb0e5eae86",
+      "blob": "9c5b22177462980f33f85b5d986085f261116558",
+      "width": 390,
+      "height": 764
+    }
+  ],
+  "capture_policy": {
+    "baseline_retained": 2,
+    "corrected_baseline_total_generated": 8,
+    "all_final_captures_retained": 23
+  },
+  "limits": [
+    "Native historical/synthetic fixtures only; not hosted/public-route, market freshness, personal-data, cross-engine or new assistive-technology acceptance.",
+    "The existing single status node, five-second timer, text, role and live markup remain. Timeout retains space within its task; explicit retirement cancels the timer and empties only its owned old message.",
+    "A frozen Remove handoff may preserve or retire only its supplied witness. If a newer message replaced it before apply, that newer message is left alone.",
+    "No extra route/history/store/notification owner, timer or replay is introduced. Model/alert/receipt/result/release/admission boundaries remain."
+  ]
+}

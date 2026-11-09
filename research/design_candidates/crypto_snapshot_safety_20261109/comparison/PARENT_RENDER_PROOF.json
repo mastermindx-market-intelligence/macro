@@ -1,0 +1,36 @@
+{
+  "source_parent": "7308f6d706777a49009437554dd35fe42ae163dd",
+  "method": "Existing render_view called with exact retained view JSON; no read_contract/build/model/producer/data refresh. Output isolated in comparison-render-parent.",
+  "files": [
+    {
+      "name": "crypto-r4.html",
+      "bytes": 117388,
+      "sha256": "d1b1ff0480eeade13dfdc30592aeb8bb5261874f9b79faef99868a106f3346a2",
+      "parent_exact": true
+    },
+    {
+      "name": "vector-r4.html",
+      "bytes": 117387,
+      "sha256": "99d01edf84059207714c8f1cc5fe2ee69dfb8fec6489a2ffd9693fbad4323f0f",
+      "parent_exact": true
+    },
+    {
+      "name": "crypto_intelligence_r4.json",
+      "bytes": 28027,
+      "sha256": "807839328e14080902df593408c9001d958b69be70d74d09fadbdc811d859401",
+      "parent_exact": true
+    },
+    {
+      "name": "crypto_intelligence_r4.js",
+      "bytes": 60408,
+      "sha256": "07038c0fa0c89d1c05640221d49f95082cc15c41376eb7b4c83edc58022a28ae",
+      "parent_exact": true
+    },
+    {
+      "name": "crypto_intelligence_r4.css",
+      "bytes": 19602,
+      "sha256": "d39fca22e0dfb94f786576cf8102fc36ccaba53d4cc37ffd57dec61cc18ee2ef",
+      "parent_exact": true
+    }
+  ]
+}

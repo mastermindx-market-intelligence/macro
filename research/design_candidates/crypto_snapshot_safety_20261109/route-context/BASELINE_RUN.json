@@ -1,0 +1,21 @@
+{
+  "command": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_native_route_destinations_match_ordinary_context",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_in_section_keyboard_route_keeps_a_visible_focus_owner",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_route_focus_handoff_yields_to_a_newer_choice",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_consumed_or_modified_route_click_is_not_replayed_by_app",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_horizon_deep_link_drawer_history_and_chart_window",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_missing_current_case_recovers_without_borrowing_review_context",
+    "--tb=short",
+    "--junitxml=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/route-context-baseline/junit.xml",
+    "--basetemp=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/route-context-baseline/pytest-temp"
+  ],
+  "exit_code": 1,
+  "seconds": 13.83,
+  "source_parent": "059b9a6acd6d84726e20781b52a66e0c2a5ec651",
+  "test_sha256": "6bedde77dc7b3ca68413fe49525db47a73d8084ce2a0e8652fb0aac65f352f02"
+}

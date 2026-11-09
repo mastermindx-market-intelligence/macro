@@ -1,0 +1,65 @@
+FIRST CORRECTED PROGRAMMATIC BASELINE — HARNESS API FAILURE
+
+{
+  "command": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_crypto_intelligence_r4_browser.py",
+    "-k",
+    "programmatic_save",
+    "--tb=short",
+    "--junitxml=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/baseline-corrected-programmatic/junit.xml",
+    "--basetemp=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/baseline-corrected-programmatic/pytest-temp"
+  ],
+  "exit_code": 1,
+  "seconds": 7.413,
+  "source_parent": "5e496c24c962e85a4f7f514dd43dc61443b95cab",
+  "test_sha256": "9cc64600fee4c6947b8aff868690a34370ec9acfeeed326e9daa7bd4a3585cae"
+}
+
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_ test_r4_programmatic_save_preserves_unrelated_focus_and_stale_save_stays_safe _
+tests/test_crypto_intelligence_r4_browser.py:580: in test_r4_programmatic_save_preserves_unrelated_focus_and_stale_save_stays_safe
+    assert _writes(page) == 1 and review.is_focused()
+                                  ^^^^^^^^^^^^^^^^^
+E   AttributeError: 'Locator' object has no attribute 'is_focused'
+=========================== short test summary info ============================
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_programmatic_save_preserves_unrelated_focus_and_stale_save_stays_safe
+1 failed, 39 deselected in 6.92s
+
+FINAL CORRECTED PROGRAMMATIC BASELINE — ORIGINAL SOURCE FOCUS FAILURE
+
+{
+  "command": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_crypto_intelligence_r4_browser.py",
+    "-k",
+    "programmatic_save",
+    "--tb=short",
+    "--junitxml=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/baseline-programmatic-final/junit.xml",
+    "--basetemp=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/baseline-programmatic-final/pytest-temp"
+  ],
+  "exit_code": 1,
+  "seconds": 11.164,
+  "source_parent": "5e496c24c962e85a4f7f514dd43dc61443b95cab",
+  "test_sha256": "daf449229b8111a92809bd57080734dfbfce8f0508dbd669ccb279f947a2242d"
+}
+
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_ test_r4_programmatic_save_preserves_unrelated_focus_and_stale_save_stays_safe _
+tests/test_crypto_intelligence_r4_browser.py:580: in test_r4_programmatic_save_preserves_unrelated_focus_and_stale_save_stays_safe
+    assert _writes(page) == 1 and review.evaluate("element => document.activeElement === element")
+E   assert (1 == 1 and False)
+E    +  where 1 = _writes(<Page url='http://127.0.0.1:62052/crypto-r4.html?lang=en#scenarios?h=30&panel=scenario%3Acontinuation'>)
+E    +  and   False = evaluate('element => document.activeElement === element')
+E    +    where evaluate = <Locator frame=<Frame name= url='http://127.0.0.1:62052/crypto-r4.html?lang=en#scenarios?h=30&panel=scenario%3Acontinuation'> selector='#cri-dialog-body >> internal:role=button[name="Historical review"s]'>.evaluate
+=========================== short test summary info ============================
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_programmatic_save_preserves_unrelated_focus_and_stale_save_stays_safe
+1 failed, 39 deselected in 9.26s

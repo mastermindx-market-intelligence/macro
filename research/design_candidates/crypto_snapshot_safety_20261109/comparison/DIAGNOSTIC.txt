@@ -1,0 +1,20 @@
+FF.                                                                      [100%]
+=================================== FAILURES ===================================
+_ test_r4_comparison_basis_locale_preserves_scroll_when_close_keeps_focus[en] __
+tests/test_crypto_intelligence_r4_browser.py:1615: in test_r4_comparison_basis_locale_preserves_scroll_when_close_keeps_focus
+    assert abs(metrics["scroll"] - min(before, metrics["maximum"])) <= 1, (before, metrics)
+E   AssertionError: (180, {'scroll': 167, 'maximum': 397})
+E   assert 13 <= 1
+E    +  where 13 = abs((167 - 180))
+E    +    where 180 = min(180, 397)
+_ test_r4_comparison_basis_locale_preserves_scroll_when_close_keeps_focus[zh] __
+tests/test_crypto_intelligence_r4_browser.py:1615: in test_r4_comparison_basis_locale_preserves_scroll_when_close_keeps_focus
+    assert abs(metrics["scroll"] - min(before, metrics["maximum"])) <= 1, (before, metrics)
+E   AssertionError: (180, {'scroll': 193, 'maximum': 539})
+E   assert 13 <= 1
+E    +  where 13 = abs((193 - 180))
+E    +    where 180 = min(180, 539)
+=========================== short test summary info ============================
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_comparison_basis_locale_preserves_scroll_when_close_keeps_focus[en]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_comparison_basis_locale_preserves_scroll_when_close_keeps_focus[zh]
+2 failed, 1 passed, 117 deselected in 7.01s

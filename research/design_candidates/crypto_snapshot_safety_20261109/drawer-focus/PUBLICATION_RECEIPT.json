@@ -1,0 +1,4354 @@
+{
+  "source": {
+    "source_parent": "8714a277ddcc865f831021471520667d831304b1",
+    "assets": "4f86c987c57c",
+    "changed": {
+      "templates/crypto_intelligence_r4.js": {
+        "bytes": 77160,
+        "sha256": "61f48d3718ff861df257ce2dce782cdb31e82e53754ed544cf73ec3d30505c77",
+        "blob": "2dcfdd19cba26deb5313b876380acdbfa80cb0c2"
+      },
+      "tests/test_crypto_intelligence_r4_browser.py": {
+        "bytes": 196722,
+        "sha256": "664b46623020160df2643af9b2b6fbbb927824fbcd2301bee598e4244666b126",
+        "blob": "4e90d70da4ae16fcd33e212dd4b4aeb81a8f3ba8"
+      },
+      "site/crypto-r4.html": {
+        "bytes": 129566,
+        "sha256": "a1dfbc09778c9f80af4f9ced604d4266fb4e630e42fdf13fc0553d4d191768c2",
+        "blob": "22edb7762cc33bceed2677ff6f32f119b29e559c"
+      },
+      "site/vector-r4.html": {
+        "bytes": 129565,
+        "sha256": "4d56207b0d474c3612ac91888057f94fe453e13869551e70a477dd892cafd813",
+        "blob": "70f29f0a32db737afeb1aee8a424803891793f3a"
+      },
+      "site/crypto_intelligence_r4.js": {
+        "bytes": 77160,
+        "sha256": "61f48d3718ff861df257ce2dce782cdb31e82e53754ed544cf73ec3d30505c77",
+        "blob": "2dcfdd19cba26deb5313b876380acdbfa80cb0c2"
+      },
+      "site/crypto_intelligence_r4.css": {
+        "bytes": 23604,
+        "sha256": "e681098d6a63a0a34f61e0f04fc81a178a276c584215fcc2c55bab4574912354",
+        "blob": "e00cb65921101c715200a884c5da7f1aca7285bf"
+      },
+      "templates/crypto_intelligence_r4.css": {
+        "bytes": 23604,
+        "sha256": "e681098d6a63a0a34f61e0f04fc81a178a276c584215fcc2c55bab4574912354",
+        "blob": "e00cb65921101c715200a884c5da7f1aca7285bf"
+      }
+    },
+    "unchanged": {
+      "templates/crypto_intelligence_r4.html.j2": {
+        "bytes": 23230,
+        "sha256": "76c6a23231e5c9b97ccef4964a04af2d70869a7e93a560adeee27d7cab67c38c",
+        "blob": "6938792268784fca2d19bc0c8eddb634dad2ca88"
+      },
+      "scripts/build_crypto_intelligence_r4.py": {
+        "bytes": 5326,
+        "sha256": "abf594e7c1cf34273f4017f6bfc28333df810eb2cff2f8ee30972335671888c0",
+        "blob": "f276092b8e72925c5d967a1f5066bd940392ceb5"
+      },
+      "tests/test_crypto_intelligence_r4.py": {
+        "bytes": 23038,
+        "sha256": "878131aea7d56e5de7f21641f60bdd2fc43cd345f738dd2b8f111c32c9219fa3",
+        "blob": "4ecf96b6707e474a34ca04437f3afd0e8c8ec8e0"
+      },
+      "lib/crypto_intelligence_view.py": {
+        "bytes": 22671,
+        "sha256": "3457d4a183444f6b4d2b8bbed1d5678d30f93e387cd9861f147d58211eb83f73",
+        "blob": "5c90c35c1307d425cb5979aa3ce609e408cfddc6"
+      },
+      "site/crypto_intelligence_r4.json": {
+        "bytes": 28027,
+        "sha256": "807839328e14080902df593408c9001d958b69be70d74d09fadbdc811d859401",
+        "blob": "024278d4143ee076f4253cd295230636818e97bd"
+      },
+      "site/theme.js": {
+        "bytes": 265200,
+        "sha256": "46939917d2e233cb0d8af828d97b1e3b7d18886fd829f88d0bc08c9f3b643455",
+        "blob": "937779ef5770fa92ef93a5e6b0f7e3415f6a7cf3"
+      },
+      "site/theme.css": {
+        "bytes": 221941,
+        "sha256": "2e8611477fd3499877721f9ce9386b1c3a55e00a2ed87c4187387845775ae64a",
+        "blob": "620895319be7e3f7808439ecbae8c33c2197389f"
+      },
+      "site/illus.js": {
+        "bytes": 2752,
+        "sha256": "8e0a3779784525f15bb4a1b20e50f39ef4d0ddf243827f5ab609cfb08a69c620",
+        "blob": "dfe818277c5068fe665337531f89d4fe7976565b"
+      },
+      "site/illus.css": {
+        "bytes": 14335,
+        "sha256": "cbe6a0b4f83095ed300ee49a5d9f4d03e88005170a4792a7a9f41805a67e5f07",
+        "blob": "cda4f3e53a34c5e996b49bdac5732357ed94b2d5"
+      },
+      "site/navigation-refresh.css": {
+        "bytes": 93481,
+        "sha256": "ef068fe19adab3779512462c40ab67b3e75a997a2dc6edfae2d5a36dd604eb5c",
+        "blob": "276c1986f2a728ca59e0f9e0bc7fe269869fdff0"
+      },
+      "site/logo_config.js": {
+        "bytes": 202,
+        "sha256": "b37d33d3194c191b1bb64db3f5c33d17c7dc06a74892e4aa8ea4d50320aae215",
+        "blob": "523923f9f424a144f4a0cf3e4814e2ea36392474"
+      },
+      "site/stock-logos.js": {
+        "bytes": 16539,
+        "sha256": "cc29be531bc08e655464b6c0d384e1a46041aeb31caf7d982e926681fda7cb49",
+        "blob": "759d78f4dfb11de591d8db5cec36a91ca372fe3c"
+      },
+      "site/live_config.js": {
+        "bytes": 367,
+        "sha256": "52943e92422103557d94066ceb65f4402816322281f95e8bd376293fe14d9c10",
+        "blob": "2ad84da9b70e83cd9825a684d3c846fc81e7366d"
+      },
+      "site/live.js": {
+        "bytes": 50731,
+        "sha256": "f8cda39dd4258a5778864b3b7e0bd8b9cc685bd1f926211a72268883a937a592",
+        "blob": "7e91599afb20a69c4010d5dc36c85439381d529f"
+      }
+    },
+    "product_inverse_exact": {
+      "templates/crypto_intelligence_r4.css": true,
+      "templates/crypto_intelligence_r4.js": true
+    },
+    "browser_test_inverse_exact": true,
+    "same_baseline_test_bytes": true,
+    "retained_html_except_two_asset_refs_exact": {
+      "crypto-r4.html": true,
+      "vector-r4.html": true
+    },
+    "retained_view_exact": true,
+    "served_assets_exact": true
+  },
+  "runs": {
+    "drawer-focus-baseline": {
+      "result": {
+        "command": [
+          "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "-m",
+          "pytest",
+          "-q",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_keyboard_current_action_ring_clears_drawer_edge",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_reverse_tab_reveals_current_summary_below_sticky_header",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_reverse_tab_respects_wrapped_saved_header_after_resize",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_actions_wrap_with_separate_touch_targets",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_disabled_current_save_is_distinct_and_inert",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_feedback_timeout_keeps_action_geometry_and_reading",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_confirmed_mutation_preserves_the_reader",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_failed_mutation_does_not_rebuild_or_replay",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_mutation_uses_fresh_reading_when_history_persistence_fails",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_mutation_reading_persistence_yields_to_a_newer_choice",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_review_returns_to_the_same_case_and_reading",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_locale_preserves_disclosure_focus_and_reading",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_saved_locale_keeps_disclosure_focus_and_reading_position",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_newer_focus_during_confirmation_survives",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_completion_focus_callbacks_keep_their_new_panel",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_programmatic_save_preserves_unrelated_focus_and_stale_save_stays_safe",
+          "--tb=short",
+          "--junitxml=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/drawer-focus-baseline/junit.xml",
+          "--basetemp=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/drawer-focus-baseline/pytest-temp"
+        ],
+        "exit_code": 1,
+        "seconds": 45.072,
+        "source_parent": "8714a277ddcc865f831021471520667d831304b1",
+        "runtime_asset_version": "62cf3bb534f8",
+        "test_sha256": "664b46623020160df2643af9b2b6fbbb927824fbcd2301bee598e4244666b126"
+      },
+      "observations": {
+        "contexts": 48,
+        "pages": 48,
+        "page_errors": [],
+        "blocked_external_requests": 0,
+        "blocked_websockets": 0,
+        "browser": "157.0.8103.39",
+        "drawer_focus": [
+          {
+            "label": "actions-en-390-False-before",
+            "key": "review",
+            "focusVisible": false,
+            "outlineStyle": "none",
+            "extent": 3,
+            "top": 476.25,
+            "bottom": 524.25,
+            "left": 20,
+            "right": 195.359375,
+            "viewTop": 167.59375,
+            "viewBottom": 600,
+            "viewLeft": 0,
+            "viewRight": 390,
+            "headerHeight": 87.59375,
+            "scroll": 127,
+            "scrollHeight": 647,
+            "bodyHeight": 559.65625,
+            "windowScroll": 397,
+            "historyLength": 3,
+            "layout": [
+              {
+                "key": "scenario-conditions",
+                "top": 397.65625,
+                "left": 20,
+                "width": 350,
+                "height": 18
+              },
+              {
+                "key": "review",
+                "top": 435.65625,
+                "left": 20,
+                "width": 175.359375,
+                "height": 48
+              },
+              {
+                "key": "snapshot-save",
+                "top": 435.65625,
+                "left": 207.359375,
+                "width": 162.640625,
+                "height": 48
+              },
+              {
+                "key": "demand-evidence",
+                "top": 495.65625,
+                "left": 20,
+                "width": 206.21875,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "label": "actions-en-390-False-after",
+            "key": "demand-evidence",
+            "focusVisible": true,
+            "outlineStyle": "solid",
+            "extent": 6,
+            "top": 536.25,
+            "bottom": 580.25,
+            "left": 20,
+            "right": 226.21875,
+            "viewTop": 167.59375,
+            "viewBottom": 600,
+            "viewLeft": 0,
+            "viewRight": 390,
+            "headerHeight": 87.59375,
+            "scroll": 127,
+            "scrollHeight": 647,
+            "bodyHeight": 559.65625,
+            "windowScroll": 397,
+            "historyLength": 3,
+            "layout": [
+              {
+                "key": "scenario-conditions",
+                "top": 397.65625,
+                "left": 20,
+                "width": 350,
+                "height": 18
+              },
+              {
+                "key": "review",
+                "top": 435.65625,
+                "left": 20,
+                "width": 175.359375,
+                "height": 48
+              },
+              {
+                "key": "snapshot-save",
+                "top": 435.65625,
+                "left": 207.359375,
+                "width": 162.640625,
+                "height": 48
+              },
+              {
+                "key": "demand-evidence",
+                "top": 495.65625,
+                "left": 20,
+                "width": 206.21875,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "label": "actions-en-390-True-before",
+            "key": "review",
+            "focusVisible": false,
+            "outlineStyle": "none",
+            "extent": 3,
+            "top": 526.15625,
+            "bottom": 574.15625,
+            "left": 20,
+            "right": 195.359375,
+            "viewTop": 167.59375,
+            "viewBottom": 600,
+            "viewLeft": 0,
+            "viewRight": 390,
+            "headerHeight": 87.59375,
+            "scroll": 0,
+            "scrollHeight": 570,
+            "bodyHeight": 482.5625,
+            "windowScroll": 420,
+            "historyLength": 3,
+            "layout": [
+              {
+                "key": "scenario-conditions",
+                "top": 320.5625,
+                "left": 20,
+                "width": 350,
+                "height": 18
+              },
+              {
+                "key": "review",
+                "top": 358.5625,
+                "left": 20,
+                "width": 175.359375,
+                "height": 48
+              },
+              {
+                "key": "snapshot-save",
+                "top": 358.5625,
+                "left": 207.359375,
+                "width": 162.640625,
+                "height": 48
+              },
+              {
+                "key": "demand-evidence",
+                "top": 418.5625,
+                "left": 20,
+                "width": 206.21875,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "label": "actions-en-390-True-after",
+            "key": "demand-evidence",
+            "focusVisible": true,
+            "outlineStyle": "solid",
+            "extent": 6,
+            "top": 556.15625,
+            "bottom": 600.15625,
+            "left": 20,
+            "right": 226.21875,
+            "viewTop": 167.59375,
+            "viewBottom": 600,
+            "viewLeft": 0,
+            "viewRight": 390,
+            "headerHeight": 87.59375,
+            "scroll": 30,
+            "scrollHeight": 570,
+            "bodyHeight": 482.5625,
+            "windowScroll": 420,
+            "historyLength": 3,
+            "layout": [
+              {
+                "key": "scenario-conditions",
+                "top": 320.5625,
+                "left": 20,
+                "width": 350,
+                "height": 18
+              },
+              {
+                "key": "review",
+                "top": 358.5625,
+                "left": 20,
+                "width": 175.359375,
+                "height": 48
+              },
+              {
+                "key": "snapshot-save",
+                "top": 358.5625,
+                "left": 207.359375,
+                "width": 162.640625,
+                "height": 48
+              },
+              {
+                "key": "demand-evidence",
+                "top": 418.5625,
+                "left": 20,
+                "width": 206.21875,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "label": "actions-zh-320-False-before",
+            "key": "review",
+            "focusVisible": false,
+            "outlineStyle": "none",
+            "extent": 3,
+            "top": 552.15625,
+            "bottom": 600.15625,
+            "left": 20,
+            "right": 154,
+            "viewTop": 170.59375,
+            "viewBottom": 600,
+            "viewLeft": 0,
+            "viewRight": 320,
+            "headerHeight": 90.59375,
+            "scroll": 46,
+            "scrollHeight": 642,
+            "bodyHeight": 551.5625,
+            "windowScroll": 412,
+            "historyLength": 3,
+            "layout": [
+              {
+                "key": "scenario-conditions",
+                "top": 386.5625,
+                "left": 20,
+                "width": 280,
+                "height": 21
+              },
+              {
+                "key": "review",
+                "top": 427.5625,
+                "left": 20,
+                "width": 134,
+                "height": 48
+              },
+              {
+                "key": "snapshot-save",
+                "top": 427.5625,
+                "left": 166,
+                "width": 134,
+                "height": 48
+              },
+              {
+                "key": "demand-evidence",
+                "top": 487.5625,
+                "left": 20,
+                "width": 121.8125,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "label": "actions-zh-320-False-after",
+            "key": "demand-evidence",
+            "focusVisible": true,
+            "outlineStyle": "solid",
+            "extent": 6,
+            "top": 536.15625,
+            "bottom": 580.15625,
+            "left": 20,
+            "right": 141.8125,
+            "viewTop": 170.59375,
+            "viewBottom": 600,
+            "viewLeft": 0,
+            "viewRight": 320,
+            "headerHeight": 90.59375,
+            "scroll": 122,
+            "scrollHeight": 642,
+            "bodyHeight": 551.5625,
+            "windowScroll": 412,
+            "historyLength": 3,
+            "layout": [
+              {
+                "key": "scenario-conditions",
+                "top": 386.5625,
+                "left": 20,
+                "width": 280,
+                "height": 21
+              },
+              {
+                "key": "review",
+                "top": 427.5625,
+                "left": 20,
+                "width": 134,
+                "height": 48
+              },
+              {
+                "key": "snapshot-save",
+                "top": 427.5625,
+                "left": 166,
+                "width": 134,
+                "height": 48
+              },
+              {
+                "key": "demand-evidence",
+                "top": 487.5625,
+                "left": 20,
+                "width": 121.8125,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "label": "actions-zh-320-True-before",
+            "key": "review",
+            "focusVisible": false,
+            "outlineStyle": "none",
+            "extent": 3,
+            "top": 517.0625,
+            "bottom": 565.0625,
+            "left": 20,
+            "right": 154,
+            "viewTop": 170.59375,
+            "viewBottom": 600,
+            "viewLeft": 0,
+            "viewRight": 320,
+            "headerHeight": 90.59375,
+            "scroll": 0,
+            "scrollHeight": 561,
+            "bodyHeight": 470.46875,
+            "windowScroll": 434,
+            "historyLength": 3,
+            "layout": [
+              {
+                "key": "scenario-conditions",
+                "top": 305.46875,
+                "left": 20,
+                "width": 280,
+                "height": 21
+              },
+              {
+                "key": "review",
+                "top": 346.46875,
+                "left": 20,
+                "width": 134,
+                "height": 48
+              },
+              {
+                "key": "snapshot-save",
+                "top": 346.46875,
+                "left": 166,
+                "width": 134,
+                "height": 48
+              },
+              {
+                "key": "demand-evidence",
+                "top": 406.46875,
+                "left": 20,
+                "width": 121.8125,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "label": "actions-zh-320-True-after",
+            "key": "demand-evidence",
+            "focusVisible": true,
+            "outlineStyle": "solid",
+            "extent": 6,
+            "top": 556.0625,
+            "bottom": 600.0625,
+            "left": 20,
+            "right": 141.8125,
+            "viewTop": 170.59375,
+            "viewBottom": 600,
+            "viewLeft": 0,
+            "viewRight": 320,
+            "headerHeight": 90.59375,
+            "scroll": 21,
+            "scrollHeight": 561,
+            "bodyHeight": 470.46875,
+            "windowScroll": 434,
+            "historyLength": 3,
+            "layout": [
+              {
+                "key": "scenario-conditions",
+                "top": 305.46875,
+                "left": 20,
+                "width": 280,
+                "height": 21
+              },
+              {
+                "key": "review",
+                "top": 346.46875,
+                "left": 20,
+                "width": 134,
+                "height": 48
+              },
+              {
+                "key": "snapshot-save",
+                "top": 346.46875,
+                "left": 166,
+                "width": 134,
+                "height": 48
+              },
+              {
+                "key": "demand-evidence",
+                "top": 406.46875,
+                "left": 20,
+                "width": 121.8125,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "label": "actions-en-1440-False-before",
+            "key": "review",
+            "focusVisible": false,
+            "outlineStyle": "none",
+            "extent": 3,
+            "top": 445.15625,
+            "bottom": 493.15625,
+            "left": 873,
+            "right": 1131.359375,
+            "viewTop": 176.59375,
+            "viewBottom": 575,
+            "viewLeft": 847,
+            "viewRight": 1415,
+            "headerHeight": 95.59375,
+            "scroll": 150,
+            "scrollHeight": 644,
+            "bodyHeight": 548.5625,
+            "windowScroll": 325,
+            "historyLength": 3,
+            "layout": [
+              {
+                "key": "scenario-conditions",
+                "top": 380.5625,
+                "left": 26,
+                "width": 516,
+                "height": 18
+              },
+              {
+                "key": "review",
+                "top": 418.5625,
+                "left": 26,
+                "width": 258.359375,
+                "height": 48
+              },
+              {
+                "key": "snapshot-save",
+                "top": 418.5625,
+                "left": 296.359375,
+                "width": 245.640625,
+                "height": 48
+              },
+              {
+                "key": "demand-evidence",
+                "top": 478.5625,
+                "left": 26,
+                "width": 206.21875,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "label": "actions-en-1440-False-after",
+            "key": "demand-evidence",
+            "focusVisible": true,
+            "outlineStyle": "solid",
+            "extent": 6,
+            "top": 505.15625,
+            "bottom": 549.15625,
+            "left": 873,
+            "right": 1079.21875,
+            "viewTop": 176.59375,
+            "viewBottom": 575,
+            "viewLeft": 847,
+            "viewRight": 1415,
+            "headerHeight": 95.59375,
+            "scroll": 150,
+            "scrollHeight": 644,
+            "bodyHeight": 548.5625,
+            "windowScroll": 325,
+            "historyLength": 3,
+            "layout": [
+              {
+                "key": "scenario-conditions",
+                "top": 380.5625,
+                "left": 26,
+                "width": 516,
+                "height": 18
+              },
+              {
+                "key": "review",
+                "top": 418.5625,
+                "left": 26,
+                "width": 258.359375,
+                "height": 48
+              },
+              {
+                "key": "snapshot-save",
+                "top": 418.5625,
+                "left": 296.359375,
+                "width": 245.640625,
+                "height": 48
+              },
+              {
+                "key": "demand-evidence",
+                "top": 478.5625,
+                "left": 26,
+                "width": 206.21875,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "label": "actions-en-1440-True-before",
+            "key": "review",
+            "focusVisible": false,
+            "outlineStyle": "none",
+            "extent": 3,
+            "top": 518.0625,
+            "bottom": 566.0625,
+            "left": 873,
+            "right": 1131.359375,
+            "viewTop": 176.59375,
+            "viewBottom": 575,
+            "viewLeft": 847,
+            "viewRight": 1415,
+            "headerHeight": 95.59375,
+            "scroll": 0,
+            "scrollHeight": 567,
+            "bodyHeight": 471.46875,
+            "windowScroll": 348,
+            "historyLength": 3,
+            "layout": [
+              {
+                "key": "scenario-conditions",
+                "top": 303.46875,
+                "left": 26,
+                "width": 516,
+                "height": 18
+              },
+              {
+                "key": "review",
+                "top": 341.46875,
+                "left": 26,
+                "width": 258.359375,
+                "height": 48
+              },
+              {
+                "key": "snapshot-save",
+                "top": 341.46875,
+                "left": 296.359375,
+                "width": 245.640625,
+                "height": 48
+              },
+              {
+                "key": "demand-evidence",
+                "top": 401.46875,
+                "left": 26,
+                "width": 206.21875,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "label": "actions-en-1440-True-after",
+            "key": "demand-evidence",
+            "focusVisible": true,
+            "outlineStyle": "solid",
+            "extent": 6,
+            "top": 505.0625,
+            "bottom": 549.0625,
+            "left": 873,
+            "right": 1079.21875,
+            "viewTop": 176.59375,
+            "viewBottom": 575,
+            "viewLeft": 847,
+            "viewRight": 1415,
+            "headerHeight": 95.59375,
+            "scroll": 73,
+            "scrollHeight": 567,
+            "bodyHeight": 471.46875,
+            "windowScroll": 348,
+            "historyLength": 3,
+            "layout": [
+              {
+                "key": "scenario-conditions",
+                "top": 303.46875,
+                "left": 26,
+                "width": 516,
+                "height": 18
+              },
+              {
+                "key": "review",
+                "top": 341.46875,
+                "left": 26,
+                "width": 258.359375,
+                "height": 48
+              },
+              {
+                "key": "snapshot-save",
+                "top": 341.46875,
+                "left": 296.359375,
+                "width": 245.640625,
+                "height": 48
+              },
+              {
+                "key": "demand-evidence",
+                "top": 401.46875,
+                "left": 26,
+                "width": 206.21875,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "label": "current-reverse-en-390-before",
+            "key": "review",
+            "focusVisible": false,
+            "outlineStyle": "none",
+            "extent": 3,
+            "top": 374.8125,
+            "bottom": 422.8125,
+            "left": 20,
+            "right": 195.359375,
+            "viewTop": 167.59375,
+            "viewBottom": 480,
+            "viewLeft": 0,
+            "viewRight": 390,
+            "headerHeight": 87.59375,
+            "scroll": 407,
+            "scrollHeight": 826,
+            "bodyHeight": 738.21875,
+            "windowScroll": 457,
+            "historyLength": 3,
+            "layout": [
+              {
+                "key": "scenario-conditions",
+                "top": 397.65625,
+                "left": 20,
+                "width": 350,
+                "height": 18
+              },
+              {
+                "key": "review",
+                "top": 614.21875,
+                "left": 20,
+                "width": 175.359375,
+                "height": 48
+              },
+              {
+                "key": "snapshot-save",
+                "top": 614.21875,
+                "left": 207.359375,
+                "width": 162.640625,
+                "height": 48
+              },
+              {
+                "key": "demand-evidence",
+                "top": 674.21875,
+                "left": 20,
+                "width": 206.21875,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "label": "current-reverse-en-390-after",
+            "key": "scenario-conditions",
+            "focusVisible": true,
+            "outlineStyle": "auto",
+            "extent": 1,
+            "top": 158.25,
+            "bottom": 176.25,
+            "left": 20,
+            "right": 370,
+            "viewTop": 167.59375,
+            "viewBottom": 480,
+            "viewLeft": 0,
+            "viewRight": 390,
+            "headerHeight": 87.59375,
+            "scroll": 407,
+            "scrollHeight": 826,
+            "bodyHeight": 738.21875,
+            "windowScroll": 457,
+            "historyLength": 3,
+            "layout": [
+              {
+                "key": "scenario-conditions",
+                "top": 397.65625,
+                "left": 20,
+                "width": 350,
+                "height": 18
+              },
+              {
+                "key": "review",
+                "top": 614.21875,
+                "left": 20,
+                "width": 175.359375,
+                "height": 48
+              },
+              {
+                "key": "snapshot-save",
+                "top": 614.21875,
+                "left": 207.359375,
+                "width": 162.640625,
+                "height": 48
+              },
+              {
+                "key": "demand-evidence",
+                "top": 674.21875,
+                "left": 20,
+                "width": 206.21875,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "label": "current-reverse-zh-320-before",
+            "key": "review",
+            "focusVisible": false,
+            "outlineStyle": "none",
+            "extent": 3,
+            "top": 379.71875,
+            "bottom": 427.71875,
+            "left": 20,
+            "right": 154,
+            "viewTop": 170.59375,
+            "viewBottom": 480,
+            "viewLeft": 0,
+            "viewRight": 320,
+            "headerHeight": 90.59375,
+            "scroll": 397,
+            "scrollHeight": 821,
+            "bodyHeight": 730.125,
+            "windowScroll": 472,
+            "historyLength": 3,
+            "layout": [
+              {
+                "key": "scenario-conditions",
+                "top": 386.5625,
+                "left": 20,
+                "width": 280,
+                "height": 21
+              },
+              {
+                "key": "review",
+                "top": 606.125,
+                "left": 20,
+                "width": 134,
+                "height": 48
+              },
+              {
+                "key": "snapshot-save",
+                "top": 606.125,
+                "left": 166,
+                "width": 134,
+                "height": 48
+              },
+              {
+                "key": "demand-evidence",
+                "top": 666.125,
+                "left": 20,
+                "width": 121.8125,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "label": "current-reverse-zh-320-after",
+            "key": "scenario-conditions",
+            "focusVisible": true,
+            "outlineStyle": "auto",
+            "extent": 1,
+            "top": 160.15625,
+            "bottom": 181.15625,
+            "left": 20,
+            "right": 300,
+            "viewTop": 170.59375,
+            "viewBottom": 480,
+            "viewLeft": 0,
+            "viewRight": 320,
+            "headerHeight": 90.59375,
+            "scroll": 397,
+            "scrollHeight": 821,
+            "bodyHeight": 730.125,
+            "windowScroll": 472,
+            "historyLength": 3,
+            "layout": [
+              {
+                "key": "scenario-conditions",
+                "top": 386.5625,
+                "left": 20,
+                "width": 280,
+                "height": 21
+              },
+              {
+                "key": "review",
+                "top": 606.125,
+                "left": 20,
+                "width": 134,
+                "height": 48
+              },
+              {
+                "key": "snapshot-save",
+                "top": 606.125,
+                "left": 166,
+                "width": 134,
+                "height": 48
+              },
+              {
+                "key": "demand-evidence",
+                "top": 666.125,
+                "left": 20,
+                "width": 121.8125,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "label": "current-reverse-en-1440-before",
+            "key": "review",
+            "focusVisible": false,
+            "outlineStyle": "none",
+            "extent": 3,
+            "top": 360.625,
+            "bottom": 408.625,
+            "left": 873,
+            "right": 1131.359375,
+            "viewTop": 176.59375,
+            "viewBottom": 455,
+            "viewLeft": 847,
+            "viewRight": 1415,
+            "headerHeight": 95.59375,
+            "scroll": 390,
+            "scrollHeight": 800,
+            "bodyHeight": 704.03125,
+            "windowScroll": 385,
+            "historyLength": 3,
+            "layout": [
+              {
+                "key": "scenario-conditions",
+                "top": 380.5625,
+                "left": 26,
+                "width": 516,
+                "height": 18
+              },
+              {
+                "key": "review",
+                "top": 574.03125,
+                "left": 26,
+                "width": 258.359375,
+                "height": 48
+              },
+              {
+                "key": "snapshot-save",
+                "top": 574.03125,
+                "left": 296.359375,
+                "width": 245.640625,
+                "height": 48
+              },
+              {
+                "key": "demand-evidence",
+                "top": 634.03125,
+                "left": 26,
+                "width": 206.21875,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "label": "current-reverse-en-1440-after",
+            "key": "scenario-conditions",
+            "focusVisible": true,
+            "outlineStyle": "auto",
+            "extent": 1,
+            "top": 167.15625,
+            "bottom": 185.15625,
+            "left": 873,
+            "right": 1389,
+            "viewTop": 176.59375,
+            "viewBottom": 455,
+            "viewLeft": 847,
+            "viewRight": 1415,
+            "headerHeight": 95.59375,
+            "scroll": 390,
+            "scrollHeight": 800,
+            "bodyHeight": 704.03125,
+            "windowScroll": 385,
+            "historyLength": 3,
+            "layout": [
+              {
+                "key": "scenario-conditions",
+                "top": 380.5625,
+                "left": 26,
+                "width": 516,
+                "height": 18
+              },
+              {
+                "key": "review",
+                "top": 574.03125,
+                "left": 26,
+                "width": 258.359375,
+                "height": 48
+              },
+              {
+                "key": "snapshot-save",
+                "top": 574.03125,
+                "left": 296.359375,
+                "width": 245.640625,
+                "height": 48
+              },
+              {
+                "key": "demand-evidence",
+                "top": 634.03125,
+                "left": 26,
+                "width": 206.21875,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "label": "saved-resize-en-390-before",
+            "key": "saved-evidence",
+            "focusVisible": false,
+            "outlineStyle": "none",
+            "extent": 3,
+            "top": 965.203125,
+            "bottom": 1032.953125,
+            "left": 35,
+            "right": 355,
+            "viewTop": 338.953125,
+            "viewBottom": 600,
+            "viewLeft": 0,
+            "viewRight": 390,
+            "headerHeight": 258.953125,
+            "scroll": 236,
+            "scrollHeight": 1334,
+            "bodyHeight": 1075,
+            "windowScroll": 0,
+            "historyLength": 3,
+            "layout": [
+              {
+                "key": "case-details",
+                "top": 213.25,
+                "left": 20,
+                "width": 350,
+                "height": 45
+              },
+              {
+                "key": "saved-evidence",
+                "top": 862.25,
+                "left": 35,
+                "width": 320,
+                "height": 67.75
+              },
+              {
+                "key": "review",
+                "top": 955,
+                "left": 20,
+                "width": 350,
+                "height": 48
+              },
+              {
+                "key": "remove",
+                "top": 1011,
+                "left": 20,
+                "width": 350,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "label": "saved-resize-en-390-after",
+            "key": "case-details",
+            "focusVisible": true,
+            "outlineStyle": "solid",
+            "extent": 6,
+            "top": 316.203125,
+            "bottom": 361.203125,
+            "left": 20,
+            "right": 370,
+            "viewTop": 338.953125,
+            "viewBottom": 600,
+            "viewLeft": 0,
+            "viewRight": 390,
+            "headerHeight": 258.953125,
+            "scroll": 236,
+            "scrollHeight": 1334,
+            "bodyHeight": 1075,
+            "windowScroll": 0,
+            "historyLength": 3,
+            "layout": [
+              {
+                "key": "case-details",
+                "top": 213.25,
+                "left": 20,
+                "width": 350,
+                "height": 45
+              },
+              {
+                "key": "saved-evidence",
+                "top": 862.25,
+                "left": 35,
+                "width": 320,
+                "height": 67.75
+              },
+              {
+                "key": "review",
+                "top": 955,
+                "left": 20,
+                "width": 350,
+                "height": 48
+              },
+              {
+                "key": "remove",
+                "top": 1011,
+                "left": 20,
+                "width": 350,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "label": "saved-resize-zh-320-before",
+            "key": "saved-evidence",
+            "focusVisible": false,
+            "outlineStyle": "none",
+            "extent": 3,
+            "top": 979.203125,
+            "bottom": 1046.953125,
+            "left": 35,
+            "right": 285,
+            "viewTop": 338.953125,
+            "viewBottom": 600,
+            "viewLeft": 0,
+            "viewRight": 320,
+            "headerHeight": 258.953125,
+            "scroll": 239,
+            "scrollHeight": 1351,
+            "bodyHeight": 1092,
+            "windowScroll": 0,
+            "historyLength": 3,
+            "layout": [
+              {
+                "key": "case-details",
+                "top": 216.25,
+                "left": 20,
+                "width": 280,
+                "height": 45
+              },
+              {
+                "key": "saved-evidence",
+                "top": 879.25,
+                "left": 35,
+                "width": 250,
+                "height": 67.75
+              },
+              {
+                "key": "review",
+                "top": 972,
+                "left": 20,
+                "width": 280,
+                "height": 48
+              },
+              {
+                "key": "remove",
+                "top": 1028,
+                "left": 20,
+                "width": 280,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "label": "saved-resize-zh-320-after",
+            "key": "case-details",
+            "focusVisible": true,
+            "outlineStyle": "solid",
+            "extent": 6,
+            "top": 316.203125,
+            "bottom": 361.203125,
+            "left": 20,
+            "right": 300,
+            "viewTop": 338.953125,
+            "viewBottom": 600,
+            "viewLeft": 0,
+            "viewRight": 320,
+            "headerHeight": 258.953125,
+            "scroll": 239,
+            "scrollHeight": 1351,
+            "bodyHeight": 1092,
+            "windowScroll": 0,
+            "historyLength": 3,
+            "layout": [
+              {
+                "key": "case-details",
+                "top": 216.25,
+                "left": 20,
+                "width": 280,
+                "height": 45
+              },
+              {
+                "key": "saved-evidence",
+                "top": 879.25,
+                "left": 35,
+                "width": 250,
+                "height": 67.75
+              },
+              {
+                "key": "review",
+                "top": 972,
+                "left": 20,
+                "width": 280,
+                "height": 48
+              },
+              {
+                "key": "remove",
+                "top": 1028,
+                "left": 20,
+                "width": 280,
+                "height": 44
+              }
+            ]
+          }
+        ]
+      },
+      "cases": {
+        "tests.test_crypto_intelligence_r4_browser::test_r4_keyboard_current_action_ring_clears_drawer_edge[en-390-False]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_keyboard_current_action_ring_clears_drawer_edge[en-390-True]": "failed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_keyboard_current_action_ring_clears_drawer_edge[zh-320-False]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_keyboard_current_action_ring_clears_drawer_edge[zh-320-True]": "failed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_keyboard_current_action_ring_clears_drawer_edge[en-1440-False]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_keyboard_current_action_ring_clears_drawer_edge[en-1440-True]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_reverse_tab_reveals_current_summary_below_sticky_header[en-390]": "failed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_reverse_tab_reveals_current_summary_below_sticky_header[zh-320]": "failed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_reverse_tab_reveals_current_summary_below_sticky_header[en-1440]": "failed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_reverse_tab_respects_wrapped_saved_header_after_resize[en-390]": "failed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_reverse_tab_respects_wrapped_saved_header_after_resize[zh-320]": "failed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_actions_wrap_with_separate_touch_targets[en-320]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_actions_wrap_with_separate_touch_targets[zh-320]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_actions_wrap_with_separate_touch_targets[en-390]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_actions_wrap_with_separate_touch_targets[zh-390]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_actions_wrap_with_separate_touch_targets[en-1440]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_disabled_current_save_is_distinct_and_inert[en-390]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_disabled_current_save_is_distinct_and_inert[zh-320]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_feedback_timeout_keeps_action_geometry_and_reading[en-390]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_feedback_timeout_keeps_action_geometry_and_reading[zh-320]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_confirmed_mutation_preserves_the_reader[en-390-save]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_confirmed_mutation_preserves_the_reader[en-390-remove]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_confirmed_mutation_preserves_the_reader[en-390-remove-expired]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_confirmed_mutation_preserves_the_reader[zh-320-save]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_confirmed_mutation_preserves_the_reader[zh-320-remove]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_confirmed_mutation_preserves_the_reader[zh-320-remove-expired]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_failed_mutation_does_not_rebuild_or_replay[en-390-read]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_failed_mutation_does_not_rebuild_or_replay[en-390-confirmation]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_failed_mutation_does_not_rebuild_or_replay[zh-320-read]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_failed_mutation_does_not_rebuild_or_replay[zh-320-confirmation]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_mutation_uses_fresh_reading_when_history_persistence_fails[en-390]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_mutation_uses_fresh_reading_when_history_persistence_fails[zh-320]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_mutation_reading_persistence_yields_to_a_newer_choice[focus]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_mutation_reading_persistence_yields_to_a_newer_choice[navigation]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_mutation_reading_persistence_yields_to_a_newer_choice[history]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_review_returns_to_the_same_case_and_reading[en-390-7-2026-11-09T12:00:00Z]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_review_returns_to_the_same_case_and_reading[zh-320-7-2026-11-09T12:00:00Z]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_review_returns_to_the_same_case_and_reading[en-1440-30-2026-10-18T12:00:00Z]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_review_returns_to_the_same_case_and_reading[zh-390-30-2026-10-18T12:00:00Z]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_locale_preserves_disclosure_focus_and_reading[390]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_locale_preserves_disclosure_focus_and_reading[320]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_saved_locale_keeps_disclosure_focus_and_reading_position[1440]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_saved_locale_keeps_disclosure_focus_and_reading_position[320]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_newer_focus_during_confirmation_survives[save]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_newer_focus_during_confirmation_survives[remove]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_completion_focus_callbacks_keep_their_new_panel[frozen-remove]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_completion_focus_callbacks_keep_their_new_panel[current-save]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_programmatic_save_preserves_unrelated_focus_and_stale_save_stays_safe": "passed"
+      }
+    },
+    "drawer-focus-verified": {
+      "result": {
+        "command": [
+          "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "-m",
+          "pytest",
+          "-q",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_keyboard_current_action_ring_clears_drawer_edge",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_reverse_tab_reveals_current_summary_below_sticky_header",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_reverse_tab_respects_wrapped_saved_header_after_resize",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_actions_wrap_with_separate_touch_targets",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_disabled_current_save_is_distinct_and_inert",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_feedback_timeout_keeps_action_geometry_and_reading",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_confirmed_mutation_preserves_the_reader",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_failed_mutation_does_not_rebuild_or_replay",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_mutation_uses_fresh_reading_when_history_persistence_fails",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_mutation_reading_persistence_yields_to_a_newer_choice",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_review_returns_to_the_same_case_and_reading",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_locale_preserves_disclosure_focus_and_reading",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_saved_locale_keeps_disclosure_focus_and_reading_position",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_newer_focus_during_confirmation_survives",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_completion_focus_callbacks_keep_their_new_panel",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_programmatic_save_preserves_unrelated_focus_and_stale_save_stays_safe",
+          "--tb=short",
+          "--junitxml=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/drawer-focus-verified/junit.xml",
+          "--basetemp=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/drawer-focus-verified/pytest-temp"
+        ],
+        "exit_code": 1,
+        "seconds": 39.956,
+        "source_parent": "8714a277ddcc865f831021471520667d831304b1",
+        "runtime_asset_version": "3de80c670379",
+        "test_sha256": "664b46623020160df2643af9b2b6fbbb927824fbcd2301bee598e4244666b126"
+      },
+      "observations": {
+        "contexts": 48,
+        "pages": 48,
+        "page_errors": [],
+        "blocked_external_requests": 0,
+        "blocked_websockets": 0,
+        "browser": "157.0.8103.39",
+        "drawer_focus": [
+          {
+            "label": "actions-en-390-False-before",
+            "key": "review",
+            "focusVisible": false,
+            "outlineStyle": "none",
+            "extent": 3,
+            "top": 476.25,
+            "bottom": 524.25,
+            "left": 20,
+            "right": 195.359375,
+            "viewTop": 167.59375,
+            "viewBottom": 600,
+            "viewLeft": 0,
+            "viewRight": 390,
+            "headerHeight": 87.59375,
+            "scroll": 127,
+            "scrollHeight": 647,
+            "bodyHeight": 559.65625,
+            "windowScroll": 397,
+            "historyLength": 3,
+            "layout": [
+              {
+                "key": "scenario-conditions",
+                "top": 397.65625,
+                "left": 20,
+                "width": 350,
+                "height": 18
+              },
+              {
+                "key": "review",
+                "top": 435.65625,
+                "left": 20,
+                "width": 175.359375,
+                "height": 48
+              },
+              {
+                "key": "snapshot-save",
+                "top": 435.65625,
+                "left": 207.359375,
+                "width": 162.640625,
+                "height": 48
+              },
+              {
+                "key": "demand-evidence",
+                "top": 495.65625,
+                "left": 20,
+                "width": 206.21875,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "label": "actions-en-390-False-after",
+            "key": "demand-evidence",
+            "focusVisible": true,
+            "outlineStyle": "solid",
+            "extent": 6,
+            "top": 536.25,
+            "bottom": 580.25,
+            "left": 20,
+            "right": 226.21875,
+            "viewTop": 167.59375,
+            "viewBottom": 600,
+            "viewLeft": 0,
+            "viewRight": 390,
+            "headerHeight": 87.59375,
+            "scroll": 127,
+            "scrollHeight": 647,
+            "bodyHeight": 559.65625,
+            "windowScroll": 397,
+            "historyLength": 3,
+            "layout": [
+              {
+                "key": "scenario-conditions",
+                "top": 397.65625,
+                "left": 20,
+                "width": 350,
+                "height": 18
+              },
+              {
+                "key": "review",
+                "top": 435.65625,
+                "left": 20,
+                "width": 175.359375,
+                "height": 48
+              },
+              {
+                "key": "snapshot-save",
+                "top": 435.65625,
+                "left": 207.359375,
+                "width": 162.640625,
+                "height": 48
+              },
+              {
+                "key": "demand-evidence",
+                "top": 495.65625,
+                "left": 20,
+                "width": 206.21875,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "label": "actions-en-390-True-before",
+            "key": "review",
+            "focusVisible": false,
+            "outlineStyle": "none",
+            "extent": 3,
+            "top": 526.15625,
+            "bottom": 574.15625,
+            "left": 20,
+            "right": 195.359375,
+            "viewTop": 167.59375,
+            "viewBottom": 600,
+            "viewLeft": 0,
+            "viewRight": 390,
+            "headerHeight": 87.59375,
+            "scroll": 0,
+            "scrollHeight": 570,
+            "bodyHeight": 482.5625,
+            "windowScroll": 420,
+            "historyLength": 3,
+            "layout": [
+              {
+                "key": "scenario-conditions",
+                "top": 320.5625,
+                "left": 20,
+                "width": 350,
+                "height": 18
+              },
+              {
+                "key": "review",
+                "top": 358.5625,
+                "left": 20,
+                "width": 175.359375,
+                "height": 48
+              },
+              {
+                "key": "snapshot-save",
+                "top": 358.5625,
+                "left": 207.359375,
+                "width": 162.640625,
+                "height": 48
+              },
+              {
+                "key": "demand-evidence",
+                "top": 418.5625,
+                "left": 20,
+                "width": 206.21875,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "label": "actions-en-390-True-after",
+            "key": "demand-evidence",
+            "focusVisible": true,
+            "outlineStyle": "solid",
+            "extent": 6,
+            "top": 548.15625,
+            "bottom": 592.15625,
+            "left": 20,
+            "right": 226.21875,
+            "viewTop": 167.59375,
+            "viewBottom": 600,
+            "viewLeft": 0,
+            "viewRight": 390,
+            "headerHeight": 87.59375,
+            "scroll": 38,
+            "scrollHeight": 570,
+            "bodyHeight": 482.5625,
+            "windowScroll": 420,
+            "historyLength": 3,
+            "layout": [
+              {
+                "key": "scenario-conditions",
+                "top": 320.5625,
+                "left": 20,
+                "width": 350,
+                "height": 18
+              },
+              {
+                "key": "review",
+                "top": 358.5625,
+                "left": 20,
+                "width": 175.359375,
+                "height": 48
+              },
+              {
+                "key": "snapshot-save",
+                "top": 358.5625,
+                "left": 207.359375,
+                "width": 162.640625,
+                "height": 48
+              },
+              {
+                "key": "demand-evidence",
+                "top": 418.5625,
+                "left": 20,
+                "width": 206.21875,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "label": "actions-zh-320-False-before",
+            "key": "review",
+            "focusVisible": false,
+            "outlineStyle": "none",
+            "extent": 3,
+            "top": 476.15625,
+            "bottom": 524.15625,
+            "left": 20,
+            "right": 154,
+            "viewTop": 170.59375,
+            "viewBottom": 600,
+            "viewLeft": 0,
+            "viewRight": 320,
+            "headerHeight": 90.59375,
+            "scroll": 122,
+            "scrollHeight": 642,
+            "bodyHeight": 551.5625,
+            "windowScroll": 412,
+            "historyLength": 3,
+            "layout": [
+              {
+                "key": "scenario-conditions",
+                "top": 386.5625,
+                "left": 20,
+                "width": 280,
+                "height": 21
+              },
+              {
+                "key": "review",
+                "top": 427.5625,
+                "left": 20,
+                "width": 134,
+                "height": 48
+              },
+              {
+                "key": "snapshot-save",
+                "top": 427.5625,
+                "left": 166,
+                "width": 134,
+                "height": 48
+              },
+              {
+                "key": "demand-evidence",
+                "top": 487.5625,
+                "left": 20,
+                "width": 121.8125,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "label": "actions-zh-320-False-after",
+            "key": "demand-evidence",
+            "focusVisible": true,
+            "outlineStyle": "solid",
+            "extent": 6,
+            "top": 536.15625,
+            "bottom": 580.15625,
+            "left": 20,
+            "right": 141.8125,
+            "viewTop": 170.59375,
+            "viewBottom": 600,
+            "viewLeft": 0,
+            "viewRight": 320,
+            "headerHeight": 90.59375,
+            "scroll": 122,
+            "scrollHeight": 642,
+            "bodyHeight": 551.5625,
+            "windowScroll": 412,
+            "historyLength": 3,
+            "layout": [
+              {
+                "key": "scenario-conditions",
+                "top": 386.5625,
+                "left": 20,
+                "width": 280,
+                "height": 21
+              },
+              {
+                "key": "review",
+                "top": 427.5625,
+                "left": 20,
+                "width": 134,
+                "height": 48
+              },
+              {
+                "key": "snapshot-save",
+                "top": 427.5625,
+                "left": 166,
+                "width": 134,
+                "height": 48
+              },
+              {
+                "key": "demand-evidence",
+                "top": 487.5625,
+                "left": 20,
+                "width": 121.8125,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "label": "actions-zh-320-True-before",
+            "key": "review",
+            "focusVisible": false,
+            "outlineStyle": "none",
+            "extent": 3,
+            "top": 517.0625,
+            "bottom": 565.0625,
+            "left": 20,
+            "right": 154,
+            "viewTop": 170.59375,
+            "viewBottom": 600,
+            "viewLeft": 0,
+            "viewRight": 320,
+            "headerHeight": 90.59375,
+            "scroll": 0,
+            "scrollHeight": 561,
+            "bodyHeight": 470.46875,
+            "windowScroll": 434,
+            "historyLength": 3,
+            "layout": [
+              {
+                "key": "scenario-conditions",
+                "top": 305.46875,
+                "left": 20,
+                "width": 280,
+                "height": 21
+              },
+              {
+                "key": "review",
+                "top": 346.46875,
+                "left": 20,
+                "width": 134,
+                "height": 48
+              },
+              {
+                "key": "snapshot-save",
+                "top": 346.46875,
+                "left": 166,
+                "width": 134,
+                "height": 48
+              },
+              {
+                "key": "demand-evidence",
+                "top": 406.46875,
+                "left": 20,
+                "width": 121.8125,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "label": "actions-zh-320-True-after",
+            "key": "demand-evidence",
+            "focusVisible": true,
+            "outlineStyle": "solid",
+            "extent": 6,
+            "top": 548.0625,
+            "bottom": 592.0625,
+            "left": 20,
+            "right": 141.8125,
+            "viewTop": 170.59375,
+            "viewBottom": 600,
+            "viewLeft": 0,
+            "viewRight": 320,
+            "headerHeight": 90.59375,
+            "scroll": 29,
+            "scrollHeight": 561,
+            "bodyHeight": 470.46875,
+            "windowScroll": 434,
+            "historyLength": 3,
+            "layout": [
+              {
+                "key": "scenario-conditions",
+                "top": 305.46875,
+                "left": 20,
+                "width": 280,
+                "height": 21
+              },
+              {
+                "key": "review",
+                "top": 346.46875,
+                "left": 20,
+                "width": 134,
+                "height": 48
+              },
+              {
+                "key": "snapshot-save",
+                "top": 346.46875,
+                "left": 166,
+                "width": 134,
+                "height": 48
+              },
+              {
+                "key": "demand-evidence",
+                "top": 406.46875,
+                "left": 20,
+                "width": 121.8125,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "label": "actions-en-1440-False-before",
+            "key": "review",
+            "focusVisible": false,
+            "outlineStyle": "none",
+            "extent": 3,
+            "top": 445.15625,
+            "bottom": 493.15625,
+            "left": 873,
+            "right": 1131.359375,
+            "viewTop": 176.59375,
+            "viewBottom": 575,
+            "viewLeft": 847,
+            "viewRight": 1415,
+            "headerHeight": 95.59375,
+            "scroll": 150,
+            "scrollHeight": 644,
+            "bodyHeight": 548.5625,
+            "windowScroll": 325,
+            "historyLength": 3,
+            "layout": [
+              {
+                "key": "scenario-conditions",
+                "top": 380.5625,
+                "left": 26,
+                "width": 516,
+                "height": 18
+              },
+              {
+                "key": "review",
+                "top": 418.5625,
+                "left": 26,
+                "width": 258.359375,
+                "height": 48
+              },
+              {
+                "key": "snapshot-save",
+                "top": 418.5625,
+                "left": 296.359375,
+                "width": 245.640625,
+                "height": 48
+              },
+              {
+                "key": "demand-evidence",
+                "top": 478.5625,
+                "left": 26,
+                "width": 206.21875,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "label": "actions-en-1440-False-after",
+            "key": "demand-evidence",
+            "focusVisible": true,
+            "outlineStyle": "solid",
+            "extent": 6,
+            "top": 505.15625,
+            "bottom": 549.15625,
+            "left": 873,
+            "right": 1079.21875,
+            "viewTop": 176.59375,
+            "viewBottom": 575,
+            "viewLeft": 847,
+            "viewRight": 1415,
+            "headerHeight": 95.59375,
+            "scroll": 150,
+            "scrollHeight": 644,
+            "bodyHeight": 548.5625,
+            "windowScroll": 325,
+            "historyLength": 3,
+            "layout": [
+              {
+                "key": "scenario-conditions",
+                "top": 380.5625,
+                "left": 26,
+                "width": 516,
+                "height": 18
+              },
+              {
+                "key": "review",
+                "top": 418.5625,
+                "left": 26,
+                "width": 258.359375,
+                "height": 48
+              },
+              {
+                "key": "snapshot-save",
+                "top": 418.5625,
+                "left": 296.359375,
+                "width": 245.640625,
+                "height": 48
+              },
+              {
+                "key": "demand-evidence",
+                "top": 478.5625,
+                "left": 26,
+                "width": 206.21875,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "label": "actions-en-1440-True-before",
+            "key": "review",
+            "focusVisible": false,
+            "outlineStyle": "none",
+            "extent": 3,
+            "top": 518.0625,
+            "bottom": 566.0625,
+            "left": 873,
+            "right": 1131.359375,
+            "viewTop": 176.59375,
+            "viewBottom": 575,
+            "viewLeft": 847,
+            "viewRight": 1415,
+            "headerHeight": 95.59375,
+            "scroll": 0,
+            "scrollHeight": 567,
+            "bodyHeight": 471.46875,
+            "windowScroll": 348,
+            "historyLength": 3,
+            "layout": [
+              {
+                "key": "scenario-conditions",
+                "top": 303.46875,
+                "left": 26,
+                "width": 516,
+                "height": 18
+              },
+              {
+                "key": "review",
+                "top": 341.46875,
+                "left": 26,
+                "width": 258.359375,
+                "height": 48
+              },
+              {
+                "key": "snapshot-save",
+                "top": 341.46875,
+                "left": 296.359375,
+                "width": 245.640625,
+                "height": 48
+              },
+              {
+                "key": "demand-evidence",
+                "top": 401.46875,
+                "left": 26,
+                "width": 206.21875,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "label": "actions-en-1440-True-after",
+            "key": "demand-evidence",
+            "focusVisible": true,
+            "outlineStyle": "solid",
+            "extent": 6,
+            "top": 505.0625,
+            "bottom": 549.0625,
+            "left": 873,
+            "right": 1079.21875,
+            "viewTop": 176.59375,
+            "viewBottom": 575,
+            "viewLeft": 847,
+            "viewRight": 1415,
+            "headerHeight": 95.59375,
+            "scroll": 73,
+            "scrollHeight": 567,
+            "bodyHeight": 471.46875,
+            "windowScroll": 348,
+            "historyLength": 3,
+            "layout": [
+              {
+                "key": "scenario-conditions",
+                "top": 303.46875,
+                "left": 26,
+                "width": 516,
+                "height": 18
+              },
+              {
+                "key": "review",
+                "top": 341.46875,
+                "left": 26,
+                "width": 258.359375,
+                "height": 48
+              },
+              {
+                "key": "snapshot-save",
+                "top": 341.46875,
+                "left": 296.359375,
+                "width": 245.640625,
+                "height": 48
+              },
+              {
+                "key": "demand-evidence",
+                "top": 401.46875,
+                "left": 26,
+                "width": 206.21875,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "label": "current-reverse-en-390-before",
+            "key": "review",
+            "focusVisible": false,
+            "outlineStyle": "none",
+            "extent": 3,
+            "top": 374.8125,
+            "bottom": 422.8125,
+            "left": 20,
+            "right": 195.359375,
+            "viewTop": 167.59375,
+            "viewBottom": 480,
+            "viewLeft": 0,
+            "viewRight": 390,
+            "headerHeight": 87.59375,
+            "scroll": 407,
+            "scrollHeight": 826,
+            "bodyHeight": 738.21875,
+            "windowScroll": 457,
+            "historyLength": 3,
+            "layout": [
+              {
+                "key": "scenario-conditions",
+                "top": 397.65625,
+                "left": 20,
+                "width": 350,
+                "height": 18
+              },
+              {
+                "key": "review",
+                "top": 614.21875,
+                "left": 20,
+                "width": 175.359375,
+                "height": 48
+              },
+              {
+                "key": "snapshot-save",
+                "top": 614.21875,
+                "left": 207.359375,
+                "width": 162.640625,
+                "height": 48
+              },
+              {
+                "key": "demand-evidence",
+                "top": 674.21875,
+                "left": 20,
+                "width": 206.21875,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "label": "current-reverse-en-390-after",
+            "key": "scenario-conditions",
+            "focusVisible": true,
+            "outlineStyle": "auto",
+            "extent": 1,
+            "top": 176.25,
+            "bottom": 194.25,
+            "left": 20,
+            "right": 370,
+            "viewTop": 167.59375,
+            "viewBottom": 480,
+            "viewLeft": 0,
+            "viewRight": 390,
+            "headerHeight": 87.59375,
+            "scroll": 389,
+            "scrollHeight": 826,
+            "bodyHeight": 738.21875,
+            "windowScroll": 457,
+            "historyLength": 3,
+            "layout": [
+              {
+                "key": "scenario-conditions",
+                "top": 397.65625,
+                "left": 20,
+                "width": 350,
+                "height": 18
+              },
+              {
+                "key": "review",
+                "top": 614.21875,
+                "left": 20,
+                "width": 175.359375,
+                "height": 48
+              },
+              {
+                "key": "snapshot-save",
+                "top": 614.21875,
+                "left": 207.359375,
+                "width": 162.640625,
+                "height": 48
+              },
+              {
+                "key": "demand-evidence",
+                "top": 674.21875,
+                "left": 20,
+                "width": 206.21875,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "label": "current-reverse-zh-320-before",
+            "key": "review",
+            "focusVisible": false,
+            "outlineStyle": "none",
+            "extent": 3,
+            "top": 379.71875,
+            "bottom": 427.71875,
+            "left": 20,
+            "right": 154,
+            "viewTop": 170.59375,
+            "viewBottom": 480,
+            "viewLeft": 0,
+            "viewRight": 320,
+            "headerHeight": 90.59375,
+            "scroll": 397,
+            "scrollHeight": 821,
+            "bodyHeight": 730.125,
+            "windowScroll": 472,
+            "historyLength": 3,
+            "layout": [
+              {
+                "key": "scenario-conditions",
+                "top": 386.5625,
+                "left": 20,
+                "width": 280,
+                "height": 21
+              },
+              {
+                "key": "review",
+                "top": 606.125,
+                "left": 20,
+                "width": 134,
+                "height": 48
+              },
+              {
+                "key": "snapshot-save",
+                "top": 606.125,
+                "left": 166,
+                "width": 134,
+                "height": 48
+              },
+              {
+                "key": "demand-evidence",
+                "top": 666.125,
+                "left": 20,
+                "width": 121.8125,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "label": "current-reverse-zh-320-after",
+            "key": "scenario-conditions",
+            "focusVisible": true,
+            "outlineStyle": "auto",
+            "extent": 1,
+            "top": 179.15625,
+            "bottom": 200.15625,
+            "left": 20,
+            "right": 300,
+            "viewTop": 170.59375,
+            "viewBottom": 480,
+            "viewLeft": 0,
+            "viewRight": 320,
+            "headerHeight": 90.59375,
+            "scroll": 378,
+            "scrollHeight": 821,
+            "bodyHeight": 730.125,
+            "windowScroll": 472,
+            "historyLength": 3,
+            "layout": [
+              {
+                "key": "scenario-conditions",
+                "top": 386.5625,
+                "left": 20,
+                "width": 280,
+                "height": 21
+              },
+              {
+                "key": "review",
+                "top": 606.125,
+                "left": 20,
+                "width": 134,
+                "height": 48
+              },
+              {
+                "key": "snapshot-save",
+                "top": 606.125,
+                "left": 166,
+                "width": 134,
+                "height": 48
+              },
+              {
+                "key": "demand-evidence",
+                "top": 666.125,
+                "left": 20,
+                "width": 121.8125,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "label": "current-reverse-en-1440-before",
+            "key": "review",
+            "focusVisible": false,
+            "outlineStyle": "none",
+            "extent": 3,
+            "top": 360.625,
+            "bottom": 408.625,
+            "left": 873,
+            "right": 1131.359375,
+            "viewTop": 176.59375,
+            "viewBottom": 455,
+            "viewLeft": 847,
+            "viewRight": 1415,
+            "headerHeight": 95.59375,
+            "scroll": 390,
+            "scrollHeight": 800,
+            "bodyHeight": 704.03125,
+            "windowScroll": 385,
+            "historyLength": 3,
+            "layout": [
+              {
+                "key": "scenario-conditions",
+                "top": 380.5625,
+                "left": 26,
+                "width": 516,
+                "height": 18
+              },
+              {
+                "key": "review",
+                "top": 574.03125,
+                "left": 26,
+                "width": 258.359375,
+                "height": 48
+              },
+              {
+                "key": "snapshot-save",
+                "top": 574.03125,
+                "left": 296.359375,
+                "width": 245.640625,
+                "height": 48
+              },
+              {
+                "key": "demand-evidence",
+                "top": 634.03125,
+                "left": 26,
+                "width": 206.21875,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "label": "current-reverse-en-1440-after",
+            "key": "scenario-conditions",
+            "focusVisible": true,
+            "outlineStyle": "auto",
+            "extent": 1,
+            "top": 185.15625,
+            "bottom": 203.15625,
+            "left": 873,
+            "right": 1389,
+            "viewTop": 176.59375,
+            "viewBottom": 455,
+            "viewLeft": 847,
+            "viewRight": 1415,
+            "headerHeight": 95.59375,
+            "scroll": 372,
+            "scrollHeight": 800,
+            "bodyHeight": 704.03125,
+            "windowScroll": 385,
+            "historyLength": 3,
+            "layout": [
+              {
+                "key": "scenario-conditions",
+                "top": 380.5625,
+                "left": 26,
+                "width": 516,
+                "height": 18
+              },
+              {
+                "key": "review",
+                "top": 574.03125,
+                "left": 26,
+                "width": 258.359375,
+                "height": 48
+              },
+              {
+                "key": "snapshot-save",
+                "top": 574.03125,
+                "left": 296.359375,
+                "width": 245.640625,
+                "height": 48
+              },
+              {
+                "key": "demand-evidence",
+                "top": 634.03125,
+                "left": 26,
+                "width": 206.21875,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "label": "saved-resize-en-390-before",
+            "key": "saved-evidence",
+            "focusVisible": false,
+            "outlineStyle": "none",
+            "extent": 3,
+            "top": 965.203125,
+            "bottom": 1032.953125,
+            "left": 35,
+            "right": 355,
+            "viewTop": 338.953125,
+            "viewBottom": 600,
+            "viewLeft": 0,
+            "viewRight": 390,
+            "headerHeight": 258.953125,
+            "scroll": 236,
+            "scrollHeight": 1334,
+            "bodyHeight": 1075,
+            "windowScroll": 0,
+            "historyLength": 3,
+            "layout": [
+              {
+                "key": "case-details",
+                "top": 213.25,
+                "left": 20,
+                "width": 350,
+                "height": 45
+              },
+              {
+                "key": "saved-evidence",
+                "top": 862.25,
+                "left": 35,
+                "width": 320,
+                "height": 67.75
+              },
+              {
+                "key": "review",
+                "top": 955,
+                "left": 20,
+                "width": 350,
+                "height": 48
+              },
+              {
+                "key": "remove",
+                "top": 1011,
+                "left": 20,
+                "width": 350,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "label": "saved-resize-en-390-after",
+            "key": "case-details",
+            "focusVisible": true,
+            "outlineStyle": "solid",
+            "extent": 6,
+            "top": 347.203125,
+            "bottom": 392.203125,
+            "left": 20,
+            "right": 370,
+            "viewTop": 338.953125,
+            "viewBottom": 600,
+            "viewLeft": 0,
+            "viewRight": 390,
+            "headerHeight": 258.953125,
+            "scroll": 205,
+            "scrollHeight": 1334,
+            "bodyHeight": 1075,
+            "windowScroll": 0,
+            "historyLength": 3,
+            "layout": [
+              {
+                "key": "case-details",
+                "top": 213.25,
+                "left": 20,
+                "width": 350,
+                "height": 45
+              },
+              {
+                "key": "saved-evidence",
+                "top": 862.25,
+                "left": 35,
+                "width": 320,
+                "height": 67.75
+              },
+              {
+                "key": "review",
+                "top": 955,
+                "left": 20,
+                "width": 350,
+                "height": 48
+              },
+              {
+                "key": "remove",
+                "top": 1011,
+                "left": 20,
+                "width": 350,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "label": "saved-resize-zh-320-before",
+            "key": "saved-evidence",
+            "focusVisible": false,
+            "outlineStyle": "none",
+            "extent": 3,
+            "top": 979.203125,
+            "bottom": 1046.953125,
+            "left": 35,
+            "right": 285,
+            "viewTop": 338.953125,
+            "viewBottom": 600,
+            "viewLeft": 0,
+            "viewRight": 320,
+            "headerHeight": 258.953125,
+            "scroll": 239,
+            "scrollHeight": 1351,
+            "bodyHeight": 1092,
+            "windowScroll": 0,
+            "historyLength": 3,
+            "layout": [
+              {
+                "key": "case-details",
+                "top": 216.25,
+                "left": 20,
+                "width": 280,
+                "height": 45
+              },
+              {
+                "key": "saved-evidence",
+                "top": 879.25,
+                "left": 35,
+                "width": 250,
+                "height": 67.75
+              },
+              {
+                "key": "review",
+                "top": 972,
+                "left": 20,
+                "width": 280,
+                "height": 48
+              },
+              {
+                "key": "remove",
+                "top": 1028,
+                "left": 20,
+                "width": 280,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "label": "saved-resize-zh-320-after",
+            "key": "case-details",
+            "focusVisible": true,
+            "outlineStyle": "solid",
+            "extent": 6,
+            "top": 347.203125,
+            "bottom": 392.203125,
+            "left": 20,
+            "right": 300,
+            "viewTop": 338.953125,
+            "viewBottom": 600,
+            "viewLeft": 0,
+            "viewRight": 320,
+            "headerHeight": 258.953125,
+            "scroll": 208,
+            "scrollHeight": 1351,
+            "bodyHeight": 1092,
+            "windowScroll": 0,
+            "historyLength": 3,
+            "layout": [
+              {
+                "key": "case-details",
+                "top": 216.25,
+                "left": 20,
+                "width": 280,
+                "height": 45
+              },
+              {
+                "key": "saved-evidence",
+                "top": 879.25,
+                "left": 35,
+                "width": 250,
+                "height": 67.75
+              },
+              {
+                "key": "review",
+                "top": 972,
+                "left": 20,
+                "width": 280,
+                "height": 48
+              },
+              {
+                "key": "remove",
+                "top": 1028,
+                "left": 20,
+                "width": 280,
+                "height": 44
+              }
+            ]
+          }
+        ]
+      },
+      "cases": {
+        "tests.test_crypto_intelligence_r4_browser::test_r4_keyboard_current_action_ring_clears_drawer_edge[en-390-False]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_keyboard_current_action_ring_clears_drawer_edge[en-390-True]": "failed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_keyboard_current_action_ring_clears_drawer_edge[zh-320-False]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_keyboard_current_action_ring_clears_drawer_edge[zh-320-True]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_keyboard_current_action_ring_clears_drawer_edge[en-1440-False]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_keyboard_current_action_ring_clears_drawer_edge[en-1440-True]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_reverse_tab_reveals_current_summary_below_sticky_header[en-390]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_reverse_tab_reveals_current_summary_below_sticky_header[zh-320]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_reverse_tab_reveals_current_summary_below_sticky_header[en-1440]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_reverse_tab_respects_wrapped_saved_header_after_resize[en-390]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_reverse_tab_respects_wrapped_saved_header_after_resize[zh-320]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_actions_wrap_with_separate_touch_targets[en-320]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_actions_wrap_with_separate_touch_targets[zh-320]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_actions_wrap_with_separate_touch_targets[en-390]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_actions_wrap_with_separate_touch_targets[zh-390]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_actions_wrap_with_separate_touch_targets[en-1440]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_disabled_current_save_is_distinct_and_inert[en-390]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_disabled_current_save_is_distinct_and_inert[zh-320]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_feedback_timeout_keeps_action_geometry_and_reading[en-390]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_feedback_timeout_keeps_action_geometry_and_reading[zh-320]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_confirmed_mutation_preserves_the_reader[en-390-save]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_confirmed_mutation_preserves_the_reader[en-390-remove]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_confirmed_mutation_preserves_the_reader[en-390-remove-expired]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_confirmed_mutation_preserves_the_reader[zh-320-save]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_confirmed_mutation_preserves_the_reader[zh-320-remove]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_confirmed_mutation_preserves_the_reader[zh-320-remove-expired]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_failed_mutation_does_not_rebuild_or_replay[en-390-read]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_failed_mutation_does_not_rebuild_or_replay[en-390-confirmation]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_failed_mutation_does_not_rebuild_or_replay[zh-320-read]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_failed_mutation_does_not_rebuild_or_replay[zh-320-confirmation]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_mutation_uses_fresh_reading_when_history_persistence_fails[en-390]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_mutation_uses_fresh_reading_when_history_persistence_fails[zh-320]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_mutation_reading_persistence_yields_to_a_newer_choice[focus]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_mutation_reading_persistence_yields_to_a_newer_choice[navigation]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_mutation_reading_persistence_yields_to_a_newer_choice[history]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_review_returns_to_the_same_case_and_reading[en-390-7-2026-11-09T12:00:00Z]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_review_returns_to_the_same_case_and_reading[zh-320-7-2026-11-09T12:00:00Z]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_review_returns_to_the_same_case_and_reading[en-1440-30-2026-10-18T12:00:00Z]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_review_returns_to_the_same_case_and_reading[zh-390-30-2026-10-18T12:00:00Z]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_locale_preserves_disclosure_focus_and_reading[390]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_locale_preserves_disclosure_focus_and_reading[320]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_saved_locale_keeps_disclosure_focus_and_reading_position[1440]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_saved_locale_keeps_disclosure_focus_and_reading_position[320]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_newer_focus_during_confirmation_survives[save]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_newer_focus_during_confirmation_survives[remove]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_completion_focus_callbacks_keep_their_new_panel[frozen-remove]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_completion_focus_callbacks_keep_their_new_panel[current-save]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_programmatic_save_preserves_unrelated_focus_and_stale_save_stays_safe": "passed"
+      }
+    },
+    "drawer-focus-final": {
+      "result": {
+        "command": [
+          "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "-m",
+          "pytest",
+          "-q",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_keyboard_current_action_ring_clears_drawer_edge",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_reverse_tab_reveals_current_summary_below_sticky_header",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_reverse_tab_respects_wrapped_saved_header_after_resize",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_actions_wrap_with_separate_touch_targets",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_disabled_current_save_is_distinct_and_inert",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_feedback_timeout_keeps_action_geometry_and_reading",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_confirmed_mutation_preserves_the_reader",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_failed_mutation_does_not_rebuild_or_replay",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_mutation_uses_fresh_reading_when_history_persistence_fails",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_mutation_reading_persistence_yields_to_a_newer_choice",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_review_returns_to_the_same_case_and_reading",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_locale_preserves_disclosure_focus_and_reading",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_saved_locale_keeps_disclosure_focus_and_reading_position",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_newer_focus_during_confirmation_survives",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_completion_focus_callbacks_keep_their_new_panel",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_programmatic_save_preserves_unrelated_focus_and_stale_save_stays_safe",
+          "--tb=short",
+          "--junitxml=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/drawer-focus-final/junit.xml",
+          "--basetemp=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/drawer-focus-final/pytest-temp"
+        ],
+        "exit_code": 0,
+        "seconds": 43.656,
+        "source_parent": "8714a277ddcc865f831021471520667d831304b1",
+        "runtime_asset_version": "4f86c987c57c",
+        "test_sha256": "664b46623020160df2643af9b2b6fbbb927824fbcd2301bee598e4244666b126"
+      },
+      "observations": {
+        "contexts": 48,
+        "pages": 48,
+        "page_errors": [],
+        "blocked_external_requests": 0,
+        "blocked_websockets": 0,
+        "browser": "157.0.8103.39",
+        "drawer_focus": [
+          {
+            "label": "actions-en-390-False-before",
+            "key": "review",
+            "focusVisible": false,
+            "outlineStyle": "none",
+            "extent": 3,
+            "top": 476.25,
+            "bottom": 524.25,
+            "left": 20,
+            "right": 195.359375,
+            "viewTop": 167.59375,
+            "viewBottom": 600,
+            "viewLeft": 0,
+            "viewRight": 390,
+            "headerHeight": 87.59375,
+            "scroll": 127,
+            "scrollHeight": 647,
+            "bodyHeight": 559.65625,
+            "windowScroll": 397,
+            "historyLength": 3,
+            "layout": [
+              {
+                "key": "scenario-conditions",
+                "top": 397.65625,
+                "left": 20,
+                "width": 350,
+                "height": 18
+              },
+              {
+                "key": "review",
+                "top": 435.65625,
+                "left": 20,
+                "width": 175.359375,
+                "height": 48
+              },
+              {
+                "key": "snapshot-save",
+                "top": 435.65625,
+                "left": 207.359375,
+                "width": 162.640625,
+                "height": 48
+              },
+              {
+                "key": "demand-evidence",
+                "top": 495.65625,
+                "left": 20,
+                "width": 206.21875,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "label": "actions-en-390-False-after",
+            "key": "demand-evidence",
+            "focusVisible": true,
+            "outlineStyle": "solid",
+            "extent": 6,
+            "top": 536.25,
+            "bottom": 580.25,
+            "left": 20,
+            "right": 226.21875,
+            "viewTop": 167.59375,
+            "viewBottom": 600,
+            "viewLeft": 0,
+            "viewRight": 390,
+            "headerHeight": 87.59375,
+            "scroll": 127,
+            "scrollHeight": 647,
+            "bodyHeight": 559.65625,
+            "windowScroll": 397,
+            "historyLength": 3,
+            "layout": [
+              {
+                "key": "scenario-conditions",
+                "top": 397.65625,
+                "left": 20,
+                "width": 350,
+                "height": 18
+              },
+              {
+                "key": "review",
+                "top": 435.65625,
+                "left": 20,
+                "width": 175.359375,
+                "height": 48
+              },
+              {
+                "key": "snapshot-save",
+                "top": 435.65625,
+                "left": 207.359375,
+                "width": 162.640625,
+                "height": 48
+              },
+              {
+                "key": "demand-evidence",
+                "top": 495.65625,
+                "left": 20,
+                "width": 206.21875,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "label": "actions-en-390-True-before",
+            "key": "review",
+            "focusVisible": false,
+            "outlineStyle": "none",
+            "extent": 3,
+            "top": 526.15625,
+            "bottom": 574.15625,
+            "left": 20,
+            "right": 195.359375,
+            "viewTop": 167.59375,
+            "viewBottom": 600,
+            "viewLeft": 0,
+            "viewRight": 390,
+            "headerHeight": 87.59375,
+            "scroll": 0,
+            "scrollHeight": 570,
+            "bodyHeight": 482.5625,
+            "windowScroll": 420,
+            "historyLength": 3,
+            "layout": [
+              {
+                "key": "scenario-conditions",
+                "top": 320.5625,
+                "left": 20,
+                "width": 350,
+                "height": 18
+              },
+              {
+                "key": "review",
+                "top": 358.5625,
+                "left": 20,
+                "width": 175.359375,
+                "height": 48
+              },
+              {
+                "key": "snapshot-save",
+                "top": 358.5625,
+                "left": 207.359375,
+                "width": 162.640625,
+                "height": 48
+              },
+              {
+                "key": "demand-evidence",
+                "top": 418.5625,
+                "left": 20,
+                "width": 206.21875,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "label": "actions-en-390-True-after",
+            "key": "demand-evidence",
+            "focusVisible": true,
+            "outlineStyle": "solid",
+            "extent": 6,
+            "top": 547.15625,
+            "bottom": 591.15625,
+            "left": 20,
+            "right": 226.21875,
+            "viewTop": 167.59375,
+            "viewBottom": 600,
+            "viewLeft": 0,
+            "viewRight": 390,
+            "headerHeight": 87.59375,
+            "scroll": 39,
+            "scrollHeight": 570,
+            "bodyHeight": 482.5625,
+            "windowScroll": 420,
+            "historyLength": 3,
+            "layout": [
+              {
+                "key": "scenario-conditions",
+                "top": 320.5625,
+                "left": 20,
+                "width": 350,
+                "height": 18
+              },
+              {
+                "key": "review",
+                "top": 358.5625,
+                "left": 20,
+                "width": 175.359375,
+                "height": 48
+              },
+              {
+                "key": "snapshot-save",
+                "top": 358.5625,
+                "left": 207.359375,
+                "width": 162.640625,
+                "height": 48
+              },
+              {
+                "key": "demand-evidence",
+                "top": 418.5625,
+                "left": 20,
+                "width": 206.21875,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "label": "actions-zh-320-False-before",
+            "key": "review",
+            "focusVisible": false,
+            "outlineStyle": "none",
+            "extent": 3,
+            "top": 476.15625,
+            "bottom": 524.15625,
+            "left": 20,
+            "right": 154,
+            "viewTop": 170.59375,
+            "viewBottom": 600,
+            "viewLeft": 0,
+            "viewRight": 320,
+            "headerHeight": 90.59375,
+            "scroll": 122,
+            "scrollHeight": 642,
+            "bodyHeight": 551.5625,
+            "windowScroll": 412,
+            "historyLength": 3,
+            "layout": [
+              {
+                "key": "scenario-conditions",
+                "top": 386.5625,
+                "left": 20,
+                "width": 280,
+                "height": 21
+              },
+              {
+                "key": "review",
+                "top": 427.5625,
+                "left": 20,
+                "width": 134,
+                "height": 48
+              },
+              {
+                "key": "snapshot-save",
+                "top": 427.5625,
+                "left": 166,
+                "width": 134,
+                "height": 48
+              },
+              {
+                "key": "demand-evidence",
+                "top": 487.5625,
+                "left": 20,
+                "width": 121.8125,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "label": "actions-zh-320-False-after",
+            "key": "demand-evidence",
+            "focusVisible": true,
+            "outlineStyle": "solid",
+            "extent": 6,
+            "top": 536.15625,
+            "bottom": 580.15625,
+            "left": 20,
+            "right": 141.8125,
+            "viewTop": 170.59375,
+            "viewBottom": 600,
+            "viewLeft": 0,
+            "viewRight": 320,
+            "headerHeight": 90.59375,
+            "scroll": 122,
+            "scrollHeight": 642,
+            "bodyHeight": 551.5625,
+            "windowScroll": 412,
+            "historyLength": 3,
+            "layout": [
+              {
+                "key": "scenario-conditions",
+                "top": 386.5625,
+                "left": 20,
+                "width": 280,
+                "height": 21
+              },
+              {
+                "key": "review",
+                "top": 427.5625,
+                "left": 20,
+                "width": 134,
+                "height": 48
+              },
+              {
+                "key": "snapshot-save",
+                "top": 427.5625,
+                "left": 166,
+                "width": 134,
+                "height": 48
+              },
+              {
+                "key": "demand-evidence",
+                "top": 487.5625,
+                "left": 20,
+                "width": 121.8125,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "label": "actions-zh-320-True-before",
+            "key": "review",
+            "focusVisible": false,
+            "outlineStyle": "none",
+            "extent": 3,
+            "top": 517.0625,
+            "bottom": 565.0625,
+            "left": 20,
+            "right": 154,
+            "viewTop": 170.59375,
+            "viewBottom": 600,
+            "viewLeft": 0,
+            "viewRight": 320,
+            "headerHeight": 90.59375,
+            "scroll": 0,
+            "scrollHeight": 561,
+            "bodyHeight": 470.46875,
+            "windowScroll": 434,
+            "historyLength": 3,
+            "layout": [
+              {
+                "key": "scenario-conditions",
+                "top": 305.46875,
+                "left": 20,
+                "width": 280,
+                "height": 21
+              },
+              {
+                "key": "review",
+                "top": 346.46875,
+                "left": 20,
+                "width": 134,
+                "height": 48
+              },
+              {
+                "key": "snapshot-save",
+                "top": 346.46875,
+                "left": 166,
+                "width": 134,
+                "height": 48
+              },
+              {
+                "key": "demand-evidence",
+                "top": 406.46875,
+                "left": 20,
+                "width": 121.8125,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "label": "actions-zh-320-True-after",
+            "key": "demand-evidence",
+            "focusVisible": true,
+            "outlineStyle": "solid",
+            "extent": 6,
+            "top": 547.0625,
+            "bottom": 591.0625,
+            "left": 20,
+            "right": 141.8125,
+            "viewTop": 170.59375,
+            "viewBottom": 600,
+            "viewLeft": 0,
+            "viewRight": 320,
+            "headerHeight": 90.59375,
+            "scroll": 30,
+            "scrollHeight": 561,
+            "bodyHeight": 470.46875,
+            "windowScroll": 434,
+            "historyLength": 3,
+            "layout": [
+              {
+                "key": "scenario-conditions",
+                "top": 305.46875,
+                "left": 20,
+                "width": 280,
+                "height": 21
+              },
+              {
+                "key": "review",
+                "top": 346.46875,
+                "left": 20,
+                "width": 134,
+                "height": 48
+              },
+              {
+                "key": "snapshot-save",
+                "top": 346.46875,
+                "left": 166,
+                "width": 134,
+                "height": 48
+              },
+              {
+                "key": "demand-evidence",
+                "top": 406.46875,
+                "left": 20,
+                "width": 121.8125,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "label": "actions-en-1440-False-before",
+            "key": "review",
+            "focusVisible": false,
+            "outlineStyle": "none",
+            "extent": 3,
+            "top": 445.15625,
+            "bottom": 493.15625,
+            "left": 873,
+            "right": 1131.359375,
+            "viewTop": 176.59375,
+            "viewBottom": 575,
+            "viewLeft": 847,
+            "viewRight": 1415,
+            "headerHeight": 95.59375,
+            "scroll": 150,
+            "scrollHeight": 644,
+            "bodyHeight": 548.5625,
+            "windowScroll": 325,
+            "historyLength": 3,
+            "layout": [
+              {
+                "key": "scenario-conditions",
+                "top": 380.5625,
+                "left": 26,
+                "width": 516,
+                "height": 18
+              },
+              {
+                "key": "review",
+                "top": 418.5625,
+                "left": 26,
+                "width": 258.359375,
+                "height": 48
+              },
+              {
+                "key": "snapshot-save",
+                "top": 418.5625,
+                "left": 296.359375,
+                "width": 245.640625,
+                "height": 48
+              },
+              {
+                "key": "demand-evidence",
+                "top": 478.5625,
+                "left": 26,
+                "width": 206.21875,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "label": "actions-en-1440-False-after",
+            "key": "demand-evidence",
+            "focusVisible": true,
+            "outlineStyle": "solid",
+            "extent": 6,
+            "top": 505.15625,
+            "bottom": 549.15625,
+            "left": 873,
+            "right": 1079.21875,
+            "viewTop": 176.59375,
+            "viewBottom": 575,
+            "viewLeft": 847,
+            "viewRight": 1415,
+            "headerHeight": 95.59375,
+            "scroll": 150,
+            "scrollHeight": 644,
+            "bodyHeight": 548.5625,
+            "windowScroll": 325,
+            "historyLength": 3,
+            "layout": [
+              {
+                "key": "scenario-conditions",
+                "top": 380.5625,
+                "left": 26,
+                "width": 516,
+                "height": 18
+              },
+              {
+                "key": "review",
+                "top": 418.5625,
+                "left": 26,
+                "width": 258.359375,
+                "height": 48
+              },
+              {
+                "key": "snapshot-save",
+                "top": 418.5625,
+                "left": 296.359375,
+                "width": 245.640625,
+                "height": 48
+              },
+              {
+                "key": "demand-evidence",
+                "top": 478.5625,
+                "left": 26,
+                "width": 206.21875,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "label": "actions-en-1440-True-before",
+            "key": "review",
+            "focusVisible": false,
+            "outlineStyle": "none",
+            "extent": 3,
+            "top": 518.0625,
+            "bottom": 566.0625,
+            "left": 873,
+            "right": 1131.359375,
+            "viewTop": 176.59375,
+            "viewBottom": 575,
+            "viewLeft": 847,
+            "viewRight": 1415,
+            "headerHeight": 95.59375,
+            "scroll": 0,
+            "scrollHeight": 567,
+            "bodyHeight": 471.46875,
+            "windowScroll": 348,
+            "historyLength": 3,
+            "layout": [
+              {
+                "key": "scenario-conditions",
+                "top": 303.46875,
+                "left": 26,
+                "width": 516,
+                "height": 18
+              },
+              {
+                "key": "review",
+                "top": 341.46875,
+                "left": 26,
+                "width": 258.359375,
+                "height": 48
+              },
+              {
+                "key": "snapshot-save",
+                "top": 341.46875,
+                "left": 296.359375,
+                "width": 245.640625,
+                "height": 48
+              },
+              {
+                "key": "demand-evidence",
+                "top": 401.46875,
+                "left": 26,
+                "width": 206.21875,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "label": "actions-en-1440-True-after",
+            "key": "demand-evidence",
+            "focusVisible": true,
+            "outlineStyle": "solid",
+            "extent": 6,
+            "top": 505.0625,
+            "bottom": 549.0625,
+            "left": 873,
+            "right": 1079.21875,
+            "viewTop": 176.59375,
+            "viewBottom": 575,
+            "viewLeft": 847,
+            "viewRight": 1415,
+            "headerHeight": 95.59375,
+            "scroll": 73,
+            "scrollHeight": 567,
+            "bodyHeight": 471.46875,
+            "windowScroll": 348,
+            "historyLength": 3,
+            "layout": [
+              {
+                "key": "scenario-conditions",
+                "top": 303.46875,
+                "left": 26,
+                "width": 516,
+                "height": 18
+              },
+              {
+                "key": "review",
+                "top": 341.46875,
+                "left": 26,
+                "width": 258.359375,
+                "height": 48
+              },
+              {
+                "key": "snapshot-save",
+                "top": 341.46875,
+                "left": 296.359375,
+                "width": 245.640625,
+                "height": 48
+              },
+              {
+                "key": "demand-evidence",
+                "top": 401.46875,
+                "left": 26,
+                "width": 206.21875,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "label": "current-reverse-en-390-before",
+            "key": "review",
+            "focusVisible": false,
+            "outlineStyle": "none",
+            "extent": 3,
+            "top": 374.8125,
+            "bottom": 422.8125,
+            "left": 20,
+            "right": 195.359375,
+            "viewTop": 167.59375,
+            "viewBottom": 480,
+            "viewLeft": 0,
+            "viewRight": 390,
+            "headerHeight": 87.59375,
+            "scroll": 407,
+            "scrollHeight": 826,
+            "bodyHeight": 738.21875,
+            "windowScroll": 457,
+            "historyLength": 3,
+            "layout": [
+              {
+                "key": "scenario-conditions",
+                "top": 397.65625,
+                "left": 20,
+                "width": 350,
+                "height": 18
+              },
+              {
+                "key": "review",
+                "top": 614.21875,
+                "left": 20,
+                "width": 175.359375,
+                "height": 48
+              },
+              {
+                "key": "snapshot-save",
+                "top": 614.21875,
+                "left": 207.359375,
+                "width": 162.640625,
+                "height": 48
+              },
+              {
+                "key": "demand-evidence",
+                "top": 674.21875,
+                "left": 20,
+                "width": 206.21875,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "label": "current-reverse-en-390-after",
+            "key": "scenario-conditions",
+            "focusVisible": true,
+            "outlineStyle": "auto",
+            "extent": 1,
+            "top": 315.25,
+            "bottom": 333.25,
+            "left": 20,
+            "right": 370,
+            "viewTop": 167.59375,
+            "viewBottom": 480,
+            "viewLeft": 0,
+            "viewRight": 390,
+            "headerHeight": 87.59375,
+            "scroll": 250,
+            "scrollHeight": 826,
+            "bodyHeight": 738.21875,
+            "windowScroll": 457,
+            "historyLength": 3,
+            "layout": [
+              {
+                "key": "scenario-conditions",
+                "top": 397.65625,
+                "left": 20,
+                "width": 350,
+                "height": 18
+              },
+              {
+                "key": "review",
+                "top": 614.21875,
+                "left": 20,
+                "width": 175.359375,
+                "height": 48
+              },
+              {
+                "key": "snapshot-save",
+                "top": 614.21875,
+                "left": 207.359375,
+                "width": 162.640625,
+                "height": 48
+              },
+              {
+                "key": "demand-evidence",
+                "top": 674.21875,
+                "left": 20,
+                "width": 206.21875,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "label": "current-reverse-zh-320-before",
+            "key": "review",
+            "focusVisible": false,
+            "outlineStyle": "none",
+            "extent": 3,
+            "top": 379.71875,
+            "bottom": 427.71875,
+            "left": 20,
+            "right": 154,
+            "viewTop": 170.59375,
+            "viewBottom": 480,
+            "viewLeft": 0,
+            "viewRight": 320,
+            "headerHeight": 90.59375,
+            "scroll": 397,
+            "scrollHeight": 821,
+            "bodyHeight": 730.125,
+            "windowScroll": 472,
+            "historyLength": 3,
+            "layout": [
+              {
+                "key": "scenario-conditions",
+                "top": 386.5625,
+                "left": 20,
+                "width": 280,
+                "height": 21
+              },
+              {
+                "key": "review",
+                "top": 606.125,
+                "left": 20,
+                "width": 134,
+                "height": 48
+              },
+              {
+                "key": "snapshot-save",
+                "top": 606.125,
+                "left": 166,
+                "width": 134,
+                "height": 48
+              },
+              {
+                "key": "demand-evidence",
+                "top": 666.125,
+                "left": 20,
+                "width": 121.8125,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "label": "current-reverse-zh-320-after",
+            "key": "scenario-conditions",
+            "focusVisible": true,
+            "outlineStyle": "auto",
+            "extent": 1,
+            "top": 180.15625,
+            "bottom": 201.15625,
+            "left": 20,
+            "right": 300,
+            "viewTop": 170.59375,
+            "viewBottom": 480,
+            "viewLeft": 0,
+            "viewRight": 320,
+            "headerHeight": 90.59375,
+            "scroll": 377,
+            "scrollHeight": 821,
+            "bodyHeight": 730.125,
+            "windowScroll": 472,
+            "historyLength": 3,
+            "layout": [
+              {
+                "key": "scenario-conditions",
+                "top": 386.5625,
+                "left": 20,
+                "width": 280,
+                "height": 21
+              },
+              {
+                "key": "review",
+                "top": 606.125,
+                "left": 20,
+                "width": 134,
+                "height": 48
+              },
+              {
+                "key": "snapshot-save",
+                "top": 606.125,
+                "left": 166,
+                "width": 134,
+                "height": 48
+              },
+              {
+                "key": "demand-evidence",
+                "top": 666.125,
+                "left": 20,
+                "width": 121.8125,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "label": "current-reverse-en-1440-before",
+            "key": "review",
+            "focusVisible": false,
+            "outlineStyle": "none",
+            "extent": 3,
+            "top": 360.625,
+            "bottom": 408.625,
+            "left": 873,
+            "right": 1131.359375,
+            "viewTop": 176.59375,
+            "viewBottom": 455,
+            "viewLeft": 847,
+            "viewRight": 1415,
+            "headerHeight": 95.59375,
+            "scroll": 390,
+            "scrollHeight": 800,
+            "bodyHeight": 704.03125,
+            "windowScroll": 385,
+            "historyLength": 3,
+            "layout": [
+              {
+                "key": "scenario-conditions",
+                "top": 380.5625,
+                "left": 26,
+                "width": 516,
+                "height": 18
+              },
+              {
+                "key": "review",
+                "top": 574.03125,
+                "left": 26,
+                "width": 258.359375,
+                "height": 48
+              },
+              {
+                "key": "snapshot-save",
+                "top": 574.03125,
+                "left": 296.359375,
+                "width": 245.640625,
+                "height": 48
+              },
+              {
+                "key": "demand-evidence",
+                "top": 634.03125,
+                "left": 26,
+                "width": 206.21875,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "label": "current-reverse-en-1440-after",
+            "key": "scenario-conditions",
+            "focusVisible": true,
+            "outlineStyle": "auto",
+            "extent": 1,
+            "top": 307.15625,
+            "bottom": 325.15625,
+            "left": 873,
+            "right": 1389,
+            "viewTop": 176.59375,
+            "viewBottom": 455,
+            "viewLeft": 847,
+            "viewRight": 1415,
+            "headerHeight": 95.59375,
+            "scroll": 250,
+            "scrollHeight": 800,
+            "bodyHeight": 704.03125,
+            "windowScroll": 385,
+            "historyLength": 3,
+            "layout": [
+              {
+                "key": "scenario-conditions",
+                "top": 380.5625,
+                "left": 26,
+                "width": 516,
+                "height": 18
+              },
+              {
+                "key": "review",
+                "top": 574.03125,
+                "left": 26,
+                "width": 258.359375,
+                "height": 48
+              },
+              {
+                "key": "snapshot-save",
+                "top": 574.03125,
+                "left": 296.359375,
+                "width": 245.640625,
+                "height": 48
+              },
+              {
+                "key": "demand-evidence",
+                "top": 634.03125,
+                "left": 26,
+                "width": 206.21875,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "label": "saved-resize-en-390-before",
+            "key": "saved-evidence",
+            "focusVisible": false,
+            "outlineStyle": "none",
+            "extent": 3,
+            "top": 965.203125,
+            "bottom": 1032.953125,
+            "left": 35,
+            "right": 355,
+            "viewTop": 338.953125,
+            "viewBottom": 600,
+            "viewLeft": 0,
+            "viewRight": 390,
+            "headerHeight": 258.953125,
+            "scroll": 236,
+            "scrollHeight": 1334,
+            "bodyHeight": 1075,
+            "windowScroll": 0,
+            "historyLength": 3,
+            "layout": [
+              {
+                "key": "case-details",
+                "top": 213.25,
+                "left": 20,
+                "width": 350,
+                "height": 45
+              },
+              {
+                "key": "saved-evidence",
+                "top": 862.25,
+                "left": 35,
+                "width": 320,
+                "height": 67.75
+              },
+              {
+                "key": "review",
+                "top": 955,
+                "left": 20,
+                "width": 350,
+                "height": 48
+              },
+              {
+                "key": "remove",
+                "top": 1011,
+                "left": 20,
+                "width": 350,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "label": "saved-resize-en-390-after",
+            "key": "case-details",
+            "focusVisible": true,
+            "outlineStyle": "solid",
+            "extent": 6,
+            "top": 348.203125,
+            "bottom": 393.203125,
+            "left": 20,
+            "right": 370,
+            "viewTop": 338.953125,
+            "viewBottom": 600,
+            "viewLeft": 0,
+            "viewRight": 390,
+            "headerHeight": 258.953125,
+            "scroll": 204,
+            "scrollHeight": 1334,
+            "bodyHeight": 1075,
+            "windowScroll": 0,
+            "historyLength": 3,
+            "layout": [
+              {
+                "key": "case-details",
+                "top": 213.25,
+                "left": 20,
+                "width": 350,
+                "height": 45
+              },
+              {
+                "key": "saved-evidence",
+                "top": 862.25,
+                "left": 35,
+                "width": 320,
+                "height": 67.75
+              },
+              {
+                "key": "review",
+                "top": 955,
+                "left": 20,
+                "width": 350,
+                "height": 48
+              },
+              {
+                "key": "remove",
+                "top": 1011,
+                "left": 20,
+                "width": 350,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "label": "saved-resize-zh-320-before",
+            "key": "saved-evidence",
+            "focusVisible": false,
+            "outlineStyle": "none",
+            "extent": 3,
+            "top": 979.203125,
+            "bottom": 1046.953125,
+            "left": 35,
+            "right": 285,
+            "viewTop": 338.953125,
+            "viewBottom": 600,
+            "viewLeft": 0,
+            "viewRight": 320,
+            "headerHeight": 258.953125,
+            "scroll": 239,
+            "scrollHeight": 1351,
+            "bodyHeight": 1092,
+            "windowScroll": 0,
+            "historyLength": 3,
+            "layout": [
+              {
+                "key": "case-details",
+                "top": 216.25,
+                "left": 20,
+                "width": 280,
+                "height": 45
+              },
+              {
+                "key": "saved-evidence",
+                "top": 879.25,
+                "left": 35,
+                "width": 250,
+                "height": 67.75
+              },
+              {
+                "key": "review",
+                "top": 972,
+                "left": 20,
+                "width": 280,
+                "height": 48
+              },
+              {
+                "key": "remove",
+                "top": 1028,
+                "left": 20,
+                "width": 280,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "label": "saved-resize-zh-320-after",
+            "key": "case-details",
+            "focusVisible": true,
+            "outlineStyle": "solid",
+            "extent": 6,
+            "top": 348.203125,
+            "bottom": 393.203125,
+            "left": 20,
+            "right": 300,
+            "viewTop": 338.953125,
+            "viewBottom": 600,
+            "viewLeft": 0,
+            "viewRight": 320,
+            "headerHeight": 258.953125,
+            "scroll": 207,
+            "scrollHeight": 1351,
+            "bodyHeight": 1092,
+            "windowScroll": 0,
+            "historyLength": 3,
+            "layout": [
+              {
+                "key": "case-details",
+                "top": 216.25,
+                "left": 20,
+                "width": 280,
+                "height": 45
+              },
+              {
+                "key": "saved-evidence",
+                "top": 879.25,
+                "left": 35,
+                "width": 250,
+                "height": 67.75
+              },
+              {
+                "key": "review",
+                "top": 972,
+                "left": 20,
+                "width": 280,
+                "height": 48
+              },
+              {
+                "key": "remove",
+                "top": 1028,
+                "left": 20,
+                "width": 280,
+                "height": 44
+              }
+            ]
+          }
+        ]
+      },
+      "cases": {
+        "tests.test_crypto_intelligence_r4_browser::test_r4_keyboard_current_action_ring_clears_drawer_edge[en-390-False]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_keyboard_current_action_ring_clears_drawer_edge[en-390-True]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_keyboard_current_action_ring_clears_drawer_edge[zh-320-False]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_keyboard_current_action_ring_clears_drawer_edge[zh-320-True]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_keyboard_current_action_ring_clears_drawer_edge[en-1440-False]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_keyboard_current_action_ring_clears_drawer_edge[en-1440-True]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_reverse_tab_reveals_current_summary_below_sticky_header[en-390]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_reverse_tab_reveals_current_summary_below_sticky_header[zh-320]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_reverse_tab_reveals_current_summary_below_sticky_header[en-1440]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_reverse_tab_respects_wrapped_saved_header_after_resize[en-390]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_reverse_tab_respects_wrapped_saved_header_after_resize[zh-320]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_actions_wrap_with_separate_touch_targets[en-320]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_actions_wrap_with_separate_touch_targets[zh-320]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_actions_wrap_with_separate_touch_targets[en-390]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_actions_wrap_with_separate_touch_targets[zh-390]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_actions_wrap_with_separate_touch_targets[en-1440]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_disabled_current_save_is_distinct_and_inert[en-390]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_disabled_current_save_is_distinct_and_inert[zh-320]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_feedback_timeout_keeps_action_geometry_and_reading[en-390]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_feedback_timeout_keeps_action_geometry_and_reading[zh-320]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_confirmed_mutation_preserves_the_reader[en-390-save]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_confirmed_mutation_preserves_the_reader[en-390-remove]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_confirmed_mutation_preserves_the_reader[en-390-remove-expired]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_confirmed_mutation_preserves_the_reader[zh-320-save]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_confirmed_mutation_preserves_the_reader[zh-320-remove]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_confirmed_mutation_preserves_the_reader[zh-320-remove-expired]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_failed_mutation_does_not_rebuild_or_replay[en-390-read]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_failed_mutation_does_not_rebuild_or_replay[en-390-confirmation]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_failed_mutation_does_not_rebuild_or_replay[zh-320-read]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_failed_mutation_does_not_rebuild_or_replay[zh-320-confirmation]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_mutation_uses_fresh_reading_when_history_persistence_fails[en-390]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_mutation_uses_fresh_reading_when_history_persistence_fails[zh-320]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_mutation_reading_persistence_yields_to_a_newer_choice[focus]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_mutation_reading_persistence_yields_to_a_newer_choice[navigation]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_mutation_reading_persistence_yields_to_a_newer_choice[history]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_review_returns_to_the_same_case_and_reading[en-390-7-2026-11-09T12:00:00Z]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_review_returns_to_the_same_case_and_reading[zh-320-7-2026-11-09T12:00:00Z]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_review_returns_to_the_same_case_and_reading[en-1440-30-2026-10-18T12:00:00Z]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_review_returns_to_the_same_case_and_reading[zh-390-30-2026-10-18T12:00:00Z]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_locale_preserves_disclosure_focus_and_reading[390]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_current_locale_preserves_disclosure_focus_and_reading[320]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_saved_locale_keeps_disclosure_focus_and_reading_position[1440]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_saved_locale_keeps_disclosure_focus_and_reading_position[320]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_newer_focus_during_confirmation_survives[save]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_newer_focus_during_confirmation_survives[remove]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_completion_focus_callbacks_keep_their_new_panel[frozen-remove]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_completion_focus_callbacks_keep_their_new_panel[current-save]": "passed",
+        "tests.test_crypto_intelligence_r4_browser::test_r4_programmatic_save_preserves_unrelated_focus_and_stale_save_stays_safe": "passed"
+      }
+    }
+  },
+  "case_set_checks": {
+    "same_48_case_ids": true,
+    "identical_baseline_final_test_bytes": true,
+    "added_cases": 11,
+    "retained_cases": 37,
+    "same_all_three_case_ids_and_test_bytes": true
+  },
+  "initial_rounding_correction": {
+    "initial_assets": "3de80c670379",
+    "initial_passed": 47,
+    "initial_failed": 1,
+    "observed_en390_clearance": 7.84375,
+    "final_requested_scroll_padding": 9,
+    "minimum_actual_clearance": 8,
+    "test_assertions_unchanged": true
+  },
+  "layout_conservation": {
+    "actions-en-390-False-before": true,
+    "actions-en-390-False-after": true,
+    "actions-en-390-True-before": true,
+    "actions-en-390-True-after": true,
+    "actions-zh-320-False-before": true,
+    "actions-zh-320-False-after": true,
+    "actions-zh-320-True-before": true,
+    "actions-zh-320-True-after": true,
+    "actions-en-1440-False-before": true,
+    "actions-en-1440-False-after": true,
+    "actions-en-1440-True-before": true,
+    "actions-en-1440-True-after": true,
+    "current-reverse-en-390-before": true,
+    "current-reverse-en-390-after": true,
+    "current-reverse-zh-320-before": true,
+    "current-reverse-zh-320-after": true,
+    "current-reverse-en-1440-before": true,
+    "current-reverse-en-1440-after": true,
+    "saved-resize-en-390-before": true,
+    "saved-resize-en-390-after": true,
+    "saved-resize-zh-320-before": true,
+    "saved-resize-zh-320-after": true
+  },
+  "files": {
+    "drawer-focus-parent-input.json": {
+      "bytes": 4477,
+      "sha256": "c707993d46ab2102933089459dd5a8b269630487446e18b8e6e8af74fd22d53a",
+      "blob": "6c008329dfbb6e4a52c04512a59aacd223d3b25b"
+    },
+    "drawer-focus-parent-receipt.json": {
+      "bytes": 4533,
+      "sha256": "e9892ddcf97e1262d7c40328d01ff668f1192d2528808a6eb754a5e39f227d28",
+      "blob": "ac5ffba48dc89216878928ab225c0b97872544e3"
+    },
+    "drawer-focus-parent-snapshot.py": {
+      "bytes": 1061,
+      "sha256": "2515950dd75535daa1d7def64c7cada518d5cc46c2bb071dce68890523fb2ca1",
+      "blob": "39a6aeeb2a7ffc1dbb597ef4f1d9cff6a325c77d"
+    },
+    "drawer-focus-source-receipt.json": {
+      "bytes": 4832,
+      "sha256": "bdd34407c1784fa170edb5969c625e2bc8e8c426df6ffe612ece866d77fd7fe4",
+      "blob": "db3932c19401f4dcdd5a2193620fd128407e46a9"
+    },
+    "drawer-focus-transforms.json": {
+      "bytes": 9067,
+      "sha256": "79d3374d0abcb2d3ce8f195c115d5796c7f4094eea64c704d81f06716e361975",
+      "blob": "81ef25aa9abea4f9babaf9b1f57c0246af2278ea"
+    },
+    "drawer-focus-test-addition.txt": {
+      "bytes": 7478,
+      "sha256": "7b5231ecabff466db46315c55b294620c45f08e369dba30f1ca7325eeb71060e",
+      "blob": "1305d44b24b688266686715359c6b4368234ccbc"
+    },
+    "drawer-focus-baseline.py": {
+      "bytes": 3514,
+      "sha256": "7b9bd2601a2673d4128e0fff159db4733d185a325c0153303bc7cc10446beda2",
+      "blob": "41aa9fa809d7b6e0621aca7b74a4596df225e5fb"
+    },
+    "drawer-focus-verified.py": {
+      "bytes": 6095,
+      "sha256": "af22b09f2bbe7d970a4cd917c50876eae94337fbe46fe4191b5cec33ae1e7a3f",
+      "blob": "df09bff632cde1a0253d19ac19a16cf5f938b4b4"
+    },
+    "drawer-focus-publication-readback.py": {
+      "bytes": 5432,
+      "sha256": "76114ae20af2286aa1717ec549a75e312a016aa3a154996da92e7294ede2d0d6",
+      "blob": "25fccf250f12aa5f3506d1315554cd7d1a82e61d"
+    },
+    "drawer-focus-initial-source-receipt.json": {
+      "bytes": 4832,
+      "sha256": "c2587d2db40de574af7d3cabcdbdbb48d41305e31b7599d7c9d1192f6f900712",
+      "blob": "90409a1da276b1534e5ceff299195a939d032d1a"
+    },
+    "drawer-focus-initial-transforms.json": {
+      "bytes": 9067,
+      "sha256": "1b4b2c9b3952faafed7dc7d479c35bed0c1473c4a866cd62e542e8ec9c9ae353",
+      "blob": "aec47a1ee190278635e61f986898062013f35db0"
+    },
+    "drawer-focus-final.py": {
+      "bytes": 6293,
+      "sha256": "c854502a6dd2aaa0fc193862286a440727e320e20bbb2fa568898886643819bb",
+      "blob": "08ed2cad171f50e37aa53c47a9e156a7b2907b68"
+    },
+    "drawer-focus-baseline/result.json": {
+      "bytes": 2443,
+      "sha256": "a468d7b9f048628aa6925db871a36d245f31bfa964bd4525eadd9c7fbdab340d",
+      "blob": "bf0204ec6165f68619f3e34cc6164dfd5a69d13c"
+    },
+    "drawer-focus-baseline/observations.json": {
+      "bytes": 25745,
+      "sha256": "24a013af900ad3119296a96ad8e6d743e6414c8fc22c2aa840455fd6160747fe",
+      "blob": "42deb55bc90c3e482b17087de238e8d104552147"
+    },
+    "drawer-focus-baseline/stdout.txt": {
+      "bytes": 4835,
+      "sha256": "99d847a84edcb330e1557e649f9ab01d0156bf83faede124a66926cf376ad2f3",
+      "blob": "e0ab9014a899b8dd055e3ce26b152c8e9e3f9f57"
+    },
+    "drawer-focus-baseline/stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "drawer-focus-baseline/junit.xml": {
+      "bytes": 12342,
+      "sha256": "ff2c771aab5a6ed5c68ee59b257495f526cee35ce69cc9b62c653c157992df58",
+      "blob": "2d3d081abfb24c2e8b26c311ab4d53a550ce1c17"
+    },
+    "drawer-focus-verified/result.json": {
+      "bytes": 2443,
+      "sha256": "1e5a4d49b1d29c7c6d5f736d4ac3a06f433114283a4355d29178d43c9514b0d1",
+      "blob": "6a116dd017e744142b0fb251128c8cdaf3da8fd3"
+    },
+    "drawer-focus-verified/observations.json": {
+      "bytes": 25746,
+      "sha256": "bb29e5d03be81d5518c34819dea24a9f8928b6dfa1d5ff97620d71e54a59a5c6",
+      "blob": "23a8db9327b3d8fd47fa19e8cfffbd6e36670640"
+    },
+    "drawer-focus-verified/stdout.txt": {
+      "bytes": 916,
+      "sha256": "f1e182efeeb287e3f49929663d9f94f4d47cdeb82aea50ba573867c5df017726",
+      "blob": "a766917ab64912b6aca7a2b2e866c13d013ab892"
+    },
+    "drawer-focus-verified/stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "drawer-focus-verified/junit.xml": {
+      "bytes": 8482,
+      "sha256": "fcb941071e9467b48922148ac65ed4cc786295e89161e2b3b1040f99cb85565a",
+      "blob": "c57024c4efaf440864fbba0c08563ccbd65a8a94"
+    },
+    "drawer-focus-final/result.json": {
+      "bytes": 2437,
+      "sha256": "dbcf4d4af2c573def697fd01f49df959cfc7a2ad1f863701e9786e2127fb5255",
+      "blob": "36b6cfc7a04da8e7aef65d5b9a7d6112367773b1"
+    },
+    "drawer-focus-final/observations.json": {
+      "bytes": 25746,
+      "sha256": "02ca0e8ad6c49985a66eea0ab40b16a2c2423c1f9058628a229ac389a0dfd3b2",
+      "blob": "4efd21ab611cd90cf8506a750b35b8c0b7c3027c"
+    },
+    "drawer-focus-final/stdout.txt": {
+      "bytes": 100,
+      "sha256": "37b7508ff6271f843aa2079d36dc4608903dbf0a63458baa7730e08fe0587bfb",
+      "blob": "1a15e9646cd283ea3ccce8510a6878b751ee2260"
+    },
+    "drawer-focus-final/stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "drawer-focus-final/junit.xml": {
+      "bytes": 7851,
+      "sha256": "6da5fb1145545775e2342b158a1d6454b195d4f478d1e8325ab912d73096aa05",
+      "blob": "049f738671844a1916e9c74a5076c41d530c5433"
+    }
+  },
+  "captures": [
+    {
+      "name": "drawer-focus-actions-en-390-expired.png",
+      "path": "drawer-focus-baseline/captures/drawer-focus-actions-en-390-expired.png",
+      "run": "drawer-focus-baseline",
+      "new_visual_scope": true,
+      "role": "Before correction",
+      "bytes": 43246,
+      "sha256": "2c2b11a7ad3a14000c2ca7851b3a89b981358de1ccec8a50c4b2dc2674508e00",
+      "blob": "5948f4ca72b77b9ccc2437e3af45899dfb9aa56a",
+      "width": 390,
+      "height": 520
+    },
+    {
+      "name": "drawer-focus-current-reverse-en-390.png",
+      "path": "drawer-focus-baseline/captures/drawer-focus-current-reverse-en-390.png",
+      "run": "drawer-focus-baseline",
+      "new_visual_scope": true,
+      "role": "Before correction",
+      "bytes": 34109,
+      "sha256": "6aa7ef9fd3edc8e4d561c5e3b7d68d0d929cf7101dfa9e9b00bfb1cce30fa911",
+      "blob": "a820e70e8540bdec32a83e96c959fefaaf3f26f7",
+      "width": 390,
+      "height": 400
+    },
+    {
+      "name": "drawer-focus-saved-resize-zh-320.png",
+      "path": "drawer-focus-baseline/captures/drawer-focus-saved-resize-zh-320.png",
+      "run": "drawer-focus-baseline",
+      "new_visual_scope": true,
+      "role": "Before correction",
+      "bytes": 45236,
+      "sha256": "11916c170fd5064b57c525988b189eeb8ed4262f4c48e9b1e0ac5f3f3b6ba810",
+      "blob": "7149579fd7b645d90166d77782afab6515bcf355",
+      "width": 320,
+      "height": 520
+    },
+    {
+      "name": "drawer-focus-actions-en-390-expired.png",
+      "path": "drawer-focus-verified/captures/drawer-focus-actions-en-390-expired.png",
+      "run": "drawer-focus-verified",
+      "new_visual_scope": false,
+      "role": "Initial native rounding diagnostic",
+      "bytes": 43313,
+      "sha256": "ed7f0648761cf690f9338e7a5ec272b8efce622bd96292760faa82b15b8a36c1",
+      "blob": "506bb0d4153175f3b8d29befc0928a7b6eb3543f",
+      "width": 390,
+      "height": 520
+    },
+    {
+      "name": "current-actions-disabled-en-390.png",
+      "path": "drawer-focus-final/captures/current-actions-disabled-en-390.png",
+      "run": "drawer-focus-final",
+      "new_visual_scope": false,
+      "role": "Retained affected regression",
+      "bytes": 43313,
+      "sha256": "d1db484b57574cbd199d40703e57e37fc4a71b1e4b29e6b0244077f3ccdcc1fc",
+      "blob": "5a7107d7ce203446da0d0154f7c232d59103ba6f",
+      "width": 390,
+      "height": 520
+    },
+    {
+      "name": "current-actions-disabled-zh-320.png",
+      "path": "drawer-focus-final/captures/current-actions-disabled-zh-320.png",
+      "run": "drawer-focus-final",
+      "new_visual_scope": false,
+      "role": "Retained affected regression",
+      "bytes": 39190,
+      "sha256": "d0004f73c648e73efe498de7a8a6d3660bd97f35c892e731bcefe776dcd44308",
+      "blob": "259ed27e0acd3ba2a913b51529ebac1d46fa4152",
+      "width": 320,
+      "height": 520
+    },
+    {
+      "name": "current-actions-en-1440.png",
+      "path": "drawer-focus-final/captures/current-actions-en-1440.png",
+      "run": "drawer-focus-final",
+      "new_visual_scope": false,
+      "role": "Retained affected regression",
+      "bytes": 43161,
+      "sha256": "89148c1ebbb05e52b67a039c686fa098572ad220a2ffa9a068632226acab3290",
+      "blob": "7ab46c311aace20bd4ce1690c1cfeb3eed69bac2",
+      "width": 570,
+      "height": 496
+    },
+    {
+      "name": "current-actions-en-320.png",
+      "path": "drawer-focus-final/captures/current-actions-en-320.png",
+      "run": "drawer-focus-final",
+      "new_visual_scope": false,
+      "role": "Retained affected regression",
+      "bytes": 35224,
+      "sha256": "5d42fe0a2a7ed229c8cd8d589d91fc746acf7d09387bc3d8df9631b4de9fbe51",
+      "blob": "74f2fae76ea1dbc8b800be1f8ac56e95e4dc5ea9",
+      "width": 320,
+      "height": 520
+    },
+    {
+      "name": "current-actions-en-390.png",
+      "path": "drawer-focus-final/captures/current-actions-en-390.png",
+      "run": "drawer-focus-final",
+      "new_visual_scope": false,
+      "role": "Retained affected regression",
+      "bytes": 42234,
+      "sha256": "5fe2b880175f4590a83b8594f406fc0a60cc63f37aae7abdef07752b25c6303e",
+      "blob": "ac9c95b1499e950a0cde05fcc12e99131052793a",
+      "width": 390,
+      "height": 520
+    },
+    {
+      "name": "current-actions-zh-320.png",
+      "path": "drawer-focus-final/captures/current-actions-zh-320.png",
+      "run": "drawer-focus-final",
+      "new_visual_scope": false,
+      "role": "Retained affected regression",
+      "bytes": 39274,
+      "sha256": "37741f54d7dd65d4dc46852d580ed2f9bba8d1d36387d8419ebf65a0246cc13a",
+      "blob": "51ec0820cff57675638f2c5b393f405bb8ef01a2",
+      "width": 320,
+      "height": 520
+    },
+    {
+      "name": "current-actions-zh-390.png",
+      "path": "drawer-focus-final/captures/current-actions-zh-390.png",
+      "run": "drawer-focus-final",
+      "new_visual_scope": false,
+      "role": "Retained affected regression",
+      "bytes": 41124,
+      "sha256": "f59e934e02fffd008f94a10b0fc30c23d481aa3c3006253c37809025a252dfa7",
+      "blob": "2c0775b70e570fc9669db2f360c7311a844ed491",
+      "width": 390,
+      "height": 520
+    },
+    {
+      "name": "current-return-details-en-390.png",
+      "path": "drawer-focus-final/captures/current-return-details-en-390.png",
+      "run": "drawer-focus-final",
+      "new_visual_scope": false,
+      "role": "Retained affected regression",
+      "bytes": 45447,
+      "sha256": "3d90867aa847fae05ebbfc50ee69b7a14c4888804b94e11b4739217324cca819",
+      "blob": "052116d9013b0a3568fa705f68b9eb904c1c1036",
+      "width": 390,
+      "height": 520
+    },
+    {
+      "name": "current-return-details-zh-320.png",
+      "path": "drawer-focus-final/captures/current-return-details-zh-320.png",
+      "run": "drawer-focus-final",
+      "new_visual_scope": false,
+      "role": "Retained affected regression",
+      "bytes": 43665,
+      "sha256": "378cc72b0f5efb287768442d150f53a589bde578850c8eff9090465bc8aae97c",
+      "blob": "e4863ceba1daecd4ae4f0e4b075498793748db03",
+      "width": 320,
+      "height": 520
+    },
+    {
+      "name": "current-return-review-en-390.png",
+      "path": "drawer-focus-final/captures/current-return-review-en-390.png",
+      "run": "drawer-focus-final",
+      "new_visual_scope": false,
+      "role": "Retained affected regression",
+      "bytes": 41791,
+      "sha256": "6e693eddac3a60b42fbcf6bdde8a65efb5de46b5526861f32897f07a2bb79ea1",
+      "blob": "21c07fa072c928aaca721c27ec562b441c0a9dc2",
+      "width": 390,
+      "height": 520
+    },
+    {
+      "name": "current-return-review-zh-320.png",
+      "path": "drawer-focus-final/captures/current-return-review-zh-320.png",
+      "run": "drawer-focus-final",
+      "new_visual_scope": false,
+      "role": "Retained affected regression",
+      "bytes": 36317,
+      "sha256": "3f10ad246bc94a2be3dddb3e532cc90251507cedea2d88f04dacd23399acd330",
+      "blob": "793cb5e2f77f0ac016576ce22e9328f4f49c59c3",
+      "width": 320,
+      "height": 520
+    },
+    {
+      "name": "current-save-reading-remove-en-390.png",
+      "path": "drawer-focus-final/captures/current-save-reading-remove-en-390.png",
+      "run": "drawer-focus-final",
+      "new_visual_scope": false,
+      "role": "Retained affected regression",
+      "bytes": 45511,
+      "sha256": "bfc7a15e02445c04b494b2389daf46ce192473a560bb3774f6013fb74561ce87",
+      "blob": "0f59849ed3bb09939a3c8a166951e49f1f4ee727",
+      "width": 390,
+      "height": 520
+    },
+    {
+      "name": "current-save-reading-remove-expired-en-390.png",
+      "path": "drawer-focus-final/captures/current-save-reading-remove-expired-en-390.png",
+      "run": "drawer-focus-final",
+      "new_visual_scope": false,
+      "role": "Retained affected regression",
+      "bytes": 45567,
+      "sha256": "4b9b3a4de2ce86687b9f74e3c31c414b1814331d413940b2181741cf2cdfc27a",
+      "blob": "c5736f4c7856be8104b835d869d79cffa8c233e8",
+      "width": 390,
+      "height": 520
+    },
+    {
+      "name": "current-save-reading-remove-expired-zh-320.png",
+      "path": "drawer-focus-final/captures/current-save-reading-remove-expired-zh-320.png",
+      "run": "drawer-focus-final",
+      "new_visual_scope": false,
+      "role": "Retained affected regression",
+      "bytes": 43675,
+      "sha256": "f54c6d4e3eedba92544253456a058d4fb40c3a733538b62452340ee4bdcdc177",
+      "blob": "3c6eb73f3236722133a16e694aa27f18ae9b06bc",
+      "width": 320,
+      "height": 520
+    },
+    {
+      "name": "current-save-reading-remove-zh-320.png",
+      "path": "drawer-focus-final/captures/current-save-reading-remove-zh-320.png",
+      "run": "drawer-focus-final",
+      "new_visual_scope": false,
+      "role": "Retained affected regression",
+      "bytes": 43664,
+      "sha256": "6153ecc602a4751461d5987aed1120754a0a0533dbf30c421eed8b21959b4168",
+      "blob": "4ac199926ae7ac7776b78a3636b465821a6d12a0",
+      "width": 320,
+      "height": 520
+    },
+    {
+      "name": "current-save-reading-save-en-390.png",
+      "path": "drawer-focus-final/captures/current-save-reading-save-en-390.png",
+      "run": "drawer-focus-final",
+      "new_visual_scope": false,
+      "role": "Retained affected regression",
+      "bytes": 45445,
+      "sha256": "957968bd1869555905bab8f6c1882485b9ebe9adfc57d4f3f004d417aa4ecd66",
+      "blob": "a2265fb0960d964a6d6fa4057b204496a6e5b019",
+      "width": 390,
+      "height": 520
+    },
+    {
+      "name": "current-save-reading-save-zh-320.png",
+      "path": "drawer-focus-final/captures/current-save-reading-save-zh-320.png",
+      "run": "drawer-focus-final",
+      "new_visual_scope": false,
+      "role": "Retained affected regression",
+      "bytes": 44090,
+      "sha256": "6cec076fb4871bf0ef0e4e0a7ba210dd68888dc4affa276e6cf47d148a1d99ef",
+      "blob": "3e0d681418af7a0a732d035d73ddd988a648f8c3",
+      "width": 320,
+      "height": 520
+    },
+    {
+      "name": "drawer-focus-actions-en-1440-expired.png",
+      "path": "drawer-focus-final/captures/drawer-focus-actions-en-1440-expired.png",
+      "run": "drawer-focus-final",
+      "new_visual_scope": true,
+      "role": "New keyboard focus proof",
+      "bytes": 42172,
+      "sha256": "405ba3b2fc44db3f89afe613aee549d23f9b36dfb04bebfc8adc4d70f5c5e8a6",
+      "blob": "116744cc265ba2f5b5ed29315220485aa48aeecc",
+      "width": 570,
+      "height": 496
+    },
+    {
+      "name": "drawer-focus-actions-en-1440-open.png",
+      "path": "drawer-focus-final/captures/drawer-focus-actions-en-1440-open.png",
+      "run": "drawer-focus-final",
+      "new_visual_scope": true,
+      "role": "New keyboard focus proof",
+      "bytes": 43161,
+      "sha256": "89148c1ebbb05e52b67a039c686fa098572ad220a2ffa9a068632226acab3290",
+      "blob": "7ab46c311aace20bd4ce1690c1cfeb3eed69bac2",
+      "width": 570,
+      "height": 496
+    },
+    {
+      "name": "drawer-focus-actions-en-390-expired.png",
+      "path": "drawer-focus-final/captures/drawer-focus-actions-en-390-expired.png",
+      "run": "drawer-focus-final",
+      "new_visual_scope": true,
+      "role": "New keyboard focus proof",
+      "bytes": 43313,
+      "sha256": "d1db484b57574cbd199d40703e57e37fc4a71b1e4b29e6b0244077f3ccdcc1fc",
+      "blob": "5a7107d7ce203446da0d0154f7c232d59103ba6f",
+      "width": 390,
+      "height": 520
+    },
+    {
+      "name": "drawer-focus-actions-en-390-open.png",
+      "path": "drawer-focus-final/captures/drawer-focus-actions-en-390-open.png",
+      "run": "drawer-focus-final",
+      "new_visual_scope": true,
+      "role": "New keyboard focus proof",
+      "bytes": 42234,
+      "sha256": "5fe2b880175f4590a83b8594f406fc0a60cc63f37aae7abdef07752b25c6303e",
+      "blob": "ac9c95b1499e950a0cde05fcc12e99131052793a",
+      "width": 390,
+      "height": 520
+    },
+    {
+      "name": "drawer-focus-actions-zh-320-expired.png",
+      "path": "drawer-focus-final/captures/drawer-focus-actions-zh-320-expired.png",
+      "run": "drawer-focus-final",
+      "new_visual_scope": true,
+      "role": "New keyboard focus proof",
+      "bytes": 39190,
+      "sha256": "d0004f73c648e73efe498de7a8a6d3660bd97f35c892e731bcefe776dcd44308",
+      "blob": "259ed27e0acd3ba2a913b51529ebac1d46fa4152",
+      "width": 320,
+      "height": 520
+    },
+    {
+      "name": "drawer-focus-actions-zh-320-open.png",
+      "path": "drawer-focus-final/captures/drawer-focus-actions-zh-320-open.png",
+      "run": "drawer-focus-final",
+      "new_visual_scope": true,
+      "role": "New keyboard focus proof",
+      "bytes": 39274,
+      "sha256": "37741f54d7dd65d4dc46852d580ed2f9bba8d1d36387d8419ebf65a0246cc13a",
+      "blob": "51ec0820cff57675638f2c5b393f405bb8ef01a2",
+      "width": 320,
+      "height": 520
+    },
+    {
+      "name": "drawer-focus-current-reverse-en-1440.png",
+      "path": "drawer-focus-final/captures/drawer-focus-current-reverse-en-1440.png",
+      "run": "drawer-focus-final",
+      "new_visual_scope": true,
+      "role": "New keyboard focus proof",
+      "bytes": 42515,
+      "sha256": "babad78ff9b49dc69f37d3388c5c83fe4a6f04db6f4168348ab68ee97c66f16f",
+      "blob": "0a811d37dfa569d5c9818fbe3d5f754f5873ca2a",
+      "width": 570,
+      "height": 376
+    },
+    {
+      "name": "drawer-focus-current-reverse-en-390.png",
+      "path": "drawer-focus-final/captures/drawer-focus-current-reverse-en-390.png",
+      "run": "drawer-focus-final",
+      "new_visual_scope": true,
+      "role": "New keyboard focus proof",
+      "bytes": 38586,
+      "sha256": "d3e773c0081e0d2131a616026acd0d55f8a9c27c2df639a75ef6b16409c7b962",
+      "blob": "6424df1a1302235789ca0732ac9d1c04fed41c7b",
+      "width": 390,
+      "height": 400
+    },
+    {
+      "name": "drawer-focus-current-reverse-zh-320.png",
+      "path": "drawer-focus-final/captures/drawer-focus-current-reverse-zh-320.png",
+      "run": "drawer-focus-final",
+      "new_visual_scope": true,
+      "role": "New keyboard focus proof",
+      "bytes": 32354,
+      "sha256": "0b21a70a8bf8725908b04a72f08a45db5630563a6357cf145742ff631c8cd11c",
+      "blob": "64aa8589871af3700ceb246edca4d8c8630acb61",
+      "width": 320,
+      "height": 400
+    },
+    {
+      "name": "drawer-focus-saved-resize-en-390.png",
+      "path": "drawer-focus-final/captures/drawer-focus-saved-resize-en-390.png",
+      "run": "drawer-focus-final",
+      "new_visual_scope": true,
+      "role": "New keyboard focus proof",
+      "bytes": 41808,
+      "sha256": "3b96aa46bc9bb0946d176c711ab2b4e116fb414975dcd305d4c397023c9b34a9",
+      "blob": "b6d4b9e19ae0a87c70a5e51eed4b8a5f077ecce9",
+      "width": 390,
+      "height": 520
+    },
+    {
+      "name": "drawer-focus-saved-resize-zh-320.png",
+      "path": "drawer-focus-final/captures/drawer-focus-saved-resize-zh-320.png",
+      "run": "drawer-focus-final",
+      "new_visual_scope": true,
+      "role": "New keyboard focus proof",
+      "bytes": 42657,
+      "sha256": "eb765e309f86949a6bd6497f452bf494e3eff507ad9897cac64a96c7d534a523",
+      "blob": "9a3026a63da1c9165223d83016167ab6494220c6",
+      "width": 320,
+      "height": 520
+    }
+  ],
+  "capture_policy": {
+    "baseline_retained": 3,
+    "baseline_total_generated": 28,
+    "initial_retained": 1,
+    "initial_total_generated": 28,
+    "all_final_captures_retained": 28
+  },
+  "limits": [
+    "Native historical/synthetic fixtures, one Chrome version; not a cross-engine, assistive-technology, hosted or public-route acceptance.",
+    "Focus changes remain native. The ResizeObserver only publishes the actual header height as a CSS metric; no focus/scroll/render/history/storage operation is added.",
+    "Explicit preventScroll restoration retains reading. Scroll padding changes the preferred viewing region, not content dimensions or blank layout space.",
+    "Current Conditions summary retains its native outline; existing action/saved-disclosure 2px+4px rings are unchanged.",
+    "Other denied/uncertain and model/alert/result/receipt/release/admission boundaries remain."
+  ]
+}

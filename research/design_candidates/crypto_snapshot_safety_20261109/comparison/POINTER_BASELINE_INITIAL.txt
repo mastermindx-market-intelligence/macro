@@ -1,0 +1,40 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+_ test_r4_comparison_pointer_close_keeps_settings_clear_and_owner_usable[en-390] _
+tests/test_crypto_intelligence_r4_browser.py:1631: in test_r4_comparison_pointer_close_keeps_settings_clear_and_owner_usable
+    _wait_drawer(page, "comparison", "Compare assets" if lang == "en" else "比较资产")
+tests/test_crypto_intelligence_r4_browser.py:602: in _wait_drawer
+    page.wait_for_function(
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/sync_api/_generated.py:12761: in wait_for_function
+    self._sync(
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_page.py:1151: in wait_for_function
+    return await self._main_frame.wait_for_function(**locals_to_params(locals()))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_frame.py:940: in wait_for_function
+    await self._channel.send("waitForFunction", self._timeout, params)
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_connection.py:76: in send
+    return await self._connection.wrap_api_call(
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_connection.py:632: in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+E   playwright._impl._errors.TimeoutError: Page.wait_for_function: Timeout 4500ms exceeded.
+_ test_r4_comparison_pointer_close_keeps_settings_clear_and_owner_usable[zh-320] _
+tests/test_crypto_intelligence_r4_browser.py:1631: in test_r4_comparison_pointer_close_keeps_settings_clear_and_owner_usable
+    _wait_drawer(page, "comparison", "Compare assets" if lang == "en" else "比较资产")
+tests/test_crypto_intelligence_r4_browser.py:602: in _wait_drawer
+    page.wait_for_function(
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/sync_api/_generated.py:12761: in wait_for_function
+    self._sync(
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_page.py:1151: in wait_for_function
+    return await self._main_frame.wait_for_function(**locals_to_params(locals()))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_frame.py:940: in wait_for_function
+    await self._channel.send("waitForFunction", self._timeout, params)
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_connection.py:76: in send
+    return await self._connection.wrap_api_call(
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_connection.py:632: in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+E   playwright._impl._errors.TimeoutError: Page.wait_for_function: Timeout 4500ms exceeded.
+=========================== short test summary info ============================
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_comparison_pointer_close_keeps_settings_clear_and_owner_usable[en-390]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_comparison_pointer_close_keeps_settings_clear_and_owner_usable[zh-320]
+2 failed, 120 deselected in 14.87s

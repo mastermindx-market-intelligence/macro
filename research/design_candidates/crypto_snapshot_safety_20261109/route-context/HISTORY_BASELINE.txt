@@ -1,0 +1,18 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+________ test_r4_route_focus_handoff_yields_to_a_newer_choice[replace] _________
+tests/test_crypto_intelligence_r4_browser.py:2108: in test_r4_route_focus_handoff_yields_to_a_newer_choice
+    assert page.evaluate("__routeChoiceRan")
+E   AssertionError: assert False
+E    +  where False = evaluate('__routeChoiceRan')
+E    +    where evaluate = <Page url='http://127.0.0.1:54654/crypto-r4.html?lang=en#markets?h=30&window=30&extra=kept'>.evaluate
+__________ test_r4_route_focus_handoff_yields_to_a_newer_choice[push] __________
+tests/test_crypto_intelligence_r4_browser.py:2108: in test_r4_route_focus_handoff_yields_to_a_newer_choice
+    assert page.evaluate("__routeChoiceRan")
+E   AssertionError: assert False
+E    +  where False = evaluate('__routeChoiceRan')
+E    +    where evaluate = <Page url='http://127.0.0.1:54654/crypto-r4.html?lang=en#markets?h=30&window=30&extra=kept'>.evaluate
+=========================== short test summary info ============================
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_route_focus_handoff_yields_to_a_newer_choice[replace]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_route_focus_handoff_yields_to_a_newer_choice[push]
+2 failed in 3.44s

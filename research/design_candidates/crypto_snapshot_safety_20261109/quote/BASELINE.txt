@@ -1,0 +1,141 @@
+..FFF.............FFFFFFFFFFF....FFFF                                    [100%]
+=================================== FAILURES ===================================
+____ test_quote_clarity_invalid_price_preserves_other_asset_evidence[zero] _____
+tests/test_crypto_intelligence_r4.py:435: in test_quote_clarity_invalid_price_preserves_other_asset_evidence
+    assert asset["price"] is None
+E   assert 0.0 is None
+_ test_quote_clarity_invalid_price_preserves_other_asset_evidence[negative_zero] _
+tests/test_crypto_intelligence_r4.py:435: in test_quote_clarity_invalid_price_preserves_other_asset_evidence
+    assert asset["price"] is None
+E   assert -0.0 is None
+__ test_quote_clarity_invalid_price_preserves_other_asset_evidence[negative] ___
+tests/test_crypto_intelligence_r4.py:435: in test_quote_clarity_invalid_price_preserves_other_asset_evidence
+    assert asset["price"] is None
+E   assert -1.0 is None
+_ test_quote_clarity_server_price_cell_is_explicit_and_never_false_zero[None-Unavailable\u6682\u65e0] _
+tests/test_crypto_intelligence_r4.py:498: in test_quote_clarity_server_price_cell_is_explicit_and_never_false_zero
+    assert parser.cells == [expected]
+E   AssertionError: assert ['—'] == ['Unavailable暂无']
+E     
+E     At index 0 diff: '—' != 'Unavailable暂无'
+E     Use -v to get more diff
+_ test_quote_clarity_server_price_cell_is_explicit_and_never_false_zero[0-Unavailable\u6682\u65e0] _
+tests/test_crypto_intelligence_r4.py:498: in test_quote_clarity_server_price_cell_is_explicit_and_never_false_zero
+    assert parser.cells == [expected]
+E   AssertionError: assert ['$0.00'] == ['Unavailable暂无']
+E     
+E     At index 0 diff: '$0.00' != 'Unavailable暂无'
+E     Use -v to get more diff
+_ test_quote_clarity_server_price_cell_is_explicit_and_never_false_zero[-1-Unavailable\u6682\u65e0] _
+tests/test_crypto_intelligence_r4.py:498: in test_quote_clarity_server_price_cell_is_explicit_and_never_false_zero
+    assert parser.cells == [expected]
+E   AssertionError: assert ['$-1.00'] == ['Unavailable暂无']
+E     
+E     At index 0 diff: '$-1.00' != 'Unavailable暂无'
+E     Use -v to get more diff
+_ test_quote_clarity_server_price_cell_is_explicit_and_never_false_zero[5e-324-<$0.00000001] _
+tests/test_crypto_intelligence_r4.py:498: in test_quote_clarity_server_price_cell_is_explicit_and_never_false_zero
+    assert parser.cells == [expected]
+E   AssertionError: assert ['$0.00'] == ['<$0.00000001']
+E     
+E     At index 0 diff: '$0.00' != '<$0.00000001'
+E     Use -v to get more diff
+_ test_quote_clarity_server_price_cell_is_explicit_and_never_false_zero[9e-09-<$0.00000001] _
+tests/test_crypto_intelligence_r4.py:498: in test_quote_clarity_server_price_cell_is_explicit_and_never_false_zero
+    assert parser.cells == [expected]
+E   AssertionError: assert ['$0.00'] == ['<$0.00000001']
+E     
+E     At index 0 diff: '$0.00' != '<$0.00000001'
+E     Use -v to get more diff
+_ test_quote_clarity_server_price_cell_is_explicit_and_never_false_zero[1e-08-$0.00000001] _
+tests/test_crypto_intelligence_r4.py:498: in test_quote_clarity_server_price_cell_is_explicit_and_never_false_zero
+    assert parser.cells == [expected]
+E   AssertionError: assert ['$0.00'] == ['$0.00000001']
+E     
+E     At index 0 diff: '$0.00' != '$0.00000001'
+E     Use -v to get more diff
+_ test_quote_clarity_server_price_cell_is_explicit_and_never_false_zero[1.5e-08-$0.00000002] _
+tests/test_crypto_intelligence_r4.py:498: in test_quote_clarity_server_price_cell_is_explicit_and_never_false_zero
+    assert parser.cells == [expected]
+E   AssertionError: assert ['$0.00'] == ['$0.00000002']
+E     
+E     At index 0 diff: '$0.00' != '$0.00000002'
+E     Use -v to get more diff
+_ test_quote_clarity_server_price_cell_is_explicit_and_never_false_zero[2.5e-08-$0.00000003] _
+tests/test_crypto_intelligence_r4.py:498: in test_quote_clarity_server_price_cell_is_explicit_and_never_false_zero
+    assert parser.cells == [expected]
+E   AssertionError: assert ['$0.00'] == ['$0.00000003']
+E     
+E     At index 0 diff: '$0.00' != '$0.00000003'
+E     Use -v to get more diff
+_ test_quote_clarity_server_price_cell_is_explicit_and_never_false_zero[0.000123455-$0.00012346] _
+tests/test_crypto_intelligence_r4.py:498: in test_quote_clarity_server_price_cell_is_explicit_and_never_false_zero
+    assert parser.cells == [expected]
+E   AssertionError: assert ['$0.00'] == ['$0.00012346']
+E     
+E     At index 0 diff: '$0.00' != '$0.00012346'
+E     Use -v to get more diff
+_ test_quote_clarity_server_price_cell_is_explicit_and_never_false_zero[0.001-$0.001] _
+tests/test_crypto_intelligence_r4.py:498: in test_quote_clarity_server_price_cell_is_explicit_and_never_false_zero
+    assert parser.cells == [expected]
+E   AssertionError: assert ['$0.00'] == ['$0.001']
+E     
+E     At index 0 diff: '$0.00' != '$0.001'
+E     Use -v to get more diff
+_ test_quote_clarity_server_price_cell_is_explicit_and_never_false_zero[0.009999994-$0.00999999] _
+tests/test_crypto_intelligence_r4.py:498: in test_quote_clarity_server_price_cell_is_explicit_and_never_false_zero
+    assert parser.cells == [expected]
+E   AssertionError: assert ['$0.01'] == ['$0.00999999']
+E     
+E     At index 0 diff: '$0.01' != '$0.00999999'
+E     Use -v to get more diff
+_ test_r4_quote_clarity_server_and_inspector_agree_without_losing_asset_context[quote-invalid-en-390-False] _
+tests/test_crypto_intelligence_r4_browser.py:1826: in test_r4_quote_clarity_server_and_inspector_agree_without_losing_asset_context
+    assert row.locator("td").nth(1).inner_text() == price
+E   AssertionError: assert '$0.00' == 'Unavailable'
+E     
+E     - Unavailable
+E     + $0.00
+_ test_r4_quote_clarity_server_and_inspector_agree_without_losing_asset_context[quote-invalid-zh-320-True] _
+tests/test_crypto_intelligence_r4_browser.py:1826: in test_r4_quote_clarity_server_and_inspector_agree_without_losing_asset_context
+    assert row.locator("td").nth(1).inner_text() == price
+E   AssertionError: assert '$0.00' == '暂无'
+E     
+E     - 暂无
+E     + $0.00
+_ test_r4_quote_clarity_server_and_inspector_agree_without_losing_asset_context[quote-small-en-390-False] _
+tests/test_crypto_intelligence_r4_browser.py:1826: in test_r4_quote_clarity_server_and_inspector_agree_without_losing_asset_context
+    assert row.locator("td").nth(1).inner_text() == price
+E   AssertionError: assert '$0.00' == '$0.001'
+E     
+E     - $0.001
+E     ?      -
+E     + $0.00
+_ test_r4_quote_clarity_server_and_inspector_agree_without_losing_asset_context[quote-small-zh-320-True] _
+tests/test_crypto_intelligence_r4_browser.py:1826: in test_r4_quote_clarity_server_and_inspector_agree_without_losing_asset_context
+    assert row.locator("td").nth(1).inner_text() == price
+E   AssertionError: assert '$0.00' == '$0.001'
+E     
+E     - $0.001
+E     ?      -
+E     + $0.00
+=========================== short test summary info ============================
+FAILED tests/test_crypto_intelligence_r4.py::test_quote_clarity_invalid_price_preserves_other_asset_evidence[zero]
+FAILED tests/test_crypto_intelligence_r4.py::test_quote_clarity_invalid_price_preserves_other_asset_evidence[negative_zero]
+FAILED tests/test_crypto_intelligence_r4.py::test_quote_clarity_invalid_price_preserves_other_asset_evidence[negative]
+FAILED tests/test_crypto_intelligence_r4.py::test_quote_clarity_server_price_cell_is_explicit_and_never_false_zero[None-Unavailable\u6682\u65e0]
+FAILED tests/test_crypto_intelligence_r4.py::test_quote_clarity_server_price_cell_is_explicit_and_never_false_zero[0-Unavailable\u6682\u65e0]
+FAILED tests/test_crypto_intelligence_r4.py::test_quote_clarity_server_price_cell_is_explicit_and_never_false_zero[-1-Unavailable\u6682\u65e0]
+FAILED tests/test_crypto_intelligence_r4.py::test_quote_clarity_server_price_cell_is_explicit_and_never_false_zero[5e-324-<$0.00000001]
+FAILED tests/test_crypto_intelligence_r4.py::test_quote_clarity_server_price_cell_is_explicit_and_never_false_zero[9e-09-<$0.00000001]
+FAILED tests/test_crypto_intelligence_r4.py::test_quote_clarity_server_price_cell_is_explicit_and_never_false_zero[1e-08-$0.00000001]
+FAILED tests/test_crypto_intelligence_r4.py::test_quote_clarity_server_price_cell_is_explicit_and_never_false_zero[1.5e-08-$0.00000002]
+FAILED tests/test_crypto_intelligence_r4.py::test_quote_clarity_server_price_cell_is_explicit_and_never_false_zero[2.5e-08-$0.00000003]
+FAILED tests/test_crypto_intelligence_r4.py::test_quote_clarity_server_price_cell_is_explicit_and_never_false_zero[0.000123455-$0.00012346]
+FAILED tests/test_crypto_intelligence_r4.py::test_quote_clarity_server_price_cell_is_explicit_and_never_false_zero[0.001-$0.001]
+FAILED tests/test_crypto_intelligence_r4.py::test_quote_clarity_server_price_cell_is_explicit_and_never_false_zero[0.009999994-$0.00999999]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_quote_clarity_server_and_inspector_agree_without_losing_asset_context[quote-invalid-en-390-False]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_quote_clarity_server_and_inspector_agree_without_losing_asset_context[quote-invalid-zh-320-True]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_quote_clarity_server_and_inspector_agree_without_losing_asset_context[quote-small-en-390-False]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_quote_clarity_server_and_inspector_agree_without_losing_asset_context[quote-small-zh-320-True]
+18 failed, 19 passed, 201 deselected in 10.75s

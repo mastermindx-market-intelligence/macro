@@ -1,0 +1,26 @@
+.............................................F...........FF............. [ 96%]
+...                                                                      [100%]
+=================================== FAILURES ===================================
+_ test_r4_current_mutation_inside_a_render_focus_callback_retains_its_new_intent _
+tests/test_crypto_intelligence_r4_browser.py:3097: in test_r4_current_mutation_inside_a_render_focus_callback_retains_its_new_intent
+    assert abs(actual - min(scroll, maximum)) <= 1
+E   assert 51 <= 1
+E    +  where 51 = abs((255 - 306))
+E    +    where 306 = min(306, 325)
+____________ test_r4_newer_focus_during_confirmation_survives[save] ____________
+tests/test_crypto_intelligence_r4_browser.py:542: in test_r4_newer_focus_during_confirmation_survives
+    assert page.locator("#cri-toast").inner_text() == ("Saved on this device." if intent == "save" else "Removed from this device.")
+E   AssertionError: assert '' == 'Saved on this device.'
+E     
+E     - Saved on this device.
+___________ test_r4_newer_focus_during_confirmation_survives[remove] ___________
+tests/test_crypto_intelligence_r4_browser.py:542: in test_r4_newer_focus_during_confirmation_survives
+    assert page.locator("#cri-toast").inner_text() == ("Saved on this device." if intent == "save" else "Removed from this device.")
+E   AssertionError: assert '' == 'Removed from this device.'
+E     
+E     - Removed from this device.
+=========================== short test summary info ============================
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_current_mutation_inside_a_render_focus_callback_retains_its_new_intent
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_newer_focus_during_confirmation_survives[save]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_newer_focus_during_confirmation_survives[remove]
+3 failed, 72 passed in 58.78s

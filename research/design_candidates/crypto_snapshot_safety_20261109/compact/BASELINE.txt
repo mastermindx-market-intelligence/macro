@@ -1,0 +1,72 @@
+FFFFFFFF                                                                 [100%]
+=================================== FAILURES ===================================
+_ test_r4_compact_matrix_two_assets_fit_with_complete_dates_and_values[en-320-False] _
+tests/test_crypto_intelligence_r4_browser.py:1681: in test_r4_compact_matrix_two_assets_fit_with_complete_dates_and_values
+    assert metrics["scrollWidth"] <= metrics["clientWidth"]+1,metrics
+E   AssertionError: {'viewport': 320, 'left': 20, 'right': 300, 'clientWidth': 280, ...}
+E   assert 370 <= (280 + 1)
+_ test_r4_compact_matrix_two_assets_fit_with_complete_dates_and_values[en-390-False] _
+tests/test_crypto_intelligence_r4_browser.py:1681: in test_r4_compact_matrix_two_assets_fit_with_complete_dates_and_values
+    assert metrics["scrollWidth"] <= metrics["clientWidth"]+1,metrics
+E   AssertionError: {'viewport': 390, 'left': 20, 'right': 370, 'clientWidth': 350, ...}
+E   assert 370 <= (350 + 1)
+_ test_r4_compact_matrix_two_assets_fit_with_complete_dates_and_values[zh-320-True] _
+tests/test_crypto_intelligence_r4_browser.py:1681: in test_r4_compact_matrix_two_assets_fit_with_complete_dates_and_values
+    assert metrics["scrollWidth"] <= metrics["clientWidth"]+1,metrics
+E   AssertionError: {'viewport': 320, 'left': 20, 'right': 300, 'clientWidth': 280, ...}
+E   assert 370 <= (280 + 1)
+_ test_r4_compact_matrix_two_assets_fit_with_complete_dates_and_values[zh-390-True] _
+tests/test_crypto_intelligence_r4_browser.py:1681: in test_r4_compact_matrix_two_assets_fit_with_complete_dates_and_values
+    assert metrics["scrollWidth"] <= metrics["clientWidth"]+1,metrics
+E   AssertionError: {'viewport': 390, 'left': 20, 'right': 370, 'clientWidth': 350, ...}
+E   assert 370 <= (350 + 1)
+_ test_r4_compact_matrix_two_assets_keep_null_zero_and_history_readable[en-False] _
+tests/test_crypto_intelligence_r4_browser.py:1703: in test_r4_compact_matrix_two_assets_keep_null_zero_and_history_readable
+    assert metrics["scrollWidth"] <= metrics["clientWidth"]+1,metrics
+E   AssertionError: {'viewport': 320, 'left': 20, 'right': 300, 'clientWidth': 280, ...}
+E   assert 370 <= (280 + 1)
+_ test_r4_compact_matrix_two_assets_keep_null_zero_and_history_readable[zh-True] _
+tests/test_crypto_intelligence_r4_browser.py:1703: in test_r4_compact_matrix_two_assets_keep_null_zero_and_history_readable
+    assert metrics["scrollWidth"] <= metrics["clientWidth"]+1,metrics
+E   AssertionError: {'viewport': 320, 'left': 20, 'right': 300, 'clientWidth': 280, ...}
+E   assert 370 <= (280 + 1)
+_ test_r4_compact_matrix_larger_cohort_keeps_native_scroll_and_measure_context[en-False] _
+tests/test_crypto_intelligence_r4_browser.py:1731: in test_r4_compact_matrix_larger_cohort_keeps_native_scroll_and_measure_context
+    page.wait_for_function("(()=>{const w=document.querySelector('.cri-comparison-scroll');return w.scrollLeft+w.clientWidth>=w.scrollWidth-1})()")
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/sync_api/_generated.py:12761: in wait_for_function
+    self._sync(
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_page.py:1151: in wait_for_function
+    return await self._main_frame.wait_for_function(**locals_to_params(locals()))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_frame.py:940: in wait_for_function
+    await self._channel.send("waitForFunction", self._timeout, params)
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_connection.py:76: in send
+    return await self._connection.wrap_api_call(
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_connection.py:632: in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+E   playwright._impl._errors.TimeoutError: Page.wait_for_function: Timeout 4500ms exceeded.
+_ test_r4_compact_matrix_larger_cohort_keeps_native_scroll_and_measure_context[zh-True] _
+tests/test_crypto_intelligence_r4_browser.py:1731: in test_r4_compact_matrix_larger_cohort_keeps_native_scroll_and_measure_context
+    page.wait_for_function("(()=>{const w=document.querySelector('.cri-comparison-scroll');return w.scrollLeft+w.clientWidth>=w.scrollWidth-1})()")
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/sync_api/_generated.py:12761: in wait_for_function
+    self._sync(
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_page.py:1151: in wait_for_function
+    return await self._main_frame.wait_for_function(**locals_to_params(locals()))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_frame.py:940: in wait_for_function
+    await self._channel.send("waitForFunction", self._timeout, params)
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_connection.py:76: in send
+    return await self._connection.wrap_api_call(
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_connection.py:632: in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+E   playwright._impl._errors.TimeoutError: Page.wait_for_function: Timeout 4500ms exceeded.
+=========================== short test summary info ============================
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_compact_matrix_two_assets_fit_with_complete_dates_and_values[en-320-False]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_compact_matrix_two_assets_fit_with_complete_dates_and_values[en-390-False]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_compact_matrix_two_assets_fit_with_complete_dates_and_values[zh-320-True]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_compact_matrix_two_assets_fit_with_complete_dates_and_values[zh-390-True]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_compact_matrix_two_assets_keep_null_zero_and_history_readable[en-False]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_compact_matrix_two_assets_keep_null_zero_and_history_readable[zh-True]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_compact_matrix_larger_cohort_keeps_native_scroll_and_measure_context[en-False]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_compact_matrix_larger_cohort_keeps_native_scroll_and_measure_context[zh-True]
+8 failed, 122 deselected in 17.49s

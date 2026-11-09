@@ -1,0 +1,16 @@
+{
+  "command": "/opt/homebrew/opt/python3.14/bin/python3.14 /Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/current-action-layout-final.py",
+  "pid": 61321,
+  "exit_code": 127,
+  "classification": "Local executable path typo; shell reported no such file before the wrapper could run.",
+  "completion": {
+    "content": [
+      {
+        "type": "text",
+        "text": "[Reading 2 new lines (total: 2 lines)]\n\nzsh:1: no such file or directory: /opt/homebrew/opt/python3.14/bin/python3.14\n\n✅ Process completed with exit code 127 (runtime: 0.05s)"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  }
+}

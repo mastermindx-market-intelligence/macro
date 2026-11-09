@@ -1,0 +1,9 @@
+[Reading 6 new lines (total: 6 lines)]
+
+Traceback (most recent call last):
+  File "/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/overview-labels-viewport-readback.py", line 51, in <module>
+    assert all(point['clear'] for point in target['points'])
+           ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError
+
+✅ Process completed with exit code 1 (runtime: 4.37s)

@@ -1,0 +1,181 @@
+FFFFFFFFFF....FFFFFFFFF................................................. [ 79%]
+...................                                                      [100%]
+=================================== FAILURES ===================================
+_____ test_r4_current_confirmed_mutation_preserves_the_reader[en-390-save] _____
+tests/test_crypto_intelligence_r4_browser.py:2888: in test_r4_current_confirmed_mutation_preserves_the_reader
+    assert page.locator("#cri-dialog-body details").evaluate("n => n.open")
+E   AssertionError: assert False
+E    +  where False = evaluate('n => n.open')
+E    +    where evaluate = <Locator frame=<Frame name= url='http://127.0.0.1:50671/crypto-r4.html?lang=en#scenarios?h=30&window=30&q=BTC&keep=mutation&panel=scenario%3Acontinuation'> selector='#cri-dialog-body details'>.evaluate
+E    +      where <Locator frame=<Frame name= url='http://127.0.0.1:50671/crypto-r4.html?lang=en#scenarios?h=30&window=30&q=BTC&keep=mutation&panel=scenario%3Acontinuation'> selector='#cri-dialog-body details'> = locator('#cri-dialog-body details')
+E    +        where locator = <Page url='http://127.0.0.1:50671/crypto-r4.html?lang=en#scenarios?h=30&window=30&q=BTC&keep=mutation&panel=scenario%3Acontinuation'>.locator
+____ test_r4_current_confirmed_mutation_preserves_the_reader[en-390-remove] ____
+tests/test_crypto_intelligence_r4_browser.py:2888: in test_r4_current_confirmed_mutation_preserves_the_reader
+    assert page.locator("#cri-dialog-body details").evaluate("n => n.open")
+E   AssertionError: assert False
+E    +  where False = evaluate('n => n.open')
+E    +    where evaluate = <Locator frame=<Frame name= url='http://127.0.0.1:50671/crypto-r4.html?lang=en#scenarios?h=30&window=30&q=BTC&keep=mutation&panel=scenario%3Acontinuation'> selector='#cri-dialog-body details'>.evaluate
+E    +      where <Locator frame=<Frame name= url='http://127.0.0.1:50671/crypto-r4.html?lang=en#scenarios?h=30&window=30&q=BTC&keep=mutation&panel=scenario%3Acontinuation'> selector='#cri-dialog-body details'> = locator('#cri-dialog-body details')
+E    +        where locator = <Page url='http://127.0.0.1:50671/crypto-r4.html?lang=en#scenarios?h=30&window=30&q=BTC&keep=mutation&panel=scenario%3Acontinuation'>.locator
+_ test_r4_current_confirmed_mutation_preserves_the_reader[en-390-remove-expired] _
+tests/test_crypto_intelligence_r4_browser.py:2888: in test_r4_current_confirmed_mutation_preserves_the_reader
+    assert page.locator("#cri-dialog-body details").evaluate("n => n.open")
+E   AssertionError: assert False
+E    +  where False = evaluate('n => n.open')
+E    +    where evaluate = <Locator frame=<Frame name= url='http://127.0.0.1:50671/crypto-r4.html?lang=en#scenarios?h=30&window=30&q=BTC&keep=mutation&panel=scenario%3Acontinuation'> selector='#cri-dialog-body details'>.evaluate
+E    +      where <Locator frame=<Frame name= url='http://127.0.0.1:50671/crypto-r4.html?lang=en#scenarios?h=30&window=30&q=BTC&keep=mutation&panel=scenario%3Acontinuation'> selector='#cri-dialog-body details'> = locator('#cri-dialog-body details')
+E    +        where locator = <Page url='http://127.0.0.1:50671/crypto-r4.html?lang=en#scenarios?h=30&window=30&q=BTC&keep=mutation&panel=scenario%3Acontinuation'>.locator
+_____ test_r4_current_confirmed_mutation_preserves_the_reader[zh-320-save] _____
+tests/test_crypto_intelligence_r4_browser.py:2888: in test_r4_current_confirmed_mutation_preserves_the_reader
+    assert page.locator("#cri-dialog-body details").evaluate("n => n.open")
+E   AssertionError: assert False
+E    +  where False = evaluate('n => n.open')
+E    +    where evaluate = <Locator frame=<Frame name= url='http://127.0.0.1:50671/crypto-r4.html?lang=zh#scenarios?h=30&window=30&q=BTC&keep=mutation&panel=scenario%3Acontinuation'> selector='#cri-dialog-body details'>.evaluate
+E    +      where <Locator frame=<Frame name= url='http://127.0.0.1:50671/crypto-r4.html?lang=zh#scenarios?h=30&window=30&q=BTC&keep=mutation&panel=scenario%3Acontinuation'> selector='#cri-dialog-body details'> = locator('#cri-dialog-body details')
+E    +        where locator = <Page url='http://127.0.0.1:50671/crypto-r4.html?lang=zh#scenarios?h=30&window=30&q=BTC&keep=mutation&panel=scenario%3Acontinuation'>.locator
+____ test_r4_current_confirmed_mutation_preserves_the_reader[zh-320-remove] ____
+tests/test_crypto_intelligence_r4_browser.py:2888: in test_r4_current_confirmed_mutation_preserves_the_reader
+    assert page.locator("#cri-dialog-body details").evaluate("n => n.open")
+E   AssertionError: assert False
+E    +  where False = evaluate('n => n.open')
+E    +    where evaluate = <Locator frame=<Frame name= url='http://127.0.0.1:50671/crypto-r4.html?lang=zh#scenarios?h=30&window=30&q=BTC&keep=mutation&panel=scenario%3Acontinuation'> selector='#cri-dialog-body details'>.evaluate
+E    +      where <Locator frame=<Frame name= url='http://127.0.0.1:50671/crypto-r4.html?lang=zh#scenarios?h=30&window=30&q=BTC&keep=mutation&panel=scenario%3Acontinuation'> selector='#cri-dialog-body details'> = locator('#cri-dialog-body details')
+E    +        where locator = <Page url='http://127.0.0.1:50671/crypto-r4.html?lang=zh#scenarios?h=30&window=30&q=BTC&keep=mutation&panel=scenario%3Acontinuation'>.locator
+_ test_r4_current_confirmed_mutation_preserves_the_reader[zh-320-remove-expired] _
+tests/test_crypto_intelligence_r4_browser.py:2888: in test_r4_current_confirmed_mutation_preserves_the_reader
+    assert page.locator("#cri-dialog-body details").evaluate("n => n.open")
+E   AssertionError: assert False
+E    +  where False = evaluate('n => n.open')
+E    +    where evaluate = <Locator frame=<Frame name= url='http://127.0.0.1:50671/crypto-r4.html?lang=zh#scenarios?h=30&window=30&q=BTC&keep=mutation&panel=scenario%3Acontinuation'> selector='#cri-dialog-body details'>.evaluate
+E    +      where <Locator frame=<Frame name= url='http://127.0.0.1:50671/crypto-r4.html?lang=zh#scenarios?h=30&window=30&q=BTC&keep=mutation&panel=scenario%3Acontinuation'> selector='#cri-dialog-body details'> = locator('#cri-dialog-body details')
+E    +        where locator = <Page url='http://127.0.0.1:50671/crypto-r4.html?lang=zh#scenarios?h=30&window=30&q=BTC&keep=mutation&panel=scenario%3Acontinuation'>.locator
+_ test_r4_current_idempotent_mutation_keeps_reading_without_another_write[en-390-save] _
+tests/test_crypto_intelligence_r4_browser.py:2931: in test_r4_current_idempotent_mutation_keeps_reading_without_another_write
+    assert page.locator("#cri-dialog-body details").evaluate("n => n.open")
+E   AssertionError: assert False
+E    +  where False = evaluate('n => n.open')
+E    +    where evaluate = <Locator frame=<Frame name= url='http://127.0.0.1:50671/crypto-r4.html?lang=en#scenarios?h=30&panel=scenario%3Acontinuation'> selector='#cri-dialog-body details'>.evaluate
+E    +      where <Locator frame=<Frame name= url='http://127.0.0.1:50671/crypto-r4.html?lang=en#scenarios?h=30&panel=scenario%3Acontinuation'> selector='#cri-dialog-body details'> = locator('#cri-dialog-body details')
+E    +        where locator = <Page url='http://127.0.0.1:50671/crypto-r4.html?lang=en#scenarios?h=30&panel=scenario%3Acontinuation'>.locator
+_ test_r4_current_idempotent_mutation_keeps_reading_without_another_write[en-390-remove] _
+tests/test_crypto_intelligence_r4_browser.py:2931: in test_r4_current_idempotent_mutation_keeps_reading_without_another_write
+    assert page.locator("#cri-dialog-body details").evaluate("n => n.open")
+E   AssertionError: assert False
+E    +  where False = evaluate('n => n.open')
+E    +    where evaluate = <Locator frame=<Frame name= url='http://127.0.0.1:50671/crypto-r4.html?lang=en#scenarios?h=30&panel=scenario%3Acontinuation'> selector='#cri-dialog-body details'>.evaluate
+E    +      where <Locator frame=<Frame name= url='http://127.0.0.1:50671/crypto-r4.html?lang=en#scenarios?h=30&panel=scenario%3Acontinuation'> selector='#cri-dialog-body details'> = locator('#cri-dialog-body details')
+E    +        where locator = <Page url='http://127.0.0.1:50671/crypto-r4.html?lang=en#scenarios?h=30&panel=scenario%3Acontinuation'>.locator
+_ test_r4_current_idempotent_mutation_keeps_reading_without_another_write[zh-320-save] _
+tests/test_crypto_intelligence_r4_browser.py:2931: in test_r4_current_idempotent_mutation_keeps_reading_without_another_write
+    assert page.locator("#cri-dialog-body details").evaluate("n => n.open")
+E   AssertionError: assert False
+E    +  where False = evaluate('n => n.open')
+E    +    where evaluate = <Locator frame=<Frame name= url='http://127.0.0.1:50671/crypto-r4.html?lang=zh#scenarios?h=30&panel=scenario%3Acontinuation'> selector='#cri-dialog-body details'>.evaluate
+E    +      where <Locator frame=<Frame name= url='http://127.0.0.1:50671/crypto-r4.html?lang=zh#scenarios?h=30&panel=scenario%3Acontinuation'> selector='#cri-dialog-body details'> = locator('#cri-dialog-body details')
+E    +        where locator = <Page url='http://127.0.0.1:50671/crypto-r4.html?lang=zh#scenarios?h=30&panel=scenario%3Acontinuation'>.locator
+_ test_r4_current_idempotent_mutation_keeps_reading_without_another_write[zh-320-remove] _
+tests/test_crypto_intelligence_r4_browser.py:2931: in test_r4_current_idempotent_mutation_keeps_reading_without_another_write
+    assert page.locator("#cri-dialog-body details").evaluate("n => n.open")
+E   AssertionError: assert False
+E    +  where False = evaluate('n => n.open')
+E    +    where evaluate = <Locator frame=<Frame name= url='http://127.0.0.1:50671/crypto-r4.html?lang=zh#scenarios?h=30&panel=scenario%3Acontinuation'> selector='#cri-dialog-body details'>.evaluate
+E    +      where <Locator frame=<Frame name= url='http://127.0.0.1:50671/crypto-r4.html?lang=zh#scenarios?h=30&panel=scenario%3Acontinuation'> selector='#cri-dialog-body details'> = locator('#cri-dialog-body details')
+E    +        where locator = <Page url='http://127.0.0.1:50671/crypto-r4.html?lang=zh#scenarios?h=30&panel=scenario%3Acontinuation'>.locator
+_ test_r4_current_mutation_uses_fresh_reading_when_history_persistence_fails[en-390] _
+tests/test_crypto_intelligence_r4_browser.py:2995: in test_r4_current_mutation_uses_fresh_reading_when_history_persistence_fails
+    assert page.locator("#cri-dialog-body details").evaluate("n => n.open")
+E   AssertionError: assert False
+E    +  where False = evaluate('n => n.open')
+E    +    where evaluate = <Locator frame=<Frame name= url='http://127.0.0.1:50671/crypto-r4.html?lang=en#scenarios?h=30&panel=scenario%3Acontinuation'> selector='#cri-dialog-body details'>.evaluate
+E    +      where <Locator frame=<Frame name= url='http://127.0.0.1:50671/crypto-r4.html?lang=en#scenarios?h=30&panel=scenario%3Acontinuation'> selector='#cri-dialog-body details'> = locator('#cri-dialog-body details')
+E    +        where locator = <Page url='http://127.0.0.1:50671/crypto-r4.html?lang=en#scenarios?h=30&panel=scenario%3Acontinuation'>.locator
+_ test_r4_current_mutation_uses_fresh_reading_when_history_persistence_fails[zh-320] _
+tests/test_crypto_intelligence_r4_browser.py:2995: in test_r4_current_mutation_uses_fresh_reading_when_history_persistence_fails
+    assert page.locator("#cri-dialog-body details").evaluate("n => n.open")
+E   AssertionError: assert False
+E    +  where False = evaluate('n => n.open')
+E    +    where evaluate = <Locator frame=<Frame name= url='http://127.0.0.1:50671/crypto-r4.html?lang=zh#scenarios?h=30&panel=scenario%3Acontinuation'> selector='#cri-dialog-body details'>.evaluate
+E    +      where <Locator frame=<Frame name= url='http://127.0.0.1:50671/crypto-r4.html?lang=zh#scenarios?h=30&panel=scenario%3Acontinuation'> selector='#cri-dialog-body details'> = locator('#cri-dialog-body details')
+E    +        where locator = <Page url='http://127.0.0.1:50671/crypto-r4.html?lang=zh#scenarios?h=30&panel=scenario%3Acontinuation'>.locator
+_ test_r4_current_mutation_reading_persistence_yields_to_a_newer_choice[focus] _
+tests/test_crypto_intelligence_r4_browser.py:3035: in test_r4_current_mutation_reading_persistence_yields_to_a_newer_choice
+    assert page.locator("#cri-dialog-body details").evaluate("n => n.open")
+E   AssertionError: assert False
+E    +  where False = evaluate('n => n.open')
+E    +    where evaluate = <Locator frame=<Frame name= url='http://127.0.0.1:50671/crypto-r4.html?lang=en#scenarios?h=30&panel=scenario%3Acontinuation'> selector='#cri-dialog-body details'>.evaluate
+E    +      where <Locator frame=<Frame name= url='http://127.0.0.1:50671/crypto-r4.html?lang=en#scenarios?h=30&panel=scenario%3Acontinuation'> selector='#cri-dialog-body details'> = locator('#cri-dialog-body details')
+E    +        where locator = <Page url='http://127.0.0.1:50671/crypto-r4.html?lang=en#scenarios?h=30&panel=scenario%3Acontinuation'>.locator
+_ test_r4_current_mutation_reading_persistence_yields_to_a_newer_choice[navigation] _
+tests/test_crypto_intelligence_r4_browser.py:3033: in test_r4_current_mutation_reading_persistence_yields_to_a_newer_choice
+    assert page.locator("#cri-dialog-body details").evaluate("n => n.open")
+E   AssertionError: assert False
+E    +  where False = evaluate('n => n.open')
+E    +    where evaluate = <Locator frame=<Frame name= url='http://127.0.0.1:50671/crypto-r4.html?lang=en#scenarios?h=30&panel=scenario%3Acontinuation'> selector='#cri-dialog-body details'>.evaluate
+E    +      where <Locator frame=<Frame name= url='http://127.0.0.1:50671/crypto-r4.html?lang=en#scenarios?h=30&panel=scenario%3Acontinuation'> selector='#cri-dialog-body details'> = locator('#cri-dialog-body details')
+E    +        where locator = <Page url='http://127.0.0.1:50671/crypto-r4.html?lang=en#scenarios?h=30&panel=scenario%3Acontinuation'>.locator
+_ test_r4_current_mutation_reading_persistence_yields_to_a_newer_choice[history] _
+tests/test_crypto_intelligence_r4_browser.py:3035: in test_r4_current_mutation_reading_persistence_yields_to_a_newer_choice
+    assert page.locator("#cri-dialog-body details").evaluate("n => n.open")
+E   AssertionError: assert False
+E    +  where False = evaluate('n => n.open')
+E    +    where evaluate = <Locator frame=<Frame name= url='http://127.0.0.1:50671/crypto-r4.html?lang=en#scenarios?h=30&panel=scenario%3Acontinuation'> selector='#cri-dialog-body details'>.evaluate
+E    +      where <Locator frame=<Frame name= url='http://127.0.0.1:50671/crypto-r4.html?lang=en#scenarios?h=30&panel=scenario%3Acontinuation'> selector='#cri-dialog-body details'> = locator('#cri-dialog-body details')
+E    +        where locator = <Page url='http://127.0.0.1:50671/crypto-r4.html?lang=en#scenarios?h=30&panel=scenario%3Acontinuation'>.locator
+__ test_r4_current_expired_remove_heading_callback_keeps_its_new_destination ___
+tests/test_crypto_intelligence_r4_browser.py:3060: in test_r4_current_expired_remove_heading_callback_keeps_its_new_destination
+    _wait_drawer(page, "evidence:liquidity_flows", "Evidence behind the view")
+tests/test_crypto_intelligence_r4_browser.py:602: in _wait_drawer
+    page.wait_for_function(
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/sync_api/_generated.py:12761: in wait_for_function
+    self._sync(
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_page.py:1151: in wait_for_function
+    return await self._main_frame.wait_for_function(**locals_to_params(locals()))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_frame.py:940: in wait_for_function
+    await self._channel.send("waitForFunction", self._timeout, params)
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_connection.py:76: in send
+    return await self._connection.wrap_api_call(
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_connection.py:632: in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+E   playwright._impl._errors.TimeoutError: Page.wait_for_function: Timeout 4500ms exceeded.
+_ test_r4_current_mutation_inside_a_render_focus_callback_retains_its_new_intent _
+tests/test_crypto_intelligence_r4_browser.py:3087: in test_r4_current_mutation_inside_a_render_focus_callback_retains_its_new_intent
+    assert page.locator("#cri-dialog-body details").evaluate("n => n.open")
+E   AssertionError: assert False
+E    +  where False = evaluate('n => n.open')
+E    +    where evaluate = <Locator frame=<Frame name= url='http://127.0.0.1:50671/crypto-r4.html?lang=en#scenarios?h=30&panel=scenario%3Acontinuation'> selector='#cri-dialog-body details'>.evaluate
+E    +      where <Locator frame=<Frame name= url='http://127.0.0.1:50671/crypto-r4.html?lang=en#scenarios?h=30&panel=scenario%3Acontinuation'> selector='#cri-dialog-body details'> = locator('#cri-dialog-body details')
+E    +        where locator = <Page url='http://127.0.0.1:50671/crypto-r4.html?lang=en#scenarios?h=30&panel=scenario%3Acontinuation'>.locator
+_ test_r4_current_mutation_yields_its_ui_when_storage_observes_a_new_history_entry[replace-metadata] _
+tests/test_crypto_intelligence_r4_browser.py:3115: in test_r4_current_mutation_yields_its_ui_when_storage_observes_a_new_history_entry
+    assert old.evaluate("n => n.isConnected && document.activeElement===n")
+E   assert False
+E    +  where False = evaluate('n => n.isConnected && document.activeElement===n')
+E    +    where evaluate = <JSHandle preview=JSHandle@<button type="button" class="cri-btn" data-snapshot-action="save" data-drawer-focus="snapshot-save">Save snapshot</button>>.evaluate
+_ test_r4_current_mutation_yields_its_ui_when_storage_observes_a_new_history_entry[push-identical] _
+tests/test_crypto_intelligence_r4_browser.py:3115: in test_r4_current_mutation_yields_its_ui_when_storage_observes_a_new_history_entry
+    assert old.evaluate("n => n.isConnected && document.activeElement===n")
+E   assert False
+E    +  where False = evaluate('n => n.isConnected && document.activeElement===n')
+E    +    where evaluate = <JSHandle preview=JSHandle@<button type="button" class="cri-btn" data-snapshot-action="save" data-drawer-focus="snapshot-save">Save snapshot</button>>.evaluate
+=========================== short test summary info ============================
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_current_confirmed_mutation_preserves_the_reader[en-390-save]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_current_confirmed_mutation_preserves_the_reader[en-390-remove]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_current_confirmed_mutation_preserves_the_reader[en-390-remove-expired]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_current_confirmed_mutation_preserves_the_reader[zh-320-save]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_current_confirmed_mutation_preserves_the_reader[zh-320-remove]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_current_confirmed_mutation_preserves_the_reader[zh-320-remove-expired]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_current_idempotent_mutation_keeps_reading_without_another_write[en-390-save]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_current_idempotent_mutation_keeps_reading_without_another_write[en-390-remove]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_current_idempotent_mutation_keeps_reading_without_another_write[zh-320-save]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_current_idempotent_mutation_keeps_reading_without_another_write[zh-320-remove]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_current_mutation_uses_fresh_reading_when_history_persistence_fails[en-390]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_current_mutation_uses_fresh_reading_when_history_persistence_fails[zh-320]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_current_mutation_reading_persistence_yields_to_a_newer_choice[focus]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_current_mutation_reading_persistence_yields_to_a_newer_choice[navigation]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_current_mutation_reading_persistence_yields_to_a_newer_choice[history]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_current_expired_remove_heading_callback_keeps_its_new_destination
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_current_mutation_inside_a_render_focus_callback_retains_its_new_intent
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_current_mutation_yields_its_ui_when_storage_observes_a_new_history_entry[replace-metadata]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_current_mutation_yields_its_ui_when_storage_observes_a_new_history_entry[push-identical]
+19 failed, 72 passed in 58.32s

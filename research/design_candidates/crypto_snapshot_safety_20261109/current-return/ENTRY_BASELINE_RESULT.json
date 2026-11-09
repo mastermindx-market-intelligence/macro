@@ -1,0 +1,17 @@
+{
+  "command": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_new_current_review_entry_starts_at_its_own_beginning",
+    "--tb=short",
+    "--junitxml=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/current-return-entry-baseline/junit.xml",
+    "--basetemp=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/current-return-entry-baseline/pytest-temp"
+  ],
+  "exit_code": 1,
+  "seconds": 4.254,
+  "source_parent": "bcf8e84957017181dc323ff3c3a9f4b32b218799",
+  "runtime_asset_version": "35617892939a",
+  "test_sha256": "739350df65b10ef86e18b4d4fb1ba9662f366dba8ef29d5dfe85ecf1e12a7dbc"
+}

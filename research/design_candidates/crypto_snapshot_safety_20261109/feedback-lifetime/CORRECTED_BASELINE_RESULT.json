@@ -1,0 +1,28 @@
+{
+  "command": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_feedback_retires_on_task_navigation_and_does_not_return_with_back",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_expired_feedback_space_retires_only_when_the_task_changes",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_close_reopen_never_resurrects_transient_feedback",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_locale_change_retires_old_feedback_and_preserves_the_reader",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_frozen_remove_handoff_survives_but_explicit_retry_retires_it",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_same_url_history_traversal_retires_feedback",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_older_apply_does_not_retire_newer_feedback_from_its_preflight",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_superseded_preflight_cannot_clear_its_newer_navigation_result",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_completion_navigation_retires_feedback_without_a_late_reissue",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_remove_feedback_handoff_cannot_follow_a_retargeted_history_write",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_retired_deadline_cannot_hide_a_new_feedback_message",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_newer_feedback_inside_handoff_history_write_survives_the_older_handoff",
+    "--tb=short",
+    "--junitxml=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/feedback-lifetime-baseline-corrected/junit.xml",
+    "--basetemp=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/feedback-lifetime-baseline-corrected/pytest-temp"
+  ],
+  "exit_code": 1,
+  "seconds": 33.545,
+  "source_parent": "bbfdd6d9d039f4f08e17c6f1e917e535dd4b2ee4",
+  "runtime_asset_version": "4f86c987c57c",
+  "test_sha256": "718302bb87138a5ebefc52d1f1cbd138f4c98962456042d99a5a106fe804ed86"
+}

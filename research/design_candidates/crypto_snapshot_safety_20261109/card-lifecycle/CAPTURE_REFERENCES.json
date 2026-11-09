@@ -1,0 +1,78 @@
+{
+  "selected": {
+    "card-lifecycle-overview-en-390.png": {
+      "bytes": 54161,
+      "sha256": "993953d5ed10a1d88dbd14039e6ced41098c8035286a29c0e492939f6564d559",
+      "blob": "65e140311e72891841d8b7c7d75a6cf011ee3ec7",
+      "width": 358,
+      "height": 497,
+      "native_path": "/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/card-lifecycle-harness-final/captures/card-lifecycle-overview-en-390.png",
+      "prior_capture_exact": true,
+      "repository_path": "captures/card-lifecycle-overview-en-390.png",
+      "visually_inspected": true
+    },
+    "card-lifecycle-overview-zh-320.png": {
+      "bytes": 50150,
+      "sha256": "420273505407d46c7f99ead9094bd80e592c425e3fc65d054b94662c3a08a768",
+      "blob": "5587d64a1894950a39494f7c9998dc590af971e1",
+      "width": 288,
+      "height": 509,
+      "native_path": "/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/card-lifecycle-final/captures/card-lifecycle-overview-zh-320.png",
+      "repository_path": "captures/card-lifecycle-overview-zh-320.png",
+      "visually_inspected": true
+    },
+    "card-lifecycle-scenarios-en-390.png": {
+      "bytes": 102905,
+      "sha256": "6d09418c65259b52b5af920b11e64a4f0a09b4e047da95140e467690d9125626",
+      "blob": "c57d416a037f24e3e0a1d745f399f67212a56ff0",
+      "width": 358,
+      "height": 886,
+      "native_path": "/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/card-lifecycle-harness-final/captures/card-lifecycle-scenarios-en-390.png",
+      "prior_capture_exact": false,
+      "repository_path": "captures/card-lifecycle-scenarios-en-390.png",
+      "visually_inspected": true
+    },
+    "card-lifecycle-scenarios-zh-320.png": {
+      "bytes": 82279,
+      "sha256": "f966038c792de300b925f87c81ef4f795f8f805c745831b124105c3dfc74b95d",
+      "blob": "963f3756a131e26e40a174856161f9f56ad71a5b",
+      "width": 288,
+      "height": 921,
+      "native_path": "/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/card-lifecycle-final/captures/card-lifecycle-scenarios-zh-320.png",
+      "repository_path": "captures/card-lifecycle-scenarios-zh-320.png",
+      "visually_inspected": true
+    },
+    "card-lifecycle-future-en-390.png": {
+      "bytes": 25515,
+      "sha256": "4e2ba722ef6be5164355d7777bac3fe6b840d01fb57293f8577b1d040846e4d1",
+      "blob": "6369a709615f6fa0f6a18436df997e2ad418340a",
+      "width": 358,
+      "height": 269,
+      "native_path": "/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/card-lifecycle-harness-final/captures/card-lifecycle-future-en-390.png",
+      "repository_path": "captures/card-lifecycle-future-en-390.png",
+      "visually_inspected": true
+    },
+    "card-lifecycle-missing-expiry-zh-320.png": {
+      "bytes": 22174,
+      "sha256": "73b3238037ca5b1986a3e41b83b9e2e35332ce29125eecf572abe9fb8bd74161",
+      "blob": "7147aef82787932c23bfcdd86f45144dbb660d55",
+      "width": 288,
+      "height": 295,
+      "native_path": "/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/card-lifecycle-harness-final/captures/card-lifecycle-missing-expiry-zh-320.png",
+      "repository_path": "captures/card-lifecycle-missing-expiry-zh-320.png",
+      "visually_inspected": true
+    }
+  },
+  "initial_distinct": {
+    "name": "initial-card-lifecycle-scenarios-en-390.png",
+    "repository_path": "captures/initial-card-lifecycle-scenarios-en-390.png",
+    "bytes": 102906,
+    "sha256": "718ef80382dd3584569339036b7268aeccbe4d73957fb0f5486bd72f94e96725",
+    "blob": "0683a2a0ef94df90efbc8108f9c503c95e087597",
+    "width": 358,
+    "height": 886,
+    "native_path": "/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/card-lifecycle-final/captures/card-lifecycle-scenarios-en-390.png",
+    "visually_inspected": true
+  },
+  "note": "Six selected captures plus one distinct initial full-group capture. The repeated compact EN crop is exact; the full-group EN crop differs. Existing fixed launcher remains in full-group crops."
+}

@@ -1,0 +1,316 @@
+FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF.....                            [100%]
+=================================== FAILURES ===================================
+_ test_r4_card_expiry_uses_the_complete_utc_expiry_day[2026-10-23T23:59:59.999Z-False-en-390] _
+tests/test_crypto_intelligence_r4_browser.py:2271: in test_r4_card_expiry_uses_the_complete_utc_expiry_day
+    assert card.locator("[data-card-window]").count() == 1
+E   assert 0 == 1
+E    +  where 0 = count()
+E    +    where count = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=en#scenarios?h=7'> selector='[data-case-ho...inuation"], [data-case-horizon="7"] .cri-case:has([data-open="scenario:continuation"]) >> nth=0 >> [data-card-window]'>.count
+E    +      where <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=en#scenarios?h=7'> selector='[data-case-ho...inuation"], [data-case-horizon="7"] .cri-case:has([data-open="scenario:continuation"]) >> nth=0 >> [data-card-window]'> = locator('[data-card-window]')
+E    +        where locator = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=en#scenarios?h=7'> selector='[data-case-ho...ta-open="scenario:continuation"], [data-case-horizon="7"] .cri-case:has([data-open="scenario:continuation"]) >> nth=0'>.locator
+_ test_r4_card_expiry_uses_the_complete_utc_expiry_day[2026-10-23T23:59:59.999Z-False-zh-320] _
+tests/test_crypto_intelligence_r4_browser.py:2271: in test_r4_card_expiry_uses_the_complete_utc_expiry_day
+    assert card.locator("[data-card-window]").count() == 1
+E   assert 0 == 1
+E    +  where 0 = count()
+E    +    where count = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=zh#scenarios?h=7'> selector='[data-case-ho...inuation"], [data-case-horizon="7"] .cri-case:has([data-open="scenario:continuation"]) >> nth=0 >> [data-card-window]'>.count
+E    +      where <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=zh#scenarios?h=7'> selector='[data-case-ho...inuation"], [data-case-horizon="7"] .cri-case:has([data-open="scenario:continuation"]) >> nth=0 >> [data-card-window]'> = locator('[data-card-window]')
+E    +        where locator = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=zh#scenarios?h=7'> selector='[data-case-ho...ta-open="scenario:continuation"], [data-case-horizon="7"] .cri-case:has([data-open="scenario:continuation"]) >> nth=0'>.locator
+_ test_r4_card_expiry_uses_the_complete_utc_expiry_day[2026-10-24T23:59:59.999Z-False-en-390] _
+tests/test_crypto_intelligence_r4_browser.py:2271: in test_r4_card_expiry_uses_the_complete_utc_expiry_day
+    assert card.locator("[data-card-window]").count() == 1
+E   assert 0 == 1
+E    +  where 0 = count()
+E    +    where count = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=en#scenarios?h=7'> selector='[data-case-ho...inuation"], [data-case-horizon="7"] .cri-case:has([data-open="scenario:continuation"]) >> nth=0 >> [data-card-window]'>.count
+E    +      where <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=en#scenarios?h=7'> selector='[data-case-ho...inuation"], [data-case-horizon="7"] .cri-case:has([data-open="scenario:continuation"]) >> nth=0 >> [data-card-window]'> = locator('[data-card-window]')
+E    +        where locator = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=en#scenarios?h=7'> selector='[data-case-ho...ta-open="scenario:continuation"], [data-case-horizon="7"] .cri-case:has([data-open="scenario:continuation"]) >> nth=0'>.locator
+_ test_r4_card_expiry_uses_the_complete_utc_expiry_day[2026-10-24T23:59:59.999Z-False-zh-320] _
+tests/test_crypto_intelligence_r4_browser.py:2271: in test_r4_card_expiry_uses_the_complete_utc_expiry_day
+    assert card.locator("[data-card-window]").count() == 1
+E   assert 0 == 1
+E    +  where 0 = count()
+E    +    where count = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=zh#scenarios?h=7'> selector='[data-case-ho...inuation"], [data-case-horizon="7"] .cri-case:has([data-open="scenario:continuation"]) >> nth=0 >> [data-card-window]'>.count
+E    +      where <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=zh#scenarios?h=7'> selector='[data-case-ho...inuation"], [data-case-horizon="7"] .cri-case:has([data-open="scenario:continuation"]) >> nth=0 >> [data-card-window]'> = locator('[data-card-window]')
+E    +        where locator = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=zh#scenarios?h=7'> selector='[data-case-ho...ta-open="scenario:continuation"], [data-case-horizon="7"] .cri-case:has([data-open="scenario:continuation"]) >> nth=0'>.locator
+_ test_r4_card_expiry_uses_the_complete_utc_expiry_day[2026-10-25T00:00:00Z-True-en-390] _
+tests/test_crypto_intelligence_r4_browser.py:2269: in test_r4_card_expiry_uses_the_complete_utc_expiry_day
+    assert ("Expired · historical context only" if lang == "en" else "已到期 · 仅供历史参考") in visible.inner_text()
+E   assert 'Expired · historical context only' in 'PRICE OBSERVATION · 2026-10-17\nUpside test\nPrice condition pending\nNEXT CHECK\n\nFirst watch for a daily close above $86,507.00.\n\nInspect scenario'
+E    +  where 'PRICE OBSERVATION · 2026-10-17\nUpside test\nPrice condition pending\nNEXT CHECK\n\nFirst watch for a daily close above $86,507.00.\n\nInspect scenario' = inner_text()
+E    +    where inner_text = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=en#scenarios?h=7'> selector='[data-view="scenarios"] .cri-case >> nth=0'>.inner_text
+_ test_r4_card_expiry_uses_the_complete_utc_expiry_day[2026-10-25T00:00:00Z-True-zh-320] _
+tests/test_crypto_intelligence_r4_browser.py:2269: in test_r4_card_expiry_uses_the_complete_utc_expiry_day
+    assert ("Expired · historical context only" if lang == "en" else "已到期 · 仅供历史参考") in visible.inner_text()
+E   assert '已到期 · 仅供历史参考' in '价格观测 · 2026-10-17\n上行检验\n价格条件尚未满足\n下一步检查\n\n先关注日收盘能否到达$86,507.00上方。\n\n查看情景'
+E    +  where '价格观测 · 2026-10-17\n上行检验\n价格条件尚未满足\n下一步检查\n\n先关注日收盘能否到达$86,507.00上方。\n\n查看情景' = inner_text()
+E    +    where inner_text = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=zh#scenarios?h=7'> selector='[data-view="scenarios"] .cri-case >> nth=0'>.inner_text
+__ test_r4_card_instances_keep_their_own_horizon_and_readable_layout[en-390] ___
+tests/test_crypto_intelligence_r4_browser.py:2297: in test_r4_card_instances_keep_their_own_horizon_and_readable_layout
+    assert card.locator("[data-card-window]").count() == 1
+E   assert 0 == 1
+E    +  where 0 = count()
+E    +    where count = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=en#scenarios?h=7'> selector='[data-case-ho...inuation"], [data-case-horizon="7"] .cri-case:has([data-open="scenario:continuation"]) >> nth=0 >> [data-card-window]'>.count
+E    +      where <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=en#scenarios?h=7'> selector='[data-case-ho...inuation"], [data-case-horizon="7"] .cri-case:has([data-open="scenario:continuation"]) >> nth=0 >> [data-card-window]'> = locator('[data-card-window]')
+E    +        where locator = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=en#scenarios?h=7'> selector='[data-case-ho...ta-open="scenario:continuation"], [data-case-horizon="7"] .cri-case:has([data-open="scenario:continuation"]) >> nth=0'>.locator
+__ test_r4_card_instances_keep_their_own_horizon_and_readable_layout[zh-320] ___
+tests/test_crypto_intelligence_r4_browser.py:2297: in test_r4_card_instances_keep_their_own_horizon_and_readable_layout
+    assert card.locator("[data-card-window]").count() == 1
+E   assert 0 == 1
+E    +  where 0 = count()
+E    +    where count = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=zh#scenarios?h=7'> selector='[data-case-ho...inuation"], [data-case-horizon="7"] .cri-case:has([data-open="scenario:continuation"]) >> nth=0 >> [data-card-window]'>.count
+E    +      where <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=zh#scenarios?h=7'> selector='[data-case-ho...inuation"], [data-case-horizon="7"] .cri-case:has([data-open="scenario:continuation"]) >> nth=0 >> [data-card-window]'> = locator('[data-card-window]')
+E    +        where locator = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=zh#scenarios?h=7'> selector='[data-case-ho...ta-open="scenario:continuation"], [data-case-horizon="7"] .cri-case:has([data-open="scenario:continuation"]) >> nth=0'>.locator
+_ test_r4_card_unqualified_dates_keep_recorded_instructions[missing-expiry-en-390] _
+tests/test_crypto_intelligence_r4_browser.py:2344: in test_r4_card_unqualified_dates_keep_recorded_instructions
+    assert expected in visible.inner_text()
+E   assert 'Expiry status unavailable' in 'PRICE OBSERVATION · 2026-10-17\nUpside test\nPrice condition pending\nNEXT CHECK\n\nFirst watch for a daily close above $86,507.00.\n\nInspect scenario'
+E    +  where 'PRICE OBSERVATION · 2026-10-17\nUpside test\nPrice condition pending\nNEXT CHECK\n\nFirst watch for a daily close above $86,507.00.\n\nInspect scenario' = inner_text()
+E    +    where inner_text = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=en#scenarios?h=7'> selector='[data-view="scenarios"] .cri-case >> nth=0'>.inner_text
+_ test_r4_card_unqualified_dates_keep_recorded_instructions[missing-expiry-zh-320] _
+tests/test_crypto_intelligence_r4_browser.py:2344: in test_r4_card_unqualified_dates_keep_recorded_instructions
+    assert expected in visible.inner_text()
+E   assert '到期状态暂无' in '价格观测 · 2026-10-17\n上行检验\n价格条件尚未满足\n下一步检查\n\n先关注日收盘能否到达$86,507.00上方。\n\n查看情景'
+E    +  where '价格观测 · 2026-10-17\n上行检验\n价格条件尚未满足\n下一步检查\n\n先关注日收盘能否到达$86,507.00上方。\n\n查看情景' = inner_text()
+E    +    where inner_text = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=zh#scenarios?h=7'> selector='[data-view="scenarios"] .cri-case >> nth=0'>.inner_text
+_ test_r4_card_unqualified_dates_keep_recorded_instructions[impossible-expiry-en-390] _
+tests/test_crypto_intelligence_r4_browser.py:2344: in test_r4_card_unqualified_dates_keep_recorded_instructions
+    assert expected in visible.inner_text()
+E   assert 'Expiry status unavailable' in 'PRICE OBSERVATION · 2026-10-17\nUpside test\nPrice condition pending\nNEXT CHECK\n\nFirst watch for a daily close above $86,507.00.\n\nInspect scenario'
+E    +  where 'PRICE OBSERVATION · 2026-10-17\nUpside test\nPrice condition pending\nNEXT CHECK\n\nFirst watch for a daily close above $86,507.00.\n\nInspect scenario' = inner_text()
+E    +    where inner_text = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=en#scenarios?h=7'> selector='[data-view="scenarios"] .cri-case >> nth=0'>.inner_text
+_ test_r4_card_unqualified_dates_keep_recorded_instructions[impossible-expiry-zh-320] _
+tests/test_crypto_intelligence_r4_browser.py:2344: in test_r4_card_unqualified_dates_keep_recorded_instructions
+    assert expected in visible.inner_text()
+E   assert '到期状态暂无' in '价格观测 · 2026-10-17\n上行检验\n价格条件尚未满足\n下一步检查\n\n先关注日收盘能否到达$86,507.00上方。\n\n查看情景'
+E    +  where '价格观测 · 2026-10-17\n上行检验\n价格条件尚未满足\n下一步检查\n\n先关注日收盘能否到达$86,507.00上方。\n\n查看情景' = inner_text()
+E    +    where inner_text = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=zh#scenarios?h=7'> selector='[data-view="scenarios"] .cri-case >> nth=0'>.inner_text
+_ test_r4_card_unqualified_dates_keep_recorded_instructions[impossible-cutoff-en-390] _
+tests/test_crypto_intelligence_r4_browser.py:2344: in test_r4_card_unqualified_dates_keep_recorded_instructions
+    assert expected in visible.inner_text()
+E   assert 'Expiry status unavailable' in 'PRICE OBSERVATION · 2026-02-30\nUpside test\nPrice condition pending\nNEXT CHECK\n\nFirst watch for a daily close above $86,507.00.\n\nInspect scenario'
+E    +  where 'PRICE OBSERVATION · 2026-02-30\nUpside test\nPrice condition pending\nNEXT CHECK\n\nFirst watch for a daily close above $86,507.00.\n\nInspect scenario' = inner_text()
+E    +    where inner_text = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=en#scenarios?h=7'> selector='[data-view="scenarios"] .cri-case >> nth=0'>.inner_text
+_ test_r4_card_unqualified_dates_keep_recorded_instructions[impossible-cutoff-zh-320] _
+tests/test_crypto_intelligence_r4_browser.py:2344: in test_r4_card_unqualified_dates_keep_recorded_instructions
+    assert expected in visible.inner_text()
+E   assert '到期状态暂无' in '价格观测 · 2026-02-30\n上行检验\n价格条件尚未满足\n下一步检查\n\n先关注日收盘能否到达$86,507.00上方。\n\n查看情景'
+E    +  where '价格观测 · 2026-02-30\n上行检验\n价格条件尚未满足\n下一步检查\n\n先关注日收盘能否到达$86,507.00上方。\n\n查看情景' = inner_text()
+E    +    where inner_text = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=zh#scenarios?h=7'> selector='[data-view="scenarios"] .cri-case >> nth=0'>.inner_text
+_ test_r4_card_unqualified_dates_keep_recorded_instructions[missing-cutoff-en-390] _
+tests/test_crypto_intelligence_r4_browser.py:2344: in test_r4_card_unqualified_dates_keep_recorded_instructions
+    assert expected in visible.inner_text()
+E   assert 'Expiry status unavailable' in 'PRICE OBSERVATION ·\nUpside test\nPrice condition pending\nNEXT CHECK\n\nFirst watch for a daily close above $86,507.00.\n\nInspect scenario'
+E    +  where 'PRICE OBSERVATION ·\nUpside test\nPrice condition pending\nNEXT CHECK\n\nFirst watch for a daily close above $86,507.00.\n\nInspect scenario' = inner_text()
+E    +    where inner_text = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=en#scenarios?h=7'> selector='[data-view="scenarios"] .cri-case >> nth=0'>.inner_text
+_ test_r4_card_unqualified_dates_keep_recorded_instructions[missing-cutoff-zh-320] _
+tests/test_crypto_intelligence_r4_browser.py:2344: in test_r4_card_unqualified_dates_keep_recorded_instructions
+    assert expected in visible.inner_text()
+E   assert '到期状态暂无' in '价格观测 ·\n上行检验\n价格条件尚未满足\n下一步检查\n\n先关注日收盘能否到达$86,507.00上方。\n\n查看情景'
+E    +  where '价格观测 ·\n上行检验\n价格条件尚未满足\n下一步检查\n\n先关注日收盘能否到达$86,507.00上方。\n\n查看情景' = inner_text()
+E    +    where inner_text = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=zh#scenarios?h=7'> selector='[data-view="scenarios"] .cri-case >> nth=0'>.inner_text
+__ test_r4_card_unqualified_dates_keep_recorded_instructions[reversed-en-390] __
+tests/test_crypto_intelligence_r4_browser.py:2344: in test_r4_card_unqualified_dates_keep_recorded_instructions
+    assert expected in visible.inner_text()
+E   assert 'Expiry status unavailable' in 'PRICE OBSERVATION · 2026-10-17\nUpside test\nPrice condition pending\nNEXT CHECK\n\nFirst watch for a daily close above $86,507.00.\n\nInspect scenario'
+E    +  where 'PRICE OBSERVATION · 2026-10-17\nUpside test\nPrice condition pending\nNEXT CHECK\n\nFirst watch for a daily close above $86,507.00.\n\nInspect scenario' = inner_text()
+E    +    where inner_text = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=en#scenarios?h=7'> selector='[data-view="scenarios"] .cri-case >> nth=0'>.inner_text
+__ test_r4_card_unqualified_dates_keep_recorded_instructions[reversed-zh-320] __
+tests/test_crypto_intelligence_r4_browser.py:2344: in test_r4_card_unqualified_dates_keep_recorded_instructions
+    assert expected in visible.inner_text()
+E   assert '到期状态暂无' in '价格观测 · 2026-10-17\n上行检验\n价格条件尚未满足\n下一步检查\n\n先关注日收盘能否到达$86,507.00上方。\n\n查看情景'
+E    +  where '价格观测 · 2026-10-17\n上行检验\n价格条件尚未满足\n下一步检查\n\n先关注日收盘能否到达$86,507.00上方。\n\n查看情景' = inner_text()
+E    +    where inner_text = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=zh#scenarios?h=7'> selector='[data-view="scenarios"] .cri-case >> nth=0'>.inner_text
+___ test_r4_card_unqualified_dates_keep_recorded_instructions[future-en-390] ___
+tests/test_crypto_intelligence_r4_browser.py:2344: in test_r4_card_unqualified_dates_keep_recorded_instructions
+    assert expected in visible.inner_text()
+E   assert 'Future-dated observation' in 'PRICE OBSERVATION · 2026-11-01\nUpside test\nPrice condition pending\nNEXT CHECK\n\nFirst watch for a daily close above $86,507.00.\n\nInspect scenario'
+E    +  where 'PRICE OBSERVATION · 2026-11-01\nUpside test\nPrice condition pending\nNEXT CHECK\n\nFirst watch for a daily close above $86,507.00.\n\nInspect scenario' = inner_text()
+E    +    where inner_text = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=en#scenarios?h=7'> selector='[data-view="scenarios"] .cri-case >> nth=0'>.inner_text
+___ test_r4_card_unqualified_dates_keep_recorded_instructions[future-zh-320] ___
+tests/test_crypto_intelligence_r4_browser.py:2344: in test_r4_card_unqualified_dates_keep_recorded_instructions
+    assert expected in visible.inner_text()
+E   assert '观测日期超前' in '价格观测 · 2026-11-01\n上行检验\n价格条件尚未满足\n下一步检查\n\n先关注日收盘能否到达$86,507.00上方。\n\n查看情景'
+E    +  where '价格观测 · 2026-11-01\n上行检验\n价格条件尚未满足\n下一步检查\n\n先关注日收盘能否到达$86,507.00上方。\n\n查看情景' = inner_text()
+E    +    where inner_text = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=zh#scenarios?h=7'> selector='[data-view="scenarios"] .cri-case >> nth=0'>.inner_text
+_ test_r4_card_supplied_text_and_evidence_are_qualified_independently[progress-missing-en-390] _
+tests/test_crypto_intelligence_r4_browser.py:2374: in test_r4_card_supplied_text_and_evidence_are_qualified_independently
+    assert card.locator("[data-card-progress-value]").count() == 1
+E   assert 0 == 1
+E    +  where 0 = count()
+E    +    where count = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=en#scenarios?h=7'> selector='[data-case-ho..."], [data-case-horizon="7"] .cri-case:has([data-open="scenario:continuation"]) >> nth=0 >> [data-card-progress-value]'>.count
+E    +      where <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=en#scenarios?h=7'> selector='[data-case-ho..."], [data-case-horizon="7"] .cri-case:has([data-open="scenario:continuation"]) >> nth=0 >> [data-card-progress-value]'> = locator('[data-card-progress-value]')
+E    +        where locator = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=en#scenarios?h=7'> selector='[data-case-ho...ta-open="scenario:continuation"], [data-case-horizon="7"] .cri-case:has([data-open="scenario:continuation"]) >> nth=0'>.locator
+_ test_r4_card_supplied_text_and_evidence_are_qualified_independently[progress-missing-zh-320] _
+tests/test_crypto_intelligence_r4_browser.py:2374: in test_r4_card_supplied_text_and_evidence_are_qualified_independently
+    assert card.locator("[data-card-progress-value]").count() == 1
+E   assert 0 == 1
+E    +  where 0 = count()
+E    +    where count = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=zh#scenarios?h=7'> selector='[data-case-ho..."], [data-case-horizon="7"] .cri-case:has([data-open="scenario:continuation"]) >> nth=0 >> [data-card-progress-value]'>.count
+E    +      where <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=zh#scenarios?h=7'> selector='[data-case-ho..."], [data-case-horizon="7"] .cri-case:has([data-open="scenario:continuation"]) >> nth=0 >> [data-card-progress-value]'> = locator('[data-card-progress-value]')
+E    +        where locator = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=zh#scenarios?h=7'> selector='[data-case-ho...ta-open="scenario:continuation"], [data-case-horizon="7"] .cri-case:has([data-open="scenario:continuation"]) >> nth=0'>.locator
+_ test_r4_card_supplied_text_and_evidence_are_qualified_independently[progress-blank-en-390] _
+tests/test_crypto_intelligence_r4_browser.py:2374: in test_r4_card_supplied_text_and_evidence_are_qualified_independently
+    assert card.locator("[data-card-progress-value]").count() == 1
+E   assert 0 == 1
+E    +  where 0 = count()
+E    +    where count = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=en#scenarios?h=7'> selector='[data-case-ho..."], [data-case-horizon="7"] .cri-case:has([data-open="scenario:continuation"]) >> nth=0 >> [data-card-progress-value]'>.count
+E    +      where <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=en#scenarios?h=7'> selector='[data-case-ho..."], [data-case-horizon="7"] .cri-case:has([data-open="scenario:continuation"]) >> nth=0 >> [data-card-progress-value]'> = locator('[data-card-progress-value]')
+E    +        where locator = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=en#scenarios?h=7'> selector='[data-case-ho...ta-open="scenario:continuation"], [data-case-horizon="7"] .cri-case:has([data-open="scenario:continuation"]) >> nth=0'>.locator
+_ test_r4_card_supplied_text_and_evidence_are_qualified_independently[progress-blank-zh-320] _
+tests/test_crypto_intelligence_r4_browser.py:2374: in test_r4_card_supplied_text_and_evidence_are_qualified_independently
+    assert card.locator("[data-card-progress-value]").count() == 1
+E   assert 0 == 1
+E    +  where 0 = count()
+E    +    where count = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=zh#scenarios?h=7'> selector='[data-case-ho..."], [data-case-horizon="7"] .cri-case:has([data-open="scenario:continuation"]) >> nth=0 >> [data-card-progress-value]'>.count
+E    +      where <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=zh#scenarios?h=7'> selector='[data-case-ho..."], [data-case-horizon="7"] .cri-case:has([data-open="scenario:continuation"]) >> nth=0 >> [data-card-progress-value]'> = locator('[data-card-progress-value]')
+E    +        where locator = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=zh#scenarios?h=7'> selector='[data-case-ho...ta-open="scenario:continuation"], [data-case-horizon="7"] .cri-case:has([data-open="scenario:continuation"]) >> nth=0'>.locator
+_ test_r4_card_supplied_text_and_evidence_are_qualified_independently[progress-object-en-390] _
+tests/test_crypto_intelligence_r4_browser.py:2374: in test_r4_card_supplied_text_and_evidence_are_qualified_independently
+    assert card.locator("[data-card-progress-value]").count() == 1
+E   assert 0 == 1
+E    +  where 0 = count()
+E    +    where count = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=en#scenarios?h=7'> selector='[data-case-ho..."], [data-case-horizon="7"] .cri-case:has([data-open="scenario:continuation"]) >> nth=0 >> [data-card-progress-value]'>.count
+E    +      where <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=en#scenarios?h=7'> selector='[data-case-ho..."], [data-case-horizon="7"] .cri-case:has([data-open="scenario:continuation"]) >> nth=0 >> [data-card-progress-value]'> = locator('[data-card-progress-value]')
+E    +        where locator = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=en#scenarios?h=7'> selector='[data-case-ho...ta-open="scenario:continuation"], [data-case-horizon="7"] .cri-case:has([data-open="scenario:continuation"]) >> nth=0'>.locator
+_ test_r4_card_supplied_text_and_evidence_are_qualified_independently[progress-object-zh-320] _
+tests/test_crypto_intelligence_r4_browser.py:2374: in test_r4_card_supplied_text_and_evidence_are_qualified_independently
+    assert card.locator("[data-card-progress-value]").count() == 1
+E   assert 0 == 1
+E    +  where 0 = count()
+E    +    where count = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=zh#scenarios?h=7'> selector='[data-case-ho..."], [data-case-horizon="7"] .cri-case:has([data-open="scenario:continuation"]) >> nth=0 >> [data-card-progress-value]'>.count
+E    +      where <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=zh#scenarios?h=7'> selector='[data-case-ho..."], [data-case-horizon="7"] .cri-case:has([data-open="scenario:continuation"]) >> nth=0 >> [data-card-progress-value]'> = locator('[data-card-progress-value]')
+E    +        where locator = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=zh#scenarios?h=7'> selector='[data-case-ho...ta-open="scenario:continuation"], [data-case-horizon="7"] .cri-case:has([data-open="scenario:continuation"]) >> nth=0'>.locator
+_ test_r4_card_supplied_text_and_evidence_are_qualified_independently[next-missing-en-390] _
+tests/test_crypto_intelligence_r4_browser.py:2374: in test_r4_card_supplied_text_and_evidence_are_qualified_independently
+    assert card.locator("[data-card-progress-value]").count() == 1
+E   assert 0 == 1
+E    +  where 0 = count()
+E    +    where count = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=en#scenarios?h=7'> selector='[data-case-ho..."], [data-case-horizon="7"] .cri-case:has([data-open="scenario:continuation"]) >> nth=0 >> [data-card-progress-value]'>.count
+E    +      where <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=en#scenarios?h=7'> selector='[data-case-ho..."], [data-case-horizon="7"] .cri-case:has([data-open="scenario:continuation"]) >> nth=0 >> [data-card-progress-value]'> = locator('[data-card-progress-value]')
+E    +        where locator = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=en#scenarios?h=7'> selector='[data-case-ho...ta-open="scenario:continuation"], [data-case-horizon="7"] .cri-case:has([data-open="scenario:continuation"]) >> nth=0'>.locator
+_ test_r4_card_supplied_text_and_evidence_are_qualified_independently[next-missing-zh-320] _
+tests/test_crypto_intelligence_r4_browser.py:2374: in test_r4_card_supplied_text_and_evidence_are_qualified_independently
+    assert card.locator("[data-card-progress-value]").count() == 1
+E   assert 0 == 1
+E    +  where 0 = count()
+E    +    where count = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=zh#scenarios?h=7'> selector='[data-case-ho..."], [data-case-horizon="7"] .cri-case:has([data-open="scenario:continuation"]) >> nth=0 >> [data-card-progress-value]'>.count
+E    +      where <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=zh#scenarios?h=7'> selector='[data-case-ho..."], [data-case-horizon="7"] .cri-case:has([data-open="scenario:continuation"]) >> nth=0 >> [data-card-progress-value]'> = locator('[data-card-progress-value]')
+E    +        where locator = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=zh#scenarios?h=7'> selector='[data-case-ho...ta-open="scenario:continuation"], [data-case-horizon="7"] .cri-case:has([data-open="scenario:continuation"]) >> nth=0'>.locator
+_ test_r4_card_supplied_text_and_evidence_are_qualified_independently[next-object-en-390] _
+tests/test_crypto_intelligence_r4_browser.py:2374: in test_r4_card_supplied_text_and_evidence_are_qualified_independently
+    assert card.locator("[data-card-progress-value]").count() == 1
+E   assert 0 == 1
+E    +  where 0 = count()
+E    +    where count = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=en#scenarios?h=7'> selector='[data-case-ho..."], [data-case-horizon="7"] .cri-case:has([data-open="scenario:continuation"]) >> nth=0 >> [data-card-progress-value]'>.count
+E    +      where <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=en#scenarios?h=7'> selector='[data-case-ho..."], [data-case-horizon="7"] .cri-case:has([data-open="scenario:continuation"]) >> nth=0 >> [data-card-progress-value]'> = locator('[data-card-progress-value]')
+E    +        where locator = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=en#scenarios?h=7'> selector='[data-case-ho...ta-open="scenario:continuation"], [data-case-horizon="7"] .cri-case:has([data-open="scenario:continuation"]) >> nth=0'>.locator
+_ test_r4_card_supplied_text_and_evidence_are_qualified_independently[next-object-zh-320] _
+tests/test_crypto_intelligence_r4_browser.py:2374: in test_r4_card_supplied_text_and_evidence_are_qualified_independently
+    assert card.locator("[data-card-progress-value]").count() == 1
+E   assert 0 == 1
+E    +  where 0 = count()
+E    +    where count = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=zh#scenarios?h=7'> selector='[data-case-ho..."], [data-case-horizon="7"] .cri-case:has([data-open="scenario:continuation"]) >> nth=0 >> [data-card-progress-value]'>.count
+E    +      where <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=zh#scenarios?h=7'> selector='[data-case-ho..."], [data-case-horizon="7"] .cri-case:has([data-open="scenario:continuation"]) >> nth=0 >> [data-card-progress-value]'> = locator('[data-card-progress-value]')
+E    +        where locator = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=zh#scenarios?h=7'> selector='[data-case-ho...ta-open="scenario:continuation"], [data-case-horizon="7"] .cri-case:has([data-open="scenario:continuation"]) >> nth=0'>.locator
+_ test_r4_card_supplied_text_and_evidence_are_qualified_independently[insufficient-en-390] _
+tests/test_crypto_intelligence_r4_browser.py:2374: in test_r4_card_supplied_text_and_evidence_are_qualified_independently
+    assert card.locator("[data-card-progress-value]").count() == 1
+E   assert 0 == 1
+E    +  where 0 = count()
+E    +    where count = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=en#scenarios?h=7'> selector='[data-case-ho..."], [data-case-horizon="7"] .cri-case:has([data-open="scenario:continuation"]) >> nth=0 >> [data-card-progress-value]'>.count
+E    +      where <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=en#scenarios?h=7'> selector='[data-case-ho..."], [data-case-horizon="7"] .cri-case:has([data-open="scenario:continuation"]) >> nth=0 >> [data-card-progress-value]'> = locator('[data-card-progress-value]')
+E    +        where locator = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=en#scenarios?h=7'> selector='[data-case-ho...ta-open="scenario:continuation"], [data-case-horizon="7"] .cri-case:has([data-open="scenario:continuation"]) >> nth=0'>.locator
+_ test_r4_card_supplied_text_and_evidence_are_qualified_independently[insufficient-zh-320] _
+tests/test_crypto_intelligence_r4_browser.py:2374: in test_r4_card_supplied_text_and_evidence_are_qualified_independently
+    assert card.locator("[data-card-progress-value]").count() == 1
+E   assert 0 == 1
+E    +  where 0 = count()
+E    +    where count = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=zh#scenarios?h=7'> selector='[data-case-ho..."], [data-case-horizon="7"] .cri-case:has([data-open="scenario:continuation"]) >> nth=0 >> [data-card-progress-value]'>.count
+E    +      where <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=zh#scenarios?h=7'> selector='[data-case-ho..."], [data-case-horizon="7"] .cri-case:has([data-open="scenario:continuation"]) >> nth=0 >> [data-card-progress-value]'> = locator('[data-card-progress-value]')
+E    +        where locator = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=zh#scenarios?h=7'> selector='[data-case-ho...ta-open="scenario:continuation"], [data-case-horizon="7"] .cri-case:has([data-open="scenario:continuation"]) >> nth=0'>.locator
+_ test_r4_card_supplied_text_and_evidence_are_qualified_independently[unavailable-en-390] _
+tests/test_crypto_intelligence_r4_browser.py:2374: in test_r4_card_supplied_text_and_evidence_are_qualified_independently
+    assert card.locator("[data-card-progress-value]").count() == 1
+E   assert 0 == 1
+E    +  where 0 = count()
+E    +    where count = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=en#scenarios?h=7'> selector='[data-case-ho..."], [data-case-horizon="7"] .cri-case:has([data-open="scenario:continuation"]) >> nth=0 >> [data-card-progress-value]'>.count
+E    +      where <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=en#scenarios?h=7'> selector='[data-case-ho..."], [data-case-horizon="7"] .cri-case:has([data-open="scenario:continuation"]) >> nth=0 >> [data-card-progress-value]'> = locator('[data-card-progress-value]')
+E    +        where locator = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=en#scenarios?h=7'> selector='[data-case-ho...ta-open="scenario:continuation"], [data-case-horizon="7"] .cri-case:has([data-open="scenario:continuation"]) >> nth=0'>.locator
+_ test_r4_card_supplied_text_and_evidence_are_qualified_independently[unavailable-zh-320] _
+tests/test_crypto_intelligence_r4_browser.py:2374: in test_r4_card_supplied_text_and_evidence_are_qualified_independently
+    assert card.locator("[data-card-progress-value]").count() == 1
+E   assert 0 == 1
+E    +  where 0 = count()
+E    +    where count = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=zh#scenarios?h=7'> selector='[data-case-ho..."], [data-case-horizon="7"] .cri-case:has([data-open="scenario:continuation"]) >> nth=0 >> [data-card-progress-value]'>.count
+E    +      where <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=zh#scenarios?h=7'> selector='[data-case-ho..."], [data-case-horizon="7"] .cri-case:has([data-open="scenario:continuation"]) >> nth=0 >> [data-card-progress-value]'> = locator('[data-card-progress-value]')
+E    +        where locator = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=zh#scenarios?h=7'> selector='[data-case-ho...ta-open="scenario:continuation"], [data-case-horizon="7"] .cri-case:has([data-open="scenario:continuation"]) >> nth=0'>.locator
+____ test_r4_card_static_reading_is_time_neutral_and_typed[retained-en-390] ____
+tests/test_crypto_intelligence_r4_browser.py:2405: in test_r4_card_static_reading_is_time_neutral_and_typed
+    assert ("Recorded next check" if lang == "en" else "当时的下一步检查") in text
+E   AssertionError: assert 'Recorded next check' in 'PRICE OBSERVATION · 2026-10-17\nUpside test\nPrice condition pending\nNEXT CHECK\n\nFirst watch for a daily close above $86,507.00.\n\nInspect scenario'
+____ test_r4_card_static_reading_is_time_neutral_and_typed[retained-zh-320] ____
+tests/test_crypto_intelligence_r4_browser.py:2405: in test_r4_card_static_reading_is_time_neutral_and_typed
+    assert ("Recorded next check" if lang == "en" else "当时的下一步检查") in text
+E   AssertionError: assert '当时的下一步检查' in '价格观测 · 2026-10-17\n上行检验\n价格条件尚未满足\n下一步检查\n\n先关注日收盘能否到达$86,507.00上方。\n\n查看情景'
+_ test_r4_card_static_reading_is_time_neutral_and_typed[progress-object-en-390] _
+tests/test_crypto_intelligence_r4_browser.py:2405: in test_r4_card_static_reading_is_time_neutral_and_typed
+    assert ("Recorded next check" if lang == "en" else "当时的下一步检查") in text
+E   assert 'Recorded next check' in "PRICE OBSERVATION · 2026-10-17\nUpside test\n{'not': 'display text'}\nNEXT CHECK\n\nFirst watch for a daily close above $86,507.00.\n\nInspect scenario"
+_ test_r4_card_static_reading_is_time_neutral_and_typed[progress-object-zh-320] _
+tests/test_crypto_intelligence_r4_browser.py:2405: in test_r4_card_static_reading_is_time_neutral_and_typed
+    assert ("Recorded next check" if lang == "en" else "当时的下一步检查") in text
+E   assert '当时的下一步检查' in "价格观测 · 2026-10-17\n上行检验\n{'not': 'display text'}\n下一步检查\n\n先关注日收盘能否到达$86,507.00上方。\n\n查看情景"
+___ test_r4_card_refresh_keeps_focus_and_inspects_the_original_case[en-390] ____
+tests/test_crypto_intelligence_r4_browser.py:2420: in test_r4_card_refresh_keeps_focus_and_inspects_the_original_case
+    assert ("Expired" if lang == "en" else "已到期") in opener.inner_text()
+E   assert 'Expired' in 'Downside test\nPrice condition met · demand unconfirmed\n\nWatch for a reclaim of $81,566.00 and check fresh demand evidence.'
+E    +  where 'Downside test\nPrice condition met · demand unconfirmed\n\nWatch for a reclaim of $81,566.00 and check fresh demand evidence.' = inner_text()
+E    +    where inner_text = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=en#overview?h=7&window=30&keep=proof'> selector='[data-view="overview"] [data-case-horizon="7"] [data-open="scenario:failure"]'>.inner_text
+___ test_r4_card_refresh_keeps_focus_and_inspects_the_original_case[zh-320] ____
+tests/test_crypto_intelligence_r4_browser.py:2420: in test_r4_card_refresh_keeps_focus_and_inspects_the_original_case
+    assert ("Expired" if lang == "en" else "已到期") in opener.inner_text()
+E   assert '已到期' in '下行检验\n价格条件已满足 · 需求尚未确认\n\n关注能否收复$81,566.00，并检查最新需求证据。'
+E    +  where '下行检验\n价格条件已满足 · 需求尚未确认\n\n关注能否收复$81,566.00，并检查最新需求证据。' = inner_text()
+E    +    where inner_text = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=zh#overview?h=7&window=30&keep=proof'> selector='[data-view="overview"] [data-case-horizon="7"] [data-open="scenario:failure"]'>.inner_text
+=========================== short test summary info ============================
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_card_expiry_uses_the_complete_utc_expiry_day[2026-10-23T23:59:59.999Z-False-en-390]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_card_expiry_uses_the_complete_utc_expiry_day[2026-10-23T23:59:59.999Z-False-zh-320]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_card_expiry_uses_the_complete_utc_expiry_day[2026-10-24T23:59:59.999Z-False-en-390]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_card_expiry_uses_the_complete_utc_expiry_day[2026-10-24T23:59:59.999Z-False-zh-320]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_card_expiry_uses_the_complete_utc_expiry_day[2026-10-25T00:00:00Z-True-en-390]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_card_expiry_uses_the_complete_utc_expiry_day[2026-10-25T00:00:00Z-True-zh-320]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_card_instances_keep_their_own_horizon_and_readable_layout[en-390]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_card_instances_keep_their_own_horizon_and_readable_layout[zh-320]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_card_unqualified_dates_keep_recorded_instructions[missing-expiry-en-390]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_card_unqualified_dates_keep_recorded_instructions[missing-expiry-zh-320]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_card_unqualified_dates_keep_recorded_instructions[impossible-expiry-en-390]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_card_unqualified_dates_keep_recorded_instructions[impossible-expiry-zh-320]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_card_unqualified_dates_keep_recorded_instructions[impossible-cutoff-en-390]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_card_unqualified_dates_keep_recorded_instructions[impossible-cutoff-zh-320]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_card_unqualified_dates_keep_recorded_instructions[missing-cutoff-en-390]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_card_unqualified_dates_keep_recorded_instructions[missing-cutoff-zh-320]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_card_unqualified_dates_keep_recorded_instructions[reversed-en-390]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_card_unqualified_dates_keep_recorded_instructions[reversed-zh-320]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_card_unqualified_dates_keep_recorded_instructions[future-en-390]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_card_unqualified_dates_keep_recorded_instructions[future-zh-320]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_card_supplied_text_and_evidence_are_qualified_independently[progress-missing-en-390]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_card_supplied_text_and_evidence_are_qualified_independently[progress-missing-zh-320]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_card_supplied_text_and_evidence_are_qualified_independently[progress-blank-en-390]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_card_supplied_text_and_evidence_are_qualified_independently[progress-blank-zh-320]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_card_supplied_text_and_evidence_are_qualified_independently[progress-object-en-390]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_card_supplied_text_and_evidence_are_qualified_independently[progress-object-zh-320]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_card_supplied_text_and_evidence_are_qualified_independently[next-missing-en-390]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_card_supplied_text_and_evidence_are_qualified_independently[next-missing-zh-320]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_card_supplied_text_and_evidence_are_qualified_independently[next-object-en-390]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_card_supplied_text_and_evidence_are_qualified_independently[next-object-zh-320]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_card_supplied_text_and_evidence_are_qualified_independently[insufficient-en-390]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_card_supplied_text_and_evidence_are_qualified_independently[insufficient-zh-320]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_card_supplied_text_and_evidence_are_qualified_independently[unavailable-en-390]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_card_supplied_text_and_evidence_are_qualified_independently[unavailable-zh-320]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_card_static_reading_is_time_neutral_and_typed[retained-en-390]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_card_static_reading_is_time_neutral_and_typed[retained-zh-320]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_card_static_reading_is_time_neutral_and_typed[progress-object-en-390]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_card_static_reading_is_time_neutral_and_typed[progress-object-zh-320]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_card_refresh_keeps_focus_and_inspects_the_original_case[en-390]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_card_refresh_keeps_focus_and_inspects_the_original_case[zh-320]
+40 failed, 5 passed in 29.11s

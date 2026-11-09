@@ -1,0 +1,4046 @@
+{
+  "baseline": {
+    "three-en-320.json": {
+      "viewport": 320,
+      "left": 20,
+      "right": 300,
+      "clientWidth": 280,
+      "scrollWidth": 490,
+      "headers": [
+        {
+          "text": "SOL",
+          "boxes": [
+            {
+              "left": 162,
+              "right": 187.265625,
+              "width": 25.265625,
+              "top": 326.6875,
+              "height": 15
+            }
+          ],
+          "fontSize": "12.5px",
+          "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+          "cellWidth": 120,
+          "paddingLeft": "12px",
+          "paddingRight": "12px"
+        },
+        {
+          "text": "ETH",
+          "boxes": [
+            {
+              "left": 282,
+              "right": 307.328125,
+              "width": 25.328125,
+              "top": 326.6875,
+              "height": 15
+            }
+          ],
+          "fontSize": "12.5px",
+          "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+          "cellWidth": 120,
+          "paddingLeft": "12px",
+          "paddingRight": "12px"
+        },
+        {
+          "text": "BTC",
+          "boxes": [
+            {
+              "left": 402,
+              "right": 427.390625,
+              "width": 25.390625,
+              "top": 326.6875,
+              "height": 15
+            }
+          ],
+          "fontSize": "12.5px",
+          "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+          "cellWidth": 120,
+          "paddingLeft": "12px",
+          "paddingRight": "12px"
+        }
+      ],
+      "rows": [
+        [
+          {
+            "text": "2026-10-15",
+            "boxes": [
+              {
+                "left": 162,
+                "right": 236.421875,
+                "width": 74.421875,
+                "top": 370.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 120,
+            "paddingLeft": "12px",
+            "paddingRight": "12px"
+          },
+          {
+            "text": "2026-10-15",
+            "boxes": [
+              {
+                "left": 282,
+                "right": 356.421875,
+                "width": 74.421875,
+                "top": 370.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 120,
+            "paddingLeft": "12px",
+            "paddingRight": "12px"
+          },
+          {
+            "text": "2026-10-15",
+            "boxes": [
+              {
+                "left": 402,
+                "right": 476.421875,
+                "width": 74.421875,
+                "top": 370.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 120,
+            "paddingLeft": "12px",
+            "paddingRight": "12px"
+          }
+        ],
+        [
+          {
+            "text": "Unavailable",
+            "boxes": [
+              {
+                "left": 162,
+                "right": 229.328125,
+                "width": 67.328125,
+                "top": 429.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 120,
+            "paddingLeft": "12px",
+            "paddingRight": "12px"
+          },
+          {
+            "text": "0.0%",
+            "boxes": [
+              {
+                "left": 282,
+                "right": 312.890625,
+                "width": 30.890625,
+                "top": 429.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 120,
+            "paddingLeft": "12px",
+            "paddingRight": "12px"
+          },
+          {
+            "text": "Unavailable",
+            "boxes": [
+              {
+                "left": 402,
+                "right": 469.328125,
+                "width": 67.328125,
+                "top": 429.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 120,
+            "paddingLeft": "12px",
+            "paddingRight": "12px"
+          }
+        ],
+        [
+          {
+            "text": "+7.6%",
+            "boxes": [
+              {
+                "left": 162,
+                "right": 200.71875,
+                "width": 38.71875,
+                "top": 492.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 120,
+            "paddingLeft": "12px",
+            "paddingRight": "12px"
+          },
+          {
+            "text": "+0.7%",
+            "boxes": [
+              {
+                "left": 282,
+                "right": 320.71875,
+                "width": 38.71875,
+                "top": 492.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 120,
+            "paddingLeft": "12px",
+            "paddingRight": "12px"
+          },
+          {
+            "text": "+0.7%",
+            "boxes": [
+              {
+                "left": 402,
+                "right": 440.71875,
+                "width": 38.71875,
+                "top": 492.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 120,
+            "paddingLeft": "12px",
+            "paddingRight": "12px"
+          }
+        ],
+        [
+          {
+            "text": "Advancing",
+            "boxes": [
+              {
+                "left": 162,
+                "right": 223.125,
+                "width": 61.125,
+                "top": 536.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 120,
+            "paddingLeft": "12px",
+            "paddingRight": "12px"
+          },
+          {
+            "text": "Advancing",
+            "boxes": [
+              {
+                "left": 282,
+                "right": 343.125,
+                "width": 61.125,
+                "top": 536.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 120,
+            "paddingLeft": "12px",
+            "paddingRight": "12px"
+          },
+          {
+            "text": "Advancing",
+            "boxes": [
+              {
+                "left": 402,
+                "right": 463.125,
+                "width": 61.125,
+                "top": 536.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 120,
+            "paddingLeft": "12px",
+            "paddingRight": "12px"
+          }
+        ],
+        [
+          {
+            "text": "Stressed",
+            "boxes": [
+              {
+                "left": 162,
+                "right": 213.71875,
+                "width": 51.71875,
+                "top": 580.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 120,
+            "paddingLeft": "12px",
+            "paddingRight": "12px"
+          },
+          {
+            "text": "Stressed",
+            "boxes": [
+              {
+                "left": 282,
+                "right": 333.71875,
+                "width": 51.71875,
+                "top": 580.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 120,
+            "paddingLeft": "12px",
+            "paddingRight": "12px"
+          },
+          {
+            "text": "Stressed",
+            "boxes": [
+              {
+                "left": 402,
+                "right": 453.71875,
+                "width": 51.71875,
+                "top": 580.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 120,
+            "paddingLeft": "12px",
+            "paddingRight": "12px"
+          }
+        ]
+      ],
+      "measureWidth": 130,
+      "bodyWidth": 320
+    },
+    "three-zh-320.json": {
+      "viewport": 320,
+      "left": 20,
+      "right": 300,
+      "clientWidth": 280,
+      "scrollWidth": 490,
+      "headers": [
+        {
+          "text": "SOL",
+          "boxes": [
+            {
+              "left": 162,
+              "right": 187.265625,
+              "width": 25.265625,
+              "top": 233.6875,
+              "height": 15
+            }
+          ],
+          "fontSize": "12.5px",
+          "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+          "cellWidth": 120,
+          "paddingLeft": "12px",
+          "paddingRight": "12px"
+        },
+        {
+          "text": "ETH",
+          "boxes": [
+            {
+              "left": 282,
+              "right": 307.328125,
+              "width": 25.328125,
+              "top": 233.6875,
+              "height": 15
+            }
+          ],
+          "fontSize": "12.5px",
+          "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+          "cellWidth": 120,
+          "paddingLeft": "12px",
+          "paddingRight": "12px"
+        },
+        {
+          "text": "BTC",
+          "boxes": [
+            {
+              "left": 402,
+              "right": 427.390625,
+              "width": 25.390625,
+              "top": 233.6875,
+              "height": 15
+            }
+          ],
+          "fontSize": "12.5px",
+          "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+          "cellWidth": 120,
+          "paddingLeft": "12px",
+          "paddingRight": "12px"
+        }
+      ],
+      "rows": [
+        [
+          {
+            "text": "2026-10-15",
+            "boxes": [
+              {
+                "left": 162,
+                "right": 236.421875,
+                "width": 74.421875,
+                "top": 279.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 120,
+            "paddingLeft": "12px",
+            "paddingRight": "12px"
+          },
+          {
+            "text": "2026-10-15",
+            "boxes": [
+              {
+                "left": 282,
+                "right": 356.421875,
+                "width": 74.421875,
+                "top": 279.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 120,
+            "paddingLeft": "12px",
+            "paddingRight": "12px"
+          },
+          {
+            "text": "2026-10-15",
+            "boxes": [
+              {
+                "left": 402,
+                "right": 476.421875,
+                "width": 74.421875,
+                "top": 279.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 120,
+            "paddingLeft": "12px",
+            "paddingRight": "12px"
+          }
+        ],
+        [
+          {
+            "text": "暂无",
+            "boxes": [
+              {
+                "left": 162,
+                "right": 187.515625,
+                "width": 25.515625,
+                "top": 326.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 120,
+            "paddingLeft": "12px",
+            "paddingRight": "12px"
+          },
+          {
+            "text": "0.0%",
+            "boxes": [
+              {
+                "left": 282,
+                "right": 312.890625,
+                "width": 30.890625,
+                "top": 325.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 120,
+            "paddingLeft": "12px",
+            "paddingRight": "12px"
+          },
+          {
+            "text": "暂无",
+            "boxes": [
+              {
+                "left": 402,
+                "right": 427.515625,
+                "width": 25.515625,
+                "top": 326.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 120,
+            "paddingLeft": "12px",
+            "paddingRight": "12px"
+          }
+        ],
+        [
+          {
+            "text": "+7.6%",
+            "boxes": [
+              {
+                "left": 162,
+                "right": 200.71875,
+                "width": 38.71875,
+                "top": 392.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 120,
+            "paddingLeft": "12px",
+            "paddingRight": "12px"
+          },
+          {
+            "text": "+0.7%",
+            "boxes": [
+              {
+                "left": 282,
+                "right": 320.71875,
+                "width": 38.71875,
+                "top": 392.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 120,
+            "paddingLeft": "12px",
+            "paddingRight": "12px"
+          },
+          {
+            "text": "+0.7%",
+            "boxes": [
+              {
+                "left": 402,
+                "right": 440.71875,
+                "width": 38.71875,
+                "top": 392.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 120,
+            "paddingLeft": "12px",
+            "paddingRight": "12px"
+          }
+        ],
+        [
+          {
+            "text": "上行",
+            "boxes": [
+              {
+                "left": 162,
+                "right": 187.515625,
+                "width": 25.515625,
+                "top": 439.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 120,
+            "paddingLeft": "12px",
+            "paddingRight": "12px"
+          },
+          {
+            "text": "上行",
+            "boxes": [
+              {
+                "left": 282,
+                "right": 307.515625,
+                "width": 25.515625,
+                "top": 439.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 120,
+            "paddingLeft": "12px",
+            "paddingRight": "12px"
+          },
+          {
+            "text": "上行",
+            "boxes": [
+              {
+                "left": 402,
+                "right": 427.515625,
+                "width": 25.515625,
+                "top": 439.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 120,
+            "paddingLeft": "12px",
+            "paddingRight": "12px"
+          }
+        ],
+        [
+          {
+            "text": "承压",
+            "boxes": [
+              {
+                "left": 162,
+                "right": 187.515625,
+                "width": 25.515625,
+                "top": 485.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 120,
+            "paddingLeft": "12px",
+            "paddingRight": "12px"
+          },
+          {
+            "text": "承压",
+            "boxes": [
+              {
+                "left": 282,
+                "right": 307.515625,
+                "width": 25.515625,
+                "top": 485.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 120,
+            "paddingLeft": "12px",
+            "paddingRight": "12px"
+          },
+          {
+            "text": "承压",
+            "boxes": [
+              {
+                "left": 402,
+                "right": 427.515625,
+                "width": 25.515625,
+                "top": 485.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 120,
+            "paddingLeft": "12px",
+            "paddingRight": "12px"
+          }
+        ]
+      ],
+      "measureWidth": 130,
+      "bodyWidth": 320
+    },
+    "two-en-320.json": {
+      "viewport": 320,
+      "left": 20,
+      "right": 300,
+      "clientWidth": 280,
+      "scrollWidth": 370,
+      "headers": [
+        {
+          "text": "ETH",
+          "boxes": [
+            {
+              "left": 162,
+              "right": 187.328125,
+              "width": 25.328125,
+              "top": 326.6875,
+              "height": 15
+            }
+          ],
+          "fontSize": "12.5px",
+          "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+          "cellWidth": 120,
+          "paddingLeft": "12px",
+          "paddingRight": "12px"
+        },
+        {
+          "text": "SOL",
+          "boxes": [
+            {
+              "left": 282,
+              "right": 307.265625,
+              "width": 25.265625,
+              "top": 326.6875,
+              "height": 15
+            }
+          ],
+          "fontSize": "12.5px",
+          "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+          "cellWidth": 120,
+          "paddingLeft": "12px",
+          "paddingRight": "12px"
+        }
+      ],
+      "rows": [
+        [
+          {
+            "text": "2026-10-15",
+            "boxes": [
+              {
+                "left": 162,
+                "right": 236.421875,
+                "width": 74.421875,
+                "top": 370.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 120,
+            "paddingLeft": "12px",
+            "paddingRight": "12px"
+          },
+          {
+            "text": "2026-10-15",
+            "boxes": [
+              {
+                "left": 282,
+                "right": 356.421875,
+                "width": 74.421875,
+                "top": 370.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 120,
+            "paddingLeft": "12px",
+            "paddingRight": "12px"
+          }
+        ],
+        [
+          {
+            "text": "+2.6%",
+            "boxes": [
+              {
+                "left": 162,
+                "right": 200.71875,
+                "width": 38.71875,
+                "top": 429.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 120,
+            "paddingLeft": "12px",
+            "paddingRight": "12px"
+          },
+          {
+            "text": "+8.8%",
+            "boxes": [
+              {
+                "left": 282,
+                "right": 320.71875,
+                "width": 38.71875,
+                "top": 429.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 120,
+            "paddingLeft": "12px",
+            "paddingRight": "12px"
+          }
+        ],
+        [
+          {
+            "text": "+0.7%",
+            "boxes": [
+              {
+                "left": 162,
+                "right": 200.71875,
+                "width": 38.71875,
+                "top": 488.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 120,
+            "paddingLeft": "12px",
+            "paddingRight": "12px"
+          },
+          {
+            "text": "+7.6%",
+            "boxes": [
+              {
+                "left": 282,
+                "right": 320.71875,
+                "width": 38.71875,
+                "top": 488.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 120,
+            "paddingLeft": "12px",
+            "paddingRight": "12px"
+          }
+        ],
+        [
+          {
+            "text": "Advancing",
+            "boxes": [
+              {
+                "left": 162,
+                "right": 223.125,
+                "width": 61.125,
+                "top": 532.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 120,
+            "paddingLeft": "12px",
+            "paddingRight": "12px"
+          },
+          {
+            "text": "Advancing",
+            "boxes": [
+              {
+                "left": 282,
+                "right": 343.125,
+                "width": 61.125,
+                "top": 532.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 120,
+            "paddingLeft": "12px",
+            "paddingRight": "12px"
+          }
+        ],
+        [
+          {
+            "text": "Stressed",
+            "boxes": [
+              {
+                "left": 162,
+                "right": 213.71875,
+                "width": 51.71875,
+                "top": 576.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 120,
+            "paddingLeft": "12px",
+            "paddingRight": "12px"
+          },
+          {
+            "text": "Stressed",
+            "boxes": [
+              {
+                "left": 282,
+                "right": 333.71875,
+                "width": 51.71875,
+                "top": 576.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 120,
+            "paddingLeft": "12px",
+            "paddingRight": "12px"
+          }
+        ]
+      ],
+      "measureWidth": 130,
+      "bodyWidth": 320
+    },
+    "two-en-390.json": {
+      "viewport": 390,
+      "left": 20,
+      "right": 370,
+      "clientWidth": 350,
+      "scrollWidth": 370,
+      "headers": [
+        {
+          "text": "ETH",
+          "boxes": [
+            {
+              "left": 162,
+              "right": 187.328125,
+              "width": 25.328125,
+              "top": 310.6875,
+              "height": 15
+            }
+          ],
+          "fontSize": "12.5px",
+          "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+          "cellWidth": 120,
+          "paddingLeft": "12px",
+          "paddingRight": "12px"
+        },
+        {
+          "text": "SOL",
+          "boxes": [
+            {
+              "left": 282,
+              "right": 307.265625,
+              "width": 25.265625,
+              "top": 310.6875,
+              "height": 15
+            }
+          ],
+          "fontSize": "12.5px",
+          "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+          "cellWidth": 120,
+          "paddingLeft": "12px",
+          "paddingRight": "12px"
+        }
+      ],
+      "rows": [
+        [
+          {
+            "text": "2026-10-15",
+            "boxes": [
+              {
+                "left": 162,
+                "right": 236.421875,
+                "width": 74.421875,
+                "top": 354.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 120,
+            "paddingLeft": "12px",
+            "paddingRight": "12px"
+          },
+          {
+            "text": "2026-10-15",
+            "boxes": [
+              {
+                "left": 282,
+                "right": 356.421875,
+                "width": 74.421875,
+                "top": 354.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 120,
+            "paddingLeft": "12px",
+            "paddingRight": "12px"
+          }
+        ],
+        [
+          {
+            "text": "+2.6%",
+            "boxes": [
+              {
+                "left": 162,
+                "right": 200.71875,
+                "width": 38.71875,
+                "top": 413.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 120,
+            "paddingLeft": "12px",
+            "paddingRight": "12px"
+          },
+          {
+            "text": "+8.8%",
+            "boxes": [
+              {
+                "left": 282,
+                "right": 320.71875,
+                "width": 38.71875,
+                "top": 413.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 120,
+            "paddingLeft": "12px",
+            "paddingRight": "12px"
+          }
+        ],
+        [
+          {
+            "text": "+0.7%",
+            "boxes": [
+              {
+                "left": 162,
+                "right": 200.71875,
+                "width": 38.71875,
+                "top": 472.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 120,
+            "paddingLeft": "12px",
+            "paddingRight": "12px"
+          },
+          {
+            "text": "+7.6%",
+            "boxes": [
+              {
+                "left": 282,
+                "right": 320.71875,
+                "width": 38.71875,
+                "top": 472.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 120,
+            "paddingLeft": "12px",
+            "paddingRight": "12px"
+          }
+        ],
+        [
+          {
+            "text": "Advancing",
+            "boxes": [
+              {
+                "left": 162,
+                "right": 223.125,
+                "width": 61.125,
+                "top": 516.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 120,
+            "paddingLeft": "12px",
+            "paddingRight": "12px"
+          },
+          {
+            "text": "Advancing",
+            "boxes": [
+              {
+                "left": 282,
+                "right": 343.125,
+                "width": 61.125,
+                "top": 516.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 120,
+            "paddingLeft": "12px",
+            "paddingRight": "12px"
+          }
+        ],
+        [
+          {
+            "text": "Stressed",
+            "boxes": [
+              {
+                "left": 162,
+                "right": 213.71875,
+                "width": 51.71875,
+                "top": 560.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 120,
+            "paddingLeft": "12px",
+            "paddingRight": "12px"
+          },
+          {
+            "text": "Stressed",
+            "boxes": [
+              {
+                "left": 282,
+                "right": 333.71875,
+                "width": 51.71875,
+                "top": 560.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 120,
+            "paddingLeft": "12px",
+            "paddingRight": "12px"
+          }
+        ]
+      ],
+      "measureWidth": 130,
+      "bodyWidth": 390
+    },
+    "two-relative-en-320.json": {
+      "viewport": 320,
+      "left": 20,
+      "right": 300,
+      "clientWidth": 280,
+      "scrollWidth": 370,
+      "headers": [
+        {
+          "text": "ETH",
+          "boxes": [
+            {
+              "left": 162,
+              "right": 187.328125,
+              "width": 25.328125,
+              "top": 326.6875,
+              "height": 15
+            }
+          ],
+          "fontSize": "12.5px",
+          "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+          "cellWidth": 120,
+          "paddingLeft": "12px",
+          "paddingRight": "12px"
+        },
+        {
+          "text": "SOL",
+          "boxes": [
+            {
+              "left": 282,
+              "right": 307.265625,
+              "width": 25.265625,
+              "top": 326.6875,
+              "height": 15
+            }
+          ],
+          "fontSize": "12.5px",
+          "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+          "cellWidth": 120,
+          "paddingLeft": "12px",
+          "paddingRight": "12px"
+        }
+      ],
+      "rows": [
+        [
+          {
+            "text": "2026-10-15",
+            "boxes": [
+              {
+                "left": 162,
+                "right": 236.421875,
+                "width": 74.421875,
+                "top": 370.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 120,
+            "paddingLeft": "12px",
+            "paddingRight": "12px"
+          },
+          {
+            "text": "2026-10-15",
+            "boxes": [
+              {
+                "left": 282,
+                "right": 356.421875,
+                "width": 74.421875,
+                "top": 370.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 120,
+            "paddingLeft": "12px",
+            "paddingRight": "12px"
+          }
+        ],
+        [
+          {
+            "text": "0.0%",
+            "boxes": [
+              {
+                "left": 162,
+                "right": 192.890625,
+                "width": 30.890625,
+                "top": 429.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 120,
+            "paddingLeft": "12px",
+            "paddingRight": "12px"
+          },
+          {
+            "text": "Unavailable",
+            "boxes": [
+              {
+                "left": 282,
+                "right": 349.328125,
+                "width": 67.328125,
+                "top": 429.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 120,
+            "paddingLeft": "12px",
+            "paddingRight": "12px"
+          }
+        ],
+        [
+          {
+            "text": "+0.7%",
+            "boxes": [
+              {
+                "left": 162,
+                "right": 200.71875,
+                "width": 38.71875,
+                "top": 492.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 120,
+            "paddingLeft": "12px",
+            "paddingRight": "12px"
+          },
+          {
+            "text": "+7.6%",
+            "boxes": [
+              {
+                "left": 282,
+                "right": 320.71875,
+                "width": 38.71875,
+                "top": 492.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 120,
+            "paddingLeft": "12px",
+            "paddingRight": "12px"
+          }
+        ],
+        [
+          {
+            "text": "Advancing",
+            "boxes": [
+              {
+                "left": 162,
+                "right": 223.125,
+                "width": 61.125,
+                "top": 536.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 120,
+            "paddingLeft": "12px",
+            "paddingRight": "12px"
+          },
+          {
+            "text": "Advancing",
+            "boxes": [
+              {
+                "left": 282,
+                "right": 343.125,
+                "width": 61.125,
+                "top": 536.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 120,
+            "paddingLeft": "12px",
+            "paddingRight": "12px"
+          }
+        ],
+        [
+          {
+            "text": "Stressed",
+            "boxes": [
+              {
+                "left": 162,
+                "right": 213.71875,
+                "width": 51.71875,
+                "top": 580.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 120,
+            "paddingLeft": "12px",
+            "paddingRight": "12px"
+          },
+          {
+            "text": "Stressed",
+            "boxes": [
+              {
+                "left": 282,
+                "right": 333.71875,
+                "width": 51.71875,
+                "top": 580.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 120,
+            "paddingLeft": "12px",
+            "paddingRight": "12px"
+          }
+        ]
+      ],
+      "measureWidth": 130,
+      "bodyWidth": 320
+    },
+    "two-relative-zh-320.json": {
+      "viewport": 320,
+      "left": 20,
+      "right": 300,
+      "clientWidth": 280,
+      "scrollWidth": 370,
+      "headers": [
+        {
+          "text": "ETH",
+          "boxes": [
+            {
+              "left": 162,
+              "right": 187.328125,
+              "width": 25.328125,
+              "top": 233.6875,
+              "height": 15
+            }
+          ],
+          "fontSize": "12.5px",
+          "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+          "cellWidth": 120,
+          "paddingLeft": "12px",
+          "paddingRight": "12px"
+        },
+        {
+          "text": "SOL",
+          "boxes": [
+            {
+              "left": 282,
+              "right": 307.265625,
+              "width": 25.265625,
+              "top": 233.6875,
+              "height": 15
+            }
+          ],
+          "fontSize": "12.5px",
+          "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+          "cellWidth": 120,
+          "paddingLeft": "12px",
+          "paddingRight": "12px"
+        }
+      ],
+      "rows": [
+        [
+          {
+            "text": "2026-10-15",
+            "boxes": [
+              {
+                "left": 162,
+                "right": 236.421875,
+                "width": 74.421875,
+                "top": 279.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 120,
+            "paddingLeft": "12px",
+            "paddingRight": "12px"
+          },
+          {
+            "text": "2026-10-15",
+            "boxes": [
+              {
+                "left": 282,
+                "right": 356.421875,
+                "width": 74.421875,
+                "top": 279.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 120,
+            "paddingLeft": "12px",
+            "paddingRight": "12px"
+          }
+        ],
+        [
+          {
+            "text": "0.0%",
+            "boxes": [
+              {
+                "left": 162,
+                "right": 192.890625,
+                "width": 30.890625,
+                "top": 325.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 120,
+            "paddingLeft": "12px",
+            "paddingRight": "12px"
+          },
+          {
+            "text": "暂无",
+            "boxes": [
+              {
+                "left": 282,
+                "right": 307.515625,
+                "width": 25.515625,
+                "top": 326.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 120,
+            "paddingLeft": "12px",
+            "paddingRight": "12px"
+          }
+        ],
+        [
+          {
+            "text": "+0.7%",
+            "boxes": [
+              {
+                "left": 162,
+                "right": 200.71875,
+                "width": 38.71875,
+                "top": 392.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 120,
+            "paddingLeft": "12px",
+            "paddingRight": "12px"
+          },
+          {
+            "text": "+7.6%",
+            "boxes": [
+              {
+                "left": 282,
+                "right": 320.71875,
+                "width": 38.71875,
+                "top": 392.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 120,
+            "paddingLeft": "12px",
+            "paddingRight": "12px"
+          }
+        ],
+        [
+          {
+            "text": "上行",
+            "boxes": [
+              {
+                "left": 162,
+                "right": 187.515625,
+                "width": 25.515625,
+                "top": 439.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 120,
+            "paddingLeft": "12px",
+            "paddingRight": "12px"
+          },
+          {
+            "text": "上行",
+            "boxes": [
+              {
+                "left": 282,
+                "right": 307.515625,
+                "width": 25.515625,
+                "top": 439.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 120,
+            "paddingLeft": "12px",
+            "paddingRight": "12px"
+          }
+        ],
+        [
+          {
+            "text": "承压",
+            "boxes": [
+              {
+                "left": 162,
+                "right": 187.515625,
+                "width": 25.515625,
+                "top": 485.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 120,
+            "paddingLeft": "12px",
+            "paddingRight": "12px"
+          },
+          {
+            "text": "承压",
+            "boxes": [
+              {
+                "left": 282,
+                "right": 307.515625,
+                "width": 25.515625,
+                "top": 485.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 120,
+            "paddingLeft": "12px",
+            "paddingRight": "12px"
+          }
+        ]
+      ],
+      "measureWidth": 130,
+      "bodyWidth": 320
+    },
+    "two-zh-320.json": {
+      "viewport": 320,
+      "left": 20,
+      "right": 300,
+      "clientWidth": 280,
+      "scrollWidth": 370,
+      "headers": [
+        {
+          "text": "ETH",
+          "boxes": [
+            {
+              "left": 162,
+              "right": 187.328125,
+              "width": 25.328125,
+              "top": 233.6875,
+              "height": 15
+            }
+          ],
+          "fontSize": "12.5px",
+          "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+          "cellWidth": 120,
+          "paddingLeft": "12px",
+          "paddingRight": "12px"
+        },
+        {
+          "text": "SOL",
+          "boxes": [
+            {
+              "left": 282,
+              "right": 307.265625,
+              "width": 25.265625,
+              "top": 233.6875,
+              "height": 15
+            }
+          ],
+          "fontSize": "12.5px",
+          "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+          "cellWidth": 120,
+          "paddingLeft": "12px",
+          "paddingRight": "12px"
+        }
+      ],
+      "rows": [
+        [
+          {
+            "text": "2026-10-15",
+            "boxes": [
+              {
+                "left": 162,
+                "right": 236.421875,
+                "width": 74.421875,
+                "top": 279.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 120,
+            "paddingLeft": "12px",
+            "paddingRight": "12px"
+          },
+          {
+            "text": "2026-10-15",
+            "boxes": [
+              {
+                "left": 282,
+                "right": 356.421875,
+                "width": 74.421875,
+                "top": 279.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 120,
+            "paddingLeft": "12px",
+            "paddingRight": "12px"
+          }
+        ],
+        [
+          {
+            "text": "+2.6%",
+            "boxes": [
+              {
+                "left": 162,
+                "right": 200.71875,
+                "width": 38.71875,
+                "top": 325.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 120,
+            "paddingLeft": "12px",
+            "paddingRight": "12px"
+          },
+          {
+            "text": "+8.8%",
+            "boxes": [
+              {
+                "left": 282,
+                "right": 320.71875,
+                "width": 38.71875,
+                "top": 325.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 120,
+            "paddingLeft": "12px",
+            "paddingRight": "12px"
+          }
+        ],
+        [
+          {
+            "text": "+0.7%",
+            "boxes": [
+              {
+                "left": 162,
+                "right": 200.71875,
+                "width": 38.71875,
+                "top": 371.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 120,
+            "paddingLeft": "12px",
+            "paddingRight": "12px"
+          },
+          {
+            "text": "+7.6%",
+            "boxes": [
+              {
+                "left": 282,
+                "right": 320.71875,
+                "width": 38.71875,
+                "top": 371.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 120,
+            "paddingLeft": "12px",
+            "paddingRight": "12px"
+          }
+        ],
+        [
+          {
+            "text": "上行",
+            "boxes": [
+              {
+                "left": 162,
+                "right": 187.515625,
+                "width": 25.515625,
+                "top": 418.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 120,
+            "paddingLeft": "12px",
+            "paddingRight": "12px"
+          },
+          {
+            "text": "上行",
+            "boxes": [
+              {
+                "left": 282,
+                "right": 307.515625,
+                "width": 25.515625,
+                "top": 418.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 120,
+            "paddingLeft": "12px",
+            "paddingRight": "12px"
+          }
+        ],
+        [
+          {
+            "text": "承压",
+            "boxes": [
+              {
+                "left": 162,
+                "right": 187.515625,
+                "width": 25.515625,
+                "top": 464.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 120,
+            "paddingLeft": "12px",
+            "paddingRight": "12px"
+          },
+          {
+            "text": "承压",
+            "boxes": [
+              {
+                "left": 282,
+                "right": 307.515625,
+                "width": 25.515625,
+                "top": 464.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 120,
+            "paddingLeft": "12px",
+            "paddingRight": "12px"
+          }
+        ]
+      ],
+      "measureWidth": 130,
+      "bodyWidth": 320
+    },
+    "two-zh-390.json": {
+      "viewport": 390,
+      "left": 20,
+      "right": 370,
+      "clientWidth": 350,
+      "scrollWidth": 370,
+      "headers": [
+        {
+          "text": "ETH",
+          "boxes": [
+            {
+              "left": 162,
+              "right": 187.328125,
+              "width": 25.328125,
+              "top": 233.6875,
+              "height": 15
+            }
+          ],
+          "fontSize": "12.5px",
+          "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+          "cellWidth": 120,
+          "paddingLeft": "12px",
+          "paddingRight": "12px"
+        },
+        {
+          "text": "SOL",
+          "boxes": [
+            {
+              "left": 282,
+              "right": 307.265625,
+              "width": 25.265625,
+              "top": 233.6875,
+              "height": 15
+            }
+          ],
+          "fontSize": "12.5px",
+          "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+          "cellWidth": 120,
+          "paddingLeft": "12px",
+          "paddingRight": "12px"
+        }
+      ],
+      "rows": [
+        [
+          {
+            "text": "2026-10-15",
+            "boxes": [
+              {
+                "left": 162,
+                "right": 236.421875,
+                "width": 74.421875,
+                "top": 279.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 120,
+            "paddingLeft": "12px",
+            "paddingRight": "12px"
+          },
+          {
+            "text": "2026-10-15",
+            "boxes": [
+              {
+                "left": 282,
+                "right": 356.421875,
+                "width": 74.421875,
+                "top": 279.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 120,
+            "paddingLeft": "12px",
+            "paddingRight": "12px"
+          }
+        ],
+        [
+          {
+            "text": "+2.6%",
+            "boxes": [
+              {
+                "left": 162,
+                "right": 200.71875,
+                "width": 38.71875,
+                "top": 325.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 120,
+            "paddingLeft": "12px",
+            "paddingRight": "12px"
+          },
+          {
+            "text": "+8.8%",
+            "boxes": [
+              {
+                "left": 282,
+                "right": 320.71875,
+                "width": 38.71875,
+                "top": 325.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 120,
+            "paddingLeft": "12px",
+            "paddingRight": "12px"
+          }
+        ],
+        [
+          {
+            "text": "+0.7%",
+            "boxes": [
+              {
+                "left": 162,
+                "right": 200.71875,
+                "width": 38.71875,
+                "top": 371.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 120,
+            "paddingLeft": "12px",
+            "paddingRight": "12px"
+          },
+          {
+            "text": "+7.6%",
+            "boxes": [
+              {
+                "left": 282,
+                "right": 320.71875,
+                "width": 38.71875,
+                "top": 371.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 120,
+            "paddingLeft": "12px",
+            "paddingRight": "12px"
+          }
+        ],
+        [
+          {
+            "text": "上行",
+            "boxes": [
+              {
+                "left": 162,
+                "right": 187.515625,
+                "width": 25.515625,
+                "top": 418.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 120,
+            "paddingLeft": "12px",
+            "paddingRight": "12px"
+          },
+          {
+            "text": "上行",
+            "boxes": [
+              {
+                "left": 282,
+                "right": 307.515625,
+                "width": 25.515625,
+                "top": 418.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 120,
+            "paddingLeft": "12px",
+            "paddingRight": "12px"
+          }
+        ],
+        [
+          {
+            "text": "承压",
+            "boxes": [
+              {
+                "left": 162,
+                "right": 187.515625,
+                "width": 25.515625,
+                "top": 464.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 120,
+            "paddingLeft": "12px",
+            "paddingRight": "12px"
+          },
+          {
+            "text": "承压",
+            "boxes": [
+              {
+                "left": 282,
+                "right": 307.515625,
+                "width": 25.515625,
+                "top": 464.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 120,
+            "paddingLeft": "12px",
+            "paddingRight": "12px"
+          }
+        ]
+      ],
+      "measureWidth": 130,
+      "bodyWidth": 390
+    }
+  },
+  "final": {
+    "three-en-320.json": {
+      "viewport": 320,
+      "left": 20,
+      "right": 300,
+      "clientWidth": 280,
+      "scrollWidth": 371,
+      "headers": [
+        {
+          "text": "SOL",
+          "boxes": [
+            {
+              "left": 126,
+              "right": 151.265625,
+              "width": 25.265625,
+              "top": 326.6875,
+              "height": 15
+            }
+          ],
+          "fontSize": "12.5px",
+          "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+          "cellWidth": 91,
+          "paddingLeft": "8px",
+          "paddingRight": "8px"
+        },
+        {
+          "text": "ETH",
+          "boxes": [
+            {
+              "left": 217,
+              "right": 242.328125,
+              "width": 25.328125,
+              "top": 326.6875,
+              "height": 15
+            }
+          ],
+          "fontSize": "12.5px",
+          "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+          "cellWidth": 91,
+          "paddingLeft": "8px",
+          "paddingRight": "8px"
+        },
+        {
+          "text": "BTC",
+          "boxes": [
+            {
+              "left": 308,
+              "right": 333.390625,
+              "width": 25.390625,
+              "top": 326.6875,
+              "height": 15
+            }
+          ],
+          "fontSize": "12.5px",
+          "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+          "cellWidth": 91,
+          "paddingLeft": "8px",
+          "paddingRight": "8px"
+        }
+      ],
+      "rows": [
+        [
+          {
+            "text": "2026-10-15",
+            "boxes": [
+              {
+                "left": 126,
+                "right": 200.421875,
+                "width": 74.421875,
+                "top": 370.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 91,
+            "paddingLeft": "8px",
+            "paddingRight": "8px"
+          },
+          {
+            "text": "2026-10-15",
+            "boxes": [
+              {
+                "left": 217,
+                "right": 291.421875,
+                "width": 74.421875,
+                "top": 370.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 91,
+            "paddingLeft": "8px",
+            "paddingRight": "8px"
+          },
+          {
+            "text": "2026-10-15",
+            "boxes": [
+              {
+                "left": 308,
+                "right": 382.421875,
+                "width": 74.421875,
+                "top": 370.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 91,
+            "paddingLeft": "8px",
+            "paddingRight": "8px"
+          }
+        ],
+        [
+          {
+            "text": "Unavailable",
+            "boxes": [
+              {
+                "left": 126,
+                "right": 193.328125,
+                "width": 67.328125,
+                "top": 444.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 91,
+            "paddingLeft": "8px",
+            "paddingRight": "8px"
+          },
+          {
+            "text": "0.0%",
+            "boxes": [
+              {
+                "left": 217,
+                "right": 247.890625,
+                "width": 30.890625,
+                "top": 444.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 91,
+            "paddingLeft": "8px",
+            "paddingRight": "8px"
+          },
+          {
+            "text": "Unavailable",
+            "boxes": [
+              {
+                "left": 308,
+                "right": 375.328125,
+                "width": 67.328125,
+                "top": 444.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 91,
+            "paddingLeft": "8px",
+            "paddingRight": "8px"
+          }
+        ],
+        [
+          {
+            "text": "+7.6%",
+            "boxes": [
+              {
+                "left": 126,
+                "right": 164.71875,
+                "width": 38.71875,
+                "top": 522.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 91,
+            "paddingLeft": "8px",
+            "paddingRight": "8px"
+          },
+          {
+            "text": "+0.7%",
+            "boxes": [
+              {
+                "left": 217,
+                "right": 255.71875,
+                "width": 38.71875,
+                "top": 522.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 91,
+            "paddingLeft": "8px",
+            "paddingRight": "8px"
+          },
+          {
+            "text": "+0.7%",
+            "boxes": [
+              {
+                "left": 308,
+                "right": 346.71875,
+                "width": 38.71875,
+                "top": 522.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 91,
+            "paddingLeft": "8px",
+            "paddingRight": "8px"
+          }
+        ],
+        [
+          {
+            "text": "Advancing",
+            "boxes": [
+              {
+                "left": 126,
+                "right": 187.125,
+                "width": 61.125,
+                "top": 566.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 91,
+            "paddingLeft": "8px",
+            "paddingRight": "8px"
+          },
+          {
+            "text": "Advancing",
+            "boxes": [
+              {
+                "left": 217,
+                "right": 278.125,
+                "width": 61.125,
+                "top": 566.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 91,
+            "paddingLeft": "8px",
+            "paddingRight": "8px"
+          },
+          {
+            "text": "Advancing",
+            "boxes": [
+              {
+                "left": 308,
+                "right": 369.125,
+                "width": 61.125,
+                "top": 566.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 91,
+            "paddingLeft": "8px",
+            "paddingRight": "8px"
+          }
+        ],
+        [
+          {
+            "text": "Stressed",
+            "boxes": [
+              {
+                "left": 126,
+                "right": 177.71875,
+                "width": 51.71875,
+                "top": 610.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 91,
+            "paddingLeft": "8px",
+            "paddingRight": "8px"
+          },
+          {
+            "text": "Stressed",
+            "boxes": [
+              {
+                "left": 217,
+                "right": 268.71875,
+                "width": 51.71875,
+                "top": 610.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 91,
+            "paddingLeft": "8px",
+            "paddingRight": "8px"
+          },
+          {
+            "text": "Stressed",
+            "boxes": [
+              {
+                "left": 308,
+                "right": 359.71875,
+                "width": 51.71875,
+                "top": 610.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 91,
+            "paddingLeft": "8px",
+            "paddingRight": "8px"
+          }
+        ]
+      ],
+      "measureWidth": 98,
+      "bodyWidth": 320
+    },
+    "three-zh-320.json": {
+      "viewport": 320,
+      "left": 20,
+      "right": 300,
+      "clientWidth": 280,
+      "scrollWidth": 371,
+      "headers": [
+        {
+          "text": "SOL",
+          "boxes": [
+            {
+              "left": 126,
+              "right": 151.265625,
+              "width": 25.265625,
+              "top": 233.6875,
+              "height": 15
+            }
+          ],
+          "fontSize": "12.5px",
+          "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+          "cellWidth": 91,
+          "paddingLeft": "8px",
+          "paddingRight": "8px"
+        },
+        {
+          "text": "ETH",
+          "boxes": [
+            {
+              "left": 217,
+              "right": 242.328125,
+              "width": 25.328125,
+              "top": 233.6875,
+              "height": 15
+            }
+          ],
+          "fontSize": "12.5px",
+          "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+          "cellWidth": 91,
+          "paddingLeft": "8px",
+          "paddingRight": "8px"
+        },
+        {
+          "text": "BTC",
+          "boxes": [
+            {
+              "left": 308,
+              "right": 333.390625,
+              "width": 25.390625,
+              "top": 233.6875,
+              "height": 15
+            }
+          ],
+          "fontSize": "12.5px",
+          "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+          "cellWidth": 91,
+          "paddingLeft": "8px",
+          "paddingRight": "8px"
+        }
+      ],
+      "rows": [
+        [
+          {
+            "text": "2026-10-15",
+            "boxes": [
+              {
+                "left": 126,
+                "right": 200.421875,
+                "width": 74.421875,
+                "top": 279.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 91,
+            "paddingLeft": "8px",
+            "paddingRight": "8px"
+          },
+          {
+            "text": "2026-10-15",
+            "boxes": [
+              {
+                "left": 217,
+                "right": 291.421875,
+                "width": 74.421875,
+                "top": 279.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 91,
+            "paddingLeft": "8px",
+            "paddingRight": "8px"
+          },
+          {
+            "text": "2026-10-15",
+            "boxes": [
+              {
+                "left": 308,
+                "right": 382.421875,
+                "width": 74.421875,
+                "top": 279.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 91,
+            "paddingLeft": "8px",
+            "paddingRight": "8px"
+          }
+        ],
+        [
+          {
+            "text": "暂无",
+            "boxes": [
+              {
+                "left": 126,
+                "right": 151.515625,
+                "width": 25.515625,
+                "top": 326.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 91,
+            "paddingLeft": "8px",
+            "paddingRight": "8px"
+          },
+          {
+            "text": "0.0%",
+            "boxes": [
+              {
+                "left": 217,
+                "right": 247.890625,
+                "width": 30.890625,
+                "top": 325.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 91,
+            "paddingLeft": "8px",
+            "paddingRight": "8px"
+          },
+          {
+            "text": "暂无",
+            "boxes": [
+              {
+                "left": 308,
+                "right": 333.515625,
+                "width": 25.515625,
+                "top": 326.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 91,
+            "paddingLeft": "8px",
+            "paddingRight": "8px"
+          }
+        ],
+        [
+          {
+            "text": "+7.6%",
+            "boxes": [
+              {
+                "left": 126,
+                "right": 164.71875,
+                "width": 38.71875,
+                "top": 392.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 91,
+            "paddingLeft": "8px",
+            "paddingRight": "8px"
+          },
+          {
+            "text": "+0.7%",
+            "boxes": [
+              {
+                "left": 217,
+                "right": 255.71875,
+                "width": 38.71875,
+                "top": 392.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 91,
+            "paddingLeft": "8px",
+            "paddingRight": "8px"
+          },
+          {
+            "text": "+0.7%",
+            "boxes": [
+              {
+                "left": 308,
+                "right": 346.71875,
+                "width": 38.71875,
+                "top": 392.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 91,
+            "paddingLeft": "8px",
+            "paddingRight": "8px"
+          }
+        ],
+        [
+          {
+            "text": "上行",
+            "boxes": [
+              {
+                "left": 126,
+                "right": 151.515625,
+                "width": 25.515625,
+                "top": 439.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 91,
+            "paddingLeft": "8px",
+            "paddingRight": "8px"
+          },
+          {
+            "text": "上行",
+            "boxes": [
+              {
+                "left": 217,
+                "right": 242.515625,
+                "width": 25.515625,
+                "top": 439.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 91,
+            "paddingLeft": "8px",
+            "paddingRight": "8px"
+          },
+          {
+            "text": "上行",
+            "boxes": [
+              {
+                "left": 308,
+                "right": 333.515625,
+                "width": 25.515625,
+                "top": 439.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 91,
+            "paddingLeft": "8px",
+            "paddingRight": "8px"
+          }
+        ],
+        [
+          {
+            "text": "承压",
+            "boxes": [
+              {
+                "left": 126,
+                "right": 151.515625,
+                "width": 25.515625,
+                "top": 485.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 91,
+            "paddingLeft": "8px",
+            "paddingRight": "8px"
+          },
+          {
+            "text": "承压",
+            "boxes": [
+              {
+                "left": 217,
+                "right": 242.515625,
+                "width": 25.515625,
+                "top": 485.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 91,
+            "paddingLeft": "8px",
+            "paddingRight": "8px"
+          },
+          {
+            "text": "承压",
+            "boxes": [
+              {
+                "left": 308,
+                "right": 333.515625,
+                "width": 25.515625,
+                "top": 485.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 91,
+            "paddingLeft": "8px",
+            "paddingRight": "8px"
+          }
+        ]
+      ],
+      "measureWidth": 98,
+      "bodyWidth": 320
+    },
+    "two-en-320.json": {
+      "viewport": 320,
+      "left": 20,
+      "right": 300,
+      "clientWidth": 280,
+      "scrollWidth": 280,
+      "headers": [
+        {
+          "text": "ETH",
+          "boxes": [
+            {
+              "left": 126,
+              "right": 151.328125,
+              "width": 25.328125,
+              "top": 326.6875,
+              "height": 15
+            }
+          ],
+          "fontSize": "12.5px",
+          "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+          "cellWidth": 91,
+          "paddingLeft": "8px",
+          "paddingRight": "8px"
+        },
+        {
+          "text": "SOL",
+          "boxes": [
+            {
+              "left": 217,
+              "right": 242.265625,
+              "width": 25.265625,
+              "top": 326.6875,
+              "height": 15
+            }
+          ],
+          "fontSize": "12.5px",
+          "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+          "cellWidth": 91,
+          "paddingLeft": "8px",
+          "paddingRight": "8px"
+        }
+      ],
+      "rows": [
+        [
+          {
+            "text": "2026-10-15",
+            "boxes": [
+              {
+                "left": 126,
+                "right": 200.421875,
+                "width": 74.421875,
+                "top": 370.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 91,
+            "paddingLeft": "8px",
+            "paddingRight": "8px"
+          },
+          {
+            "text": "2026-10-15",
+            "boxes": [
+              {
+                "left": 217,
+                "right": 291.421875,
+                "width": 74.421875,
+                "top": 370.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 91,
+            "paddingLeft": "8px",
+            "paddingRight": "8px"
+          }
+        ],
+        [
+          {
+            "text": "+2.6%",
+            "boxes": [
+              {
+                "left": 126,
+                "right": 164.71875,
+                "width": 38.71875,
+                "top": 444.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 91,
+            "paddingLeft": "8px",
+            "paddingRight": "8px"
+          },
+          {
+            "text": "+8.8%",
+            "boxes": [
+              {
+                "left": 217,
+                "right": 255.71875,
+                "width": 38.71875,
+                "top": 444.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 91,
+            "paddingLeft": "8px",
+            "paddingRight": "8px"
+          }
+        ],
+        [
+          {
+            "text": "+0.7%",
+            "boxes": [
+              {
+                "left": 126,
+                "right": 164.71875,
+                "width": 38.71875,
+                "top": 503.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 91,
+            "paddingLeft": "8px",
+            "paddingRight": "8px"
+          },
+          {
+            "text": "+7.6%",
+            "boxes": [
+              {
+                "left": 217,
+                "right": 255.71875,
+                "width": 38.71875,
+                "top": 503.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 91,
+            "paddingLeft": "8px",
+            "paddingRight": "8px"
+          }
+        ],
+        [
+          {
+            "text": "Advancing",
+            "boxes": [
+              {
+                "left": 126,
+                "right": 187.125,
+                "width": 61.125,
+                "top": 547.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 91,
+            "paddingLeft": "8px",
+            "paddingRight": "8px"
+          },
+          {
+            "text": "Advancing",
+            "boxes": [
+              {
+                "left": 217,
+                "right": 278.125,
+                "width": 61.125,
+                "top": 547.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 91,
+            "paddingLeft": "8px",
+            "paddingRight": "8px"
+          }
+        ],
+        [
+          {
+            "text": "Stressed",
+            "boxes": [
+              {
+                "left": 126,
+                "right": 177.71875,
+                "width": 51.71875,
+                "top": 591.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 91,
+            "paddingLeft": "8px",
+            "paddingRight": "8px"
+          },
+          {
+            "text": "Stressed",
+            "boxes": [
+              {
+                "left": 217,
+                "right": 268.71875,
+                "width": 51.71875,
+                "top": 591.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 91,
+            "paddingLeft": "8px",
+            "paddingRight": "8px"
+          }
+        ]
+      ],
+      "measureWidth": 98,
+      "bodyWidth": 320
+    },
+    "two-en-390.json": {
+      "viewport": 390,
+      "left": 20,
+      "right": 370,
+      "clientWidth": 350,
+      "scrollWidth": 350,
+      "headers": [
+        {
+          "text": "ETH",
+          "boxes": [
+            {
+              "left": 126,
+              "right": 151.328125,
+              "width": 25.328125,
+              "top": 310.6875,
+              "height": 15
+            }
+          ],
+          "fontSize": "12.5px",
+          "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+          "cellWidth": 126,
+          "paddingLeft": "8px",
+          "paddingRight": "8px"
+        },
+        {
+          "text": "SOL",
+          "boxes": [
+            {
+              "left": 252,
+              "right": 277.265625,
+              "width": 25.265625,
+              "top": 310.6875,
+              "height": 15
+            }
+          ],
+          "fontSize": "12.5px",
+          "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+          "cellWidth": 126,
+          "paddingLeft": "8px",
+          "paddingRight": "8px"
+        }
+      ],
+      "rows": [
+        [
+          {
+            "text": "2026-10-15",
+            "boxes": [
+              {
+                "left": 126,
+                "right": 200.421875,
+                "width": 74.421875,
+                "top": 354.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 126,
+            "paddingLeft": "8px",
+            "paddingRight": "8px"
+          },
+          {
+            "text": "2026-10-15",
+            "boxes": [
+              {
+                "left": 252,
+                "right": 326.421875,
+                "width": 74.421875,
+                "top": 354.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 126,
+            "paddingLeft": "8px",
+            "paddingRight": "8px"
+          }
+        ],
+        [
+          {
+            "text": "+2.6%",
+            "boxes": [
+              {
+                "left": 126,
+                "right": 164.71875,
+                "width": 38.71875,
+                "top": 428.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 126,
+            "paddingLeft": "8px",
+            "paddingRight": "8px"
+          },
+          {
+            "text": "+8.8%",
+            "boxes": [
+              {
+                "left": 252,
+                "right": 290.71875,
+                "width": 38.71875,
+                "top": 428.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 126,
+            "paddingLeft": "8px",
+            "paddingRight": "8px"
+          }
+        ],
+        [
+          {
+            "text": "+0.7%",
+            "boxes": [
+              {
+                "left": 126,
+                "right": 164.71875,
+                "width": 38.71875,
+                "top": 487.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 126,
+            "paddingLeft": "8px",
+            "paddingRight": "8px"
+          },
+          {
+            "text": "+7.6%",
+            "boxes": [
+              {
+                "left": 252,
+                "right": 290.71875,
+                "width": 38.71875,
+                "top": 487.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 126,
+            "paddingLeft": "8px",
+            "paddingRight": "8px"
+          }
+        ],
+        [
+          {
+            "text": "Advancing",
+            "boxes": [
+              {
+                "left": 126,
+                "right": 187.125,
+                "width": 61.125,
+                "top": 531.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 126,
+            "paddingLeft": "8px",
+            "paddingRight": "8px"
+          },
+          {
+            "text": "Advancing",
+            "boxes": [
+              {
+                "left": 252,
+                "right": 313.125,
+                "width": 61.125,
+                "top": 531.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 126,
+            "paddingLeft": "8px",
+            "paddingRight": "8px"
+          }
+        ],
+        [
+          {
+            "text": "Stressed",
+            "boxes": [
+              {
+                "left": 126,
+                "right": 177.71875,
+                "width": 51.71875,
+                "top": 575.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 126,
+            "paddingLeft": "8px",
+            "paddingRight": "8px"
+          },
+          {
+            "text": "Stressed",
+            "boxes": [
+              {
+                "left": 252,
+                "right": 303.71875,
+                "width": 51.71875,
+                "top": 575.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 126,
+            "paddingLeft": "8px",
+            "paddingRight": "8px"
+          }
+        ]
+      ],
+      "measureWidth": 98,
+      "bodyWidth": 390
+    },
+    "two-relative-en-320.json": {
+      "viewport": 320,
+      "left": 20,
+      "right": 300,
+      "clientWidth": 280,
+      "scrollWidth": 280,
+      "headers": [
+        {
+          "text": "ETH",
+          "boxes": [
+            {
+              "left": 126,
+              "right": 151.328125,
+              "width": 25.328125,
+              "top": 326.6875,
+              "height": 15
+            }
+          ],
+          "fontSize": "12.5px",
+          "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+          "cellWidth": 91,
+          "paddingLeft": "8px",
+          "paddingRight": "8px"
+        },
+        {
+          "text": "SOL",
+          "boxes": [
+            {
+              "left": 217,
+              "right": 242.265625,
+              "width": 25.265625,
+              "top": 326.6875,
+              "height": 15
+            }
+          ],
+          "fontSize": "12.5px",
+          "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+          "cellWidth": 91,
+          "paddingLeft": "8px",
+          "paddingRight": "8px"
+        }
+      ],
+      "rows": [
+        [
+          {
+            "text": "2026-10-15",
+            "boxes": [
+              {
+                "left": 126,
+                "right": 200.421875,
+                "width": 74.421875,
+                "top": 370.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 91,
+            "paddingLeft": "8px",
+            "paddingRight": "8px"
+          },
+          {
+            "text": "2026-10-15",
+            "boxes": [
+              {
+                "left": 217,
+                "right": 291.421875,
+                "width": 74.421875,
+                "top": 370.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 91,
+            "paddingLeft": "8px",
+            "paddingRight": "8px"
+          }
+        ],
+        [
+          {
+            "text": "0.0%",
+            "boxes": [
+              {
+                "left": 126,
+                "right": 156.890625,
+                "width": 30.890625,
+                "top": 444.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 91,
+            "paddingLeft": "8px",
+            "paddingRight": "8px"
+          },
+          {
+            "text": "Unavailable",
+            "boxes": [
+              {
+                "left": 217,
+                "right": 284.328125,
+                "width": 67.328125,
+                "top": 444.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 91,
+            "paddingLeft": "8px",
+            "paddingRight": "8px"
+          }
+        ],
+        [
+          {
+            "text": "+0.7%",
+            "boxes": [
+              {
+                "left": 126,
+                "right": 164.71875,
+                "width": 38.71875,
+                "top": 522.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 91,
+            "paddingLeft": "8px",
+            "paddingRight": "8px"
+          },
+          {
+            "text": "+7.6%",
+            "boxes": [
+              {
+                "left": 217,
+                "right": 255.71875,
+                "width": 38.71875,
+                "top": 522.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 91,
+            "paddingLeft": "8px",
+            "paddingRight": "8px"
+          }
+        ],
+        [
+          {
+            "text": "Advancing",
+            "boxes": [
+              {
+                "left": 126,
+                "right": 187.125,
+                "width": 61.125,
+                "top": 566.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 91,
+            "paddingLeft": "8px",
+            "paddingRight": "8px"
+          },
+          {
+            "text": "Advancing",
+            "boxes": [
+              {
+                "left": 217,
+                "right": 278.125,
+                "width": 61.125,
+                "top": 566.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 91,
+            "paddingLeft": "8px",
+            "paddingRight": "8px"
+          }
+        ],
+        [
+          {
+            "text": "Stressed",
+            "boxes": [
+              {
+                "left": 126,
+                "right": 177.71875,
+                "width": 51.71875,
+                "top": 610.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 91,
+            "paddingLeft": "8px",
+            "paddingRight": "8px"
+          },
+          {
+            "text": "Stressed",
+            "boxes": [
+              {
+                "left": 217,
+                "right": 268.71875,
+                "width": 51.71875,
+                "top": 610.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 91,
+            "paddingLeft": "8px",
+            "paddingRight": "8px"
+          }
+        ]
+      ],
+      "measureWidth": 98,
+      "bodyWidth": 320
+    },
+    "two-relative-zh-320.json": {
+      "viewport": 320,
+      "left": 20,
+      "right": 300,
+      "clientWidth": 280,
+      "scrollWidth": 280,
+      "headers": [
+        {
+          "text": "ETH",
+          "boxes": [
+            {
+              "left": 126,
+              "right": 151.328125,
+              "width": 25.328125,
+              "top": 233.6875,
+              "height": 15
+            }
+          ],
+          "fontSize": "12.5px",
+          "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+          "cellWidth": 91,
+          "paddingLeft": "8px",
+          "paddingRight": "8px"
+        },
+        {
+          "text": "SOL",
+          "boxes": [
+            {
+              "left": 217,
+              "right": 242.265625,
+              "width": 25.265625,
+              "top": 233.6875,
+              "height": 15
+            }
+          ],
+          "fontSize": "12.5px",
+          "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+          "cellWidth": 91,
+          "paddingLeft": "8px",
+          "paddingRight": "8px"
+        }
+      ],
+      "rows": [
+        [
+          {
+            "text": "2026-10-15",
+            "boxes": [
+              {
+                "left": 126,
+                "right": 200.421875,
+                "width": 74.421875,
+                "top": 279.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 91,
+            "paddingLeft": "8px",
+            "paddingRight": "8px"
+          },
+          {
+            "text": "2026-10-15",
+            "boxes": [
+              {
+                "left": 217,
+                "right": 291.421875,
+                "width": 74.421875,
+                "top": 279.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 91,
+            "paddingLeft": "8px",
+            "paddingRight": "8px"
+          }
+        ],
+        [
+          {
+            "text": "0.0%",
+            "boxes": [
+              {
+                "left": 126,
+                "right": 156.890625,
+                "width": 30.890625,
+                "top": 325.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 91,
+            "paddingLeft": "8px",
+            "paddingRight": "8px"
+          },
+          {
+            "text": "暂无",
+            "boxes": [
+              {
+                "left": 217,
+                "right": 242.515625,
+                "width": 25.515625,
+                "top": 326.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 91,
+            "paddingLeft": "8px",
+            "paddingRight": "8px"
+          }
+        ],
+        [
+          {
+            "text": "+0.7%",
+            "boxes": [
+              {
+                "left": 126,
+                "right": 164.71875,
+                "width": 38.71875,
+                "top": 392.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 91,
+            "paddingLeft": "8px",
+            "paddingRight": "8px"
+          },
+          {
+            "text": "+7.6%",
+            "boxes": [
+              {
+                "left": 217,
+                "right": 255.71875,
+                "width": 38.71875,
+                "top": 392.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 91,
+            "paddingLeft": "8px",
+            "paddingRight": "8px"
+          }
+        ],
+        [
+          {
+            "text": "上行",
+            "boxes": [
+              {
+                "left": 126,
+                "right": 151.515625,
+                "width": 25.515625,
+                "top": 439.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 91,
+            "paddingLeft": "8px",
+            "paddingRight": "8px"
+          },
+          {
+            "text": "上行",
+            "boxes": [
+              {
+                "left": 217,
+                "right": 242.515625,
+                "width": 25.515625,
+                "top": 439.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 91,
+            "paddingLeft": "8px",
+            "paddingRight": "8px"
+          }
+        ],
+        [
+          {
+            "text": "承压",
+            "boxes": [
+              {
+                "left": 126,
+                "right": 151.515625,
+                "width": 25.515625,
+                "top": 485.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 91,
+            "paddingLeft": "8px",
+            "paddingRight": "8px"
+          },
+          {
+            "text": "承压",
+            "boxes": [
+              {
+                "left": 217,
+                "right": 242.515625,
+                "width": 25.515625,
+                "top": 485.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 91,
+            "paddingLeft": "8px",
+            "paddingRight": "8px"
+          }
+        ]
+      ],
+      "measureWidth": 98,
+      "bodyWidth": 320
+    },
+    "two-zh-320.json": {
+      "viewport": 320,
+      "left": 20,
+      "right": 300,
+      "clientWidth": 280,
+      "scrollWidth": 280,
+      "headers": [
+        {
+          "text": "ETH",
+          "boxes": [
+            {
+              "left": 126,
+              "right": 151.328125,
+              "width": 25.328125,
+              "top": 233.6875,
+              "height": 15
+            }
+          ],
+          "fontSize": "12.5px",
+          "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+          "cellWidth": 91,
+          "paddingLeft": "8px",
+          "paddingRight": "8px"
+        },
+        {
+          "text": "SOL",
+          "boxes": [
+            {
+              "left": 217,
+              "right": 242.265625,
+              "width": 25.265625,
+              "top": 233.6875,
+              "height": 15
+            }
+          ],
+          "fontSize": "12.5px",
+          "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+          "cellWidth": 91,
+          "paddingLeft": "8px",
+          "paddingRight": "8px"
+        }
+      ],
+      "rows": [
+        [
+          {
+            "text": "2026-10-15",
+            "boxes": [
+              {
+                "left": 126,
+                "right": 200.421875,
+                "width": 74.421875,
+                "top": 279.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 91,
+            "paddingLeft": "8px",
+            "paddingRight": "8px"
+          },
+          {
+            "text": "2026-10-15",
+            "boxes": [
+              {
+                "left": 217,
+                "right": 291.421875,
+                "width": 74.421875,
+                "top": 279.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 91,
+            "paddingLeft": "8px",
+            "paddingRight": "8px"
+          }
+        ],
+        [
+          {
+            "text": "+2.6%",
+            "boxes": [
+              {
+                "left": 126,
+                "right": 164.71875,
+                "width": 38.71875,
+                "top": 325.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 91,
+            "paddingLeft": "8px",
+            "paddingRight": "8px"
+          },
+          {
+            "text": "+8.8%",
+            "boxes": [
+              {
+                "left": 217,
+                "right": 255.71875,
+                "width": 38.71875,
+                "top": 325.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 91,
+            "paddingLeft": "8px",
+            "paddingRight": "8px"
+          }
+        ],
+        [
+          {
+            "text": "+0.7%",
+            "boxes": [
+              {
+                "left": 126,
+                "right": 164.71875,
+                "width": 38.71875,
+                "top": 388.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 91,
+            "paddingLeft": "8px",
+            "paddingRight": "8px"
+          },
+          {
+            "text": "+7.6%",
+            "boxes": [
+              {
+                "left": 217,
+                "right": 255.71875,
+                "width": 38.71875,
+                "top": 388.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 91,
+            "paddingLeft": "8px",
+            "paddingRight": "8px"
+          }
+        ],
+        [
+          {
+            "text": "上行",
+            "boxes": [
+              {
+                "left": 126,
+                "right": 151.515625,
+                "width": 25.515625,
+                "top": 435.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 91,
+            "paddingLeft": "8px",
+            "paddingRight": "8px"
+          },
+          {
+            "text": "上行",
+            "boxes": [
+              {
+                "left": 217,
+                "right": 242.515625,
+                "width": 25.515625,
+                "top": 435.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 91,
+            "paddingLeft": "8px",
+            "paddingRight": "8px"
+          }
+        ],
+        [
+          {
+            "text": "承压",
+            "boxes": [
+              {
+                "left": 126,
+                "right": 151.515625,
+                "width": 25.515625,
+                "top": 481.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 91,
+            "paddingLeft": "8px",
+            "paddingRight": "8px"
+          },
+          {
+            "text": "承压",
+            "boxes": [
+              {
+                "left": 217,
+                "right": 242.515625,
+                "width": 25.515625,
+                "top": 481.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 91,
+            "paddingLeft": "8px",
+            "paddingRight": "8px"
+          }
+        ]
+      ],
+      "measureWidth": 98,
+      "bodyWidth": 320
+    },
+    "two-zh-390.json": {
+      "viewport": 390,
+      "left": 20,
+      "right": 370,
+      "clientWidth": 350,
+      "scrollWidth": 350,
+      "headers": [
+        {
+          "text": "ETH",
+          "boxes": [
+            {
+              "left": 126,
+              "right": 151.328125,
+              "width": 25.328125,
+              "top": 233.6875,
+              "height": 15
+            }
+          ],
+          "fontSize": "12.5px",
+          "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+          "cellWidth": 126,
+          "paddingLeft": "8px",
+          "paddingRight": "8px"
+        },
+        {
+          "text": "SOL",
+          "boxes": [
+            {
+              "left": 252,
+              "right": 277.265625,
+              "width": 25.265625,
+              "top": 233.6875,
+              "height": 15
+            }
+          ],
+          "fontSize": "12.5px",
+          "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+          "cellWidth": 126,
+          "paddingLeft": "8px",
+          "paddingRight": "8px"
+        }
+      ],
+      "rows": [
+        [
+          {
+            "text": "2026-10-15",
+            "boxes": [
+              {
+                "left": 126,
+                "right": 200.421875,
+                "width": 74.421875,
+                "top": 279.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 126,
+            "paddingLeft": "8px",
+            "paddingRight": "8px"
+          },
+          {
+            "text": "2026-10-15",
+            "boxes": [
+              {
+                "left": 252,
+                "right": 326.421875,
+                "width": 74.421875,
+                "top": 279.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 126,
+            "paddingLeft": "8px",
+            "paddingRight": "8px"
+          }
+        ],
+        [
+          {
+            "text": "+2.6%",
+            "boxes": [
+              {
+                "left": 126,
+                "right": 164.71875,
+                "width": 38.71875,
+                "top": 325.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 126,
+            "paddingLeft": "8px",
+            "paddingRight": "8px"
+          },
+          {
+            "text": "+8.8%",
+            "boxes": [
+              {
+                "left": 252,
+                "right": 290.71875,
+                "width": 38.71875,
+                "top": 325.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 126,
+            "paddingLeft": "8px",
+            "paddingRight": "8px"
+          }
+        ],
+        [
+          {
+            "text": "+0.7%",
+            "boxes": [
+              {
+                "left": 126,
+                "right": 164.71875,
+                "width": 38.71875,
+                "top": 388.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 126,
+            "paddingLeft": "8px",
+            "paddingRight": "8px"
+          },
+          {
+            "text": "+7.6%",
+            "boxes": [
+              {
+                "left": 252,
+                "right": 290.71875,
+                "width": 38.71875,
+                "top": 388.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 126,
+            "paddingLeft": "8px",
+            "paddingRight": "8px"
+          }
+        ],
+        [
+          {
+            "text": "上行",
+            "boxes": [
+              {
+                "left": 126,
+                "right": 151.515625,
+                "width": 25.515625,
+                "top": 435.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 126,
+            "paddingLeft": "8px",
+            "paddingRight": "8px"
+          },
+          {
+            "text": "上行",
+            "boxes": [
+              {
+                "left": 252,
+                "right": 277.515625,
+                "width": 25.515625,
+                "top": 435.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 126,
+            "paddingLeft": "8px",
+            "paddingRight": "8px"
+          }
+        ],
+        [
+          {
+            "text": "承压",
+            "boxes": [
+              {
+                "left": 126,
+                "right": 151.515625,
+                "width": 25.515625,
+                "top": 481.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 126,
+            "paddingLeft": "8px",
+            "paddingRight": "8px"
+          },
+          {
+            "text": "承压",
+            "boxes": [
+              {
+                "left": 252,
+                "right": 277.515625,
+                "width": 25.515625,
+                "top": 481.6875,
+                "height": 15
+              }
+            ],
+            "fontSize": "12.5px",
+            "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+            "cellWidth": 126,
+            "paddingLeft": "8px",
+            "paddingRight": "8px"
+          }
+        ]
+      ],
+      "measureWidth": 98,
+      "bodyWidth": 390
+    }
+  }
+}

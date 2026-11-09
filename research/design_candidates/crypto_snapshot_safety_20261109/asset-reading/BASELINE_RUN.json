@@ -1,0 +1,18 @@
+{
+  "command": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_crypto_intelligence_r4.py::test_quote_clarity_server_price_cell_is_explicit_and_never_false_zero",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_quote_clarity_server_and_inspector_agree_without_losing_asset_context",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_asset_identity_is_clear_without_changing_search_routes_or_context",
+    "--tb=short",
+    "--junitxml=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/asset-reading-baseline/junit.xml",
+    "--basetemp=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/asset-reading-baseline/pytest-temp"
+  ],
+  "exit_code": 1,
+  "seconds": 7.672,
+  "source_parent": "0c895f7bf5585f152f7bc0c6fc5eb23b6ec057c6",
+  "test_sha256": "c1bfbeb023ce1fa623092adfab611d4c03c8de0894dbbeb0f55ec13134031d4d"
+}

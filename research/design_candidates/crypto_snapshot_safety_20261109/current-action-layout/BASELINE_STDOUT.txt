@@ -1,0 +1,158 @@
+FFFFFFFFFFFFFFFFFFF....FF............................................... [ 96%]
+...                                                                      [100%]
+=================================== FAILURES ===================================
+_______ test_r4_current_actions_wrap_with_separate_touch_targets[en-320] _______
+tests/test_crypto_intelligence_r4_browser.py:3200: in test_r4_current_actions_wrap_with_separate_touch_targets
+    assert review["height"] >= 48 and save["height"] >= 48 and demand["height"] >= 44
+E   assert (42 >= 48)
+_______ test_r4_current_actions_wrap_with_separate_touch_targets[zh-320] _______
+tests/test_crypto_intelligence_r4_browser.py:3200: in test_r4_current_actions_wrap_with_separate_touch_targets
+    assert review["height"] >= 48 and save["height"] >= 48 and demand["height"] >= 44
+E   assert (43 >= 48)
+_______ test_r4_current_actions_wrap_with_separate_touch_targets[en-390] _______
+tests/test_crypto_intelligence_r4_browser.py:3200: in test_r4_current_actions_wrap_with_separate_touch_targets
+    assert review["height"] >= 48 and save["height"] >= 48 and demand["height"] >= 44
+E   assert (42 >= 48)
+_______ test_r4_current_actions_wrap_with_separate_touch_targets[zh-390] _______
+tests/test_crypto_intelligence_r4_browser.py:3200: in test_r4_current_actions_wrap_with_separate_touch_targets
+    assert review["height"] >= 48 and save["height"] >= 48 and demand["height"] >= 44
+E   assert (43 >= 48)
+______ test_r4_current_actions_wrap_with_separate_touch_targets[en-1440] _______
+tests/test_crypto_intelligence_r4_browser.py:3200: in test_r4_current_actions_wrap_with_separate_touch_targets
+    assert review["height"] >= 48 and save["height"] >= 48 and demand["height"] >= 44
+E   assert (42 >= 48)
+_________ test_r4_disabled_current_save_is_distinct_and_inert[en-390] __________
+tests/test_crypto_intelligence_r4_browser.py:3226: in test_r4_disabled_current_save_is_distinct_and_inert
+    assert before["background"] != reference["background"] and before["color"] != reference["color"]
+E   AssertionError: assert ('rgb(21, 24, 32)' != 'rgb(21, 24, 32)')
+_________ test_r4_disabled_current_save_is_distinct_and_inert[zh-320] __________
+tests/test_crypto_intelligence_r4_browser.py:3226: in test_r4_disabled_current_save_is_distinct_and_inert
+    assert before["background"] != reference["background"] and before["color"] != reference["color"]
+E   AssertionError: assert ('rgb(255, 255, 255)' != 'rgb(255, 255, 255)')
+_________ test_r4_mutation_feedback_never_covers_controls[en-390-save] _________
+tests/test_crypto_intelligence_r4_browser.py:3261: in test_r4_mutation_feedback_never_covers_controls
+    geometry = _assert_feedback_clear(page, fully_visible=outcome in ("unreadable", "unconfirmed"))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_crypto_intelligence_r4_browser.py:3182: in _assert_feedback_clear
+    assert overlap_width <= 1 or overlap_height <= 1, (feedback, control)
+E   AssertionError: ({'x': 105.5, 'y': 529, 'width': 179, 'height': 47, ...}, {'x': 20, 'y': 537.8125, 'width': 206.21875, 'height': 42, ...})
+E   assert (120.71875 <= 1 or 38.1875 <= 1)
+________ test_r4_mutation_feedback_never_covers_controls[en-390-remove] ________
+tests/test_crypto_intelligence_r4_browser.py:3261: in test_r4_mutation_feedback_never_covers_controls
+    geometry = _assert_feedback_clear(page, fully_visible=outcome in ("unreadable", "unconfirmed"))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_crypto_intelligence_r4_browser.py:3182: in _assert_feedback_clear
+    assert overlap_width <= 1 or overlap_height <= 1, (feedback, control)
+E   AssertionError: ({'x': 97.5, 'y': 512, 'width': 195, 'height': 64, ...}, {'x': 20, 'y': 479.8125, 'width': 142.875, 'height': 42, ...})
+E   assert (65.375 <= 1 or 9.8125 <= 1)
+____ test_r4_mutation_feedback_never_covers_controls[en-390-remove-expired] ____
+tests/test_crypto_intelligence_r4_browser.py:3261: in test_r4_mutation_feedback_never_covers_controls
+    geometry = _assert_feedback_clear(page, fully_visible=outcome in ("unreadable", "unconfirmed"))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_crypto_intelligence_r4_browser.py:3182: in _assert_feedback_clear
+    assert overlap_width <= 1 or overlap_height <= 1, (feedback, control)
+E   AssertionError: ({'x': 97.5, 'y': 512, 'width': 195, 'height': 64, ...}, {'x': 20, 'y': 479.71875, 'width': 142.875, 'height': 42, ...})
+E   assert (65.375 <= 1 or 9.71875 <= 1)
+______ test_r4_mutation_feedback_never_covers_controls[en-390-unreadable] ______
+tests/test_crypto_intelligence_r4_browser.py:3261: in test_r4_mutation_feedback_never_covers_controls
+    geometry = _assert_feedback_clear(page, fully_visible=outcome in ("unreadable", "unconfirmed"))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_crypto_intelligence_r4_browser.py:3182: in _assert_feedback_clear
+    assert overlap_width <= 1 or overlap_height <= 1, (feedback, control)
+E   AssertionError: ({'x': 97.5, 'y': 495, 'width': 195, 'height': 81, ...}, {'x': 20, 'y': 479.8125, 'width': 142.875, 'height': 42, ...})
+E   assert (65.375 <= 1 or 26.8125 <= 1)
+_____ test_r4_mutation_feedback_never_covers_controls[en-390-unconfirmed] ______
+tests/test_crypto_intelligence_r4_browser.py:3261: in test_r4_mutation_feedback_never_covers_controls
+    geometry = _assert_feedback_clear(page, fully_visible=outcome in ("unreadable", "unconfirmed"))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_crypto_intelligence_r4_browser.py:3182: in _assert_feedback_clear
+    assert overlap_width <= 1 or overlap_height <= 1, (feedback, control)
+E   AssertionError: ({'x': 97.5, 'y': 478, 'width': 195, 'height': 98, ...}, {'x': 20, 'y': 479.8125, 'width': 142.875, 'height': 42, ...})
+E   assert (65.375 <= 1 or 42.0 <= 1)
+_________ test_r4_mutation_feedback_never_covers_controls[zh-320-save] _________
+tests/test_crypto_intelligence_r4_browser.py:3261: in test_r4_mutation_feedback_never_covers_controls
+    geometry = _assert_feedback_clear(page, fully_visible=outcome in ("unreadable", "unconfirmed"))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_crypto_intelligence_r4_browser.py:3182: in _assert_feedback_clear
+    assert overlap_width <= 1 or overlap_height <= 1, (feedback, control)
+E   AssertionError: ({'x': 81.875, 'y': 526, 'width': 156.25, 'height': 50, ...}, {'x': 20, 'y': 536.71875, 'width': 121.8125, 'height': 43, ...})
+E   assert (59.9375 <= 1 or 39.28125 <= 1)
+________ test_r4_mutation_feedback_never_covers_controls[zh-320-remove] ________
+tests/test_crypto_intelligence_r4_browser.py:3261: in test_r4_mutation_feedback_never_covers_controls
+    geometry = _assert_feedback_clear(page, fully_visible=outcome in ("unreadable", "unconfirmed"))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_crypto_intelligence_r4_browser.py:3182: in _assert_feedback_clear
+    assert overlap_width <= 1 or overlap_height <= 1, (feedback, control)
+E   AssertionError: ({'x': 81.875, 'y': 526, 'width': 156.25, 'height': 50, ...}, {'x': 20, 'y': 536.71875, 'width': 121.8125, 'height': 43, ...})
+E   assert (59.9375 <= 1 or 39.28125 <= 1)
+____ test_r4_mutation_feedback_never_covers_controls[zh-320-remove-expired] ____
+tests/test_crypto_intelligence_r4_browser.py:3261: in test_r4_mutation_feedback_never_covers_controls
+    geometry = _assert_feedback_clear(page, fully_visible=outcome in ("unreadable", "unconfirmed"))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_crypto_intelligence_r4_browser.py:3182: in _assert_feedback_clear
+    assert overlap_width <= 1 or overlap_height <= 1, (feedback, control)
+E   AssertionError: ({'x': 81.875, 'y': 526, 'width': 156.25, 'height': 50, ...}, {'x': 20, 'y': 536.625, 'width': 121.8125, 'height': 43, ...})
+E   assert (59.9375 <= 1 or 39.375 <= 1)
+______ test_r4_mutation_feedback_never_covers_controls[zh-320-unreadable] ______
+tests/test_crypto_intelligence_r4_browser.py:3261: in test_r4_mutation_feedback_never_covers_controls
+    geometry = _assert_feedback_clear(page, fully_visible=outcome in ("unreadable", "unconfirmed"))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_crypto_intelligence_r4_browser.py:3182: in _assert_feedback_clear
+    assert overlap_width <= 1 or overlap_height <= 1, (feedback, control)
+E   AssertionError: ({'x': 80, 'y': 486, 'width': 160, 'height': 90, ...}, {'x': 20, 'y': 477.71875, 'width': 91.203125, 'height': 43, ...})
+E   assert (31.203125 <= 1 or 34.71875 <= 1)
+_____ test_r4_mutation_feedback_never_covers_controls[zh-320-unconfirmed] ______
+tests/test_crypto_intelligence_r4_browser.py:3261: in test_r4_mutation_feedback_never_covers_controls
+    geometry = _assert_feedback_clear(page, fully_visible=outcome in ("unreadable", "unconfirmed"))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_crypto_intelligence_r4_browser.py:3182: in _assert_feedback_clear
+    assert overlap_width <= 1 or overlap_height <= 1, (feedback, control)
+E   AssertionError: ({'x': 80, 'y': 466, 'width': 160, 'height': 110, ...}, {'x': 20, 'y': 477.71875, 'width': 91.203125, 'height': 43, ...})
+E   assert (31.203125 <= 1 or 43.0 <= 1)
+______ test_r4_feedback_timeout_keeps_action_geometry_and_reading[en-390] ______
+tests/test_crypto_intelligence_r4_browser.py:3292: in test_r4_feedback_timeout_keeps_action_geometry_and_reading
+    before = _assert_feedback_clear(page, fully_visible=True)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_crypto_intelligence_r4_browser.py:3182: in _assert_feedback_clear
+    assert overlap_width <= 1 or overlap_height <= 1, (feedback, control)
+E   AssertionError: ({'x': 105.5, 'y': 529, 'width': 179, 'height': 47, ...}, {'x': 20, 'y': 537.8125, 'width': 206.21875, 'height': 42, ...})
+E   assert (120.71875 <= 1 or 38.1875 <= 1)
+______ test_r4_feedback_timeout_keeps_action_geometry_and_reading[zh-320] ______
+tests/test_crypto_intelligence_r4_browser.py:3292: in test_r4_feedback_timeout_keeps_action_geometry_and_reading
+    before = _assert_feedback_clear(page, fully_visible=True)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_crypto_intelligence_r4_browser.py:3182: in _assert_feedback_clear
+    assert overlap_width <= 1 or overlap_height <= 1, (feedback, control)
+E   AssertionError: ({'x': 81.875, 'y': 526, 'width': 156.25, 'height': 50, ...}, {'x': 20, 'y': 536.71875, 'width': 121.8125, 'height': 43, ...})
+E   assert (59.9375 <= 1 or 39.28125 <= 1)
+_ test_r4_saved_remove_failure_feedback_is_visible_without_rebuilding[en-390] __
+tests/test_crypto_intelligence_r4_browser.py:3360: in test_r4_saved_remove_failure_feedback_is_visible_without_rebuilding
+    assert box["action"]["top"] >= box["header"] and box["action"]["bottom"] <= box["feedback"]["top"] - 8
+E   assert (535.78125 >= 229.78125 and 579.78125 <= (478 - 8))
+_ test_r4_saved_remove_failure_feedback_is_visible_without_rebuilding[zh-320] __
+tests/test_crypto_intelligence_r4_browser.py:3360: in test_r4_saved_remove_failure_feedback_is_visible_without_rebuilding
+    assert box["action"]["top"] >= box["header"] and box["action"]["bottom"] <= box["feedback"]["top"] - 8
+E   assert (535.78125 >= 229.78125 and 579.78125 <= (466 - 8))
+=========================== short test summary info ============================
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_current_actions_wrap_with_separate_touch_targets[en-320]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_current_actions_wrap_with_separate_touch_targets[zh-320]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_current_actions_wrap_with_separate_touch_targets[en-390]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_current_actions_wrap_with_separate_touch_targets[zh-390]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_current_actions_wrap_with_separate_touch_targets[en-1440]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_disabled_current_save_is_distinct_and_inert[en-390]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_disabled_current_save_is_distinct_and_inert[zh-320]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_mutation_feedback_never_covers_controls[en-390-save]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_mutation_feedback_never_covers_controls[en-390-remove]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_mutation_feedback_never_covers_controls[en-390-remove-expired]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_mutation_feedback_never_covers_controls[en-390-unreadable]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_mutation_feedback_never_covers_controls[en-390-unconfirmed]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_mutation_feedback_never_covers_controls[zh-320-save]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_mutation_feedback_never_covers_controls[zh-320-remove]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_mutation_feedback_never_covers_controls[zh-320-remove-expired]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_mutation_feedback_never_covers_controls[zh-320-unreadable]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_mutation_feedback_never_covers_controls[zh-320-unconfirmed]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_feedback_timeout_keeps_action_geometry_and_reading[en-390]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_feedback_timeout_keeps_action_geometry_and_reading[zh-320]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_saved_remove_failure_feedback_is_visible_without_rebuilding[en-390]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_saved_remove_failure_feedback_is_visible_without_rebuilding[zh-320]
+21 failed, 54 passed in 47.92s

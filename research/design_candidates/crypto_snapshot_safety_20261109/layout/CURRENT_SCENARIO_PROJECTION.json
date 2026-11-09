@@ -1,0 +1,12 @@
+[
+  {
+    "case": "current-en-320.json",
+    "html_exact": true,
+    "geometry_exact": true
+  },
+  {
+    "case": "current-zh-1440.json",
+    "html_exact": true,
+    "geometry_exact": true
+  }
+]

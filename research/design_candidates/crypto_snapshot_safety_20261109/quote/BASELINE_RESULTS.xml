@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="18" skipped="0" tests="37" time="10.714" timestamp="2026-11-09T09:22:46.881749-07:00" hostname="m2studio"><testcase classname="tests.test_crypto_intelligence_r4" name="test_quote_clarity_invalid_price_preserves_other_asset_evidence[missing]" time="0.001" /><testcase classname="tests.test_crypto_intelligence_r4" name="test_quote_clarity_invalid_price_preserves_other_asset_evidence[null]" time="0.002" /><testcase classname="tests.test_crypto_intelligence_r4" name="test_quote_clarity_invalid_price_preserves_other_asset_evidence[zero]" time="0.001"><failure message="assert 0.0 is None">tests/test_crypto_intelligence_r4.py:435: in test_quote_clarity_invalid_price_preserves_other_asset_evidence
+    assert asset["price"] is None
+E   assert 0.0 is None</failure></testcase><testcase classname="tests.test_crypto_intelligence_r4" name="test_quote_clarity_invalid_price_preserves_other_asset_evidence[negative_zero]" time="0.002"><failure message="assert -0.0 is None">tests/test_crypto_intelligence_r4.py:435: in test_quote_clarity_invalid_price_preserves_other_asset_evidence
+    assert asset["price"] is None
+E   assert -0.0 is None</failure></testcase><testcase classname="tests.test_crypto_intelligence_r4" name="test_quote_clarity_invalid_price_preserves_other_asset_evidence[negative]" time="0.001"><failure message="assert -1.0 is None">tests/test_crypto_intelligence_r4.py:435: in test_quote_clarity_invalid_price_preserves_other_asset_evidence
+    assert asset["price"] is None
+E   assert -1.0 is None</failure></testcase><testcase classname="tests.test_crypto_intelligence_r4" name="test_quote_clarity_invalid_price_preserves_other_asset_evidence[true]" time="0.001" /><testcase classname="tests.test_crypto_intelligence_r4" name="test_quote_clarity_invalid_price_preserves_other_asset_evidence[false]" time="0.001" /><testcase classname="tests.test_crypto_intelligence_r4" name="test_quote_clarity_invalid_price_preserves_other_asset_evidence[nan]" time="0.001" /><testcase classname="tests.test_crypto_intelligence_r4" name="test_quote_clarity_invalid_price_preserves_other_asset_evidence[positive_infinity]" time="0.001" /><testcase classname="tests.test_crypto_intelligence_r4" name="test_quote_clarity_invalid_price_preserves_other_asset_evidence[negative_infinity]" time="0.001" /><testcase classname="tests.test_crypto_intelligence_r4" name="test_quote_clarity_invalid_price_preserves_other_asset_evidence[numeric_string]" time="0.002" /><testcase classname="tests.test_crypto_intelligence_r4" name="test_quote_clarity_invalid_price_preserves_other_asset_evidence[mapping]" time="0.001" /><testcase classname="tests.test_crypto_intelligence_r4" name="test_quote_clarity_invalid_price_preserves_other_asset_evidence[list]" time="0.001" /><testcase classname="tests.test_crypto_intelligence_r4" name="test_quote_clarity_positive_price_remains_a_supplied_number[5e-324]" time="0.000" /><testcase classname="tests.test_crypto_intelligence_r4" name="test_quote_clarity_positive_price_remains_a_supplied_number[1e-08]" time="0.000" /><testcase classname="tests.test_crypto_intelligence_r4" name="test_quote_clarity_positive_price_remains_a_supplied_number[0.001]" time="0.001" /><testcase classname="tests.test_crypto_intelligence_r4" name="test_quote_clarity_positive_price_remains_a_supplied_number[104.19]" time="0.001" /><testcase classname="tests.test_crypto_intelligence_r4" name="test_quote_clarity_positive_price_remains_a_supplied_number[2413.2]" time="0.001" /><testcase classname="tests.test_crypto_intelligence_r4" name="test_quote_clarity_server_price_cell_is_explicit_and_never_false_zero[None-Unavailable\u6682\u65e0]" time="0.318"><failure message="AssertionError: assert ['—'] == ['Unavailable暂无']&#10;  &#10;  At index 0 diff: '—' != 'Unavailable暂无'&#10;  Use -v to get more diff">tests/test_crypto_intelligence_r4.py:498: in test_quote_clarity_server_price_cell_is_explicit_and_never_false_zero
+    assert parser.cells == [expected]
+E   AssertionError: assert ['—'] == ['Unavailable暂无']
+E     
+E     At index 0 diff: '—' != 'Unavailable暂无'
+E     Use -v to get more diff</failure></testcase><testcase classname="tests.test_crypto_intelligence_r4" name="test_quote_clarity_server_price_cell_is_explicit_and_never_false_zero[0-Unavailable\u6682\u65e0]" time="0.089"><failure message="AssertionError: assert ['$0.00'] == ['Unavailable暂无']&#10;  &#10;  At index 0 diff: '$0.00' != 'Unavailable暂无'&#10;  Use -v to get more diff">tests/test_crypto_intelligence_r4.py:498: in test_quote_clarity_server_price_cell_is_explicit_and_never_false_zero
+    assert parser.cells == [expected]
+E   AssertionError: assert ['$0.00'] == ['Unavailable暂无']
+E     
+E     At index 0 diff: '$0.00' != 'Unavailable暂无'
+E     Use -v to get more diff</failure></testcase><testcase classname="tests.test_crypto_intelligence_r4" name="test_quote_clarity_server_price_cell_is_explicit_and_never_false_zero[-1-Unavailable\u6682\u65e0]" time="0.128"><failure message="AssertionError: assert ['$-1.00'] == ['Unavailable暂无']&#10;  &#10;  At index 0 diff: '$-1.00' != 'Unavailable暂无'&#10;  Use -v to get more diff">tests/test_crypto_intelligence_r4.py:498: in test_quote_clarity_server_price_cell_is_explicit_and_never_false_zero
+    assert parser.cells == [expected]
+E   AssertionError: assert ['$-1.00'] == ['Unavailable暂无']
+E     
+E     At index 0 diff: '$-1.00' != 'Unavailable暂无'
+E     Use -v to get more diff</failure></testcase><testcase classname="tests.test_crypto_intelligence_r4" name="test_quote_clarity_server_price_cell_is_explicit_and_never_false_zero[5e-324-&lt;$0.00000001]" time="0.240"><failure message="AssertionError: assert ['$0.00'] == ['&lt;$0.00000001']&#10;  &#10;  At index 0 diff: '$0.00' != '&lt;$0.00000001'&#10;  Use -v to get more diff">tests/test_crypto_intelligence_r4.py:498: in test_quote_clarity_server_price_cell_is_explicit_and_never_false_zero
+    assert parser.cells == [expected]
+E   AssertionError: assert ['$0.00'] == ['&lt;$0.00000001']
+E     
+E     At index 0 diff: '$0.00' != '&lt;$0.00000001'
+E     Use -v to get more diff</failure></testcase><testcase classname="tests.test_crypto_intelligence_r4" name="test_quote_clarity_server_price_cell_is_explicit_and_never_false_zero[9e-09-&lt;$0.00000001]" time="0.116"><failure message="AssertionError: assert ['$0.00'] == ['&lt;$0.00000001']&#10;  &#10;  At index 0 diff: '$0.00' != '&lt;$0.00000001'&#10;  Use -v to get more diff">tests/test_crypto_intelligence_r4.py:498: in test_quote_clarity_server_price_cell_is_explicit_and_never_false_zero
+    assert parser.cells == [expected]
+E   AssertionError: assert ['$0.00'] == ['&lt;$0.00000001']
+E     
+E     At index 0 diff: '$0.00' != '&lt;$0.00000001'
+E     Use -v to get more diff</failure></testcase><testcase classname="tests.test_crypto_intelligence_r4" name="test_quote_clarity_server_price_cell_is_explicit_and_never_false_zero[1e-08-$0.00000001]" time="0.088"><failure message="AssertionError: assert ['$0.00'] == ['$0.00000001']&#10;  &#10;  At index 0 diff: '$0.00' != '$0.00000001'&#10;  Use -v to get more diff">tests/test_crypto_intelligence_r4.py:498: in test_quote_clarity_server_price_cell_is_explicit_and_never_false_zero
+    assert parser.cells == [expected]
+E   AssertionError: assert ['$0.00'] == ['$0.00000001']
+E     
+E     At index 0 diff: '$0.00' != '$0.00000001'
+E     Use -v to get more diff</failure></testcase><testcase classname="tests.test_crypto_intelligence_r4" name="test_quote_clarity_server_price_cell_is_explicit_and_never_false_zero[1.5e-08-$0.00000002]" time="0.144"><failure message="AssertionError: assert ['$0.00'] == ['$0.00000002']&#10;  &#10;  At index 0 diff: '$0.00' != '$0.00000002'&#10;  Use -v to get more diff">tests/test_crypto_intelligence_r4.py:498: in test_quote_clarity_server_price_cell_is_explicit_and_never_false_zero
+    assert parser.cells == [expected]
+E   AssertionError: assert ['$0.00'] == ['$0.00000002']
+E     
+E     At index 0 diff: '$0.00' != '$0.00000002'
+E     Use -v to get more diff</failure></testcase><testcase classname="tests.test_crypto_intelligence_r4" name="test_quote_clarity_server_price_cell_is_explicit_and_never_false_zero[2.5e-08-$0.00000003]" time="0.236"><failure message="AssertionError: assert ['$0.00'] == ['$0.00000003']&#10;  &#10;  At index 0 diff: '$0.00' != '$0.00000003'&#10;  Use -v to get more diff">tests/test_crypto_intelligence_r4.py:498: in test_quote_clarity_server_price_cell_is_explicit_and_never_false_zero
+    assert parser.cells == [expected]
+E   AssertionError: assert ['$0.00'] == ['$0.00000003']
+E     
+E     At index 0 diff: '$0.00' != '$0.00000003'
+E     Use -v to get more diff</failure></testcase><testcase classname="tests.test_crypto_intelligence_r4" name="test_quote_clarity_server_price_cell_is_explicit_and_never_false_zero[0.000123455-$0.00012346]" time="0.113"><failure message="AssertionError: assert ['$0.00'] == ['$0.00012346']&#10;  &#10;  At index 0 diff: '$0.00' != '$0.00012346'&#10;  Use -v to get more diff">tests/test_crypto_intelligence_r4.py:498: in test_quote_clarity_server_price_cell_is_explicit_and_never_false_zero
+    assert parser.cells == [expected]
+E   AssertionError: assert ['$0.00'] == ['$0.00012346']
+E     
+E     At index 0 diff: '$0.00' != '$0.00012346'
+E     Use -v to get more diff</failure></testcase><testcase classname="tests.test_crypto_intelligence_r4" name="test_quote_clarity_server_price_cell_is_explicit_and_never_false_zero[0.001-$0.001]" time="0.134"><failure message="AssertionError: assert ['$0.00'] == ['$0.001']&#10;  &#10;  At index 0 diff: '$0.00' != '$0.001'&#10;  Use -v to get more diff">tests/test_crypto_intelligence_r4.py:498: in test_quote_clarity_server_price_cell_is_explicit_and_never_false_zero
+    assert parser.cells == [expected]
+E   AssertionError: assert ['$0.00'] == ['$0.001']
+E     
+E     At index 0 diff: '$0.00' != '$0.001'
+E     Use -v to get more diff</failure></testcase><testcase classname="tests.test_crypto_intelligence_r4" name="test_quote_clarity_server_price_cell_is_explicit_and_never_false_zero[0.009999994-$0.00999999]" time="0.116"><failure message="AssertionError: assert ['$0.01'] == ['$0.00999999']&#10;  &#10;  At index 0 diff: '$0.01' != '$0.00999999'&#10;  Use -v to get more diff">tests/test_crypto_intelligence_r4.py:498: in test_quote_clarity_server_price_cell_is_explicit_and_never_false_zero
+    assert parser.cells == [expected]
+E   AssertionError: assert ['$0.01'] == ['$0.00999999']
+E     
+E     At index 0 diff: '$0.01' != '$0.00999999'
+E     Use -v to get more diff</failure></testcase><testcase classname="tests.test_crypto_intelligence_r4" name="test_quote_clarity_server_price_cell_is_explicit_and_never_false_zero[0.009999995-$0.01]" time="0.233" /><testcase classname="tests.test_crypto_intelligence_r4" name="test_quote_clarity_server_price_cell_is_explicit_and_never_false_zero[0.01-$0.01]" time="0.177" /><testcase classname="tests.test_crypto_intelligence_r4" name="test_quote_clarity_server_price_cell_is_explicit_and_never_false_zero[104.19-$104.19]" time="0.118" /><testcase classname="tests.test_crypto_intelligence_r4" name="test_quote_clarity_server_price_cell_is_explicit_and_never_false_zero[2413.2-$2,413]" time="0.275" /><testcase classname="tests.test_crypto_intelligence_r4_browser" name="test_r4_quote_clarity_server_and_inspector_agree_without_losing_asset_context[quote-invalid-en-390-False]" time="2.422"><failure message="AssertionError: assert '$0.00' == 'Unavailable'&#10;  &#10;  - Unavailable&#10;  + $0.00">tests/test_crypto_intelligence_r4_browser.py:1826: in test_r4_quote_clarity_server_and_inspector_agree_without_losing_asset_context
+    assert row.locator("td").nth(1).inner_text() == price
+E   AssertionError: assert '$0.00' == 'Unavailable'
+E     
+E     - Unavailable
+E     + $0.00</failure></testcase><testcase classname="tests.test_crypto_intelligence_r4_browser" name="test_r4_quote_clarity_server_and_inspector_agree_without_losing_asset_context[quote-invalid-zh-320-True]" time="1.001"><failure message="AssertionError: assert '$0.00' == '暂无'&#10;  &#10;  - 暂无&#10;  + $0.00">tests/test_crypto_intelligence_r4_browser.py:1826: in test_r4_quote_clarity_server_and_inspector_agree_without_losing_asset_context
+    assert row.locator("td").nth(1).inner_text() == price
+E   AssertionError: assert '$0.00' == '暂无'
+E     
+E     - 暂无
+E     + $0.00</failure></testcase><testcase classname="tests.test_crypto_intelligence_r4_browser" name="test_r4_quote_clarity_server_and_inspector_agree_without_losing_asset_context[quote-small-en-390-False]" time="0.594"><failure message="AssertionError: assert '$0.00' == '$0.001'&#10;  &#10;  - $0.001&#10;  ?      -&#10;  + $0.00">tests/test_crypto_intelligence_r4_browser.py:1826: in test_r4_quote_clarity_server_and_inspector_agree_without_losing_asset_context
+    assert row.locator("td").nth(1).inner_text() == price
+E   AssertionError: assert '$0.00' == '$0.001'
+E     
+E     - $0.001
+E     ?      -
+E     + $0.00</failure></testcase><testcase classname="tests.test_crypto_intelligence_r4_browser" name="test_r4_quote_clarity_server_and_inspector_agree_without_losing_asset_context[quote-small-zh-320-True]" time="1.596"><failure message="AssertionError: assert '$0.00' == '$0.001'&#10;  &#10;  - $0.001&#10;  ?      -&#10;  + $0.00">tests/test_crypto_intelligence_r4_browser.py:1826: in test_r4_quote_clarity_server_and_inspector_agree_without_losing_asset_context
+    assert row.locator("td").nth(1).inner_text() == price
+E   AssertionError: assert '$0.00' == '$0.001'
+E     
+E     - $0.001
+E     ?      -
+E     + $0.00</failure></testcase></testsuite></testsuites>

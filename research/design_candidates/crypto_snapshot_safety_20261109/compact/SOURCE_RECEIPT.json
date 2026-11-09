@@ -1,0 +1,60 @@
+{
+  "source_parent": "32ad0bc508b50afefa3dc485f970423733a42c54",
+  "runtime_version": "1bbbd2258e94",
+  "files": {
+    "tests/test_crypto_intelligence_r4_browser.py": {
+      "bytes": 94803,
+      "sha256": "07502af8e1aceff8ce6170ac63cedf8a9ea20ba73653fbb628663961e633093c",
+      "blob": "499812957f2866428386f9f5851f081efa255864"
+    },
+    "site/crypto-r4.html": {
+      "bytes": 118948,
+      "sha256": "2e22a606ee4ff4398fe0918a1be9209765d90fc90e9ef1d3c2cdb2560b4bcf53",
+      "blob": "42917459d7c43ac2632d7d5fa58ee870816abfa5"
+    },
+    "site/vector-r4.html": {
+      "bytes": 118947,
+      "sha256": "4992ccef48ad9498ba16571fe5438216c6341b433d81582879bf012784e315cd",
+      "blob": "c44f275303e545d3bd6e963084ba9397fd501739"
+    },
+    "site/crypto_intelligence_r4.css": {
+      "bytes": 21915,
+      "sha256": "c5d2c8b28229d506d243b90bcf3be8d69f3de2ef4d519d98ebbbaca0d105adff",
+      "blob": "42ef998089e8f6e312fb768e07f3bccfd2701b8c"
+    },
+    "templates/crypto_intelligence_r4.css": {
+      "bytes": 21915,
+      "sha256": "c5d2c8b28229d506d243b90bcf3be8d69f3de2ef4d519d98ebbbaca0d105adff",
+      "blob": "42ef998089e8f6e312fb768e07f3bccfd2701b8c"
+    }
+  },
+  "unchanged_inputs": [
+    "templates/crypto_intelligence_r4.js",
+    "site/crypto_intelligence_r4.js",
+    "site/crypto_intelligence_r4.json",
+    "templates/crypto_intelligence_r4.html.j2",
+    "scripts/build_crypto_intelligence_r4.py",
+    "tests/test_crypto_intelligence_r4.py",
+    "lib/crypto_intelligence_view.py",
+    "site/theme.js",
+    "site/theme.css",
+    "site/illus.js",
+    "site/illus.css",
+    "site/navigation-refresh.css",
+    "site/logo_config.js",
+    "site/stock-logos.js",
+    "site/live_config.js",
+    "site/live.js"
+  ],
+  "pages": [
+    {
+      "path": "site/crypto-r4.html",
+      "only_two_asset_version_references_changed": true
+    },
+    {
+      "path": "site/vector-r4.html",
+      "only_two_asset_version_references_changed": true
+    }
+  ],
+  "served_css_matches": true
+}

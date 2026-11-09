@@ -1,0 +1,154 @@
+FFFFFFFF......FFFF........FFFFFF                                         [100%]
+=================================== FAILURES ===================================
+_ test_relative_integrity_unavailable_value_cannot_retain_direction[missing-Leading Bitcoin-\u9886\u5148\u6bd4\u7279\u5e01] _
+tests/test_crypto_intelligence_r4.py:334: in test_relative_integrity_unavailable_value_cannot_retain_direction
+    assert (asset["relative_en"], asset["relative_zh"]) == ("Unavailable", "暂无")
+E   AssertionError: assert ('Leading Bitcoin', '领先比特币') == ('Unavailable', '暂无')
+E     
+E     At index 0 diff: 'Leading Bitcoin' != 'Unavailable'
+E     Use -v to get more diff
+_ test_relative_integrity_unavailable_value_cannot_retain_direction[null-Lagging Bitcoin-\u843d\u540e\u6bd4\u7279\u5e01] _
+tests/test_crypto_intelligence_r4.py:334: in test_relative_integrity_unavailable_value_cannot_retain_direction
+    assert (asset["relative_en"], asset["relative_zh"]) == ("Unavailable", "暂无")
+E   AssertionError: assert ('Lagging Bitcoin', '落后比特币') == ('Unavailable', '暂无')
+E     
+E     At index 0 diff: 'Lagging Bitcoin' != 'Unavailable'
+E     Use -v to get more diff
+_ test_relative_integrity_unavailable_value_cannot_retain_direction[true-Tracking Bitcoin-\u8ddf\u968f\u6bd4\u7279\u5e01] _
+tests/test_crypto_intelligence_r4.py:334: in test_relative_integrity_unavailable_value_cannot_retain_direction
+    assert (asset["relative_en"], asset["relative_zh"]) == ("Unavailable", "暂无")
+E   AssertionError: assert ('Tracking Bitcoin', '跟随比特币') == ('Unavailable', '暂无')
+E     
+E     At index 0 diff: 'Tracking Bitcoin' != 'Unavailable'
+E     Use -v to get more diff
+_ test_relative_integrity_unavailable_value_cannot_retain_direction[false-Leading Bitcoin-\u79ef\u7d2f\u5386\u53f2\u4e2d] _
+tests/test_crypto_intelligence_r4.py:334: in test_relative_integrity_unavailable_value_cannot_retain_direction
+    assert (asset["relative_en"], asset["relative_zh"]) == ("Unavailable", "暂无")
+E   AssertionError: assert ('Leading Bitcoin', '积累历史中') == ('Unavailable', '暂无')
+E     
+E     At index 0 diff: 'Leading Bitcoin' != 'Unavailable'
+E     Use -v to get more diff
+_ test_relative_integrity_unavailable_value_cannot_retain_direction[nan-Tracking Bitcoin-\u9886\u5148\u6bd4\u7279\u5e01] _
+tests/test_crypto_intelligence_r4.py:334: in test_relative_integrity_unavailable_value_cannot_retain_direction
+    assert (asset["relative_en"], asset["relative_zh"]) == ("Unavailable", "暂无")
+E   AssertionError: assert ('Tracking Bitcoin', '领先比特币') == ('Unavailable', '暂无')
+E     
+E     At index 0 diff: 'Tracking Bitcoin' != 'Unavailable'
+E     Use -v to get more diff
+_ test_relative_integrity_unavailable_value_cannot_retain_direction[positive_infinity-Leading Bitcoin-\u9886\u5148\u6bd4\u7279\u5e01] _
+tests/test_crypto_intelligence_r4.py:334: in test_relative_integrity_unavailable_value_cannot_retain_direction
+    assert (asset["relative_en"], asset["relative_zh"]) == ("Unavailable", "暂无")
+E   AssertionError: assert ('Leading Bitcoin', '领先比特币') == ('Unavailable', '暂无')
+E     
+E     At index 0 diff: 'Leading Bitcoin' != 'Unavailable'
+E     Use -v to get more diff
+_ test_relative_integrity_unavailable_value_cannot_retain_direction[negative_infinity-Lagging Bitcoin-\u843d\u540e\u6bd4\u7279\u5e01] _
+tests/test_crypto_intelligence_r4.py:334: in test_relative_integrity_unavailable_value_cannot_retain_direction
+    assert (asset["relative_en"], asset["relative_zh"]) == ("Unavailable", "暂无")
+E   AssertionError: assert ('Lagging Bitcoin', '落后比特币') == ('Unavailable', '暂无')
+E     
+E     At index 0 diff: 'Lagging Bitcoin' != 'Unavailable'
+E     Use -v to get more diff
+_ test_relative_integrity_unavailable_value_cannot_retain_direction[numeric_string-Leading Bitcoin-\u9886\u5148\u6bd4\u7279\u5e01] _
+tests/test_crypto_intelligence_r4.py:334: in test_relative_integrity_unavailable_value_cannot_retain_direction
+    assert (asset["relative_en"], asset["relative_zh"]) == ("Unavailable", "暂无")
+E   AssertionError: assert ('Leading Bitcoin', '领先比特币') == ('Unavailable', '暂无')
+E     
+E     At index 0 diff: 'Leading Bitcoin' != 'Unavailable'
+E     Use -v to get more diff
+_ test_relative_integrity_null_history_has_one_bilingual_meaning[Building history-None-expected1] _
+tests/test_crypto_intelligence_r4.py:379: in test_relative_integrity_null_history_has_one_bilingual_meaning
+    assert (asset["relative_en"], asset["relative_zh"]) == expected
+E   AssertionError: assert ('Building history', '暂无') == ('Building history', '积累历史中')
+E     
+E     At index 1 diff: '暂无' != '积累历史中'
+E     Use -v to get more diff
+_ test_relative_integrity_null_history_has_one_bilingual_meaning[Building history-\u9886\u5148\u6bd4\u7279\u5e01-expected2] _
+tests/test_crypto_intelligence_r4.py:379: in test_relative_integrity_null_history_has_one_bilingual_meaning
+    assert (asset["relative_en"], asset["relative_zh"]) == expected
+E   AssertionError: assert ('Building history', '领先比特币') == ('Building history', '积累历史中')
+E     
+E     At index 1 diff: '领先比特币' != '积累历史中'
+E     Use -v to get more diff
+_ test_relative_integrity_null_history_has_one_bilingual_meaning[Leading Bitcoin-\u79ef\u7d2f\u5386\u53f2\u4e2d-expected3] _
+tests/test_crypto_intelligence_r4.py:379: in test_relative_integrity_null_history_has_one_bilingual_meaning
+    assert (asset["relative_en"], asset["relative_zh"]) == expected
+E   AssertionError: assert ('Leading Bitcoin', '积累历史中') == ('Unavailable', '暂无')
+E     
+E     At index 0 diff: 'Leading Bitcoin' != 'Unavailable'
+E     Use -v to get more diff
+_ test_relative_integrity_null_history_has_one_bilingual_meaning[building history-\u79ef\u7d2f\u5386\u53f2\u4e2d-expected4] _
+tests/test_crypto_intelligence_r4.py:379: in test_relative_integrity_null_history_has_one_bilingual_meaning
+    assert (asset["relative_en"], asset["relative_zh"]) == expected
+E   AssertionError: assert ('building history', '积累历史中') == ('Unavailable', '暂无')
+E     
+E     At index 0 diff: 'building history' != 'Unavailable'
+E     Use -v to get more diff
+_ test_relative_integrity_malformed_optional_container_preserves_asset[Leading Bitcoin] _
+tests/test_crypto_intelligence_r4.py:408: in test_relative_integrity_malformed_optional_container_preserves_asset
+    asset = build_view(*args)["assets"][0]
+            ^^^^^^^^^^^^^^^^^
+lib/crypto_intelligence_view.py:285: in build_view
+    "relative_90d_pct": finite((item.get("relative") or {}).get("change_90d_pct")) if covered else None,
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'str' object has no attribute 'get'
+__ test_relative_integrity_malformed_optional_container_preserves_asset[True] __
+tests/test_crypto_intelligence_r4.py:408: in test_relative_integrity_malformed_optional_container_preserves_asset
+    asset = build_view(*args)["assets"][0]
+            ^^^^^^^^^^^^^^^^^
+lib/crypto_intelligence_view.py:285: in build_view
+    "relative_90d_pct": finite((item.get("relative") or {}).get("change_90d_pct")) if covered else None,
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'bool' object has no attribute 'get'
+_ test_r4_relative_integrity_projection_reaches_overview_inspector_and_comparison[en-390-False] _
+tests/test_crypto_intelligence_r4_browser.py:1755: in test_r4_relative_integrity_projection_reaches_overview_inspector_and_comparison
+    assert unavailable in watch.nth(0).inner_text()
+E   assert 'Unavailable' in 'Ethereum ETH\n\nLeading Bitcoin · Stressed\n\nInspect asset'
+E    +  where 'Ethereum ETH\n\nLeading Bitcoin · Stressed\n\nInspect asset' = inner_text()
+E    +    where inner_text = <Locator frame=<Frame name= url='http://127.0.0.1:54463/crypto-r4.html?lang=en#overview'> selector='[data-view="overview"] .cri-watch-row >> nth=0'>.inner_text
+E    +      where <Locator frame=<Frame name= url='http://127.0.0.1:54463/crypto-r4.html?lang=en#overview'> selector='[data-view="overview"] .cri-watch-row >> nth=0'> = nth(0)
+E    +        where nth = <Locator frame=<Frame name= url='http://127.0.0.1:54463/crypto-r4.html?lang=en#overview'> selector='[data-view="overview"] .cri-watch-row'>.nth
+_ test_r4_relative_integrity_projection_reaches_overview_inspector_and_comparison[zh-320-True] _
+tests/test_crypto_intelligence_r4_browser.py:1755: in test_r4_relative_integrity_projection_reaches_overview_inspector_and_comparison
+    assert unavailable in watch.nth(0).inner_text()
+E   assert '暂无' in 'Ethereum ETH\n\n领先比特币 · 承压\n\n查看资产'
+E    +  where 'Ethereum ETH\n\n领先比特币 · 承压\n\n查看资产' = inner_text()
+E    +    where inner_text = <Locator frame=<Frame name= url='http://127.0.0.1:54463/crypto-r4.html?lang=zh#overview'> selector='[data-view="overview"] .cri-watch-row >> nth=0'>.inner_text
+E    +      where <Locator frame=<Frame name= url='http://127.0.0.1:54463/crypto-r4.html?lang=zh#overview'> selector='[data-view="overview"] .cri-watch-row >> nth=0'> = nth(0)
+E    +        where nth = <Locator frame=<Frame name= url='http://127.0.0.1:54463/crypto-r4.html?lang=zh#overview'> selector='[data-view="overview"] .cri-watch-row'>.nth
+_ test_r4_relative_integrity_leaders_filter_uses_only_qualified_projection[en] _
+tests/test_crypto_intelligence_r4_browser.py:1799: in test_r4_relative_integrity_leaders_filter_uses_only_qualified_projection
+    assert rows.evaluate_all("nodes=>nodes.map(n=>n.dataset.assetRow)")==["XRP"]
+E   AssertionError: assert ['ETH', 'XRP'] == ['XRP']
+E     
+E     At index 0 diff: 'ETH' != 'XRP'
+E     Left contains one more item: 'XRP'
+E     Use -v to get more diff
+_ test_r4_relative_integrity_leaders_filter_uses_only_qualified_projection[zh] _
+tests/test_crypto_intelligence_r4_browser.py:1799: in test_r4_relative_integrity_leaders_filter_uses_only_qualified_projection
+    assert rows.evaluate_all("nodes=>nodes.map(n=>n.dataset.assetRow)")==["XRP"]
+E   AssertionError: assert ['ETH', 'XRP'] == ['XRP']
+E     
+E     At index 0 diff: 'ETH' != 'XRP'
+E     Left contains one more item: 'XRP'
+E     Use -v to get more diff
+=========================== short test summary info ============================
+FAILED tests/test_crypto_intelligence_r4.py::test_relative_integrity_unavailable_value_cannot_retain_direction[missing-Leading Bitcoin-\u9886\u5148\u6bd4\u7279\u5e01]
+FAILED tests/test_crypto_intelligence_r4.py::test_relative_integrity_unavailable_value_cannot_retain_direction[null-Lagging Bitcoin-\u843d\u540e\u6bd4\u7279\u5e01]
+FAILED tests/test_crypto_intelligence_r4.py::test_relative_integrity_unavailable_value_cannot_retain_direction[true-Tracking Bitcoin-\u8ddf\u968f\u6bd4\u7279\u5e01]
+FAILED tests/test_crypto_intelligence_r4.py::test_relative_integrity_unavailable_value_cannot_retain_direction[false-Leading Bitcoin-\u79ef\u7d2f\u5386\u53f2\u4e2d]
+FAILED tests/test_crypto_intelligence_r4.py::test_relative_integrity_unavailable_value_cannot_retain_direction[nan-Tracking Bitcoin-\u9886\u5148\u6bd4\u7279\u5e01]
+FAILED tests/test_crypto_intelligence_r4.py::test_relative_integrity_unavailable_value_cannot_retain_direction[positive_infinity-Leading Bitcoin-\u9886\u5148\u6bd4\u7279\u5e01]
+FAILED tests/test_crypto_intelligence_r4.py::test_relative_integrity_unavailable_value_cannot_retain_direction[negative_infinity-Lagging Bitcoin-\u843d\u540e\u6bd4\u7279\u5e01]
+FAILED tests/test_crypto_intelligence_r4.py::test_relative_integrity_unavailable_value_cannot_retain_direction[numeric_string-Leading Bitcoin-\u9886\u5148\u6bd4\u7279\u5e01]
+FAILED tests/test_crypto_intelligence_r4.py::test_relative_integrity_null_history_has_one_bilingual_meaning[Building history-None-expected1]
+FAILED tests/test_crypto_intelligence_r4.py::test_relative_integrity_null_history_has_one_bilingual_meaning[Building history-\u9886\u5148\u6bd4\u7279\u5e01-expected2]
+FAILED tests/test_crypto_intelligence_r4.py::test_relative_integrity_null_history_has_one_bilingual_meaning[Leading Bitcoin-\u79ef\u7d2f\u5386\u53f2\u4e2d-expected3]
+FAILED tests/test_crypto_intelligence_r4.py::test_relative_integrity_null_history_has_one_bilingual_meaning[building history-\u79ef\u7d2f\u5386\u53f2\u4e2d-expected4]
+FAILED tests/test_crypto_intelligence_r4.py::test_relative_integrity_malformed_optional_container_preserves_asset[Leading Bitcoin]
+FAILED tests/test_crypto_intelligence_r4.py::test_relative_integrity_malformed_optional_container_preserves_asset[True]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_relative_integrity_projection_reaches_overview_inspector_and_comparison[en-390-False]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_relative_integrity_projection_reaches_overview_inspector_and_comparison[zh-320-True]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_relative_integrity_leaders_filter_uses_only_qualified_projection[en]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_relative_integrity_leaders_filter_uses_only_qualified_projection[zh]
+18 failed, 14 passed, 169 deselected in 4.54s

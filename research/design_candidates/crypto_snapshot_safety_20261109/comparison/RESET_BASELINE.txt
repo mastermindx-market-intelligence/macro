@@ -1,0 +1,22 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+_______ test_r4_comparison_reset_moves_focus_before_hiding_recovery[en] ________
+tests/test_crypto_intelligence_r4_browser.py:1446: in test_r4_comparison_reset_moves_focus_before_hiding_recovery
+    assert page.locator("#cri-search").evaluate("node=>document.activeElement===node")
+E   AssertionError: assert False
+E    +  where False = evaluate('node=>document.activeElement===node')
+E    +    where evaluate = <Locator frame=<Frame name= url='http://127.0.0.1:50811/crypto-r4.html?lang=en#markets?h=30&window=30&keep=proof'> selector='#cri-search'>.evaluate
+E    +      where <Locator frame=<Frame name= url='http://127.0.0.1:50811/crypto-r4.html?lang=en#markets?h=30&window=30&keep=proof'> selector='#cri-search'> = locator('#cri-search')
+E    +        where locator = <Page url='http://127.0.0.1:50811/crypto-r4.html?lang=en#markets?h=30&window=30&keep=proof'>.locator
+_______ test_r4_comparison_reset_moves_focus_before_hiding_recovery[zh] ________
+tests/test_crypto_intelligence_r4_browser.py:1446: in test_r4_comparison_reset_moves_focus_before_hiding_recovery
+    assert page.locator("#cri-search").evaluate("node=>document.activeElement===node")
+E   AssertionError: assert False
+E    +  where False = evaluate('node=>document.activeElement===node')
+E    +    where evaluate = <Locator frame=<Frame name= url='http://127.0.0.1:50811/crypto-r4.html?lang=zh#markets?h=30&window=30&keep=proof'> selector='#cri-search'>.evaluate
+E    +      where <Locator frame=<Frame name= url='http://127.0.0.1:50811/crypto-r4.html?lang=zh#markets?h=30&window=30&keep=proof'> selector='#cri-search'> = locator('#cri-search')
+E    +        where locator = <Page url='http://127.0.0.1:50811/crypto-r4.html?lang=zh#markets?h=30&window=30&keep=proof'>.locator
+=========================== short test summary info ============================
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_comparison_reset_moves_focus_before_hiding_recovery[en]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_comparison_reset_moves_focus_before_hiding_recovery[zh]
+2 failed, 117 deselected in 4.54s

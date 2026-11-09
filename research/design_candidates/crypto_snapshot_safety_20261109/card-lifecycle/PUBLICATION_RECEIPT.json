@@ -1,0 +1,1028 @@
+{
+  "source": {
+    "source_parent": "2c9d619dfdc2e21a0cc0839094c6fa2be84a6260",
+    "runtime_parent": "e70fc60183c83565497c431c433b0594423cc7cb",
+    "assets": "7fc541a886d1",
+    "changed": {
+      "templates/crypto_intelligence_r4.js": {
+        "bytes": 70220,
+        "sha256": "a670cd3e4af072eaac164ca83c3edb570b157554f723e027e5fa72eadbe616e7",
+        "blob": "b0c2f59d881757c0981713fe85a785757408a72a"
+      },
+      "tests/test_crypto_intelligence_r4_browser.py": {
+        "bytes": 139174,
+        "sha256": "369f72b45299f64861ae21ba8afcf93337c40670311f6f6c294ce45795ca8e28",
+        "blob": "6bc1a312fc3649d9b2d139c6ff94bbd3364b5e02"
+      },
+      "site/crypto-r4.html": {
+        "bytes": 129566,
+        "sha256": "271d0d28a095a0d9822d2e68d153801427647de23dcf20e1769b61299cf3caf6",
+        "blob": "c35c2cfdb4582964a5c09ec0c2824eb79fef6d51"
+      },
+      "site/vector-r4.html": {
+        "bytes": 129565,
+        "sha256": "92423b70c6c18bb1588aeb053ccbfe2f2d55cdbb648e5ef190db2bd0fbe53de0",
+        "blob": "4cd747e5352e646dee394f74102cb0209c7ec5ac"
+      },
+      "site/crypto_intelligence_r4.js": {
+        "bytes": 70220,
+        "sha256": "a670cd3e4af072eaac164ca83c3edb570b157554f723e027e5fa72eadbe616e7",
+        "blob": "b0c2f59d881757c0981713fe85a785757408a72a"
+      },
+      "templates/crypto_intelligence_r4.html.j2": {
+        "bytes": 23230,
+        "sha256": "76c6a23231e5c9b97ccef4964a04af2d70869a7e93a560adeee27d7cab67c38c",
+        "blob": "6938792268784fca2d19bc0c8eddb634dad2ca88"
+      },
+      "site/crypto_intelligence_r4.css": {
+        "bytes": 23199,
+        "sha256": "ecbe6e8b1e4e10042877dd2c372b8f6aa7b75f6ea013b4bb01ac94465eef7370",
+        "blob": "0ff8227746d546facac1d1f073a9cf9ae20c2b53"
+      },
+      "templates/crypto_intelligence_r4.css": {
+        "bytes": 23199,
+        "sha256": "ecbe6e8b1e4e10042877dd2c372b8f6aa7b75f6ea013b4bb01ac94465eef7370",
+        "blob": "0ff8227746d546facac1d1f073a9cf9ae20c2b53"
+      }
+    },
+    "unchanged": {
+      "scripts/build_crypto_intelligence_r4.py": {
+        "bytes": 5326,
+        "sha256": "abf594e7c1cf34273f4017f6bfc28333df810eb2cff2f8ee30972335671888c0",
+        "blob": "f276092b8e72925c5d967a1f5066bd940392ceb5"
+      },
+      "tests/test_crypto_intelligence_r4.py": {
+        "bytes": 23038,
+        "sha256": "878131aea7d56e5de7f21641f60bdd2fc43cd345f738dd2b8f111c32c9219fa3",
+        "blob": "4ecf96b6707e474a34ca04437f3afd0e8c8ec8e0"
+      },
+      "lib/crypto_intelligence_view.py": {
+        "bytes": 22671,
+        "sha256": "3457d4a183444f6b4d2b8bbed1d5678d30f93e387cd9861f147d58211eb83f73",
+        "blob": "5c90c35c1307d425cb5979aa3ce609e408cfddc6"
+      },
+      "site/crypto_intelligence_r4.json": {
+        "bytes": 28027,
+        "sha256": "807839328e14080902df593408c9001d958b69be70d74d09fadbdc811d859401",
+        "blob": "024278d4143ee076f4253cd295230636818e97bd"
+      },
+      "site/theme.js": {
+        "bytes": 265200,
+        "sha256": "46939917d2e233cb0d8af828d97b1e3b7d18886fd829f88d0bc08c9f3b643455",
+        "blob": "937779ef5770fa92ef93a5e6b0f7e3415f6a7cf3"
+      },
+      "site/theme.css": {
+        "bytes": 221941,
+        "sha256": "2e8611477fd3499877721f9ce9386b1c3a55e00a2ed87c4187387845775ae64a",
+        "blob": "620895319be7e3f7808439ecbae8c33c2197389f"
+      },
+      "site/illus.js": {
+        "bytes": 2752,
+        "sha256": "8e0a3779784525f15bb4a1b20e50f39ef4d0ddf243827f5ab609cfb08a69c620",
+        "blob": "dfe818277c5068fe665337531f89d4fe7976565b"
+      },
+      "site/illus.css": {
+        "bytes": 14335,
+        "sha256": "cbe6a0b4f83095ed300ee49a5d9f4d03e88005170a4792a7a9f41805a67e5f07",
+        "blob": "cda4f3e53a34c5e996b49bdac5732357ed94b2d5"
+      },
+      "site/navigation-refresh.css": {
+        "bytes": 93481,
+        "sha256": "ef068fe19adab3779512462c40ab67b3e75a997a2dc6edfae2d5a36dd604eb5c",
+        "blob": "276c1986f2a728ca59e0f9e0bc7fe269869fdff0"
+      },
+      "site/logo_config.js": {
+        "bytes": 202,
+        "sha256": "b37d33d3194c191b1bb64db3f5c33d17c7dc06a74892e4aa8ea4d50320aae215",
+        "blob": "523923f9f424a144f4a0cf3e4814e2ea36392474"
+      },
+      "site/stock-logos.js": {
+        "bytes": 16539,
+        "sha256": "cc29be531bc08e655464b6c0d384e1a46041aeb31caf7d982e926681fda7cb49",
+        "blob": "759d78f4dfb11de591d8db5cec36a91ca372fe3c"
+      },
+      "site/live_config.js": {
+        "bytes": 367,
+        "sha256": "52943e92422103557d94066ceb65f4402816322281f95e8bd376293fe14d9c10",
+        "blob": "2ad84da9b70e83cd9825a684d3c846fc81e7366d"
+      },
+      "site/live.js": {
+        "bytes": 50731,
+        "sha256": "f8cda39dd4258a5778864b3b7e0bd8b9cc685bd1f926211a72268883a937a592",
+        "blob": "7e91599afb20a69c4010d5dc36c85439381d529f"
+      }
+    },
+    "product_inverse_exact": {
+      "templates/crypto_intelligence_r4.html.j2": true,
+      "templates/crypto_intelligence_r4.css": true,
+      "templates/crypto_intelligence_r4.js": true
+    },
+    "browser_test_inverse_exact": true,
+    "retained_page_outside_14_cards_exact": {
+      "crypto-r4.html": true,
+      "vector-r4.html": true
+    },
+    "case_identity_order": {
+      "crypto-r4.html": [
+        [
+          "failure"
+        ],
+        [
+          "continuation"
+        ],
+        [
+          "continuation"
+        ],
+        [
+          "failure"
+        ],
+        [
+          "failure"
+        ],
+        [
+          "continuation"
+        ],
+        [
+          "continuation"
+        ],
+        [
+          "failure"
+        ],
+        [
+          "continuation"
+        ],
+        [
+          "range"
+        ],
+        [
+          "failure"
+        ],
+        [
+          "continuation"
+        ],
+        [
+          "range"
+        ],
+        [
+          "failure"
+        ]
+      ],
+      "vector-r4.html": [
+        [
+          "failure"
+        ],
+        [
+          "continuation"
+        ],
+        [
+          "continuation"
+        ],
+        [
+          "failure"
+        ],
+        [
+          "failure"
+        ],
+        [
+          "continuation"
+        ],
+        [
+          "continuation"
+        ],
+        [
+          "failure"
+        ],
+        [
+          "continuation"
+        ],
+        [
+          "range"
+        ],
+        [
+          "failure"
+        ],
+        [
+          "continuation"
+        ],
+        [
+          "range"
+        ],
+        [
+          "failure"
+        ]
+      ]
+    },
+    "leading_template_newlines": {
+      "crypto-r4.html": {
+        "before": 7,
+        "after": 10
+      },
+      "vector-r4.html": {
+        "before": 7,
+        "after": 10
+      }
+    },
+    "retained_view_exact": true,
+    "served_assets_exact": true,
+    "runtime_unchanged_after_initial_candidate": true,
+    "test_harness_correction_inverse_exact": true
+  },
+  "runs": {
+    "card-lifecycle-baseline": {
+      "result": {
+        "command": [
+          "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "-m",
+          "pytest",
+          "-q",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_card_expiry_uses_the_complete_utc_expiry_day",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_card_instances_keep_their_own_horizon_and_readable_layout",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_card_unqualified_dates_keep_recorded_instructions",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_card_supplied_text_and_evidence_are_qualified_independently",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_card_static_reading_is_time_neutral_and_typed",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_card_refresh_keeps_focus_and_inspects_the_original_case",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_card_empty_input_preserves_the_existing_empty_branch",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_scenario_retains_its_existing_reading_order",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_frozen_expiry_is_distinct_from_original_progress",
+          "--tb=short",
+          "--junitxml=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/card-lifecycle-baseline/junit.xml",
+          "--basetemp=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/card-lifecycle-baseline/pytest-temp"
+        ],
+        "exit_code": 1,
+        "seconds": 29.535,
+        "source_parent": "2c9d619dfdc2e21a0cc0839094c6fa2be84a6260",
+        "test_sha256": "5f274464ff6e3bb91a8a18ce903f6939f22c38ede63f74141df788edb96a1608"
+      },
+      "tests": 45,
+      "failed": 40,
+      "passed": 5,
+      "observations": {
+        "contexts": 45,
+        "pages": 45,
+        "page_errors": [],
+        "blocked_external_requests": 0,
+        "blocked_websockets": 0,
+        "browser": "157.0.8103.39"
+      },
+      "failed_cases": [
+        {
+          "name": "test_r4_card_expiry_uses_the_complete_utc_expiry_day[2026-10-23T23:59:59.999Z-False-en-390]",
+          "type": null,
+          "message": "assert 0 == 1\n +  where 0 = count()\n +    where count = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=en#scenarios?h=7'> selector='[data-case-ho...inuation\"], [data-case-horizon=\"7\"] .cri-case:has([data-open=\"scenario:continuation\"]) >> nth=0 >> [data-card-window]'>.count\n +      where <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=en#scenarios?h=7'> selector='[data-case-ho...inuation\"], [data-case-horizon=\"7\"] .cri-case:has([data-open=\"scenario:continuation\"]) >> nth=0 >> [data-card-window]'> = locator('[data-card-window]')\n +        where locator = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=en#scenarios?h=7'> selector='[data-case-ho...ta-open=\"scenario:continuation\"], [data-case-horizon=\"7\"] .cri-case:has([data-open=\"scenario:continuation\"]) >> nth=0'>.locator"
+        },
+        {
+          "name": "test_r4_card_expiry_uses_the_complete_utc_expiry_day[2026-10-23T23:59:59.999Z-False-zh-320]",
+          "type": null,
+          "message": "assert 0 == 1\n +  where 0 = count()\n +    where count = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=zh#scenarios?h=7'> selector='[data-case-ho...inuation\"], [data-case-horizon=\"7\"] .cri-case:has([data-open=\"scenario:continuation\"]) >> nth=0 >> [data-card-window]'>.count\n +      where <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=zh#scenarios?h=7'> selector='[data-case-ho...inuation\"], [data-case-horizon=\"7\"] .cri-case:has([data-open=\"scenario:continuation\"]) >> nth=0 >> [data-card-window]'> = locator('[data-card-window]')\n +        where locator = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=zh#scenarios?h=7'> selector='[data-case-ho...ta-open=\"scenario:continuation\"], [data-case-horizon=\"7\"] .cri-case:has([data-open=\"scenario:continuation\"]) >> nth=0'>.locator"
+        },
+        {
+          "name": "test_r4_card_expiry_uses_the_complete_utc_expiry_day[2026-10-24T23:59:59.999Z-False-en-390]",
+          "type": null,
+          "message": "assert 0 == 1\n +  where 0 = count()\n +    where count = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=en#scenarios?h=7'> selector='[data-case-ho...inuation\"], [data-case-horizon=\"7\"] .cri-case:has([data-open=\"scenario:continuation\"]) >> nth=0 >> [data-card-window]'>.count\n +      where <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=en#scenarios?h=7'> selector='[data-case-ho...inuation\"], [data-case-horizon=\"7\"] .cri-case:has([data-open=\"scenario:continuation\"]) >> nth=0 >> [data-card-window]'> = locator('[data-card-window]')\n +        where locator = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=en#scenarios?h=7'> selector='[data-case-ho...ta-open=\"scenario:continuation\"], [data-case-horizon=\"7\"] .cri-case:has([data-open=\"scenario:continuation\"]) >> nth=0'>.locator"
+        },
+        {
+          "name": "test_r4_card_expiry_uses_the_complete_utc_expiry_day[2026-10-24T23:59:59.999Z-False-zh-320]",
+          "type": null,
+          "message": "assert 0 == 1\n +  where 0 = count()\n +    where count = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=zh#scenarios?h=7'> selector='[data-case-ho...inuation\"], [data-case-horizon=\"7\"] .cri-case:has([data-open=\"scenario:continuation\"]) >> nth=0 >> [data-card-window]'>.count\n +      where <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=zh#scenarios?h=7'> selector='[data-case-ho...inuation\"], [data-case-horizon=\"7\"] .cri-case:has([data-open=\"scenario:continuation\"]) >> nth=0 >> [data-card-window]'> = locator('[data-card-window]')\n +        where locator = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=zh#scenarios?h=7'> selector='[data-case-ho...ta-open=\"scenario:continuation\"], [data-case-horizon=\"7\"] .cri-case:has([data-open=\"scenario:continuation\"]) >> nth=0'>.locator"
+        },
+        {
+          "name": "test_r4_card_expiry_uses_the_complete_utc_expiry_day[2026-10-25T00:00:00Z-True-en-390]",
+          "type": null,
+          "message": "assert 'Expired · historical context only' in 'PRICE OBSERVATION · 2026-10-17\\nUpside test\\nPrice condition pending\\nNEXT CHECK\\n\\nFirst watch for a daily close above $86,507.00.\\n\\nInspect scenario'\n +  where 'PRICE OBSERVATION · 2026-10-17\\nUpside test\\nPrice condition pending\\nNEXT CHECK\\n\\nFirst watch for a daily close above $86,507.00.\\n\\nInspect scenario' = inner_text()\n +    where inner_text = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=en#scenarios?h=7'> selector='[data-view=\"scenarios\"] .cri-case >> nth=0'>.inner_text"
+        },
+        {
+          "name": "test_r4_card_expiry_uses_the_complete_utc_expiry_day[2026-10-25T00:00:00Z-True-zh-320]",
+          "type": null,
+          "message": "assert '已到期 · 仅供历史参考' in '价格观测 · 2026-10-17\\n上行检验\\n价格条件尚未满足\\n下一步检查\\n\\n先关注日收盘能否到达$86,507.00上方。\\n\\n查看情景'\n +  where '价格观测 · 2026-10-17\\n上行检验\\n价格条件尚未满足\\n下一步检查\\n\\n先关注日收盘能否到达$86,507.00上方。\\n\\n查看情景' = inner_text()\n +    where inner_text = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=zh#scenarios?h=7'> selector='[data-view=\"scenarios\"] .cri-case >> nth=0'>.inner_text"
+        },
+        {
+          "name": "test_r4_card_instances_keep_their_own_horizon_and_readable_layout[en-390]",
+          "type": null,
+          "message": "assert 0 == 1\n +  where 0 = count()\n +    where count = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=en#scenarios?h=7'> selector='[data-case-ho...inuation\"], [data-case-horizon=\"7\"] .cri-case:has([data-open=\"scenario:continuation\"]) >> nth=0 >> [data-card-window]'>.count\n +      where <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=en#scenarios?h=7'> selector='[data-case-ho...inuation\"], [data-case-horizon=\"7\"] .cri-case:has([data-open=\"scenario:continuation\"]) >> nth=0 >> [data-card-window]'> = locator('[data-card-window]')\n +        where locator = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=en#scenarios?h=7'> selector='[data-case-ho...ta-open=\"scenario:continuation\"], [data-case-horizon=\"7\"] .cri-case:has([data-open=\"scenario:continuation\"]) >> nth=0'>.locator"
+        },
+        {
+          "name": "test_r4_card_instances_keep_their_own_horizon_and_readable_layout[zh-320]",
+          "type": null,
+          "message": "assert 0 == 1\n +  where 0 = count()\n +    where count = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=zh#scenarios?h=7'> selector='[data-case-ho...inuation\"], [data-case-horizon=\"7\"] .cri-case:has([data-open=\"scenario:continuation\"]) >> nth=0 >> [data-card-window]'>.count\n +      where <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=zh#scenarios?h=7'> selector='[data-case-ho...inuation\"], [data-case-horizon=\"7\"] .cri-case:has([data-open=\"scenario:continuation\"]) >> nth=0 >> [data-card-window]'> = locator('[data-card-window]')\n +        where locator = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=zh#scenarios?h=7'> selector='[data-case-ho...ta-open=\"scenario:continuation\"], [data-case-horizon=\"7\"] .cri-case:has([data-open=\"scenario:continuation\"]) >> nth=0'>.locator"
+        },
+        {
+          "name": "test_r4_card_unqualified_dates_keep_recorded_instructions[missing-expiry-en-390]",
+          "type": null,
+          "message": "assert 'Expiry status unavailable' in 'PRICE OBSERVATION · 2026-10-17\\nUpside test\\nPrice condition pending\\nNEXT CHECK\\n\\nFirst watch for a daily close above $86,507.00.\\n\\nInspect scenario'\n +  where 'PRICE OBSERVATION · 2026-10-17\\nUpside test\\nPrice condition pending\\nNEXT CHECK\\n\\nFirst watch for a daily close above $86,507.00.\\n\\nInspect scenario' = inner_text()\n +    where inner_text = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=en#scenarios?h=7'> selector='[data-view=\"scenarios\"] .cri-case >> nth=0'>.inner_text"
+        },
+        {
+          "name": "test_r4_card_unqualified_dates_keep_recorded_instructions[missing-expiry-zh-320]",
+          "type": null,
+          "message": "assert '到期状态暂无' in '价格观测 · 2026-10-17\\n上行检验\\n价格条件尚未满足\\n下一步检查\\n\\n先关注日收盘能否到达$86,507.00上方。\\n\\n查看情景'\n +  where '价格观测 · 2026-10-17\\n上行检验\\n价格条件尚未满足\\n下一步检查\\n\\n先关注日收盘能否到达$86,507.00上方。\\n\\n查看情景' = inner_text()\n +    where inner_text = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=zh#scenarios?h=7'> selector='[data-view=\"scenarios\"] .cri-case >> nth=0'>.inner_text"
+        },
+        {
+          "name": "test_r4_card_unqualified_dates_keep_recorded_instructions[impossible-expiry-en-390]",
+          "type": null,
+          "message": "assert 'Expiry status unavailable' in 'PRICE OBSERVATION · 2026-10-17\\nUpside test\\nPrice condition pending\\nNEXT CHECK\\n\\nFirst watch for a daily close above $86,507.00.\\n\\nInspect scenario'\n +  where 'PRICE OBSERVATION · 2026-10-17\\nUpside test\\nPrice condition pending\\nNEXT CHECK\\n\\nFirst watch for a daily close above $86,507.00.\\n\\nInspect scenario' = inner_text()\n +    where inner_text = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=en#scenarios?h=7'> selector='[data-view=\"scenarios\"] .cri-case >> nth=0'>.inner_text"
+        },
+        {
+          "name": "test_r4_card_unqualified_dates_keep_recorded_instructions[impossible-expiry-zh-320]",
+          "type": null,
+          "message": "assert '到期状态暂无' in '价格观测 · 2026-10-17\\n上行检验\\n价格条件尚未满足\\n下一步检查\\n\\n先关注日收盘能否到达$86,507.00上方。\\n\\n查看情景'\n +  where '价格观测 · 2026-10-17\\n上行检验\\n价格条件尚未满足\\n下一步检查\\n\\n先关注日收盘能否到达$86,507.00上方。\\n\\n查看情景' = inner_text()\n +    where inner_text = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=zh#scenarios?h=7'> selector='[data-view=\"scenarios\"] .cri-case >> nth=0'>.inner_text"
+        },
+        {
+          "name": "test_r4_card_unqualified_dates_keep_recorded_instructions[impossible-cutoff-en-390]",
+          "type": null,
+          "message": "assert 'Expiry status unavailable' in 'PRICE OBSERVATION · 2026-02-30\\nUpside test\\nPrice condition pending\\nNEXT CHECK\\n\\nFirst watch for a daily close above $86,507.00.\\n\\nInspect scenario'\n +  where 'PRICE OBSERVATION · 2026-02-30\\nUpside test\\nPrice condition pending\\nNEXT CHECK\\n\\nFirst watch for a daily close above $86,507.00.\\n\\nInspect scenario' = inner_text()\n +    where inner_text = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=en#scenarios?h=7'> selector='[data-view=\"scenarios\"] .cri-case >> nth=0'>.inner_text"
+        },
+        {
+          "name": "test_r4_card_unqualified_dates_keep_recorded_instructions[impossible-cutoff-zh-320]",
+          "type": null,
+          "message": "assert '到期状态暂无' in '价格观测 · 2026-02-30\\n上行检验\\n价格条件尚未满足\\n下一步检查\\n\\n先关注日收盘能否到达$86,507.00上方。\\n\\n查看情景'\n +  where '价格观测 · 2026-02-30\\n上行检验\\n价格条件尚未满足\\n下一步检查\\n\\n先关注日收盘能否到达$86,507.00上方。\\n\\n查看情景' = inner_text()\n +    where inner_text = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=zh#scenarios?h=7'> selector='[data-view=\"scenarios\"] .cri-case >> nth=0'>.inner_text"
+        },
+        {
+          "name": "test_r4_card_unqualified_dates_keep_recorded_instructions[missing-cutoff-en-390]",
+          "type": null,
+          "message": "assert 'Expiry status unavailable' in 'PRICE OBSERVATION ·\\nUpside test\\nPrice condition pending\\nNEXT CHECK\\n\\nFirst watch for a daily close above $86,507.00.\\n\\nInspect scenario'\n +  where 'PRICE OBSERVATION ·\\nUpside test\\nPrice condition pending\\nNEXT CHECK\\n\\nFirst watch for a daily close above $86,507.00.\\n\\nInspect scenario' = inner_text()\n +    where inner_text = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=en#scenarios?h=7'> selector='[data-view=\"scenarios\"] .cri-case >> nth=0'>.inner_text"
+        },
+        {
+          "name": "test_r4_card_unqualified_dates_keep_recorded_instructions[missing-cutoff-zh-320]",
+          "type": null,
+          "message": "assert '到期状态暂无' in '价格观测 ·\\n上行检验\\n价格条件尚未满足\\n下一步检查\\n\\n先关注日收盘能否到达$86,507.00上方。\\n\\n查看情景'\n +  where '价格观测 ·\\n上行检验\\n价格条件尚未满足\\n下一步检查\\n\\n先关注日收盘能否到达$86,507.00上方。\\n\\n查看情景' = inner_text()\n +    where inner_text = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=zh#scenarios?h=7'> selector='[data-view=\"scenarios\"] .cri-case >> nth=0'>.inner_text"
+        },
+        {
+          "name": "test_r4_card_unqualified_dates_keep_recorded_instructions[reversed-en-390]",
+          "type": null,
+          "message": "assert 'Expiry status unavailable' in 'PRICE OBSERVATION · 2026-10-17\\nUpside test\\nPrice condition pending\\nNEXT CHECK\\n\\nFirst watch for a daily close above $86,507.00.\\n\\nInspect scenario'\n +  where 'PRICE OBSERVATION · 2026-10-17\\nUpside test\\nPrice condition pending\\nNEXT CHECK\\n\\nFirst watch for a daily close above $86,507.00.\\n\\nInspect scenario' = inner_text()\n +    where inner_text = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=en#scenarios?h=7'> selector='[data-view=\"scenarios\"] .cri-case >> nth=0'>.inner_text"
+        },
+        {
+          "name": "test_r4_card_unqualified_dates_keep_recorded_instructions[reversed-zh-320]",
+          "type": null,
+          "message": "assert '到期状态暂无' in '价格观测 · 2026-10-17\\n上行检验\\n价格条件尚未满足\\n下一步检查\\n\\n先关注日收盘能否到达$86,507.00上方。\\n\\n查看情景'\n +  where '价格观测 · 2026-10-17\\n上行检验\\n价格条件尚未满足\\n下一步检查\\n\\n先关注日收盘能否到达$86,507.00上方。\\n\\n查看情景' = inner_text()\n +    where inner_text = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=zh#scenarios?h=7'> selector='[data-view=\"scenarios\"] .cri-case >> nth=0'>.inner_text"
+        },
+        {
+          "name": "test_r4_card_unqualified_dates_keep_recorded_instructions[future-en-390]",
+          "type": null,
+          "message": "assert 'Future-dated observation' in 'PRICE OBSERVATION · 2026-11-01\\nUpside test\\nPrice condition pending\\nNEXT CHECK\\n\\nFirst watch for a daily close above $86,507.00.\\n\\nInspect scenario'\n +  where 'PRICE OBSERVATION · 2026-11-01\\nUpside test\\nPrice condition pending\\nNEXT CHECK\\n\\nFirst watch for a daily close above $86,507.00.\\n\\nInspect scenario' = inner_text()\n +    where inner_text = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=en#scenarios?h=7'> selector='[data-view=\"scenarios\"] .cri-case >> nth=0'>.inner_text"
+        },
+        {
+          "name": "test_r4_card_unqualified_dates_keep_recorded_instructions[future-zh-320]",
+          "type": null,
+          "message": "assert '观测日期超前' in '价格观测 · 2026-11-01\\n上行检验\\n价格条件尚未满足\\n下一步检查\\n\\n先关注日收盘能否到达$86,507.00上方。\\n\\n查看情景'\n +  where '价格观测 · 2026-11-01\\n上行检验\\n价格条件尚未满足\\n下一步检查\\n\\n先关注日收盘能否到达$86,507.00上方。\\n\\n查看情景' = inner_text()\n +    where inner_text = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=zh#scenarios?h=7'> selector='[data-view=\"scenarios\"] .cri-case >> nth=0'>.inner_text"
+        },
+        {
+          "name": "test_r4_card_supplied_text_and_evidence_are_qualified_independently[progress-missing-en-390]",
+          "type": null,
+          "message": "assert 0 == 1\n +  where 0 = count()\n +    where count = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=en#scenarios?h=7'> selector='[data-case-ho...\"], [data-case-horizon=\"7\"] .cri-case:has([data-open=\"scenario:continuation\"]) >> nth=0 >> [data-card-progress-value]'>.count\n +      where <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=en#scenarios?h=7'> selector='[data-case-ho...\"], [data-case-horizon=\"7\"] .cri-case:has([data-open=\"scenario:continuation\"]) >> nth=0 >> [data-card-progress-value]'> = locator('[data-card-progress-value]')\n +        where locator = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=en#scenarios?h=7'> selector='[data-case-ho...ta-open=\"scenario:continuation\"], [data-case-horizon=\"7\"] .cri-case:has([data-open=\"scenario:continuation\"]) >> nth=0'>.locator"
+        },
+        {
+          "name": "test_r4_card_supplied_text_and_evidence_are_qualified_independently[progress-missing-zh-320]",
+          "type": null,
+          "message": "assert 0 == 1\n +  where 0 = count()\n +    where count = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=zh#scenarios?h=7'> selector='[data-case-ho...\"], [data-case-horizon=\"7\"] .cri-case:has([data-open=\"scenario:continuation\"]) >> nth=0 >> [data-card-progress-value]'>.count\n +      where <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=zh#scenarios?h=7'> selector='[data-case-ho...\"], [data-case-horizon=\"7\"] .cri-case:has([data-open=\"scenario:continuation\"]) >> nth=0 >> [data-card-progress-value]'> = locator('[data-card-progress-value]')\n +        where locator = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=zh#scenarios?h=7'> selector='[data-case-ho...ta-open=\"scenario:continuation\"], [data-case-horizon=\"7\"] .cri-case:has([data-open=\"scenario:continuation\"]) >> nth=0'>.locator"
+        },
+        {
+          "name": "test_r4_card_supplied_text_and_evidence_are_qualified_independently[progress-blank-en-390]",
+          "type": null,
+          "message": "assert 0 == 1\n +  where 0 = count()\n +    where count = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=en#scenarios?h=7'> selector='[data-case-ho...\"], [data-case-horizon=\"7\"] .cri-case:has([data-open=\"scenario:continuation\"]) >> nth=0 >> [data-card-progress-value]'>.count\n +      where <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=en#scenarios?h=7'> selector='[data-case-ho...\"], [data-case-horizon=\"7\"] .cri-case:has([data-open=\"scenario:continuation\"]) >> nth=0 >> [data-card-progress-value]'> = locator('[data-card-progress-value]')\n +        where locator = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=en#scenarios?h=7'> selector='[data-case-ho...ta-open=\"scenario:continuation\"], [data-case-horizon=\"7\"] .cri-case:has([data-open=\"scenario:continuation\"]) >> nth=0'>.locator"
+        },
+        {
+          "name": "test_r4_card_supplied_text_and_evidence_are_qualified_independently[progress-blank-zh-320]",
+          "type": null,
+          "message": "assert 0 == 1\n +  where 0 = count()\n +    where count = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=zh#scenarios?h=7'> selector='[data-case-ho...\"], [data-case-horizon=\"7\"] .cri-case:has([data-open=\"scenario:continuation\"]) >> nth=0 >> [data-card-progress-value]'>.count\n +      where <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=zh#scenarios?h=7'> selector='[data-case-ho...\"], [data-case-horizon=\"7\"] .cri-case:has([data-open=\"scenario:continuation\"]) >> nth=0 >> [data-card-progress-value]'> = locator('[data-card-progress-value]')\n +        where locator = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=zh#scenarios?h=7'> selector='[data-case-ho...ta-open=\"scenario:continuation\"], [data-case-horizon=\"7\"] .cri-case:has([data-open=\"scenario:continuation\"]) >> nth=0'>.locator"
+        },
+        {
+          "name": "test_r4_card_supplied_text_and_evidence_are_qualified_independently[progress-object-en-390]",
+          "type": null,
+          "message": "assert 0 == 1\n +  where 0 = count()\n +    where count = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=en#scenarios?h=7'> selector='[data-case-ho...\"], [data-case-horizon=\"7\"] .cri-case:has([data-open=\"scenario:continuation\"]) >> nth=0 >> [data-card-progress-value]'>.count\n +      where <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=en#scenarios?h=7'> selector='[data-case-ho...\"], [data-case-horizon=\"7\"] .cri-case:has([data-open=\"scenario:continuation\"]) >> nth=0 >> [data-card-progress-value]'> = locator('[data-card-progress-value]')\n +        where locator = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=en#scenarios?h=7'> selector='[data-case-ho...ta-open=\"scenario:continuation\"], [data-case-horizon=\"7\"] .cri-case:has([data-open=\"scenario:continuation\"]) >> nth=0'>.locator"
+        },
+        {
+          "name": "test_r4_card_supplied_text_and_evidence_are_qualified_independently[progress-object-zh-320]",
+          "type": null,
+          "message": "assert 0 == 1\n +  where 0 = count()\n +    where count = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=zh#scenarios?h=7'> selector='[data-case-ho...\"], [data-case-horizon=\"7\"] .cri-case:has([data-open=\"scenario:continuation\"]) >> nth=0 >> [data-card-progress-value]'>.count\n +      where <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=zh#scenarios?h=7'> selector='[data-case-ho...\"], [data-case-horizon=\"7\"] .cri-case:has([data-open=\"scenario:continuation\"]) >> nth=0 >> [data-card-progress-value]'> = locator('[data-card-progress-value]')\n +        where locator = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=zh#scenarios?h=7'> selector='[data-case-ho...ta-open=\"scenario:continuation\"], [data-case-horizon=\"7\"] .cri-case:has([data-open=\"scenario:continuation\"]) >> nth=0'>.locator"
+        },
+        {
+          "name": "test_r4_card_supplied_text_and_evidence_are_qualified_independently[next-missing-en-390]",
+          "type": null,
+          "message": "assert 0 == 1\n +  where 0 = count()\n +    where count = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=en#scenarios?h=7'> selector='[data-case-ho...\"], [data-case-horizon=\"7\"] .cri-case:has([data-open=\"scenario:continuation\"]) >> nth=0 >> [data-card-progress-value]'>.count\n +      where <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=en#scenarios?h=7'> selector='[data-case-ho...\"], [data-case-horizon=\"7\"] .cri-case:has([data-open=\"scenario:continuation\"]) >> nth=0 >> [data-card-progress-value]'> = locator('[data-card-progress-value]')\n +        where locator = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=en#scenarios?h=7'> selector='[data-case-ho...ta-open=\"scenario:continuation\"], [data-case-horizon=\"7\"] .cri-case:has([data-open=\"scenario:continuation\"]) >> nth=0'>.locator"
+        },
+        {
+          "name": "test_r4_card_supplied_text_and_evidence_are_qualified_independently[next-missing-zh-320]",
+          "type": null,
+          "message": "assert 0 == 1\n +  where 0 = count()\n +    where count = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=zh#scenarios?h=7'> selector='[data-case-ho...\"], [data-case-horizon=\"7\"] .cri-case:has([data-open=\"scenario:continuation\"]) >> nth=0 >> [data-card-progress-value]'>.count\n +      where <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=zh#scenarios?h=7'> selector='[data-case-ho...\"], [data-case-horizon=\"7\"] .cri-case:has([data-open=\"scenario:continuation\"]) >> nth=0 >> [data-card-progress-value]'> = locator('[data-card-progress-value]')\n +        where locator = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=zh#scenarios?h=7'> selector='[data-case-ho...ta-open=\"scenario:continuation\"], [data-case-horizon=\"7\"] .cri-case:has([data-open=\"scenario:continuation\"]) >> nth=0'>.locator"
+        },
+        {
+          "name": "test_r4_card_supplied_text_and_evidence_are_qualified_independently[next-object-en-390]",
+          "type": null,
+          "message": "assert 0 == 1\n +  where 0 = count()\n +    where count = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=en#scenarios?h=7'> selector='[data-case-ho...\"], [data-case-horizon=\"7\"] .cri-case:has([data-open=\"scenario:continuation\"]) >> nth=0 >> [data-card-progress-value]'>.count\n +      where <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=en#scenarios?h=7'> selector='[data-case-ho...\"], [data-case-horizon=\"7\"] .cri-case:has([data-open=\"scenario:continuation\"]) >> nth=0 >> [data-card-progress-value]'> = locator('[data-card-progress-value]')\n +        where locator = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=en#scenarios?h=7'> selector='[data-case-ho...ta-open=\"scenario:continuation\"], [data-case-horizon=\"7\"] .cri-case:has([data-open=\"scenario:continuation\"]) >> nth=0'>.locator"
+        },
+        {
+          "name": "test_r4_card_supplied_text_and_evidence_are_qualified_independently[next-object-zh-320]",
+          "type": null,
+          "message": "assert 0 == 1\n +  where 0 = count()\n +    where count = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=zh#scenarios?h=7'> selector='[data-case-ho...\"], [data-case-horizon=\"7\"] .cri-case:has([data-open=\"scenario:continuation\"]) >> nth=0 >> [data-card-progress-value]'>.count\n +      where <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=zh#scenarios?h=7'> selector='[data-case-ho...\"], [data-case-horizon=\"7\"] .cri-case:has([data-open=\"scenario:continuation\"]) >> nth=0 >> [data-card-progress-value]'> = locator('[data-card-progress-value]')\n +        where locator = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=zh#scenarios?h=7'> selector='[data-case-ho...ta-open=\"scenario:continuation\"], [data-case-horizon=\"7\"] .cri-case:has([data-open=\"scenario:continuation\"]) >> nth=0'>.locator"
+        },
+        {
+          "name": "test_r4_card_supplied_text_and_evidence_are_qualified_independently[insufficient-en-390]",
+          "type": null,
+          "message": "assert 0 == 1\n +  where 0 = count()\n +    where count = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=en#scenarios?h=7'> selector='[data-case-ho...\"], [data-case-horizon=\"7\"] .cri-case:has([data-open=\"scenario:continuation\"]) >> nth=0 >> [data-card-progress-value]'>.count\n +      where <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=en#scenarios?h=7'> selector='[data-case-ho...\"], [data-case-horizon=\"7\"] .cri-case:has([data-open=\"scenario:continuation\"]) >> nth=0 >> [data-card-progress-value]'> = locator('[data-card-progress-value]')\n +        where locator = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=en#scenarios?h=7'> selector='[data-case-ho...ta-open=\"scenario:continuation\"], [data-case-horizon=\"7\"] .cri-case:has([data-open=\"scenario:continuation\"]) >> nth=0'>.locator"
+        },
+        {
+          "name": "test_r4_card_supplied_text_and_evidence_are_qualified_independently[insufficient-zh-320]",
+          "type": null,
+          "message": "assert 0 == 1\n +  where 0 = count()\n +    where count = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=zh#scenarios?h=7'> selector='[data-case-ho...\"], [data-case-horizon=\"7\"] .cri-case:has([data-open=\"scenario:continuation\"]) >> nth=0 >> [data-card-progress-value]'>.count\n +      where <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=zh#scenarios?h=7'> selector='[data-case-ho...\"], [data-case-horizon=\"7\"] .cri-case:has([data-open=\"scenario:continuation\"]) >> nth=0 >> [data-card-progress-value]'> = locator('[data-card-progress-value]')\n +        where locator = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=zh#scenarios?h=7'> selector='[data-case-ho...ta-open=\"scenario:continuation\"], [data-case-horizon=\"7\"] .cri-case:has([data-open=\"scenario:continuation\"]) >> nth=0'>.locator"
+        },
+        {
+          "name": "test_r4_card_supplied_text_and_evidence_are_qualified_independently[unavailable-en-390]",
+          "type": null,
+          "message": "assert 0 == 1\n +  where 0 = count()\n +    where count = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=en#scenarios?h=7'> selector='[data-case-ho...\"], [data-case-horizon=\"7\"] .cri-case:has([data-open=\"scenario:continuation\"]) >> nth=0 >> [data-card-progress-value]'>.count\n +      where <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=en#scenarios?h=7'> selector='[data-case-ho...\"], [data-case-horizon=\"7\"] .cri-case:has([data-open=\"scenario:continuation\"]) >> nth=0 >> [data-card-progress-value]'> = locator('[data-card-progress-value]')\n +        where locator = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=en#scenarios?h=7'> selector='[data-case-ho...ta-open=\"scenario:continuation\"], [data-case-horizon=\"7\"] .cri-case:has([data-open=\"scenario:continuation\"]) >> nth=0'>.locator"
+        },
+        {
+          "name": "test_r4_card_supplied_text_and_evidence_are_qualified_independently[unavailable-zh-320]",
+          "type": null,
+          "message": "assert 0 == 1\n +  where 0 = count()\n +    where count = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=zh#scenarios?h=7'> selector='[data-case-ho...\"], [data-case-horizon=\"7\"] .cri-case:has([data-open=\"scenario:continuation\"]) >> nth=0 >> [data-card-progress-value]'>.count\n +      where <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=zh#scenarios?h=7'> selector='[data-case-ho...\"], [data-case-horizon=\"7\"] .cri-case:has([data-open=\"scenario:continuation\"]) >> nth=0 >> [data-card-progress-value]'> = locator('[data-card-progress-value]')\n +        where locator = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=zh#scenarios?h=7'> selector='[data-case-ho...ta-open=\"scenario:continuation\"], [data-case-horizon=\"7\"] .cri-case:has([data-open=\"scenario:continuation\"]) >> nth=0'>.locator"
+        },
+        {
+          "name": "test_r4_card_static_reading_is_time_neutral_and_typed[retained-en-390]",
+          "type": null,
+          "message": "AssertionError: assert 'Recorded next check' in 'PRICE OBSERVATION · 2026-10-17\\nUpside test\\nPrice condition pending\\nNEXT CHECK\\n\\nFirst watch for a daily close above $86,507.00.\\n\\nInspect scenario'"
+        },
+        {
+          "name": "test_r4_card_static_reading_is_time_neutral_and_typed[retained-zh-320]",
+          "type": null,
+          "message": "AssertionError: assert '当时的下一步检查' in '价格观测 · 2026-10-17\\n上行检验\\n价格条件尚未满足\\n下一步检查\\n\\n先关注日收盘能否到达$86,507.00上方。\\n\\n查看情景'"
+        },
+        {
+          "name": "test_r4_card_static_reading_is_time_neutral_and_typed[progress-object-en-390]",
+          "type": null,
+          "message": "assert 'Recorded next check' in \"PRICE OBSERVATION · 2026-10-17\\nUpside test\\n{'not': 'display text'}\\nNEXT CHECK\\n\\nFirst watch for a daily close above $86,507.00.\\n\\nInspect scenario\""
+        },
+        {
+          "name": "test_r4_card_static_reading_is_time_neutral_and_typed[progress-object-zh-320]",
+          "type": null,
+          "message": "assert '当时的下一步检查' in \"价格观测 · 2026-10-17\\n上行检验\\n{'not': 'display text'}\\n下一步检查\\n\\n先关注日收盘能否到达$86,507.00上方。\\n\\n查看情景\""
+        },
+        {
+          "name": "test_r4_card_refresh_keeps_focus_and_inspects_the_original_case[en-390]",
+          "type": null,
+          "message": "assert 'Expired' in 'Downside test\\nPrice condition met · demand unconfirmed\\n\\nWatch for a reclaim of $81,566.00 and check fresh demand evidence.'\n +  where 'Downside test\\nPrice condition met · demand unconfirmed\\n\\nWatch for a reclaim of $81,566.00 and check fresh demand evidence.' = inner_text()\n +    where inner_text = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=en#overview?h=7&window=30&keep=proof'> selector='[data-view=\"overview\"] [data-case-horizon=\"7\"] [data-open=\"scenario:failure\"]'>.inner_text"
+        },
+        {
+          "name": "test_r4_card_refresh_keeps_focus_and_inspects_the_original_case[zh-320]",
+          "type": null,
+          "message": "assert '已到期' in '下行检验\\n价格条件已满足 · 需求尚未确认\\n\\n关注能否收复$81,566.00，并检查最新需求证据。'\n +  where '下行检验\\n价格条件已满足 · 需求尚未确认\\n\\n关注能否收复$81,566.00，并检查最新需求证据。' = inner_text()\n +    where inner_text = <Locator frame=<Frame name= url='http://127.0.0.1:58277/crypto-r4.html?lang=zh#overview?h=7&window=30&keep=proof'> selector='[data-view=\"overview\"] [data-case-horizon=\"7\"] [data-open=\"scenario:failure\"]'>.inner_text"
+        }
+      ],
+      "files": {
+        "result.json": {
+          "bytes": 1593,
+          "sha256": "dd58cb52f577f9b046f713cad01f35507acdb893d844386fd2bc3d4555df311d",
+          "blob": "62112799e99edc86ed722e2f52fff628b749c71e"
+        },
+        "stdout.txt": {
+          "bytes": 44135,
+          "sha256": "4058f6916534c7345a83dba5b8833c6039f13ad56fdde1cc87def58123b2fc86",
+          "blob": "ce73c077a4fcbf7132a1f13cbeb460fbe5c0dea8"
+        },
+        "stderr.txt": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+        },
+        "junit.xml": {
+          "bytes": 76653,
+          "sha256": "cc286465b57d66071dce9c8588675bad40473af6f77b0ba817d92e74291ad629",
+          "blob": "9c232a879b978e81d7959365960eb2311da6db5f"
+        },
+        "observations.json": {
+          "bytes": 148,
+          "sha256": "e46ae8c51aadda379cb7944008f13fe34c4d9c5f184407648121ee0e7e37825b",
+          "blob": "b362661d536b116bdac85427178187cc307aefff"
+        }
+      }
+    },
+    "card-lifecycle-final": {
+      "result": {
+        "command": [
+          "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "-m",
+          "pytest",
+          "-q",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_card_expiry_uses_the_complete_utc_expiry_day",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_card_instances_keep_their_own_horizon_and_readable_layout",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_card_unqualified_dates_keep_recorded_instructions",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_card_supplied_text_and_evidence_are_qualified_independently",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_card_static_reading_is_time_neutral_and_typed",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_card_refresh_keeps_focus_and_inspects_the_original_case",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_card_empty_input_preserves_the_existing_empty_branch",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_scenario_retains_its_existing_reading_order",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_frozen_expiry_is_distinct_from_original_progress",
+          "--tb=short",
+          "--junitxml=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/card-lifecycle-final/junit.xml",
+          "--basetemp=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/card-lifecycle-final/pytest-temp"
+        ],
+        "exit_code": 1,
+        "seconds": 25.764,
+        "source_parent": "2c9d619dfdc2e21a0cc0839094c6fa2be84a6260",
+        "runtime_asset_version": "7fc541a886d1",
+        "candidate_inputs": {
+          "templates/crypto_intelligence_r4.html.j2": {
+            "bytes": 23230,
+            "sha256": "76c6a23231e5c9b97ccef4964a04af2d70869a7e93a560adeee27d7cab67c38c",
+            "blob": "6938792268784fca2d19bc0c8eddb634dad2ca88"
+          },
+          "templates/crypto_intelligence_r4.css": {
+            "bytes": 23199,
+            "sha256": "ecbe6e8b1e4e10042877dd2c372b8f6aa7b75f6ea013b4bb01ac94465eef7370",
+            "blob": "0ff8227746d546facac1d1f073a9cf9ae20c2b53"
+          },
+          "templates/crypto_intelligence_r4.js": {
+            "bytes": 70220,
+            "sha256": "a670cd3e4af072eaac164ca83c3edb570b157554f723e027e5fa72eadbe616e7",
+            "blob": "b0c2f59d881757c0981713fe85a785757408a72a"
+          },
+          "tests/test_crypto_intelligence_r4_browser.py": {
+            "bytes": 139148,
+            "sha256": "5f274464ff6e3bb91a8a18ce903f6939f22c38ede63f74141df788edb96a1608",
+            "blob": "75166216d02881b2188e9cf0955715cf4ab4e2d8"
+          }
+        }
+      },
+      "tests": 45,
+      "failed": 5,
+      "passed": 40,
+      "observations": {
+        "contexts": 45,
+        "pages": 45,
+        "page_errors": [],
+        "blocked_external_requests": 0,
+        "blocked_websockets": 0,
+        "browser": "157.0.8103.39"
+      },
+      "failed_cases": [
+        {
+          "name": "test_r4_card_instances_keep_their_own_horizon_and_readable_layout[en-390]",
+          "type": null,
+          "message": "AssertionError: assert 'NEXT CHECK' == 'Next check'\n  \n  - Next check\n  + NEXT CHECK"
+        },
+        {
+          "name": "test_r4_card_unqualified_dates_keep_recorded_instructions[missing-expiry-zh-320]",
+          "type": null,
+          "message": "playwright._impl._errors.Error: Locator.screenshot: Error: strict mode violation: locator(\"[data-view=\\\"scenarios\\\"] .cri-case:first-child\") resolved to 2 elements:\n    1) <article data-card-recorded=\"true\" class=\"cri-panel cri-case\" data-scenario-card=\"continuation\">…</article> aka get_by_text(\"Observed观测 2026-10-172026-10-17Expires到期 Not supplied未提供Upside test\")\n    2) <article class=\"cri-panel cri-case\" data-card-recorded=\"false\" data-scenario-card=\"continuation\">…</article> aka get_by_text(\"Observed观测 2026-10-172026-10-17Expires到期 2026-11-162026-11-16Upside test\")\n\nCall log:\n  - waiting for locator(\"[data-view=\\\"scenarios\\\"] .cri-case:first-child\")"
+        },
+        {
+          "name": "test_r4_card_unqualified_dates_keep_recorded_instructions[future-en-390]",
+          "type": null,
+          "message": "playwright._impl._errors.Error: Locator.screenshot: Error: strict mode violation: locator(\"[data-view=\\\"scenarios\\\"] .cri-case:first-child\") resolved to 2 elements:\n    1) <article data-card-recorded=\"true\" class=\"cri-panel cri-case\" data-scenario-card=\"continuation\">…</article> aka get_by_text(\"Observed观测 2026-11-012026-11-01Expires到期 2026-11-082026-11-08Upside test上行检验\")\n    2) <article class=\"cri-panel cri-case\" data-card-recorded=\"false\" data-scenario-card=\"continuation\">…</article> aka get_by_text(\"Observed观测 2026-10-172026-10-17Expires到期 2026-11-162026-11-16Upside test上行检验\")\n\nCall log:\n  - waiting for locator(\"[data-view=\\\"scenarios\\\"] .cri-case:first-child\")"
+        },
+        {
+          "name": "test_r4_card_static_reading_is_time_neutral_and_typed[retained-en-390]",
+          "type": null,
+          "message": "AssertionError: assert 'Recorded next check' in 'Observed\\n2026-10-17\\nExpires\\n2026-10-24\\nUpside test\\nRecorded status · Price condition pending\\nRECORDED NEXT CHECK\\n\\nFirst watch for a daily close above $86,507.00.\\n\\nInspect scenario'"
+        },
+        {
+          "name": "test_r4_card_static_reading_is_time_neutral_and_typed[progress-object-en-390]",
+          "type": null,
+          "message": "AssertionError: assert 'Recorded next check' in 'Observed\\n2026-10-17\\nExpires\\n2026-10-24\\nUpside test\\nRecorded status unavailable\\nRECORDED NEXT CHECK\\n\\nFirst watch for a daily close above $86,507.00.\\n\\nInspect scenario'"
+        }
+      ],
+      "files": {
+        "result.json": {
+          "bytes": 2449,
+          "sha256": "0621aceceef8e5058ff658f78a424d4fbd49c07102cbc5cb4f49054a9807ff4d",
+          "blob": "801d3befa889f0d571b0f722b59496c806054ea8"
+        },
+        "stdout.txt": {
+          "bytes": 6959,
+          "sha256": "631e6629dc3d017c326b116e61d093e347cb9c6692d956855cff97ccdedd10ff",
+          "blob": "bda880fcb7f090bf4eef9270804521c1a02f5907"
+        },
+        "stderr.txt": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+        },
+        "junit.xml": {
+          "bytes": 15953,
+          "sha256": "2fbd603ca33eeed1fc661f132867578d70606d104f248806d770a757f4d31fac",
+          "blob": "720275df325692e22a864e6b1c14d251c78dab80"
+        },
+        "observations.json": {
+          "bytes": 148,
+          "sha256": "e46ae8c51aadda379cb7944008f13fe34c4d9c5f184407648121ee0e7e37825b",
+          "blob": "b362661d536b116bdac85427178187cc307aefff"
+        }
+      }
+    },
+    "card-lifecycle-harness-final": {
+      "result": {
+        "command": [
+          "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "-m",
+          "pytest",
+          "-q",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_card_instances_keep_their_own_horizon_and_readable_layout[en-390]",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_card_unqualified_dates_keep_recorded_instructions[missing-expiry-zh-320]",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_card_unqualified_dates_keep_recorded_instructions[future-en-390]",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_card_static_reading_is_time_neutral_and_typed[retained-en-390]",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_card_static_reading_is_time_neutral_and_typed[progress-object-en-390]",
+          "--tb=short",
+          "--junitxml=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/card-lifecycle-harness-final/junit.xml",
+          "--basetemp=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/card-lifecycle-harness-final/pytest-temp"
+        ],
+        "exit_code": 0,
+        "seconds": 6.41,
+        "source_parent": "2c9d619dfdc2e21a0cc0839094c6fa2be84a6260",
+        "runtime_asset_version": "7fc541a886d1",
+        "runtime_unchanged": true,
+        "test_sha256": "369f72b45299f64861ae21ba8afcf93337c40670311f6f6c294ce45795ca8e28"
+      },
+      "tests": 5,
+      "failed": 0,
+      "passed": 5,
+      "observations": {
+        "contexts": 5,
+        "pages": 5,
+        "page_errors": [],
+        "blocked_external_requests": 0,
+        "blocked_websockets": 0,
+        "browser": "157.0.8103.39"
+      },
+      "failed_cases": [],
+      "files": {
+        "result.json": {
+          "bytes": 1297,
+          "sha256": "c96c57f5e176748504cf919f0305161b591ed2123973f8cfd64f2c53a84215e7",
+          "blob": "fc0c6f96e04a0dc40245cb65f5e56637959091f3"
+        },
+        "stdout.txt": {
+          "bytes": 98,
+          "sha256": "964b72eaa12d7c2fd41c84c7a52f86af876eefa9569bbcaf6224ba03b89fdf90",
+          "blob": "5cfb63b0dfdb31eca82d380d422d5d41a4c654a1"
+        },
+        "stderr.txt": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+        },
+        "junit.xml": {
+          "bytes": 1051,
+          "sha256": "4c2020c42a3da0281820658e6670dbc6f2799c43076c458af8f16fa1ae20edd8",
+          "blob": "1cc71e9cfdf9e5222433e84c0f113e38f8cc6b0d"
+        },
+        "observations.json": {
+          "bytes": 146,
+          "sha256": "1b20b6484e8e89dcb3ebf857e8316c71c22446c109ef51c94b45bd2162203924",
+          "blob": "1ae7f5340a8eb78b807f832035a8aefea905efd9"
+        }
+      }
+    }
+  },
+  "baseline_and_candidate_case_identity_exact": true,
+  "correction_cases_exactly_initial_failures": true,
+  "unique_affected_passing_cases": 45,
+  "verification_scope": "40 initial candidate passes plus five corrected affected passes; not a single 45-pass run. Runtime unchanged during correction.",
+  "captures": {
+    "card-lifecycle-overview-en-390.png": {
+      "bytes": 54161,
+      "sha256": "993953d5ed10a1d88dbd14039e6ced41098c8035286a29c0e492939f6564d559",
+      "blob": "65e140311e72891841d8b7c7d75a6cf011ee3ec7",
+      "width": 358,
+      "height": 497,
+      "native_path": "/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/card-lifecycle-harness-final/captures/card-lifecycle-overview-en-390.png",
+      "prior_capture_exact": true
+    },
+    "card-lifecycle-overview-zh-320.png": {
+      "bytes": 50150,
+      "sha256": "420273505407d46c7f99ead9094bd80e592c425e3fc65d054b94662c3a08a768",
+      "blob": "5587d64a1894950a39494f7c9998dc590af971e1",
+      "width": 288,
+      "height": 509,
+      "native_path": "/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/card-lifecycle-final/captures/card-lifecycle-overview-zh-320.png"
+    },
+    "card-lifecycle-scenarios-en-390.png": {
+      "bytes": 102905,
+      "sha256": "6d09418c65259b52b5af920b11e64a4f0a09b4e047da95140e467690d9125626",
+      "blob": "c57d416a037f24e3e0a1d745f399f67212a56ff0",
+      "width": 358,
+      "height": 886,
+      "native_path": "/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/card-lifecycle-harness-final/captures/card-lifecycle-scenarios-en-390.png",
+      "prior_capture_exact": false
+    },
+    "card-lifecycle-scenarios-zh-320.png": {
+      "bytes": 82279,
+      "sha256": "f966038c792de300b925f87c81ef4f795f8f805c745831b124105c3dfc74b95d",
+      "blob": "963f3756a131e26e40a174856161f9f56ad71a5b",
+      "width": 288,
+      "height": 921,
+      "native_path": "/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/card-lifecycle-final/captures/card-lifecycle-scenarios-zh-320.png"
+    },
+    "card-lifecycle-future-en-390.png": {
+      "bytes": 25515,
+      "sha256": "4e2ba722ef6be5164355d7777bac3fe6b840d01fb57293f8577b1d040846e4d1",
+      "blob": "6369a709615f6fa0f6a18436df997e2ad418340a",
+      "width": 358,
+      "height": 269,
+      "native_path": "/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/card-lifecycle-harness-final/captures/card-lifecycle-future-en-390.png"
+    },
+    "card-lifecycle-missing-expiry-zh-320.png": {
+      "bytes": 22174,
+      "sha256": "73b3238037ca5b1986a3e41b83b9e2e35332ce29125eecf572abe9fb8bd74161",
+      "blob": "7147aef82787932c23bfcdd86f45144dbb660d55",
+      "width": 288,
+      "height": 295,
+      "native_path": "/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/card-lifecycle-harness-final/captures/card-lifecycle-missing-expiry-zh-320.png"
+    }
+  },
+  "all_native_captures": {
+    "card-lifecycle-final/captures/card-lifecycle-overview-en-390.png": {
+      "bytes": 54161,
+      "sha256": "993953d5ed10a1d88dbd14039e6ced41098c8035286a29c0e492939f6564d559",
+      "blob": "65e140311e72891841d8b7c7d75a6cf011ee3ec7",
+      "width": 358,
+      "height": 497,
+      "native_path": "/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/card-lifecycle-final/captures/card-lifecycle-overview-en-390.png"
+    },
+    "card-lifecycle-final/captures/card-lifecycle-overview-zh-320.png": {
+      "bytes": 50150,
+      "sha256": "420273505407d46c7f99ead9094bd80e592c425e3fc65d054b94662c3a08a768",
+      "blob": "5587d64a1894950a39494f7c9998dc590af971e1",
+      "width": 288,
+      "height": 509,
+      "native_path": "/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/card-lifecycle-final/captures/card-lifecycle-overview-zh-320.png"
+    },
+    "card-lifecycle-final/captures/card-lifecycle-scenarios-en-390.png": {
+      "bytes": 102906,
+      "sha256": "718ef80382dd3584569339036b7268aeccbe4d73957fb0f5486bd72f94e96725",
+      "blob": "0683a2a0ef94df90efbc8108f9c503c95e087597",
+      "width": 358,
+      "height": 886,
+      "native_path": "/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/card-lifecycle-final/captures/card-lifecycle-scenarios-en-390.png"
+    },
+    "card-lifecycle-final/captures/card-lifecycle-scenarios-zh-320.png": {
+      "bytes": 82279,
+      "sha256": "f966038c792de300b925f87c81ef4f795f8f805c745831b124105c3dfc74b95d",
+      "blob": "963f3756a131e26e40a174856161f9f56ad71a5b",
+      "width": 288,
+      "height": 921,
+      "native_path": "/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/card-lifecycle-final/captures/card-lifecycle-scenarios-zh-320.png"
+    },
+    "card-lifecycle-harness-final/captures/card-lifecycle-future-en-390.png": {
+      "bytes": 25515,
+      "sha256": "4e2ba722ef6be5164355d7777bac3fe6b840d01fb57293f8577b1d040846e4d1",
+      "blob": "6369a709615f6fa0f6a18436df997e2ad418340a",
+      "width": 358,
+      "height": 269,
+      "native_path": "/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/card-lifecycle-harness-final/captures/card-lifecycle-future-en-390.png"
+    },
+    "card-lifecycle-harness-final/captures/card-lifecycle-missing-expiry-zh-320.png": {
+      "bytes": 22174,
+      "sha256": "73b3238037ca5b1986a3e41b83b9e2e35332ce29125eecf572abe9fb8bd74161",
+      "blob": "7147aef82787932c23bfcdd86f45144dbb660d55",
+      "width": 288,
+      "height": 295,
+      "native_path": "/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/card-lifecycle-harness-final/captures/card-lifecycle-missing-expiry-zh-320.png"
+    },
+    "card-lifecycle-harness-final/captures/card-lifecycle-overview-en-390.png": {
+      "bytes": 54161,
+      "sha256": "993953d5ed10a1d88dbd14039e6ced41098c8035286a29c0e492939f6564d559",
+      "blob": "65e140311e72891841d8b7c7d75a6cf011ee3ec7",
+      "width": 358,
+      "height": 497,
+      "native_path": "/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/card-lifecycle-harness-final/captures/card-lifecycle-overview-en-390.png",
+      "prior_capture_exact": true
+    },
+    "card-lifecycle-harness-final/captures/card-lifecycle-scenarios-en-390.png": {
+      "bytes": 102905,
+      "sha256": "6d09418c65259b52b5af920b11e64a4f0a09b4e047da95140e467690d9125626",
+      "blob": "c57d416a037f24e3e0a1d745f399f67212a56ff0",
+      "width": 358,
+      "height": 886,
+      "native_path": "/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/card-lifecycle-harness-final/captures/card-lifecycle-scenarios-en-390.png",
+      "prior_capture_exact": false
+    }
+  },
+  "parent_snapshot": {
+    "parent": {
+      "head": "2c9d619dfdc2e21a0cc0839094c6fa2be84a6260",
+      "tree": "c86fc3372cc0885a779b9548da5996ce5f36a375",
+      "runtime_checkpoint": "e70fc60183c83565497c431c433b0594423cc7cb",
+      "assets": "f15feec04ead",
+      "files": {
+        "templates/crypto_intelligence_r4.js": {
+          "bytes": 67211,
+          "sha256": "ed1301921ebca77074becda5dc74f982e9d1c3ca317687f0675fb68192ebf5dc",
+          "blob": "60459763cebf95fb058a9f380a57cc5fdb0b1643"
+        },
+        "tests/test_crypto_intelligence_r4_browser.py": {
+          "bytes": 120911,
+          "sha256": "29c022d2c6f83d98adb7d013856047bd2c628f858a9543a3676653ce82038265",
+          "blob": "d77df90aec0c4087d68e90529329ffb1c344583f"
+        },
+        "site/crypto-r4.html": {
+          "bytes": 119151,
+          "sha256": "a00f465f72e8a77029505d99bea9bcab7782f1b54b972753a338c2f74bb2860c",
+          "blob": "c260e21df62defc37dc21d10f32d24d6c9308923"
+        },
+        "site/vector-r4.html": {
+          "bytes": 119150,
+          "sha256": "a3a2e26eb1bec566397d7bf9457941fc6ee94f794ae920e692a1a0c63dc9e71a",
+          "blob": "b7c7f18ad441da7cb7481e9c09f6c5c1ea02b5e9"
+        },
+        "site/crypto_intelligence_r4.js": {
+          "bytes": 67211,
+          "sha256": "ed1301921ebca77074becda5dc74f982e9d1c3ca317687f0675fb68192ebf5dc",
+          "blob": "60459763cebf95fb058a9f380a57cc5fdb0b1643"
+        },
+        "templates/crypto_intelligence_r4.html.j2": {
+          "bytes": 21725,
+          "sha256": "75319d5e25b1fd8ee7f1d63fe29f97eaec58624ed28b7a1108baa4256f7dad06",
+          "blob": "68a95067b3eb388422b52cd3daec412642fc7a49"
+        },
+        "site/crypto_intelligence_r4.css": {
+          "bytes": 22413,
+          "sha256": "ffe6037109c230c7b7a8e60b74626a9726042a27f40622ebf787af30f4411e14",
+          "blob": "808714199cca5f83ad40312b5ce771e69179d7db"
+        },
+        "templates/crypto_intelligence_r4.css": {
+          "bytes": 22413,
+          "sha256": "ffe6037109c230c7b7a8e60b74626a9726042a27f40622ebf787af30f4411e14",
+          "blob": "808714199cca5f83ad40312b5ce771e69179d7db"
+        },
+        "scripts/build_crypto_intelligence_r4.py": {
+          "bytes": 5326,
+          "sha256": "abf594e7c1cf34273f4017f6bfc28333df810eb2cff2f8ee30972335671888c0",
+          "blob": "f276092b8e72925c5d967a1f5066bd940392ceb5"
+        },
+        "tests/test_crypto_intelligence_r4.py": {
+          "bytes": 23038,
+          "sha256": "878131aea7d56e5de7f21641f60bdd2fc43cd345f738dd2b8f111c32c9219fa3",
+          "blob": "4ecf96b6707e474a34ca04437f3afd0e8c8ec8e0"
+        },
+        "lib/crypto_intelligence_view.py": {
+          "bytes": 22671,
+          "sha256": "3457d4a183444f6b4d2b8bbed1d5678d30f93e387cd9861f147d58211eb83f73",
+          "blob": "5c90c35c1307d425cb5979aa3ce609e408cfddc6"
+        },
+        "site/crypto_intelligence_r4.json": {
+          "bytes": 28027,
+          "sha256": "807839328e14080902df593408c9001d958b69be70d74d09fadbdc811d859401",
+          "blob": "024278d4143ee076f4253cd295230636818e97bd"
+        },
+        "site/theme.js": {
+          "bytes": 265200,
+          "sha256": "46939917d2e233cb0d8af828d97b1e3b7d18886fd829f88d0bc08c9f3b643455",
+          "blob": "937779ef5770fa92ef93a5e6b0f7e3415f6a7cf3"
+        },
+        "site/theme.css": {
+          "bytes": 221941,
+          "sha256": "2e8611477fd3499877721f9ce9386b1c3a55e00a2ed87c4187387845775ae64a",
+          "blob": "620895319be7e3f7808439ecbae8c33c2197389f"
+        },
+        "site/illus.js": {
+          "bytes": 2752,
+          "sha256": "8e0a3779784525f15bb4a1b20e50f39ef4d0ddf243827f5ab609cfb08a69c620",
+          "blob": "dfe818277c5068fe665337531f89d4fe7976565b"
+        },
+        "site/illus.css": {
+          "bytes": 14335,
+          "sha256": "cbe6a0b4f83095ed300ee49a5d9f4d03e88005170a4792a7a9f41805a67e5f07",
+          "blob": "cda4f3e53a34c5e996b49bdac5732357ed94b2d5"
+        },
+        "site/navigation-refresh.css": {
+          "bytes": 93481,
+          "sha256": "ef068fe19adab3779512462c40ab67b3e75a997a2dc6edfae2d5a36dd604eb5c",
+          "blob": "276c1986f2a728ca59e0f9e0bc7fe269869fdff0"
+        },
+        "site/logo_config.js": {
+          "bytes": 202,
+          "sha256": "b37d33d3194c191b1bb64db3f5c33d17c7dc06a74892e4aa8ea4d50320aae215",
+          "blob": "523923f9f424a144f4a0cf3e4814e2ea36392474"
+        },
+        "site/stock-logos.js": {
+          "bytes": 16539,
+          "sha256": "cc29be531bc08e655464b6c0d384e1a46041aeb31caf7d982e926681fda7cb49",
+          "blob": "759d78f4dfb11de591d8db5cec36a91ca372fe3c"
+        },
+        "site/live_config.js": {
+          "bytes": 367,
+          "sha256": "52943e92422103557d94066ceb65f4402816322281f95e8bd376293fe14d9c10",
+          "blob": "2ad84da9b70e83cd9825a684d3c846fc81e7366d"
+        },
+        "site/live.js": {
+          "bytes": 50731,
+          "sha256": "f8cda39dd4258a5778864b3b7e0bd8b9cc685bd1f926211a72268883a937a592",
+          "blob": "7e91599afb20a69c4010d5dc36c85439381d529f"
+        }
+      }
+    },
+    "files": {
+      "templates/crypto_intelligence_r4.js": {
+        "bytes": 67211,
+        "sha256": "ed1301921ebca77074becda5dc74f982e9d1c3ca317687f0675fb68192ebf5dc",
+        "blob": "60459763cebf95fb058a9f380a57cc5fdb0b1643"
+      },
+      "tests/test_crypto_intelligence_r4_browser.py": {
+        "bytes": 120911,
+        "sha256": "29c022d2c6f83d98adb7d013856047bd2c628f858a9543a3676653ce82038265",
+        "blob": "d77df90aec0c4087d68e90529329ffb1c344583f"
+      },
+      "site/crypto-r4.html": {
+        "bytes": 119151,
+        "sha256": "a00f465f72e8a77029505d99bea9bcab7782f1b54b972753a338c2f74bb2860c",
+        "blob": "c260e21df62defc37dc21d10f32d24d6c9308923"
+      },
+      "site/vector-r4.html": {
+        "bytes": 119150,
+        "sha256": "a3a2e26eb1bec566397d7bf9457941fc6ee94f794ae920e692a1a0c63dc9e71a",
+        "blob": "b7c7f18ad441da7cb7481e9c09f6c5c1ea02b5e9"
+      },
+      "site/crypto_intelligence_r4.js": {
+        "bytes": 67211,
+        "sha256": "ed1301921ebca77074becda5dc74f982e9d1c3ca317687f0675fb68192ebf5dc",
+        "blob": "60459763cebf95fb058a9f380a57cc5fdb0b1643"
+      },
+      "templates/crypto_intelligence_r4.html.j2": {
+        "bytes": 21725,
+        "sha256": "75319d5e25b1fd8ee7f1d63fe29f97eaec58624ed28b7a1108baa4256f7dad06",
+        "blob": "68a95067b3eb388422b52cd3daec412642fc7a49"
+      },
+      "site/crypto_intelligence_r4.css": {
+        "bytes": 22413,
+        "sha256": "ffe6037109c230c7b7a8e60b74626a9726042a27f40622ebf787af30f4411e14",
+        "blob": "808714199cca5f83ad40312b5ce771e69179d7db"
+      },
+      "templates/crypto_intelligence_r4.css": {
+        "bytes": 22413,
+        "sha256": "ffe6037109c230c7b7a8e60b74626a9726042a27f40622ebf787af30f4411e14",
+        "blob": "808714199cca5f83ad40312b5ce771e69179d7db"
+      },
+      "scripts/build_crypto_intelligence_r4.py": {
+        "bytes": 5326,
+        "sha256": "abf594e7c1cf34273f4017f6bfc28333df810eb2cff2f8ee30972335671888c0",
+        "blob": "f276092b8e72925c5d967a1f5066bd940392ceb5"
+      },
+      "tests/test_crypto_intelligence_r4.py": {
+        "bytes": 23038,
+        "sha256": "878131aea7d56e5de7f21641f60bdd2fc43cd345f738dd2b8f111c32c9219fa3",
+        "blob": "4ecf96b6707e474a34ca04437f3afd0e8c8ec8e0"
+      },
+      "lib/crypto_intelligence_view.py": {
+        "bytes": 22671,
+        "sha256": "3457d4a183444f6b4d2b8bbed1d5678d30f93e387cd9861f147d58211eb83f73",
+        "blob": "5c90c35c1307d425cb5979aa3ce609e408cfddc6"
+      },
+      "site/crypto_intelligence_r4.json": {
+        "bytes": 28027,
+        "sha256": "807839328e14080902df593408c9001d958b69be70d74d09fadbdc811d859401",
+        "blob": "024278d4143ee076f4253cd295230636818e97bd"
+      },
+      "site/theme.js": {
+        "bytes": 265200,
+        "sha256": "46939917d2e233cb0d8af828d97b1e3b7d18886fd829f88d0bc08c9f3b643455",
+        "blob": "937779ef5770fa92ef93a5e6b0f7e3415f6a7cf3"
+      },
+      "site/theme.css": {
+        "bytes": 221941,
+        "sha256": "2e8611477fd3499877721f9ce9386b1c3a55e00a2ed87c4187387845775ae64a",
+        "blob": "620895319be7e3f7808439ecbae8c33c2197389f"
+      },
+      "site/illus.js": {
+        "bytes": 2752,
+        "sha256": "8e0a3779784525f15bb4a1b20e50f39ef4d0ddf243827f5ab609cfb08a69c620",
+        "blob": "dfe818277c5068fe665337531f89d4fe7976565b"
+      },
+      "site/illus.css": {
+        "bytes": 14335,
+        "sha256": "cbe6a0b4f83095ed300ee49a5d9f4d03e88005170a4792a7a9f41805a67e5f07",
+        "blob": "cda4f3e53a34c5e996b49bdac5732357ed94b2d5"
+      },
+      "site/navigation-refresh.css": {
+        "bytes": 93481,
+        "sha256": "ef068fe19adab3779512462c40ab67b3e75a997a2dc6edfae2d5a36dd604eb5c",
+        "blob": "276c1986f2a728ca59e0f9e0bc7fe269869fdff0"
+      },
+      "site/logo_config.js": {
+        "bytes": 202,
+        "sha256": "b37d33d3194c191b1bb64db3f5c33d17c7dc06a74892e4aa8ea4d50320aae215",
+        "blob": "523923f9f424a144f4a0cf3e4814e2ea36392474"
+      },
+      "site/stock-logos.js": {
+        "bytes": 16539,
+        "sha256": "cc29be531bc08e655464b6c0d384e1a46041aeb31caf7d982e926681fda7cb49",
+        "blob": "759d78f4dfb11de591d8db5cec36a91ca372fe3c"
+      },
+      "site/live_config.js": {
+        "bytes": 367,
+        "sha256": "52943e92422103557d94066ceb65f4402816322281f95e8bd376293fe14d9c10",
+        "blob": "2ad84da9b70e83cd9825a684d3c846fc81e7366d"
+      },
+      "site/live.js": {
+        "bytes": 50731,
+        "sha256": "f8cda39dd4258a5778864b3b7e0bd8b9cc685bd1f926211a72268883a937a592",
+        "blob": "7e91599afb20a69c4010d5dc36c85439381d529f"
+      }
+    },
+    "retained_render_exact": {
+      "crypto-r4.html": true,
+      "vector-r4.html": true,
+      "crypto_intelligence_r4.js": true,
+      "crypto_intelligence_r4.css": true,
+      "crypto_intelligence_r4.json": true
+    },
+    "runtime_mutations": 0
+  }
+}

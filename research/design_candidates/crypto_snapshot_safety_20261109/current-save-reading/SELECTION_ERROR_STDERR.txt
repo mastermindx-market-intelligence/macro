@@ -1,0 +1,120 @@
+ERROR: not found: /Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/tests/test_crypto_intelligence_r4_browser.py::tests/test_crypto_intelligence_r4_browser.py::test_r4_current_confirmed_mutation_preserves_the_reader
+(no match in any of [<Module test_crypto_intelligence_r4_browser.py>])
+
+ERROR: not found: /Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/tests/test_crypto_intelligence_r4_browser.py::tests/test_crypto_intelligence_r4_browser.py::test_r4_current_idempotent_mutation_keeps_reading_without_another_write
+(no match in any of [<Module test_crypto_intelligence_r4_browser.py>])
+
+ERROR: not found: /Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/tests/test_crypto_intelligence_r4_browser.py::tests/test_crypto_intelligence_r4_browser.py::test_r4_current_failed_mutation_does_not_rebuild_or_replay
+(no match in any of [<Module test_crypto_intelligence_r4_browser.py>])
+
+ERROR: not found: /Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/tests/test_crypto_intelligence_r4_browser.py::tests/test_crypto_intelligence_r4_browser.py::test_r4_current_mutation_uses_fresh_reading_when_history_persistence_fails
+(no match in any of [<Module test_crypto_intelligence_r4_browser.py>])
+
+ERROR: not found: /Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/tests/test_crypto_intelligence_r4_browser.py::tests/test_crypto_intelligence_r4_browser.py::test_r4_current_mutation_reading_persistence_yields_to_a_newer_choice
+(no match in any of [<Module test_crypto_intelligence_r4_browser.py>])
+
+ERROR: not found: /Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/tests/test_crypto_intelligence_r4_browser.py::tests/test_crypto_intelligence_r4_browser.py::test_r4_current_expired_remove_heading_callback_keeps_its_new_destination
+(no match in any of [<Module test_crypto_intelligence_r4_browser.py>])
+
+ERROR: not found: /Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/tests/test_crypto_intelligence_r4_browser.py::tests/test_crypto_intelligence_r4_browser.py::test_r4_current_mutation_inside_a_render_focus_callback_retains_its_new_intent
+(no match in any of [<Module test_crypto_intelligence_r4_browser.py>])
+
+ERROR: not found: /Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/tests/test_crypto_intelligence_r4_browser.py::tests/test_crypto_intelligence_r4_browser.py::test_r4_current_mutation_yields_its_ui_when_storage_observes_a_new_history_entry
+(no match in any of [<Module test_crypto_intelligence_r4_browser.py>])
+
+ERROR: not found: /Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/tests/test_crypto_intelligence_r4_browser.py::tests/test_crypto_intelligence_r4_browser.py::test_r4_current_mutation_with_unqualified_reading_still_reconciles_controls
+(no match in any of [<Module test_crypto_intelligence_r4_browser.py>])
+
+ERROR: not found: /Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/tests/test_crypto_intelligence_r4_browser.py::tests/test_crypto_intelligence_r4_browser.py::test_r4_current_review_returns_to_the_same_case_and_reading
+(no match in any of [<Module test_crypto_intelligence_r4_browser.py>])
+
+ERROR: not found: /Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/tests/test_crypto_intelligence_r4_browser.py::tests/test_crypto_intelligence_r4_browser.py::test_r4_current_review_close_exits_the_managed_journey
+(no match in any of [<Module test_crypto_intelligence_r4_browser.py>])
+
+ERROR: not found: /Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/tests/test_crypto_intelligence_r4_browser.py::tests/test_crypto_intelligence_r4_browser.py::test_r4_detached_current_review_replaces_with_exact_scenario
+(no match in any of [<Module test_crypto_intelligence_r4_browser.py>])
+
+ERROR: not found: /Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/tests/test_crypto_intelligence_r4_browser.py::tests/test_crypto_intelligence_r4_browser.py::test_r4_current_parent_rejects_the_same_id_at_a_different_horizon
+(no match in any of [<Module test_crypto_intelligence_r4_browser.py>])
+
+ERROR: not found: /Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/tests/test_crypto_intelligence_r4_browser.py::tests/test_crypto_intelligence_r4_browser.py::test_r4_current_parent_accepts_the_normalized_default_horizon
+(no match in any of [<Module test_crypto_intelligence_r4_browser.py>])
+
+ERROR: not found: /Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/tests/test_crypto_intelligence_r4_browser.py::tests/test_crypto_intelligence_r4_browser.py::test_r4_current_return_rejects_stale_reading_identity
+(no match in any of [<Module test_crypto_intelligence_r4_browser.py>])
+
+ERROR: not found: /Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/tests/test_crypto_intelligence_r4_browser.py::tests/test_crypto_intelligence_r4_browser.py::test_r4_current_locale_preserves_disclosure_focus_and_reading
+(no match in any of [<Module test_crypto_intelligence_r4_browser.py>])
+
+ERROR: not found: /Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/tests/test_crypto_intelligence_r4_browser.py::tests/test_crypto_intelligence_r4_browser.py::test_r4_current_restore_uses_heading_when_save_becomes_disabled
+(no match in any of [<Module test_crypto_intelligence_r4_browser.py>])
+
+ERROR: not found: /Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/tests/test_crypto_intelligence_r4_browser.py::tests/test_crypto_intelligence_r4_browser.py::test_r4_current_restore_does_not_swap_remove_focus_to_save
+(no match in any of [<Module test_crypto_intelligence_r4_browser.py>])
+
+ERROR: not found: /Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/tests/test_crypto_intelligence_r4_browser.py::tests/test_crypto_intelligence_r4_browser.py::test_r4_current_return_survives_unreadable_saved_storage
+(no match in any of [<Module test_crypto_intelligence_r4_browser.py>])
+
+ERROR: not found: /Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/tests/test_crypto_intelligence_r4_browser.py::tests/test_crypto_intelligence_r4_browser.py::test_r4_current_parent_focus_callback_keeps_the_new_destination
+(no match in any of [<Module test_crypto_intelligence_r4_browser.py>])
+
+ERROR: not found: /Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/tests/test_crypto_intelligence_r4_browser.py::tests/test_crypto_intelligence_r4_browser.py::test_r4_current_parent_double_activation_moves_back_once
+(no match in any of [<Module test_crypto_intelligence_r4_browser.py>])
+
+ERROR: not found: /Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/tests/test_crypto_intelligence_r4_browser.py::tests/test_crypto_intelligence_r4_browser.py::test_r4_current_parent_is_absent_without_a_resolved_case
+(no match in any of [<Module test_crypto_intelligence_r4_browser.py>])
+
+ERROR: not found: /Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/tests/test_crypto_intelligence_r4_browser.py::tests/test_crypto_intelligence_r4_browser.py::test_r4_current_evidence_native_back_restores_the_case_reader
+(no match in any of [<Module test_crypto_intelligence_r4_browser.py>])
+
+ERROR: not found: /Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/tests/test_crypto_intelligence_r4_browser.py::tests/test_crypto_intelligence_r4_browser.py::test_r4_saved_journey_restores_the_exact_outer_horizon
+(no match in any of [<Module test_crypto_intelligence_r4_browser.py>])
+
+ERROR: not found: /Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/tests/test_crypto_intelligence_r4_browser.py::tests/test_crypto_intelligence_r4_browser.py::test_r4_detached_saved_item_still_has_a_real_review_parent
+(no match in any of [<Module test_crypto_intelligence_r4_browser.py>])
+
+ERROR: not found: /Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/tests/test_crypto_intelligence_r4_browser.py::tests/test_crypto_intelligence_r4_browser.py::test_r4_truly_detached_review_opens_exact_saved_case_by_replace
+(no match in any of [<Module test_crypto_intelligence_r4_browser.py>])
+
+ERROR: not found: /Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/tests/test_crypto_intelligence_r4_browser.py::tests/test_crypto_intelligence_r4_browser.py::test_r4_saved_parent_focus_callback_keeps_its_new_destination
+(no match in any of [<Module test_crypto_intelligence_r4_browser.py>])
+
+ERROR: not found: /Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/tests/test_crypto_intelligence_r4_browser.py::tests/test_crypto_intelligence_r4_browser.py::test_r4_saved_parent_rechecks_the_requested_record_before_return
+(no match in any of [<Module test_crypto_intelligence_r4_browser.py>])
+
+ERROR: not found: /Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/tests/test_crypto_intelligence_r4_browser.py::tests/test_crypto_intelligence_r4_browser.py::test_r4_legacy_saved_parent_horizon_is_repaired_in_the_same_entry
+(no match in any of [<Module test_crypto_intelligence_r4_browser.py>])
+
+ERROR: not found: /Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/tests/test_crypto_intelligence_r4_browser.py::tests/test_crypto_intelligence_r4_browser.py::test_r4_saved_locale_keeps_disclosure_focus_and_reading_position
+(no match in any of [<Module test_crypto_intelligence_r4_browser.py>])
+
+ERROR: not found: /Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/tests/test_crypto_intelligence_r4_browser.py::tests/test_crypto_intelligence_r4_browser.py::test_r4_close_falls_back_to_the_restored_active_view_heading
+(no match in any of [<Module test_crypto_intelligence_r4_browser.py>])
+
+ERROR: not found: /Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/tests/test_crypto_intelligence_r4_browser.py::tests/test_crypto_intelligence_r4_browser.py::test_r4_missing_current_case_recovers_without_borrowing_review_context
+(no match in any of [<Module test_crypto_intelligence_r4_browser.py>])
+
+ERROR: not found: /Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/tests/test_crypto_intelligence_r4_browser.py::tests/test_crypto_intelligence_r4_browser.py::test_r4_generic_and_valid_current_reviews_remain_distinct
+(no match in any of [<Module test_crypto_intelligence_r4_browser.py>])
+
+ERROR: not found: /Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/tests/test_crypto_intelligence_r4_browser.py::tests/test_crypto_intelligence_r4_browser.py::test_r4_current_scenario_retains_its_existing_reading_order
+(no match in any of [<Module test_crypto_intelligence_r4_browser.py>])
+
+ERROR: not found: /Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/tests/test_crypto_intelligence_r4_browser.py::tests/test_crypto_intelligence_r4_browser.py::test_r4_newer_focus_during_confirmation_survives
+(no match in any of [<Module test_crypto_intelligence_r4_browser.py>])
+
+ERROR: not found: /Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/tests/test_crypto_intelligence_r4_browser.py::tests/test_crypto_intelligence_r4_browser.py::test_r4_completion_focus_callbacks_keep_their_new_panel
+(no match in any of [<Module test_crypto_intelligence_r4_browser.py>])
+
+ERROR: not found: /Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/tests/test_crypto_intelligence_r4_browser.py::tests/test_crypto_intelligence_r4_browser.py::test_r4_programmatic_save_preserves_unrelated_focus_and_stale_save_stays_safe
+(no match in any of [<Module test_crypto_intelligence_r4_browser.py>])
+
+ERROR: not found: /Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/tests/test_crypto_intelligence_r4_browser.py::tests/test_crypto_intelligence_r4_browser.py::test_r4_current_review_locale_does_not_restart_existing_reading
+(no match in any of [<Module test_crypto_intelligence_r4_browser.py>])
+
+ERROR: not found: /Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/tests/test_crypto_intelligence_r4_browser.py::tests/test_crypto_intelligence_r4_browser.py::test_r4_new_current_review_entry_starts_at_its_own_beginning
+(no match in any of [<Module test_crypto_intelligence_r4_browser.py>])
+
+ERROR: not found: /Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/tests/test_crypto_intelligence_r4_browser.py::tests/test_crypto_intelligence_r4_browser.py::test_r4_snapshot_buttons_keep_their_visible_intent_across_tabs
+(no match in any of [<Module test_crypto_intelligence_r4_browser.py>])
+

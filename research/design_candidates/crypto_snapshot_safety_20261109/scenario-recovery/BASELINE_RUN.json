@@ -1,0 +1,19 @@
+{
+  "command": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_missing_current_case_recovers_without_borrowing_review_context",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_generic_and_valid_current_reviews_remain_distinct",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_unusable_saved_version_never_borrows_current_context",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_deep_link_and_older_snapshots_fail_open_with_honest_copy",
+    "--tb=short",
+    "--junitxml=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/scenario-recovery-baseline/junit.xml",
+    "--basetemp=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/scenario-recovery-baseline/pytest-temp"
+  ],
+  "exit_code": 1,
+  "seconds": 31.255,
+  "source_parent": "ce97e52d0cd131de2a1ca7e750574fcdc9482adb",
+  "test_sha256": "93ace94b0401a1bb2ea872cad16fc1adefa869c147812874dd31cab6c2c95a81"
+}

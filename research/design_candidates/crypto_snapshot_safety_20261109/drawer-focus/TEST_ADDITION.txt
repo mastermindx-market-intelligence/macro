@@ -1,0 +1,122 @@
+
+
+# Keyboard focus uses the existing drawer scrollport without changing restored reading.
+def _drawer_focus_sample(page, label):
+    sample = page.evaluate("""() => {
+      const dialog=document.getElementById('cri-dialog'), body=document.getElementById('cri-dialog-body');
+      const header=dialog.querySelector('.cri-dialog-header'), active=document.activeElement;
+      const frame=dialog.getBoundingClientRect(), h=header.getBoundingClientRect(), r=active.getBoundingClientRect();
+      const style=getComputedStyle(active), b=body.getBoundingClientRect();
+      const extent=(parseFloat(style.outlineWidth)||0)+Math.max(0,parseFloat(style.outlineOffset)||0);
+      return {key:active.dataset.drawerFocus||active.id||active.tagName,focusVisible:active.matches(':focus-visible'),
+        outlineStyle:style.outlineStyle,extent,top:r.top,bottom:r.bottom,left:r.left,right:r.right,
+        viewTop:Math.max(frame.top+dialog.clientTop,h.bottom),
+        viewBottom:frame.top+dialog.clientTop+dialog.clientHeight,
+        viewLeft:frame.left+dialog.clientLeft,viewRight:frame.left+dialog.clientLeft+dialog.clientWidth,
+        headerHeight:h.height,scroll:dialog.scrollTop,scrollHeight:dialog.scrollHeight,bodyHeight:b.height,
+        windowScroll:scrollY,historyLength:history.length,
+        layout:Array.from(body.querySelectorAll('summary,button')).map(n=>{
+          const x=n.getBoundingClientRect();
+          return {key:n.dataset.drawerFocus||n.textContent,top:x.top-b.top,left:x.left-b.left,width:x.width,height:x.height};
+        })};
+    }""")
+    _OBSERVATIONS.setdefault("drawer_focus", []).append({"label": label, **sample})
+    return sample
+
+
+def _assert_drawer_focus_ring(sample):
+    assert sample["focusVisible"] and sample["outlineStyle"] != "none", sample
+    assert sample["extent"] > 0, sample
+    assert sample["top"] - sample["viewTop"] >= 7.9, sample
+    assert sample["viewBottom"] - sample["bottom"] >= 7.9, sample
+    assert sample["left"] - sample["extent"] >= sample["viewLeft"] - .1, sample
+    assert sample["right"] + sample["extent"] <= sample["viewRight"] + .1, sample
+
+
+def _place_summary_behind_header(page, selector):
+    page.locator(selector).evaluate("""summary => {
+      const dialog=document.getElementById('cri-dialog'), header=dialog.querySelector('.cri-dialog-header');
+      const r=summary.getBoundingClientRect(), h=header.getBoundingClientRect();
+      dialog.scrollTop += r.top - (h.bottom-r.height/2);
+    }""")
+    obscured = page.locator(selector).evaluate("""n => {
+      const r=n.getBoundingClientRect(), h=document.querySelector('.cri-dialog-header').getBoundingClientRect();
+      return r.top < h.bottom && r.bottom > h.top;
+    }""")
+    assert obscured, "Fixture must put the target behind the actual sticky header before reverse Tab"
+
+
+@pytest.mark.parametrize("expired", [False, True])
+@pytest.mark.parametrize("lang,width", [("en", 390), ("zh", 320), ("en", 1440)])
+def test_r4_keyboard_current_action_ring_clears_drawer_edge(snapshot_page, lang, width, expired):
+    page = snapshot_page(lang, width, at="2026-12-01T12:00:00Z" if expired else "2026-10-18T12:00:00Z")
+    page.set_viewport_size({"width": width, "height": 600})
+    _open_scenario(page)
+    address, original = page.url, _raw(page)
+    review = page.locator('[data-drawer-focus="review"]')
+    review.focus()
+    before = _drawer_focus_sample(page, f"actions-{lang}-{width}-{expired}-before")
+    page.keyboard.press("Tab")
+    if not expired:
+        assert page.locator('[data-snapshot-action="save"]').evaluate("n => document.activeElement===n")
+        page.keyboard.press("Tab")
+    assert page.locator('[data-drawer-focus="demand-evidence"]').evaluate("n => document.activeElement===n")
+    after = _drawer_focus_sample(page, f"actions-{lang}-{width}-{expired}-after")
+    _capture(page, f"drawer-focus-actions-{lang}-{width}-{'expired' if expired else 'open'}")
+    _assert_drawer_focus_ring(after)
+    assert before["layout"] == after["layout"] and before["bodyHeight"] == after["bodyHeight"]
+    assert before["scrollHeight"] == after["scrollHeight"]
+    assert page.url == address and before["historyLength"] == after["historyLength"]
+    assert before["windowScroll"] == after["windowScroll"] and _raw(page) == original and _writes(page) == 0
+
+
+@pytest.mark.parametrize("lang,width", [("en", 390), ("zh", 320), ("en", 1440)])
+def test_r4_reverse_tab_reveals_current_summary_below_sticky_header(snapshot_page, lang, width):
+    page = snapshot_page(lang, width)
+    page.set_viewport_size({"width": width, "height": 480})
+    _open_scenario(page)
+    summary = '[data-drawer-focus="scenario-conditions"]'
+    page.locator(summary).click()
+    page.locator('[data-drawer-focus="review"]').evaluate("n => n.focus({preventScroll:true})")
+    _place_summary_behind_header(page, summary)
+    before = _drawer_focus_sample(page, f"current-reverse-{lang}-{width}-before")
+    address, original = page.url, _raw(page)
+    page.keyboard.press("Shift+Tab")
+    assert page.locator(summary).evaluate("n => document.activeElement===n")
+    after = _drawer_focus_sample(page, f"current-reverse-{lang}-{width}-after")
+    _capture(page, f"drawer-focus-current-reverse-{lang}-{width}")
+    _assert_drawer_focus_ring(after)
+    assert page.locator('[data-drawer-disclosure="scenario-conditions"]').evaluate("n => n.open")
+    assert before["layout"] == after["layout"] and before["scrollHeight"] == after["scrollHeight"]
+    assert before["windowScroll"] == after["windowScroll"]
+    assert page.url == address and _raw(page) == original and _writes(page) == 0
+
+
+@pytest.mark.parametrize("lang,width", [("en", 390), ("zh", 320)])
+def test_r4_reverse_tab_respects_wrapped_saved_header_after_resize(snapshot_page, lang, width):
+    page = snapshot_page(lang, 1440)
+    page.set_viewport_size({"width": 1440, "height": 600})
+    frozen = _frozen(_scenario(page))
+    frozen["title_en"] = "A retained scenario with a longer title that wraps on a narrow screen"
+    frozen["title_zh"] = "这是一项保留原始条件且标题会在窄屏中自动换行的历史情景"
+    _seed(page, [frozen])
+    _open_saved(page, frozen["revision"])
+    wide_header = page.locator(".cri-dialog-header").evaluate("n => n.getBoundingClientRect().height")
+    page.set_viewport_size({"width": width, "height": 600})
+    page.wait_for_function("document.querySelector('.cri-dialog-header').getBoundingClientRect().height > " + str(wide_header))
+    summary = '[data-drawer-focus="case-details"]'
+    page.locator(summary).click()
+    page.locator("#cri-dialog-body summary").nth(1).evaluate("n => n.focus({preventScroll:true})")
+    _place_summary_behind_header(page, summary)
+    before = _drawer_focus_sample(page, f"saved-resize-{lang}-{width}-before")
+    address, original = page.url, _raw(page)
+    page.keyboard.press("Shift+Tab")
+    assert page.locator(summary).evaluate("n => document.activeElement===n")
+    after = _drawer_focus_sample(page, f"saved-resize-{lang}-{width}-after")
+    _capture(page, f"drawer-focus-saved-resize-{lang}-{width}")
+    _assert_drawer_focus_ring(after)
+    assert after["headerHeight"] > wide_header
+    assert page.locator('[data-drawer-disclosure="case-details"]').evaluate("n => n.open")
+    assert before["layout"] == after["layout"] and before["scrollHeight"] == after["scrollHeight"]
+    assert before["windowScroll"] == after["windowScroll"]
+    assert page.url == address and _raw(page) == original and _writes(page) == 0

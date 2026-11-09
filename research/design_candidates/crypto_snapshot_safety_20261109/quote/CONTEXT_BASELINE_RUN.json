@@ -1,0 +1,15 @@
+{
+  "command": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_crypto_intelligence_r4.py::test_quote_clarity_formatting_is_independent_of_caller_decimal_context",
+    "--tb=short",
+    "--junitxml=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/quote-clarity-context-baseline/junit.xml"
+  ],
+  "exit_code": 1,
+  "seconds": 0.46,
+  "builder_sha256": "9de0d5e680d2f3f799504f84e67e949cfa783a615b2b7ba26f5573edf17eea68",
+  "contract_sha256": "878131aea7d56e5de7f21641f60bdd2fc43cd345f738dd2b8f111c32c9219fa3"
+}

@@ -1,0 +1,1790 @@
+{
+  "observations": {
+    "stage": "parent",
+    "contexts": 4,
+    "pages": 4,
+    "page_errors": [],
+    "blocked_external_requests": 0,
+    "blocked_websockets": 0,
+    "browser": "157.0.8103.39",
+    "seconds": 9.045
+  },
+  "cases": [
+    {
+      "view": "overview",
+      "width": 320,
+      "height": 844,
+      "scrollY": 1582,
+      "maxScroll": 1582,
+      "pageWidth": 320,
+      "footer": {
+        "left": 16,
+        "right": 180.390625,
+        "top": 740.3125,
+        "bottom": 780.3125,
+        "width": 164.390625,
+        "height": 40
+      },
+      "launcher": {
+        "left": 248,
+        "right": 304,
+        "top": 772,
+        "bottom": 828,
+        "width": 56,
+        "height": 56
+      },
+      "launcherStyle": {
+        "position": "fixed",
+        "bottom": "16px",
+        "right": "16px",
+        "pointerEvents": "auto",
+        "zIndex": "2147483000"
+      },
+      "text": "Bitcoin model & methods\n↗",
+      "fontSize": "12.5px",
+      "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+      "focusVisible": true,
+      "focusExtent": 6,
+      "verticalGap": -8.3125,
+      "focusGap": -14.3125,
+      "horizontalOverlap": false,
+      "hits": [
+        {
+          "x": 98.1953125,
+          "y": 760.3125,
+          "clear": true,
+          "hitTag": "SPAN",
+          "hitId": ""
+        },
+        {
+          "x": 20,
+          "y": 744.3125,
+          "clear": true,
+          "hitTag": "BUTTON",
+          "hitId": ""
+        },
+        {
+          "x": 176.390625,
+          "y": 744.3125,
+          "clear": true,
+          "hitTag": "BUTTON",
+          "hitId": ""
+        },
+        {
+          "x": 20,
+          "y": 776.3125,
+          "clear": true,
+          "hitTag": "BUTTON",
+          "hitId": ""
+        },
+        {
+          "x": 176.390625,
+          "y": 776.3125,
+          "clear": true,
+          "hitTag": "BUTTON",
+          "hitId": ""
+        }
+      ],
+      "bodyView": {
+        "left": 16,
+        "right": 304,
+        "top": -1316,
+        "bottom": 639.3125,
+        "width": 288,
+        "height": 1955.3125
+      },
+      "footerContainer": {
+        "left": 16,
+        "right": 304,
+        "top": 675.3125,
+        "bottom": 780.3125,
+        "width": 288,
+        "height": 105
+      },
+      "paddingBottom": "64px",
+      "safeAreaFormulaSupported": true,
+      "version": "602406872d1d",
+      "summary": [
+        {
+          "text": "Vs BTC: Tracking Bitcoin\nRisk: Stressed",
+          "fontSize": "12.5px",
+          "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif"
+        },
+        {
+          "text": "Vs BTC: Leading Bitcoin\nRisk: Stressed",
+          "fontSize": "12.5px",
+          "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif"
+        }
+      ],
+      "lang": "en",
+      "at_end": true,
+      "clear": true,
+      "model_close_focus": true
+    },
+    {
+      "view": "bitcoin",
+      "width": 320,
+      "height": 844,
+      "scrollY": 1539,
+      "maxScroll": 1539,
+      "pageWidth": 320,
+      "footer": {
+        "left": 16,
+        "right": 180.390625,
+        "top": 740.109375,
+        "bottom": 780.109375,
+        "width": 164.390625,
+        "height": 40
+      },
+      "launcher": {
+        "left": 248,
+        "right": 304,
+        "top": 772,
+        "bottom": 828,
+        "width": 56,
+        "height": 56
+      },
+      "launcherStyle": {
+        "position": "fixed",
+        "bottom": "16px",
+        "right": "16px",
+        "pointerEvents": "auto",
+        "zIndex": "2147483000"
+      },
+      "text": "Bitcoin model & methods\n↗",
+      "fontSize": "12.5px",
+      "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+      "focusVisible": true,
+      "focusExtent": 6,
+      "verticalGap": -8.109375,
+      "focusGap": -14.109375,
+      "horizontalOverlap": false,
+      "hits": [
+        {
+          "x": 98.1953125,
+          "y": 760.109375,
+          "clear": true,
+          "hitTag": "SPAN",
+          "hitId": ""
+        },
+        {
+          "x": 20,
+          "y": 744.109375,
+          "clear": true,
+          "hitTag": "BUTTON",
+          "hitId": ""
+        },
+        {
+          "x": 176.390625,
+          "y": 744.109375,
+          "clear": true,
+          "hitTag": "BUTTON",
+          "hitId": ""
+        },
+        {
+          "x": 20,
+          "y": 776.109375,
+          "clear": true,
+          "hitTag": "BUTTON",
+          "hitId": ""
+        },
+        {
+          "x": 176.390625,
+          "y": 776.109375,
+          "clear": true,
+          "hitTag": "BUTTON",
+          "hitId": ""
+        }
+      ],
+      "bodyView": {
+        "left": 16,
+        "right": 304,
+        "top": -1273,
+        "bottom": 639.109375,
+        "width": 288,
+        "height": 1912.109375
+      },
+      "footerContainer": {
+        "left": 16,
+        "right": 304,
+        "top": 675.109375,
+        "bottom": 780.109375,
+        "width": 288,
+        "height": 105
+      },
+      "paddingBottom": "64px",
+      "safeAreaFormulaSupported": true,
+      "version": "602406872d1d",
+      "summary": [
+        {
+          "text": "Vs BTC: Tracking Bitcoin相对 BTC：跟随比特币 Risk: Stressed风险：承压",
+          "fontSize": "12.5px",
+          "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif"
+        },
+        {
+          "text": "Vs BTC: Leading Bitcoin相对 BTC：领先比特币 Risk: Stressed风险：承压",
+          "fontSize": "12.5px",
+          "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif"
+        }
+      ],
+      "lang": "en",
+      "at_end": true,
+      "clear": true,
+      "model_close_focus": true
+    },
+    {
+      "view": "markets",
+      "width": 320,
+      "height": 844,
+      "scrollY": 592,
+      "maxScroll": 592,
+      "pageWidth": 320,
+      "footer": {
+        "left": 16,
+        "right": 180.390625,
+        "top": 739.9375,
+        "bottom": 779.9375,
+        "width": 164.390625,
+        "height": 40
+      },
+      "launcher": {
+        "left": 248,
+        "right": 304,
+        "top": 772,
+        "bottom": 828,
+        "width": 56,
+        "height": 56
+      },
+      "launcherStyle": {
+        "position": "fixed",
+        "bottom": "16px",
+        "right": "16px",
+        "pointerEvents": "auto",
+        "zIndex": "2147483000"
+      },
+      "text": "Bitcoin model & methods\n↗",
+      "fontSize": "12.5px",
+      "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+      "focusVisible": true,
+      "focusExtent": 6,
+      "verticalGap": -7.9375,
+      "focusGap": -13.9375,
+      "horizontalOverlap": false,
+      "hits": [
+        {
+          "x": 98.1953125,
+          "y": 759.9375,
+          "clear": true,
+          "hitTag": "SPAN",
+          "hitId": ""
+        },
+        {
+          "x": 20,
+          "y": 743.9375,
+          "clear": true,
+          "hitTag": "BUTTON",
+          "hitId": ""
+        },
+        {
+          "x": 176.390625,
+          "y": 743.9375,
+          "clear": true,
+          "hitTag": "BUTTON",
+          "hitId": ""
+        },
+        {
+          "x": 20,
+          "y": 775.9375,
+          "clear": true,
+          "hitTag": "BUTTON",
+          "hitId": ""
+        },
+        {
+          "x": 176.390625,
+          "y": 775.9375,
+          "clear": true,
+          "hitTag": "BUTTON",
+          "hitId": ""
+        }
+      ],
+      "bodyView": {
+        "left": 16,
+        "right": 304,
+        "top": -326,
+        "bottom": 638.9375,
+        "width": 288,
+        "height": 964.9375
+      },
+      "footerContainer": {
+        "left": 16,
+        "right": 304,
+        "top": 674.9375,
+        "bottom": 779.9375,
+        "width": 288,
+        "height": 105
+      },
+      "paddingBottom": "64px",
+      "safeAreaFormulaSupported": true,
+      "version": "602406872d1d",
+      "summary": [
+        {
+          "text": "Vs BTC: Tracking Bitcoin相对 BTC：跟随比特币 Risk: Stressed风险：承压",
+          "fontSize": "12.5px",
+          "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif"
+        },
+        {
+          "text": "Vs BTC: Leading Bitcoin相对 BTC：领先比特币 Risk: Stressed风险：承压",
+          "fontSize": "12.5px",
+          "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif"
+        }
+      ],
+      "lang": "en",
+      "at_end": true,
+      "clear": true,
+      "model_close_focus": true
+    },
+    {
+      "view": "scenarios",
+      "width": 320,
+      "height": 844,
+      "scrollY": 1882,
+      "maxScroll": 1882,
+      "pageWidth": 320,
+      "footer": {
+        "left": 16,
+        "right": 180.390625,
+        "top": 739.78125,
+        "bottom": 779.78125,
+        "width": 164.390625,
+        "height": 40
+      },
+      "launcher": {
+        "left": 248,
+        "right": 304,
+        "top": 772,
+        "bottom": 828,
+        "width": 56,
+        "height": 56
+      },
+      "launcherStyle": {
+        "position": "fixed",
+        "bottom": "16px",
+        "right": "16px",
+        "pointerEvents": "auto",
+        "zIndex": "2147483000"
+      },
+      "text": "Bitcoin model & methods\n↗",
+      "fontSize": "12.5px",
+      "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+      "focusVisible": true,
+      "focusExtent": 6,
+      "verticalGap": -7.78125,
+      "focusGap": -13.78125,
+      "horizontalOverlap": false,
+      "hits": [
+        {
+          "x": 98.1953125,
+          "y": 759.78125,
+          "clear": true,
+          "hitTag": "SPAN",
+          "hitId": ""
+        },
+        {
+          "x": 20,
+          "y": 743.78125,
+          "clear": true,
+          "hitTag": "BUTTON",
+          "hitId": ""
+        },
+        {
+          "x": 176.390625,
+          "y": 743.78125,
+          "clear": true,
+          "hitTag": "BUTTON",
+          "hitId": ""
+        },
+        {
+          "x": 20,
+          "y": 775.78125,
+          "clear": true,
+          "hitTag": "BUTTON",
+          "hitId": ""
+        },
+        {
+          "x": 176.390625,
+          "y": 775.78125,
+          "clear": true,
+          "hitTag": "BUTTON",
+          "hitId": ""
+        }
+      ],
+      "bodyView": {
+        "left": 16,
+        "right": 304,
+        "top": -1616,
+        "bottom": 638.78125,
+        "width": 288,
+        "height": 2254.78125
+      },
+      "footerContainer": {
+        "left": 16,
+        "right": 304,
+        "top": 674.78125,
+        "bottom": 779.78125,
+        "width": 288,
+        "height": 105
+      },
+      "paddingBottom": "64px",
+      "safeAreaFormulaSupported": true,
+      "version": "602406872d1d",
+      "summary": [
+        {
+          "text": "Vs BTC: Tracking Bitcoin相对 BTC：跟随比特币 Risk: Stressed风险：承压",
+          "fontSize": "12.5px",
+          "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif"
+        },
+        {
+          "text": "Vs BTC: Leading Bitcoin相对 BTC：领先比特币 Risk: Stressed风险：承压",
+          "fontSize": "12.5px",
+          "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif"
+        }
+      ],
+      "lang": "en",
+      "at_end": true,
+      "clear": true,
+      "model_close_focus": true
+    },
+    {
+      "view": "overview",
+      "width": 320,
+      "height": 844,
+      "scrollY": 1359,
+      "maxScroll": 1359,
+      "pageWidth": 320,
+      "footer": {
+        "left": 16,
+        "right": 138.5625,
+        "top": 740.15625,
+        "bottom": 780.15625,
+        "width": 122.5625,
+        "height": 40
+      },
+      "launcher": {
+        "left": 248,
+        "right": 304,
+        "top": 772,
+        "bottom": 828,
+        "width": 56,
+        "height": 56
+      },
+      "launcherStyle": {
+        "position": "fixed",
+        "bottom": "16px",
+        "right": "16px",
+        "pointerEvents": "auto",
+        "zIndex": "2147483000"
+      },
+      "text": "比特币模型与方法\n↗",
+      "fontSize": "12.5px",
+      "fontFamily": "\"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", \"Microsoft JhengHei\", \"Heiti SC\", -apple-system, \"system-ui\", Inter, sans-serif",
+      "focusVisible": true,
+      "focusExtent": 6,
+      "verticalGap": -8.15625,
+      "focusGap": -14.15625,
+      "horizontalOverlap": false,
+      "hits": [
+        {
+          "x": 77.28125,
+          "y": 760.15625,
+          "clear": true,
+          "hitTag": "SPAN",
+          "hitId": ""
+        },
+        {
+          "x": 20,
+          "y": 744.15625,
+          "clear": true,
+          "hitTag": "BUTTON",
+          "hitId": ""
+        },
+        {
+          "x": 134.5625,
+          "y": 744.15625,
+          "clear": true,
+          "hitTag": "BUTTON",
+          "hitId": ""
+        },
+        {
+          "x": 20,
+          "y": 776.15625,
+          "clear": true,
+          "hitTag": "BUTTON",
+          "hitId": ""
+        },
+        {
+          "x": 134.5625,
+          "y": 776.15625,
+          "clear": true,
+          "hitTag": "BUTTON",
+          "hitId": ""
+        }
+      ],
+      "bodyView": {
+        "left": 16,
+        "right": 304,
+        "top": -1107,
+        "bottom": 652.15625,
+        "width": 288,
+        "height": 1759.15625
+      },
+      "footerContainer": {
+        "left": 16,
+        "right": 304,
+        "top": 688.15625,
+        "bottom": 780.15625,
+        "width": 288,
+        "height": 92
+      },
+      "paddingBottom": "64px",
+      "safeAreaFormulaSupported": true,
+      "version": "602406872d1d",
+      "summary": [
+        {
+          "text": "相对 BTC：跟随比特币\n风险：承压",
+          "fontSize": "12.5px",
+          "fontFamily": "\"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", \"Microsoft JhengHei\", \"Heiti SC\", -apple-system, \"system-ui\", Inter, sans-serif"
+        },
+        {
+          "text": "相对 BTC：领先比特币\n风险：承压",
+          "fontSize": "12.5px",
+          "fontFamily": "\"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", \"Microsoft JhengHei\", \"Heiti SC\", -apple-system, \"system-ui\", Inter, sans-serif"
+        }
+      ],
+      "lang": "zh",
+      "at_end": true,
+      "clear": true,
+      "model_close_focus": true
+    },
+    {
+      "view": "bitcoin",
+      "width": 320,
+      "height": 844,
+      "scrollY": 1124,
+      "maxScroll": 1124,
+      "pageWidth": 320,
+      "footer": {
+        "left": 16,
+        "right": 138.5625,
+        "top": 739.953125,
+        "bottom": 779.953125,
+        "width": 122.5625,
+        "height": 40
+      },
+      "launcher": {
+        "left": 248,
+        "right": 304,
+        "top": 772,
+        "bottom": 828,
+        "width": 56,
+        "height": 56
+      },
+      "launcherStyle": {
+        "position": "fixed",
+        "bottom": "16px",
+        "right": "16px",
+        "pointerEvents": "auto",
+        "zIndex": "2147483000"
+      },
+      "text": "比特币模型与方法\n↗",
+      "fontSize": "12.5px",
+      "fontFamily": "\"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", \"Microsoft JhengHei\", \"Heiti SC\", -apple-system, \"system-ui\", Inter, sans-serif",
+      "focusVisible": true,
+      "focusExtent": 6,
+      "verticalGap": -7.953125,
+      "focusGap": -13.953125,
+      "horizontalOverlap": false,
+      "hits": [
+        {
+          "x": 77.28125,
+          "y": 759.953125,
+          "clear": true,
+          "hitTag": "SPAN",
+          "hitId": ""
+        },
+        {
+          "x": 20,
+          "y": 743.953125,
+          "clear": true,
+          "hitTag": "BUTTON",
+          "hitId": ""
+        },
+        {
+          "x": 134.5625,
+          "y": 743.953125,
+          "clear": true,
+          "hitTag": "BUTTON",
+          "hitId": ""
+        },
+        {
+          "x": 20,
+          "y": 775.953125,
+          "clear": true,
+          "hitTag": "BUTTON",
+          "hitId": ""
+        },
+        {
+          "x": 134.5625,
+          "y": 775.953125,
+          "clear": true,
+          "hitTag": "BUTTON",
+          "hitId": ""
+        }
+      ],
+      "bodyView": {
+        "left": 16,
+        "right": 304,
+        "top": -872,
+        "bottom": 651.953125,
+        "width": 288,
+        "height": 1523.953125
+      },
+      "footerContainer": {
+        "left": 16,
+        "right": 304,
+        "top": 687.953125,
+        "bottom": 779.953125,
+        "width": 288,
+        "height": 92
+      },
+      "paddingBottom": "64px",
+      "safeAreaFormulaSupported": true,
+      "version": "602406872d1d",
+      "summary": [
+        {
+          "text": "Vs BTC: Tracking Bitcoin相对 BTC：跟随比特币 Risk: Stressed风险：承压",
+          "fontSize": "12.5px",
+          "fontFamily": "\"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", \"Microsoft JhengHei\", \"Heiti SC\", -apple-system, \"system-ui\", Inter, sans-serif"
+        },
+        {
+          "text": "Vs BTC: Leading Bitcoin相对 BTC：领先比特币 Risk: Stressed风险：承压",
+          "fontSize": "12.5px",
+          "fontFamily": "\"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", \"Microsoft JhengHei\", \"Heiti SC\", -apple-system, \"system-ui\", Inter, sans-serif"
+        }
+      ],
+      "lang": "zh",
+      "at_end": true,
+      "clear": true,
+      "model_close_focus": true
+    },
+    {
+      "view": "markets",
+      "width": 320,
+      "height": 844,
+      "scrollY": 556,
+      "maxScroll": 556,
+      "pageWidth": 320,
+      "footer": {
+        "left": 16,
+        "right": 138.5625,
+        "top": 739.9375,
+        "bottom": 779.9375,
+        "width": 122.5625,
+        "height": 40
+      },
+      "launcher": {
+        "left": 248,
+        "right": 304,
+        "top": 772,
+        "bottom": 828,
+        "width": 56,
+        "height": 56
+      },
+      "launcherStyle": {
+        "position": "fixed",
+        "bottom": "16px",
+        "right": "16px",
+        "pointerEvents": "auto",
+        "zIndex": "2147483000"
+      },
+      "text": "比特币模型与方法\n↗",
+      "fontSize": "12.5px",
+      "fontFamily": "\"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", \"Microsoft JhengHei\", \"Heiti SC\", -apple-system, \"system-ui\", Inter, sans-serif",
+      "focusVisible": true,
+      "focusExtent": 6,
+      "verticalGap": -7.9375,
+      "focusGap": -13.9375,
+      "horizontalOverlap": false,
+      "hits": [
+        {
+          "x": 77.28125,
+          "y": 759.9375,
+          "clear": true,
+          "hitTag": "SPAN",
+          "hitId": ""
+        },
+        {
+          "x": 20,
+          "y": 743.9375,
+          "clear": true,
+          "hitTag": "BUTTON",
+          "hitId": ""
+        },
+        {
+          "x": 134.5625,
+          "y": 743.9375,
+          "clear": true,
+          "hitTag": "BUTTON",
+          "hitId": ""
+        },
+        {
+          "x": 20,
+          "y": 775.9375,
+          "clear": true,
+          "hitTag": "BUTTON",
+          "hitId": ""
+        },
+        {
+          "x": 134.5625,
+          "y": 775.9375,
+          "clear": true,
+          "hitTag": "BUTTON",
+          "hitId": ""
+        }
+      ],
+      "bodyView": {
+        "left": 16,
+        "right": 304,
+        "top": -304,
+        "bottom": 651.9375,
+        "width": 288,
+        "height": 955.9375
+      },
+      "footerContainer": {
+        "left": 16,
+        "right": 304,
+        "top": 687.9375,
+        "bottom": 779.9375,
+        "width": 288,
+        "height": 92
+      },
+      "paddingBottom": "64px",
+      "safeAreaFormulaSupported": true,
+      "version": "602406872d1d",
+      "summary": [
+        {
+          "text": "Vs BTC: Tracking Bitcoin相对 BTC：跟随比特币 Risk: Stressed风险：承压",
+          "fontSize": "12.5px",
+          "fontFamily": "\"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", \"Microsoft JhengHei\", \"Heiti SC\", -apple-system, \"system-ui\", Inter, sans-serif"
+        },
+        {
+          "text": "Vs BTC: Leading Bitcoin相对 BTC：领先比特币 Risk: Stressed风险：承压",
+          "fontSize": "12.5px",
+          "fontFamily": "\"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", \"Microsoft JhengHei\", \"Heiti SC\", -apple-system, \"system-ui\", Inter, sans-serif"
+        }
+      ],
+      "lang": "zh",
+      "at_end": true,
+      "clear": true,
+      "model_close_focus": true
+    },
+    {
+      "view": "scenarios",
+      "width": 320,
+      "height": 844,
+      "scrollY": 1569,
+      "maxScroll": 1569,
+      "pageWidth": 320,
+      "footer": {
+        "left": 16,
+        "right": 138.5625,
+        "top": 740.140625,
+        "bottom": 780.140625,
+        "width": 122.5625,
+        "height": 40
+      },
+      "launcher": {
+        "left": 248,
+        "right": 304,
+        "top": 772,
+        "bottom": 828,
+        "width": 56,
+        "height": 56
+      },
+      "launcherStyle": {
+        "position": "fixed",
+        "bottom": "16px",
+        "right": "16px",
+        "pointerEvents": "auto",
+        "zIndex": "2147483000"
+      },
+      "text": "比特币模型与方法\n↗",
+      "fontSize": "12.5px",
+      "fontFamily": "\"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", \"Microsoft JhengHei\", \"Heiti SC\", -apple-system, \"system-ui\", Inter, sans-serif",
+      "focusVisible": true,
+      "focusExtent": 6,
+      "verticalGap": -8.140625,
+      "focusGap": -14.140625,
+      "horizontalOverlap": false,
+      "hits": [
+        {
+          "x": 77.28125,
+          "y": 760.140625,
+          "clear": true,
+          "hitTag": "SPAN",
+          "hitId": ""
+        },
+        {
+          "x": 20,
+          "y": 744.140625,
+          "clear": true,
+          "hitTag": "BUTTON",
+          "hitId": ""
+        },
+        {
+          "x": 134.5625,
+          "y": 744.140625,
+          "clear": true,
+          "hitTag": "BUTTON",
+          "hitId": ""
+        },
+        {
+          "x": 20,
+          "y": 776.140625,
+          "clear": true,
+          "hitTag": "BUTTON",
+          "hitId": ""
+        },
+        {
+          "x": 134.5625,
+          "y": 776.140625,
+          "clear": true,
+          "hitTag": "BUTTON",
+          "hitId": ""
+        }
+      ],
+      "bodyView": {
+        "left": 16,
+        "right": 304,
+        "top": -1317,
+        "bottom": 652.140625,
+        "width": 288,
+        "height": 1969.140625
+      },
+      "footerContainer": {
+        "left": 16,
+        "right": 304,
+        "top": 688.140625,
+        "bottom": 780.140625,
+        "width": 288,
+        "height": 92
+      },
+      "paddingBottom": "64px",
+      "safeAreaFormulaSupported": true,
+      "version": "602406872d1d",
+      "summary": [
+        {
+          "text": "Vs BTC: Tracking Bitcoin相对 BTC：跟随比特币 Risk: Stressed风险：承压",
+          "fontSize": "12.5px",
+          "fontFamily": "\"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", \"Microsoft JhengHei\", \"Heiti SC\", -apple-system, \"system-ui\", Inter, sans-serif"
+        },
+        {
+          "text": "Vs BTC: Leading Bitcoin相对 BTC：领先比特币 Risk: Stressed风险：承压",
+          "fontSize": "12.5px",
+          "fontFamily": "\"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", \"Microsoft JhengHei\", \"Heiti SC\", -apple-system, \"system-ui\", Inter, sans-serif"
+        }
+      ],
+      "lang": "zh",
+      "at_end": true,
+      "clear": true,
+      "model_close_focus": true
+    },
+    {
+      "view": "overview",
+      "width": 1440,
+      "height": 844,
+      "scrollY": 669,
+      "maxScroll": 669,
+      "pageWidth": 1440,
+      "footer": {
+        "left": 1215.609375,
+        "right": 1380,
+        "top": 740.109375,
+        "bottom": 780.109375,
+        "width": 164.390625,
+        "height": 40
+      },
+      "launcher": {
+        "left": 1216.375,
+        "right": 1418,
+        "top": 766,
+        "bottom": 822,
+        "width": 201.625,
+        "height": 56
+      },
+      "launcherStyle": {
+        "position": "fixed",
+        "bottom": "22px",
+        "right": "22px",
+        "pointerEvents": "auto",
+        "zIndex": "2147483000"
+      },
+      "text": "Bitcoin model & methods\n↗",
+      "fontSize": "12.5px",
+      "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+      "focusVisible": true,
+      "focusExtent": 6,
+      "verticalGap": -14.109375,
+      "focusGap": -20.109375,
+      "horizontalOverlap": true,
+      "hits": [
+        {
+          "x": 1297.8046875,
+          "y": 760.109375,
+          "clear": true,
+          "hitTag": "SPAN",
+          "hitId": ""
+        },
+        {
+          "x": 1219.609375,
+          "y": 744.109375,
+          "clear": true,
+          "hitTag": "BUTTON",
+          "hitId": ""
+        },
+        {
+          "x": 1376,
+          "y": 744.109375,
+          "clear": true,
+          "hitTag": "BUTTON",
+          "hitId": ""
+        },
+        {
+          "x": 1219.609375,
+          "y": 776.109375,
+          "clear": true,
+          "hitTag": "BUTTON",
+          "hitId": ""
+        },
+        {
+          "x": 1376,
+          "y": 776.109375,
+          "clear": false,
+          "hitTag": "DIV",
+          "hitId": "mmb-boot"
+        }
+      ],
+      "bodyView": {
+        "left": 60,
+        "right": 1380,
+        "top": -435,
+        "bottom": 681.109375,
+        "width": 1320,
+        "height": 1116.109375
+      },
+      "footerContainer": {
+        "left": 60,
+        "right": 1380,
+        "top": 717.109375,
+        "bottom": 780.109375,
+        "width": 1320,
+        "height": 63
+      },
+      "paddingBottom": "64px",
+      "safeAreaFormulaSupported": true,
+      "version": "602406872d1d",
+      "summary": [
+        {
+          "text": "Vs BTC: Tracking Bitcoin\nRisk: Stressed",
+          "fontSize": "12.5px",
+          "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif"
+        },
+        {
+          "text": "Vs BTC: Leading Bitcoin\nRisk: Stressed",
+          "fontSize": "12.5px",
+          "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif"
+        }
+      ],
+      "lang": "en",
+      "at_end": true,
+      "clear": false,
+      "model_close_focus": "not attempted: clearance failed"
+    },
+    {
+      "view": "bitcoin",
+      "width": 1440,
+      "height": 844,
+      "scrollY": 609,
+      "maxScroll": 609,
+      "pageWidth": 1440,
+      "footer": {
+        "left": 1215.609375,
+        "right": 1380,
+        "top": 739.90625,
+        "bottom": 779.90625,
+        "width": 164.390625,
+        "height": 40
+      },
+      "launcher": {
+        "left": 1216.375,
+        "right": 1418,
+        "top": 766,
+        "bottom": 822,
+        "width": 201.625,
+        "height": 56
+      },
+      "launcherStyle": {
+        "position": "fixed",
+        "bottom": "22px",
+        "right": "22px",
+        "pointerEvents": "auto",
+        "zIndex": "2147483000"
+      },
+      "text": "Bitcoin model & methods\n↗",
+      "fontSize": "12.5px",
+      "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+      "focusVisible": true,
+      "focusExtent": 6,
+      "verticalGap": -13.90625,
+      "focusGap": -19.90625,
+      "horizontalOverlap": true,
+      "hits": [
+        {
+          "x": 1297.8046875,
+          "y": 759.90625,
+          "clear": true,
+          "hitTag": "SPAN",
+          "hitId": ""
+        },
+        {
+          "x": 1219.609375,
+          "y": 743.90625,
+          "clear": true,
+          "hitTag": "BUTTON",
+          "hitId": ""
+        },
+        {
+          "x": 1376,
+          "y": 743.90625,
+          "clear": true,
+          "hitTag": "BUTTON",
+          "hitId": ""
+        },
+        {
+          "x": 1219.609375,
+          "y": 775.90625,
+          "clear": true,
+          "hitTag": "BUTTON",
+          "hitId": ""
+        },
+        {
+          "x": 1376,
+          "y": 775.90625,
+          "clear": false,
+          "hitTag": "DIV",
+          "hitId": "mmb-boot"
+        }
+      ],
+      "bodyView": {
+        "left": 60,
+        "right": 1380,
+        "top": -375,
+        "bottom": 680.90625,
+        "width": 1320,
+        "height": 1055.90625
+      },
+      "footerContainer": {
+        "left": 60,
+        "right": 1380,
+        "top": 716.90625,
+        "bottom": 779.90625,
+        "width": 1320,
+        "height": 63
+      },
+      "paddingBottom": "64px",
+      "safeAreaFormulaSupported": true,
+      "version": "602406872d1d",
+      "summary": [
+        {
+          "text": "Vs BTC: Tracking Bitcoin相对 BTC：跟随比特币 Risk: Stressed风险：承压",
+          "fontSize": "12.5px",
+          "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif"
+        },
+        {
+          "text": "Vs BTC: Leading Bitcoin相对 BTC：领先比特币 Risk: Stressed风险：承压",
+          "fontSize": "12.5px",
+          "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif"
+        }
+      ],
+      "lang": "en",
+      "at_end": true,
+      "clear": false,
+      "model_close_focus": "not attempted: clearance failed"
+    },
+    {
+      "view": "markets",
+      "width": 1440,
+      "height": 844,
+      "scrollY": 139,
+      "maxScroll": 139,
+      "pageWidth": 1440,
+      "footer": {
+        "left": 1215.609375,
+        "right": 1380,
+        "top": 739.515625,
+        "bottom": 779.515625,
+        "width": 164.390625,
+        "height": 40
+      },
+      "launcher": {
+        "left": 1216.375,
+        "right": 1418,
+        "top": 766,
+        "bottom": 822,
+        "width": 201.625,
+        "height": 56
+      },
+      "launcherStyle": {
+        "position": "fixed",
+        "bottom": "22px",
+        "right": "22px",
+        "pointerEvents": "auto",
+        "zIndex": "2147483000"
+      },
+      "text": "Bitcoin model & methods\n↗",
+      "fontSize": "12.5px",
+      "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+      "focusVisible": true,
+      "focusExtent": 6,
+      "verticalGap": -13.515625,
+      "focusGap": -19.515625,
+      "horizontalOverlap": true,
+      "hits": [
+        {
+          "x": 1297.8046875,
+          "y": 759.515625,
+          "clear": true,
+          "hitTag": "SPAN",
+          "hitId": ""
+        },
+        {
+          "x": 1219.609375,
+          "y": 743.515625,
+          "clear": true,
+          "hitTag": "BUTTON",
+          "hitId": ""
+        },
+        {
+          "x": 1376,
+          "y": 743.515625,
+          "clear": true,
+          "hitTag": "BUTTON",
+          "hitId": ""
+        },
+        {
+          "x": 1219.609375,
+          "y": 775.515625,
+          "clear": true,
+          "hitTag": "BUTTON",
+          "hitId": ""
+        },
+        {
+          "x": 1376,
+          "y": 775.515625,
+          "clear": false,
+          "hitTag": "DIV",
+          "hitId": "mmb-boot"
+        }
+      ],
+      "bodyView": {
+        "left": 60,
+        "right": 1380,
+        "top": 95,
+        "bottom": 680.515625,
+        "width": 1320,
+        "height": 585.515625
+      },
+      "footerContainer": {
+        "left": 60,
+        "right": 1380,
+        "top": 716.515625,
+        "bottom": 779.515625,
+        "width": 1320,
+        "height": 63
+      },
+      "paddingBottom": "64px",
+      "safeAreaFormulaSupported": true,
+      "version": "602406872d1d",
+      "summary": [
+        {
+          "text": "Vs BTC: Tracking Bitcoin相对 BTC：跟随比特币 Risk: Stressed风险：承压",
+          "fontSize": "12.5px",
+          "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif"
+        },
+        {
+          "text": "Vs BTC: Leading Bitcoin相对 BTC：领先比特币 Risk: Stressed风险：承压",
+          "fontSize": "12.5px",
+          "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif"
+        }
+      ],
+      "lang": "en",
+      "at_end": true,
+      "clear": false,
+      "model_close_focus": "not attempted: clearance failed"
+    },
+    {
+      "view": "scenarios",
+      "width": 1440,
+      "height": 844,
+      "scrollY": 541,
+      "maxScroll": 541,
+      "pageWidth": 1440,
+      "footer": {
+        "left": 1215.609375,
+        "right": 1380,
+        "top": 740.390625,
+        "bottom": 780.390625,
+        "width": 164.390625,
+        "height": 40
+      },
+      "launcher": {
+        "left": 1216.375,
+        "right": 1418,
+        "top": 766,
+        "bottom": 822,
+        "width": 201.625,
+        "height": 56
+      },
+      "launcherStyle": {
+        "position": "fixed",
+        "bottom": "22px",
+        "right": "22px",
+        "pointerEvents": "auto",
+        "zIndex": "2147483000"
+      },
+      "text": "Bitcoin model & methods\n↗",
+      "fontSize": "12.5px",
+      "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+      "focusVisible": true,
+      "focusExtent": 6,
+      "verticalGap": -14.390625,
+      "focusGap": -20.390625,
+      "horizontalOverlap": true,
+      "hits": [
+        {
+          "x": 1297.8046875,
+          "y": 760.390625,
+          "clear": true,
+          "hitTag": "SPAN",
+          "hitId": ""
+        },
+        {
+          "x": 1219.609375,
+          "y": 744.390625,
+          "clear": true,
+          "hitTag": "BUTTON",
+          "hitId": ""
+        },
+        {
+          "x": 1376,
+          "y": 744.390625,
+          "clear": true,
+          "hitTag": "BUTTON",
+          "hitId": ""
+        },
+        {
+          "x": 1219.609375,
+          "y": 776.390625,
+          "clear": true,
+          "hitTag": "BUTTON",
+          "hitId": ""
+        },
+        {
+          "x": 1376,
+          "y": 776.390625,
+          "clear": false,
+          "hitTag": "DIV",
+          "hitId": "mmb-boot"
+        }
+      ],
+      "bodyView": {
+        "left": 60,
+        "right": 1380,
+        "top": -307,
+        "bottom": 681.390625,
+        "width": 1320,
+        "height": 988.390625
+      },
+      "footerContainer": {
+        "left": 60,
+        "right": 1380,
+        "top": 717.390625,
+        "bottom": 780.390625,
+        "width": 1320,
+        "height": 63
+      },
+      "paddingBottom": "64px",
+      "safeAreaFormulaSupported": true,
+      "version": "602406872d1d",
+      "summary": [
+        {
+          "text": "Vs BTC: Tracking Bitcoin相对 BTC：跟随比特币 Risk: Stressed风险：承压",
+          "fontSize": "12.5px",
+          "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif"
+        },
+        {
+          "text": "Vs BTC: Leading Bitcoin相对 BTC：领先比特币 Risk: Stressed风险：承压",
+          "fontSize": "12.5px",
+          "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif"
+        }
+      ],
+      "lang": "en",
+      "at_end": true,
+      "clear": false,
+      "model_close_focus": "not attempted: clearance failed"
+    },
+    {
+      "view": "overview",
+      "width": 1440,
+      "height": 844,
+      "scrollY": 699,
+      "maxScroll": 699,
+      "pageWidth": 1440,
+      "footer": {
+        "left": 1257.4375,
+        "right": 1380,
+        "top": 740.109375,
+        "bottom": 780.109375,
+        "width": 122.5625,
+        "height": 40
+      },
+      "launcher": {
+        "left": 1247.34375,
+        "right": 1418,
+        "top": 766,
+        "bottom": 822,
+        "width": 170.65625,
+        "height": 56
+      },
+      "launcherStyle": {
+        "position": "fixed",
+        "bottom": "22px",
+        "right": "22px",
+        "pointerEvents": "auto",
+        "zIndex": "2147483000"
+      },
+      "text": "比特币模型与方法\n↗",
+      "fontSize": "12.5px",
+      "fontFamily": "\"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", \"Microsoft JhengHei\", \"Heiti SC\", -apple-system, \"system-ui\", Inter, sans-serif",
+      "focusVisible": true,
+      "focusExtent": 6,
+      "verticalGap": -14.109375,
+      "focusGap": -20.109375,
+      "horizontalOverlap": true,
+      "hits": [
+        {
+          "x": 1318.71875,
+          "y": 760.109375,
+          "clear": true,
+          "hitTag": "SPAN",
+          "hitId": ""
+        },
+        {
+          "x": 1261.4375,
+          "y": 744.109375,
+          "clear": true,
+          "hitTag": "BUTTON",
+          "hitId": ""
+        },
+        {
+          "x": 1376,
+          "y": 744.109375,
+          "clear": true,
+          "hitTag": "BUTTON",
+          "hitId": ""
+        },
+        {
+          "x": 1261.4375,
+          "y": 776.109375,
+          "clear": false,
+          "hitTag": "DIV",
+          "hitId": ""
+        },
+        {
+          "x": 1376,
+          "y": 776.109375,
+          "clear": false,
+          "hitTag": "DIV",
+          "hitId": "mmb-boot"
+        }
+      ],
+      "bodyView": {
+        "left": 60,
+        "right": 1380,
+        "top": -455,
+        "bottom": 681.109375,
+        "width": 1320,
+        "height": 1136.109375
+      },
+      "footerContainer": {
+        "left": 60,
+        "right": 1380,
+        "top": 717.109375,
+        "bottom": 780.109375,
+        "width": 1320,
+        "height": 63
+      },
+      "paddingBottom": "64px",
+      "safeAreaFormulaSupported": true,
+      "version": "602406872d1d",
+      "summary": [
+        {
+          "text": "相对 BTC：跟随比特币\n风险：承压",
+          "fontSize": "12.5px",
+          "fontFamily": "\"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", \"Microsoft JhengHei\", \"Heiti SC\", -apple-system, \"system-ui\", Inter, sans-serif"
+        },
+        {
+          "text": "相对 BTC：领先比特币\n风险：承压",
+          "fontSize": "12.5px",
+          "fontFamily": "\"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", \"Microsoft JhengHei\", \"Heiti SC\", -apple-system, \"system-ui\", Inter, sans-serif"
+        }
+      ],
+      "lang": "zh",
+      "at_end": true,
+      "clear": false,
+      "model_close_focus": "not attempted: clearance failed"
+    },
+    {
+      "view": "bitcoin",
+      "width": 1440,
+      "height": 844,
+      "scrollY": 635,
+      "maxScroll": 635,
+      "pageWidth": 1440,
+      "footer": {
+        "left": 1257.4375,
+        "right": 1380,
+        "top": 739.90625,
+        "bottom": 779.90625,
+        "width": 122.5625,
+        "height": 40
+      },
+      "launcher": {
+        "left": 1247.34375,
+        "right": 1418,
+        "top": 766,
+        "bottom": 822,
+        "width": 170.65625,
+        "height": 56
+      },
+      "launcherStyle": {
+        "position": "fixed",
+        "bottom": "22px",
+        "right": "22px",
+        "pointerEvents": "auto",
+        "zIndex": "2147483000"
+      },
+      "text": "比特币模型与方法\n↗",
+      "fontSize": "12.5px",
+      "fontFamily": "\"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", \"Microsoft JhengHei\", \"Heiti SC\", -apple-system, \"system-ui\", Inter, sans-serif",
+      "focusVisible": true,
+      "focusExtent": 6,
+      "verticalGap": -13.90625,
+      "focusGap": -19.90625,
+      "horizontalOverlap": true,
+      "hits": [
+        {
+          "x": 1318.71875,
+          "y": 759.90625,
+          "clear": true,
+          "hitTag": "SPAN",
+          "hitId": ""
+        },
+        {
+          "x": 1261.4375,
+          "y": 743.90625,
+          "clear": true,
+          "hitTag": "BUTTON",
+          "hitId": ""
+        },
+        {
+          "x": 1376,
+          "y": 743.90625,
+          "clear": true,
+          "hitTag": "BUTTON",
+          "hitId": ""
+        },
+        {
+          "x": 1261.4375,
+          "y": 775.90625,
+          "clear": false,
+          "hitTag": "DIV",
+          "hitId": ""
+        },
+        {
+          "x": 1376,
+          "y": 775.90625,
+          "clear": false,
+          "hitTag": "DIV",
+          "hitId": "mmb-boot"
+        }
+      ],
+      "bodyView": {
+        "left": 60,
+        "right": 1380,
+        "top": -391,
+        "bottom": 680.90625,
+        "width": 1320,
+        "height": 1071.90625
+      },
+      "footerContainer": {
+        "left": 60,
+        "right": 1380,
+        "top": 716.90625,
+        "bottom": 779.90625,
+        "width": 1320,
+        "height": 63
+      },
+      "paddingBottom": "64px",
+      "safeAreaFormulaSupported": true,
+      "version": "602406872d1d",
+      "summary": [
+        {
+          "text": "Vs BTC: Tracking Bitcoin相对 BTC：跟随比特币 Risk: Stressed风险：承压",
+          "fontSize": "12.5px",
+          "fontFamily": "\"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", \"Microsoft JhengHei\", \"Heiti SC\", -apple-system, \"system-ui\", Inter, sans-serif"
+        },
+        {
+          "text": "Vs BTC: Leading Bitcoin相对 BTC：领先比特币 Risk: Stressed风险：承压",
+          "fontSize": "12.5px",
+          "fontFamily": "\"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", \"Microsoft JhengHei\", \"Heiti SC\", -apple-system, \"system-ui\", Inter, sans-serif"
+        }
+      ],
+      "lang": "zh",
+      "at_end": true,
+      "clear": false,
+      "model_close_focus": "not attempted: clearance failed"
+    },
+    {
+      "view": "markets",
+      "width": 1440,
+      "height": 844,
+      "scrollY": 160,
+      "maxScroll": 160,
+      "pageWidth": 1440,
+      "footer": {
+        "left": 1257.4375,
+        "right": 1380,
+        "top": 739.515625,
+        "bottom": 779.515625,
+        "width": 122.5625,
+        "height": 40
+      },
+      "launcher": {
+        "left": 1247.34375,
+        "right": 1418,
+        "top": 766,
+        "bottom": 822,
+        "width": 170.65625,
+        "height": 56
+      },
+      "launcherStyle": {
+        "position": "fixed",
+        "bottom": "22px",
+        "right": "22px",
+        "pointerEvents": "auto",
+        "zIndex": "2147483000"
+      },
+      "text": "比特币模型与方法\n↗",
+      "fontSize": "12.5px",
+      "fontFamily": "\"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", \"Microsoft JhengHei\", \"Heiti SC\", -apple-system, \"system-ui\", Inter, sans-serif",
+      "focusVisible": true,
+      "focusExtent": 6,
+      "verticalGap": -13.515625,
+      "focusGap": -19.515625,
+      "horizontalOverlap": true,
+      "hits": [
+        {
+          "x": 1318.71875,
+          "y": 759.515625,
+          "clear": true,
+          "hitTag": "SPAN",
+          "hitId": ""
+        },
+        {
+          "x": 1261.4375,
+          "y": 743.515625,
+          "clear": true,
+          "hitTag": "BUTTON",
+          "hitId": ""
+        },
+        {
+          "x": 1376,
+          "y": 743.515625,
+          "clear": true,
+          "hitTag": "BUTTON",
+          "hitId": ""
+        },
+        {
+          "x": 1261.4375,
+          "y": 775.515625,
+          "clear": false,
+          "hitTag": "DIV",
+          "hitId": ""
+        },
+        {
+          "x": 1376,
+          "y": 775.515625,
+          "clear": false,
+          "hitTag": "DIV",
+          "hitId": "mmb-boot"
+        }
+      ],
+      "bodyView": {
+        "left": 60,
+        "right": 1380,
+        "top": 84,
+        "bottom": 680.515625,
+        "width": 1320,
+        "height": 596.515625
+      },
+      "footerContainer": {
+        "left": 60,
+        "right": 1380,
+        "top": 716.515625,
+        "bottom": 779.515625,
+        "width": 1320,
+        "height": 63
+      },
+      "paddingBottom": "64px",
+      "safeAreaFormulaSupported": true,
+      "version": "602406872d1d",
+      "summary": [
+        {
+          "text": "Vs BTC: Tracking Bitcoin相对 BTC：跟随比特币 Risk: Stressed风险：承压",
+          "fontSize": "12.5px",
+          "fontFamily": "\"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", \"Microsoft JhengHei\", \"Heiti SC\", -apple-system, \"system-ui\", Inter, sans-serif"
+        },
+        {
+          "text": "Vs BTC: Leading Bitcoin相对 BTC：领先比特币 Risk: Stressed风险：承压",
+          "fontSize": "12.5px",
+          "fontFamily": "\"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", \"Microsoft JhengHei\", \"Heiti SC\", -apple-system, \"system-ui\", Inter, sans-serif"
+        }
+      ],
+      "lang": "zh",
+      "at_end": true,
+      "clear": false,
+      "model_close_focus": "not attempted: clearance failed"
+    },
+    {
+      "view": "scenarios",
+      "width": 1440,
+      "height": 844,
+      "scrollY": 562,
+      "maxScroll": 562,
+      "pageWidth": 1440,
+      "footer": {
+        "left": 1257.4375,
+        "right": 1380,
+        "top": 740.390625,
+        "bottom": 780.390625,
+        "width": 122.5625,
+        "height": 40
+      },
+      "launcher": {
+        "left": 1247.34375,
+        "right": 1418,
+        "top": 766,
+        "bottom": 822,
+        "width": 170.65625,
+        "height": 56
+      },
+      "launcherStyle": {
+        "position": "fixed",
+        "bottom": "22px",
+        "right": "22px",
+        "pointerEvents": "auto",
+        "zIndex": "2147483000"
+      },
+      "text": "比特币模型与方法\n↗",
+      "fontSize": "12.5px",
+      "fontFamily": "\"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", \"Microsoft JhengHei\", \"Heiti SC\", -apple-system, \"system-ui\", Inter, sans-serif",
+      "focusVisible": true,
+      "focusExtent": 6,
+      "verticalGap": -14.390625,
+      "focusGap": -20.390625,
+      "horizontalOverlap": true,
+      "hits": [
+        {
+          "x": 1318.71875,
+          "y": 760.390625,
+          "clear": true,
+          "hitTag": "SPAN",
+          "hitId": ""
+        },
+        {
+          "x": 1261.4375,
+          "y": 744.390625,
+          "clear": true,
+          "hitTag": "BUTTON",
+          "hitId": ""
+        },
+        {
+          "x": 1376,
+          "y": 744.390625,
+          "clear": true,
+          "hitTag": "BUTTON",
+          "hitId": ""
+        },
+        {
+          "x": 1261.4375,
+          "y": 776.390625,
+          "clear": false,
+          "hitTag": "DIV",
+          "hitId": ""
+        },
+        {
+          "x": 1376,
+          "y": 776.390625,
+          "clear": false,
+          "hitTag": "DIV",
+          "hitId": "mmb-boot"
+        }
+      ],
+      "bodyView": {
+        "left": 60,
+        "right": 1380,
+        "top": -318,
+        "bottom": 681.390625,
+        "width": 1320,
+        "height": 999.390625
+      },
+      "footerContainer": {
+        "left": 60,
+        "right": 1380,
+        "top": 717.390625,
+        "bottom": 780.390625,
+        "width": 1320,
+        "height": 63
+      },
+      "paddingBottom": "64px",
+      "safeAreaFormulaSupported": true,
+      "version": "602406872d1d",
+      "summary": [
+        {
+          "text": "Vs BTC: Tracking Bitcoin相对 BTC：跟随比特币 Risk: Stressed风险：承压",
+          "fontSize": "12.5px",
+          "fontFamily": "\"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", \"Microsoft JhengHei\", \"Heiti SC\", -apple-system, \"system-ui\", Inter, sans-serif"
+        },
+        {
+          "text": "Vs BTC: Leading Bitcoin相对 BTC：领先比特币 Risk: Stressed风险：承压",
+          "fontSize": "12.5px",
+          "fontFamily": "\"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", \"Microsoft JhengHei\", \"Heiti SC\", -apple-system, \"system-ui\", Inter, sans-serif"
+        }
+      ],
+      "lang": "zh",
+      "at_end": true,
+      "clear": false,
+      "model_close_focus": "not attempted: clearance failed"
+    }
+  ]
+}

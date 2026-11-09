@@ -1,0 +1,324 @@
+{
+  "source": {
+    "source_parent": "95ac76db194b8952aef0e63c4bcb30a220da78e0",
+    "version": "e38da6bba4dd",
+    "js_transforms": 22,
+    "css_transforms": 1,
+    "js_css_inverse_exact": true,
+    "template_site_assets_exact": true,
+    "saved_html_version_references_only": true,
+    "unchanged_inputs": [
+      "site/crypto_intelligence_r4.json",
+      "templates/crypto_intelligence_r4.html.j2",
+      "scripts/build_crypto_intelligence_r4.py",
+      "tests/test_crypto_intelligence_r4.py",
+      "lib/crypto_intelligence_view.py",
+      "site/theme.js",
+      "site/theme.css",
+      "site/illus.js",
+      "site/illus.css",
+      "site/navigation-refresh.css",
+      "site/logo_config.js",
+      "site/stock-logos.js",
+      "site/live_config.js",
+      "site/live.js"
+    ],
+    "candidate_files": {
+      "templates/crypto_intelligence_r4.js": {
+        "bytes": 60408,
+        "sha256": "07038c0fa0c89d1c05640221d49f95082cc15c41376eb7b4c83edc58022a28ae",
+        "blob": "37386b469d55d99f60f6a28a8858194247691d84"
+      },
+      "site/crypto_intelligence_r4.js": {
+        "bytes": 60408,
+        "sha256": "07038c0fa0c89d1c05640221d49f95082cc15c41376eb7b4c83edc58022a28ae",
+        "blob": "37386b469d55d99f60f6a28a8858194247691d84"
+      },
+      "templates/crypto_intelligence_r4.css": {
+        "bytes": 19602,
+        "sha256": "d39fca22e0dfb94f786576cf8102fc36ccaba53d4cc37ffd57dec61cc18ee2ef",
+        "blob": "1edc12c5dcc3d7702b1ffd043bf65b5e19142559"
+      },
+      "site/crypto_intelligence_r4.css": {
+        "bytes": 19602,
+        "sha256": "d39fca22e0dfb94f786576cf8102fc36ccaba53d4cc37ffd57dec61cc18ee2ef",
+        "blob": "1edc12c5dcc3d7702b1ffd043bf65b5e19142559"
+      },
+      "site/crypto-r4.html": {
+        "bytes": 117388,
+        "sha256": "d1b1ff0480eeade13dfdc30592aeb8bb5261874f9b79faef99868a106f3346a2",
+        "blob": "e9e8f81d8d2ea0078bd50b2f0b7e1d81a876364b"
+      },
+      "site/vector-r4.html": {
+        "bytes": 117387,
+        "sha256": "99d01edf84059207714c8f1cc5fe2ee69dfb8fec6489a2ffd9693fbad4323f0f",
+        "blob": "3a9107e9b45b81a75f111163206b92cab657eaa7"
+      },
+      "tests/test_crypto_intelligence_r4_browser.py": {
+        "bytes": 67708,
+        "sha256": "9e6f295e6a0988abb05a3e03c634241ce81ec81f600f7d11383251157c3f1cba",
+        "blob": "910ed8140ecc83826db0b0b229a5f12aa890b443"
+      }
+    },
+    "node_check": {
+      "exit_code": 0,
+      "stderr": ""
+    },
+    "model_refresh": false,
+    "public_route_cutover": false
+  },
+  "baseline": {
+    "command": [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "-m",
+      "pytest",
+      "-q",
+      "tests/test_crypto_intelligence_r4_browser.py",
+      "-k",
+      "frozen_layout_frontloads or frozen_expiry_is_distinct or frozen_legacy_layout or saved_review_disclosure or saved_recovery_actions or current_scenario_retains or frozen_missing_progress or frozen_remove_keeps",
+      "--tb=short",
+      "--junitxml=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/layout-baseline/junit.xml",
+      "--basetemp=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/layout-baseline/pytest-temp"
+    ],
+    "exit_code": 1,
+    "seconds": 40.291,
+    "source_parent": "95ac76db194b8952aef0e63c4bcb30a220da78e0",
+    "runtime_version": "7d9cb01e7600",
+    "test_sha256": "cf5a6fedcc428289044ff995aa37b2bb950ef07061a7799ca2bfc39f0a1cd0f6"
+  },
+  "baseline_observations": {
+    "contexts": 21,
+    "pages": 21,
+    "page_errors": [],
+    "blocked_external_requests": 0,
+    "blocked_websockets": 0,
+    "browser": "157.0.8103.39"
+  },
+  "candidate": {
+    "command": [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "-m",
+      "pytest",
+      "-q",
+      "tests/test_crypto_intelligence_r4_browser.py",
+      "--tb=short",
+      "--junitxml=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/layout-final/junit.xml",
+      "--basetemp=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/layout-final/pytest-temp"
+    ],
+    "exit_code": 0,
+    "seconds": 80.858,
+    "source_parent": "95ac76db194b8952aef0e63c4bcb30a220da78e0",
+    "candidate_version": "e38da6bba4dd",
+    "candidate_files": {
+      "templates/crypto_intelligence_r4.js": {
+        "bytes": 60408,
+        "sha256": "07038c0fa0c89d1c05640221d49f95082cc15c41376eb7b4c83edc58022a28ae",
+        "blob": "37386b469d55d99f60f6a28a8858194247691d84"
+      },
+      "site/crypto_intelligence_r4.js": {
+        "bytes": 60408,
+        "sha256": "07038c0fa0c89d1c05640221d49f95082cc15c41376eb7b4c83edc58022a28ae",
+        "blob": "37386b469d55d99f60f6a28a8858194247691d84"
+      },
+      "templates/crypto_intelligence_r4.css": {
+        "bytes": 19602,
+        "sha256": "d39fca22e0dfb94f786576cf8102fc36ccaba53d4cc37ffd57dec61cc18ee2ef",
+        "blob": "1edc12c5dcc3d7702b1ffd043bf65b5e19142559"
+      },
+      "site/crypto_intelligence_r4.css": {
+        "bytes": 19602,
+        "sha256": "d39fca22e0dfb94f786576cf8102fc36ccaba53d4cc37ffd57dec61cc18ee2ef",
+        "blob": "1edc12c5dcc3d7702b1ffd043bf65b5e19142559"
+      },
+      "site/crypto-r4.html": {
+        "bytes": 117388,
+        "sha256": "d1b1ff0480eeade13dfdc30592aeb8bb5261874f9b79faef99868a106f3346a2",
+        "blob": "e9e8f81d8d2ea0078bd50b2f0b7e1d81a876364b"
+      },
+      "site/vector-r4.html": {
+        "bytes": 117387,
+        "sha256": "99d01edf84059207714c8f1cc5fe2ee69dfb8fec6489a2ffd9693fbad4323f0f",
+        "blob": "3a9107e9b45b81a75f111163206b92cab657eaa7"
+      },
+      "tests/test_crypto_intelligence_r4_browser.py": {
+        "bytes": 67708,
+        "sha256": "9e6f295e6a0988abb05a3e03c634241ce81ec81f600f7d11383251157c3f1cba",
+        "blob": "910ed8140ecc83826db0b0b229a5f12aa890b443"
+      }
+    }
+  },
+  "candidate_observations": {
+    "contexts": 87,
+    "pages": 93,
+    "page_errors": [],
+    "blocked_external_requests": 0,
+    "blocked_websockets": 0,
+    "browser": "157.0.8103.39"
+  },
+  "current_scenario_projection": [
+    {
+      "case": "current-en-320.json",
+      "html_exact": true,
+      "geometry_exact": true
+    },
+    {
+      "case": "current-zh-1440.json",
+      "html_exact": true,
+      "geometry_exact": true
+    }
+  ],
+  "light_capture": {
+    "command": [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "-m",
+      "pytest",
+      "-q",
+      "tests/layout_light_capture.py",
+      "--tb=short",
+      "--basetemp=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/layout-light-captures/pytest-temp"
+    ],
+    "exit_code": 0,
+    "seconds": 6.93,
+    "candidate_version": "e38da6bba4dd",
+    "purpose": "Inspect light-theme closed saved cases at390EN and320ZH without changing the verified runtime or primary browser harness."
+  },
+  "light_capture_observations": {
+    "contexts": 2,
+    "pages": 2,
+    "page_errors": [],
+    "blocked_external_requests": 0,
+    "blocked_websockets": 0,
+    "browser": "157.0.8103.39"
+  },
+  "counts": {
+    "baseline": {
+      "failed": 19,
+      "passed": 2,
+      "deselected": 61
+    },
+    "candidate_browser_passed": 86,
+    "previous_browser_cases_retained": 61,
+    "added_browser_cases": 25,
+    "prior_unchanged_contract_cases": 39,
+    "contract_rerun": false,
+    "additional_light_capture_cases": 2
+  },
+  "captures": [
+    {
+      "path": "layout-final/captures/layout-saved-en-1440-dark.png",
+      "name": "layout-saved-en-1440-dark.png",
+      "bytes": 40310,
+      "sha256": "dd29b0bbc649f3f4440290271bf7f55fd62fb8d23b08d0af59b221e8da2bead8",
+      "blob": "e51b17842b9056d7c638d39f97705b6980088a87"
+    },
+    {
+      "path": "layout-final/captures/layout-saved-zh-390-dark.png",
+      "name": "layout-saved-zh-390-dark.png",
+      "bytes": 35891,
+      "sha256": "f55eb4bf52bf9a30dd0a968aafeb937d1a9ef906614c27acbc8c051a17adeceb",
+      "blob": "eee1ef0ab25e523f3324368d560a891003301bd9"
+    },
+    {
+      "path": "layout-final/captures/layout-saved-en-320-dark.png",
+      "name": "layout-saved-en-320-dark.png",
+      "bytes": 37905,
+      "sha256": "e56a3a0428699b353e24a1a7e9e60a22cd7b03874ea02ad0a8279ed2277d330b",
+      "blob": "e64f392b2ca5b7979479e2db103d605875848ef5"
+    },
+    {
+      "path": "layout-final/captures/layout-review-zh-390.png",
+      "name": "layout-review-zh-390.png",
+      "bytes": 28084,
+      "sha256": "37f42a88df6133fb496f114831a09b2a32667abff41393edda9579191a3a2dd7",
+      "blob": "228674ded2d22b219a11a8d62224f43ae47de366"
+    },
+    {
+      "path": "layout-final/captures/layout-recovery-missing-en-320.png",
+      "name": "layout-recovery-missing-en-320.png",
+      "bytes": 22257,
+      "sha256": "4b449de1dbc9a5d103ee99bd34a84d857a24f7ca25042689797ad2d1160785c4",
+      "blob": "3602d05ba58f91057a17492f4087882ba8141a43"
+    },
+    {
+      "path": "layout-final/captures/layout-recovery-unreadable-zh-390.png",
+      "name": "layout-recovery-unreadable-zh-390.png",
+      "bytes": 17548,
+      "sha256": "40949ee0e8620daad4467433fac5674a5b738d0beaa668a2c1e42f02ed1e2ad7",
+      "blob": "1eb21e96fe6b577ae078010518c71352d99575c0"
+    },
+    {
+      "path": "layout-final/captures/navigation-return-320-en.png",
+      "name": "navigation-return-320-en.png",
+      "bytes": 53763,
+      "sha256": "978673f42c0027f8a5516f4d1ea265e6fbbb824421d40dd0428511bdbdc3ee1b",
+      "blob": "6cb2b988da1262043ffb8e5705e56c6518decd73"
+    },
+    {
+      "path": "layout-final/captures/layout-evidence-en-1440-dark.png",
+      "name": "layout-evidence-en-1440-dark.png",
+      "bytes": 59006,
+      "sha256": "7783d02f2239afab4b2a8d6d589f200f80b0ce9598fdda17f62c050a9c1bf564",
+      "blob": "0355e14b35de69f5b7637cfdace8371a31d9defe"
+    },
+    {
+      "path": "layout-final/captures/layout-evidence-zh-390-dark.png",
+      "name": "layout-evidence-zh-390-dark.png",
+      "bytes": 54549,
+      "sha256": "f8462e1e68da35b28d9579754888325d0dc2efe3ab5d3043f58851c3ecc385dd",
+      "blob": "ca8cd84fcf9a8d56074990e7b9f06a0927120287"
+    },
+    {
+      "path": "layout-final/captures/layout-legacy-en-320.png",
+      "name": "layout-legacy-en-320.png",
+      "bytes": 46753,
+      "sha256": "3212cd57d96e717faa26cae341536e7d0e178829ad1fa2ede793eac5cfda678e",
+      "blob": "74563a9b62fbda4f0edbb512875f0a561e4fefd5"
+    },
+    {
+      "path": "layout-light-captures/captures/layout-saved-en-390-light.png",
+      "name": "layout-saved-en-390-light.png",
+      "bytes": 37653,
+      "sha256": "7d7bfd3118ab65b74b334b6d9838151cf3970147bf6caf0567ea9f9aea19e2c1",
+      "blob": "462f0c97027285dcc964f672b764e3ec3172d097"
+    },
+    {
+      "path": "layout-light-captures/captures/layout-saved-zh-320-light.png",
+      "name": "layout-saved-zh-320-light.png",
+      "bytes": 34633,
+      "sha256": "cd1ea8f6b2f59ec30bdfd6741067a9d97c7f0992f31374182fcc555eaf179b76",
+      "blob": "43f3cb5d622b4cb2f2aa258ec3ec13d5a718530f"
+    }
+  ],
+  "inspected_capture_count": 12,
+  "paper_new_states": [
+    {
+      "source": "3BM-0",
+      "clone": "3LJ-0",
+      "nodes": 29,
+      "mapped_identity_parent_order_styles_exact": true,
+      "copy_exact": true,
+      "placement": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "source": "3BC-0",
+      "clone": "3MC-0",
+      "nodes": 32,
+      "mapped_identity_parent_order_styles_exact": true,
+      "copy_exact": true,
+      "placement": {
+        "x": 470,
+        "y": 0
+      }
+    }
+  ],
+  "limitations": [
+    "No hosted/independent visual acceptance",
+    "No current-market freshness/model promotion/release",
+    "No full-viewport toast placement proof",
+    "Web Storage is not atomic cross-tab CAS"
+  ],
+  "next": "Audit existing relative-comparison window/cohort/evidence-basis workflow against accepted Paper."
+}

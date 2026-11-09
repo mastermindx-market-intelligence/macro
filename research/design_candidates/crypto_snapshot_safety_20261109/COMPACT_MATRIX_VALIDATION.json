@@ -1,0 +1,288 @@
+{
+  "source_parent": "32ad0bc508b50afefa3dc485f970423733a42c54",
+  "source_parent_tree": "39e7c58c6fc271eec03cafc672fd123b2085ebfe",
+  "runtime_version": "1bbbd2258e94",
+  "runtime_source": {
+    "source_parent": "32ad0bc508b50afefa3dc485f970423733a42c54",
+    "runtime_version": "1bbbd2258e94",
+    "files": {
+      "tests/test_crypto_intelligence_r4_browser.py": {
+        "bytes": 94803,
+        "sha256": "07502af8e1aceff8ce6170ac63cedf8a9ea20ba73653fbb628663961e633093c",
+        "blob": "499812957f2866428386f9f5851f081efa255864"
+      },
+      "site/crypto-r4.html": {
+        "bytes": 118948,
+        "sha256": "2e22a606ee4ff4398fe0918a1be9209765d90fc90e9ef1d3c2cdb2560b4bcf53",
+        "blob": "42917459d7c43ac2632d7d5fa58ee870816abfa5"
+      },
+      "site/vector-r4.html": {
+        "bytes": 118947,
+        "sha256": "4992ccef48ad9498ba16571fe5438216c6341b433d81582879bf012784e315cd",
+        "blob": "c44f275303e545d3bd6e963084ba9397fd501739"
+      },
+      "site/crypto_intelligence_r4.css": {
+        "bytes": 21915,
+        "sha256": "c5d2c8b28229d506d243b90bcf3be8d69f3de2ef4d519d98ebbbaca0d105adff",
+        "blob": "42ef998089e8f6e312fb768e07f3bccfd2701b8c"
+      },
+      "templates/crypto_intelligence_r4.css": {
+        "bytes": 21915,
+        "sha256": "c5d2c8b28229d506d243b90bcf3be8d69f3de2ef4d519d98ebbbaca0d105adff",
+        "blob": "42ef998089e8f6e312fb768e07f3bccfd2701b8c"
+      }
+    },
+    "unchanged_inputs": [
+      "templates/crypto_intelligence_r4.js",
+      "site/crypto_intelligence_r4.js",
+      "site/crypto_intelligence_r4.json",
+      "templates/crypto_intelligence_r4.html.j2",
+      "scripts/build_crypto_intelligence_r4.py",
+      "tests/test_crypto_intelligence_r4.py",
+      "lib/crypto_intelligence_view.py",
+      "site/theme.js",
+      "site/theme.css",
+      "site/illus.js",
+      "site/illus.css",
+      "site/navigation-refresh.css",
+      "site/logo_config.js",
+      "site/stock-logos.js",
+      "site/live_config.js",
+      "site/live.js"
+    ],
+    "pages": [
+      {
+        "path": "site/crypto-r4.html",
+        "only_two_asset_version_references_changed": true
+      },
+      {
+        "path": "site/vector-r4.html",
+        "only_two_asset_version_references_changed": true
+      }
+    ],
+    "served_css_matches": true
+  },
+  "native": {
+    "source_parent": "32ad0bc508b50afefa3dc485f970423733a42c54",
+    "runtime_version": "1bbbd2258e94",
+    "runs": {
+      "compact-matrix-baseline": {
+        "result": {
+          "command": [
+            "/opt/homebrew/opt/python@3.14/bin/python3.14",
+            "-m",
+            "pytest",
+            "-q",
+            "tests/test_crypto_intelligence_r4_browser.py",
+            "-k",
+            "test_r4_compact_matrix",
+            "--tb=short",
+            "--junitxml=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/compact-matrix-baseline/junit.xml",
+            "--basetemp=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/compact-matrix-baseline/pytest-temp"
+          ],
+          "exit_code": 1,
+          "seconds": 17.85,
+          "source_parent": "32ad0bc508b50afefa3dc485f970423733a42c54",
+          "runtime_version": "d4393a5d0e55",
+          "test_sha256": "5cd38f29f5a3d151dac67ed306b4199d2a10c9de938d0cf5d6db639e35a15609"
+        },
+        "observations": {
+          "contexts": 8,
+          "pages": 8,
+          "page_errors": [],
+          "blocked_external_requests": 0,
+          "blocked_websockets": 0,
+          "browser": "157.0.8103.39"
+        }
+      },
+      "compact-matrix-baseline-correction": {
+        "result": {
+          "command": [
+            "/opt/homebrew/opt/python@3.14/bin/python3.14",
+            "-m",
+            "pytest",
+            "-q",
+            "tests/test_crypto_intelligence_r4_browser.py",
+            "-k",
+            "compact_matrix_larger_cohort",
+            "--tb=short",
+            "--junitxml=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/compact-matrix-baseline-correction/junit.xml",
+            "--basetemp=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/compact-matrix-baseline-correction/pytest-temp"
+          ],
+          "exit_code": 0,
+          "seconds": 4.198,
+          "runtime_version": "d4393a5d0e55",
+          "source_parent": "32ad0bc508b50afefa3dc485f970423733a42c54",
+          "test_sha256": "07502af8e1aceff8ce6170ac63cedf8a9ea20ba73653fbb628663961e633093c"
+        },
+        "observations": {
+          "contexts": 2,
+          "pages": 2,
+          "page_errors": [],
+          "blocked_external_requests": 0,
+          "blocked_websockets": 0,
+          "browser": "157.0.8103.39"
+        }
+      },
+      "compact-matrix-final": {
+        "result": {
+          "command": [
+            "/opt/homebrew/opt/python@3.14/bin/python3.14",
+            "-m",
+            "pytest",
+            "-q",
+            "tests/test_crypto_intelligence_r4_browser.py",
+            "-k",
+            "test_r4_compact_matrix or comparison_full_cohort",
+            "--tb=short",
+            "--junitxml=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/compact-matrix-final/junit.xml",
+            "--basetemp=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/compact-matrix-final/pytest-temp"
+          ],
+          "exit_code": 0,
+          "seconds": 9.768,
+          "source_parent": "32ad0bc508b50afefa3dc485f970423733a42c54",
+          "runtime_version": "1bbbd2258e94",
+          "test_sha256": "07502af8e1aceff8ce6170ac63cedf8a9ea20ba73653fbb628663961e633093c"
+        },
+        "observations": {
+          "contexts": 12,
+          "pages": 12,
+          "page_errors": [],
+          "blocked_external_requests": 0,
+          "blocked_websockets": 0,
+          "browser": "157.0.8103.39"
+        }
+      }
+    },
+    "font_and_text_checks": [
+      {
+        "name": "three-en-320.json",
+        "text_and_font_unchanged": true,
+        "parent_scroll_width": 490,
+        "candidate_scroll_width": 371,
+        "client_width": 280,
+        "measure_width": 98
+      },
+      {
+        "name": "three-zh-320.json",
+        "text_and_font_unchanged": true,
+        "parent_scroll_width": 490,
+        "candidate_scroll_width": 371,
+        "client_width": 280,
+        "measure_width": 98
+      },
+      {
+        "name": "two-en-320.json",
+        "text_and_font_unchanged": true,
+        "parent_scroll_width": 370,
+        "candidate_scroll_width": 280,
+        "client_width": 280,
+        "measure_width": 98
+      },
+      {
+        "name": "two-en-390.json",
+        "text_and_font_unchanged": true,
+        "parent_scroll_width": 370,
+        "candidate_scroll_width": 350,
+        "client_width": 350,
+        "measure_width": 98
+      },
+      {
+        "name": "two-relative-en-320.json",
+        "text_and_font_unchanged": true,
+        "parent_scroll_width": 370,
+        "candidate_scroll_width": 280,
+        "client_width": 280,
+        "measure_width": 98
+      },
+      {
+        "name": "two-relative-zh-320.json",
+        "text_and_font_unchanged": true,
+        "parent_scroll_width": 370,
+        "candidate_scroll_width": 280,
+        "client_width": 280,
+        "measure_width": 98
+      },
+      {
+        "name": "two-zh-320.json",
+        "text_and_font_unchanged": true,
+        "parent_scroll_width": 370,
+        "candidate_scroll_width": 280,
+        "client_width": 280,
+        "measure_width": 98
+      },
+      {
+        "name": "two-zh-390.json",
+        "text_and_font_unchanged": true,
+        "parent_scroll_width": 370,
+        "candidate_scroll_width": 350,
+        "client_width": 350,
+        "measure_width": 98
+      }
+    ],
+    "captures": [
+      {
+        "name": "compact-null-en-320.png",
+        "bytes": 33386,
+        "sha256": "02bcbc215476b4ab1a5cf1194edf486469c4d2293902d33c8e8aea794db8b358",
+        "blob": "a101f8452df26d39b3c34777aa1ffd77d5f2438d"
+      },
+      {
+        "name": "compact-three-zh-320.png",
+        "bytes": 29835,
+        "sha256": "da9675815b71d80c328a41b9e2fdd62c43ceac54b9a06186034a21ad21801f9a",
+        "blob": "a967bf821685f9213f8e544b39f2d4c7676b250e"
+      },
+      {
+        "name": "compact-two-en-320.png",
+        "bytes": 31603,
+        "sha256": "3f8ddad89b86a6cb1d3b7d234adf304b4137cce1d2cb83f62a18b6b06f4e3716",
+        "blob": "7404bab0af5d5b506c635f649031b58640f7dbc2"
+      },
+      {
+        "name": "compact-two-zh-320.png",
+        "bytes": 28528,
+        "sha256": "cf634e22e01dea40b02d99c6162a487356ac7c166fa14dbab173a58e8bafca73",
+        "blob": "2038e3f719510c6a530aaeff4119827a891b25b6"
+      }
+    ]
+  },
+  "proof_scope": {
+    "candidate_passed": 12,
+    "candidate_deselected": 118,
+    "new_cases": 8,
+    "retained_affected_cases": 4,
+    "primary_pytest_seconds": 9.5,
+    "prior_complete_run": {
+      "source_head": "32ad0bc508b50afefa3dc485f970423733a42c54",
+      "asset_version": "d4393a5d0e55",
+      "passed": 161
+    },
+    "full_suite_rerun": false,
+    "inspected_new_captures": 4
+  },
+  "qualifications": [
+    "Six initial baseline failures reproduce fit; two are insufficient-arrow harness failures. Corrected parent larger-cohort checks pass.",
+    "Initial cloud 100/90 column estimate was revised from actual date metrics before candidate upload.",
+    "Metadata-only first publication script used an overbroad capture glob and stopped before writing. Corrected compact-* selection passed; runtime/tests were not replayed.",
+    "Historical/synthetic local proof is not current freshness, production acceptance or independent/hosted visual acceptance."
+  ],
+  "mutations": {
+    "css": {
+      "before": "/* Keep desktop dismissal clear of the shared navigation hover controls. */",
+      "after": "/* Fit the current two-asset matrix without hiding values; larger cohorts still scroll. */\n@media(max-width:400px){\n.cri-comparison-table th,.cri-comparison-table td{padding-left:8px;padding-right:8px}\n.cri-comparison-table th:first-child{width:98px;min-width:98px}\n.cri-comparison-table td{min-width:91px}\n.cri-comparison-table tbody tr:first-child td{white-space:nowrap}\n}\n\n/* Keep desktop dismissal clear of the shared navigation hover controls. */"
+    },
+    "saved_pages": "Only two asset version references per page; inverse exact",
+    "test_source_sha256": "07502af8e1aceff8ce6170ac63cedf8a9ea20ba73653fbb628663961e633093c",
+    "initial_baseline_test_sha256": "5cd38f29f5a3d151dac67ed306b4199d2a10c9de938d0cf5d6db639e35a15609"
+  },
+  "holds": [
+    "H5/model",
+    "alerts",
+    "public-route cutover",
+    "hosted/independent visual acceptance",
+    "admission/release",
+    "all existing denied/unknown effect action families"
+  ],
+  "next": "Projection-only null/directional-state consistency; paired-window producer receipts remain unimplemented."
+}

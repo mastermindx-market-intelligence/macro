@@ -1,0 +1,184 @@
+{
+  "observations": {
+    "stage": "parent",
+    "contexts": 2,
+    "pages": 2,
+    "page_errors": [],
+    "blocked_external_requests": 0,
+    "blocked_websockets": 0,
+    "browser": "157.0.8103.39",
+    "seconds": 4.017
+  },
+  "cases": [
+    {
+      "width": 320,
+      "pageWidth": 320,
+      "section": {
+        "left": 16,
+        "right": 304,
+        "top": 408.40625,
+        "bottom": 638.5,
+        "width": 288,
+        "height": 230.09375
+      },
+      "rows": [
+        {
+          "text": "Tracking Bitcoin · Stressed",
+          "fontSize": "12.5px",
+          "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+          "row": {
+            "left": 16,
+            "right": 304,
+            "top": 484.5,
+            "bottom": 561.5,
+            "width": 288,
+            "height": 77
+          },
+          "info": {
+            "left": 16,
+            "right": 172.25,
+            "top": 503.5,
+            "bottom": 541.5,
+            "width": 156.25,
+            "height": 38
+          },
+          "button": {
+            "left": 186.640625,
+            "right": 304,
+            "top": 502.5,
+            "bottom": 542.5,
+            "width": 117.359375,
+            "height": 40
+          },
+          "scrollWidth": 288,
+          "clientWidth": 288,
+          "symbol": "asset:ETH",
+          "pairs": []
+        },
+        {
+          "text": "Leading Bitcoin · Stressed",
+          "fontSize": "12.5px",
+          "fontFamily": "-apple-system, \"system-ui\", Inter, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", sans-serif",
+          "row": {
+            "left": 16,
+            "right": 304,
+            "top": 561.5,
+            "bottom": 638.5,
+            "width": 288,
+            "height": 77
+          },
+          "info": {
+            "left": 16,
+            "right": 168.359375,
+            "top": 580.5,
+            "bottom": 618.5,
+            "width": 152.359375,
+            "height": 38
+          },
+          "button": {
+            "left": 186.640625,
+            "right": 304,
+            "top": 579.5,
+            "bottom": 619.5,
+            "width": 117.359375,
+            "height": 40
+          },
+          "scrollWidth": 288,
+          "clientWidth": 288,
+          "symbol": "asset:SOL",
+          "pairs": []
+        }
+      ],
+      "name": "retained-en-320",
+      "variant": "retained",
+      "lang": "en",
+      "touch": false,
+      "inspect_and_close_focus": true
+    },
+    {
+      "width": 320,
+      "pageWidth": 320,
+      "section": {
+        "left": 16,
+        "right": 304,
+        "top": 412.25,
+        "bottom": 652.34375,
+        "width": 288,
+        "height": 240.09375
+      },
+      "rows": [
+        {
+          "text": "跟随比特币 · 承压",
+          "fontSize": "12.5px",
+          "fontFamily": "\"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", \"Microsoft JhengHei\", \"Heiti SC\", -apple-system, \"system-ui\", Inter, sans-serif",
+          "row": {
+            "left": 16,
+            "right": 304,
+            "top": 492.34375,
+            "bottom": 572.34375,
+            "width": 288,
+            "height": 80
+          },
+          "info": {
+            "left": 16,
+            "right": 120.65625,
+            "top": 510.34375,
+            "bottom": 553.34375,
+            "width": 104.65625,
+            "height": 43
+          },
+          "button": {
+            "left": 216.796875,
+            "right": 304,
+            "top": 511.84375,
+            "bottom": 551.84375,
+            "width": 87.203125,
+            "height": 40
+          },
+          "scrollWidth": 288,
+          "clientWidth": 288,
+          "symbol": "asset:ETH",
+          "pairs": []
+        },
+        {
+          "text": "领先比特币 · 承压",
+          "fontSize": "12.5px",
+          "fontFamily": "\"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", \"Microsoft JhengHei\", \"Heiti SC\", -apple-system, \"system-ui\", Inter, sans-serif",
+          "row": {
+            "left": 16,
+            "right": 304,
+            "top": 572.34375,
+            "bottom": 652.34375,
+            "width": 288,
+            "height": 80
+          },
+          "info": {
+            "left": 16,
+            "right": 120.65625,
+            "top": 590.34375,
+            "bottom": 633.34375,
+            "width": 104.65625,
+            "height": 43
+          },
+          "button": {
+            "left": 216.796875,
+            "right": 304,
+            "top": 591.84375,
+            "bottom": 631.84375,
+            "width": 87.203125,
+            "height": 40
+          },
+          "scrollWidth": 288,
+          "clientWidth": 288,
+          "symbol": "asset:SOL",
+          "pairs": []
+        }
+      ],
+      "name": "retained-zh-320",
+      "variant": "retained",
+      "lang": "zh",
+      "touch": true,
+      "inspect_and_close_focus": true
+    }
+  ]
+}

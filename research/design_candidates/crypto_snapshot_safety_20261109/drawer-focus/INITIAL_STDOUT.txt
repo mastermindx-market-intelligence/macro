@@ -1,0 +1,12 @@
+.F..............................................                         [100%]
+=================================== FAILURES ===================================
+_____ test_r4_keyboard_current_action_ring_clears_drawer_edge[en-390-True] _____
+tests/test_crypto_intelligence_r4_browser.py:3435: in test_r4_keyboard_current_action_ring_clears_drawer_edge
+    _assert_drawer_focus_ring(after)
+tests/test_crypto_intelligence_r4_browser.py:3400: in _assert_drawer_focus_ring
+    assert sample["viewBottom"] - sample["bottom"] >= 7.9, sample
+E   AssertionError: {'key': 'demand-evidence', 'focusVisible': True, 'outlineStyle': 'solid', 'extent': 6, ...}
+E   assert (600 - 592.15625) >= 7.9
+=========================== short test summary info ============================
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_keyboard_current_action_ring_clears_drawer_edge[en-390-True]
+1 failed, 47 passed in 39.70s
