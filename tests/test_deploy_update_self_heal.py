@@ -1032,11 +1032,17 @@ MUST_RESTART = [
     "engine/earnings_narrative/context_packets.py",
     "engine/earnings_narrative/contracts.py",
     "engine/earnings_narrative/digest.py",
+    "engine/earnings_narrative/economic_interpretation.py",
     "engine/earnings_narrative/private_publication.py",
     "engine/earnings_narrative/promotion.py",
     "engine/earnings_narrative/public_wire.py",
     "engine/earnings_narrative/story.py",
     "engine/earnings_narrative/story_packets.py",
+    "engine/earnings_release/__init__.py",
+    "engine/earnings_release/binding.py",
+    "engine/earnings_release/figures.py",
+    "engine/earnings_release/filing_key.py",
+    "engine/earnings_release/receipts.py",
     "engine/press/__init__.py",
     "engine/press/earnings_adapter.py",
     # CXI packet build reached from brain_gateway (+ its module-level siblings)
@@ -1186,6 +1192,9 @@ ADMIN_MUST_RESTART = [
     "templates/theme.css",  # derived token response is process-pinned
     "engine/qledger_store.py",  # A1 selected request scope is import-cached
     "admin/marketing.py",
+    # Retained GSC observations call the native builder and its classifier.
+    "engine/marketing/seo_search_console.py",
+    "engine/marketing/seo_director.py",
     "admin/metabolism_panel.py",
     "admin/neural_web.py",
     "admin/orchestrator_chat.py",
@@ -1250,6 +1259,7 @@ ADMIN_MUST_NOT_RESTART = [
     # rendered site + data artifacts are read from disk per request
     "site/index.html",
     "data/qbus/items.parquet",
+    "data/marketing/seo/search_console_daily.parquet",  # path name only; read per request
     "engine/neuralweb/doctrine/00_identity.md",
     # the panel's only entry into ask_brain is _post_filter_advice(); the
     # tool-schema / dispatch paths that lazily import cortex are never called
@@ -1258,7 +1268,6 @@ ADMIN_MUST_NOT_RESTART = [
     "engine/master_brain.py",
     "engine/china_radar.py",
     # nightly-only marketing modules — the package is named, not globbed
-    "engine/marketing/seo_director.py",
     "engine/marketing/breaking_feed.py",
     # macro-api's chart path, on no panel path
     "engine/marketing/chart_render.py",
@@ -1692,6 +1701,9 @@ def test_admin_closure_probe_is_not_vacuous():
     # nightly-only lanes must stay OUT, else the closure is over-broad and the
     # narrow-restart intent is lost
     assert "engine/neuralweb/cortex.py" not in closure
+    assert "engine/marketing/seo_search_console.py" in closure
+    # The probe stops at non-admin function bodies: _build_scorecard's nested
+    # classifier import is covered explicitly by ADMIN_MUST_RESTART above.
     assert "engine/marketing/seo_director.py" not in closure
     assert "engine/master_brain.py" not in closure
 

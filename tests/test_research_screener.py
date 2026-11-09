@@ -203,6 +203,20 @@ def test_catalyst_window_keeps_30_trading_days_and_drops_the_rest():
     assert trading_days_between(as_of, date(2027, 3, 1)) > CATALYST_WINDOW_TRADING_DAYS
 
 
+def test_expired_window_does_not_hide_the_next_estimated_catalyst():
+    issuer = _state("US-XNAS-DEMO", "DEMO", window_start="2026-10-31")
+    windows = issuer["legs"]["catalyst"]["next_observables"]
+    windows.extend([
+        {**windows[0], "window_start": "2026-11-10", "window_end": "2026-11-12"},
+        {**windows[0], "window_start": "2026-11-05", "window_end": "2026-11-06"},
+    ])
+    row = compile_research_screener([issuer], as_of="2026-11-02")["rows"][0]
+    assert row["catalyst"] is not None
+    assert row["catalyst"]["window_start"] == "2026-11-05"
+    assert row["catalyst"]["window_end"] == "2026-11-06"
+    assert row["catalyst"]["kind"] == "estimated_window"
+
+
 def test_per_lens_null_when_owner_is_missing():
     payload = compile_research_screener(
         [_state("US-XNAS-AAPL", "AAPL", name="Apple")],
@@ -231,6 +245,190 @@ def test_valuation_posture_is_owner_attributed():
     assert "披露" in posture["label"]["zh"]
     assert posture["owner"]["en"]
     assert "。" in posture["assumptions_text"]["zh"] or "，" in posture["assumptions_text"]["zh"]
+
+
+@pytest.mark.parametrize("reverse", [False, True])
+def test_shared_ticker_valuation_belongs_to_its_listing(reverse):
+    keys = ["TEST-A", "TEST-B"]
+    states = [_state(key, "DEMO") for key in keys]
+    postures = [
+        {**_valuation("DEMO", price=20, per_share=value), "listing_key": key}
+        for key, value in zip(keys, [40, 10])
+    ]
+    if reverse:
+        postures.reverse()
+    rows = compile_research_screener(states, postures)["rows"]
+    labels = {r["listing_key"]: r["valuation_posture"]["label"]["en"] for r in rows}
+    assert "inexpensive" in labels["TEST-A"]
+    assert labels["TEST-B"].startswith("Looks expensive")
+
+
+def test_ambiguous_ticker_cannot_supply_a_missing_listing_posture():
+    states = [_state("TEST-A", "DEMO"), _state("TEST-B", "DEMO")]
+    values = {"TEST-A": _valuation("DEMO", price=20, per_share=40),
+              "DEMO": _valuation("DEMO", price=20, per_share=10)}
+    rows = compile_research_screener(states, values)["rows"]
+    by_key = {r["listing_key"]: r["valuation_posture"] for r in rows}
+    assert "inexpensive" in by_key["TEST-A"]["label"]["en"]
+    assert by_key["TEST-B"] is None
+
+
+@pytest.mark.parametrize(
+    ("identity", "expected_listing"),
+    [({"ticker": "DEMO"}, "TEST-B"), ({"listing_key": "DEMO"}, "DEMO"), ({}, None)],
+)
+def test_mapping_key_can_be_one_listing_and_another_listings_ticker(identity, expected_listing):
+    states = [_state("DEMO", "OTHER"), _state("TEST-B", "DEMO")]
+    value = _valuation("", price=20, per_share=40)
+    value.update(identity)
+    rows = compile_research_screener(states, {"DEMO": value})["rows"]
+    matches = [r["listing_key"] for r in rows if r["valuation_posture"] is not None]
+    assert matches == ([expected_listing] if expected_listing else [])
+
+
+@pytest.mark.parametrize("production_dir_exists", [False, True])
+def test_missing_production_records_never_use_repository_examples(tmp_path, production_dir_exists):
+    from scripts.build_research_screener import build_payload
+
+    examples = tmp_path / "tests" / "fixtures" / "research_screener"
+    examples.mkdir(parents=True)
+    (examples / "DEMO.json").write_text(json.dumps({
+        "name": "Example company",
+        "security_state": _state("TEST-DEMO", "DEMO"),
+        "valuation_scenario": {"v1": _valuation("DEMO", price=20, per_share=40)},
+    }))
+    if production_dir_exists:
+        (tmp_path / "site" / "stockdata").mkdir(parents=True)
+
+    assert build_payload(tmp_path)["rows"] == []
+
+
+def test_render_without_production_records_publishes_empty_json_and_html(tmp_path, monkeypatch):
+    import sys
+    import types
+    from scripts import build_research_screener as builder
+
+    examples = tmp_path / "tests" / "fixtures" / "research_screener"
+    examples.mkdir(parents=True)
+    (examples / "DEMO.json").write_text(json.dumps({
+        "name": "Example company",
+        "security_state": _state("TEST-DEMO", "DEMO"),
+    }))
+    # Exercise the real publisher and template without the unrelated site-wide
+    # optimizer/shims or any repository site/data inputs.
+    pages = types.ModuleType("lib.pages")
+    pages.write_page = lambda path, html: path.write_text(html, encoding="utf-8")
+    monkeypatch.setitem(sys.modules, "lib.pages", pages)
+    monkeypatch.setattr(builder, "bake_html", lambda root, payload: builder.render_html(REPO, payload))
+
+    payload = builder.render(tmp_path)
+    published = json.loads((tmp_path / "site" / builder.JSON_NAME).read_text())
+    html = (tmp_path / "site" / builder.HTML_NAME).read_text()
+    assert payload["rows"] == published["rows"] == []
+    assert 'data-rs-empty' in html
+    assert 'data-listing-key="TEST-DEMO"' not in html
+    assert "Example company" not in html
+
+
+@pytest.mark.parametrize("input_state", ["missing", "empty", "malformed", "wrong_schema", "missing_identity"])
+def test_unavailable_universe_does_not_claim_lenses_found_no_names(tmp_path, input_state):
+    from scripts.build_research_screener import build_payload, render_html
+
+    if input_state != "missing":
+        stockdir = tmp_path / "site" / "stockdata"
+        stockdir.mkdir(parents=True)
+        if input_state == "malformed":
+            (stockdir / "DEMO.json").write_text("{broken")
+        elif input_state in ("wrong_schema", "missing_identity"):
+            state = _state("TEST-DEMO", "DEMO")
+            if input_state == "wrong_schema":
+                state["schema"] = "unsupported"
+            else:
+                state.pop("listing_key")
+            (stockdir / "DEMO.json").write_text(json.dumps({"security_state": state}))
+
+    payload = build_payload(tmp_path)
+    assert payload["rows"] == []
+    html = render_html(REPO, payload)
+    empty = re.search(r'<p class="rs-empty"([^>]*)>(.*?)</p>', html, re.S)
+    assert empty is not None
+    assert "hidden" not in empty.group(1), "Unavailable input must be visible before JavaScript"
+    copy = _visible_copy(html)
+    assert "Research list unavailable." in copy
+    assert "研究名单暂不可用。" in copy
+    assert "Company data is not available right now." in copy
+    assert "当前没有可用的公司数据。" in copy
+    assert "No names match these lenses" not in copy
+    assert "目前没有公司符合这些视角" not in copy
+    assert "0 names in this list" not in copy
+
+
+def test_populated_universe_retains_separate_lens_empty_copy():
+    from scripts.build_research_screener import render_html
+
+    payload = compile_research_screener([_state("TEST-DEMO", "DEMO")])
+    html = render_html(REPO, payload)
+    empty = re.search(r'<p class="rs-empty"([^>]*)>(.*?)</p>', html, re.S)
+    assert empty is not None and "hidden" in empty.group(1)
+    assert "No names match these lenses right now." in empty.group(2)
+    assert "目前没有公司符合这些视角。" in empty.group(2)
+    assert "1 name in this list." in _visible_copy(html)
+    assert "Research list unavailable." not in _visible_copy(html)
+
+
+def test_stock_record_preserves_valuation_listing_identity(tmp_path):
+    from scripts.build_research_screener import build_payload
+
+    stockdir = tmp_path / "site" / "stockdata"
+    stockdir.mkdir(parents=True)
+    for key, ticker, value in [("TEST-A", "DEMO", 40), ("TEST-B", "DEMO", 10),
+                               ("TEST-C", "OTHER", 5), ("TEST-D", "TEST", 5)]:
+        valuation = _valuation(ticker, price=20, per_share=value)
+        if key == "TEST-C":
+            valuation["listing_key"] = "TEST-A"
+        if key == "TEST-D":
+            valuation["ticker"] = "DEMO"
+        record = {"security_state": _state(key, ticker), "valuation_scenario": {"v1": valuation}}
+        (stockdir / f"{key}.json").write_text(json.dumps(record))
+    postures = {r["listing_key"]: r["valuation_posture"] for r in build_payload(tmp_path)["rows"]}
+    assert "inexpensive" in postures["TEST-A"]["label"]["en"]
+    assert postures["TEST-B"]["label"]["en"].startswith("Looks expensive")
+    assert postures["TEST-C"] is None
+    assert postures["TEST-D"] is None
+
+
+@pytest.mark.parametrize(("field", "bad"), [
+    ("price", "NaN"), ("price", True), ("price", 10**400),
+    ("per_share", float("inf")), ("per_share", False),
+    ("computable", "false"),
+    ("sales_growth_pct", None), ("margin_delta_pp", "-Infinity"),
+    ("earnings_multiple", True),
+])
+def test_unusable_valuation_omits_the_posture_but_keeps_the_catalyst(field, bad):
+    state = _state("TEST-A", "DEMO", window_start="2026-11-05")
+    valuation = _valuation("DEMO", price=20, per_share=20)
+    base = valuation["scenarios"][0]
+    if field == "price":
+        valuation["price"]["value"] = bad
+    elif field in base:
+        base[field] = bad
+    else:
+        base["assumptions"][field] = bad
+    row = compile_research_screener([state], [valuation], as_of="2026-11-02")["rows"][0]
+    assert row["valuation_posture"] is None
+    assert row["catalyst"]["window_start"] == "2026-11-05"
+    assert "reported earnings" not in row["why"]["en"]
+    assert "已披露盈利" not in row["why"]["zh"]
+
+
+def test_finite_equal_values_and_explicit_zero_assumptions_keep_their_meaning():
+    state = _state("TEST-A", "DEMO")
+    valuation = _valuation("DEMO", price="20", per_share=20, growth=0, margin="0", multiple=18)
+    row = compile_research_screener([state], [valuation])["rows"][0]
+    assert "in line" in row["valuation_posture"]["label"]["en"]
+    text = row["valuation_posture"]["assumptions_text"]
+    assert text["en"] == "Sales unchanged, margins unchanged, valued at 18 times reported earnings."
+    assert "销售收入不变，利润率不变" in text["zh"]
 
 
 def test_en_zh_copy_uses_cjk_punctuation():
@@ -850,7 +1048,7 @@ const ROWS = [
   { key: 'US-XNAS-TSLA', ticker: 'TSLA', name: 'Tesla', catalystDate: '2026-09-20', hasCatalyst: true },
 ];
 
-function buildPage(doc) {
+function buildPage(doc, sourceRows = ROWS) {
   const main = new El('main', { class: 'rs', id: 'rs-main' });
   doc.body.appendChild(main);
   const chips = new El('div', { class: 'rs-chips', role: 'group' });
@@ -902,7 +1100,7 @@ function buildPage(doc) {
 
   const list = new El('ol', { class: 'rs-list', 'data-rs-list': '' });
   main.appendChild(list);
-  ROWS.forEach((r) => {
+  sourceRows.forEach((r) => {
     const li = new El('li', {
       class: 'rs-row',
       'data-listing-key': r.key,
@@ -1042,6 +1240,22 @@ function chip(doc, lens) { return doc.querySelector('.rs-chip[data-lens="' + len
 function orderBtn(doc, order) { return doc.querySelector('.rs-order-btn[data-order="' + order + '"]'); }
 
 const SCENARIOS = {
+  async empty_universe(ctx) {
+    const page = buildPage(ctx.doc, []);
+    runInline(ctx);
+    chip(ctx.doc, 'catalyst').click();
+    await settle(ctx);
+    return snapshot(ctx, page, null);
+  },
+
+  async valuation_lens_no_matches(ctx) {
+    const page = buildPage(ctx.doc);
+    runInline(ctx);
+    chip(ctx.doc, 'valuation').click();
+    await settle(ctx);
+    return snapshot(ctx, page, null);
+  },
+
   async closed_only(ctx) {
     const page = buildPage(ctx.doc);
     ctx.sandbox.MDXAuth = makeAuth({ session: true });
@@ -1604,6 +1818,15 @@ def _held(scen: dict) -> list[str]:
 
 def _visible(scen: dict) -> list[str]:
     return [r["ticker"] for r in scen["rows"] if not r["hidden"]]
+
+
+def test_input_empty_and_filtered_empty_remain_visible_after_script(tmp_path):
+    cases = _run_exposure_scenarios(tmp_path, ["empty_universe", "valuation_lens_no_matches"])
+    assert cases["empty_universe"]["rows"] == []
+    assert len(cases["valuation_lens_no_matches"]["rows"]) == 3
+    for case in cases.values():
+        assert _visible(case) == []
+        assert case["emptyHidden"] is False
 
 
 def test_exposure_notice_variants_and_portfolio_destination():
