@@ -4110,6 +4110,170 @@ with sync_playwright() as pw:
     check('copy-focus-failure-redirect-390-en',lambda:copy_focus_failure_redirect(390,'en'))
     check('copy-focus-pagehide-320-zh',lambda:copy_focus_pagehide(320,'zh'))
 
+    def search_match_page(c,width):
+        p=page_for(c,'gmi.html?fixture=search-match#theme=theme%3Aconventional_dram&lens=chain')
+        expect(p.locator('[data-gmi-ready]')).to_have_count(1)
+        if width<=820:p.locator('[data-browse-open]').click()
+        expect(p.locator('[data-topic-search]')).to_be_visible()
+        return p
+
+    def search_match_snapshot(p,width,language,query):
+        rows=p.locator('[data-topic-results] [data-topic-select]:visible')
+        values=rows.evaluate_all("""nodes=>nodes.map(n=>({
+          id:n.getAttribute('data-topic-select'),title:n.querySelector('strong').innerText,
+          context:n.querySelector(':scope > span').innerText,
+          en:n.querySelector(':scope > span > .l-en')?.textContent,
+          zh:n.querySelector(':scope > span > .l-zh')?.textContent,
+          count:n.querySelector(':scope > span > b')?.innerText||'',
+          href:n.getAttribute('href'),tabIndex:n.tabIndex,current:n.getAttribute('aria-current')
+        }))""")
+        result={'width':width,'language':language,'query':query,'row_count':len(values),'rows':values[:25],'rows_truncated':len(values)>25,'count':p.locator('[data-topic-count]').inner_text(),
+                'selected':p.locator('#gmi-topic-title').text_content(),'url':p.url}
+        report.setdefault('search_match_observations',[]).append(result)
+        return result
+
+
+    def search_match_fit(p,width,language,query):
+        row=p.locator('[data-topic-results] [data-topic-select="theme:hbm_packaging"]')
+        v=row.evaluate("""(n,language)=>{
+          const label=n.querySelector(':scope > span > .l-'+language),badge=n.querySelector(':scope > span > b');
+          const rect=x=>{const r=x.getBoundingClientRect();return {x:r.x,y:r.y,right:r.right,bottom:r.bottom,width:r.width,height:r.height};};
+          const range=document.createRange();range.selectNodeContents(label);
+          return {row:rect(n),label:rect(label),badge:rect(badge),textRects:[...range.getClientRects()].map(r=>({x:r.x,right:r.right,y:r.y,bottom:r.bottom})),
+            overflow:document.documentElement.scrollWidth>innerWidth};
+        }""",language)
+        assert v['row']['width']>=44 and v['row']['height']>=44 and not v['overflow'],v
+        assert v['row']['x']>=0 and v['row']['right']<=width+.1,v
+        assert all(r['x']>=v['row']['x'] and r['right']<=v['row']['right']+.1 for r in v['textRects']),v
+        a,b=v['label'],v['badge']
+        assert min(a['right'],b['right'])<=max(a['x'],b['x'])+.1 or min(a['bottom'],b['bottom'])<=max(a['y'],b['y'])+.1,v
+        report.setdefault('search_match_geometry',[]).append({'width':width,'language':language,'query':query,**v})
+
+    def search_match_workflow(width,language):
+        with context(width,'dark' if language=='en' else 'light',language) as c:
+            p=search_match_page(c,width);search=p.locator('[data-topic-search]')
+            payload=json.loads(p.locator('#gmi-topic-data').text_content())
+            topic=next(t for t in payload['topics'] if t['id']=='theme:hbm_packaging')
+            parent=payload['categories'][topic['parent']]
+            selected=next(t for t in payload['topics'] if t['id']=='theme:conventional_dram')
+            row=p.locator('[data-topic-results] [data-topic-select="theme:hbm_packaging"]')
+            p.evaluate("""()=>{
+              window.__searchMatchRows=[...document.querySelectorAll('[data-topic-results] [data-topic-select]')].map(n=>({
+                node:n,id:n.getAttribute('data-topic-select'),href:n.getAttribute('href'),title:n.querySelector('strong'),
+                titleHTML:n.querySelector('strong').innerHTML,en:n.querySelector(':scope > span > .l-en'),zh:n.querySelector(':scope > span > .l-zh'),
+                count:n.querySelector(':scope > span > b'),countHTML:n.querySelector(':scope > span > b')?.innerHTML
+              }));
+            }""")
+            cases=[('NVIDIA H200','Platform: NVIDIA H200','平台：NVIDIA H200',1),
+                   ('24GB','Product: 24GB 8H HBM3E','产品：24GB 8H HBM3E',1),
+                   ('Micron','Company: Micron Technology','公司：Micron Technology',2),
+                   ('MU','Ticker: MU','证券代码：MU',20),
+                   ('HBM',parent['en'],parent['zh'],21),
+                   ('MU 24GB',parent['en'],parent['zh'],1),
+                   ('nViDiA   H200','Platform: NVIDIA H200','平台：NVIDIA H200',1)]
+            for query,en,zh,count in cases:
+                search.fill(query)
+                expect(p.locator('[data-topic-results] [data-topic-select]:visible')).to_have_count(count)
+                expect(row.locator(':scope > span > .l-en')).to_have_text(en)
+                expect(row.locator(':scope > span > .l-zh')).to_have_text(zh)
+                assert row.locator(':scope > span > b').inner_text()==('1 connection' if language=='en' else '1 条关联')
+                expect(p.locator('#gmi-topic-title')).to_have_text(selected[language])
+                assert parse_qs(urlsplit(p.url).fragment)['theme']==[selected['id']]
+                assert p.evaluate("""()=>window.__searchMatchRows.every((s,i)=>{
+                  const n=document.querySelectorAll('[data-topic-results] [data-topic-select]')[i];
+                  return n===s.node&&n.getAttribute('href')===s.href&&n.querySelector('strong')===s.title&&s.title.innerHTML===s.titleHTML&&
+                    n.querySelector(':scope > span > .l-en')===s.en&&n.querySelector(':scope > span > .l-zh')===s.zh&&
+                    n.querySelector(':scope > span > b')===s.count&&s.count?.innerHTML===s.countHTML;
+                })""")
+                if query=='Micron':
+                    crop=p.locator('[data-topic-results] [data-topic-select="theme:micronutrients_soil_conditioners"]')
+                    expect(crop).to_be_visible()
+                    assert crop.locator(':scope > span > b').count()==0
+                    crop_topic=next(t for t in payload['topics'] if t['id']=='theme:micronutrients_soil_conditioners')
+                    crop_parent=payload['categories'][crop_topic['parent']]
+                    expect(crop.locator(':scope > span > .l-'+language)).to_have_text(crop_parent[language])
+                if query=='NVIDIA H200':
+                    for other in ('zh' if language=='en' else 'en',language):
+                        p.evaluate('(v)=>document.documentElement.setAttribute("data-lang",v)',other)
+                        expect(row.locator(':scope > span > .l-'+other)).to_be_visible()
+                        expect(row.locator(':scope > span > .l-'+other)).to_have_text(zh if other=='zh' else en)
+                        search.dispatch_event('input')
+                        expect(row.locator(':scope > span > .l-'+other)).to_have_text(zh if other=='zh' else en)
+                search_match_snapshot(p,width,language,query)
+                search_match_fit(p,width,language,query)
+                capture=(query=='NVIDIA H200' and (width,language) in ((390,'en'),(320,'zh'),(1440,'en'))) or (query=='24GB' and (width,language)==(320,'zh')) or (query=='Micron' and (width,language)==(390,'en'))
+                if capture:
+                    slug={'NVIDIA H200':'platform','24GB':'product','Micron':'company'}[query]
+                    path=args.out/f'search-match-{slug}-{width}-{language}.png'
+                    p.screenshot(path=str(path));report['screenshots'].append(path.name)
+            # Existing filters still own eligibility; query Clear restores only the canonical parent.
+            search.fill('Micron')
+            p.locator('[data-evidence-only]').check();p.locator('input[name="gmi-scope"][value="core"]').check()
+            p.locator('[data-topic-category-filter]').select_option(topic['category'])
+            expect(p.locator('[data-topic-results] [data-topic-select]:visible')).to_have_count(1)
+            p.locator('[data-topic-search-clear]').click()
+            expect(search).to_have_value('');expect(search).to_be_focused()
+            expect(p.locator('[data-evidence-only]')).to_be_checked()
+            expect(p.locator('input[name="gmi-scope"][value="core"]')).to_be_checked()
+            expect(p.locator('[data-topic-category-filter]')).to_have_value(topic['category'])
+            expect(row.locator(':scope > span > .l-'+language)).to_have_text(parent[language])
+            expect(p.locator('[data-topic-results] [data-topic-select]:visible')).to_have_count(1)
+            search_match_snapshot(p,width,language,'query-clear-retains-filters')
+            p.locator('[data-gmi-browse] [data-topic-reset]').first.click()
+            expect(p.locator('[data-topic-results] [data-topic-select]:visible')).to_have_count(371)
+            for query in ('   ','no-such-public-field-fixture'):
+                search.fill(query)
+                expect(p.locator('[data-topic-results] [data-topic-select]:visible')).to_have_count(371 if query.strip()=='' else 0)
+                expect(row.locator(':scope > span > .l-en')).to_have_text(parent['en'])
+                expect(row.locator(':scope > span > .l-zh')).to_have_text(parent['zh'])
+                search_match_snapshot(p,width,language,query)
+            # Follow the actual result to its existing dated evidence.
+            search.fill('NVIDIA H200');history=p.evaluate('history.length')
+            row.click()
+            expect(p.locator('#gmi-topic-title')).to_have_text(topic[language])
+            assert p.evaluate('history.length')==history+1
+            assert parse_qs(urlsplit(p.url).fragment)['theme']==[topic['id']]
+            expect(p.locator('[data-topic-connections] .gmi-product-path strong').filter(has_text='NVIDIA H200')).to_be_visible()
+            if width<=820:
+                expect(p.locator('[data-browse-dialog]')).not_to_be_visible()
+                expect(p.locator('#gmi-topic-title')).to_be_focused()
+
+    def search_match_history(width,language):
+        with context(width,'light',language) as c:
+            p=search_match_page(c,width);search=p.locator('[data-topic-search]')
+            row=p.locator('[data-topic-results] [data-topic-select="theme:hbm_packaging"]')
+            payload=json.loads(p.locator('#gmi-topic-data').text_content())
+            topic=next(t for t in payload['topics'] if t['id']=='theme:hbm_packaging')
+            parent=payload['categories'][topic['parent']]
+            p.evaluate("""()=>new Promise(resolve=>{
+              addEventListener('hashchange',()=>requestAnimationFrame(()=>resolve()),{once:true});
+              location.hash='theme=theme%3Aconventional_dram&lens=chain&q=NVIDIA+H200';
+            })""")
+            expect(row.locator(':scope > span > .l-'+language)).to_have_text('Platform: NVIDIA H200' if language=='en' else '平台：NVIDIA H200')
+            row.focus();p.evaluate('window.__searchMatchAnchor=document.activeElement')
+            other='zh' if language=='en' else 'en'
+            p.evaluate('(v)=>document.documentElement.setAttribute("data-lang",v)',other)
+            expect(row.locator(':scope > span > .l-'+other)).to_be_visible();expect(row).to_be_focused()
+            expect(row.locator(':scope > span > .l-'+other)).to_have_text('Platform: NVIDIA H200' if other=='en' else '平台：NVIDIA H200')
+            p.evaluate('(v)=>document.documentElement.setAttribute("data-lang",v)',language)
+            expect(row.locator(':scope > span > .l-'+language)).to_be_visible()
+            p.go_back();expect(search).to_have_value('');expect(row).to_be_focused()
+            expect(row.locator(':scope > span > .l-'+language)).to_have_text(parent[language])
+            search_match_snapshot(p,width,language,'back')
+            p.go_forward();expect(search).to_have_value('NVIDIA H200');expect(row).to_be_focused()
+            expect(row.locator(':scope > span > .l-'+language)).to_have_text('Platform: NVIDIA H200' if language=='en' else '平台：NVIDIA H200')
+            assert p.evaluate('window.__searchMatchAnchor===document.activeElement')
+            search_match_snapshot(p,width,language,'forward')
+            p.keyboard.press('Enter')
+            expect(p.locator('#gmi-topic-title')).to_have_text(topic[language])
+            assert parse_qs(urlsplit(p.url).fragment)['theme']==[topic['id']]
+            if width<=820:expect(p.locator('[data-browse-dialog]')).not_to_be_visible()
+
+    for width,language in ((1440,'en'),(1440,'zh'),(390,'en'),(320,'zh'),(320,'en'),(390,'zh'),(820,'en')):
+        check(f'search-match-workflow-{width}-{language}',lambda w=width,l=language:search_match_workflow(w,l))
+    for width,language in ((390,'en'),(320,'zh')):
+        check(f'search-match-history-{width}-{language}',lambda w=width,l=language:search_match_history(w,l))
+
     browser.close()
 server.shutdown()
 report['pass'] = all(c['result']=='PASS' for c in report['cases']) and not report['page_errors']

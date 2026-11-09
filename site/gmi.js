@@ -528,9 +528,24 @@ function retireCopy(recoverFocus){
 }
 function writeURL(mode){var p=new URLSearchParams(location.hash.slice(1));p.set('theme',state.theme);[['q',state.q],['category',state.category],['scope',state.scope==='all'?'':state.scope],['evidence',state.evidence?'1':'']].forEach(function(pair){if(pair[1])p.set(pair[0],pair[1]);else p.delete(pair[0]);});var next='#'+p.toString();if(next!==location.hash){retireCopy(true);history[mode==='push'?'pushState':'replaceState'](null,'',next);}lastHash=location.hash;refreshJourney();}
 function matches(t){return(!state.category||t.paths.some(function(path){return path.length&&path[0].id===state.category;}))&&(state.scope==='all'||t.tier===state.scope)&&(!state.evidence||t.connections.length>0)&&(!norm(state.q)||searchText.get(t.id).includes(norm(state.q)));}
+/* Explain only an individually matching admitted field, never a phrase that
+   merely spans the flattened search corpus. Keep taxonomy and count owners. */
+function resultContext(t,query){
+  var parent=data.categories[t.parent];
+  if(!query||!t.connections.length||norm(label(t)).includes(query)||norm(label(parent)).includes(query))return parent;
+  var fields=[['company','Company: ','公司：'],['ticker','Ticker: ','证券代码：'],
+    ['product','Product: ','产品：'],['platform','Platform: ','平台：']];
+  for(var i=0;i<t.connections.length;i++){
+    for(var j=0;j<fields.length;j++){
+      var field=fields[j],value=txt(t.connections[i][field[0]]);
+      if(value&&norm(value).includes(query))return{en:field[1]+value,zh:field[2]+value};
+    }
+  }
+  return parent;
+}
 var filterPass=0;
 function filters(){
-  var pass=++filterPass;
+  var pass=++filterPass,query=norm(state.q);
   search.value=state.q;category.value=state.category;evidence.checked=state.evidence;scopes.forEach(function(s){s.checked=s.value===state.scope;});
   var count=0,firstVisible=null,selectedVisible=null;
   var projected=rows.map(function(row){
@@ -560,7 +575,12 @@ function filters(){
   if(pass!==filterPass)return;
   if(searchClear&&searchClear.hidden!==clearHidden)searchClear.hidden=clearHidden;
   projected.forEach(function(item){
-    var row=item.row,t=item.topic;if(row.hidden!==item.hidden)row.hidden=item.hidden;row.tabIndex=-1;
+    var row=item.row,t=item.topic,context=resultContext(t,query);
+    ['en','zh'].forEach(function(code){
+      var text=row.querySelector(':scope > span > .l-'+code),value=context[code]||context.en;
+      if(text&&text.textContent!==value)text.textContent=value;
+    });
+    if(row.hidden!==item.hidden)row.hidden=item.hidden;row.tabIndex=-1;
     if(t.id===state.theme)row.setAttribute('aria-current','true');else row.removeAttribute('aria-current');
   });
   if(selectedVisible||firstVisible)(selectedVisible||firstVisible).tabIndex=0;

@@ -1629,3 +1629,57 @@ Paired JS blob **c5d32d689ffae6caedf72a8afef317c9900c4428**, SHA256 **4ca7c46fd9
 Extend existing Build module07 body **7NI-0** with pre-hide recovery, local projection versus attempt identity, effect-time guards and the pagehide exception. Keep the same eighteen modules / 57 nodes; the visible product already has the manual-copy panel and needs no added explanatory UI or duplicate specimen.
 
 PR10676 remains Draft with the original model01 `EFFECT_UNKNOWN/ROOT_UNVERIFIED` and all release holds. Controlled clipboard/component proof does not establish operating-system clipboard access, full shared shell/fonts, native OS IME, spoken assistive technology, actual BFCache, live account/admission, current hosted CI or deployment.
+
+
+## 11.39 · Explain company and product search matches in place — 9 Nov 2026
+
+### Visible gap
+
+At parent `60f131e086e614487d86ebf089aa52b1af2630f0`, primary Browse promises theme/company/product search and already indexes public company, ticker, product and platform fields. A search for **NVIDIA H200** or **24GB** correctly returns the HBM topic, but its row only shows the topic, **AI Semiconductors / AI半导体**, and the total connection count. The matching field is invisible until the reader opens the answer. Baseline PID **33186**, exit1, **8.25 s**, records those missing explanations in EN390 and ZH320.
+
+Reuse the existing secondary label position. Keep the topic title, native result anchor and connection badge:
+
+| Matching field | English prefix | Chinese prefix |
+|---|---|---|
+| company | Company: | 公司： |
+| ticker | Ticker: | 证券代码： |
+| product | Product: | 产品： |
+| platform | Platform: | 平台： |
+
+Values remain the exact admitted source strings: for example, **Company: Micron Technology**, **Product: 24GB 8H HBM3E** or **平台：NVIDIA H200**. The neutral label identifies a matching source field; it does not assert present supply, qualified theme membership, current delivery or revenue exposure. Date and Planned status remain with the existing evidence card.
+
+### Existing search and presentation owners
+
+The small `resultContext(t, query)` helper returns either the canonical parent labels or one field explanation. It uses the answer-first owner's unchanged `norm()`: lowercase, whitespace collapse and trim. It introduces no tokenizer, Unicode normalization, ranking, search index or new field admission.
+
+Show a hint only when the **complete normalized query occurs inside one individual connection field**. Iterate supplied connections in their existing order, then company, ticker, product and platform. Missing or empty optional fields do not manufacture a value.
+
+Suppress the hint when the normalized query is empty or when the visible language's canonical topic **or** parent label already explains it. Check those two labels separately. Do not concatenate them, inspect the whole row text, inspect its hidden language, or treat a previously rendered hint as the parent. This keeps repeated filtering and locale cycles stable. Clear restores the canonical parent labels.
+
+The existing corpus also contains classification paths and concatenated fields. A query such as **MU 24GB** still matches across ticker/product boundaries under that incumbent search behavior, but no individual field contains the phrase, so the row keeps its canonical parent. The feature explains a supported subset of search results, not every match.
+
+Inside the existing `filters()` pass, wait for the established pre-hide focus/reentrancy guard, then equality-update only the two direct language-label nodes with `textContent`. Keep anchor, title, count node, DOM order, roving focus and native href identity. The badge remains **all published connections for the topic**, not matching companies. No HTML, CSS, page generation, URL or data-owner change is needed.
+
+### Source-bound consumer proof
+
+Final PID **52303**, exit0, **25.60 s**: **13 cases / 13 fresh anonymous contexts**, Chrome **157.0.8103.39**, zero page errors. Seven complete search workflows cover EN/ZH1440, EN/ZH390/320 and EN820. They check exact company/ticker/product/platform text, case/whitespace matching, current title suppression, a cross-field phrase, empty/whitespace/no-result restoration, retained category/scope/evidence on query Clear, full Reset, and actual result selection into dated evidence.
+
+The current **Micron** substring query retains both HBM and **Crop micronutrients & soil conditioners**. Only the admitted HBM connection receives a company hint. Current result counts remain one for platform/product, two for Micron, twenty for MU and twenty-one for HBM under the unfiltered corpus. These are fixture-bound counts, not a new ranking or catalogue claim.
+
+Two actual Back/Forward cases preserve the focused result anchor and restore the correct parent/hint across locale changes, then activate it with Enter. Two unchanged primary Clear cases and two unchanged Browse focus-edge cases retain query ownership, source-card/open-receipt identity and newer-filter protection.
+
+There are **74 search snapshots** and **49 geometry checks**. Existing labels, exact field values and connection badges fit without overlap or page overflow, including ZH320; row targets stay at least 44 px. Five final platform/product/company captures were inspected. No extra product paragraph or control was added.
+
+Two test-authoring diagnostics remain in the evidence. PID **45854** expected a duplicated numeral in the bilingual badge's raw text; the original markup has one shared numeral. PID **47715** passed both desktop cases before an unscoped Reset selector resolved to inert answer recovery behind the mobile dialog. The corrected assertion retains count-node identity and visible-language text; the corrected selector targets Browse's existing Reset. Product JavaScript remained SHA256 **2fabd10c90100dac6144093205f757adcc4ed9f4c28e618ecd74d551878d5b43** through all candidate runs.
+
+All **121 prior qualified verifier definitions remain AST-exact**; five new helpers and canonical registrations are added. All seven HTML pages and CSS are byte-exact. Source self-check removes only the new explanation helper and filter-label projection to reconstruct the parent JS exactly, including copy, search eligibility, URL, locale and data admission owners. Paired JS blob **cf2aa0de56bd3ee4b09808aa96d8492f9506d4f2**.
+
+[SEARCH_MATCH_VALIDATION_20261109.json](SEARCH_MATCH_VALIDATION_20261109.json) retains baseline, diagnostic and final reports, hashes, commands, all case results and all new search observations/geometry. Repeated legacy-regression detailed snapshots remain in the exact hashed complete native report; that export projection is explicit.
+
+### Paper and next finding
+
+Append **Q05 company match EN390 Noir** and **Q06 platform match ZH320 Day** to the existing Browse flow on p-D-0. Both use current All categories / All scope / evidence unchecked state, truthful two/one result counts and the retained conventional-DRAM answer behind the dialog. Preserve Q01–Q04. Extend existing Build module08 body **7NL-0** with the exact-field, language, stable-order and count contract; keep eighteen modules.
+
+The visual pass separately exposed a real content defect: **Conventional DRAM (non-HBM)** receives the specialized HBM sentence because both client and server macro test for an HBM substring. Continue with a distinct identity-based description correction, preserving both existing bilingual sentences and model/public-data boundaries.
+
+Original model01 `EFFECT_UNKNOWN/ROOT_UNVERIFIED`, Draft and release holds remain. These component checks do not establish full shared shell/fonts, native OS IME, spoken AT, live account/admission, current hosted CI or deployment.
