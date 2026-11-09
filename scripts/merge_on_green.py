@@ -403,7 +403,9 @@ MAX_REFRESHES_PER_SWEEP = 8
 # sweep per minute.  Each refreshed pull request launches one ci.yml run with 12
 # hosted jobs (plus fences), and on 2026-08-11 the shared pool was already pinned at
 # 180/180.  Count every active pull-request ci.yml run — ordinary session work and
-# controller re-proofs alike — and add no refreshes above this repo-wide ceiling.
+# controller re-proofs alike — and add no ordinary refreshes above this repo-wide
+# ceiling (the S9 saturation floor below is the one bounded exception: a single
+# lease-serialized refresh under its own hard ceiling, never a raised allowance).
 # Eight proof runs are roughly half the hosted pool, leaving real capacity for the
 # sessions the controller exists to serve.  This is intentionally conservative:
 # an ordinary in-flight proof consumes the same runners as a controller-created one.
@@ -414,6 +416,9 @@ MAX_IN_FLIGHT_PR_PROOFS = 8
 # advertised eight new refresh slots because the former "fair refresh" clamp raised
 # a negative allowance back to eight.  That directly defeated the repo-wide circuit
 # breaker and re-created the CI stampede it was meant to stop.
+# The S9 saturation floor below is NOT that clamp: it is one lease-serialized
+# refresh, granted only under a hard in-flight ceiling and only while the job-level
+# census shows no refusal (see REFRESH_FLOOR_PER_SWEEP).
 HIGH_LOAD_LEASE_THRESHOLD = 1
 ACTIVE_PR_PROOF_STATUSES = ("queued", "in_progress", "pending", "requested", "waiting")
 # Adaptive headroom ABOVE the flat cap, never a flat raise.  The flat 8 was sized
@@ -467,6 +472,30 @@ ADAPTIVE_SERVED_RUNS_FULL_HEADROOM = 2
 ADAPTIVE_PICKUP_GRACE_SECONDS = 120
 ADAPTIVE_HOSTED_LABEL_PREFIXES = ("ubuntu-", "windows-", "macos-")
 ADAPTIVE_LATER_WAVE_JOB_PREFIXES = ("ci-pack-", "ci-gate")
+# S9 (2026-11-07) saturation floor.  Sweep 42339359763 (2026-11-07 04:39Z) read 12
+# indexed proofs against the flat cap of 8, the census reported slow pickups (no
+# queued run, no refused job), the adaptive headroom was therefore 0, and the
+# allowance was 0 -- while EVERY armed pull request was stale because main had
+# changed the check definitions (~70 refresh-deferred per sweep).  Ordinary session
+# pushes kept the in-flight count above the cap, so the controller never refreshed
+# anything and nothing merged overnight.  A pool that is merely slow is still
+# serving; a pool that REFUSES (queued run or waiting hosted job) is not.  When the
+# ordinary allowance is zero, admit ONE refresh per sweep, serialized by the durable
+# lease (one slot is inside HIGH_LOAD_LEASE_THRESHOLD, so racing sweep generations
+# cannot both spend it), only while (a) the census was actually read and witnessed
+# the hosted pool picking work up (a served later-wave job, or a slow pickup -- a
+# slow job HAS started; a mature run with neither is no evidence of capacity),
+# (b) it shows no refusal evidence, and (c) fewer than REFRESH_FLOOR_PROOF_CEILING
+# proofs are in flight -- the same half-headroom cap the adaptive policy grants on
+# a single served run.  Controller refreshes count toward that ceiling like any
+# other proof, so the floor can never push the pool past it.  Because the lease is
+# held until its owner's proof settles (or the lease max age), the floor drains at
+# one controller proof per proof LIFETIME, not one per sweep -- enough to keep the
+# queue moving when sessions' own pushes alone would hold the allowance at zero.
+REFRESH_FLOOR_PER_SWEEP = 1
+REFRESH_FLOOR_PROOF_CEILING = MAX_IN_FLIGHT_PR_PROOFS + (
+    ADAPTIVE_PROOF_CAP_MAX - MAX_IN_FLIGHT_PR_PROOFS
+) // 2
 # The rotation advances by the live pull cap every bucket, so every armed pull
 # request enters the window within ceil(N / cap) buckets — ~40 minutes for a
 # 93-PR backlog. Ten minutes matches the recovery cron; the sweeper keeps NO state
@@ -3086,6 +3115,8 @@ class ProofFreshness:
         )
         if status >= 400 or not isinstance(payload, dict):
             raise _read_failed(status, payload, f"blob {blob_sha[:12]} unreadable")
+        if payload.get("sha") != blob_sha:
+            raise RuntimeError(f"blob {blob_sha[:12]} identity mismatch")
         if str(payload.get("encoding") or "") != "base64":
             raise RuntimeError(f"blob {blob_sha[:12]} has unsupported encoding")
         try:
@@ -4160,6 +4191,40 @@ def adaptive_proof_cap(census: HostedPoolCensus | None) -> tuple[int, str]:
     return cap, f"+{headroom} adaptive: {why}"
 
 
+def refresh_floor_allowance(
+    census: HostedPoolCensus | None, effective_proofs: int
+) -> tuple[int, str]:
+    """``(slots, detail)`` for a sweep whose ordinary allowance came out at zero.
+
+    Never more than ``REFRESH_FLOOR_PER_SWEEP``; zero without a readable census
+    that witnessed a pickup (served run or slow job), on any refusal evidence, or
+    at/above ``REFRESH_FLOOR_PROOF_CEILING``.
+    """
+    if census is None:
+        return 0, "floor withheld: hosted pool census not read"
+    if census.queued_runs > 0 or census.refused_jobs > 0:
+        return 0, (
+            f"floor withheld: hosted pool refused {census.queued_runs} queued "
+            f"run(s), {census.refused_jobs} waiting hosted job(s)"
+        )
+    if census.sampled_runs <= 0 or (census.served_runs <= 0 and census.slow_jobs <= 0):
+        return 0, (
+            "floor withheld: no hosted pickup witnessed "
+            f"({census.sampled_runs} mature run(s) sampled, none served or slow)"
+        )
+    if effective_proofs >= REFRESH_FLOOR_PROOF_CEILING:
+        return 0, (
+            f"floor withheld: {effective_proofs} proof(s) in flight, at or above "
+            f"the floor ceiling {REFRESH_FLOOR_PROOF_CEILING}"
+        )
+    return REFRESH_FLOOR_PER_SWEEP, (
+        f"saturation floor: {REFRESH_FLOOR_PER_SWEEP} lease-serialized refresh "
+        f"({effective_proofs} proof(s) in flight under ceiling "
+        f"{REFRESH_FLOOR_PROOF_CEILING}, {census.slow_jobs} slow pickup(s), "
+        f"no refusal in {census.sampled_runs} mature run(s))"
+    )
+
+
 def refresh_lease_reservation_count(
     repo: str,
     token: str,
@@ -4464,6 +4529,7 @@ class RefreshLease:
         self.readable = readable
         self.claim_attempted = False
         self.released_numbers: set[int] = set()
+        self.claim_attempted_number: int | None = None
         self._label_ready: bool | None = None
 
     @property
@@ -4515,6 +4581,27 @@ class RefreshLease:
             return True
         return current - stamp >= REFRESH_LEASE_MAX_SECONDS
 
+    def _decline(self, number: Any, reason: str) -> bool:
+        """Refuse a claim out loud.
+
+        Every refusal before the issue-label POST used to be a bare ``return
+        False`` (most are pre-write; the read-back case follows a register write
+        whose outcome is then unknown); the only trace
+        the sweep left was `refresh_deferred`'s "0/1 effective CI workload slot(s)
+        in use", which reads as a capacity wait when the real cause was a refused
+        generation-register read, a sweep-wide claim latch, or a released
+        generation (observed live with a tier-0 `main-red-repair` pull request
+        deferred sweep after sweep while the queue showed a free slot). The
+        annotation names the cause; the fail-closed verdict is unchanged.
+        """
+        _annotate(
+            "notice",
+            "merge-on-green refresh lease",
+            f"PR #{number}: refresh lease not claimed — {reason}; no update-branch "
+            "write attempted.",
+        )
+        return False
+
     def _write_generation_record(self, number: Any, head_sha: str) -> bool:
         """Create/update and affirm the exact generation before claiming.
 
@@ -4552,7 +4639,11 @@ class RefreshLease:
                     },
                 )
             else:
-                return False
+                return self._decline(
+                    number,
+                    f"the generation register read answered HTTP {status}"
+                    + ("" if isinstance(current, dict) or status != 200 else " without a label object"),
+                )
             # Every mutating response is potentially ambiguous, and 422 is also
             # validation/throttling. Only an exact read-back authorises the issue
             # label or the CI-producing update.
@@ -4564,11 +4655,19 @@ class RefreshLease:
                 or not isinstance(verified, dict)
                 or str(verified.get("description") or "") != description
             ):
-                return False
+                return self._decline(
+                    number,
+                    "a generation register write was attempted but the read-back did "
+                    f"not affirm the intended record (write HTTP {write_status}, "
+                    f"read-back HTTP {verify_status}); the register's outcome is "
+                    "unknown",
+                )
             self._label_ready = True
             parsed = parse_refresh_lease_record(description)
             if parsed is None:
-                return False
+                return self._decline(
+                    number, "the affirmed generation record did not parse"
+                )
             (
                 _owner,
                 self.generation_head_sha,
@@ -4605,24 +4704,60 @@ class RefreshLease:
         """Claim before ``update-branch``; ambiguity fails closed."""
         number = pull.get("number")
         head_sha = str(((pull.get("head") or {}).get("sha")) or "").lower()
-        if not self.readable or not number or len(head_sha) != 40:
-            return False
+        if not self.readable:
+            return self._decline(
+                number, "the lease census or generation register is unreadable this sweep"
+            )
+        if not number:
+            return self._decline(number, "the live pull request carries no number")
+        if len(head_sha) != 40:
+            return self._decline(
+                number, "the live pull request carries no 40-character head sha"
+            )
         if str(number).isdigit() and int(number) in self.released_numbers:
-            return False
+            return self._decline(
+                number, "its generation was released earlier in this same sweep"
+            )
         if self.owns(pull):
             # A generation may authorize exactly one update of its recorded head.
             # Once update-branch moved the live head, later sweeps only reconcile
             # that workload; they must never use the same label for a second update.
-            return bool(
-                self.generation_head_sha
-                and head_sha == self.generation_head_sha
-                and self.record_is_current()
+            if not self.generation_head_sha:
+                return self._decline(
+                    number, "it holds the lease but no generation head is recorded"
+                )
+            if head_sha != self.generation_head_sha:
+                return self._decline(
+                    number,
+                    "its recorded generation already authorised one update "
+                    f"(recorded head {self.generation_head_sha[:12]}, live head "
+                    f"{head_sha[:12]})",
+                )
+            if self.record_is_current():
+                return True
+            return self._decline(
+                number,
+                "the generation register no longer affirms its generation "
+                "(read refused or record changed)",
             )
-        if self.owner_number is not None or self.claim_attempted:
-            return False
+        if self.owner_number is not None:
+            return self._decline(
+                number, f"PR #{self.owner_number} holds the one durable lease"
+            )
+        if self.claim_attempted:
+            return self._decline(
+                number,
+                "this sweep already spent its single lease claim"
+                + (
+                    f" on PR #{self.claim_attempted_number}"
+                    if self.claim_attempted_number is not None
+                    else ""
+                ),
+            )
         # Set before any network write. A timeout may mean the server accepted it,
         # so this process must never try a different pull request afterward.
         self.claim_attempted = True
+        self.claim_attempted_number = int(number) if str(number).isdigit() else None
         if not self._write_generation_record(number, head_sha):
             return False
         try:
@@ -7474,11 +7609,19 @@ def live_authorized_pull(
         )
         return None, "authorization-unreadable"
     if status >= 400 or not isinstance(live, dict):
-        _annotate(
-            "warning",
-            "merge-on-green authorization",
-            f"PR #{number}: live authorization read returned HTTP {status}.",
+        # Reuse the existing body/header classifier without changing this guard's
+        # fail-closed disposition or its callers' retry policy. A bare HTTP 403
+        # hides the distinction between exhausted quota and an authorization fault.
+        failure = _read_failed(
+            status, live, f"PR #{number}: live authorization read failed"
         )
+        detail = str(failure)
+        if token:
+            detail = detail.replace(token, "[redacted]")
+        # Provider text is untrusted annotation data, never another log command.
+        detail = re.sub(r"[\x00-\x1f\x7f-\x9f]", " ", detail)
+        detail = " ".join(detail.split()).replace("%", "%25")[:600]
+        _annotate("warning", "merge-on-green authorization", detail)
         return None, "authorization-unreadable"
     if live.get("merged") is True:
         return None, "already-merged"
@@ -9323,6 +9466,7 @@ def main() -> int:
     # It degrades to the flat cap on ANY census problem, including a RateLimited
     # read: it must never route the sweep into the deferred path.
     proof_cap, adaptive_detail = MAX_IN_FLIGHT_PR_PROOFS, "census skipped: flat cap"
+    pool_census: HostedPoolCensus | None = None
     effective_proofs = int(effective_active_proofs or 0)
     if (
         active_pr_proofs is not None
@@ -9344,6 +9488,13 @@ def main() -> int:
         available_refreshes = max(
             0, proof_cap - int(effective_active_proofs or 0)
         )
+        floor_detail = ""
+        if available_refreshes == 0 and budget.max_refreshes > 0:
+            # S9: a saturated-but-serving pool must not freeze every stale proof
+            # indefinitely. One lease-serialized refresh, under a hard ceiling.
+            available_refreshes, floor_detail = refresh_floor_allowance(
+                pool_census, effective_proofs
+            )
         budget.max_refreshes = min(budget.max_refreshes, available_refreshes)
         budget.requires_refresh_lease = (
             0 < budget.max_refreshes <= HIGH_LOAD_LEASE_THRESHOLD
@@ -9354,6 +9505,7 @@ def main() -> int:
             f"reservation(s), global cap "
             f"{proof_cap} ({adaptive_detail}), {budget.max_refreshes} CI workload slot(s) "
             "available this sweep"
+            + (f" [{floor_detail}]" if floor_detail else "")
             + (" (durable lease required)" if budget.requires_refresh_lease else "")
         )
     budget.refresh_context = refresh_load_detail

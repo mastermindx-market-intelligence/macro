@@ -208,7 +208,7 @@
     "changed_fingerprints": [],
     "correction_state": "none",
     "note": "Same reference period as the predecessor print; no tracked metric changed value (no-change republication).",
-    "predecessor_generation_id": "liquidity_central_banks-US-1de45ee650918118"
+    "predecessor_generation_id": "liquidity_central_banks-US-ddfb7450598c9f52"
   },
   "drivers": {
     "balance_sheet": [
@@ -301,11 +301,11 @@
     ]
   },
   "generation": {
-    "built_at": "2026-11-05T10:00:13Z",
+    "built_at": "2026-11-09T06:41:31Z",
     "calculation_as_of": "2026-10-16T18:16:51.754201+00:00",
-    "code_version": "e26dddef9b88ebefbcb9600423a069a829c6899d",
-    "content_sha256": "aadd65cd2c25dc227bc2c68c74ee9deae82aa599b5752b0062d88b2c3a8a8257",
-    "generation_id": "liquidity_central_banks-US-aadd65cd2c25dc22",
+    "code_version": "df80d43dc64ec32b78dff8acbfac3f11a7ce71c0",
+    "content_sha256": "61311aadd35e04c1f9704b2ede011f8b5f8186a7dfd921ce62f2c8d81ebd7e0c",
+    "generation_id": "liquidity_central_banks-US-61311aadd35e04c1",
     "producer": "engine.market_os.macro_workspaces.liquidity_central_banks",
     "rendered_at": null
   },

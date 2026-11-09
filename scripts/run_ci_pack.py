@@ -418,7 +418,11 @@ OBSERVED_COMMAND_SECONDS = {
     # local timings scaled by 0.7. workflow-yaml keeps the parse gate, the
     # render-lane contracts and the options/sparse suites: about 90 s including
     # its data-stack install.
-    "ci-control-plane-contracts": 1400,
+    # 2026-11-04 (#917): ci-control-plane-contracts split three ways; hosted group
+    # timings from runs 41806511589 / 41803222742 (median of the two).
+    "ci-control-plane-contracts": 815,
+    "ci-control-plane-census": 530,
+    "ci-control-plane-structure": 150,
     # Hosted command groups, 2026-10-19: FIF historical kernel median 1618 s
     # plus ~13 s guards (nine runs); earnings 1071 s in full trial 39247388552.
     # These calibrate balancing only; install/checkout/queue are excluded.
@@ -2111,6 +2115,33 @@ def partition_jobs(jobs: Iterable[LegacyJob], pack_count: int) -> list[list[Lega
     return packs
 
 
+def compact_scoped_packs(
+    jobs: Iterable[LegacyJob], pack_count: int
+) -> list[list[LegacyJob]]:
+    """Use fewer active bins without increasing the legacy modeled peak load.
+
+    Only build_plan's genuinely narrowed PR lane may use this compactor. The
+    ordinary partition_jobs function and main baseline pack names are unchanged.
+    Weights are planning estimates, not elapsed-time or speedup guarantees.
+    """
+    selected = list(jobs)
+    baseline = partition_jobs(selected, pack_count)
+    if any(job.weight < 0 for job in selected):
+        raise ValueError("scoped compaction requires nonnegative job weights")
+    peak = max((sum(job.weight for job in pack) for pack in baseline), default=0)
+    if not selected or peak == 0:
+        return baseline
+    total = sum(job.weight for job in selected)
+    # No packing below this bin count can retain the old peak. Search every
+    # feasible smaller greedy count; greedy feasibility need not be monotonic.
+    lower_bound = max(1, (total + peak - 1) // peak)
+    for active_count in range(lower_bound, min(pack_count, len(selected))):
+        candidate = partition_jobs(selected, active_count)
+        if max(sum(job.weight for job in pack) for pack in candidate) <= peak:
+            return candidate + [[] for _ in range(pack_count - active_count)]
+    return baseline
+
+
 # ---------------------------------------------------------------------------
 # Plan once, execute many (2026-08-11)
 #
@@ -2405,9 +2436,24 @@ def build_plan(
             f"{reason}"
         )
 
-    # Balance across the SELECTED set, not the full manifest — otherwise a
-    # scoped run would leave whole packs empty while one pack carried it all.
-    packs = partition_jobs(eligible, pack_count)
+    event = event or os.environ.get("GITHUB_EVENT_NAME") or (
+        "pull_request" if changed_from is not None else "workflow_dispatch"
+    )
+    role = role or os.environ.get("CI_SEMANTIC_ROLE") or (
+        "pr_head" if event == "pull_request" else "main"
+    )
+    # Main and full-suite plans retain every legacy baseline check name.
+    # Only a genuinely narrowed active PR selection may compact execution.
+    narrowed_pr = (
+        role == "pr_head"
+        and changed_from is not None
+        and changed is not None
+        and scope_mode == "active"
+        and not invalidated
+        and len(eligible) < len(jobs)
+    )
+    packs = (compact_scoped_packs(eligible, pack_count) if narrowed_pr
+             else partition_jobs(eligible, pack_count))
     pack_jobs = tuple(tuple(job.job_id for job in pack) for pack in packs)
     pack_weights = tuple(sum(job.weight for job in pack) for pack in packs)
     eligible_job_ids = tuple(job.job_id for job in eligible)
@@ -2436,12 +2482,6 @@ def build_plan(
         or os.environ.get("CI_BASE_SHA")
         or changed_from
         or tested_tree_sha
-    )
-    event = event or os.environ.get("GITHUB_EVENT_NAME") or (
-        "pull_request" if changed_from is not None else "workflow_dispatch"
-    )
-    role = role or os.environ.get("CI_SEMANTIC_ROLE") or (
-        "pr_head" if event == "pull_request" else "main"
     )
     # `workflow` is resolved HERE, before the role/event validation below, so
     # the narrow main-owned diagnostic admission can be evaluated in the same gate instead of
@@ -5003,6 +5043,66 @@ def _base_replay_unavailable(base_sha: str, detail: object) -> dict[str, Any]:
     }
 
 
+# Parent environment names an exact-base replay child may inherit. Every
+# name is a non-capability setting: no token, no credential, no path into the
+# candidate checkout. `LC_*` locale names are admitted by prefix.
+#
+# `CI` is deliberately on the list. pytest decides whether the short-summary
+# `FAILED nodeid - msg` line carries the failure message via
+# `running_on_ci()`, i.e. whether `CI` is set. The candidate runs with the
+# runner's `CI=true` and emits the whole message; a replay without it trims
+# the message to the terminal width or drops it, so the semantic failure
+# atoms (`ci_semantic_proof` `:reason=` digest) do not match and a base-red
+# failure that has a message is refused as a signature mismatch (#10735 run
+# 41925067587 pack 11: candidate `FAILED ... - AssertionError...`, replay
+# `FAILED ...`). `CI` is a boolean the runner sets, not a bearer of any
+# capability. `PYTHONUTF8` and `PYTHONIOENCODING` keep the child's text
+# encoding identical to the candidate's.
+EXACT_BASE_REPLAY_SAFE_PARENT_ENV: frozenset[str] = frozenset({
+    "PATH",
+    "SHELL",
+    "LANG",
+    "CI",
+    "LANGUAGE",
+    "LC_ALL",
+    "TZ",
+    "TERM",
+    "COLORTERM",
+    "NO_COLOR",
+    "FORCE_COLOR",
+    "SSL_CERT_FILE",
+    "SSL_CERT_DIR",
+    "REQUESTS_CA_BUNDLE",
+    "CURL_CA_BUNDLE",
+    "HTTP_PROXY",
+    "HTTPS_PROXY",
+    "ALL_PROXY",
+    "NO_PROXY",
+    "http_proxy",
+    "https_proxy",
+    "all_proxy",
+    "no_proxy",
+    "PYTHONIOENCODING",
+    "PYTHONUTF8",
+    "PYTHONDONTWRITEBYTECODE",
+    "RUNNER_OS",
+    "RUNNER_ARCH",
+    "RUNNER_ENVIRONMENT",
+    "RUNNER_TOOL_CACHE",
+    "ImageOS",
+    "ImageVersion",
+})
+
+
+def _exact_base_replay_parent_env(environ: Mapping[str, str]) -> dict[str, str]:
+    """Return the allowlisted subset of ``environ`` for an exact-base replay."""
+    return {
+        key: value
+        for key, value in environ.items()
+        if key in EXACT_BASE_REPLAY_SAFE_PARENT_ENV or key.startswith("LC_")
+    }
+
+
 def _run_exact_base_replays(
     *,
     root: Path,
@@ -5055,47 +5155,11 @@ def _run_exact_base_replays(
                 base_changed_files = child_temp / "changed-files.json"
                 base_changed_files.write_text("null\n", encoding="utf-8")
                 # A replay is a base-only execution context, not a PR runner
-                # wearing a different cwd. Build from a small non-capability
-                # allowlist: denylisting GITHUB_TOKEN alone still leaves the
-                # Actions runtime/artifact and OIDC bearer tokens live.
-                safe_parent_names = {
-                    "PATH",
-                    "SHELL",
-                    "LANG",
-                    "LANGUAGE",
-                    "LC_ALL",
-                    "TZ",
-                    "TERM",
-                    "COLORTERM",
-                    "NO_COLOR",
-                    "FORCE_COLOR",
-                    "SSL_CERT_FILE",
-                    "SSL_CERT_DIR",
-                    "REQUESTS_CA_BUNDLE",
-                    "CURL_CA_BUNDLE",
-                    "HTTP_PROXY",
-                    "HTTPS_PROXY",
-                    "ALL_PROXY",
-                    "NO_PROXY",
-                    "http_proxy",
-                    "https_proxy",
-                    "all_proxy",
-                    "no_proxy",
-                    "PYTHONUTF8",
-                    "PYTHONIOENCODING",
-                    "PYTHONDONTWRITEBYTECODE",
-                    "RUNNER_OS",
-                    "RUNNER_ARCH",
-                    "RUNNER_ENVIRONMENT",
-                    "RUNNER_TOOL_CACHE",
-                    "ImageOS",
-                    "ImageVersion",
-                }
-                child_env = {
-                    key: value
-                    for key, value in os.environ.items()
-                    if key in safe_parent_names or key.startswith("LC_")
-                }
+                # wearing a different cwd. Build from the small non-capability
+                # allowlist in EXACT_BASE_REPLAY_SAFE_PARENT_ENV: denylisting
+                # GITHUB_TOKEN alone still leaves the Actions runtime/artifact
+                # and OIDC bearer tokens live.
+                child_env = _exact_base_replay_parent_env(os.environ)
                 # Re-exec the selected setup-python interpreter without copying
                 # candidate-controlled loader state.  The directory is derived
                 # and containment-checked against sys.base_prefix above.
