@@ -1959,3 +1959,53 @@ The source-receipt Build **7M9-0** now has **15 modules / 48 div nodes**. New mo
 PR10676's description now links the current **49d47033f4d758af2ec7212fccee04d762fec956** source, company proof, new Paper page and fifteen-module Build. It keeps previous category/header/Clear results tied to their dated heads. Its original release/model-hold section remains verbatim; readback confirms the exact intended body, current head, Draft status and unmerged state.
 
 This phase does not settle the parent mission. Bounded source review identifies the next independent defect: `refreshJourney()` can remove a focused qualified return link without first recovering focus. The existing Relationships restriction panel also lacks a direct company-evidence recovery action despite explaining that it is available, and its heading overstates clearance status. These can be improved through the existing return/navigation/template owners without consuming the fenced relationship model or changing publication authority. Original release, capture, model, active-writer and protected-style fences remain.
+
+## 40. GMI: qualified-return recovery and actionable relationship availability
+
+### Current implementation
+
+The original Draft [PR10676](https://github.com/mastermindx-market-intelligence/Macro/pull/10676) advances from **49d47033f4d758af2ec7212fccee04d762fec956** to **ed2a0d178b459a8bdb1cc233f257ee82d946f71a**, tree **86c28762f7e951eb3a80626a2ae8f2aba918efd9**. All nine files read back exactly. DESIGN_RECORD §11.31 and `RETURN_RECOVERY_VALIDATION_20261109.json` bind the source, diagnostics, final browser results and rendering comparison.
+
+The existing return-removal branch now focuses the real brand link before removing a holder that owns focus. It uses preventScroll and an existing product-navigation link as the bounded fallback only if focus remains in the holder. It respects a focus handler that already moved elsewhere, preserves unrelated focus and still removes invalid context in an exceptional DOM with no usable target. Valid returns retain the same Back anchor through destination and language changes.
+
+Every other JavaScript byte remains exact: safeReturn, originalHrefs, current/source/catalogue/research projection, link-refresh order, history and locale owners. Focus neither activates a destination nor rewrites history. The following normal href pass removes retired context from the brand. No extra navigation or scroll owner is introduced.
+
+Relationships now reuses the compact task header with the exact relationships page key. Its H1 is Company relationships / 公司关系. The availability heading is **Public relationship view unavailable / 暂无公开关系视图**, which states the absent verified public projection without inferring individual clearance outcomes. **Browse company evidence / 浏览公司证据** is the native primary action; Explore themes and Coverage & methodology remain secondary.
+
+The existing owner carries a qualified research return, reuses a qualified catalogue's permitted query/upstream context, and leaves direct/rejected arrivals with the ordinary company destination. The original two publication paragraphs and native disclosure remain exact. No relationship parties, records, amounts, excerpts or hidden search payload is added; a populated catalogue is not promised.
+
+### Exact-source proof
+
+Renderer preparation verifies 48 inputs and the same accepted **e644fa48…** model. All nine parent outputs reproduce exactly. Final outputs change only **gmi-relationships.html and gmi.js**; all six other HTML pages and CSS remain byte-identical. The actual relationship page is 61,988 bytes, blob **8a693c57b649b300a5c3e53e9d24cfa9c92987c7**. Shared JS is **ef00b9aca6d4e343a8dea7bbd8010020fec671f1**. The complete native output is hash-checked after transport.
+
+Final PID50506 passes **28 cases / 28 fresh anonymous contexts**, zero page errors, Chrome157.0.8103.39, exit0 in 52.66 seconds. Eight header scenarios cover direct/research/catalogue entry, 1440/390/320 EN/ZH and crowded dark/stale/Brain fixtures. Their **24 matched layouts** place the publication panel **145.984375–196.390625 px sooner**. Six final relationship captures were inspected.
+
+Twelve return-focus cases cover company, issuer, index, coverage, relationships and state-reference routes in EN/ZH. Two actual company/research journey cases, four real no-JavaScript cases and two existing company focus/count regressions complete the matrix. Checks include three rejected returns, valid anchor identity, locale, unrelated controls, real back/forward, unchanged history ownership, hidden/missing brand fallback, a focus-handler redirect, native disclosure Enter/Space and actual primary-link navigation. The no-target exceptional fixture removes invalid context and is explicitly not reported as successful focus recovery.
+
+Corrected baseline PID43349 has eight original-layout observations and two expected focus-removal failures, exit1 in 23.48 seconds. All 48 old verifier definitions remain exact; five definitions are added. The current header, publication paragraphs/disclosure, nav/snapshot/slot and template boundaries are self-checked against the parent.
+
+Two test diagnostics are retained:
+- Initial baseline PID39951, exit1 in 22.91 seconds, exposed eight nested fixture-serialization comparisons alongside the two actual focus failures. Three constants were corrected to the existing return owner's parameter order; product source did not change.
+- Initial candidate PID45302 passed 16 cases and stopped on an assertion that conflated final scroll position with focus's effect. PID48600 measured **300 before focus → 300 after focus → 240 after layout removal**. The final test checks native focus timing separately from later browser anchoring. The initial run and diagnostic remain preserved; no product change concealed the distinction.
+
+The complete native receipt was read from the original retained output over 21 pages; no export replay was issued. This is local component/render proof with explicit Brain/stale/missing-header/scroll-tail fixtures, not full shell/fonts, spoken AT, live account/admission, current hosted CI or deployment acceptance.
+
+### Paper and builder contract
+
+The new [Relationships · Availability](https://app.paper.design/file/01M5H6EARN9YHQV17JC6ZG9BRY/p-A-0) page follows Companies without changing the original page order.
+
+| Root | Specimen | Editable div nodes |
+| --- | --- | ---: |
+| **8T0-0** | R01 · EN390 Day direct entry, precise publication status and three available destinations | 37 |
+| **8V9-0** | R02 · ZH320 Noir, qualified company-results return and localized recovery | 40 |
+| **90M-0** | R03 · Complete expanded native-publication explanation in EN | 6 |
+
+Both phones retain 844 px viewport shells. The primary action is distinct, the explanatory limits stay adjacent to the availability state, and the mechanism remains a collapsed disclosure in the initial view. R03 provides the complete expanded text. All three specimens were visually checked.
+
+The source-receipt Build **7M9-0** has **16 modules / 51 div nodes**. New module 15 **90Y-0** explains exact return retirement, fallback/redirect ordering, valid anchor identity, focus-time versus layout scroll, contextual company navigation, no-JavaScript behavior and publication limits. Proof is module 16. All 48 prior node IDs, parents and styles remain exact; only **7MV,7MZ,7NE,7NF** intentionally update source/proof text. The source company views **88M/8GG** remain exact. New specimen and module/proof captures were inspected; the exact four edited roots were finished.
+
+After page creation, one exact-file read returned UPSTREAM_UNAVAILABLE. Read-only inspection found Paper connected with another active design. An exact-file reconciliation found the already-created **p-A-0**, and normal guarded work continued. No page creation was repeated, no generic desktop/file-transition workaround was used, and no mutation had an uncertain outcome.
+
+`PAPER_RETURN_RECOVERY_20261109.json` binds editable JSX, observed operations, preservation checks, connection recovery and source readback. The PR description points to **ed2a0d178b459a8bdb1cc233f257ee82d946f71a**, current 28-case proof and sixteen-module Build, while keeping the original release/model hold section verbatim and earlier results tied to dated heads. Exact readback confirms Draft/unmerged status and the intended body.
+
+The phase is saved and the parent mission continues. The next bounded review examines the existing coverage/methodology page for source-grounded denominator, date, navigation or clarity defects. Original model01, release, capture, protected-style and active-writer fences remain; this phase neither consumes a new relationship model nor settles an independent blocked lane.

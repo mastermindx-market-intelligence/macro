@@ -1,0 +1,667 @@
+{
+  "schema": "paper-return-relationship-readback-v1",
+  "date": "2026-11-09",
+  "source": {
+    "pr": 10676,
+    "head": "ed2a0d178b459a8bdb1cc233f257ee82d946f71a",
+    "tree": "86c28762f7e951eb3a80626a2ae8f2aba918efd9",
+    "parent": "49d47033f4d758af2ec7212fccee04d762fec956",
+    "files": [
+      {
+        "path": "templates/_gmi_product_header.html.j2",
+        "sha": "945b464b1a0380e4b1b86c873866f273fe0c9574",
+        "exact": true,
+        "length": 2068
+      },
+      {
+        "path": "templates/gmi_relationships.html.j2",
+        "sha": "e30d0df9e359e529c707468cf952e0aa84a36987",
+        "exact": true,
+        "length": 2271
+      },
+      {
+        "path": "templates/gmi.js",
+        "sha": "ef00b9aca6d4e343a8dea7bbd8010020fec671f1",
+        "exact": true,
+        "length": 52414
+      },
+      {
+        "path": "site/gmi.js",
+        "sha": "ef00b9aca6d4e343a8dea7bbd8010020fec671f1",
+        "exact": true,
+        "length": 52414
+      },
+      {
+        "path": "site/gmi-relationships.html",
+        "sha": "8a693c57b649b300a5c3e53e9d24cfa9c92987c7",
+        "exact": true,
+        "length": 58337
+      },
+      {
+        "path": "research/theme_graph/gmi_design_20261021/verify_product_browser.py",
+        "sha": "77944d4bb9e863d97635dbeda007eba1c30424d3",
+        "exact": true,
+        "length": 193404
+      },
+      {
+        "path": "research/theme_graph/gmi_design_20261021/verify_return_recovery_component.py",
+        "sha": "20c26d3a87906a884f81bf25ba4a739d25533bb7",
+        "exact": true,
+        "length": 9571
+      },
+      {
+        "path": "research/theme_graph/gmi_design_20261021/DESIGN_RECORD.md",
+        "sha": "3c4306712f1df8d40e080f477bdd7bcbffeb926a",
+        "exact": true,
+        "length": 175916
+      },
+      {
+        "path": "research/theme_graph/gmi_design_20261021/RETURN_RECOVERY_VALIDATION_20261109.json",
+        "sha": "0293ed5269cf6a8975ebeab54e4f107a8ba3059c",
+        "exact": true,
+        "length": 355003
+      }
+    ],
+    "draft": true,
+    "merged": false
+  },
+  "prior_paper_record": {
+    "audit_head": "70a94178bcdd6ad920dd09ff31a4ab857f398814",
+    "receipt": "PAPER_COMPANY_ENTRY_20261109.json"
+  },
+  "file_id": "01M5H6EARN9YHQV17JC6ZG9BRY",
+  "page": {
+    "id": "p-A-0",
+    "name": "Relationships · Availability",
+    "url": "https://app.paper.design/file/01M5H6EARN9YHQV17JC6ZG9BRY/p-A-0",
+    "order": [
+      "p-1-0",
+      "p-8-0",
+      "p-9-0",
+      "p-A-0",
+      "p-7-0",
+      "p-6-0",
+      "p-4-0",
+      "p-2-0",
+      "p-3-0",
+      "p-5-0"
+    ],
+    "creation": [
+      {
+        "file": {
+          "id": "01M5H6EARN9YHQV17JC6ZG9BRY",
+          "name": "GMI Explorer · Product system"
+        },
+        "contentHash": {
+          "tokens": "ac191fd9"
+        }
+      },
+      {
+        "pageId": "p-A-0",
+        "name": "Relationships · Availability",
+        "icon": "design"
+      }
+    ],
+    "duplicate_results": [
+      {
+        "file": {
+          "id": "01M5H6EARN9YHQV17JC6ZG9BRY",
+          "name": "GMI Explorer · Product system"
+        },
+        "contentHash": {
+          "tokens": "ac191fd9"
+        }
+      },
+      {
+        "duplicatedNodes": [
+          {
+            "sourceId": "88M-0",
+            "newId": "8T0-0",
+            "name": "C01 · Company match · EN390 Day",
+            "component": "Frame",
+            "worldX": 940,
+            "worldY": 0,
+            "x": 940,
+            "y": 0,
+            "descendantIdMap": {
+              "8IU-0": "8T1-0",
+              "8IV-0": "8V4-0",
+              "8J0-0": "8UN-0",
+              "8J1-0": "8T2-0",
+              "8LW-0": "8UG-0",
+              "8MS-0": "8TK-0",
+              "8P4-0": "8T3-0",
+              "8P5-0": "8TJ-0",
+              "8P6-0": "8TG-0",
+              "8P9-0": "8TD-0",
+              "8PC-0": "8T4-0",
+              "8PD-0": "8T9-0",
+              "8PH-0": "8T5-0",
+              "8PI-0": "8T8-0",
+              "8PJ-0": "8T6-0",
+              "8PK-0": "8T7-0",
+              "8PE-0": "8TC-0",
+              "8PF-0": "8TA-0",
+              "8PG-0": "8TB-0",
+              "8PA-0": "8TF-0",
+              "8PB-0": "8TE-0",
+              "8P7-0": "8TI-0",
+              "8P8-0": "8TH-0",
+              "8MT-0": "8U8-0",
+              "8N1-0": "8TR-0",
+              "8N2-0": "8TL-0",
+              "8NX-0": "8TQ-0",
+              "8NY-0": "8TM-0",
+              "8NZ-0": "8TP-0",
+              "8O0-0": "8TN-0",
+              "8O1-0": "8TO-0",
+              "8NG-0": "8TS-0",
+              "8NH-0": "8U2-0",
+              "8NN-0": "8TZ-0",
+              "8NQ-0": "8TT-0",
+              "8NR-0": "8TY-0",
+              "8NS-0": "8TU-0",
+              "8NT-0": "8TX-0",
+              "8NU-0": "8TV-0",
+              "8NV-0": "8TW-0",
+              "8NO-0": "8U1-0",
+              "8NP-0": "8U0-0",
+              "8NI-0": "8U7-0",
+              "8NJ-0": "8U3-0",
+              "8NK-0": "8U6-0",
+              "8NL-0": "8U4-0",
+              "8NM-0": "8U5-0",
+              "8MU-0": "8UA-0",
+              "8N0-0": "8U9-0",
+              "8MV-0": "8UE-0",
+              "8MX-0": "8UB-0",
+              "8MY-0": "8UD-0",
+              "8MZ-0": "8UC-0",
+              "8MW-0": "8UF-0",
+              "8LX-0": "8UI-0",
+              "8M2-0": "8UH-0",
+              "8LY-0": "8UK-0",
+              "8M1-0": "8UJ-0",
+              "8LZ-0": "8UM-0",
+              "8M0-0": "8UL-0",
+              "8S0-0": "8UX-0",
+              "8K1-0": "8UO-0",
+              "8K2-0": "8UT-0",
+              "8K6-0": "8UP-0",
+              "8K7-0": "8US-0",
+              "8K8-0": "8UQ-0",
+              "8K9-0": "8UR-0",
+              "8K3-0": "8UV-0",
+              "8K5-0": "8UU-0",
+              "8K4-0": "8UW-0",
+              "8S1-0": "8V2-0",
+              "8S3-0": "8V0-0",
+              "8S5-0": "8UY-0",
+              "8S6-0": "8UZ-0",
+              "8S4-0": "8V1-0",
+              "8S2-0": "8V3-0",
+              "8IW-0": "8V8-0",
+              "8IX-0": "8V7-0",
+              "8IY-0": "8V5-0",
+              "8IZ-0": "8V6-0"
+            }
+          },
+          {
+            "sourceId": "8GG-0",
+            "newId": "8V9-0",
+            "name": "C02 · Company catalogue · ZH320 Noir",
+            "component": "Frame",
+            "worldX": 940,
+            "worldY": 980,
+            "x": 940,
+            "y": 980,
+            "descendantIdMap": {
+              "8J3-0": "8VA-0",
+              "8J4-0": "8XD-0",
+              "8J9-0": "8WW-0",
+              "8JA-0": "8VB-0",
+              "8M4-0": "8WP-0",
+              "8N4-0": "8VT-0",
+              "8PM-0": "8VC-0",
+              "8PN-0": "8VS-0",
+              "8PO-0": "8VP-0",
+              "8PR-0": "8VM-0",
+              "8PU-0": "8VD-0",
+              "8PV-0": "8VI-0",
+              "8PZ-0": "8VE-0",
+              "8Q0-0": "8VH-0",
+              "8Q1-0": "8VF-0",
+              "8Q2-0": "8VG-0",
+              "8PW-0": "8VL-0",
+              "8PX-0": "8VJ-0",
+              "8PY-0": "8VK-0",
+              "8PS-0": "8VO-0",
+              "8PT-0": "8VN-0",
+              "8PP-0": "8VR-0",
+              "8PQ-0": "8VQ-0",
+              "8N5-0": "8WH-0",
+              "8ND-0": "8W0-0",
+              "8NE-0": "8VU-0",
+              "8OK-0": "8VZ-0",
+              "8OL-0": "8VV-0",
+              "8OM-0": "8VY-0",
+              "8ON-0": "8VW-0",
+              "8OO-0": "8VX-0",
+              "8O3-0": "8W1-0",
+              "8O4-0": "8WB-0",
+              "8OA-0": "8W8-0",
+              "8OD-0": "8W2-0",
+              "8OE-0": "8W7-0",
+              "8OF-0": "8W3-0",
+              "8OG-0": "8W6-0",
+              "8OH-0": "8W4-0",
+              "8OI-0": "8W5-0",
+              "8OB-0": "8WA-0",
+              "8OC-0": "8W9-0",
+              "8O5-0": "8WG-0",
+              "8O6-0": "8WC-0",
+              "8O7-0": "8WF-0",
+              "8O8-0": "8WD-0",
+              "8O9-0": "8WE-0",
+              "8N6-0": "8WJ-0",
+              "8NC-0": "8WI-0",
+              "8N7-0": "8WN-0",
+              "8N9-0": "8WK-0",
+              "8NA-0": "8WM-0",
+              "8NB-0": "8WL-0",
+              "8N8-0": "8WO-0",
+              "8M5-0": "8WR-0",
+              "8MA-0": "8WQ-0",
+              "8M6-0": "8WT-0",
+              "8M9-0": "8WS-0",
+              "8M7-0": "8WV-0",
+              "8M8-0": "8WU-0",
+              "8S8-0": "8X6-0",
+              "8KI-0": "8WX-0",
+              "8KJ-0": "8X2-0",
+              "8KN-0": "8WY-0",
+              "8KO-0": "8X1-0",
+              "8KP-0": "8WZ-0",
+              "8KQ-0": "8X0-0",
+              "8KK-0": "8X4-0",
+              "8KM-0": "8X3-0",
+              "8KL-0": "8X5-0",
+              "8S9-0": "8XB-0",
+              "8SB-0": "8X9-0",
+              "8SD-0": "8X7-0",
+              "8SE-0": "8X8-0",
+              "8SC-0": "8XA-0",
+              "8SA-0": "8XC-0",
+              "8J5-0": "8XH-0",
+              "8J6-0": "8XG-0",
+              "8J7-0": "8XE-0",
+              "8J8-0": "8XF-0"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "views": [
+    {
+      "key": "R01",
+      "root": "8T0-0",
+      "shell": "8T1-0",
+      "w": 390,
+      "lang": "en",
+      "theme": "day",
+      "name": "R01 · Public view unavailable · EN390 Day",
+      "viewport_height": 844,
+      "jsx": "(\n    <div id=\"8T0-0\" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', fontSize: '12px', fontSynthesis: 'none', lineHeight: '16px', MozOsxFontSmoothing: 'grayscale', overflow: 'visible', overflowWrap: 'anywhere', WebkitFontSmoothing: 'antialiased' }}>\n      <div id=\"8XI-0\" style={{ backgroundColor: 'var(--color-gmi-day-canvas)', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', height: '844px', overflow: 'clip', width: '390px' }}>\n        <div id=\"8XJ-0\" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', paddingBottom: '12px', paddingLeft: '16px', paddingRight: '88px', paddingTop: '16px' }}>\n          <div id=\"8XK-0\" style={{ alignContent: 'center', boxSizing: 'border-box', color: 'var(--color-gmi-day-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', fontWeight: 600, lineHeight: '20px', minHeight: '44px' }}>\n            GMI Explorer\n          </div>\n          <div id=\"8XL-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-day-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '24px', fontWeight: 700, lineHeight: '29px' }}>\n            Company relationships\n          </div>\n          <div id=\"8XM-0\" style={{ boxSizing: 'border-box', display: 'flex', paddingTop: '8px' }}>\n            <div id=\"8XN-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-day-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '12px', lineHeight: '18px' }}>\n              Snapshot · 3 Nov 2026\n            </div>\n          </div>\n        </div>\n        <div id=\"8XO-0\" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', paddingInline: '16px' }}>\n          <div id=\"8Y0-0\" style={{ boxSizing: 'border-box', display: 'flex', gap: '4px' }}>\n            <div id=\"8Y1-0\" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexGrow: '1', justifyContent: 'center', minHeight: '44px', minWidth: '0px', paddingBlock: '8px', paddingInline: '4px' }}>\n              <div id=\"8Y2-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-day-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '13px', fontWeight: 600, lineHeight: '20px', textAlign: 'center' }}>\n                Theme research\n              </div>\n            </div>\n            <div id=\"8Y3-0\" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexGrow: '1', justifyContent: 'center', minHeight: '44px', minWidth: '0px', paddingBlock: '8px', paddingInline: '4px' }}>\n              <div id=\"8Y4-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-day-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '13px', fontWeight: 600, lineHeight: '20px', textAlign: 'center' }}>\n                Company evidence\n              </div>\n            </div>\n            <div id=\"8Y5-0\" style={{ alignItems: 'center', backgroundColor: 'var(--color-gmi-day-surface)', borderColor: 'var(--color-gmi-day-line)', borderRadius: '8px', borderStyle: 'solid', borderWidth: '1px', boxShadow: '#1822300D 0px 1px 2px', boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexGrow: '1', justifyContent: 'center', minHeight: '44px', minWidth: '0px', paddingBlock: '8px', paddingInline: '4px' }}>\n              <div id=\"8Y6-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-day-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '13px', fontWeight: 600, lineHeight: '20px', textAlign: 'center' }}>\n                Relationships\n              </div>\n            </div>\n          </div>\n          <div id=\"8Y7-0\" style={{ alignItems: 'center', borderBottomColor: 'var(--color-gmi-day-line)', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '4px', justifyContent: 'space-between', paddingBottom: '16px', paddingTop: '8px' }}>\n            <div id=\"8Y8-0\" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '8px', minHeight: '44px', paddingBlock: '8px', paddingInline: '4px' }}>\n              <svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\" id=\"8Y9-0\" style={{ flexShrink: '0', display: 'inline-block' }}>\n                <path d=\"M9 6.5h11M9 12h11M9 17.5h11M4.5 6.5h.01M4.5 12h.01M4.5 17.5h.01\" fill=\"none\" stroke=\"#5D6B7E\" strokeWidth=\"1.8\" strokeLinecap=\"round\" />\n              </svg>\n              <div id=\"8YB-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-day-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '12px', lineHeight: '18px' }}>\n                Full index\n              </div>\n            </div>\n            <div id=\"8YC-0\" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '8px', minHeight: '44px', paddingBlock: '8px', paddingInline: '4px' }}>\n              <div id=\"8YD-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-day-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '12px', lineHeight: '18px' }}>\n                Coverage &amp; methodology\n              </div>\n              <svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\" id=\"8YE-0\" style={{ flexShrink: '0', display: 'inline-block' }}>\n                <path d=\"M4.5 12h15M13.5 6l6 6-6 6\" fill=\"none\" stroke=\"#5D6B7E\" strokeWidth=\"1.8\" strokeLinecap=\"round\" strokeLinejoin=\"round\" />\n              </svg>\n            </div>\n          </div>\n        </div>\n        <div id=\"8XP-0\" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '20px', padding: '16px' }}>\n          <div id=\"8Z4-0\" style={{ backgroundColor: 'var(--color-gmi-day-surface)', borderColor: 'var(--color-gmi-day-line)', borderRadius: '14px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', padding: '20px' }}>\n            <div id=\"8Z5-0\" style={{ alignItems: 'center', borderColor: 'var(--color-gmi-day-line)', borderRadius: '12px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexShrink: 0, height: '48px', justifyContent: 'center', width: '48px' }}>\n              <svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" id=\"8Z6-0\" style={{ display: 'inline-block', flexShrink: 0 }}>\n                <path d=\"M3.5 3.5l17 17\" fill=\"none\" stroke=\"#5D6B7E\" strokeWidth=\"1.8\" strokeLinecap=\"round\" strokeLinejoin=\"round\" />\n                <path d=\"M10.6 6.1c.5-.1.9-.1 1.4-.1 5 0 8.4 4.4 9.4 6-.5.8-1.5 2.2-3 3.5M6.5 7.5C4.7 8.8 3.4 10.6 2.6 12c1 1.6 4.4 6 9.4 6 1.6 0 3-.4 4.2-1\" fill=\"none\" stroke=\"#5D6B7E\" strokeWidth=\"1.8\" strokeLinecap=\"round\" strokeLinejoin=\"round\" />\n                <path d=\"M9.9 9.9a3 3 0 0 0 4.2 4.2\" fill=\"none\" stroke=\"#5D6B7E\" strokeWidth=\"1.8\" strokeLinecap=\"round\" strokeLinejoin=\"round\" />\n              </svg>\n            </div>\n            <div id=\"8ZA-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-day-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '11px', fontWeight: 600, letterSpacing: '0.08em', lineHeight: '16px' }}>\n              PUBLICATION STATUS\n            </div>\n            <div id=\"8ZB-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-day-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '24px', fontWeight: 700, letterSpacing: '-0.025em', lineHeight: '30px' }}>\n              Public relationship view unavailable\n            </div>\n            <div id=\"8ZC-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-day-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', lineHeight: '24px' }}>\n              This snapshot does not include a verified public relationship view. Company names, relationship details and financial figures are withheld here.\n            </div>\n            <div id=\"8ZD-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-day-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', lineHeight: '24px' }}>\n              This is a publication restriction, not a statement that no relationships exist.\n            </div>\n            <div id=\"8ZE-0\" style={{ boxSizing: 'border-box', display: 'flex', flexWrap: 'wrap', gap: '12px', paddingTop: '4px' }}>\n              <div id=\"8ZS-0\" style={{ alignItems: 'center', backgroundColor: 'var(--color-gmi-day-accent)', borderColor: 'var(--color-gmi-day-accent)', borderRadius: '8px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '8px', justifyContent: 'center', minHeight: '44px', paddingBlock: '10px', paddingInline: '16px' }}>\n                <div id=\"8ZT-0\" style={{ boxSizing: 'border-box', color: '#FFFFFF', fontFamily: 'var(--font-gmi-ui)', fontSize: '13px', fontWeight: 600, lineHeight: '20px' }}>\n                  Browse company evidence\n                </div>\n                <svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\" id=\"8ZU-0\" style={{ flexShrink: '0', display: 'inline-block' }}>\n                  <path d=\"M4.5 12h15M13.5 6l6 6-6 6\" fill=\"none\" stroke=\"#FFFFFF\" strokeWidth=\"1.8\" strokeLinecap=\"round\" strokeLinejoin=\"round\" />\n                </svg>\n              </div>\n              <div id=\"8ZW-0\" style={{ alignItems: 'center', borderColor: 'var(--color-gmi-day-line)', borderRadius: '8px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '8px', justifyContent: 'center', minHeight: '44px', paddingBlock: '10px', paddingInline: '16px' }}>\n                <div id=\"8ZX-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-day-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '13px', fontWeight: 600, lineHeight: '20px' }}>\n                  Explore themes\n                </div>\n              </div>\n              <div id=\"8ZY-0\" style={{ alignItems: 'center', borderColor: 'var(--color-gmi-day-line)', borderRadius: '8px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '8px', justifyContent: 'center', minHeight: '44px', paddingBlock: '10px', paddingInline: '16px' }}>\n                <div id=\"8ZZ-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-day-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '13px', fontWeight: 600, lineHeight: '20px' }}>\n                  Coverage &amp; methodology\n                </div>\n              </div>\n            </div>\n          </div>\n          <div id=\"901-0\" style={{ backgroundColor: 'var(--color-gmi-day-canvas)', borderBottomColor: 'var(--color-gmi-day-line)', borderBottomStyle: 'solid', borderBottomWidth: '1px', borderTopColor: 'var(--color-gmi-day-line)', borderTopStyle: 'solid', borderTopWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', paddingBlock: '8px', width: '358px' }}>\n            <div id=\"902-0\" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '8px', minHeight: '44px' }}>\n              <svg width=\"10\" height=\"10\" viewBox=\"0 0 12 12\" xmlns=\"http://www.w3.org/2000/svg\" id=\"903-0\" style={{ flexShrink: '0', display: 'inline-block' }}>\n                <path d=\"M3.5 2l5 4-5 4Z\" fill=\"#1C2430\" />\n              </svg>\n              <div id=\"905-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-day-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '13px', fontWeight: 600, lineHeight: '20px' }}>\n                How publication works\n              </div>\n            </div>\n          </div>\n        </div>\n      </div>\n    </div>\n  )"
+    },
+    {
+      "key": "R02",
+      "root": "8V9-0",
+      "shell": "8VA-0",
+      "w": 320,
+      "lang": "zh",
+      "theme": "night",
+      "name": "R02 · Return to company results · ZH320 Noir",
+      "viewport_height": 844,
+      "jsx": "(\n    <div id=\"8V9-0\" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', fontSize: '12px', fontSynthesis: 'none', lineHeight: '16px', MozOsxFontSmoothing: 'grayscale', overflow: 'visible', overflowWrap: 'anywhere', WebkitFontSmoothing: 'antialiased' }}>\n      <div id=\"8XR-0\" style={{ backgroundColor: 'var(--color-gmi-night-canvas)', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', height: '844px', overflow: 'clip', width: '320px' }}>\n        <div id=\"8XS-0\" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', paddingBottom: '12px', paddingLeft: '16px', paddingRight: '88px', paddingTop: '16px' }}>\n          <div id=\"8XT-0\" style={{ alignContent: 'center', boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', fontWeight: 600, lineHeight: '20px', minHeight: '44px' }}>\n            GMI Explorer\n          </div>\n          <div id=\"8XU-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-zh)', fontSize: '24px', fontWeight: 600, lineHeight: '29px' }}>\n            公司关系\n          </div>\n          <div id=\"8XV-0\" style={{ boxSizing: 'border-box', display: 'flex', paddingTop: '8px' }}>\n            <div id=\"8XW-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-zh)', fontSize: '12px', lineHeight: '18px' }}>\n              快照日期 · 2026年11月3日\n            </div>\n          </div>\n        </div>\n        <div id=\"8XX-0\" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', paddingInline: '16px' }}>\n          <div id=\"8YH-0\" style={{ boxSizing: 'border-box', display: 'flex', gap: '4px' }}>\n            <div id=\"8YI-0\" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexGrow: '1', justifyContent: 'center', minHeight: '44px', minWidth: '0px', paddingBlock: '8px', paddingInline: '4px' }}>\n              <div id=\"8YJ-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-zh)', fontSize: '13px', fontWeight: 600, lineHeight: '20px', textAlign: 'center' }}>\n                主题研究\n              </div>\n            </div>\n            <div id=\"8YK-0\" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexGrow: '1', justifyContent: 'center', minHeight: '44px', minWidth: '0px', paddingBlock: '8px', paddingInline: '4px' }}>\n              <div id=\"8YL-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-zh)', fontSize: '13px', fontWeight: 600, lineHeight: '20px', textAlign: 'center' }}>\n                公司证据\n              </div>\n            </div>\n            <div id=\"8YM-0\" style={{ alignItems: 'center', backgroundColor: 'var(--color-gmi-night-raised)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '8px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexGrow: '1', justifyContent: 'center', minHeight: '44px', minWidth: '0px', paddingBlock: '8px', paddingInline: '4px' }}>\n              <div id=\"8YN-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-zh)', fontSize: '13px', fontWeight: 600, lineHeight: '20px', textAlign: 'center' }}>\n                公司关系\n              </div>\n            </div>\n          </div>\n          <div id=\"8YO-0\" style={{ alignItems: 'center', borderBottomColor: 'var(--color-gmi-night-line)', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '4px', justifyContent: 'space-between', paddingBottom: '16px', paddingTop: '8px' }}>\n            <div id=\"8YP-0\" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '8px', minHeight: '44px', paddingBlock: '8px', paddingInline: '4px' }}>\n              <svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\" id=\"8YQ-0\" style={{ flexShrink: '0', display: 'inline-block' }}>\n                <path d=\"M9 6.5h11M9 12h11M9 17.5h11M4.5 6.5h.01M4.5 12h.01M4.5 17.5h.01\" fill=\"none\" stroke=\"#929BAA\" strokeWidth=\"1.8\" strokeLinecap=\"round\" />\n              </svg>\n              <div id=\"8YS-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-zh)', fontSize: '12px', lineHeight: '18px' }}>\n                完整索引\n              </div>\n            </div>\n            <div id=\"8YT-0\" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '8px', minHeight: '44px', paddingBlock: '8px', paddingInline: '4px' }}>\n              <div id=\"8YU-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-zh)', fontSize: '12px', lineHeight: '18px' }}>\n                覆盖与方法\n              </div>\n              <svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\" id=\"8YV-0\" style={{ flexShrink: '0', display: 'inline-block' }}>\n                <path d=\"M4.5 12h15M13.5 6l6 6-6 6\" fill=\"none\" stroke=\"#929BAA\" strokeWidth=\"1.8\" strokeLinecap=\"round\" strokeLinejoin=\"round\" />\n              </svg>\n            </div>\n          </div>\n        </div>\n        <div id=\"8XY-0\" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '20px', padding: '16px' }}>\n          <div id=\"8YY-0\" style={{ boxSizing: 'border-box', display: 'flex' }}>\n            <div id=\"8YZ-0\" style={{ alignItems: 'center', backgroundColor: 'var(--color-gmi-night-surface)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '8px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '8px', minHeight: '44px', paddingBlock: '10px', paddingInline: '16px' }}>\n              <svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\" id=\"8Z0-0\" style={{ display: 'inline-block', flexShrink: 0 }}>\n                <path d=\"M19.5 12h-15M10.5 6l-6 6 6 6\" fill=\"none\" stroke=\"#F2F4F7\" strokeWidth=\"1.8\" strokeLinecap=\"round\" strokeLinejoin=\"round\" />\n              </svg>\n              <div id=\"8Z2-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-zh)', fontSize: '13px', lineHeight: '20px' }}>\n                返回公司结果\n              </div>\n            </div>\n          </div>\n          <div id=\"8ZG-0\" style={{ backgroundColor: 'var(--color-gmi-night-surface)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '14px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', padding: '20px' }}>\n            <div id=\"8ZH-0\" style={{ alignItems: 'center', borderColor: 'var(--color-gmi-night-line)', borderRadius: '12px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexShrink: 0, height: '48px', justifyContent: 'center', width: '48px' }}>\n              <svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" id=\"8ZI-0\" style={{ display: 'inline-block', flexShrink: 0 }}>\n                <path d=\"M3.5 3.5l17 17\" fill=\"none\" stroke=\"#A5ACB8\" strokeWidth=\"1.8\" strokeLinecap=\"round\" strokeLinejoin=\"round\" />\n                <path d=\"M10.6 6.1c.5-.1.9-.1 1.4-.1 5 0 8.4 4.4 9.4 6-.5.8-1.5 2.2-3 3.5M6.5 7.5C4.7 8.8 3.4 10.6 2.6 12c1 1.6 4.4 6 9.4 6 1.6 0 3-.4 4.2-1\" fill=\"none\" stroke=\"#A5ACB8\" strokeWidth=\"1.8\" strokeLinecap=\"round\" strokeLinejoin=\"round\" />\n                <path d=\"M9.9 9.9a3 3 0 0 0 4.2 4.2\" fill=\"none\" stroke=\"#A5ACB8\" strokeWidth=\"1.8\" strokeLinecap=\"round\" strokeLinejoin=\"round\" />\n              </svg>\n            </div>\n            <div id=\"8ZM-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-zh)', fontSize: '11px', fontWeight: 600, lineHeight: '16px' }}>\n              发布状态\n            </div>\n            <div id=\"8ZN-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-zh)', fontSize: '24px', fontWeight: 600, lineHeight: '30px' }}>\n              暂无公开关系视图\n            </div>\n            <div id=\"8ZO-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-zh)', fontSize: '14px', lineHeight: '24px' }}>\n              此快照尚不包含经核实的公开关系视图。相关公司名称、关系详情及财务数值暂不在此展示。\n            </div>\n            <div id=\"8ZP-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-zh)', fontSize: '14px', lineHeight: '24px' }}>\n              这是发布限制，并不表示这些关系不存在。\n            </div>\n            <div id=\"8ZQ-0\" style={{ boxSizing: 'border-box', display: 'flex', flexWrap: 'wrap', gap: '12px', paddingTop: '4px' }}>\n              <div id=\"907-0\" style={{ alignItems: 'center', backgroundColor: 'var(--color-gmi-night-text)', borderColor: 'var(--color-gmi-night-text)', borderRadius: '8px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '8px', justifyContent: 'center', minHeight: '44px', paddingBlock: '10px', paddingInline: '16px' }}>\n                <div id=\"908-0\" style={{ boxSizing: 'border-box', color: '#0F1115', fontFamily: 'var(--font-gmi-zh)', fontSize: '13px', fontWeight: 600, lineHeight: '20px' }}>\n                  浏览公司证据\n                </div>\n                <svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\" id=\"909-0\" style={{ flexShrink: '0', display: 'inline-block' }}>\n                  <path d=\"M4.5 12h15M13.5 6l6 6-6 6\" fill=\"none\" stroke=\"#0F1115\" strokeWidth=\"1.8\" strokeLinecap=\"round\" strokeLinejoin=\"round\" />\n                </svg>\n              </div>\n              <div id=\"90B-0\" style={{ alignItems: 'center', borderColor: 'var(--color-gmi-night-line)', borderRadius: '8px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '8px', justifyContent: 'center', minHeight: '44px', paddingBlock: '10px', paddingInline: '16px' }}>\n                <div id=\"90C-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-zh)', fontSize: '13px', fontWeight: 600, lineHeight: '20px' }}>\n                  探索主题\n                </div>\n              </div>\n              <div id=\"90D-0\" style={{ alignItems: 'center', borderColor: 'var(--color-gmi-night-line)', borderRadius: '8px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '8px', justifyContent: 'center', minHeight: '44px', paddingBlock: '10px', paddingInline: '16px' }}>\n                <div id=\"90E-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-zh)', fontSize: '13px', fontWeight: 600, lineHeight: '20px' }}>\n                  覆盖与方法\n                </div>\n              </div>\n            </div>\n          </div>\n          <div id=\"90G-0\" style={{ backgroundColor: 'var(--color-gmi-night-canvas)', borderBottomColor: 'var(--color-gmi-night-line)', borderBottomStyle: 'solid', borderBottomWidth: '1px', borderTopColor: 'var(--color-gmi-night-line)', borderTopStyle: 'solid', borderTopWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', paddingBlock: '8px', width: '288px' }}>\n            <div id=\"90H-0\" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '8px', minHeight: '44px' }}>\n              <svg width=\"10\" height=\"10\" viewBox=\"0 0 12 12\" xmlns=\"http://www.w3.org/2000/svg\" id=\"90I-0\" style={{ flexShrink: '0', display: 'inline-block' }}>\n                <path d=\"M3.5 2l5 4-5 4Z\" fill=\"#F2F4F7\" />\n              </svg>\n              <div id=\"90K-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-zh)', fontSize: '13px', fontWeight: 600, lineHeight: '20px' }}>\n                发布机制\n              </div>\n            </div>\n          </div>\n        </div>\n      </div>\n    </div>\n  )"
+    },
+    {
+      "key": "R03",
+      "root": "90M-0",
+      "name": "R03 · Publication mechanism · Expanded EN",
+      "jsx": "(\n    <div id=\"90M-0\" style={{ backgroundColor: 'var(--color-gmi-day-canvas)', borderBottomColor: 'var(--color-gmi-day-line)', borderBottomStyle: 'solid', borderBottomWidth: '1px', borderTopColor: 'var(--color-gmi-day-line)', borderTopStyle: 'solid', borderTopWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', fontSize: '12px', fontSynthesis: 'none', lineHeight: '16px', MozOsxFontSmoothing: 'grayscale', overflowWrap: 'anywhere', paddingBlock: '8px', WebkitFontSmoothing: 'antialiased', width: '358px' }}>\n      <div id=\"90N-0\" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '8px', minHeight: '44px' }}>\n        <svg width=\"10\" height=\"10\" viewBox=\"0 0 12 12\" xmlns=\"http://www.w3.org/2000/svg\" id=\"90V-0\" style={{ flexShrink: '0', display: 'inline-block' }}>\n          <path d=\"M2 3.5l4 5 4-5Z\" fill=\"#1C2430\" />\n        </svg>\n        <div id=\"90O-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-day-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '13px', fontWeight: 600, lineHeight: '20px' }}>\n          How publication works\n        </div>\n      </div>\n      <div id=\"90R-0\" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '8px', paddingBottom: '12px', paddingTop: '8px' }}>\n        <div id=\"90S-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-day-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '13px', lineHeight: '22px' }}>\n          Relationship facts, magnitudes and excerpts each require the appropriate recorded permission. Public access to a source document does not grant those permissions.\n        </div>\n        <div id=\"90T-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-day-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '13px', lineHeight: '22px' }}>\n          Theme research and separately cleared company evidence remain available.\n        </div>\n      </div>\n    </div>\n  )"
+    }
+  ],
+  "build": {
+    "root": "7M9-0",
+    "page": "p-7-0",
+    "module": "90Y-0",
+    "modules": 16,
+    "div_nodes": 51,
+    "intentional_text_updates": [
+      {
+        "nodeId": "7MV-0",
+        "html": "Candidate #10676 @ed2a0d17 preserves the existing scripts/build_gmi_explorer.py admission of one exact Micron product observation. The card contains published_date, public URL, bilingual source label, receipt, source key/hash, planned lifecycle, product and platform. 26 Feb 2024 is a date-only publication. First recorded remains a separate theme_links.first_seen value; retrieval and review timestamps are not card fields. Do not infer current delivery, amount or revenue exposure."
+      },
+      {
+        "nodeId": "7MZ-0",
+        "html": "Implemented in templates/gmi.js and identical site/gmi.js · current blob ef00b9aca6d4e343a8dea7bbd8010020fec671f1 · PR10676 @ed2a0d178b459a8bdb1cc233f257ee82d946f71a. Only the locale observer passes sync(true). A one-render capture matches exact theme + receipt + source key + source text hash; every member of a duplicate receipt-ID group is ineligible. Native details restore only exact current matches, regardless of order, then discard the capture. No storage, request, URL field or research-state owner was added; evidence=1 remains the existing filter."
+      },
+      {
+        "nodeId": "7NE-0",
+        "html": "16 · Proof and release boundary"
+      },
+      {
+        "nodeId": "7NF-0",
+        "html": "Return/relationship recovery passes 28 named cases in 28 fresh anonymous contexts: eight relationship header scenarios, twelve return-focus paths across six routes in EN/ZH, two actual company/research recovery journeys, four with JavaScript actually disabled, and two existing company focus/count regressions. Real back/forward, retained valid-anchor identity, locale, rejected returns, unrelated focus, hidden/missing brand fallback and a focus-handler redirect pass. A malformed no-target fixture still removes invalid context; it is not reported as focus success.<br /><br />Across 24 matched relationship layouts, the publication panel starts 145.98–196.39 px sooner. Six final captures were inspected. Baseline has eight original-layout observations and two expected focus-removal failures. Test-only corrections align nested fixture serialization and distinguish native focus-time scrolling from later layout anchoring; original reports and the 300→300→240 diagnostic remain recorded.<br /><br />Earlier company proof at 49d47033 remains 29 cases/44 matched layouts, category proof at 9bdc486c remains 24 cases and index-header proof at 20179e31 remains 23 cases/66 layouts. These are dated receipts. Current rendering changes only relationships HTML and paired JS; six other HTML pages and CSS remain byte-identical. The existing publication paragraphs, disclosure, nav, snapshot and Brain slot are exact.<br /><br />PR10676 @ed2a0d17 stays Draft with original model/release holds. All nine files read back exactly; DESIGN_RECORD §§11.19–11.31 separates source-bound proof. Paper has three new relationship specimens and sixteen Build modules. Local component checks do not establish full shared shell/fonts, spoken AT, shared Brain runtime, live account/admission, current hosted CI or deployment."
+      }
+    ],
+    "jsx": "(\n    <div id=\"7M9-0\" style={{ backgroundColor: 'var(--color-gmi-night-canvas)', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', fontSynthesis: 'none', gap: '20px', MozOsxFontSmoothing: 'grayscale', overflowWrap: 'anywhere', padding: '32px', WebkitFontSmoothing: 'antialiased', width: '1080px' }}>\n      <div id=\"7MA-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-accent)', fontFamily: 'var(--font-gmi-ui)', fontSize: '12px', fontWeight: 600, letterSpacing: '0.06em', lineHeight: '18px' }}>\n        S06 · BUILD · RECEIPTS, KEYBOARD &amp; SEARCH IMPLEMENTED · 09 NOV 2026\n      </div>\n      <div id=\"7MB-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '28px', fontWeight: 600, lineHeight: '36px' }}>\n        Research that keeps your place.\n      </div>\n      <div id=\"7MP-0\" style={{ backgroundColor: 'var(--color-gmi-night-surface)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '14px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', padding: '24px' }}>\n        <div id=\"7MQ-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '18px', fontWeight: 600, lineHeight: '26px' }}>\n          01 · Keep the two native disclosures distinct\n        </div>\n        <div id=\"7MR-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', lineHeight: '22px' }}>\n          Source receipt / 来源凭证 uses .gmi-evidence-receipt: the selected card’s Record, Source key and Source text hash. Theme details / 主题详情 uses .gmi-topic-receipt: taxonomy paths, Core/Extended scope and value-chain position. Keep the current publication date, planned lifecycle, source link, company action, related topics and coverage intact. No inspector, extra route or request is needed to open either disclosure.\n        </div>\n      </div>\n      <div id=\"7MT-0\" style={{ backgroundColor: 'var(--color-gmi-night-surface)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '14px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', padding: '24px' }}>\n        <div id=\"7MU-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '18px', fontWeight: 600, lineHeight: '26px' }}>\n          02 · Exact public fields; separate clocks\n        </div>\n        <div id=\"7MV-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', lineHeight: '22px' }}>\n          Candidate #10676 @ed2a0d17 preserves the existing scripts/build_gmi_explorer.py admission of one exact Micron product observation. The card contains published_date, public URL, bilingual source label, receipt, source key/hash, planned lifecycle, product and platform. 26 Feb 2024 is a date-only publication. First recorded remains a separate theme_links.first_seen value; retrieval and review timestamps are not card fields. Do not infer current delivery, amount or revenue exposure.\n        </div>\n      </div>\n      <div id=\"7MX-0\" style={{ backgroundColor: 'var(--color-gmi-night-surface)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '14px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', padding: '24px' }}>\n        <div id=\"7MY-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '18px', fontWeight: 600, lineHeight: '26px' }}>\n          03 · Preserve locale state inside the existing renderer\n        </div>\n        <div id=\"7MZ-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', lineHeight: '22px' }}>\n          Implemented in templates/gmi.js and identical site/gmi.js · current blob ef00b9aca6d4e343a8dea7bbd8010020fec671f1 · PR10676 @ed2a0d178b459a8bdb1cc233f257ee82d946f71a. Only the locale observer passes sync(true). A one-render capture matches exact theme + receipt + source key + source text hash; every member of a duplicate receipt-ID group is ineligible. Native details restore only exact current matches, regardless of order, then discard the capture. No storage, request, URL field or research-state owner was added; evidence=1 remains the existing filter.\n        </div>\n      </div>\n      <div id=\"7N1-0\" style={{ backgroundColor: 'var(--color-gmi-night-surface)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '14px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', padding: '24px' }}>\n        <div id=\"7N2-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '18px', fontWeight: 600, lineHeight: '26px' }}>\n          04 · Preserve receipt focus across languages\n        </div>\n        <div id=\"7N3-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', lineHeight: '22px' }}>\n          On a locale-only receipt redraw, keep focus on any surviving control. Restore only a previously focused node that was removed, and only while focus remains on the body. Source/company actions must match both role and the complete destination after the existing navigation rewrite. A changed or missing action falls back to that receipt’s summary; an absent, changed or ambiguous record uses the current focusable topic heading. Native summary keeps Enter/Space and ordinary Tab behavior; disclosure state grants no source, selection or navigation authority.\n        </div>\n      </div>\n      <div id=\"7N5-0\" style={{ backgroundColor: 'var(--color-gmi-night-surface)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '14px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', padding: '24px' }}>\n        <div id=\"7N6-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '18px', fontWeight: 600, lineHeight: '26px' }}>\n          05 · Keep recovery at the serving boundary\n        </div>\n        <div id=\"7N7-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', lineHeight: '22px', whiteSpace: 'pre-wrap' }}>\n          gmi_return carries only the qualified theme/company catalogue context, a bounded query and at most one upstream theme return; it does not capture an immutable source snapshot, exact opener or scroll. Keep stale-issuer deletion. Once the guarded publisher propagates that deletion, standalone HTML reaches the normal missing-file response after the existing access gate. Do not create a replacement issuer page.<br />At the inspected Terminal source, no GMI route is admitted; the existing route boundary uses notFound(). For a separately admitted route, a missing qualified bridge reaches the existing 15-second failure boundary with Retry / Open original; a registry mismatch uses refresh. Neither proves withdrawal. Access restrictions, missing files and routing eligibility need distinct evidence.<br />Future recovery belongs to the existing serving/shell owner, must retain only permitted return context and cannot depend on JavaScript in a deleted document. Qualified against Macro @071ed19f and Terminal @4e868da4. Installed flags, live responses and the separately held registry proposal remain unverified.\n        </div>\n      </div>\n      <div id=\"7N9-0\" style={{ backgroundColor: 'var(--color-gmi-night-surface)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '14px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', padding: '24px' }}>\n        <div id=\"7NA-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '18px', fontWeight: 600, lineHeight: '26px' }}>\n          06 · Responsive implementation and useful motion\n        </div>\n        <div id=\"7NB-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', lineHeight: '22px' }}>\n          Both GMI stylesheets retain a 44 px minimum for native summaries. The production macro renders Theme details / 主题详情 separately from Source receipt / 来源凭证, including without JavaScript. Receipt identifiers remain exact. Primary navigation labels now wrap at narrow widths; the 320 px English document fits its viewport with 44 px targets. Category shortcuts also measure at least 44 px. Their mobile sticky-header and destination offsets are paired at 61 px, keeping headers visible below the rail. Preserve native expansion and immediate reduced-motion behavior. The answer-side recovery bar wraps at 320 px and retains a 44 px action.\n        </div>\n      </div>\n      <div id=\"7NH-0\" style={{ backgroundColor: 'var(--color-gmi-night-surface)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '14px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', padding: '24px' }}>\n        <div id=\"7NJ-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '18px', fontWeight: 600, lineHeight: '26px' }}>\n          07 · Copy belongs to its initiating view\n        </div>\n        <div id=\"7NI-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', lineHeight: '22px', whiteSpace: 'pre-wrap' }}>\n          One attempt captures the complete normalized URL and selected theme. Pending shows Copying… / 正在复制…. Success, failure and finally may update only that same current attempt. Selection, filter URL changes, history, lens changes and page exit retire it, even after an A→B→A return. Each success timer belongs to its own attempt; an old completion cannot enable a newer action.<br />A current failure shows the captured URL in the existing manual fallback. Later focus, pointer intent or window blur relinquishes automatic focus; body focus alone grants nothing. Locale-only redraws preserve the current URL and translate owned feedback. A prior system clipboard write cannot be cancelled; no corrective write, queue, retry or persistence was added.\n        </div>\n      </div>\n      <div id=\"7NK-0\" style={{ backgroundColor: 'var(--color-gmi-night-surface)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '14px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', padding: '24px' }}>\n        <div id=\"7NM-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '18px', fontWeight: 600, lineHeight: '26px' }}>\n          08 · One keyboard entry; predictable filtering\n        </div>\n        <div id=\"7NL-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', lineHeight: '22px', whiteSpace: 'pre-wrap' }}>\n          The enhanced tree has one sequential row entry, with arrows moving among visible rows. Hidden and empty categories cannot retain a Tab stop. Its existing bilingual heading supplies the accessible name. Native theme links keep their destinations and modified-click behavior; information buttons and See all stay separately reachable. Without JavaScript, the original 371 link attributes remain.<br /><br />Plain Enter/Space on a leaf delegates to the existing topic-selection owner. Preserve parent expansion, modifiers, IME and repeat handling. Before search hides active row content, focus the search input; before collapse hides a descendant, focus its nearest visible ancestor. Preserve surviving and unrelated focus. Clearing a zero-result search restores expansion and uses the first visible row as the next entry.<br /><br />Index shortcuts follow their filtered groups. Hidden, detached or unowned targets cannot replace the parameter fragment; reject stale observer entries before changing current-link state. Return focus before the index hides an active row, category or shortcut. Query, lens, open state and return context keep their existing owners.<br /><br />The tree’s existing no-match paragraph now sits inside one persistent polite, atomic status region. Keep focus in search, preserve its bilingual text and skip unchanged visibility writes. Clear hides the paragraph while the status owner remains mounted. A scoped CSS rule offsets the extra empty flex gap: normal spacing stays 12 px; the visible message keeps its original margins. No second announcer, timer, locale observer or query state is needed.\n        </div>\n      </div>\n      <div id=\"7NN-0\" style={{ backgroundColor: 'var(--color-gmi-night-surface)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '14px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', padding: '24px' }}>\n        <div id=\"7NP-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '18px', fontWeight: 600, lineHeight: '26px' }}>\n          09 · Count the results the user can see\n        </div>\n        <div id=\"7NO-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', lineHeight: '22px', whiteSpace: 'pre-wrap' }}>\n          The existing indexRender pass derives one compact status plus category and subgroup counts from its matching rows. HBM shows 2 results / 2 个结果, category counts of two, and one result in each visible subgroup. At zero, use the existing no-match wording in the same live-status region. The query is already visible; do not repeat it in a paragraph.<br /><br />Generated data-gmi-total attributes restore the original totals on Clear. Keep the footer explicitly labelled Full index / 完整索引. Hide the static core/extended breakdown while searching: tier and held/admitted review status are separate dimensions, so never infer one from the other. Existing bilingual spans handle language changes. Matching-row counts do not establish company evidence, completeness, freshness or admission.<br /><br />The index now keeps one persistent polite/atomic wrapper around its existing visual feedback paragraph. Move the status role off the hidden paragraph; retain its count/no-match spans and language owner. indexHidden still releases owned focus before a hide request, then skips unchanged visibility writes. Repeated equivalent searches and duplicate language notifications make no feedback mutations. The whole paragraph controls empty-gap compensation: 12 px normally and after Clear; zero-result feedback retains its space.\n        </div>\n      </div>\n      <div id=\"7SR-0\" style={{ backgroundColor: 'var(--color-gmi-night-surface)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '14px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', padding: '24px' }}>\n        <div id=\"7ST-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '18px', fontWeight: 600, lineHeight: '26px' }}>\n          10 · Recover without leaving the answer\n        </div>\n        <div id=\"7SS-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', lineHeight: '22px', whiteSpace: 'pre-wrap' }}>\n          Show “This topic is outside your filters.” / “当前主题不在筛选范围内。” with Clear filters / 清除筛选 only when a valid selected topic is excluded. Invalid-topic and failed-data states keep their own explanations, without this unrelated action. Generated markup starts hidden when JavaScript is unavailable.<br /><br />Join the existing data-topic-reset handler. Clear Browse query/category/scope/evidence, retain the selected theme, and use the current replace-URL path to preserve lens and return context and retire copy feedback. Do not select or rerender the answer: retain evidence-node identity, exact source fields and open receipts.<br /><br />The answer-side caller returns focus to the visible topic heading; existing drawer/sidebar callers keep search focus. Before hiding a focused recovery action, focus that heading. Native modal behavior stays intact. Reuse current panel/button tokens, allow wrapping, expose the notice before changing its status text, and skip unchanged text writes. No extra timer, storage or announcement owner is needed.\n        </div>\n      </div>\n      <div id=\"7YP-0\" style={{ backgroundColor: 'var(--color-gmi-night-surface)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '14px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', padding: '24px' }}>\n        <div id=\"7YR-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '18px', fontWeight: 600, lineHeight: '26px' }}>\n          11 · Clear the search; keep the research\n        </div>\n        <div id=\"7YQ-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', lineHeight: '22px', whiteSpace: 'pre-wrap' }}>\n          The tree and full index share one localized Clear search / 清空搜索 icon button. It is hidden until JavaScript binds the existing input path. Keep the field 44 px high and the action 44 × 44 px. Replace the slash hint while the raw input is nonempty, including whitespace. Suppress the browser cancel only under the enhanced class.<br /><br />Click and native Enter/Space focus the input, empty its value and dispatch the current input event once. Ordinary Escape uses that same helper; consumed, composing and keyCode229 events do nothing. The existing search, URL and expansion owners perform the reset. Do not clear primary Browse filters, select a different answer or redraw evidence.<br /><br />Index initial/history restoration synchronizes the button from the restored value. Before hiding a focused clear action, return focus to search; preserve unrelated focus. Keep lens, qualified return, other hash keys and current disclosures. Use the existing locale owner. No second filter state, announcement cycle, timer or navigation owner is needed. S06G contains editable EN Day / ZH Noir 320 px states; implementation proof also covers 390 and 1440 px.\n        </div>\n      </div>\n      <div id=\"87Z-0\" style={{ backgroundColor: 'var(--color-gmi-night-surface)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '14px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', padding: '24px' }}>\n        <div id=\"881-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '18px', fontWeight: 600, lineHeight: '26px' }}>\n          12 · The index starts with its task\n        </div>\n        <div id=\"880-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', lineHeight: '22px', whiteSpace: 'pre-wrap' }}>\n          Use the existing page_key=index branch in _gmi_product_header.html.j2. Keep GMI Explorer as a small real link with its .gmi-product-name hook and 44 px target; place the sole All micro-themes / 全部细分主题 H1 beside the one exact dated snapshot. Remove only the index’s repeated head() introduction, breadcrumb, count sentence and same-clock date. Other pages keep their existing header output.<br /><br />Preserve the full snapshot/stale subtree, Brain slot, navigation and the qualified return inserted after navigation. Keep the 72 px mobile Brain reservation. Use a 32 px title on desktop and 24 px at ≤820, natural Chinese spacing, no fixed height and 16 px navigation/return gaps. The brand still restores the qualified research destination; company return may contain one upstream theme return.<br /><br />Without JavaScript, keep the server-rendered title/date, ordinary links and native disclosures. Do not fabricate stale qualification, Brain docking or a contextual return. The Index · Search and navigation page shows an EN390 default viewport and ZH320 filtered company-return/stale state. Two visible results and Full index: 371 stay distinct. These are editable design states; the existing source owns query, count, history and navigation.\n        </div>\n      </div>\n      <div id=\"88I-0\" style={{ backgroundColor: 'var(--color-gmi-night-surface)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '14px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', padding: '24px' }}>\n        <div id=\"88J-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '18px', fontWeight: 600, lineHeight: '26px' }}>\n          13 · Choose a category, then go\n        </div>\n        <div id=\"88K-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', lineHeight: '22px', whiteSpace: 'pre-wrap' }}>\n          At the existing ≤640 px breakpoint, show a native Category / 类别 select and a separate Go / 前往 button. Keep the select and Go 44 px high, Go 44 px wide, an 8 px gap and the existing 61 px sticky strip. Desktop and no-JS keep the original anchor track. The authored custom wrapper starts hidden; unavailable scripts must not leave an inert control.<br /><br />Selection is a pending destination, not the category in view. Typeahead and selection never navigate. Go revalidates and invokes the retained category link, preserving query, lens, qualified return, other hash keys and history. Keep the selected ID for repeat jumps. Derive options from the existing visible groups and active-language labels/counts; available zero-count categories stay eligible. Filtering removes unavailable options; a lost choice resets to the prompt without a first-category fallback.<br /><br />Retain valid choices through locale/count changes and avoid rebuilding equivalent options. Passive IntersectionObserver updates only the existing anchor current state. Before disabling focused Go, focus the select; before zero-match nav hiding, the existing index owner focuses search. On resize, reveal incoming controls, transfer only owned focus with preventScroll, carry a focused desktop link’s ID to mobile, then hide outgoing controls. If all destinations are stale, recover to existing search. No new URL, storage, locale, observer or navigation owner.\n        </div>\n      </div>\n      <div id=\"8SW-0\" style={{ backgroundColor: 'var(--color-gmi-night-surface)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '14px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', padding: '24px' }}>\n        <div id=\"8SX-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '18px', fontWeight: 600, lineHeight: '26px' }}>\n          14 · Company entry keeps evidence and focus\n        </div>\n        <div id=\"8SY-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', lineHeight: '22px', whiteSpace: 'pre-wrap' }}>\n          Use exactly page_key=companies in the shared header. Keep the small 44 px GMI Explorer link, one Company evidence / 公司证据 H1, the original snapshot/stale owner, active navigation, utility links and 72 px Brain reservation. Share the existing compact index declarations; issuer and the six other HTML pages remain unchanged. The company page already had one snapshot: remove repeated introduction/breadcrumb/title instructions, not a second date.<br /><br />Keep every source-rendered company, dated product record, planned stage, named platform, source label/link, historical-context footer and company-detail action. Keep the interpretation guide. Remove only the final paragraph that repeats the guide’s qualification. The 26 Feb 2024 source date and 3 Nov 2026 snapshot remain separate.<br /><br />Within the existing company controller, focus search before hiding a card or no-match container that owns focus. Clear search / 清空搜索 focuses search before clearing and invoking updateCompanies once. Skip unchanged hidden values and complete localized count text; preserve unrelated or surviving control focus and the existing URL, history, return and locale owners.<br /><br />A normalized active query says N matching companies / 匹配到 N 家公司. Blank or whitespace-only input retains N companies with evidence on file / 有收录证据的公司：N 家. Count company cards, not product connections. No-match offers Clear search; a genuinely empty catalogue says No company evidence yet / 暂无公司证据, keeps Clear hidden and offers Explore themes.<br /><br />Paper Companies · Evidence and recovery contains C01 EN390 match, C02 ZH320 Noir full catalogue, C03 EN390 no-match with qualified research return, C04 ZH320 Noir empty-catalogue fixture, and C05 the complete EN card. Phone shells are truthful 844 px viewports; content continues below the fold. C04 is a renderer fixture, not a replacement public dataset. C05 exposes both source and company-detail actions without compressing the phone card.\n        </div>\n      </div>\n      <div id=\"90Y-0\" style={{ backgroundColor: 'var(--color-gmi-night-surface)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '14px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', padding: '24px' }}>\n        <div id=\"90Z-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '18px', fontWeight: 600, lineHeight: '26px' }}>\n          15 · Retire returns; offer available evidence\n        </div>\n        <div id=\"910-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', lineHeight: '22px', whiteSpace: 'pre-wrap' }}>\n          When refreshJourney retires an absent or rejected return, first ask whether the holder contains document.activeElement. If it does, focus the existing a.gmi-product-name[href] outside that holder with preventScroll:true. If focus remains in the holder, use the existing product-nav link as the bounded fallback. Respect a focus handler that already moved to another surviving control. Then remove the invalid holder; even an exceptional DOM with neither usable target must not keep a stale Back action.<br /><br />Valid-to-valid changes keep the same Back anchor and update its qualified href/localized label. Unrelated source, search or navigation focus stays in place. Keep safeReturn, originalHrefs and the following link-projection loop exact. Focus must not activate a link, write history, manufacture a return or retain the retired destination on the brand. The browser still owns history scrolling and layout anchoring: a measured focus call kept scrollY at 300; removing the holder later changed it to 240. Do not add a scroll controller to conceal that distinction.<br /><br />Use the exact relationships page key with the existing compact task header: Company relationships / 公司关系. Preserve snapshot/stale, Brain slot, real brand/nav and utilities. The unavailable panel says Public relationship view unavailable / 暂无公开关系视图; it reports the missing verified public projection, not the outcome of every record’s clearance decision.<br /><br />Browse company evidence / 浏览公司证据 is the native primary action, followed by Explore themes and Coverage &amp; methodology. Existing navigation carries a qualified theme return or reuses the exact company-catalogue query/upstream context; direct and rejected entry use the ordinary company route. Without JavaScript all three anchors and the native publication disclosure work. Keep the original explanation and disclosure intact. Do not emit relationship parties, records, magnitudes, excerpts or a hidden search payload; source availability is not display permission.<br /><br />Paper Relationships · Availability contains R01 EN390 Day direct entry, R02 ZH320 Noir with company return, and R03 the expanded publication mechanism. The phones use 844 px viewports. These are editable source-contract specimens; local browser proof, catalogue content and public release acceptance remain separate.\n        </div>\n      </div>\n      <div id=\"7ND-0\" style={{ backgroundColor: 'var(--color-gmi-night-surface)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '14px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', padding: '24px' }}>\n        <div id=\"7NE-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '18px', fontWeight: 600, lineHeight: '26px' }}>\n          16 · Proof and release boundary\n        </div>\n        <div id=\"7NF-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', lineHeight: '22px', whiteSpace: 'pre-wrap' }}>\n          Return/relationship recovery passes 28 named cases in 28 fresh anonymous contexts: eight relationship header scenarios, twelve return-focus paths across six routes in EN/ZH, two actual company/research recovery journeys, four with JavaScript actually disabled, and two existing company focus/count regressions. Real back/forward, retained valid-anchor identity, locale, rejected returns, unrelated focus, hidden/missing brand fallback and a focus-handler redirect pass. A malformed no-target fixture still removes invalid context; it is not reported as focus success.<br /><br />Across 24 matched relationship layouts, the publication panel starts 145.98–196.39 px sooner. Six final captures were inspected. Baseline has eight original-layout observations and two expected focus-removal failures. Test-only corrections align nested fixture serialization and distinguish native focus-time scrolling from later layout anchoring; original reports and the 300→300→240 diagnostic remain recorded.<br /><br />Earlier company proof at 49d47033 remains 29 cases/44 matched layouts, category proof at 9bdc486c remains 24 cases and index-header proof at 20179e31 remains 23 cases/66 layouts. These are dated receipts. Current rendering changes only relationships HTML and paired JS; six other HTML pages and CSS remain byte-identical. The existing publication paragraphs, disclosure, nav, snapshot and Brain slot are exact.<br /><br />PR10676 @ed2a0d17 stays Draft with original model/release holds. All nine files read back exactly; DESIGN_RECORD §§11.19–11.31 separates source-bound proof. Paper has three new relationship specimens and sixteen Build modules. Local component checks do not establish full shared shell/fonts, spoken AT, shared Brain runtime, live account/admission, current hosted CI or deployment.\n        </div>\n      </div>\n    </div>\n  )"
+  },
+  "preservation": {
+    "source": [
+      {
+        "path": "templates/_gmi_product_header.html.j2",
+        "sha": "945b464b1a0380e4b1b86c873866f273fe0c9574",
+        "exact": true,
+        "length": 2068
+      },
+      {
+        "path": "templates/gmi_relationships.html.j2",
+        "sha": "e30d0df9e359e529c707468cf952e0aa84a36987",
+        "exact": true,
+        "length": 2271
+      },
+      {
+        "path": "templates/gmi.js",
+        "sha": "ef00b9aca6d4e343a8dea7bbd8010020fec671f1",
+        "exact": true,
+        "length": 52414
+      },
+      {
+        "path": "site/gmi.js",
+        "sha": "ef00b9aca6d4e343a8dea7bbd8010020fec671f1",
+        "exact": true,
+        "length": 52414
+      },
+      {
+        "path": "site/gmi-relationships.html",
+        "sha": "8a693c57b649b300a5c3e53e9d24cfa9c92987c7",
+        "exact": true,
+        "length": 58337
+      },
+      {
+        "path": "research/theme_graph/gmi_design_20261021/verify_product_browser.py",
+        "sha": "77944d4bb9e863d97635dbeda007eba1c30424d3",
+        "exact": true,
+        "length": 193404
+      },
+      {
+        "path": "research/theme_graph/gmi_design_20261021/verify_return_recovery_component.py",
+        "sha": "20c26d3a87906a884f81bf25ba4a739d25533bb7",
+        "exact": true,
+        "length": 9571
+      },
+      {
+        "path": "research/theme_graph/gmi_design_20261021/DESIGN_RECORD.md",
+        "sha": "3c4306712f1df8d40e080f477bdd7bcbffeb926a",
+        "exact": true,
+        "length": 175916
+      },
+      {
+        "path": "research/theme_graph/gmi_design_20261021/RETURN_RECOVERY_VALIDATION_20261109.json",
+        "sha": "0293ed5269cf6a8975ebeab54e4f107a8ba3059c",
+        "exact": true,
+        "length": 355003
+      }
+    ],
+    "prior_views": {
+      "build": true,
+      "companyEN": true,
+      "companyZH": true
+    },
+    "build": {
+      "old_nodes": 48,
+      "new_nodes": 51,
+      "modules": 16,
+      "prior_parent_style_unaffected_text_exact": true,
+      "intentional_text_updates": [
+        "7MV-0",
+        "7MZ-0",
+        "7NE-0",
+        "7NF-0"
+      ],
+      "titles": [
+        "01 · Keep the two native disclosures distinct",
+        "02 · Exact public fields; separate clocks",
+        "03 · Preserve locale state inside the existing renderer",
+        "04 · Preserve receipt focus across languages",
+        "05 · Keep recovery at the serving boundary",
+        "06 · Responsive implementation and useful motion",
+        "07 · Copy belongs to its initiating view",
+        "08 · One keyboard entry; predictable filtering",
+        "09 · Count the results the user can see",
+        "10 · Recover without leaving the answer",
+        "11 · Clear the search; keep the research",
+        "12 · The index starts with its task",
+        "13 · Choose a category, then go",
+        "14 · Company entry keeps evidence and focus",
+        "15 · Retire returns; offer available evidence",
+        "16 · Proof and release boundary"
+      ]
+    },
+    "views": [
+      {
+        "key": "R01",
+        "id": "8T0-0",
+        "div_nodes": 37,
+        "inspected": true
+      },
+      {
+        "key": "R02",
+        "id": "8V9-0",
+        "div_nodes": 40,
+        "inspected": true
+      },
+      {
+        "key": "R03",
+        "id": "90M-0",
+        "div_nodes": 6,
+        "inspected": true
+      }
+    ]
+  },
+  "canvas_operations": [
+    {
+      "key": "gmiReturnRecoveryPaperCreatePage",
+      "tool": "create_page",
+      "operation_id": "paper-estate-cont-20261108-return-relationship-page-20261109",
+      "state": "APPLIED_RESPONSE_OBSERVED"
+    },
+    {
+      "key": "gmiReturnRecoveryPaperPageOrder",
+      "tool": "arrange_pages",
+      "operation_id": "paper-estate-cont-20261108-return-relationship-page-order-20261109",
+      "state": "APPLIED_RESPONSE_OBSERVED"
+    },
+    {
+      "key": "gmiReturnRecoveryPaperDuplicates",
+      "tool": "duplicate_nodes",
+      "operation_id": "paper-estate-cont-20261108-return-relationship-phone-copies-20261109",
+      "state": "APPLIED_RESPONSE_OBSERVED"
+    },
+    {
+      "key": "gmiReturnRecoveryPaperNames",
+      "tool": "rename_nodes",
+      "operation_id": "paper-estate-cont-20261108-return-phone-names-20261109",
+      "state": "APPLIED_RESPONSE_OBSERVED"
+    },
+    {
+      "key": "gmiReturnRecoveryPaperR02Context",
+      "tool": "write_html",
+      "operation_id": "paper-estate-cont-20261108-return-r02-context-20261109",
+      "state": "APPLIED_RESPONSE_OBSERVED"
+    },
+    {
+      "key": "gmiReturnRecoveryPaperExpandedDuplicate",
+      "tool": "duplicate_nodes",
+      "operation_id": "paper-estate-cont-20261108-return-expanded-disclosure-20261109",
+      "state": "APPLIED_RESPONSE_OBSERVED"
+    },
+    {
+      "key": "gmiReturnRecoveryPaperExpandedName",
+      "tool": "rename_nodes",
+      "operation_id": "paper-estate-cont-20261108-return-expanded-name-20261109",
+      "state": "APPLIED_RESPONSE_OBSERVED"
+    },
+    {
+      "key": "gmiReturnRecoveryPaperExpandedContent",
+      "tool": "write_html",
+      "operation_id": "paper-estate-cont-20261108-return-expanded-content-20261109",
+      "state": "APPLIED_RESPONSE_OBSERVED"
+    },
+    {
+      "key": "gmiReturnRecoveryPaperExpandedCaret",
+      "tool": "write_html",
+      "operation_id": "paper-estate-cont-20261108-return-expanded-caret-20261109",
+      "state": "APPLIED_RESPONSE_OBSERVED"
+    },
+    {
+      "key": "gmiReturnRecoveryPaperBuildModule",
+      "tool": "write_html",
+      "operation_id": "paper-estate-cont-20261108-return-build-module-20261109",
+      "state": "APPLIED_RESPONSE_OBSERVED"
+    },
+    {
+      "key": "gmiReturnRecoveryPaperBuildMove",
+      "tool": "move_nodes",
+      "operation_id": "paper-estate-cont-20261108-return-build-order-20261109",
+      "state": "APPLIED_RESPONSE_OBSERVED"
+    },
+    {
+      "key": "gmiReturnRecoveryPaperBuildText",
+      "tool": "set_text_content",
+      "operation_id": "paper-estate-cont-20261108-return-build-proof-20261109",
+      "state": "APPLIED_RESPONSE_OBSERVED"
+    },
+    {
+      "key": "gmiReturnRecoveryPaperFinish",
+      "tool": "finish_working_on_nodes",
+      "operation_id": "paper-estate-cont-20261108-return-finish-20261109",
+      "state": "APPLIED_RESPONSE_OBSERVED"
+    },
+    {
+      "key": "gmiReturnRecoveryPaperR01Shell",
+      "tool": "write_html",
+      "operation_id": "paper-estate-cont-20261108-return-r01-shell-20261109",
+      "state": "APPLIED_RESPONSE_OBSERVED"
+    },
+    {
+      "key": "gmiReturnRecoveryPaperR01Nav",
+      "tool": "write_html",
+      "operation_id": "paper-estate-cont-20261108-return-r01-nav-20261109",
+      "state": "APPLIED_RESPONSE_OBSERVED"
+    },
+    {
+      "key": "gmiReturnRecoveryPaperR01Panel",
+      "tool": "write_html",
+      "operation_id": "paper-estate-cont-20261108-return-r01-panel-20261109",
+      "state": "APPLIED_RESPONSE_OBSERVED"
+    },
+    {
+      "key": "gmiReturnRecoveryPaperR01Actions",
+      "tool": "write_html",
+      "operation_id": "paper-estate-cont-20261108-return-r01-actions-20261109",
+      "state": "APPLIED_RESPONSE_OBSERVED"
+    },
+    {
+      "key": "gmiReturnRecoveryPaperR01Disclosure",
+      "tool": "write_html",
+      "operation_id": "paper-estate-cont-20261108-return-r01-disclosure-20261109",
+      "state": "APPLIED_RESPONSE_OBSERVED"
+    },
+    {
+      "key": "gmiReturnRecoveryPaperR02Shell",
+      "tool": "write_html",
+      "operation_id": "paper-estate-cont-20261108-return-r02-shell-20261109",
+      "state": "APPLIED_RESPONSE_OBSERVED"
+    },
+    {
+      "key": "gmiReturnRecoveryPaperR02Nav",
+      "tool": "write_html",
+      "operation_id": "paper-estate-cont-20261108-return-r02-nav-20261109",
+      "state": "APPLIED_RESPONSE_OBSERVED"
+    },
+    {
+      "key": "gmiReturnRecoveryPaperR02Panel",
+      "tool": "write_html",
+      "operation_id": "paper-estate-cont-20261108-return-r02-panel-20261109",
+      "state": "APPLIED_RESPONSE_OBSERVED"
+    },
+    {
+      "key": "gmiReturnRecoveryPaperR02Actions",
+      "tool": "write_html",
+      "operation_id": "paper-estate-cont-20261108-return-r02-actions-20261109",
+      "state": "APPLIED_RESPONSE_OBSERVED"
+    },
+    {
+      "key": "gmiReturnRecoveryPaperR02Disclosure",
+      "tool": "write_html",
+      "operation_id": "paper-estate-cont-20261108-return-r02-disclosure-20261109",
+      "state": "APPLIED_RESPONSE_OBSERVED"
+    }
+  ],
+  "finish": {
+    "roots": [
+      "8T0-0",
+      "8V9-0",
+      "90M-0",
+      "7M9-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED"
+  },
+  "visual_review": {
+    "views": [
+      "R01",
+      "R02",
+      "R03",
+      "BuildModule",
+      "BuildProof"
+    ],
+    "inspected": true,
+    "scope": "Editable source-contract specimens. Phone card/content may continue below844px; no browser/runtime proof inferred from Paper."
+  },
+  "connection_recovery": {
+    "initial_exact_read": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\"state\":\"UPSTREAM_UNAVAILABLE\",\"detail\":\"Paper must be running with a file open. Login state is unknown.\",\"retry_allowed\":false}"
+        }
+      ],
+      "structuredContent": {
+        "error_code": "INVALID_ARGUMENT"
+      },
+      "isError": true
+    },
+    "inspect_observation": "Paper connected with another active file after a transient UPSTREAM_UNAVAILABLE exact-file read.",
+    "reconciled": "One exact-file read found the already-created p-A-0, then normal guarded work continued. No repeated create, prepare, generic desktop fallback or alternate carrier.",
+    "created_page_id": "p-A-0"
+  },
+  "boundaries": [
+    "Existing publication explanation and native disclosure remain source-exact; editable text reproduces that contract.",
+    "Original company source views preserved; all48 prior Build IDs/styles/parents exact with four intentional text changes.",
+    "No private relationship projection or replacement model; source availability and publication permission remain distinct.",
+    "No protected original style/token/archive/delete operation, release hold or other live-writer target changed."
+  ],
+  "pr_description": {
+    "body": "## Why\n\nGMI previously led with taxonomy and admission machinery, leaving readers to infer what a theme meant, what a company connection established, and which source date or lifecycle qualified the claim. This implements the Chairman's resumed product-and-code mandate in the existing frontend and consolidates Paper into one canonical product system.\n\n## What changes\n\n- Lead theme research with a plain-language topic explanation, dated company/product evidence, explicit limits and a concrete next action.\n- Add the searchable company-evidence route. Preserve all 371 microthemes, parent paths, Core/Extended and evidence filters, the full index, taxonomy tree, value-chain lens and coverage arithmetic.\n- Preserve URL/history restoration, responsive mobile browsing, related-topic navigation, keyboard/focus behavior, copy success/denial handling and server-rendered/no-JS/malformed-payload fallbacks.\n- Reuse the existing theme, language, navigation and Brain owners. The original Brain root retains its palette, events and focus lifecycle; styling uses canonical tokens.\n- Restrict public product rendering to the single separately cleared Micron observation, whose source was published on 26 February 2024, including its receipt, planned lifecycle, product/platform, source identity and visible EN/ZH attribution. ACCEPT/RATIFIED alone does not admit a new public fact.\n- Exclude private graph/correction/raw-source context from Jinja, retire stale issuer output after withdrawal and refuse nonregular/symlink issuer targets.\n- Preserve missing, unknown or malformed knowledge dates as not recorded in EN/ZH; source publication and Planned lifecycle remain independent. Valid recorded first-seen dates retain their existing display.\n- Include generated pages, incumbent GMI CI registration, production-render regression tests, dated browser evidence and editable Paper workflow/build views.\n- Bring the full index directly to search with one title/date, a 44 px Clear search action, coherent filtered counts, and a mobile Category + Go control that preserves research context and repeat navigation.\n- Bring company evidence to search sooner, distinguish matching counts from catalogue coverage, and recover keyboard focus before results disappear.\n- Retire expired qualified returns without losing owned focus, and provide direct company-evidence recovery from the relationship publication state.\n\nThe canonical design home is [GMI Explorer · Product system](https://app.paper.design/file/01M5H6EARN9YHQV17JC6ZG9BRY/p-1-0). Start index work on [Index · Search and navigation](https://app.paper.design/file/01M5H6EARN9YHQV17JC6ZG9BRY/p-8-0); [Companies · Evidence and recovery](https://app.paper.design/file/01M5H6EARN9YHQV17JC6ZG9BRY/p-9-0) covers the company workflow; [Relationships · Availability](https://app.paper.design/file/01M5H6EARN9YHQV17JC6ZG9BRY/p-A-0) covers publication-state recovery; the [source receipt page and 16-module Build](https://app.paper.design/file/01M5H6EARN9YHQV17JC6ZG9BRY/p-7-0) carry the current interaction/source contracts. Original product views and historical references remain preserved; the dated ten-board evidence below describes the earlier product set.\n\n## Current source and focused verification — 9 November 2026\n\nCurrent head: [`ed2a0d178b459a8bdb1cc233f257ee82d946f71a`](https://github.com/mastermindx-market-intelligence/Macro/commit/ed2a0d178b459a8bdb1cc233f257ee82d946f71a). The PR remains **Draft and unmerged**, with the release/model holds below unchanged.\n\nThe latest change repairs qualified return retirement and clarifies relationship availability. When a Back link's context disappears, its existing owner moves only owned focus to the real brand link, with an existing navigation link as a bounded fallback, before removing the holder. Valid return anchors retain identity; unrelated focus, URL/history, locale and the existing destination projection remain unchanged.\n\nRelationships now uses the compact **Company relationships / 公司关系** task header. **Public relationship view unavailable / 暂无公开关系视图** describes the missing verified public projection without inferring every record's clearance status. **Browse company evidence / 浏览公司证据** is the native primary recovery action; Explore themes, Coverage & methodology and the original publication explanation/disclosure remain available. The existing navigation owner preserves a qualified company search and upstream research return. No relationship data is added or exposed.\n\n| Evidence | Exact scope |\n|---|---|\n| Latest return/relationship matrix | **28 cases / 28 fresh anonymous contexts**, Chrome157.0.8103.39, zero page errors: eight header scenarios, twelve return-focus paths across six routes in EN/ZH, two actual company/research journeys, four actually without JavaScript and two existing company focus/count regressions |\n| Interaction and layout | Absent/rejected/valid returns, anchor identity, locale, unrelated focus, real back/forward, hidden/missing brand fallback and focus-handler redirect; **24 matched layouts**, with **145.98–196.39 px** less space before the publication panel; six final captures inspected |\n| Production renderer and source | 48 checked inputs and the existing accepted e644fa48… model; all nine parent outputs reproduced; final rendered changes limited to relationships HTML and paired JS; all six other HTML pages and CSS byte-identical; all nine changed files published and read back exactly |\n| Earlier company entry at `49d47033` | 29 cases, 44 matched layouts, 145.98–215.14 px less space before search; matching-company versus on-file counts, focus-before-hide and distinct genuine-empty catalogue fixture |\n| Earlier category navigation at `9bdc486c` | 24 cases: pending native select + explicit Go, retained anchors, typeahead, repeat navigation, empty categories, filtering/locale, stale targets and responsive focus; desktop/no-JS native links retained |\n| Earlier index header / Clear | Header at `20179e31`: 23 cases/66 layouts. Clear at `16a87f43`: 36 cases/42 contexts. Each result remains bound to its recorded source |\n| Paper readback | EN390 Day availability, ZH320 Noir catalogue return and an expanded publication disclosure. Build now has **16 modules / 51 nodes**. Prior company views and all 48 old Build node IDs/styles/parents remain exact outside four intentional source/proof text updates |\n\nRead [DESIGN_RECORD §§11.19–11.31](https://github.com/mastermindx-market-intelligence/Macro/blob/ed2a0d178b459a8bdb1cc233f257ee82d946f71a/research/theme_graph/gmi_design_20261021/DESIGN_RECORD.md), [return/relationship validation](https://github.com/mastermindx-market-intelligence/Macro/blob/ed2a0d178b459a8bdb1cc233f257ee82d946f71a/research/theme_graph/gmi_design_20261021/RETURN_RECOVERY_VALIDATION_20261109.json), [company validation](https://github.com/mastermindx-market-intelligence/Macro/blob/49d47033f4d758af2ec7212fccee04d762fec956/research/theme_graph/gmi_design_20261021/COMPANY_ENTRY_VALIDATION_20261109.json) and [category validation](https://github.com/mastermindx-market-intelligence/Macro/blob/9bdc486c6b7622d9f306d29e9d12d572ed88415c/research/theme_graph/gmi_design_20261021/CATEGORY_PICKER_VALIDATION_20261109.json).\n\nThe baseline retains two expected focused-holder failures. Preserved test diagnostics separate a nested fixture-serialization correction from product behavior, and native focus-time scroll from later layout anchoring: **300 before focus → 300 after focus → 240 after removal**. The final verifier checks focus's own effect; no new scroll controller is added. An exceptional fixture with no usable focus target still removes the invalid return and is not reported as successful focus recovery.\n\nThese are exact-source rendering and anonymous component results. Brain/stale/missing-header fixtures are explicit. No current-head hosted CI, OS-native select popup, spoken assistive-technology, full shared shell/fonts, shared Brain runtime, live-account, public-admission or deployment acceptance is claimed.\n\n## Release blocker — keep draft\n\n**Keep Draft and all no-merge/no-Ready/no-un-draft/no-enqueue/no-relabel holds. No auto-merge or deployment is authorized while these holds remain.**\n\nOriginal model run `gmi-product-upgrade-20261103-model01` remains **EFFECT_UNKNOWN / ROOT_UNVERIFIED**, with root `gmi-paper-makeover-20261103-sol`, parent `gmi-product-upgrade-20261103-sol`, original controller PID `38742` and lease `868f3981b9bd`. Its current status denies result consumption, retry and dispatch. No applicable settlement action is exposed; the original installed runtime owner must reconcile this same run/process/lease and publish eligible terminal evidence. This continuation has not consumed its result, reassigned its work or modified its fenced model/presentation/test paths.\n\nThe current product specimen does not grant broader source-emission rights, qualification, internal graph use or relationship publication. A qualified public-data projection remains with the incumbent owner. Release also requires concluded current-head CI and the protected deployment/live-verification path. The existing hourly observer reports attention facts only; it is not an engineering worker or release authority.\n\n## Route integration and serving boundaries\n\nCompanies is integrated with the incumbent builder, normal render workflow, shared-document injection, standalone navigation and canonical/social metadata. This establishes the standalone GMI path. Parent Shared Shell catalogue admission remains with its existing cross-repository census/export owner; no derived catalogue rows were hand-added.\n\nThe existing GMI sitemap exclusion and `X-Robots-Tag: noindex, noarchive` remain intentional. Indexing promotion must coordinate the serving and sitemap owners. Changing access classification does not grant public-fact permission.\n\n\n**Cross-PR catalogue integration remains owed:** [PR #10696 comment 6626264216](https://github.com/mastermindx-market-intelligence/macro/pull/10696#issuecomment-6626264216) records the earlier omitted companies route; the later November 4 source record below captures the exporter admission condition. These dated observations do not settle current consumer admission. The incumbent registry/export owner must qualify the exact combined source and original consumer-admission hold without inferring access or public-fact rights. Both source lanes touch registry tests; this writer does not take over the parallel owner branch.\n\n<details>\n<summary>November 4 verification and integration — historical evidence</summary>\n\n## November 4 verification record — historical head\n\nRecorded head: `be851458055efbffa1f2db61da12b7744502479a` (GMI source repair plus then-current main integration; Draft at that observation).\n\n| Evidence | Result and scope |\n|---|---|\n| Existing eight-suite GMI CI command, executed locally on the candidate source | **186 passed in 109.89 seconds**, exit 0 |\n| Bound source/data/template/test inputs | **130 checked**, no unexpected differences; two intended builder/test overrides for this repair |\n| Knowledge-clock regression | **7 failures and 1 positive control reproduced before repair**; all eight cases now pass through the production renderer with EN/ZH tooltip and independent publication/lifecycle checks |\n| Output-target symlink hardening | **9 reproduced failures → 9 green** for six fixed HTML pages, paired CSS/JS and site directory; disposable red test overwrote outside sentinel, corrected preflight refuses before any generated write |\n| Attribution and public-boundary regression | Six altered-label cases, incomplete/unqualified facts, stale issuer retirement and symlink refusal remain covered |\n| Same-input renderer comparison | **9/9 HTML/CSS/JS outputs byte-identical** for the accepted specimen |\n| Accepted real Chrome browser proof | **92/92 passed**, zero recorded page exceptions; committed browser inputs unchanged |\n| Accepted visual evidence | 91 original PNGs retained; accepted design work was not recaptured |\n| GitHub publication readback | All four intended code/evidence blobs match; one commit ahead of the parent with no unexpected paths |\n| Hosted CI observed November 4 | [CI 41898455221](https://github.com/mastermindx-market-intelligence/macro/actions/runs/41898455221) was **in progress** at the recorded integrated head; no completed hosted result was accepted in this observation |\n| Hosted fences observed November 4 | [Fences 41898455029](https://github.com/mastermindx-market-intelligence/macro/actions/runs/41898455029) concluded **SUCCESS** at the recorded integrated head |\n\n\nThat November 4 continuation also guarded fixed GMI output targets. A controlled symlink test previously overwrote a disposable file outside the intended output directory. The new renderer refuses pre-existing output symlinks before its page and asset writes. All 186 GMI tests passed and all nine accepted specimen files remained byte-identical. This is not a claim of race-free filesystem hardening or a production incident. [Exact source-bound validation](https://github.com/mastermindx-market-intelligence/macro/blob/d6500a8398d11d717ca4af7015d557c61fb084b1/research/theme_graph/gmi_design_20261021/PUBLIC_OUTPUT_SYMLINK_VALIDATION_20261104.json).\n\nThe repair removes a confirmed fallback that displayed the source publication date as “first seen” when knowledge time was missing. Invalid KNOWN values previously either broke rendering or displayed an impossible date. The builder now validates the recorded clock and the tooltip displays “first seen not recorded” / “首次收录时间未记录” when needed. A valid known knowledge date stays distinct from the 26 February 2024 publication date. These new states are covered by production-render tests; the accepted browser matrix was preserved, not rerun.\n\nThe parent head `71d7124f6634c4080ad4d926826d4a24dd60b68b` passed [fences 41793928552](https://github.com/mastermindx-market-intelligence/macro/actions/runs/41793928552); its [CI 41793928668](https://github.com/mastermindx-market-intelligence/macro/actions/runs/41793928668) was still executing when last observed. The earlier integration head `f328fe875d48db8392533ff649271d687961219d` passed [CI 41777490547](https://github.com/mastermindx-market-intelligence/macro/actions/runs/41777490547) and [fences 41777490350](https://github.com/mastermindx-market-intelligence/macro/actions/runs/41777490350). Historical results do not substitute for current-head hosted checks.\n\nThe three S1 regressions introduced by withholding incomplete/unreviewed issuer pages remain repaired without weakening production admission. Template-only escaping and bilingual missing-value behavior remain separately covered. No model-owner or presentation-subtree file was changed by this continuation.\n\nEvidence: [knowledge-clock validation](https://github.com/mastermindx-market-intelligence/macro/blob/0a7e8e66f7ac63ed297548026936c096531d3167/research/theme_graph/gmi_design_20261021/PUBLIC_KNOWLEDGE_CLOCK_VALIDATION_20261104.json), [regression alignment](https://github.com/mastermindx-market-intelligence/macro/blob/0a7e8e66f7ac63ed297548026936c096531d3167/research/theme_graph/gmi_design_20261021/PUBLIC_BOUNDARY_VALIDATION_20261104.json), [attribution validation](https://github.com/mastermindx-market-intelligence/macro/blob/0a7e8e66f7ac63ed297548026936c096531d3167/research/theme_graph/gmi_design_20261021/PUBLIC_ATTRIBUTION_VALIDATION_20261104.json), [browser report](https://github.com/mastermindx-market-intelligence/macro/blob/0a7e8e66f7ac63ed297548026936c096531d3167/mockups/evidence/gmi-product-20261103/browser-report.json), and [DESIGN_RECORD §§11.13–11.15](https://github.com/mastermindx-market-intelligence/macro/blob/0a7e8e66f7ac63ed297548026936c096531d3167/research/theme_graph/gmi_design_20261021/DESIGN_RECORD.md).\n\nThese are source/render checks and preserved anonymous-browser proof. Authenticated backend behavior, live external-source availability, production performance, deployment and live URL acceptance are not claimed. Clipboard denial and malformed payload are explicit injected faults.\n\n## November 4 integration continuation — historical source record\n\n- **Source repair:** `30b298f39c3c68468770cd2cf12cedc11d53c29a` restored the existing page-registry AST scanner's 7/7 GMI routes with zero unresolved sites after the output-symlink guard. Original hosted failure [41801221560](https://github.com/mastermindx-market-intelligence/macro/actions/runs/41801221560) was precisely one `product-experience-registry` regression; verified exact regression case green locally, full 186-case GMI suite green, all nine accepted HTML/CSS/JS specimen bytes identical.\n- **Actual base conflict resolved:** [merge source `be851458055e`](https://github.com/mastermindx-market-intelligence/macro/commit/be851458055efbffa1f2db61da12b7744502479a) composed the reviewed GMI semantic head with protected main `affa0fd2e68723efc9e2cbc0e7c791ab70f5a53d` and its newer infrastructure. Compared to that main source there are exactly 154 intended GMI paths; `.github/ci/legacy-jobs.yml` preserves mainline bytes and adds the four previously reviewed GMI test/dependency manifest deltas. Six static GMI pages took the redesign source version, **preserving their honest November 3 as-of labels** rather than relabeling older evidence with the mainline November 4 render-sync clocks. No model data or public permission was promoted.\n- **Gates observed November 4:** [fences 41898455029](https://github.com/mastermindx-market-intelligence/macro/actions/runs/41898455029) **SUCCESS**; [CI 41898455221](https://github.com/mastermindx-market-intelligence/macro/actions/runs/41898455221) **IN_PROGRESS**, so hosted source qualification is not yet asserted. The PR is Draft/open/mergeable and remains deliberately unmerged.\n- **Shared Shell release condition:** The exact current registry/exporter sources from independent [P12.T9 PR #10696](https://github.com/mastermindx-market-intelligence/macro/pull/10696) auto-admit an anonymous/live `macro:gmi_companies` row to `legacyPaths` unless `shared_shell:admission_withheld` is present. Exact pure-source test: unmarked => admitted, marked => `consumer_admission_withheld`. [Owner handoff comment #6640275440](https://github.com/mastermindx-market-intelligence/macro/pull/10696#issuecomment-6640275440) binds the fail-closed follow-up and ordering; this PR does **not** seize the registry writer or insert an unqualified audience.\n- **Model/runtime:** `gmi-product-upgrade-20261103-model01` remains Fabric `EFFECT_UNKNOWN / ROOT_UNVERIFIED` (result consumption, retry and replacement not authorized). Executive Session Bridge owner currently reports `backend_unavailable`. This does not block independent GMI frontend testing but continues to block model-dependent public-fact promotion.\n- **Accepted and held:** Ten Paper boards, 92 real-Chrome browser cases and 91 original screenshots remain preserved, not redone. Protected source rights, shared-consumer purpose, noindex, authenticated live path, deployment and user acceptance remain separate gates. Do not merge, enqueue, Ready/un-draft, relabel, deploy or invent approval from this source/CI improvement.\n\n</details>\n",
+    "checks": {
+      "body_exact": true,
+      "head": "ed2a0d178b459a8bdb1cc233f257ee82d946f71a",
+      "draft": true,
+      "merged": false,
+      "release_hold_verbatim": true
+    }
+  }
+}
