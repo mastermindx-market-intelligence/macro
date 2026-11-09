@@ -1758,3 +1758,37 @@ Baseline PID76771 reproduced the missing persistent owner in two cases. Candidat
 Paper [GMI p7](https://app.paper.design/file/01M5H6EARN9YHQV17JC6ZG9BRY/p-7-0), Build **7M9-0**, retains eleven modules and all 36 IDs/parents/order/styles. Four text nodes align the source identity, index feedback contract and proof. The native full-frame screenshot was inspected and the exact root finished. **PAPER_INDEX_STATUS_20261109.json** records readback. Spoken assistive-technology output and full-shell/fonts/live-account/serving/release acceptance remain separate.
 
 Next useful feature: an authored 44 px Clear search button can replace the small native cancel affordance only after enhancement, reuse the existing Escape/input path, and preserve tree expansion plus index URL/disclosure context. Current empty fields and JavaScript-disabled native behavior should remain. The separate index header also contains a duplicated title/date introduction; source review is evaluating an index-only consolidation while protecting navigation and qualified returns. Neither next step is claimed implemented here.
+
+## 36. GMI: a visible Clear search control and editable state set
+
+The original GMI [Draft PR10676](https://github.com/mastermindx-market-intelligence/Macro/pull/10676) advances from `472146a6532a7bd48db5cdc433ff4e36ecfee456` to **16a87f43743fe3a9bae02db7e3d64969871d8cd9**, tree **941f39bef1fbd59b45687dc0e9df4783dcffa991**. All **11 intended files** read back exactly. Draft, model01 and release holds remain.
+
+Tree and full-index search now have one authored **Clear search / 清空搜索** icon button. Its target is 44 × 44 px inside the unchanged 44 px field. It replaces the slash hint while the raw value is nonempty, including whitespace, and suppresses the browser's cancel affordance only after enhancement. The default-hidden button creates no inert control when scripts are disabled.
+
+Click and native Enter/Space focus the input, clear it and dispatch the original input event once. Ordinary Escape uses the same helper; consumed/composing/keyCode229 events leave the query intact. Existing input/query/URL owners remain authoritative. Tree clearing restores its expansion snapshot and retains the selected answer and open evidence receipt. Index clearing removes only its query through the current replace-state path while preserving lens, return and other URL keys. Initial/history restoration keeps suffix visibility synchronized. Focus moves before a focused action is hidden; unrelated valid focus remains.
+
+| Source | Exact blob |
+| --- | --- |
+| Paired JavaScript | **7caa903eb1fd78bb6b4cdd611c1c69d2f0c09224** |
+| Paired CSS | **4225a93b50eaa668dbc3acf72a0d4c1b4b2d7e6a** |
+| Shared search macro | **2b90130394a11df2e4b10fa1ab65041727d18836** |
+| Generated explorer | **e765336c2b840108aff2dadb45543ea5524e6026** |
+| Generated index | **16be2eb38d020a753df418c0b0abcca1487bf0dc** |
+| Canonical verifier | **a2ca4d53c03e0e66935877b38a9c87cc45f2507a** |
+| Extracting harness | **7e340af7a59976a186936d322620f6358326f738** |
+| DESIGN_RECORD §11.27 | **4fd2be674b1f176ed9adb344137df6b967688071** |
+| SEARCH_CLEAR_VALIDATION_20261109.json | **3a3deeff3657d8e4b7417a45944f673cde54ce0c** |
+
+Source self-check reconstructs the exact parent outside the new helpers, restore sync and input binding. The CSS is solely the suffix rules; removing the hidden button recreates the entire prior macro. Status containers and other owners remain exact. The qualified renderer reproduces the baseline from 48 inputs and the accepted e644fa48… model, then changes one search-box line in each page plus paired assets. Five other generated HTML files stay identical. Transported actual renderer bytes match full SHA-256 and Git-blob identities.
+
+Final native PID33720 passes **36 cases / 42 fresh anonymous contexts**, Chrome157.0.8103.39, zero page errors, exit0, 77.23 seconds. The matrix covers both searches in EN/ZH at 1440/390/320, two dark states, four actually disabled-JavaScript contexts and affected tree roving/status and index navigation/history. It verifies native activation, one input event, guarded Escape, whitespace, focus before hiding, initial and changed history, locale, 44 px geometry and evidence retention. Six field captures were visually inspected.
+
+The retained first run stopped after six fixture failures: it queried an accessible name while the control was intentionally hidden. A one-case diagnostic exposed that assertion. Final tests check the hidden label, then the visible accessible name, and require the entire expected matrix. Guarded termination plus process readback proved the original runner absent. No production source changed during test correction; the stopped receipt has no numeric exit-code claim. [Structured validation](https://github.com/mastermindx-market-intelligence/Macro/blob/16a87f43743fe3a9bae02db7e3d64969871d8cd9/research/theme_graph/gmi_design_20261021/SEARCH_CLEAR_VALIDATION_20261109.json) separates the renderer's earlier verification-file hashes from the exact final verifier/harness.
+
+Paper [GMI p7](https://app.paper.design/file/01M5H6EARN9YHQV17JC6ZG9BRY/p-7-0) adds **7SU-0**, S06G · Clear search · Day / Noir · 320px, with six editable empty/filled/keyboard-focus states. The first capture exposed a 320px root cropping an overly wide state sheet. The new companion alone was re-authored as a 320px vertical sheet; the final full native capture is clean. SVG strokes use the observed Day/Noir muted values, correcting the authoring parser's black currentColor result. The original receipt component **7JR-0** remains exact. No held style/creation/delete operation was attempted.
+
+Build **7M9-0** now has twelve modules and 39 nodes. All previous 36 IDs, parents, styles and unaffected text remain; the new three-node clear contract precedes the renumbered proof module. Current source references, native evidence, fixture correction and release boundary are explicit. New module and proof captures were inspected; both exact roots were finished. **PAPER_SEARCH_CLEAR_20261109.json** preserves the editable JSX and readback.
+
+The next source-backed improvement is index-only header consolidation: retain the linked brand, move the sole All micro-themes H1 into the product header, preserve its exact snapshot/stale subtree, Brain slot, navigation and qualified return, and remove the duplicated index head() introduction/date. It must prove real search-position improvement in matched entry states, preserve 44px navigation and no overflow, and leave other pages byte-identical. This section does not claim that next change implemented.
+
+Anonymous DOM/accessibility-tree proof does not establish OS IME, spoken AT, full shared-shell/fonts, live account/public admission or release. Catalyst's refused production attempt and Tools' loader/P0B holds remain unchanged.

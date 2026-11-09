@@ -1,0 +1,246 @@
+{
+  "schema": "PAPER_GMI_SEARCH_CLEAR_V1",
+  "date": "2026-11-09",
+  "file_id": "01M5H6EARN9YHQV17JC6ZG9BRY",
+  "page_id": "p-7-0",
+  "source_head": "16a87f43743fe3a9bae02db7e3d64969871d8cd9",
+  "source_readback": [
+    {
+      "path": "templates/gmi.js",
+      "sha": "7caa903eb1fd78bb6b4cdd611c1c69d2f0c09224",
+      "keys": [
+        "content",
+        "encoding",
+        "sha",
+        "display_url",
+        "display_title"
+      ],
+      "exact": true,
+      "length": 48612
+    },
+    {
+      "path": "site/gmi.js",
+      "sha": "7caa903eb1fd78bb6b4cdd611c1c69d2f0c09224",
+      "keys": [
+        "content",
+        "encoding",
+        "sha",
+        "display_url",
+        "display_title"
+      ],
+      "exact": true,
+      "length": 48612
+    },
+    {
+      "path": "templates/gmi.css",
+      "sha": "4225a93b50eaa668dbc3acf72a0d4c1b4b2d7e6a",
+      "keys": [
+        "content",
+        "encoding",
+        "sha",
+        "display_url",
+        "display_title"
+      ],
+      "exact": true,
+      "length": 69290
+    },
+    {
+      "path": "site/gmi.css",
+      "sha": "4225a93b50eaa668dbc3acf72a0d4c1b4b2d7e6a",
+      "keys": [
+        "content",
+        "encoding",
+        "sha",
+        "display_url",
+        "display_title"
+      ],
+      "exact": true,
+      "length": 69290
+    },
+    {
+      "path": "templates/_gmi_macros.html.j2",
+      "sha": "2b90130394a11df2e4b10fa1ab65041727d18836",
+      "keys": [
+        "content",
+        "encoding",
+        "sha",
+        "display_url",
+        "display_title"
+      ],
+      "exact": true,
+      "length": 6639
+    },
+    {
+      "path": "site/gmi.html",
+      "sha": "e765336c2b840108aff2dadb45543ea5524e6026",
+      "keys": [
+        "content",
+        "encoding",
+        "sha",
+        "display_url",
+        "display_title"
+      ],
+      "exact": true,
+      "length": 939028
+    },
+    {
+      "path": "site/gmi-index.html",
+      "sha": "16be2eb38d020a753df418c0b0abcca1487bf0dc",
+      "keys": [
+        "content",
+        "encoding",
+        "sha",
+        "display_url",
+        "display_title"
+      ],
+      "exact": true,
+      "length": 244380
+    },
+    {
+      "path": "research/theme_graph/gmi_design_20261021/verify_product_browser.py",
+      "sha": "a2ca4d53c03e0e66935877b38a9c87cc45f2507a",
+      "keys": [
+        "content",
+        "encoding",
+        "sha",
+        "display_url",
+        "display_title"
+      ],
+      "exact": true,
+      "length": 121183
+    },
+    {
+      "path": "research/theme_graph/gmi_design_20261021/verify_search_clear_component.py",
+      "sha": "7e340af7a59976a186936d322620f6358326f738",
+      "keys": [
+        "content",
+        "encoding",
+        "sha",
+        "display_url",
+        "display_title"
+      ],
+      "exact": true,
+      "length": 7783
+    },
+    {
+      "path": "research/theme_graph/gmi_design_20261021/DESIGN_RECORD.md",
+      "sha": "4fd2be674b1f176ed9adb344137df6b967688071",
+      "keys": [
+        "content",
+        "encoding",
+        "sha",
+        "display_url",
+        "display_title"
+      ],
+      "exact": true,
+      "length": 141702
+    },
+    {
+      "path": "research/theme_graph/gmi_design_20261021/SEARCH_CLEAR_VALIDATION_20261109.json",
+      "sha": "3a3deeff3657d8e4b7417a45944f673cde54ce0c",
+      "keys": [
+        "content",
+        "encoding",
+        "sha",
+        "display_url",
+        "display_title"
+      ],
+      "exact": true,
+      "length": 127186
+    }
+  ],
+  "new_states": {
+    "root": "7SU-0",
+    "name": "S06G · Clear search · Day / Noir · 320px",
+    "matrix": "7WH-0",
+    "node_count": 46,
+    "states": [
+      "EN Day empty",
+      "EN Day filled",
+      "EN Day keyboard focus",
+      "ZH Noir empty",
+      "ZH Noir filled",
+      "ZH Noir keyboard focus"
+    ],
+    "native_screenshot_observed": true,
+    "jsx": "(\n    <div id=\"7SU-0\" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', fontSize: '12px', fontSynthesis: 'none', lineHeight: '16px', MozOsxFontSmoothing: 'grayscale', overflow: 'visible', overflowWrap: 'anywhere', WebkitFontSmoothing: 'antialiased' }}>\n      <div id=\"7WH-0\" style={{ backgroundColor: 'var(--color-gmi-day-canvas)', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '16px', width: '320px' }}>\n        <div id=\"7WI-0\" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '8px', padding: '24px' }}>\n          <div id=\"7WJ-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-day-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '11px', letterSpacing: '0.08em', lineHeight: '16px' }}>\n            S06G · SEARCH CONTROL\n          </div>\n          <div id=\"7WK-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-day-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '24px', fontWeight: 600, lineHeight: '30px', whiteSpace: 'pre-wrap' }}>\n            Clear the query.<br />Keep your place.\n          </div>\n          <div id=\"7WL-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-day-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', lineHeight: '22px', whiteSpace: 'pre-wrap' }}>\n            Tree and full index<br />One action · 44 px target\n          </div>\n        </div>\n        <div id=\"7WN-0\" style={{ backgroundColor: 'var(--color-gmi-day-surface)', borderColor: 'var(--color-gmi-day-line)', borderRadius: '14px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '24px', padding: '32px', width: '320px' }}>\n          <div id=\"7WO-0\" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '8px' }}>\n            <div id=\"7WP-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-day-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '11px', letterSpacing: '0.05em', lineHeight: '16px' }}>\n              EN · DAY · 320 PX\n            </div>\n            <div id=\"7WQ-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-day-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '18px', fontWeight: 600, lineHeight: '24px' }}>\n              Tree and full index\n            </div>\n          </div>\n          <div id=\"7WX-0\" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '8px' }}>\n            <div id=\"7WY-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-day-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '12px', lineHeight: '16px' }}>\n              Empty\n            </div>\n            <div id=\"7WZ-0\" style={{ alignItems: 'center', backgroundColor: 'var(--color-gmi-day-surface)', borderColor: 'var(--color-gmi-day-line)', borderRadius: '10px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexShrink: 0, gap: '10px', height: '44px', paddingLeft: '14px', paddingRight: '58px', position: 'relative', width: '100%' }}>\n              <svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\" id=\"7X0-0\" style={{ display: 'inline-block', flexShrink: 0 }}>\n                <circle cx=\"11\" cy=\"11\" r=\"6.5\" fill=\"none\" stroke=\"#5D6B7E\" strokeWidth=\"1.8\" strokeLinecap=\"round\" strokeLinejoin=\"round\" />\n                <path d=\"M16 16l4.5 4.5\" fill=\"none\" stroke=\"#5D6B7E\" strokeWidth=\"1.8\" strokeLinecap=\"round\" strokeLinejoin=\"round\" />\n              </svg>\n              <div id=\"7X3-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-day-muted)', display: '-webkit-box', flexBasis: '0%', flexGrow: '1', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', lineHeight: '20px', minWidth: '0px', overflow: 'hidden', textOverflow: 'ellipsis', WebkitBoxOrient: 'vertical', WebkitLineClamp: '1', whiteSpace: 'pre' }}>\n                Search 371 micro-themes\n              </div>\n              <div id=\"7X4-0\" style={{ alignItems: 'center', borderColor: 'var(--color-gmi-day-line)', borderRadius: '4px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', height: '20px', justifyContent: 'center', position: 'absolute', right: '14px', top: '11px', width: '20px' }}>\n                <div id=\"7X5-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-day-muted)', fontFamily: 'var(--font-gmi-mono)', fontSize: '12px', lineHeight: '16px' }}>\n                  /\n                </div>\n              </div>\n            </div>\n          </div>\n          <div id=\"7X7-0\" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '8px' }}>\n            <div id=\"7X8-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-day-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '12px', lineHeight: '16px' }}>\n              Filled\n            </div>\n            <div id=\"7X9-0\" style={{ alignItems: 'center', backgroundColor: 'var(--color-gmi-day-surface)', borderColor: 'var(--color-gmi-day-line)', borderRadius: '10px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexShrink: 0, gap: '10px', height: '44px', paddingLeft: '14px', paddingRight: '58px', position: 'relative', width: '100%' }}>\n              <svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\" id=\"7XA-0\" style={{ display: 'inline-block', flexShrink: 0 }}>\n                <circle cx=\"11\" cy=\"11\" r=\"6.5\" fill=\"none\" stroke=\"#5D6B7E\" strokeWidth=\"1.8\" strokeLinecap=\"round\" strokeLinejoin=\"round\" />\n                <path d=\"M16 16l4.5 4.5\" fill=\"none\" stroke=\"#5D6B7E\" strokeWidth=\"1.8\" strokeLinecap=\"round\" strokeLinejoin=\"round\" />\n              </svg>\n              <div id=\"7XD-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-day-text)', display: '-webkit-box', flexBasis: '0%', flexGrow: '1', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', lineHeight: '20px', minWidth: '0px', overflow: 'hidden', textOverflow: 'ellipsis', WebkitBoxOrient: 'vertical', WebkitLineClamp: '1', whiteSpace: 'pre' }}>\n                HBM\n              </div>\n              <div id=\"7XE-0\" style={{ alignItems: 'center', borderRadius: '10px', boxSizing: 'border-box', display: 'flex', height: '44px', justifyContent: 'center', position: 'absolute', right: '0px', top: '0px', width: '44px' }}>\n                <svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\" id=\"7XF-0\" style={{ display: 'inline-block', flexShrink: 0 }}>\n                  <path d=\"M6 6l12 12M18 6 6 18\" fill=\"none\" stroke=\"#5D6B7E\" strokeWidth=\"1.8\" strokeLinecap=\"round\" />\n                </svg>\n              </div>\n            </div>\n          </div>\n          <div id=\"7XI-0\" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '8px' }}>\n            <div id=\"7XJ-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-day-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '12px', lineHeight: '16px' }}>\n              Keyboard focus\n            </div>\n            <div id=\"7XK-0\" style={{ alignItems: 'center', backgroundColor: 'var(--color-gmi-day-surface)', borderColor: 'var(--color-gmi-day-accent)', borderRadius: '10px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexShrink: 0, gap: '10px', height: '44px', paddingLeft: '14px', paddingRight: '58px', position: 'relative', width: '100%' }}>\n              <svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\" id=\"7XL-0\" style={{ display: 'inline-block', flexShrink: 0 }}>\n                <circle cx=\"11\" cy=\"11\" r=\"6.5\" fill=\"none\" stroke=\"#5D6B7E\" strokeWidth=\"1.8\" strokeLinecap=\"round\" strokeLinejoin=\"round\" />\n                <path d=\"M16 16l4.5 4.5\" fill=\"none\" stroke=\"#5D6B7E\" strokeWidth=\"1.8\" strokeLinecap=\"round\" strokeLinejoin=\"round\" />\n              </svg>\n              <div id=\"7XO-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-day-text)', display: '-webkit-box', flexBasis: '0%', flexGrow: '1', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', lineHeight: '20px', minWidth: '0px', overflow: 'hidden', textOverflow: 'ellipsis', WebkitBoxOrient: 'vertical', WebkitLineClamp: '1', whiteSpace: 'pre' }}>\n                HBM\n              </div>\n              <div id=\"7XP-0\" style={{ alignItems: 'center', borderRadius: '10px', boxSizing: 'border-box', display: 'flex', height: '44px', justifyContent: 'center', outline: '2px solid var(--color-gmi-day-accent)', outlineOffset: '-5px', position: 'absolute', right: '0px', top: '0px', width: '44px' }}>\n                <svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\" id=\"7XQ-0\" style={{ display: 'inline-block', flexShrink: 0 }}>\n                  <path d=\"M6 6l12 12M18 6 6 18\" fill=\"none\" stroke=\"#5D6B7E\" strokeWidth=\"1.8\" strokeLinecap=\"round\" />\n                </svg>\n              </div>\n            </div>\n          </div>\n        </div>\n        <div id=\"7WS-0\" style={{ backgroundColor: 'var(--color-gmi-night-surface)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '14px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '24px', padding: '32px', width: '320px' }}>\n          <div id=\"7WT-0\" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '8px' }}>\n            <div id=\"7WU-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '11px', letterSpacing: '0.05em', lineHeight: '16px' }}>\n              中文 · NOIR · 320 PX\n            </div>\n            <div id=\"7WV-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-zh)', fontSize: '18px', fontWeight: 600, lineHeight: '24px' }}>\n              主题树与完整索引\n            </div>\n          </div>\n          <div id=\"7XT-0\" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '8px' }}>\n            <div id=\"7XU-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-zh)', fontSize: '12px', lineHeight: '16px' }}>\n              空白\n            </div>\n            <div id=\"7XV-0\" style={{ alignItems: 'center', backgroundColor: 'var(--color-gmi-night-surface)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '10px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexShrink: 0, gap: '10px', height: '44px', paddingLeft: '14px', paddingRight: '58px', position: 'relative', width: '100%' }}>\n              <svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\" id=\"7XW-0\" style={{ display: 'inline-block', flexShrink: 0 }}>\n                <circle cx=\"11\" cy=\"11\" r=\"6.5\" fill=\"none\" stroke=\"#A5ACB8\" strokeWidth=\"1.8\" strokeLinecap=\"round\" strokeLinejoin=\"round\" />\n                <path d=\"M16 16l4.5 4.5\" fill=\"none\" stroke=\"#A5ACB8\" strokeWidth=\"1.8\" strokeLinecap=\"round\" strokeLinejoin=\"round\" />\n              </svg>\n              <div id=\"7XZ-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', display: '-webkit-box', flexBasis: '0%', flexGrow: '1', fontFamily: 'var(--font-gmi-zh)', fontSize: '14px', lineHeight: '20px', minWidth: '0px', overflow: 'hidden', textOverflow: 'ellipsis', WebkitBoxOrient: 'vertical', WebkitLineClamp: '1', whiteSpace: 'pre' }}>\n                搜索 371 个细分主题\n              </div>\n              <div id=\"7Y0-0\" style={{ alignItems: 'center', borderColor: 'var(--color-gmi-night-line)', borderRadius: '4px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', height: '20px', justifyContent: 'center', position: 'absolute', right: '14px', top: '11px', width: '20px' }}>\n                <div id=\"7Y1-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-mono)', fontSize: '12px', lineHeight: '16px' }}>\n                  /\n                </div>\n              </div>\n            </div>\n          </div>\n          <div id=\"7Y3-0\" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '8px' }}>\n            <div id=\"7Y4-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-zh)', fontSize: '12px', lineHeight: '16px' }}>\n              已输入\n            </div>\n            <div id=\"7Y5-0\" style={{ alignItems: 'center', backgroundColor: 'var(--color-gmi-night-surface)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '10px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexShrink: 0, gap: '10px', height: '44px', paddingLeft: '14px', paddingRight: '58px', position: 'relative', width: '100%' }}>\n              <svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\" id=\"7Y6-0\" style={{ display: 'inline-block', flexShrink: 0 }}>\n                <circle cx=\"11\" cy=\"11\" r=\"6.5\" fill=\"none\" stroke=\"#A5ACB8\" strokeWidth=\"1.8\" strokeLinecap=\"round\" strokeLinejoin=\"round\" />\n                <path d=\"M16 16l4.5 4.5\" fill=\"none\" stroke=\"#A5ACB8\" strokeWidth=\"1.8\" strokeLinecap=\"round\" strokeLinejoin=\"round\" />\n              </svg>\n              <div id=\"7Y9-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', display: '-webkit-box', flexBasis: '0%', flexGrow: '1', fontFamily: 'var(--font-gmi-zh)', fontSize: '14px', lineHeight: '20px', minWidth: '0px', overflow: 'hidden', textOverflow: 'ellipsis', WebkitBoxOrient: 'vertical', WebkitLineClamp: '1', whiteSpace: 'pre' }}>\n                HBM\n              </div>\n              <div id=\"7YA-0\" style={{ alignItems: 'center', borderRadius: '10px', boxSizing: 'border-box', display: 'flex', height: '44px', justifyContent: 'center', position: 'absolute', right: '0px', top: '0px', width: '44px' }}>\n                <svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\" id=\"7YB-0\" style={{ display: 'inline-block', flexShrink: 0 }}>\n                  <path d=\"M6 6l12 12M18 6 6 18\" fill=\"none\" stroke=\"#A5ACB8\" strokeWidth=\"1.8\" strokeLinecap=\"round\" />\n                </svg>\n              </div>\n            </div>\n          </div>\n          <div id=\"7YE-0\" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '8px' }}>\n            <div id=\"7YF-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-zh)', fontSize: '12px', lineHeight: '16px' }}>\n              键盘焦点\n            </div>\n            <div id=\"7YG-0\" style={{ alignItems: 'center', backgroundColor: 'var(--color-gmi-night-surface)', borderColor: 'var(--color-gmi-night-accent)', borderRadius: '10px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexShrink: 0, gap: '10px', height: '44px', paddingLeft: '14px', paddingRight: '58px', position: 'relative', width: '100%' }}>\n              <svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\" id=\"7YH-0\" style={{ display: 'inline-block', flexShrink: 0 }}>\n                <circle cx=\"11\" cy=\"11\" r=\"6.5\" fill=\"none\" stroke=\"#A5ACB8\" strokeWidth=\"1.8\" strokeLinecap=\"round\" strokeLinejoin=\"round\" />\n                <path d=\"M16 16l4.5 4.5\" fill=\"none\" stroke=\"#A5ACB8\" strokeWidth=\"1.8\" strokeLinecap=\"round\" strokeLinejoin=\"round\" />\n              </svg>\n              <div id=\"7YK-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', display: '-webkit-box', flexBasis: '0%', flexGrow: '1', fontFamily: 'var(--font-gmi-zh)', fontSize: '14px', lineHeight: '20px', minWidth: '0px', overflow: 'hidden', textOverflow: 'ellipsis', WebkitBoxOrient: 'vertical', WebkitLineClamp: '1', whiteSpace: 'pre' }}>\n                HBM\n              </div>\n              <div id=\"7YL-0\" style={{ alignItems: 'center', borderRadius: '10px', boxSizing: 'border-box', display: 'flex', height: '44px', justifyContent: 'center', outline: '2px solid var(--color-gmi-night-accent)', outlineOffset: '-5px', position: 'absolute', right: '0px', top: '0px', width: '44px' }}>\n                <svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\" id=\"7YM-0\" style={{ display: 'inline-block', flexShrink: 0 }}>\n                  <path d=\"M6 6l12 12M18 6 6 18\" fill=\"none\" stroke=\"#A5ACB8\" strokeWidth=\"1.8\" strokeLinecap=\"round\" />\n                </svg>\n              </div>\n            </div>\n          </div>\n        </div>\n      </div>\n    </div>\n  )"
+  },
+  "build": {
+    "root": "7M9-0",
+    "modules": 12,
+    "previous_nodes": 36,
+    "current_nodes": 39,
+    "new_module": "7YP-0",
+    "changed_text": [
+      {
+        "nodeId": "7MV-0",
+        "html": "Candidate #10676 @16a87f43 preserves the existing scripts/build_gmi_explorer.py admission of one exact Micron product observation. The card contains published_date, public URL, bilingual source label, receipt, source key/hash, planned lifecycle, product and platform. 26 Feb 2024 is a date-only publication. First recorded remains a separate theme_links.first_seen value; retrieval and review timestamps are not card fields. Do not infer current delivery, amount or revenue exposure."
+      },
+      {
+        "nodeId": "7MZ-0",
+        "html": "Implemented in templates/gmi.js and identical site/gmi.js · current blob 7caa903eb1fd78bb6b4cdd611c1c69d2f0c09224 · PR10676 @16a87f43743fe3a9bae02db7e3d64969871d8cd9. Only the locale observer passes sync(true). A one-render capture matches exact theme + receipt + source key + source text hash; every member of a duplicate receipt-ID group is ineligible. Native details restore only exact current matches, regardless of order, then discard the capture. No storage, request, URL field or research-state owner was added; evidence=1 remains the existing filter."
+      },
+      {
+        "nodeId": "7YR-0",
+        "html": "11 · Clear the search; keep the research"
+      },
+      {
+        "nodeId": "7YQ-0",
+        "html": "The tree and full index share one localized Clear search / 清空搜索 icon button. It is hidden until JavaScript binds the existing input path. Keep the field 44 px high and the action 44 × 44 px. Replace the slash hint while the raw input is nonempty, including whitespace. Suppress the browser cancel only under the enhanced class.<br /><br />Click and native Enter/Space focus the input, empty its value and dispatch the current input event once. Ordinary Escape uses that same helper; consumed, composing and keyCode229 events do nothing. The existing search, URL and expansion owners perform the reset. Do not clear primary Browse filters, select a different answer or redraw evidence.<br /><br />Index initial/history restoration synchronizes the button from the restored value. Before hiding a focused clear action, return focus to search; preserve unrelated focus. Keep lens, qualified return, other hash keys and current disclosures. Use the existing locale owner. No second filter state, announcement cycle, timer or navigation owner is needed. S06G contains editable EN Day / ZH Noir 320 px states; implementation proof also covers 390 and 1440 px."
+      },
+      {
+        "nodeId": "7NE-0",
+        "html": "12 · Proof and release boundary"
+      },
+      {
+        "nodeId": "7NF-0",
+        "html": "Clear search passes 36 cases in 42 fresh anonymous contexts: both searches in EN/ZH at 1440/390/320, two dark cases, four actual JavaScript-disabled cases and affected tree roving/status plus index navigation/history. Native click/Enter/Space dispatch once; Escape guards, raw whitespace, initial/changed history, focus before hiding, locale, 44 px geometry and retained evidence pass. Six light/dark field captures were inspected.<br /><br />The first run exposed a test assertion on a deliberately hidden button, not a source defect. Its stopped process and bounded diagnostic are retained. Final tests check the hidden label, then the visible accessible name, and require the complete expected matrix. Product source stayed unchanged. Earlier index status 14 / 14, tree status 8 / 8 and answer recovery 8 / 18 remain separately qualified.<br /><br />PR10676 @16a87f43 stays Draft with original model/release holds. The renderer reproduces the parent and changes one line in each search page plus paired assets; five other HTML outputs are exact. All 11 published files read back exactly. DESIGN_RECORD §§11.19–11.27 and dated receipts bind source, corrections and historical reuse. Anonymous DOM/accessibility-tree proof does not establish spoken AT, OS IME, full shell/fonts, live account/admission or deployment."
+      }
+    ],
+    "checks": {
+      "preserved_original_build_nodes": true,
+      "old_build_nodes": 36,
+      "new_build_nodes": 39,
+      "added": [
+        {
+          "id": "7YP-0",
+          "parent": "7M9-0",
+          "text": ""
+        },
+        {
+          "id": "7YR-0",
+          "parent": "7YP-0",
+          "text": "11 · Clear the search; keep the research "
+        },
+        {
+          "id": "7YQ-0",
+          "parent": "7YP-0",
+          "text": "The tree and full index share one localized Clear search / 清空搜索 icon button. It "
+        }
+      ],
+      "original_receipt_exact": true,
+      "module_before_proof": true,
+      "state_node_count": 46
+    },
+    "new_module_and_proof_screenshots_observed": true,
+    "jsx": "(\n    <div id=\"7M9-0\" style={{ backgroundColor: 'var(--color-gmi-night-canvas)', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', fontSynthesis: 'none', gap: '20px', MozOsxFontSmoothing: 'grayscale', overflowWrap: 'anywhere', padding: '32px', WebkitFontSmoothing: 'antialiased', width: '1080px' }}>\n      <div id=\"7MA-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-accent)', fontFamily: 'var(--font-gmi-ui)', fontSize: '12px', fontWeight: 600, letterSpacing: '0.06em', lineHeight: '18px' }}>\n        S06 · BUILD · RECEIPTS, KEYBOARD &amp; SEARCH IMPLEMENTED · 09 NOV 2026\n      </div>\n      <div id=\"7MB-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '28px', fontWeight: 600, lineHeight: '36px' }}>\n        Research that keeps your place.\n      </div>\n      <div id=\"7MP-0\" style={{ backgroundColor: 'var(--color-gmi-night-surface)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '14px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', padding: '24px' }}>\n        <div id=\"7MQ-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '18px', fontWeight: 600, lineHeight: '26px' }}>\n          01 · Keep the two native disclosures distinct\n        </div>\n        <div id=\"7MR-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', lineHeight: '22px' }}>\n          Source receipt / 来源凭证 uses .gmi-evidence-receipt: the selected card’s Record, Source key and Source text hash. Theme details / 主题详情 uses .gmi-topic-receipt: taxonomy paths, Core/Extended scope and value-chain position. Keep the current publication date, planned lifecycle, source link, company action, related topics and coverage intact. No inspector, extra route or request is needed to open either disclosure.\n        </div>\n      </div>\n      <div id=\"7MT-0\" style={{ backgroundColor: 'var(--color-gmi-night-surface)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '14px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', padding: '24px' }}>\n        <div id=\"7MU-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '18px', fontWeight: 600, lineHeight: '26px' }}>\n          02 · Exact public fields; separate clocks\n        </div>\n        <div id=\"7MV-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', lineHeight: '22px' }}>\n          Candidate #10676 @16a87f43 preserves the existing scripts/build_gmi_explorer.py admission of one exact Micron product observation. The card contains published_date, public URL, bilingual source label, receipt, source key/hash, planned lifecycle, product and platform. 26 Feb 2024 is a date-only publication. First recorded remains a separate theme_links.first_seen value; retrieval and review timestamps are not card fields. Do not infer current delivery, amount or revenue exposure.\n        </div>\n      </div>\n      <div id=\"7MX-0\" style={{ backgroundColor: 'var(--color-gmi-night-surface)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '14px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', padding: '24px' }}>\n        <div id=\"7MY-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '18px', fontWeight: 600, lineHeight: '26px' }}>\n          03 · Preserve locale state inside the existing renderer\n        </div>\n        <div id=\"7MZ-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', lineHeight: '22px' }}>\n          Implemented in templates/gmi.js and identical site/gmi.js · current blob 7caa903eb1fd78bb6b4cdd611c1c69d2f0c09224 · PR10676 @16a87f43743fe3a9bae02db7e3d64969871d8cd9. Only the locale observer passes sync(true). A one-render capture matches exact theme + receipt + source key + source text hash; every member of a duplicate receipt-ID group is ineligible. Native details restore only exact current matches, regardless of order, then discard the capture. No storage, request, URL field or research-state owner was added; evidence=1 remains the existing filter.\n        </div>\n      </div>\n      <div id=\"7N1-0\" style={{ backgroundColor: 'var(--color-gmi-night-surface)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '14px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', padding: '24px' }}>\n        <div id=\"7N2-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '18px', fontWeight: 600, lineHeight: '26px' }}>\n          04 · Preserve receipt focus across languages\n        </div>\n        <div id=\"7N3-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', lineHeight: '22px' }}>\n          On a locale-only receipt redraw, keep focus on any surviving control. Restore only a previously focused node that was removed, and only while focus remains on the body. Source/company actions must match both role and the complete destination after the existing navigation rewrite. A changed or missing action falls back to that receipt’s summary; an absent, changed or ambiguous record uses the current focusable topic heading. Native summary keeps Enter/Space and ordinary Tab behavior; disclosure state grants no source, selection or navigation authority.\n        </div>\n      </div>\n      <div id=\"7N5-0\" style={{ backgroundColor: 'var(--color-gmi-night-surface)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '14px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', padding: '24px' }}>\n        <div id=\"7N6-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '18px', fontWeight: 600, lineHeight: '26px' }}>\n          05 · Keep recovery at the serving boundary\n        </div>\n        <div id=\"7N7-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', lineHeight: '22px', whiteSpace: 'pre-wrap' }}>\n          gmi_return carries only the qualified theme/company catalogue context, a bounded query and at most one upstream theme return; it does not capture an immutable source snapshot, exact opener or scroll. Keep stale-issuer deletion. Once the guarded publisher propagates that deletion, standalone HTML reaches the normal missing-file response after the existing access gate. Do not create a replacement issuer page.<br />At the inspected Terminal source, no GMI route is admitted; the existing route boundary uses notFound(). For a separately admitted route, a missing qualified bridge reaches the existing 15-second failure boundary with Retry / Open original; a registry mismatch uses refresh. Neither proves withdrawal. Access restrictions, missing files and routing eligibility need distinct evidence.<br />Future recovery belongs to the existing serving/shell owner, must retain only permitted return context and cannot depend on JavaScript in a deleted document. Qualified against Macro @071ed19f and Terminal @4e868da4. Installed flags, live responses and the separately held registry proposal remain unverified.\n        </div>\n      </div>\n      <div id=\"7N9-0\" style={{ backgroundColor: 'var(--color-gmi-night-surface)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '14px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', padding: '24px' }}>\n        <div id=\"7NA-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '18px', fontWeight: 600, lineHeight: '26px' }}>\n          06 · Responsive implementation and useful motion\n        </div>\n        <div id=\"7NB-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', lineHeight: '22px' }}>\n          Both GMI stylesheets retain a 44 px minimum for native summaries. The production macro renders Theme details / 主题详情 separately from Source receipt / 来源凭证, including without JavaScript. Receipt identifiers remain exact. Primary navigation labels now wrap at narrow widths; the 320 px English document fits its viewport with 44 px targets. Category shortcuts also measure at least 44 px. Their mobile sticky-header and destination offsets are paired at 61 px, keeping headers visible below the rail. Preserve native expansion and immediate reduced-motion behavior. The answer-side recovery bar wraps at 320 px and retains a 44 px action.\n        </div>\n      </div>\n      <div id=\"7NH-0\" style={{ backgroundColor: 'var(--color-gmi-night-surface)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '14px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', padding: '24px' }}>\n        <div id=\"7NJ-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '18px', fontWeight: 600, lineHeight: '26px' }}>\n          07 · Copy belongs to its initiating view\n        </div>\n        <div id=\"7NI-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', lineHeight: '22px', whiteSpace: 'pre-wrap' }}>\n          One attempt captures the complete normalized URL and selected theme. Pending shows Copying… / 正在复制…. Success, failure and finally may update only that same current attempt. Selection, filter URL changes, history, lens changes and page exit retire it, even after an A→B→A return. Each success timer belongs to its own attempt; an old completion cannot enable a newer action.<br />A current failure shows the captured URL in the existing manual fallback. Later focus, pointer intent or window blur relinquishes automatic focus; body focus alone grants nothing. Locale-only redraws preserve the current URL and translate owned feedback. A prior system clipboard write cannot be cancelled; no corrective write, queue, retry or persistence was added.\n        </div>\n      </div>\n      <div id=\"7NK-0\" style={{ backgroundColor: 'var(--color-gmi-night-surface)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '14px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', padding: '24px' }}>\n        <div id=\"7NM-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '18px', fontWeight: 600, lineHeight: '26px' }}>\n          08 · One keyboard entry; predictable filtering\n        </div>\n        <div id=\"7NL-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', lineHeight: '22px', whiteSpace: 'pre-wrap' }}>\n          The enhanced tree has one sequential row entry, with arrows moving among visible rows. Hidden and empty categories cannot retain a Tab stop. Its existing bilingual heading supplies the accessible name. Native theme links keep their destinations and modified-click behavior; information buttons and See all stay separately reachable. Without JavaScript, the original 371 link attributes remain.<br /><br />Plain Enter/Space on a leaf delegates to the existing topic-selection owner. Preserve parent expansion, modifiers, IME and repeat handling. Before search hides active row content, focus the search input; before collapse hides a descendant, focus its nearest visible ancestor. Preserve surviving and unrelated focus. Clearing a zero-result search restores expansion and uses the first visible row as the next entry.<br /><br />Index shortcuts follow their filtered groups. Hidden, detached or unowned targets cannot replace the parameter fragment; reject stale observer entries before changing current-link state. Return focus before the index hides an active row, category or shortcut. Query, lens, open state and return context keep their existing owners.<br /><br />The tree’s existing no-match paragraph now sits inside one persistent polite, atomic status region. Keep focus in search, preserve its bilingual text and skip unchanged visibility writes. Clear hides the paragraph while the status owner remains mounted. A scoped CSS rule offsets the extra empty flex gap: normal spacing stays 12 px; the visible message keeps its original margins. No second announcer, timer, locale observer or query state is needed.\n        </div>\n      </div>\n      <div id=\"7NN-0\" style={{ backgroundColor: 'var(--color-gmi-night-surface)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '14px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', padding: '24px' }}>\n        <div id=\"7NP-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '18px', fontWeight: 600, lineHeight: '26px' }}>\n          09 · Count the results the user can see\n        </div>\n        <div id=\"7NO-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', lineHeight: '22px', whiteSpace: 'pre-wrap' }}>\n          The existing indexRender pass derives one compact status plus category and subgroup counts from its matching rows. HBM shows 2 results / 2 个结果, category counts of two, and one result in each visible subgroup. At zero, use the existing no-match wording in the same live-status region. The query is already visible; do not repeat it in a paragraph.<br /><br />Generated data-gmi-total attributes restore the original totals on Clear. Keep the footer explicitly labelled Full index / 完整索引. Hide the static core/extended breakdown while searching: tier and held/admitted review status are separate dimensions, so never infer one from the other. Existing bilingual spans handle language changes. Matching-row counts do not establish company evidence, completeness, freshness or admission.<br /><br />The index now keeps one persistent polite/atomic wrapper around its existing visual feedback paragraph. Move the status role off the hidden paragraph; retain its count/no-match spans and language owner. indexHidden still releases owned focus before a hide request, then skips unchanged visibility writes. Repeated equivalent searches and duplicate language notifications make no feedback mutations. The whole paragraph controls empty-gap compensation: 12 px normally and after Clear; zero-result feedback retains its space.\n        </div>\n      </div>\n      <div id=\"7SR-0\" style={{ backgroundColor: 'var(--color-gmi-night-surface)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '14px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', padding: '24px' }}>\n        <div id=\"7ST-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '18px', fontWeight: 600, lineHeight: '26px' }}>\n          10 · Recover without leaving the answer\n        </div>\n        <div id=\"7SS-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', lineHeight: '22px', whiteSpace: 'pre-wrap' }}>\n          Show “This topic is outside your filters.” / “当前主题不在筛选范围内。” with Clear filters / 清除筛选 only when a valid selected topic is excluded. Invalid-topic and failed-data states keep their own explanations, without this unrelated action. Generated markup starts hidden when JavaScript is unavailable.<br /><br />Join the existing data-topic-reset handler. Clear Browse query/category/scope/evidence, retain the selected theme, and use the current replace-URL path to preserve lens and return context and retire copy feedback. Do not select or rerender the answer: retain evidence-node identity, exact source fields and open receipts.<br /><br />The answer-side caller returns focus to the visible topic heading; existing drawer/sidebar callers keep search focus. Before hiding a focused recovery action, focus that heading. Native modal behavior stays intact. Reuse current panel/button tokens, allow wrapping, expose the notice before changing its status text, and skip unchanged text writes. No extra timer, storage or announcement owner is needed.\n        </div>\n      </div>\n      <div id=\"7YP-0\" style={{ backgroundColor: 'var(--color-gmi-night-surface)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '14px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', padding: '24px' }}>\n        <div id=\"7YR-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '18px', fontWeight: 600, lineHeight: '26px' }}>\n          11 · Clear the search; keep the research\n        </div>\n        <div id=\"7YQ-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', lineHeight: '22px', whiteSpace: 'pre-wrap' }}>\n          The tree and full index share one localized Clear search / 清空搜索 icon button. It is hidden until JavaScript binds the existing input path. Keep the field 44 px high and the action 44 × 44 px. Replace the slash hint while the raw input is nonempty, including whitespace. Suppress the browser cancel only under the enhanced class.<br /><br />Click and native Enter/Space focus the input, empty its value and dispatch the current input event once. Ordinary Escape uses that same helper; consumed, composing and keyCode229 events do nothing. The existing search, URL and expansion owners perform the reset. Do not clear primary Browse filters, select a different answer or redraw evidence.<br /><br />Index initial/history restoration synchronizes the button from the restored value. Before hiding a focused clear action, return focus to search; preserve unrelated focus. Keep lens, qualified return, other hash keys and current disclosures. Use the existing locale owner. No second filter state, announcement cycle, timer or navigation owner is needed. S06G contains editable EN Day / ZH Noir 320 px states; implementation proof also covers 390 and 1440 px.\n        </div>\n      </div>\n      <div id=\"7ND-0\" style={{ backgroundColor: 'var(--color-gmi-night-surface)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '14px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', padding: '24px' }}>\n        <div id=\"7NE-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '18px', fontWeight: 600, lineHeight: '26px' }}>\n          12 · Proof and release boundary\n        </div>\n        <div id=\"7NF-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', lineHeight: '22px', whiteSpace: 'pre-wrap' }}>\n          Clear search passes 36 cases in 42 fresh anonymous contexts: both searches in EN/ZH at 1440/390/320, two dark cases, four actual JavaScript-disabled cases and affected tree roving/status plus index navigation/history. Native click/Enter/Space dispatch once; Escape guards, raw whitespace, initial/changed history, focus before hiding, locale, 44 px geometry and retained evidence pass. Six light/dark field captures were inspected.<br /><br />The first run exposed a test assertion on a deliberately hidden button, not a source defect. Its stopped process and bounded diagnostic are retained. Final tests check the hidden label, then the visible accessible name, and require the complete expected matrix. Product source stayed unchanged. Earlier index status 14 / 14, tree status 8 / 8 and answer recovery 8 / 18 remain separately qualified.<br /><br />PR10676 @16a87f43 stays Draft with original model/release holds. The renderer reproduces the parent and changes one line in each search page plus paired assets; five other HTML outputs are exact. All 11 published files read back exactly. DESIGN_RECORD §§11.19–11.27 and dated receipts bind source, corrections and historical reuse. Anonymous DOM/accessibility-tree proof does not establish spoken AT, OS IME, full shell/fonts, live account/admission or deployment.\n        </div>\n      </div>\n    </div>\n  )"
+  },
+  "recovery": {
+    "initial_capture": "The duplicated 320px root cropped an initially authored 784px horizontal sheet.",
+    "correction": "Re-authored only the new companion contents as a complete 320px vertical Day/Noir sheet. The original receipt source remained exact. SVG strokes use the observed Day/Noir muted token values so the authoring parser does not resolve currentColor to black.",
+    "final_result": "Full native root capture inspected; all six states, clear icons and keyboard outlines are visible without clipping.",
+    "held_operations": "No update_styles/create_artboard/token/archive/delete operation was attempted."
+  },
+  "finish": {
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "node_ids": [
+      "7SU-0",
+      "7M9-0"
+    ]
+  },
+  "retained_boundaries": [
+    "Original 7JR receipt component byte-identical before/after.",
+    "Existing 36 Build IDs, styles, parents and untouched text retained; new three-node module placed before proof.",
+    "Source remains Draft; browser and Paper specimens are not production release or native assistive-technology acceptance."
+  ]
+}
