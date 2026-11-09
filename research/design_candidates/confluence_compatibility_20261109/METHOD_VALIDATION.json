@@ -1,0 +1,460 @@
+{
+  "schema": "confluence_method_validation/v1",
+  "parent": "d752f398271dd444697e662a4dab29529dcb8a45",
+  "source_receipt": {
+    "parent": "d752f398271dd444697e662a4dab29529dcb8a45",
+    "template_inverse_exact": true,
+    "served_inverse_exact": true,
+    "parent_components_exact": true,
+    "served_changed_regions": [
+      "page_style",
+      "ledger"
+    ],
+    "figures": [
+      {
+        "remaining_paragraphs_exact": true,
+        "steps": "Within each month 每个月内 Share of winning fires 触发后上涨的占比 Across months 汇总各月 Average shares equally 各月占比等权平均",
+        "caption": "Win: price is above the next-close entry price after 21 trading days. 上涨：以触发后的下一收盘价入场，21 个交易日后价格高于入场价。 This is not the fraction of winning months or the pooled win rate. 这不是盈利月份占比，也不是所有触发次数合并后的胜率。"
+      },
+      {
+        "remaining_paragraphs_exact": true,
+        "steps": "Within each month 每个月内 Share of winning fires 触发后上涨的占比 Across months 汇总各月 Average shares equally 各月占比等权平均",
+        "caption": "Win: price is above the next-close entry price after 21 trading days. 上涨：以触发后的下一收盘价入场，21 个交易日后价格高于入场价。 This is not the fraction of winning months or the pooled win rate. 这不是盈利月份占比，也不是所有触发次数合并后的胜率。"
+      },
+      {
+        "remaining_paragraphs_exact": true,
+        "steps": "Within each month 每个月内 Share of winning fires 触发后上涨的占比 Across months 汇总各月 Average shares equally 各月占比等权平均",
+        "caption": "Win: price is above the next-close entry price after 21 trading days. 上涨：以触发后的下一收盘价入场，21 个交易日后价格高于入场价。 This is not the fraction of winning months or the pooled win rate. 这不是盈利月份占比，也不是所有触发次数合并后的胜率。"
+      }
+    ],
+    "card_markup_exact_after_restoring_first_paragraph": true,
+    "all_scripts_exact": true,
+    "hero_motif_exact": true,
+    "unchanged_files": [
+      "scripts/build_confluence_screener.py",
+      "tests/test_confluence_screener_page.py",
+      "site/premiumdata/confluence_screener.json"
+    ],
+    "protected_payload_matches_actual_producer": true,
+    "source_generation": {
+      "schema": "confluence_source.v1",
+      "generated_utc": "2026-11-08T11:31:29Z",
+      "sha256": "4f8c3dcd8508a55978f4b27d7c4d34828bc1044881ed404120cb353b1d4dc7c1"
+    },
+    "tagged_cta_exact": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+    "files": {
+      "templates/confluence_screener.html.j2": {
+        "bytes": 52475,
+        "sha256": "b8883532f7db6b4a57b03dd2dd2bf94e0f9ed39a95f85b140071e446c0d86442",
+        "blob": "6aa36e72ee8c10ffa30ee45e4f7b2b0cac6686aa"
+      },
+      "site/confluence_screener.html": {
+        "bytes": 122586,
+        "sha256": "7e2867cb6759edeb4208c2c28802946aad345cb710960efc1f2d44a9e0f6b88a",
+        "blob": "5cc4cfce90800c399c4396142288bc5a8173d00c"
+      },
+      "scripts/build_confluence_screener.py": {
+        "bytes": 19003,
+        "sha256": "b5aa86624a18a17fd985870d9baaaa8cb745b0baffa6d4c17b6e198b6668d50a",
+        "blob": "b3db0ced7bc46607f728764c6f9f00dd851f9012"
+      },
+      "tests/test_confluence_screener_page.py": {
+        "bytes": 39299,
+        "sha256": "d1877abe2a29d2c5d7412566eface17f81c62fdd980dff178efa2d0c5e657257",
+        "blob": "906eb06bc02fb37140fa403b425316bc8341ac87"
+      },
+      "site/premiumdata/confluence_screener.json": {
+        "bytes": 542,
+        "sha256": "11a76bb62e26bd344ef29c198b7791df95b4140d18328f46f54b343f78aa4e7d",
+        "blob": "ed039512de9bf2fe3c838b6d562d0ef5da72658f"
+      }
+    }
+  },
+  "template_changes": [
+    [
+      "        <p>{{ t('Within each month, calculate the share of fires whose next-close entry finished higher after 21 trading days. Then average those monthly proportions equally. This is not the fraction of winning months or the pooled win rate.', '先在每个月内计算触发后于下一收盘价入场、21 个交易日后上涨的比例，再对各月比例等权平均。这不是盈利月份占比，也不是所有触发次数合并后的胜率。') }}</p>",
+      "        <figure class=\"method-figure\">\n          <ol class=\"method-steps\" role=\"list\">\n            <li>\n              <span class=\"method-step-label\">{{ t('Within each month', '每个月内') }}</span>\n              <strong>{{ t('Share of winning fires', '触发后上涨的占比') }}</strong>\n            </li>\n            <li>\n              <span class=\"method-step-label\">{{ t('Across months', '汇总各月') }}</span>\n              <strong>{{ t('Average shares equally', '各月占比等权平均') }}</strong>\n            </li>\n          </ol>\n          <figcaption>{{ t('Win: price is above the next-close entry price after 21 trading days.', '上涨：以触发后的下一收盘价入场，21 个交易日后价格高于入场价。') }}\n            <p class=\"method-distinction\">{{ t('This is not the fraction of winning months or the pooled win rate.', '这不是盈利月份占比，也不是所有触发次数合并后的胜率。') }}</p>\n          </figcaption>\n        </figure>"
+    ],
+    [
+      ".lc-method p{font-size:var(--fs-body,14px);line-height:1.55;margin:0 0 var(--sp-3,12px);max-width:85ch}\n",
+      ".lc-method p{font-size:var(--fs-body,14px);line-height:1.55;margin:0 0 var(--sp-3,12px);max-width:85ch}\n\n/* Explain the existing monthly calculation without inventing example observations. */\n.method-figure{margin:var(--sp-2,8px) 0 var(--sp-3,12px);max-width:560px}\n.method-steps{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 28px;list-style:none;margin:0;padding:0}\n.method-steps li{position:relative;display:grid;grid-template-rows:subgrid;grid-row:span 2;min-width:0}\n.method-step-label{font-size:var(--fs-sm,12.5px);line-height:1.4;color:var(--muted)}\n.method-steps strong{font-size:var(--fs-body,14px);line-height:1.45;font-weight:600;color:var(--text);overflow-wrap:anywhere}\n.method-steps li+li::before{content:\"→\";position:absolute;top:20px;left:-21px;font-size:16px;line-height:20px;color:var(--muted)}\n.method-figure figcaption{font-size:var(--fs-body,14px);line-height:1.55;margin-top:10px}\n.lc-method .method-distinction{margin:8px 0 0}\n.lc-method[open] .method-figure{animation:method-reveal 120ms ease-out}\n@keyframes method-reveal{from{opacity:.85}to{opacity:1}}\n"
+    ],
+    [
+      "/* responsive */\n@media(max-width:640px){",
+      "/* responsive */\n@media(max-width:400px){\n  .locked{display:grid;grid-template-columns:32px minmax(0,1fr);align-items:start}\n  .locked .lk-tx{min-width:0}\n  .locked>.btn{grid-column:1/-1;justify-self:start}\n}\n@media(max-width:640px){"
+    ]
+  ],
+  "native_source_projection": {
+    "start": {
+      "content": [
+        {
+          "type": "text",
+          "text": "Process started with PID 27048 (shell: /bin/zsh)\nInitial output:\n{\"receipt\": \"/Volumes/Mastermind/agent-workspaces/verify/confluence-compat-20261109-klbmhv4a/method-source-receipt.json\", \"template_inverse_exact\": true, \"served_inverse_exact\": true, \"card_restoration_exact\": true, \"remaining_paragraphs_per_card\": 4, \"files\": {\"templates/confluence_screener.html.j2\": {\"bytes\": 52475, \"sha256\": \"b8883532f7db6b4a57b03dd2dd2bf94e0f9ed39a95f85b140071e446c0d86442\", \"blob\": \"6aa36e72ee8c10ffa30ee45e4f7b2b0cac6686aa\"}, \"site/confluence_screener.html\": {\"bytes\": 122586, \"sha256\": \"7e2867cb6759edeb4208c2c28802946aad345cb710960efc1f2d44a9e0f6b88a\", \"blob\": \"5cc4cfce90800c399c4396142288bc5a8173d00c\"}, \"scripts/build_confluence_screener.py\": {\"bytes\": 19003, \"sha256\": \"b5aa86624a18a17fd985870d9baaaa8cb745b0baffa6d4c17b6e198b6668d50a\", \"blob\": \"b3db0ced7bc46607f728764c6f9f00dd851f9012\"}, \"tests/test_confluence_screener_page.py\": {\"bytes\": 39299, \"sha256\": \"d1877abe2a29d2c5d7412566eface17f81c62fdd980dff178efa2d0c5e657257\", \"blob\": \"906eb06bc02fb37140fa403b425316bc8341ac87\"}, \"site/premiumdata/confluence_screener.json\": {\"bytes\": 542, \"sha256\": \"11a76bb62e26bd344ef29c198b7791df95b4140d18328f46f54b343f78aa4e7d\", \"blob\": \"ed039512de9bf2fe3c838b6d562d0ef5da72658f\"}}}\n"
+        }
+      ],
+      "structuredContent": null,
+      "isError": false
+    },
+    "completion": {
+      "content": [
+        {
+          "type": "text",
+          "text": "[Reading 2 new lines (total: 2 lines)]\n\n{\"receipt\": \"/Volumes/Mastermind/agent-workspaces/verify/confluence-compat-20261109-klbmhv4a/method-source-receipt.json\", \"template_inverse_exact\": true, \"served_inverse_exact\": true, \"card_restoration_exact\": true, \"remaining_paragraphs_per_card\": 4, \"files\": {\"templates/confluence_screener.html.j2\": {\"bytes\": 52475, \"sha256\": \"b8883532f7db6b4a57b03dd2dd2bf94e0f9ed39a95f85b140071e446c0d86442\", \"blob\": \"6aa36e72ee8c10ffa30ee45e4f7b2b0cac6686aa\"}, \"site/confluence_screener.html\": {\"bytes\": 122586, \"sha256\": \"7e2867cb6759edeb4208c2c28802946aad345cb710960efc1f2d44a9e0f6b88a\", \"blob\": \"5cc4cfce90800c399c4396142288bc5a8173d00c\"}, \"scripts/build_confluence_screener.py\": {\"bytes\": 19003, \"sha256\": \"b5aa86624a18a17fd985870d9baaaa8cb745b0baffa6d4c17b6e198b6668d50a\", \"blob\": \"b3db0ced7bc46607f728764c6f9f00dd851f9012\"}, \"tests/test_confluence_screener_page.py\": {\"bytes\": 39299, \"sha256\": \"d1877abe2a29d2c5d7412566eface17f81c62fdd980dff178efa2d0c5e657257\", \"blob\": \"906eb06bc02fb37140fa403b425316bc8341ac87\"}, \"site/premiumdata/confluence_screener.json\": {\"bytes\": 542, \"sha256\": \"11a76bb62e26bd344ef29c198b7791df95b4140d18328f46f54b343f78aa4e7d\", \"blob\": \"ed039512de9bf2fe3c838b6d562d0ef5da72658f\"}}}\n\n✅ Process completed with exit code 0 (runtime: 0.55s)"
+        }
+      ],
+      "structuredContent": null,
+      "isError": false
+    },
+    "command": "python3 - <<'PY'\nfrom pathlib import Path\nimport hashlib,html,json,re,sys\nfrom bs4 import BeautifulSoup\nr=Path(\"/Volumes/Mastermind/agent-workspaces/verify/confluence-compat-20261109-klbmhv4a\");p=r/'method-parent';sys.path.insert(0,str(r))\nm=json.loads((r/'method-manifest.json').read_text());old_template=(p/'templates/confluence_screener.html.j2').read_text();new_template=(r/'templates/confluence_screener.html.j2').read_text();inverse=new_template\nfor a,b in reversed(m['changes']):\n assert inverse.count(b)==1\n inverse=inverse.replace(b,a,1)\nassert inverse==old_template\nfrom scripts.build_confluence_screener import build_context,render_html,build_premium_payload\nraw=json.loads((r/'site/factordata/tech_confluence.json').read_text());tiles=json.loads((r/'site/marketdata/sp500_heatmap.json').read_text()).get('tiles',[]);names={t['t']:t['name'] for t in tiles if t.get('t') and t.get('name')}\nserved=(p/'site/confluence_screener.html').read_bytes().decode();ctx=build_context(raw,names);ctx['generated_utc']='FIXED_METHOD_CLOCK';ctx['cta_url']=html.unescape(re.search(r'<a class=\"btn\" href=\"([^\"]+)\"><span class=\"l-en\">Start free trial',served).group(1))\nold,new=render_html(p,ctx),render_html(r,ctx)\ndef regions(t):return {'style':re.search(r'<style>\\n/\\* ── bilingual.*?</style>',t,re.S).group(0),'ledger':t[t.index('<div class=\"ledger\">'):t.index('<div class=\"honesty\">')]}\na,b,c=regions(old),regions(served),regions(new);assert a==b\nupdated=served\nfor key in ('style','ledger'):\n assert updated.count(b[key])==1;updated=updated.replace(b[key],c[key],1)\nback=updated\nfor key in ('ledger','style'):\n assert back.count(c[key])==1;back=back.replace(c[key],b[key],1)\nassert back==served\nbs,ns=BeautifulSoup(served,'html.parser'),BeautifulSoup(updated,'html.parser')\nassert len(ns.select('.method-figure'))==3\nremaining=[]\nfor old_card,new_card in zip(bs.select('.lc'),ns.select('.lc')):\n om,nm=old_card.select_one('.lc-method'),new_card.select_one('.lc-method')\n old_ps=om.find_all('p',recursive=False);new_ps=nm.find_all('p',recursive=False)\n assert len(old_ps)==5 and len(new_ps)==4\n assert [str(n) for n in old_ps[1:]]==[str(n) for n in new_ps]\n figure=new_card.select_one('.method-figure');assert len(figure.select('ol > li'))==2\n remaining.append({'remaining_paragraphs_exact':True,'steps':figure.select_one('ol').get_text(' ',strip=True),'caption':figure.select_one('figcaption').get_text(' ',strip=True)})\n figure.replace_with(BeautifulSoup(str(old_ps[0]),'html.parser').p)\n assert str(new_card)==str(old_card),'outside method-figure card change'\nassert [str(n) for n in bs.find_all('script')]==[str(n) for n in ns.find_all('script')]\nassert str(bs.select_one('.hero-motif'))==str(ns.select_one('.hero-motif'))\nunchanged=['scripts/build_confluence_screener.py','tests/test_confluence_screener_page.py','site/premiumdata/confluence_screener.json']\nfor path in unchanged:assert (r/path).read_bytes()==(p/path).read_bytes(),path\nassert build_premium_payload(raw,names)==json.loads((r/'site/premiumdata/confluence_screener.json').read_text())\n(r/'site/confluence_screener.html').write_bytes(updated.encode())\ndef meta(path):\n data=path.read_bytes();return {'bytes':len(data),'sha256':hashlib.sha256(data).hexdigest(),'blob':hashlib.sha1(b'blob '+str(len(data)).encode()+b'\\0'+data).hexdigest()}\nproof={'parent':m['parent'],'template_inverse_exact':True,'served_inverse_exact':True,'parent_components_exact':True,'served_changed_regions':['page_style','ledger'],'figures':remaining,'card_markup_exact_after_restoring_first_paragraph':True,'all_scripts_exact':True,'hero_motif_exact':True,'unchanged_files':unchanged,'protected_payload_matches_actual_producer':True,'source_generation':ctx['source_generation'],'tagged_cta_exact':ctx['cta_url'],'files':{path:meta(r/path) for path in ['templates/confluence_screener.html.j2','site/confluence_screener.html']+unchanged}}\n(r/'method-source-receipt.json').write_text(json.dumps(proof,ensure_ascii=False,indent=2)+'\\n')\nprint(json.dumps({'receipt':str(r/'method-source-receipt.json'),'template_inverse_exact':True,'served_inverse_exact':True,'card_restoration_exact':True,'remaining_paragraphs_per_card':4,'files':proof['files']},ensure_ascii=False))\nPY"
+  },
+  "tests": {
+    "start": {
+      "content": [
+        {
+          "type": "text",
+          "text": "Process started with PID 28226 (shell: /bin/zsh)\nInitial output:\n\n⏳ Process is running. Use read_process_output to get more output."
+        }
+      ],
+      "structuredContent": null,
+      "isError": false
+    },
+    "completion": {
+      "content": [
+        {
+          "type": "text",
+          "text": "[Reading 7 new lines (total: 7 lines)]\n\n........................................................................ [ 78%]\n....................                                                     [100%]\n92 passed in 5.29s\n\n\n{\"exit\": 0}\n\n✅ Process completed with exit code 0 (runtime: 5.77s)"
+        }
+      ],
+      "structuredContent": null,
+      "isError": false
+    },
+    "output": "........................................................................ [ 78%]\n....................                                                     [100%]\n92 passed in 5.29s\n",
+    "command": "python3 - <<'PY'\nfrom pathlib import Path\nimport json,subprocess,sys\nr=Path('/Volumes/Mastermind/agent-workspaces/verify/confluence-compat-20261109-klbmhv4a')\np=subprocess.run([sys.executable,'-B','-m','pytest','-q','tests/test_confluence_screener_page.py','--disable-warnings','--basetemp',str(r/'pytest-method-reviewed-render')],cwd=r,text=True,capture_output=True)\n(r/'method-reviewed-page-tests-output.txt').write_text(p.stdout+p.stderr);print(p.stdout);print(p.stderr);print(json.dumps({'exit':p.returncode}));raise SystemExit(p.returncode)\nPY",
+    "existing_tests": 92,
+    "new_page_tests": 0
+  },
+  "browser": {
+    "start": {
+      "content": [
+        {
+          "type": "text",
+          "text": "Process started with PID 28065 (shell: /bin/zsh)\nInitial output:\n\n⏳ Process is running. Use read_process_output to get more output."
+        }
+      ],
+      "structuredContent": null,
+      "isError": false
+    },
+    "completion": {
+      "content": [
+        {
+          "type": "text",
+          "text": "[Reading 2 new lines (total: 2 lines)]\n\n{\"passed\": 13, \"failed\": 0, \"contexts\": 13, \"page_errors\": 0, \"report\": \"/Volumes/Mastermind/agent-workspaces/verify/confluence-compat-20261109-klbmhv4a/method-reviewed-proof/browser-report.json\", \"failures\": []}\n\n✅ Process completed with exit code 0 (runtime: 11.54s)"
+        }
+      ],
+      "structuredContent": null,
+      "isError": false
+    },
+    "command": "python3 -B '/Volumes/Mastermind/agent-workspaces/verify/confluence-compat-20261109-klbmhv4a/scripts/verify_confluence_method_browser.py' --out '/Volumes/Mastermind/agent-workspaces/verify/confluence-compat-20261109-klbmhv4a/method-reviewed-proof' --baseline-page '/Volumes/Mastermind/agent-workspaces/verify/confluence-compat-20261109-klbmhv4a/method-parent/site/confluence_screener.html' --browser-executable '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'",
+    "report": "METHOD_BROWSER.json",
+    "passed": 13,
+    "failed": 0,
+    "contexts": 13,
+    "page_observations": 26,
+    "page_errors": 0,
+    "report_sources": {
+      "templates/confluence_screener.html.j2": {
+        "bytes": 52475,
+        "sha256": "b8883532f7db6b4a57b03dd2dd2bf94e0f9ed39a95f85b140071e446c0d86442",
+        "blob": "6aa36e72ee8c10ffa30ee45e4f7b2b0cac6686aa"
+      },
+      "site/confluence_screener.html": {
+        "bytes": 122586,
+        "sha256": "7e2867cb6759edeb4208c2c28802946aad345cb710960efc1f2d44a9e0f6b88a",
+        "blob": "5cc4cfce90800c399c4396142288bc5a8173d00c"
+      },
+      "site/premiumdata/confluence_screener.json": {
+        "bytes": 542,
+        "sha256": "11a76bb62e26bd344ef29c198b7791df95b4140d18328f46f54b343f78aa4e7d",
+        "blob": "ed039512de9bf2fe3c838b6d562d0ef5da72658f"
+      },
+      "scripts/verify_confluence_method_browser.py": {
+        "bytes": 16632,
+        "sha256": "6d6dca09d04949f4be10892c8b4aeef1d6cb5806f0d3b66b324dbb3431b91a8e",
+        "blob": "0758baaff2935569bdcab858fb31af005e39a996"
+      }
+    },
+    "captures": [
+      {
+        "file": "before-method-320-en.png",
+        "surface": "method",
+        "state": "before",
+        "width": 320,
+        "lang": "en",
+        "bytes": 15378,
+        "sha256": "e37af4f9eb899905cbd325b30231d5c0ec3454003bf2d1563b274bcbd7a75f42",
+        "blob": "4ad6a1233f45a3fca331edb73e7fd6b4683b2c38"
+      },
+      {
+        "file": "before-locked-320-en.png",
+        "surface": "locked",
+        "state": "before",
+        "width": 320,
+        "lang": "en",
+        "bytes": 8477,
+        "sha256": "25bd521deb0b51d6ae70b37e568c89caed10ab434553cf09efee8ae78a61557d",
+        "blob": "4866a8d9c083e93d220a5b476458b8456ff03869"
+      },
+      {
+        "file": "after-method-320-en.png",
+        "surface": "method",
+        "state": "after",
+        "width": 320,
+        "lang": "en",
+        "bytes": 18078,
+        "sha256": "559ef47199c246cca8c8958491bed8f9d995441c0ea319c3d7805f8e895eebea",
+        "blob": "5990eb233c106946034d5b039471309a7d4468e5"
+      },
+      {
+        "file": "after-locked-320-en.png",
+        "surface": "locked",
+        "state": "after",
+        "width": 320,
+        "lang": "en",
+        "bytes": 8099,
+        "sha256": "00f848814938104a46da3fb64bcfac395a8b4a38045aa53a1ede092051fa6b56",
+        "blob": "da46c551f93282e28e8899c22cfa129a1680794e"
+      },
+      {
+        "file": "before-method-320-zh.png",
+        "surface": "method",
+        "state": "before",
+        "width": 320,
+        "lang": "zh",
+        "bytes": 17231,
+        "sha256": "d315523bf7cb642eaa09908e982d3b62e31f6e16a85dee196f5fd67e6488d7dc",
+        "blob": "e2394c8d80ed73af5a74c3c3916f35dea1ddd8d8"
+      },
+      {
+        "file": "before-locked-320-zh.png",
+        "surface": "locked",
+        "state": "before",
+        "width": 320,
+        "lang": "zh",
+        "bytes": 10803,
+        "sha256": "1707da27ae2790ec4c576029689d32c3dae4a4dc12130c29f0c96998c066fa27",
+        "blob": "e99ad0c7067cbbc160b46f9f4c5d52f2f79fd3f1"
+      },
+      {
+        "file": "after-method-320-zh.png",
+        "surface": "method",
+        "state": "after",
+        "width": 320,
+        "lang": "zh",
+        "bytes": 21514,
+        "sha256": "304ee15c706f34d36923d7b95cb8951b38e93ca8b9ee5442e7a13f686671e849",
+        "blob": "2a7e87490ba951660eb99f057d3efe443d5406f7"
+      },
+      {
+        "file": "after-locked-320-zh.png",
+        "surface": "locked",
+        "state": "after",
+        "width": 320,
+        "lang": "zh",
+        "bytes": 10641,
+        "sha256": "081ea71c594a14873fc6b64cc4c957b339cf1e86c80b2987a940d551fd0aea19",
+        "blob": "4a7f9821a85e66ddfc76117603b94db08e22246b"
+      },
+      {
+        "file": "before-method-1440-en.png",
+        "surface": "method",
+        "state": "before",
+        "width": 1440,
+        "lang": "en",
+        "bytes": 13872,
+        "sha256": "fd91ca16c67ea82c9c4895069bb158b1272705b9870cb04fc439c178a7e2e2ff",
+        "blob": "10edff86c999d080a279fcba509597801038552c"
+      },
+      {
+        "file": "after-method-1440-en.png",
+        "surface": "method",
+        "state": "after",
+        "width": 1440,
+        "lang": "en",
+        "bytes": 17070,
+        "sha256": "1b03d6bc306bc84db28de64668635097a7dc2878bbc87167dc409dc154c88a45",
+        "blob": "c67c7b4216cd736c64fedd6c3c9311431f8db207"
+      },
+      {
+        "file": "before-method-1440-zh.png",
+        "surface": "method",
+        "state": "before",
+        "width": 1440,
+        "lang": "zh",
+        "bytes": 16779,
+        "sha256": "23fc3fa157c2f2eae37de957c6ad05dd295cae5af6e170418c20e543be1d6b56",
+        "blob": "e502eba3212e2230c09149257eabd6199ee7190a"
+      },
+      {
+        "file": "after-method-1440-zh.png",
+        "surface": "method",
+        "state": "after",
+        "width": 1440,
+        "lang": "zh",
+        "bytes": 21400,
+        "sha256": "58cc66ccf532bb1b39826ebd805167779269acdedf33f0a922700f81aff3ef6d",
+        "blob": "0f3da31cc3a9adf79a6f132eeb7aca410db0e653"
+      }
+    ],
+    "visually_inspected_captures": [
+      "before-method-320-en.png",
+      "before-locked-320-en.png",
+      "after-method-320-en.png",
+      "after-locked-320-en.png",
+      "before-method-320-zh.png",
+      "before-locked-320-zh.png",
+      "after-method-320-zh.png",
+      "after-locked-320-zh.png",
+      "before-method-1440-en.png",
+      "after-method-1440-en.png",
+      "before-method-1440-zh.png",
+      "after-method-1440-zh.png"
+    ]
+  },
+  "initial": {
+    "start": {
+      "content": [
+        {
+          "type": "text",
+          "text": "Process started with PID 8748 (shell: /bin/zsh)\nInitial output:\n\n⏳ Process is running. Use read_process_output to get more output."
+        }
+      ],
+      "structuredContent": null,
+      "isError": false
+    },
+    "completion": {
+      "content": [
+        {
+          "type": "text",
+          "text": "[Reading 2 new lines (total: 2 lines)]\n\n{\"passed\": 12, \"failed\": 1, \"contexts\": 13, \"page_errors\": 0, \"report\": \"/Volumes/Mastermind/agent-workspaces/verify/confluence-compat-20261109-klbmhv4a/method-candidate-proof/browser-report.json\", \"failures\": [{\"name\": \"320-en-reduce-no-page-js\", \"error\": \"Page.wait_for_function: Timeout 6000ms exceeded.\"}]}\n\n✅ Process completed with exit code 1 (runtime: 18.09s)"
+        }
+      ],
+      "structuredContent": null,
+      "isError": false
+    },
+    "report": "METHOD_BROWSER_INITIAL.json",
+    "passed": 12,
+    "failed": 1,
+    "retained_snapshot_count": 25,
+    "reported_snapshot_count": 26,
+    "classifications": [
+      "Native disclosure opened; injected toggle observer could not execute with page JavaScript disabled. Final verifier observes native state/computed CSS directly in that case.",
+      "Initial <=640px locked grouping unnecessarily increased 640px height. Final source scopes grouping to <=400px and asserts no checked locked-height increase.",
+      "Initial figure focus clearance and figcaption content-model placement corrected.",
+      "Reduced-motion computed name/duration added so proof does not depend on event timing."
+    ],
+    "initial_template": {
+      "bytes": 52421,
+      "sha256": "74a2709c269fce3ff5170003de715d3591d6c1dfb1a95624af19fc09b316acb9",
+      "blob": "1df38e189fb680916dedaa402d33ac0d14ebaf5d"
+    },
+    "initial_harness": {
+      "bytes": 15627,
+      "sha256": "8c0288f7bb2deb05bbbba423ad03692f5909ed8cb2c24dea34cb398417b6b7b1",
+      "blob": "fbaf48eae471adb82d5a8d0a058790ff1a79d30a"
+    }
+  },
+  "tradeoff": {
+    "collapsed_default_preserved": true,
+    "expanded_method_height_delta": [
+      {
+        "name": "320-en-reduce",
+        "pixels": 40.53125
+      },
+      {
+        "name": "320-zh-reduce",
+        "pixels": 66.40625
+      },
+      {
+        "name": "390-en-reduce",
+        "pixels": 66.40625
+      },
+      {
+        "name": "390-zh-reduce",
+        "pixels": 67.796875
+      },
+      {
+        "name": "400-en-reduce",
+        "pixels": 66.40625
+      },
+      {
+        "name": "400-zh-reduce",
+        "pixels": 67.796875
+      },
+      {
+        "name": "401-en-reduce",
+        "pixels": 66.40625
+      },
+      {
+        "name": "401-zh-reduce",
+        "pixels": 67.796875
+      },
+      {
+        "name": "1440-en-reduce",
+        "pixels": 67.796875
+      },
+      {
+        "name": "1440-zh-reduce",
+        "pixels": 67.796875
+      },
+      {
+        "name": "320-en-no-preference",
+        "pixels": 40.53125
+      },
+      {
+        "name": "1440-zh-no-preference",
+        "pixels": 67.796875
+      },
+      {
+        "name": "320-en-reduce-no-page-js",
+        "pixels": 40.53125
+      }
+    ],
+    "narrow_locked_height_reduction": [
+      {
+        "name": "320-en-reduce",
+        "pixels": [
+          46,
+          46
+        ]
+      },
+      {
+        "name": "320-zh-reduce",
+        "pixels": [
+          29.90625,
+          29.90625
+        ]
+      },
+      {
+        "name": "320-en-no-preference",
+        "pixels": [
+          46,
+          46
+        ]
+      },
+      {
+        "name": "320-en-reduce-no-page-js",
+        "pixels": [
+          46,
+          46
+        ]
+      }
+    ]
+  },
+  "limits": [
+    "Controlled local browser; existing app destination intercepted, not live signup or entitlement.",
+    "No changes to builder, protected JSON, auth/controller, source ordering, data or hero; source receipt proves these boundaries.",
+    "No deployment or release proof; Draft PR10893 does not inherit PR10705 admission.",
+    "Prior shared-navigation overflow at960 remains outside this check.",
+    "Native CSS animation tested in Chrome157; no full shared-shell/font or spoken AT claim."
+  ]
+}

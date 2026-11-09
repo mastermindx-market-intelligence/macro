@@ -134,6 +134,18 @@ a{color:var(--ink-link, var(--link));text-decoration:none}
 .lc-method summary::before{content:"+";font:700 16px var(--font-mono);width:16px;flex:none}
 .lc-method[open] summary::before{content:"−"}
 .lc-method p{font-size:var(--fs-body,14px);line-height:1.55;margin:0 0 var(--sp-3,12px);max-width:85ch}
+
+/* Explain the existing monthly calculation without inventing example observations. */
+.method-figure{margin:var(--sp-2,8px) 0 var(--sp-3,12px);max-width:560px}
+.method-steps{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 28px;list-style:none;margin:0;padding:0}
+.method-steps li{position:relative;display:grid;grid-template-rows:subgrid;grid-row:span 2;min-width:0}
+.method-step-label{font-size:var(--fs-sm,12.5px);line-height:1.4;color:var(--muted)}
+.method-steps strong{font-size:var(--fs-body,14px);line-height:1.45;font-weight:600;color:var(--text);overflow-wrap:anywhere}
+.method-steps li+li::before{content:"→";position:absolute;top:20px;left:-21px;font-size:16px;line-height:20px;color:var(--muted)}
+.method-figure figcaption{font-size:var(--fs-body,14px);line-height:1.55;margin-top:10px}
+.lc-method .method-distinction{margin:8px 0 0}
+.lc-method[open] .method-figure{animation:method-reveal 120ms ease-out}
+@keyframes method-reveal{from{opacity:.85}to{opacity:1}}
 .confluence-access{display:flex;align-items:center;gap:var(--sp-3,12px);flex-wrap:wrap;padding:var(--sp-4,16px);margin-top:var(--sp-4,16px);border:1px solid var(--line);border-radius:var(--r-card,12px);background:var(--panel2);font-size:var(--fs-body,14px)}
 .confluence-access[hidden],.confluence-access button[hidden]{display:none}
 .empty .btn{margin-top:var(--sp-4,16px)}
@@ -218,6 +230,11 @@ a:focus-visible,.btn:focus-visible,summary:focus-visible{outline:2px solid var(-
   .lc-wr{width:100%;gap:var(--sp-3,12px)}
 }
 /* responsive */
+@media(max-width:400px){
+  .locked{display:grid;grid-template-columns:32px minmax(0,1fr);align-items:start}
+  .locked .lk-tx{min-width:0}
+  .locked>.btn{grid-column:1/-1;justify-self:start}
+}
 @media(max-width:640px){
   .hero-inner{grid-template-columns:1fr}
   .hero-motif{display:none}
@@ -647,7 +664,21 @@ html[data-theme="light"] .cs-tipped:hover,html[data-theme="light"] .cs-tipped:fo
 
       <details class="lc-method">
         <summary><span class="l-en">How these readings are calculated</span><span class="l-zh">这些读数如何计算</span></summary>
-        <p><span class="l-en">Within each month, calculate the share of fires whose next-close entry finished higher after 21 trading days. Then average those monthly proportions equally. This is not the fraction of winning months or the pooled win rate.</span><span class="l-zh">先在每个月内计算触发后于下一收盘价入场、21 个交易日后上涨的比例，再对各月比例等权平均。这不是盈利月份占比，也不是所有触发次数合并后的胜率。</span></p>
+        <figure class="method-figure">
+          <ol class="method-steps" role="list">
+            <li>
+              <span class="method-step-label"><span class="l-en">Within each month</span><span class="l-zh">每个月内</span></span>
+              <strong><span class="l-en">Share of winning fires</span><span class="l-zh">触发后上涨的占比</span></strong>
+            </li>
+            <li>
+              <span class="method-step-label"><span class="l-en">Across months</span><span class="l-zh">汇总各月</span></span>
+              <strong><span class="l-en">Average shares equally</span><span class="l-zh">各月占比等权平均</span></strong>
+            </li>
+          </ol>
+          <figcaption><span class="l-en">Win: price is above the next-close entry price after 21 trading days.</span><span class="l-zh">上涨：以触发后的下一收盘价入场，21 个交易日后价格高于入场价。</span>
+            <p class="method-distinction"><span class="l-en">This is not the fraction of winning months or the pooled win rate.</span><span class="l-zh">这不是盈利月份占比，也不是所有触发次数合并后的胜率。</span></p>
+          </figcaption>
+        </figure>
         <p><span class="l-en">Recent is the test period, with fire dates from 2018-01-01. Older is the training period, before that date. These recipes were searched historically; neither label establishes untouched prospective validation.</span><span class="l-zh">近年为测试期，触发日期自 2018-01-01 起；更早为该日期之前的训练期。组合由历史搜索得出，这些标签不代表未经查看的前瞻验证。</span></p>
         <p><span class="l-en">Random-entry monthly win average · 21 trading days · recent: </span><span class="l-zh">随机入场月均胜率 · 21 个交易日 · 近年：</span>5.7/10<span class="l-en"> · older: </span><span class="l-zh"> · 更早：</span>5.6/10. <span class="l-en">The baseline enters the same stocks on random dates over the same period. Comparison points describe win-rate differences, not investment returns.</span><span class="l-zh">基准是在同一时期对相同股票随机选择日期入场。比较百分点指胜率差值，并非投资收益率。</span></p>
         <p><span class="l-en">A sighting starts when the full combination changes from false to true. Consecutive days that remain true add no sightings. Yearly frequency averages sightings over the first-to-last span. D and W label daily and weekly bars; indicator lookback is separate.</span><span class="l-zh">完整组合由不成立变为成立时计为一次触发，连续成立的日期不重复计数。年均频率按首次至末次的时间跨度计算。D 和 W 分别表示日线与周线，指标回看窗口是另一属性。</span></p>
@@ -769,7 +800,21 @@ html[data-theme="light"] .cs-tipped:hover,html[data-theme="light"] .cs-tipped:fo
 
       <details class="lc-method">
         <summary><span class="l-en">How these readings are calculated</span><span class="l-zh">这些读数如何计算</span></summary>
-        <p><span class="l-en">Within each month, calculate the share of fires whose next-close entry finished higher after 21 trading days. Then average those monthly proportions equally. This is not the fraction of winning months or the pooled win rate.</span><span class="l-zh">先在每个月内计算触发后于下一收盘价入场、21 个交易日后上涨的比例，再对各月比例等权平均。这不是盈利月份占比，也不是所有触发次数合并后的胜率。</span></p>
+        <figure class="method-figure">
+          <ol class="method-steps" role="list">
+            <li>
+              <span class="method-step-label"><span class="l-en">Within each month</span><span class="l-zh">每个月内</span></span>
+              <strong><span class="l-en">Share of winning fires</span><span class="l-zh">触发后上涨的占比</span></strong>
+            </li>
+            <li>
+              <span class="method-step-label"><span class="l-en">Across months</span><span class="l-zh">汇总各月</span></span>
+              <strong><span class="l-en">Average shares equally</span><span class="l-zh">各月占比等权平均</span></strong>
+            </li>
+          </ol>
+          <figcaption><span class="l-en">Win: price is above the next-close entry price after 21 trading days.</span><span class="l-zh">上涨：以触发后的下一收盘价入场，21 个交易日后价格高于入场价。</span>
+            <p class="method-distinction"><span class="l-en">This is not the fraction of winning months or the pooled win rate.</span><span class="l-zh">这不是盈利月份占比，也不是所有触发次数合并后的胜率。</span></p>
+          </figcaption>
+        </figure>
         <p><span class="l-en">Recent is the test period, with fire dates from 2018-01-01. Older is the training period, before that date. These recipes were searched historically; neither label establishes untouched prospective validation.</span><span class="l-zh">近年为测试期，触发日期自 2018-01-01 起；更早为该日期之前的训练期。组合由历史搜索得出，这些标签不代表未经查看的前瞻验证。</span></p>
         <p><span class="l-en">Random-entry monthly win average · 21 trading days · recent: </span><span class="l-zh">随机入场月均胜率 · 21 个交易日 · 近年：</span>5.7/10<span class="l-en"> · older: </span><span class="l-zh"> · 更早：</span>5.6/10. <span class="l-en">The baseline enters the same stocks on random dates over the same period. Comparison points describe win-rate differences, not investment returns.</span><span class="l-zh">基准是在同一时期对相同股票随机选择日期入场。比较百分点指胜率差值，并非投资收益率。</span></p>
         <p><span class="l-en">A sighting starts when the full combination changes from false to true. Consecutive days that remain true add no sightings. Yearly frequency averages sightings over the first-to-last span. D and W label daily and weekly bars; indicator lookback is separate.</span><span class="l-zh">完整组合由不成立变为成立时计为一次触发，连续成立的日期不重复计数。年均频率按首次至末次的时间跨度计算。D 和 W 分别表示日线与周线，指标回看窗口是另一属性。</span></p>
@@ -897,7 +942,21 @@ html[data-theme="light"] .cs-tipped:hover,html[data-theme="light"] .cs-tipped:fo
 
       <details class="lc-method">
         <summary><span class="l-en">How these readings are calculated</span><span class="l-zh">这些读数如何计算</span></summary>
-        <p><span class="l-en">Within each month, calculate the share of fires whose next-close entry finished higher after 21 trading days. Then average those monthly proportions equally. This is not the fraction of winning months or the pooled win rate.</span><span class="l-zh">先在每个月内计算触发后于下一收盘价入场、21 个交易日后上涨的比例，再对各月比例等权平均。这不是盈利月份占比，也不是所有触发次数合并后的胜率。</span></p>
+        <figure class="method-figure">
+          <ol class="method-steps" role="list">
+            <li>
+              <span class="method-step-label"><span class="l-en">Within each month</span><span class="l-zh">每个月内</span></span>
+              <strong><span class="l-en">Share of winning fires</span><span class="l-zh">触发后上涨的占比</span></strong>
+            </li>
+            <li>
+              <span class="method-step-label"><span class="l-en">Across months</span><span class="l-zh">汇总各月</span></span>
+              <strong><span class="l-en">Average shares equally</span><span class="l-zh">各月占比等权平均</span></strong>
+            </li>
+          </ol>
+          <figcaption><span class="l-en">Win: price is above the next-close entry price after 21 trading days.</span><span class="l-zh">上涨：以触发后的下一收盘价入场，21 个交易日后价格高于入场价。</span>
+            <p class="method-distinction"><span class="l-en">This is not the fraction of winning months or the pooled win rate.</span><span class="l-zh">这不是盈利月份占比，也不是所有触发次数合并后的胜率。</span></p>
+          </figcaption>
+        </figure>
         <p><span class="l-en">Recent is the test period, with fire dates from 2018-01-01. Older is the training period, before that date. These recipes were searched historically; neither label establishes untouched prospective validation.</span><span class="l-zh">近年为测试期，触发日期自 2018-01-01 起；更早为该日期之前的训练期。组合由历史搜索得出，这些标签不代表未经查看的前瞻验证。</span></p>
         <p><span class="l-en">Random-entry monthly win average · 21 trading days · recent: </span><span class="l-zh">随机入场月均胜率 · 21 个交易日 · 近年：</span>5.7/10<span class="l-en"> · older: </span><span class="l-zh"> · 更早：</span>5.6/10. <span class="l-en">The baseline enters the same stocks on random dates over the same period. Comparison points describe win-rate differences, not investment returns.</span><span class="l-zh">基准是在同一时期对相同股票随机选择日期入场。比较百分点指胜率差值，并非投资收益率。</span></p>
         <p><span class="l-en">A sighting starts when the full combination changes from false to true. Consecutive days that remain true add no sightings. Yearly frequency averages sightings over the first-to-last span. D and W label daily and weekly bars; indicator lookback is separate.</span><span class="l-zh">完整组合由不成立变为成立时计为一次触发，连续成立的日期不重复计数。年均频率按首次至末次的时间跨度计算。D 和 W 分别表示日线与周线，指标回看窗口是另一属性。</span></p>

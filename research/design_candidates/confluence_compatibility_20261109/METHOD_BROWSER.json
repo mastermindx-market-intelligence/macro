@@ -1,0 +1,4253 @@
+{
+  "schema": "confluence_method_browser/v1",
+  "observed_at": "2026-11-09T12:39:26.846812+00:00",
+  "browser": "157.0.8103.39",
+  "contexts": 13,
+  "page_observations": 26,
+  "cases": [
+    {
+      "name": "320-en-reduce",
+      "width": 320,
+      "lang": "en",
+      "reduced_motion": "reduce",
+      "page_javascript_enabled": true,
+      "before": {
+        "documentOverflow": false,
+        "method": {
+          "box": {
+            "x": 37,
+            "y": 426.765625,
+            "right": 283,
+            "bottom": 1257.140625,
+            "width": 246,
+            "height": 830.375
+          },
+          "summary": {
+            "x": 37,
+            "y": 427.765625,
+            "right": 283,
+            "bottom": 471.765625,
+            "width": 246,
+            "height": 44
+          },
+          "open": true,
+          "firstParagraph": "Within each month, calculate the share of fires whose next-close entry finished higher after 21 trading days. Then average those monthly proportions equally. This is not the fraction of winning months or the pooled win rate.",
+          "firstParagraphHeight": 151.8125,
+          "remainingParagraphs": [
+            "Within each month, calculate the share of fires whose next-close entry finished higher after 21 trading days. Then average those monthly proportions equally. This is not the fraction of winning months or the pooled win rate.",
+            "Recent is the test period, with fire dates from 2018-01-01. Older is the training period, before that date. These recipes were searched historically; neither label establishes untouched prospective validation.",
+            "Random-entry monthly win average · 21 trading days · recent: 5.7/10 · older: 5.6/10. The baseline enters the same stocks on random dates over the same period. Comparison points describe win-rate differences, not investment returns.",
+            "A sighting starts when the full combination changes from false to true. Consecutive days that remain true add no sightings. Yearly frequency averages sightings over the first-to-last span. D and W label daily and weekly bars; indicator lookback is separate.",
+            "Source ordering uses a Wilson-based ranking heuristic on the recent monthly win average, minus the random-entry baseline. It is a ranking heuristic, not a statistical-significance result."
+          ]
+        },
+        "figure": null,
+        "locked": [
+          {
+            "box": {
+              "x": 37,
+              "y": 2096.09375,
+              "right": 283,
+              "bottom": 2282.46875,
+              "width": 246,
+              "height": 186.375
+            },
+            "icon": {
+              "x": 54,
+              "y": 2111.09375,
+              "right": 86,
+              "bottom": 2143.09375,
+              "width": 32,
+              "height": 32
+            },
+            "text": {
+              "x": 54,
+              "y": 2157.09375,
+              "right": 266,
+              "bottom": 2209.46875,
+              "width": 212,
+              "height": 52.375
+            },
+            "button": {
+              "x": 54,
+              "y": 2223.46875,
+              "right": 177.171875,
+              "bottom": 2267.46875,
+              "width": 123.171875,
+              "height": 44
+            },
+            "content": "1 stock in this snapshot\nMatching names require an eligible plan.\nStart free trial",
+            "href": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+            "scroll": 244,
+            "client": 244,
+            "textScroll": 212,
+            "textClient": 212
+          },
+          {
+            "box": {
+              "x": 37,
+              "y": 2966.828125,
+              "right": 283,
+              "bottom": 3153.203125,
+              "width": 246,
+              "height": 186.375
+            },
+            "icon": {
+              "x": 54,
+              "y": 2981.828125,
+              "right": 86,
+              "bottom": 3013.828125,
+              "width": 32,
+              "height": 32
+            },
+            "text": {
+              "x": 54,
+              "y": 3027.828125,
+              "right": 266,
+              "bottom": 3080.203125,
+              "width": 212,
+              "height": 52.375
+            },
+            "button": {
+              "x": 54,
+              "y": 3094.203125,
+              "right": 177.171875,
+              "bottom": 3138.203125,
+              "width": 123.171875,
+              "height": 44
+            },
+            "content": "1 stock in this snapshot\nMatching names require an eligible plan.\nStart free trial",
+            "href": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+            "scroll": 244,
+            "client": 244,
+            "textScroll": 212,
+            "textClient": 212
+          }
+        ],
+        "publicValues": [
+          "Recent (2018+)\n9.1/10\n14 months · 22 fires\nOlder (before 2018)\n5.8/10\n57 months · 71 fires\nMonthly win average · 21 trading days\nVersus random entry · percentage points\nRecent comparison\n+34.3\nOlder comparison\n+1.7",
+          "Recent (2018+)\n8.4/10\n19 months · 28 fires\nOlder (before 2018)\n6.3/10\n62 months · 86 fires\nMonthly win average · 21 trading days\nVersus random entry · percentage points\nRecent comparison\n+27.5\nOlder comparison\n+7.0",
+          "Recent (2018+)\n8.3/10\n18 months · 28 fires\nOlder (before 2018)\n5.9/10\n56 months · 74 fires\nMonthly win average · 21 trading days\nVersus random entry · percentage points\nRecent comparison\n+26.0\nOlder comparison\n+3.0"
+        ],
+        "heroAnimations": 0
+      },
+      "open_motion": {
+        "opacity": "1",
+        "animations": []
+      },
+      "after": {
+        "documentOverflow": false,
+        "method": {
+          "box": {
+            "x": 37,
+            "y": 426.765625,
+            "right": 283,
+            "bottom": 1297.671875,
+            "width": 246,
+            "height": 870.90625
+          },
+          "summary": {
+            "x": 37,
+            "y": 427.765625,
+            "right": 283,
+            "bottom": 471.765625,
+            "width": 246,
+            "height": 44
+          },
+          "open": true,
+          "firstParagraph": "Recent is the test period, with fire dates from 2018-01-01. Older is the training period, before that date. These recipes were searched historically; neither label establishes untouched prospective validation.",
+          "firstParagraphHeight": 130.125,
+          "remainingParagraphs": [
+            "Recent is the test period, with fire dates from 2018-01-01. Older is the training period, before that date. These recipes were searched historically; neither label establishes untouched prospective validation.",
+            "Random-entry monthly win average · 21 trading days · recent: 5.7/10 · older: 5.6/10. The baseline enters the same stocks on random dates over the same period. Comparison points describe win-rate differences, not investment returns.",
+            "A sighting starts when the full combination changes from false to true. Consecutive days that remain true add no sightings. Yearly frequency averages sightings over the first-to-last span. D and W label daily and weekly bars; indicator lookback is separate.",
+            "Source ordering uses a Wilson-based ranking heuristic on the recent monthly win average, minus the random-entry baseline. It is a ranking heuristic, not a statistical-significance result."
+          ]
+        },
+        "figure": {
+          "box": {
+            "x": 37,
+            "y": 479.765625,
+            "right": 283,
+            "bottom": 664.109375,
+            "width": 246,
+            "height": 184.34375
+          },
+          "text": "Within each month\nShare of winning fires\nAcross months\nAverage shares equally\nWin: price is above the next-close entry price after 21 trading days.\n\nThis is not the fraction of winning months or the pooled win rate.",
+          "caption": "Win: price is above the next-close entry price after 21 trading days.\n\nThis is not the fraction of winning months or the pooled win rate.",
+          "steps": [
+            {
+              "box": {
+                "x": 37,
+                "y": 479.765625,
+                "right": 146,
+                "bottom": 559.359375,
+                "width": 109,
+                "height": 79.59375
+              },
+              "text": "Within each month\nShare of winning fires",
+              "scroll": 109,
+              "client": 109
+            },
+            {
+              "box": {
+                "x": 174,
+                "y": 479.765625,
+                "right": 283,
+                "bottom": 559.359375,
+                "width": 109,
+                "height": 79.59375
+              },
+              "text": "Across months\nAverage shares equally",
+              "scroll": 109,
+              "client": 109
+            }
+          ],
+          "opacity": "1",
+          "animationName": "none",
+          "animationDuration": "0s",
+          "captionLast": true,
+          "captionCount": 1,
+          "animations": []
+        },
+        "locked": [
+          {
+            "box": {
+              "x": 37,
+              "y": 2136.625,
+              "right": 283,
+              "bottom": 2277,
+              "width": 246,
+              "height": 140.375
+            },
+            "icon": {
+              "x": 54,
+              "y": 2151.625,
+              "right": 86,
+              "bottom": 2183.625,
+              "width": 32,
+              "height": 32
+            },
+            "text": {
+              "x": 100,
+              "y": 2151.625,
+              "right": 266,
+              "bottom": 2204,
+              "width": 166,
+              "height": 52.375
+            },
+            "button": {
+              "x": 54,
+              "y": 2218,
+              "right": 177.171875,
+              "bottom": 2262,
+              "width": 123.171875,
+              "height": 44
+            },
+            "content": "1 stock in this snapshot\nMatching names require an eligible plan.\nStart free trial",
+            "href": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+            "scroll": 244,
+            "client": 244,
+            "textScroll": 166,
+            "textClient": 166,
+            "height_reduction": 46,
+            "action_upward": 46
+          },
+          {
+            "box": {
+              "x": 37,
+              "y": 2961.359375,
+              "right": 283,
+              "bottom": 3101.734375,
+              "width": 246,
+              "height": 140.375
+            },
+            "icon": {
+              "x": 54,
+              "y": 2976.359375,
+              "right": 86,
+              "bottom": 3008.359375,
+              "width": 32,
+              "height": 32
+            },
+            "text": {
+              "x": 100,
+              "y": 2976.359375,
+              "right": 266,
+              "bottom": 3028.734375,
+              "width": 166,
+              "height": 52.375
+            },
+            "button": {
+              "x": 54,
+              "y": 3042.734375,
+              "right": 177.171875,
+              "bottom": 3086.734375,
+              "width": 123.171875,
+              "height": 44
+            },
+            "content": "1 stock in this snapshot\nMatching names require an eligible plan.\nStart free trial",
+            "href": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+            "scroll": 244,
+            "client": 244,
+            "textScroll": 166,
+            "textClient": 166,
+            "height_reduction": 46,
+            "action_upward": 46
+          }
+        ],
+        "publicValues": [
+          "Recent (2018+)\n9.1/10\n14 months · 22 fires\nOlder (before 2018)\n5.8/10\n57 months · 71 fires\nMonthly win average · 21 trading days\nVersus random entry · percentage points\nRecent comparison\n+34.3\nOlder comparison\n+1.7",
+          "Recent (2018+)\n8.4/10\n19 months · 28 fires\nOlder (before 2018)\n6.3/10\n62 months · 86 fires\nMonthly win average · 21 trading days\nVersus random entry · percentage points\nRecent comparison\n+27.5\nOlder comparison\n+7.0",
+          "Recent (2018+)\n8.3/10\n18 months · 28 fires\nOlder (before 2018)\n5.9/10\n56 months · 74 fires\nMonthly win average · 21 trading days\nVersus random entry · percentage points\nRecent comparison\n+26.0\nOlder comparison\n+3.0"
+        ],
+        "heroAnimations": 0
+      },
+      "method_height_delta": 40.53125,
+      "figure_height_vs_paragraph": {
+        "figure": 184.34375,
+        "prior_paragraph": 151.8125
+      },
+      "status": "PASS",
+      "destination": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+      "action_focus": {
+        "visible": true,
+        "outline": "solid",
+        "width": "2px"
+      }
+    },
+    {
+      "name": "320-zh-reduce",
+      "width": 320,
+      "lang": "zh",
+      "reduced_motion": "reduce",
+      "page_javascript_enabled": true,
+      "before": {
+        "documentOverflow": false,
+        "method": {
+          "box": {
+            "x": 37,
+            "y": 427.265625,
+            "right": 283,
+            "bottom": 997.390625,
+            "width": 246,
+            "height": 570.125
+          },
+          "summary": {
+            "x": 37,
+            "y": 428.265625,
+            "right": 283,
+            "bottom": 472.265625,
+            "width": 246,
+            "height": 44
+          },
+          "open": true,
+          "firstParagraph": "先在每个月内计算触发后于下一收盘价入场、21 个交易日后上涨的比例，再对各月比例等权平均。这不是盈利月份占比，也不是所有触发次数合并后的胜率。",
+          "firstParagraphHeight": 108.4375,
+          "remainingParagraphs": [
+            "先在每个月内计算触发后于下一收盘价入场、21 个交易日后上涨的比例，再对各月比例等权平均。这不是盈利月份占比，也不是所有触发次数合并后的胜率。",
+            "近年为测试期，触发日期自 2018-01-01 起；更早为该日期之前的训练期。组合由历史搜索得出，这些标签不代表未经查看的前瞻验证。",
+            "随机入场月均胜率 · 21 个交易日 · 近年：5.7/10 · 更早：5.6/10. 基准是在同一时期对相同股票随机选择日期入场。比较百分点指胜率差值，并非投资收益率。",
+            "完整组合由不成立变为成立时计为一次触发，连续成立的日期不重复计数。年均频率按首次至末次的时间跨度计算。D 和 W 分别表示日线与周线，指标回看窗口是另一属性。",
+            "源数据排序使用近期月均胜率的 Wilson 近似值并减去随机入场基准。这是排序方法，不是统计显著性结果。"
+          ]
+        },
+        "figure": null,
+        "locked": [
+          {
+            "box": {
+              "x": 37,
+              "y": 1756.28125,
+              "right": 283,
+              "bottom": 1926.5625,
+              "width": 246,
+              "height": 170.28125
+            },
+            "icon": {
+              "x": 54,
+              "y": 1771.28125,
+              "right": 86,
+              "bottom": 1803.28125,
+              "width": 32,
+              "height": 32
+            },
+            "text": {
+              "x": 54,
+              "y": 1817.28125,
+              "right": 266,
+              "bottom": 1853.5625,
+              "width": 212,
+              "height": 36.28125
+            },
+            "button": {
+              "x": 54,
+              "y": 1867.5625,
+              "right": 164,
+              "bottom": 1911.5625,
+              "width": 110,
+              "height": 44
+            },
+            "content": "1 只股票在此快照匹配\n查看匹配名称需具备相应方案权限。\n开始免费试用",
+            "href": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+            "scroll": 244,
+            "client": 244,
+            "textScroll": 212,
+            "textClient": 212
+          },
+          {
+            "box": {
+              "x": 37,
+              "y": 2552.453125,
+              "right": 283,
+              "bottom": 2722.734375,
+              "width": 246,
+              "height": 170.28125
+            },
+            "icon": {
+              "x": 54,
+              "y": 2567.453125,
+              "right": 86,
+              "bottom": 2599.453125,
+              "width": 32,
+              "height": 32
+            },
+            "text": {
+              "x": 54,
+              "y": 2613.453125,
+              "right": 266,
+              "bottom": 2649.734375,
+              "width": 212,
+              "height": 36.28125
+            },
+            "button": {
+              "x": 54,
+              "y": 2663.734375,
+              "right": 164,
+              "bottom": 2707.734375,
+              "width": 110,
+              "height": 44
+            },
+            "content": "1 只股票在此快照匹配\n查看匹配名称需具备相应方案权限。\n开始免费试用",
+            "href": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+            "scroll": 244,
+            "client": 244,
+            "textScroll": 212,
+            "textClient": 212
+          }
+        ],
+        "publicValues": [
+          "近年（2018起）\n9.1/10\n14 个月 · 22 次触发\n更早（2018前）\n5.8/10\n57 个月 · 71 次触发\n月均胜率 · 21 个交易日\n较随机入场 · 个百分点\n近年比较\n+34.3\n更早比较\n+1.7",
+          "近年（2018起）\n8.4/10\n19 个月 · 28 次触发\n更早（2018前）\n6.3/10\n62 个月 · 86 次触发\n月均胜率 · 21 个交易日\n较随机入场 · 个百分点\n近年比较\n+27.5\n更早比较\n+7.0",
+          "近年（2018起）\n8.3/10\n18 个月 · 28 次触发\n更早（2018前）\n5.9/10\n56 个月 · 74 次触发\n月均胜率 · 21 个交易日\n较随机入场 · 个百分点\n近年比较\n+26.0\n更早比较\n+3.0"
+        ],
+        "heroAnimations": 0
+      },
+      "open_motion": {
+        "opacity": "1",
+        "animations": []
+      },
+      "after": {
+        "documentOverflow": false,
+        "method": {
+          "box": {
+            "x": 37,
+            "y": 427.265625,
+            "right": 283,
+            "bottom": 1063.796875,
+            "width": 246,
+            "height": 636.53125
+          },
+          "summary": {
+            "x": 37,
+            "y": 428.265625,
+            "right": 283,
+            "bottom": 472.265625,
+            "width": 246,
+            "height": 44
+          },
+          "open": true,
+          "firstParagraph": "近年为测试期，触发日期自 2018-01-01 起；更早为该日期之前的训练期。组合由历史搜索得出，这些标签不代表未经查看的前瞻验证。",
+          "firstParagraphHeight": 86.75,
+          "remainingParagraphs": [
+            "近年为测试期，触发日期自 2018-01-01 起；更早为该日期之前的训练期。组合由历史搜索得出，这些标签不代表未经查看的前瞻验证。",
+            "随机入场月均胜率 · 21 个交易日 · 近年：5.7/10 · 更早：5.6/10. 基准是在同一时期对相同股票随机选择日期入场。比较百分点指胜率差值，并非投资收益率。",
+            "完整组合由不成立变为成立时计为一次触发，连续成立的日期不重复计数。年均频率按首次至末次的时间跨度计算。D 和 W 分别表示日线与周线，指标回看窗口是另一属性。",
+            "源数据排序使用近期月均胜率的 Wilson 近似值并减去随机入场基准。这是排序方法，不是统计显著性结果。"
+          ]
+        },
+        "figure": {
+          "box": {
+            "x": 37,
+            "y": 480.265625,
+            "right": 283,
+            "bottom": 647.109375,
+            "width": 246,
+            "height": 166.84375
+          },
+          "text": "每个月内\n触发后上涨的占比\n汇总各月\n各月占比等权平均\n上涨：以触发后的下一收盘价入场，21 个交易日后价格高于入场价。\n\n这不是盈利月份占比，也不是所有触发次数合并后的胜率。",
+          "caption": "上涨：以触发后的下一收盘价入场，21 个交易日后价格高于入场价。\n\n这不是盈利月份占比，也不是所有触发次数合并后的胜率。",
+          "steps": [
+            {
+              "box": {
+                "x": 37,
+                "y": 480.265625,
+                "right": 146,
+                "bottom": 542.359375,
+                "width": 109,
+                "height": 62.09375
+              },
+              "text": "每个月内\n触发后上涨的占比",
+              "scroll": 109,
+              "client": 109
+            },
+            {
+              "box": {
+                "x": 174,
+                "y": 480.265625,
+                "right": 283,
+                "bottom": 542.359375,
+                "width": 109,
+                "height": 62.09375
+              },
+              "text": "汇总各月\n各月占比等权平均",
+              "scroll": 109,
+              "client": 109
+            }
+          ],
+          "opacity": "1",
+          "animationName": "none",
+          "animationDuration": "0s",
+          "captionLast": true,
+          "captionCount": 1,
+          "animations": []
+        },
+        "locked": [
+          {
+            "box": {
+              "x": 37,
+              "y": 1822.6875,
+              "right": 283,
+              "bottom": 1963.0625,
+              "width": 246,
+              "height": 140.375
+            },
+            "icon": {
+              "x": 54,
+              "y": 1837.6875,
+              "right": 86,
+              "bottom": 1869.6875,
+              "width": 32,
+              "height": 32
+            },
+            "text": {
+              "x": 100,
+              "y": 1837.6875,
+              "right": 266,
+              "bottom": 1890.0625,
+              "width": 166,
+              "height": 52.375
+            },
+            "button": {
+              "x": 54,
+              "y": 1904.0625,
+              "right": 164,
+              "bottom": 1948.0625,
+              "width": 110,
+              "height": 44
+            },
+            "content": "1 只股票在此快照匹配\n查看匹配名称需具备相应方案权限。\n开始免费试用",
+            "href": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+            "scroll": 244,
+            "client": 244,
+            "textScroll": 166,
+            "textClient": 166,
+            "height_reduction": 29.90625,
+            "action_upward": 29.90625
+          },
+          {
+            "box": {
+              "x": 37,
+              "y": 2588.953125,
+              "right": 283,
+              "bottom": 2729.328125,
+              "width": 246,
+              "height": 140.375
+            },
+            "icon": {
+              "x": 54,
+              "y": 2603.953125,
+              "right": 86,
+              "bottom": 2635.953125,
+              "width": 32,
+              "height": 32
+            },
+            "text": {
+              "x": 100,
+              "y": 2603.953125,
+              "right": 266,
+              "bottom": 2656.328125,
+              "width": 166,
+              "height": 52.375
+            },
+            "button": {
+              "x": 54,
+              "y": 2670.328125,
+              "right": 164,
+              "bottom": 2714.328125,
+              "width": 110,
+              "height": 44
+            },
+            "content": "1 只股票在此快照匹配\n查看匹配名称需具备相应方案权限。\n开始免费试用",
+            "href": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+            "scroll": 244,
+            "client": 244,
+            "textScroll": 166,
+            "textClient": 166,
+            "height_reduction": 29.90625,
+            "action_upward": 29.90625
+          }
+        ],
+        "publicValues": [
+          "近年（2018起）\n9.1/10\n14 个月 · 22 次触发\n更早（2018前）\n5.8/10\n57 个月 · 71 次触发\n月均胜率 · 21 个交易日\n较随机入场 · 个百分点\n近年比较\n+34.3\n更早比较\n+1.7",
+          "近年（2018起）\n8.4/10\n19 个月 · 28 次触发\n更早（2018前）\n6.3/10\n62 个月 · 86 次触发\n月均胜率 · 21 个交易日\n较随机入场 · 个百分点\n近年比较\n+27.5\n更早比较\n+7.0",
+          "近年（2018起）\n8.3/10\n18 个月 · 28 次触发\n更早（2018前）\n5.9/10\n56 个月 · 74 次触发\n月均胜率 · 21 个交易日\n较随机入场 · 个百分点\n近年比较\n+26.0\n更早比较\n+3.0"
+        ],
+        "heroAnimations": 0
+      },
+      "method_height_delta": 66.40625,
+      "figure_height_vs_paragraph": {
+        "figure": 166.84375,
+        "prior_paragraph": 108.4375
+      },
+      "status": "PASS",
+      "destination": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+      "action_focus": {
+        "visible": true,
+        "outline": "solid",
+        "width": "2px"
+      }
+    },
+    {
+      "name": "390-en-reduce",
+      "width": 390,
+      "lang": "en",
+      "reduced_motion": "reduce",
+      "page_javascript_enabled": true,
+      "before": {
+        "documentOverflow": false,
+        "method": {
+          "box": {
+            "x": 37,
+            "y": 426.765625,
+            "right": 353,
+            "bottom": 1061.953125,
+            "width": 316,
+            "height": 635.1875
+          },
+          "summary": {
+            "x": 37,
+            "y": 427.765625,
+            "right": 353,
+            "bottom": 471.765625,
+            "width": 316,
+            "height": 44
+          },
+          "open": true,
+          "firstParagraph": "Within each month, calculate the share of fires whose next-close entry finished higher after 21 trading days. Then average those monthly proportions equally. This is not the fraction of winning months or the pooled win rate.",
+          "firstParagraphHeight": 108.4375,
+          "remainingParagraphs": [
+            "Within each month, calculate the share of fires whose next-close entry finished higher after 21 trading days. Then average those monthly proportions equally. This is not the fraction of winning months or the pooled win rate.",
+            "Recent is the test period, with fire dates from 2018-01-01. Older is the training period, before that date. These recipes were searched historically; neither label establishes untouched prospective validation.",
+            "Random-entry monthly win average · 21 trading days · recent: 5.7/10 · older: 5.6/10. The baseline enters the same stocks on random dates over the same period. Comparison points describe win-rate differences, not investment returns.",
+            "A sighting starts when the full combination changes from false to true. Consecutive days that remain true add no sightings. Yearly frequency averages sightings over the first-to-last span. D and W label daily and weekly bars; indicator lookback is separate.",
+            "Source ordering uses a Wilson-based ranking heuristic on the recent monthly win average, minus the random-entry baseline. It is a ranking heuristic, not a statistical-significance result."
+          ]
+        },
+        "figure": null,
+        "locked": [
+          {
+            "box": {
+              "x": 37,
+              "y": 1802.71875,
+              "right": 353,
+              "bottom": 1927,
+              "width": 316,
+              "height": 124.28125
+            },
+            "icon": {
+              "x": 54,
+              "y": 1819.859375,
+              "right": 86,
+              "bottom": 1851.859375,
+              "width": 32,
+              "height": 32
+            },
+            "text": {
+              "x": 100,
+              "y": 1817.71875,
+              "right": 336,
+              "bottom": 1854,
+              "width": 236,
+              "height": 36.28125
+            },
+            "button": {
+              "x": 54,
+              "y": 1868,
+              "right": 177.171875,
+              "bottom": 1912,
+              "width": 123.171875,
+              "height": 44
+            },
+            "content": "1 stock in this snapshot\nMatching names require an eligible plan.\nStart free trial",
+            "href": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+            "scroll": 314,
+            "client": 314,
+            "textScroll": 236,
+            "textClient": 236
+          },
+          {
+            "box": {
+              "x": 37,
+              "y": 2534.765625,
+              "right": 353,
+              "bottom": 2659.046875,
+              "width": 316,
+              "height": 124.28125
+            },
+            "icon": {
+              "x": 54,
+              "y": 2551.90625,
+              "right": 86,
+              "bottom": 2583.90625,
+              "width": 32,
+              "height": 32
+            },
+            "text": {
+              "x": 100,
+              "y": 2549.765625,
+              "right": 336,
+              "bottom": 2586.046875,
+              "width": 236,
+              "height": 36.28125
+            },
+            "button": {
+              "x": 54,
+              "y": 2600.046875,
+              "right": 177.171875,
+              "bottom": 2644.046875,
+              "width": 123.171875,
+              "height": 44
+            },
+            "content": "1 stock in this snapshot\nMatching names require an eligible plan.\nStart free trial",
+            "href": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+            "scroll": 314,
+            "client": 314,
+            "textScroll": 236,
+            "textClient": 236
+          }
+        ],
+        "publicValues": [
+          "Recent (2018+)\n9.1/10\n14 months · 22 fires\nOlder (before 2018)\n5.8/10\n57 months · 71 fires\nMonthly win average · 21 trading days\nVersus random entry · percentage points\nRecent comparison\n+34.3\nOlder comparison\n+1.7",
+          "Recent (2018+)\n8.4/10\n19 months · 28 fires\nOlder (before 2018)\n6.3/10\n62 months · 86 fires\nMonthly win average · 21 trading days\nVersus random entry · percentage points\nRecent comparison\n+27.5\nOlder comparison\n+7.0",
+          "Recent (2018+)\n8.3/10\n18 months · 28 fires\nOlder (before 2018)\n5.9/10\n56 months · 74 fires\nMonthly win average · 21 trading days\nVersus random entry · percentage points\nRecent comparison\n+26.0\nOlder comparison\n+3.0"
+        ],
+        "heroAnimations": 0
+      },
+      "open_motion": {
+        "opacity": "1",
+        "animations": []
+      },
+      "after": {
+        "documentOverflow": false,
+        "method": {
+          "box": {
+            "x": 37,
+            "y": 426.765625,
+            "right": 353,
+            "bottom": 1128.359375,
+            "width": 316,
+            "height": 701.59375
+          },
+          "summary": {
+            "x": 37,
+            "y": 427.765625,
+            "right": 353,
+            "bottom": 471.765625,
+            "width": 316,
+            "height": 44
+          },
+          "open": true,
+          "firstParagraph": "Recent is the test period, with fire dates from 2018-01-01. Older is the training period, before that date. These recipes were searched historically; neither label establishes untouched prospective validation.",
+          "firstParagraphHeight": 108.4375,
+          "remainingParagraphs": [
+            "Recent is the test period, with fire dates from 2018-01-01. Older is the training period, before that date. These recipes were searched historically; neither label establishes untouched prospective validation.",
+            "Random-entry monthly win average · 21 trading days · recent: 5.7/10 · older: 5.6/10. The baseline enters the same stocks on random dates over the same period. Comparison points describe win-rate differences, not investment returns.",
+            "A sighting starts when the full combination changes from false to true. Consecutive days that remain true add no sightings. Yearly frequency averages sightings over the first-to-last span. D and W label daily and weekly bars; indicator lookback is separate.",
+            "Source ordering uses a Wilson-based ranking heuristic on the recent monthly win average, minus the random-entry baseline. It is a ranking heuristic, not a statistical-significance result."
+          ]
+        },
+        "figure": {
+          "box": {
+            "x": 37,
+            "y": 479.765625,
+            "right": 353,
+            "bottom": 646.609375,
+            "width": 316,
+            "height": 166.84375
+          },
+          "text": "Within each month\nShare of winning fires\nAcross months\nAverage shares equally\nWin: price is above the next-close entry price after 21 trading days.\n\nThis is not the fraction of winning months or the pooled win rate.",
+          "caption": "Win: price is above the next-close entry price after 21 trading days.\n\nThis is not the fraction of winning months or the pooled win rate.",
+          "steps": [
+            {
+              "box": {
+                "x": 37,
+                "y": 479.765625,
+                "right": 181,
+                "bottom": 541.859375,
+                "width": 144,
+                "height": 62.09375
+              },
+              "text": "Within each month\nShare of winning fires",
+              "scroll": 144,
+              "client": 144
+            },
+            {
+              "box": {
+                "x": 209,
+                "y": 479.765625,
+                "right": 353,
+                "bottom": 541.859375,
+                "width": 144,
+                "height": 62.09375
+              },
+              "text": "Across months\nAverage shares equally",
+              "scroll": 144,
+              "client": 144
+            }
+          ],
+          "opacity": "1",
+          "animationName": "none",
+          "animationDuration": "0s",
+          "captionLast": true,
+          "captionCount": 1,
+          "animations": []
+        },
+        "locked": [
+          {
+            "box": {
+              "x": 37,
+              "y": 1869.125,
+              "right": 353,
+              "bottom": 1993.40625,
+              "width": 316,
+              "height": 124.28125
+            },
+            "icon": {
+              "x": 54,
+              "y": 1884.125,
+              "right": 86,
+              "bottom": 1916.125,
+              "width": 32,
+              "height": 32
+            },
+            "text": {
+              "x": 100,
+              "y": 1884.125,
+              "right": 336,
+              "bottom": 1920.40625,
+              "width": 236,
+              "height": 36.28125
+            },
+            "button": {
+              "x": 54,
+              "y": 1934.40625,
+              "right": 177.171875,
+              "bottom": 1978.40625,
+              "width": 123.171875,
+              "height": 44
+            },
+            "content": "1 stock in this snapshot\nMatching names require an eligible plan.\nStart free trial",
+            "href": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+            "scroll": 314,
+            "client": 314,
+            "textScroll": 236,
+            "textClient": 236,
+            "height_reduction": 0,
+            "action_upward": 0
+          },
+          {
+            "box": {
+              "x": 37,
+              "y": 2601.171875,
+              "right": 353,
+              "bottom": 2725.453125,
+              "width": 316,
+              "height": 124.28125
+            },
+            "icon": {
+              "x": 54,
+              "y": 2616.171875,
+              "right": 86,
+              "bottom": 2648.171875,
+              "width": 32,
+              "height": 32
+            },
+            "text": {
+              "x": 100,
+              "y": 2616.171875,
+              "right": 336,
+              "bottom": 2652.453125,
+              "width": 236,
+              "height": 36.28125
+            },
+            "button": {
+              "x": 54,
+              "y": 2666.453125,
+              "right": 177.171875,
+              "bottom": 2710.453125,
+              "width": 123.171875,
+              "height": 44
+            },
+            "content": "1 stock in this snapshot\nMatching names require an eligible plan.\nStart free trial",
+            "href": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+            "scroll": 314,
+            "client": 314,
+            "textScroll": 236,
+            "textClient": 236,
+            "height_reduction": 0,
+            "action_upward": 0
+          }
+        ],
+        "publicValues": [
+          "Recent (2018+)\n9.1/10\n14 months · 22 fires\nOlder (before 2018)\n5.8/10\n57 months · 71 fires\nMonthly win average · 21 trading days\nVersus random entry · percentage points\nRecent comparison\n+34.3\nOlder comparison\n+1.7",
+          "Recent (2018+)\n8.4/10\n19 months · 28 fires\nOlder (before 2018)\n6.3/10\n62 months · 86 fires\nMonthly win average · 21 trading days\nVersus random entry · percentage points\nRecent comparison\n+27.5\nOlder comparison\n+7.0",
+          "Recent (2018+)\n8.3/10\n18 months · 28 fires\nOlder (before 2018)\n5.9/10\n56 months · 74 fires\nMonthly win average · 21 trading days\nVersus random entry · percentage points\nRecent comparison\n+26.0\nOlder comparison\n+3.0"
+        ],
+        "heroAnimations": 0
+      },
+      "method_height_delta": 66.40625,
+      "figure_height_vs_paragraph": {
+        "figure": 166.84375,
+        "prior_paragraph": 108.4375
+      },
+      "status": "PASS",
+      "destination": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+      "action_focus": {
+        "visible": true,
+        "outline": "solid",
+        "width": "2px"
+      }
+    },
+    {
+      "name": "390-zh-reduce",
+      "width": 390,
+      "lang": "zh",
+      "reduced_motion": "reduce",
+      "page_javascript_enabled": true,
+      "before": {
+        "documentOverflow": false,
+        "method": {
+          "box": {
+            "x": 37,
+            "y": 426.921875,
+            "right": 353,
+            "bottom": 910.296875,
+            "width": 316,
+            "height": 483.375
+          },
+          "summary": {
+            "x": 37,
+            "y": 427.921875,
+            "right": 353,
+            "bottom": 471.921875,
+            "width": 316,
+            "height": 44
+          },
+          "open": true,
+          "firstParagraph": "先在每个月内计算触发后于下一收盘价入场、21 个交易日后上涨的比例，再对各月比例等权平均。这不是盈利月份占比，也不是所有触发次数合并后的胜率。",
+          "firstParagraphHeight": 86.75,
+          "remainingParagraphs": [
+            "先在每个月内计算触发后于下一收盘价入场、21 个交易日后上涨的比例，再对各月比例等权平均。这不是盈利月份占比，也不是所有触发次数合并后的胜率。",
+            "近年为测试期，触发日期自 2018-01-01 起；更早为该日期之前的训练期。组合由历史搜索得出，这些标签不代表未经查看的前瞻验证。",
+            "随机入场月均胜率 · 21 个交易日 · 近年：5.7/10 · 更早：5.6/10. 基准是在同一时期对相同股票随机选择日期入场。比较百分点指胜率差值，并非投资收益率。",
+            "完整组合由不成立变为成立时计为一次触发，连续成立的日期不重复计数。年均频率按首次至末次的时间跨度计算。D 和 W 分别表示日线与周线，指标回看窗口是另一属性。",
+            "源数据排序使用近期月均胜率的 Wilson 近似值并减去随机入场基准。这是排序方法，不是统计显著性结果。"
+          ]
+        },
+        "figure": null,
+        "locked": [
+          {
+            "box": {
+              "x": 37,
+              "y": 1603.46875,
+              "right": 353,
+              "bottom": 1727.75,
+              "width": 316,
+              "height": 124.28125
+            },
+            "icon": {
+              "x": 54,
+              "y": 1620.609375,
+              "right": 86,
+              "bottom": 1652.609375,
+              "width": 32,
+              "height": 32
+            },
+            "text": {
+              "x": 100,
+              "y": 1618.46875,
+              "right": 336,
+              "bottom": 1654.75,
+              "width": 236,
+              "height": 36.28125
+            },
+            "button": {
+              "x": 54,
+              "y": 1668.75,
+              "right": 164,
+              "bottom": 1712.75,
+              "width": 110,
+              "height": 44
+            },
+            "content": "1 只股票在此快照匹配\n查看匹配名称需具备相应方案权限。\n开始免费试用",
+            "href": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+            "scroll": 314,
+            "client": 314,
+            "textScroll": 236,
+            "textClient": 236
+          },
+          {
+            "box": {
+              "x": 37,
+              "y": 2313.921875,
+              "right": 353,
+              "bottom": 2438.203125,
+              "width": 316,
+              "height": 124.28125
+            },
+            "icon": {
+              "x": 54,
+              "y": 2331.0625,
+              "right": 86,
+              "bottom": 2363.0625,
+              "width": 32,
+              "height": 32
+            },
+            "text": {
+              "x": 100,
+              "y": 2328.921875,
+              "right": 336,
+              "bottom": 2365.203125,
+              "width": 236,
+              "height": 36.28125
+            },
+            "button": {
+              "x": 54,
+              "y": 2379.203125,
+              "right": 164,
+              "bottom": 2423.203125,
+              "width": 110,
+              "height": 44
+            },
+            "content": "1 只股票在此快照匹配\n查看匹配名称需具备相应方案权限。\n开始免费试用",
+            "href": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+            "scroll": 314,
+            "client": 314,
+            "textScroll": 236,
+            "textClient": 236
+          }
+        ],
+        "publicValues": [
+          "近年（2018起）\n9.1/10\n14 个月 · 22 次触发\n更早（2018前）\n5.8/10\n57 个月 · 71 次触发\n月均胜率 · 21 个交易日\n较随机入场 · 个百分点\n近年比较\n+34.3\n更早比较\n+1.7",
+          "近年（2018起）\n8.4/10\n19 个月 · 28 次触发\n更早（2018前）\n6.3/10\n62 个月 · 86 次触发\n月均胜率 · 21 个交易日\n较随机入场 · 个百分点\n近年比较\n+27.5\n更早比较\n+7.0",
+          "近年（2018起）\n8.3/10\n18 个月 · 28 次触发\n更早（2018前）\n5.9/10\n56 个月 · 74 次触发\n月均胜率 · 21 个交易日\n较随机入场 · 个百分点\n近年比较\n+26.0\n更早比较\n+3.0"
+        ],
+        "heroAnimations": 0
+      },
+      "open_motion": {
+        "opacity": "1",
+        "animations": []
+      },
+      "after": {
+        "documentOverflow": false,
+        "method": {
+          "box": {
+            "x": 37,
+            "y": 426.921875,
+            "right": 353,
+            "bottom": 978.09375,
+            "width": 316,
+            "height": 551.171875
+          },
+          "summary": {
+            "x": 37,
+            "y": 427.921875,
+            "right": 353,
+            "bottom": 471.921875,
+            "width": 316,
+            "height": 44
+          },
+          "open": true,
+          "firstParagraph": "近年为测试期，触发日期自 2018-01-01 起；更早为该日期之前的训练期。组合由历史搜索得出，这些标签不代表未经查看的前瞻验证。",
+          "firstParagraphHeight": 65.0625,
+          "remainingParagraphs": [
+            "近年为测试期，触发日期自 2018-01-01 起；更早为该日期之前的训练期。组合由历史搜索得出，这些标签不代表未经查看的前瞻验证。",
+            "随机入场月均胜率 · 21 个交易日 · 近年：5.7/10 · 更早：5.6/10. 基准是在同一时期对相同股票随机选择日期入场。比较百分点指胜率差值，并非投资收益率。",
+            "完整组合由不成立变为成立时计为一次触发，连续成立的日期不重复计数。年均频率按首次至末次的时间跨度计算。D 和 W 分别表示日线与周线，指标回看窗口是另一属性。",
+            "源数据排序使用近期月均胜率的 Wilson 近似值并减去随机入场基准。这是排序方法，不是统计显著性结果。"
+          ]
+        },
+        "figure": {
+          "box": {
+            "x": 37,
+            "y": 479.921875,
+            "right": 353,
+            "bottom": 626.46875,
+            "width": 316,
+            "height": 146.546875
+          },
+          "text": "每个月内\n触发后上涨的占比\n汇总各月\n各月占比等权平均\n上涨：以触发后的下一收盘价入场，21 个交易日后价格高于入场价。\n\n这不是盈利月份占比，也不是所有触发次数合并后的胜率。",
+          "caption": "上涨：以触发后的下一收盘价入场，21 个交易日后价格高于入场价。\n\n这不是盈利月份占比，也不是所有触发次数合并后的胜率。",
+          "steps": [
+            {
+              "box": {
+                "x": 37,
+                "y": 479.921875,
+                "right": 181,
+                "bottom": 521.71875,
+                "width": 144,
+                "height": 41.796875
+              },
+              "text": "每个月内\n触发后上涨的占比",
+              "scroll": 144,
+              "client": 144
+            },
+            {
+              "box": {
+                "x": 209,
+                "y": 479.921875,
+                "right": 353,
+                "bottom": 521.71875,
+                "width": 144,
+                "height": 41.796875
+              },
+              "text": "汇总各月\n各月占比等权平均",
+              "scroll": 144,
+              "client": 144
+            }
+          ],
+          "opacity": "1",
+          "animationName": "none",
+          "animationDuration": "0s",
+          "captionLast": true,
+          "captionCount": 1,
+          "animations": []
+        },
+        "locked": [
+          {
+            "box": {
+              "x": 37,
+              "y": 1671.265625,
+              "right": 353,
+              "bottom": 1795.546875,
+              "width": 316,
+              "height": 124.28125
+            },
+            "icon": {
+              "x": 54,
+              "y": 1686.265625,
+              "right": 86,
+              "bottom": 1718.265625,
+              "width": 32,
+              "height": 32
+            },
+            "text": {
+              "x": 100,
+              "y": 1686.265625,
+              "right": 336,
+              "bottom": 1722.546875,
+              "width": 236,
+              "height": 36.28125
+            },
+            "button": {
+              "x": 54,
+              "y": 1736.546875,
+              "right": 164,
+              "bottom": 1780.546875,
+              "width": 110,
+              "height": 44
+            },
+            "content": "1 只股票在此快照匹配\n查看匹配名称需具备相应方案权限。\n开始免费试用",
+            "href": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+            "scroll": 314,
+            "client": 314,
+            "textScroll": 236,
+            "textClient": 236,
+            "height_reduction": 0,
+            "action_upward": 0
+          },
+          {
+            "box": {
+              "x": 37,
+              "y": 2381.71875,
+              "right": 353,
+              "bottom": 2506,
+              "width": 316,
+              "height": 124.28125
+            },
+            "icon": {
+              "x": 54,
+              "y": 2396.71875,
+              "right": 86,
+              "bottom": 2428.71875,
+              "width": 32,
+              "height": 32
+            },
+            "text": {
+              "x": 100,
+              "y": 2396.71875,
+              "right": 336,
+              "bottom": 2433,
+              "width": 236,
+              "height": 36.28125
+            },
+            "button": {
+              "x": 54,
+              "y": 2447,
+              "right": 164,
+              "bottom": 2491,
+              "width": 110,
+              "height": 44
+            },
+            "content": "1 只股票在此快照匹配\n查看匹配名称需具备相应方案权限。\n开始免费试用",
+            "href": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+            "scroll": 314,
+            "client": 314,
+            "textScroll": 236,
+            "textClient": 236,
+            "height_reduction": 0,
+            "action_upward": 0
+          }
+        ],
+        "publicValues": [
+          "近年（2018起）\n9.1/10\n14 个月 · 22 次触发\n更早（2018前）\n5.8/10\n57 个月 · 71 次触发\n月均胜率 · 21 个交易日\n较随机入场 · 个百分点\n近年比较\n+34.3\n更早比较\n+1.7",
+          "近年（2018起）\n8.4/10\n19 个月 · 28 次触发\n更早（2018前）\n6.3/10\n62 个月 · 86 次触发\n月均胜率 · 21 个交易日\n较随机入场 · 个百分点\n近年比较\n+27.5\n更早比较\n+7.0",
+          "近年（2018起）\n8.3/10\n18 个月 · 28 次触发\n更早（2018前）\n5.9/10\n56 个月 · 74 次触发\n月均胜率 · 21 个交易日\n较随机入场 · 个百分点\n近年比较\n+26.0\n更早比较\n+3.0"
+        ],
+        "heroAnimations": 0
+      },
+      "method_height_delta": 67.796875,
+      "figure_height_vs_paragraph": {
+        "figure": 146.546875,
+        "prior_paragraph": 86.75
+      },
+      "status": "PASS",
+      "destination": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+      "action_focus": {
+        "visible": true,
+        "outline": "solid",
+        "width": "2px"
+      }
+    },
+    {
+      "name": "400-en-reduce",
+      "width": 400,
+      "lang": "en",
+      "reduced_motion": "reduce",
+      "page_javascript_enabled": true,
+      "before": {
+        "documentOverflow": false,
+        "method": {
+          "box": {
+            "x": 37,
+            "y": 426.765625,
+            "right": 363,
+            "bottom": 1061.953125,
+            "width": 326,
+            "height": 635.1875
+          },
+          "summary": {
+            "x": 37,
+            "y": 427.765625,
+            "right": 363,
+            "bottom": 471.765625,
+            "width": 326,
+            "height": 44
+          },
+          "open": true,
+          "firstParagraph": "Within each month, calculate the share of fires whose next-close entry finished higher after 21 trading days. Then average those monthly proportions equally. This is not the fraction of winning months or the pooled win rate.",
+          "firstParagraphHeight": 108.4375,
+          "remainingParagraphs": [
+            "Within each month, calculate the share of fires whose next-close entry finished higher after 21 trading days. Then average those monthly proportions equally. This is not the fraction of winning months or the pooled win rate.",
+            "Recent is the test period, with fire dates from 2018-01-01. Older is the training period, before that date. These recipes were searched historically; neither label establishes untouched prospective validation.",
+            "Random-entry monthly win average · 21 trading days · recent: 5.7/10 · older: 5.6/10. The baseline enters the same stocks on random dates over the same period. Comparison points describe win-rate differences, not investment returns.",
+            "A sighting starts when the full combination changes from false to true. Consecutive days that remain true add no sightings. Yearly frequency averages sightings over the first-to-last span. D and W label daily and weekly bars; indicator lookback is separate.",
+            "Source ordering uses a Wilson-based ranking heuristic on the recent monthly win average, minus the random-entry baseline. It is a ranking heuristic, not a statistical-significance result."
+          ]
+        },
+        "figure": null,
+        "locked": [
+          {
+            "box": {
+              "x": 37,
+              "y": 1802.71875,
+              "right": 363,
+              "bottom": 1927,
+              "width": 326,
+              "height": 124.28125
+            },
+            "icon": {
+              "x": 54,
+              "y": 1819.859375,
+              "right": 86,
+              "bottom": 1851.859375,
+              "width": 32,
+              "height": 32
+            },
+            "text": {
+              "x": 100,
+              "y": 1817.71875,
+              "right": 346,
+              "bottom": 1854,
+              "width": 246,
+              "height": 36.28125
+            },
+            "button": {
+              "x": 54,
+              "y": 1868,
+              "right": 177.171875,
+              "bottom": 1912,
+              "width": 123.171875,
+              "height": 44
+            },
+            "content": "1 stock in this snapshot\nMatching names require an eligible plan.\nStart free trial",
+            "href": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+            "scroll": 324,
+            "client": 324,
+            "textScroll": 246,
+            "textClient": 246
+          },
+          {
+            "box": {
+              "x": 37,
+              "y": 2534.765625,
+              "right": 363,
+              "bottom": 2659.046875,
+              "width": 326,
+              "height": 124.28125
+            },
+            "icon": {
+              "x": 54,
+              "y": 2551.90625,
+              "right": 86,
+              "bottom": 2583.90625,
+              "width": 32,
+              "height": 32
+            },
+            "text": {
+              "x": 100,
+              "y": 2549.765625,
+              "right": 346,
+              "bottom": 2586.046875,
+              "width": 246,
+              "height": 36.28125
+            },
+            "button": {
+              "x": 54,
+              "y": 2600.046875,
+              "right": 177.171875,
+              "bottom": 2644.046875,
+              "width": 123.171875,
+              "height": 44
+            },
+            "content": "1 stock in this snapshot\nMatching names require an eligible plan.\nStart free trial",
+            "href": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+            "scroll": 324,
+            "client": 324,
+            "textScroll": 246,
+            "textClient": 246
+          }
+        ],
+        "publicValues": [
+          "Recent (2018+)\n9.1/10\n14 months · 22 fires\nOlder (before 2018)\n5.8/10\n57 months · 71 fires\nMonthly win average · 21 trading days\nVersus random entry · percentage points\nRecent comparison\n+34.3\nOlder comparison\n+1.7",
+          "Recent (2018+)\n8.4/10\n19 months · 28 fires\nOlder (before 2018)\n6.3/10\n62 months · 86 fires\nMonthly win average · 21 trading days\nVersus random entry · percentage points\nRecent comparison\n+27.5\nOlder comparison\n+7.0",
+          "Recent (2018+)\n8.3/10\n18 months · 28 fires\nOlder (before 2018)\n5.9/10\n56 months · 74 fires\nMonthly win average · 21 trading days\nVersus random entry · percentage points\nRecent comparison\n+26.0\nOlder comparison\n+3.0"
+        ],
+        "heroAnimations": 0
+      },
+      "open_motion": {
+        "opacity": "1",
+        "animations": []
+      },
+      "after": {
+        "documentOverflow": false,
+        "method": {
+          "box": {
+            "x": 37,
+            "y": 426.765625,
+            "right": 363,
+            "bottom": 1128.359375,
+            "width": 326,
+            "height": 701.59375
+          },
+          "summary": {
+            "x": 37,
+            "y": 427.765625,
+            "right": 363,
+            "bottom": 471.765625,
+            "width": 326,
+            "height": 44
+          },
+          "open": true,
+          "firstParagraph": "Recent is the test period, with fire dates from 2018-01-01. Older is the training period, before that date. These recipes were searched historically; neither label establishes untouched prospective validation.",
+          "firstParagraphHeight": 108.4375,
+          "remainingParagraphs": [
+            "Recent is the test period, with fire dates from 2018-01-01. Older is the training period, before that date. These recipes were searched historically; neither label establishes untouched prospective validation.",
+            "Random-entry monthly win average · 21 trading days · recent: 5.7/10 · older: 5.6/10. The baseline enters the same stocks on random dates over the same period. Comparison points describe win-rate differences, not investment returns.",
+            "A sighting starts when the full combination changes from false to true. Consecutive days that remain true add no sightings. Yearly frequency averages sightings over the first-to-last span. D and W label daily and weekly bars; indicator lookback is separate.",
+            "Source ordering uses a Wilson-based ranking heuristic on the recent monthly win average, minus the random-entry baseline. It is a ranking heuristic, not a statistical-significance result."
+          ]
+        },
+        "figure": {
+          "box": {
+            "x": 37,
+            "y": 479.765625,
+            "right": 363,
+            "bottom": 646.609375,
+            "width": 326,
+            "height": 166.84375
+          },
+          "text": "Within each month\nShare of winning fires\nAcross months\nAverage shares equally\nWin: price is above the next-close entry price after 21 trading days.\n\nThis is not the fraction of winning months or the pooled win rate.",
+          "caption": "Win: price is above the next-close entry price after 21 trading days.\n\nThis is not the fraction of winning months or the pooled win rate.",
+          "steps": [
+            {
+              "box": {
+                "x": 37,
+                "y": 479.765625,
+                "right": 186,
+                "bottom": 541.859375,
+                "width": 149,
+                "height": 62.09375
+              },
+              "text": "Within each month\nShare of winning fires",
+              "scroll": 149,
+              "client": 149
+            },
+            {
+              "box": {
+                "x": 214,
+                "y": 479.765625,
+                "right": 363,
+                "bottom": 541.859375,
+                "width": 149,
+                "height": 62.09375
+              },
+              "text": "Across months\nAverage shares equally",
+              "scroll": 149,
+              "client": 149
+            }
+          ],
+          "opacity": "1",
+          "animationName": "none",
+          "animationDuration": "0s",
+          "captionLast": true,
+          "captionCount": 1,
+          "animations": []
+        },
+        "locked": [
+          {
+            "box": {
+              "x": 37,
+              "y": 1869.125,
+              "right": 363,
+              "bottom": 1993.40625,
+              "width": 326,
+              "height": 124.28125
+            },
+            "icon": {
+              "x": 54,
+              "y": 1884.125,
+              "right": 86,
+              "bottom": 1916.125,
+              "width": 32,
+              "height": 32
+            },
+            "text": {
+              "x": 100,
+              "y": 1884.125,
+              "right": 346,
+              "bottom": 1920.40625,
+              "width": 246,
+              "height": 36.28125
+            },
+            "button": {
+              "x": 54,
+              "y": 1934.40625,
+              "right": 177.171875,
+              "bottom": 1978.40625,
+              "width": 123.171875,
+              "height": 44
+            },
+            "content": "1 stock in this snapshot\nMatching names require an eligible plan.\nStart free trial",
+            "href": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+            "scroll": 324,
+            "client": 324,
+            "textScroll": 246,
+            "textClient": 246,
+            "height_reduction": 0,
+            "action_upward": 0
+          },
+          {
+            "box": {
+              "x": 37,
+              "y": 2601.171875,
+              "right": 363,
+              "bottom": 2725.453125,
+              "width": 326,
+              "height": 124.28125
+            },
+            "icon": {
+              "x": 54,
+              "y": 2616.171875,
+              "right": 86,
+              "bottom": 2648.171875,
+              "width": 32,
+              "height": 32
+            },
+            "text": {
+              "x": 100,
+              "y": 2616.171875,
+              "right": 346,
+              "bottom": 2652.453125,
+              "width": 246,
+              "height": 36.28125
+            },
+            "button": {
+              "x": 54,
+              "y": 2666.453125,
+              "right": 177.171875,
+              "bottom": 2710.453125,
+              "width": 123.171875,
+              "height": 44
+            },
+            "content": "1 stock in this snapshot\nMatching names require an eligible plan.\nStart free trial",
+            "href": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+            "scroll": 324,
+            "client": 324,
+            "textScroll": 246,
+            "textClient": 246,
+            "height_reduction": 0,
+            "action_upward": 0
+          }
+        ],
+        "publicValues": [
+          "Recent (2018+)\n9.1/10\n14 months · 22 fires\nOlder (before 2018)\n5.8/10\n57 months · 71 fires\nMonthly win average · 21 trading days\nVersus random entry · percentage points\nRecent comparison\n+34.3\nOlder comparison\n+1.7",
+          "Recent (2018+)\n8.4/10\n19 months · 28 fires\nOlder (before 2018)\n6.3/10\n62 months · 86 fires\nMonthly win average · 21 trading days\nVersus random entry · percentage points\nRecent comparison\n+27.5\nOlder comparison\n+7.0",
+          "Recent (2018+)\n8.3/10\n18 months · 28 fires\nOlder (before 2018)\n5.9/10\n56 months · 74 fires\nMonthly win average · 21 trading days\nVersus random entry · percentage points\nRecent comparison\n+26.0\nOlder comparison\n+3.0"
+        ],
+        "heroAnimations": 0
+      },
+      "method_height_delta": 66.40625,
+      "figure_height_vs_paragraph": {
+        "figure": 166.84375,
+        "prior_paragraph": 108.4375
+      },
+      "status": "PASS",
+      "destination": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+      "action_focus": {
+        "visible": true,
+        "outline": "solid",
+        "width": "2px"
+      }
+    },
+    {
+      "name": "400-zh-reduce",
+      "width": 400,
+      "lang": "zh",
+      "reduced_motion": "reduce",
+      "page_javascript_enabled": true,
+      "before": {
+        "documentOverflow": false,
+        "method": {
+          "box": {
+            "x": 37,
+            "y": 426.921875,
+            "right": 363,
+            "bottom": 910.296875,
+            "width": 326,
+            "height": 483.375
+          },
+          "summary": {
+            "x": 37,
+            "y": 427.921875,
+            "right": 363,
+            "bottom": 471.921875,
+            "width": 326,
+            "height": 44
+          },
+          "open": true,
+          "firstParagraph": "先在每个月内计算触发后于下一收盘价入场、21 个交易日后上涨的比例，再对各月比例等权平均。这不是盈利月份占比，也不是所有触发次数合并后的胜率。",
+          "firstParagraphHeight": 86.75,
+          "remainingParagraphs": [
+            "先在每个月内计算触发后于下一收盘价入场、21 个交易日后上涨的比例，再对各月比例等权平均。这不是盈利月份占比，也不是所有触发次数合并后的胜率。",
+            "近年为测试期，触发日期自 2018-01-01 起；更早为该日期之前的训练期。组合由历史搜索得出，这些标签不代表未经查看的前瞻验证。",
+            "随机入场月均胜率 · 21 个交易日 · 近年：5.7/10 · 更早：5.6/10. 基准是在同一时期对相同股票随机选择日期入场。比较百分点指胜率差值，并非投资收益率。",
+            "完整组合由不成立变为成立时计为一次触发，连续成立的日期不重复计数。年均频率按首次至末次的时间跨度计算。D 和 W 分别表示日线与周线，指标回看窗口是另一属性。",
+            "源数据排序使用近期月均胜率的 Wilson 近似值并减去随机入场基准。这是排序方法，不是统计显著性结果。"
+          ]
+        },
+        "figure": null,
+        "locked": [
+          {
+            "box": {
+              "x": 37,
+              "y": 1603.46875,
+              "right": 363,
+              "bottom": 1727.75,
+              "width": 326,
+              "height": 124.28125
+            },
+            "icon": {
+              "x": 54,
+              "y": 1620.609375,
+              "right": 86,
+              "bottom": 1652.609375,
+              "width": 32,
+              "height": 32
+            },
+            "text": {
+              "x": 100,
+              "y": 1618.46875,
+              "right": 346,
+              "bottom": 1654.75,
+              "width": 246,
+              "height": 36.28125
+            },
+            "button": {
+              "x": 54,
+              "y": 1668.75,
+              "right": 164,
+              "bottom": 1712.75,
+              "width": 110,
+              "height": 44
+            },
+            "content": "1 只股票在此快照匹配\n查看匹配名称需具备相应方案权限。\n开始免费试用",
+            "href": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+            "scroll": 324,
+            "client": 324,
+            "textScroll": 246,
+            "textClient": 246
+          },
+          {
+            "box": {
+              "x": 37,
+              "y": 2313.921875,
+              "right": 363,
+              "bottom": 2438.203125,
+              "width": 326,
+              "height": 124.28125
+            },
+            "icon": {
+              "x": 54,
+              "y": 2331.0625,
+              "right": 86,
+              "bottom": 2363.0625,
+              "width": 32,
+              "height": 32
+            },
+            "text": {
+              "x": 100,
+              "y": 2328.921875,
+              "right": 346,
+              "bottom": 2365.203125,
+              "width": 246,
+              "height": 36.28125
+            },
+            "button": {
+              "x": 54,
+              "y": 2379.203125,
+              "right": 164,
+              "bottom": 2423.203125,
+              "width": 110,
+              "height": 44
+            },
+            "content": "1 只股票在此快照匹配\n查看匹配名称需具备相应方案权限。\n开始免费试用",
+            "href": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+            "scroll": 324,
+            "client": 324,
+            "textScroll": 246,
+            "textClient": 246
+          }
+        ],
+        "publicValues": [
+          "近年（2018起）\n9.1/10\n14 个月 · 22 次触发\n更早（2018前）\n5.8/10\n57 个月 · 71 次触发\n月均胜率 · 21 个交易日\n较随机入场 · 个百分点\n近年比较\n+34.3\n更早比较\n+1.7",
+          "近年（2018起）\n8.4/10\n19 个月 · 28 次触发\n更早（2018前）\n6.3/10\n62 个月 · 86 次触发\n月均胜率 · 21 个交易日\n较随机入场 · 个百分点\n近年比较\n+27.5\n更早比较\n+7.0",
+          "近年（2018起）\n8.3/10\n18 个月 · 28 次触发\n更早（2018前）\n5.9/10\n56 个月 · 74 次触发\n月均胜率 · 21 个交易日\n较随机入场 · 个百分点\n近年比较\n+26.0\n更早比较\n+3.0"
+        ],
+        "heroAnimations": 0
+      },
+      "open_motion": {
+        "opacity": "1",
+        "animations": []
+      },
+      "after": {
+        "documentOverflow": false,
+        "method": {
+          "box": {
+            "x": 37,
+            "y": 426.921875,
+            "right": 363,
+            "bottom": 978.09375,
+            "width": 326,
+            "height": 551.171875
+          },
+          "summary": {
+            "x": 37,
+            "y": 427.921875,
+            "right": 363,
+            "bottom": 471.921875,
+            "width": 326,
+            "height": 44
+          },
+          "open": true,
+          "firstParagraph": "近年为测试期，触发日期自 2018-01-01 起；更早为该日期之前的训练期。组合由历史搜索得出，这些标签不代表未经查看的前瞻验证。",
+          "firstParagraphHeight": 65.0625,
+          "remainingParagraphs": [
+            "近年为测试期，触发日期自 2018-01-01 起；更早为该日期之前的训练期。组合由历史搜索得出，这些标签不代表未经查看的前瞻验证。",
+            "随机入场月均胜率 · 21 个交易日 · 近年：5.7/10 · 更早：5.6/10. 基准是在同一时期对相同股票随机选择日期入场。比较百分点指胜率差值，并非投资收益率。",
+            "完整组合由不成立变为成立时计为一次触发，连续成立的日期不重复计数。年均频率按首次至末次的时间跨度计算。D 和 W 分别表示日线与周线，指标回看窗口是另一属性。",
+            "源数据排序使用近期月均胜率的 Wilson 近似值并减去随机入场基准。这是排序方法，不是统计显著性结果。"
+          ]
+        },
+        "figure": {
+          "box": {
+            "x": 37,
+            "y": 479.921875,
+            "right": 363,
+            "bottom": 626.46875,
+            "width": 326,
+            "height": 146.546875
+          },
+          "text": "每个月内\n触发后上涨的占比\n汇总各月\n各月占比等权平均\n上涨：以触发后的下一收盘价入场，21 个交易日后价格高于入场价。\n\n这不是盈利月份占比，也不是所有触发次数合并后的胜率。",
+          "caption": "上涨：以触发后的下一收盘价入场，21 个交易日后价格高于入场价。\n\n这不是盈利月份占比，也不是所有触发次数合并后的胜率。",
+          "steps": [
+            {
+              "box": {
+                "x": 37,
+                "y": 479.921875,
+                "right": 186,
+                "bottom": 521.71875,
+                "width": 149,
+                "height": 41.796875
+              },
+              "text": "每个月内\n触发后上涨的占比",
+              "scroll": 149,
+              "client": 149
+            },
+            {
+              "box": {
+                "x": 214,
+                "y": 479.921875,
+                "right": 363,
+                "bottom": 521.71875,
+                "width": 149,
+                "height": 41.796875
+              },
+              "text": "汇总各月\n各月占比等权平均",
+              "scroll": 149,
+              "client": 149
+            }
+          ],
+          "opacity": "1",
+          "animationName": "none",
+          "animationDuration": "0s",
+          "captionLast": true,
+          "captionCount": 1,
+          "animations": []
+        },
+        "locked": [
+          {
+            "box": {
+              "x": 37,
+              "y": 1671.265625,
+              "right": 363,
+              "bottom": 1795.546875,
+              "width": 326,
+              "height": 124.28125
+            },
+            "icon": {
+              "x": 54,
+              "y": 1686.265625,
+              "right": 86,
+              "bottom": 1718.265625,
+              "width": 32,
+              "height": 32
+            },
+            "text": {
+              "x": 100,
+              "y": 1686.265625,
+              "right": 346,
+              "bottom": 1722.546875,
+              "width": 246,
+              "height": 36.28125
+            },
+            "button": {
+              "x": 54,
+              "y": 1736.546875,
+              "right": 164,
+              "bottom": 1780.546875,
+              "width": 110,
+              "height": 44
+            },
+            "content": "1 只股票在此快照匹配\n查看匹配名称需具备相应方案权限。\n开始免费试用",
+            "href": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+            "scroll": 324,
+            "client": 324,
+            "textScroll": 246,
+            "textClient": 246,
+            "height_reduction": 0,
+            "action_upward": 0
+          },
+          {
+            "box": {
+              "x": 37,
+              "y": 2381.71875,
+              "right": 363,
+              "bottom": 2506,
+              "width": 326,
+              "height": 124.28125
+            },
+            "icon": {
+              "x": 54,
+              "y": 2396.71875,
+              "right": 86,
+              "bottom": 2428.71875,
+              "width": 32,
+              "height": 32
+            },
+            "text": {
+              "x": 100,
+              "y": 2396.71875,
+              "right": 346,
+              "bottom": 2433,
+              "width": 246,
+              "height": 36.28125
+            },
+            "button": {
+              "x": 54,
+              "y": 2447,
+              "right": 164,
+              "bottom": 2491,
+              "width": 110,
+              "height": 44
+            },
+            "content": "1 只股票在此快照匹配\n查看匹配名称需具备相应方案权限。\n开始免费试用",
+            "href": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+            "scroll": 324,
+            "client": 324,
+            "textScroll": 246,
+            "textClient": 246,
+            "height_reduction": 0,
+            "action_upward": 0
+          }
+        ],
+        "publicValues": [
+          "近年（2018起）\n9.1/10\n14 个月 · 22 次触发\n更早（2018前）\n5.8/10\n57 个月 · 71 次触发\n月均胜率 · 21 个交易日\n较随机入场 · 个百分点\n近年比较\n+34.3\n更早比较\n+1.7",
+          "近年（2018起）\n8.4/10\n19 个月 · 28 次触发\n更早（2018前）\n6.3/10\n62 个月 · 86 次触发\n月均胜率 · 21 个交易日\n较随机入场 · 个百分点\n近年比较\n+27.5\n更早比较\n+7.0",
+          "近年（2018起）\n8.3/10\n18 个月 · 28 次触发\n更早（2018前）\n5.9/10\n56 个月 · 74 次触发\n月均胜率 · 21 个交易日\n较随机入场 · 个百分点\n近年比较\n+26.0\n更早比较\n+3.0"
+        ],
+        "heroAnimations": 0
+      },
+      "method_height_delta": 67.796875,
+      "figure_height_vs_paragraph": {
+        "figure": 146.546875,
+        "prior_paragraph": 86.75
+      },
+      "status": "PASS",
+      "destination": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+      "action_focus": {
+        "visible": true,
+        "outline": "solid",
+        "width": "2px"
+      }
+    },
+    {
+      "name": "401-en-reduce",
+      "width": 401,
+      "lang": "en",
+      "reduced_motion": "reduce",
+      "page_javascript_enabled": true,
+      "before": {
+        "documentOverflow": false,
+        "method": {
+          "box": {
+            "x": 37,
+            "y": 426.765625,
+            "right": 364,
+            "bottom": 1061.953125,
+            "width": 327,
+            "height": 635.1875
+          },
+          "summary": {
+            "x": 37,
+            "y": 427.765625,
+            "right": 364,
+            "bottom": 471.765625,
+            "width": 327,
+            "height": 44
+          },
+          "open": true,
+          "firstParagraph": "Within each month, calculate the share of fires whose next-close entry finished higher after 21 trading days. Then average those monthly proportions equally. This is not the fraction of winning months or the pooled win rate.",
+          "firstParagraphHeight": 108.4375,
+          "remainingParagraphs": [
+            "Within each month, calculate the share of fires whose next-close entry finished higher after 21 trading days. Then average those monthly proportions equally. This is not the fraction of winning months or the pooled win rate.",
+            "Recent is the test period, with fire dates from 2018-01-01. Older is the training period, before that date. These recipes were searched historically; neither label establishes untouched prospective validation.",
+            "Random-entry monthly win average · 21 trading days · recent: 5.7/10 · older: 5.6/10. The baseline enters the same stocks on random dates over the same period. Comparison points describe win-rate differences, not investment returns.",
+            "A sighting starts when the full combination changes from false to true. Consecutive days that remain true add no sightings. Yearly frequency averages sightings over the first-to-last span. D and W label daily and weekly bars; indicator lookback is separate.",
+            "Source ordering uses a Wilson-based ranking heuristic on the recent monthly win average, minus the random-entry baseline. It is a ranking heuristic, not a statistical-significance result."
+          ]
+        },
+        "figure": null,
+        "locked": [
+          {
+            "box": {
+              "x": 37,
+              "y": 1802.71875,
+              "right": 364,
+              "bottom": 1927,
+              "width": 327,
+              "height": 124.28125
+            },
+            "icon": {
+              "x": 54,
+              "y": 1819.859375,
+              "right": 86,
+              "bottom": 1851.859375,
+              "width": 32,
+              "height": 32
+            },
+            "text": {
+              "x": 100,
+              "y": 1817.71875,
+              "right": 347,
+              "bottom": 1854,
+              "width": 247,
+              "height": 36.28125
+            },
+            "button": {
+              "x": 54,
+              "y": 1868,
+              "right": 177.171875,
+              "bottom": 1912,
+              "width": 123.171875,
+              "height": 44
+            },
+            "content": "1 stock in this snapshot\nMatching names require an eligible plan.\nStart free trial",
+            "href": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+            "scroll": 325,
+            "client": 325,
+            "textScroll": 247,
+            "textClient": 247
+          },
+          {
+            "box": {
+              "x": 37,
+              "y": 2534.765625,
+              "right": 364,
+              "bottom": 2659.046875,
+              "width": 327,
+              "height": 124.28125
+            },
+            "icon": {
+              "x": 54,
+              "y": 2551.90625,
+              "right": 86,
+              "bottom": 2583.90625,
+              "width": 32,
+              "height": 32
+            },
+            "text": {
+              "x": 100,
+              "y": 2549.765625,
+              "right": 347,
+              "bottom": 2586.046875,
+              "width": 247,
+              "height": 36.28125
+            },
+            "button": {
+              "x": 54,
+              "y": 2600.046875,
+              "right": 177.171875,
+              "bottom": 2644.046875,
+              "width": 123.171875,
+              "height": 44
+            },
+            "content": "1 stock in this snapshot\nMatching names require an eligible plan.\nStart free trial",
+            "href": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+            "scroll": 325,
+            "client": 325,
+            "textScroll": 247,
+            "textClient": 247
+          }
+        ],
+        "publicValues": [
+          "Recent (2018+)\n9.1/10\n14 months · 22 fires\nOlder (before 2018)\n5.8/10\n57 months · 71 fires\nMonthly win average · 21 trading days\nVersus random entry · percentage points\nRecent comparison\n+34.3\nOlder comparison\n+1.7",
+          "Recent (2018+)\n8.4/10\n19 months · 28 fires\nOlder (before 2018)\n6.3/10\n62 months · 86 fires\nMonthly win average · 21 trading days\nVersus random entry · percentage points\nRecent comparison\n+27.5\nOlder comparison\n+7.0",
+          "Recent (2018+)\n8.3/10\n18 months · 28 fires\nOlder (before 2018)\n5.9/10\n56 months · 74 fires\nMonthly win average · 21 trading days\nVersus random entry · percentage points\nRecent comparison\n+26.0\nOlder comparison\n+3.0"
+        ],
+        "heroAnimations": 0
+      },
+      "open_motion": {
+        "opacity": "1",
+        "animations": []
+      },
+      "after": {
+        "documentOverflow": false,
+        "method": {
+          "box": {
+            "x": 37,
+            "y": 426.765625,
+            "right": 364,
+            "bottom": 1128.359375,
+            "width": 327,
+            "height": 701.59375
+          },
+          "summary": {
+            "x": 37,
+            "y": 427.765625,
+            "right": 364,
+            "bottom": 471.765625,
+            "width": 327,
+            "height": 44
+          },
+          "open": true,
+          "firstParagraph": "Recent is the test period, with fire dates from 2018-01-01. Older is the training period, before that date. These recipes were searched historically; neither label establishes untouched prospective validation.",
+          "firstParagraphHeight": 108.4375,
+          "remainingParagraphs": [
+            "Recent is the test period, with fire dates from 2018-01-01. Older is the training period, before that date. These recipes were searched historically; neither label establishes untouched prospective validation.",
+            "Random-entry monthly win average · 21 trading days · recent: 5.7/10 · older: 5.6/10. The baseline enters the same stocks on random dates over the same period. Comparison points describe win-rate differences, not investment returns.",
+            "A sighting starts when the full combination changes from false to true. Consecutive days that remain true add no sightings. Yearly frequency averages sightings over the first-to-last span. D and W label daily and weekly bars; indicator lookback is separate.",
+            "Source ordering uses a Wilson-based ranking heuristic on the recent monthly win average, minus the random-entry baseline. It is a ranking heuristic, not a statistical-significance result."
+          ]
+        },
+        "figure": {
+          "box": {
+            "x": 37,
+            "y": 479.765625,
+            "right": 364,
+            "bottom": 646.609375,
+            "width": 327,
+            "height": 166.84375
+          },
+          "text": "Within each month\nShare of winning fires\nAcross months\nAverage shares equally\nWin: price is above the next-close entry price after 21 trading days.\n\nThis is not the fraction of winning months or the pooled win rate.",
+          "caption": "Win: price is above the next-close entry price after 21 trading days.\n\nThis is not the fraction of winning months or the pooled win rate.",
+          "steps": [
+            {
+              "box": {
+                "x": 37,
+                "y": 479.765625,
+                "right": 186.5,
+                "bottom": 541.859375,
+                "width": 149.5,
+                "height": 62.09375
+              },
+              "text": "Within each month\nShare of winning fires",
+              "scroll": 150,
+              "client": 150
+            },
+            {
+              "box": {
+                "x": 214.5,
+                "y": 479.765625,
+                "right": 364,
+                "bottom": 541.859375,
+                "width": 149.5,
+                "height": 62.09375
+              },
+              "text": "Across months\nAverage shares equally",
+              "scroll": 150,
+              "client": 150
+            }
+          ],
+          "opacity": "1",
+          "animationName": "none",
+          "animationDuration": "0s",
+          "captionLast": true,
+          "captionCount": 1,
+          "animations": []
+        },
+        "locked": [
+          {
+            "box": {
+              "x": 37,
+              "y": 1869.125,
+              "right": 364,
+              "bottom": 1993.40625,
+              "width": 327,
+              "height": 124.28125
+            },
+            "icon": {
+              "x": 54,
+              "y": 1886.265625,
+              "right": 86,
+              "bottom": 1918.265625,
+              "width": 32,
+              "height": 32
+            },
+            "text": {
+              "x": 100,
+              "y": 1884.125,
+              "right": 347,
+              "bottom": 1920.40625,
+              "width": 247,
+              "height": 36.28125
+            },
+            "button": {
+              "x": 54,
+              "y": 1934.40625,
+              "right": 177.171875,
+              "bottom": 1978.40625,
+              "width": 123.171875,
+              "height": 44
+            },
+            "content": "1 stock in this snapshot\nMatching names require an eligible plan.\nStart free trial",
+            "href": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+            "scroll": 325,
+            "client": 325,
+            "textScroll": 247,
+            "textClient": 247,
+            "height_reduction": 0,
+            "action_upward": 0
+          },
+          {
+            "box": {
+              "x": 37,
+              "y": 2601.171875,
+              "right": 364,
+              "bottom": 2725.453125,
+              "width": 327,
+              "height": 124.28125
+            },
+            "icon": {
+              "x": 54,
+              "y": 2618.3125,
+              "right": 86,
+              "bottom": 2650.3125,
+              "width": 32,
+              "height": 32
+            },
+            "text": {
+              "x": 100,
+              "y": 2616.171875,
+              "right": 347,
+              "bottom": 2652.453125,
+              "width": 247,
+              "height": 36.28125
+            },
+            "button": {
+              "x": 54,
+              "y": 2666.453125,
+              "right": 177.171875,
+              "bottom": 2710.453125,
+              "width": 123.171875,
+              "height": 44
+            },
+            "content": "1 stock in this snapshot\nMatching names require an eligible plan.\nStart free trial",
+            "href": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+            "scroll": 325,
+            "client": 325,
+            "textScroll": 247,
+            "textClient": 247,
+            "height_reduction": 0,
+            "action_upward": 0
+          }
+        ],
+        "publicValues": [
+          "Recent (2018+)\n9.1/10\n14 months · 22 fires\nOlder (before 2018)\n5.8/10\n57 months · 71 fires\nMonthly win average · 21 trading days\nVersus random entry · percentage points\nRecent comparison\n+34.3\nOlder comparison\n+1.7",
+          "Recent (2018+)\n8.4/10\n19 months · 28 fires\nOlder (before 2018)\n6.3/10\n62 months · 86 fires\nMonthly win average · 21 trading days\nVersus random entry · percentage points\nRecent comparison\n+27.5\nOlder comparison\n+7.0",
+          "Recent (2018+)\n8.3/10\n18 months · 28 fires\nOlder (before 2018)\n5.9/10\n56 months · 74 fires\nMonthly win average · 21 trading days\nVersus random entry · percentage points\nRecent comparison\n+26.0\nOlder comparison\n+3.0"
+        ],
+        "heroAnimations": 0
+      },
+      "method_height_delta": 66.40625,
+      "figure_height_vs_paragraph": {
+        "figure": 166.84375,
+        "prior_paragraph": 108.4375
+      },
+      "status": "PASS",
+      "destination": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+      "action_focus": {
+        "visible": true,
+        "outline": "solid",
+        "width": "2px"
+      }
+    },
+    {
+      "name": "401-zh-reduce",
+      "width": 401,
+      "lang": "zh",
+      "reduced_motion": "reduce",
+      "page_javascript_enabled": true,
+      "before": {
+        "documentOverflow": false,
+        "method": {
+          "box": {
+            "x": 37,
+            "y": 426.921875,
+            "right": 364,
+            "bottom": 910.296875,
+            "width": 327,
+            "height": 483.375
+          },
+          "summary": {
+            "x": 37,
+            "y": 427.921875,
+            "right": 364,
+            "bottom": 471.921875,
+            "width": 327,
+            "height": 44
+          },
+          "open": true,
+          "firstParagraph": "先在每个月内计算触发后于下一收盘价入场、21 个交易日后上涨的比例，再对各月比例等权平均。这不是盈利月份占比，也不是所有触发次数合并后的胜率。",
+          "firstParagraphHeight": 86.75,
+          "remainingParagraphs": [
+            "先在每个月内计算触发后于下一收盘价入场、21 个交易日后上涨的比例，再对各月比例等权平均。这不是盈利月份占比，也不是所有触发次数合并后的胜率。",
+            "近年为测试期，触发日期自 2018-01-01 起；更早为该日期之前的训练期。组合由历史搜索得出，这些标签不代表未经查看的前瞻验证。",
+            "随机入场月均胜率 · 21 个交易日 · 近年：5.7/10 · 更早：5.6/10. 基准是在同一时期对相同股票随机选择日期入场。比较百分点指胜率差值，并非投资收益率。",
+            "完整组合由不成立变为成立时计为一次触发，连续成立的日期不重复计数。年均频率按首次至末次的时间跨度计算。D 和 W 分别表示日线与周线，指标回看窗口是另一属性。",
+            "源数据排序使用近期月均胜率的 Wilson 近似值并减去随机入场基准。这是排序方法，不是统计显著性结果。"
+          ]
+        },
+        "figure": null,
+        "locked": [
+          {
+            "box": {
+              "x": 37,
+              "y": 1603.46875,
+              "right": 364,
+              "bottom": 1727.75,
+              "width": 327,
+              "height": 124.28125
+            },
+            "icon": {
+              "x": 54,
+              "y": 1620.609375,
+              "right": 86,
+              "bottom": 1652.609375,
+              "width": 32,
+              "height": 32
+            },
+            "text": {
+              "x": 100,
+              "y": 1618.46875,
+              "right": 347,
+              "bottom": 1654.75,
+              "width": 247,
+              "height": 36.28125
+            },
+            "button": {
+              "x": 54,
+              "y": 1668.75,
+              "right": 164,
+              "bottom": 1712.75,
+              "width": 110,
+              "height": 44
+            },
+            "content": "1 只股票在此快照匹配\n查看匹配名称需具备相应方案权限。\n开始免费试用",
+            "href": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+            "scroll": 325,
+            "client": 325,
+            "textScroll": 247,
+            "textClient": 247
+          },
+          {
+            "box": {
+              "x": 37,
+              "y": 2313.921875,
+              "right": 364,
+              "bottom": 2438.203125,
+              "width": 327,
+              "height": 124.28125
+            },
+            "icon": {
+              "x": 54,
+              "y": 2331.0625,
+              "right": 86,
+              "bottom": 2363.0625,
+              "width": 32,
+              "height": 32
+            },
+            "text": {
+              "x": 100,
+              "y": 2328.921875,
+              "right": 347,
+              "bottom": 2365.203125,
+              "width": 247,
+              "height": 36.28125
+            },
+            "button": {
+              "x": 54,
+              "y": 2379.203125,
+              "right": 164,
+              "bottom": 2423.203125,
+              "width": 110,
+              "height": 44
+            },
+            "content": "1 只股票在此快照匹配\n查看匹配名称需具备相应方案权限。\n开始免费试用",
+            "href": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+            "scroll": 325,
+            "client": 325,
+            "textScroll": 247,
+            "textClient": 247
+          }
+        ],
+        "publicValues": [
+          "近年（2018起）\n9.1/10\n14 个月 · 22 次触发\n更早（2018前）\n5.8/10\n57 个月 · 71 次触发\n月均胜率 · 21 个交易日\n较随机入场 · 个百分点\n近年比较\n+34.3\n更早比较\n+1.7",
+          "近年（2018起）\n8.4/10\n19 个月 · 28 次触发\n更早（2018前）\n6.3/10\n62 个月 · 86 次触发\n月均胜率 · 21 个交易日\n较随机入场 · 个百分点\n近年比较\n+27.5\n更早比较\n+7.0",
+          "近年（2018起）\n8.3/10\n18 个月 · 28 次触发\n更早（2018前）\n5.9/10\n56 个月 · 74 次触发\n月均胜率 · 21 个交易日\n较随机入场 · 个百分点\n近年比较\n+26.0\n更早比较\n+3.0"
+        ],
+        "heroAnimations": 0
+      },
+      "open_motion": {
+        "opacity": "1",
+        "animations": []
+      },
+      "after": {
+        "documentOverflow": false,
+        "method": {
+          "box": {
+            "x": 37,
+            "y": 426.921875,
+            "right": 364,
+            "bottom": 978.09375,
+            "width": 327,
+            "height": 551.171875
+          },
+          "summary": {
+            "x": 37,
+            "y": 427.921875,
+            "right": 364,
+            "bottom": 471.921875,
+            "width": 327,
+            "height": 44
+          },
+          "open": true,
+          "firstParagraph": "近年为测试期，触发日期自 2018-01-01 起；更早为该日期之前的训练期。组合由历史搜索得出，这些标签不代表未经查看的前瞻验证。",
+          "firstParagraphHeight": 65.0625,
+          "remainingParagraphs": [
+            "近年为测试期，触发日期自 2018-01-01 起；更早为该日期之前的训练期。组合由历史搜索得出，这些标签不代表未经查看的前瞻验证。",
+            "随机入场月均胜率 · 21 个交易日 · 近年：5.7/10 · 更早：5.6/10. 基准是在同一时期对相同股票随机选择日期入场。比较百分点指胜率差值，并非投资收益率。",
+            "完整组合由不成立变为成立时计为一次触发，连续成立的日期不重复计数。年均频率按首次至末次的时间跨度计算。D 和 W 分别表示日线与周线，指标回看窗口是另一属性。",
+            "源数据排序使用近期月均胜率的 Wilson 近似值并减去随机入场基准。这是排序方法，不是统计显著性结果。"
+          ]
+        },
+        "figure": {
+          "box": {
+            "x": 37,
+            "y": 479.921875,
+            "right": 364,
+            "bottom": 626.46875,
+            "width": 327,
+            "height": 146.546875
+          },
+          "text": "每个月内\n触发后上涨的占比\n汇总各月\n各月占比等权平均\n上涨：以触发后的下一收盘价入场，21 个交易日后价格高于入场价。\n\n这不是盈利月份占比，也不是所有触发次数合并后的胜率。",
+          "caption": "上涨：以触发后的下一收盘价入场，21 个交易日后价格高于入场价。\n\n这不是盈利月份占比，也不是所有触发次数合并后的胜率。",
+          "steps": [
+            {
+              "box": {
+                "x": 37,
+                "y": 479.921875,
+                "right": 186.5,
+                "bottom": 521.71875,
+                "width": 149.5,
+                "height": 41.796875
+              },
+              "text": "每个月内\n触发后上涨的占比",
+              "scroll": 150,
+              "client": 150
+            },
+            {
+              "box": {
+                "x": 214.5,
+                "y": 479.921875,
+                "right": 364,
+                "bottom": 521.71875,
+                "width": 149.5,
+                "height": 41.796875
+              },
+              "text": "汇总各月\n各月占比等权平均",
+              "scroll": 150,
+              "client": 150
+            }
+          ],
+          "opacity": "1",
+          "animationName": "none",
+          "animationDuration": "0s",
+          "captionLast": true,
+          "captionCount": 1,
+          "animations": []
+        },
+        "locked": [
+          {
+            "box": {
+              "x": 37,
+              "y": 1671.265625,
+              "right": 364,
+              "bottom": 1795.546875,
+              "width": 327,
+              "height": 124.28125
+            },
+            "icon": {
+              "x": 54,
+              "y": 1688.40625,
+              "right": 86,
+              "bottom": 1720.40625,
+              "width": 32,
+              "height": 32
+            },
+            "text": {
+              "x": 100,
+              "y": 1686.265625,
+              "right": 347,
+              "bottom": 1722.546875,
+              "width": 247,
+              "height": 36.28125
+            },
+            "button": {
+              "x": 54,
+              "y": 1736.546875,
+              "right": 164,
+              "bottom": 1780.546875,
+              "width": 110,
+              "height": 44
+            },
+            "content": "1 只股票在此快照匹配\n查看匹配名称需具备相应方案权限。\n开始免费试用",
+            "href": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+            "scroll": 325,
+            "client": 325,
+            "textScroll": 247,
+            "textClient": 247,
+            "height_reduction": 0,
+            "action_upward": 0
+          },
+          {
+            "box": {
+              "x": 37,
+              "y": 2381.71875,
+              "right": 364,
+              "bottom": 2506,
+              "width": 327,
+              "height": 124.28125
+            },
+            "icon": {
+              "x": 54,
+              "y": 2398.859375,
+              "right": 86,
+              "bottom": 2430.859375,
+              "width": 32,
+              "height": 32
+            },
+            "text": {
+              "x": 100,
+              "y": 2396.71875,
+              "right": 347,
+              "bottom": 2433,
+              "width": 247,
+              "height": 36.28125
+            },
+            "button": {
+              "x": 54,
+              "y": 2447,
+              "right": 164,
+              "bottom": 2491,
+              "width": 110,
+              "height": 44
+            },
+            "content": "1 只股票在此快照匹配\n查看匹配名称需具备相应方案权限。\n开始免费试用",
+            "href": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+            "scroll": 325,
+            "client": 325,
+            "textScroll": 247,
+            "textClient": 247,
+            "height_reduction": 0,
+            "action_upward": 0
+          }
+        ],
+        "publicValues": [
+          "近年（2018起）\n9.1/10\n14 个月 · 22 次触发\n更早（2018前）\n5.8/10\n57 个月 · 71 次触发\n月均胜率 · 21 个交易日\n较随机入场 · 个百分点\n近年比较\n+34.3\n更早比较\n+1.7",
+          "近年（2018起）\n8.4/10\n19 个月 · 28 次触发\n更早（2018前）\n6.3/10\n62 个月 · 86 次触发\n月均胜率 · 21 个交易日\n较随机入场 · 个百分点\n近年比较\n+27.5\n更早比较\n+7.0",
+          "近年（2018起）\n8.3/10\n18 个月 · 28 次触发\n更早（2018前）\n5.9/10\n56 个月 · 74 次触发\n月均胜率 · 21 个交易日\n较随机入场 · 个百分点\n近年比较\n+26.0\n更早比较\n+3.0"
+        ],
+        "heroAnimations": 0
+      },
+      "method_height_delta": 67.796875,
+      "figure_height_vs_paragraph": {
+        "figure": 146.546875,
+        "prior_paragraph": 86.75
+      },
+      "status": "PASS",
+      "destination": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+      "action_focus": {
+        "visible": true,
+        "outline": "solid",
+        "width": "2px"
+      }
+    },
+    {
+      "name": "1440-en-reduce",
+      "width": 1440,
+      "lang": "en",
+      "reduced_motion": "reduce",
+      "page_javascript_enabled": true,
+      "before": {
+        "documentOverflow": false,
+        "method": {
+          "box": {
+            "x": 223,
+            "y": 427.015625,
+            "right": 1217,
+            "bottom": 780.265625,
+            "width": 994,
+            "height": 353.25
+          },
+          "summary": {
+            "x": 223,
+            "y": 428.015625,
+            "right": 1217,
+            "bottom": 472.015625,
+            "width": 994,
+            "height": 44
+          },
+          "open": true,
+          "firstParagraph": "Within each month, calculate the share of fires whose next-close entry finished higher after 21 trading days. Then average those monthly proportions equally. This is not the fraction of winning months or the pooled win rate.",
+          "firstParagraphHeight": 43.375,
+          "remainingParagraphs": [
+            "Within each month, calculate the share of fires whose next-close entry finished higher after 21 trading days. Then average those monthly proportions equally. This is not the fraction of winning months or the pooled win rate.",
+            "Recent is the test period, with fire dates from 2018-01-01. Older is the training period, before that date. These recipes were searched historically; neither label establishes untouched prospective validation.",
+            "Random-entry monthly win average · 21 trading days · recent: 5.7/10 · older: 5.6/10. The baseline enters the same stocks on random dates over the same period. Comparison points describe win-rate differences, not investment returns.",
+            "A sighting starts when the full combination changes from false to true. Consecutive days that remain true add no sightings. Yearly frequency averages sightings over the first-to-last span. D and W label daily and weekly bars; indicator lookback is separate.",
+            "Source ordering uses a Wilson-based ranking heuristic on the recent monthly win average, minus the random-entry baseline. It is a ranking heuristic, not a statistical-significance result."
+          ]
+        },
+        "figure": null,
+        "locked": [
+          {
+            "box": {
+              "x": 223,
+              "y": 1251.5625,
+              "right": 1217,
+              "bottom": 1325.5625,
+              "width": 994,
+              "height": 74
+            },
+            "icon": {
+              "x": 240,
+              "y": 1272.5625,
+              "right": 272,
+              "bottom": 1304.5625,
+              "width": 32,
+              "height": 32
+            },
+            "text": {
+              "x": 286,
+              "y": 1270.421875,
+              "right": 1062.828125,
+              "bottom": 1306.703125,
+              "width": 776.828125,
+              "height": 36.28125
+            },
+            "button": {
+              "x": 1076.828125,
+              "y": 1266.5625,
+              "right": 1200,
+              "bottom": 1310.5625,
+              "width": 123.171875,
+              "height": 44
+            },
+            "content": "1 stock in this snapshot\nMatching names require an eligible plan.\nStart free trial",
+            "href": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+            "scroll": 992,
+            "client": 992,
+            "textScroll": 777,
+            "textClient": 777
+          },
+          {
+            "box": {
+              "x": 223,
+              "y": 1689.859375,
+              "right": 1217,
+              "bottom": 1763.859375,
+              "width": 994,
+              "height": 74
+            },
+            "icon": {
+              "x": 240,
+              "y": 1710.859375,
+              "right": 272,
+              "bottom": 1742.859375,
+              "width": 32,
+              "height": 32
+            },
+            "text": {
+              "x": 286,
+              "y": 1708.71875,
+              "right": 1062.828125,
+              "bottom": 1745,
+              "width": 776.828125,
+              "height": 36.28125
+            },
+            "button": {
+              "x": 1076.828125,
+              "y": 1704.859375,
+              "right": 1200,
+              "bottom": 1748.859375,
+              "width": 123.171875,
+              "height": 44
+            },
+            "content": "1 stock in this snapshot\nMatching names require an eligible plan.\nStart free trial",
+            "href": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+            "scroll": 992,
+            "client": 992,
+            "textScroll": 777,
+            "textClient": 777
+          }
+        ],
+        "publicValues": [
+          "Recent (2018+)\n9.1/10\n14 months · 22 fires\nOlder (before 2018)\n5.8/10\n57 months · 71 fires\nMonthly win average · 21 trading days\nVersus random entry · percentage points\nRecent comparison\n+34.3\nOlder comparison\n+1.7",
+          "Recent (2018+)\n8.4/10\n19 months · 28 fires\nOlder (before 2018)\n6.3/10\n62 months · 86 fires\nMonthly win average · 21 trading days\nVersus random entry · percentage points\nRecent comparison\n+27.5\nOlder comparison\n+7.0",
+          "Recent (2018+)\n8.3/10\n18 months · 28 fires\nOlder (before 2018)\n5.9/10\n56 months · 74 fires\nMonthly win average · 21 trading days\nVersus random entry · percentage points\nRecent comparison\n+26.0\nOlder comparison\n+3.0"
+        ],
+        "heroAnimations": 0
+      },
+      "open_motion": {
+        "opacity": "1",
+        "animations": []
+      },
+      "after": {
+        "documentOverflow": false,
+        "method": {
+          "box": {
+            "x": 223,
+            "y": 427.015625,
+            "right": 1217,
+            "bottom": 848.0625,
+            "width": 994,
+            "height": 421.046875
+          },
+          "summary": {
+            "x": 223,
+            "y": 428.015625,
+            "right": 1217,
+            "bottom": 472.015625,
+            "width": 994,
+            "height": 44
+          },
+          "open": true,
+          "firstParagraph": "Recent is the test period, with fire dates from 2018-01-01. Older is the training period, before that date. These recipes were searched historically; neither label establishes untouched prospective validation.",
+          "firstParagraphHeight": 43.375,
+          "remainingParagraphs": [
+            "Recent is the test period, with fire dates from 2018-01-01. Older is the training period, before that date. These recipes were searched historically; neither label establishes untouched prospective validation.",
+            "Random-entry monthly win average · 21 trading days · recent: 5.7/10 · older: 5.6/10. The baseline enters the same stocks on random dates over the same period. Comparison points describe win-rate differences, not investment returns.",
+            "A sighting starts when the full combination changes from false to true. Consecutive days that remain true add no sightings. Yearly frequency averages sightings over the first-to-last span. D and W label daily and weekly bars; indicator lookback is separate.",
+            "Source ordering uses a Wilson-based ranking heuristic on the recent monthly win average, minus the random-entry baseline. It is a ranking heuristic, not a statistical-significance result."
+          ]
+        },
+        "figure": {
+          "box": {
+            "x": 223,
+            "y": 480.015625,
+            "right": 783,
+            "bottom": 583.1875,
+            "width": 560,
+            "height": 103.171875
+          },
+          "text": "Within each month\nShare of winning fires\nAcross months\nAverage shares equally\nWin: price is above the next-close entry price after 21 trading days.\n\nThis is not the fraction of winning months or the pooled win rate.",
+          "caption": "Win: price is above the next-close entry price after 21 trading days.\n\nThis is not the fraction of winning months or the pooled win rate.",
+          "steps": [
+            {
+              "box": {
+                "x": 223,
+                "y": 480.015625,
+                "right": 489,
+                "bottom": 521.8125,
+                "width": 266,
+                "height": 41.796875
+              },
+              "text": "Within each month\nShare of winning fires",
+              "scroll": 266,
+              "client": 266
+            },
+            {
+              "box": {
+                "x": 517,
+                "y": 480.015625,
+                "right": 783,
+                "bottom": 521.8125,
+                "width": 266,
+                "height": 41.796875
+              },
+              "text": "Across months\nAverage shares equally",
+              "scroll": 266,
+              "client": 266
+            }
+          ],
+          "opacity": "1",
+          "animationName": "none",
+          "animationDuration": "0s",
+          "captionLast": true,
+          "captionCount": 1,
+          "animations": []
+        },
+        "locked": [
+          {
+            "box": {
+              "x": 223,
+              "y": 1319.359375,
+              "right": 1217,
+              "bottom": 1393.359375,
+              "width": 994,
+              "height": 74
+            },
+            "icon": {
+              "x": 240,
+              "y": 1340.359375,
+              "right": 272,
+              "bottom": 1372.359375,
+              "width": 32,
+              "height": 32
+            },
+            "text": {
+              "x": 286,
+              "y": 1338.21875,
+              "right": 1062.828125,
+              "bottom": 1374.5,
+              "width": 776.828125,
+              "height": 36.28125
+            },
+            "button": {
+              "x": 1076.828125,
+              "y": 1334.359375,
+              "right": 1200,
+              "bottom": 1378.359375,
+              "width": 123.171875,
+              "height": 44
+            },
+            "content": "1 stock in this snapshot\nMatching names require an eligible plan.\nStart free trial",
+            "href": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+            "scroll": 992,
+            "client": 992,
+            "textScroll": 777,
+            "textClient": 777,
+            "height_reduction": 0,
+            "action_upward": 0
+          },
+          {
+            "box": {
+              "x": 223,
+              "y": 1757.65625,
+              "right": 1217,
+              "bottom": 1831.65625,
+              "width": 994,
+              "height": 74
+            },
+            "icon": {
+              "x": 240,
+              "y": 1778.65625,
+              "right": 272,
+              "bottom": 1810.65625,
+              "width": 32,
+              "height": 32
+            },
+            "text": {
+              "x": 286,
+              "y": 1776.515625,
+              "right": 1062.828125,
+              "bottom": 1812.796875,
+              "width": 776.828125,
+              "height": 36.28125
+            },
+            "button": {
+              "x": 1076.828125,
+              "y": 1772.65625,
+              "right": 1200,
+              "bottom": 1816.65625,
+              "width": 123.171875,
+              "height": 44
+            },
+            "content": "1 stock in this snapshot\nMatching names require an eligible plan.\nStart free trial",
+            "href": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+            "scroll": 992,
+            "client": 992,
+            "textScroll": 777,
+            "textClient": 777,
+            "height_reduction": 0,
+            "action_upward": 0
+          }
+        ],
+        "publicValues": [
+          "Recent (2018+)\n9.1/10\n14 months · 22 fires\nOlder (before 2018)\n5.8/10\n57 months · 71 fires\nMonthly win average · 21 trading days\nVersus random entry · percentage points\nRecent comparison\n+34.3\nOlder comparison\n+1.7",
+          "Recent (2018+)\n8.4/10\n19 months · 28 fires\nOlder (before 2018)\n6.3/10\n62 months · 86 fires\nMonthly win average · 21 trading days\nVersus random entry · percentage points\nRecent comparison\n+27.5\nOlder comparison\n+7.0",
+          "Recent (2018+)\n8.3/10\n18 months · 28 fires\nOlder (before 2018)\n5.9/10\n56 months · 74 fires\nMonthly win average · 21 trading days\nVersus random entry · percentage points\nRecent comparison\n+26.0\nOlder comparison\n+3.0"
+        ],
+        "heroAnimations": 0
+      },
+      "method_height_delta": 67.796875,
+      "figure_height_vs_paragraph": {
+        "figure": 103.171875,
+        "prior_paragraph": 43.375
+      },
+      "status": "PASS",
+      "destination": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+      "action_focus": {
+        "visible": true,
+        "outline": "solid",
+        "width": "2px"
+      }
+    },
+    {
+      "name": "1440-zh-reduce",
+      "width": 1440,
+      "lang": "zh",
+      "reduced_motion": "reduce",
+      "page_javascript_enabled": true,
+      "before": {
+        "documentOverflow": false,
+        "method": {
+          "box": {
+            "x": 223,
+            "y": 426.828125,
+            "right": 1217,
+            "bottom": 715.015625,
+            "width": 994,
+            "height": 288.1875
+          },
+          "summary": {
+            "x": 223,
+            "y": 427.828125,
+            "right": 1217,
+            "bottom": 471.828125,
+            "width": 994,
+            "height": 44
+          },
+          "open": true,
+          "firstParagraph": "先在每个月内计算触发后于下一收盘价入场、21 个交易日后上涨的比例，再对各月比例等权平均。这不是盈利月份占比，也不是所有触发次数合并后的胜率。",
+          "firstParagraphHeight": 43.375,
+          "remainingParagraphs": [
+            "先在每个月内计算触发后于下一收盘价入场、21 个交易日后上涨的比例，再对各月比例等权平均。这不是盈利月份占比，也不是所有触发次数合并后的胜率。",
+            "近年为测试期，触发日期自 2018-01-01 起；更早为该日期之前的训练期。组合由历史搜索得出，这些标签不代表未经查看的前瞻验证。",
+            "随机入场月均胜率 · 21 个交易日 · 近年：5.7/10 · 更早：5.6/10. 基准是在同一时期对相同股票随机选择日期入场。比较百分点指胜率差值，并非投资收益率。",
+            "完整组合由不成立变为成立时计为一次触发，连续成立的日期不重复计数。年均频率按首次至末次的时间跨度计算。D 和 W 分别表示日线与周线，指标回看窗口是另一属性。",
+            "源数据排序使用近期月均胜率的 Wilson 近似值并减去随机入场基准。这是排序方法，不是统计显著性结果。"
+          ]
+        },
+        "figure": null,
+        "locked": [
+          {
+            "box": {
+              "x": 223,
+              "y": 1186.3125,
+              "right": 1217,
+              "bottom": 1260.3125,
+              "width": 994,
+              "height": 74
+            },
+            "icon": {
+              "x": 240,
+              "y": 1207.3125,
+              "right": 272,
+              "bottom": 1239.3125,
+              "width": 32,
+              "height": 32
+            },
+            "text": {
+              "x": 286,
+              "y": 1205.171875,
+              "right": 1076,
+              "bottom": 1241.453125,
+              "width": 790,
+              "height": 36.28125
+            },
+            "button": {
+              "x": 1090,
+              "y": 1201.3125,
+              "right": 1200,
+              "bottom": 1245.3125,
+              "width": 110,
+              "height": 44
+            },
+            "content": "1 只股票在此快照匹配\n查看匹配名称需具备相应方案权限。\n开始免费试用",
+            "href": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+            "scroll": 992,
+            "client": 992,
+            "textScroll": 790,
+            "textClient": 790
+          },
+          {
+            "box": {
+              "x": 223,
+              "y": 1624.609375,
+              "right": 1217,
+              "bottom": 1698.609375,
+              "width": 994,
+              "height": 74
+            },
+            "icon": {
+              "x": 240,
+              "y": 1645.609375,
+              "right": 272,
+              "bottom": 1677.609375,
+              "width": 32,
+              "height": 32
+            },
+            "text": {
+              "x": 286,
+              "y": 1643.46875,
+              "right": 1076,
+              "bottom": 1679.75,
+              "width": 790,
+              "height": 36.28125
+            },
+            "button": {
+              "x": 1090,
+              "y": 1639.609375,
+              "right": 1200,
+              "bottom": 1683.609375,
+              "width": 110,
+              "height": 44
+            },
+            "content": "1 只股票在此快照匹配\n查看匹配名称需具备相应方案权限。\n开始免费试用",
+            "href": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+            "scroll": 992,
+            "client": 992,
+            "textScroll": 790,
+            "textClient": 790
+          }
+        ],
+        "publicValues": [
+          "近年（2018起）\n9.1/10\n14 个月 · 22 次触发\n更早（2018前）\n5.8/10\n57 个月 · 71 次触发\n月均胜率 · 21 个交易日\n较随机入场 · 个百分点\n近年比较\n+34.3\n更早比较\n+1.7",
+          "近年（2018起）\n8.4/10\n19 个月 · 28 次触发\n更早（2018前）\n6.3/10\n62 个月 · 86 次触发\n月均胜率 · 21 个交易日\n较随机入场 · 个百分点\n近年比较\n+27.5\n更早比较\n+7.0",
+          "近年（2018起）\n8.3/10\n18 个月 · 28 次触发\n更早（2018前）\n5.9/10\n56 个月 · 74 次触发\n月均胜率 · 21 个交易日\n较随机入场 · 个百分点\n近年比较\n+26.0\n更早比较\n+3.0"
+        ],
+        "heroAnimations": 0
+      },
+      "open_motion": {
+        "opacity": "1",
+        "animations": []
+      },
+      "after": {
+        "documentOverflow": false,
+        "method": {
+          "box": {
+            "x": 223,
+            "y": 426.828125,
+            "right": 1217,
+            "bottom": 782.8125,
+            "width": 994,
+            "height": 355.984375
+          },
+          "summary": {
+            "x": 223,
+            "y": 427.828125,
+            "right": 1217,
+            "bottom": 471.828125,
+            "width": 994,
+            "height": 44
+          },
+          "open": true,
+          "firstParagraph": "近年为测试期，触发日期自 2018-01-01 起；更早为该日期之前的训练期。组合由历史搜索得出，这些标签不代表未经查看的前瞻验证。",
+          "firstParagraphHeight": 43.375,
+          "remainingParagraphs": [
+            "近年为测试期，触发日期自 2018-01-01 起；更早为该日期之前的训练期。组合由历史搜索得出，这些标签不代表未经查看的前瞻验证。",
+            "随机入场月均胜率 · 21 个交易日 · 近年：5.7/10 · 更早：5.6/10. 基准是在同一时期对相同股票随机选择日期入场。比较百分点指胜率差值，并非投资收益率。",
+            "完整组合由不成立变为成立时计为一次触发，连续成立的日期不重复计数。年均频率按首次至末次的时间跨度计算。D 和 W 分别表示日线与周线，指标回看窗口是另一属性。",
+            "源数据排序使用近期月均胜率的 Wilson 近似值并减去随机入场基准。这是排序方法，不是统计显著性结果。"
+          ]
+        },
+        "figure": {
+          "box": {
+            "x": 223,
+            "y": 479.828125,
+            "right": 783,
+            "bottom": 583,
+            "width": 560,
+            "height": 103.171875
+          },
+          "text": "每个月内\n触发后上涨的占比\n汇总各月\n各月占比等权平均\n上涨：以触发后的下一收盘价入场，21 个交易日后价格高于入场价。\n\n这不是盈利月份占比，也不是所有触发次数合并后的胜率。",
+          "caption": "上涨：以触发后的下一收盘价入场，21 个交易日后价格高于入场价。\n\n这不是盈利月份占比，也不是所有触发次数合并后的胜率。",
+          "steps": [
+            {
+              "box": {
+                "x": 223,
+                "y": 479.828125,
+                "right": 489,
+                "bottom": 521.625,
+                "width": 266,
+                "height": 41.796875
+              },
+              "text": "每个月内\n触发后上涨的占比",
+              "scroll": 266,
+              "client": 266
+            },
+            {
+              "box": {
+                "x": 517,
+                "y": 479.828125,
+                "right": 783,
+                "bottom": 521.625,
+                "width": 266,
+                "height": 41.796875
+              },
+              "text": "汇总各月\n各月占比等权平均",
+              "scroll": 266,
+              "client": 266
+            }
+          ],
+          "opacity": "1",
+          "animationName": "none",
+          "animationDuration": "0s",
+          "captionLast": true,
+          "captionCount": 1,
+          "animations": []
+        },
+        "locked": [
+          {
+            "box": {
+              "x": 223,
+              "y": 1254.109375,
+              "right": 1217,
+              "bottom": 1328.109375,
+              "width": 994,
+              "height": 74
+            },
+            "icon": {
+              "x": 240,
+              "y": 1275.109375,
+              "right": 272,
+              "bottom": 1307.109375,
+              "width": 32,
+              "height": 32
+            },
+            "text": {
+              "x": 286,
+              "y": 1272.96875,
+              "right": 1076,
+              "bottom": 1309.25,
+              "width": 790,
+              "height": 36.28125
+            },
+            "button": {
+              "x": 1090,
+              "y": 1269.109375,
+              "right": 1200,
+              "bottom": 1313.109375,
+              "width": 110,
+              "height": 44
+            },
+            "content": "1 只股票在此快照匹配\n查看匹配名称需具备相应方案权限。\n开始免费试用",
+            "href": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+            "scroll": 992,
+            "client": 992,
+            "textScroll": 790,
+            "textClient": 790,
+            "height_reduction": 0,
+            "action_upward": 0
+          },
+          {
+            "box": {
+              "x": 223,
+              "y": 1692.40625,
+              "right": 1217,
+              "bottom": 1766.40625,
+              "width": 994,
+              "height": 74
+            },
+            "icon": {
+              "x": 240,
+              "y": 1713.40625,
+              "right": 272,
+              "bottom": 1745.40625,
+              "width": 32,
+              "height": 32
+            },
+            "text": {
+              "x": 286,
+              "y": 1711.265625,
+              "right": 1076,
+              "bottom": 1747.546875,
+              "width": 790,
+              "height": 36.28125
+            },
+            "button": {
+              "x": 1090,
+              "y": 1707.40625,
+              "right": 1200,
+              "bottom": 1751.40625,
+              "width": 110,
+              "height": 44
+            },
+            "content": "1 只股票在此快照匹配\n查看匹配名称需具备相应方案权限。\n开始免费试用",
+            "href": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+            "scroll": 992,
+            "client": 992,
+            "textScroll": 790,
+            "textClient": 790,
+            "height_reduction": 0,
+            "action_upward": 0
+          }
+        ],
+        "publicValues": [
+          "近年（2018起）\n9.1/10\n14 个月 · 22 次触发\n更早（2018前）\n5.8/10\n57 个月 · 71 次触发\n月均胜率 · 21 个交易日\n较随机入场 · 个百分点\n近年比较\n+34.3\n更早比较\n+1.7",
+          "近年（2018起）\n8.4/10\n19 个月 · 28 次触发\n更早（2018前）\n6.3/10\n62 个月 · 86 次触发\n月均胜率 · 21 个交易日\n较随机入场 · 个百分点\n近年比较\n+27.5\n更早比较\n+7.0",
+          "近年（2018起）\n8.3/10\n18 个月 · 28 次触发\n更早（2018前）\n5.9/10\n56 个月 · 74 次触发\n月均胜率 · 21 个交易日\n较随机入场 · 个百分点\n近年比较\n+26.0\n更早比较\n+3.0"
+        ],
+        "heroAnimations": 0
+      },
+      "method_height_delta": 67.796875,
+      "figure_height_vs_paragraph": {
+        "figure": 103.171875,
+        "prior_paragraph": 43.375
+      },
+      "status": "PASS",
+      "destination": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+      "action_focus": {
+        "visible": true,
+        "outline": "solid",
+        "width": "2px"
+      }
+    },
+    {
+      "name": "320-en-no-preference",
+      "width": 320,
+      "lang": "en",
+      "reduced_motion": "no-preference",
+      "page_javascript_enabled": true,
+      "before": {
+        "documentOverflow": false,
+        "method": {
+          "box": {
+            "x": 37,
+            "y": 426.71875,
+            "right": 283,
+            "bottom": 1257.09375,
+            "width": 246,
+            "height": 830.375
+          },
+          "summary": {
+            "x": 37,
+            "y": 427.71875,
+            "right": 283,
+            "bottom": 471.71875,
+            "width": 246,
+            "height": 44
+          },
+          "open": true,
+          "firstParagraph": "Within each month, calculate the share of fires whose next-close entry finished higher after 21 trading days. Then average those monthly proportions equally. This is not the fraction of winning months or the pooled win rate.",
+          "firstParagraphHeight": 151.8125,
+          "remainingParagraphs": [
+            "Within each month, calculate the share of fires whose next-close entry finished higher after 21 trading days. Then average those monthly proportions equally. This is not the fraction of winning months or the pooled win rate.",
+            "Recent is the test period, with fire dates from 2018-01-01. Older is the training period, before that date. These recipes were searched historically; neither label establishes untouched prospective validation.",
+            "Random-entry monthly win average · 21 trading days · recent: 5.7/10 · older: 5.6/10. The baseline enters the same stocks on random dates over the same period. Comparison points describe win-rate differences, not investment returns.",
+            "A sighting starts when the full combination changes from false to true. Consecutive days that remain true add no sightings. Yearly frequency averages sightings over the first-to-last span. D and W label daily and weekly bars; indicator lookback is separate.",
+            "Source ordering uses a Wilson-based ranking heuristic on the recent monthly win average, minus the random-entry baseline. It is a ranking heuristic, not a statistical-significance result."
+          ]
+        },
+        "figure": null,
+        "locked": [
+          {
+            "box": {
+              "x": 37,
+              "y": 2096.046875,
+              "right": 283,
+              "bottom": 2282.421875,
+              "width": 246,
+              "height": 186.375
+            },
+            "icon": {
+              "x": 54,
+              "y": 2111.046875,
+              "right": 86,
+              "bottom": 2143.046875,
+              "width": 32,
+              "height": 32
+            },
+            "text": {
+              "x": 54,
+              "y": 2157.046875,
+              "right": 266,
+              "bottom": 2209.421875,
+              "width": 212,
+              "height": 52.375
+            },
+            "button": {
+              "x": 54,
+              "y": 2223.421875,
+              "right": 177.171875,
+              "bottom": 2267.421875,
+              "width": 123.171875,
+              "height": 44
+            },
+            "content": "1 stock in this snapshot\nMatching names require an eligible plan.\nStart free trial",
+            "href": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+            "scroll": 244,
+            "client": 244,
+            "textScroll": 212,
+            "textClient": 212
+          },
+          {
+            "box": {
+              "x": 37,
+              "y": 2966.78125,
+              "right": 283,
+              "bottom": 3153.15625,
+              "width": 246,
+              "height": 186.375
+            },
+            "icon": {
+              "x": 54,
+              "y": 2981.78125,
+              "right": 86,
+              "bottom": 3013.78125,
+              "width": 32,
+              "height": 32
+            },
+            "text": {
+              "x": 54,
+              "y": 3027.78125,
+              "right": 266,
+              "bottom": 3080.15625,
+              "width": 212,
+              "height": 52.375
+            },
+            "button": {
+              "x": 54,
+              "y": 3094.15625,
+              "right": 177.171875,
+              "bottom": 3138.15625,
+              "width": 123.171875,
+              "height": 44
+            },
+            "content": "1 stock in this snapshot\nMatching names require an eligible plan.\nStart free trial",
+            "href": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+            "scroll": 244,
+            "client": 244,
+            "textScroll": 212,
+            "textClient": 212
+          }
+        ],
+        "publicValues": [
+          "Recent (2018+)\n9.1/10\n14 months · 22 fires\nOlder (before 2018)\n5.8/10\n57 months · 71 fires\nMonthly win average · 21 trading days\nVersus random entry · percentage points\nRecent comparison\n+34.3\nOlder comparison\n+1.7",
+          "Recent (2018+)\n8.4/10\n19 months · 28 fires\nOlder (before 2018)\n6.3/10\n62 months · 86 fires\nMonthly win average · 21 trading days\nVersus random entry · percentage points\nRecent comparison\n+27.5\nOlder comparison\n+7.0",
+          "Recent (2018+)\n8.3/10\n18 months · 28 fires\nOlder (before 2018)\n5.9/10\n56 months · 74 fires\nMonthly win average · 21 trading days\nVersus random entry · percentage points\nRecent comparison\n+26.0\nOlder comparison\n+3.0"
+        ],
+        "heroAnimations": 0
+      },
+      "open_motion": {
+        "opacity": "0.85",
+        "animations": [
+          {
+            "name": "method-reveal",
+            "timing": {
+              "delay": 0,
+              "direction": "normal",
+              "duration": 120,
+              "easing": "linear",
+              "endDelay": 0,
+              "fill": "none",
+              "iterationStart": 0,
+              "iterations": 1
+            },
+            "frames": [
+              {
+                "offset": 0,
+                "opacity": "0.85",
+                "transform": null
+              },
+              {
+                "offset": 1,
+                "opacity": "1",
+                "transform": null
+              }
+            ]
+          }
+        ]
+      },
+      "after": {
+        "documentOverflow": false,
+        "method": {
+          "box": {
+            "x": 37,
+            "y": 427.25,
+            "right": 283,
+            "bottom": 1298.15625,
+            "width": 246,
+            "height": 870.90625
+          },
+          "summary": {
+            "x": 37,
+            "y": 428.25,
+            "right": 283,
+            "bottom": 472.25,
+            "width": 246,
+            "height": 44
+          },
+          "open": true,
+          "firstParagraph": "Recent is the test period, with fire dates from 2018-01-01. Older is the training period, before that date. These recipes were searched historically; neither label establishes untouched prospective validation.",
+          "firstParagraphHeight": 130.125,
+          "remainingParagraphs": [
+            "Recent is the test period, with fire dates from 2018-01-01. Older is the training period, before that date. These recipes were searched historically; neither label establishes untouched prospective validation.",
+            "Random-entry monthly win average · 21 trading days · recent: 5.7/10 · older: 5.6/10. The baseline enters the same stocks on random dates over the same period. Comparison points describe win-rate differences, not investment returns.",
+            "A sighting starts when the full combination changes from false to true. Consecutive days that remain true add no sightings. Yearly frequency averages sightings over the first-to-last span. D and W label daily and weekly bars; indicator lookback is separate.",
+            "Source ordering uses a Wilson-based ranking heuristic on the recent monthly win average, minus the random-entry baseline. It is a ranking heuristic, not a statistical-significance result."
+          ]
+        },
+        "figure": {
+          "box": {
+            "x": 37,
+            "y": 480.25,
+            "right": 283,
+            "bottom": 664.59375,
+            "width": 246,
+            "height": 184.34375
+          },
+          "text": "Within each month\nShare of winning fires\nAcross months\nAverage shares equally\nWin: price is above the next-close entry price after 21 trading days.\n\nThis is not the fraction of winning months or the pooled win rate.",
+          "caption": "Win: price is above the next-close entry price after 21 trading days.\n\nThis is not the fraction of winning months or the pooled win rate.",
+          "steps": [
+            {
+              "box": {
+                "x": 37,
+                "y": 480.25,
+                "right": 146,
+                "bottom": 559.84375,
+                "width": 109,
+                "height": 79.59375
+              },
+              "text": "Within each month\nShare of winning fires",
+              "scroll": 109,
+              "client": 109
+            },
+            {
+              "box": {
+                "x": 174,
+                "y": 480.25,
+                "right": 283,
+                "bottom": 559.84375,
+                "width": 109,
+                "height": 79.59375
+              },
+              "text": "Across months\nAverage shares equally",
+              "scroll": 109,
+              "client": 109
+            }
+          ],
+          "opacity": "1",
+          "animationName": "method-reveal",
+          "animationDuration": "0.12s",
+          "captionLast": true,
+          "captionCount": 1,
+          "animations": []
+        },
+        "locked": [
+          {
+            "box": {
+              "x": 37,
+              "y": 2137.109375,
+              "right": 283,
+              "bottom": 2277.484375,
+              "width": 246,
+              "height": 140.375
+            },
+            "icon": {
+              "x": 54,
+              "y": 2152.109375,
+              "right": 86,
+              "bottom": 2184.109375,
+              "width": 32,
+              "height": 32
+            },
+            "text": {
+              "x": 100,
+              "y": 2152.109375,
+              "right": 266,
+              "bottom": 2204.484375,
+              "width": 166,
+              "height": 52.375
+            },
+            "button": {
+              "x": 54,
+              "y": 2218.484375,
+              "right": 177.171875,
+              "bottom": 2262.484375,
+              "width": 123.171875,
+              "height": 44
+            },
+            "content": "1 stock in this snapshot\nMatching names require an eligible plan.\nStart free trial",
+            "href": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+            "scroll": 244,
+            "client": 244,
+            "textScroll": 166,
+            "textClient": 166,
+            "height_reduction": 46,
+            "action_upward": 46
+          },
+          {
+            "box": {
+              "x": 37,
+              "y": 2961.84375,
+              "right": 283,
+              "bottom": 3102.21875,
+              "width": 246,
+              "height": 140.375
+            },
+            "icon": {
+              "x": 54,
+              "y": 2976.84375,
+              "right": 86,
+              "bottom": 3008.84375,
+              "width": 32,
+              "height": 32
+            },
+            "text": {
+              "x": 100,
+              "y": 2976.84375,
+              "right": 266,
+              "bottom": 3029.21875,
+              "width": 166,
+              "height": 52.375
+            },
+            "button": {
+              "x": 54,
+              "y": 3043.21875,
+              "right": 177.171875,
+              "bottom": 3087.21875,
+              "width": 123.171875,
+              "height": 44
+            },
+            "content": "1 stock in this snapshot\nMatching names require an eligible plan.\nStart free trial",
+            "href": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+            "scroll": 244,
+            "client": 244,
+            "textScroll": 166,
+            "textClient": 166,
+            "height_reduction": 46,
+            "action_upward": 46
+          }
+        ],
+        "publicValues": [
+          "Recent (2018+)\n9.1/10\n14 months · 22 fires\nOlder (before 2018)\n5.8/10\n57 months · 71 fires\nMonthly win average · 21 trading days\nVersus random entry · percentage points\nRecent comparison\n+34.3\nOlder comparison\n+1.7",
+          "Recent (2018+)\n8.4/10\n19 months · 28 fires\nOlder (before 2018)\n6.3/10\n62 months · 86 fires\nMonthly win average · 21 trading days\nVersus random entry · percentage points\nRecent comparison\n+27.5\nOlder comparison\n+7.0",
+          "Recent (2018+)\n8.3/10\n18 months · 28 fires\nOlder (before 2018)\n5.9/10\n56 months · 74 fires\nMonthly win average · 21 trading days\nVersus random entry · percentage points\nRecent comparison\n+26.0\nOlder comparison\n+3.0"
+        ],
+        "heroAnimations": 0
+      },
+      "method_height_delta": 40.53125,
+      "figure_height_vs_paragraph": {
+        "figure": 184.34375,
+        "prior_paragraph": 151.8125
+      },
+      "status": "PASS",
+      "destination": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+      "action_focus": {
+        "visible": true,
+        "outline": "solid",
+        "width": "2px"
+      }
+    },
+    {
+      "name": "1440-zh-no-preference",
+      "width": 1440,
+      "lang": "zh",
+      "reduced_motion": "no-preference",
+      "page_javascript_enabled": true,
+      "before": {
+        "documentOverflow": false,
+        "method": {
+          "box": {
+            "x": 223,
+            "y": 427.3125,
+            "right": 1217,
+            "bottom": 715.5,
+            "width": 994,
+            "height": 288.1875
+          },
+          "summary": {
+            "x": 223,
+            "y": 428.3125,
+            "right": 1217,
+            "bottom": 472.3125,
+            "width": 994,
+            "height": 44
+          },
+          "open": true,
+          "firstParagraph": "先在每个月内计算触发后于下一收盘价入场、21 个交易日后上涨的比例，再对各月比例等权平均。这不是盈利月份占比，也不是所有触发次数合并后的胜率。",
+          "firstParagraphHeight": 43.375,
+          "remainingParagraphs": [
+            "先在每个月内计算触发后于下一收盘价入场、21 个交易日后上涨的比例，再对各月比例等权平均。这不是盈利月份占比，也不是所有触发次数合并后的胜率。",
+            "近年为测试期，触发日期自 2018-01-01 起；更早为该日期之前的训练期。组合由历史搜索得出，这些标签不代表未经查看的前瞻验证。",
+            "随机入场月均胜率 · 21 个交易日 · 近年：5.7/10 · 更早：5.6/10. 基准是在同一时期对相同股票随机选择日期入场。比较百分点指胜率差值，并非投资收益率。",
+            "完整组合由不成立变为成立时计为一次触发，连续成立的日期不重复计数。年均频率按首次至末次的时间跨度计算。D 和 W 分别表示日线与周线，指标回看窗口是另一属性。",
+            "源数据排序使用近期月均胜率的 Wilson 近似值并减去随机入场基准。这是排序方法，不是统计显著性结果。"
+          ]
+        },
+        "figure": null,
+        "locked": [
+          {
+            "box": {
+              "x": 223,
+              "y": 1186.796875,
+              "right": 1217,
+              "bottom": 1260.796875,
+              "width": 994,
+              "height": 74
+            },
+            "icon": {
+              "x": 240,
+              "y": 1207.796875,
+              "right": 272,
+              "bottom": 1239.796875,
+              "width": 32,
+              "height": 32
+            },
+            "text": {
+              "x": 286,
+              "y": 1205.65625,
+              "right": 1076,
+              "bottom": 1241.9375,
+              "width": 790,
+              "height": 36.28125
+            },
+            "button": {
+              "x": 1090,
+              "y": 1201.796875,
+              "right": 1200,
+              "bottom": 1245.796875,
+              "width": 110,
+              "height": 44
+            },
+            "content": "1 只股票在此快照匹配\n查看匹配名称需具备相应方案权限。\n开始免费试用",
+            "href": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+            "scroll": 992,
+            "client": 992,
+            "textScroll": 790,
+            "textClient": 790
+          },
+          {
+            "box": {
+              "x": 223,
+              "y": 1625.09375,
+              "right": 1217,
+              "bottom": 1699.09375,
+              "width": 994,
+              "height": 74
+            },
+            "icon": {
+              "x": 240,
+              "y": 1646.09375,
+              "right": 272,
+              "bottom": 1678.09375,
+              "width": 32,
+              "height": 32
+            },
+            "text": {
+              "x": 286,
+              "y": 1643.953125,
+              "right": 1076,
+              "bottom": 1680.234375,
+              "width": 790,
+              "height": 36.28125
+            },
+            "button": {
+              "x": 1090,
+              "y": 1640.09375,
+              "right": 1200,
+              "bottom": 1684.09375,
+              "width": 110,
+              "height": 44
+            },
+            "content": "1 只股票在此快照匹配\n查看匹配名称需具备相应方案权限。\n开始免费试用",
+            "href": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+            "scroll": 992,
+            "client": 992,
+            "textScroll": 790,
+            "textClient": 790
+          }
+        ],
+        "publicValues": [
+          "近年（2018起）\n9.1/10\n14 个月 · 22 次触发\n更早（2018前）\n5.8/10\n57 个月 · 71 次触发\n月均胜率 · 21 个交易日\n较随机入场 · 个百分点\n近年比较\n+34.3\n更早比较\n+1.7",
+          "近年（2018起）\n8.4/10\n19 个月 · 28 次触发\n更早（2018前）\n6.3/10\n62 个月 · 86 次触发\n月均胜率 · 21 个交易日\n较随机入场 · 个百分点\n近年比较\n+27.5\n更早比较\n+7.0",
+          "近年（2018起）\n8.3/10\n18 个月 · 28 次触发\n更早（2018前）\n5.9/10\n56 个月 · 74 次触发\n月均胜率 · 21 个交易日\n较随机入场 · 个百分点\n近年比较\n+26.0\n更早比较\n+3.0"
+        ],
+        "heroAnimations": 0
+      },
+      "open_motion": {
+        "opacity": "0.85",
+        "animations": [
+          {
+            "name": "method-reveal",
+            "timing": {
+              "delay": 0,
+              "direction": "normal",
+              "duration": 120,
+              "easing": "linear",
+              "endDelay": 0,
+              "fill": "none",
+              "iterationStart": 0,
+              "iterations": 1
+            },
+            "frames": [
+              {
+                "offset": 0,
+                "opacity": "0.85",
+                "transform": null
+              },
+              {
+                "offset": 1,
+                "opacity": "1",
+                "transform": null
+              }
+            ]
+          }
+        ]
+      },
+      "after": {
+        "documentOverflow": false,
+        "method": {
+          "box": {
+            "x": 223,
+            "y": 433.3125,
+            "right": 1217,
+            "bottom": 789.296875,
+            "width": 994,
+            "height": 355.984375
+          },
+          "summary": {
+            "x": 223,
+            "y": 434.3125,
+            "right": 1217,
+            "bottom": 478.3125,
+            "width": 994,
+            "height": 44
+          },
+          "open": true,
+          "firstParagraph": "近年为测试期，触发日期自 2018-01-01 起；更早为该日期之前的训练期。组合由历史搜索得出，这些标签不代表未经查看的前瞻验证。",
+          "firstParagraphHeight": 43.375,
+          "remainingParagraphs": [
+            "近年为测试期，触发日期自 2018-01-01 起；更早为该日期之前的训练期。组合由历史搜索得出，这些标签不代表未经查看的前瞻验证。",
+            "随机入场月均胜率 · 21 个交易日 · 近年：5.7/10 · 更早：5.6/10. 基准是在同一时期对相同股票随机选择日期入场。比较百分点指胜率差值，并非投资收益率。",
+            "完整组合由不成立变为成立时计为一次触发，连续成立的日期不重复计数。年均频率按首次至末次的时间跨度计算。D 和 W 分别表示日线与周线，指标回看窗口是另一属性。",
+            "源数据排序使用近期月均胜率的 Wilson 近似值并减去随机入场基准。这是排序方法，不是统计显著性结果。"
+          ]
+        },
+        "figure": {
+          "box": {
+            "x": 223,
+            "y": 486.3125,
+            "right": 783,
+            "bottom": 589.484375,
+            "width": 560,
+            "height": 103.171875
+          },
+          "text": "每个月内\n触发后上涨的占比\n汇总各月\n各月占比等权平均\n上涨：以触发后的下一收盘价入场，21 个交易日后价格高于入场价。\n\n这不是盈利月份占比，也不是所有触发次数合并后的胜率。",
+          "caption": "上涨：以触发后的下一收盘价入场，21 个交易日后价格高于入场价。\n\n这不是盈利月份占比，也不是所有触发次数合并后的胜率。",
+          "steps": [
+            {
+              "box": {
+                "x": 223,
+                "y": 486.3125,
+                "right": 489,
+                "bottom": 528.109375,
+                "width": 266,
+                "height": 41.796875
+              },
+              "text": "每个月内\n触发后上涨的占比",
+              "scroll": 266,
+              "client": 266
+            },
+            {
+              "box": {
+                "x": 517,
+                "y": 486.3125,
+                "right": 783,
+                "bottom": 528.109375,
+                "width": 266,
+                "height": 41.796875
+              },
+              "text": "汇总各月\n各月占比等权平均",
+              "scroll": 266,
+              "client": 266
+            }
+          ],
+          "opacity": "1",
+          "animationName": "method-reveal",
+          "animationDuration": "0.12s",
+          "captionLast": true,
+          "captionCount": 1,
+          "animations": []
+        },
+        "locked": [
+          {
+            "box": {
+              "x": 223,
+              "y": 1260.59375,
+              "right": 1217,
+              "bottom": 1334.59375,
+              "width": 994,
+              "height": 74
+            },
+            "icon": {
+              "x": 240,
+              "y": 1281.59375,
+              "right": 272,
+              "bottom": 1313.59375,
+              "width": 32,
+              "height": 32
+            },
+            "text": {
+              "x": 286,
+              "y": 1279.453125,
+              "right": 1076,
+              "bottom": 1315.734375,
+              "width": 790,
+              "height": 36.28125
+            },
+            "button": {
+              "x": 1090,
+              "y": 1275.59375,
+              "right": 1200,
+              "bottom": 1319.59375,
+              "width": 110,
+              "height": 44
+            },
+            "content": "1 只股票在此快照匹配\n查看匹配名称需具备相应方案权限。\n开始免费试用",
+            "href": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+            "scroll": 992,
+            "client": 992,
+            "textScroll": 790,
+            "textClient": 790,
+            "height_reduction": 0,
+            "action_upward": 0
+          },
+          {
+            "box": {
+              "x": 223,
+              "y": 1698.890625,
+              "right": 1217,
+              "bottom": 1772.890625,
+              "width": 994,
+              "height": 74
+            },
+            "icon": {
+              "x": 240,
+              "y": 1719.890625,
+              "right": 272,
+              "bottom": 1751.890625,
+              "width": 32,
+              "height": 32
+            },
+            "text": {
+              "x": 286,
+              "y": 1717.75,
+              "right": 1076,
+              "bottom": 1754.03125,
+              "width": 790,
+              "height": 36.28125
+            },
+            "button": {
+              "x": 1090,
+              "y": 1713.890625,
+              "right": 1200,
+              "bottom": 1757.890625,
+              "width": 110,
+              "height": 44
+            },
+            "content": "1 只股票在此快照匹配\n查看匹配名称需具备相应方案权限。\n开始免费试用",
+            "href": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+            "scroll": 992,
+            "client": 992,
+            "textScroll": 790,
+            "textClient": 790,
+            "height_reduction": 0,
+            "action_upward": 0
+          }
+        ],
+        "publicValues": [
+          "近年（2018起）\n9.1/10\n14 个月 · 22 次触发\n更早（2018前）\n5.8/10\n57 个月 · 71 次触发\n月均胜率 · 21 个交易日\n较随机入场 · 个百分点\n近年比较\n+34.3\n更早比较\n+1.7",
+          "近年（2018起）\n8.4/10\n19 个月 · 28 次触发\n更早（2018前）\n6.3/10\n62 个月 · 86 次触发\n月均胜率 · 21 个交易日\n较随机入场 · 个百分点\n近年比较\n+27.5\n更早比较\n+7.0",
+          "近年（2018起）\n8.3/10\n18 个月 · 28 次触发\n更早（2018前）\n5.9/10\n56 个月 · 74 次触发\n月均胜率 · 21 个交易日\n较随机入场 · 个百分点\n近年比较\n+26.0\n更早比较\n+3.0"
+        ],
+        "heroAnimations": 0
+      },
+      "method_height_delta": 67.796875,
+      "figure_height_vs_paragraph": {
+        "figure": 103.171875,
+        "prior_paragraph": 43.375
+      },
+      "status": "PASS",
+      "destination": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+      "action_focus": {
+        "visible": true,
+        "outline": "solid",
+        "width": "2px"
+      }
+    },
+    {
+      "name": "320-en-reduce-no-page-js",
+      "width": 320,
+      "lang": "en",
+      "reduced_motion": "reduce",
+      "page_javascript_enabled": false,
+      "before": {
+        "documentOverflow": false,
+        "method": {
+          "box": {
+            "x": 37,
+            "y": 427.46875,
+            "right": 283,
+            "bottom": 1257.84375,
+            "width": 246,
+            "height": 830.375
+          },
+          "summary": {
+            "x": 37,
+            "y": 428.46875,
+            "right": 283,
+            "bottom": 472.46875,
+            "width": 246,
+            "height": 44
+          },
+          "open": true,
+          "firstParagraph": "Within each month, calculate the share of fires whose next-close entry finished higher after 21 trading days. Then average those monthly proportions equally. This is not the fraction of winning months or the pooled win rate.",
+          "firstParagraphHeight": 151.8125,
+          "remainingParagraphs": [
+            "Within each month, calculate the share of fires whose next-close entry finished higher after 21 trading days. Then average those monthly proportions equally. This is not the fraction of winning months or the pooled win rate.",
+            "Recent is the test period, with fire dates from 2018-01-01. Older is the training period, before that date. These recipes were searched historically; neither label establishes untouched prospective validation.",
+            "Random-entry monthly win average · 21 trading days · recent: 5.7/10 · older: 5.6/10. The baseline enters the same stocks on random dates over the same period. Comparison points describe win-rate differences, not investment returns.",
+            "A sighting starts when the full combination changes from false to true. Consecutive days that remain true add no sightings. Yearly frequency averages sightings over the first-to-last span. D and W label daily and weekly bars; indicator lookback is separate.",
+            "Source ordering uses a Wilson-based ranking heuristic on the recent monthly win average, minus the random-entry baseline. It is a ranking heuristic, not a statistical-significance result."
+          ]
+        },
+        "figure": null,
+        "locked": [
+          {
+            "box": {
+              "x": 37,
+              "y": 2096.796875,
+              "right": 283,
+              "bottom": 2283.171875,
+              "width": 246,
+              "height": 186.375
+            },
+            "icon": {
+              "x": 54,
+              "y": 2111.796875,
+              "right": 86,
+              "bottom": 2143.796875,
+              "width": 32,
+              "height": 32
+            },
+            "text": {
+              "x": 54,
+              "y": 2157.796875,
+              "right": 266,
+              "bottom": 2210.171875,
+              "width": 212,
+              "height": 52.375
+            },
+            "button": {
+              "x": 54,
+              "y": 2224.171875,
+              "right": 177.171875,
+              "bottom": 2268.171875,
+              "width": 123.171875,
+              "height": 44
+            },
+            "content": "1 stock in this snapshot\nMatching names require an eligible plan.\nStart free trial",
+            "href": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+            "scroll": 244,
+            "client": 244,
+            "textScroll": 212,
+            "textClient": 212
+          },
+          {
+            "box": {
+              "x": 37,
+              "y": 2967.53125,
+              "right": 283,
+              "bottom": 3153.90625,
+              "width": 246,
+              "height": 186.375
+            },
+            "icon": {
+              "x": 54,
+              "y": 2982.53125,
+              "right": 86,
+              "bottom": 3014.53125,
+              "width": 32,
+              "height": 32
+            },
+            "text": {
+              "x": 54,
+              "y": 3028.53125,
+              "right": 266,
+              "bottom": 3080.90625,
+              "width": 212,
+              "height": 52.375
+            },
+            "button": {
+              "x": 54,
+              "y": 3094.90625,
+              "right": 177.171875,
+              "bottom": 3138.90625,
+              "width": 123.171875,
+              "height": 44
+            },
+            "content": "1 stock in this snapshot\nMatching names require an eligible plan.\nStart free trial",
+            "href": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+            "scroll": 244,
+            "client": 244,
+            "textScroll": 212,
+            "textClient": 212
+          }
+        ],
+        "publicValues": [
+          "Recent (2018+)\n9.1/10\n14 months · 22 fires\nOlder (before 2018)\n5.8/10\n57 months · 71 fires\nMonthly win average · 21 trading days\nVersus random entry · percentage points\nRecent comparison\n+34.3\nOlder comparison\n+1.7",
+          "Recent (2018+)\n8.4/10\n19 months · 28 fires\nOlder (before 2018)\n6.3/10\n62 months · 86 fires\nMonthly win average · 21 trading days\nVersus random entry · percentage points\nRecent comparison\n+27.5\nOlder comparison\n+7.0",
+          "Recent (2018+)\n8.3/10\n18 months · 28 fires\nOlder (before 2018)\n5.9/10\n56 months · 74 fires\nMonthly win average · 21 trading days\nVersus random entry · percentage points\nRecent comparison\n+26.0\nOlder comparison\n+3.0"
+        ],
+        "heroAnimations": 0
+      },
+      "after": {
+        "documentOverflow": false,
+        "method": {
+          "box": {
+            "x": 37,
+            "y": 427.46875,
+            "right": 283,
+            "bottom": 1298.375,
+            "width": 246,
+            "height": 870.90625
+          },
+          "summary": {
+            "x": 37,
+            "y": 428.46875,
+            "right": 283,
+            "bottom": 472.46875,
+            "width": 246,
+            "height": 44
+          },
+          "open": true,
+          "firstParagraph": "Recent is the test period, with fire dates from 2018-01-01. Older is the training period, before that date. These recipes were searched historically; neither label establishes untouched prospective validation.",
+          "firstParagraphHeight": 130.125,
+          "remainingParagraphs": [
+            "Recent is the test period, with fire dates from 2018-01-01. Older is the training period, before that date. These recipes were searched historically; neither label establishes untouched prospective validation.",
+            "Random-entry monthly win average · 21 trading days · recent: 5.7/10 · older: 5.6/10. The baseline enters the same stocks on random dates over the same period. Comparison points describe win-rate differences, not investment returns.",
+            "A sighting starts when the full combination changes from false to true. Consecutive days that remain true add no sightings. Yearly frequency averages sightings over the first-to-last span. D and W label daily and weekly bars; indicator lookback is separate.",
+            "Source ordering uses a Wilson-based ranking heuristic on the recent monthly win average, minus the random-entry baseline. It is a ranking heuristic, not a statistical-significance result."
+          ]
+        },
+        "figure": {
+          "box": {
+            "x": 37,
+            "y": 480.46875,
+            "right": 283,
+            "bottom": 664.8125,
+            "width": 246,
+            "height": 184.34375
+          },
+          "text": "Within each month\nShare of winning fires\nAcross months\nAverage shares equally\nWin: price is above the next-close entry price after 21 trading days.\n\nThis is not the fraction of winning months or the pooled win rate.",
+          "caption": "Win: price is above the next-close entry price after 21 trading days.\n\nThis is not the fraction of winning months or the pooled win rate.",
+          "steps": [
+            {
+              "box": {
+                "x": 37,
+                "y": 480.46875,
+                "right": 146,
+                "bottom": 560.0625,
+                "width": 109,
+                "height": 79.59375
+              },
+              "text": "Within each month\nShare of winning fires",
+              "scroll": 109,
+              "client": 109
+            },
+            {
+              "box": {
+                "x": 174,
+                "y": 480.46875,
+                "right": 283,
+                "bottom": 560.0625,
+                "width": 109,
+                "height": 79.59375
+              },
+              "text": "Across months\nAverage shares equally",
+              "scroll": 109,
+              "client": 109
+            }
+          ],
+          "opacity": "1",
+          "animationName": "none",
+          "animationDuration": "0s",
+          "captionLast": true,
+          "captionCount": 1,
+          "animations": []
+        },
+        "locked": [
+          {
+            "box": {
+              "x": 37,
+              "y": 2137.328125,
+              "right": 283,
+              "bottom": 2277.703125,
+              "width": 246,
+              "height": 140.375
+            },
+            "icon": {
+              "x": 54,
+              "y": 2152.328125,
+              "right": 86,
+              "bottom": 2184.328125,
+              "width": 32,
+              "height": 32
+            },
+            "text": {
+              "x": 100,
+              "y": 2152.328125,
+              "right": 266,
+              "bottom": 2204.703125,
+              "width": 166,
+              "height": 52.375
+            },
+            "button": {
+              "x": 54,
+              "y": 2218.703125,
+              "right": 177.171875,
+              "bottom": 2262.703125,
+              "width": 123.171875,
+              "height": 44
+            },
+            "content": "1 stock in this snapshot\nMatching names require an eligible plan.\nStart free trial",
+            "href": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+            "scroll": 244,
+            "client": 244,
+            "textScroll": 166,
+            "textClient": 166,
+            "height_reduction": 46,
+            "action_upward": 46
+          },
+          {
+            "box": {
+              "x": 37,
+              "y": 2962.0625,
+              "right": 283,
+              "bottom": 3102.4375,
+              "width": 246,
+              "height": 140.375
+            },
+            "icon": {
+              "x": 54,
+              "y": 2977.0625,
+              "right": 86,
+              "bottom": 3009.0625,
+              "width": 32,
+              "height": 32
+            },
+            "text": {
+              "x": 100,
+              "y": 2977.0625,
+              "right": 266,
+              "bottom": 3029.4375,
+              "width": 166,
+              "height": 52.375
+            },
+            "button": {
+              "x": 54,
+              "y": 3043.4375,
+              "right": 177.171875,
+              "bottom": 3087.4375,
+              "width": 123.171875,
+              "height": 44
+            },
+            "content": "1 stock in this snapshot\nMatching names require an eligible plan.\nStart free trial",
+            "href": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+            "scroll": 244,
+            "client": 244,
+            "textScroll": 166,
+            "textClient": 166,
+            "height_reduction": 46,
+            "action_upward": 46
+          }
+        ],
+        "publicValues": [
+          "Recent (2018+)\n9.1/10\n14 months · 22 fires\nOlder (before 2018)\n5.8/10\n57 months · 71 fires\nMonthly win average · 21 trading days\nVersus random entry · percentage points\nRecent comparison\n+34.3\nOlder comparison\n+1.7",
+          "Recent (2018+)\n8.4/10\n19 months · 28 fires\nOlder (before 2018)\n6.3/10\n62 months · 86 fires\nMonthly win average · 21 trading days\nVersus random entry · percentage points\nRecent comparison\n+27.5\nOlder comparison\n+7.0",
+          "Recent (2018+)\n8.3/10\n18 months · 28 fires\nOlder (before 2018)\n5.9/10\n56 months · 74 fires\nMonthly win average · 21 trading days\nVersus random entry · percentage points\nRecent comparison\n+26.0\nOlder comparison\n+3.0"
+        ],
+        "heroAnimations": 0
+      },
+      "method_height_delta": 40.53125,
+      "figure_height_vs_paragraph": {
+        "figure": 184.34375,
+        "prior_paragraph": 151.8125
+      },
+      "status": "PASS",
+      "destination": "https://app.mastermind-x.com/?utm_source=site&utm_medium=free_tools&utm_campaign=confluence_screener&utm_content=cta",
+      "action_focus": {
+        "visible": true,
+        "outline": "solid",
+        "width": "2px"
+      }
+    }
+  ],
+  "captures": [
+    {
+      "file": "before-method-320-en.png",
+      "surface": "method",
+      "state": "before",
+      "width": 320,
+      "lang": "en",
+      "bytes": 15378,
+      "sha256": "e37af4f9eb899905cbd325b30231d5c0ec3454003bf2d1563b274bcbd7a75f42",
+      "blob": "4ad6a1233f45a3fca331edb73e7fd6b4683b2c38"
+    },
+    {
+      "file": "before-locked-320-en.png",
+      "surface": "locked",
+      "state": "before",
+      "width": 320,
+      "lang": "en",
+      "bytes": 8477,
+      "sha256": "25bd521deb0b51d6ae70b37e568c89caed10ab434553cf09efee8ae78a61557d",
+      "blob": "4866a8d9c083e93d220a5b476458b8456ff03869"
+    },
+    {
+      "file": "after-method-320-en.png",
+      "surface": "method",
+      "state": "after",
+      "width": 320,
+      "lang": "en",
+      "bytes": 18078,
+      "sha256": "559ef47199c246cca8c8958491bed8f9d995441c0ea319c3d7805f8e895eebea",
+      "blob": "5990eb233c106946034d5b039471309a7d4468e5"
+    },
+    {
+      "file": "after-locked-320-en.png",
+      "surface": "locked",
+      "state": "after",
+      "width": 320,
+      "lang": "en",
+      "bytes": 8099,
+      "sha256": "00f848814938104a46da3fb64bcfac395a8b4a38045aa53a1ede092051fa6b56",
+      "blob": "da46c551f93282e28e8899c22cfa129a1680794e"
+    },
+    {
+      "file": "before-method-320-zh.png",
+      "surface": "method",
+      "state": "before",
+      "width": 320,
+      "lang": "zh",
+      "bytes": 17231,
+      "sha256": "d315523bf7cb642eaa09908e982d3b62e31f6e16a85dee196f5fd67e6488d7dc",
+      "blob": "e2394c8d80ed73af5a74c3c3916f35dea1ddd8d8"
+    },
+    {
+      "file": "before-locked-320-zh.png",
+      "surface": "locked",
+      "state": "before",
+      "width": 320,
+      "lang": "zh",
+      "bytes": 10803,
+      "sha256": "1707da27ae2790ec4c576029689d32c3dae4a4dc12130c29f0c96998c066fa27",
+      "blob": "e99ad0c7067cbbc160b46f9f4c5d52f2f79fd3f1"
+    },
+    {
+      "file": "after-method-320-zh.png",
+      "surface": "method",
+      "state": "after",
+      "width": 320,
+      "lang": "zh",
+      "bytes": 21514,
+      "sha256": "304ee15c706f34d36923d7b95cb8951b38e93ca8b9ee5442e7a13f686671e849",
+      "blob": "2a7e87490ba951660eb99f057d3efe443d5406f7"
+    },
+    {
+      "file": "after-locked-320-zh.png",
+      "surface": "locked",
+      "state": "after",
+      "width": 320,
+      "lang": "zh",
+      "bytes": 10641,
+      "sha256": "081ea71c594a14873fc6b64cc4c957b339cf1e86c80b2987a940d551fd0aea19",
+      "blob": "4a7f9821a85e66ddfc76117603b94db08e22246b"
+    },
+    {
+      "file": "before-method-1440-en.png",
+      "surface": "method",
+      "state": "before",
+      "width": 1440,
+      "lang": "en",
+      "bytes": 13872,
+      "sha256": "fd91ca16c67ea82c9c4895069bb158b1272705b9870cb04fc439c178a7e2e2ff",
+      "blob": "10edff86c999d080a279fcba509597801038552c"
+    },
+    {
+      "file": "after-method-1440-en.png",
+      "surface": "method",
+      "state": "after",
+      "width": 1440,
+      "lang": "en",
+      "bytes": 17070,
+      "sha256": "1b03d6bc306bc84db28de64668635097a7dc2878bbc87167dc409dc154c88a45",
+      "blob": "c67c7b4216cd736c64fedd6c3c9311431f8db207"
+    },
+    {
+      "file": "before-method-1440-zh.png",
+      "surface": "method",
+      "state": "before",
+      "width": 1440,
+      "lang": "zh",
+      "bytes": 16779,
+      "sha256": "23fc3fa157c2f2eae37de957c6ad05dd295cae5af6e170418c20e543be1d6b56",
+      "blob": "e502eba3212e2230c09149257eabd6199ee7190a"
+    },
+    {
+      "file": "after-method-1440-zh.png",
+      "surface": "method",
+      "state": "after",
+      "width": 1440,
+      "lang": "zh",
+      "bytes": 21400,
+      "sha256": "58cc66ccf532bb1b39826ebd805167779269acdedf33f0a922700f81aff3ef6d",
+      "blob": "0f3da31cc3a9adf79a6f132eeb7aca410db0e653"
+    }
+  ],
+  "page_errors": [],
+  "passed": 13,
+  "failed": 0,
+  "sources": {
+    "templates/confluence_screener.html.j2": {
+      "bytes": 52475,
+      "sha256": "b8883532f7db6b4a57b03dd2dd2bf94e0f9ed39a95f85b140071e446c0d86442",
+      "blob": "6aa36e72ee8c10ffa30ee45e4f7b2b0cac6686aa"
+    },
+    "site/confluence_screener.html": {
+      "bytes": 122586,
+      "sha256": "7e2867cb6759edeb4208c2c28802946aad345cb710960efc1f2d44a9e0f6b88a",
+      "blob": "5cc4cfce90800c399c4396142288bc5a8173d00c"
+    },
+    "site/premiumdata/confluence_screener.json": {
+      "bytes": 542,
+      "sha256": "11a76bb62e26bd344ef29c198b7791df95b4140d18328f46f54b343f78aa4e7d",
+      "blob": "ed039512de9bf2fe3c838b6d562d0ef5da72658f"
+    },
+    "scripts/verify_confluence_method_browser.py": {
+      "bytes": 16632,
+      "sha256": "6d6dca09d04949f4be10892c8b4aeef1d6cb5806f0d3b66b324dbb3431b91a8e",
+      "blob": "0758baaff2935569bdcab858fb31af005e39a996"
+    }
+  },
+  "baseline_page": {
+    "bytes": 119240,
+    "sha256": "89bc0f854bf734479441ff36c6ab6f6a7d5259f40330841e1e765000c27fcb28",
+    "blob": "2701226b6cf50a3628726c5a49a2c444814df2e8"
+  },
+  "scope": "Actual saved-page before/after pairs. Two no-preference motion cases and one page-JavaScript-disabled native-disclosure case supplement reduced-motion EN/ZH widths. Browser evaluation observes state; no product controller is introduced. Existing app navigation is intercepted locally. No live entitlement, deployment, spoken AT or full shared-shell/font claim."
+}
