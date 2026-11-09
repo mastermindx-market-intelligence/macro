@@ -1030,6 +1030,13 @@
   body.addEventListener("toggle", function (event) {
     if (body.contains(event.target) && event.target.hasAttribute("data-drawer-disclosure")) rememberDrawer();
   }, true);
+  // Native keyboard scrolling excludes the sticky header without changing layout or restored reading.
+  var drawerHeader = dialog.querySelector(".cri-dialog-header");
+  if (drawerHeader && typeof ResizeObserver === "function") {
+    new ResizeObserver(function () {
+      dialog.style.setProperty("--cri-header-height", Math.ceil(drawerHeader.getBoundingClientRect().height) + "px");
+    }).observe(drawerHeader);
+  }
   dialog.addEventListener("focusin", function () { rememberDrawer(); });
   dialog.addEventListener("scrollend", function () { rememberDrawer(); });
   new MutationObserver(function () { rememberDrawer(); apply(); }).observe(document.documentElement, { attributes: true, attributeFilter: ["data-lang"] });

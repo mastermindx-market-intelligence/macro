@@ -2,13 +2,14 @@
 
 This is the dependent candidate for reliable saved cases, asset readings and navigation in [Macro PR #10901](https://github.com/mastermindx-market-intelligence/Macro/pull/10901). Start with the workflow below, then open its contract and exact proof.
 
-**Latest recorded runtime proof: 9 November 2026, assets `62cf3bb534f8`; [current actions and feedback receipt](current-action-layout/PUBLICATION_RECEIPT.json).** The candidate remains Draft, unmerged and unarmed. Its incumbent base is [PR #9580](https://github.com/mastermindx-market-intelligence/Macro/pull/9580) at `5e496c24c962e85a4f7f514dd43dc61443b95cab`. These are recorded checkpoints, not live-head assertions.
+**Latest recorded runtime proof: 9 November 2026, assets `4f86c987c57c`; [drawer keyboard-focus receipt](drawer-focus/PUBLICATION_RECEIPT.json).** The candidate remains Draft, unmerged and unarmed. Its incumbent base is [PR #9580](https://github.com/mastermindx-market-intelligence/Macro/pull/9580) at `5e496c24c962e85a4f7f514dd43dc61443b95cab`. These are recorded checkpoints, not live-head assertions.
 
 ## Find the workflow
 
 | User task or failure | Builder contract | Exact verification |
 |---|---|---|
 | Save or remove a specific snapshot; handle unreadable storage or uncertain completion | [Storage and snapshot safety](SNAPSHOT_SAFETY.md) | [Validation and limits](SNAPSHOT_VALIDATION.json) |
+| Keep keyboard focus visible at drawer edges and below a wrapped sticky header | [Drawer focus clearance](DRAWER_FOCUS.md) | [Native proof and exact scope](drawer-focus/PUBLICATION_RECEIPT.json) |
 | Use separated current-case actions, recognize disabled Save and read unobstructed outcome feedback | [Current actions and feedback](CURRENT_ACTIONS.md) | [Native proof and exact scope](current-action-layout/PUBLICATION_RECEIPT.json) |
 | Keep conditions, scroll and usable focus after confirmed current Save/Remove | [Current mutation reading](CURRENT_SAVE_READING.md) | [Native proof and exact scope](current-save-reading/PUBLICATION_RECEIPT.json) |
 | Reopen the original saved horizon; return to the same version and reading position | [Saved navigation](NAVIGATION.md) | [Navigation validation](NAVIGATION_VALIDATION.json) |
@@ -51,7 +52,7 @@ The full portfolio audit remains in [PR #10617](https://github.com/mastermindx-m
 
 ## Next bounded work
 
-**Recorded on 9 November 2026:** current action spacing, disabled Save distinction and unobstructed mutation feedback are implemented and locally verified. The latest affected run has 75 passing cases on assets `62cf3bb534f8`. Confirmed outcomes keep their reading; an owned failure may move the existing drawer only enough to reveal its message. Next, inspect keyboard focus-ring clearance at the drawer edges and feedback ownership across panel transitions through the existing owners.
+**Recorded on 9 November 2026:** drawer keyboard focus now clears the viewport edges and the actual sticky header while explicit reading restoration keeps its scroll. The latest affected run has 48 passing cases on assets `4f86c987c57c`. Next, retire old feedback and its reserved timeout space when a task ends, preserving current confirmations and the intentional frozen Remove → Saved result through the existing status/navigation owners.
 
 Model/H5 authority, alert integration, paired receipts, qualified historical results, hosted/independent visual acceptance, public-route cutover and admission/release remain with their existing owners. Historical or synthetic local fixtures do not establish current-market freshness or production acceptance.
 

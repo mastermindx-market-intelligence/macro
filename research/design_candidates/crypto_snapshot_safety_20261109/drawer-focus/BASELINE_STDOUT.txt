@@ -1,0 +1,60 @@
+.F.F..FFFFF.....................................                         [100%]
+=================================== FAILURES ===================================
+_____ test_r4_keyboard_current_action_ring_clears_drawer_edge[en-390-True] _____
+tests/test_crypto_intelligence_r4_browser.py:3435: in test_r4_keyboard_current_action_ring_clears_drawer_edge
+    _assert_drawer_focus_ring(after)
+tests/test_crypto_intelligence_r4_browser.py:3400: in _assert_drawer_focus_ring
+    assert sample["viewBottom"] - sample["bottom"] >= 7.9, sample
+E   AssertionError: {'key': 'demand-evidence', 'focusVisible': True, 'outlineStyle': 'solid', 'extent': 6, ...}
+E   assert (600 - 600.15625) >= 7.9
+_____ test_r4_keyboard_current_action_ring_clears_drawer_edge[zh-320-True] _____
+tests/test_crypto_intelligence_r4_browser.py:3435: in test_r4_keyboard_current_action_ring_clears_drawer_edge
+    _assert_drawer_focus_ring(after)
+tests/test_crypto_intelligence_r4_browser.py:3400: in _assert_drawer_focus_ring
+    assert sample["viewBottom"] - sample["bottom"] >= 7.9, sample
+E   AssertionError: {'key': 'demand-evidence', 'focusVisible': True, 'outlineStyle': 'solid', 'extent': 6, ...}
+E   assert (600 - 600.0625) >= 7.9
+___ test_r4_reverse_tab_reveals_current_summary_below_sticky_header[en-390] ____
+tests/test_crypto_intelligence_r4_browser.py:3457: in test_r4_reverse_tab_reveals_current_summary_below_sticky_header
+    _assert_drawer_focus_ring(after)
+tests/test_crypto_intelligence_r4_browser.py:3399: in _assert_drawer_focus_ring
+    assert sample["top"] - sample["viewTop"] >= 7.9, sample
+E   AssertionError: {'key': 'scenario-conditions', 'focusVisible': True, 'outlineStyle': 'auto', 'extent': 1, ...}
+E   assert (158.25 - 167.59375) >= 7.9
+___ test_r4_reverse_tab_reveals_current_summary_below_sticky_header[zh-320] ____
+tests/test_crypto_intelligence_r4_browser.py:3457: in test_r4_reverse_tab_reveals_current_summary_below_sticky_header
+    _assert_drawer_focus_ring(after)
+tests/test_crypto_intelligence_r4_browser.py:3399: in _assert_drawer_focus_ring
+    assert sample["top"] - sample["viewTop"] >= 7.9, sample
+E   AssertionError: {'key': 'scenario-conditions', 'focusVisible': True, 'outlineStyle': 'auto', 'extent': 1, ...}
+E   assert (160.15625 - 170.59375) >= 7.9
+___ test_r4_reverse_tab_reveals_current_summary_below_sticky_header[en-1440] ___
+tests/test_crypto_intelligence_r4_browser.py:3457: in test_r4_reverse_tab_reveals_current_summary_below_sticky_header
+    _assert_drawer_focus_ring(after)
+tests/test_crypto_intelligence_r4_browser.py:3399: in _assert_drawer_focus_ring
+    assert sample["top"] - sample["viewTop"] >= 7.9, sample
+E   AssertionError: {'key': 'scenario-conditions', 'focusVisible': True, 'outlineStyle': 'auto', 'extent': 1, ...}
+E   assert (167.15625 - 176.59375) >= 7.9
+____ test_r4_reverse_tab_respects_wrapped_saved_header_after_resize[en-390] ____
+tests/test_crypto_intelligence_r4_browser.py:3486: in test_r4_reverse_tab_respects_wrapped_saved_header_after_resize
+    _assert_drawer_focus_ring(after)
+tests/test_crypto_intelligence_r4_browser.py:3399: in _assert_drawer_focus_ring
+    assert sample["top"] - sample["viewTop"] >= 7.9, sample
+E   AssertionError: {'key': 'case-details', 'focusVisible': True, 'outlineStyle': 'solid', 'extent': 6, ...}
+E   assert (316.203125 - 338.953125) >= 7.9
+____ test_r4_reverse_tab_respects_wrapped_saved_header_after_resize[zh-320] ____
+tests/test_crypto_intelligence_r4_browser.py:3486: in test_r4_reverse_tab_respects_wrapped_saved_header_after_resize
+    _assert_drawer_focus_ring(after)
+tests/test_crypto_intelligence_r4_browser.py:3399: in _assert_drawer_focus_ring
+    assert sample["top"] - sample["viewTop"] >= 7.9, sample
+E   AssertionError: {'key': 'case-details', 'focusVisible': True, 'outlineStyle': 'solid', 'extent': 6, ...}
+E   assert (316.203125 - 338.953125) >= 7.9
+=========================== short test summary info ============================
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_keyboard_current_action_ring_clears_drawer_edge[en-390-True]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_keyboard_current_action_ring_clears_drawer_edge[zh-320-True]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_reverse_tab_reveals_current_summary_below_sticky_header[en-390]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_reverse_tab_reveals_current_summary_below_sticky_header[zh-320]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_reverse_tab_reveals_current_summary_below_sticky_header[en-1440]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_reverse_tab_respects_wrapped_saved_header_after_resize[en-390]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_reverse_tab_respects_wrapped_saved_header_after_resize[zh-320]
+7 failed, 41 passed in 43.96s

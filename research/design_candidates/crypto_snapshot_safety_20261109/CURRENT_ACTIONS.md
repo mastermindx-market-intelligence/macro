@@ -1,5 +1,7 @@
 # Current actions and unobstructed mutation feedback
 
+> **Later keyboard-focus extension:** [Drawer focus clearance](DRAWER_FOCUS.md) now keeps native forward/reverse keyboard focus clear of the viewport edges and the measured sticky header. Explicit reading restoration still retains its scroll. The proof below remains the action/feedback phase's historical scope.
+
 ## User outcome
 
 Current-case Historical review and Save/Remove have 12px separation, readable wrapping and 48px targets. Inspect demand sits on its own row, 12px below, with a target of at least 44px. Save uses the existing primary treatment; Remove remains neutral. Native disabled Save is visually distinct and has no enabled hover treatment. Review and inspection keep their independent availability.

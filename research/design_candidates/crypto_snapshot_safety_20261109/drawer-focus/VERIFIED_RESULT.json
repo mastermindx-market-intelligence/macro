@@ -1,0 +1,32 @@
+{
+  "command": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_keyboard_current_action_ring_clears_drawer_edge",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_reverse_tab_reveals_current_summary_below_sticky_header",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_reverse_tab_respects_wrapped_saved_header_after_resize",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_actions_wrap_with_separate_touch_targets",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_disabled_current_save_is_distinct_and_inert",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_feedback_timeout_keeps_action_geometry_and_reading",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_confirmed_mutation_preserves_the_reader",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_failed_mutation_does_not_rebuild_or_replay",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_mutation_uses_fresh_reading_when_history_persistence_fails",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_mutation_reading_persistence_yields_to_a_newer_choice",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_review_returns_to_the_same_case_and_reading",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_locale_preserves_disclosure_focus_and_reading",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_saved_locale_keeps_disclosure_focus_and_reading_position",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_newer_focus_during_confirmation_survives",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_completion_focus_callbacks_keep_their_new_panel",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_programmatic_save_preserves_unrelated_focus_and_stale_save_stays_safe",
+    "--tb=short",
+    "--junitxml=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/drawer-focus-final/junit.xml",
+    "--basetemp=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/drawer-focus-final/pytest-temp"
+  ],
+  "exit_code": 0,
+  "seconds": 43.656,
+  "source_parent": "8714a277ddcc865f831021471520667d831304b1",
+  "runtime_asset_version": "4f86c987c57c",
+  "test_sha256": "664b46623020160df2643af9b2b6fbbb927824fbcd2301bee598e4244666b126"
+}
