@@ -1800,3 +1800,70 @@ Extend current Build module08 with the result/slash ownership guards and module0
 The next design correction will reduce repeated generic/empty-topic prose so its existing company-evidence action appears earlier on phones. Retain the canonical HBM description, classification identity, published-evidence/participation distinction, existing company catalogue route and separate completeness/revenue qualification.
 
 Original Draft, model01 **EFFECT_UNKNOWN / ROOT_UNVERIFIED**, no-Ready/no-merge/no-relabel/no-enqueue and release holds remain. Generated-main checks do not establish full shared shell/fonts, physical IME/keyboard-layout behavior, spoken AT, live account/admission, current hosted CI or deployment.
+
+
+## 11.42 · Make the next step visible on empty topics — 9 Nov 2026
+
+### Remove repeated explanation, keep the meaning
+
+At parent **ce523870476f250e456eb3c481f4f89bf619866d**, a generic topic explanation, Research coverage eyebrow, mapped-topic paragraph and separate participation footnote repeated the same absence state before the next action. Baseline measurement PID **42865**, exit0, **9.20 s**, collected four narrow layouts; it did not assess the proposed copy. The English company action ended below the initial 844 px viewport at both widths. The Chinese baselines already fit.
+
+Both existing renderers now use **Theme group: {actual parent} / 所属主题组：{实际父级}** for generic topics. Canonical **theme:hbm_packaging** alone retains its specialized HBM description. This is classification context, not an invented substantive definition.
+
+The empty card has one heading, one paragraph and its existing catalogue action:
+
+| Element | English | 中文 |
+|---|---|---|
+| Heading | No company evidence yet | 暂无公司证据 |
+| Body | No reviewed company connections are published here. This does not mean no companies participate. | 此处暂无经审核并发布的公司关联，不代表没有公司参与该主题。 |
+| Action | Browse company evidence | 浏览公司证据 |
+
+Remove the client eyebrow and server-only decorative file symbol. Merge the participation qualification into that one paragraph. Hide **only** the duplicated zero-count `[data-topic-coverage]` line when the selected topic has no connections, and reveal its count again on a populated topic. Keep the separate completeness/revenue qualification, Related topics, Theme details, source fields, hierarchy, dates and admission rules. No CSS or type/target reduction is needed.
+
+### Reuse the actual company journey
+
+The CTA keeps the existing **gmi-companies.html** destination. The incumbent journey projection already qualifies its return with permitted current research state. Native Enter reaches the searchable company catalogue; its existing return action restores the selected Conventional DRAM topic, query, scope and lens. Do not create a second return owner or carry the ephemeral fixture query.
+
+The action names the company-evidence catalogue. It does not claim that its contents are restricted to the empty topic, that reviewed records exist elsewhere, or that no companies participate.
+
+### Measured phone improvement
+
+All measurements use the same accepted inputs, assets, 844 px viewport and initial scroll zero.
+
+| Layout | Before action bottom | After action bottom | Earlier by |
+|---|---:|---:|---:|
+| EN390 | 871.77 px | 772.47 px | 99.30 px |
+| EN320 | 959.81 px | 836.72 px | 123.09 px |
+| ZH320 | 815.22 px | 737.17 px | 78.05 px |
+| ZH390 | 796.47 px | 718.42 px | 78.05 px |
+
+Each final action fits the initial viewport. All four keep **44 px** action height and **12.5 px** action text, with no horizontal overflow. The generic description shrinks to one line in these fixtures; the empty body has one paragraph. EN390 and ZH320 final captures were inspected.
+
+### Production-render and browser proof
+
+Baseline production-macro PID **43080**, exit0, **3.69 s**, captures all 371 current outputs. Candidate production-macro PID **66293**, exit0, **2.22 s**, passes **742 description language checks**, validates **370 empty cards**, and proves all markup outside the explicit description/empty-card/zero-count regions unchanged. HBM's entire macro output stays exact; the 370 non-HBM outputs change as intended.
+
+Final browser PID **67635**, exit0, **17.98 s**: **10 cases / 10 fresh anonymous contexts**, Chrome **157.0.8103.39**, zero page errors:
+
+- Six complete empty-topic workflows at EN/ZH1440, EN/ZH390 and EN/ZH320, with **24 empty-state observations** and **six positive HBM controls**.
+- Actual company CTA activation and return, locale changes, empty → HBM → empty navigation, positive count restoration, dated source preservation and native Theme details expansion.
+- Two prior description-identity regression workflows at EN390/ZH320.
+- Two controlled production-macro components with scripts disabled, confirming the bilingual structure, native company anchor, 44 px target and retained lower qualification.
+
+The no-JS component fixture is explicitly controlled. It is **not** a new served route or a promise that a deep-linked empty topic renders before JavaScript. All seven existing generated HTML pages still start with their accepted HBM specimen and remain byte-exact.
+
+### Source containment and builder mapping
+
+Three small replacements in **templates/gmi.js** and three in **templates/_gmi_product_macros.html.j2** implement this change; reverse them to reconstruct each parent blob exactly. Paired JS blob **f6d2872d0a1e07f4c93ddfd4078e7fefcf687fec**, SHA256 **5b50ccda856c87fc3e9a8f46d0b4b846952ca42f729078dbada51fb019d58b55**; macro blob **6fa73f0c5d222baa93cb3ef222c1e7bcc171a4e3**.
+
+Of 135 prior qualified verifier definitions, **133 remain AST-exact**. Only the expected generic sentence changes in `topic_description_paths` and its nested `verify`; reversing that expectation reconstructs the whole parent verifier before adding two new helpers and registrations. All **46 other bound render inputs**, the accepted model, seven generated HTML pages and CSS remain exact.
+
+[EMPTY_TOPIC_VALIDATION_20261109.json](EMPTY_TOPIC_VALIDATION_20261109.json) preserves full baseline/final browser reports, all 371 server before/after markup hashes, selected full macro results, commands, process outcomes, geometry and screenshot hashes. Repeated server prose is explicitly projected; complete original report hashes are retained.
+
+Add editable EN390 Noir and ZH320 Day empty-topic views to the canonical Paper product file. Update the current Build guide's generic-description, zero-count and company-return rules, and the Q05/Q06 dimmed empty backdrops. Keep eighteen modules and their existing structural owners.
+
+### Continue with native link consistency
+
+Source review found that ordinary topic selection retains current filters/lens through the existing URL writer, while topic anchors advertised to native new-tab/copy-link actions contain only the target theme. The next bounded phase should reproduce this consumer mismatch and use the incumbent journey/URL owners to project an equivalent destination. No extra navigation controller is needed.
+
+PR10676 remains Draft with original model01 **EFFECT_UNKNOWN / ROOT_UNVERIFIED**, no-Ready/no-merge/no-relabel/no-enqueue, consumer-admission and release holds. This source/component evidence does not establish full shared shell/fonts, physical IME, spoken AT, live account, current hosted CI or deployment.

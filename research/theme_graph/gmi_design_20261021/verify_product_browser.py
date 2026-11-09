@@ -4285,7 +4285,7 @@ with sync_playwright() as pw:
             report.setdefault('description_observations',[]).append(observed)
             def verify(topic_id,phase,active_language,special=False):
                 topic=topics[topic_id];parent=payload['categories'][topic['parent']]
-                generic=('A topic within '+parent['en']+'. Explore its classification and the company evidence currently on file.') if active_language=='en' else ('属于“'+parent['zh']+'”的主题。查看其分类位置与目前收录的公司证据。')
+                generic=('Theme group: '+parent['en']) if active_language=='en' else ('所属主题组：'+parent['zh'])
                 hbm='High-bandwidth memory stacking and its packaging — a distinct part of the AI semiconductor stack.' if active_language=='en' else '高带宽内存的堆叠与封装，是 AI 半导体体系中一个独立的环节。'
                 expected=hbm if special else generic
                 expect(description).to_have_text(expected)
@@ -4578,6 +4578,92 @@ with sync_playwright() as pw:
 
     for width,language in ((390,'en'),(320,'zh')):
         check(f'browse-reopen-{width}-{language}',lambda w=width,l=language:browse_keys_reopen(w,l))
+
+    def empty_topic_snapshot(p,phase,width,language):
+        value=p.evaluate("""()=>{
+          const empty=document.querySelector('.gmi-topic-empty'),action=empty?.querySelector('a'),description=document.querySelector('[data-topic-description]');
+          const rect=n=>{const r=n.getBoundingClientRect();return {top:r.top,bottom:r.bottom,left:r.left,right:r.right,width:r.width,height:r.height};};
+          const coverage=document.querySelector('[data-topic-coverage]');
+          return {description:description.textContent,descriptionBox:rect(description),
+            heading:empty?.querySelector('h2')?.textContent,paragraphs:Array.from(empty?.querySelectorAll(':scope > p')||[]).map(n=>n.textContent),
+            eyebrowCount:empty?.querySelectorAll('.gmi-eyebrow,.gmi-empty-symbol').length,
+            action:action?{text:action.textContent,href:action.href,box:rect(action),fontSize:getComputedStyle(action).fontSize}:null,
+            emptyBox:empty?rect(empty):null,coverageHidden:coverage.hidden,coverageText:coverage.textContent,
+            evidenceCards:document.querySelectorAll('[data-topic-connections] .gmi-evidence-card').length,
+            viewport:{width:innerWidth,height:innerHeight,scrollY,documentWidth:document.documentElement.scrollWidth},
+            title:document.getElementById('gmi-topic-title').textContent,url:location.href};
+        }""")
+        value.update({'phase':phase,'width':width,'language':language})
+        report.setdefault('empty_topic_observations',[]).append(value)
+        return value
+
+    def empty_topic_workflow(width,language,measure_only=False):
+        with context(width,'dark' if language=='en' else 'light',language,reduced_motion='reduce' if width==320 else 'no-preference') as c:
+            p=page_for(c,'gmi.html?fixture=empty-topic#theme=theme%3Aconventional_dram&lens=chain&q=HBM&scope=core')
+            expect(p.locator('[data-gmi-ready]')).to_have_count(1)
+            payload=json.loads(p.locator('#gmi-topic-data').text_content())
+            topic=next(t for t in payload['topics'] if t['id']=='theme:conventional_dram')
+            parent=payload['categories'][topic['parent']]
+            before=empty_topic_snapshot(p,'initial',width,language)
+            if (width,language) in ((390,'en'),(320,'zh')):
+                path=args.out/f'empty-topic-initial-{width}-{language}.png';p.screenshot(path=str(path),full_page=False);report['screenshots'].append(path.name)
+            if measure_only:return
+            expected_group=('Theme group: '+parent['en']) if language=='en' else ('所属主题组：'+parent['zh'])
+            expected_body='No reviewed company connections are published here. This does not mean no companies participate.' if language=='en' else '此处暂无经审核并发布的公司关联，不代表没有公司参与该主题。'
+            expected_action='Browse company evidence' if language=='en' else '浏览公司证据'
+            assert before['description']==expected_group
+            assert before['paragraphs']==[expected_body] and before['eyebrowCount']==0
+            assert before['action']['text']==expected_action and before['action']['box']['height']>=44
+            assert before['coverageHidden'] and before['evidenceCards']==0
+            assert before['viewport']['scrollY']==0 and before['viewport']['documentWidth']<=width
+            assert before['action']['box']['top']>=0 and before['action']['box']['bottom']<=before['viewport']['height']
+            origin=parse_qs(urlsplit(p.url).fragment)
+            action=p.locator('.gmi-topic-empty a')
+            destination=urlsplit(action.get_attribute('href'));assert destination.path.endswith('gmi-companies.html')
+            assert parse_qs(destination.fragment)['gmi_return'][0].split('#')[0]=='gmi.html'
+            assert parse_qs(urlsplit(parse_qs(destination.fragment)['gmi_return'][0]).fragment)==origin
+            action.focus();p.keyboard.press('Enter')
+            expect(p.locator('[data-company-search]')).to_have_value('')
+            expect(p.locator('[data-company-card]:visible')).to_have_count(1)
+            back=p.locator('[data-gmi-return]')
+            expect(back).to_have_text('Back to theme research' if language=='en' else '返回主题研究')
+            assert parse_qs(urlsplit(back.get_attribute('href')).fragment)==origin
+            back.click();expect(p.locator('[data-gmi-ready]')).to_have_count(1)
+            assert parse_qs(urlsplit(p.url).fragment)==origin
+            returned=empty_topic_snapshot(p,'company-roundtrip',width,language)
+            assert returned['description']==expected_group and returned['paragraphs']==[expected_body] and returned['coverageHidden']
+            other='zh' if language=='en' else 'en';url=p.url
+            p.evaluate('(v)=>document.documentElement.setAttribute("data-lang",v)',other)
+            other_group=('Theme group: '+parent['en']) if other=='en' else ('所属主题组：'+parent['zh'])
+            expect(p.locator('[data-topic-description]')).to_have_text(other_group)
+            translated=empty_topic_snapshot(p,'locale-other',width,other)
+            assert translated['paragraphs']==['No reviewed company connections are published here. This does not mean no companies participate.' if other=='en' else '此处暂无经审核并发布的公司关联，不代表没有公司参与该主题。']
+            assert translated['coverageHidden'] and p.url==url
+            p.evaluate('(v)=>document.documentElement.setAttribute("data-lang",v)',language)
+            expect(p.locator('[data-topic-description]')).to_have_text(expected_group)
+            p.locator('[data-topic-related] [data-topic-select="theme:hbm_packaging"]').click()
+            hbm=next(t for t in payload['topics'] if t['id']=='theme:hbm_packaging')
+            expect(p.locator('#gmi-topic-title')).to_have_text(hbm[language])
+            expect(p.locator('[data-topic-connections] .gmi-evidence-card')).to_have_count(1)
+            expect(p.locator('[data-topic-coverage]')).to_be_visible()
+            expect(p.locator('[data-topic-coverage]')).to_have_text('1 documented connection on file.' if language=='en' else '已收录 1 条有据可查的关联。')
+            expect(p.locator('.gmi-evidence-date')).to_contain_text('2024')
+            expect(p.locator('[data-topic-description]')).to_have_text('High-bandwidth memory stacking and its packaging — a distinct part of the AI semiconductor stack.' if language=='en' else '高带宽内存的堆叠与封装，是 AI 半导体体系中一个独立的环节。')
+            report.setdefault('empty_positive_controls',[]).append({'width':width,'language':language,'topic':hbm['id'],'cards':1,'coverage_visible':True,'url':p.url})
+            p.locator('[data-topic-related] [data-topic-select="theme:conventional_dram"]').click()
+            expect(p.locator('#gmi-topic-title')).to_have_text(topic[language])
+            again=empty_topic_snapshot(p,'empty-after-evidence',width,language)
+            assert again['description']==expected_group and again['paragraphs']==[expected_body] and again['coverageHidden'] and again['evidenceCards']==0
+            assert parse_qs(urlsplit(p.url).fragment)==origin
+            summary=p.locator('.gmi-topic-receipt summary');summary.focus();p.keyboard.press('Enter')
+            expect(p.locator('.gmi-topic-receipt')).to_have_attribute('open','')
+            expect(p.locator('[data-topic-taxonomy]')).to_be_visible()
+            qualification=p.locator('[data-topic-coverage]').locator('..').locator('.gmi-note')
+            expect(qualification).to_be_visible()
+            assert qualification.inner_text().strip()==('This is a source-led research view. It is not a complete company universe or a measure of revenue exposure.' if language=='en' else '此研究视图以来源为依据，并非完整的公司集合，也不衡量营收敞口。')
+
+    for width,language in ((1440,'en'),(1440,'zh'),(390,'en'),(320,'zh'),(320,'en'),(390,'zh')):
+        check(f'empty-topic-{width}-{language}',lambda w=width,l=language:empty_topic_workflow(w,l))
 
     browser.close()
 server.shutdown()
