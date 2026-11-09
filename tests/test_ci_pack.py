@@ -5703,9 +5703,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_948),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_969),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_706),
+    ("templates/index.html", 137, 5_950),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_971),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_708),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5713,6 +5713,33 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-09 (PR #7292, retain landed ledger and original CI contribution):
+    Receiving main75e018ac includes the independent data-base-shim ledger.
+    Preserve every original subject history region and current46-line history.
+    The subject owner preimages remain unchanged; original marginal+2
+    composes current5948/5969/5706 as5950/5971/5708.
+    Keep all400 owners, all197 curated owners and every existing assertion.
+    Retain job ceilings137/138/131, ten packs and current selection rules.
+    Only source-accounting limits are composed; no runtime/admission change.
+    Prior actual product/research and paired-probe evidence stays attached
+    to its recorded generation; fresh successor hosted qualification is owed.
+
+    2026-11-09 (PR #7292, measured persona cross-host coverage):
+    the canonical paired planner ran on the complete candidate product tree
+    cc04263a4724e37d0d6a158c876d11ceef459775 at local proof commit
+    0022e0904bfda141482c1b07c4a07946bf405daa. All4,457 discovered suites were
+    readable, including the tracked new cross-host suite. Comparing current
+    catalogdb652c64 with candidatee2fe9823 on that same source universe gave
+    weights5945/5966/5703 -> 5947/5968/5705, exactly+2 per probe. All selected
+    owner IDs, jobs137/137/131 and ten packs were unchanged. Current-catalog
+    measurements had no breaches; candidate breaches were only these three
+    weight deltas. Retain job ceilings137/138/131 and the ten-pack limit.
+    This is an actual paired catalog measurement, not an original-main
+    product-tree measurement or an elapsed-time allowance. Preserve all
+    landed F09 and other accounting/history below, without double funding.
+    The four affected marketing suites plus deterministic fixture test
+    passed236 tests using exact tracked fixtures and temporary test roots.
 
     2026-11-09 (PR #10226, reconcile the actual #10192 landing):
     #10192 merged as7bdfb249486d409ee8634501842c31f51af74c7c.
