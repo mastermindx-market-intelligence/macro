@@ -30,7 +30,7 @@ Applied and visually checked focused improvements in twenty-three existing Paper
 | Shared Watchlists | [Recovery references](https://app.paper.design/file/01M6Y309YH7PJZMF23R7EDH3CM/p-1-0) · [Exact destination & browser retention](https://app.paper.design/file/01M6Y309YH7PJZMF23R7EDH3CM/p-2-0) | Fourteen copy corrections across six roots; clear return to reading, consistent Chinese terminology, and current save/identity/retention contracts preserved. |
 | Shared Tools & Research Launcher | [Amended mobile directory](https://app.paper.design/file/01M6Y32A3E4XC51FQVJN98YRPH/p-1-0) · [Expanded chooser & Build](https://app.paper.design/file/01M6Y32A3E4XC51FQVJN98YRPH/p-2-0) | Eight compact category controls; all current groups reachable in 390px EN / 320px ZH specimens; Clear versus Show all clarified; existing catalogue and destination owner preserved. |
 | Catalyst Intelligence | [Source-bound discovery](https://app.paper.design/file/01M6Y2VTQBVC9NA39HNG1DYWFH/p-2-0) · [Selection/filter states & Build](https://app.paper.design/file/01M6Y2VTQBVC9NA39HNG1DYWFH/p-3-0) | Seven desktop/EN390/ZH320 specimens separate selection, filters, absence and exact manual-copy recovery; nine-module Build and executable reference with 22 passing offline checks; original source/Defense views preserved. |
-| Market Memory evidence workspace | [Historical comparison](https://app.paper.design/file/01M6Y2V2M0J28M2PYAHWZ8SB98/p-1-0) · [Inspection Build](https://app.paper.design/file/01M6Y2V2M0J28M2PYAHWZ8SB98/p-2-0) | Twelve precise inspection actions, four Chinese selected-state corrections and two mobile return controls; original values and later-outcome views preserved. |
+| Market Memory evidence workspace | [Historical comparison](https://app.paper.design/file/01M6Y2V2M0J28M2PYAHWZ8SB98/p-1-0) · [Inspection Build](https://app.paper.design/file/01M6Y2V2M0J28M2PYAHWZ8SB98/p-2-0) | Twelve precise inspection actions, four Chinese selected-state corrections and two mobile return controls; seven-module Build now maps the actual Macro retained-output consumer and PR10796’s local-return gap; original values and later-outcome views preserved. |
 
 The [motion reference HTML](expectation-surface-motion-reference.html) demonstrates the intended selection, pending, failure/retry, details-return and reduced-motion state model using explicit fixtures. JavaScript syntax was checked; browser execution was not verified in this session.
 
@@ -52,6 +52,10 @@ The selected-case/copy correction now has an actual Terminal implementation in [
 **46 component tests and 18 targeted browser cases passed**, with a clean complete-source TypeScript check. Desktop, tablet and mobile EN/ZH—including 320px Chinese—were exercised. [The source-bound explanation, manifest, check output and seven original captures](https://github.com/mastermindx-market-intelligence/mastermind-terminal/tree/45472fcedad31292d660d54731d4da472ca04f1e/docs/verification/catalyst-selection-copy-20261109) are committed with the source. These are synthetic fixture results, not live data/entitlement/deployment proof.
 
 PR1354 is Ready and its exact-head native auto-merge is enrolled. The observed CI jobs remain queued; protected merge and applicable deployment/live proof remain pending. See continuation §23 for source custody, architecture and the preserved historical test denial.
+
+The existing Market Memory inspection Build now also names its actual Macro consumer, two source-copy sites, panel/focus handlers, URL owner and asset-delivery path. Continuation §24 records the applied seven-module contract and preserves active PR10796; its application return control remains to be implemented on the qualified incumbent carrier.
+
+The reusable Catalyst owner finding is preserved in [DSC-CATALYST-COPY-CONTEXT-USES-EXISTING-READ-OWNER](../../../../agentos/discoveries/DSC-CATALYST-COPY-CONTEXT-USES-EXISTING-READ-OWNER.md), with source-bound proof and limits.
 
 ## Assignment and source
 
