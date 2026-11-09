@@ -7429,6 +7429,7 @@ jobs:
       - "tests/__init__.py"
       - "tests/conftest.py"
       - "tests/test_site_access_boundary.py"
+      - "tools/xguerrilla/validators.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -29846,6 +29847,62 @@ jobs:
         # Public runtime operations refuse; no live pool/persona/profile is read.
         # Git policy checks inspect ignore/index metadata, not the private file.
         run: python -m pytest tests/test_marketing_approval_desk.py tests/test_marketing_card_earns_pixels.py tests/test_marketing_wire_expiry.py tools/xguerrilla/tests/test_drivers.py tools/xguerrilla/tests/test_net.py tools/xguerrilla/tests/test_ops.py tools/xguerrilla/tests/test_pilot_sim.py tools/xguerrilla/tests/test_proxies_template.py tools/xguerrilla/tests/test_state.py tools/xguerrilla/tests/test_textdrift.py tools/xguerrilla/tests/test_typing.py tools/xguerrilla/tests/test_validators.py tools/xguerrilla/tests/test_runtime_boundary.py -q
+
+  xguerrilla-admission:
+    if: ${{ false }}  # executed inside ci-pack — NOT a disabled gate; see the ci-pack job.
+    gate: code
+    # PR #10870 admission chain: tools/xguerrilla/admission.py's regression
+    # suite first landed appended to marketing-social-publisher's run line,
+    # which re-selected that job for ordinary code PRs and pushed all three
+    # packing probes 2 weight-seconds over their composed ceilings
+    # (contract-delta: 3 introduced, 0 inherited). Curated here instead:
+    # scope: exclusive owns this package conservatively. Pytest's ancestor
+    # conftest imports profiles -> runtime_boundary and inserts tools/ into
+    # sys.path; the static resolver cannot infer that package alias. Keep
+    # existing and future package-local dependencies covered, including
+    # dependencies reached only through pytest collection.
+    # The three unrelated packing probes still do not select this job.
+    # No job-count, weight, pack, timeout, or concurrency ceiling changes.
+    scope: exclusive
+    paths:
+      - "tools/xguerrilla/**"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install deps
+        # Minimal lane deps: pytest + pyyaml only. admission.py is stdlib
+        # (hashlib/json/math/time/dataclasses/datetime/typing); net.py and
+        # persona.py import yaml. No numpy/pandas/pyarrow, zero network.
+        run: pip install pytest pyyaml
+      - name: admission chain unit tests
+        run: python -m pytest tools/xguerrilla/tests/test_admission.py -q
+
+  xguerrilla-identity-registry:
+    if: ${{ false }}
+    gate: code
+    scope: exclusive
+    paths:
+      # Collection injects tools/ as an import root; own the whole package,
+      # including conftest, profiles/runtime helpers and future dependencies.
+      - tools/xguerrilla/**
+      - tools/__init__.py
+      - research/agentic_media/handoffs/XG_IDENTITY_REGISTRY_V1.md
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install registry contract dependencies
+        run: pip install pytest pyyaml
+      - name: Identity schema, exact lock and pre-overwrite transition contracts
+        # Synthetic dictionaries and tmp_path files only; no live registry,
+        # persona, credential, account, browser or runtime admission is read.
+        run: python -m pytest tools/xguerrilla/tests/test_registry.py -q
 
   marketing-media-pipeline:
     if: ${{ false }}
@@ -53256,3 +53313,57 @@ jobs:
         run: pip install pandas numpy pyyaml jsonschema
       - name: fail-closed signal builder entrypoint and healthy controls
         run: python -m unittest tests/test_build_signal_quality_fail_closed.py -v
+  public-site-figma-baseline-contracts:
+    # PR #7220 (public-site Figma baseline) CI-ownership repair, 2026-11-06: the three
+    # suites the branch shipped had no CI run-step owner — contract-delta flagged
+    # exactly those three as introduced unwired suites, and this job is that one
+    # owner. scope: exclusive — paths: is the measured import/read closure. The
+    # suites exercise pure contracts (36 capture targets, matrix sealing, generated
+    # JS parsed by node) and never launch a browser, touch Figma or the network.
+    if: ${{ false }}
+    gate: code
+    scope: exclusive
+    # paths: is the planner's measured closure for this job's own commands, not a
+    # guess: the three suites, their ancestor init, the four tools/figma modules,
+    # and the eleven frozen site/ source files capture_reference_matrix.py names
+    # when it verifies the source before capture (a change to any of them must
+    # re-run these contracts).
+    paths:
+      - tests/__init__.py
+      - tests/test_public_site_figma_capture_jobs.py
+      - tests/test_public_site_figma_import_plan.py
+      - tests/test_public_site_figma_reference_matrix.py
+      - tools/figma/__init__.py
+      - tools/figma/public_site_baseline/__init__.py
+      - tools/figma/public_site_baseline/build_import_plan.py
+      - tools/figma/public_site_baseline/capture_reference_matrix.py
+      - tools/figma/public_site_baseline/reference_matrix.py
+      - site/adtest.js
+      - site/index.html
+      - site/landing.css
+      - site/mm_brain.js
+      - site/onboard.css
+      - site/onboard.js
+      - site/products/market-dashboards.html
+      - site/products/market-terminal.html
+      - site/products/mastermind-ai.html
+      - site/scene-motion.css
+      - site/scene-motion.js
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: install test deps
+        run: pip install pytest playwright
+      - name: capture job matrix contracts
+        run: python -m pytest tests/test_public_site_figma_capture_jobs.py -q
+      - name: import plan contracts (generated JS parsed by node)
+        run: python -m pytest tests/test_public_site_figma_import_plan.py -q
+      - name: reference matrix sealing contracts
+        run: python -m pytest tests/test_public_site_figma_reference_matrix.py -q
