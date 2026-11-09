@@ -1792,3 +1792,52 @@ Build **7M9-0** now has twelve modules and 39 nodes. All previous 36 IDs, parent
 The next source-backed improvement is index-only header consolidation: retain the linked brand, move the sole All micro-themes H1 into the product header, preserve its exact snapshot/stale subtree, Brain slot, navigation and qualified return, and remove the duplicated index head() introduction/date. It must prove real search-position improvement in matched entry states, preserve 44px navigation and no overflow, and leave other pages byte-identical. This section does not claim that next change implemented.
 
 Anonymous DOM/accessibility-tree proof does not establish OS IME, spoken AT, full shared-shell/fonts, live account/public admission or release. Catalyst's refused production attempt and Tools' loader/P0B holds remain unchanged.
+
+## 37. GMI: remove the duplicated index introduction and add its current Paper views
+
+The original [Draft PR10676](https://github.com/mastermindx-market-intelligence/Macro/pull/10676) advances from **16a87f43743fe3a9bae02db7e3d64969871d8cd9** to **20179e319a3f5219488fda4f1642a49e77ed8b13**, tree **d52699fe6fbeaa6ee0dacadc4a5897d44e1ebe84**. All **nine intended files** read back exactly. Production JavaScript remains **7caa903eb1fd78bb6b4cdd611c1c69d2f0c09224**; Draft/model01/release holds remain.
+
+The full index previously displayed the generic GMI introduction and snapshot before navigation, then a second breadcrumb/title/count introduction and another display of the same model.asof date before search. The existing page_key=index branch now renders a secondary linked brand, the sole **All micro-themes / 全部细分主题** H1 and one exact dated snapshot. Only the index head() import/call is removed. The shared snapshot/stale subtree, Brain slot, navigation, context-return insertion and index content remain exact.
+
+The smaller brand retains its .gmi-product-name hook and a 44px target. The title is 32 px on desktop and 24 px at ≤820 px, with natural Chinese tracking and no fixed height. The current 72 px mobile Brain reservation remains; index-only navigation and return margins are 16 px. The return owner still inserts after navigation, and both brand/research and company-return fragments remain intact. Direct entry does not acquire a fabricated back action.
+
+| Matched direct entry | Search before | Search after | Saving |
+| --- | ---: | ---: | ---: |
+| 1440 px EN/ZH | 364.78px | 218.80px | 145.98px |
+| 390 px EN | 467.44px | 282.80px | 184.64px |
+| 390 px ZH | 437.19px | 271.30px | 165.89px |
+| 320 px EN | 508.69px | 282.80px | 225.89px |
+| 320 px ZH | 455.94px | 271.30px | 184.64px |
+
+These coordinates belong to the anonymous generated-main fixture. Across **66 matched states**, including equal return and Brain conditions, the saving is **145.98–233.89px**. The proof does not promise these exact coordinates beneath a live shared shell.
+
+| Source | Exact blob |
+| --- | --- |
+| Shared product header | **207ad3b122a9db95f4c017413207385275dfee3f** |
+| Index template | **0b4a23d3818c27f62778074969270640ef48780a** |
+| Paired CSS | **5b9c70ed21a5c94dc565258304d061dbabf0bb56** |
+| Generated index | **3c6d1512da13534cb23882626c748ca4e269a973** |
+| Canonical verifier | **1bccdb51065c550a7214e0a2cf7c42728807179c** |
+| Header harness | **dec19d9e0bce3cfc0ac6ee2d96e24ec0f064a466** |
+| DESIGN_RECORD §11.28 | **3100c1cbbbccd7ee95a38aef9e2d137573626d41** |
+| INDEX_HEADER_VALIDATION_20261109.json | **9b323b3ee57cf7bd665855da58db12e5c0ba105c** |
+
+The same 48 source-bound inputs and accepted model reproduce the parent explorer/index. Only index HTML and paired CSS change among nine renderer outputs; six other HTML pages and JavaScript stay exact. Actual 261,797-byte index transport matches full SHA-256 and Git-blob identities. The source self-check confirms exact snapshot/slot/nav markup, exact content below the removed introduction and unchanged existing CSS/verifier definitions.
+
+Baseline PID264 records 11 original-layout observations in 11 contexts, exit0/31.01s. Their passes verify the repeated-introduction measurement contract, not acceptance of the proposed header. Candidate PID3454 passes **23 cases / 23 contexts**, Chrome157.0.8103.39, no page errors, exit0/47.29s. Eleven header cases each cover direct/research/company entry with empty and populated Brain slots. Four actual no-JS cases retain 371 native destinations and disclosure behavior. Six existing filtered-index and two Clear-search cases also pass. Seven header captures were inspected. [The structured validation](https://github.com/mastermindx-market-intelligence/Macro/blob/20179e319a3f5219488fda4f1642a49e77ed8b13/research/theme_graph/gmi_design_20261021/INDEX_HEADER_VALIDATION_20261109.json) records all measurements and commands.
+
+The 44 px Brain button and November 9/20 clocks are explicit fixtures. They exercise the existing docking event and stale-age condition. Without JavaScript, the header remains dated and navigable, but does not derive stale qualification, dock Brain or generate a contextual return. No replacement dynamic owner was added.
+
+### Paper: a dedicated, discoverable Index page
+
+New [**Index · Search and navigation**](https://app.paper.design/file/01M5H6EARN9YHQV17JC6ZG9BRY/p-8-0) follows Current product in the file's page order. It contains:
+
+- **7YS-0 · I01**: Day / English 390 px default viewport, one header/date, current index navigation, the existing search/legend and native category/row language.
+- **811-0 · I02**: Noir / Chinese 320 px conditional older-snapshot/company-return state. HBM produces 2 results, one each under AI半导体 and 存储与HBM. Full index: 371, 68 core and 303 extended remain explicitly separate.
+- Search fields reuse the editable S06G component; that original remains exact. Source receipt originals 7ER/7JR also remain exact. No foundations/tokens or historical references changed.
+
+Both full native captures were inspected. The English board deliberately represents an 844 px viewport, so content continues below its bottom edge; the Chinese filtered view contains both result rows and the total footer. Existing Build 7M9 on p7 now has 13 modules / 42 nodes, preserving all 39 prior IDs/parents/styles and unaffected text while adding the three-node index contract. Its new module/proof captures were inspected. The two views and exact Build root were finished. **PAPER_INDEX_HEADER_20261109.json** retains editable JSX and readback.
+
+Next assessment concerns mobile category selection: the current 44 px horizontal rail is source-correct, but choosing a distant category may warrant a compact native selector through the existing validated jump owner. That feature is only under read-only evaluation here; no alternate navigation state or picker is claimed implemented.
+
+Full shared-Brain runtime, external fonts/shared shell, live accounts/public admission, spoken assistive technology and release remain separate. Catalyst's reconciled refusal and Tools' loader/P0B holds remain unchanged.
