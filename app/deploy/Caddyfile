@@ -286,7 +286,8 @@
 	# `redir` sorts before `handle`/`file_server`, so this resolves ahead of the
 	# Site Access Boundary and needs no exemption in the wall itself.
 	@x_ref {
-		path_regexp x_ref ^/x/(?P<id>[a-z0-9]{4,32})/?$
+		path_regexp x_ref ^/x/(?P<id>[a-z0-9][a-z0-9.]{2,30}[a-z0-9])/?$
+		not path *..*
 	}
 	redir @x_ref "/?ref={re.x_ref.id}" 301
 	# Consolidated-away page with real Google demand (63 impressions pre-outage):
