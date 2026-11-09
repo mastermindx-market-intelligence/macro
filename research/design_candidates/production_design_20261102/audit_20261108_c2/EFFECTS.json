@@ -1,0 +1,1839 @@
+{
+  "schema": "paper.audit.effects.v1",
+  "date": "2026-11-08",
+  "authority": "Chairman outer task: audit and improve Paper architecture, workflows, clarity, illustrations and build plans",
+  "law_pin": "5c3d3885234358aefb97ecdbc59be0864df14f8b",
+  "macro_pin": "338a10852dcefa5d2bd07e5c6be0955c2b1e83fd",
+  "carrier": "Studio Direct C2 Personal paper_edit",
+  "branch": "design/paper-audit-20261108-c2",
+  "operations": [
+    {
+      "key": "hub_qa_create",
+      "operation_id": "paper-audit-20261108-c2-hub-qa-page",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "create_page",
+      "adapter_snapshot_before": "1e8e5539da46aca3af0b57338a613304604dfd3cb410e6239c47ced17a6afb35",
+      "adapter_snapshot_after": "9a9e4751d3962417a418115718a2f451ee1d1cf2e6a9b0435e88da6fa5293fe8",
+      "retry_allowed": false,
+      "production_acceptance": false,
+      "result": [
+        {
+          "pageId": "p-A-0",
+          "name": "98 · Adapter QA · Retained canaries",
+          "icon": "blueprint"
+        }
+      ]
+    },
+    {
+      "key": "hub_qa_move",
+      "operation_id": "paper-audit-20261108-c2-hub-qa-relocate",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "move_nodes",
+      "adapter_snapshot_before": "7686b18a1eaf61f4b8891355800b0c16fb3848662a78ce2adf577919e1bb7fa4",
+      "adapter_snapshot_after": "7686b18a1eaf61f4b8891355800b0c16fb3848662a78ce2adf577919e1bb7fa4",
+      "retry_allowed": false,
+      "production_acceptance": false,
+      "result": [
+        {
+          "moves": [
+            {
+              "nodeId": "6V4-0",
+              "parentId": "root_node_p-A-0",
+              "index": 0
+            },
+            {
+              "nodeId": "6VO-0",
+              "parentId": "root_node_p-A-0",
+              "index": 1
+            },
+            {
+              "nodeId": "6W1-1",
+              "parentId": "root_node_p-A-0",
+              "index": 2
+            }
+          ],
+          "affectedParents": [
+            {
+              "parentId": "root_node_p-A-0",
+              "childIds": [
+                "6V4-0",
+                "6VO-0",
+                "6W1-1"
+              ]
+            },
+            {
+              "parentId": "root_node_p-1-0",
+              "childIds": [
+                "5E9-0"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "hub_qa_order",
+      "operation_id": "paper-audit-20261108-c2-hub-qa-order",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "arrange_pages",
+      "adapter_snapshot_before": "366fae860f39fc02ada915746ead65b9befd389ae2ab0b22c01c2924996760d8",
+      "adapter_snapshot_after": "43a3985607110f05f003a45dc1f3433a8e9cfc675da86eb82a822e58ce7b183b",
+      "retry_allowed": false,
+      "production_acceptance": false,
+      "result": [
+        {
+          "pages": [
+            {
+              "type": "page",
+              "id": "p-1-0",
+              "name": "00 · Start here · Hub design map",
+              "icon": "arrow",
+              "isActive": false
+            },
+            {
+              "type": "page",
+              "id": "p-2-0",
+              "name": "00B · R4 contracts + Navigation",
+              "icon": "info",
+              "isActive": false
+            },
+            {
+              "type": "page",
+              "id": "p-3-0",
+              "name": "01 · Hub · Desktop Commands + Evidence",
+              "icon": null,
+              "isActive": false
+            },
+            {
+              "type": "page",
+              "id": "p-4-0",
+              "name": "02 · Hub · Mobile Commands + Evidence",
+              "icon": null,
+              "isActive": false
+            },
+            {
+              "type": "page",
+              "id": "p-5-0",
+              "name": "03 · Hub · Research + Risk States",
+              "icon": null,
+              "isActive": true
+            },
+            {
+              "type": "page",
+              "id": "p-6-0",
+              "name": "04 · Hub · Loading, Filters + Locale Coverage",
+              "icon": null,
+              "isActive": false
+            },
+            {
+              "type": "divider",
+              "id": "p-9-0"
+            },
+            {
+              "type": "page",
+              "id": "p-8-0",
+              "name": "98 · SOURCE ONLY · Intelligence Hub Alt Data Baseline",
+              "icon": null,
+              "isActive": false
+            },
+            {
+              "type": "page",
+              "id": "p-A-0",
+              "name": "98 · Adapter QA · Retained canaries",
+              "icon": "blueprint",
+              "isActive": false
+            },
+            {
+              "type": "page",
+              "id": "p-7-0",
+              "name": "99 · Hub · Transfer QA + Held",
+              "icon": null,
+              "isActive": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "ontology_motion_header",
+      "operation_id": "paper-audit-20261108-c2-motion-header",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "write_html",
+      "adapter_snapshot_before": "64a1efd6c1233c304881b67efd79acaebf746e02378ba97b9e9bff8b5007caf4",
+      "adapter_snapshot_after": "64a1efd6c1233c304881b67efd79acaebf746e02378ba97b9e9bff8b5007caf4",
+      "retry_allowed": false,
+      "production_acceptance": false,
+      "result": [
+        {
+          "createdNodes": [
+            {
+              "id": "A9R-0",
+              "name": "Motion contract · audit 2026-11-08",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "A9S-0",
+              "name": "Motion contract header",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "A9T-0",
+              "name": "Frame",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "A9U-0",
+              "name": "MOTION + EVIDENCE · …",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "A9V-0",
+              "name": "Make every change le…",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "A9W-0",
+              "name": "Reveal the observati…",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "A9X-0",
+              "name": "Frame",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "A9Y-0",
+              "name": "BUILD CONTRACT CANDI…",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "A9Z-0",
+              "name": "Static frames · runt…",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "ontology_motion_row",
+      "operation_id": "paper-audit-20261108-c2-motion-row",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "write_html",
+      "adapter_snapshot_before": "64a1efd6c1233c304881b67efd79acaebf746e02378ba97b9e9bff8b5007caf4",
+      "adapter_snapshot_after": "64a1efd6c1233c304881b67efd79acaebf746e02378ba97b9e9bff8b5007caf4",
+      "retry_allowed": false,
+      "production_acceptance": false,
+      "result": [
+        {
+          "createdNodes": [
+            {
+              "id": "AA1-0",
+              "name": "Motion storyboard · three states",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "motion_card_reveal",
+      "operation_id": "paper-audit-20261108-c2-motion-reveal-header",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "write_html",
+      "adapter_snapshot_before": "64a1efd6c1233c304881b67efd79acaebf746e02378ba97b9e9bff8b5007caf4",
+      "adapter_snapshot_after": "64a1efd6c1233c304881b67efd79acaebf746e02378ba97b9e9bff8b5007caf4",
+      "retry_allowed": false,
+      "production_acceptance": false,
+      "result": [
+        {
+          "createdNodes": [
+            {
+              "id": "AA3-0",
+              "name": "Motion · reveal",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "AA4-0",
+              "name": "Frame",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "AA5-0",
+              "name": "01 · REVEAL",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "AA6-0",
+              "name": "Draw once. Keep the …",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "motion_diagram_reveal",
+      "operation_id": "paper-audit-20261108-c2-motion-reveal-diagram",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "write_html",
+      "adapter_snapshot_before": "64a1efd6c1233c304881b67efd79acaebf746e02378ba97b9e9bff8b5007caf4",
+      "adapter_snapshot_after": "64a1efd6c1233c304881b67efd79acaebf746e02378ba97b9e9bff8b5007caf4",
+      "retry_allowed": false,
+      "production_acceptance": false,
+      "result": [
+        {
+          "createdNodes": [
+            {
+              "id": "AAI-0",
+              "name": "Reveal · honest gap specimen",
+              "component": "SVG",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "AAJ-0",
+              "name": "Rect",
+              "component": "SVGVisualElement",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "AAK-0",
+              "name": "Path",
+              "component": "SVGVisualElement",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "AAL-0",
+              "name": "Path",
+              "component": "SVGVisualElement",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "AAM-0",
+              "name": "Circle",
+              "component": "SVGVisualElement",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "AAN-0",
+              "name": "Circle",
+              "component": "SVGVisualElement",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "AAO-0",
+              "name": "Circle",
+              "component": "SVGVisualElement",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "AAP-0",
+              "name": "Circle",
+              "component": "SVGVisualElement",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "AAQ-0",
+              "name": "Path",
+              "component": "SVGVisualElement",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "AAR-0",
+              "name": "Revision A · illustr…",
+              "component": "SVGVisualElement",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "AAS-0",
+              "name": "Missing",
+              "component": "SVGVisualElement",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "AAT-0",
+              "name": "14",
+              "component": "SVGVisualElement",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "motion_copy_reveal",
+      "operation_id": "paper-audit-20261108-c2-motion-reveal-behavior",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "write_html",
+      "adapter_snapshot_before": "64a1efd6c1233c304881b67efd79acaebf746e02378ba97b9e9bff8b5007caf4",
+      "adapter_snapshot_after": "64a1efd6c1233c304881b67efd79acaebf746e02378ba97b9e9bff8b5007caf4",
+      "retry_allowed": false,
+      "production_acceptance": false,
+      "result": [
+        {
+          "createdNodes": [
+            {
+              "id": "ABM-0",
+              "name": "Motion · reveal behavior",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "ABN-0",
+              "name": "Use the current draw…",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "ABO-0",
+              "name": "Existing ilx rendere…",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "motion_card_inspect",
+      "operation_id": "paper-audit-20261108-c2-motion-inspect-header",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "write_html",
+      "adapter_snapshot_before": "64a1efd6c1233c304881b67efd79acaebf746e02378ba97b9e9bff8b5007caf4",
+      "adapter_snapshot_after": "64a1efd6c1233c304881b67efd79acaebf746e02378ba97b9e9bff8b5007caf4",
+      "retry_allowed": false,
+      "production_acceptance": false,
+      "result": [
+        {
+          "createdNodes": [
+            {
+              "id": "AA8-0",
+              "name": "Motion · inspect",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "AA9-0",
+              "name": "Frame",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "AAA-0",
+              "name": "02 · INSPECT",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "AAB-0",
+              "name": "Follow the exact val…",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "motion_diagram_inspect",
+      "operation_id": "paper-audit-20261108-c2-motion-inspect-diagram",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "write_html",
+      "adapter_snapshot_before": "64a1efd6c1233c304881b67efd79acaebf746e02378ba97b9e9bff8b5007caf4",
+      "adapter_snapshot_after": "64a1efd6c1233c304881b67efd79acaebf746e02378ba97b9e9bff8b5007caf4",
+      "retry_allowed": false,
+      "production_acceptance": false,
+      "result": [
+        {
+          "createdNodes": [
+            {
+              "id": "AAV-0",
+              "name": "Inspect · selected value and receipt",
+              "component": "SVG",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "AAW-0",
+              "name": "Rect",
+              "component": "SVGVisualElement",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "AAX-0",
+              "name": "Path",
+              "component": "SVGVisualElement",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "AAY-0",
+              "name": "Circle",
+              "component": "SVGVisualElement",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "AAZ-0",
+              "name": "Circle",
+              "component": "SVGVisualElement",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "AB0-0",
+              "name": "Path",
+              "component": "SVGVisualElement",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "AB1-0",
+              "name": "Rect",
+              "component": "SVGVisualElement",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "AB2-0",
+              "name": "EXACT VALUE",
+              "component": "SVGVisualElement",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "AB3-0",
+              "name": "12",
+              "component": "SVGVisualElement",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "AB4-0",
+              "name": "Revision A · period …",
+              "component": "SVGVisualElement",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "AB5-0",
+              "name": "Selected value → aut…",
+              "component": "SVGVisualElement",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "motion_copy_inspect",
+      "operation_id": "paper-audit-20261108-c2-motion-inspect-behavior",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "write_html",
+      "adapter_snapshot_before": "64a1efd6c1233c304881b67efd79acaebf746e02378ba97b9e9bff8b5007caf4",
+      "adapter_snapshot_after": "64a1efd6c1233c304881b67efd79acaebf746e02378ba97b9e9bff8b5007caf4",
+      "retry_allowed": false,
+      "production_acceptance": false,
+      "result": [
+        {
+          "createdNodes": [
+            {
+              "id": "ABQ-0",
+              "name": "Motion · inspect behavior",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "ABR-0",
+              "name": "Bind the selected ma…",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "ABS-0",
+              "name": "Typed host interacti…",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "motion_card_revise",
+      "operation_id": "paper-audit-20261108-c2-motion-revise-header",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "write_html",
+      "adapter_snapshot_before": "64a1efd6c1233c304881b67efd79acaebf746e02378ba97b9e9bff8b5007caf4",
+      "adapter_snapshot_after": "64a1efd6c1233c304881b67efd79acaebf746e02378ba97b9e9bff8b5007caf4",
+      "retry_allowed": false,
+      "production_acceptance": false,
+      "result": [
+        {
+          "createdNodes": [
+            {
+              "id": "AAD-0",
+              "name": "Motion · revise",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "AAE-0",
+              "name": "Frame",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "AAF-0",
+              "name": "03 · REVISE",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "AAG-0",
+              "name": "Review, then replace…",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "motion_diagram_revise",
+      "operation_id": "paper-audit-20261108-c2-motion-revise-diagram",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "write_html",
+      "adapter_snapshot_before": "64a1efd6c1233c304881b67efd79acaebf746e02378ba97b9e9bff8b5007caf4",
+      "adapter_snapshot_after": "64a1efd6c1233c304881b67efd79acaebf746e02378ba97b9e9bff8b5007caf4",
+      "retry_allowed": false,
+      "production_acceptance": false,
+      "result": [
+        {
+          "createdNodes": [
+            {
+              "id": "AB7-0",
+              "name": "Revise · controlled version change",
+              "component": "SVG",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "AB8-0",
+              "name": "Rect",
+              "component": "SVGVisualElement",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "AB9-0",
+              "name": "Rect",
+              "component": "SVGVisualElement",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "ABA-0",
+              "name": "REVISION A",
+              "component": "SVGVisualElement",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "ABB-0",
+              "name": "Path",
+              "component": "SVGVisualElement",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "ABC-0",
+              "name": "Path",
+              "component": "SVGVisualElement",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "ABD-0",
+              "name": "Rect",
+              "component": "SVGVisualElement",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "ABE-0",
+              "name": "Review",
+              "component": "SVGVisualElement",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "ABF-0",
+              "name": "Confirm",
+              "component": "SVGVisualElement",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "ABG-0",
+              "name": "Path",
+              "component": "SVGVisualElement",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "ABH-0",
+              "name": "Rect",
+              "component": "SVGVisualElement",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "ABI-0",
+              "name": "REVISION B",
+              "component": "SVGVisualElement",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "ABJ-0",
+              "name": "Path",
+              "component": "SVGVisualElement",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "ABK-0",
+              "name": "Saved A stays intact…",
+              "component": "SVGVisualElement",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "motion_copy_revise",
+      "operation_id": "paper-audit-20261108-c2-motion-revise-behavior",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "write_html",
+      "adapter_snapshot_before": "64a1efd6c1233c304881b67efd79acaebf746e02378ba97b9e9bff8b5007caf4",
+      "adapter_snapshot_after": "64a1efd6c1233c304881b67efd79acaebf746e02378ba97b9e9bff8b5007caf4",
+      "retry_allowed": false,
+      "production_acceptance": false,
+      "result": [
+        {
+          "createdNodes": [
+            {
+              "id": "ABU-0",
+              "name": "Motion · revise behavior",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "ABV-0",
+              "name": "Changing an input ma…",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "ABW-0",
+              "name": "Existing calculation…",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "motion_accessibility",
+      "operation_id": "paper-audit-20261108-c2-motion-accessibility",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "write_html",
+      "adapter_snapshot_before": "64a1efd6c1233c304881b67efd79acaebf746e02378ba97b9e9bff8b5007caf4",
+      "adapter_snapshot_after": "64a1efd6c1233c304881b67efd79acaebf746e02378ba97b9e9bff8b5007caf4",
+      "retry_allowed": false,
+      "production_acceptance": false,
+      "result": [
+        {
+          "createdNodes": [
+            {
+              "id": "ABY-0",
+              "name": "Motion accessibility + source contract",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "ABZ-0",
+              "name": "Frame",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "AC0-0",
+              "name": "Reduced motion keeps…",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "AC1-0",
+              "name": "Show the final state…",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "AC2-0",
+              "name": "Frame",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "AC3-0",
+              "name": "Reuse the current ow…",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "AC4-0",
+              "name": "UI: 160 / 200 / 550m…",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "AC5-0",
+              "name": "Frame",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "AC6-0",
+              "name": "Build + verification…",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "AC7-0",
+              "name": "Macro · e8e99c5 · au…",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "guide_copy_edit",
+      "operation_id": "paper-audit-20261108-c2-guide-intro-copy",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "set_text_content",
+      "adapter_snapshot_before": "3a5b80cea678abc8857d814d2d2fbc66d37040b3493efe393285e08401630e4f",
+      "adapter_snapshot_after": "801c4f5772087a38ecaf86f1eacafa25c5198d579b6d28ec8bfcdb4d6bc92e96",
+      "retry_allowed": false,
+      "production_acceptance": false,
+      "result": [
+        {
+          "updates": [
+            {
+              "nodeId": "3CT-0"
+            },
+            {
+              "nodeId": "3CU-0"
+            },
+            {
+              "nodeId": "3KR-0"
+            },
+            {
+              "nodeId": "3KQ-0"
+            },
+            {
+              "nodeId": "3MV-0"
+            },
+            {
+              "nodeId": "3MU-0"
+            },
+            {
+              "nodeId": "3OZ-0"
+            },
+            {
+              "nodeId": "3OY-0"
+            },
+            {
+              "nodeId": "3R3-0"
+            },
+            {
+              "nodeId": "3R2-0"
+            },
+            {
+              "nodeId": "3TH-0"
+            },
+            {
+              "nodeId": "3TG-0"
+            },
+            {
+              "nodeId": "3VV-0"
+            },
+            {
+              "nodeId": "3VU-0"
+            },
+            {
+              "nodeId": "3E9-0"
+            },
+            {
+              "nodeId": "3EA-0"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "guide_accent_3CJ-0",
+      "operation_id": "paper-audit-20261108-c2-guide-accent-3cj-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "write_html",
+      "adapter_snapshot_before": "801c4f5772087a38ecaf86f1eacafa25c5198d579b6d28ec8bfcdb4d6bc92e96",
+      "adapter_snapshot_after": "801c4f5772087a38ecaf86f1eacafa25c5198d579b6d28ec8bfcdb4d6bc92e96",
+      "retry_allowed": false,
+      "production_acceptance": false,
+      "result": [
+        {
+          "createdNodes": [
+            {
+              "id": "3Z3-0",
+              "name": "Risk advisory · neutral emphasis",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "3Z4-0",
+              "name": "An advisory, not cer…",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "guide_accent_3IS-0",
+      "operation_id": "paper-audit-20261108-c2-guide-accent-3is-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "write_html",
+      "adapter_snapshot_before": "801c4f5772087a38ecaf86f1eacafa25c5198d579b6d28ec8bfcdb4d6bc92e96",
+      "adapter_snapshot_after": "801c4f5772087a38ecaf86f1eacafa25c5198d579b6d28ec8bfcdb4d6bc92e96",
+      "retry_allowed": false,
+      "production_acceptance": false,
+      "result": [
+        {
+          "createdNodes": [
+            {
+              "id": "3Z6-0",
+              "name": "Risk advisory · neutral emphasis",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "3Z7-0",
+              "name": "An advisory, not cer…",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "guide_accent_3KW-0",
+      "operation_id": "paper-audit-20261108-c2-guide-accent-3kw-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "write_html",
+      "adapter_snapshot_before": "801c4f5772087a38ecaf86f1eacafa25c5198d579b6d28ec8bfcdb4d6bc92e96",
+      "adapter_snapshot_after": "801c4f5772087a38ecaf86f1eacafa25c5198d579b6d28ec8bfcdb4d6bc92e96",
+      "retry_allowed": false,
+      "production_acceptance": false,
+      "result": [
+        {
+          "createdNodes": [
+            {
+              "id": "3Z9-0",
+              "name": "Risk advisory · neutral emphasis",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "3ZA-0",
+              "name": "这是风险提示，不是确定性结论，也不是自动…",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "guide_accent_3N0-0",
+      "operation_id": "paper-audit-20261108-c2-guide-accent-3n0-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "write_html",
+      "adapter_snapshot_before": "801c4f5772087a38ecaf86f1eacafa25c5198d579b6d28ec8bfcdb4d6bc92e96",
+      "adapter_snapshot_after": "801c4f5772087a38ecaf86f1eacafa25c5198d579b6d28ec8bfcdb4d6bc92e96",
+      "retry_allowed": false,
+      "production_acceptance": false,
+      "result": [
+        {
+          "createdNodes": [
+            {
+              "id": "3ZC-0",
+              "name": "Risk advisory · neutral emphasis",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "3ZD-0",
+              "name": "这是风险提示，不是确定性结论，也不是自动…",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "guide_accent_3P4-0",
+      "operation_id": "paper-audit-20261108-c2-guide-accent-3p4-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "write_html",
+      "adapter_snapshot_before": "801c4f5772087a38ecaf86f1eacafa25c5198d579b6d28ec8bfcdb4d6bc92e96",
+      "adapter_snapshot_after": "801c4f5772087a38ecaf86f1eacafa25c5198d579b6d28ec8bfcdb4d6bc92e96",
+      "retry_allowed": false,
+      "production_acceptance": false,
+      "result": [
+        {
+          "createdNodes": [
+            {
+              "id": "3ZF-0",
+              "name": "Risk advisory · neutral emphasis",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "3ZG-0",
+              "name": "An advisory, not cer…",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "guide_accent_3RI-0",
+      "operation_id": "paper-audit-20261108-c2-guide-accent-3ri-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "write_html",
+      "adapter_snapshot_before": "801c4f5772087a38ecaf86f1eacafa25c5198d579b6d28ec8bfcdb4d6bc92e96",
+      "adapter_snapshot_after": "801c4f5772087a38ecaf86f1eacafa25c5198d579b6d28ec8bfcdb4d6bc92e96",
+      "retry_allowed": false,
+      "production_acceptance": false,
+      "result": [
+        {
+          "createdNodes": [
+            {
+              "id": "3ZI-0",
+              "name": "Risk advisory · neutral emphasis",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "3ZJ-0",
+              "name": "An advisory, not cer…",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "guide_accent_3TW-0",
+      "operation_id": "paper-audit-20261108-c2-guide-accent-3tw-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "write_html",
+      "adapter_snapshot_before": "801c4f5772087a38ecaf86f1eacafa25c5198d579b6d28ec8bfcdb4d6bc92e96",
+      "adapter_snapshot_after": "801c4f5772087a38ecaf86f1eacafa25c5198d579b6d28ec8bfcdb4d6bc92e96",
+      "retry_allowed": false,
+      "production_acceptance": false,
+      "result": [
+        {
+          "createdNodes": [
+            {
+              "id": "3ZL-0",
+              "name": "Risk advisory · neutral emphasis",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "3ZM-0",
+              "name": "这是风险提示，不是确定性结论，也不是自动…",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "guide_accent_3CK-0",
+      "operation_id": "paper-audit-20261108-c2-guide-accent-3ck-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "write_html",
+      "adapter_snapshot_before": "801c4f5772087a38ecaf86f1eacafa25c5198d579b6d28ec8bfcdb4d6bc92e96",
+      "adapter_snapshot_after": "801c4f5772087a38ecaf86f1eacafa25c5198d579b6d28ec8bfcdb4d6bc92e96",
+      "retry_allowed": false,
+      "production_acceptance": false,
+      "result": [
+        {
+          "createdNodes": [
+            {
+              "id": "3ZO-0",
+              "name": "Risk advisory · neutral emphasis",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "3ZP-0",
+              "name": "这是风险提示，不是确定性结论，也不是自动…",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "ai_builder_edit",
+      "operation_id": "paper-audit-20261108-c2-ai-builder-receipts",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "set_text_content",
+      "adapter_snapshot_before": "0eb6d86ef086fc1bb51c2c8cb0e3d45dc236b3e997f06f598a75f2ccc05f2d3a",
+      "adapter_snapshot_after": "0eb6d86ef086fc1bb51c2c8cb0e3d45dc236b3e997f06f598a75f2ccc05f2d3a",
+      "retry_allowed": false,
+      "production_acceptance": false,
+      "result": [
+        {
+          "updates": [
+            {
+              "nodeId": "1ZD-0"
+            },
+            {
+              "nodeId": "1ZE-0"
+            },
+            {
+              "nodeId": "1ZF-0"
+            },
+            {
+              "nodeId": "1YZ-0"
+            },
+            {
+              "nodeId": "1Z0-0"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "finish_hub",
+      "operation_id": "paper-audit-20261108-c2-finish-hub",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "finish_working_on_nodes",
+      "adapter_snapshot_before": "43a3985607110f05f003a45dc1f3433a8e9cfc675da86eb82a822e58ce7b183b",
+      "adapter_snapshot_after": "43a3985607110f05f003a45dc1f3433a8e9cfc675da86eb82a822e58ce7b183b",
+      "retry_allowed": false,
+      "production_acceptance": false,
+      "result": [
+        "OK"
+      ]
+    },
+    {
+      "key": "finish_ontology",
+      "operation_id": "paper-audit-20261108-c2-finish-ontology",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "finish_working_on_nodes",
+      "adapter_snapshot_before": "64a1efd6c1233c304881b67efd79acaebf746e02378ba97b9e9bff8b5007caf4",
+      "adapter_snapshot_after": "64a1efd6c1233c304881b67efd79acaebf746e02378ba97b9e9bff8b5007caf4",
+      "retry_allowed": false,
+      "production_acceptance": false,
+      "result": [
+        "OK"
+      ]
+    },
+    {
+      "key": "finish_guide",
+      "operation_id": "paper-audit-20261108-c2-finish-guide",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "finish_working_on_nodes",
+      "adapter_snapshot_before": "801c4f5772087a38ecaf86f1eacafa25c5198d579b6d28ec8bfcdb4d6bc92e96",
+      "adapter_snapshot_after": "801c4f5772087a38ecaf86f1eacafa25c5198d579b6d28ec8bfcdb4d6bc92e96",
+      "retry_allowed": false,
+      "production_acceptance": false,
+      "result": [
+        "OK"
+      ]
+    },
+    {
+      "key": "finish_ai",
+      "operation_id": "paper-audit-20261108-c2-finish-ai",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "finish_working_on_nodes",
+      "adapter_snapshot_before": "0eb6d86ef086fc1bb51c2c8cb0e3d45dc236b3e997f06f598a75f2ccc05f2d3a",
+      "adapter_snapshot_after": "0eb6d86ef086fc1bb51c2c8cb0e3d45dc236b3e997f06f598a75f2ccc05f2d3a",
+      "retry_allowed": false,
+      "production_acceptance": false,
+      "result": [
+        "OK"
+      ]
+    },
+    {
+      "key": "motion_pointer_edit",
+      "operation_id": "paper-audit-20261108-c2-motion-source-pointer",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "set_text_content",
+      "adapter_snapshot_before": "64a1efd6c1233c304881b67efd79acaebf746e02378ba97b9e9bff8b5007caf4",
+      "adapter_snapshot_after": "64a1efd6c1233c304881b67efd79acaebf746e02378ba97b9e9bff8b5007caf4",
+      "retry_allowed": false,
+      "production_acceptance": false,
+      "result": [
+        {
+          "updates": [
+            {
+              "nodeId": "AC7-0"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "finish_motion_pointer",
+      "operation_id": "paper-audit-20261108-c2-finish-motion-pointer",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "finish_working_on_nodes",
+      "adapter_snapshot_before": "64a1efd6c1233c304881b67efd79acaebf746e02378ba97b9e9bff8b5007caf4",
+      "adapter_snapshot_after": "64a1efd6c1233c304881b67efd79acaebf746e02378ba97b9e9bff8b5007caf4",
+      "retry_allowed": false,
+      "production_acceptance": false,
+      "result": [
+        "OK"
+      ]
+    },
+    {
+      "key": "motion_inspect_consistency_edit",
+      "operation_id": "paper-audit-20261108-c2-motion-inspect-consistency",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "write_html",
+      "adapter_snapshot_before": "64a1efd6c1233c304881b67efd79acaebf746e02378ba97b9e9bff8b5007caf4",
+      "adapter_snapshot_after": "64a1efd6c1233c304881b67efd79acaebf746e02378ba97b9e9bff8b5007caf4",
+      "retry_allowed": false,
+      "production_acceptance": false,
+      "result": [
+        {
+          "createdNodes": [
+            {
+              "id": "AC9-0",
+              "name": "Inspect · revision A period 2 exact value",
+              "component": "SVG",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "ACA-0",
+              "name": "Rect",
+              "component": "SVGVisualElement",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "ACB-0",
+              "name": "Path",
+              "component": "SVGVisualElement",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "ACC-0",
+              "name": "Path",
+              "component": "SVGVisualElement",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "ACD-0",
+              "name": "Circle",
+              "component": "SVGVisualElement",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "ACE-0",
+              "name": "Circle",
+              "component": "SVGVisualElement",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "ACF-0",
+              "name": "Path",
+              "component": "SVGVisualElement",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "ACG-0",
+              "name": "Rect",
+              "component": "SVGVisualElement",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "ACH-0",
+              "name": "EXACT VALUE",
+              "component": "SVGVisualElement",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "ACI-0",
+              "name": "12",
+              "component": "SVGVisualElement",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "ACJ-0",
+              "name": "Revision A · period …",
+              "component": "SVGVisualElement",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "ACK-0",
+              "name": "Selected value → aut…",
+              "component": "SVGVisualElement",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "finish_motion_consistency",
+      "operation_id": "paper-audit-20261108-c2-finish-motion-consistency",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "finish_working_on_nodes",
+      "adapter_snapshot_before": "64a1efd6c1233c304881b67efd79acaebf746e02378ba97b9e9bff8b5007caf4",
+      "adapter_snapshot_after": "64a1efd6c1233c304881b67efd79acaebf746e02378ba97b9e9bff8b5007caf4",
+      "retry_allowed": false,
+      "production_acceptance": false,
+      "result": [
+        "OK"
+      ]
+    }
+  ],
+  "verification": {
+    "all_mutations_observed": true,
+    "uncertain_effects": [],
+    "hub_entry_artboards": [
+      "5E9-0"
+    ],
+    "hub_retained_canaries": {
+      "pageId": "p-A-0",
+      "nodeIds": [
+        "6V4-0",
+        "6VO-0",
+        "6W1-1"
+      ]
+    },
+    "ontology": {
+      "boardId": "9T-0",
+      "addedSectionId": "A9R-0",
+      "readback": true,
+      "screenshotReviewed": true,
+      "preservedImplementationBoard": "13J-0",
+      "contractSourceCommit": "cb225f999dafc5fa3582bd798c4829525853c4cb",
+      "finalSourcePointerReadback": true,
+      "inspectionCurveMatchesReveal": true,
+      "inspectionDiagramNode": "AC9-0"
+    },
+    "guide": [
+      {
+        "board": "3CJ-0",
+        "locale": "en",
+        "introCorrect": true,
+        "scopeCorrect": true,
+        "warningEdgeAbsent": true,
+        "advisoryPreserved": true,
+        "calibrationStillPresent": true,
+        "warning": null
+      },
+      {
+        "board": "3IS-0",
+        "locale": "en",
+        "introCorrect": true,
+        "scopeCorrect": true,
+        "warningEdgeAbsent": true,
+        "advisoryPreserved": true,
+        "calibrationStillPresent": true,
+        "warning": null
+      },
+      {
+        "board": "3KW-0",
+        "locale": "zh",
+        "introCorrect": true,
+        "scopeCorrect": true,
+        "warningEdgeAbsent": true,
+        "advisoryPreserved": true,
+        "calibrationStillPresent": true,
+        "warning": null
+      },
+      {
+        "board": "3N0-0",
+        "locale": "zh",
+        "introCorrect": true,
+        "scopeCorrect": true,
+        "warningEdgeAbsent": true,
+        "advisoryPreserved": true,
+        "calibrationStillPresent": true,
+        "warning": null
+      },
+      {
+        "board": "3P4-0",
+        "locale": "en",
+        "introCorrect": true,
+        "scopeCorrect": true,
+        "warningEdgeAbsent": true,
+        "advisoryPreserved": true,
+        "calibrationStillPresent": true,
+        "warning": null
+      },
+      {
+        "board": "3RI-0",
+        "locale": "en",
+        "introCorrect": true,
+        "scopeCorrect": true,
+        "warningEdgeAbsent": true,
+        "advisoryPreserved": true,
+        "calibrationStillPresent": true,
+        "warning": null
+      },
+      {
+        "board": "3TW-0",
+        "locale": "zh",
+        "introCorrect": true,
+        "scopeCorrect": true,
+        "warningEdgeAbsent": true,
+        "advisoryPreserved": true,
+        "calibrationStillPresent": true,
+        "warning": null
+      },
+      {
+        "board": "3CK-0",
+        "locale": "zh",
+        "introCorrect": true,
+        "scopeCorrect": true,
+        "warningEdgeAbsent": true,
+        "advisoryPreserved": true,
+        "calibrationStillPresent": true,
+        "warning": null
+      }
+    ],
+    "ai": {
+      "boardId": "5M0-0",
+      "readback": true,
+      "screenshotReviewed": true,
+      "saveHoldPreserved": true,
+      "historyReceiptAbsenceCorrected": true
+    },
+    "releaseWorkingIndicators": true
+  },
+  "preserved_boundaries": [
+    {
+      "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+      "boundary": "Vendor warning: file too large; further changes will result in data loss. No mutations attempted; no copy/move workaround."
+    },
+    {
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "boundary": "R14 design freeze IM13–IM18 preserved."
+    },
+    {
+      "boundary": "F01/F02/F03 and active Terminal1244 implementation/release holds preserved."
+    }
+  ],
+  "runtime_comparison": {
+    "observed_utc_date": "2026-11-08",
+    "international": {
+      "url": "https://www.mastermind-x.com/intl.html?view=scanner&market=&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=",
+      "initialOverviewTitle": "International markets",
+      "state": "anonymous served page and scanner inspected via visible UI",
+      "available": "7 configured markets, 6 qualified returns, 1 abstain, 57 no data; four clocks rendered",
+      "disabledTabs": [
+        "Transmission",
+        "Scenario lab",
+        "Replay"
+      ],
+      "abstain": [
+        "EM FX common-factor model",
+        "credit and funding",
+        "session calendar",
+        "attention ranking",
+        "transmission",
+        "US corroboration",
+        "thesis"
+      ],
+      "displayIssues": [
+        "Two page h1 headings in accessibility tree",
+        "Four-clock contract language visible in glance tier",
+        "Thirteen Research context controls before primary content",
+        "Many repeated Abstain/rights labels dominate data rows"
+      ],
+      "noTradesOrWrites": true
+    },
+    "hub": {
+      "url": "https://www.mastermind-x.com/intelligence_hub.html",
+      "state": "anonymous served page and screenshot inspected",
+      "snapshotDate": "2026-11-08",
+      "quoteState": "Delayed prices · 36/44 names (after initial Checking current prices)",
+      "features": [
+        "Emerging edge",
+        "Discovery",
+        "Exhausted",
+        "Dated catalysts",
+        "Command",
+        "Track record",
+        "Sector heat"
+      ],
+      "designGap": [
+        "Legacy colored container-edge accents remain",
+        "Room-left percent could be misread as expected return or probability",
+        "Paper current board is snapshot fixture and must use runtime source labels rather than sample data"
+      ],
+      "noTradesOrWrites": true
+    },
+    "limitations": "Read-only visual comparison; no entitlement, watch, save, full breakpoint or runtime acceptance proof."
+  },
+  "evidence": [
+    {
+      "name": "motion-storyboard.jpg",
+      "sha": "61bfcc499c242a9c165c9c591c6e7eb6cd34537c"
+    },
+    {
+      "name": "ai-build-sequence.jpg",
+      "sha": "e9886c4ab30a2969a3bb2802a6f1602a20fda348"
+    },
+    {
+      "name": "risk-guide-en-desktop.jpg",
+      "sha": "6b953c95300ed03b54ad1553c47773d46078e108"
+    },
+    {
+      "name": "risk-guide-zh-mobile.jpg",
+      "sha": "d1fd9155c40543bedb8f13562492854b87528844"
+    }
+  ]
+}
