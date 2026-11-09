@@ -1,0 +1,516 @@
+{
+  "schema": "mastermind.p0_evidence.v2",
+  "generated_at": "2026-10-11T07:27:14.860Z",
+  "tool": {
+    "module_ref": "mockups/evidence/news-family-inspection/capture.cjs",
+    "module_sha256": "73797390c9382baec2dfa39742c8834d0d045d4034d853bf1a7a151985d56f17"
+  },
+  "head": "478103d5e8bae869edca77efdcba41239a0739b7",
+  "target": "news.html#nxConsequence",
+  "outcome": "captured",
+  "totals": {
+    "rest_cells": 8,
+    "rest_required": 8,
+    "pages": 1
+  },
+  "axes": {
+    "viewports": {
+      "desktop": [
+        1440,
+        900
+      ],
+      "mobile": [
+        390,
+        844
+      ]
+    },
+    "locales": [
+      "en",
+      "zh"
+    ],
+    "themes": [
+      "dark",
+      "light"
+    ],
+    "access": [
+      "anonymous"
+    ],
+    "subjects": [
+      "consequences"
+    ]
+  },
+  "source": {
+    "base": "478103d5e8bae869edca77efdcba41239a0739b7",
+    "fixture": "six earnings with named exposures; one tickerless macro event; overview cap1",
+    "template_sha256": "a4d602f88b64fe549ab6d2b5060bdb325a4c7b7782cd8b39c7012121d2d5128e",
+    "producer_sha256": "afa3062fd522b3018951e0119d0054c3861a3a3d20bd8869e2d58f98f72aa8c8",
+    "corpus_sha256": "8abd01528dee8cff904ac26d293c88b7c3d21896806f7c6e431d795fd59ae0e7",
+    "corpus_events": 16771,
+    "actual_window": "Events from 1 Oct to 8 Oct 2026",
+    "actual_families": [
+      {
+        "family": "research_vault",
+        "in_window": 0,
+        "available_count": 0
+      },
+      {
+        "family": "macro_release",
+        "in_window": 3,
+        "available_count": 0
+      },
+      {
+        "family": "earnings",
+        "in_window": 0,
+        "available_count": 0
+      },
+      {
+        "family": "earnings_call",
+        "in_window": 6,
+        "available_count": 6
+      },
+      {
+        "family": "regime_flip",
+        "in_window": 0,
+        "available_count": 0
+      },
+      {
+        "family": "risk_band",
+        "in_window": 0,
+        "available_count": 0
+      }
+    ]
+  },
+  "honesty": {
+    "page": "Local render of the candidate template and producer. Eight resting and eight real keyboard-open fixture cases; one additional saved-corpus mobile case. No served, authenticated or fresh-market-data claim.",
+    "source_pin": "Source was uncommitted at capture; exact template and producer SHA256 are recorded. head names the base commit.",
+    "fixture": "Six named earnings, one tickerless macro event; global overview cap1. Other News sections use existing test fixture.",
+    "saved_corpus": "16771 committed Chronicle events at the recorded base and corpus SHA256; no producer or cadence advanced.",
+    "tool": "Captured through bundled Playwright. The retained harness consumes local site/news.html,actual.html,unavailable.html; HTML is rendered from tests.test_news_page_render fixture and the pinned corpus through the candidate sources."
+  },
+  "pages": [
+    {
+      "page_id": "macro:news",
+      "route": "/news.html",
+      "route_kind": "news",
+      "subject": "consequences",
+      "selector": "#nxConsequence",
+      "page_tree_sha": "2fdd81af97b8e7f01499ca5043638acd058baaa8",
+      "states": [
+        {
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "theme": "dark",
+          "locale": "en",
+          "access": "anonymous",
+          "subject": "consequences",
+          "applied_theme": "dark",
+          "applied_locale": "en",
+          "captured": true,
+          "file": "closed-dark-en-desktop.png",
+          "sha256": "2a192e17bdc7c2818e7044a638940ee990f07ca1f377306c9956f8b44e798564",
+          "bytes": 53626,
+          "width": 1008,
+          "height": 698
+        },
+        {
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "theme": "dark",
+          "locale": "en",
+          "access": "anonymous",
+          "subject": "consequences",
+          "applied_theme": "dark",
+          "applied_locale": "en",
+          "force_state": "earnings_disclosure_open",
+          "captured": true,
+          "file": "open-dark-en-desktop.png",
+          "sha256": "aba693f9d5093d1aee2fb921259bb0cbca50e61b075bc54fb80ab84b6e17ad55",
+          "bytes": 75649,
+          "width": 1008,
+          "height": 929
+        },
+        {
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "theme": "dark",
+          "locale": "zh",
+          "access": "anonymous",
+          "subject": "consequences",
+          "applied_theme": "dark",
+          "applied_locale": "zh",
+          "captured": true,
+          "file": "closed-dark-zh-desktop.png",
+          "sha256": "fad206058bc7b494454051785df8b93bead92bc1c84cec4584e9c017967a8c71",
+          "bytes": 51539,
+          "width": 1008,
+          "height": 677
+        },
+        {
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "theme": "dark",
+          "locale": "zh",
+          "access": "anonymous",
+          "subject": "consequences",
+          "applied_theme": "dark",
+          "applied_locale": "zh",
+          "force_state": "earnings_disclosure_open",
+          "captured": true,
+          "file": "open-dark-zh-desktop.png",
+          "sha256": "7cac8188274316e6e2aa30480f1925ef216fdc30f08346153100e50d207dfa5e",
+          "bytes": 72286,
+          "width": 1008,
+          "height": 909
+        },
+        {
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "theme": "light",
+          "locale": "en",
+          "access": "anonymous",
+          "subject": "consequences",
+          "applied_theme": "light",
+          "applied_locale": "en",
+          "captured": true,
+          "file": "closed-light-en-desktop.png",
+          "sha256": "17d54b3aa287cc6e32dc1c589235f9840d4ff4d23b4c2538ac374426635c5654",
+          "bytes": 56037,
+          "width": 1008,
+          "height": 698
+        },
+        {
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "theme": "light",
+          "locale": "en",
+          "access": "anonymous",
+          "subject": "consequences",
+          "applied_theme": "light",
+          "applied_locale": "en",
+          "force_state": "earnings_disclosure_open",
+          "captured": true,
+          "file": "open-light-en-desktop.png",
+          "sha256": "885eb85d17730952ec048cfad3dddaf2634baf1f6635afaf587c7511bd1662c0",
+          "bytes": 81756,
+          "width": 1008,
+          "height": 929
+        },
+        {
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "theme": "light",
+          "locale": "zh",
+          "access": "anonymous",
+          "subject": "consequences",
+          "applied_theme": "light",
+          "applied_locale": "zh",
+          "captured": true,
+          "file": "closed-light-zh-desktop.png",
+          "sha256": "b5cd9967e0f982e8dd9ab19a6f40f22ea2dc33d4597e8b8491f233a3a2190601",
+          "bytes": 53782,
+          "width": 1008,
+          "height": 677
+        },
+        {
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "theme": "light",
+          "locale": "zh",
+          "access": "anonymous",
+          "subject": "consequences",
+          "applied_theme": "light",
+          "applied_locale": "zh",
+          "force_state": "earnings_disclosure_open",
+          "captured": true,
+          "file": "open-light-zh-desktop.png",
+          "sha256": "37c512e82b247480a9b91a9e645cd01f4466843c97e176d95a5bc24307cabc1b",
+          "bytes": 78312,
+          "width": 1008,
+          "height": 909
+        },
+        {
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "theme": "dark",
+          "locale": "en",
+          "access": "anonymous",
+          "subject": "consequences",
+          "applied_theme": "dark",
+          "applied_locale": "en",
+          "captured": true,
+          "file": "closed-dark-en-mobile.png",
+          "sha256": "37d927756af48422ed68c41ab6eaeea3c0814c8578acf98335b4079fe10d6f99",
+          "bytes": 52106,
+          "width": 320,
+          "height": 694
+        },
+        {
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "theme": "dark",
+          "locale": "en",
+          "access": "anonymous",
+          "subject": "consequences",
+          "applied_theme": "dark",
+          "applied_locale": "en",
+          "force_state": "earnings_disclosure_open",
+          "captured": true,
+          "file": "open-dark-en-mobile.png",
+          "sha256": "49960509cae670a3277f3c6074c6b571c1aae04611b19d0301caf2e5f6c098f9",
+          "bytes": 76560,
+          "width": 320,
+          "height": 1100
+        },
+        {
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "theme": "dark",
+          "locale": "zh",
+          "access": "anonymous",
+          "subject": "consequences",
+          "applied_theme": "dark",
+          "applied_locale": "zh",
+          "captured": true,
+          "file": "closed-dark-zh-mobile.png",
+          "sha256": "1982f1acc6041f950dcfa348014c0282aa25b9dc9271bb7e3c6061e260d34d09",
+          "bytes": 53203,
+          "width": 320,
+          "height": 674
+        },
+        {
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "theme": "dark",
+          "locale": "zh",
+          "access": "anonymous",
+          "subject": "consequences",
+          "applied_theme": "dark",
+          "applied_locale": "zh",
+          "force_state": "earnings_disclosure_open",
+          "captured": true,
+          "file": "open-dark-zh-mobile.png",
+          "sha256": "a65909c8c00398e5e625e894f10d19a16dc99970536f2bf88a5b60eb5c19acdf",
+          "bytes": 76497,
+          "width": 320,
+          "height": 1080
+        },
+        {
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "theme": "light",
+          "locale": "en",
+          "access": "anonymous",
+          "subject": "consequences",
+          "applied_theme": "light",
+          "applied_locale": "en",
+          "captured": true,
+          "file": "closed-light-en-mobile.png",
+          "sha256": "34c1ddbeb8d226e4f592e7bf8e31027c32e4dd046bfbd8ad66ec226243662383",
+          "bytes": 53351,
+          "width": 320,
+          "height": 694
+        },
+        {
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "theme": "light",
+          "locale": "en",
+          "access": "anonymous",
+          "subject": "consequences",
+          "applied_theme": "light",
+          "applied_locale": "en",
+          "force_state": "earnings_disclosure_open",
+          "captured": true,
+          "file": "open-light-en-mobile.png",
+          "sha256": "ed8b0ea8b5740cbd003b1c17086d6db41db084d16e876f2758a1dba1f8495b85",
+          "bytes": 81514,
+          "width": 320,
+          "height": 1100
+        },
+        {
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "theme": "light",
+          "locale": "zh",
+          "access": "anonymous",
+          "subject": "consequences",
+          "applied_theme": "light",
+          "applied_locale": "zh",
+          "captured": true,
+          "file": "closed-light-zh-mobile.png",
+          "sha256": "96794d63794fd4cfcaaef39899b06214bbc00d16830788a2a3bda1fd37d4af57",
+          "bytes": 54785,
+          "width": 320,
+          "height": 674
+        },
+        {
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "theme": "light",
+          "locale": "zh",
+          "access": "anonymous",
+          "subject": "consequences",
+          "applied_theme": "light",
+          "applied_locale": "zh",
+          "force_state": "earnings_disclosure_open",
+          "captured": true,
+          "file": "open-light-zh-mobile.png",
+          "sha256": "4e4ebfbc50a548e614e31b93d98598d7591b2597d95cfce10903eb3232e166af",
+          "bytes": 81808,
+          "width": 320,
+          "height": 1080
+        },
+        {
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "theme": "light",
+          "locale": "en",
+          "access": "anonymous",
+          "subject": "consequences",
+          "applied_theme": "light",
+          "applied_locale": "en",
+          "force_state": "saved_corpus_calls_open",
+          "captured": true,
+          "file": "actual-light-en-mobile.png",
+          "sha256": "0b79576c4b378bf51526f6f454d2d3fa0c34b137fcaec4f47c270f98ab0e4fb1",
+          "bytes": 117236,
+          "width": 320,
+          "height": 1548
+        }
+      ],
+      "metrics": {
+        "browser_checks": [
+          {
+            "theme": "dark",
+            "locale": "en",
+            "viewport": "desktop",
+            "keyboard_open_close": true,
+            "typed_empties": true,
+            "overflow": {
+              "doc": 1440,
+              "viewport": 1440,
+              "wide": 0
+            },
+            "page_errors": []
+          },
+          {
+            "theme": "dark",
+            "locale": "zh",
+            "viewport": "desktop",
+            "keyboard_open_close": true,
+            "typed_empties": true,
+            "overflow": {
+              "doc": 1440,
+              "viewport": 1440,
+              "wide": 0
+            },
+            "page_errors": []
+          },
+          {
+            "theme": "light",
+            "locale": "en",
+            "viewport": "desktop",
+            "keyboard_open_close": true,
+            "typed_empties": true,
+            "overflow": {
+              "doc": 1440,
+              "viewport": 1440,
+              "wide": 0
+            },
+            "page_errors": []
+          },
+          {
+            "theme": "light",
+            "locale": "zh",
+            "viewport": "desktop",
+            "keyboard_open_close": true,
+            "typed_empties": true,
+            "overflow": {
+              "doc": 1440,
+              "viewport": 1440,
+              "wide": 0
+            },
+            "page_errors": []
+          },
+          {
+            "theme": "dark",
+            "locale": "en",
+            "viewport": "mobile",
+            "keyboard_open_close": true,
+            "typed_empties": true,
+            "overflow": {
+              "doc": 390,
+              "viewport": 390,
+              "wide": 0
+            },
+            "page_errors": []
+          },
+          {
+            "theme": "dark",
+            "locale": "zh",
+            "viewport": "mobile",
+            "keyboard_open_close": true,
+            "typed_empties": true,
+            "overflow": {
+              "doc": 390,
+              "viewport": 390,
+              "wide": 0
+            },
+            "page_errors": []
+          },
+          {
+            "theme": "light",
+            "locale": "en",
+            "viewport": "mobile",
+            "keyboard_open_close": true,
+            "typed_empties": true,
+            "overflow": {
+              "doc": 390,
+              "viewport": 390,
+              "wide": 0
+            },
+            "page_errors": []
+          },
+          {
+            "theme": "light",
+            "locale": "zh",
+            "viewport": "mobile",
+            "keyboard_open_close": true,
+            "typed_empties": true,
+            "overflow": {
+              "doc": 390,
+              "viewport": 390,
+              "wide": 0
+            },
+            "page_errors": []
+          },
+          {
+            "saved_corpus_calls": 4,
+            "unavailable_source_views": 0
+          }
+        ]
+      },
+      "console_errors": [],
+      "failed_responses": [],
+      "gaps": [
+        "Production covering-render and served verification remain after merge."
+      ]
+    }
+  ]
+}

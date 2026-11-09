@@ -29,7 +29,11 @@ from zoneinfo import ZoneInfo
 import pandas as pd
 
 from engine import technicals
-from lib import store
+from functools import lru_cache
+from lib import config, store
+from lib.market_observations import filter_session_observations
+from lib.market_session import (cash_market_for_symbol, market_local_date,
+                                missed_sessions, session_freshness, session_status)
 
 log = logging.getLogger("live_overlay")
 
@@ -42,17 +46,64 @@ _Z90 = 1.645  # ~5th/95th-pct multiplier for a (log)normal one-session move
 
 # --------------------------------------------------------- baseline reads ----
 
-def read_close(ticker: str) -> pd.Series | None:
-    """Daily close Series for a ticker, trying the yahoo store then the
-    deep-history stocks store. None when neither exists."""
-    for group in ("yahoo", "stocks"):
-        df = store.read(group, ticker)
-        if df is not None and not df.empty and "close" in df.columns:
-            s = df["close"].astype(float).dropna()
-            if not s.empty:
-                return s
-    return None
+@lru_cache(maxsize=6)
+def _wide_close_panel(path: str, _mtime_ns: int, _size: int) -> pd.DataFrame:
+    """Process-local reuse of an existing panel, invalidated by its file version."""
+    return pd.read_parquet(path)
 
+
+def _cash_history(close: pd.Series | None, market: str, now=None) -> pd.Series | None:
+    if close is None or close.empty:
+        return None
+    values = pd.to_numeric(close, errors="coerce").replace(
+        [float("inf"), float("-inf")], float("nan")).dropna()
+    values = values.loc[values > 0]
+    frame = filter_session_observations(values.to_frame("close"), market, now=now)
+    return frame["close"].sort_index() if not frame.empty else None
+
+
+def read_close(ticker: str) -> pd.Series | None:
+    """Read a whole adjusted series from the incumbent regional price owners.
+
+    The freshest regional through-date wins; deep regional OHLCV wins ties.
+    US and unrelated assets retain the incumbent yahoo-then-stocks precedence.
+    Never stitch independently adjusted series, or invent a new persistent cache.
+    """
+    market = cash_market_for_symbol(ticker)
+    regional = {
+        "cn": (("china_stocks", "china"), (("china_search", "closes"),
+                                           ("china_breadth", "_closes_cache"))),
+        "hk": (("hk_stocks", "hk_stocks_ext", "hk"), (("hk_search", "closes_deep"),
+                                                     ("hk_breadth", "_closes_cache"))),
+        "ca": (("canada",), (("canada_search", "closes"),
+                              ("canada_breadth", "_closes_cache"))),
+    }
+    groups, panels = regional.get(market, ((), ()))
+    candidates = []
+    for group in (*groups, "yahoo", "stocks"):
+        df = store.read(group, ticker)
+        if df is not None and not df.empty and "close" in df:
+            s = _cash_history(df["close"], market) if market else df["close"].astype(float).dropna()
+            if s is not None and not s.empty:
+                if market not in regional:
+                    return s.copy()
+                candidates.append(s)
+    for group, name in panels:
+        path = config.data_dir() / group / f"{name}.parquet"
+        try:
+            stat = path.stat()
+            frame = _wide_close_panel(str(path), stat.st_mtime_ns, stat.st_size)
+            if ticker in frame:
+                s = _cash_history(frame[ticker], market)
+                if s is not None and not s.empty:
+                    candidates.append(s)
+        except (OSError, ValueError, KeyError):
+            continue
+    if not candidates:
+        return None
+    # Python's max preserves the first candidate on an equal date, keeping the
+    # regional adjusted source's precedence without mixing adjustment bases.
+    return max(candidates, key=lambda s: pd.Timestamp(s.index.max())).copy()
 
 def splice(close: pd.Series, live_price: float,
            ts: datetime | None = None) -> pd.Series:
@@ -88,6 +139,9 @@ def region_for(symbol: str) -> str:
     Mirrors the client-side ``regionOf()`` in live.js so consumers calling this
     server-side function get the same session lookup the browser uses.
     """
+    supported = cash_market_for_symbol(symbol)
+    if supported:
+        return supported
     s = str(symbol or "").upper()
     if s.endswith(".HK"):
         return "hk"
@@ -116,9 +170,9 @@ def region_for(symbol: str) -> str:
 
 
 # Local-time trading windows per region (DST handled via zoneinfo). These are an
-# ADVISORY hint only — no exchange holiday calendar and no half-days; a consumer
-# uses them to tell "stale because the market is closed" from "feed broke during
-# RTH", not as an authoritative session oracle.
+# fallback for the unrelated regions below. CN/HK/US/CA and Connect use the
+# shared projection of the existing exchange calendars, including verified
+# holidays and half days. Closure never upgrades missing or stale source data.
 #
 # Hours cross-verified against the globe-data lunch fields in site/index.html:
 #   JP 09:00-15:00 with lunch 11:30-12:30 Asia/Tokyo
@@ -140,8 +194,9 @@ _REGION_HOURS = {
 
 
 def market_session(region: str, now: datetime | None = None) -> dict:
-    """{region, open, local_time} — is the region's cash session open right now?
-    Advisory (no holidays/half-days); see _REGION_HOURS."""
+    """Cash-session status; verified holiday detail for the four supported venues."""
+    if str(region).lower() in {"us", "ca", "cn", "hk", "connect"}:
+        return session_status(region, now)
     now = now or datetime.now(timezone.utc)
     if now.tzinfo is None:
         now = now.replace(tzinfo=timezone.utc)
@@ -252,7 +307,8 @@ def divergence(baseline: dict, live_price: float,
 # ------------------------------------------------------------- staleness ----
 
 def staleness(quote: dict | None, stale_after_min: float,
-              now: datetime | None = None, session_open: bool | None = None) -> dict:
+              now: datetime | None = None, session_open: bool | None = None,
+              *, require_timestamp: bool = False) -> dict:
     """Is this quote fresh enough to act on, and WHY is it stale?
 
     Distinguishes the two states the old code conflated: a quote can be stale
@@ -265,16 +321,33 @@ def staleness(quote: dict | None, stale_after_min: float,
     if not quote or quote.get("price") is None:
         reason = "market closed" if session_open is False else "no live quote"
         return {"stale": True, "age_min": None, "reason": reason}
-    age = quote.get("delay_min")
-    if age is None and quote.get("quote_ts"):
+    if quote.get("quote_ts_synthetic"):
+        return {"stale": True, "age_min": None, "reason": "synthetic quote timestamp"}
+    if require_timestamp and not quote.get("quote_ts"):
+        return {"stale": True, "age_min": None, "reason": "missing quote timestamp"}
+    # A vendor's latency estimate cannot reset the actual observation clock.
+    now = now or datetime.now(timezone.utc)
+    if now.tzinfo is None:
+        now = now.replace(tzinfo=timezone.utc)
+    ages = []
+    try:
+        delay = float(quote.get("delay_min"))
+        if math.isfinite(delay) and delay >= 0:
+            ages.append(delay)
+    except (TypeError, ValueError):
+        pass
+    if quote.get("quote_ts"):
         try:
-            ts = datetime.fromisoformat(quote["quote_ts"])
-            now = now or datetime.now(timezone.utc)
+            ts = datetime.fromisoformat(str(quote["quote_ts"]).replace("Z", "+00:00"))
             if ts.tzinfo is None:
                 ts = ts.replace(tzinfo=timezone.utc)
-            age = max(0.0, (now - ts).total_seconds() / 60.0)
-        except Exception:  # noqa: BLE001
-            age = None
+            elapsed = (now - ts).total_seconds() / 60.0
+            if elapsed < -1:
+                return {"stale": True, "age_min": None, "reason": "future quote timestamp"}
+            ages.append(max(0.0, elapsed))
+        except (TypeError, ValueError, OverflowError):
+            return {"stale": True, "age_min": None, "reason": "invalid quote timestamp"}
+    age = max(ages) if ages else None
     not_live_basis = quote.get("price_basis") in ("day", "prev")
     stale = age is None or age > float(stale_after_min) or not_live_basis
     if not stale:
@@ -291,11 +364,13 @@ def staleness(quote: dict | None, stale_after_min: float,
             "reason": reason}
 
 
-def _baseline_age_days(asof: str | None, now: datetime) -> int | None:
+def _baseline_age_days(asof: str | None, now: datetime, market: str | None = None) -> int | None:
     if not asof:
         return None
     try:
         d0 = pd.Timestamp(asof).normalize()
+        if market:
+            return missed_sessions(market, d0.date(), market_local_date(market, now))
         d1 = pd.Timestamp(now).tz_localize(None).normalize()
         return int(pd.bdate_range(d0, d1).size) - 1 if d1 >= d0 else 0
     except Exception:  # noqa: BLE001
@@ -314,45 +389,96 @@ def build_ticker_overlay(ticker: str, baseline: dict, quote: dict | None,
     valid and ``stale`` tells the consumer to trust the nightly baseline."""
     now = now or datetime.now(timezone.utc)
     region = region_for(ticker)
-    session = market_session(region, now)
+    cash_market = cash_market_for_symbol(ticker)
+    # The legacy region fallback also labels derivatives/FX/crypto "us"; it is
+    # not an exchange-session authority for those instruments.
+    session = ({"open": None} if not cash_market and region == "us" else
+               market_session(cash_market or region, now))
     base_tech = baseline.get("tech") or {}
     base_close = base_tech.get("price")
+    if cash_market:
+        close = _cash_history(close, cash_market, now)
+    has_history = close is not None and not close.empty
+    health = session_freshness(cash_market, baseline.get("asof"), now) if cash_market else None
+    history = (session_freshness(cash_market, close.index[-1].date() if has_history else None, now)
+               if cash_market else None)
+    history_bad = bool(history and history["state"] != "current")
+    frozen = bool(cash_market and session.get("data_frozen"))
+    age_days = _baseline_age_days(baseline.get("asof"), now, cash_market)
+    baseline_stale = ((health["state"] != "current" or history_bad) if health else
+                      age_days is not None and age_days > 1)
+    data_state = health["state"] if health else None
+    if history_bad and data_state == "current":
+        data_state = history["state"]
+    data_meta = {
+        "data_frozen": frozen, "data_state": data_state,
+        "baseline_data_state": health["state"] if health else None,
+        "history_state": history["state"] if history else None,
+        "history_through": history["observed_session"] if history else None,
+        "data_through": health["observed_session"] if health else baseline.get("asof"),
+        "session_state": session.get("state") if cash_market else None,
+        "baseline_age_days": age_days, "baseline_stale": baseline_stale,
+        "lag_sessions": health["lag_sessions"] if health else None,
+        "expected_session": health["expected_session"] if health else None,
+    }
 
-    # Outlier / limit-move guard: a glitch print must not splice or mark anything.
+    # The bad-print rejection stays visible even during an expected closure.
     bad_print = False
     if quote and quote.get("price") is not None and base_close:
         if abs(float(quote["price"]) / float(base_close) - 1) > max_chg_pct / 100.0:
             bad_print = True
-
-    stale = staleness(quote, stale_after_min, now, session_open=session["open"])
-    is_stale = stale["stale"] or bad_print or close is None or close.empty
+    stale = staleness(quote, stale_after_min, now,
+                      session_open=session["open"] if cash_market else None,
+                      require_timestamp=bool(cash_market))
+    quote_clock_invalid = stale["reason"] in {
+        "future quote timestamp", "invalid quote timestamp",
+        "missing quote timestamp", "synthetic quote timestamp"}
+    # Keep clock integrity even when bad_print wins the display reason. An
+    # invalid clock cannot outrank a subsequent real provider observation.
+    data_meta["quote_clock_invalid"] = quote_clock_invalid
+    quote_invalid = bad_print or quote_clock_invalid
+    data_meta["quote_state"] = ("invalid" if quote_invalid else
+                                "missing" if not quote or quote.get("price") is None else
+                                "stale" if stale["stale"] else "current")
+    invalid_baseline = health and health["state"] in {"missing", "invalid", "unverified"}
+    is_stale = (stale["stale"] or bad_print or not has_history or frozen
+                or invalid_baseline or history_bad)
 
     if is_stale:
-        reason = "bad print (limit-move guard)" if bad_print else stale["reason"]
+        if bad_print:
+            reason, flag = "bad print (limit-move guard)", "bad_print"
+        elif quote_invalid:
+            reason, flag = stale["reason"], "invalid_quote"
+        elif invalid_baseline:
+            reason, flag = "baseline " + health["state"], "baseline_stale"
+        elif history_bad:
+            reason, flag = "price history " + history["state"], "history_stale"
+        elif frozen:
+            reason = ("market holiday" if session["state"] == "holiday" else "market closed")
+            reason += " — retained completed session"
+            if baseline_stale:
+                reason += "; baseline missing expected sessions"
+            flag = "baseline_stale" if baseline_stale else "market_closed"
+        else:
+            reason, flag = stale["reason"], "no_quote"
         return {
             "ticker": ticker, "region": region, "session_open": session["open"],
-            "price": base_close,  # show the trustworthy nightly close, not a stale tick
+            "price": base_close,
             "source": (quote or {}).get("source"), "quote_ts": (quote or {}).get("quote_ts"),
             "price_basis": (quote or {}).get("price_basis"),
             "stale": True, "age_min": stale["age_min"], "stale_reason": reason,
-            "baseline_asof": baseline.get("asof"),
-            "tech": base_tech,  # nightly values, unchanged
-            "divergence": {"flag": "bad_print" if bad_print else "no_quote",
-                           "severity": "info",
-                           "detail": "stale/no quote — using nightly baseline"
-                           if not bad_print else f"rejected outlier print ({quote.get('price')})",
+            "baseline_asof": baseline.get("asof"), **data_meta,
+            "tech": base_tech,
+            "divergence": {"flag": flag, "severity": "info", "detail": reason,
                            "chg_pct": None},
         }
 
     price = float(quote["price"])
-    tech = live_tech(close, price, now)
+    # Exchange-local date, without mutating the persisted nightly history.
+    splice_at = (datetime.combine(market_local_date(cash_market, now), datetime.min.time())
+                 if cash_market else now)
+    tech = live_tech(close, price, splice_at)
     div = divergence(baseline, price, tech)
-
-    # Baseline-staleness guard: if the nightly close is >1 trading day old, the
-    # "single-session" move actually spans several days — downgrade any alert so a
-    # failed nightly build can't manufacture a false breach.
-    age_days = _baseline_age_days(baseline.get("asof"), now)
-    baseline_stale = age_days is not None and age_days > 1
     if baseline_stale and div.get("severity") == "alert":
         div = {**div, "severity": "info", "flag": "baseline_stale",
                "detail": f"baseline {age_days} trading days old — move spans multiple "
@@ -364,11 +490,9 @@ def build_ticker_overlay(ticker: str, baseline: dict, quote: dict | None,
         "quote_ts": quote.get("quote_ts"), "price_basis": quote.get("price_basis"),
         "delay_min": quote.get("delay_min"), "currency": quote.get("currency"),
         "stale": False, "age_min": stale["age_min"],
-        "baseline_asof": baseline.get("asof"), "baseline_age_days": age_days,
-        "baseline_stale": baseline_stale,
+        "baseline_asof": baseline.get("asof"), **data_meta,
         "prev_close": base_close, "chg_pct": div.get("chg_pct"),
-        "tech": tech,           # refreshed fast leaves
-        "divergence": div,
+        "tech": tech, "divergence": div,
     }
 
 
@@ -407,6 +531,12 @@ def merge_baseline(baseline: dict, overlay: dict) -> dict:
         "chg_pct": overlay.get("chg_pct"),
         "stale": stale, "age_min": overlay.get("age_min"),
         "session_open": overlay.get("session_open"),
+        "session_state": overlay.get("session_state"),
+        "data_frozen": overlay.get("data_frozen", False),
+        "data_state": overlay.get("data_state"),
+        "quote_state": overlay.get("quote_state"),
+        "data_through": overlay.get("data_through"),
+        "expected_session": overlay.get("expected_session"),
         "divergence": div.get("flag"),
         "divergence_severity": sev,
         "divergence_detail": div.get("detail"),

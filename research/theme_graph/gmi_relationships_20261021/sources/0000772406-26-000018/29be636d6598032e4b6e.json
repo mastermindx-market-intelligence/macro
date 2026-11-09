@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-05-21T20:11:56Z",
+ "accession": "0000772406-26-000018",
+ "cik": "0000772406",
+ "doc_byte_length": 1688324,
+ "doc_sha256": "38603376827b247d3b9116ab5efe18c85aac83feddcf709371908d03fc7895e6",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-05-21",
+ "form": "10-K",
+ "period_of_report": "2026-03-28",
+ "primary_document": "crus-20260328.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 1327767,
+  "byte_start": 1326883,
+  "normalized": "The balance of the prepayment is $14.7 million at March 28, 2026, and is currently recorded in \"Prepaid wafers\" on the consolidated balance sheets. As of March 28, 2026, the Company estimates its remaining purchase obligation to be approximately $180 million of wafers from GlobalFoundries under the Capacity Reservation Agreement.",
+  "normalized_sha256": "cf4f2f568c78cb1654a50d6c98153dbf2af3d8462cddeb08cc884d37ba595815",
+  "raw": "  The balance of the prepayment is $<ix:nonFraction unitRef=\"usd\" contextRef=\"c-4\" decimals=\"-5\" name=\"crus:PurchaseCommitmentsPrepaidWafers\" scale=\"6\" id=\"f-952\">14.7</ix:nonFraction>&#160;million at March&#160;28, 2026, and is currently recorded in \"</span><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-style:italic;font-weight:400;line-height:120%\">Prepaid wafers</span><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%\">\" on the consolidated balance sheets.  As of March&#160;28, 2026, the Company estimates its remaining purchase obligation to be approximately $<ix:nonFraction unitRef=\"usd\" contextRef=\"c-58\" decimals=\"-6\" name=\"us-gaap:PurchaseObligation\" scale=\"6\" id=\"f-953\">180</ix:nonFraction> million of wafers from GlobalFoundries under the Capacity Reservation Agreement. ",
+  "raw_sha256": "29be636d6598032e4b6e1cffa8f93069cf367f0b885b313ef78ae3cf269db268"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/772406/000077240626000018/crus-20260328.htm",
+ "xbrl_contexts": []
+}

@@ -16,15 +16,45 @@ class: build
 blast_radius: reversible
 ambiguity: specified
 next_action: >
-  2026-08-27 CEO-takeover wave (handoff
-  agentos/handoffs/PROPHET-US-AVAILABILITY-2026-08-27-ceo-takeover.md): permanence
-  net PR #6534 and display-truth PR #6532 armed on merge-on-green. Verify tonight's
-  B1 nightly (run 33036497832) yields a fresh session-2026-08-26 board live, close
-  the open prophet-outage issues with receipts, then observe #6534's two §0
-  production proofs on NATURAL runs (never dispatch to force them). W2's full
-  fire-drill week remains the program done-bar; chip follow-ups
-  task_7df1337c/b0e6bfee/a194ca27/0c033ef2 close the known instrument gaps.
+  2026-10-31 BOUNDED A2 READ-CONSUMER COORDINATION.
+  Historical producer/source PRs #7180, #7187 and #7457
+  are already MERGED per current GitHub; do not reland
+  them from this outdated prose (DO_NOT_REDO).
+  W0/W3 remain in_progress with their own original proof
+  and W1/W2 are separately gated. The V4-A2 sibling
+  workstream's read-only Check E settlement consumer is
+  proposed in isolated Draft/HOLD #10256, exact current
+  source head based on 8c6f946842af4fbf61d49b588448d39a677b4d45.
+  It changes only the existing Check E liveness detector,
+  its tests and this explicit Availability ownership record.
+  No new HTTP fetch or paid-index read, no second publisher,
+  no new detector/alert/dispatch authority, and no edits
+  to the sole rescue scheduler or its budgets.
+  The consumer parses public prophet.settlement_manifest/v1
+  as supplied read-only evidence: predeploy absence silent,
+  PENDING advisory, blind INDETERMINATE, SETTLED never
+  excuses existing A-D/heartbeat failures. Exact immutable
+  initial code head 8c6f9468 passed 111 focused/complete
+  liveness tests locally on a separately reconstructed
+  source snapshot; hosted fence 41179369155 SUCCESS
+  at that initial code head. Follow-up owner-record commit
+  requires its own fresh hosted checks, so do not claim CI
+  on a newer head. Original independent Fabric reviewer
+  was TERMINAL rc75 REFUSED host temperature before execution,
+  no SOURCE_PASS and no permission for bypass retry.
+  Availability owner/custody read-only evidence query in
+  Slack thread 1793430537.066329 remains a distinct
+  carrier; consume its RESULT and preserve actual live
+  writer/effect fences. Coordinate review and controlled
+  real-path acceptance through this existing workstream
+  before any release. Parent V4 #10202 and producer
+  clock #10209 remain Draft/HOLD unmerged; no accepted
+  GMI fourth asset or protected served identity exists.
+  This records-only source delta neither releases #10256
+  nor finishes A2 or W0/W3.
 owns_paths:
+  - scripts/check_nightly_liveness.py
+  - tests/test_nightly_liveness.py
   - scripts/prophet_rescue.py
   - .github/workflows/prophet-rescue.yml
   - tests/test_prophet_rescue.py
@@ -75,6 +105,8 @@ landmines:
   - "Never dispatch over a queued/in_progress daily run; never exceed the 2/night auto-budget — livelock and dispatch-storm classes are both measured, not hypothetical."
   - "Force-majeure reconstruction defaults to the narrow authority in DEC:FORCE-MAJEURE-SESSIONS-ARE-BACKFILLED-BY-DEFAULT: the one authorized Aug-14 PIT replay is absorbed and must not be rerun; reconstructed rows stay unmarked, and data-defect windows remain outside that authority. The 2026-08-11 no-origination/no-bake-time facts remain historical evidence, not a blanket prohibition that supersedes the later DEC."
   - "GitHub concurrency supersedes PENDING runs even when cancel-in-progress is false (DSC:GITHUB-CONCURRENCY-SUPERSEDES-PENDING). daily.yml DST crons must keep distinct groups (DEC:DAILY-CRON-SLOT-CONCURRENCY-GROUPS)."
+  - "A pre-close vendor daily bar can be provisional even when its date is today. Clip the full non-crypto scoring plane to one expected_last_session BEFORE ranking; never weaken mixed-vintage refusal to make picks appear."
+  - "Hashing a source path before and after a build is not enough if consumers reopen it: an ABA rewrite can restore the original hash after different bytes were consumed. Every Prophet consumer must use the one frozen parsed source object."
 do_not_redo:
   - "Do not re-investigate GitHub platform incidents for Aug 11-13 2026 — githubstatus history checked, zero Actions incidents; the outage was self-inflicted (workflow-size strand, fleet force-cancels, runner disk-full)."
   - "Do not build a second detection check duplicating PR #5487's run-created/run-concluded/source_asof arms."
