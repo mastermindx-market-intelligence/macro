@@ -1,0 +1,12 @@
+{
+  "command": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "scripts/run_ci_pack.py",
+    "--workflow",
+    ".github/ci/legacy-jobs.yml",
+    "--validate-only"
+  ],
+  "exit_code": 0,
+  "duration_seconds": 1.69,
+  "log": "ci-manifest.log"
+}

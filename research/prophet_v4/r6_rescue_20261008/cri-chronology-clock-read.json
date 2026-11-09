@@ -1,0 +1,50 @@
+{
+  "plan_id": "CRI-BULL-20261005",
+  "asset": "CRI",
+  "recorded_at": "2026-10-06",
+  "first_commit": "fe0676ef1241a5646713012ad5145e23e66eab9b",
+  "first_committed_at": "2026-10-06T00:46:54-07:00",
+  "clock_evidence": {
+    "plan_run_date": "2026-10-06",
+    "first_committed_at": "2026-10-06T00:46:54-07:00",
+    "origination_recorded_utc": "2026-10-06T07:43:29.145743+00:00",
+    "accepted_publication_at": null,
+    "first_user_exposure_at": null,
+    "executable_fill_at": null,
+    "publication_status": "UNRESOLVED",
+    "publication_reason": "accepted_publication_receipt_not_joined",
+    "fill_status": "UNRESOLVED",
+    "fill_reason": "executable_fill_evidence_not_joined"
+  },
+  "board_as_of": "2026-10-05",
+  "board_price_basis": "2026-10-05",
+  "board_mixed_vintage": true,
+  "board_row_signal_asof": "2026-10-05",
+  "board_row_signal_tier": "T1",
+  "board_row_source_marker_date": "2026-10-05",
+  "board_row_source_marker_type": "buy",
+  "board_row_spot": 32.32,
+  "published_signal_date": "2026-10-05",
+  "published_entry_date": "2026-10-05",
+  "published_entry": 32.32,
+  "price_source": "site/factordata/us_standouts.json",
+  "price_source_scope": "origination_receipt_board_contract",
+  "price_source_last_session": "2026-10-05",
+  "price_source_sha256": "80c672c79a8e66aa2b11660dda6a91bc4e50041e3bb2b784d126d7e84bb4dcf2",
+  "price_source_error": null,
+  "price_match_status": "matched_origination_receipt",
+  "price_matches": [
+    {
+      "date": "2026-10-05",
+      "close": 32.32,
+      "difference": 0.0
+    }
+  ],
+  "price_basis_date": "2026-10-05",
+  "market_session_lag": 1,
+  "integrity_status": "stale_price_basis",
+  "admission_integrity": "actionable_tier_proven",
+  "quarantine_recommended": true,
+  "origination_receipt_path": "data/prophet/origination_receipts/37402815092-1-80c672c79a8e66aa.json",
+  "origination_receipt_sha256": "988bd93ab54e0bc07b9b6ef29edc1e0de1698be903d597d50cc320b842f79b0e"
+}

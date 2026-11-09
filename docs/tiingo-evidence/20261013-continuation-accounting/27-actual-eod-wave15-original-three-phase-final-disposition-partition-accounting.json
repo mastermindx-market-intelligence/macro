@@ -1,0 +1,119 @@
+{
+  "schema": "tiingo.original_three_phase_qualified_quality_failure_never_partition/v1",
+  "recorded_at_utc": "2026-10-13T02:56:27.528833+00:00",
+  "run_id": "eod-wave15-final-unreserved-20261012-01a12ab6",
+  "physical_continuation_run": "eod-wave15-original-unadmitted-continuation02-20261013-01a12ab6",
+  "method_sha256": "3744200cbd984fe49b79020966f35d4ed1bf2f78f2128e722a845bcfa89ed2b4",
+  "prior_combined_accounting_sha256": "1ae5e94b56cf3d0ed97f2f82e45d16a019baf17702f1e82a3b944668edaeb774",
+  "prior_combined_accounting_actual_parent_sha256": "a8e053d087e84146d312d49d97e132eef16688788d95bf15b842d9b04ef64939",
+  "continuation_accounting_sha256": "fadd559da063ca188956f3a53644f94e8cc3b8df5c9015c92a16bc9b99358aab",
+  "continuation_accounting_actual_parent_sha256": "f142e15461bda2c588cc3e77358bb95a3a2ddb6d733099cb94294ca20c3a2e0e",
+  "actual_capture_parent_sha256": {
+    "tiingo-wave15-original-capture-actual-terminal-parent-consumption.json": "063e448cec92e6231c6d09560fc169b7d83d4baddb92fd9063127ee90c7aed69",
+    "tiingo-wave15-continuation01-capture-actual-terminal-parent-consumption.json": "0bfe42a813c65de6be846ed3507773d2643ac697fcf615b0033ee87cf1fa5a70",
+    "tiingo-wave15-continuation02-capture-actual-terminal-parent-consumption.json": "461c416c8dd91cceb605199bf6d98673c12640def8041f532323b0c0954a5107"
+  },
+  "actual_capture_result_sha256": {
+    "eod-wave15-final-unreserved-20261012-01a12ab6-result.json": "1ef688ee4589509a0bfb21d6515be77d422c28974d0d75174a82112d02b7e03f",
+    "eod-wave15-original-unadmitted-continuation01-20261013-01a12ab6-result.json": "18c5d5b16917aafc0d1c1c1959ee45b62bfb7ad870b66c058e1fb06dff299df8",
+    "eod-wave15-original-unadmitted-continuation02-20261013-01a12ab6-result.json": "259a104731b007c3465c7c001c40df49ade457793ec3030eb90e5871d790fbdd"
+  },
+  "all_actual_terminal_capture_and_qualification_returns_consumed": true,
+  "all_original_4392_identities_accounted_exactly_once": true,
+  "qualified_successes": 2493,
+  "source_quality_quarantined_successes": 1,
+  "held_attempted_failure_count": 5,
+  "held_attempted_failures": [
+    {
+      "source": "eod-bars",
+      "symbol": "TACI",
+      "request_path": "/tiingo/daily/TACI/prices?endDate=2026-10-09&startDate=2011-03-01",
+      "reason": "Tiingo transport unavailable",
+      "transport_reason_class": "TimeoutError",
+      "transport_message_retained": false
+    },
+    {
+      "source": "eod-bars",
+      "symbol": "TACJF",
+      "request_path": "/tiingo/daily/TACJF/prices?endDate=2017-07-10&startDate=2008-02-05",
+      "reason": "Tiingo transport unavailable",
+      "transport_reason_class": "TimeoutError",
+      "transport_message_retained": false
+    },
+    {
+      "source": "eod-bars",
+      "symbol": "TAER",
+      "request_path": "/tiingo/daily/TAER/prices?endDate=2026-10-09&startDate=2015-12-24",
+      "reason": "Tiingo transport unavailable",
+      "transport_reason_class": "TimeoutError",
+      "transport_message_retained": false
+    },
+    {
+      "source": "eod-bars",
+      "symbol": "TORSF",
+      "request_path": "/tiingo/daily/TORSF/prices?endDate=2020-08-06&startDate=2007-07-31",
+      "reason": "Tiingo transport unavailable",
+      "transport_reason_class": "TimeoutError",
+      "transport_message_retained": false
+    },
+    {
+      "source": "eod-bars",
+      "symbol": "TRPCF",
+      "request_path": "/tiingo/daily/TRPCF/prices?endDate=2026-10-09&startDate=2021-10-26",
+      "reason": "Tiingo transport unavailable",
+      "transport_reason_class": "TimeoutError",
+      "transport_message_retained": false
+    }
+  ],
+  "never_admitted_count": 1893,
+  "qualified_disjoint_bars": 5566978,
+  "qualified_raw_bytes": 1255586918,
+  "quarantined_raw_bytes": 950557,
+  "all_captured_raw_bytes": 1256537475,
+  "qualification_sha256": {
+    "eod-wave15-prefix02-qualified.json": "280bf20a6e22223dde64dc1bf0b79484568eef91ec86aea1c996917b77a5e1a6",
+    "eod-wave15-prefix04-qualified.json": "054b4ebb60e2f568251babd0dd6c543d2744c5d46655e767ad9f8becbda7f57b",
+    "eod-wave15-prefix05-qualified.json": "a0d9ddb7bdc981ecd2a1459f57a58f83141c96d4d00ebcd02ecd021c6d9ab58a",
+    "eod-wave15-unadmitted-continuation01-prefix01-qualified.json": "834f6fe3da44986c92edf79517f0ed9a2365ff266f4b80eefc76cfb0adca6385",
+    "eod-wave15-unadmitted-continuation01-prefix02-qualified.json": "6aa4e418b7ddf87c4b3870ef077705980780e9be1885a1d6bb393426da5647b2",
+    "eod-wave15-unadmitted-continuation02-prefix01-qualified.json": "b552cc0b6d833f693738f39318296d7e84c2600ca52b64b88df38c3c56e10f3e"
+  },
+  "coverage_sha256": {
+    "eod-qualified-catalogue-coverage-wave15-prefix02-delta.json": "f07854642431b971b75b117b8e838176d3a932b817b062e6c971fd1b81060543",
+    "eod-qualified-catalogue-coverage-wave15-prefix04-delta.json": "f31fa77bc32ac9c428908bec0a306790cf4d24e28fc022f32f48c8b559c7f70f",
+    "eod-qualified-catalogue-coverage-wave15-prefix05-delta.json": "8073eb5e798b1887d3736bda157cc7c4f3cac7f6a6b042ff99298bf811a22f11",
+    "eod-qualified-catalogue-coverage-wave15-unadmitted-continuation01-prefix01-delta.json": "2936ee27ae60635424b257e84b21546dc3485c55b04bdf815bcdd653744ccea8",
+    "eod-qualified-catalogue-coverage-wave15-unadmitted-continuation01-prefix02-delta.json": "8dd1e9b1f55ea5a34dcc9a9c2c5f839797b29382578c7061df8465c1d827df80",
+    "eod-qualified-catalogue-coverage-wave15-unadmitted-continuation02-prefix01-delta.json": "2ea5ada401e3d375c157f0fd7e5340045a05cac02cae57a6f95c2d94f2d9e145"
+  },
+  "actual_disposition_window_parent_sha256": {
+    "tiingo-wave15-disposition-window02-actual-parent-consumption.json": "ab9f193a5069105b42b1e42906a628992afdaa03351940e7364160c01e32ddaf",
+    "tiingo-wave15-disposition-window03-actual-parent-consumption.json": "231303786536982bdbb61505c0713790e558e44e5e2869ff427a82a13b548ac6",
+    "tiingo-wave15-continuation01-disposition-window01-actual-parent-consumption.json": "d72930cc1a5bf3fb51200bdf587267161a69ba13fd32d6adddb17635cd4f611c",
+    "tiingo-wave15-continuation02-disposition-window01-actual-parent-consumption.json": "f0e4c6cd30c6441a885ede6628f08831da059a109f9cdd6b749e99c675d18f2c"
+  },
+  "last_coverage_file": "eod-qualified-catalogue-coverage-wave15-unadmitted-continuation02-prefix01-delta.json",
+  "last_coverage_sha256": "2ea5ada401e3d375c157f0fd7e5340045a05cac02cae57a6f95c2d94f2d9e145",
+  "global_histories": 45651,
+  "global_bars": 96634698,
+  "global_candidate_status": {
+    "NONEMPTY_DESIRED_REQUEST_WINDOWS_CAPTURED": 45651,
+    "CAPTURED_EMPTY_RESPONSE": 117,
+    "UNCAPTURED_CATALOGUE_WINDOW": 1918,
+    "CAPTURED_SOURCE_QUALITY_QUARANTINED": 3
+  },
+  "all_captured_successes_partitioned_between_valid_and_quality": true,
+  "all_selected_captured": false,
+  "all_captured_successes_reader_qualified": false,
+  "failed_requests_retried": false,
+  "provider_requests": 0,
+  "credentials_read": false,
+  "archive_writes": 0,
+  "full_vendor_history_proven": false,
+  "canonical_identity_admitted": false,
+  "pit_backtest_eligible": false,
+  "programme_acceptance_claimed": false,
+  "retained_operational_accounting_sha256": "d616793faf640cef04b509915d5b15ac418048833f92b95a9d0f7008f7a17c59",
+  "never_admitted_request_rows_copied": false,
+  "licensed_market_rows_copied": false
+}
