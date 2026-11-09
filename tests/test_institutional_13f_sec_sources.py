@@ -973,6 +973,27 @@ def test_filing_package_rejects_identity_and_completeness_drift() -> None:
         )
 
 
+def test_filing_package_rejects_atom_acceptance_clock_drift() -> None:
+    """The Atom ``<updated>`` clock never outranks the filing's own
+    ``<ACCEPTANCE-DATETIME>``: a discovery one second off is refused."""
+
+    drifted = FilingDiscovery(
+        accession=ACCESSION,
+        cik="0001792167",
+        form="13F-HR/A",
+        filing_date="2026-08-07",
+        accepted_at="2026-08-07T17:25:17-04:00",
+        index_url=INDEX_URL,
+    )
+    with pytest.raises(SecSourceError, match="filing acceptance timestamp mismatch"):
+        parse_filing_package(
+            index_url=INDEX_URL,
+            index_source=(FIXTURES / "filing_index.json").read_bytes(),
+            documents=_filing_documents(),
+            discovery=drifted,
+        )
+
+
 def test_filing_package_tolerates_index_size_mismatch_and_warns(capsys) -> None:
     """SEC's index.json ``size`` is advisory (it provably disagrees with SEC's
     own Content-Length and served bytes for some documents, block-rounded to

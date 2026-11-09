@@ -147,7 +147,7 @@ def test_degraded_render_preserves_roster_prices_history_and_regional_routes(sou
     assert degraded["theme"].get("score") is None
 
 
-def _render_javascript(html, tmp_path):
+def _render_javascript(html, tmp_path, viewer_at=None):
     node = shutil.which("node")
     if not node:
         pytest.skip("Node is required for the incumbent JavaScript renderer witness")
@@ -155,7 +155,8 @@ def _render_javascript(html, tmp_path):
     report = tmp_path / "rendered.json"
     page.write_text(html)
     subprocess.run(
-        [node, str(ROOT / "tests/fixtures/basket_detail_render_witness.cjs"), str(page), str(report)],
+        [node, str(ROOT / "tests/fixtures/basket_detail_render_witness.cjs"), str(page), str(report)]
+        + ([viewer_at] if viewer_at else []),
         check=True, capture_output=True, text=True, timeout=12,
     )
     return json.loads(report.read_text())
@@ -210,3 +211,54 @@ def test_nonfinite_or_boolean_counts_are_not_observations(source, render_detail,
     for markup in _render_javascript(html, tmp_path)["cells"].values():
         assert _counter_pair(markup, "new hi / lo") == "—/—"
         assert _counter_pair(markup, "adv / dec today") == "—/—"
+
+
+def test_theme_cycle_chart_preserves_geometry_on_wide_detail_pages():
+    template = (Path(__file__).parents[1] / "templates" / "basket_detail.html.j2").read_text()
+    assert 'const W=1080,H=240' in template
+    assert 'preserveAspectRatio="xMidYMid meet"' in template
+    assert 'aspect-ratio:'+'$'+'{W}/'+'$'+'{H}' in template
+    assert 'preserveAspectRatio="none" style="display:block;height:168px"' not in template
+
+
+@pytest.mark.parametrize("price_date", ["2026-11-06", None, ""])
+def test_intl_price_panel_date_is_separate_and_does_not_claim_ingestion_delay(
+    source, render_detail, tmp_path, price_date,
+):
+    # Controlled metadata on the existing regional renderer fixture. No new market reading.
+    source["as_of"] = price_date
+    source["theme_intel"]["as_of"] = "2026-11-08"
+    _, html, detail = render_detail(source, "intl")
+    assert detail["price_panel_as_of"] == price_date
+    assert detail["as_of"] == "2026-11-08", "the existing theme clock must remain separate"
+    assert detail["back"] == "../baskets_intl.html"
+    assert detail["members"]
+    assert all(detail["basket"][key] == value for key, value in source["baskets"][0].items())
+    rendered_dates = []
+    for viewer_at in ("2026-11-06T14:00:00Z", "2026-11-09T01:28:00Z", "2026-11-10T14:00:00Z"):
+        cells = _render_javascript(html, tmp_path, viewer_at)["cells"]
+        rendered_dates.append({})
+        for language, markup in cells.items():
+            match = re.search(r'<div class="disc" data-price-panel-date>(.*?)</div>', markup)
+            assert match, "International reader must disclose the panel's own date"
+            localized = re.search(r'<span class="l-' + language + r'">(.*?)</span>', match.group(1))
+            assert localized, "the incumbent language owner must retain both translations"
+            text = html_module.unescape(localized.group(1))
+            expected = (("Price panel dated " if language == "en" else "价格面板日期：") + price_date
+                        if price_date else ("Price panel date unavailable" if language == "en" else "价格面板日期不可用"))
+            assert text == expected
+            assert "today's session not yet ingested" not in markup
+            assert "nightly pending" not in markup and "今日行情尚未录入" not in markup
+            rendered_dates[-1][language] = text
+    assert rendered_dates[0] == rendered_dates[1] == rendered_dates[2]
+
+
+@pytest.mark.parametrize("region", ["us", "canada", "hk"])
+def test_intl_price_date_addition_preserves_other_regional_readers(source, render_detail, tmp_path, region):
+    _, html, detail = render_detail(source, region)
+    assert "price_panel_as_of" not in detail
+    assert detail["as_of"] == source["theme_intel"]["as_of"]
+    cells = _render_javascript(html, tmp_path, "2026-11-09T01:28:00Z")["cells"]
+    assert "today's session not yet ingested" in cells["en"]
+    assert "今日行情尚未录入" in cells["zh"]
+    assert all("data-price-panel-date" not in markup for markup in cells.values())
