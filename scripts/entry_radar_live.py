@@ -88,7 +88,7 @@ import tempfile
 import time
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any
+from typing import Any, Mapping
 
 _CODE_ROOT = str(Path(__file__).resolve().parent.parent)
 # UNCONDITIONAL, position 0 — the conditional `if _CODE_ROOT not in sys.path`
@@ -313,7 +313,7 @@ def _reader(state: Path | None):
     """
     try:
         from engine.entry_radar.vendor_minutes import VendorMinuteReader  # noqa: PLC0415
-        return VendorMinuteReader(state_dir=state)
+        return VendorMinuteReader(state_dir=state, receipt_clock=lambda: datetime.now(timezone.utc))
     except Exception as exc:  # noqa: BLE001
         print(f"::notice title=entry-radar-live::no C3 minute reader on this host "
               f"({exc}) — C1/C2 still evaluate, C3 publishes unavailable", flush=True)
@@ -331,7 +331,8 @@ def _print_timings(stages: dict[str, float], evaluator: dict[str, Any],
     :attr:`live_eval.PassResult.timings`, empty on a refusal.  Never part of the
     served payload.
     """
-    parts = [f"{key}={value:.1f}" for key, value in stages.items()]
+    parts = [f"{key}={value:.1f}" if isinstance(value, float) else f"{key}={value}"
+             for key, value in stages.items()]
     parts += [f"pass.{key}={value:.1f}" if isinstance(value, float)
               else f"pass.{key}={value}" for key, value in evaluator.items()]
     print(f"entry-radar-live timings total_s={total_s:.1f} " + " ".join(parts),
@@ -340,8 +341,14 @@ def _print_timings(stages: dict[str, float], evaluator: dict[str, Any],
 
 def run(root: Path, *, now: datetime | None = None, dry_run: bool = False,
         state_override: str | None = None, live_override: str | None = None,
-        spool_dir: str | None = None) -> int:
-    """One pass, end to end.  Returns the process exit code."""
+        spool_dir: str | None = None,
+        opportunity_cases: Mapping[str, Mapping[str, Any]] | None = None) -> int:
+    """One pass, end to end. Returns the process exit code.
+
+    A trusted in-process caller may supply already composed research cases by
+    native episode ID. The evaluator validates them after lifecycle decisions.
+    Default/CLI absence performs no case acquisition or attachment.
+    """
     try:
         LP.assert_published_spec_hashes()
     except LP.SpecHashDrift as exc:
@@ -358,12 +365,18 @@ def run(root: Path, *, now: datetime | None = None, dry_run: bool = False,
 
     pack: Any = None
     quotes: Any = None
-    stages: dict[str, float] = {}
+    stages: dict[str, Any] = {}
     t_run = time.perf_counter()
     try:
         t_stage = time.perf_counter()
-        pack = LP.load_pack(state) if state is not None else None
+        pack_receipt: dict[str, Any] = {}
+        pack = (LP.load_pack(state, receipt=pack_receipt)
+                if state is not None else None)
         stages["load_pack_s"] = time.perf_counter() - t_stage
+        # The verified-once receipt's outcome rides the timings line (never the
+        # payload): ``hit`` is the skip, ``written``/``miss`` a full re-verify.
+        stages["load_pack_receipt"] = str(pack_receipt.get("state") or "n/a")
+        stages["load_pack_digest_s"] = float(pack_receipt.get("digest_s") or 0.0)
         t_stage = time.perf_counter()
         ledger = LL.LiveEpisodeLedger.load(state)
         stages["load_ledger_s"] = time.perf_counter() - t_stage
@@ -379,7 +392,8 @@ def run(root: Path, *, now: datetime | None = None, dry_run: bool = False,
         result = LE.run_pass(now=stamp, pack=pack, quotes=quotes, ledger=ledger,
                              state_dir=state, spool=spool,
                              intraday_reader=reader,
-                             unspooled_ok=dry_run, dry_run=dry_run)
+                             unspooled_ok=dry_run, dry_run=dry_run,
+                             opportunity_cases=opportunity_cases)
         stages["run_pass_s"] = time.perf_counter() - t_stage
     except Exception as exc:  # noqa: BLE001 — the ``failed`` receipt's producer
         # NEVER SILENT, AND NEVER A STALE ARTIFACT LEFT STANDING.  A pass that

@@ -441,6 +441,143 @@ def test_refuses_changed_group_reference_position_and_missing_active():
         plan_routes(_previous_source(), _candidate_source(), trimmed)
 
 
+def _x_ref_redir_inner():
+    """A groupless redirect route: the #10837 bio-ref shape."""
+    return {
+        "match": [
+            {
+                "path_regexp": {
+                    "name": "x_ref",
+                    "pattern": "^/x/(?P<id>[a-z0-9](?:\\.?[a-z0-9]){3,31})/?$",
+                }
+            }
+        ],
+        "handle": [{"handler": "static_response", "statusCode": 301}],
+    }
+
+
+def test_groupless_route_insertion_shifts_group_positions_and_still_plans():
+    """A groupless route inserted ahead of grouped blocks shifts every group
+    occurrence, but block identity is unchanged — the planner must adopt it
+    in place and remap the candidate group names onto the ACTIVE ones."""
+    prev, active = _previous_source(), _active_config()
+    inserted = _x_ref_redir_inner()
+    cand = _previous_source()
+    for srv in ("srv0", "srv1"):
+        _www_inner(cand, srv).insert(0, copy.deepcopy(inserted))
+    planned = plan_routes(prev, cand, active)
+    for srv, root_group, movers_group in (
+        ("srv0", "group9", "group11"),
+        ("srv1", "group21", "group25"),
+    ):
+        inner = _www_inner(planned, srv)
+        assert inner[0] == inserted, srv
+        assert inner[1]["group"] == root_group, srv
+        assert inner[2]["group"] == movers_group, srv
+        assert inner[1] == _www_inner(active, srv)[0], srv
+        assert inner[2] == _www_inner(active, srv)[1], srv
+    # Everything outside the changed host routes is untouched.
+    assert planned["apps"]["tls"] == active["apps"]["tls"]
+    assert planned["logging"] == active["logging"]
+    repeated = plan_routes(prev, cand, planned)
+    assert repeated == planned and repeated is not planned
+
+
+def test_groupless_route_removal_shifts_group_positions_back_and_still_plans():
+    """The mirror case: the previous generation carried a groupless route that
+    the candidate dropped — positions shift back, block identity holds, and
+    the planned result is the active config (idempotent no-write)."""
+    prev, active = _previous_source(), _active_config()
+    stale = {
+        "match": [{"path": ["/retired-page.html"]}],
+        "handle": [{"handler": "static_response", "aborted": True}],
+    }
+    cand = _previous_source()
+    for srv in ("srv0", "srv1"):
+        # The stale route is part of the adopted previous generation, so the
+        # active config carries it too; the candidate simply drops it.
+        _www_inner(prev, srv).insert(0, copy.deepcopy(stale))
+        _www_inner(active, srv).insert(0, copy.deepcopy(stale))
+    planned = plan_routes(prev, cand, active)
+    # The candidate drops the stale route; the plan must drop it from the
+    # served config too, keeping the grouped blocks on their active names.
+    expected = copy.deepcopy(active)
+    for srv in ("srv0", "srv1"):
+        assert _www_inner(expected, srv)[0] == stale, srv
+        _www_inner(expected, srv).pop(0)
+    assert planned == expected
+    repeated = plan_routes(prev, cand, planned)
+    assert repeated == planned and repeated is not planned
+
+
+@pytest.mark.parametrize("channel", ["ordinary", "errors"])
+@pytest.mark.parametrize("change", ["insert", "remove"])
+def test_shifted_group_routes_repeat_without_mutating_inputs(channel, change):
+    prev, cand, active = _previous_source(), _previous_source(), _active_config()
+    targets = (cand,) if change == "insert" else (prev, active)
+    for config in targets:
+        for srv in ("srv0", "srv1"):
+            _www_inner(config, srv).insert(1, _x_ref_redir_inner())
+    if channel == "errors":
+        for config in (prev, cand, active):
+            for server in config["apps"]["http"]["servers"].values():
+                server["errors"] = {"routes": server.pop("routes")}
+                server["routes"] = []
+    snapshot = copy.deepcopy((prev, cand, active))
+    planned = plan_routes(prev, cand, active)
+    repeated = plan_routes(prev, cand, planned)
+    assert repeated == planned and repeated is not planned
+    assert (prev, cand, active) == snapshot
+
+
+@pytest.mark.parametrize("change", ["wrapper", "parent_matcher", "other_parent", "handler"])
+def test_group_position_shift_cannot_change_ancestor_semantics(change):
+    prev, cand, active = _previous_source(), _previous_source(), _active_config()
+    if change in {"parent_matcher", "other_parent"}:
+        for config in (prev, cand, active):
+            for srv in ("srv0", "srv1"):
+                inner = _www_inner(config, srv)
+                blocks = list(inner)
+                inner[:] = [
+                    {"match": [{"path": ["/first/*"]}],
+                     "handle": [{"handler": "subroute", "routes": blocks[:1]}]},
+                    {"match": [{"path": ["/second/*"]}],
+                     "handle": [{"handler": "subroute", "routes": blocks[1:]}]},
+                ]
+    for srv in ("srv0", "srv1"):
+        inner = _www_inner(cand, srv)
+        if change == "wrapper":
+            inner[:] = [{"match": [{"path": ["/restricted/*"]}],
+                         "handle": [{"handler": "subroute", "routes": list(inner)}]}]
+        elif change == "parent_matcher":
+            inner[0]["match"] = [{"path": ["/restricted/*"]}]
+            inner[0]["handle"][0]["routes"].insert(0, _x_ref_redir_inner())
+        elif change == "other_parent":
+            moved = inner[0]["handle"][0]["routes"].pop()
+            inner[1]["handle"][0]["routes"].insert(0, moved)
+        else:
+            inner.insert(0, _x_ref_redir_inner())
+            route = next(r for r in cand["apps"]["http"]["servers"][srv]["routes"]
+                         if r["match"] == [{"host": WWW_HOST}])
+            route["handle"].insert(0, {"handler": "authentication", "sentinel": "changed"})
+    snapshot = copy.deepcopy((prev, cand, active))
+    with pytest.raises(ReconcileRefusal, match="group topology"):
+        plan_routes(prev, cand, active)
+    assert (prev, cand, active) == snapshot
+
+
+def test_insertion_that_also_edits_a_grouped_block_still_refuses():
+    """A shift plus a content edit to a grouped block in one generation is
+    outside the envelope: block identity at the occurrence position fails.
+    Split such a change into two publications."""
+    prev, cand, active = _previous_source(), _candidate_source(), _active_config()
+    for srv in ("srv0", "srv1"):
+        _www_inner(cand, srv).insert(0, _x_ref_redir_inner())
+    _www_inner(cand, "srv0")[2]["handle"].append({"handler": "headers", "sentinel": "edit"})
+    with pytest.raises(ReconcileRefusal, match="moved between generations"):
+        plan_routes(prev, cand, active)
+
+
 def test_refuses_non_object_inputs():
     active = _active_config()
     for broken in (None, [], "config", 7):
@@ -698,3 +835,35 @@ def test_renumbered_group_rejects_content_changes_without_literal_addition_witne
     with pytest.raises(ReconcileRefusal, match='different route content'):
         plan_routes(previous, candidate, active)
     assert (previous, candidate, active) == snapshots
+
+
+@pytest.mark.parametrize("channel", ["ordinary", "errors"])
+@pytest.mark.parametrize("negated", [False, True])
+@pytest.mark.parametrize("changed_group", ["moved", "stationary"])
+def test_group_shift_still_refuses_literal_path_additions(channel, negated, changed_group):
+    """A literal-path witness cannot relax the current group-position envelope."""
+    previous, candidate, active = _previous_source(), _previous_source(), _active_config()
+    target = 1 if changed_group == "moved" else 0
+    old_match = {"path": ["/old.css", "/keep.js"]}
+    if negated:
+        old_match = {"not": [old_match]}
+    for config in (previous, candidate, active):
+        for name in ("srv0", "srv1"):
+            _www_inner(config, name)[target]["match"] = [copy.deepcopy(old_match)]
+    for name in ("srv0", "srv1"):
+        inner = _www_inner(candidate, name)
+        changed = inner[target]
+        changed["group"] = "group30"
+        matcher = changed["match"][0]["not"][0] if negated else changed["match"][0]
+        matcher["path"].insert(1, "/forex_r26.js")
+        # The second case changes a stationary group while a sibling shifts.
+        inner.insert(0 if changed_group == "moved" else 1, _x_ref_redir_inner())
+    if channel == "errors":
+        for config in (previous, candidate, active):
+            for name in ("srv0", "srv1"):
+                server = config["apps"]["http"]["servers"][name]
+                server["errors"] = {"routes": server.pop("routes")}
+    snapshot = copy.deepcopy((previous, candidate, active))
+    with pytest.raises(ReconcileRefusal, match="group topology"):
+        plan_routes(previous, candidate, active)
+    assert (previous, candidate, active) == snapshot

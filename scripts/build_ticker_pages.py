@@ -31,6 +31,7 @@ from calendar import month_abbr
 from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlsplit
 
 _HERE = Path(__file__).resolve().parent
 _ROOT = _HERE.parent
@@ -483,6 +484,61 @@ def is_stale(freshness_date: str | None) -> bool:
         return (date.today() - d).days > STALENESS_DAYS
     except (ValueError, TypeError):
         return True
+
+
+def _issuer_clocks(per: dict, intel: dict | None, news_rec: dict | None) -> dict:
+    """Keep issuer evidence, measured price and daily-analysis clocks separate.
+
+    A global publication receipt is not an observation of every issuer. The
+    stock-library owner binds price_asof to its actual close and blob.asof to
+    its analysis series; neither may be advanced by news or this render.
+    """
+    blob = per.get("blob") or {}
+    tech = blob.get("tech") or {}
+    price = tech.get("price")
+    price_as_of = None
+    if (isinstance(price, (int, float)) and not isinstance(price, bool)
+            and math.isfinite(price) and price > 0):
+        price_as_of = page_freshness([tech.get("price_asof")])
+    daily_as_of = page_freshness([per.get("blob_asof") or blob.get("asof")]) if tech else None
+    dates = [price_as_of, daily_as_of]
+    for artifact, key in (("blob", "blob_asof"), ("gex_v1", "gex_as_of"),
+                          ("signals", "signals_as_of"), ("flow", "flow_as_of"),
+                          ("brief", "brief_as_of")):
+        if per.get(artifact):
+            dates.append(per.get(key))
+    if isinstance(intel, dict):
+        # Only existing semantic channels qualify, not schema/version/receipt
+        # metadata or has_* flags. A measured numeric zero remains evidence.
+        read = intel.get("read") if isinstance(intel.get("read"), dict) else {}
+        brain = intel.get("brain") if isinstance(intel.get("brain"), dict) else {}
+        alt = intel.get("alt") if isinstance(intel.get("alt"), dict) else {}
+        radar = intel.get("radar") if isinstance(intel.get("radar"), dict) else {}
+        texts = (intel.get("note"), read.get("read"), read.get("label"),
+                 brain.get("evidence"), radar.get("note"))
+        numbers = (brain.get("confidence"), alt.get("signal_score"), radar.get("edge_score"))
+        if (any(isinstance(text, str) and _clean_str(text) for text in texts)
+                or any(finite(number) is not None for number in numbers)):
+            dates.append(intel.get("asof") or intel.get("as_of"))
+    headlines = news_rec.get("top") if isinstance(news_rec, dict) else None
+    for headline in headlines if isinstance(headlines, list) else []:
+        if not isinstance(headline, dict):
+            continue
+        title, url, published = (headline.get(key) for key in ("title", "url", "published"))
+        if not all(isinstance(value, str) and value.strip() for value in (title, url, published)) or not _clean_str(title):
+            continue
+        try:
+            source = urlsplit(url)
+            if (source.scheme not in {"http", "https"} or not source.hostname
+                    or source.username or source.password):
+                continue
+        except ValueError:
+            continue
+        # Publication of an actual issuer headline is a dated source; the
+        # row/global collection receipt is not a substitute for that date.
+        dates.append(published)
+    return {"freshness": page_freshness(dates), "price_as_of": price_as_of,
+            "daily_as_of": daily_as_of, "price_stale": is_stale(price_as_of)}
 
 
 def build_sitemap(existing_xml: str, stocks_entries: list[dict]) -> str:
@@ -1585,7 +1641,7 @@ def _build_deep(blob: dict | None, per: dict, agg: dict, ticker: str,
 
 def _build_meta(
     ticker: str, name: str, blob: dict | None, stance_en: str,
-    freshness: str, stale: bool, generated_utc: str,
+    freshness: str | None, stale: bool, generated_utc: str,
 ) -> dict:
     price = None
     if blob:
@@ -1626,12 +1682,15 @@ def _build_meta(
         "@type": "ProfilePage",
         "@id": f"{canonical}#profile",
         "name": f"{ticker} — {name} company dossier",
-        "datePublished": freshness,
-        "dateModified": freshness,
         "publisher": {"@type": "Organization", "name": "MastermindX"},
         "mainEntity": company_entity,
         "url": canonical,
     }
+    # Profile publication history is not retained here. This document's known
+    # generation day can describe modification, never the market observation.
+    generated_day = page_freshness([generated_utc])
+    if generated_day:
+        jsonld["dateModified"] = generated_day
     jsonld_str = json.dumps(jsonld, ensure_ascii=False).replace("</", "<\\/")
 
     return {
@@ -5761,16 +5820,8 @@ def build_page_context(
     inv_en, inv_zh = _scrub_machine(inv_en), _scrub_machine_zh(inv_zh)
 
     # --- Freshness ---
-    freshness_dates = [
-        per.get("blob_asof"),
-        per.get("gex_as_of"),
-        per.get("signals_as_of"),
-        per.get("flow_as_of"),
-        agg.get("intel_as_of"),
-        agg.get("news_as_of"),
-        per.get("brief_as_of"),
-    ]
-    freshness = page_freshness(freshness_dates) or date.today().isoformat()
+    clocks = _issuer_clocks(per, intel, news_rec)
+    freshness = clocks["freshness"]
     stale = is_stale(freshness)
 
     # --- Trailing returns + seasonality from ohlc ---
@@ -5963,6 +6014,9 @@ def build_page_context(
         "meta_desc": meta["meta_desc"],
         "jsonld_str": meta["jsonld_str"],
         "freshness": freshness,
+        "price_as_of": clocks["price_as_of"],
+        "daily_as_of": clocks["daily_as_of"],
+        "price_stale": clocks["price_stale"],
         "stale": stale,
         "stance_en": stance_en,
         "stance_zh": stance_zh,

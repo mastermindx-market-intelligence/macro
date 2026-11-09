@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "BIIB-BULL-20260731",
-  "asof": "2026-11-04",
+  "asof": "2026-11-09",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 49.2,
@@ -11,20 +11,20 @@
   "human_state": "Closed",
   "components": {
     "validity": 100.0,
-    "progress": 51.9,
+    "progress": 51.4,
     "pace": 0.0,
-    "retention": 89.5,
-    "overlay": 56.0
+    "retention": 88.3,
+    "overlay": 39.0
   },
   "geometry": {
-    "dist_to_stop_r": 2.048,
-    "dist_to_t1_r": 0.452,
-    "dist_to_t2_r": 1.952,
-    "horizon_pct_used": 191.1,
-    "p1": 0.6984,
-    "p2": 0.3492,
+    "dist_to_stop_r": 2.033,
+    "dist_to_t1_r": 0.467,
+    "dist_to_t2_r": 1.967,
+    "horizon_pct_used": 202.2,
+    "p1": 0.6887,
+    "p2": 0.3444,
     "p3": null,
-    "move_r": 1.048,
+    "move_r": 1.033,
     "mfe_r": 1.171,
     "mae_r": 0.0
   },
@@ -45,8 +45,8 @@
   "_first_trigger_ts": "2026-08-10",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 86,
-  "tau": 1.9111,
+  "days_elapsed": 91,
+  "tau": 2.0222,
   "closed": true,
   "outcome": "EXPIRED"
 }

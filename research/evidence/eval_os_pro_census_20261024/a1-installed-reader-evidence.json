@@ -1,0 +1,292 @@
+{
+  "schema": "eval_os.a1_published_reader_evidence.v1",
+  "qualified_source": "5aae3c5e97dcdcf85d0745062fe9424f1ed7c0c7",
+  "observed_installed_head": "d73ae874899240c583e5745be4784baf6b237d97",
+  "observer_sha256": "fb6ae5050e11421706c4903405d584baf27b8b22a66887023013831a6a39aebd",
+  "private_receipt_sha256": "730609fee2ab93205b7252abc3b114dcadaeea1e50651861f65171f28c264e04",
+  "started_at": "2026-10-24T20:11:01.495679+00:00",
+  "finished_at": "2026-10-24T20:11:24.231640+00:00",
+  "status": "completed",
+  "call_count": 1,
+  "source_scope": "18 named reader and owner dependencies; not complete transitive import closure",
+  "named_source_files": {
+    "admin/intelligence_execution.py": {
+      "matches_qualified": true,
+      "bytes": 7268,
+      "sha256": "b9dad66079908a8db55ef1d1240c42c42a0b91b9c3188c78b227d3ab436c5cc2",
+      "git_blob": "b47bcece53dd04d9e20dad43e6330d425289cefe",
+      "qualified_blob": "b47bcece53dd04d9e20dad43e6330d425289cefe"
+    },
+    "admin/intelligence_os.py": {
+      "matches_qualified": true,
+      "bytes": 49950,
+      "sha256": "45eceabbee1d04ecf820b1d2ca5b24a5c0b417ec27a6171ed5939f7010e59873",
+      "git_blob": "8b755a6cf87b8a765e558b126e31e6a3f21d4b9c",
+      "qualified_blob": "8b755a6cf87b8a765e558b126e31e6a3f21d4b9c"
+    },
+    "admin/evidence_status.py": {
+      "matches_qualified": true,
+      "bytes": 17167,
+      "sha256": "5315e8e95b2a5ee3c5c12b88eac8126c8578db12a773357916aed20bdb459efd",
+      "git_blob": "fc9ccd59e40760f8dc03f0871910bfdfe663e0d0",
+      "qualified_blob": "fc9ccd59e40760f8dc03f0871910bfdfe663e0d0"
+    },
+    "admin/evidence_findings.py": {
+      "matches_qualified": true,
+      "bytes": 7312,
+      "sha256": "d2355370c9c458db54a35e2253903d5b781b5b0193c945b587618706cb3bf909",
+      "git_blob": "89d5d66fec0848d65d973f6f73c4aab7d3bf995c",
+      "qualified_blob": "89d5d66fec0848d65d973f6f73c4aab7d3bf995c"
+    },
+    "admin/server.py": {
+      "matches_qualified": true,
+      "bytes": 111920,
+      "sha256": "123950edd7be06feaecfe60580dc72d3a189854ae9fab4c803b887e4cf5e5bbd",
+      "git_blob": "074419010e96f6208816da4cf113c7623837b968",
+      "qualified_blob": "074419010e96f6208816da4cf113c7623837b968"
+    },
+    "engine/intelligence_registry.py": {
+      "matches_qualified": true,
+      "bytes": 90720,
+      "sha256": "f0fabfca6112fa51087450ae8d5e246a2e88c606b235d2ae200cfcac0d6bcfc9",
+      "git_blob": "8e715eb811565f305589a5b978d19e81492e4d7a",
+      "qualified_blob": "8e715eb811565f305589a5b978d19e81492e4d7a"
+    },
+    "engine/output_health.py": {
+      "matches_qualified": true,
+      "bytes": 75220,
+      "sha256": "8a2d8395a99c5900489949ec4d683e7e5e66356dd23398c5028ac1b6bc766a06",
+      "git_blob": "80e40fa956f6bf6d871bf0f01616f20dfb4b0237",
+      "qualified_blob": "80e40fa956f6bf6d871bf0f01616f20dfb4b0237"
+    },
+    "engine/qledger.py": {
+      "matches_qualified": true,
+      "bytes": 258090,
+      "sha256": "6473c710806b26bc5ee3da3ad781d07b3ca02f208f9789a723186216819c1e00",
+      "git_blob": "24dd479b42901b96d062b2e837eeaa0767966b42",
+      "qualified_blob": "24dd479b42901b96d062b2e837eeaa0767966b42"
+    },
+    "engine/qledger_desk_adapter.py": {
+      "matches_qualified": true,
+      "bytes": 33610,
+      "sha256": "55f7304d9c422992cb5710a95c118c16cfd78999b7bb51095e0951b9018c11c4",
+      "git_blob": "3697d2a35fd7acb3bd3f96b301e474ba421e034d",
+      "qualified_blob": "3697d2a35fd7acb3bd3f96b301e474ba421e034d"
+    },
+    "engine/qledger_evidence_clock.py": {
+      "matches_qualified": true,
+      "bytes": 7295,
+      "sha256": "f553456b749bf9d98b01954e1e32ec61f1a0c436ae4ed20303323db2319af943",
+      "git_blob": "c98a197729ad1a0f29da8999212f55887e38872f",
+      "qualified_blob": "c98a197729ad1a0f29da8999212f55887e38872f"
+    },
+    "engine/qledger_store.py": {
+      "matches_qualified": true,
+      "bytes": 11615,
+      "sha256": "3a1d30cbd20a09bc428d069fcd9548f17ff94763ffcfdd83041d6c11edd6e3db",
+      "git_blob": "b8ac49b2066504cf14126f0ed3e71fb478fe86a8",
+      "qualified_blob": "b8ac49b2066504cf14126f0ed3e71fb478fe86a8"
+    },
+    "engine/qledger_store_protocol.py": {
+      "matches_qualified": true,
+      "bytes": 51527,
+      "sha256": "ec2286621e93084c65e8ec37eda6bcc46f6e7044828652c819f756f8ea27b2b3",
+      "git_blob": "ad60f468fa406b5b5b6a1a3ff302a0ba6a25b5a5",
+      "qualified_blob": "ad60f468fa406b5b5b6a1a3ff302a0ba6a25b5a5"
+    },
+    "engine/qledger_validity.py": {
+      "matches_qualified": true,
+      "bytes": 15575,
+      "sha256": "8076620b1db88e314d617cb80bf6525789d9fd2f532a21263ee8f6d3df20bb23",
+      "git_blob": "2b27c32c56b679178a3e52e3b609856a13ec2dd8",
+      "qualified_blob": "2b27c32c56b679178a3e52e3b609856a13ec2dd8"
+    },
+    "scripts/build_intelligence_registry.py": {
+      "matches_qualified": true,
+      "bytes": 33475,
+      "sha256": "70cf6a37e840a5a7b2c3e3f90be343a2a04bbd1b86a595167595b425b6b2e025",
+      "git_blob": "c574278273263a03e35032bad5eec3ee365a17b2",
+      "qualified_blob": "c574278273263a03e35032bad5eec3ee365a17b2"
+    },
+    "scripts/build_output_health.py": {
+      "matches_qualified": true,
+      "bytes": 45945,
+      "sha256": "42a6f850ba02351165a563b0341faa8649e4458d5d5a50b8e3498e6e6044fe11",
+      "git_blob": "b2ff67a4ddfdf7f4e9210f08f0bffd9c7f590039",
+      "qualified_blob": "b2ff67a4ddfdf7f4e9210f08f0bffd9c7f590039"
+    },
+    "scripts/grade_qledger.py": {
+      "matches_qualified": true,
+      "bytes": 53641,
+      "sha256": "56d49a99be7105c29f80795c2c2af8d89605f660f6280042fdb28072731155b2",
+      "git_blob": "2e715c01e3676ca0299a4af6d35b4bb17b68941f",
+      "qualified_blob": "2e715c01e3676ca0299a4af6d35b4bb17b68941f"
+    },
+    "scripts/check_qledger_metric_validity.py": {
+      "matches_qualified": true,
+      "bytes": 26819,
+      "sha256": "d3775ad1da581d74102870b8676e56d03d4b0ab4a6533107e5f527850882f13b",
+      "git_blob": "14695bd5532d72191a103c4d6c877ebb1246e2fc",
+      "qualified_blob": "14695bd5532d72191a103c4d6c877ebb1246e2fc"
+    },
+    "scripts/check_synapse_reads.py": {
+      "matches_qualified": true,
+      "bytes": 38598,
+      "sha256": "c1502b75e3adad5b6d982d002b9234cd34be1ae26ee7e6e61802f3279e565d8c",
+      "git_blob": "a22599b709ea498424ecab902223805b0df24cb8",
+      "qualified_blob": "a22599b709ea498424ecab902223805b0df24cb8"
+    }
+  },
+  "stable_named_source_files": true,
+  "stable_observed_service_epoch": true,
+  "stable_installed_head": true,
+  "services_active_before_and_after": true,
+  "observation": {
+    "status": "completed",
+    "call_count": 1,
+    "started_at": "2026-10-24T20:11:01.778493+00:00",
+    "finished_at": "2026-10-24T20:11:23.971062+00:00",
+    "ok": true,
+    "error_code": null,
+    "wall_seconds": 22.182338,
+    "resource": {
+      "child_rusage_before_maxrss_kib": 0,
+      "child_rusage_maxrss_kib": 180996,
+      "child_user_seconds": 18.972052,
+      "child_system_seconds": 1.750779,
+      "observer_maxrss_kib": 17792,
+      "semantics": "Linux RUSAGE_CHILDREN high-water KiB; not simultaneous process-tree memory"
+    },
+    "safety_envelope": {
+      "address_space_bytes": 1073741824,
+      "wall_seconds": 45,
+      "result_bytes": 16777216,
+      "cleanup_seconds": 2
+    },
+    "census": {
+      "engines": 386,
+      "canonical_engines": 385,
+      "noncanonical_output_groups": 1,
+      "artifacts": 650,
+      "outputs_assessed": 299,
+      "by_state": {
+        "degraded": 2,
+        "healthy": 84,
+        "null": 426,
+        "stale": 76,
+        "unavailable": 62
+      },
+      "by_assessment_status": {
+        "complete": 155,
+        "could_not_look": 351,
+        "partial": 144
+      },
+      "by_output_class": {
+        "classification_state": 31,
+        "descriptive": 92,
+        "detection_event": 22,
+        "null": 455,
+        "predictive": 40,
+        "ranking": 5,
+        "salience": 5
+      },
+      "by_evidence_status": {
+        "Accruing": 36,
+        "Degraded": 339,
+        "Ungraded by design": 10
+      },
+      "by_authority": {
+        "display": 625,
+        "engine_input": 12,
+        "gate_size": 5,
+        "user_ranking": 8
+      },
+      "by_storage": {
+        "git": 610,
+        "git+r2": 3,
+        "gitignored-local": 19,
+        "r2": 18
+      },
+      "by_dependency_bound": {
+        "exact": 235,
+        "upper": 415
+      }
+    },
+    "generated": {
+      "observed_at": "2026-10-24T20:11:03.901951+00:00",
+      "root_mode": "mixed",
+      "compute_seconds": 19.79,
+      "cache": "miss",
+      "trust_mtime": false,
+      "source_generation": {
+        "claims_source": [
+          "legacy",
+          [
+            64769,
+            1835093,
+            104857394,
+            1792569805068526600,
+            1792569805068526600
+          ]
+        ],
+        "read_status": "coherent"
+      }
+    },
+    "checks": {
+      "engine_partition": true,
+      "engine_rows_match": true,
+      "engine_artifacts_match": true,
+      "assessment_partition": true,
+      "assessed_vs_blind": true,
+      "state_partition": true,
+      "class_partition": true,
+      "canonical_band_partition": true,
+      "canonical_rows_match": true,
+      "trust_mtime_false": true,
+      "named_dependency_key_coherent": true
+    },
+    "qualification_status_counts": {
+      "portability": {
+        "host_local_metadata": 4
+      },
+      "qualified_scope": {
+        "named_ledger_metadata_config_clocks_owner_code": 4
+      },
+      "named_generation_match": {
+        "False": 4
+      },
+      "receipt_status": {
+        "recorded_provenance": 4
+      },
+      "all_inputs_qualification": {
+        "unavailable": 4
+      },
+      "current_source_qualification": {
+        "unavailable": 5
+      },
+      "named_generation_check": {
+        "host_local_metadata": 4
+      }
+    },
+    "qualification_counter_unit": "projection-field occurrences; not unique owner snapshots",
+    "typed_findings": {
+      "present": true,
+      "status": "partial",
+      "numeric_attribution_status": "unavailable"
+    },
+    "serialized_panel_bytes": 556422,
+    "execution_module_from_installed_root": true
+  },
+  "limits": [
+    "Cold refers to a fresh process and in-memory cache miss; OS page cache was uncontrolled.",
+    "One cold backend derivation; not authenticated route, resident HTTP cache, repeat distribution or SLO acceptance.",
+    "RUSAGE_CHILDREN is high-water KiB, not simultaneous tree memory.",
+    "Coherence brackets the named dependency key; not an atomic snapshot of every output. Staleness-reader file is excluded by existing TTL semantics.",
+    "Legacy claims identity is host-local metadata, not a content digest.",
+    "18 named installed source files were qualified; no complete transitive or resident-loaded-byte attestation. -B prevents new bytecode writes but does not exclude existing pyc loading.",
+    "Recorded provenance is not current/all-input qualification; no grade/price computation occurred.",
+    "No native QLedger activation, service restart, data mutation, force refresh, cache purge or browser authentication occurred.",
+    "No A1 completion, user comprehension, numeric attribution, promotion authority or instruction rollout is claimed."
+  ]
+}
+
