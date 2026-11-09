@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "PAHC-BULL-20260629",
-  "asof": "2026-11-06",
+  "asof": "2026-11-09",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 44.6,
@@ -10,27 +10,27 @@
   "recommended_action": null,
   "human_state": "Closed",
   "components": {
-    "validity": 100.0,
-    "progress": 26.6,
+    "validity": 98.0,
+    "progress": 0.0,
     "pace": 0.0,
-    "retention": 34.3,
-    "overlay": 32.8
+    "retention": 0.0,
+    "overlay": 33.0
   },
   "geometry": {
-    "dist_to_stop_r": 1.43,
-    "dist_to_t1_r": 1.07,
-    "dist_to_t2_r": 2.57,
-    "horizon_pct_used": 253.3,
-    "p1": 0.2866,
-    "p2": 0.1433,
+    "dist_to_stop_r": 0.985,
+    "dist_to_t1_r": 1.5,
+    "dist_to_t2_r": 3.0,
+    "horizon_pct_used": 260.0,
+    "p1": -0.0097,
+    "p2": -0.0049,
     "p3": null,
-    "move_r": 0.43,
+    "move_r": -0.015,
     "mfe_r": 1.253,
-    "mae_r": -0.007
+    "mae_r": -0.015
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "Moving Away from Stop",
+  "change_reason": "",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
@@ -40,13 +40,13 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 6.879998168945313,
-  "_mae": -0.03999999999999915,
+  "_mae": -0.0800009155273429,
   "_max_p1": 0.8354581868786052,
   "_first_trigger_ts": "2026-07-15",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 114,
-  "tau": 2.5333,
+  "days_elapsed": 117,
+  "tau": 2.6,
   "closed": true,
   "outcome": "EXPIRED"
 }

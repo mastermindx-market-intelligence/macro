@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "DHI-BULL-20260818",
-  "asof": "2026-11-06",
+  "asof": "2026-11-09",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 37.3,
@@ -11,26 +11,26 @@
   "human_state": "Closed",
   "components": {
     "validity": 100.0,
-    "progress": 18.8,
+    "progress": 2.5,
     "pace": 0.0,
-    "retention": 100.0,
-    "overlay": 38.8
+    "retention": 6.6,
+    "overlay": 33.0
   },
   "geometry": {
-    "dist_to_stop_r": 1.27,
-    "dist_to_t1_r": 1.23,
-    "dist_to_t2_r": 2.73,
-    "horizon_pct_used": 175.6,
-    "p1": 0.18,
-    "p2": 0.09,
+    "dist_to_stop_r": 1.018,
+    "dist_to_t1_r": 1.482,
+    "dist_to_t2_r": 2.982,
+    "horizon_pct_used": 182.2,
+    "p1": 0.0119,
+    "p2": 0.006,
     "p3": null,
-    "move_r": 0.27,
+    "move_r": 0.018,
     "mfe_r": 0.27,
     "mae_r": -0.88
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "Moving Away from Stop",
+  "change_reason": "",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
@@ -45,8 +45,8 @@
   "_first_trigger_ts": "2026-11-06",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 79,
-  "tau": 1.7556,
+  "days_elapsed": 82,
+  "tau": 1.8222,
   "closed": true,
   "outcome": "NO_ENTRY"
 }

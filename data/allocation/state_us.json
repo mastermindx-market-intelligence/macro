@@ -9,6 +9,7 @@
     "insurance",
     "mag7",
     "managed_care",
+    "obesity_glp1",
     "regional_banks",
     "retail",
     "travel",
@@ -18,13 +19,14 @@
     "us_sector_health",
     "us_sector_materials",
     "us_sector_realestate",
-    "us_sector_staples"
+    "us_sector_staples",
+    "us_sector_tech"
   ],
   "held": [
     "big_pharma",
     "us_sector_health",
-    "energy_complex",
-    "defensives"
+    "defensives",
+    "energy_complex"
   ],
   "leader": "memory_storage",
   "names": {
