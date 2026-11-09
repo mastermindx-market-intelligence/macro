@@ -41,7 +41,11 @@
     placeholder/aria-label on language change, and un-hides the no-match line. -#}
 {% macro search_box(en, zh, scope) -%}
 <div class="gmi-search" role="search">{{ ic("search", 18) }}<input class="gmi-search-in" type="search" data-gmi-filter="{{ scope }}" placeholder="{{ en }}" aria-label="{{ en }}" data-ph-en="{{ en }}" data-ph-zh="{{ zh }}" data-aria-en="{{ en }}" data-aria-zh="{{ zh }}" autocomplete="off" spellcheck="false"><kbd aria-hidden="true">/</kbd></div>
+{% if scope == 'index' -%}
+<p class="gmi-index-feedback" data-gmi-index-feedback role="status" aria-live="polite" aria-atomic="true" hidden><span data-gmi-index-count hidden><span class="l-en" data-gmi-index-count-en></span><span class="l-zh" data-gmi-index-count-zh></span></span><span data-gmi-nomatch="{{ scope }}" hidden>{{ t("No micro-theme matches that search.", "没有匹配该搜索的细分主题。") }}</span></p>
+{%- else -%}
 <p class="mx-empty gmi-empty-inline" data-gmi-nomatch="{{ scope }}" hidden>{{ t("No micro-theme matches that search.", "没有匹配该搜索的细分主题。") }}</p>
+{%- endif %}
 {%- endmacro %}
 
 {% macro key() -%}

@@ -1,0 +1,2502 @@
+{
+  "schema": "GMI_KEYBOARD_INDEX_VALIDATION_V1",
+  "recorded_at": "2026-11-09T05:06:46Z",
+  "repository": "mastermindx-market-intelligence/Macro",
+  "pull_request": 10676,
+  "parent_head": "696f370a3b47c2abc893a7c111b5669cce66d654",
+  "status": "SOURCE_CANDIDATE_VALIDATED_NOT_RELEASED",
+  "source_law_pin": "5c3d3885234358aefb97ecdbc59be0864df14f8b",
+  "sources": [
+    {
+      "path": "templates/gmi.js",
+      "bytes": 46328,
+      "sha256": "9a9db79633e3d4a92615865cb6b8350c9c855b3c64f842c23e6373c233ad3bd5",
+      "git_blob": "6231f3aeacffa0ea1645772633ee2362ab375e0d"
+    },
+    {
+      "path": "site/gmi.js",
+      "bytes": 46328,
+      "sha256": "9a9db79633e3d4a92615865cb6b8350c9c855b3c64f842c23e6373c233ad3bd5",
+      "git_blob": "6231f3aeacffa0ea1645772633ee2362ab375e0d"
+    },
+    {
+      "path": "templates/gmi.css",
+      "bytes": 67850,
+      "sha256": "5f27cbc0573e3d19f82b79da2396811f3f0f06263269da597b79b246d0acd1c7",
+      "git_blob": "8bdb7f167e2524ce37da863251181362be495e57"
+    },
+    {
+      "path": "site/gmi.css",
+      "bytes": 67850,
+      "sha256": "5f27cbc0573e3d19f82b79da2396811f3f0f06263269da597b79b246d0acd1c7",
+      "git_blob": "8bdb7f167e2524ce37da863251181362be495e57"
+    },
+    {
+      "path": "templates/_gmi_macros.html.j2",
+      "bytes": 6629,
+      "sha256": "13c5ea8f90fe643a3a97763106ff584b44ab2d0aa66745024318d41343033e35",
+      "git_blob": "101dea0d4a6c3dbf8b6a30b46413be1119b83000"
+    },
+    {
+      "path": "templates/gmi_index.html.j2",
+      "bytes": 3579,
+      "sha256": "4a505b97052c3c1519bdc206cd09d2cc01ba787466afb82c32961f25a5298b91",
+      "git_blob": "de23d434e99adac9665b36a50992b653b72e8c14"
+    },
+    {
+      "path": "site/gmi-index.html",
+      "bytes": 262268,
+      "sha256": "471e9f56f60f49d54b1ffb468c686c56fce4302730bfe23f62458f9caec60474",
+      "git_blob": "7426afdcddd4b8bca944725b23d8234ab6815c2f"
+    },
+    {
+      "path": "research/theme_graph/gmi_design_20261021/verify_product_browser.py",
+      "bytes": 68723,
+      "sha256": "5224505ceb3cf9e921ed80f16666506970b0c3c352369e14f6c81c72d4737e6d",
+      "git_blob": "6c6b57c1c20a9966602b6a68a20c67df430a1c21"
+    }
+  ],
+  "changes": [
+    "Delegate eligible tree-leaf Enter/Space to the existing topic link and selection owner; preserve parent, modifier, IME, repeat and nested-anchor behavior.",
+    "Derive category shortcut availability from existing filtered groups; guard missing/detached/hidden activation and stale intersection entries without losing URL context.",
+    "Release owned focus before hiding a result, category or shortcut, or restoring a collapsed group; retain surviving and unrelated focus.",
+    "Use existing indexRender matches for one bilingual status, category and subgroup counts; restore generated totals on Clear and label the footer Full index.",
+    "Keep core/extended tier totals separate from review status; hide the static tier breakdown during active search.",
+    "Allow narrow primary-navigation labels to wrap; retain 44 px targets. Raise category shortcuts to 44 px and pair mobile sticky/scroll offsets at 61 px."
+  ],
+  "source_self_check": {
+    "javascript_syntax": "PASS",
+    "python_verifier_syntax": "PASS",
+    "answer_first_controller_byte_identical_to_parent": true,
+    "template_site_javascript_identical": true,
+    "template_site_stylesheet_identical": true,
+    "generated_index_transport_hash_verified": true
+  },
+  "production_render": {
+    "qualified_model_sha256": "e644fa48a2bb6e6affe8d1fda74556d9db5f82acadffdad839e1efe8f095359f",
+    "builder_blob": "900253d42a7b1d43ad41aa493e8032444c4570de",
+    "bindings": {
+      "source_head": "696f370a3b47c2abc893a7c111b5669cce66d654",
+      "model_sha256": "e644fa48a2bb6e6affe8d1fda74556d9db5f82acadffdad839e1efe8f095359f",
+      "inputs": [
+        {
+          "path": "config.yml",
+          "blob": "5be75249c98033d7ee0fbe55928713b1f50af627"
+        },
+        {
+          "path": "scripts/build_gmi_explorer.py",
+          "blob": "900253d42a7b1d43ad41aa493e8032444c4570de"
+        },
+        {
+          "path": "lib/shared_shell.py",
+          "blob": "cffbeba3f8fdcf7a9413d9428aec0154d97d9614"
+        },
+        {
+          "path": "lib/config.py",
+          "blob": "b6fc888269876242597da354aaa726c20ed95802"
+        },
+        {
+          "path": "lib/pages.py",
+          "blob": "db175c463a31828263b57a3287afba661439a765"
+        },
+        {
+          "path": "lib/site_assets.py",
+          "blob": "03d7ce6137a30b990435cb1fee2090e61c2e95e3"
+        },
+        {
+          "path": "templates/_site_nav.html.j2",
+          "blob": "d5c449e9ec498c49007c2de0ced1757a7f36b12d"
+        },
+        {
+          "path": "templates/gmi_relationships.html.j2",
+          "blob": "53b8a697a17064367964b566788d553b7b27a4e0"
+        },
+        {
+          "path": "templates/_navlinks.html.j2",
+          "blob": "70fee6eabeb2cfe6d92590da42aa8c3e3733e837"
+        },
+        {
+          "path": "templates/_gmi_theme_data.html.j2",
+          "blob": "0520256ae0a2f61a33702070686be769d8640124"
+        },
+        {
+          "path": "templates/theme.css",
+          "blob": "619436f58d37a222d1db7021ba9d52bb3a05a7fa"
+        },
+        {
+          "path": "templates/gmi.css",
+          "blob": "23ce5f275ffc07a57278450b560d9d0c20f86632"
+        },
+        {
+          "path": "templates/_gmi_product_header.html.j2",
+          "blob": "c7b10dbfecc66deacfe9b8fbbb2ce72932299695"
+        },
+        {
+          "path": "templates/_interfonts.html.j2",
+          "blob": "f6e84eb856ce66f732aacafe883d5c26c5d1e27e"
+        },
+        {
+          "path": "templates/_gmi_taxonomy.html.j2",
+          "blob": "99ade053147ecb6f42a9b1119af4f522df5c05b7"
+        },
+        {
+          "path": "templates/_gmi_base.html.j2",
+          "blob": "1d76c899cb2ce05b66e7d37d19b53e212e814b4d"
+        },
+        {
+          "path": "templates/_gmi_macros.html.j2",
+          "blob": "1c926c0047dfa3d8a82b45ba0d278e5e51f6bad6"
+        },
+        {
+          "path": "templates/shared_shell_bridge.js",
+          "blob": "00ee9b9fa4d1fba67359d3d6b95c7937aed150b7"
+        },
+        {
+          "path": "templates/gmi.js",
+          "blob": "387383b0e237162421dfebf5eb9d7ef85302cb1e"
+        },
+        {
+          "path": "templates/_all_tools_menu.html.j2",
+          "blob": "3259b4e5c6305fd2f9a33bea65141efb0528680a"
+        },
+        {
+          "path": "templates/shared_shell.css",
+          "blob": "88a0fd9e836fbffac36722dac04189c6eb24af9b"
+        },
+        {
+          "path": "templates/gmi_map.html.j2",
+          "blob": "8da56912a78e4a030be4de0a5f6f4c3fdc1e8ff2"
+        },
+        {
+          "path": "templates/gmi_states.html.j2",
+          "blob": "2e2f66e8f9588403a58434ae6fa80bfa181845bf"
+        },
+        {
+          "path": "templates/theme.js",
+          "blob": "21a1fb1627ac34badc6078cff486f98486e9b773"
+        },
+        {
+          "path": "templates/_seo_head.html.j2",
+          "blob": "1a0f1a7cd3a8499e9d873171171d374424f9ddd8"
+        },
+        {
+          "path": "templates/gmi_companies.html.j2",
+          "blob": "afb542f5740a4147c5ef0d05aaae25481d8d6851"
+        },
+        {
+          "path": "templates/gmi_issuer.html.j2",
+          "blob": "35b06fd42b3ef485564b504fcacecacb89383c49"
+        },
+        {
+          "path": "templates/data_base.js",
+          "blob": "9e7cc392f0bad0e269d26903432faa39d94a1b62"
+        },
+        {
+          "path": "templates/gmi_coverage.html.j2",
+          "blob": "417a1e5ad85e66796201a1879e520db53bc9fbfc"
+        },
+        {
+          "path": "templates/_gmi_product_macros.html.j2",
+          "blob": "3e82a587bb0ad17f536d0513d85a1c0a66304999"
+        },
+        {
+          "path": "templates/_gmi_head.html.j2",
+          "blob": "5fe310cbe1a4a988f60f8b400e47a2de82ff06ef"
+        },
+        {
+          "path": "templates/gmi_index.html.j2",
+          "blob": "ff766f3634bb8954ea29e2363eb5a14f5facfa46"
+        },
+        {
+          "path": "engine/theme_graph/store.py",
+          "blob": "853bc3bb557aaf32251de0eb053bcff55604e68c"
+        },
+        {
+          "path": "engine/theme_graph/identity_resolution.py",
+          "blob": "e3510e69645a96872e7080efe028633ff6836324"
+        },
+        {
+          "path": "engine/theme_graph/change_report.py",
+          "blob": "354a48be5a56416b941fecb9942401a7f0fb7f1c"
+        },
+        {
+          "path": "engine/theme_graph/membership_evidence.py",
+          "blob": "3785874c443ffcd4cde2db31b1f11cafc184d7d5"
+        },
+        {
+          "path": "engine/theme_graph/rights.py",
+          "blob": "d801f2e231e8a0dbf05d30e96fd0024ae70bd63b"
+        },
+        {
+          "path": "engine/theme_graph/probation.py",
+          "blob": "eac18b9804411c10ee8cede2d5d6f9aae2a84f1f"
+        },
+        {
+          "path": "engine/theme_graph/identity.py",
+          "blob": "c27fb161bf401ca05387c4f07ac8e0220b801b2a"
+        },
+        {
+          "path": "lib/dataos/temporal.py",
+          "blob": "094b149a8b9158f19cb99c4005568c12db96ed41"
+        },
+        {
+          "path": "lib/dataos/registry.py",
+          "blob": "65b0d69036da97760f20241468f2549b21d9c686"
+        },
+        {
+          "path": "lib/dataos/__init__.py",
+          "blob": "1ddadafd88a59dfc90a7d68c3ae0897da1aae661"
+        },
+        {
+          "path": "lib/dataos/nulls.py",
+          "blob": "8e7f09ac172f326bab1678ac626fa1d5dc5aa0ab"
+        },
+        {
+          "path": "lib/dataos/quality.py",
+          "blob": "967b943443d9507c5c0078f62848c38c3d2af48a"
+        },
+        {
+          "path": "lib/dataos/identity.py",
+          "blob": "fb99fd182ac506a158c63ab434f09374cdbbd4f8"
+        },
+        {
+          "path": "lib/dataos/price.py",
+          "blob": "be127fa853a6aafbf0bcb33b58783316ac972faa"
+        },
+        {
+          "path": "scripts/gmi_explorer/present.py",
+          "blob": "c5ae61d80a484c07d583831577db52881843061b"
+        },
+        {
+          "path": "scripts/gmi_explorer/model.py",
+          "blob": "2614997dd87bf7d7e2d0b61b283c6b364801e1b1"
+        }
+      ]
+    },
+    "baseline": {
+      "source_head": "696f370a3b47c2abc893a7c111b5669cce66d654",
+      "input_count": 48,
+      "model_sha256": "e644fa48a2bb6e6affe8d1fda74556d9db5f82acadffdad839e1efe8f095359f",
+      "outputs": {
+        "gmi-companies.html": "014cd2e2660f353b2b90982b1cdf0e2c426fecf8939b3265834bffd6ebd960fc",
+        "gmi-coverage.html": "b9233025f8a8eb2c7963e84ffccffcdde3d0e18ca1a362480fa26b4c8d6a578c",
+        "gmi-index.html": "304086ae49f2543e143f9e39637cbdae2c2fe684572f3779edb388f0afc20e42",
+        "gmi-issuer-mu.html": "22cc39aca77961584fad494ab0afa788b287636f7e3c5cfaecba7dbda2172bdd",
+        "gmi-relationships.html": "dfaa6cf417b30c3d0f7955f16e03b69c44c3bd072ccffb23dc54c82177c15ddf",
+        "gmi-states.html": "3b3c22bd3c57dc34586ac5b9d0800cab9d6c3259f56c9cdc5c2021117a65187e",
+        "gmi.css": "c146dbe254c4a2a31635e00d6f5c6fd29b4e96edcb18ddfa55e56cbde17c7703",
+        "gmi.html": "3185babccf7b0f0ec5b81029dc041dba39d19235723a6db2d2c3b7b85652ea51",
+        "gmi.js": "ff4bc13c57df0ba6f098e67e866f6b5b4d4b6ad5b793985110eefdeeb42c797d"
+      },
+      "index_exact": true,
+      "explorer_exact": true
+    },
+    "candidate": {
+      "baseline_head": "696f370a3b47c2abc893a7c111b5669cce66d654",
+      "model_sha256": "e644fa48a2bb6e6affe8d1fda74556d9db5f82acadffdad839e1efe8f095359f",
+      "changed": [
+        "gmi-index.html",
+        "gmi.css",
+        "gmi.js"
+      ],
+      "outputs": {
+        "gmi-companies.html": "014cd2e2660f353b2b90982b1cdf0e2c426fecf8939b3265834bffd6ebd960fc",
+        "gmi-coverage.html": "b9233025f8a8eb2c7963e84ffccffcdde3d0e18ca1a362480fa26b4c8d6a578c",
+        "gmi-index.html": "471e9f56f60f49d54b1ffb468c686c56fce4302730bfe23f62458f9caec60474",
+        "gmi-issuer-mu.html": "22cc39aca77961584fad494ab0afa788b287636f7e3c5cfaecba7dbda2172bdd",
+        "gmi-relationships.html": "dfaa6cf417b30c3d0f7955f16e03b69c44c3bd072ccffb23dc54c82177c15ddf",
+        "gmi-states.html": "3b3c22bd3c57dc34586ac5b9d0800cab9d6c3259f56c9cdc5c2021117a65187e",
+        "gmi.css": "5f27cbc0573e3d19f82b79da2396811f3f0f06263269da597b79b246d0acd1c7",
+        "gmi.html": "3185babccf7b0f0ec5b81029dc041dba39d19235723a6db2d2c3b7b85652ea51",
+        "gmi.js": "9a9db79633e3d4a92615865cb6b8350c9c855b3c64f842c23e6373c233ad3bd5"
+      },
+      "candidate_index_blob": "7426afdcddd4b8bca944725b23d8234ab6815c2f",
+      "paired_assets_exact": true,
+      "all_other_outputs_unchanged": true
+    },
+    "scope": "Existing render_site/public-model/make_env/write_page path with the unchanged source-qualified accepted model in a new isolated verification root. No model generation, fenced model01 consumption or publication. Only gmi-index.html, gmi.js and gmi.css change among nine render outputs; historical coverage output is not published."
+  },
+  "browser": {
+    "browser": "157.0.8103.39",
+    "scope": "Fresh anonymous actual-generated-component DOM with complete GMI and shared theme CSS, all external networking blocked, reduced motion. Native keyboard plus explicit repeat/modifier/empty-row/queued-observer fault injections. No shared shell, live login, OS clipboard, public admission or deployment acceptance.",
+    "keyboard_shortcut_baseline": {
+      "pid": 40198,
+      "exit_code": 1,
+      "runtime_seconds": 13.98,
+      "receipt": {
+        "generated_at": "2026-11-09T04:53:35.914149+00:00",
+        "baseline": true,
+        "scope": "Bounded GMI component proof using exact generated HTML, JS and CSS inputs.\n\nThis harness uses an anonymous Chrome context and blocks every external request.\nIt extracts committed main content; it does not exercise the shared shell, login,\npublic admission, live serving or release. Keyboard/observer faults are explicit.",
+        "script_sha256": "ff4bc13c57df0ba6f098e67e866f6b5b4d4b6ad5b793985110eefdeeb42c797d",
+        "inputs": [
+          {
+            "path": "candidate/gmi.html",
+            "git_blob": "f821055256f57d3fa777e77c14c4a555ef4375cf",
+            "sha256": "3185babccf7b0f0ec5b81029dc041dba39d19235723a6db2d2c3b7b85652ea51",
+            "bytes": 972102
+          },
+          {
+            "path": "candidate/gmi-index.html",
+            "git_blob": "80f2c8bc0a5e9dc2925e8fad6c2552e3ef4a5c83",
+            "sha256": "304086ae49f2543e143f9e39637cbdae2c2fe684572f3779edb388f0afc20e42",
+            "bytes": 260073
+          },
+          {
+            "path": "candidate/gmi.js",
+            "git_blob": "387383b0e237162421dfebf5eb9d7ef85302cb1e",
+            "sha256": "ff4bc13c57df0ba6f098e67e866f6b5b4d4b6ad5b793985110eefdeeb42c797d",
+            "bytes": 43589
+          },
+          {
+            "path": "candidate/gmi.css",
+            "git_blob": "23ce5f275ffc07a57278450b560d9d0c20f86632",
+            "sha256": "c146dbe254c4a2a31635e00d6f5c6fd29b4e96edcb18ddfa55e56cbde17c7703",
+            "bytes": 67724
+          },
+          {
+            "path": "templates/theme.css",
+            "git_blob": "619436f58d37a222d1db7021ba9d52bb3a05a7fa",
+            "sha256": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757",
+            "bytes": 227583
+          }
+        ],
+        "cases": [
+          {
+            "name": "taxonomy-keyboard-1440-en",
+            "result": "FAIL",
+            "error": "Traceback (most recent call last):\n  File \"/Volumes/Mastermind/agent-workspaces/verify/gmi-keyboard-index-20261109-82_g_97g/verify_keyboard_index_component.py\", line 71, in <module>\n    action(width,language)\n    ~~~~~~^^^^^^^^^^^^^^^^\n  File \"keyboard_cases.py\", line 45, in taxonomy_keyboard_activation\n    report['browser']=browser.version\n            ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/sync_api/_generated.py\", line 22839, in to_have_text\n    self._sync(\n    ~~~~~~~~~~^\n        self._impl_obj.to_have_text(\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    ...<4 lines>...\n        )\n        ^\n    )\n    ^\n  File \"/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_sync_base.py\", line 115, in _sync\n    return task.result()\n           ~~~~~~~~~~~^^\nAssertionError: Locator expected to have text 'Conventional DRAM (non-HBM)'\nActual value: HBM & advanced packaging \nCall log:\n  - Expect \"to_have_text\" with timeout 1500ms\n  - waiting for locator(\"#gmi-topic-title\")\n    13 × locator resolved to <h1 tabindex=\"-1\" id=\"gmi-topic-title\">HBM & advanced packaging</h1>\n       - unexpected value \"HBM & advanced packaging\"\n\nAria snapshot:\n- heading \"HBM & advanced packaging\" [level=1]\n",
+            "contexts": 1
+          },
+          {
+            "name": "index-shortcuts-1440-en",
+            "result": "FAIL",
+            "error": "Traceback (most recent call last):\n  File \"/Volumes/Mastermind/agent-workspaces/verify/gmi-keyboard-index-20261109-82_g_97g/verify_keyboard_index_component.py\", line 71, in <module>\n    action(width,language)\n    ~~~~~~^^^^^^^^^^^^^^^^\n  File \"keyboard_cases.py\", line 94, in index_filtered_shortcuts\n  File \"/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/sync_api/_generated.py\", line 23358, in not_to_be_visible\n    self._sync(\n    ~~~~~~~~~~^\n        self._impl_obj.not_to_be_visible(\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n            visible=visible, timeout=to_milliseconds(timeout)\n            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n        )\n        ^\n    )\n    ^\n  File \"/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_sync_base.py\", line 115, in _sync\n    return task.result()\n           ~~~~~~~~~~~^^\nAssertionError: Locator expected not to be visible\nActual value: visible \nCall log:\n  - Expect \"not_to_be_visible\" with timeout 1500ms\n  - waiting for locator(\".gmi-jump a[href=\\\"#energy_power\\\"]\")\n    16 × locator resolved to <a aria-current=\"true\" href=\"#energy_power\">…</a>\n       - unexpected value \"visible\"\n\nAria snapshot:\n- link \"Energy & power 79\":\n  - /url: \"#energy_power\"\n",
+            "contexts": 1
+          },
+          {
+            "name": "taxonomy-keyboard-390-en",
+            "result": "FAIL",
+            "error": "Traceback (most recent call last):\n  File \"/Volumes/Mastermind/agent-workspaces/verify/gmi-keyboard-index-20261109-82_g_97g/verify_keyboard_index_component.py\", line 71, in <module>\n    action(width,language)\n    ~~~~~~^^^^^^^^^^^^^^^^\n  File \"keyboard_cases.py\", line 45, in taxonomy_keyboard_activation\n    report['browser']=browser.version\n            ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/sync_api/_generated.py\", line 22839, in to_have_text\n    self._sync(\n    ~~~~~~~~~~^\n        self._impl_obj.to_have_text(\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    ...<4 lines>...\n        )\n        ^\n    )\n    ^\n  File \"/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_sync_base.py\", line 115, in _sync\n    return task.result()\n           ~~~~~~~~~~~^^\nAssertionError: Locator expected to have text 'Conventional DRAM (non-HBM)'\nActual value: HBM & advanced packaging \nCall log:\n  - Expect \"to_have_text\" with timeout 1500ms\n  - waiting for locator(\"#gmi-topic-title\")\n    16 × locator resolved to <h1 tabindex=\"-1\" id=\"gmi-topic-title\">HBM & advanced packaging</h1>\n       - unexpected value \"HBM & advanced packaging\"\n\nAria snapshot:\n- heading \"HBM & advanced packaging\" [level=1]\n",
+            "contexts": 1
+          },
+          {
+            "name": "index-shortcuts-390-en",
+            "result": "FAIL",
+            "error": "Traceback (most recent call last):\n  File \"/Volumes/Mastermind/agent-workspaces/verify/gmi-keyboard-index-20261109-82_g_97g/verify_keyboard_index_component.py\", line 71, in <module>\n    action(width,language)\n    ~~~~~~^^^^^^^^^^^^^^^^\n  File \"keyboard_cases.py\", line 94, in index_filtered_shortcuts\n  File \"/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/sync_api/_generated.py\", line 23358, in not_to_be_visible\n    self._sync(\n    ~~~~~~~~~~^\n        self._impl_obj.not_to_be_visible(\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n            visible=visible, timeout=to_milliseconds(timeout)\n            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n        )\n        ^\n    )\n    ^\n  File \"/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_sync_base.py\", line 115, in _sync\n    return task.result()\n           ~~~~~~~~~~~^^\nAssertionError: Locator expected not to be visible\nActual value: visible \nCall log:\n  - Expect \"not_to_be_visible\" with timeout 1500ms\n  - waiting for locator(\".gmi-jump a[href=\\\"#energy_power\\\"]\")\n    16 × locator resolved to <a aria-current=\"true\" href=\"#energy_power\">…</a>\n       - unexpected value \"visible\"\n\nAria snapshot:\n- link \"Energy & power 79\":\n  - /url: \"#energy_power\"\n",
+            "contexts": 1
+          }
+        ],
+        "contexts": 4,
+        "screenshots": [],
+        "page_errors": [],
+        "browser": "157.0.8103.39",
+        "pass": false
+      }
+    },
+    "layout_regression": {
+      "pid": 42328,
+      "first_candidate": {
+        "generated_at": "2026-11-09T04:54:14.164363+00:00",
+        "baseline": false,
+        "scope": "Bounded GMI component proof using exact generated HTML, JS and CSS inputs.\n\nThis harness uses an anonymous Chrome context and blocks every external request.\nIt extracts committed main content; it does not exercise the shared shell, login,\npublic admission, live serving or release. Keyboard/observer faults are explicit.",
+        "script_sha256": "a3d53fc10d9a6123fa193e80f95ae52cbbd44b1047cf45ec38a81fc1ac8d0d19",
+        "inputs": [
+          {
+            "path": "candidate/gmi.html",
+            "git_blob": "f821055256f57d3fa777e77c14c4a555ef4375cf",
+            "sha256": "3185babccf7b0f0ec5b81029dc041dba39d19235723a6db2d2c3b7b85652ea51",
+            "bytes": 972102
+          },
+          {
+            "path": "candidate/gmi-index.html",
+            "git_blob": "80f2c8bc0a5e9dc2925e8fad6c2552e3ef4a5c83",
+            "sha256": "304086ae49f2543e143f9e39637cbdae2c2fe684572f3779edb388f0afc20e42",
+            "bytes": 260073
+          },
+          {
+            "path": "candidate/gmi.js",
+            "git_blob": "387383b0e237162421dfebf5eb9d7ef85302cb1e",
+            "sha256": "ff4bc13c57df0ba6f098e67e866f6b5b4d4b6ad5b793985110eefdeeb42c797d",
+            "bytes": 43589
+          },
+          {
+            "path": "candidate/gmi.css",
+            "git_blob": "23ce5f275ffc07a57278450b560d9d0c20f86632",
+            "sha256": "c146dbe254c4a2a31635e00d6f5c6fd29b4e96edcb18ddfa55e56cbde17c7703",
+            "bytes": 67724
+          },
+          {
+            "path": "templates/theme.css",
+            "git_blob": "619436f58d37a222d1db7021ba9d52bb3a05a7fa",
+            "sha256": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757",
+            "bytes": 227583
+          }
+        ],
+        "cases": [
+          {
+            "name": "taxonomy-keyboard-1440-en",
+            "result": "PASS",
+            "contexts": 2
+          },
+          {
+            "name": "index-shortcuts-1440-en",
+            "result": "PASS",
+            "contexts": 1
+          },
+          {
+            "name": "taxonomy-keyboard-1440-zh",
+            "result": "PASS",
+            "contexts": 2
+          },
+          {
+            "name": "index-shortcuts-1440-zh",
+            "result": "PASS",
+            "contexts": 1
+          },
+          {
+            "name": "taxonomy-keyboard-390-en",
+            "result": "PASS",
+            "contexts": 2
+          },
+          {
+            "name": "index-shortcuts-390-en",
+            "result": "PASS",
+            "contexts": 1
+          },
+          {
+            "name": "taxonomy-keyboard-390-zh",
+            "result": "PASS",
+            "contexts": 2
+          },
+          {
+            "name": "index-shortcuts-390-zh",
+            "result": "PASS",
+            "contexts": 1
+          },
+          {
+            "name": "taxonomy-keyboard-320-en",
+            "result": "FAIL",
+            "error": "Traceback (most recent call last):\n  File \"/Volumes/Mastermind/agent-workspaces/verify/gmi-keyboard-index-20261109-82_g_97g/verify_keyboard_index_component.py\", line 71, in <module>\n    action(width,language)\n    ~~~~~~^^^^^^^^^^^^^^^^\n  File \"keyboard_cases.py\", line 70, in taxonomy_keyboard_activation\n    try:\n    \nAssertionError\n",
+            "contexts": 1
+          },
+          {
+            "name": "index-shortcuts-320-en",
+            "result": "FAIL",
+            "error": "Traceback (most recent call last):\n  File \"/Volumes/Mastermind/agent-workspaces/verify/gmi-keyboard-index-20261109-82_g_97g/verify_keyboard_index_component.py\", line 71, in <module>\n    action(width,language)\n    ~~~~~~^^^^^^^^^^^^^^^^\n  File \"keyboard_cases.py\", line 194, in index_filtered_shortcuts\nAssertionError\n",
+            "contexts": 1
+          },
+          {
+            "name": "taxonomy-keyboard-320-zh",
+            "result": "PASS",
+            "contexts": 2
+          },
+          {
+            "name": "index-shortcuts-320-zh",
+            "result": "PASS",
+            "contexts": 1
+          }
+        ],
+        "contexts": 17,
+        "screenshots": [
+          "index-filter-390-en.png",
+          "index-filter-320-zh.png"
+        ],
+        "page_errors": [],
+        "browser": "157.0.8103.39",
+        "pass": false
+      },
+      "observations": [
+        {
+          "viewport": 320,
+          "width": 351,
+          "elements": [
+            {
+              "tag": "A",
+              "cls": "",
+              "text": "Relationships公司关系",
+              "left": 258.953125,
+              "right": 351.4375,
+              "width": 92.484375,
+              "minWidth": "auto",
+              "whiteSpace": "nowrap",
+              "overflowWrap": "normal",
+              "display": "flex",
+              "font": "12.5px"
+            },
+            {
+              "tag": "SPAN",
+              "cls": "l-en",
+              "text": "Relationships",
+              "left": 263.953125,
+              "right": 346.4375,
+              "width": 82.484375,
+              "minWidth": "auto",
+              "whiteSpace": "nowrap",
+              "overflowWrap": "normal",
+              "display": "block",
+              "font": "12.5px"
+            },
+            {
+              "tag": "SPAN",
+              "cls": "l-en",
+              "text": "More detail",
+              "left": 262.140625,
+              "right": 323.609375,
+              "width": 61.46875,
+              "minWidth": "0px",
+              "whiteSpace": "nowrap",
+              "overflowWrap": "normal",
+              "display": "inline",
+              "font": "11px"
+            },
+            {
+              "tag": "SPAN",
+              "cls": "l-en",
+              "text": "25 micro-themes: 4 core, 21 extended, 0 held, 0 admitted",
+              "left": 36,
+              "right": 408.03125,
+              "width": 372.03125,
+              "minWidth": "0px",
+              "whiteSpace": "nowrap",
+              "overflowWrap": "normal",
+              "display": "inline",
+              "font": "14px"
+            },
+            {
+              "tag": "SPAN",
+              "cls": "l-en",
+              "text": "64 micro-themes: 9 core, 54 extended, 0 held, 1 admitted",
+              "left": 36,
+              "right": 409.140625,
+              "width": 373.140625,
+              "minWidth": "0px",
+              "whiteSpace": "nowrap",
+              "overflowWrap": "normal",
+              "display": "inline",
+              "font": "14px"
+            },
+            {
+              "tag": "SPAN",
+              "cls": "l-en",
+              "text": "79 micro-themes: 12 core, 67 extended, 0 held, 0 admitted",
+              "left": 36,
+              "right": 415.390625,
+              "width": 379.390625,
+              "minWidth": "0px",
+              "whiteSpace": "nowrap",
+              "overflowWrap": "normal",
+              "display": "inline",
+              "font": "14px"
+            },
+            {
+              "tag": "SPAN",
+              "cls": "l-en",
+              "text": "36 micro-themes: 7 core, 29 extended, 0 held, 0 admitted",
+              "left": 36,
+              "right": 410,
+              "width": 374,
+              "minWidth": "0px",
+              "whiteSpace": "nowrap",
+              "overflowWrap": "normal",
+              "display": "inline",
+              "font": "14px"
+            },
+            {
+              "tag": "SPAN",
+              "cls": "l-en",
+              "text": "92 micro-themes: 21 core, 71 extended, 0 held, 0 admitted",
+              "left": 36,
+              "right": 413.59375,
+              "width": 377.59375,
+              "minWidth": "0px",
+              "whiteSpace": "nowrap",
+              "overflowWrap": "normal",
+              "display": "inline",
+              "font": "14px"
+            },
+            {
+              "tag": "SPAN",
+              "cls": "l-en",
+              "text": "56 micro-themes: 14 core, 42 extended, 0 held, 0 admitted",
+              "left": 36,
+              "right": 417.34375,
+              "width": 381.34375,
+              "minWidth": "0px",
+              "whiteSpace": "nowrap",
+              "overflowWrap": "normal",
+              "display": "inline",
+              "font": "14px"
+            },
+            {
+              "tag": "SPAN",
+              "cls": "l-en",
+              "text": "19 micro-themes: 0 core, 19 extended, 0 held, 0 admitted",
+              "left": 36,
+              "right": 406.609375,
+              "width": 370.609375,
+              "minWidth": "0px",
+              "whiteSpace": "nowrap",
+              "overflowWrap": "normal",
+              "display": "inline",
+              "font": "14px"
+            }
+          ],
+          "route": "gmi.html"
+        },
+        {
+          "viewport": 320,
+          "width": 351,
+          "elements": [
+            {
+              "tag": "A",
+              "cls": "",
+              "text": "Relationships公司关系",
+              "left": 258.953125,
+              "right": 351.4375,
+              "width": 92.484375,
+              "minWidth": "auto",
+              "whiteSpace": "nowrap",
+              "overflowWrap": "normal",
+              "display": "flex",
+              "font": "12.5px"
+            },
+            {
+              "tag": "SPAN",
+              "cls": "l-en",
+              "text": "Relationships",
+              "left": 263.953125,
+              "right": 346.4375,
+              "width": 82.484375,
+              "minWidth": "auto",
+              "whiteSpace": "nowrap",
+              "overflowWrap": "normal",
+              "display": "block",
+              "font": "12.5px"
+            }
+          ],
+          "route": "gmi-index.html"
+        }
+      ],
+      "finding": "320 px English primary tabs produced a 351 px document. Existing CSS forced non-wrapping labels. The source fix allows wrapping; it does not hide document overflow."
+    },
+    "keyboard_before_count_amendment": {
+      "pid": 48585,
+      "exit_code": 0,
+      "runtime_seconds": 26.4,
+      "receipt": {
+        "generated_at": "2026-11-09T04:56:09.479734+00:00",
+        "baseline": false,
+        "scope": "Bounded GMI component proof using exact generated HTML, JS and CSS inputs.\n\nThis harness uses an anonymous Chrome context and blocks every external request.\nIt extracts committed main content; it does not exercise the shared shell, login,\npublic admission, live serving or release. Keyboard/observer faults are explicit.",
+        "script_sha256": "a3d53fc10d9a6123fa193e80f95ae52cbbd44b1047cf45ec38a81fc1ac8d0d19",
+        "gmi_css_sha256": "0f569e8349643bdac4f734ba9f49d796ae2e034667a48259f942a67e20f02040",
+        "inputs": [
+          {
+            "path": "candidate/gmi.html",
+            "git_blob": "f821055256f57d3fa777e77c14c4a555ef4375cf",
+            "sha256": "3185babccf7b0f0ec5b81029dc041dba39d19235723a6db2d2c3b7b85652ea51",
+            "bytes": 972102
+          },
+          {
+            "path": "candidate/gmi-index.html",
+            "git_blob": "80f2c8bc0a5e9dc2925e8fad6c2552e3ef4a5c83",
+            "sha256": "304086ae49f2543e143f9e39637cbdae2c2fe684572f3779edb388f0afc20e42",
+            "bytes": 260073
+          },
+          {
+            "path": "candidate/gmi.js",
+            "git_blob": "387383b0e237162421dfebf5eb9d7ef85302cb1e",
+            "sha256": "ff4bc13c57df0ba6f098e67e866f6b5b4d4b6ad5b793985110eefdeeb42c797d",
+            "bytes": 43589
+          },
+          {
+            "path": "candidate/gmi.css",
+            "git_blob": "23ce5f275ffc07a57278450b560d9d0c20f86632",
+            "sha256": "c146dbe254c4a2a31635e00d6f5c6fd29b4e96edcb18ddfa55e56cbde17c7703",
+            "bytes": 67724
+          },
+          {
+            "path": "templates/theme.css",
+            "git_blob": "619436f58d37a222d1db7021ba9d52bb3a05a7fa",
+            "sha256": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757",
+            "bytes": 227583
+          }
+        ],
+        "cases": [
+          {
+            "name": "taxonomy-keyboard-1440-en",
+            "result": "PASS",
+            "contexts": 2
+          },
+          {
+            "name": "index-shortcuts-1440-en",
+            "result": "PASS",
+            "contexts": 1
+          },
+          {
+            "name": "taxonomy-keyboard-1440-zh",
+            "result": "PASS",
+            "contexts": 2
+          },
+          {
+            "name": "index-shortcuts-1440-zh",
+            "result": "PASS",
+            "contexts": 1
+          },
+          {
+            "name": "taxonomy-keyboard-390-en",
+            "result": "PASS",
+            "contexts": 2
+          },
+          {
+            "name": "index-shortcuts-390-en",
+            "result": "PASS",
+            "contexts": 1
+          },
+          {
+            "name": "taxonomy-keyboard-390-zh",
+            "result": "PASS",
+            "contexts": 2
+          },
+          {
+            "name": "index-shortcuts-390-zh",
+            "result": "PASS",
+            "contexts": 1
+          },
+          {
+            "name": "taxonomy-keyboard-320-en",
+            "result": "PASS",
+            "contexts": 2
+          },
+          {
+            "name": "index-shortcuts-320-en",
+            "result": "PASS",
+            "contexts": 1
+          },
+          {
+            "name": "taxonomy-keyboard-320-zh",
+            "result": "PASS",
+            "contexts": 2
+          },
+          {
+            "name": "index-shortcuts-320-zh",
+            "result": "PASS",
+            "contexts": 1
+          }
+        ],
+        "contexts": 18,
+        "screenshots": [
+          "index-filter-390-en.png",
+          "index-filter-320-zh.png"
+        ],
+        "page_errors": [],
+        "browser": "157.0.8103.39",
+        "navigation_geometry": [
+          {
+            "width": 1440,
+            "language": "en",
+            "route": "/gmi.html",
+            "targets": [
+              {
+                "text": "Theme research",
+                "left": 32,
+                "right": 164.78125,
+                "height": 44
+              },
+              {
+                "text": "Company evidence",
+                "left": 168.78125,
+                "right": 318.953125,
+                "height": 44
+              },
+              {
+                "text": "Relationships",
+                "left": 322.953125,
+                "right": 439.4375,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "width": 1440,
+            "language": "en",
+            "route": "/gmi.html",
+            "targets": [
+              {
+                "text": "Theme research",
+                "left": 32,
+                "right": 164.78125,
+                "height": 44
+              },
+              {
+                "text": "Company evidence",
+                "left": 168.78125,
+                "right": 318.953125,
+                "height": 44
+              },
+              {
+                "text": "Relationships",
+                "left": 322.953125,
+                "right": 439.4375,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "width": 1440,
+            "language": "en",
+            "route": "/gmi-index.html",
+            "targets": [
+              {
+                "text": "Theme research",
+                "left": 32,
+                "right": 164.78125,
+                "height": 44
+              },
+              {
+                "text": "Company evidence",
+                "left": 168.78125,
+                "right": 318.953125,
+                "height": 44
+              },
+              {
+                "text": "Relationships",
+                "left": 322.953125,
+                "right": 439.4375,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "width": 1440,
+            "language": "zh",
+            "route": "/gmi.html",
+            "targets": [
+              {
+                "text": "主题研究",
+                "left": 32,
+                "right": 116,
+                "height": 44
+              },
+              {
+                "text": "公司证据",
+                "left": 120,
+                "right": 204,
+                "height": 44
+              },
+              {
+                "text": "公司关系",
+                "left": 208,
+                "right": 292,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "width": 1440,
+            "language": "zh",
+            "route": "/gmi.html",
+            "targets": [
+              {
+                "text": "主题研究",
+                "left": 32,
+                "right": 116,
+                "height": 44
+              },
+              {
+                "text": "公司证据",
+                "left": 120,
+                "right": 204,
+                "height": 44
+              },
+              {
+                "text": "公司关系",
+                "left": 208,
+                "right": 292,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "width": 1440,
+            "language": "zh",
+            "route": "/gmi-index.html",
+            "targets": [
+              {
+                "text": "主题研究",
+                "left": 32,
+                "right": 116,
+                "height": 44
+              },
+              {
+                "text": "公司证据",
+                "left": 120,
+                "right": 204,
+                "height": 44
+              },
+              {
+                "text": "公司关系",
+                "left": 208,
+                "right": 292,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "width": 390,
+            "language": "en",
+            "route": "/gmi.html",
+            "targets": [
+              {
+                "text": "Theme research",
+                "left": 16,
+                "right": 132.65625,
+                "height": 44
+              },
+              {
+                "text": "Company evidence",
+                "left": 136.65625,
+                "right": 253.328125,
+                "height": 55.5
+              },
+              {
+                "text": "Relationships",
+                "left": 257.328125,
+                "right": 374,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "width": 390,
+            "language": "en",
+            "route": "/gmi.html",
+            "targets": [
+              {
+                "text": "Theme research",
+                "left": 16,
+                "right": 132.65625,
+                "height": 44
+              },
+              {
+                "text": "Company evidence",
+                "left": 136.65625,
+                "right": 253.328125,
+                "height": 55.5
+              },
+              {
+                "text": "Relationships",
+                "left": 257.328125,
+                "right": 374,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "width": 390,
+            "language": "en",
+            "route": "/gmi-index.html",
+            "targets": [
+              {
+                "text": "Theme research",
+                "left": 16,
+                "right": 132.65625,
+                "height": 44
+              },
+              {
+                "text": "Company evidence",
+                "left": 136.65625,
+                "right": 253.328125,
+                "height": 55.5
+              },
+              {
+                "text": "Relationships",
+                "left": 257.328125,
+                "right": 374,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "width": 390,
+            "language": "zh",
+            "route": "/gmi.html",
+            "targets": [
+              {
+                "text": "主题研究",
+                "left": 16,
+                "right": 132.65625,
+                "height": 44
+              },
+              {
+                "text": "公司证据",
+                "left": 136.65625,
+                "right": 253.328125,
+                "height": 44
+              },
+              {
+                "text": "公司关系",
+                "left": 257.328125,
+                "right": 374,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "width": 390,
+            "language": "zh",
+            "route": "/gmi.html",
+            "targets": [
+              {
+                "text": "主题研究",
+                "left": 16,
+                "right": 132.65625,
+                "height": 44
+              },
+              {
+                "text": "公司证据",
+                "left": 136.65625,
+                "right": 253.328125,
+                "height": 44
+              },
+              {
+                "text": "公司关系",
+                "left": 257.328125,
+                "right": 374,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "width": 390,
+            "language": "zh",
+            "route": "/gmi-index.html",
+            "targets": [
+              {
+                "text": "主题研究",
+                "left": 16,
+                "right": 132.65625,
+                "height": 44
+              },
+              {
+                "text": "公司证据",
+                "left": 136.65625,
+                "right": 253.328125,
+                "height": 44
+              },
+              {
+                "text": "公司关系",
+                "left": 257.328125,
+                "right": 374,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "width": 320,
+            "language": "en",
+            "route": "/gmi.html",
+            "targets": [
+              {
+                "text": "Theme research",
+                "left": 16,
+                "right": 109.328125,
+                "height": 55.5
+              },
+              {
+                "text": "Company evidence",
+                "left": 113.328125,
+                "right": 206.671875,
+                "height": 55.5
+              },
+              {
+                "text": "Relationships",
+                "left": 210.671875,
+                "right": 304,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "width": 320,
+            "language": "en",
+            "route": "/gmi.html",
+            "targets": [
+              {
+                "text": "Theme research",
+                "left": 16,
+                "right": 109.328125,
+                "height": 55.5
+              },
+              {
+                "text": "Company evidence",
+                "left": 113.328125,
+                "right": 206.671875,
+                "height": 55.5
+              },
+              {
+                "text": "Relationships",
+                "left": 210.671875,
+                "right": 304,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "width": 320,
+            "language": "en",
+            "route": "/gmi-index.html",
+            "targets": [
+              {
+                "text": "Theme research",
+                "left": 16,
+                "right": 109.328125,
+                "height": 55.5
+              },
+              {
+                "text": "Company evidence",
+                "left": 113.328125,
+                "right": 206.671875,
+                "height": 55.5
+              },
+              {
+                "text": "Relationships",
+                "left": 210.671875,
+                "right": 304,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "width": 320,
+            "language": "zh",
+            "route": "/gmi.html",
+            "targets": [
+              {
+                "text": "主题研究",
+                "left": 16,
+                "right": 109.328125,
+                "height": 44
+              },
+              {
+                "text": "公司证据",
+                "left": 113.328125,
+                "right": 206.671875,
+                "height": 44
+              },
+              {
+                "text": "公司关系",
+                "left": 210.671875,
+                "right": 304,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "width": 320,
+            "language": "zh",
+            "route": "/gmi.html",
+            "targets": [
+              {
+                "text": "主题研究",
+                "left": 16,
+                "right": 109.328125,
+                "height": 44
+              },
+              {
+                "text": "公司证据",
+                "left": 113.328125,
+                "right": 206.671875,
+                "height": 44
+              },
+              {
+                "text": "公司关系",
+                "left": 210.671875,
+                "right": 304,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "width": 320,
+            "language": "zh",
+            "route": "/gmi-index.html",
+            "targets": [
+              {
+                "text": "主题研究",
+                "left": 16,
+                "right": 109.328125,
+                "height": 44
+              },
+              {
+                "text": "公司证据",
+                "left": 113.328125,
+                "right": 206.671875,
+                "height": 44
+              },
+              {
+                "text": "公司关系",
+                "left": 210.671875,
+                "right": 304,
+                "height": 44
+              }
+            ]
+          }
+        ],
+        "pass": true
+      }
+    },
+    "count_baseline": {
+      "pid": 67669,
+      "exit_code": 0,
+      "runtime_seconds": 4.48,
+      "receipt": {
+        "source_head": "696f370a3b47c2abc893a7c111b5669cce66d654",
+        "browser": "157.0.8103.39",
+        "cases": [
+          {
+            "width": 1440,
+            "language": "en",
+            "displayed_rows": 2,
+            "displayed_chip_count": "64",
+            "expected_chip_count": "2",
+            "regression_reproduced": true
+          },
+          {
+            "width": 320,
+            "language": "zh",
+            "displayed_rows": 2,
+            "displayed_chip_count": "64",
+            "expected_chip_count": "2",
+            "regression_reproduced": true
+          }
+        ],
+        "page_errors": []
+      },
+      "meaning": "Exit 0 records successful reproduction: two displayed HBM rows were labelled 64 by the category shortcut, in desktop EN and 320 px ZH."
+    },
+    "initial_count_run": {
+      "pid": 73914,
+      "exit_code": 1,
+      "runtime_seconds": 25.65,
+      "receipt": {
+        "generated_at": "2026-11-09T05:02:38.673797+00:00",
+        "baseline": false,
+        "scope": "Bounded GMI component proof using exact generated HTML, JS and CSS inputs.\n\nThis harness uses an anonymous Chrome context and blocks every external request.\nIt extracts committed main content; it does not exercise the shared shell, login,\npublic admission, live serving or release. Keyboard/observer faults are explicit.",
+        "script_sha256": "9a9db79633e3d4a92615865cb6b8350c9c855b3c64f842c23e6373c233ad3bd5",
+        "gmi_css_sha256": "5f27cbc0573e3d19f82b79da2396811f3f0f06263269da597b79b246d0acd1c7",
+        "verifier_sha256": "9c274f0bf5b9e7a869fd1fea18a34e9b712da9400f91b4922e1e7a7e0875aaf3",
+        "inputs": {
+          "source_head": "696f370a3b47c2abc893a7c111b5669cce66d654",
+          "model_sha256": "e644fa48a2bb6e6affe8d1fda74556d9db5f82acadffdad839e1efe8f095359f",
+          "inputs": [
+            {
+              "path": "config.yml",
+              "blob": "5be75249c98033d7ee0fbe55928713b1f50af627"
+            },
+            {
+              "path": "scripts/build_gmi_explorer.py",
+              "blob": "900253d42a7b1d43ad41aa493e8032444c4570de"
+            },
+            {
+              "path": "lib/shared_shell.py",
+              "blob": "cffbeba3f8fdcf7a9413d9428aec0154d97d9614"
+            },
+            {
+              "path": "lib/config.py",
+              "blob": "b6fc888269876242597da354aaa726c20ed95802"
+            },
+            {
+              "path": "lib/pages.py",
+              "blob": "db175c463a31828263b57a3287afba661439a765"
+            },
+            {
+              "path": "lib/site_assets.py",
+              "blob": "03d7ce6137a30b990435cb1fee2090e61c2e95e3"
+            },
+            {
+              "path": "templates/_site_nav.html.j2",
+              "blob": "d5c449e9ec498c49007c2de0ced1757a7f36b12d"
+            },
+            {
+              "path": "templates/gmi_relationships.html.j2",
+              "blob": "53b8a697a17064367964b566788d553b7b27a4e0"
+            },
+            {
+              "path": "templates/_navlinks.html.j2",
+              "blob": "70fee6eabeb2cfe6d92590da42aa8c3e3733e837"
+            },
+            {
+              "path": "templates/_gmi_theme_data.html.j2",
+              "blob": "0520256ae0a2f61a33702070686be769d8640124"
+            },
+            {
+              "path": "templates/theme.css",
+              "blob": "619436f58d37a222d1db7021ba9d52bb3a05a7fa"
+            },
+            {
+              "path": "templates/gmi.css",
+              "blob": "23ce5f275ffc07a57278450b560d9d0c20f86632"
+            },
+            {
+              "path": "templates/_gmi_product_header.html.j2",
+              "blob": "c7b10dbfecc66deacfe9b8fbbb2ce72932299695"
+            },
+            {
+              "path": "templates/_interfonts.html.j2",
+              "blob": "f6e84eb856ce66f732aacafe883d5c26c5d1e27e"
+            },
+            {
+              "path": "templates/_gmi_taxonomy.html.j2",
+              "blob": "99ade053147ecb6f42a9b1119af4f522df5c05b7"
+            },
+            {
+              "path": "templates/_gmi_base.html.j2",
+              "blob": "1d76c899cb2ce05b66e7d37d19b53e212e814b4d"
+            },
+            {
+              "path": "templates/_gmi_macros.html.j2",
+              "blob": "1c926c0047dfa3d8a82b45ba0d278e5e51f6bad6"
+            },
+            {
+              "path": "templates/shared_shell_bridge.js",
+              "blob": "00ee9b9fa4d1fba67359d3d6b95c7937aed150b7"
+            },
+            {
+              "path": "templates/gmi.js",
+              "blob": "387383b0e237162421dfebf5eb9d7ef85302cb1e"
+            },
+            {
+              "path": "templates/_all_tools_menu.html.j2",
+              "blob": "3259b4e5c6305fd2f9a33bea65141efb0528680a"
+            },
+            {
+              "path": "templates/shared_shell.css",
+              "blob": "88a0fd9e836fbffac36722dac04189c6eb24af9b"
+            },
+            {
+              "path": "templates/gmi_map.html.j2",
+              "blob": "8da56912a78e4a030be4de0a5f6f4c3fdc1e8ff2"
+            },
+            {
+              "path": "templates/gmi_states.html.j2",
+              "blob": "2e2f66e8f9588403a58434ae6fa80bfa181845bf"
+            },
+            {
+              "path": "templates/theme.js",
+              "blob": "21a1fb1627ac34badc6078cff486f98486e9b773"
+            },
+            {
+              "path": "templates/_seo_head.html.j2",
+              "blob": "1a0f1a7cd3a8499e9d873171171d374424f9ddd8"
+            },
+            {
+              "path": "templates/gmi_companies.html.j2",
+              "blob": "afb542f5740a4147c5ef0d05aaae25481d8d6851"
+            },
+            {
+              "path": "templates/gmi_issuer.html.j2",
+              "blob": "35b06fd42b3ef485564b504fcacecacb89383c49"
+            },
+            {
+              "path": "templates/data_base.js",
+              "blob": "9e7cc392f0bad0e269d26903432faa39d94a1b62"
+            },
+            {
+              "path": "templates/gmi_coverage.html.j2",
+              "blob": "417a1e5ad85e66796201a1879e520db53bc9fbfc"
+            },
+            {
+              "path": "templates/_gmi_product_macros.html.j2",
+              "blob": "3e82a587bb0ad17f536d0513d85a1c0a66304999"
+            },
+            {
+              "path": "templates/_gmi_head.html.j2",
+              "blob": "5fe310cbe1a4a988f60f8b400e47a2de82ff06ef"
+            },
+            {
+              "path": "templates/gmi_index.html.j2",
+              "blob": "ff766f3634bb8954ea29e2363eb5a14f5facfa46"
+            },
+            {
+              "path": "engine/theme_graph/store.py",
+              "blob": "853bc3bb557aaf32251de0eb053bcff55604e68c"
+            },
+            {
+              "path": "engine/theme_graph/identity_resolution.py",
+              "blob": "e3510e69645a96872e7080efe028633ff6836324"
+            },
+            {
+              "path": "engine/theme_graph/change_report.py",
+              "blob": "354a48be5a56416b941fecb9942401a7f0fb7f1c"
+            },
+            {
+              "path": "engine/theme_graph/membership_evidence.py",
+              "blob": "3785874c443ffcd4cde2db31b1f11cafc184d7d5"
+            },
+            {
+              "path": "engine/theme_graph/rights.py",
+              "blob": "d801f2e231e8a0dbf05d30e96fd0024ae70bd63b"
+            },
+            {
+              "path": "engine/theme_graph/probation.py",
+              "blob": "eac18b9804411c10ee8cede2d5d6f9aae2a84f1f"
+            },
+            {
+              "path": "engine/theme_graph/identity.py",
+              "blob": "c27fb161bf401ca05387c4f07ac8e0220b801b2a"
+            },
+            {
+              "path": "lib/dataos/temporal.py",
+              "blob": "094b149a8b9158f19cb99c4005568c12db96ed41"
+            },
+            {
+              "path": "lib/dataos/registry.py",
+              "blob": "65b0d69036da97760f20241468f2549b21d9c686"
+            },
+            {
+              "path": "lib/dataos/__init__.py",
+              "blob": "1ddadafd88a59dfc90a7d68c3ae0897da1aae661"
+            },
+            {
+              "path": "lib/dataos/nulls.py",
+              "blob": "8e7f09ac172f326bab1678ac626fa1d5dc5aa0ab"
+            },
+            {
+              "path": "lib/dataos/quality.py",
+              "blob": "967b943443d9507c5c0078f62848c38c3d2af48a"
+            },
+            {
+              "path": "lib/dataos/identity.py",
+              "blob": "fb99fd182ac506a158c63ab434f09374cdbbd4f8"
+            },
+            {
+              "path": "lib/dataos/price.py",
+              "blob": "be127fa853a6aafbf0bcb33b58783316ac972faa"
+            },
+            {
+              "path": "scripts/gmi_explorer/present.py",
+              "blob": "c5ae61d80a484c07d583831577db52881843061b"
+            },
+            {
+              "path": "scripts/gmi_explorer/model.py",
+              "blob": "2614997dd87bf7d7e2d0b61b283c6b364801e1b1"
+            }
+          ]
+        },
+        "render": {
+          "baseline_head": "696f370a3b47c2abc893a7c111b5669cce66d654",
+          "model_sha256": "e644fa48a2bb6e6affe8d1fda74556d9db5f82acadffdad839e1efe8f095359f",
+          "changed": [
+            "gmi-index.html",
+            "gmi.css",
+            "gmi.js"
+          ],
+          "outputs": {
+            "gmi-companies.html": "014cd2e2660f353b2b90982b1cdf0e2c426fecf8939b3265834bffd6ebd960fc",
+            "gmi-coverage.html": "b9233025f8a8eb2c7963e84ffccffcdde3d0e18ca1a362480fa26b4c8d6a578c",
+            "gmi-index.html": "471e9f56f60f49d54b1ffb468c686c56fce4302730bfe23f62458f9caec60474",
+            "gmi-issuer-mu.html": "22cc39aca77961584fad494ab0afa788b287636f7e3c5cfaecba7dbda2172bdd",
+            "gmi-relationships.html": "dfaa6cf417b30c3d0f7955f16e03b69c44c3bd072ccffb23dc54c82177c15ddf",
+            "gmi-states.html": "3b3c22bd3c57dc34586ac5b9d0800cab9d6c3259f56c9cdc5c2021117a65187e",
+            "gmi.css": "5f27cbc0573e3d19f82b79da2396811f3f0f06263269da597b79b246d0acd1c7",
+            "gmi.html": "3185babccf7b0f0ec5b81029dc041dba39d19235723a6db2d2c3b7b85652ea51",
+            "gmi.js": "9a9db79633e3d4a92615865cb6b8350c9c855b3c64f842c23e6373c233ad3bd5"
+          },
+          "candidate_index_blob": "7426afdcddd4b8bca944725b23d8234ab6815c2f",
+          "paired_assets_exact": true,
+          "all_other_outputs_unchanged": true
+        },
+        "cases": [
+          {
+            "name": "taxonomy-keyboard-1440-en",
+            "result": "PASS",
+            "contexts": 2
+          },
+          {
+            "name": "index-shortcuts-1440-en",
+            "result": "FAIL",
+            "error": "Traceback (most recent call last):\n  File \"/Volumes/Mastermind/agent-workspaces/verify/gmi-index-counts-20261109-0ljxpqe4/verify_index_count_component.py\", line 81, in <module>\n    action(width,language)\n    ~~~~~~^^^^^^^^^^^^^^^^\n  File \"/Volumes/Mastermind/agent-workspaces/verify/gmi-index-counts-20261109-0ljxpqe4/verify_product_browser.py\", line 1122, in index_filtered_shortcuts\n    assert feedback.inner_text().strip()==('1 result' if language=='en' else '1 个结果')\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n",
+            "contexts": 1
+          },
+          {
+            "name": "taxonomy-keyboard-1440-zh",
+            "result": "PASS",
+            "contexts": 2
+          },
+          {
+            "name": "index-shortcuts-1440-zh",
+            "result": "FAIL",
+            "error": "Traceback (most recent call last):\n  File \"/Volumes/Mastermind/agent-workspaces/verify/gmi-index-counts-20261109-0ljxpqe4/verify_index_count_component.py\", line 81, in <module>\n    action(width,language)\n    ~~~~~~^^^^^^^^^^^^^^^^\n  File \"/Volumes/Mastermind/agent-workspaces/verify/gmi-index-counts-20261109-0ljxpqe4/verify_product_browser.py\", line 1122, in index_filtered_shortcuts\n    assert feedback.inner_text().strip()==('1 result' if language=='en' else '1 个结果')\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n",
+            "contexts": 1
+          },
+          {
+            "name": "taxonomy-keyboard-390-en",
+            "result": "PASS",
+            "contexts": 2
+          },
+          {
+            "name": "index-shortcuts-390-en",
+            "result": "FAIL",
+            "error": "Traceback (most recent call last):\n  File \"/Volumes/Mastermind/agent-workspaces/verify/gmi-index-counts-20261109-0ljxpqe4/verify_index_count_component.py\", line 81, in <module>\n    action(width,language)\n    ~~~~~~^^^^^^^^^^^^^^^^\n  File \"/Volumes/Mastermind/agent-workspaces/verify/gmi-index-counts-20261109-0ljxpqe4/verify_product_browser.py\", line 1122, in index_filtered_shortcuts\n    assert feedback.inner_text().strip()==('1 result' if language=='en' else '1 个结果')\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n",
+            "contexts": 1
+          },
+          {
+            "name": "taxonomy-keyboard-390-zh",
+            "result": "PASS",
+            "contexts": 2
+          },
+          {
+            "name": "index-shortcuts-390-zh",
+            "result": "FAIL",
+            "error": "Traceback (most recent call last):\n  File \"/Volumes/Mastermind/agent-workspaces/verify/gmi-index-counts-20261109-0ljxpqe4/verify_index_count_component.py\", line 81, in <module>\n    action(width,language)\n    ~~~~~~^^^^^^^^^^^^^^^^\n  File \"/Volumes/Mastermind/agent-workspaces/verify/gmi-index-counts-20261109-0ljxpqe4/verify_product_browser.py\", line 1122, in index_filtered_shortcuts\n    assert feedback.inner_text().strip()==('1 result' if language=='en' else '1 个结果')\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n",
+            "contexts": 1
+          },
+          {
+            "name": "taxonomy-keyboard-320-en",
+            "result": "PASS",
+            "contexts": 2
+          },
+          {
+            "name": "index-shortcuts-320-en",
+            "result": "FAIL",
+            "error": "Traceback (most recent call last):\n  File \"/Volumes/Mastermind/agent-workspaces/verify/gmi-index-counts-20261109-0ljxpqe4/verify_index_count_component.py\", line 81, in <module>\n    action(width,language)\n    ~~~~~~^^^^^^^^^^^^^^^^\n  File \"/Volumes/Mastermind/agent-workspaces/verify/gmi-index-counts-20261109-0ljxpqe4/verify_product_browser.py\", line 1122, in index_filtered_shortcuts\n    assert feedback.inner_text().strip()==('1 result' if language=='en' else '1 个结果')\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n",
+            "contexts": 1
+          },
+          {
+            "name": "taxonomy-keyboard-320-zh",
+            "result": "PASS",
+            "contexts": 2
+          },
+          {
+            "name": "index-shortcuts-320-zh",
+            "result": "FAIL",
+            "error": "Traceback (most recent call last):\n  File \"/Volumes/Mastermind/agent-workspaces/verify/gmi-index-counts-20261109-0ljxpqe4/verify_index_count_component.py\", line 81, in <module>\n    action(width,language)\n    ~~~~~~^^^^^^^^^^^^^^^^\n  File \"/Volumes/Mastermind/agent-workspaces/verify/gmi-index-counts-20261109-0ljxpqe4/verify_product_browser.py\", line 1122, in index_filtered_shortcuts\n    assert feedback.inner_text().strip()==('1 result' if language=='en' else '1 个结果')\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n",
+            "contexts": 1
+          }
+        ],
+        "contexts": 18,
+        "screenshots": [],
+        "page_errors": [],
+        "browser": "157.0.8103.39",
+        "navigation_geometry": [
+          {
+            "width": 1440,
+            "language": "en",
+            "route": "/gmi.html",
+            "targets": [
+              {
+                "text": "Theme research",
+                "left": 32,
+                "right": 164.78125,
+                "height": 44
+              },
+              {
+                "text": "Company evidence",
+                "left": 168.78125,
+                "right": 318.953125,
+                "height": 44
+              },
+              {
+                "text": "Relationships",
+                "left": 322.953125,
+                "right": 439.4375,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "width": 1440,
+            "language": "en",
+            "route": "/gmi.html",
+            "targets": [
+              {
+                "text": "Theme research",
+                "left": 32,
+                "right": 164.78125,
+                "height": 44
+              },
+              {
+                "text": "Company evidence",
+                "left": 168.78125,
+                "right": 318.953125,
+                "height": 44
+              },
+              {
+                "text": "Relationships",
+                "left": 322.953125,
+                "right": 439.4375,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "width": 1440,
+            "language": "zh",
+            "route": "/gmi.html",
+            "targets": [
+              {
+                "text": "主题研究",
+                "left": 32,
+                "right": 116,
+                "height": 44
+              },
+              {
+                "text": "公司证据",
+                "left": 120,
+                "right": 204,
+                "height": 44
+              },
+              {
+                "text": "公司关系",
+                "left": 208,
+                "right": 292,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "width": 1440,
+            "language": "zh",
+            "route": "/gmi.html",
+            "targets": [
+              {
+                "text": "主题研究",
+                "left": 32,
+                "right": 116,
+                "height": 44
+              },
+              {
+                "text": "公司证据",
+                "left": 120,
+                "right": 204,
+                "height": 44
+              },
+              {
+                "text": "公司关系",
+                "left": 208,
+                "right": 292,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "width": 390,
+            "language": "en",
+            "route": "/gmi.html",
+            "targets": [
+              {
+                "text": "Theme research",
+                "left": 16,
+                "right": 132.65625,
+                "height": 44
+              },
+              {
+                "text": "Company evidence",
+                "left": 136.65625,
+                "right": 253.328125,
+                "height": 55.5
+              },
+              {
+                "text": "Relationships",
+                "left": 257.328125,
+                "right": 374,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "width": 390,
+            "language": "en",
+            "route": "/gmi.html",
+            "targets": [
+              {
+                "text": "Theme research",
+                "left": 16,
+                "right": 132.65625,
+                "height": 44
+              },
+              {
+                "text": "Company evidence",
+                "left": 136.65625,
+                "right": 253.328125,
+                "height": 55.5
+              },
+              {
+                "text": "Relationships",
+                "left": 257.328125,
+                "right": 374,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "width": 390,
+            "language": "zh",
+            "route": "/gmi.html",
+            "targets": [
+              {
+                "text": "主题研究",
+                "left": 16,
+                "right": 132.65625,
+                "height": 44
+              },
+              {
+                "text": "公司证据",
+                "left": 136.65625,
+                "right": 253.328125,
+                "height": 44
+              },
+              {
+                "text": "公司关系",
+                "left": 257.328125,
+                "right": 374,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "width": 390,
+            "language": "zh",
+            "route": "/gmi.html",
+            "targets": [
+              {
+                "text": "主题研究",
+                "left": 16,
+                "right": 132.65625,
+                "height": 44
+              },
+              {
+                "text": "公司证据",
+                "left": 136.65625,
+                "right": 253.328125,
+                "height": 44
+              },
+              {
+                "text": "公司关系",
+                "left": 257.328125,
+                "right": 374,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "width": 320,
+            "language": "en",
+            "route": "/gmi.html",
+            "targets": [
+              {
+                "text": "Theme research",
+                "left": 16,
+                "right": 109.328125,
+                "height": 55.5
+              },
+              {
+                "text": "Company evidence",
+                "left": 113.328125,
+                "right": 206.671875,
+                "height": 55.5
+              },
+              {
+                "text": "Relationships",
+                "left": 210.671875,
+                "right": 304,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "width": 320,
+            "language": "en",
+            "route": "/gmi.html",
+            "targets": [
+              {
+                "text": "Theme research",
+                "left": 16,
+                "right": 109.328125,
+                "height": 55.5
+              },
+              {
+                "text": "Company evidence",
+                "left": 113.328125,
+                "right": 206.671875,
+                "height": 55.5
+              },
+              {
+                "text": "Relationships",
+                "left": 210.671875,
+                "right": 304,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "width": 320,
+            "language": "zh",
+            "route": "/gmi.html",
+            "targets": [
+              {
+                "text": "主题研究",
+                "left": 16,
+                "right": 109.328125,
+                "height": 44
+              },
+              {
+                "text": "公司证据",
+                "left": 113.328125,
+                "right": 206.671875,
+                "height": 44
+              },
+              {
+                "text": "公司关系",
+                "left": 210.671875,
+                "right": 304,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "width": 320,
+            "language": "zh",
+            "route": "/gmi.html",
+            "targets": [
+              {
+                "text": "主题研究",
+                "left": 16,
+                "right": 109.328125,
+                "height": 44
+              },
+              {
+                "text": "公司证据",
+                "left": 113.328125,
+                "right": 206.671875,
+                "height": 44
+              },
+              {
+                "text": "公司关系",
+                "left": 210.671875,
+                "right": 304,
+                "height": 44
+              }
+            ]
+          }
+        ],
+        "sticky_geometry": [
+          {
+            "width": 390,
+            "language": "en",
+            "navTop": 0,
+            "navBottom": 61,
+            "headerTop": 61.9375,
+            "scrollMargin": "61px"
+          },
+          {
+            "width": 390,
+            "language": "zh",
+            "navTop": 0,
+            "navBottom": 61,
+            "headerTop": 61.6875,
+            "scrollMargin": "61px"
+          },
+          {
+            "width": 320,
+            "language": "en",
+            "navTop": 0,
+            "navBottom": 61,
+            "headerTop": 61.9375,
+            "scrollMargin": "61px"
+          },
+          {
+            "width": 320,
+            "language": "zh",
+            "navTop": 0,
+            "navBottom": 61,
+            "headerTop": 62.4375,
+            "scrollMargin": "61px"
+          }
+        ],
+        "pass": false
+      },
+      "diagnosis": "The new singular-count assertion incorrectly assumed 'advanced packaging' matched one row. Canonical rendered data has three such rows: HBM & advanced packaging; 2.5D/3D advanced packaging (AI logic); Advanced packaging & assembly equipment. The test now uses the unique full HBM label. No product behavior or assertion was weakened."
+    },
+    "final_index_run": {
+      "pid": 81809,
+      "exit_code": 0,
+      "runtime_seconds": 13.24,
+      "receipt": {
+        "generated_at": "2026-11-09T05:04:06.446565+00:00",
+        "baseline": false,
+        "case_family": "index",
+        "scope": "Bounded GMI component proof using exact generated HTML, JS and CSS inputs.\n\nThis harness uses an anonymous Chrome context and blocks every external request.\nIt extracts committed main content; it does not exercise the shared shell, login,\npublic admission, live serving or release. Keyboard/observer faults are explicit.",
+        "script_sha256": "9a9db79633e3d4a92615865cb6b8350c9c855b3c64f842c23e6373c233ad3bd5",
+        "gmi_css_sha256": "5f27cbc0573e3d19f82b79da2396811f3f0f06263269da597b79b246d0acd1c7",
+        "verifier_sha256": "5224505ceb3cf9e921ed80f16666506970b0c3c352369e14f6c81c72d4737e6d",
+        "inputs": {
+          "source_head": "696f370a3b47c2abc893a7c111b5669cce66d654",
+          "model_sha256": "e644fa48a2bb6e6affe8d1fda74556d9db5f82acadffdad839e1efe8f095359f",
+          "inputs": [
+            {
+              "path": "config.yml",
+              "blob": "5be75249c98033d7ee0fbe55928713b1f50af627"
+            },
+            {
+              "path": "scripts/build_gmi_explorer.py",
+              "blob": "900253d42a7b1d43ad41aa493e8032444c4570de"
+            },
+            {
+              "path": "lib/shared_shell.py",
+              "blob": "cffbeba3f8fdcf7a9413d9428aec0154d97d9614"
+            },
+            {
+              "path": "lib/config.py",
+              "blob": "b6fc888269876242597da354aaa726c20ed95802"
+            },
+            {
+              "path": "lib/pages.py",
+              "blob": "db175c463a31828263b57a3287afba661439a765"
+            },
+            {
+              "path": "lib/site_assets.py",
+              "blob": "03d7ce6137a30b990435cb1fee2090e61c2e95e3"
+            },
+            {
+              "path": "templates/_site_nav.html.j2",
+              "blob": "d5c449e9ec498c49007c2de0ced1757a7f36b12d"
+            },
+            {
+              "path": "templates/gmi_relationships.html.j2",
+              "blob": "53b8a697a17064367964b566788d553b7b27a4e0"
+            },
+            {
+              "path": "templates/_navlinks.html.j2",
+              "blob": "70fee6eabeb2cfe6d92590da42aa8c3e3733e837"
+            },
+            {
+              "path": "templates/_gmi_theme_data.html.j2",
+              "blob": "0520256ae0a2f61a33702070686be769d8640124"
+            },
+            {
+              "path": "templates/theme.css",
+              "blob": "619436f58d37a222d1db7021ba9d52bb3a05a7fa"
+            },
+            {
+              "path": "templates/gmi.css",
+              "blob": "23ce5f275ffc07a57278450b560d9d0c20f86632"
+            },
+            {
+              "path": "templates/_gmi_product_header.html.j2",
+              "blob": "c7b10dbfecc66deacfe9b8fbbb2ce72932299695"
+            },
+            {
+              "path": "templates/_interfonts.html.j2",
+              "blob": "f6e84eb856ce66f732aacafe883d5c26c5d1e27e"
+            },
+            {
+              "path": "templates/_gmi_taxonomy.html.j2",
+              "blob": "99ade053147ecb6f42a9b1119af4f522df5c05b7"
+            },
+            {
+              "path": "templates/_gmi_base.html.j2",
+              "blob": "1d76c899cb2ce05b66e7d37d19b53e212e814b4d"
+            },
+            {
+              "path": "templates/_gmi_macros.html.j2",
+              "blob": "1c926c0047dfa3d8a82b45ba0d278e5e51f6bad6"
+            },
+            {
+              "path": "templates/shared_shell_bridge.js",
+              "blob": "00ee9b9fa4d1fba67359d3d6b95c7937aed150b7"
+            },
+            {
+              "path": "templates/gmi.js",
+              "blob": "387383b0e237162421dfebf5eb9d7ef85302cb1e"
+            },
+            {
+              "path": "templates/_all_tools_menu.html.j2",
+              "blob": "3259b4e5c6305fd2f9a33bea65141efb0528680a"
+            },
+            {
+              "path": "templates/shared_shell.css",
+              "blob": "88a0fd9e836fbffac36722dac04189c6eb24af9b"
+            },
+            {
+              "path": "templates/gmi_map.html.j2",
+              "blob": "8da56912a78e4a030be4de0a5f6f4c3fdc1e8ff2"
+            },
+            {
+              "path": "templates/gmi_states.html.j2",
+              "blob": "2e2f66e8f9588403a58434ae6fa80bfa181845bf"
+            },
+            {
+              "path": "templates/theme.js",
+              "blob": "21a1fb1627ac34badc6078cff486f98486e9b773"
+            },
+            {
+              "path": "templates/_seo_head.html.j2",
+              "blob": "1a0f1a7cd3a8499e9d873171171d374424f9ddd8"
+            },
+            {
+              "path": "templates/gmi_companies.html.j2",
+              "blob": "afb542f5740a4147c5ef0d05aaae25481d8d6851"
+            },
+            {
+              "path": "templates/gmi_issuer.html.j2",
+              "blob": "35b06fd42b3ef485564b504fcacecacb89383c49"
+            },
+            {
+              "path": "templates/data_base.js",
+              "blob": "9e7cc392f0bad0e269d26903432faa39d94a1b62"
+            },
+            {
+              "path": "templates/gmi_coverage.html.j2",
+              "blob": "417a1e5ad85e66796201a1879e520db53bc9fbfc"
+            },
+            {
+              "path": "templates/_gmi_product_macros.html.j2",
+              "blob": "3e82a587bb0ad17f536d0513d85a1c0a66304999"
+            },
+            {
+              "path": "templates/_gmi_head.html.j2",
+              "blob": "5fe310cbe1a4a988f60f8b400e47a2de82ff06ef"
+            },
+            {
+              "path": "templates/gmi_index.html.j2",
+              "blob": "ff766f3634bb8954ea29e2363eb5a14f5facfa46"
+            },
+            {
+              "path": "engine/theme_graph/store.py",
+              "blob": "853bc3bb557aaf32251de0eb053bcff55604e68c"
+            },
+            {
+              "path": "engine/theme_graph/identity_resolution.py",
+              "blob": "e3510e69645a96872e7080efe028633ff6836324"
+            },
+            {
+              "path": "engine/theme_graph/change_report.py",
+              "blob": "354a48be5a56416b941fecb9942401a7f0fb7f1c"
+            },
+            {
+              "path": "engine/theme_graph/membership_evidence.py",
+              "blob": "3785874c443ffcd4cde2db31b1f11cafc184d7d5"
+            },
+            {
+              "path": "engine/theme_graph/rights.py",
+              "blob": "d801f2e231e8a0dbf05d30e96fd0024ae70bd63b"
+            },
+            {
+              "path": "engine/theme_graph/probation.py",
+              "blob": "eac18b9804411c10ee8cede2d5d6f9aae2a84f1f"
+            },
+            {
+              "path": "engine/theme_graph/identity.py",
+              "blob": "c27fb161bf401ca05387c4f07ac8e0220b801b2a"
+            },
+            {
+              "path": "lib/dataos/temporal.py",
+              "blob": "094b149a8b9158f19cb99c4005568c12db96ed41"
+            },
+            {
+              "path": "lib/dataos/registry.py",
+              "blob": "65b0d69036da97760f20241468f2549b21d9c686"
+            },
+            {
+              "path": "lib/dataos/__init__.py",
+              "blob": "1ddadafd88a59dfc90a7d68c3ae0897da1aae661"
+            },
+            {
+              "path": "lib/dataos/nulls.py",
+              "blob": "8e7f09ac172f326bab1678ac626fa1d5dc5aa0ab"
+            },
+            {
+              "path": "lib/dataos/quality.py",
+              "blob": "967b943443d9507c5c0078f62848c38c3d2af48a"
+            },
+            {
+              "path": "lib/dataos/identity.py",
+              "blob": "fb99fd182ac506a158c63ab434f09374cdbbd4f8"
+            },
+            {
+              "path": "lib/dataos/price.py",
+              "blob": "be127fa853a6aafbf0bcb33b58783316ac972faa"
+            },
+            {
+              "path": "scripts/gmi_explorer/present.py",
+              "blob": "c5ae61d80a484c07d583831577db52881843061b"
+            },
+            {
+              "path": "scripts/gmi_explorer/model.py",
+              "blob": "2614997dd87bf7d7e2d0b61b283c6b364801e1b1"
+            }
+          ]
+        },
+        "render": {
+          "baseline_head": "696f370a3b47c2abc893a7c111b5669cce66d654",
+          "model_sha256": "e644fa48a2bb6e6affe8d1fda74556d9db5f82acadffdad839e1efe8f095359f",
+          "changed": [
+            "gmi-index.html",
+            "gmi.css",
+            "gmi.js"
+          ],
+          "outputs": {
+            "gmi-companies.html": "014cd2e2660f353b2b90982b1cdf0e2c426fecf8939b3265834bffd6ebd960fc",
+            "gmi-coverage.html": "b9233025f8a8eb2c7963e84ffccffcdde3d0e18ca1a362480fa26b4c8d6a578c",
+            "gmi-index.html": "471e9f56f60f49d54b1ffb468c686c56fce4302730bfe23f62458f9caec60474",
+            "gmi-issuer-mu.html": "22cc39aca77961584fad494ab0afa788b287636f7e3c5cfaecba7dbda2172bdd",
+            "gmi-relationships.html": "dfaa6cf417b30c3d0f7955f16e03b69c44c3bd072ccffb23dc54c82177c15ddf",
+            "gmi-states.html": "3b3c22bd3c57dc34586ac5b9d0800cab9d6c3259f56c9cdc5c2021117a65187e",
+            "gmi.css": "5f27cbc0573e3d19f82b79da2396811f3f0f06263269da597b79b246d0acd1c7",
+            "gmi.html": "3185babccf7b0f0ec5b81029dc041dba39d19235723a6db2d2c3b7b85652ea51",
+            "gmi.js": "9a9db79633e3d4a92615865cb6b8350c9c855b3c64f842c23e6373c233ad3bd5"
+          },
+          "candidate_index_blob": "7426afdcddd4b8bca944725b23d8234ab6815c2f",
+          "paired_assets_exact": true,
+          "all_other_outputs_unchanged": true
+        },
+        "cases": [
+          {
+            "name": "index-shortcuts-1440-en",
+            "result": "PASS",
+            "contexts": 1
+          },
+          {
+            "name": "index-shortcuts-1440-zh",
+            "result": "PASS",
+            "contexts": 1
+          },
+          {
+            "name": "index-shortcuts-390-en",
+            "result": "PASS",
+            "contexts": 1
+          },
+          {
+            "name": "index-shortcuts-390-zh",
+            "result": "PASS",
+            "contexts": 1
+          },
+          {
+            "name": "index-shortcuts-320-en",
+            "result": "PASS",
+            "contexts": 1
+          },
+          {
+            "name": "index-shortcuts-320-zh",
+            "result": "PASS",
+            "contexts": 1
+          }
+        ],
+        "contexts": 6,
+        "screenshots": [
+          "index-filter-390-en.png",
+          "index-filter-320-zh.png"
+        ],
+        "page_errors": [],
+        "browser": "157.0.8103.39",
+        "navigation_geometry": [
+          {
+            "width": 1440,
+            "language": "en",
+            "route": "/gmi-index.html",
+            "targets": [
+              {
+                "text": "Theme research",
+                "left": 32,
+                "right": 164.78125,
+                "height": 44
+              },
+              {
+                "text": "Company evidence",
+                "left": 168.78125,
+                "right": 318.953125,
+                "height": 44
+              },
+              {
+                "text": "Relationships",
+                "left": 322.953125,
+                "right": 439.4375,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "width": 1440,
+            "language": "zh",
+            "route": "/gmi-index.html",
+            "targets": [
+              {
+                "text": "主题研究",
+                "left": 32,
+                "right": 116,
+                "height": 44
+              },
+              {
+                "text": "公司证据",
+                "left": 120,
+                "right": 204,
+                "height": 44
+              },
+              {
+                "text": "公司关系",
+                "left": 208,
+                "right": 292,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "width": 390,
+            "language": "en",
+            "route": "/gmi-index.html",
+            "targets": [
+              {
+                "text": "Theme research",
+                "left": 16,
+                "right": 132.65625,
+                "height": 44
+              },
+              {
+                "text": "Company evidence",
+                "left": 136.65625,
+                "right": 253.328125,
+                "height": 55.5
+              },
+              {
+                "text": "Relationships",
+                "left": 257.328125,
+                "right": 374,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "width": 390,
+            "language": "zh",
+            "route": "/gmi-index.html",
+            "targets": [
+              {
+                "text": "主题研究",
+                "left": 16,
+                "right": 132.65625,
+                "height": 44
+              },
+              {
+                "text": "公司证据",
+                "left": 136.65625,
+                "right": 253.328125,
+                "height": 44
+              },
+              {
+                "text": "公司关系",
+                "left": 257.328125,
+                "right": 374,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "width": 320,
+            "language": "en",
+            "route": "/gmi-index.html",
+            "targets": [
+              {
+                "text": "Theme research",
+                "left": 16,
+                "right": 109.328125,
+                "height": 55.5
+              },
+              {
+                "text": "Company evidence",
+                "left": 113.328125,
+                "right": 206.671875,
+                "height": 55.5
+              },
+              {
+                "text": "Relationships",
+                "left": 210.671875,
+                "right": 304,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "width": 320,
+            "language": "zh",
+            "route": "/gmi-index.html",
+            "targets": [
+              {
+                "text": "主题研究",
+                "left": 16,
+                "right": 109.328125,
+                "height": 44
+              },
+              {
+                "text": "公司证据",
+                "left": 113.328125,
+                "right": 206.671875,
+                "height": 44
+              },
+              {
+                "text": "公司关系",
+                "left": 210.671875,
+                "right": 304,
+                "height": 44
+              }
+            ]
+          }
+        ],
+        "sticky_geometry": [
+          {
+            "width": 390,
+            "language": "en",
+            "navTop": 0,
+            "navBottom": 61,
+            "headerTop": 61.9375,
+            "scrollMargin": "61px"
+          },
+          {
+            "width": 390,
+            "language": "zh",
+            "navTop": 0,
+            "navBottom": 61,
+            "headerTop": 61.6875,
+            "scrollMargin": "61px"
+          },
+          {
+            "width": 320,
+            "language": "en",
+            "navTop": 0,
+            "navBottom": 61,
+            "headerTop": 61.9375,
+            "scrollMargin": "61px"
+          },
+          {
+            "width": 320,
+            "language": "zh",
+            "navTop": 0,
+            "navBottom": 61,
+            "headerTop": 62.4375,
+            "scrollMargin": "61px"
+          }
+        ],
+        "pass": true
+      }
+    },
+    "accepted_current_cases": [
+      {
+        "name": "taxonomy-keyboard-1440-en",
+        "result": "PASS",
+        "contexts": 2,
+        "pid": 73914
+      },
+      {
+        "name": "taxonomy-keyboard-1440-zh",
+        "result": "PASS",
+        "contexts": 2,
+        "pid": 73914
+      },
+      {
+        "name": "taxonomy-keyboard-390-en",
+        "result": "PASS",
+        "contexts": 2,
+        "pid": 73914
+      },
+      {
+        "name": "taxonomy-keyboard-390-zh",
+        "result": "PASS",
+        "contexts": 2,
+        "pid": 73914
+      },
+      {
+        "name": "taxonomy-keyboard-320-en",
+        "result": "PASS",
+        "contexts": 2,
+        "pid": 73914
+      },
+      {
+        "name": "taxonomy-keyboard-320-zh",
+        "result": "PASS",
+        "contexts": 2,
+        "pid": 73914
+      },
+      {
+        "name": "index-shortcuts-1440-en",
+        "result": "PASS",
+        "contexts": 1,
+        "pid": 81809
+      },
+      {
+        "name": "index-shortcuts-1440-zh",
+        "result": "PASS",
+        "contexts": 1,
+        "pid": 81809
+      },
+      {
+        "name": "index-shortcuts-390-en",
+        "result": "PASS",
+        "contexts": 1,
+        "pid": 81809
+      },
+      {
+        "name": "index-shortcuts-390-zh",
+        "result": "PASS",
+        "contexts": 1,
+        "pid": 81809
+      },
+      {
+        "name": "index-shortcuts-320-en",
+        "result": "PASS",
+        "contexts": 1,
+        "pid": 81809
+      },
+      {
+        "name": "index-shortcuts-320-zh",
+        "result": "PASS",
+        "contexts": 1,
+        "pid": 81809
+      }
+    ],
+    "accepted_current_contexts": 18,
+    "reuse": {
+      "reason": "The six successful taxonomy cases use exactly the same current JS/CSS and byte-identical navigation/taxonomy test functions. Only the index test query changed. These cases were reused rather than re-executed.",
+      "checks": {
+        "navigation_helper_identical": true,
+        "taxonomy_function_identical": true
+      },
+      "final_function_sha256": {
+        "gmi_navigation_fit": "d2b71e902db454a72953549f6e0165c41072b8c6d367810658415a045a160e31",
+        "taxonomy_keyboard_activation": "db8a55940d3e83e93f5ad23e48cfd0cdf2f30cc68751c94fc82445f85f8d9d15",
+        "index_filtered_shortcuts": "ea53ea873b69e82af3c153c7e6dcbab3c62954a4b53e24a649d273f803810817"
+      }
+    },
+    "visual_review": {
+      "captures": [
+        {
+          "name": "index-filter-320-zh.png",
+          "bytes": 115057,
+          "sha256": "b3075e9ee42276bb0d23908fe36f2d2818fa0db72c95cfb2769941acbd0ccbf7"
+        },
+        {
+          "name": "index-filter-390-en.png",
+          "bytes": 125008,
+          "sha256": "04a6cbd2e324f13b80874fab1300490d7353395ffd68923c5b4413a29367131a"
+        }
+      ],
+      "inspected": [
+        "index-filter-390-en.png",
+        "index-filter-320-zh.png"
+      ],
+      "finding": "Readable bilingual result status; shortcut/category counts2; each visible subgroup count1; explicit full-index footer; no clipped controls. Sticky mobile nav bottom61px and group headers61.69–62.44px do not overlap."
+    },
+    "harness": {
+      "source": "\"\"\"Bounded GMI component proof using exact generated HTML, JS and CSS inputs.\n\nThis harness uses an anonymous Chrome context and blocks every external request.\nIt extracts committed main content; it does not exercise the shared shell, login,\npublic admission, live serving or release. Keyboard/observer faults are explicit.\n\"\"\"\nimport argparse\nimport ast\nfrom datetime import datetime, timezone\nimport hashlib\nimport json\nfrom pathlib import Path\nimport traceback\nfrom urllib.parse import parse_qs, urlencode, urlsplit\nfrom bs4 import BeautifulSoup\nfrom playwright.sync_api import sync_playwright, expect\n\nparser=argparse.ArgumentParser()\nparser.add_argument('--root',type=Path,required=True)\nparser.add_argument('--executable',required=True)\nparser.add_argument('--baseline',action='store_true')\nparser.add_argument('--case-family',choices=('all','index'),default='all')\nargs=parser.parse_args()\nargs.out=args.root/('baseline-proof' if args.baseline else 'candidate-proof')\nargs.out.mkdir(exist_ok=True)\nsource=args.root/('baseline' if args.baseline else 'candidate')\nscript=(source/'gmi.js').read_text()\nstyle=(args.root/'templates/theme.css').read_text()+'\\n'+(source/'gmi.css').read_text()\nparts={}\nfor name in ('gmi.html','gmi-index.html'):\n    soup=BeautifulSoup((source/name).read_text(),'html.parser')\n    main=soup.select_one('main#main')\n    assert main is not None\n    extra=[]\n    for selector in ('#gmi-topic-data','[data-gmi-announcement]','[data-browse-dialog]'):\n        node=soup.select_one(selector)\n        if node is not None and main not in node.parents:\n            extra.append(str(node))\n    parts[name]=str(main)+''.join(extra)\nreport={'generated_at':datetime.now(timezone.utc).isoformat(),'baseline':args.baseline,'case_family':args.case_family,'scope':__doc__.strip(),\n        'script_sha256':hashlib.sha256(script.encode()).hexdigest(),\n        'gmi_css_sha256':hashlib.sha256((source/'gmi.css').read_bytes()).hexdigest(),\n        'verifier_sha256':hashlib.sha256((args.root/'verify_product_browser.py').read_bytes()).hexdigest(),\n        'inputs':json.loads((args.root/'input-bindings.json').read_text()),\n        'render':json.loads((args.root/('baseline-render-receipt.json' if args.baseline else 'candidate-render-receipt.json')).read_text()),\n        'cases':[],'contexts':0,'screenshots':[],'page_errors':[]}\n\nwith sync_playwright() as pw:\n    browser=pw.chromium.launch(executable_path=args.executable,headless=True)\n    report['browser']=browser.version\n\n    def context(width=1440,theme='light',language='en',**kwargs):\n        c=browser.new_context(viewport={'width':width,'height':1000 if width>800 else 844},device_scale_factor=1,**kwargs)\n        report['contexts']+=1\n        def serve(route):\n            name=urlsplit(route.request.url).path.rsplit('/',1)[-1]\n            if urlsplit(route.request.url).netloc!='gmi-keyboard.fixture' or name not in parts:\n                return route.abort()\n            body='<!doctype html><html data-lang=\"'+language+'\" data-theme=\"'+theme+'\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><style>'+style+'</style></head><body class=\"page-macro gmi-page gmi-product\">'+parts[name]+'<script>'+script+'</script></body></html>'\n            route.fulfill(status=200,content_type='text/html; charset=utf-8',body=body)\n        c.route('**/*',serve)\n        return c\n\n    def page_for(c,route='gmi.html'):\n        p=c.new_page()\n        p.on('pageerror',lambda e:report['page_errors'].append(str(e)))\n        p.goto('https://gmi-keyboard.fixture/'+route,wait_until='networkidle')\n        return p\n\n    # Execute the actual named definitions from the one canonical verifier.\n    verifier=args.root/'verify_product_browser.py'\n    parsed=ast.parse(verifier.read_text())\n    names={'gmi_navigation_fit','taxonomy_keyboard_activation','index_filtered_shortcuts'}\n    definitions=sorted([n for n in ast.walk(parsed) if isinstance(n,ast.FunctionDef) and n.name in names],key=lambda n:n.lineno)\n    assert {n.name for n in definitions}==names and len(definitions)==3\n    exec(compile(ast.Module(body=definitions,type_ignores=[]),str(verifier),'exec'),globals())\n    matrix=((1440,'en'),(390,'en')) if args.baseline else tuple((w,l) for w in (1440,390,320) for l in ('en','zh'))\n    for width,language in matrix:\n        actions=(('index-shortcuts',index_filtered_shortcuts),) if args.case_family=='index' else (('taxonomy-keyboard',taxonomy_keyboard_activation),('index-shortcuts',index_filtered_shortcuts))\n        for name,action in actions:\n            before=report['contexts']\n            try:\n                action(width,language)\n                result={'name':f'{name}-{width}-{language}','result':'PASS'}\n            except Exception:\n                result={'name':f'{name}-{width}-{language}','result':'FAIL','error':traceback.format_exc(limit=4)[-2400:]}\n            result['contexts']=report['contexts']-before\n            report['cases'].append(result)\n            print(json.dumps(result,ensure_ascii=False),flush=True)\n    browser.close()\nreport['pass']=all(x['result']=='PASS' for x in report['cases']) and not report['page_errors']\n(args.out/'browser-report.json').write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\\n')\nprint(json.dumps({'browser':report['browser'],'passed':sum(x['result']=='PASS' for x in report['cases']),'total':len(report['cases']),'contexts':report['contexts'],'page_errors':report['page_errors'],'report':str(args.out/'browser-report.json')},ensure_ascii=False),flush=True)\nraise SystemExit(0 if report['pass'] else 1)\n",
+      "sha256": "bc84bf7bb92a1ac4d89dcb58b7bc347ffaaa7951b14e525866d2dda591829cf5",
+      "test_owner": "verify_product_browser.py; the component harness extracts the three exact named AST definitions from that file",
+      "final_command": "python3 /Volumes/Mastermind/agent-workspaces/verify/gmi-index-counts-20261109-0ljxpqe4/verify_index_count_component.py --root /Volumes/Mastermind/agent-workspaces/verify/gmi-index-counts-20261109-0ljxpqe4 --executable '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' --case-family index"
+    }
+  },
+  "retained_boundaries": [
+    "Original model01 EFFECT_UNKNOWN / ROOT_UNVERIFIED remains fenced: no consume, retry, replacement, re-dispatch or settlement claim.",
+    "PR10676 remains Draft; no Ready, relabel, auto-merge, enqueue, merge or deployment action.",
+    "Existing copy/locale/label proofs are historical exact-owner evidence; no claim that those suites were rerun.",
+    "No Tools P0B capture, receipt closure, loader-key owner or shared navigation incumbent was changed.",
+    "Full shared-shell/fonts/account/live serving and release proof remain separate."
+  ]
+}

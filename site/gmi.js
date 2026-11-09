@@ -23,17 +23,23 @@ function sync(){bs.forEach(function(b){b.setAttribute('aria-selected',String(r.g
 bs.forEach(function(b){b.addEventListener('click',function(){var v=b.getAttribute('data-gmi-set-lens');r.setAttribute('data-gmi-lens',v);sync();
 var h=new URLSearchParams(location.hash.slice(1));h.set('lens',v);history.replaceState(null,'','#'+h.toString());});});sync();})();
 
-/* JUMP_JS (specimen, verbatim): jump-nav intercepts chip clicks (scrollIntoView, never a
-   hash navigation, so lens state is not clobbered) and tracks the current category. */
-(function(){var nav=document.querySelector('.gmi-jump');if(!nav)return;
+/* Category jumps share the existing filtered groups. Suppress native fragment
+   navigation even for unavailable targets, preserving search/lens/return context. */
+(function(){var nav=document.querySelector('.gmi-jump'),idx=document.querySelector('[data-gmi-index]');if(!nav||!idx)return;
 var tr=nav.querySelector('.gmi-jump-track'),links=[].slice.call(nav.querySelectorAll('a'));
-links.forEach(function(a){a.addEventListener('click',function(e){var g=document.getElementById(a.getAttribute('href').slice(1));
-if(!g)return;e.preventDefault();g.setAttribute('open','');g.scrollIntoView({block:'start'});});});
-if(!('IntersectionObserver' in window))return;var cur=null;
-var io=new IntersectionObserver(function(es){es.forEach(function(en){if(!en.isIntersecting)return;var id=en.target.id;
-links.forEach(function(a){var on=a.getAttribute('href')==='#'+id;if(on)a.setAttribute('aria-current','true');else a.removeAttribute('aria-current');
-if(on&&cur!==a){cur=a;if(tr.scrollWidth>tr.clientWidth)tr.scrollLeft=a.offsetLeft-16;}});});},{rootMargin:'-60px 0px -70% 0px'});
-[].forEach.call(document.querySelectorAll('[data-gmi-index] > details'),function(g){io.observe(g);});})();
+function available(g){return g&&g.isConnected&&g.parentElement===idx&&!g.hidden;}
+links.forEach(function(a){a.addEventListener('click',function(e){e.preventDefault();
+var g=document.getElementById(a.getAttribute('href').slice(1));
+if(a.hidden||!a.isConnected||nav.hidden||!available(g))return;
+g.setAttribute('open','');g.scrollIntoView({block:'start'});});});
+if(!('IntersectionObserver' in window))return;
+var io=new IntersectionObserver(function(es){es.forEach(function(en){if(!en.isIntersecting||!available(en.target))return;
+var current=links.find(function(a){return !a.hidden&&a.isConnected&&a.getAttribute('href')==='#'+en.target.id;});if(!current)return;
+var changed=current.getAttribute('aria-current')!=='true';
+links.forEach(function(a){if(a===current)a.setAttribute('aria-current','true');else a.removeAttribute('aria-current');});
+if(changed&&tr&&tr.scrollWidth>tr.clientWidth)tr.scrollLeft=current.offsetLeft-16;
+});},{rootMargin:'-60px 0px -70% 0px'});
+[].forEach.call(idx.querySelectorAll(':scope > details'),function(g){io.observe(g);});})();
 
 /* INDEX_JS (specimen, verbatim): on phones collapse all index groups but the first,
    unless the hash carries open=all. */
@@ -83,7 +89,11 @@ if(tree){
     if(expandable(r))toggle(r);focusItem(r);});
   tree.addEventListener('keydown',function(e){var r=e.target.closest('[role="treeitem"]');if(!r||e.target!==r)return;
     var items=visibleItems(),i=items.indexOf(r),k=e.key;
-    if(k==='Enter'||k===' '){if(expandable(r)){e.preventDefault();toggle(r);}}
+    if(k==='Enter'||k===' '){if(expandable(r)){e.preventDefault();toggle(r);}
+      else if(!r.hidden&&!e.ctrlKey&&!e.metaKey&&!e.altKey&&!e.shiftKey&&!e.isComposing&&e.keyCode!==229){
+        var a=r.querySelector('a[data-topic-select][href]');
+        if(a&&!a.hidden&&a.getAttribute('aria-disabled')!=='true'){
+          e.preventDefault();if(!e.repeat)a.click();}}}
     else if(k==='ArrowDown'){e.preventDefault();focusItem(items[i+1]);}
     else if(k==='ArrowUp'){e.preventDefault();focusItem(items[i-1]);}
     else if(k==='Home'){e.preventDefault();focusItem(items[0]);}
@@ -96,19 +106,44 @@ if(tree){
 /* ---- index ---- */
 var idx=document.querySelector('[data-gmi-index]');
 var groups=idx?[].slice.call(idx.querySelectorAll(':scope > details')):[];
+var indexNav=idx?document.querySelector('.gmi-jump'):null;
+var indexLinks=indexNav?[].slice.call(indexNav.querySelectorAll('a')):[];
 var iq='',isnap=null;
+/* Release focus immediately before this owner hides its active control. This also
+   covers an excluded row inside a category that still has other matching rows. */
+function releaseIndexFocus(el){if(indexInput&&el.contains(document.activeElement))indexInput.focus();}
+function indexHidden(el,on){if(on)releaseIndexFocus(el);el.hidden=on;}
+/* Totals come from generated markup; active-search counts come from the same
+   matching rows this pass displays. Review status is not a core/extended tier. */
+function indexText(el,value){if(el&&el.textContent!==String(value))el.textContent=String(value);}
+function indexCount(el,count){if(el)indexText(el,iq?count:el.getAttribute('data-gmi-total'));}
+function indexHeading(h,count){if(h){indexHidden(h,!!iq&&!count);indexCount(h.querySelector('[data-gmi-subgroup-count]'),count);}}
 function indexRender(){
-  var n=0;
-  groups.forEach(function(g){var any=false,h=null,hv=false;
+  var n=0,groupCounts=[];
+  groups.forEach(function(g){var matches=0,h=null,hits=0;
     [].forEach.call(g.children,function(el){
       if(el.tagName==='SUMMARY')return;
-      if(el.classList.contains('gmi-index-t')){if(h)h.hidden=!!iq&&!hv;h=el;hv=false;return;}
+      if(el.classList.contains('gmi-index-t')){indexHeading(h,hits);h=el;hits=0;return;}
       var m=!iq||(el.hasAttribute('data-gmi-q')&&hit(el,iq));
-      el.hidden=!m;if(m&&el.hasAttribute('data-gmi-q')){hv=true;any=true;if(iq)n++;}});
-    if(h)h.hidden=!!iq&&!hv;
-    g.hidden=!!iq&&!any;
-    if(iq&&any)g.setAttribute('open','');});
+      indexHidden(el,!m);if(m&&el.hasAttribute('data-gmi-q')){hits++;matches++;n++;}});
+    indexHeading(h,hits);groupCounts.push(matches);
+    indexHidden(g,!!iq&&!matches);
+    indexCount(g.querySelector('[data-gmi-category-count]'),matches);
+    var breakdown=g.querySelector('[data-gmi-index-breakdown]');if(breakdown)indexHidden(breakdown,!!iq);
+    if(iq&&matches)g.setAttribute('open','');});
+  indexLinks.forEach(function(a){var g=document.getElementById(a.getAttribute('href').slice(1)),i=groups.indexOf(g);
+    var hidden=!g||!g.isConnected||i===-1||g.hidden;
+    indexHidden(a,hidden);if(hidden)a.removeAttribute('aria-current');
+    indexCount(a.querySelector('[data-gmi-category-count]'),i<0?0:groupCounts[i]);});
+  if(indexNav)indexHidden(indexNav,!indexLinks.some(function(a){return !a.hidden;}));
   noMatch('index',!!iq&&n===0);
+  var feedback=document.querySelector('[data-gmi-index-feedback]');
+  if(feedback){
+    indexText(feedback.querySelector('[data-gmi-index-count-en]'),n+' '+(n===1?'result':'results'));
+    indexText(feedback.querySelector('[data-gmi-index-count-zh]'),n+' 个结果');
+    indexHidden(feedback.querySelector('[data-gmi-index-count]'),!iq||n===0);
+    indexHidden(feedback,!iq);
+  }
 }
 
 /* ---- inputs ---- */
@@ -117,7 +152,10 @@ function setIndexQuery(value){
   var q=norm(value);
   if(q&&!iq)isnap=groups.map(function(g){return g.hasAttribute('open');});
   iq=q;indexRender();
-  if(!q&&isnap){groups.forEach(function(g,i){if(isnap[i])g.setAttribute('open','');else g.removeAttribute('open');});isnap=null;}
+  if(!q&&isnap){groups.forEach(function(g,i){if(isnap[i])g.setAttribute('open','');else{
+    var active=document.activeElement,summary=g.querySelector(':scope > summary');
+    if(active!==g&&(!summary||!summary.contains(active)))releaseIndexFocus(g);
+    g.removeAttribute('open');}});isnap=null;}
 }
 var indexInput=document.querySelector('input[data-gmi-filter="index"]');
 function restoreIndex(){if(!indexInput)return;indexInput.value=(new URLSearchParams(location.hash.slice(1)).get('q')||'').slice(0,200);setIndexQuery(indexInput.value);}

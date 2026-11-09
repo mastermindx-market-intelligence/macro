@@ -925,6 +925,251 @@ with sync_playwright() as pw:
     for width in (1440, 390):
         check(f'clipboard-context-races-{width}', lambda w=width: clipboard_context_paths(w))
 
+    def gmi_navigation_fit(p, width, language):
+        values=p.locator('.gmi-product-tabs > a').evaluate_all('(nodes)=>nodes.map(n=>{const r=n.getBoundingClientRect();return {text:n.innerText,left:r.left,right:r.right,height:r.height};})')
+        assert all(v['left']>=0 and v['right']<=width+0.1 and v['height']>=44 for v in values)
+        assert not p.evaluate('document.documentElement.scrollWidth>innerWidth')
+        report.setdefault('navigation_geometry',[]).append({'width':width,'language':language,'route':urlsplit(p.url).path,'targets':values})
+
+
+    def taxonomy_keyboard_activation(width, language):
+        """Actual generated tree wrappers delegate to the existing topic selection owner."""
+        route = 'gmi.html?fixture=keyboard#'+urlencode({'lens':'chain','open':'all','gmi_return':'gmi-companies.html#q=Micron'})
+        for key in ('Enter', 'Space'):
+            with context(width, 'light', language, reduced_motion='reduce') as c:
+                p = page_for(c, route)
+                expect(p.locator('[data-gmi-ready]')).to_have_count(1)
+                topics = json.loads(p.locator('#gmi-topic-data').text_content())['topics']
+                topic = next(t for t in topics if t['id']=='theme:conventional_dram')
+                advanced = p.locator('.gmi-advanced')
+                advanced.locator(':scope > summary').click()
+                parent = p.locator('.gmi-tree [role="treeitem"][aria-expanded]').first
+                before = parent.get_attribute('aria-expanded')
+                original_url = p.url
+                parent.focus(); p.keyboard.press('Enter')
+                assert parent.get_attribute('aria-expanded') != before
+                p.keyboard.press('Space')
+                assert parent.get_attribute('aria-expanded') == before
+                assert p.url == original_url
+                p.locator('input[data-gmi-filter="tree"]').fill(topic['en'])
+                rows = p.locator('.gmi-tree [role="treeitem"]:visible')
+                rows.first.focus()
+                leaf = p.locator('.gmi-tree [role="treeitem"]').filter(has=p.locator('a[data-topic-select="'+topic['id']+'"]')).first
+                for _ in range(rows.count()):
+                    if leaf.evaluate('(n)=>n===document.activeElement'):
+                        break
+                    p.keyboard.press('ArrowDown')
+                expect(leaf).to_be_focused()
+                initial_length = p.evaluate('history.length')
+                initial_url = p.url
+                # Explicit keyboard faults: modified/IME input stays with its native owner.
+                for modifier in ('ctrlKey','metaKey','altKey','shiftKey','isComposing'):
+                    outcome = leaf.evaluate('''(n,modifier)=>{
+                      const e=new KeyboardEvent('keydown',{key:'Enter',bubbles:true,cancelable:true,[modifier]:true});
+                      n.dispatchEvent(e);return {prevented:e.defaultPrevented,url:location.href};
+                    }''',modifier)
+                    assert not outcome['prevented'] and outcome['url']==initial_url, modifier
+                # A held Space must be cancelled without selecting or scrolling again.
+                repeated = leaf.evaluate('''n=>{
+                  const e=new KeyboardEvent('keydown',{key:' ',repeat:true,bubbles:true,cancelable:true});
+                  n.dispatchEvent(e);return e.defaultPrevented;
+                }''')
+                # The baseline deliberately reaches the user-facing activation falsifier first.
+                p.keyboard.press(key)
+                expect(p.locator('#gmi-topic-title')).to_have_text(topic[language],timeout=1500)
+                expect(p.locator('#gmi-topic-title')).to_be_focused()
+                assert repeated
+                assert p.evaluate('history.length') == initial_length+1
+                params = parse_qs(urlsplit(p.url).fragment)
+                assert params['theme']==[topic['id']]
+                assert params['lens']==['chain'] and params['open']==['all']
+                assert params['gmi_return']==['gmi-companies.html#q=Micron']
+                assert urlsplit(p.url).query=='fixture=keyboard'
+                # A native Enter on the nested anchor must not be converted into a second click.
+                other = next(t for t in topics if t['id']=='theme:hbm_packaging')
+                p.locator('input[data-gmi-filter="tree"]').fill(other['en'])
+                anchor = p.locator('.gmi-tree a[data-topic-select="'+other['id']+'"]:visible').first
+                anchor.focus(); prior = p.evaluate('history.length'); p.keyboard.press('Enter')
+                expect(p.locator('#gmi-topic-title')).to_have_text(other[language])
+                assert p.evaluate('history.length') == prior+1
+                # An explicitly empty wrapper acquires no fabricated destination.
+                result = p.evaluate('''()=>{
+                  const tree=document.querySelector('.gmi-tree'),row=document.createElement('div');
+                  row.setAttribute('role','treeitem');row.tabIndex=-1;row.textContent='Empty category fixture';tree.append(row);
+                  const before=location.href;
+                  const e=new KeyboardEvent('keydown',{key:'Enter',bubbles:true,cancelable:true});row.dispatchEvent(e);
+                  const result={unchanged:before===location.href,prevented:e.defaultPrevented};row.remove();return result;
+                }''')
+                assert result=={'unchanged':True,'prevented':False}
+                gmi_navigation_fit(p,width,language)
+
+
+    def index_filtered_shortcuts(width, language):
+        """Search, focus and queued intersection entries share the existing index groups."""
+        with context(width, 'light', language, reduced_motion='reduce') as c:
+            # Keep native observation; retain callbacks only to exercise a queued stale entry.
+            c.add_init_script('''(()=>{
+              const Native=window.IntersectionObserver;window.__gmiJumpObservers=[];
+              window.IntersectionObserver=class extends Native {
+                constructor(callback,options){super(callback,options);
+                  if(options&&options.rootMargin==='-60px 0px -70% 0px')window.__gmiJumpObservers.push(callback);
+                }
+              };
+            })();''')
+            route = 'gmi-index.html?fixture=keyboard#'+urlencode({'open':'all','lens':'chain','gmi_return':'gmi.html#theme=theme:hbm_packaging&q=Micron'})
+            p = page_for(c, route)
+            search = p.locator('input[data-gmi-filter="index"]')
+            nav = p.locator('.gmi-jump')
+            energy = p.locator('.gmi-jump a[href="#energy_power"]')
+            semiconductor = p.locator('.gmi-jump a[href="#semiconductors_hardware"]')
+            total = p.locator('.gmi-jump a').count()
+            totals = p.locator('[data-gmi-total]').evaluate_all('(nodes)=>nodes.map(n=>({value:n.textContent,total:n.getAttribute("data-gmi-total")}))')
+            assert all(x['value']==x['total'] for x in totals)
+            expect(p.locator('[data-gmi-index-feedback]')).not_to_be_visible()
+            assert ('Full index: 371 micro-themes' if language=='en' else '完整索引：371 个细分主题') in p.locator('.gmi-foot').inner_text()
+            # Real sticky geometry is exercised before filtering shortens the document.
+            energy.click()
+            p.evaluate('()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)))')
+            targets=p.locator('.gmi-jump a:visible').evaluate_all('(nodes)=>nodes.map(n=>n.getBoundingClientRect().height)')
+            assert min(targets)>=44
+            if width<=640:
+                geometry=p.evaluate('''()=>{const nav=document.querySelector('.gmi-jump').getBoundingClientRect(),head=document.querySelector('#energy_power > summary').getBoundingClientRect();
+                  return {navTop:nav.top,navBottom:nav.bottom,headerTop:head.top,scrollMargin:getComputedStyle(document.getElementById('energy_power')).scrollMarginTop};}''')
+                assert abs(geometry['navTop'])<1 and geometry['headerTop']>=geometry['navBottom']-0.5
+                assert geometry['scrollMargin']=='61px'
+                report.setdefault('sticky_geometry',[]).append({'width':width,'language':language,**geometry})
+            energy.evaluate('(n)=>n.setAttribute("aria-current","true")')
+            search.fill('HBM')
+            expect(energy).not_to_be_visible(timeout=1500)
+            expect(energy).not_to_have_attribute('aria-current','true')
+            assert p.locator('.gmi-jump a:visible').count()==1
+            expect(semiconductor).to_be_visible()
+            expect(search).to_be_focused()
+            assert p.locator('[data-gmi-index] > details:visible').count()==1
+            assert p.locator('a.gmi-irow-name:visible').count()==2
+            expect(semiconductor.locator('small')).to_have_text('2')
+            expect(p.locator('#semiconductors_hardware > summary > b')).to_have_text('2')
+            assert p.locator('.gmi-index-t:visible [data-gmi-subgroup-count]').all_text_contents()==['1','1']
+            assert p.locator('[data-gmi-index-breakdown]').evaluate_all('(nodes)=>nodes.every(n=>n.hidden)')
+            feedback=p.locator('[data-gmi-index-feedback]')
+            expect(feedback).to_be_visible()
+            assert feedback.inner_text().strip()==('2 results' if language=='en' else '2 个结果')
+            assert p.locator('[role="status"]:visible').count()==1
+            before = p.url
+            semiconductor.click()
+            assert p.url==before
+            assert p.locator('#semiconductors_hardware').evaluate('(n)=>n.open')
+            # Hidden or detached targets may not fall through to a destructive native fragment.
+            result = p.evaluate('''()=>{
+              const a=document.querySelector('.gmi-jump a[href="#energy_power"]'),g=document.getElementById('energy_power');
+              const before=location.href,scroll=scrollY,opened=g.open,parent=g.parentNode,next=g.nextSibling;
+              a.click();const hidden={url:location.href,scroll:scrollY,opened:g.open};
+              g.remove();a.click();const detached=location.href;parent.insertBefore(g,next);
+              return {before,scroll,opened,hidden,detached};
+            }''')
+            assert result['hidden']=={'url':result['before'],'scroll':result['scroll'],'opened':result['opened']}
+            assert result['detached']==result['before']
+            stale = p.evaluate('''()=>{
+              const callbacks=window.__gmiJumpObservers,good=document.getElementById('semiconductors_hardware'),bad=document.getElementById('energy_power');
+              callbacks.forEach(cb=>cb([{target:good,isIntersecting:true}]));
+              callbacks.forEach(cb=>cb([{target:bad,isIntersecting:true}]));
+              return [...document.querySelectorAll('.gmi-jump [aria-current="true"]')].map(a=>a.getAttribute('href'));
+            }''')
+            assert stale==['#semiconductors_hardware']
+            # Clear restores all groups and shortcuts; a no-match query hides the whole rail.
+            search.fill('zz-gmi-no-match-fixture')
+            expect(nav).not_to_be_visible()
+            expect(p.locator('[data-gmi-nomatch="index"]')).to_be_visible()
+            expect(p.locator('[data-gmi-index-count]')).not_to_be_visible()
+            assert feedback.inner_text().strip()==('No micro-theme matches that search.' if language=='en' else '没有匹配该搜索的细分主题。')
+            assert p.locator('[role="status"]:visible').count()==1
+            expect(search).to_be_focused()
+            search.press('Escape')
+            expect(nav).to_be_visible()
+            assert p.locator('.gmi-jump a:visible').count()==total
+            assert p.locator('a.gmi-irow-name:visible').count()==371
+            expect(feedback).not_to_be_visible()
+            assert p.locator('[data-gmi-total]').evaluate_all('(nodes)=>nodes.map(n=>({value:n.textContent,total:n.getAttribute("data-gmi-total")}))')==totals
+            assert p.locator('[data-gmi-index-breakdown]').evaluate_all('(nodes)=>nodes.every(n=>!n.hidden)')
+            params = parse_qs(urlsplit(p.url).fragment)
+            assert 'q' not in params and params['open']==['all'] and params['lens']==['chain']
+            assert params['gmi_return']==['gmi.html#theme=theme:hbm_packaging&q=Micron']
+            # Hiding a previously current category must not suppress its next reveal after Clear.
+            def reveal_last():
+                return p.evaluate('''()=>{
+                  const track=document.querySelector('.gmi-jump-track'),g=document.getElementById('crypto_digital_assets');
+                  track.scrollLeft=0;window.__gmiJumpObservers.forEach(cb=>cb([{target:g,isIntersecting:true}]));
+                  return {overflow:track.scrollWidth>track.clientWidth,scroll:track.scrollLeft};
+                }''')
+            first = reveal_last()
+            if first['overflow']:
+                assert first['scroll']>0
+            search.fill('HBM');search.press('Escape')
+            again = reveal_last()
+            if again['overflow']:
+                assert again['scroll']>0
+
+            def restore(query):
+                p.evaluate('''q=>{const h=new URLSearchParams(location.hash.slice(1));
+                  if(q)h.set('q',q);else h.delete('q');location.hash=h.toString();}''',query)
+                expect(search).to_have_value(query)
+
+            # History can hide a focused row while another row in its category still matches.
+            dram = p.locator('[data-gmi-id="theme:conventional_dram"] a')
+            dram.focus();restore('HBM & advanced packaging')
+            expect(p.locator('#semiconductors_hardware')).to_be_visible()
+            expect(dram).not_to_be_visible()
+            assert feedback.inner_text().strip()==('1 result' if language=='en' else '1 个结果')
+            expect(semiconductor.locator('small')).to_have_text('1')
+            assert p.locator('.gmi-index-t:visible [data-gmi-subgroup-count]').all_text_contents()==['1']
+            expect(search).to_be_focused()
+            hbm = p.locator('[data-gmi-id="theme:hbm_packaging"] a')
+            hbm.focus();restore('HBM')
+            expect(hbm).to_be_focused()
+            restore('');energy.focus();restore('HBM')
+            expect(search).to_be_focused()
+            restore('');p.locator('#energy_power > summary').focus();restore('HBM')
+            expect(search).to_be_focused()
+            # An unrelated focus owner is not taken over by history restoration.
+            restore('')
+            p.evaluate('''()=>{const b=document.createElement('button');b.id='gmi-focus-fixture';
+              b.textContent='Unrelated focus fixture';document.body.append(b);b.focus();}''')
+            restore('HBM')
+            expect(p.locator('#gmi-focus-fixture')).to_be_focused()
+            p.locator('#gmi-focus-fixture').evaluate('(n)=>n.remove()')
+            restore('zz-gmi-no-match-fixture');p.go_back()
+            expect(search).to_have_value('HBM')
+            assert p.locator('.gmi-jump a:visible').count()==1
+            p.go_forward();expect(search).to_have_value('zz-gmi-no-match-fixture')
+            expect(nav).not_to_be_visible()
+            restore('HBM')
+            p.evaluate('(language)=>document.documentElement.setAttribute("data-lang",language)', 'zh' if language=='en' else 'en')
+            assert p.locator('.gmi-jump a:visible').count()==1
+            assert feedback.inner_text().strip()==('2 个结果' if language=='en' else '2 results')
+            # Restoring the pre-search collapsed state also releases focus before closing it.
+            restore('')
+            group = p.locator('#energy_power')
+            group.evaluate('(n)=>{n.open=false;}')
+            query = group.locator('[data-gmi-q]').first.get_attribute('data-gmi-q')[:200]
+            restore(query)
+            group.locator('a.gmi-irow-name:visible').first.focus()
+            restore('')
+            assert not group.evaluate('(n)=>n.open')
+            expect(search).to_be_focused()
+            restore('HBM')
+            p.evaluate('(language)=>document.documentElement.setAttribute("data-lang",language)',language)
+            gmi_navigation_fit(p,width,language)
+            if (width,language) in ((390,'en'),(320,'zh')):
+                path=args.out/f'index-filter-{width}-{language}.png'
+                p.screenshot(path=str(path),full_page=True)
+                report['screenshots'].append(path.name)
+
+
+    for width in (1440, 390, 320):
+        for language in ('en', 'zh'):
+            check(f'taxonomy-keyboard-{width}-{language}', lambda w=width,l=language: taxonomy_keyboard_activation(w,l))
+            check(f'index-shortcuts-{width}-{language}', lambda w=width,l=language: index_filtered_shortcuts(w,l))
+
     browser.close()
 server.shutdown()
 report['pass'] = all(c['result']=='PASS' for c in report['cases']) and not report['page_errors']
