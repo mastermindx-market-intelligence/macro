@@ -24,7 +24,11 @@ Run:
 from __future__ import annotations
 
 import json
+import os
+import stat
 import sys
+import tempfile
+from pathlib import Path
 
 import pytest
 import requests
@@ -400,3 +404,272 @@ def test_a_readable_states_file_still_gets_its_stamp(sentinel, monkeypatch):
     st = _states_file()
     assert st["as_of"] == D2 and st["states"] == PREV_STATES
     assert st["source"]["reason"] == "http_500"
+
+# Complete snapshots and atomic source-health writes share the original state owner.
+@pytest.mark.parametrize("payload", [
+    [_rows("AAPL")[0], None],
+    [None, _rows("AAPL")[0]],
+    [_rows("AAPL")[0], "not-a-container"],
+    [{"watchlist_symbols": []}, 0],
+    *([_rows("AAPL")[0], {"watchlist_symbols": value}]
+      for value in (None, False, 0, "", {}, "AAPL")),
+    [_rows("AAPL")[0], {}],
+    *([{"watchlist_symbols": [{"symbol": "AAPL"}, entry]}]
+       for entry in (None, 3, "MSFT", {}, {"ticker": "MSFT"},
+                     {"symbol": None}, {"symbol": False}, {"symbol": 3},
+                     {"symbol": []}, {"symbol": {}}, {"symbol": ""},
+                     {"symbol": "  "})),
+])
+def test_partial_watchlist_is_unavailable_and_never_evaluated(
+        sentinel, monkeypatch, payload):
+    _seed()
+    baseline = _states_file()
+    baseline["retained_metadata"] = {"version": 7, "opaque": [1, None]}
+    M._STATES_PATH.write_text(json.dumps(baseline))
+    cooldown = M._COOLDOWN_PATH.read_bytes()
+    _wire_supabase(monkeypatch, response=_Resp(200, payload))
+
+    def forbidden(*args, **kwargs):
+        pytest.fail("an incomplete watchlist reached evaluation or a durable advance")
+
+    for name in ("_load_per_ticker_states", "run_sentinel", "update_cooldown",
+                 "_save_states", "_save_cooldown", "_append_alert_jsonl",
+                 "_send_discord_watchlist"):
+        monkeypatch.setattr(M, name, forbidden)
+
+    assert _run() == 0
+    after = _states_file()
+    source = after.pop("source")
+    assert after == baseline
+    assert source["state"] == M.WatchlistRead.READ_UNAVAILABLE
+    assert source["watched_count"] == 0 and source["checked"] == D3
+    assert M._COOLDOWN_PATH.read_bytes() == cooldown
+    assert not M._ALERTS_JSONL.exists()
+
+
+def test_complete_symbols_keep_punctuation_and_one_operator_filtered_request(
+        sentinel, monkeypatch):
+    _wire_supabase(monkeypatch)
+    calls = []
+
+    def get(url, **kwargs):
+        calls.append((url, kwargs))
+        return _Resp(200, _rows(" msft ", "BTC-USD", "600519.SS", "MSFT"))
+
+    monkeypatch.setattr(M.requests, "get", get)
+    result = M._fetch_operator_watchlist()
+    assert result.available and result.tickers == ("600519.SS", "BTC-USD", "MSFT")
+    assert len(calls) == 1
+    url, request = calls[0]
+    assert url == "https://abc.supabase.co/rest/v1/watchlists"
+    assert request["params"] == {
+        "select": "id,user_id,watchlist_symbols(symbol)", "user_id": "eq.uid-123"}
+    assert request["timeout"] == 20
+
+
+def test_health_stamp_is_private_staged_atomic_and_preserves_existing_mode(
+        sentinel, monkeypatch):
+    _seed()
+    original = _states_file()
+    original["retained_metadata"] = {"version": 7, "opaque": [1, None]}
+    original["source"] = {"old": "replaced"}
+    M._STATES_PATH.write_text(json.dumps(original, indent=2))
+    M._STATES_PATH.chmod(0o640)
+    before = M._STATES_PATH.read_bytes()
+    cooldown = M._COOLDOWN_PATH.read_bytes()
+    _wire_supabase(monkeypatch, response=_Resp(500))
+    real_create, real_replace = tempfile.mkstemp, os.replace
+    staged = []
+
+    def create(*args, **kwargs):
+        fd, name = real_create(*args, **kwargs)
+        path = Path(name)
+        assert path.parent == M._STATES_PATH.parent
+        assert stat.S_IMODE(path.stat().st_mode) == 0o600
+        staged.append(path)
+        return fd, name
+
+    def replace(source, destination):
+        assert Path(source) == staged[-1]
+        assert Path(destination) == M._STATES_PATH
+        assert M._STATES_PATH.read_bytes() == before
+        assert stat.S_IMODE(Path(source).stat().st_mode) == 0o640
+        return real_replace(source, destination)
+
+    with monkeypatch.context() as patch:
+        patch.setattr(tempfile, "mkstemp", create)
+        patch.setattr(os, "replace", replace)
+        assert _run() == 0
+
+    assert len(staged) == 1 and not staged[0].exists()
+    after = _states_file()
+    source = after.pop("source")
+    original.pop("source")
+    assert after == original
+    assert source["reason"] == "http_500" and source["checked"] == D3
+    assert stat.S_IMODE(M._STATES_PATH.stat().st_mode) == 0o640
+    assert M._COOLDOWN_PATH.read_bytes() == cooldown
+    assert not list(M._ALERTS_DIR.glob(".watchlist_sentinel_states.json.*.tmp"))
+
+
+@pytest.mark.parametrize("fault", [
+    "stat", "read", "serialize", "mkdir", "create", "open",
+    "write", "short_write", "flush", "close", "mode", "fsync", "replace",
+])
+def test_unavailable_health_stamp_failures_preserve_exact_live_bytes(
+        sentinel, monkeypatch, caplog, capsys, fault):
+    _seed()
+    M._STATES_PATH.chmod(0o640)
+    before = M._STATES_PATH.read_bytes()
+    cooldown = M._COOLDOWN_PATH.read_bytes()
+    unrelated = M._ALERTS_DIR / ".unrelated.tmp"
+    unrelated.write_bytes(b"unrelated staging must survive")
+    before_names = {p.name for p in M._ALERTS_DIR.iterdir()}
+    canary = "PRIVATE_RESPONSE_TOKEN_SYMBOL_UID"
+    _wire_supabase(monkeypatch, response=_Resp(500, text=canary))
+    caplog.set_level("INFO", logger="watchlist_sentinel")
+
+    def fail(*args, **kwargs):
+        raise OSError(canary)
+
+    with monkeypatch.context() as patch:
+        if fault in ("stat", "read", "mkdir"):
+            method = {"stat": "lstat", "read": "read_text", "mkdir": "mkdir"}[fault]
+            real_method = getattr(Path, method)
+            target = M._STATES_PATH.parent if fault == "mkdir" else M._STATES_PATH
+
+            def guarded(path, *args, **kwargs):
+                if path == target:
+                    raise OSError(canary)
+                return real_method(path, *args, **kwargs)
+
+            patch.setattr(Path, method, guarded)
+        elif fault == "serialize":
+            patch.setattr(json, "dumps", fail)
+        elif fault == "create":
+            patch.setattr(tempfile, "mkstemp", fail)
+        elif fault == "open":
+            patch.setattr(os, "fdopen", fail)
+        elif fault in ("write", "short_write", "flush", "close"):
+            real_fdopen = os.fdopen
+
+            class BrokenStream:
+                def __init__(self, stream):
+                    self.stream = stream
+
+                def __enter__(self):
+                    return self
+
+                def __exit__(self, *args):
+                    result = self.stream.__exit__(*args)
+                    if fault == "close":
+                        raise OSError(canary)
+                    return result
+
+                def write(self, payload):
+                    if fault in ("write", "short_write"):
+                        count = self.stream.write(payload[:3])
+                        if fault == "write":
+                            raise OSError(canary)
+                        return count
+                    return self.stream.write(payload)
+
+                def flush(self):
+                    if fault == "flush":
+                        raise OSError(canary)
+                    return self.stream.flush()
+
+                def fileno(self):
+                    return self.stream.fileno()
+
+            patch.setattr(os, "fdopen",
+                          lambda *args, **kwargs: BrokenStream(real_fdopen(*args, **kwargs)))
+        else:
+            patch.setattr(os, {"mode": "fchmod", "fsync": "fsync",
+                               "replace": "replace"}[fault], fail)
+        assert _run() == 0
+
+    assert M._STATES_PATH.read_bytes() == before
+    assert stat.S_IMODE(M._STATES_PATH.stat().st_mode) == 0o640
+    assert M._COOLDOWN_PATH.read_bytes() == cooldown
+    assert {p.name for p in M._ALERTS_DIR.iterdir()} == before_names
+    assert unrelated.read_bytes() == b"unrelated staging must survive"
+    assert canary not in caplog.text + capsys.readouterr().out
+
+
+@pytest.mark.parametrize("kind", ["symlink", "directory"])
+def test_nonregular_states_are_never_replaced(sentinel, monkeypatch, tmp_path, kind):
+    _seed()
+    cooldown = M._COOLDOWN_PATH.read_bytes()
+    M._STATES_PATH.unlink()
+    target = tmp_path / "other_owner.json"
+    target.write_text('{"as_of":"2026-09-17","private":"keep"}')
+    before = target.read_bytes()
+    if kind == "symlink":
+        M._STATES_PATH.symlink_to(target)
+    else:
+        M._STATES_PATH.mkdir()
+    _wire_supabase(monkeypatch, response=_Resp(500))
+    assert _run() == 0
+    assert target.read_bytes() == before
+    assert M._STATES_PATH.is_symlink() if kind == "symlink" else M._STATES_PATH.is_dir()
+    assert M._COOLDOWN_PATH.read_bytes() == cooldown
+    assert not list(M._ALERTS_DIR.glob(".watchlist_sentinel_states.json.*.tmp"))
+
+
+def test_first_health_stamp_creates_private_file_without_an_evaluated_baseline(
+        sentinel, monkeypatch):
+    _wire_supabase(monkeypatch, response=_Resp(500))
+    assert _run() == 0
+    assert set(_states_file()) == {"source"}
+    assert stat.S_IMODE(M._STATES_PATH.stat().st_mode) == 0o600
+    assert not M._COOLDOWN_PATH.exists()
+
+
+def test_cleanup_refusal_is_fail_soft_and_never_removes_other_staging(
+        sentinel, monkeypatch, caplog):
+    _seed()
+    before = M._STATES_PATH.read_bytes()
+    cooldown = M._COOLDOWN_PATH.read_bytes()
+    unrelated = M._ALERTS_DIR / ".unrelated.tmp"
+    unrelated.write_bytes(b"keep")
+    _wire_supabase(monkeypatch, response=_Resp(500))
+    real_unlink = Path.unlink
+    canary = "PRIVATE_CLEANUP_EXCEPTION"
+
+    def refuse_replace(*args):
+        raise OSError(canary)
+
+    def refuse_owned_unlink(path, *args, **kwargs):
+        if path.name.startswith(".watchlist_sentinel_states.json."):
+            raise PermissionError(canary)
+        return real_unlink(path, *args, **kwargs)
+
+    with monkeypatch.context() as patch:
+        patch.setattr(os, "replace", refuse_replace)
+        patch.setattr(Path, "unlink", refuse_owned_unlink)
+        assert _run() == 0
+
+    assert M._STATES_PATH.read_bytes() == before
+    assert M._COOLDOWN_PATH.read_bytes() == cooldown
+    assert unrelated.read_bytes() == b"keep"
+    leftovers = list(M._ALERTS_DIR.glob(".watchlist_sentinel_states.json.*.tmp"))
+    assert len(leftovers) == 1
+    assert "temporary cleanup failed" in caplog.text
+    assert canary not in caplog.text
+    for path in leftovers:  # only this test's isolated, deliberately unremovable temp.
+        path.unlink()
+
+
+@pytest.mark.parametrize("failed_read", ["http", "transport"])
+def test_fetch_diagnostics_never_emit_response_or_exception_contents(
+        sentinel, monkeypatch, caplog, capsys, failed_read):
+    _seed()
+    canary = "PRIVATE_RESPONSE_CREDENTIAL_OPERATOR_SYMBOL"
+    caplog.set_level("INFO", logger="watchlist_sentinel")
+    if failed_read == "http":
+        _wire_supabase(monkeypatch, response=_Resp(500, text=canary))
+    else:
+        _wire_supabase(monkeypatch, raises=requests.exceptions.ConnectionError(canary))
+    assert _run() == 0
+    assert canary not in caplog.text + capsys.readouterr().out

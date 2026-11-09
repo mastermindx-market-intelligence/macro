@@ -305,6 +305,19 @@ def _plain_row(row: Mapping[str, object]) -> dict[str, object]:
     return {k: _plain_value(v) for k, v in row.items()}
 
 
+def candidate_source_row(row: Mapping[str, object]) -> dict[str, object]:
+    """Normalize candidate bytes without changing pre-receipt source identities.
+
+    Monthly parquet schema union supplies a null receipt column on older rows.
+    Its absence and canonical null are equivalent; every present non-null value,
+    including malformed metadata, remains part of the immutable source receipt.
+    """
+    result = _plain_row(_json_safe(dict(row)))
+    if result.get("today_selection_row_receipt") is None:
+        result.pop("today_selection_row_receipt", None)
+    return result
+
+
 def _unanchored_batch(source: str, schema: str, rows: list[dict[str, object]], spine: IdentitySpine,
                       *, ticker_key: str = "ticker", session_key: str = "as_of",
                       source_id: Callable[[dict[str, object]], str] | None = None,
@@ -350,7 +363,8 @@ def candidate_observations(data_root: Path, spine: IdentitySpine) -> IntakeBatch
     if not paths:
         return IntakeBatch((), (), ({"source": "candidate", "status": "degraded", "reason": "MISSING_SOURCE_FILE"},))
     snapshots = [_records_snapshot(path) for path in paths]
-    rows = [row for snapshot_rows, _receipt_row in snapshots for row in snapshot_rows]
+    rows = [candidate_source_row(row) for snapshot_rows, _receipt_row in snapshots
+            for row in snapshot_rows]
     file_receipts = [receipt for _snapshot_rows, receipt in snapshots]
     sessions = [str(row.get("stamp_date") or "") for row in rows]
     current = max((value for value in sessions if _session(value) is not None), default=None)

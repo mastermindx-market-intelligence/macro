@@ -1,0 +1,1584 @@
+{
+ "aliases": [
+  {
+   "alias": "Advanced Micro Devices",
+   "alias_norm": "advanced micro devices",
+   "basis": "ticker AMD -> ISS:US-XNAS-AMD (sec_name 'ADVANCED MICRO DEVICES INC', cik 2488) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNAS-AMD",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "Agnico Eagle",
+   "alias_norm": "agnico eagle",
+   "basis": "ticker AEM -> ISS:US-XNYS-AEM (sec_name 'AGNICO EAGLE MINES LTD', cik 2809) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNYS-AEM",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "Albemarle",
+   "alias_norm": "albemarle",
+   "basis": "ticker ALB -> ISS:US-XNYS-ALB (sec_name 'ALBEMARLE CORP', cik 915913) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNYS-ALB",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "Alphabet",
+   "alias_norm": "alphabet",
+   "basis": "ticker GOOG -> ISS:US-XNAS-GOOG (sec_name 'Alphabet Inc.', cik 1652044) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNAS-GOOG",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "Alphabet Inc.",
+   "alias_norm": "alphabet inc",
+   "basis": "ticker GOOG -> ISS:US-XNAS-GOOG (sec_name 'Alphabet Inc.', cik 1652044) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNAS-GOOG",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "Aluminum Corporation of China",
+   "alias_norm": "aluminum corporation of china",
+   "basis": "A-share SEC:CN-XSHG-601600 in manifest CN core (security-level only, NO_ISSUER_EVIDENCE)",
+   "cn_security_id": "SEC:CN-XSHG-601600",
+   "issuer_id": null,
+   "non_edge_reason": "CN_SECURITY_LEVEL_ONLY",
+   "target": "non_edge"
+  },
+  {
+   "alias": "Amazon",
+   "alias_norm": "amazon",
+   "basis": "ticker AMZN -> ISS:US-XNAS-AMZN (sec_name 'AMAZON COM INC', cik 1018724) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNAS-AMZN",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "Amazon.com",
+   "alias_norm": "amazon com",
+   "basis": "ticker AMZN -> ISS:US-XNAS-AMZN (sec_name 'AMAZON COM INC', cik 1018724) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNAS-AMZN",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "Amazon Web Services",
+   "alias_norm": "amazon web services",
+   "basis": "ticker AMZN -> ISS:US-XNAS-AMZN (sec_name 'AMAZON COM INC', cik 1018724) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNAS-AMZN",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "AMD",
+   "alias_norm": "amd",
+   "basis": "ticker AMD -> ISS:US-XNAS-AMD (sec_name 'ADVANCED MICRO DEVICES INC', cik 2488) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNAS-AMD",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "Analog Devices",
+   "alias_norm": "analog devices",
+   "basis": "ticker ADI -> ISS:US-XNAS-ADI (sec_name 'ANALOG DEVICES INC', cik 6281) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNAS-ADI",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "Anglo American",
+   "alias_norm": "anglo american",
+   "basis": "listed outside the core markets; absent from the 1925 core-US issuers and the CN core",
+   "cn_security_id": null,
+   "issuer_id": null,
+   "non_edge_reason": "OUT_OF_CORE_MARKET",
+   "target": "non_edge"
+  },
+  {
+   "alias": "Anthropic",
+   "alias_norm": "anthropic",
+   "basis": "no core-US issuer; privately held",
+   "cn_security_id": null,
+   "issuer_id": null,
+   "non_edge_reason": "PRIVATE_COMPANY",
+   "target": "non_edge"
+  },
+  {
+   "alias": "Apple",
+   "alias_norm": "apple",
+   "basis": "ticker AAPL -> ISS:US-XNAS-AAPL (sec_name 'Apple Inc.', cik 320193) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNAS-AAPL",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "Apple Inc.",
+   "alias_norm": "apple inc",
+   "basis": "ticker AAPL -> ISS:US-XNAS-AAPL (sec_name 'Apple Inc.', cik 320193) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNAS-AAPL",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "Applied Materials",
+   "alias_norm": "applied materials",
+   "basis": "ticker AMAT -> ISS:US-XNAS-AMAT (sec_name 'APPLIED MATERIALS INC /DE', cik 6951) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNAS-AMAT",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "Arm Holdings",
+   "alias_norm": "arm holdings",
+   "basis": "ticker ARM -> ISS:US-XNAS-ARM (sec_name 'ARM HOLDINGS PLC /UK', cik 1973239) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNAS-ARM",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "Arm Limited",
+   "alias_norm": "arm limited",
+   "basis": "ticker ARM -> ISS:US-XNAS-ARM (sec_name 'ARM HOLDINGS PLC /UK', cik 1973239) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNAS-ARM",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "Arrow Electronics",
+   "alias_norm": "arrow electronics",
+   "basis": "ticker ARW -> ISS:US-XNYS-ARW (sec_name 'ARROW ELECTRONICS, INC.', cik 7536) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNYS-ARW",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "ASE Technology Holding",
+   "alias_norm": "ase technology holding",
+   "basis": "ticker ASX -> ISS:US-XNYS-ASX (sec_name 'ASE Technology Holding Co., Ltd.', cik 1122411) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNYS-ASX",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "ASML",
+   "alias_norm": "asml",
+   "basis": "ticker ASML -> ISS:US-XNAS-ASML (sec_name 'ASML HOLDING NV', cik 937966) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNAS-ASML",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "Avnet",
+   "alias_norm": "avnet",
+   "basis": "ticker AVT -> ISS:US-XNAS-AVT (sec_name 'AVNET INC', cik 8858) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNAS-AVT",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "AWS",
+   "alias_norm": "aws",
+   "basis": "ticker AMZN -> ISS:US-XNAS-AMZN (sec_name 'AMAZON COM INC', cik 1018724) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNAS-AMZN",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "Baoshan Iron & Steel",
+   "alias_norm": "baoshan iron and steel",
+   "basis": "A-share SEC:CN-XSHG-600019 in manifest CN core (security-level only, NO_ISSUER_EVIDENCE)",
+   "cn_security_id": "SEC:CN-XSHG-600019",
+   "issuer_id": null,
+   "non_edge_reason": "CN_SECURITY_LEVEL_ONLY",
+   "target": "non_edge"
+  },
+  {
+   "alias": "Baosteel",
+   "alias_norm": "baosteel",
+   "basis": "A-share SEC:CN-XSHG-600019 in manifest CN core (security-level only, NO_ISSUER_EVIDENCE)",
+   "cn_security_id": "SEC:CN-XSHG-600019",
+   "issuer_id": null,
+   "non_edge_reason": "CN_SECURITY_LEVEL_ONLY",
+   "target": "non_edge"
+  },
+  {
+   "alias": "BHP",
+   "alias_norm": "bhp",
+   "basis": "ticker BHP -> ISS:US-XNYS-BHP (sec_name 'BHP Group Ltd', cik 811809) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNYS-BHP",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "BOE",
+   "alias_norm": "boe",
+   "basis": "A-share SEC:CN-XSHE-000725 in manifest CN core (security-level only, NO_ISSUER_EVIDENCE)",
+   "cn_security_id": "SEC:CN-XSHE-000725",
+   "issuer_id": null,
+   "non_edge_reason": "CN_SECURITY_LEVEL_ONLY",
+   "target": "non_edge"
+  },
+  {
+   "alias": "BOE Technology",
+   "alias_norm": "boe technology",
+   "basis": "A-share SEC:CN-XSHE-000725 in manifest CN core (security-level only, NO_ISSUER_EVIDENCE)",
+   "cn_security_id": "SEC:CN-XSHE-000725",
+   "issuer_id": null,
+   "non_edge_reason": "CN_SECURITY_LEVEL_ONLY",
+   "target": "non_edge"
+  },
+  {
+   "alias": "Boeing",
+   "alias_norm": "boeing",
+   "basis": "ticker BA -> ISS:US-XNYS-BA (sec_name 'BOEING CO', cik 12927) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNYS-BA",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "Bosch",
+   "alias_norm": "bosch",
+   "basis": "no core-US issuer; privately held",
+   "cn_security_id": null,
+   "issuer_id": null,
+   "non_edge_reason": "PRIVATE_COMPANY",
+   "target": "non_edge"
+  },
+  {
+   "alias": "BP",
+   "alias_norm": "bp",
+   "basis": "ticker BP -> ISS:US-XNYS-BP (sec_name 'BP PLC', cik 313807) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNYS-BP",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "Broadcom",
+   "alias_norm": "broadcom",
+   "basis": "ticker AVGO -> ISS:US-XNAS-AVGO (sec_name 'Broadcom Inc.', cik 1730168) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNAS-AVGO",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "BYD",
+   "alias_norm": "byd",
+   "basis": "A-share SEC:CN-XSHE-002594 in manifest CN core (security-level only, NO_ISSUER_EVIDENCE)",
+   "cn_security_id": "SEC:CN-XSHE-002594",
+   "issuer_id": null,
+   "non_edge_reason": "CN_SECURITY_LEVEL_ONLY",
+   "target": "non_edge"
+  },
+  {
+   "alias": "Cameco",
+   "alias_norm": "cameco",
+   "basis": "ticker CCJ -> ISS:US-XNYS-CCJ (sec_name 'CAMECO CORP', cik 1009001) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNYS-CCJ",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "Cargill",
+   "alias_norm": "cargill",
+   "basis": "no core-US issuer; privately held",
+   "cn_security_id": null,
+   "issuer_id": null,
+   "non_edge_reason": "PRIVATE_COMPANY",
+   "target": "non_edge"
+  },
+  {
+   "alias": "Caterpillar",
+   "alias_norm": "caterpillar",
+   "basis": "ticker CAT -> ISS:US-XNYS-CAT (sec_name 'CATERPILLAR INC', cik 18230) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNYS-CAT",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "CATL",
+   "alias_norm": "catl",
+   "basis": "A-share SEC:CN-XSHE-300750 in manifest CN core (security-level only, NO_ISSUER_EVIDENCE)",
+   "cn_security_id": "SEC:CN-XSHE-300750",
+   "issuer_id": null,
+   "non_edge_reason": "CN_SECURITY_LEVEL_ONLY",
+   "target": "non_edge"
+  },
+  {
+   "alias": "CF Industries",
+   "alias_norm": "cf industries",
+   "basis": "ticker CF -> ISS:US-XNYS-CF (sec_name 'CF Industries Holdings, Inc.', cik 1324404) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNYS-CF",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "Chalco",
+   "alias_norm": "chalco",
+   "basis": "A-share SEC:CN-XSHG-601600 in manifest CN core (security-level only, NO_ISSUER_EVIDENCE)",
+   "cn_security_id": "SEC:CN-XSHG-601600",
+   "issuer_id": null,
+   "non_edge_reason": "CN_SECURITY_LEVEL_ONLY",
+   "target": "non_edge"
+  },
+  {
+   "alias": "Chevron",
+   "alias_norm": "chevron",
+   "basis": "ticker CVX -> ISS:US-XNYS-CVX (sec_name 'CHEVRON CORP', cik 93410) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNYS-CVX",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "China Molybdenum",
+   "alias_norm": "china molybdenum",
+   "basis": "A-share SEC:CN-XSHG-603993 in manifest CN core (security-level only, NO_ISSUER_EVIDENCE)",
+   "cn_security_id": "SEC:CN-XSHG-603993",
+   "issuer_id": null,
+   "non_edge_reason": "CN_SECURITY_LEVEL_ONLY",
+   "target": "non_edge"
+  },
+  {
+   "alias": "China Northern Rare Earth",
+   "alias_norm": "china northern rare earth",
+   "basis": "A-share SEC:CN-XSHG-600111 in manifest CN core (security-level only, NO_ISSUER_EVIDENCE)",
+   "cn_security_id": "SEC:CN-XSHG-600111",
+   "issuer_id": null,
+   "non_edge_reason": "CN_SECURITY_LEVEL_ONLY",
+   "target": "non_edge"
+  },
+  {
+   "alias": "China Rare Earth",
+   "alias_norm": "china rare earth",
+   "basis": "A-share SEC:CN-XSHE-000831 in manifest CN core (security-level only, NO_ISSUER_EVIDENCE)",
+   "cn_security_id": "SEC:CN-XSHE-000831",
+   "issuer_id": null,
+   "non_edge_reason": "CN_SECURITY_LEVEL_ONLY",
+   "target": "non_edge"
+  },
+  {
+   "alias": "China Shenhua",
+   "alias_norm": "china shenhua",
+   "basis": "A-share SEC:CN-XSHG-601088 in manifest CN core (security-level only, NO_ISSUER_EVIDENCE)",
+   "cn_security_id": "SEC:CN-XSHG-601088",
+   "issuer_id": null,
+   "non_edge_reason": "CN_SECURITY_LEVEL_ONLY",
+   "target": "non_edge"
+  },
+  {
+   "alias": "Cisco",
+   "alias_norm": "cisco",
+   "basis": "ticker CSCO -> ISS:US-XNAS-CSCO (sec_name 'CISCO SYSTEMS, INC.', cik 858877) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNAS-CSCO",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "Cisco Systems",
+   "alias_norm": "cisco systems",
+   "basis": "ticker CSCO -> ISS:US-XNAS-CSCO (sec_name 'CISCO SYSTEMS, INC.', cik 858877) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNAS-CSCO",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "Cleveland-Cliffs",
+   "alias_norm": "cleveland cliffs",
+   "basis": "ticker CLF -> ISS:US-XNYS-CLF (sec_name 'CLEVELAND-CLIFFS INC.', cik 764065) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNYS-CLF",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "CMOC",
+   "alias_norm": "cmoc",
+   "basis": "A-share SEC:CN-XSHG-603993 in manifest CN core (security-level only, NO_ISSUER_EVIDENCE)",
+   "cn_security_id": "SEC:CN-XSHG-603993",
+   "issuer_id": null,
+   "non_edge_reason": "CN_SECURITY_LEVEL_ONLY",
+   "target": "non_edge"
+  },
+  {
+   "alias": "Compal",
+   "alias_norm": "compal",
+   "basis": "listed outside the core markets; absent from the 1925 core-US issuers and the CN core",
+   "cn_security_id": null,
+   "issuer_id": null,
+   "non_edge_reason": "OUT_OF_CORE_MARKET",
+   "target": "non_edge"
+  },
+  {
+   "alias": "Constellation Energy",
+   "alias_norm": "constellation energy",
+   "basis": "ticker CEG -> ISS:US-XNAS-CEG (sec_name 'Constellation Energy Corp', cik 1868275) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNAS-CEG",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "Contemporary Amperex Technology",
+   "alias_norm": "contemporary amperex technology",
+   "basis": "A-share SEC:CN-XSHE-300750 in manifest CN core (security-level only, NO_ISSUER_EVIDENCE)",
+   "cn_security_id": "SEC:CN-XSHE-300750",
+   "issuer_id": null,
+   "non_edge_reason": "CN_SECURITY_LEVEL_ONLY",
+   "target": "non_edge"
+  },
+  {
+   "alias": "Core Natural Resources",
+   "alias_norm": "core natural resources",
+   "basis": "ticker CNR -> ISS:US-XNYS-CNR (sec_name 'Core Natural Resources, Inc.', cik 1710366) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNYS-CNR",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "Deere",
+   "alias_norm": "deere",
+   "basis": "ticker DE -> ISS:US-XNYS-DE (sec_name 'DEERE & CO', cik 315189) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNYS-DE",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "Dell",
+   "alias_norm": "dell",
+   "basis": "ticker DELL -> ISS:US-XNYS-DELL (sec_name 'Dell Technologies Inc.', cik 1571996) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNYS-DELL",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "Dell Technologies",
+   "alias_norm": "dell technologies",
+   "basis": "ticker DELL -> ISS:US-XNYS-DELL (sec_name 'Dell Technologies Inc.', cik 1571996) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNYS-DELL",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "Denso",
+   "alias_norm": "denso",
+   "basis": "listed outside the core markets; absent from the 1925 core-US issuers and the CN core",
+   "cn_security_id": null,
+   "issuer_id": null,
+   "non_edge_reason": "OUT_OF_CORE_MARKET",
+   "target": "non_edge"
+  },
+  {
+   "alias": "Duke Energy",
+   "alias_norm": "duke energy",
+   "basis": "ticker DUK -> ISS:US-XNYS-DUK (sec_name 'Duke Energy CORP', cik 1326160) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNYS-DUK",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "Ericsson",
+   "alias_norm": "ericsson",
+   "basis": "ticker ERIC -> ISS:US-XNAS-ERIC (sec_name 'ERICSSON LM TELEPHONE CO', cik 717826) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNAS-ERIC",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "Exelon",
+   "alias_norm": "exelon",
+   "basis": "ticker EXC -> ISS:US-XNAS-EXC (sec_name 'EXELON CORP', cik 1109357) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNAS-EXC",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "Exxon Mobil",
+   "alias_norm": "exxon mobil",
+   "basis": "ticker XOM -> ISS:US-XNYS-XOM (sec_name 'ExxonMobil Holdings Corp', cik 2115436) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNYS-XOM",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "ExxonMobil",
+   "alias_norm": "exxonmobil",
+   "basis": "ticker XOM -> ISS:US-XNYS-XOM (sec_name 'ExxonMobil Holdings Corp', cik 2115436) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNYS-XOM",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "Facebook",
+   "alias_norm": "facebook",
+   "basis": "ticker META -> ISS:US-XNAS-META (sec_name 'Meta Platforms, Inc.', cik 1326801) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNAS-META",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "Flex Ltd.",
+   "alias_norm": "flex ltd",
+   "basis": "ticker FLEX -> ISS:US-XNAS-FLEX (sec_name 'FLEX LTD.', cik 866374) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNAS-FLEX",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "Flextronics",
+   "alias_norm": "flextronics",
+   "basis": "ticker FLEX -> ISS:US-XNAS-FLEX (sec_name 'FLEX LTD.', cik 866374) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNAS-FLEX",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "Ford",
+   "alias_norm": "ford",
+   "basis": "ticker F -> ISS:US-XNYS-F (sec_name 'FORD MOTOR CO', cik 37996) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNYS-F",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "Ford Motor Company",
+   "alias_norm": "ford motor company",
+   "basis": "ticker F -> ISS:US-XNYS-F (sec_name 'FORD MOTOR CO', cik 37996) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNYS-F",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "Foxconn",
+   "alias_norm": "foxconn",
+   "basis": "listed outside the core markets; absent from the 1925 core-US issuers and the CN core",
+   "cn_security_id": null,
+   "issuer_id": null,
+   "non_edge_reason": "OUT_OF_CORE_MARKET",
+   "target": "non_edge"
+  },
+  {
+   "alias": "Franco-Nevada",
+   "alias_norm": "franco nevada",
+   "basis": "ticker FNV -> ISS:US-XNYS-FNV (sec_name 'FRANCO NEVADA Corp', cik 1456346) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNYS-FNV",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "Freeport-McMoRan",
+   "alias_norm": "freeport mcmoran",
+   "basis": "ticker FCX -> ISS:US-XNYS-FCX (sec_name 'FREEPORT-MCMORAN INC', cik 831259) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNYS-FCX",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "Ganfeng Lithium",
+   "alias_norm": "ganfeng lithium",
+   "basis": "A-share SEC:CN-XSHE-002460 in manifest CN core (security-level only, NO_ISSUER_EVIDENCE)",
+   "cn_security_id": "SEC:CN-XSHE-002460",
+   "issuer_id": null,
+   "non_edge_reason": "CN_SECURITY_LEVEL_ONLY",
+   "target": "non_edge"
+  },
+  {
+   "alias": "General Motors",
+   "alias_norm": "general motors",
+   "basis": "ticker GM -> ISS:US-XNYS-GM (sec_name 'General Motors Co', cik 1467858) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNYS-GM",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "Glencore",
+   "alias_norm": "glencore",
+   "basis": "listed outside the core markets; absent from the 1925 core-US issuers and the CN core",
+   "cn_security_id": null,
+   "issuer_id": null,
+   "non_edge_reason": "OUT_OF_CORE_MARKET",
+   "target": "non_edge"
+  },
+  {
+   "alias": "GlobalFoundries",
+   "alias_norm": "globalfoundries",
+   "basis": "ticker GFS -> ISS:US-XNAS-GFS (sec_name 'GLOBALFOUNDRIES Inc.', cik 1709048) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNAS-GFS",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "Goertek",
+   "alias_norm": "goertek",
+   "basis": "A-share SEC:CN-XSHE-002241 in manifest CN core (security-level only, NO_ISSUER_EVIDENCE)",
+   "cn_security_id": "SEC:CN-XSHE-002241",
+   "issuer_id": null,
+   "non_edge_reason": "CN_SECURITY_LEVEL_ONLY",
+   "target": "non_edge"
+  },
+  {
+   "alias": "Google",
+   "alias_norm": "google",
+   "basis": "ticker GOOG -> ISS:US-XNAS-GOOG (sec_name 'Alphabet Inc.', cik 1652044) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNAS-GOOG",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "Hewlett Packard Enterprise",
+   "alias_norm": "hewlett packard enterprise",
+   "basis": "ticker HPE -> ISS:US-XNYS-HPE (sec_name 'Hewlett Packard Enterprise Co', cik 1645590) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNYS-HPE",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "Hon Hai",
+   "alias_norm": "hon hai",
+   "basis": "listed outside the core markets; absent from the 1925 core-US issuers and the CN core",
+   "cn_security_id": null,
+   "issuer_id": null,
+   "non_edge_reason": "OUT_OF_CORE_MARKET",
+   "target": "non_edge"
+  },
+  {
+   "alias": "Hon Hai Precision Industry",
+   "alias_norm": "hon hai precision industry",
+   "basis": "listed outside the core markets; absent from the 1925 core-US issuers and the CN core",
+   "cn_security_id": null,
+   "issuer_id": null,
+   "non_edge_reason": "OUT_OF_CORE_MARKET",
+   "target": "non_edge"
+  },
+  {
+   "alias": "Honda",
+   "alias_norm": "honda",
+   "basis": "listed outside the core markets; absent from the 1925 core-US issuers and the CN core",
+   "cn_security_id": null,
+   "issuer_id": null,
+   "non_edge_reason": "OUT_OF_CORE_MARKET",
+   "target": "non_edge"
+  },
+  {
+   "alias": "Honeywell",
+   "alias_norm": "honeywell",
+   "basis": "ticker HON -> ISS:US-XNAS-HON (sec_name 'HONEYWELL INTERNATIONAL INC', cik 773840) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNAS-HON",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "HP Inc.",
+   "alias_norm": "hp inc",
+   "basis": "ticker HPQ -> ISS:US-XNYS-HPQ (sec_name 'HP INC', cik 47217) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNYS-HPQ",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "Huawei",
+   "alias_norm": "huawei",
+   "basis": "no core-US issuer; privately held",
+   "cn_security_id": null,
+   "issuer_id": null,
+   "non_edge_reason": "PRIVATE_COMPANY",
+   "target": "non_edge"
+  },
+  {
+   "alias": "Huawei Technologies",
+   "alias_norm": "huawei technologies",
+   "basis": "no core-US issuer; privately held",
+   "cn_security_id": null,
+   "issuer_id": null,
+   "non_edge_reason": "PRIVATE_COMPANY",
+   "target": "non_edge"
+  },
+  {
+   "alias": "Huayou Cobalt",
+   "alias_norm": "huayou cobalt",
+   "basis": "A-share SEC:CN-XSHG-603799 in manifest CN core (security-level only, NO_ISSUER_EVIDENCE)",
+   "cn_security_id": "SEC:CN-XSHG-603799",
+   "issuer_id": null,
+   "non_edge_reason": "CN_SECURITY_LEVEL_ONLY",
+   "target": "non_edge"
+  },
+  {
+   "alias": "Hyundai",
+   "alias_norm": "hyundai",
+   "basis": "listed outside the core markets; absent from the 1925 core-US issuers and the CN core",
+   "cn_security_id": null,
+   "issuer_id": null,
+   "non_edge_reason": "OUT_OF_CORE_MARKET",
+   "target": "non_edge"
+  },
+  {
+   "alias": "Intel",
+   "alias_norm": "intel",
+   "basis": "ticker INTC -> ISS:US-XNAS-INTC (sec_name 'INTEL CORP', cik 50863) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNAS-INTC",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "Inventec",
+   "alias_norm": "inventec",
+   "basis": "listed outside the core markets; absent from the 1925 core-US issuers and the CN core",
+   "cn_security_id": null,
+   "issuer_id": null,
+   "non_edge_reason": "OUT_OF_CORE_MARKET",
+   "target": "non_edge"
+  },
+  {
+   "alias": "Jabil",
+   "alias_norm": "jabil",
+   "basis": "ticker JBL -> ISS:US-XNYS-JBL (sec_name 'JABIL INC', cik 898293) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNYS-JBL",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "JCET",
+   "alias_norm": "jcet",
+   "basis": "A-share SEC:CN-XSHG-600584 in manifest CN core (security-level only, NO_ISSUER_EVIDENCE)",
+   "cn_security_id": "SEC:CN-XSHG-600584",
+   "issuer_id": null,
+   "non_edge_reason": "CN_SECURITY_LEVEL_ONLY",
+   "target": "non_edge"
+  },
+  {
+   "alias": "John Deere",
+   "alias_norm": "john deere",
+   "basis": "ticker DE -> ISS:US-XNYS-DE (sec_name 'DEERE & CO', cik 315189) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNYS-DE",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "Kinross",
+   "alias_norm": "kinross",
+   "basis": "ticker KGC -> ISS:US-XNYS-KGC (sec_name 'KINROSS GOLD CORP', cik 701818) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNYS-KGC",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "Kinross Gold",
+   "alias_norm": "kinross gold",
+   "basis": "ticker KGC -> ISS:US-XNYS-KGC (sec_name 'KINROSS GOLD CORP', cik 701818) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNYS-KGC",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "Kioxia",
+   "alias_norm": "kioxia",
+   "basis": "listed outside the core markets; absent from the 1925 core-US issuers and the CN core",
+   "cn_security_id": null,
+   "issuer_id": null,
+   "non_edge_reason": "OUT_OF_CORE_MARKET",
+   "target": "non_edge"
+  },
+  {
+   "alias": "KLA",
+   "alias_norm": "kla",
+   "basis": "ticker KLAC -> ISS:US-XNAS-KLAC (sec_name 'KLA CORP', cik 319201) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNAS-KLAC",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "KLA Corporation",
+   "alias_norm": "kla corporation",
+   "basis": "ticker KLAC -> ISS:US-XNAS-KLAC (sec_name 'KLA CORP', cik 319201) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNAS-KLAC",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "Lam Research",
+   "alias_norm": "lam research",
+   "basis": "ticker LRCX -> ISS:US-XNAS-LRCX (sec_name 'LAM RESEARCH CORP', cik 707549) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNAS-LRCX",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "Lenovo",
+   "alias_norm": "lenovo",
+   "basis": "listed outside the core markets; absent from the 1925 core-US issuers and the CN core",
+   "cn_security_id": null,
+   "issuer_id": null,
+   "non_edge_reason": "OUT_OF_CORE_MARKET",
+   "target": "non_edge"
+  },
+  {
+   "alias": "Lens Technology",
+   "alias_norm": "lens technology",
+   "basis": "A-share SEC:CN-XSHE-300433 in manifest CN core (security-level only, NO_ISSUER_EVIDENCE)",
+   "cn_security_id": "SEC:CN-XSHE-300433",
+   "issuer_id": null,
+   "non_edge_reason": "CN_SECURITY_LEVEL_ONLY",
+   "target": "non_edge"
+  },
+  {
+   "alias": "LG Electronics",
+   "alias_norm": "lg electronics",
+   "basis": "listed outside the core markets; absent from the 1925 core-US issuers and the CN core",
+   "cn_security_id": null,
+   "issuer_id": null,
+   "non_edge_reason": "OUT_OF_CORE_MARKET",
+   "target": "non_edge"
+  },
+  {
+   "alias": "Lockheed Martin",
+   "alias_norm": "lockheed martin",
+   "basis": "ticker LMT -> ISS:US-XNYS-LMT (sec_name 'LOCKHEED MARTIN CORP', cik 936468) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNYS-LMT",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "Luxshare",
+   "alias_norm": "luxshare",
+   "basis": "A-share SEC:CN-XSHE-002475 in manifest CN core (security-level only, NO_ISSUER_EVIDENCE)",
+   "cn_security_id": "SEC:CN-XSHE-002475",
+   "issuer_id": null,
+   "non_edge_reason": "CN_SECURITY_LEVEL_ONLY",
+   "target": "non_edge"
+  },
+  {
+   "alias": "Luxshare Precision",
+   "alias_norm": "luxshare precision",
+   "basis": "A-share SEC:CN-XSHE-002475 in manifest CN core (security-level only, NO_ISSUER_EVIDENCE)",
+   "cn_security_id": "SEC:CN-XSHE-002475",
+   "issuer_id": null,
+   "non_edge_reason": "CN_SECURITY_LEVEL_ONLY",
+   "target": "non_edge"
+  },
+  {
+   "alias": "Marathon Petroleum",
+   "alias_norm": "marathon petroleum",
+   "basis": "ticker MPC -> ISS:US-XNYS-MPC (sec_name 'Marathon Petroleum Corp', cik 1510295) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNYS-MPC",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "MediaTek",
+   "alias_norm": "mediatek",
+   "basis": "listed outside the core markets; absent from the 1925 core-US issuers and the CN core",
+   "cn_security_id": null,
+   "issuer_id": null,
+   "non_edge_reason": "OUT_OF_CORE_MARKET",
+   "target": "non_edge"
+  },
+  {
+   "alias": "Meta Platforms",
+   "alias_norm": "meta platforms",
+   "basis": "ticker META -> ISS:US-XNAS-META (sec_name 'Meta Platforms, Inc.', cik 1326801) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNAS-META",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "Micron",
+   "alias_norm": "micron",
+   "basis": "ticker MU -> ISS:US-XNAS-MU (sec_name 'MICRON TECHNOLOGY INC', cik 723125) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNAS-MU",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "Micron Technology",
+   "alias_norm": "micron technology",
+   "basis": "ticker MU -> ISS:US-XNAS-MU (sec_name 'MICRON TECHNOLOGY INC', cik 723125) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNAS-MU",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "Microsoft",
+   "alias_norm": "microsoft",
+   "basis": "ticker MSFT -> ISS:US-XNAS-MSFT (sec_name 'MICROSOFT CORP', cik 789019) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNAS-MSFT",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "Mosaic",
+   "alias_norm": "mosaic",
+   "basis": "ticker MOS -> ISS:US-XNYS-MOS (sec_name 'MOSAIC CO', cik 1285785) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNYS-MOS",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "MP Materials",
+   "alias_norm": "mp materials",
+   "basis": "ticker MP -> ISS:US-XNYS-MP (sec_name 'MP Materials Corp. / DE', cik 1801368) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNYS-MP",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "NAURA",
+   "alias_norm": "naura",
+   "basis": "A-share SEC:CN-XSHE-002371 in manifest CN core (security-level only, NO_ISSUER_EVIDENCE)",
+   "cn_security_id": "SEC:CN-XSHE-002371",
+   "issuer_id": null,
+   "non_edge_reason": "CN_SECURITY_LEVEL_ONLY",
+   "target": "non_edge"
+  },
+  {
+   "alias": "Newmont",
+   "alias_norm": "newmont",
+   "basis": "ticker NEM -> ISS:US-XNYS-NEM (sec_name 'NEWMONT Corp /DE/', cik 1164727) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNYS-NEM",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "Nippon Steel",
+   "alias_norm": "nippon steel",
+   "basis": "listed outside the core markets; absent from the 1925 core-US issuers and the CN core",
+   "cn_security_id": null,
+   "issuer_id": null,
+   "non_edge_reason": "OUT_OF_CORE_MARKET",
+   "target": "non_edge"
+  },
+  {
+   "alias": "Nokia",
+   "alias_norm": "nokia",
+   "basis": "ticker NOK -> ISS:US-XNYS-NOK (sec_name 'NOKIA CORP', cik 924613) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNYS-NOK",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "Nucor",
+   "alias_norm": "nucor",
+   "basis": "ticker NUE -> ISS:US-XNYS-NUE (sec_name 'NUCOR CORP', cik 73309) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNYS-NUE",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "Nutrien",
+   "alias_norm": "nutrien",
+   "basis": "ticker NTR -> ISS:US-XNYS-NTR (sec_name 'Nutrien Ltd.', cik 1725964) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNYS-NTR",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "NVIDIA",
+   "alias_norm": "nvidia",
+   "basis": "ticker NVDA -> ISS:US-XNAS-NVDA (sec_name 'NVIDIA CORP', cik 1045810) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNAS-NVDA",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "OpenAI",
+   "alias_norm": "openai",
+   "basis": "no core-US issuer; privately held",
+   "cn_security_id": null,
+   "issuer_id": null,
+   "non_edge_reason": "PRIVATE_COMPANY",
+   "target": "non_edge"
+  },
+  {
+   "alias": "Oracle",
+   "alias_norm": "oracle",
+   "basis": "ticker ORCL -> ISS:US-XNYS-ORCL (sec_name 'ORACLE CORP', cik 1341439) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNYS-ORCL",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "Pan American Silver",
+   "alias_norm": "pan american silver",
+   "basis": "ticker PAAS -> ISS:US-XNYS-PAAS (sec_name 'PAN AMERICAN SILVER CORP', cik 771992) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNYS-PAAS",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "Pegatron",
+   "alias_norm": "pegatron",
+   "basis": "listed outside the core markets; absent from the 1925 core-US issuers and the CN core",
+   "cn_security_id": null,
+   "issuer_id": null,
+   "non_edge_reason": "OUT_OF_CORE_MARKET",
+   "target": "non_edge"
+  },
+  {
+   "alias": "PetroChina",
+   "alias_norm": "petrochina",
+   "basis": "A-share SEC:CN-XSHG-601857 in manifest CN core (security-level only, NO_ISSUER_EVIDENCE)",
+   "cn_security_id": "SEC:CN-XSHG-601857",
+   "issuer_id": null,
+   "non_edge_reason": "CN_SECURITY_LEVEL_ONLY",
+   "target": "non_edge"
+  },
+  {
+   "alias": "Phillips 66",
+   "alias_norm": "phillips 66",
+   "basis": "ticker PSX -> ISS:US-XNYS-PSX (sec_name 'Phillips 66', cik 1534701) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNYS-PSX",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "Qualcomm",
+   "alias_norm": "qualcomm",
+   "basis": "ticker QCOM -> ISS:US-XNAS-QCOM (sec_name 'QUALCOMM INC/DE', cik 804328) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNAS-QCOM",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "Quanta Computer",
+   "alias_norm": "quanta computer",
+   "basis": "listed outside the core markets; absent from the 1925 core-US issuers and the CN core",
+   "cn_security_id": null,
+   "issuer_id": null,
+   "non_edge_reason": "OUT_OF_CORE_MARKET",
+   "target": "non_edge"
+  },
+  {
+   "alias": "Rio Tinto",
+   "alias_norm": "rio tinto",
+   "basis": "ticker RIO -> ISS:US-XNYS-RIO (sec_name 'RIO TINTO PLC', cik 863064) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNYS-RIO",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "Robert Bosch",
+   "alias_norm": "robert bosch",
+   "basis": "no core-US issuer; privately held",
+   "cn_security_id": null,
+   "issuer_id": null,
+   "non_edge_reason": "PRIVATE_COMPANY",
+   "target": "non_edge"
+  },
+  {
+   "alias": "Royal Gold",
+   "alias_norm": "royal gold",
+   "basis": "ticker RGLD -> ISS:US-XNAS-RGLD (sec_name 'ROYAL GOLD INC', cik 85535) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNAS-RGLD",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "Samsung",
+   "alias_norm": "samsung",
+   "basis": "listed outside the core markets; absent from the 1925 core-US issuers and the CN core",
+   "cn_security_id": null,
+   "issuer_id": null,
+   "non_edge_reason": "OUT_OF_CORE_MARKET",
+   "target": "non_edge"
+  },
+  {
+   "alias": "Samsung Electronics",
+   "alias_norm": "samsung electronics",
+   "basis": "listed outside the core markets; absent from the 1925 core-US issuers and the CN core",
+   "cn_security_id": null,
+   "issuer_id": null,
+   "non_edge_reason": "OUT_OF_CORE_MARKET",
+   "target": "non_edge"
+  },
+  {
+   "alias": "Sanmina",
+   "alias_norm": "sanmina",
+   "basis": "ticker SANM -> ISS:US-XNAS-SANM (sec_name 'SANMINA CORP', cik 897723) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNAS-SANM",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "Seagate",
+   "alias_norm": "seagate",
+   "basis": "ticker STX -> ISS:US-XNAS-STX (sec_name 'Seagate Technology Holdings plc', cik 1137789) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNAS-STX",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "Seagate Technology",
+   "alias_norm": "seagate technology",
+   "basis": "ticker STX -> ISS:US-XNAS-STX (sec_name 'Seagate Technology Holdings plc', cik 1137789) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNAS-STX",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "Semiconductor Manufacturing International Corporation",
+   "alias_norm": "semiconductor manufacturing international corporation",
+   "basis": "A-share SEC:CN-XSHG-688981 in manifest CN core (security-level only, NO_ISSUER_EVIDENCE)",
+   "cn_security_id": "SEC:CN-XSHG-688981",
+   "issuer_id": null,
+   "non_edge_reason": "CN_SECURITY_LEVEL_ONLY",
+   "target": "non_edge"
+  },
+  {
+   "alias": "Shell",
+   "alias_norm": "shell",
+   "basis": "ticker SHEL -> ISS:US-XNYS-SHEL (sec_name 'Shell plc', cik 1306965) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNYS-SHEL",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "Shenghe",
+   "alias_norm": "shenghe",
+   "basis": "A-share SEC:CN-XSHG-600392 in manifest CN core (security-level only, NO_ISSUER_EVIDENCE)",
+   "cn_security_id": "SEC:CN-XSHG-600392",
+   "issuer_id": null,
+   "non_edge_reason": "CN_SECURITY_LEVEL_ONLY",
+   "target": "non_edge"
+  },
+  {
+   "alias": "Shenghe Resources",
+   "alias_norm": "shenghe resources",
+   "basis": "A-share SEC:CN-XSHG-600392 in manifest CN core (security-level only, NO_ISSUER_EVIDENCE)",
+   "cn_security_id": "SEC:CN-XSHG-600392",
+   "issuer_id": null,
+   "non_edge_reason": "CN_SECURITY_LEVEL_ONLY",
+   "target": "non_edge"
+  },
+  {
+   "alias": "Sibanye-Stillwater",
+   "alias_norm": "sibanye stillwater",
+   "basis": "ticker SBSW -> ISS:US-XNYS-SBSW (sec_name 'Sibanye Stillwater Ltd', cik 1786909) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNYS-SBSW",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "Sinopec",
+   "alias_norm": "sinopec",
+   "basis": "A-share SEC:CN-XSHG-600028 in manifest CN core (security-level only, NO_ISSUER_EVIDENCE)",
+   "cn_security_id": "SEC:CN-XSHG-600028",
+   "issuer_id": null,
+   "non_edge_reason": "CN_SECURITY_LEVEL_ONLY",
+   "target": "non_edge"
+  },
+  {
+   "alias": "SK hynix",
+   "alias_norm": "sk hynix",
+   "basis": "listed outside the core markets; absent from the 1925 core-US issuers and the CN core",
+   "cn_security_id": null,
+   "issuer_id": null,
+   "non_edge_reason": "OUT_OF_CORE_MARKET",
+   "target": "non_edge"
+  },
+  {
+   "alias": "SMIC",
+   "alias_norm": "smic",
+   "basis": "A-share SEC:CN-XSHG-688981 in manifest CN core (security-level only, NO_ISSUER_EVIDENCE)",
+   "cn_security_id": "SEC:CN-XSHG-688981",
+   "issuer_id": null,
+   "non_edge_reason": "CN_SECURITY_LEVEL_ONLY",
+   "target": "non_edge"
+  },
+  {
+   "alias": "Sociedad Química y Minera de Chile",
+   "alias_norm": "sociedad química y minera de chile",
+   "basis": "ticker SQM -> ISS:US-XNYS-SQM (sec_name 'CHEMICAL & MINING CO OF CHILE INC', cik 909037) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNYS-SQM",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "Sony",
+   "alias_norm": "sony",
+   "basis": "ticker SONY -> ISS:US-XNYS-SONY (sec_name 'Sony Group Corp', cik 313838) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNYS-SONY",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "Southern Company",
+   "alias_norm": "southern company",
+   "basis": "ticker SO -> ISS:US-XNYS-SO (sec_name 'SOUTHERN CO', cik 92122) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNYS-SO",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "Southern Copper",
+   "alias_norm": "southern copper",
+   "basis": "ticker SCCO -> ISS:US-XNYS-SCCO (sec_name 'SOUTHERN COPPER CORP/', cik 1001838) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNYS-SCCO",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "SpaceX",
+   "alias_norm": "spacex",
+   "basis": "no core-US issuer; privately held",
+   "cn_security_id": null,
+   "issuer_id": null,
+   "non_edge_reason": "PRIVATE_COMPANY",
+   "target": "non_edge"
+  },
+  {
+   "alias": "SQM",
+   "alias_norm": "sqm",
+   "basis": "ticker SQM -> ISS:US-XNYS-SQM (sec_name 'CHEMICAL & MINING CO OF CHILE INC', cik 909037) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNYS-SQM",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "Stellantis",
+   "alias_norm": "stellantis",
+   "basis": "listed outside the core markets; absent from the 1925 core-US issuers and the CN core",
+   "cn_security_id": null,
+   "issuer_id": null,
+   "non_edge_reason": "OUT_OF_CORE_MARKET",
+   "target": "non_edge"
+  },
+  {
+   "alias": "Super Micro Computer",
+   "alias_norm": "super micro computer",
+   "basis": "ticker SMCI -> ISS:US-XNAS-SMCI (sec_name 'Super Micro Computer, Inc.', cik 1375365) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNAS-SMCI",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "Supermicro",
+   "alias_norm": "supermicro",
+   "basis": "ticker SMCI -> ISS:US-XNAS-SMCI (sec_name 'Super Micro Computer, Inc.', cik 1375365) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNAS-SMCI",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "Taiwan Semiconductor Manufacturing Company",
+   "alias_norm": "taiwan semiconductor manufacturing company",
+   "basis": "ticker TSM -> ISS:US-XNYS-TSM (sec_name 'TAIWAN SEMICONDUCTOR MANUFACTURING CO LTD', cik 1046179) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNYS-TSM",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "Taiwan Semiconductor Manufacturing Company Limited",
+   "alias_norm": "taiwan semiconductor manufacturing company limited",
+   "basis": "ticker TSM -> ISS:US-XNYS-TSM (sec_name 'TAIWAN SEMICONDUCTOR MANUFACTURING CO LTD', cik 1046179) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNYS-TSM",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "Teck",
+   "alias_norm": "teck",
+   "basis": "ticker TECK -> ISS:US-XNYS-TECK (sec_name 'TECK RESOURCES LTD', cik 886986) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNYS-TECK",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "Teck Resources",
+   "alias_norm": "teck resources",
+   "basis": "ticker TECK -> ISS:US-XNYS-TECK (sec_name 'TECK RESOURCES LTD', cik 886986) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNYS-TECK",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "Tesla",
+   "alias_norm": "tesla",
+   "basis": "ticker TSLA -> ISS:US-XNAS-TSLA (sec_name 'Tesla, Inc.', cik 1318605) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNAS-TSLA",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "Texas Instruments",
+   "alias_norm": "texas instruments",
+   "basis": "ticker TXN -> ISS:US-XNAS-TXN (sec_name 'TEXAS INSTRUMENTS INC', cik 97476) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNAS-TXN",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "The Mosaic Company",
+   "alias_norm": "the mosaic company",
+   "basis": "ticker MOS -> ISS:US-XNYS-MOS (sec_name 'MOSAIC CO', cik 1285785) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNYS-MOS",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "Tianqi Lithium",
+   "alias_norm": "tianqi lithium",
+   "basis": "A-share SEC:CN-XSHE-002466 in manifest CN core (security-level only, NO_ISSUER_EVIDENCE)",
+   "cn_security_id": "SEC:CN-XSHE-002466",
+   "issuer_id": null,
+   "non_edge_reason": "CN_SECURITY_LEVEL_ONLY",
+   "target": "non_edge"
+  },
+  {
+   "alias": "Tokyo Electron",
+   "alias_norm": "tokyo electron",
+   "basis": "listed outside the core markets; absent from the 1925 core-US issuers and the CN core",
+   "cn_security_id": null,
+   "issuer_id": null,
+   "non_edge_reason": "OUT_OF_CORE_MARKET",
+   "target": "non_edge"
+  },
+  {
+   "alias": "Tongfu Microelectronics",
+   "alias_norm": "tongfu microelectronics",
+   "basis": "A-share SEC:CN-XSHE-002156 in manifest CN core (security-level only, NO_ISSUER_EVIDENCE)",
+   "cn_security_id": "SEC:CN-XSHE-002156",
+   "issuer_id": null,
+   "non_edge_reason": "CN_SECURITY_LEVEL_ONLY",
+   "target": "non_edge"
+  },
+  {
+   "alias": "Toyota",
+   "alias_norm": "toyota",
+   "basis": "listed outside the core markets; absent from the 1925 core-US issuers and the CN core",
+   "cn_security_id": null,
+   "issuer_id": null,
+   "non_edge_reason": "OUT_OF_CORE_MARKET",
+   "target": "non_edge"
+  },
+  {
+   "alias": "TSMC",
+   "alias_norm": "tsmc",
+   "basis": "ticker TSM -> ISS:US-XNYS-TSM (sec_name 'TAIWAN SEMICONDUCTOR MANUFACTURING CO LTD', cik 1046179) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNYS-TSM",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "UMC",
+   "alias_norm": "umc",
+   "basis": "ticker UMC -> ISS:US-XNYS-UMC (sec_name 'UNITED MICROELECTRONICS CORP', cik 1033767) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNYS-UMC",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "United Microelectronics Corporation",
+   "alias_norm": "united microelectronics corporation",
+   "basis": "ticker UMC -> ISS:US-XNYS-UMC (sec_name 'UNITED MICROELECTRONICS CORP', cik 1033767) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNYS-UMC",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "Vale",
+   "alias_norm": "vale",
+   "basis": "ticker VALE -> ISS:US-XNYS-VALE (sec_name 'Vale S.A.', cik 917851) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNYS-VALE",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "Valero",
+   "alias_norm": "valero",
+   "basis": "ticker VLO -> ISS:US-XNYS-VLO (sec_name 'VALERO ENERGY CORP/TX', cik 1035002) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNYS-VLO",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "Western Digital",
+   "alias_norm": "western digital",
+   "basis": "ticker WDC -> ISS:US-XNAS-WDC (sec_name 'WESTERN DIGITAL CORP', cik 106040) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNAS-WDC",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "Wheaton Precious Metals",
+   "alias_norm": "wheaton precious metals",
+   "basis": "ticker WPM -> ISS:US-XNYS-WPM (sec_name 'Wheaton Precious Metals Corp.', cik 1323404) in resolver projection, manifest 2373df79e941",
+   "cn_security_id": null,
+   "issuer_id": "ISS:US-XNYS-WPM",
+   "non_edge_reason": null,
+   "target": "issuer"
+  },
+  {
+   "alias": "Wistron",
+   "alias_norm": "wistron",
+   "basis": "listed outside the core markets; absent from the 1925 core-US issuers and the CN core",
+   "cn_security_id": null,
+   "issuer_id": null,
+   "non_edge_reason": "OUT_OF_CORE_MARKET",
+   "target": "non_edge"
+  },
+  {
+   "alias": "WT Microelectronics",
+   "alias_norm": "wt microelectronics",
+   "basis": "listed outside the core markets; absent from the 1925 core-US issuers and the CN core",
+   "cn_security_id": null,
+   "issuer_id": null,
+   "non_edge_reason": "OUT_OF_CORE_MARKET",
+   "target": "non_edge"
+  },
+  {
+   "alias": "xAI",
+   "alias_norm": "xai",
+   "basis": "no core-US issuer; privately held",
+   "cn_security_id": null,
+   "issuer_id": null,
+   "non_edge_reason": "PRIVATE_COMPANY",
+   "target": "non_edge"
+  },
+  {
+   "alias": "Xiamen Tungsten",
+   "alias_norm": "xiamen tungsten",
+   "basis": "A-share SEC:CN-XSHG-600549 in manifest CN core (security-level only, NO_ISSUER_EVIDENCE)",
+   "cn_security_id": "SEC:CN-XSHG-600549",
+   "issuer_id": null,
+   "non_edge_reason": "CN_SECURITY_LEVEL_ONLY",
+   "target": "non_edge"
+  },
+  {
+   "alias": "Xiaomi",
+   "alias_norm": "xiaomi",
+   "basis": "listed outside the core markets; absent from the 1925 core-US issuers and the CN core",
+   "cn_security_id": null,
+   "issuer_id": null,
+   "non_edge_reason": "OUT_OF_CORE_MARKET",
+   "target": "non_edge"
+  },
+  {
+   "alias": "Zhejiang Huayou Cobalt",
+   "alias_norm": "zhejiang huayou cobalt",
+   "basis": "A-share SEC:CN-XSHG-603799 in manifest CN core (security-level only, NO_ISSUER_EVIDENCE)",
+   "cn_security_id": "SEC:CN-XSHG-603799",
+   "issuer_id": null,
+   "non_edge_reason": "CN_SECURITY_LEVEL_ONLY",
+   "target": "non_edge"
+  },
+  {
+   "alias": "Zijin Mining",
+   "alias_norm": "zijin mining",
+   "basis": "A-share SEC:CN-XSHG-601899 in manifest CN core (security-level only, NO_ISSUER_EVIDENCE)",
+   "cn_security_id": "SEC:CN-XSHG-601899",
+   "issuer_id": null,
+   "non_edge_reason": "CN_SECURITY_LEVEL_ONLY",
+   "target": "non_edge"
+  }
+ ],
+ "manifest_version": "2373df79e9418057828ab6cbf7f6fd4055e96b5d9fc66e3de72fa10854a782d5",
+ "n": 175,
+ "resolver_sha256": "a18924867fa53f58c0e01ac873d5bc2a8d610a01b69ad333ea6dfb51183303cd",
+ "rule": "F03 A34: an alias is applied only on exact alias_norm equality with the normalized counterparty name_as_filed; an issuer target is re-checked against the resolver projection at use; ambiguous bare names (HP, GE, General Electric, Arm as a word) are deliberately absent",
+ "schema": "orch_rel.m2_curated_aliases/v1"
+}

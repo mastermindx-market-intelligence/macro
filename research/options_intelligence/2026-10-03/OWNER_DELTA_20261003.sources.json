@@ -1,0 +1,1078 @@
+{
+  "schema": "options.research.owner_source_delta/v1",
+  "operation_id": "options-intelligence-deep-research-20261003-astra-001",
+  "observed_within_utc": [
+    "2026-10-03 10:07:06 UTC",
+    "2026-10-03 10:17:30 UTC"
+  ],
+  "protected_procedure_pin_supplied_by_parent": "20adcaf65c2dd1bb734ab06e215feb1a0eb65659",
+  "research_head_supplied_by_parent": "4444bb68aa05caa413c362f2bb6d810aa5591265",
+  "branch_pins": {
+    "macro": "3d9969c15bba0f57b64da7592c0731cc8a0f2eac",
+    "terminal": "41b8af2da46614cedd2a485214e53003d4f030fc"
+  },
+  "scope": "Read-only current-owner/source delta; no provider/runtime sessions, tests, source mutations, worker launch, owner messages or external writes.",
+  "findings": {
+    "B1": "Current gamma engine blob matches earlier witness; no direct repair carrier found in bounded list.",
+    "B2": "Current hedge math and UI blobs match earlier witness; #7306 is related repricing/provenance work, not this Terminal profile fix.",
+    "B3": "Chain proxy blob unchanged; #7417 has exact-head semantic approval for separate package claim, remains open with old detector on main.",
+    "B5": "Existing #8310/#8313/#8318/#7306/#8201/#7889 carry distinct active repairs/holds; no completion or live owner liveness inferred.",
+    "W0": "Archive access/binding receipts and frozen retrospective manifest exist; neither purchased tier/running Theta build nor six-pilot PIT/source freshness established."
+  },
+  "archive_manifest_summary": {
+    "present": 429,
+    "missing": 6,
+    "kinds": [
+      "price",
+      "greeks",
+      "oi"
+    ],
+    "availability_columns_nonempty": 0,
+    "build_or_tier_fields": [],
+    "runtime": {
+      "numpy": "2.5.1",
+      "pandas": "3.0.5",
+      "pyarrow": "25.0.0",
+      "python": "3.12.13",
+      "scipy": "1.18.0"
+    },
+    "protocol_sha256": "67011db3d3aed08827f027cafc5b5a2bf890289a1017b227cad15fc240826e68"
+  },
+  "owned_paths": [
+    {
+      "repository": "mastermind-terminal",
+      "number": 723,
+      "filenames": [
+        "docs/TERMINAL_OPTIONS_COMPANION_2026-09-23.md",
+        "terminal/app/globals.css",
+        "terminal/components/ChartPane.tsx",
+        "terminal/components/ChartPanel.tsx",
+        "terminal/components/TerminalShell.tsx",
+        "terminal/components/mobile/AnalysisHubSheet.tsx",
+        "terminal/components/options-companion/FlowCompanion.tsx",
+        "terminal/components/options-companion/GexMarketMemory.tsx",
+        "terminal/components/options-companion/MatrixCompanion.tsx",
+        "terminal/components/options-companion/OptionsCompanion.module.css",
+        "terminal/components/options-companion/OptionsCompanion.tsx",
+        "terminal/components/options-companion/OptionsRail.tsx",
+        "terminal/components/options-companion/VannaCompanion.tsx",
+        "terminal/components/options-companion/optionsStrings.ts",
+        "terminal/components/options-companion/useOptionsSnapshot.ts",
+        "terminal/components/shared/StrikeExpiryMatrix.tsx",
+        "terminal/components/shared/StrikeExpiryMatrixRail.module.css",
+        "terminal/components/ui/MobileSheet.tsx",
+        "terminal/docs/pr-crops/options-companion-20260923/EVIDENCE.json",
+        "terminal/docs/pr-crops/options-companion-20260923/desktop-en-gamma-pin.png",
+        "terminal/docs/pr-crops/options-companion-20260923/desktop-en-panel-light.png",
+        "terminal/docs/pr-crops/options-companion-20260923/desktop-en-vanna.png",
+        "terminal/docs/pr-crops/options-companion-20260923/desktop-zh-gamma-pin.png",
+        "terminal/docs/pr-crops/options-companion-20260923/desktop-zh-panel-light.png",
+        "terminal/docs/pr-crops/options-companion-20260923/desktop-zh-vanna.png",
+        "terminal/docs/pr-crops/options-companion-20260923/mobile-en-gamma-pin.png",
+        "terminal/docs/pr-crops/options-companion-20260923/mobile-en-panel-light.png",
+        "terminal/docs/pr-crops/options-companion-20260923/mobile-en-vanna.png",
+        "terminal/docs/pr-crops/options-companion-20260923/mobile-zh-gamma-pin.png",
+        "terminal/docs/pr-crops/options-companion-20260923/mobile-zh-panel-light.png",
+        "terminal/docs/pr-crops/options-companion-20260923/mobile-zh-vanna.png",
+        "terminal/docs/pr-crops/options-companion-20260923/paper-gamma.png",
+        "terminal/docs/pr-crops/options-companion-20260923/qualification/chart-view-recapture-321ef80.log",
+        "terminal/docs/pr-crops/options-companion-20260923/qualification/final-companion-799ee3f.log",
+        "terminal/docs/pr-crops/options-companion-20260923/qualification/lint-799ee3f.log",
+        "terminal/docs/pr-crops/options-companion-20260923/qualification/matrix-spot-reproducer.json",
+        "terminal/docs/pr-crops/options-companion-20260923/qualification/production-matrix-host-audit.json",
+        "terminal/docs/pr-crops/options-companion-20260923/qualification/repair-browser.log",
+        "terminal/docs/pr-crops/options-companion-20260923/qualification/tsc-799ee3f.log",
+        "terminal/docs/pr-crops/options-companion-20260923/qualification/unit-label-reuse.log",
+        "terminal/docs/pr-crops/options-companion-20260923/qualification/visual-recapture-321ef80.log",
+        "terminal/docs/pr-crops/options-companion-20260923/tablet-en-gamma-pin.png",
+        "terminal/docs/pr-crops/options-companion-20260923/tablet-en-panel-light.png",
+        "terminal/docs/pr-crops/options-companion-20260923/tablet-en-vanna.png",
+        "terminal/docs/pr-crops/options-companion-20260923/tablet-zh-gamma-pin.png",
+        "terminal/docs/pr-crops/options-companion-20260923/tablet-zh-panel-light.png",
+        "terminal/docs/pr-crops/options-companion-20260923/tablet-zh-vanna.png",
+        "terminal/docs/pr-crops/options-level-axis-labels/desktop-compact.png",
+        "terminal/docs/pr-crops/options-level-axis-labels/desktop-left-percentage.png",
+        "terminal/docs/pr-crops/options-level-axis-labels/desktop.png",
+        "terminal/docs/pr-crops/options-level-axis-labels/manifest.json",
+        "terminal/docs/pr-crops/options-level-axis-labels/mobile.png",
+        "terminal/docs/pr-crops/options-level-axis-labels/tablet.png",
+        "terminal/docs/pr-crops/options-r6-r7-20260929/EVIDENCE.json",
+        "terminal/docs/pr-crops/options-r6-r7-20260929/desktop-en-gamma-pin.png",
+        "terminal/docs/pr-crops/options-r6-r7-20260929/desktop-en-panel-light.png",
+        "terminal/docs/pr-crops/options-r6-r7-20260929/desktop-en-r6-partial-dark.png",
+        "terminal/docs/pr-crops/options-r6-r7-20260929/desktop-en-r6-partial-light.png",
+        "terminal/docs/pr-crops/options-r6-r7-20260929/desktop-en-r6-reveal.png",
+        "terminal/docs/pr-crops/options-r6-r7-20260929/desktop-en-vanna.png",
+        "terminal/docs/pr-crops/options-r6-r7-20260929/desktop-zh-gamma-pin.png",
+        "terminal/docs/pr-crops/options-r6-r7-20260929/desktop-zh-panel-light.png",
+        "terminal/docs/pr-crops/options-r6-r7-20260929/desktop-zh-r6-partial-dark.png",
+        "terminal/docs/pr-crops/options-r6-r7-20260929/desktop-zh-r6-partial-light.png",
+        "terminal/docs/pr-crops/options-r6-r7-20260929/desktop-zh-r6-reveal.png",
+        "terminal/docs/pr-crops/options-r6-r7-20260929/desktop-zh-vanna.png",
+        "terminal/docs/pr-crops/options-r6-r7-20260929/independent-review-verdict.txt",
+        "terminal/docs/pr-crops/options-r6-r7-20260929/lint.log",
+        "terminal/docs/pr-crops/options-r6-r7-20260929/mobile-en-gamma-pin.png",
+        "terminal/docs/pr-crops/options-r6-r7-20260929/mobile-en-panel-light.png",
+        "terminal/docs/pr-crops/options-r6-r7-20260929/mobile-en-r6-partial-dark.png",
+        "terminal/docs/pr-crops/options-r6-r7-20260929/mobile-en-r6-partial-light.png",
+        "terminal/docs/pr-crops/options-r6-r7-20260929/mobile-en-r6-reveal.png",
+        "terminal/docs/pr-crops/options-r6-r7-20260929/mobile-en-vanna.png",
+        "terminal/docs/pr-crops/options-r6-r7-20260929/mobile-zh-gamma-pin.png",
+        "terminal/docs/pr-crops/options-r6-r7-20260929/mobile-zh-panel-light.png",
+        "terminal/docs/pr-crops/options-r6-r7-20260929/mobile-zh-r6-partial-dark.png",
+        "terminal/docs/pr-crops/options-r6-r7-20260929/mobile-zh-r6-partial-light.png",
+        "terminal/docs/pr-crops/options-r6-r7-20260929/mobile-zh-r6-reveal.png",
+        "terminal/docs/pr-crops/options-r6-r7-20260929/mobile-zh-vanna.png",
+        "terminal/docs/pr-crops/options-r6-r7-20260929/tablet-en-gamma-pin.png",
+        "terminal/docs/pr-crops/options-r6-r7-20260929/tablet-en-panel-light.png",
+        "terminal/docs/pr-crops/options-r6-r7-20260929/tablet-en-r6-partial-dark.png",
+        "terminal/docs/pr-crops/options-r6-r7-20260929/tablet-en-r6-partial-light.png",
+        "terminal/docs/pr-crops/options-r6-r7-20260929/tablet-en-r6-reveal.png",
+        "terminal/docs/pr-crops/options-r6-r7-20260929/tablet-en-vanna.png",
+        "terminal/docs/pr-crops/options-r6-r7-20260929/tablet-zh-gamma-pin.png",
+        "terminal/docs/pr-crops/options-r6-r7-20260929/tablet-zh-panel-light.png",
+        "terminal/docs/pr-crops/options-r6-r7-20260929/tablet-zh-r6-partial-dark.png",
+        "terminal/docs/pr-crops/options-r6-r7-20260929/tablet-zh-r6-partial-light.png",
+        "terminal/docs/pr-crops/options-r6-r7-20260929/tablet-zh-r6-reveal.png",
+        "terminal/docs/pr-crops/options-r6-r7-20260929/tablet-zh-vanna.png",
+        "terminal/docs/pr-crops/options-r6-r7-20260929/terminal-route.log",
+        "terminal/docs/pr-crops/options-r6-r7-20260929/typecheck.log",
+        "terminal/docs/pr-crops/options-r6-r7-20260929/typegen.log",
+        "terminal/docs/pr-crops/options-r6-r7-20260929/whole-unit.log",
+        "terminal/docs/pr-crops/terminal-visual-intelligence/EVIDENCE.yml",
+        "terminal/docs/pr-crops/terminal-visual-intelligence/desktop-context-zh.png",
+        "terminal/docs/pr-crops/terminal-visual-intelligence/desktop-context.png",
+        "terminal/docs/pr-crops/terminal-visual-intelligence/mobile-context-zh.png",
+        "terminal/docs/pr-crops/terminal-visual-intelligence/mobile-context.png",
+        "terminal/docs/pr-crops/terminal-visual-intelligence/tablet-context-zh.png",
+        "terminal/docs/pr-crops/terminal-visual-intelligence/tablet-context.png",
+        "terminal/e2e/mobile-chart-hub-upgrade.spec.ts",
+        "terminal/e2e/options-companion.spec.ts",
+        "terminal/lib/__tests__/flowClientCache.test.ts",
+        "terminal/lib/__tests__/optionsCompanion.test.ts",
+        "terminal/lib/__tests__/optionsCompanionUi.test.tsx",
+        "terminal/lib/__tests__/optionsMarketMemory.test.tsx",
+        "terminal/lib/__tests__/optionsScopeFocus.test.tsx",
+        "terminal/lib/__tests__/optionsScopeIntegrity.test.tsx",
+        "terminal/lib/entitlement.ts",
+        "terminal/lib/entitlementStore.ts",
+        "terminal/lib/flowClientCache.ts",
+        "terminal/lib/optionsAccess.ts",
+        "terminal/lib/optionsChartPin.ts",
+        "terminal/lib/optionsCompanion.ts"
+      ]
+    },
+    {
+      "repository": "macro",
+      "number": 8310,
+      "filenames": [
+        "contracts/options/options.alpha_candidate_feed.v1.schema.json",
+        "contracts/options/options.alpha_candidate_feed_activation_receipt.v1.schema.json",
+        "contracts/options/options.trade_nbbo_microstructure.v1.schema.json",
+        "engine/options_alpha_candidate_feed.py",
+        "engine/options_signal_campaign.py",
+        "tests/test_options_alpha_candidate_feed.py"
+      ]
+    },
+    {
+      "repository": "macro",
+      "number": 8313,
+      "filenames": [
+        "config/flow_score.yml",
+        "lib/flow_score_geometry.py",
+        "scripts/ops_train_flow_score.py",
+        "tests/test_fs4_flow_trainer.py",
+        "tests/test_fs5_flow_geometry.py"
+      ]
+    },
+    {
+      "repository": "macro",
+      "number": 8318,
+      "filenames": [
+        "agentos/handoffs/WS-OPTIONS-OA3-EXACT-RULER-2026-10-03.md",
+        "agentos/workstreams/WS-OPTIONS-ALPHA-INTELLIGENCE-RECOVERY.md",
+        "engine/options_alpha_exact_option_outcome.py",
+        "tests/test_options_alpha_exact_option_outcome.py"
+      ]
+    },
+    {
+      "repository": "macro",
+      "number": 7889,
+      "filenames": [
+        ".github/runner-policy.yml",
+        ".github/workflows/daily.yml",
+        ".github/workflows/options-intel.yml",
+        "ops/runner-host/common/runner_admission.py",
+        "ops/runner-host/common/runner_admission_hook.js",
+        "ops/runner-host/common/runner_binding.py",
+        "ops/runner-host/m1/run_guarded_runner.sh",
+        "scripts/build_options_intel_brief.py",
+        "scripts/check_runner_policy.py",
+        "scripts/ci/ad1_execution_evidence.py",
+        "tests/test_ci_canary_tools.py",
+        "tests/test_options_intel_brief.py",
+        "tests/test_runner_policy.py"
+      ]
+    },
+    {
+      "repository": "macro",
+      "number": 7306,
+      "filenames": [
+        ".github/ci/legacy-jobs.yml",
+        "engine/options_scenario_surface.py",
+        "research/OPTIONS_WORKBENCH_SCENARIO_SURFACE_R2_2026-09-18.md",
+        "research/evidence/options-workbench-r2-scenario-surface-20260918/final-integrated-owner-pack.log",
+        "research/evidence/options-workbench-r2-scenario-surface-20260918/final-owner-pack.log",
+        "research/evidence/options-workbench-r2-scenario-surface-20260918/integrated-owner-pack.log",
+        "research/evidence/options-workbench-r2-scenario-surface-20260918/live-contract-final-integrated-pack.log",
+        "research/evidence/options-workbench-r2-scenario-surface-20260918/live-contract-final-owner-pack.log",
+        "research/evidence/options-workbench-r2-scenario-surface-20260918/live-contract-seam-green.log",
+        "research/evidence/options-workbench-r2-scenario-surface-20260918/owner-pack.log",
+        "research/evidence/options-workbench-r2-scenario-surface-20260918/pit-and-seams-green.log",
+        "research/evidence/options-workbench-r2-scenario-surface-20260918/product-gaps-green.log",
+        "research/evidence/options-workbench-r2-scenario-surface-20260918/product-gaps-red.log",
+        "research/evidence/options-workbench-r2-scenario-surface-20260918/verification.json",
+        "scripts/build_options_scenario_surface.py",
+        "tests/test_options_scenario_surface.py"
+      ]
+    },
+    {
+      "repository": "macro",
+      "number": 7417,
+      "filenames": [
+        "engine/flow_enrich.py",
+        "tests/test_flow_enrich.py"
+      ]
+    },
+    {
+      "repository": "macro",
+      "number": 8201,
+      "filenames": [
+        "agentos/handoffs/OPTIONS-ALPHA-INTELLIGENCE-RECOVERY-2026-09-29-flow-source-clocks.md",
+        "collectors/flow_signals.py",
+        "research/options_estate/OPTIONS_FLOW_SOURCE_CLOCK_QUALIFICATION_2026-09-29.md",
+        "research/options_estate/flow_source_clock_qualification_20260929/native-producer-bridge.json",
+        "research/options_estate/flow_source_clock_qualification_20260929/real-input-baseline.json",
+        "research/options_estate/flow_source_clock_qualification_20260929/real-input-native-stats-and-gate.json",
+        "research/options_estate/flow_source_clock_qualification_20260929/software-evidence.json",
+        "research/options_estate/flow_source_clock_qualification_20260929/source-manifest.json",
+        "scripts/build_flow_signals.py",
+        "tests/test_flow_signals.py"
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "id": "mastermind-terminal-599",
+      "kind": "github_metadata",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/issues/599",
+      "api_url": "https://api.github.com/repos/mastermindx-market-intelligence/mastermind-terminal/issues/599",
+      "observed_within_utc": [
+        "2026-10-03 10:07:06 UTC",
+        "2026-10-03 10:17:30 UTC"
+      ],
+      "state": "open",
+      "draft": null,
+      "head_sha": null,
+      "updated_at": "2026-10-03T09:36:31Z",
+      "author": "mastermindx-3",
+      "assignees": [],
+      "mergeable": null,
+      "mergeable_state": null,
+      "authority": "Repository state only; author and assignees do not prove live custody."
+    },
+    {
+      "id": "mastermind-terminal-723",
+      "kind": "github_metadata",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/723",
+      "api_url": "https://api.github.com/repos/mastermindx-market-intelligence/mastermind-terminal/issues/723",
+      "observed_within_utc": [
+        "2026-10-03 10:07:06 UTC",
+        "2026-10-03 10:17:30 UTC"
+      ],
+      "state": "open",
+      "draft": true,
+      "head_sha": "c8705d6eacb6fcc706881dbf92e079e1c8ca01c4",
+      "updated_at": "2026-10-03T07:45:30Z",
+      "author": "chriswong6031-creator",
+      "assignees": [],
+      "mergeable": false,
+      "mergeable_state": "dirty",
+      "authority": "Repository state only; author and assignees do not prove live custody."
+    },
+    {
+      "id": "macro-8310",
+      "kind": "github_metadata",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/8310",
+      "api_url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/pulls/8310",
+      "observed_within_utc": [
+        "2026-10-03 10:07:06 UTC",
+        "2026-10-03 10:17:30 UTC"
+      ],
+      "state": "open",
+      "draft": true,
+      "head_sha": "a15ba9ae77826bf6a1d6fcb40022b6816b705e43",
+      "updated_at": "2026-10-03T09:05:43Z",
+      "author": "chriswong6031-creator",
+      "assignees": [],
+      "mergeable": true,
+      "mergeable_state": "unstable",
+      "authority": "Repository state only; author and assignees do not prove live custody."
+    },
+    {
+      "id": "macro-8313",
+      "kind": "github_metadata",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/8313",
+      "api_url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/pulls/8313",
+      "observed_within_utc": [
+        "2026-10-03 10:07:06 UTC",
+        "2026-10-03 10:17:30 UTC"
+      ],
+      "state": "open",
+      "draft": true,
+      "head_sha": "e66cbee946474149964778f6023890365ce52f21",
+      "updated_at": "2026-10-03T08:47:11Z",
+      "author": "chriswong6031-creator",
+      "assignees": [],
+      "mergeable": null,
+      "mergeable_state": "unknown",
+      "authority": "Repository state only; author and assignees do not prove live custody."
+    },
+    {
+      "id": "macro-8318",
+      "kind": "github_metadata",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/8318",
+      "api_url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/pulls/8318",
+      "observed_within_utc": [
+        "2026-10-03 10:07:06 UTC",
+        "2026-10-03 10:17:30 UTC"
+      ],
+      "state": "open",
+      "draft": true,
+      "head_sha": "0319f637d322698e39dfea19e731c64adc657f7d",
+      "updated_at": "2026-10-03T09:20:54Z",
+      "author": "chriswong6031-creator",
+      "assignees": [],
+      "mergeable": true,
+      "mergeable_state": "unstable",
+      "authority": "Repository state only; author and assignees do not prove live custody."
+    },
+    {
+      "id": "macro-7889",
+      "kind": "github_metadata",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7889",
+      "api_url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/pulls/7889",
+      "observed_within_utc": [
+        "2026-10-03 10:07:06 UTC",
+        "2026-10-03 10:17:30 UTC"
+      ],
+      "state": "open",
+      "draft": true,
+      "head_sha": "ba1ba7bd826b987705eda1abb67925571c3a002e",
+      "updated_at": "2026-10-03T09:29:55Z",
+      "author": "chriswong6031-creator",
+      "assignees": [],
+      "mergeable": true,
+      "mergeable_state": "unstable",
+      "authority": "Repository state only; author and assignees do not prove live custody."
+    },
+    {
+      "id": "macro-7306",
+      "kind": "github_metadata",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7306",
+      "api_url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/pulls/7306",
+      "observed_within_utc": [
+        "2026-10-03 10:07:06 UTC",
+        "2026-10-03 10:17:30 UTC"
+      ],
+      "state": "open",
+      "draft": true,
+      "head_sha": "8cbb2581699c23bb2a2fd7a640a68f4bf2890150",
+      "updated_at": "2026-10-03T07:37:48Z",
+      "author": "mastermindx-2",
+      "assignees": [],
+      "mergeable": null,
+      "mergeable_state": "unknown",
+      "authority": "Repository state only; author and assignees do not prove live custody."
+    },
+    {
+      "id": "macro-7417",
+      "kind": "github_metadata",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7417",
+      "api_url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/pulls/7417",
+      "observed_within_utc": [
+        "2026-10-03 10:07:06 UTC",
+        "2026-10-03 10:17:30 UTC"
+      ],
+      "state": "open",
+      "draft": false,
+      "head_sha": "f3335f8e0cc2aada62445159643a80d207d0e402",
+      "updated_at": "2026-09-30T10:02:29Z",
+      "author": "mastermidx4",
+      "assignees": []
+    },
+    {
+      "id": "macro-8201",
+      "kind": "github_metadata",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/8201",
+      "api_url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/pulls/8201",
+      "observed_within_utc": [
+        "2026-10-03 10:07:06 UTC",
+        "2026-10-03 10:17:30 UTC"
+      ],
+      "state": "open",
+      "draft": true,
+      "head_sha": "c6b2a20f470d15352e673f25fef239544ce7f7b6",
+      "updated_at": "2026-09-30T01:48:15Z",
+      "author": "mastermindxryan",
+      "assignees": []
+    },
+    {
+      "id": "comment-5959151943",
+      "kind": "owner_or_reviewer_receipt",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/issues/599#issuecomment-5959151943",
+      "observed_within_utc": [
+        "2026-10-03 10:07:06 UTC",
+        "2026-10-03 10:17:30 UTC"
+      ],
+      "author": "mastermidx4",
+      "created_at": "2026-10-02T18:49:33Z",
+      "updated_at": "2026-10-02T18:49:33Z",
+      "authority": "Confirms existence and content of dated receipt; operations/tests described were not rerun in this audit."
+    },
+    {
+      "id": "comment-5966443385",
+      "kind": "owner_or_reviewer_receipt",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/issues/599#issuecomment-5966443385",
+      "observed_within_utc": [
+        "2026-10-03 10:07:06 UTC",
+        "2026-10-03 10:17:30 UTC"
+      ],
+      "author": "mastermidx4",
+      "created_at": "2026-10-03T06:41:03Z",
+      "updated_at": "2026-10-03T06:41:03Z",
+      "authority": "Confirms existence and content of dated receipt; operations/tests described were not rerun in this audit."
+    },
+    {
+      "id": "comment-5966937542",
+      "kind": "owner_or_reviewer_receipt",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/issues/599#issuecomment-5966937542",
+      "observed_within_utc": [
+        "2026-10-03 10:07:06 UTC",
+        "2026-10-03 10:17:30 UTC"
+      ],
+      "author": "mastermidx4",
+      "created_at": "2026-10-03T07:53:18Z",
+      "updated_at": "2026-10-03T07:53:18Z",
+      "authority": "Confirms existence and content of dated receipt; operations/tests described were not rerun in this audit."
+    },
+    {
+      "id": "comment-5967369914",
+      "kind": "owner_or_reviewer_receipt",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/issues/599#issuecomment-5967369914",
+      "observed_within_utc": [
+        "2026-10-03 10:07:06 UTC",
+        "2026-10-03 10:17:30 UTC"
+      ],
+      "author": "mastermidx4",
+      "created_at": "2026-10-03T08:53:10Z",
+      "updated_at": "2026-10-03T08:53:10Z",
+      "authority": "Confirms existence and content of dated receipt; operations/tests described were not rerun in this audit."
+    },
+    {
+      "id": "comment-5967837521",
+      "kind": "owner_or_reviewer_receipt",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/issues/599#issuecomment-5967837521",
+      "observed_within_utc": [
+        "2026-10-03 10:07:06 UTC",
+        "2026-10-03 10:17:30 UTC"
+      ],
+      "author": "mastermidx4",
+      "created_at": "2026-10-03T09:36:31Z",
+      "updated_at": "2026-10-03T09:36:31Z",
+      "authority": "Confirms existence and content of dated receipt; operations/tests described were not rerun in this audit."
+    },
+    {
+      "id": "comment-5902620552",
+      "kind": "owner_or_reviewer_receipt",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/723#issuecomment-5902620552",
+      "observed_within_utc": [
+        "2026-10-03 10:07:06 UTC",
+        "2026-10-03 10:17:30 UTC"
+      ],
+      "author": "mastermidx4",
+      "created_at": "2026-09-30T02:03:59Z",
+      "updated_at": "2026-09-30T02:03:59Z",
+      "authority": "Confirms existence and content of dated receipt; operations/tests described were not rerun in this audit."
+    },
+    {
+      "id": "comment-5965392290",
+      "kind": "owner_or_reviewer_receipt",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/723#issuecomment-5965392290",
+      "observed_within_utc": [
+        "2026-10-03 10:07:06 UTC",
+        "2026-10-03 10:17:30 UTC"
+      ],
+      "author": "mastermindx-3",
+      "created_at": "2026-10-03T04:10:10Z",
+      "updated_at": "2026-10-03T07:45:30Z",
+      "authority": "Confirms existence and content of dated receipt; operations/tests described were not rerun in this audit."
+    },
+    {
+      "id": "comment-5967284997",
+      "kind": "owner_or_reviewer_receipt",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/8310#issuecomment-5967284997",
+      "observed_within_utc": [
+        "2026-10-03 10:07:06 UTC",
+        "2026-10-03 10:17:30 UTC"
+      ],
+      "author": "mastermindx-2",
+      "created_at": "2026-10-03T08:42:49Z",
+      "updated_at": "2026-10-03T08:42:49Z",
+      "authority": "Confirms existence and content of dated receipt; operations/tests described were not rerun in this audit."
+    },
+    {
+      "id": "comment-5967512378",
+      "kind": "owner_or_reviewer_receipt",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/8310#issuecomment-5967512378",
+      "observed_within_utc": [
+        "2026-10-03 10:07:06 UTC",
+        "2026-10-03 10:17:30 UTC"
+      ],
+      "author": "mastermidx4",
+      "created_at": "2026-10-03T09:05:43Z",
+      "updated_at": "2026-10-03T09:05:43Z",
+      "authority": "Confirms existence and content of dated receipt; operations/tests described were not rerun in this audit."
+    },
+    {
+      "id": "comment-5967316071",
+      "kind": "owner_or_reviewer_receipt",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/8313#issuecomment-5967316071",
+      "observed_within_utc": [
+        "2026-10-03 10:07:06 UTC",
+        "2026-10-03 10:17:30 UTC"
+      ],
+      "author": "mastermindx-2",
+      "created_at": "2026-10-03T08:47:11Z",
+      "updated_at": "2026-10-03T08:47:11Z",
+      "authority": "Confirms existence and content of dated receipt; operations/tests described were not rerun in this audit."
+    },
+    {
+      "id": "comment-5888723981",
+      "kind": "owner_or_reviewer_receipt",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7889#issuecomment-5888723981",
+      "observed_within_utc": [
+        "2026-10-03 10:07:06 UTC",
+        "2026-10-03 10:17:30 UTC"
+      ],
+      "author": "mastermindx-3",
+      "created_at": "2026-09-29T10:52:02Z",
+      "updated_at": "2026-09-29T10:52:02Z",
+      "authority": "Confirms existence and content of dated receipt; operations/tests described were not rerun in this audit."
+    },
+    {
+      "id": "comment-5895242624",
+      "kind": "owner_or_reviewer_receipt",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7889#issuecomment-5895242624",
+      "observed_within_utc": [
+        "2026-10-03 10:07:06 UTC",
+        "2026-10-03 10:17:30 UTC"
+      ],
+      "author": "mastermindxryan",
+      "created_at": "2026-09-29T17:26:13Z",
+      "updated_at": "2026-09-29T17:26:13Z",
+      "authority": "Confirms existence and content of dated receipt; operations/tests described were not rerun in this audit."
+    },
+    {
+      "id": "comment-5895392129",
+      "kind": "owner_or_reviewer_receipt",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7889#issuecomment-5895392129",
+      "observed_within_utc": [
+        "2026-10-03 10:07:06 UTC",
+        "2026-10-03 10:17:30 UTC"
+      ],
+      "author": "mastermindxryan",
+      "created_at": "2026-09-29T17:35:54Z",
+      "updated_at": "2026-09-29T17:35:54Z",
+      "authority": "Confirms existence and content of dated receipt; operations/tests described were not rerun in this audit."
+    },
+    {
+      "id": "comment-5897099128",
+      "kind": "owner_or_reviewer_receipt",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7889#issuecomment-5897099128",
+      "observed_within_utc": [
+        "2026-10-03 10:07:06 UTC",
+        "2026-10-03 10:17:30 UTC"
+      ],
+      "author": "mastermindxryan",
+      "created_at": "2026-09-29T19:24:29Z",
+      "updated_at": "2026-09-29T19:24:29Z",
+      "authority": "Confirms existence and content of dated receipt; operations/tests described were not rerun in this audit."
+    },
+    {
+      "id": "comment-5966554901",
+      "kind": "owner_or_reviewer_receipt",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7889#issuecomment-5966554901",
+      "observed_within_utc": [
+        "2026-10-03 10:07:06 UTC",
+        "2026-10-03 10:17:30 UTC"
+      ],
+      "author": "mastermidx4",
+      "created_at": "2026-10-03T06:58:07Z",
+      "updated_at": "2026-10-03T06:58:07Z",
+      "authority": "Confirms existence and content of dated receipt; operations/tests described were not rerun in this audit."
+    },
+    {
+      "id": "comment-5967599174",
+      "kind": "owner_or_reviewer_receipt",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7889#issuecomment-5967599174",
+      "observed_within_utc": [
+        "2026-10-03 10:07:06 UTC",
+        "2026-10-03 10:17:30 UTC"
+      ],
+      "author": "chriswong6031-creator",
+      "created_at": "2026-10-03T09:12:47Z",
+      "updated_at": "2026-10-03T09:12:47Z",
+      "authority": "Confirms existence and content of dated receipt; operations/tests described were not rerun in this audit."
+    },
+    {
+      "id": "comment-5967784565",
+      "kind": "owner_or_reviewer_receipt",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7889#issuecomment-5967784565",
+      "observed_within_utc": [
+        "2026-10-03 10:07:06 UTC",
+        "2026-10-03 10:17:30 UTC"
+      ],
+      "author": "mastermindx-2",
+      "created_at": "2026-10-03T09:29:55Z",
+      "updated_at": "2026-10-03T09:29:55Z",
+      "authority": "Confirms existence and content of dated receipt; operations/tests described were not rerun in this audit."
+    },
+    {
+      "id": "comment-5902458911",
+      "kind": "owner_or_reviewer_receipt",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/8201#issuecomment-5902458911",
+      "observed_within_utc": [
+        "2026-10-03 10:07:06 UTC",
+        "2026-10-03 10:17:30 UTC"
+      ],
+      "author": "mastermindxryan",
+      "created_at": "2026-09-30T01:48:15Z",
+      "updated_at": "2026-09-30T01:48:15Z",
+      "authority": "Confirms existence and content of dated receipt; operations/tests described were not rerun in this audit."
+    },
+    {
+      "id": "comment-5747190588",
+      "kind": "owner_or_reviewer_receipt",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7417#issuecomment-5747190588",
+      "observed_within_utc": [
+        "2026-10-03 10:07:06 UTC",
+        "2026-10-03 10:17:30 UTC"
+      ],
+      "author": "mastermidx4",
+      "created_at": "2026-09-20T02:59:09Z",
+      "updated_at": "2026-09-20T02:59:09Z",
+      "authority": "Confirms existence and content of dated receipt; operations/tests described were not rerun in this audit."
+    },
+    {
+      "id": "review-5346292928",
+      "kind": "formal_review_record",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/723#pullrequestreview-5346292928",
+      "observed_within_utc": [
+        "2026-10-03 10:07:06 UTC",
+        "2026-10-03 10:17:30 UTC"
+      ],
+      "state": "CHANGES_REQUESTED",
+      "author": "mastermidx4",
+      "commit_id": "014c434b682f9b0221d624d901140c83467b52a3",
+      "submitted_at": "2026-09-29T00:31:44Z",
+      "authority": "Review content is a dated reviewer claim; source/runtime tests not rerun."
+    },
+    {
+      "id": "review-5347665044",
+      "kind": "formal_review_record",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/723#pullrequestreview-5347665044",
+      "observed_within_utc": [
+        "2026-10-03 10:07:06 UTC",
+        "2026-10-03 10:17:30 UTC"
+      ],
+      "state": "COMMENTED",
+      "author": "mastermidx4",
+      "commit_id": "014c434b682f9b0221d624d901140c83467b52a3",
+      "submitted_at": "2026-09-29T04:20:47Z",
+      "authority": "Review content is a dated reviewer claim; source/runtime tests not rerun."
+    },
+    {
+      "id": "review-5347818888",
+      "kind": "formal_review_record",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/723#pullrequestreview-5347818888",
+      "observed_within_utc": [
+        "2026-10-03 10:07:06 UTC",
+        "2026-10-03 10:17:30 UTC"
+      ],
+      "state": "COMMENTED",
+      "author": "mastermidx4",
+      "commit_id": "014c434b682f9b0221d624d901140c83467b52a3",
+      "submitted_at": "2026-09-29T04:47:58Z",
+      "authority": "Review content is a dated reviewer claim; source/runtime tests not rerun."
+    },
+    {
+      "id": "review-5349407876",
+      "kind": "formal_review_record",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/723#pullrequestreview-5349407876",
+      "observed_within_utc": [
+        "2026-10-03 10:07:06 UTC",
+        "2026-10-03 10:17:30 UTC"
+      ],
+      "state": "APPROVED",
+      "author": "mastermidx4",
+      "commit_id": "c8705d6eacb6fcc706881dbf92e079e1c8ca01c4",
+      "submitted_at": "2026-09-29T07:56:00Z",
+      "authority": "Review content is a dated reviewer claim; source/runtime tests not rerun."
+    },
+    {
+      "id": "review-5349757168",
+      "kind": "formal_review_record",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/723#pullrequestreview-5349757168",
+      "observed_within_utc": [
+        "2026-10-03 10:07:06 UTC",
+        "2026-10-03 10:17:30 UTC"
+      ],
+      "state": "COMMENTED",
+      "author": "mastermidx4",
+      "commit_id": "c8705d6eacb6fcc706881dbf92e079e1c8ca01c4",
+      "submitted_at": "2026-09-29T08:29:30Z",
+      "authority": "Review content is a dated reviewer claim; source/runtime tests not rerun."
+    },
+    {
+      "id": "review-5356574367",
+      "kind": "formal_review_record",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/723#pullrequestreview-5356574367",
+      "observed_within_utc": [
+        "2026-10-03 10:07:06 UTC",
+        "2026-10-03 10:17:30 UTC"
+      ],
+      "state": "COMMENTED",
+      "author": "mastermidx4",
+      "commit_id": "c8705d6eacb6fcc706881dbf92e079e1c8ca01c4",
+      "submitted_at": "2026-09-29T18:12:13Z",
+      "authority": "Review content is a dated reviewer claim; source/runtime tests not rerun."
+    },
+    {
+      "id": "review-5399771712",
+      "kind": "formal_review_record",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/8310#pullrequestreview-5399771712",
+      "observed_within_utc": [
+        "2026-10-03 10:07:06 UTC",
+        "2026-10-03 10:17:30 UTC"
+      ],
+      "state": "COMMENTED",
+      "author": "mastermidx4",
+      "commit_id": "a15ba9ae77826bf6a1d6fcb40022b6816b705e43",
+      "submitted_at": "2026-10-03T08:43:33Z",
+      "authority": "Review content is a dated reviewer claim; source/runtime tests not rerun."
+    },
+    {
+      "id": "review-5399586408",
+      "kind": "formal_review_record",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/8313#pullrequestreview-5399586408",
+      "observed_within_utc": [
+        "2026-10-03 10:07:06 UTC",
+        "2026-10-03 10:17:30 UTC"
+      ],
+      "state": "COMMENTED",
+      "author": "mastermidx4",
+      "commit_id": "e66cbee946474149964778f6023890365ce52f21",
+      "submitted_at": "2026-10-03T07:42:37Z",
+      "authority": "Review content is a dated reviewer claim; source/runtime tests not rerun."
+    },
+    {
+      "id": "review-5399743532",
+      "kind": "formal_review_record",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/8318#pullrequestreview-5399743532",
+      "observed_within_utc": [
+        "2026-10-03 10:07:06 UTC",
+        "2026-10-03 10:17:30 UTC"
+      ],
+      "state": "COMMENTED",
+      "author": "mastermidx4",
+      "commit_id": "025ab040d7ea42aa07dac8fae0120f6c372b82d9",
+      "submitted_at": "2026-10-03T08:33:48Z",
+      "authority": "Review content is a dated reviewer claim; source/runtime tests not rerun."
+    },
+    {
+      "id": "review-5399959968",
+      "kind": "formal_review_record",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/8318#pullrequestreview-5399959968",
+      "observed_within_utc": [
+        "2026-10-03 10:07:06 UTC",
+        "2026-10-03 10:17:30 UTC"
+      ],
+      "state": "COMMENTED",
+      "author": "mastermidx4",
+      "commit_id": "0319f637d322698e39dfea19e731c64adc657f7d",
+      "submitted_at": "2026-10-03T09:20:54Z",
+      "authority": "Review content is a dated reviewer claim; source/runtime tests not rerun."
+    },
+    {
+      "id": "review-5399568840",
+      "kind": "formal_review_record",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7306#pullrequestreview-5399568840",
+      "observed_within_utc": [
+        "2026-10-03 10:07:06 UTC",
+        "2026-10-03 10:17:30 UTC"
+      ],
+      "state": "CHANGES_REQUESTED",
+      "author": "mastermindx-3",
+      "commit_id": "8cbb2581699c23bb2a2fd7a640a68f4bf2890150",
+      "submitted_at": "2026-10-03T07:37:47Z",
+      "authority": "Review content is a dated reviewer claim; source/runtime tests not rerun."
+    },
+    {
+      "id": "review-5364699564",
+      "kind": "formal_review_record",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7417#pullrequestreview-5364699564",
+      "observed_within_utc": [
+        "2026-10-03 10:07:06 UTC",
+        "2026-10-03 10:17:30 UTC"
+      ],
+      "state": "APPROVED",
+      "author": "mastermindxryan",
+      "commit_id": "f3335f8e0cc2aada62445159643a80d207d0e402",
+      "submitted_at": "2026-09-30T10:02:29Z",
+      "authority": "Review content is a dated reviewer claim; source/runtime tests not rerun."
+    },
+    {
+      "kind": "immutable_source",
+      "repository": "macro",
+      "path": "engine/gex_engine.py",
+      "git_blob_sha": "15cff47b86b6a452daa6268a7f8be5455f914b13",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/3d9969c15bba0f57b64da7592c0731cc8a0f2eac/engine/gex_engine.py",
+      "observed_within_utc": [
+        "2026-10-03 10:07:06 UTC",
+        "2026-10-03 10:17:30 UTC"
+      ],
+      "ranges": [
+        {
+          "start": 43,
+          "end": 90,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/3d9969c15bba0f57b64da7592c0731cc8a0f2eac/engine/gex_engine.py#L43-L90"
+        },
+        {
+          "start": 135,
+          "end": 150,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/3d9969c15bba0f57b64da7592c0731cc8a0f2eac/engine/gex_engine.py#L135-L150"
+        }
+      ],
+      "authority": "Direct static source inspection, not deployment or data observation."
+    },
+    {
+      "kind": "immutable_source",
+      "repository": "mastermind-terminal",
+      "path": "terminal/lib/marketStructure.ts",
+      "git_blob_sha": "b57bb1b794522c80af5a8288a82bcb06d64ed939",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/41b8af2da46614cedd2a485214e53003d4f030fc/terminal/lib/marketStructure.ts",
+      "observed_within_utc": [
+        "2026-10-03 10:07:06 UTC",
+        "2026-10-03 10:17:30 UTC"
+      ],
+      "ranges": [
+        {
+          "start": 597,
+          "end": 697,
+          "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/41b8af2da46614cedd2a485214e53003d4f030fc/terminal/lib/marketStructure.ts#L597-L697"
+        }
+      ],
+      "authority": "Direct static source inspection, not deployment or data observation."
+    },
+    {
+      "kind": "immutable_source",
+      "repository": "mastermind-terminal",
+      "path": "terminal/components/msc/HedgingCards.tsx",
+      "git_blob_sha": "b3562a6b227673a94e8f2cc55bb55b64fe87dce3",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/41b8af2da46614cedd2a485214e53003d4f030fc/terminal/components/msc/HedgingCards.tsx",
+      "observed_within_utc": [
+        "2026-10-03 10:07:06 UTC",
+        "2026-10-03 10:17:30 UTC"
+      ],
+      "ranges": [
+        {
+          "start": 69,
+          "end": 140,
+          "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/41b8af2da46614cedd2a485214e53003d4f030fc/terminal/components/msc/HedgingCards.tsx#L69-L140"
+        }
+      ],
+      "authority": "Direct static source inspection, not deployment or data observation."
+    },
+    {
+      "kind": "immutable_source",
+      "repository": "macro",
+      "path": "scripts/build_chain_heat.py",
+      "git_blob_sha": "61af2c74d09bc29674c095c0687f586de1ed37f1",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/3d9969c15bba0f57b64da7592c0731cc8a0f2eac/scripts/build_chain_heat.py",
+      "observed_within_utc": [
+        "2026-10-03 10:07:06 UTC",
+        "2026-10-03 10:17:30 UTC"
+      ],
+      "ranges": [
+        {
+          "start": 106,
+          "end": 133,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/3d9969c15bba0f57b64da7592c0731cc8a0f2eac/scripts/build_chain_heat.py#L106-L133"
+        },
+        {
+          "start": 176,
+          "end": 193,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/3d9969c15bba0f57b64da7592c0731cc8a0f2eac/scripts/build_chain_heat.py#L176-L193"
+        }
+      ],
+      "authority": "Direct static source inspection, not deployment or data observation."
+    },
+    {
+      "kind": "immutable_source",
+      "repository": "macro",
+      "path": "engine/options_scenario_surface.py",
+      "git_blob_sha": "a11b60b1a6734ed930cb2fea56496c303ac21cc3",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/8cbb2581699c23bb2a2fd7a640a68f4bf2890150/engine/options_scenario_surface.py",
+      "observed_within_utc": [
+        "2026-10-03 10:07:06 UTC",
+        "2026-10-03 10:17:30 UTC"
+      ],
+      "ranges": [
+        {
+          "start": 58,
+          "end": 92,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/8cbb2581699c23bb2a2fd7a640a68f4bf2890150/engine/options_scenario_surface.py#L58-L92"
+        },
+        {
+          "start": 310,
+          "end": 315,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/8cbb2581699c23bb2a2fd7a640a68f4bf2890150/engine/options_scenario_surface.py#L310-L315"
+        }
+      ],
+      "authority": "Direct static source inspection, not deployment or data observation."
+    },
+    {
+      "kind": "immutable_source",
+      "repository": "macro",
+      "path": "engine/flow_enrich.py",
+      "git_blob_sha": "272e7f8e035e4bba085462fd4ae857e8a64ac3b3",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/3d9969c15bba0f57b64da7592c0731cc8a0f2eac/engine/flow_enrich.py",
+      "observed_within_utc": [
+        "2026-10-03 10:07:06 UTC",
+        "2026-10-03 10:17:30 UTC"
+      ],
+      "ranges": [
+        {
+          "start": 251,
+          "end": 262,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/3d9969c15bba0f57b64da7592c0731cc8a0f2eac/engine/flow_enrich.py#L251-L262"
+        },
+        {
+          "start": 344,
+          "end": 359,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/3d9969c15bba0f57b64da7592c0731cc8a0f2eac/engine/flow_enrich.py#L344-L359"
+        },
+        {
+          "start": 612,
+          "end": 618,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/3d9969c15bba0f57b64da7592c0731cc8a0f2eac/engine/flow_enrich.py#L612-L618"
+        }
+      ],
+      "authority": "Direct static source inspection, not deployment or data observation."
+    },
+    {
+      "kind": "immutable_source",
+      "repository": "macro",
+      "path": "collectors/flow_signals.py",
+      "git_blob_sha": "d6dbb79e40921dae07c8e4af529154e508c795f2",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/3d9969c15bba0f57b64da7592c0731cc8a0f2eac/collectors/flow_signals.py",
+      "observed_within_utc": [
+        "2026-10-03 10:07:06 UTC",
+        "2026-10-03 10:17:30 UTC"
+      ],
+      "ranges": [
+        {
+          "start": 68,
+          "end": 122,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/3d9969c15bba0f57b64da7592c0731cc8a0f2eac/collectors/flow_signals.py#L68-L122"
+        }
+      ],
+      "authority": "Direct static source inspection, not deployment or data observation."
+    },
+    {
+      "kind": "immutable_source",
+      "repository": "macro",
+      "path": "collectors/flow_signals.py",
+      "git_blob_sha": "8dc8d7473f8b7aa538b9a1d23fc65972e9e86597",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/c6b2a20f470d15352e673f25fef239544ce7f7b6/collectors/flow_signals.py",
+      "observed_within_utc": [
+        "2026-10-03 10:07:06 UTC",
+        "2026-10-03 10:17:30 UTC"
+      ],
+      "ranges": [
+        {
+          "start": 69,
+          "end": 78,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/c6b2a20f470d15352e673f25fef239544ce7f7b6/collectors/flow_signals.py#L69-L78"
+        },
+        {
+          "start": 131,
+          "end": 138,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/c6b2a20f470d15352e673f25fef239544ce7f7b6/collectors/flow_signals.py#L131-L138"
+        },
+        {
+          "start": 307,
+          "end": 345,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/c6b2a20f470d15352e673f25fef239544ce7f7b6/collectors/flow_signals.py#L307-L345"
+        }
+      ],
+      "authority": "Direct static source inspection, not deployment or data observation."
+    },
+    {
+      "kind": "immutable_research_artifact",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/79e365faf358a7645e7d6aad0758dde6d8508ee7/reports/artifacts/options_theta_retrospective_20261002.md",
+      "git_blob_sha": "4d8baa56d7c3455278006a6e7bd7360ccbbfea1f",
+      "observed_within_utc": [
+        "2026-10-03 10:07:06 UTC",
+        "2026-10-03 10:17:30 UTC"
+      ],
+      "ranges": [
+        {
+          "start": 170,
+          "end": 205,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/79e365faf358a7645e7d6aad0758dde6d8508ee7/reports/artifacts/options_theta_retrospective_20261002.md#L170-L205"
+        },
+        {
+          "start": 207,
+          "end": 237,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/79e365faf358a7645e7d6aad0758dde6d8508ee7/reports/artifacts/options_theta_retrospective_20261002.md#L207-L237"
+        },
+        {
+          "start": 240,
+          "end": 257,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/79e365faf358a7645e7d6aad0758dde6d8508ee7/reports/artifacts/options_theta_retrospective_20261002.md#L240-L257"
+        }
+      ],
+      "authority": "Direct artifact inspection; underlying archive and computation were not rerun."
+    },
+    {
+      "kind": "immutable_research_artifact",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/79e365faf358a7645e7d6aad0758dde6d8508ee7/reports/artifacts/options_theta_retrospective_20261002_manifest.json",
+      "git_blob_sha": "397c42bab5530f816b8763d554e9551de14618f2",
+      "observed_within_utc": [
+        "2026-10-03 10:07:06 UTC",
+        "2026-10-03 10:17:30 UTC"
+      ],
+      "ranges": [],
+      "authority": "Direct artifact inspection; underlying archive and computation were not rerun."
+    }
+  ],
+  "limits": [
+    "Latest bounded comments, not entire issue history or estate-wide ownership search.",
+    "No GitHub check suites or live runtime re-probed.",
+    "No hosted CI results inferred from PR state.",
+    "Historical owner-reported symptoms are superseded only within later receipt scope.",
+    "No renewed attempts at refused #686, dirty #780, native-fabric custody or other action-specific fences."
+  ]
+}

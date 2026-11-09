@@ -66,7 +66,10 @@ from __future__ import annotations
 import argparse
 import json
 import logging
+import os
+import stat
 import sys
+import tempfile
 from dataclasses import dataclass
 from datetime import date, datetime, timezone
 from pathlib import Path
@@ -214,14 +217,14 @@ def _fetch_operator_watchlist() -> WatchlistRead:
         r = requests.get(rest_url, headers=headers, params=params, timeout=20)
         if r.status_code != 200:
             log.info(
-                "watchlist_sentinel: Supabase returned %d — watchlist unknown (%s)",
+                "watchlist_sentinel: Supabase returned %d — watchlist unknown",
                 r.status_code,
-                r.text[:200],
             )
             return WatchlistRead.unavailable(f"http_{r.status_code}")
         rows = r.json()
     except Exception as exc:  # noqa: BLE001
-        log.info("watchlist_sentinel: Supabase request failed — watchlist unknown (%s)", exc)
+        log.info("watchlist_sentinel: Supabase request failed — watchlist unknown (%s)",
+                 type(exc).__name__)
         return WatchlistRead.unavailable("request_failed")
 
     # A payload that is not the shape we asked for is a FAILED read, not an empty watchlist.
@@ -236,43 +239,32 @@ def _fetch_operator_watchlist() -> WatchlistRead:
         log.info("watchlist_sentinel: no watchlist rows found — operator watches nothing")
         return WatchlistRead.ok(())
 
-    dict_rows = [row for row in rows if isinstance(row, dict)]
-    if not dict_rows:
-        log.info("watchlist_sentinel: no usable row objects in payload — watchlist unknown")
+    if not all(isinstance(row, dict) for row in rows):
+        log.info("watchlist_sentinel: malformed watchlist row — watchlist unknown")
         return WatchlistRead.unavailable("malformed_payload")
 
-    # Privacy: log counts only, never UIDs or symbols individually.
-    log.info("watchlist_sentinel: fetched %d watchlist container(s)", len(dict_rows))
-
-    # Flatten symbols from all the operator's list containers, dedupe, sort.
+    # Privacy: counts only. A partial usable response is not a complete watchlist.
+    log.info("watchlist_sentinel: fetched %d watchlist container(s)", len(rows))
     seen: set[str] = set()
     tickers: list[str] = []
-    entries_seen = 0          # symbol ROWS the payload actually carried
-    for row in dict_rows:
-        symbols = row.get("watchlist_symbols") or []
+    for row in rows:
+        symbols = row.get("watchlist_symbols")
         if not isinstance(symbols, list):
-            # The embedded select asks for a list; anything else means the shape changed under us.
-            log.info("watchlist_sentinel: watchlist_symbols was %s, not a list — watchlist unknown",
-                     type(symbols).__name__)
+            # Missing, null and falsy non-lists are not an explicit empty relation.
+            log.info("watchlist_sentinel: malformed embedded symbol list — watchlist unknown")
             return WatchlistRead.unavailable("malformed_payload")
         for entry in symbols:
-            entries_seen += 1
             if not isinstance(entry, dict):
-                continue
-            raw = (entry.get("symbol") or "").strip().upper()
-            if raw and raw not in seen:
+                log.info("watchlist_sentinel: malformed symbol row — watchlist unknown")
+                return WatchlistRead.unavailable("malformed_payload")
+            symbol = entry.get("symbol")
+            if not isinstance(symbol, str) or not symbol.strip():
+                log.info("watchlist_sentinel: unusable symbol row — watchlist unknown")
+                return WatchlistRead.unavailable("no_usable_symbols")
+            raw = symbol.strip().upper()
+            if raw not in seen:
                 seen.add(raw)
                 tickers.append(raw)
-
-    # Symbol rows that yield NO usable ticker are not an empty watchlist — they are a read whose
-    # shape we no longer understand. A `symbol` column renamed out from under this query would
-    # otherwise arrive as an authoritative empty and wipe the cooldown, which is the original
-    # defect in a narrower disguise. Zero ENTRIES is different, and stays honestly empty: that is
-    # a real container the operator has simply not put anything in.
-    if entries_seen and not tickers:
-        log.info("watchlist_sentinel: %d symbol row(s) yielded no usable ticker — watchlist unknown",
-                 entries_seen)
-        return WatchlistRead.unavailable("no_usable_symbols")
 
     tickers.sort()
     log.info("watchlist_sentinel: %d unique ticker(s) in operator watchlist", len(tickers))
@@ -466,38 +458,87 @@ def _save_states(today_str: str, states: dict[str, dict], dry_run: bool,
 
 
 def _record_unavailable_source(today_str: str, read: WatchlistRead, dry_run: bool) -> None:
-    """Stamp the failed read onto the EXISTING states file without advancing anything.
+    """Replace only source health while retaining the last evaluated baseline.
 
-    Deliberately NOT a second store (there is exactly one Sentinel state store and this keeps it
-    that way): `as_of` and `states` are rewritten byte-for-byte from what the last authoritative
-    night left, and only the `source` envelope moves. Preserving `as_of` is load-bearing twice
-    over — it keeps _load_prev_states() pointing at the last night we actually evaluated, and it
-    keeps _is_same_day_rerender() False so a later run tonight retries the fetch instead of
-    skipping as though tonight were already done.
+    Existing fields retain their values, including unknown metadata; JSON formatting
+    may change on success. Unreadable, non-object and non-regular files stay untouched.
+    Failed staging never truncates the live state. This is the same state owner, not
+    a second durable store, and an unavailable night remains open for a later retry.
     """
     if dry_run:
         return
+
     existing: dict = {}
-    if _STATES_PATH.exists():
+    existing_mode: int | None = None
+    stage = "stat"
+    try:
         try:
-            loaded = json.loads(_STATES_PATH.read_text())
-        except Exception as exc:  # noqa: BLE001
-            # The file is there but we cannot read it. REFUSE to write: rewriting it with only a
-            # health stamp would turn a read problem into the exact data loss this whole change
-            # exists to prevent, and would destroy bytes a human might still recover. The stamp is
-            # a nicety; the state is the point.
-            log.warning("watchlist_sentinel: states file unreadable (%s) — not stamping source, "
-                        "leaving the file untouched", exc)
-            return
-        if isinstance(loaded, dict):
+            prior = _STATES_PATH.lstat()
+        except FileNotFoundError:
+            prior = None
+        if prior is not None:
+            if not stat.S_ISREG(prior.st_mode):
+                log.warning("watchlist_sentinel: states file is not regular — not stamping source")
+                return
+            existing_mode = stat.S_IMODE(prior.st_mode)
+            stage = "read"
+            loaded = json.loads(_STATES_PATH.read_text(encoding="utf-8"))
+            if not isinstance(loaded, dict):
+                log.warning("watchlist_sentinel: states file is not an object — not stamping source")
+                return
             existing = loaded
-        else:
-            log.warning("watchlist_sentinel: states file holds %s, not an object — not stamping "
-                        "source, leaving the file untouched", type(loaded).__name__)
-            return
-    existing["source"] = _source_envelope(read, today_str)
-    _ALERTS_DIR.mkdir(parents=True, exist_ok=True)
-    _STATES_PATH.write_text(json.dumps(existing, separators=(",", ":")))
+        existing["source"] = _source_envelope(read, today_str)
+        stage = "serialize"
+        payload = json.dumps(existing, separators=(",", ":")).encode("utf-8")
+        stage = "mkdir"
+        _STATES_PATH.parent.mkdir(parents=True, exist_ok=True)
+    except Exception as exc:  # noqa: BLE001
+        log.warning("watchlist_sentinel: source stamp %s failed (%s) — state untouched",
+                    stage, type(exc).__name__)
+        return
+
+    temp_path: Path | None = None
+    temp_fd: int | None = None
+    try:
+        stage = "create"
+        temp_fd, temp_name = tempfile.mkstemp(
+            prefix=f".{_STATES_PATH.name}.", suffix=".tmp", dir=_STATES_PATH.parent)
+        temp_path = Path(temp_name)  # mkstemp creates a private 0600 sibling.
+        stage = "open"
+        with os.fdopen(temp_fd, "wb") as stream:
+            temp_fd = None  # the stream now owns and closes this descriptor.
+            stage = "write"
+            if stream.write(payload) != len(payload):
+                raise OSError("short state write")
+            stage = "flush"
+            stream.flush()
+            if existing_mode is not None:
+                stage = "mode"
+                os.fchmod(stream.fileno(), existing_mode)
+            stage = "fsync"
+            os.fsync(stream.fileno())
+            stage = "close"
+        stage = "replace"
+        os.replace(temp_path, _STATES_PATH)
+        temp_path = None
+    except Exception as exc:  # noqa: BLE001
+        log.warning("watchlist_sentinel: source stamp %s failed (%s) — state retained",
+                    stage, type(exc).__name__)
+    finally:
+        if temp_fd is not None:
+            try:
+                os.close(temp_fd)
+            except Exception as exc:  # noqa: BLE001
+                log.warning("watchlist_sentinel: source stamp descriptor cleanup failed (%s)",
+                            type(exc).__name__)
+        if temp_path is not None:
+            try:
+                temp_path.unlink()
+            except FileNotFoundError:
+                pass
+            except Exception as exc:  # noqa: BLE001
+                log.warning("watchlist_sentinel: source stamp temporary cleanup failed (%s)",
+                            type(exc).__name__)
 
 
 def _save_cooldown(today_str: str, cooldown: dict[str, dict], dry_run: bool) -> None:
@@ -635,7 +676,8 @@ def main() -> int:
 
     if not read.available:
         # We did not learn the watchlist, so nothing downstream is knowable. Durable state is
-        # PRESERVED EXACTLY — no states write, no cooldown write. Advancing here is what a single
+        # The evaluated baseline and cooldown are preserved; only source health may change.
+        # Advancing the evaluated state here is what a single
         # bad night used to cost: the cooldown map was overwritten with {} (erasing every live
         # suppression, so a ticker that alerted two nights ago could alert again immediately) and
         # the previous-state snapshot jumped to today, stepping the enter-detection baseline past

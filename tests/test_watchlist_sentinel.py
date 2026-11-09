@@ -557,7 +557,7 @@ class TestFetchOperatorWatchlist:
         assert result.available is True and result.tickers == ()
 
     def test_malformed_symbol_rows_none_safe(self):
-        """None entries and rows missing 'symbol' key do not crash."""
+        """A partly malformed response stays unavailable and never crashes."""
         _fetch_operator_watchlist = self._import()
         secret_fn, load_fn = self._mock_config()
 
@@ -582,7 +582,10 @@ class TestFetchOperatorWatchlist:
              patch("scripts.run_watchlist_sentinel.requests.get", return_value=mock_resp):
             result = _fetch_operator_watchlist()
 
-        assert list(result.tickers) == ["MSFT"]
+        assert result.available is False
+        assert result.state == result.READ_UNAVAILABLE
+        assert result.reason == "malformed_payload"
+        assert result.tickers == ()
 
     def test_symbols_deduped_and_sorted(self):
         """Symbols from multiple list containers are deduped and returned sorted."""
