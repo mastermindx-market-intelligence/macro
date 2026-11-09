@@ -2,13 +2,14 @@
 
 This is the dependent candidate for reliable saved cases, asset readings and navigation in [Macro PR #10901](https://github.com/mastermindx-market-intelligence/Macro/pull/10901). Start with the workflow below, then open its contract and exact proof.
 
-**Latest recorded runtime proof: 9 November 2026, assets `2698fd4fd4ed`; [current-case navigation receipt](current-return/PUBLICATION_RECEIPT.json).** The candidate remains Draft, unmerged and unarmed. Its incumbent base is [PR #9580](https://github.com/mastermindx-market-intelligence/Macro/pull/9580) at `5e496c24c962e85a4f7f514dd43dc61443b95cab`. These are recorded checkpoints, not live-head assertions.
+**Latest recorded runtime proof: 9 November 2026, assets `a8bf00034c30`; [confirmed Save/Remove reading receipt](current-save-reading/PUBLICATION_RECEIPT.json).** The candidate remains Draft, unmerged and unarmed. Its incumbent base is [PR #9580](https://github.com/mastermindx-market-intelligence/Macro/pull/9580) at `5e496c24c962e85a4f7f514dd43dc61443b95cab`. These are recorded checkpoints, not live-head assertions.
 
 ## Find the workflow
 
 | User task or failure | Builder contract | Exact verification |
 |---|---|---|
 | Save or remove a specific snapshot; handle unreadable storage or uncertain completion | [Storage and snapshot safety](SNAPSHOT_SAFETY.md) | [Validation and limits](SNAPSHOT_VALIDATION.json) |
+| Keep conditions, scroll and usable focus after confirmed current Save/Remove | [Current mutation reading](CURRENT_SAVE_READING.md) | [Native proof and exact scope](current-save-reading/PUBLICATION_RECEIPT.json) |
 | Reopen the original saved horizon; return to the same version and reading position | [Saved navigation](NAVIGATION.md) | [Navigation validation](NAVIGATION_VALIDATION.json) |
 | Read a frozen case, its condition and retained evidence; distinguish unavailable historical results | [Frozen-case hierarchy](FROZEN_LAYOUT.md) | [Layout validation](FROZEN_LAYOUT_VALIDATION.json) |
 | Distinguish an open, expired, future-dated or unverifiable case before inspection | [Scenario-card lifecycle](SCENARIO_CARD_LIFECYCLE.md) | [Native proof and exact scope](card-lifecycle/PUBLICATION_RECEIPT.json) |
@@ -49,7 +50,7 @@ The full portfolio audit remains in [PR #10617](https://github.com/mastermindx-m
 
 ## Next bounded work
 
-**Recorded on 9 November 2026:** scenario-card lifecycle qualification is implemented and locally verified. Next, add a same-case return from a valid current review through the existing history owner. Preserve whole-drawer Close, saved-case return/reading state, missing-case recovery and newer-choice safeguards.
+**Recorded on 9 November 2026:** current review/return and confirmed Save/Remove reading continuity are implemented and locally verified. The latest affected run has 91 passing cases on assets `a8bf00034c30`. Next, align current-case action spacing with Paper and keep confirmation feedback from covering Inspect demand, through the existing layout and status owner.
 
 Model/H5 authority, alert integration, paired receipts, qualified historical results, hosted/independent visual acceptance, public-route cutover and admission/release remain with their existing owners. Historical or synthetic local fixtures do not establish current-market freshness or production acceptance.
 

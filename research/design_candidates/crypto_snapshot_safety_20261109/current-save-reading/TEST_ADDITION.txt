@@ -1,0 +1,302 @@
+
+
+
+# A confirmed current-case mutation must preserve its freshly observed reader.
+def _current_mutation_reader(page, intent, lang="en"):
+    _open_scenario(page)
+    page.locator("#cri-dialog-body summary").click()
+    action = page.locator('[data-snapshot-action="' + ("save" if intent == "save" else "remove") + '"]')
+    action.scroll_into_view_if_needed()
+    action.focus()
+    scroll = page.locator("#cri-dialog").evaluate("n => n.scrollTop")
+    assert scroll > 0
+    return action, scroll
+
+
+@pytest.mark.parametrize("intent", ["save", "remove", "remove-expired"])
+@pytest.mark.parametrize("lang,width", [("en", 390), ("zh", 320)])
+def test_r4_current_confirmed_mutation_preserves_the_reader(snapshot_page, intent, lang, width):
+    page = snapshot_page(lang, width, at="2026-12-01T12:00:00Z" if intent == "remove-expired" else "2026-10-18T12:00:00Z",
+                         start="#scenarios?h=30&window=30&q=BTC&keep=mutation")
+    page.set_viewport_size({"width": width, "height": 600})
+    source = _current_source(page, 30)
+    opaque = [{"future": [0, False, None]}, {"format": "unrecognized", "keep": {"exact": True}}]
+    _seed(page, opaque if intent == "save" else [opaque[0], _frozen(source), opaque[1]])
+    action, scroll = _current_mutation_reader(page, intent, lang)
+    before_url, before_history = page.url, page.evaluate("history.length")
+    action.click()
+    assert _writes(page) == 1
+    if intent == "save":
+        entries = _entries(page)
+        assert entries[:-1] == opaque
+        assert {key: entries[-1][key] for key in source} == source
+        assert entries[-1]["saved_at"] == "2026-10-18T12:00:00.000Z"
+        expected_action = "remove"
+    else:
+        assert _entries(page) == opaque
+        expected_action = "save"
+    assert page.locator("#cri-dialog-body details").evaluate("n => n.open")
+    assert abs(page.locator("#cri-dialog").evaluate("n => n.scrollTop") - scroll) <= 1
+    control = page.locator('[data-snapshot-action="' + expected_action + '"]')
+    if intent == "remove-expired":
+        assert control.is_disabled()
+        assert page.locator("#cri-dialog-title").evaluate("n => document.activeElement===n")
+        expected_focus = "heading"
+    else:
+        assert control.is_enabled() and control.evaluate("n => document.activeElement===n")
+        expected_focus = "snapshot-" + expected_action
+    reading = page.evaluate("history.state.reading")
+    assert {k: reading[k] for k in ("panel", "revision", "horizon", "cutoff")} == {
+        "panel": "scenario:" + source["id"], "revision": source["revision"],
+        "horizon": 30, "cutoff": source["as_of"],
+    }
+    assert reading["disclosures"] == ["scenario-conditions"] and reading["focus"] == expected_focus
+    assert abs(reading["scroll"] - scroll) <= 1
+    assert page.url == before_url and page.evaluate("history.length") == before_history
+    assert page.evaluate("document.documentElement.scrollWidth <= innerWidth")
+    assert page.locator("#cri-dialog").evaluate("n => n.scrollWidth <= n.clientWidth + 1")
+    _capture(page, f"current-save-reading-{intent}-{lang}-{width}")
+    if intent != "remove-expired":
+        _review_saved(page, lang)
+        _current_parent(page, lang).click()
+        _wait_drawer(page, "scenario:" + source["id"], source["title_" + lang])
+        assert page.locator("#cri-dialog-body details").evaluate("n => n.open")
+        assert page.locator('[data-drawer-focus="review"]').evaluate("n => document.activeElement===n")
+        assert _writes(page) == 1
+
+
+@pytest.mark.parametrize("intent", ["save", "remove"])
+@pytest.mark.parametrize("lang,width", [("en", 390), ("zh", 320)])
+def test_r4_current_idempotent_mutation_keeps_reading_without_another_write(snapshot_page, intent, lang, width):
+    page = snapshot_page(lang, width)
+    page.set_viewport_size({"width": width, "height": 600})
+    source, opaque = _current_source(page, 30), {"future": [0, False, "retained"]}
+    _seed(page, [opaque] if intent == "save" else [opaque, _frozen(source)])
+    action, scroll = _current_mutation_reader(page, intent, lang)
+    retained = [opaque, _frozen(source)] if intent == "save" else [opaque]
+    _seed(page, retained)
+    before_raw, before_url, before_history = _raw(page), page.url, page.evaluate("history.length")
+    action.click()
+    assert _raw(page) == before_raw and _writes(page) == 0
+    assert page.locator("#cri-dialog-body details").evaluate("n => n.open")
+    assert abs(page.locator("#cri-dialog").evaluate("n => n.scrollTop") - scroll) <= 1
+    opposite = "remove" if intent == "save" else "save"
+    assert page.locator('[data-snapshot-action="' + opposite + '"]').evaluate("n => document.activeElement===n")
+    assert page.evaluate("history.state.reading.focus") == "snapshot-" + opposite
+    assert page.url == before_url and page.evaluate("history.length") == before_history
+    text = page.locator("#cri-toast").inner_text()
+    assert (("Already saved" if intent == "save" else "no longer saved") if lang == "en" else
+            ("已保存此快照" if intent == "save" else "已无此快照")) in text
+
+
+@pytest.mark.parametrize("failure", ["read", "confirmation"])
+@pytest.mark.parametrize("lang,width", [("en", 390), ("zh", 320)])
+def test_r4_current_failed_mutation_does_not_rebuild_or_replay(snapshot_page, failure, lang, width):
+    page = snapshot_page(lang, width)
+    page.set_viewport_size({"width": width, "height": 600})
+    _seed(page, [{"future": "unchanged"}])
+    action, scroll = _current_mutation_reader(page, "save", lang)
+    before_html, before_raw, before_url = page.locator("#cri-dialog-body").inner_html(), _raw(page), page.url
+    old_control = action.element_handle()
+    page.evaluate("""failure => {
+      if(failure==='read') {
+        Storage.prototype.getItem=function(key) {
+          if(key===__snapshotKey)throw new Error('Synthetic unreadable collection');
+          return __snapshotNativeGet.call(this,key);
+        };
+      } else {
+        Storage.prototype.setItem=function(key,value) {
+          if(key===__snapshotKey){__snapshotWrites+=1;return;}
+          return __snapshotNativeSet.call(this,key,value);
+        };
+      }
+    }""", failure)
+    action.click()
+    assert _writes(page) == (0 if failure == "read" else 1)
+    assert _raw(page) == before_raw and page.url == before_url
+    assert page.locator("#cri-dialog-body").inner_html() == before_html
+    assert old_control.evaluate("n => n.isConnected && document.activeElement===n")
+    assert abs(page.locator("#cri-dialog").evaluate("n => n.scrollTop") - scroll) <= 1
+    if failure == "confirmation":
+        _assert_uncertain(page, lang)
+    else:
+        assert ("couldn’t be read" if lang == "en" else "无法读取") in page.locator("#cri-toast").inner_text()
+
+
+@pytest.mark.parametrize("lang,width", [("en", 390), ("zh", 320)])
+def test_r4_current_mutation_uses_fresh_reading_when_history_persistence_fails(snapshot_page, lang, width):
+    page = snapshot_page(lang, width)
+    page.set_viewport_size({"width": width, "height": 600})
+    _open_scenario(page)
+    action = page.locator('[data-snapshot-action="save"]')
+    action.focus()
+    old_metadata = page.evaluate("history.state")
+    assert old_metadata["reading"]["disclosures"] == []
+    page.evaluate("""() => {
+      history.replaceState=function(){throw new DOMException('Synthetic reading persistence failure','SecurityError');};
+    }""")
+    page.locator("#cri-dialog-body summary").click()
+    action.scroll_into_view_if_needed()
+    action.focus()
+    scroll = page.locator("#cri-dialog").evaluate("n => n.scrollTop")
+    assert scroll > 0
+    action.click()
+    assert _writes(page) == 1
+    assert page.locator("#cri-dialog-body details").evaluate("n => n.open")
+    assert abs(page.locator("#cri-dialog").evaluate("n => n.scrollTop") - scroll) <= 1
+    assert page.locator('[data-snapshot-action="remove"]').evaluate("n => document.activeElement===n")
+    assert page.evaluate("history.state") == old_metadata, "A failed optional history write is not claimed as persistence"
+
+
+@pytest.mark.parametrize("choice", ["focus", "navigation", "history"])
+def test_r4_current_mutation_reading_persistence_yields_to_a_newer_choice(snapshot_page, choice):
+    page = snapshot_page(width=390)
+    page.set_viewport_size({"width": 390, "height": 600})
+    source = _current_source(page, 30)
+    action, scroll = _current_mutation_reader(page, "save")
+    page.evaluate("""choice => {
+      const replace=history.replaceState.bind(history);let fired=false;
+      history.replaceState=function(metadata,title,url) {
+        const result=replace(metadata,title,url);
+        if(fired || __snapshotWrites<1)return result;
+        fired=true;window.__mutationChoiceFired=true;
+        if(choice==='navigation') {
+          document.querySelector('#crypto-intelligence [data-open="evidence:liquidity_flows"]').click();
+          window.__mutationChoiceFocus=document.querySelector('#cri-dialog-body summary');
+          __mutationChoiceFocus.focus();
+        } else if(choice==='focus') {
+          window.__mutationChoiceFocus=document.querySelector('[data-drawer-focus="review"]');
+          __mutationChoiceFocus.focus();
+        } else {
+          replace(Object.assign({},history.state,{newerMutationReader:'retained'}),'',location.href);
+        }
+        return result;
+      };
+    }""", choice)
+    action.click()
+    assert page.evaluate("__mutationChoiceFired===true") and _writes(page) == 1
+    if choice == "navigation":
+        _wait_drawer(page, "evidence:liquidity_flows", "Evidence behind the view")
+        assert page.evaluate("__mutationChoiceFocus.isConnected && document.activeElement===__mutationChoiceFocus")
+        page.go_back()
+        _wait_drawer(page, "scenario:continuation", source["title_en"])
+        assert page.locator("#cri-dialog-body details").evaluate("n => n.open")
+    else:
+        assert page.locator("#cri-dialog-body details").evaluate("n => n.open")
+        assert abs(page.locator("#cri-dialog").evaluate("n => n.scrollTop") - scroll) <= 1
+        if choice == "focus":
+            assert page.evaluate("__mutationChoiceFocus.isConnected && document.activeElement===__mutationChoiceFocus")
+        else:
+            assert page.evaluate("history.state.newerMutationReader") == "retained"
+            assert not page.locator('[data-snapshot-action="remove"]').evaluate("n => document.activeElement===n")
+
+
+def test_r4_current_expired_remove_heading_callback_keeps_its_new_destination(snapshot_page):
+    page = snapshot_page(width=390, at="2026-12-01T12:00:00Z")
+    page.set_viewport_size({"width": 390, "height": 600})
+    _seed(page, [_frozen(_current_source(page, 30)), {"future": "keep"}])
+    action, _ = _current_mutation_reader(page, "remove")
+    page.evaluate("""() => {
+      let fired=false;
+      document.addEventListener('focusin',event=>{
+        if(fired || __snapshotWrites<1 || event.target.id!=='cri-dialog-title')return;
+        fired=true;
+        document.querySelector('#crypto-intelligence [data-open="evidence:liquidity_flows"]').click();
+        window.__expiredMutationFocus=document.querySelector('#cri-dialog-body summary');
+        __expiredMutationFocus.focus();
+      });
+    }""")
+    action.click()
+    _wait_drawer(page, "evidence:liquidity_flows", "Evidence behind the view")
+    assert _entries(page) == [{"future": "keep"}] and _writes(page) == 1
+    assert page.evaluate("__expiredMutationFocus.isConnected && document.activeElement===__expiredMutationFocus")
+
+
+def test_r4_current_mutation_inside_a_render_focus_callback_retains_its_new_intent(snapshot_page):
+    page = snapshot_page(width=390)
+    page.set_viewport_size({"width": 390, "height": 600})
+    source = _current_source(page, 30)
+    _open_scenario(page)
+    page.locator("#cri-dialog-body summary").click()
+    review = page.locator('[data-drawer-focus="review"]')
+    review.scroll_into_view_if_needed()
+    review.focus()
+    scroll = page.locator("#cri-dialog").evaluate("n => n.scrollTop")
+    page.evaluate("""() => {
+      let fired=false;
+      document.addEventListener('focusin',event=>{
+        if(fired || document.documentElement.dataset.lang!=='zh' || event.target.dataset.drawerFocus!=='review')return;
+        fired=true;window.__nestedMutationRan=true;
+        const action=document.querySelector('[data-snapshot-action="save"]');
+        action.focus({preventScroll:true});action.click();
+      });
+    }""")
+    page.locator("html").evaluate("n => n.dataset.lang='zh'")
+    _wait_drawer(page, "scenario:continuation", source["title_zh"])
+    assert page.evaluate("__nestedMutationRan===true") and _writes(page) == 1
+    assert page.locator("#cri-dialog-body details").evaluate("n => n.open")
+    assert page.locator('[data-snapshot-action="remove"]').evaluate("n => document.activeElement===n")
+    assert page.evaluate("history.state.reading.focus") == "snapshot-remove"
+    actual, maximum = page.locator("#cri-dialog").evaluate("n => [n.scrollTop,n.scrollHeight-n.clientHeight]")
+    assert abs(actual - min(scroll, maximum)) <= 1
+
+
+@pytest.mark.parametrize("choice", ["replace-metadata", "push-identical"])
+def test_r4_current_mutation_yields_its_ui_when_storage_observes_a_new_history_entry(snapshot_page, choice):
+    page = snapshot_page(width=390)
+    page.set_viewport_size({"width": 390, "height": 600})
+    action, scroll = _current_mutation_reader(page, "save")
+    old = action.element_handle()
+    before_html, before_length = page.locator("#cri-dialog-body").inner_html(), page.evaluate("history.length")
+    page.evaluate("""choice => {
+      let fired=false;
+      Storage.prototype.getItem=function(key) {
+        const result=__snapshotNativeGet.call(this,key);
+        if(key===__snapshotKey && !fired) {
+          fired=true;
+          if(choice==='replace-metadata')history.replaceState(Object.assign({},history.state,{newerCurrentEntry:true}),'',location.href);
+          else history.pushState(history.state,'',location.href);
+        }
+        return result;
+      };
+    }""", choice)
+    action.click()
+    assert _writes(page) == 1 and len(_entries(page)) == 1
+    assert old.evaluate("n => n.isConnected && document.activeElement===n")
+    assert page.locator("#cri-dialog-body").inner_html() == before_html
+    assert abs(page.locator("#cri-dialog").evaluate("n => n.scrollTop") - scroll) <= 1
+    if choice == "replace-metadata":
+        assert page.evaluate("history.state.newerCurrentEntry") is True
+    else:
+        assert page.evaluate("history.length") == before_length + 1
+
+
+def test_r4_current_mutation_with_unqualified_reading_still_reconciles_controls(scenario_card_page):
+    page, view = scenario_card_page(at="2026-10-18T12:00:00Z", variant="impossible-cutoff")
+    page.set_viewport_size({"width": 390, "height": 600})
+    source = view["scenarios"]["7"][0]
+    original = json.loads((SITE / "crypto_intelligence_r4.json").read_text())["scenarios"]["7"][0]
+    page.evaluate("""key=>{
+      window.__snapshotKey=key;window.__snapshotNativeGet=Storage.prototype.getItem;
+      window.__snapshotNativeSet=Storage.prototype.setItem;window.__snapshotWrites=0;
+      Storage.prototype.setItem=function(k,v){if(k===key)__snapshotWrites+=1;return __snapshotNativeSet.call(this,k,v);};
+    }""", KEY)
+    _seed(page, [_frozen(original), {"future": "keep"}])
+    _open_scenario(page)
+    page.evaluate("""source=>{
+      const metadata=Object.assign({},history.state,{reading:{
+        panel:'scenario:'+source.id,revision:source.revision,horizon:7,cutoff:source.as_of,
+        disclosures:['scenario-conditions'],focus:'review',scroll:250}});
+      history.replaceState(metadata,'',location.href);
+      window.dispatchEvent(new PopStateEvent('popstate',{state:metadata}));
+    }""", source)
+    _wait_drawer(page, "scenario:" + source["id"], source["title_en"])
+    page.locator("#cri-dialog-body summary").click()
+    action = page.locator('[data-snapshot-action="remove"]')
+    action.focus()
+    before_metadata = page.evaluate("history.state")
+    action.click()
+    assert _entries(page) == [{"future": "keep"}] and _writes(page) == 1
+    assert page.locator('[data-snapshot-action="save"]').evaluate("n => document.activeElement===n")
+    assert not page.locator("#cri-dialog-body details").evaluate("n => n.open")
+    assert page.evaluate("history.state") == before_metadata

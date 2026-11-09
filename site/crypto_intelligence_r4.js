@@ -72,38 +72,67 @@
       horizon: body.dataset.savedHorizon ? Number(body.dataset.savedHorizon) : null,
       cutoff: body.dataset.savedCutoff || null };
   }
-  function rememberDrawer(focusOverride) {
-    // Never capture outgoing DOM into an incoming history entry.
-    if (readingSuspended || !dialog.open || root.dataset.renderedAddress !== location.href ||
-        renderedHistory === null || historySignature() !== renderedHistory) return;
+  function captureDrawerReading(focusOverride) {
+    // Fresh DOM and history ownership are separate from reading eligibility.
+    var signature = historySignature();
+    if (!dialog.open || root.dataset.renderedAddress !== location.href ||
+        renderedHistory === null || signature !== renderedHistory ||
+        state().params.get("panel") !== body.dataset.panel) return { owned: false };
+    var capture = { owned: true, address: location.href, language: zh(), subtree: body.firstChild,
+      signature: signature, length: history.length, reading: null };
     var scope = readingScope();
-    if (!scope || state().params.get("panel") !== scope.panel) return;
+    if (!scope) return capture;
     var active = document.activeElement, keyed = active && active.closest("[data-drawer-focus]");
     var focus = active === title ? "heading" : active && active.id === "cri-dialog-close" ? "close" :
       keyed && dialog.contains(keyed) ? keyed.dataset.drawerFocus : null;
     if (typeof focusOverride === "string" && drawerFocus(focusOverride)) focus = focusOverride;
-    var reading = Object.assign({}, scope, {
+    capture.reading = Object.assign({}, scope, {
       disclosures: Array.from(body.querySelectorAll("details[data-drawer-disclosure]")).filter(function (element) {
         return element.open;
       }).map(function (element) { return element.dataset.drawerDisclosure; }),
       focus: focus, scroll: Math.max(0, dialog.scrollTop)
     });
+    return capture;
+  }
+  function ownsDrawerCapture(capture, signature) {
+    return capture.owned && dialog.open && location.href === capture.address && zh() === capture.language &&
+      body.firstChild === capture.subtree && history.length === capture.length &&
+      historySignature() === (signature === undefined ? capture.signature : signature);
+  }
+  function persistDrawerReading(capture) {
+    if (!capture.reading || !ownsDrawerCapture(capture)) return false;
     var metadata = history.state && typeof history.state === "object" && !Array.isArray(history.state) ?
       Object.assign({}, history.state) : {};
-    if (JSON.stringify(metadata.reading) === JSON.stringify(reading)) return;
-    metadata.reading = reading;
-    try {
-      history.replaceState(metadata, "", location.href);
-      renderedHistory = historySignature();
-    } catch (error) { /* Optional reading state must not break navigation. */ }
+    metadata.reading = capture.reading;
+    var intended = JSON.stringify(metadata);
+    if (intended === capture.signature) return true;
+    try { history.replaceState(metadata, "", capture.address); }
+    catch (error) { /* Optional reading state must not break the visible reader. */ }
+    // A callback may replace this entry without changing its URL or focus.
+    if (ownsDrawerCapture(capture, intended)) { renderedHistory = intended; return true; }
+    return ownsDrawerCapture(capture); // An unchanged, failed optional write remains usable.
   }
-  function drawerReading() {
-    var scope = readingScope(), reading = history.state && history.state.reading;
+  function rememberDrawer(focusOverride) {
+    if (!readingSuspended) persistDrawerReading(captureDrawerReading(focusOverride));
+  }
+  function matchingDrawerReading(reading) {
+    var scope = readingScope();
     if (!scope || !reading || typeof reading !== "object" || reading.panel !== scope.panel ||
         reading.revision !== scope.revision || reading.horizon !== scope.horizon ||
         reading.cutoff !== scope.cutoff || !Array.isArray(reading.disclosures) ||
         typeof reading.scroll !== "number" || !isFinite(reading.scroll) || reading.scroll < 0) return null;
     return reading;
+  }
+  function drawerReading() { return matchingDrawerReading(history.state && history.state.reading); }
+  function restoreDrawerReading(reading) {
+    body.querySelectorAll("details[data-drawer-disclosure]").forEach(function (element) {
+      element.open = reading.disclosures.indexOf(element.dataset.drawerDisclosure) >= 0;
+    });
+    dialog.scrollTop = reading.scroll;
+  }
+  function usableDrawerFocus(element) {
+    return element && element.isConnected && !element.matches(":disabled") && element.getClientRects().length &&
+      !element.closest("[hidden],[inert]") && getComputedStyle(element).visibility !== "hidden" ? element : null;
   }
   function savedIdentity(s) {
     dialog.classList.add("cri-dialog-saved");
@@ -281,10 +310,10 @@
   function save(s, intent, trigger) {
     if (!s || typeof s.revision !== "string" || !s.revision ||
         (intent !== "save" && intent !== "remove")) return;
-    var actionUrl = location.href, actionLang = zh(), panel = state().params.get("panel");
+    var actionUrl = location.href, actionLang = zh(), actionHistoryLength = history.length, panel = state().params.get("panel");
     var ownedFocus = document.activeElement === trigger;
     function ownsAction() {
-      return location.href === actionUrl && zh() === actionLang &&
+      return location.href === actionUrl && zh() === actionLang && history.length === actionHistoryLength &&
         trigger && trigger.isConnected && body.contains(trigger);
     }
     function report(message) { if (ownsAction()) toast(message); }
@@ -349,12 +378,28 @@
       update(null, { panel: "saved" }, true);
       return; // apply() owns displaced focus; no late focus after its callbacks.
     }
-    renderDrawer(panel, collection);
-    if (location.href !== actionUrl || zh() !== actionLang) return;
-    if (document.activeElement !== document.body && document.activeElement !== trigger &&
-        document.activeElement !== dialog) return;
-    var restoredAction = body.querySelector("[data-snapshot-action]") || document.getElementById("cri-dialog-close");
-    if (restoredAction && restoredAction.isConnected) restoredAction.focus();
+    var captured = captureDrawerReading();
+    if (!captured.owned || !ownsAction() || document.activeElement !== trigger) return;
+    var priorSuspension = readingSuspended, restoredAction, projected = false;
+    readingSuspended = true;
+    try {
+      renderDrawer(panel, collection);
+      if (location.href !== actionUrl || zh() !== actionLang ||
+          history.length !== actionHistoryLength || historySignature() !== captured.signature) return;
+      var focusAfterRender = document.activeElement;
+      if (focusAfterRender !== document.body && focusAfterRender !== trigger && focusAfterRender !== dialog) return;
+      var reading = matchingDrawerReading(captured.reading);
+      if (reading) { restoreDrawerReading(reading); projected = true; }
+      restoredAction = usableDrawerFocus(body.querySelector("[data-snapshot-action]")) || title;
+      if (restoredAction === title) title.tabIndex = -1;
+      // Persist the completed projection before focus, including inside a render callback.
+      var completed = captureDrawerReading(restoredAction === title ? "heading" : restoredAction.dataset.drawerFocus);
+      if (!completed.owned || (reading ? !persistDrawerReading(completed) : !ownsDrawerCapture(completed)) ||
+          location.href !== actionUrl || zh() !== actionLang || body.firstChild !== completed.subtree ||
+          history.length !== actionHistoryLength || document.activeElement !== focusAfterRender) return;
+    } finally { readingSuspended = priorSuspension; }
+    restoredAction.focus({ preventScroll: projected });
+    // No later projection or persistence: a focus callback owns its new choice.
   }
   function scenarioCardState(s, today, language) {
     var windowState = "unknown", progress = null, nextCheck = null, insufficient = false;
@@ -899,18 +944,10 @@
         var returningToCase = returning && scope && returning.panel === scope.panel &&
           returning.revision === scope.revision && returning.horizon === scope.horizon && returning.cutoff === scope.cutoff;
         if (reading || returningToCase) {
-          if (reading) {
-            body.querySelectorAll("details[data-drawer-disclosure]").forEach(function (element) {
-              element.open = reading.disclosures.indexOf(element.dataset.drawerDisclosure) >= 0;
-            });
-            dialog.scrollTop = reading.scroll;
-          }
+          if (reading) restoreDrawerReading(reading);
           var restored = returningToCase ? drawerFocus("review") :
             reading && typeof reading.focus === "string" ? drawerFocus(reading.focus) : null;
-          if (restored && (!restored.isConnected || restored.matches(":disabled") ||
-              !restored.getClientRects().length || restored.closest("[hidden],[inert]") ||
-              getComputedStyle(restored).visibility === "hidden")) restored = null;
-          restored = restored || title;
+          restored = usableDrawerFocus(restored) || title;
           if (restored === title) title.tabIndex = -1;
           restored.focus({ preventScroll: !!reading });
           return; // A focus callback owns any newer destination or reading position.
