@@ -1,0 +1,135 @@
+{
+  "source_head_before": "30117a758d915dcfeec562c823f764151ef5db08",
+  "reviewer": "assigning root source adjudication; not independent review",
+  "cases": [
+    {
+      "benchmark_id": "risk_breadth_2026-07-08",
+      "source_path": "research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md",
+      "input_spans": [
+        [
+          59,
+          65
+        ],
+        [
+          48,
+          48
+        ]
+      ],
+      "oracle_span": [
+        55,
+        67
+      ],
+      "cutoff_date": "2026-07-08",
+      "adjudication_date": "2026-07-12",
+      "input_date_meaning": "latest date included in supplied excerpt; not original publication time",
+      "fixture_sha256": "55b237a29ca3af9580b25d26e9d17c2427daa99671cb8c86f779bf459b5da98d"
+    },
+    {
+      "benchmark_id": "treasury_liquidity_2026-07-02",
+      "source_path": "research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md",
+      "input_spans": [
+        [
+          163,
+          168
+        ],
+        [
+          172,
+          174
+        ],
+        [
+          178,
+          178
+        ]
+      ],
+      "oracle_span": [
+        174,
+        180
+      ],
+      "cutoff_date": "2026-07-02",
+      "adjudication_date": "2026-07-12",
+      "input_date_meaning": "latest date included in supplied excerpt; not original publication time",
+      "fixture_sha256": "6e425605f527d21d39b836fa599d0209d456299f74c200015a77464cbf94f7f2",
+      "chronology_adjudication": "Excluded undated RRP collapse at line179; the dated July2 proxy statement at174 remains. No later July9 TGA amount enters input."
+    },
+    {
+      "benchmark_id": "semiconductor_divergence_2026-07-08",
+      "source_path": "research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md",
+      "input_spans": [
+        [
+          39,
+          44
+        ]
+      ],
+      "oracle_span": [
+        31,
+        37
+      ],
+      "cutoff_date": "2026-07-08",
+      "adjudication_date": "2026-07-12",
+      "input_date_meaning": "latest date included in supplied excerpt; not original publication time",
+      "fixture_sha256": "6ab991ff7a289096af9e1be864513e73161b87432b5098fab93ed99c9ef54772"
+    },
+    {
+      "benchmark_id": "mag7_organ_causality_2026-07-11",
+      "source_path": "research/MAG7_TURN_POSTMORTEM_BY_FABLE.md",
+      "input_spans": [
+        [
+          21,
+          47
+        ]
+      ],
+      "oracle_span": [
+        125,
+        134
+      ],
+      "cutoff_date": "2026-07-11",
+      "adjudication_date": "2026-07-11",
+      "input_date_meaning": "latest date included in supplied excerpt; not original publication time",
+      "fixture_sha256": "6fbe91b12942d0ab621eebe9fb760fde9fe764dc202ac0c9187d4774cda527df"
+    },
+    {
+      "benchmark_id": "mag7_flow_calibration_2026-07-11",
+      "source_path": "research/MAG7_TURN_POSTMORTEM_BY_FABLE.md",
+      "input_spans": [
+        [
+          49,
+          61
+        ]
+      ],
+      "oracle_span": [
+        54,
+        66
+      ],
+      "cutoff_date": "2026-07-11",
+      "adjudication_date": "2026-07-11",
+      "input_date_meaning": "latest date included in supplied excerpt; not original publication time",
+      "fixture_sha256": "e0ba16e2b8d4aef75d2537a587f6e3594fd90cf949ae5aa17f592d43e68a6792"
+    },
+    {
+      "benchmark_id": "mag7_narrative_denominator_2026-07-11",
+      "source_path": "research/MAG7_TURN_POSTMORTEM_BY_FABLE.md",
+      "input_spans": [
+        [
+          88,
+          92
+        ],
+        [
+          101,
+          104
+        ]
+      ],
+      "oracle_span": [
+        101,
+        109
+      ],
+      "cutoff_date": "2026-07-11",
+      "adjudication_date": "2026-07-11",
+      "input_date_meaning": "latest date included in supplied excerpt; not original publication time",
+      "fixture_sha256": "7846c95577c9f7293e51951c49d4c41c58ac0d35c1dd26004992927e9fe3bfae"
+    }
+  ],
+  "historical_availability": "unverified",
+  "market_claims": "only statements in supplied research documents; no new external verification or live advice",
+  "case_independence": "not established; shared episode within and across groups",
+  "semantic_model_acceptance": "not run; original eval-t6-blind-six-01a1333d-c2 request refused no_pool_available before launch"
+}

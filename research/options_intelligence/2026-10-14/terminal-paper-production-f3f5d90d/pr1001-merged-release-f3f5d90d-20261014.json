@@ -1,0 +1,430 @@
+{
+  "schema": "fable.pr1001.merged_source_qualification.v1",
+  "observed_at": "2026-10-14T10:35:08.381280+00:00",
+  "accepted_head": "580b05f17bc776a1393fb4ffed0f64250a7206a2",
+  "accepted_base": "3cefe15f801b2185e181ac31c092a88897270f82",
+  "actual_merge": "f3f5d90df6d3b08227389dbeb512018697f2e634",
+  "fetched_master": "f3f5d90df6d3b08227389dbeb512018697f2e634",
+  "merge_contained_by_fetched_master": true,
+  "changed_paths": [
+    {
+      "path": "terminal/components/shared/StrikeExpiryMatrix.tsx",
+      "accepted": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "bd269f6c63a6fe0aa77a66aea3dd9449a6c5f395"
+      },
+      "merged": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "bd269f6c63a6fe0aa77a66aea3dd9449a6c5f395"
+      },
+      "identical": true,
+      "bytes": 52791,
+      "sha256": "fcf95fee35f7d60c23cea23ba199b1cf8c23fead6f51cd248fa069da7d1c075a"
+    },
+    {
+      "path": "terminal/docs/pr-crops/options-companion-20260923/qualification/paper-row-boundary-20261014/QUALIFICATION.json",
+      "accepted": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "b345938b29eedc125eb3187b62b45fdba159055f"
+      },
+      "merged": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "b345938b29eedc125eb3187b62b45fdba159055f"
+      },
+      "identical": true,
+      "bytes": 5545,
+      "sha256": "5572e3c23c3ce6b25bde7631657b4441449b5aac7f79a619abf44ae6e5ea9e74"
+    },
+    {
+      "path": "terminal/docs/pr-crops/options-companion-20260923/qualification/paper-row-boundary-20261014/green/93-row-desktop-en.json",
+      "accepted": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "c4b39fd0025fef2652deac64998ef6a252bcf2b4"
+      },
+      "merged": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "c4b39fd0025fef2652deac64998ef6a252bcf2b4"
+      },
+      "identical": true,
+      "bytes": 2855,
+      "sha256": "c8b07d604f3dc4b2e2808abcc0f0aea902aa5231033a6a8b7eb4fa56bc0bd32e"
+    },
+    {
+      "path": "terminal/docs/pr-crops/options-companion-20260923/qualification/paper-row-boundary-20261014/green/93-row-desktop-en.png",
+      "accepted": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "5e39e20ecee784269af94c2513fa292f9deb7c69"
+      },
+      "merged": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "5e39e20ecee784269af94c2513fa292f9deb7c69"
+      },
+      "identical": true,
+      "bytes": 141413,
+      "sha256": "72a55be455aa534f88b7f9d189e394090b21f041dc7f02c005acdf3479faf0f5"
+    },
+    {
+      "path": "terminal/docs/pr-crops/options-companion-20260923/qualification/paper-row-boundary-20261014/green/93-row-desktop-zh.json",
+      "accepted": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "c4b39fd0025fef2652deac64998ef6a252bcf2b4"
+      },
+      "merged": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "c4b39fd0025fef2652deac64998ef6a252bcf2b4"
+      },
+      "identical": true,
+      "bytes": 2855,
+      "sha256": "c8b07d604f3dc4b2e2808abcc0f0aea902aa5231033a6a8b7eb4fa56bc0bd32e"
+    },
+    {
+      "path": "terminal/docs/pr-crops/options-companion-20260923/qualification/paper-row-boundary-20261014/green/93-row-desktop-zh.png",
+      "accepted": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "87c2701ff6a065f906fffa100cdacbc7ebfdbdb9"
+      },
+      "merged": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "87c2701ff6a065f906fffa100cdacbc7ebfdbdb9"
+      },
+      "identical": true,
+      "bytes": 156732,
+      "sha256": "3f7f5662c138d1edc8528c3eb99fd4a4123f7460a40cef04065b7e66433ec6fb"
+    },
+    {
+      "path": "terminal/docs/pr-crops/options-companion-20260923/qualification/paper-row-boundary-20261014/green/93-row-mobile-en.json",
+      "accepted": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "529e8471c84d0f85e5c081b7493f13abde97cd96"
+      },
+      "merged": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "529e8471c84d0f85e5c081b7493f13abde97cd96"
+      },
+      "identical": true,
+      "bytes": 2833,
+      "sha256": "534a4e5ba81824138c4bcc940d514f7635776748350ce0b2945dba13f382d6f0"
+    },
+    {
+      "path": "terminal/docs/pr-crops/options-companion-20260923/qualification/paper-row-boundary-20261014/green/93-row-mobile-en.png",
+      "accepted": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "c0bfbf68bef41722d323056fb75fe18270fc041f"
+      },
+      "merged": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "c0bfbf68bef41722d323056fb75fe18270fc041f"
+      },
+      "identical": true,
+      "bytes": 88849,
+      "sha256": "c344f5a1217e227c65df14137a764e4c7cf261de2e741bc87714815f35eb840f"
+    },
+    {
+      "path": "terminal/docs/pr-crops/options-companion-20260923/qualification/paper-row-boundary-20261014/green/93-row-mobile-zh.json",
+      "accepted": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "ae741034d6ba462a82f82b16ab268214ce862aea"
+      },
+      "merged": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "ae741034d6ba462a82f82b16ab268214ce862aea"
+      },
+      "identical": true,
+      "bytes": 2833,
+      "sha256": "557e935a470d5cae6fd533332e4a5db8f765bdac1b47e9cc8f5c7efd30032b98"
+    },
+    {
+      "path": "terminal/docs/pr-crops/options-companion-20260923/qualification/paper-row-boundary-20261014/green/93-row-mobile-zh.png",
+      "accepted": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "cae3f7c12b0cfe4c68048e1ee65125d902493198"
+      },
+      "merged": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "cae3f7c12b0cfe4c68048e1ee65125d902493198"
+      },
+      "identical": true,
+      "bytes": 98332,
+      "sha256": "f2a3e5bb58e4b0789d6414e1738ddb848833333b37d8fc7da837128b76092c43"
+    },
+    {
+      "path": "terminal/docs/pr-crops/options-companion-20260923/qualification/paper-row-boundary-20261014/green/93-row-tablet-en.json",
+      "accepted": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "196e6ff2aba281d1f2941d6975e9c269e8a970c4"
+      },
+      "merged": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "196e6ff2aba281d1f2941d6975e9c269e8a970c4"
+      },
+      "identical": true,
+      "bytes": 2828,
+      "sha256": "89ec9e5310c55156639e20c2cd3ea0db74758cc694167fcf74b17a0f0be9cee8"
+    },
+    {
+      "path": "terminal/docs/pr-crops/options-companion-20260923/qualification/paper-row-boundary-20261014/green/93-row-tablet-en.png",
+      "accepted": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "e74da287bc1d69714b2147eb4bf0f7a89987628a"
+      },
+      "merged": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "e74da287bc1d69714b2147eb4bf0f7a89987628a"
+      },
+      "identical": true,
+      "bytes": 135672,
+      "sha256": "09d5f91ef02b98c1c435015a65cd4b9e4da99ffab102e8e333057cc571920e33"
+    },
+    {
+      "path": "terminal/docs/pr-crops/options-companion-20260923/qualification/paper-row-boundary-20261014/green/93-row-tablet-zh.json",
+      "accepted": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "fdbe4f33a85b3a54a82db0147f21a7c55adc2831"
+      },
+      "merged": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "fdbe4f33a85b3a54a82db0147f21a7c55adc2831"
+      },
+      "identical": true,
+      "bytes": 2831,
+      "sha256": "48b7fbdea741457d00f8e27bc070e536a6188acadcf5255ba1df76fabef73193"
+    },
+    {
+      "path": "terminal/docs/pr-crops/options-companion-20260923/qualification/paper-row-boundary-20261014/green/93-row-tablet-zh.png",
+      "accepted": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "0654d68b73efe5e622becc0f9bba812426d62298"
+      },
+      "merged": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "0654d68b73efe5e622becc0f9bba812426d62298"
+      },
+      "identical": true,
+      "bytes": 152995,
+      "sha256": "730a682468a3c55c32fe0b06fbafe294034d1739c1d9e68348f18c0bba2736e8"
+    },
+    {
+      "path": "terminal/docs/pr-crops/options-companion-20260923/qualification/paper-row-boundary-20261014/green/RESULT.json",
+      "accepted": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "1c89b02574a68eb1925ff71c4b1d6e2563dde0d2"
+      },
+      "merged": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "1c89b02574a68eb1925ff71c4b1d6e2563dde0d2"
+      },
+      "identical": true,
+      "bytes": 176,
+      "sha256": "287e4924adf21204a77d7ebab8af301c674f1ecbf6d54fb3edfc645061bc8e1e"
+    },
+    {
+      "path": "terminal/docs/pr-crops/options-companion-20260923/qualification/paper-row-boundary-20261014/green/SOURCE_BINDING.json",
+      "accepted": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "9d7aa170fe82be632e4bfe10af8d0a7d78565c52"
+      },
+      "merged": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "9d7aa170fe82be632e4bfe10af8d0a7d78565c52"
+      },
+      "identical": true,
+      "bytes": 151,
+      "sha256": "509e11f2762ff30719571cedfa46e527bf1a6f79708e146a9c23e7b93b99470e"
+    },
+    {
+      "path": "terminal/docs/pr-crops/options-companion-20260923/qualification/paper-row-boundary-20261014/green/browser-report.json",
+      "accepted": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "b4d91d53cc6ab1a57b598079ecb3411a40fb2e7d"
+      },
+      "merged": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "b4d91d53cc6ab1a57b598079ecb3411a40fb2e7d"
+      },
+      "identical": true,
+      "bytes": 48979,
+      "sha256": "84763b14521f2b1b6901b7c7becaece657c6002b9234daa079aa1e32b9263534"
+    },
+    {
+      "path": "terminal/docs/pr-crops/options-companion-20260923/qualification/paper-row-boundary-20261014/red/93-row-tablet-en.json",
+      "accepted": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "644a258c925754dd2aaf3933cc6c9b617689c3e3"
+      },
+      "merged": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "644a258c925754dd2aaf3933cc6c9b617689c3e3"
+      },
+      "identical": true,
+      "bytes": 2828,
+      "sha256": "7c0bbf6fa4f294563568b2862a5792a189785e6597599f343bc81800ab3fac84"
+    },
+    {
+      "path": "terminal/docs/pr-crops/options-companion-20260923/qualification/paper-row-boundary-20261014/red/93-row-tablet-en.png",
+      "accepted": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "813585bc26b27e32747248c8352a3fda900fe0db"
+      },
+      "merged": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "813585bc26b27e32747248c8352a3fda900fe0db"
+      },
+      "identical": true,
+      "bytes": 135744,
+      "sha256": "519516d080cdbcb56a90017f48b4b019098e99e9ae773707a8c67b56dacf5ab7"
+    },
+    {
+      "path": "terminal/docs/pr-crops/options-companion-20260923/qualification/paper-row-boundary-20261014/red/93-row-tablet-zh.json",
+      "accepted": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "b52cef5db82a33dd2c89047d885e19b8b5bee805"
+      },
+      "merged": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "b52cef5db82a33dd2c89047d885e19b8b5bee805"
+      },
+      "identical": true,
+      "bytes": 2831,
+      "sha256": "75471ca33acc927f8c14e8a44ebd36e6885271774aa559e1fb673a9f9f1d25fe"
+    },
+    {
+      "path": "terminal/docs/pr-crops/options-companion-20260923/qualification/paper-row-boundary-20261014/red/93-row-tablet-zh.png",
+      "accepted": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "df69a1e303d530fc81dc42692f6ca3925548d8ee"
+      },
+      "merged": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "df69a1e303d530fc81dc42692f6ca3925548d8ee"
+      },
+      "identical": true,
+      "bytes": 153213,
+      "sha256": "8defb341825d76112ba7431805989513f3566ecad7726358f86e6841fc01a42a"
+    },
+    {
+      "path": "terminal/docs/pr-crops/options-companion-20260923/qualification/paper-row-boundary-20261014/red/RESULT.json",
+      "accepted": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "5f1c3c3ede6047d273469b613ccc32c80806d2cd"
+      },
+      "merged": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "5f1c3c3ede6047d273469b613ccc32c80806d2cd"
+      },
+      "identical": true,
+      "bytes": 176,
+      "sha256": "700f7e9e1de08b01e42d6d64569828f1f007e9733e6c40d8286ea9a11a4e91fe"
+    },
+    {
+      "path": "terminal/docs/pr-crops/options-companion-20260923/qualification/paper-row-boundary-20261014/red/SOURCE_BINDING.json",
+      "accepted": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "19f1f81995c7cc4d76502b9a68080f01aee36739"
+      },
+      "merged": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "19f1f81995c7cc4d76502b9a68080f01aee36739"
+      },
+      "identical": true,
+      "bytes": 141,
+      "sha256": "04b0d6918a7b02f203e26994dec407d5ecdb0d82fd77d0e3986b61f3d672d54d"
+    },
+    {
+      "path": "terminal/docs/pr-crops/options-companion-20260923/qualification/paper-row-boundary-20261014/red/browser-report.json",
+      "accepted": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "7bf343fb47f0503f39328cc6362be2f3eb6e1a7e"
+      },
+      "merged": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "7bf343fb47f0503f39328cc6362be2f3eb6e1a7e"
+      },
+      "identical": true,
+      "bytes": 20810,
+      "sha256": "1f7a89e03e1e1b0003496a22928f1d39b7bf64df94468bdb2852b1e6c645ee45"
+    },
+    {
+      "path": "terminal/e2e/options-companion.spec.ts",
+      "accepted": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "881294fb0837d7f2ced7374996e56f9aefc22eb6"
+      },
+      "merged": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "881294fb0837d7f2ced7374996e56f9aefc22eb6"
+      },
+      "identical": true,
+      "bytes": 85933,
+      "sha256": "c291793dddfc8c135f8c7c5a08e321665841d15a4f938fcd266668d4422632db"
+    },
+    {
+      "path": "terminal/e2e/options-desk-map.spec.ts",
+      "accepted": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "bdf96c7da3347201f47172b1d4120bcada121187"
+      },
+      "merged": {
+        "mode": "100644",
+        "type": "blob",
+        "oid": "bdf96c7da3347201f47172b1d4120bcada121187"
+      },
+      "identical": true,
+      "bytes": 24730,
+      "sha256": "bb715089f1013d693fe7f22d03cd19d32a8ee007d3850bce22e610d868412fa3"
+    }
+  ],
+  "all_changed_blobs_and_modes_identical": true,
+  "mismatches": [],
+  "scope": "Source qualification only; CI, installed release, authenticated browser acceptance and whole-program completion are separate."
+}

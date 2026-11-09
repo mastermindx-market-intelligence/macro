@@ -1,0 +1,21 @@
+{
+  "dependency": "jsdom@26.1.0",
+  "temporary_dependency_path": "/tmp/d06-commodity-dom-iwe2tecn",
+  "steps": [
+    {
+      "name": "dom-dependency",
+      "returncode": 0,
+      "log": "docs/pr-crops/market-continuation-20261105/integration/dom-dependency.log"
+    },
+    {
+      "name": "commodities-dom-2",
+      "returncode": 0,
+      "log": "docs/pr-crops/market-continuation-20261105/integration/commodities-dom-2.log"
+    },
+    {
+      "name": "other-d06-tests",
+      "returncode": 0,
+      "log": "docs/pr-crops/market-continuation-20261105/integration/other-d06-tests.log"
+    }
+  ]
+}
