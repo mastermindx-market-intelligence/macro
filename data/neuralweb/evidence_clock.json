@@ -1,13 +1,13 @@
 {
   "schema": "neuralweb.evidence_clock.v1",
-  "as_of": "2026-11-06",
-  "generated_utc": "2026-11-06T13:06:01Z",
+  "as_of": "2026-11-08",
+  "generated_utc": "2026-11-08T10:04:01Z",
   "authority": "display_only",
   "summary": {
     "n_rows": 329,
     "by_state": {
-      "overdue": 181,
-      "due": 36,
+      "overdue": 185,
+      "due": 32,
       "human_review": 0,
       "missing": 1,
       "stale": 1,
@@ -466,7 +466,7 @@
       "date_state": "overdue",
       "readiness": {
         "n_open": 6932,
-        "n_past_check_by": 6566
+        "n_past_check_by": 6620
       },
       "allowed_actions": [
         "inspect",
@@ -2799,7 +2799,7 @@
       "state": "overdue",
       "date_state": "overdue",
       "readiness": {
-        "n_open": 75,
+        "n_open": 73,
         "n_past_check_by": 58
       },
       "allowed_actions": [
@@ -2930,7 +2930,7 @@
       "date_state": "overdue",
       "readiness": {
         "n_open": 203,
-        "n_past_check_by": 145
+        "n_past_check_by": 152
       },
       "allowed_actions": [
         "inspect",
@@ -6050,8 +6050,8 @@
       "clock_type": "come_back_on",
       "due_at": "2026-10-30",
       "as_of": "2026-10-02",
-      "state": "due",
-      "date_state": "due",
+      "state": "overdue",
+      "date_state": "overdue",
       "readiness": {
         "horizon_d": 21,
         "status": "registered"
@@ -6082,8 +6082,8 @@
       "clock_type": "come_back_on",
       "due_at": "2026-10-31",
       "as_of": "2026-10-03",
-      "state": "due",
-      "date_state": "due",
+      "state": "overdue",
+      "date_state": "overdue",
       "readiness": {
         "horizon_d": 21,
         "status": "registered"
@@ -6114,8 +6114,8 @@
       "clock_type": "come_back_on",
       "due_at": "2026-10-31",
       "as_of": "2026-10-03",
-      "state": "due",
-      "date_state": "due",
+      "state": "overdue",
+      "date_state": "overdue",
       "readiness": {
         "horizon_d": 21,
         "status": "registered"
@@ -6146,8 +6146,8 @@
       "clock_type": "come_back_on",
       "due_at": "2026-10-31",
       "as_of": "2026-07-03",
-      "state": "due",
-      "date_state": "due",
+      "state": "overdue",
+      "date_state": "overdue",
       "readiness": {
         "maturation": "stable-negative T3 on live cohort => wire per-market demote; sign-flip/null => clear flag",
         "cadence": "once",
@@ -7074,7 +7074,7 @@
       "subject_type": "experiment",
       "owner_program": "engine-fix",
       "clock_type": "awaiting_execution",
-      "due_at": "2026-11-06",
+      "due_at": "2026-11-08",
       "as_of": "2026-07-06",
       "state": "due",
       "date_state": "due",
@@ -7106,7 +7106,7 @@
       "subject_type": "experiment",
       "owner_program": "engine-fix",
       "clock_type": "awaiting_execution",
-      "due_at": "2026-11-06",
+      "due_at": "2026-11-08",
       "as_of": "2026-07-06",
       "state": "due",
       "date_state": "due",
@@ -7138,7 +7138,7 @@
       "subject_type": "experiment",
       "owner_program": "engine-fix",
       "clock_type": "awaiting_execution",
-      "due_at": "2026-11-06",
+      "due_at": "2026-11-08",
       "as_of": "2026-07-06",
       "state": "due",
       "date_state": "due",
@@ -7170,7 +7170,7 @@
       "subject_type": "experiment",
       "owner_program": "engine-fix",
       "clock_type": "awaiting_execution",
-      "due_at": "2026-11-06",
+      "due_at": "2026-11-08",
       "as_of": "2026-07-06",
       "state": "due",
       "date_state": "due",
@@ -7241,13 +7241,10 @@
       "readiness": {
         "as_of": "2026-10-16",
         "stale_chips": [
-          "market",
           "reliability",
           "contradictions",
-          "bottom_sensors",
           "options_entry",
           "macro_weather",
-          "claim_reliability",
           "inflation_intelligence",
           "government_revenue"
         ]
@@ -7332,8 +7329,8 @@
       "state": "blocked",
       "date_state": "accruing",
       "readiness": {
-        "n_claims": 118398,
-        "n_with_falsifier": 1267,
+        "n_claims": 118397,
+        "n_with_falsifier": 1265,
         "falsifier_coverage": "1.1%",
         "blocking_reason": "falsifier coverage 1.1%; not a promotion-grade substrate"
       },
@@ -10227,7 +10224,7 @@
       "state": "accruing",
       "date_state": "accruing",
       "readiness": {
-        "n_open": 2,
+        "n_open": 3,
         "n_past_check_by": 0
       },
       "allowed_actions": [
