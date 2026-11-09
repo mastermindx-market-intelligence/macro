@@ -1,0 +1,2457 @@
+{
+  "completed_journeys": 40,
+  "css_blob": "99feca51197fd2006c1857e9fab7d46b2f170a77",
+  "duration_seconds": 82.618399143219,
+  "external_network": "External origins blocked explicitly; current pinned local snapshot only",
+  "journeys": [
+    {
+      "activation": {
+        "bubbled": 0,
+        "sector_open_calls": 0,
+        "trusted_clicks": 1
+      },
+      "anchor_tabs": 140,
+      "applied_state": {
+        "locale": "en",
+        "theme": "dark"
+      },
+      "destination_heading": "Media (512980.SS)",
+      "destination_status": 200,
+      "destination_title": "Media (512980.SS) — cycle & constituents",
+      "destination_url": "http://127.0.0.1:63505/sectors/512980.SS.html",
+      "expected_localized_heading": "Media",
+      "external_requests_blocked": [
+        "https://s3.tradingview.com/tv.js"
+      ],
+      "failed_responses": [],
+      "family": "overview",
+      "focus_ring": {
+        "color": "rgb(122, 167, 224)",
+        "focused": true,
+        "offset": "2px",
+        "semantic": "#7aa7e0",
+        "style": "solid",
+        "visible": true,
+        "width": "2px"
+      },
+      "focus_trace": [
+        {
+          "href": "start.html",
+          "id": "",
+          "tag": "A"
+        },
+        {
+          "href": "china_intel.html",
+          "id": "",
+          "tag": "A"
+        },
+        {
+          "href": "baskets_hk.html",
+          "id": "",
+          "tag": "A"
+        },
+        {
+          "href": "euro_area.html",
+          "id": "",
+          "tag": "A"
+        },
+        {
+          "href": "https://bot.mastermind-x.com",
+          "id": "",
+          "tag": "A"
+        },
+        {
+          "href": "ontology.html",
+          "id": "",
+          "tag": "A"
+        },
+        {
+          "href": null,
+          "id": "",
+          "tag": "BUTTON"
+        }
+      ],
+      "height": 900,
+      "href": "sectors/512980.SS.html",
+      "locale": "en",
+      "name": "Media",
+      "page_errors": [
+        "TradingView is not defined"
+      ],
+      "status": "passed",
+      "theme": "dark",
+      "ticker": "512980.SS",
+      "viewport": "desktop",
+      "width": 1440
+    },
+    {
+      "activation": {
+        "bubbled": 0,
+        "sector_open_calls": 0,
+        "trusted_clicks": 1
+      },
+      "anchor_tabs": 38,
+      "applied_state": {
+        "locale": "en",
+        "theme": "dark"
+      },
+      "destination_heading": "Media (512980.SS)",
+      "destination_status": 200,
+      "destination_title": "Media (512980.SS) — cycle & constituents",
+      "destination_url": "http://127.0.0.1:63505/sectors/512980.SS.html",
+      "dialog_open": "cnx-dlg-markets",
+      "dialog_tabs": 123,
+      "expected_localized_heading": "Media",
+      "external_requests_blocked": [
+        "https://s3.tradingview.com/tv.js"
+      ],
+      "failed_responses": [
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:63505/marketdata/china_heatmap.json"
+        }
+      ],
+      "family": "markets",
+      "focus_ring": {
+        "color": "rgb(122, 167, 224)",
+        "focused": true,
+        "offset": "2px",
+        "semantic": "#7aa7e0",
+        "style": "solid",
+        "visible": true,
+        "width": "2px"
+      },
+      "focus_trace": [
+        {
+          "href": "#cnx-dlg-policy",
+          "id": "",
+          "tag": "A"
+        },
+        {
+          "href": "sectors/512690.SS.html",
+          "id": "",
+          "tag": "A"
+        }
+      ],
+      "height": 900,
+      "href": "sectors/512980.SS.html",
+      "locale": "en",
+      "name": "Media",
+      "page_errors": [
+        "TradingView is not defined"
+      ],
+      "status": "passed",
+      "theme": "dark",
+      "ticker": "512980.SS",
+      "viewport": "desktop",
+      "width": 1440
+    },
+    {
+      "activation": {
+        "bubbled": 0,
+        "sector_open_calls": 0,
+        "trusted_clicks": 1
+      },
+      "anchor_tabs": 22,
+      "applied_state": {
+        "locale": "en",
+        "theme": "dark"
+      },
+      "destination_heading": "Consumer Staples (159928.SZ)",
+      "destination_status": 200,
+      "destination_title": "Consumer Staples (159928.SZ) — cycle & constituents",
+      "destination_url": "http://127.0.0.1:63505/sectors/159928.SZ.html",
+      "dialog_open": "cnx-dlg-sector",
+      "dialog_tabs": 139,
+      "expected_localized_heading": "Consumer Staples",
+      "external_requests_blocked": [
+        "https://s3.tradingview.com/tv.js"
+      ],
+      "failed_responses": [],
+      "family": "sector_chips",
+      "focus_ring": {
+        "color": "rgb(122, 167, 224)",
+        "focused": true,
+        "offset": "2px",
+        "semantic": "#7aa7e0",
+        "style": "solid",
+        "visible": true,
+        "width": "2px"
+      },
+      "focus_trace": [
+        {
+          "href": "sectors/512980.SS.html",
+          "id": "",
+          "tag": "A"
+        },
+        {
+          "href": null,
+          "id": "",
+          "tag": "BUTTON"
+        }
+      ],
+      "height": 900,
+      "href": "sectors/159928.SZ.html",
+      "locale": "en",
+      "name": "Consumer Staples",
+      "page_errors": [
+        "TradingView is not defined"
+      ],
+      "status": "passed",
+      "theme": "dark",
+      "ticker": "159928.SZ",
+      "viewport": "desktop",
+      "width": 1440
+    },
+    {
+      "activation": {
+        "bubbled": 0,
+        "sector_open_calls": 0,
+        "trusted_clicks": 1
+      },
+      "anchor_tabs": 49,
+      "applied_state": {
+        "locale": "en",
+        "theme": "dark"
+      },
+      "destination_heading": "Media (512980.SS)",
+      "destination_status": 200,
+      "destination_title": "Media (512980.SS) — cycle & constituents",
+      "destination_url": "http://127.0.0.1:63505/sectors/512980.SS.html",
+      "dialog_open": "cnx-dlg-sector",
+      "dialog_tabs": 139,
+      "expected_localized_heading": "Media",
+      "external_requests_blocked": [
+        "https://s3.tradingview.com/tv.js"
+      ],
+      "failed_responses": [],
+      "family": "rotation",
+      "focus_ring": {
+        "color": "rgb(122, 167, 224)",
+        "focused": true,
+        "offset": "2px",
+        "semantic": "#7aa7e0",
+        "style": "solid",
+        "visible": true,
+        "width": "2px"
+      },
+      "focus_trace": [
+        {
+          "href": "sectors/512980.SS.html",
+          "id": "",
+          "tag": "A"
+        },
+        {
+          "href": null,
+          "id": "",
+          "tag": "BUTTON"
+        },
+        {
+          "href": "sectors/512800.SS.html",
+          "id": "",
+          "tag": "A"
+        }
+      ],
+      "height": 900,
+      "href": "sectors/512980.SS.html",
+      "locale": "en",
+      "name": "Media",
+      "page_errors": [
+        "TradingView is not defined"
+      ],
+      "status": "passed",
+      "theme": "dark",
+      "ticker": "512980.SS",
+      "viewport": "desktop",
+      "width": 1440
+    },
+    {
+      "activation": {
+        "bubbled": 0,
+        "sector_open_calls": 0,
+        "trusted_clicks": 1
+      },
+      "anchor_tabs": 33,
+      "applied_state": {
+        "locale": "en",
+        "theme": "dark"
+      },
+      "destination_heading": "Nonferrous Metals (512400.SS)",
+      "destination_status": 200,
+      "destination_title": "Nonferrous Metals (512400.SS) — cycle & constituents",
+      "destination_url": "http://127.0.0.1:63505/sectors/512400.SS.html",
+      "dialog_open": "cnx-dlg-playbook",
+      "dialog_tabs": 128,
+      "expected_localized_heading": "Nonferrous Metals",
+      "external_requests_blocked": [
+        "https://s3.tradingview.com/tv.js"
+      ],
+      "failed_responses": [],
+      "family": "playbook",
+      "focus_ring": {
+        "color": "rgb(122, 167, 224)",
+        "focused": true,
+        "offset": "2px",
+        "semantic": "#7aa7e0",
+        "style": "solid",
+        "visible": true,
+        "width": "2px"
+      },
+      "focus_trace": [
+        {
+          "href": null,
+          "id": "",
+          "tag": "BUTTON"
+        },
+        {
+          "href": null,
+          "id": "",
+          "tag": "DIV"
+        }
+      ],
+      "height": 900,
+      "href": "sectors/512400.SS.html",
+      "locale": "en",
+      "name": "Nonferrous Metals",
+      "page_errors": [
+        "TradingView is not defined"
+      ],
+      "status": "passed",
+      "theme": "dark",
+      "ticker": "512400.SS",
+      "viewport": "desktop",
+      "width": 1440
+    },
+    {
+      "activation": {
+        "bubbled": 0,
+        "sector_open_calls": 0,
+        "trusted_clicks": 1
+      },
+      "anchor_tabs": 140,
+      "applied_state": {
+        "locale": "en",
+        "theme": "light"
+      },
+      "destination_heading": "Media (512980.SS)",
+      "destination_status": 200,
+      "destination_title": "Media (512980.SS) — cycle & constituents",
+      "destination_url": "http://127.0.0.1:63505/sectors/512980.SS.html",
+      "expected_localized_heading": "Media",
+      "external_requests_blocked": [
+        "https://s3.tradingview.com/tv.js"
+      ],
+      "failed_responses": [],
+      "family": "overview",
+      "focus_ring": {
+        "color": "rgb(40, 95, 255)",
+        "focused": true,
+        "offset": "2px",
+        "semantic": "#285fff",
+        "style": "solid",
+        "visible": true,
+        "width": "2px"
+      },
+      "focus_trace": [
+        {
+          "href": "start.html",
+          "id": "",
+          "tag": "A"
+        },
+        {
+          "href": "china_intel.html",
+          "id": "",
+          "tag": "A"
+        },
+        {
+          "href": "baskets_hk.html",
+          "id": "",
+          "tag": "A"
+        },
+        {
+          "href": "euro_area.html",
+          "id": "",
+          "tag": "A"
+        },
+        {
+          "href": "https://bot.mastermind-x.com",
+          "id": "",
+          "tag": "A"
+        },
+        {
+          "href": "ontology.html",
+          "id": "",
+          "tag": "A"
+        },
+        {
+          "href": null,
+          "id": "",
+          "tag": "BUTTON"
+        }
+      ],
+      "height": 900,
+      "href": "sectors/512980.SS.html",
+      "locale": "en",
+      "name": "Media",
+      "page_errors": [
+        "TradingView is not defined"
+      ],
+      "status": "passed",
+      "theme": "light",
+      "ticker": "512980.SS",
+      "viewport": "desktop",
+      "width": 1440
+    },
+    {
+      "activation": {
+        "bubbled": 0,
+        "sector_open_calls": 0,
+        "trusted_clicks": 1
+      },
+      "anchor_tabs": 38,
+      "applied_state": {
+        "locale": "en",
+        "theme": "light"
+      },
+      "destination_heading": "Media (512980.SS)",
+      "destination_status": 200,
+      "destination_title": "Media (512980.SS) — cycle & constituents",
+      "destination_url": "http://127.0.0.1:63505/sectors/512980.SS.html",
+      "dialog_open": "cnx-dlg-markets",
+      "dialog_tabs": 123,
+      "expected_localized_heading": "Media",
+      "external_requests_blocked": [
+        "https://s3.tradingview.com/tv.js"
+      ],
+      "failed_responses": [
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:63505/marketdata/china_heatmap.json"
+        }
+      ],
+      "family": "markets",
+      "focus_ring": {
+        "color": "rgb(40, 95, 255)",
+        "focused": true,
+        "offset": "2px",
+        "semantic": "#285fff",
+        "style": "solid",
+        "visible": true,
+        "width": "2px"
+      },
+      "focus_trace": [
+        {
+          "href": "#cnx-dlg-policy",
+          "id": "",
+          "tag": "A"
+        },
+        {
+          "href": "sectors/512690.SS.html",
+          "id": "",
+          "tag": "A"
+        }
+      ],
+      "height": 900,
+      "href": "sectors/512980.SS.html",
+      "locale": "en",
+      "name": "Media",
+      "page_errors": [
+        "TradingView is not defined"
+      ],
+      "status": "passed",
+      "theme": "light",
+      "ticker": "512980.SS",
+      "viewport": "desktop",
+      "width": 1440
+    },
+    {
+      "activation": {
+        "bubbled": 0,
+        "sector_open_calls": 0,
+        "trusted_clicks": 1
+      },
+      "anchor_tabs": 22,
+      "applied_state": {
+        "locale": "en",
+        "theme": "light"
+      },
+      "destination_heading": "Consumer Staples (159928.SZ)",
+      "destination_status": 200,
+      "destination_title": "Consumer Staples (159928.SZ) — cycle & constituents",
+      "destination_url": "http://127.0.0.1:63505/sectors/159928.SZ.html",
+      "dialog_open": "cnx-dlg-sector",
+      "dialog_tabs": 139,
+      "expected_localized_heading": "Consumer Staples",
+      "external_requests_blocked": [
+        "https://s3.tradingview.com/tv.js"
+      ],
+      "failed_responses": [],
+      "family": "sector_chips",
+      "focus_ring": {
+        "color": "rgb(40, 95, 255)",
+        "focused": true,
+        "offset": "2px",
+        "semantic": "#285fff",
+        "style": "solid",
+        "visible": true,
+        "width": "2px"
+      },
+      "focus_trace": [
+        {
+          "href": "sectors/512980.SS.html",
+          "id": "",
+          "tag": "A"
+        },
+        {
+          "href": null,
+          "id": "",
+          "tag": "BUTTON"
+        }
+      ],
+      "height": 900,
+      "href": "sectors/159928.SZ.html",
+      "locale": "en",
+      "name": "Consumer Staples",
+      "page_errors": [
+        "TradingView is not defined"
+      ],
+      "status": "passed",
+      "theme": "light",
+      "ticker": "159928.SZ",
+      "viewport": "desktop",
+      "width": 1440
+    },
+    {
+      "activation": {
+        "bubbled": 0,
+        "sector_open_calls": 0,
+        "trusted_clicks": 1
+      },
+      "anchor_tabs": 49,
+      "applied_state": {
+        "locale": "en",
+        "theme": "light"
+      },
+      "destination_heading": "Media (512980.SS)",
+      "destination_status": 200,
+      "destination_title": "Media (512980.SS) — cycle & constituents",
+      "destination_url": "http://127.0.0.1:63505/sectors/512980.SS.html",
+      "dialog_open": "cnx-dlg-sector",
+      "dialog_tabs": 139,
+      "expected_localized_heading": "Media",
+      "external_requests_blocked": [
+        "https://s3.tradingview.com/tv.js"
+      ],
+      "failed_responses": [],
+      "family": "rotation",
+      "focus_ring": {
+        "color": "rgb(40, 95, 255)",
+        "focused": true,
+        "offset": "2px",
+        "semantic": "#285fff",
+        "style": "solid",
+        "visible": true,
+        "width": "2px"
+      },
+      "focus_trace": [
+        {
+          "href": "sectors/512980.SS.html",
+          "id": "",
+          "tag": "A"
+        },
+        {
+          "href": null,
+          "id": "",
+          "tag": "BUTTON"
+        },
+        {
+          "href": "sectors/512800.SS.html",
+          "id": "",
+          "tag": "A"
+        }
+      ],
+      "height": 900,
+      "href": "sectors/512980.SS.html",
+      "locale": "en",
+      "name": "Media",
+      "page_errors": [
+        "TradingView is not defined"
+      ],
+      "status": "passed",
+      "theme": "light",
+      "ticker": "512980.SS",
+      "viewport": "desktop",
+      "width": 1440
+    },
+    {
+      "activation": {
+        "bubbled": 0,
+        "sector_open_calls": 0,
+        "trusted_clicks": 1
+      },
+      "anchor_tabs": 33,
+      "applied_state": {
+        "locale": "en",
+        "theme": "light"
+      },
+      "destination_heading": "Nonferrous Metals (512400.SS)",
+      "destination_status": 200,
+      "destination_title": "Nonferrous Metals (512400.SS) — cycle & constituents",
+      "destination_url": "http://127.0.0.1:63505/sectors/512400.SS.html",
+      "dialog_open": "cnx-dlg-playbook",
+      "dialog_tabs": 128,
+      "expected_localized_heading": "Nonferrous Metals",
+      "external_requests_blocked": [
+        "https://s3.tradingview.com/tv.js"
+      ],
+      "failed_responses": [],
+      "family": "playbook",
+      "focus_ring": {
+        "color": "rgb(40, 95, 255)",
+        "focused": true,
+        "offset": "2px",
+        "semantic": "#285fff",
+        "style": "solid",
+        "visible": true,
+        "width": "2px"
+      },
+      "focus_trace": [
+        {
+          "href": null,
+          "id": "",
+          "tag": "BUTTON"
+        },
+        {
+          "href": null,
+          "id": "",
+          "tag": "DIV"
+        }
+      ],
+      "height": 900,
+      "href": "sectors/512400.SS.html",
+      "locale": "en",
+      "name": "Nonferrous Metals",
+      "page_errors": [
+        "TradingView is not defined"
+      ],
+      "status": "passed",
+      "theme": "light",
+      "ticker": "512400.SS",
+      "viewport": "desktop",
+      "width": 1440
+    },
+    {
+      "activation": {
+        "bubbled": 0,
+        "sector_open_calls": 0,
+        "trusted_clicks": 1
+      },
+      "anchor_tabs": 140,
+      "applied_state": {
+        "locale": "zh",
+        "theme": "dark"
+      },
+      "destination_heading": "传媒 (512980.SS)",
+      "destination_status": 200,
+      "destination_title": "Media (512980.SS) — cycle & constituents",
+      "destination_url": "http://127.0.0.1:63505/sectors/512980.SS.html",
+      "expected_localized_heading": "传媒",
+      "external_requests_blocked": [
+        "https://s3.tradingview.com/tv.js"
+      ],
+      "failed_responses": [],
+      "family": "overview",
+      "focus_ring": {
+        "color": "rgb(122, 167, 224)",
+        "focused": true,
+        "offset": "2px",
+        "semantic": "#7aa7e0",
+        "style": "solid",
+        "visible": true,
+        "width": "2px"
+      },
+      "focus_trace": [
+        {
+          "href": "start.html",
+          "id": "",
+          "tag": "A"
+        },
+        {
+          "href": "china_intel.html",
+          "id": "",
+          "tag": "A"
+        },
+        {
+          "href": "baskets_hk.html",
+          "id": "",
+          "tag": "A"
+        },
+        {
+          "href": "euro_area.html",
+          "id": "",
+          "tag": "A"
+        },
+        {
+          "href": "https://bot.mastermind-x.com",
+          "id": "",
+          "tag": "A"
+        },
+        {
+          "href": "ontology.html",
+          "id": "",
+          "tag": "A"
+        },
+        {
+          "href": null,
+          "id": "",
+          "tag": "BUTTON"
+        }
+      ],
+      "height": 900,
+      "href": "sectors/512980.SS.html",
+      "locale": "zh",
+      "name": "Media",
+      "page_errors": [
+        "TradingView is not defined"
+      ],
+      "status": "passed",
+      "theme": "dark",
+      "ticker": "512980.SS",
+      "viewport": "desktop",
+      "width": 1440
+    },
+    {
+      "activation": {
+        "bubbled": 0,
+        "sector_open_calls": 0,
+        "trusted_clicks": 1
+      },
+      "anchor_tabs": 38,
+      "applied_state": {
+        "locale": "zh",
+        "theme": "dark"
+      },
+      "destination_heading": "传媒 (512980.SS)",
+      "destination_status": 200,
+      "destination_title": "Media (512980.SS) — cycle & constituents",
+      "destination_url": "http://127.0.0.1:63505/sectors/512980.SS.html",
+      "dialog_open": "cnx-dlg-markets",
+      "dialog_tabs": 123,
+      "expected_localized_heading": "传媒",
+      "external_requests_blocked": [
+        "https://s3.tradingview.com/tv.js"
+      ],
+      "failed_responses": [
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:63505/marketdata/china_heatmap.json"
+        }
+      ],
+      "family": "markets",
+      "focus_ring": {
+        "color": "rgb(122, 167, 224)",
+        "focused": true,
+        "offset": "2px",
+        "semantic": "#7aa7e0",
+        "style": "solid",
+        "visible": true,
+        "width": "2px"
+      },
+      "focus_trace": [
+        {
+          "href": "#cnx-dlg-policy",
+          "id": "",
+          "tag": "A"
+        },
+        {
+          "href": "sectors/512690.SS.html",
+          "id": "",
+          "tag": "A"
+        }
+      ],
+      "height": 900,
+      "href": "sectors/512980.SS.html",
+      "locale": "zh",
+      "name": "Media",
+      "page_errors": [
+        "TradingView is not defined"
+      ],
+      "status": "passed",
+      "theme": "dark",
+      "ticker": "512980.SS",
+      "viewport": "desktop",
+      "width": 1440
+    },
+    {
+      "activation": {
+        "bubbled": 0,
+        "sector_open_calls": 0,
+        "trusted_clicks": 1
+      },
+      "anchor_tabs": 22,
+      "applied_state": {
+        "locale": "zh",
+        "theme": "dark"
+      },
+      "destination_heading": "必需消费 (159928.SZ)",
+      "destination_status": 200,
+      "destination_title": "Consumer Staples (159928.SZ) — cycle & constituents",
+      "destination_url": "http://127.0.0.1:63505/sectors/159928.SZ.html",
+      "dialog_open": "cnx-dlg-sector",
+      "dialog_tabs": 139,
+      "expected_localized_heading": "必需消费",
+      "external_requests_blocked": [
+        "https://s3.tradingview.com/tv.js"
+      ],
+      "failed_responses": [],
+      "family": "sector_chips",
+      "focus_ring": {
+        "color": "rgb(122, 167, 224)",
+        "focused": true,
+        "offset": "2px",
+        "semantic": "#7aa7e0",
+        "style": "solid",
+        "visible": true,
+        "width": "2px"
+      },
+      "focus_trace": [
+        {
+          "href": "sectors/512980.SS.html",
+          "id": "",
+          "tag": "A"
+        },
+        {
+          "href": null,
+          "id": "",
+          "tag": "BUTTON"
+        }
+      ],
+      "height": 900,
+      "href": "sectors/159928.SZ.html",
+      "locale": "zh",
+      "name": "Consumer Staples",
+      "page_errors": [
+        "TradingView is not defined"
+      ],
+      "status": "passed",
+      "theme": "dark",
+      "ticker": "159928.SZ",
+      "viewport": "desktop",
+      "width": 1440
+    },
+    {
+      "activation": {
+        "bubbled": 0,
+        "sector_open_calls": 0,
+        "trusted_clicks": 1
+      },
+      "anchor_tabs": 49,
+      "applied_state": {
+        "locale": "zh",
+        "theme": "dark"
+      },
+      "destination_heading": "传媒 (512980.SS)",
+      "destination_status": 200,
+      "destination_title": "Media (512980.SS) — cycle & constituents",
+      "destination_url": "http://127.0.0.1:63505/sectors/512980.SS.html",
+      "dialog_open": "cnx-dlg-sector",
+      "dialog_tabs": 139,
+      "expected_localized_heading": "传媒",
+      "external_requests_blocked": [
+        "https://s3.tradingview.com/tv.js"
+      ],
+      "failed_responses": [],
+      "family": "rotation",
+      "focus_ring": {
+        "color": "rgb(122, 167, 224)",
+        "focused": true,
+        "offset": "2px",
+        "semantic": "#7aa7e0",
+        "style": "solid",
+        "visible": true,
+        "width": "2px"
+      },
+      "focus_trace": [
+        {
+          "href": "sectors/512980.SS.html",
+          "id": "",
+          "tag": "A"
+        },
+        {
+          "href": null,
+          "id": "",
+          "tag": "BUTTON"
+        },
+        {
+          "href": "sectors/512800.SS.html",
+          "id": "",
+          "tag": "A"
+        }
+      ],
+      "height": 900,
+      "href": "sectors/512980.SS.html",
+      "locale": "zh",
+      "name": "Media",
+      "page_errors": [
+        "TradingView is not defined"
+      ],
+      "status": "passed",
+      "theme": "dark",
+      "ticker": "512980.SS",
+      "viewport": "desktop",
+      "width": 1440
+    },
+    {
+      "activation": {
+        "bubbled": 0,
+        "sector_open_calls": 0,
+        "trusted_clicks": 1
+      },
+      "anchor_tabs": 33,
+      "applied_state": {
+        "locale": "zh",
+        "theme": "dark"
+      },
+      "destination_heading": "有色金属 (512400.SS)",
+      "destination_status": 200,
+      "destination_title": "Nonferrous Metals (512400.SS) — cycle & constituents",
+      "destination_url": "http://127.0.0.1:63505/sectors/512400.SS.html",
+      "dialog_open": "cnx-dlg-playbook",
+      "dialog_tabs": 128,
+      "expected_localized_heading": "有色金属",
+      "external_requests_blocked": [
+        "https://s3.tradingview.com/tv.js"
+      ],
+      "failed_responses": [],
+      "family": "playbook",
+      "focus_ring": {
+        "color": "rgb(122, 167, 224)",
+        "focused": true,
+        "offset": "2px",
+        "semantic": "#7aa7e0",
+        "style": "solid",
+        "visible": true,
+        "width": "2px"
+      },
+      "focus_trace": [
+        {
+          "href": null,
+          "id": "",
+          "tag": "BUTTON"
+        },
+        {
+          "href": null,
+          "id": "",
+          "tag": "DIV"
+        }
+      ],
+      "height": 900,
+      "href": "sectors/512400.SS.html",
+      "locale": "zh",
+      "name": "Nonferrous Metals",
+      "page_errors": [
+        "TradingView is not defined"
+      ],
+      "status": "passed",
+      "theme": "dark",
+      "ticker": "512400.SS",
+      "viewport": "desktop",
+      "width": 1440
+    },
+    {
+      "activation": {
+        "bubbled": 0,
+        "sector_open_calls": 0,
+        "trusted_clicks": 1
+      },
+      "anchor_tabs": 140,
+      "applied_state": {
+        "locale": "zh",
+        "theme": "light"
+      },
+      "destination_heading": "传媒 (512980.SS)",
+      "destination_status": 200,
+      "destination_title": "Media (512980.SS) — cycle & constituents",
+      "destination_url": "http://127.0.0.1:63505/sectors/512980.SS.html",
+      "expected_localized_heading": "传媒",
+      "external_requests_blocked": [
+        "https://s3.tradingview.com/tv.js"
+      ],
+      "failed_responses": [],
+      "family": "overview",
+      "focus_ring": {
+        "color": "rgb(40, 95, 255)",
+        "focused": true,
+        "offset": "2px",
+        "semantic": "#285fff",
+        "style": "solid",
+        "visible": true,
+        "width": "2px"
+      },
+      "focus_trace": [
+        {
+          "href": "start.html",
+          "id": "",
+          "tag": "A"
+        },
+        {
+          "href": "china_intel.html",
+          "id": "",
+          "tag": "A"
+        },
+        {
+          "href": "baskets_hk.html",
+          "id": "",
+          "tag": "A"
+        },
+        {
+          "href": "euro_area.html",
+          "id": "",
+          "tag": "A"
+        },
+        {
+          "href": "https://bot.mastermind-x.com",
+          "id": "",
+          "tag": "A"
+        },
+        {
+          "href": "ontology.html",
+          "id": "",
+          "tag": "A"
+        },
+        {
+          "href": null,
+          "id": "",
+          "tag": "BUTTON"
+        }
+      ],
+      "height": 900,
+      "href": "sectors/512980.SS.html",
+      "locale": "zh",
+      "name": "Media",
+      "page_errors": [
+        "TradingView is not defined"
+      ],
+      "status": "passed",
+      "theme": "light",
+      "ticker": "512980.SS",
+      "viewport": "desktop",
+      "width": 1440
+    },
+    {
+      "activation": {
+        "bubbled": 0,
+        "sector_open_calls": 0,
+        "trusted_clicks": 1
+      },
+      "anchor_tabs": 38,
+      "applied_state": {
+        "locale": "zh",
+        "theme": "light"
+      },
+      "destination_heading": "传媒 (512980.SS)",
+      "destination_status": 200,
+      "destination_title": "Media (512980.SS) — cycle & constituents",
+      "destination_url": "http://127.0.0.1:63505/sectors/512980.SS.html",
+      "dialog_open": "cnx-dlg-markets",
+      "dialog_tabs": 123,
+      "expected_localized_heading": "传媒",
+      "external_requests_blocked": [
+        "https://s3.tradingview.com/tv.js"
+      ],
+      "failed_responses": [
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:63505/marketdata/china_heatmap.json"
+        }
+      ],
+      "family": "markets",
+      "focus_ring": {
+        "color": "rgb(40, 95, 255)",
+        "focused": true,
+        "offset": "2px",
+        "semantic": "#285fff",
+        "style": "solid",
+        "visible": true,
+        "width": "2px"
+      },
+      "focus_trace": [
+        {
+          "href": "#cnx-dlg-policy",
+          "id": "",
+          "tag": "A"
+        },
+        {
+          "href": "sectors/512690.SS.html",
+          "id": "",
+          "tag": "A"
+        }
+      ],
+      "height": 900,
+      "href": "sectors/512980.SS.html",
+      "locale": "zh",
+      "name": "Media",
+      "page_errors": [
+        "TradingView is not defined"
+      ],
+      "status": "passed",
+      "theme": "light",
+      "ticker": "512980.SS",
+      "viewport": "desktop",
+      "width": 1440
+    },
+    {
+      "activation": {
+        "bubbled": 0,
+        "sector_open_calls": 0,
+        "trusted_clicks": 1
+      },
+      "anchor_tabs": 22,
+      "applied_state": {
+        "locale": "zh",
+        "theme": "light"
+      },
+      "destination_heading": "必需消费 (159928.SZ)",
+      "destination_status": 200,
+      "destination_title": "Consumer Staples (159928.SZ) — cycle & constituents",
+      "destination_url": "http://127.0.0.1:63505/sectors/159928.SZ.html",
+      "dialog_open": "cnx-dlg-sector",
+      "dialog_tabs": 139,
+      "expected_localized_heading": "必需消费",
+      "external_requests_blocked": [
+        "https://s3.tradingview.com/tv.js"
+      ],
+      "failed_responses": [],
+      "family": "sector_chips",
+      "focus_ring": {
+        "color": "rgb(40, 95, 255)",
+        "focused": true,
+        "offset": "2px",
+        "semantic": "#285fff",
+        "style": "solid",
+        "visible": true,
+        "width": "2px"
+      },
+      "focus_trace": [
+        {
+          "href": "sectors/512980.SS.html",
+          "id": "",
+          "tag": "A"
+        },
+        {
+          "href": null,
+          "id": "",
+          "tag": "BUTTON"
+        }
+      ],
+      "height": 900,
+      "href": "sectors/159928.SZ.html",
+      "locale": "zh",
+      "name": "Consumer Staples",
+      "page_errors": [
+        "TradingView is not defined"
+      ],
+      "status": "passed",
+      "theme": "light",
+      "ticker": "159928.SZ",
+      "viewport": "desktop",
+      "width": 1440
+    },
+    {
+      "activation": {
+        "bubbled": 0,
+        "sector_open_calls": 0,
+        "trusted_clicks": 1
+      },
+      "anchor_tabs": 49,
+      "applied_state": {
+        "locale": "zh",
+        "theme": "light"
+      },
+      "destination_heading": "传媒 (512980.SS)",
+      "destination_status": 200,
+      "destination_title": "Media (512980.SS) — cycle & constituents",
+      "destination_url": "http://127.0.0.1:63505/sectors/512980.SS.html",
+      "dialog_open": "cnx-dlg-sector",
+      "dialog_tabs": 139,
+      "expected_localized_heading": "传媒",
+      "external_requests_blocked": [
+        "https://s3.tradingview.com/tv.js"
+      ],
+      "failed_responses": [],
+      "family": "rotation",
+      "focus_ring": {
+        "color": "rgb(40, 95, 255)",
+        "focused": true,
+        "offset": "2px",
+        "semantic": "#285fff",
+        "style": "solid",
+        "visible": true,
+        "width": "2px"
+      },
+      "focus_trace": [
+        {
+          "href": "sectors/512980.SS.html",
+          "id": "",
+          "tag": "A"
+        },
+        {
+          "href": null,
+          "id": "",
+          "tag": "BUTTON"
+        },
+        {
+          "href": "sectors/512800.SS.html",
+          "id": "",
+          "tag": "A"
+        }
+      ],
+      "height": 900,
+      "href": "sectors/512980.SS.html",
+      "locale": "zh",
+      "name": "Media",
+      "page_errors": [
+        "TradingView is not defined"
+      ],
+      "status": "passed",
+      "theme": "light",
+      "ticker": "512980.SS",
+      "viewport": "desktop",
+      "width": 1440
+    },
+    {
+      "activation": {
+        "bubbled": 0,
+        "sector_open_calls": 0,
+        "trusted_clicks": 1
+      },
+      "anchor_tabs": 33,
+      "applied_state": {
+        "locale": "zh",
+        "theme": "light"
+      },
+      "destination_heading": "有色金属 (512400.SS)",
+      "destination_status": 200,
+      "destination_title": "Nonferrous Metals (512400.SS) — cycle & constituents",
+      "destination_url": "http://127.0.0.1:63505/sectors/512400.SS.html",
+      "dialog_open": "cnx-dlg-playbook",
+      "dialog_tabs": 128,
+      "expected_localized_heading": "有色金属",
+      "external_requests_blocked": [
+        "https://s3.tradingview.com/tv.js"
+      ],
+      "failed_responses": [],
+      "family": "playbook",
+      "focus_ring": {
+        "color": "rgb(40, 95, 255)",
+        "focused": true,
+        "offset": "2px",
+        "semantic": "#285fff",
+        "style": "solid",
+        "visible": true,
+        "width": "2px"
+      },
+      "focus_trace": [
+        {
+          "href": null,
+          "id": "",
+          "tag": "BUTTON"
+        },
+        {
+          "href": null,
+          "id": "",
+          "tag": "DIV"
+        }
+      ],
+      "height": 900,
+      "href": "sectors/512400.SS.html",
+      "locale": "zh",
+      "name": "Nonferrous Metals",
+      "page_errors": [
+        "TradingView is not defined"
+      ],
+      "status": "passed",
+      "theme": "light",
+      "ticker": "512400.SS",
+      "viewport": "desktop",
+      "width": 1440
+    },
+    {
+      "activation": {
+        "bubbled": 0,
+        "sector_open_calls": 0,
+        "trusted_clicks": 1
+      },
+      "anchor_tabs": 32,
+      "applied_state": {
+        "locale": "en",
+        "theme": "dark"
+      },
+      "destination_heading": "Media (512980.SS)",
+      "destination_status": 200,
+      "destination_title": "Media (512980.SS) — cycle & constituents",
+      "destination_url": "http://127.0.0.1:63505/sectors/512980.SS.html",
+      "expected_localized_heading": "Media",
+      "external_requests_blocked": [
+        "https://s3.tradingview.com/tv.js"
+      ],
+      "failed_responses": [],
+      "family": "overview",
+      "focus_ring": {
+        "color": "rgb(122, 167, 224)",
+        "focused": true,
+        "offset": "2px",
+        "semantic": "#7aa7e0",
+        "style": "solid",
+        "visible": true,
+        "width": "2px"
+      },
+      "focus_trace": [
+        {
+          "href": null,
+          "id": "",
+          "tag": "BUTTON"
+        },
+        {
+          "href": null,
+          "id": "",
+          "tag": "BUTTON"
+        }
+      ],
+      "height": 844,
+      "href": "sectors/512980.SS.html",
+      "locale": "en",
+      "name": "Media",
+      "page_errors": [
+        "TradingView is not defined"
+      ],
+      "status": "passed",
+      "theme": "dark",
+      "ticker": "512980.SS",
+      "viewport": "mobile",
+      "width": 390
+    },
+    {
+      "activation": {
+        "bubbled": 0,
+        "sector_open_calls": 0,
+        "trusted_clicks": 1
+      },
+      "anchor_tabs": 39,
+      "applied_state": {
+        "locale": "en",
+        "theme": "dark"
+      },
+      "destination_heading": "Media (512980.SS)",
+      "destination_status": 200,
+      "destination_title": "Media (512980.SS) — cycle & constituents",
+      "destination_url": "http://127.0.0.1:63505/sectors/512980.SS.html",
+      "dialog_open": "cnx-dlg-markets",
+      "dialog_tabs": 14,
+      "expected_localized_heading": "Media",
+      "external_requests_blocked": [
+        "https://s3.tradingview.com/tv.js"
+      ],
+      "failed_responses": [
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:63505/marketdata/china_heatmap.json"
+        }
+      ],
+      "family": "markets",
+      "focus_ring": {
+        "color": "rgb(122, 167, 224)",
+        "focused": true,
+        "offset": "2px",
+        "semantic": "#7aa7e0",
+        "style": "solid",
+        "visible": true,
+        "width": "2px"
+      },
+      "focus_trace": [
+        {
+          "href": "#cnx-dlg-policy",
+          "id": "",
+          "tag": "A"
+        },
+        {
+          "href": "sectors/159928.SZ.html",
+          "id": "",
+          "tag": "A"
+        }
+      ],
+      "height": 844,
+      "href": "sectors/512980.SS.html",
+      "locale": "en",
+      "name": "Media",
+      "page_errors": [
+        "TradingView is not defined"
+      ],
+      "status": "passed",
+      "theme": "dark",
+      "ticker": "512980.SS",
+      "viewport": "mobile",
+      "width": 390
+    },
+    {
+      "activation": {
+        "bubbled": 0,
+        "sector_open_calls": 0,
+        "trusted_clicks": 1
+      },
+      "anchor_tabs": 22,
+      "applied_state": {
+        "locale": "en",
+        "theme": "dark"
+      },
+      "destination_heading": "Consumer Staples (159928.SZ)",
+      "destination_status": 200,
+      "destination_title": "Consumer Staples (159928.SZ) — cycle & constituents",
+      "destination_url": "http://127.0.0.1:63505/sectors/159928.SZ.html",
+      "dialog_open": "cnx-dlg-sector",
+      "dialog_tabs": 31,
+      "expected_localized_heading": "Consumer Staples",
+      "external_requests_blocked": [
+        "https://s3.tradingview.com/tv.js"
+      ],
+      "failed_responses": [],
+      "family": "sector_chips",
+      "focus_ring": {
+        "color": "rgb(122, 167, 224)",
+        "focused": true,
+        "offset": "2px",
+        "semantic": "#7aa7e0",
+        "style": "solid",
+        "visible": true,
+        "width": "2px"
+      },
+      "focus_trace": [
+        {
+          "href": "sectors/512980.SS.html",
+          "id": "",
+          "tag": "A"
+        },
+        {
+          "href": null,
+          "id": "",
+          "tag": "BUTTON"
+        }
+      ],
+      "height": 844,
+      "href": "sectors/159928.SZ.html",
+      "locale": "en",
+      "name": "Consumer Staples",
+      "page_errors": [
+        "TradingView is not defined"
+      ],
+      "status": "passed",
+      "theme": "dark",
+      "ticker": "159928.SZ",
+      "viewport": "mobile",
+      "width": 390
+    },
+    {
+      "activation": {
+        "bubbled": 0,
+        "sector_open_calls": 0,
+        "trusted_clicks": 1
+      },
+      "anchor_tabs": 49,
+      "applied_state": {
+        "locale": "en",
+        "theme": "dark"
+      },
+      "destination_heading": "Media (512980.SS)",
+      "destination_status": 200,
+      "destination_title": "Media (512980.SS) — cycle & constituents",
+      "destination_url": "http://127.0.0.1:63505/sectors/512980.SS.html",
+      "dialog_open": "cnx-dlg-sector",
+      "dialog_tabs": 31,
+      "expected_localized_heading": "Media",
+      "external_requests_blocked": [
+        "https://s3.tradingview.com/tv.js"
+      ],
+      "failed_responses": [],
+      "family": "rotation",
+      "focus_ring": {
+        "color": "rgb(122, 167, 224)",
+        "focused": true,
+        "offset": "2px",
+        "semantic": "#7aa7e0",
+        "style": "solid",
+        "visible": true,
+        "width": "2px"
+      },
+      "focus_trace": [
+        {
+          "href": "sectors/512980.SS.html",
+          "id": "",
+          "tag": "A"
+        },
+        {
+          "href": null,
+          "id": "",
+          "tag": "BUTTON"
+        },
+        {
+          "href": "sectors/512800.SS.html",
+          "id": "",
+          "tag": "A"
+        }
+      ],
+      "height": 844,
+      "href": "sectors/512980.SS.html",
+      "locale": "en",
+      "name": "Media",
+      "page_errors": [
+        "TradingView is not defined"
+      ],
+      "status": "passed",
+      "theme": "dark",
+      "ticker": "512980.SS",
+      "viewport": "mobile",
+      "width": 390
+    },
+    {
+      "activation": {
+        "bubbled": 0,
+        "sector_open_calls": 0,
+        "trusted_clicks": 1
+      },
+      "anchor_tabs": 34,
+      "applied_state": {
+        "locale": "en",
+        "theme": "dark"
+      },
+      "destination_heading": "Nonferrous Metals (512400.SS)",
+      "destination_status": 200,
+      "destination_title": "Nonferrous Metals (512400.SS) — cycle & constituents",
+      "destination_url": "http://127.0.0.1:63505/sectors/512400.SS.html",
+      "dialog_open": "cnx-dlg-playbook",
+      "dialog_tabs": 19,
+      "expected_localized_heading": "Nonferrous Metals",
+      "external_requests_blocked": [
+        "https://s3.tradingview.com/tv.js"
+      ],
+      "failed_responses": [],
+      "family": "playbook",
+      "focus_ring": {
+        "color": "rgb(122, 167, 224)",
+        "focused": true,
+        "offset": "2px",
+        "semantic": "#7aa7e0",
+        "style": "solid",
+        "visible": true,
+        "width": "2px"
+      },
+      "focus_trace": [
+        {
+          "href": null,
+          "id": "",
+          "tag": "BUTTON"
+        },
+        {
+          "href": null,
+          "id": "",
+          "tag": "BUTTON"
+        }
+      ],
+      "height": 844,
+      "href": "sectors/512400.SS.html",
+      "locale": "en",
+      "name": "Nonferrous Metals",
+      "page_errors": [
+        "TradingView is not defined"
+      ],
+      "status": "passed",
+      "theme": "dark",
+      "ticker": "512400.SS",
+      "viewport": "mobile",
+      "width": 390
+    },
+    {
+      "activation": {
+        "bubbled": 0,
+        "sector_open_calls": 0,
+        "trusted_clicks": 1
+      },
+      "anchor_tabs": 32,
+      "applied_state": {
+        "locale": "en",
+        "theme": "light"
+      },
+      "destination_heading": "Media (512980.SS)",
+      "destination_status": 200,
+      "destination_title": "Media (512980.SS) — cycle & constituents",
+      "destination_url": "http://127.0.0.1:63505/sectors/512980.SS.html",
+      "expected_localized_heading": "Media",
+      "external_requests_blocked": [
+        "https://s3.tradingview.com/tv.js"
+      ],
+      "failed_responses": [],
+      "family": "overview",
+      "focus_ring": {
+        "color": "rgb(40, 95, 255)",
+        "focused": true,
+        "offset": "2px",
+        "semantic": "#285fff",
+        "style": "solid",
+        "visible": true,
+        "width": "2px"
+      },
+      "focus_trace": [
+        {
+          "href": null,
+          "id": "",
+          "tag": "BUTTON"
+        },
+        {
+          "href": null,
+          "id": "",
+          "tag": "BUTTON"
+        }
+      ],
+      "height": 844,
+      "href": "sectors/512980.SS.html",
+      "locale": "en",
+      "name": "Media",
+      "page_errors": [
+        "TradingView is not defined"
+      ],
+      "status": "passed",
+      "theme": "light",
+      "ticker": "512980.SS",
+      "viewport": "mobile",
+      "width": 390
+    },
+    {
+      "activation": {
+        "bubbled": 0,
+        "sector_open_calls": 0,
+        "trusted_clicks": 1
+      },
+      "anchor_tabs": 39,
+      "applied_state": {
+        "locale": "en",
+        "theme": "light"
+      },
+      "destination_heading": "Media (512980.SS)",
+      "destination_status": 200,
+      "destination_title": "Media (512980.SS) — cycle & constituents",
+      "destination_url": "http://127.0.0.1:63505/sectors/512980.SS.html",
+      "dialog_open": "cnx-dlg-markets",
+      "dialog_tabs": 14,
+      "expected_localized_heading": "Media",
+      "external_requests_blocked": [
+        "https://s3.tradingview.com/tv.js"
+      ],
+      "failed_responses": [
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:63505/marketdata/china_heatmap.json"
+        }
+      ],
+      "family": "markets",
+      "focus_ring": {
+        "color": "rgb(40, 95, 255)",
+        "focused": true,
+        "offset": "2px",
+        "semantic": "#285fff",
+        "style": "solid",
+        "visible": true,
+        "width": "2px"
+      },
+      "focus_trace": [
+        {
+          "href": "#cnx-dlg-policy",
+          "id": "",
+          "tag": "A"
+        },
+        {
+          "href": "sectors/159928.SZ.html",
+          "id": "",
+          "tag": "A"
+        }
+      ],
+      "height": 844,
+      "href": "sectors/512980.SS.html",
+      "locale": "en",
+      "name": "Media",
+      "page_errors": [
+        "TradingView is not defined"
+      ],
+      "status": "passed",
+      "theme": "light",
+      "ticker": "512980.SS",
+      "viewport": "mobile",
+      "width": 390
+    },
+    {
+      "activation": {
+        "bubbled": 0,
+        "sector_open_calls": 0,
+        "trusted_clicks": 1
+      },
+      "anchor_tabs": 22,
+      "applied_state": {
+        "locale": "en",
+        "theme": "light"
+      },
+      "destination_heading": "Consumer Staples (159928.SZ)",
+      "destination_status": 200,
+      "destination_title": "Consumer Staples (159928.SZ) — cycle & constituents",
+      "destination_url": "http://127.0.0.1:63505/sectors/159928.SZ.html",
+      "dialog_open": "cnx-dlg-sector",
+      "dialog_tabs": 31,
+      "expected_localized_heading": "Consumer Staples",
+      "external_requests_blocked": [
+        "https://s3.tradingview.com/tv.js"
+      ],
+      "failed_responses": [],
+      "family": "sector_chips",
+      "focus_ring": {
+        "color": "rgb(40, 95, 255)",
+        "focused": true,
+        "offset": "2px",
+        "semantic": "#285fff",
+        "style": "solid",
+        "visible": true,
+        "width": "2px"
+      },
+      "focus_trace": [
+        {
+          "href": "sectors/512980.SS.html",
+          "id": "",
+          "tag": "A"
+        },
+        {
+          "href": null,
+          "id": "",
+          "tag": "BUTTON"
+        }
+      ],
+      "height": 844,
+      "href": "sectors/159928.SZ.html",
+      "locale": "en",
+      "name": "Consumer Staples",
+      "page_errors": [
+        "TradingView is not defined"
+      ],
+      "status": "passed",
+      "theme": "light",
+      "ticker": "159928.SZ",
+      "viewport": "mobile",
+      "width": 390
+    },
+    {
+      "activation": {
+        "bubbled": 0,
+        "sector_open_calls": 0,
+        "trusted_clicks": 1
+      },
+      "anchor_tabs": 49,
+      "applied_state": {
+        "locale": "en",
+        "theme": "light"
+      },
+      "destination_heading": "Media (512980.SS)",
+      "destination_status": 200,
+      "destination_title": "Media (512980.SS) — cycle & constituents",
+      "destination_url": "http://127.0.0.1:63505/sectors/512980.SS.html",
+      "dialog_open": "cnx-dlg-sector",
+      "dialog_tabs": 31,
+      "expected_localized_heading": "Media",
+      "external_requests_blocked": [
+        "https://s3.tradingview.com/tv.js"
+      ],
+      "failed_responses": [],
+      "family": "rotation",
+      "focus_ring": {
+        "color": "rgb(40, 95, 255)",
+        "focused": true,
+        "offset": "2px",
+        "semantic": "#285fff",
+        "style": "solid",
+        "visible": true,
+        "width": "2px"
+      },
+      "focus_trace": [
+        {
+          "href": "sectors/512980.SS.html",
+          "id": "",
+          "tag": "A"
+        },
+        {
+          "href": null,
+          "id": "",
+          "tag": "BUTTON"
+        },
+        {
+          "href": "sectors/512800.SS.html",
+          "id": "",
+          "tag": "A"
+        }
+      ],
+      "height": 844,
+      "href": "sectors/512980.SS.html",
+      "locale": "en",
+      "name": "Media",
+      "page_errors": [
+        "TradingView is not defined"
+      ],
+      "status": "passed",
+      "theme": "light",
+      "ticker": "512980.SS",
+      "viewport": "mobile",
+      "width": 390
+    },
+    {
+      "activation": {
+        "bubbled": 0,
+        "sector_open_calls": 0,
+        "trusted_clicks": 1
+      },
+      "anchor_tabs": 34,
+      "applied_state": {
+        "locale": "en",
+        "theme": "light"
+      },
+      "destination_heading": "Nonferrous Metals (512400.SS)",
+      "destination_status": 200,
+      "destination_title": "Nonferrous Metals (512400.SS) — cycle & constituents",
+      "destination_url": "http://127.0.0.1:63505/sectors/512400.SS.html",
+      "dialog_open": "cnx-dlg-playbook",
+      "dialog_tabs": 19,
+      "expected_localized_heading": "Nonferrous Metals",
+      "external_requests_blocked": [
+        "https://s3.tradingview.com/tv.js"
+      ],
+      "failed_responses": [],
+      "family": "playbook",
+      "focus_ring": {
+        "color": "rgb(40, 95, 255)",
+        "focused": true,
+        "offset": "2px",
+        "semantic": "#285fff",
+        "style": "solid",
+        "visible": true,
+        "width": "2px"
+      },
+      "focus_trace": [
+        {
+          "href": null,
+          "id": "",
+          "tag": "BUTTON"
+        },
+        {
+          "href": null,
+          "id": "",
+          "tag": "BUTTON"
+        }
+      ],
+      "height": 844,
+      "href": "sectors/512400.SS.html",
+      "locale": "en",
+      "name": "Nonferrous Metals",
+      "page_errors": [
+        "TradingView is not defined"
+      ],
+      "status": "passed",
+      "theme": "light",
+      "ticker": "512400.SS",
+      "viewport": "mobile",
+      "width": 390
+    },
+    {
+      "activation": {
+        "bubbled": 0,
+        "sector_open_calls": 0,
+        "trusted_clicks": 1
+      },
+      "anchor_tabs": 32,
+      "applied_state": {
+        "locale": "zh",
+        "theme": "dark"
+      },
+      "destination_heading": "传媒 (512980.SS)",
+      "destination_status": 200,
+      "destination_title": "Media (512980.SS) — cycle & constituents",
+      "destination_url": "http://127.0.0.1:63505/sectors/512980.SS.html",
+      "expected_localized_heading": "传媒",
+      "external_requests_blocked": [
+        "https://s3.tradingview.com/tv.js"
+      ],
+      "failed_responses": [],
+      "family": "overview",
+      "focus_ring": {
+        "color": "rgb(122, 167, 224)",
+        "focused": true,
+        "offset": "2px",
+        "semantic": "#7aa7e0",
+        "style": "solid",
+        "visible": true,
+        "width": "2px"
+      },
+      "focus_trace": [
+        {
+          "href": null,
+          "id": "",
+          "tag": "BUTTON"
+        },
+        {
+          "href": null,
+          "id": "",
+          "tag": "BUTTON"
+        }
+      ],
+      "height": 844,
+      "href": "sectors/512980.SS.html",
+      "locale": "zh",
+      "name": "Media",
+      "page_errors": [
+        "TradingView is not defined"
+      ],
+      "status": "passed",
+      "theme": "dark",
+      "ticker": "512980.SS",
+      "viewport": "mobile",
+      "width": 390
+    },
+    {
+      "activation": {
+        "bubbled": 0,
+        "sector_open_calls": 0,
+        "trusted_clicks": 1
+      },
+      "anchor_tabs": 39,
+      "applied_state": {
+        "locale": "zh",
+        "theme": "dark"
+      },
+      "destination_heading": "传媒 (512980.SS)",
+      "destination_status": 200,
+      "destination_title": "Media (512980.SS) — cycle & constituents",
+      "destination_url": "http://127.0.0.1:63505/sectors/512980.SS.html",
+      "dialog_open": "cnx-dlg-markets",
+      "dialog_tabs": 14,
+      "expected_localized_heading": "传媒",
+      "external_requests_blocked": [
+        "https://s3.tradingview.com/tv.js"
+      ],
+      "failed_responses": [
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:63505/marketdata/china_heatmap.json"
+        }
+      ],
+      "family": "markets",
+      "focus_ring": {
+        "color": "rgb(122, 167, 224)",
+        "focused": true,
+        "offset": "2px",
+        "semantic": "#7aa7e0",
+        "style": "solid",
+        "visible": true,
+        "width": "2px"
+      },
+      "focus_trace": [
+        {
+          "href": "#cnx-dlg-policy",
+          "id": "",
+          "tag": "A"
+        },
+        {
+          "href": "sectors/159928.SZ.html",
+          "id": "",
+          "tag": "A"
+        }
+      ],
+      "height": 844,
+      "href": "sectors/512980.SS.html",
+      "locale": "zh",
+      "name": "Media",
+      "page_errors": [
+        "TradingView is not defined"
+      ],
+      "status": "passed",
+      "theme": "dark",
+      "ticker": "512980.SS",
+      "viewport": "mobile",
+      "width": 390
+    },
+    {
+      "activation": {
+        "bubbled": 0,
+        "sector_open_calls": 0,
+        "trusted_clicks": 1
+      },
+      "anchor_tabs": 22,
+      "applied_state": {
+        "locale": "zh",
+        "theme": "dark"
+      },
+      "destination_heading": "必需消费 (159928.SZ)",
+      "destination_status": 200,
+      "destination_title": "Consumer Staples (159928.SZ) — cycle & constituents",
+      "destination_url": "http://127.0.0.1:63505/sectors/159928.SZ.html",
+      "dialog_open": "cnx-dlg-sector",
+      "dialog_tabs": 31,
+      "expected_localized_heading": "必需消费",
+      "external_requests_blocked": [
+        "https://s3.tradingview.com/tv.js"
+      ],
+      "failed_responses": [],
+      "family": "sector_chips",
+      "focus_ring": {
+        "color": "rgb(122, 167, 224)",
+        "focused": true,
+        "offset": "2px",
+        "semantic": "#7aa7e0",
+        "style": "solid",
+        "visible": true,
+        "width": "2px"
+      },
+      "focus_trace": [
+        {
+          "href": "sectors/512980.SS.html",
+          "id": "",
+          "tag": "A"
+        },
+        {
+          "href": null,
+          "id": "",
+          "tag": "BUTTON"
+        }
+      ],
+      "height": 844,
+      "href": "sectors/159928.SZ.html",
+      "locale": "zh",
+      "name": "Consumer Staples",
+      "page_errors": [
+        "TradingView is not defined"
+      ],
+      "status": "passed",
+      "theme": "dark",
+      "ticker": "159928.SZ",
+      "viewport": "mobile",
+      "width": 390
+    },
+    {
+      "activation": {
+        "bubbled": 0,
+        "sector_open_calls": 0,
+        "trusted_clicks": 1
+      },
+      "anchor_tabs": 49,
+      "applied_state": {
+        "locale": "zh",
+        "theme": "dark"
+      },
+      "destination_heading": "传媒 (512980.SS)",
+      "destination_status": 200,
+      "destination_title": "Media (512980.SS) — cycle & constituents",
+      "destination_url": "http://127.0.0.1:63505/sectors/512980.SS.html",
+      "dialog_open": "cnx-dlg-sector",
+      "dialog_tabs": 31,
+      "expected_localized_heading": "传媒",
+      "external_requests_blocked": [
+        "https://s3.tradingview.com/tv.js"
+      ],
+      "failed_responses": [],
+      "family": "rotation",
+      "focus_ring": {
+        "color": "rgb(122, 167, 224)",
+        "focused": true,
+        "offset": "2px",
+        "semantic": "#7aa7e0",
+        "style": "solid",
+        "visible": true,
+        "width": "2px"
+      },
+      "focus_trace": [
+        {
+          "href": "sectors/512980.SS.html",
+          "id": "",
+          "tag": "A"
+        },
+        {
+          "href": null,
+          "id": "",
+          "tag": "BUTTON"
+        },
+        {
+          "href": "sectors/512800.SS.html",
+          "id": "",
+          "tag": "A"
+        }
+      ],
+      "height": 844,
+      "href": "sectors/512980.SS.html",
+      "locale": "zh",
+      "name": "Media",
+      "page_errors": [
+        "TradingView is not defined"
+      ],
+      "status": "passed",
+      "theme": "dark",
+      "ticker": "512980.SS",
+      "viewport": "mobile",
+      "width": 390
+    },
+    {
+      "activation": {
+        "bubbled": 0,
+        "sector_open_calls": 0,
+        "trusted_clicks": 1
+      },
+      "anchor_tabs": 34,
+      "applied_state": {
+        "locale": "zh",
+        "theme": "dark"
+      },
+      "destination_heading": "有色金属 (512400.SS)",
+      "destination_status": 200,
+      "destination_title": "Nonferrous Metals (512400.SS) — cycle & constituents",
+      "destination_url": "http://127.0.0.1:63505/sectors/512400.SS.html",
+      "dialog_open": "cnx-dlg-playbook",
+      "dialog_tabs": 19,
+      "expected_localized_heading": "有色金属",
+      "external_requests_blocked": [
+        "https://s3.tradingview.com/tv.js"
+      ],
+      "failed_responses": [],
+      "family": "playbook",
+      "focus_ring": {
+        "color": "rgb(122, 167, 224)",
+        "focused": true,
+        "offset": "2px",
+        "semantic": "#7aa7e0",
+        "style": "solid",
+        "visible": true,
+        "width": "2px"
+      },
+      "focus_trace": [
+        {
+          "href": null,
+          "id": "",
+          "tag": "BUTTON"
+        },
+        {
+          "href": null,
+          "id": "",
+          "tag": "BUTTON"
+        }
+      ],
+      "height": 844,
+      "href": "sectors/512400.SS.html",
+      "locale": "zh",
+      "name": "Nonferrous Metals",
+      "page_errors": [
+        "TradingView is not defined"
+      ],
+      "status": "passed",
+      "theme": "dark",
+      "ticker": "512400.SS",
+      "viewport": "mobile",
+      "width": 390
+    },
+    {
+      "activation": {
+        "bubbled": 0,
+        "sector_open_calls": 0,
+        "trusted_clicks": 1
+      },
+      "anchor_tabs": 32,
+      "applied_state": {
+        "locale": "zh",
+        "theme": "light"
+      },
+      "destination_heading": "传媒 (512980.SS)",
+      "destination_status": 200,
+      "destination_title": "Media (512980.SS) — cycle & constituents",
+      "destination_url": "http://127.0.0.1:63505/sectors/512980.SS.html",
+      "expected_localized_heading": "传媒",
+      "external_requests_blocked": [
+        "https://s3.tradingview.com/tv.js"
+      ],
+      "failed_responses": [],
+      "family": "overview",
+      "focus_ring": {
+        "color": "rgb(40, 95, 255)",
+        "focused": true,
+        "offset": "2px",
+        "semantic": "#285fff",
+        "style": "solid",
+        "visible": true,
+        "width": "2px"
+      },
+      "focus_trace": [
+        {
+          "href": null,
+          "id": "",
+          "tag": "BUTTON"
+        },
+        {
+          "href": null,
+          "id": "",
+          "tag": "BUTTON"
+        }
+      ],
+      "height": 844,
+      "href": "sectors/512980.SS.html",
+      "locale": "zh",
+      "name": "Media",
+      "page_errors": [
+        "TradingView is not defined"
+      ],
+      "status": "passed",
+      "theme": "light",
+      "ticker": "512980.SS",
+      "viewport": "mobile",
+      "width": 390
+    },
+    {
+      "activation": {
+        "bubbled": 0,
+        "sector_open_calls": 0,
+        "trusted_clicks": 1
+      },
+      "anchor_tabs": 39,
+      "applied_state": {
+        "locale": "zh",
+        "theme": "light"
+      },
+      "destination_heading": "传媒 (512980.SS)",
+      "destination_status": 200,
+      "destination_title": "Media (512980.SS) — cycle & constituents",
+      "destination_url": "http://127.0.0.1:63505/sectors/512980.SS.html",
+      "dialog_open": "cnx-dlg-markets",
+      "dialog_tabs": 14,
+      "expected_localized_heading": "传媒",
+      "external_requests_blocked": [
+        "https://s3.tradingview.com/tv.js"
+      ],
+      "failed_responses": [
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:63505/marketdata/china_heatmap.json"
+        }
+      ],
+      "family": "markets",
+      "focus_ring": {
+        "color": "rgb(40, 95, 255)",
+        "focused": true,
+        "offset": "2px",
+        "semantic": "#285fff",
+        "style": "solid",
+        "visible": true,
+        "width": "2px"
+      },
+      "focus_trace": [
+        {
+          "href": "#cnx-dlg-policy",
+          "id": "",
+          "tag": "A"
+        },
+        {
+          "href": "sectors/159928.SZ.html",
+          "id": "",
+          "tag": "A"
+        }
+      ],
+      "height": 844,
+      "href": "sectors/512980.SS.html",
+      "locale": "zh",
+      "name": "Media",
+      "page_errors": [
+        "TradingView is not defined"
+      ],
+      "status": "passed",
+      "theme": "light",
+      "ticker": "512980.SS",
+      "viewport": "mobile",
+      "width": 390
+    },
+    {
+      "activation": {
+        "bubbled": 0,
+        "sector_open_calls": 0,
+        "trusted_clicks": 1
+      },
+      "anchor_tabs": 22,
+      "applied_state": {
+        "locale": "zh",
+        "theme": "light"
+      },
+      "destination_heading": "必需消费 (159928.SZ)",
+      "destination_status": 200,
+      "destination_title": "Consumer Staples (159928.SZ) — cycle & constituents",
+      "destination_url": "http://127.0.0.1:63505/sectors/159928.SZ.html",
+      "dialog_open": "cnx-dlg-sector",
+      "dialog_tabs": 31,
+      "expected_localized_heading": "必需消费",
+      "external_requests_blocked": [
+        "https://s3.tradingview.com/tv.js"
+      ],
+      "failed_responses": [],
+      "family": "sector_chips",
+      "focus_ring": {
+        "color": "rgb(40, 95, 255)",
+        "focused": true,
+        "offset": "2px",
+        "semantic": "#285fff",
+        "style": "solid",
+        "visible": true,
+        "width": "2px"
+      },
+      "focus_trace": [
+        {
+          "href": "sectors/512980.SS.html",
+          "id": "",
+          "tag": "A"
+        },
+        {
+          "href": null,
+          "id": "",
+          "tag": "BUTTON"
+        }
+      ],
+      "height": 844,
+      "href": "sectors/159928.SZ.html",
+      "locale": "zh",
+      "name": "Consumer Staples",
+      "page_errors": [
+        "TradingView is not defined"
+      ],
+      "status": "passed",
+      "theme": "light",
+      "ticker": "159928.SZ",
+      "viewport": "mobile",
+      "width": 390
+    },
+    {
+      "activation": {
+        "bubbled": 0,
+        "sector_open_calls": 0,
+        "trusted_clicks": 1
+      },
+      "anchor_tabs": 49,
+      "applied_state": {
+        "locale": "zh",
+        "theme": "light"
+      },
+      "destination_heading": "传媒 (512980.SS)",
+      "destination_status": 200,
+      "destination_title": "Media (512980.SS) — cycle & constituents",
+      "destination_url": "http://127.0.0.1:63505/sectors/512980.SS.html",
+      "dialog_open": "cnx-dlg-sector",
+      "dialog_tabs": 31,
+      "expected_localized_heading": "传媒",
+      "external_requests_blocked": [
+        "https://s3.tradingview.com/tv.js"
+      ],
+      "failed_responses": [],
+      "family": "rotation",
+      "focus_ring": {
+        "color": "rgb(40, 95, 255)",
+        "focused": true,
+        "offset": "2px",
+        "semantic": "#285fff",
+        "style": "solid",
+        "visible": true,
+        "width": "2px"
+      },
+      "focus_trace": [
+        {
+          "href": "sectors/512980.SS.html",
+          "id": "",
+          "tag": "A"
+        },
+        {
+          "href": null,
+          "id": "",
+          "tag": "BUTTON"
+        },
+        {
+          "href": "sectors/512800.SS.html",
+          "id": "",
+          "tag": "A"
+        }
+      ],
+      "height": 844,
+      "href": "sectors/512980.SS.html",
+      "locale": "zh",
+      "name": "Media",
+      "page_errors": [
+        "TradingView is not defined"
+      ],
+      "status": "passed",
+      "theme": "light",
+      "ticker": "512980.SS",
+      "viewport": "mobile",
+      "width": 390
+    },
+    {
+      "activation": {
+        "bubbled": 0,
+        "sector_open_calls": 0,
+        "trusted_clicks": 1
+      },
+      "anchor_tabs": 34,
+      "applied_state": {
+        "locale": "zh",
+        "theme": "light"
+      },
+      "destination_heading": "有色金属 (512400.SS)",
+      "destination_status": 200,
+      "destination_title": "Nonferrous Metals (512400.SS) — cycle & constituents",
+      "destination_url": "http://127.0.0.1:63505/sectors/512400.SS.html",
+      "dialog_open": "cnx-dlg-playbook",
+      "dialog_tabs": 19,
+      "expected_localized_heading": "有色金属",
+      "external_requests_blocked": [
+        "https://s3.tradingview.com/tv.js"
+      ],
+      "failed_responses": [],
+      "family": "playbook",
+      "focus_ring": {
+        "color": "rgb(40, 95, 255)",
+        "focused": true,
+        "offset": "2px",
+        "semantic": "#285fff",
+        "style": "solid",
+        "visible": true,
+        "width": "2px"
+      },
+      "focus_trace": [
+        {
+          "href": null,
+          "id": "",
+          "tag": "BUTTON"
+        },
+        {
+          "href": null,
+          "id": "",
+          "tag": "BUTTON"
+        }
+      ],
+      "height": 844,
+      "href": "sectors/512400.SS.html",
+      "locale": "zh",
+      "name": "Nonferrous Metals",
+      "page_errors": [
+        "TradingView is not defined"
+      ],
+      "status": "passed",
+      "theme": "light",
+      "ticker": "512400.SS",
+      "viewport": "mobile",
+      "width": 390
+    }
+  ],
+  "page_blob": "d8434b45ed3ef08a990f3f8d0404cb2b19d716b9",
+  "passed_journeys": 40,
+  "planned_journeys": 40,
+  "receiving_main": "b84bd66ab8313db879f68f97995486cf0aa7f782",
+  "schema": "mastermind.china_sector_keyboard_proof.v1"
+}

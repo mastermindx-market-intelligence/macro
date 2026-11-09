@@ -1,15 +1,15 @@
 {
   "schema": "seo_audit.v1",
-  "as_of": "2026-11-01T19:22:40Z",
-  "health_score": 86,
+  "as_of": "2026-11-08T19:21:02Z",
+  "health_score": 85,
   "census": {
-    "total_pages": 3048,
+    "total_pages": 3054,
     "by_family": {
       "core": {
-        "pages": 178,
-        "with_canonical": 164,
-        "with_desc": 163,
-        "with_og": 163,
+        "pages": 184,
+        "with_canonical": 170,
+        "with_desc": 169,
+        "with_og": 169,
         "with_jsonld": 7,
         "in_sitemap": 21
       },
@@ -66,10 +66,10 @@
     }
   },
   "sitemap": {
-    "total_urls": 5728,
+    "total_urls": 5717,
     "core": 3036,
     "products": 5,
-    "stocks": 2687,
+    "stocks": 2676,
     "host_ok": true,
     "bad_host_count": 0,
     "apex_host_count": 0,
@@ -80,7 +80,7 @@
       "unsubscribe.html"
     ],
     "excluded_public_count": 1,
-    "non_public_absent_count": 260,
+    "non_public_absent_count": 266,
     "duplicates": []
   },
   "crawl_infra": {
@@ -88,7 +88,7 @@
     "robots_sitemap_host_ok": true,
     "llms_txt_present": true,
     "brand_facts_present": true,
-    "brand_facts_age_days": 97
+    "brand_facts_age_days": 104
   },
   "issues": [
     {
@@ -146,6 +146,13 @@
       "class": "missing_og",
       "page": "canada_stock.html",
       "detail": "Missing OG tags: og_title, og_desc, og_image"
+    },
+    {
+      "id": "page_weight_china_stocks_html",
+      "severity": "low",
+      "class": "page_weight",
+      "page": "china_stocks.html",
+      "detail": "HTML size 2.8 MB exceeds 2.5 MB"
     },
     {
       "id": "missing_description_china_stocks_lab_html",
@@ -285,7 +292,7 @@
       "severity": "low",
       "class": "page_weight",
       "page": "intl.html",
-      "detail": "HTML size 21.6 MB exceeds 2.5 MB"
+      "detail": "HTML size 21.8 MB exceeds 2.5 MB"
     },
     {
       "id": "missing_description_intl_stock_html",
@@ -845,7 +852,7 @@
       "severity": "low",
       "class": "brand_facts_stale",
       "page": "brand-facts.json",
-      "detail": "brand-facts.json effective_at is 97d ago (warn >90d)"
+      "detail": "brand-facts.json effective_at is 104d ago (warn >90d)"
     }
   ],
   "issue_counts_by_class": {
@@ -853,8 +860,8 @@
     "missing_description": 28,
     "missing_og": 28,
     "missing_canonical": 27,
+    "page_weight": 2,
     "desc_length": 6,
-    "page_weight": 1,
     "title_length": 2,
     "missing_lang": 1,
     "missing_title": 1,
@@ -866,6 +873,6 @@
     "critical": 0,
     "high": 51,
     "medium": 55,
-    "low": 2
+    "low": 3
   }
 }

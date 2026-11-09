@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "WERN-BULL-20260714",
-  "asof": "2026-11-04",
+  "asof": "2026-11-09",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 20.9,
@@ -10,23 +10,23 @@
   "recommended_action": null,
   "human_state": "Closed",
   "components": {
-    "validity": 7.8,
+    "validity": 0.6,
     "progress": 0.0,
-    "pace": 3.3,
+    "pace": 0.0,
     "retention": 0.0,
-    "overlay": 56.0
+    "overlay": 33.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.184,
+    "dist_to_stop_r": 0.056,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 144.4,
-    "p1": -0.5441,
-    "p2": -0.2721,
+    "horizon_pct_used": 155.6,
+    "p1": -0.6296,
+    "p2": -0.3148,
     "p3": null,
-    "move_r": -0.816,
+    "move_r": -0.944,
     "mfe_r": 0.066,
-    "mae_r": -0.893
+    "mae_r": -0.944
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -40,13 +40,13 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 0.860000915527344,
-  "_mae": -11.569999389648437,
+  "_mae": -12.229999237060547,
   "_max_p1": 0.04427289140423908,
   "_first_trigger_ts": "2026-08-31",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 65,
-  "tau": 1.4444,
+  "days_elapsed": 70,
+  "tau": 1.5556,
   "closed": true,
   "outcome": "EXPIRED"
 }

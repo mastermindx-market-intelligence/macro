@@ -654,3 +654,322 @@ def test_the_rendered_report_names_its_policy_source(repo, tmp_path, monkeypatch
     assert "policy source:" in blob
     assert str(cfg) in blob, blob[:400]
 
+
+
+# This opt-in is only a tool for the original Fabric acceptance owner.
+# A safe Git verdict does not independently establish worker acceptance.
+
+
+def test_only_worktree_exact_cleanup_preserves_sibling_branch_and_no_prune(repo, tmp_path, monkeypatch):
+    done = _add_worktree(repo, "done", branch="lane/done")
+    other = _add_worktree(repo, "other", branch="lane/other")
+    _age(repo, done)
+    _age(repo, other)
+    cfg = _write_config(tmp_path, armed=True, min_age_days=0, delete_local_branches=True)
+    rc, row = _run_main(repo, tmp_path, monkeypatch, cfg=cfg, apply=True,
+                        extra=["--only-worktree", str(done), "--no-fetch"])
+    assert rc == 0
+    assert row["meta"]["only_worktree"] == str(done.resolve())
+    assert row["apply"]["deleted"] == [str(done)]
+    assert not row["apply"]["pruned"]
+    assert row["apply"]["branches_deleted"] == []
+    assert not done.exists() and other.exists()
+    assert _git(repo["primary"], "rev-parse", "refs/heads/lane/done")
+
+
+def test_only_worktree_unpushed_unique_head_retained(repo, tmp_path, monkeypatch):
+    target = _add_worktree(repo, "unique", branch="lane/unique")
+    head = _commit_in(target)
+    _age(repo, target)
+    cfg = _write_config(tmp_path, armed=True, min_age_days=0)
+    rc, row = _run_main(repo, tmp_path, monkeypatch, cfg=cfg, apply=True,
+                        extra=["--only-worktree", str(target), "--no-fetch"])
+    assert rc == 3
+    assert _verdict(row, "unique")["verdict"] == "UNPUSHED"
+    assert target.exists() and _git(target, "rev-parse", "HEAD") == head
+
+
+def test_only_worktree_bad_path_refused(repo, tmp_path, monkeypatch):
+    target = _add_worktree(repo, "target", branch="lane/target")
+    _age(repo, target)
+    outside = tmp_path / "outside"
+    outside.mkdir()
+    for path in (str(repo["root"]), str(outside), "relative/path"):
+        with pytest.raises(SystemExit, match="only-worktree refused"):
+            _run_main(repo, tmp_path, monkeypatch, extra=["--only-worktree", path])
+    assert target.exists()
+
+
+def test_only_worktree_never_force_removes_ignored_artifacts(repo, tmp_path, monkeypatch):
+    target = _add_worktree(repo, "ignored", branch="lane/ignored")
+    # Ignored local artifacts must not silently disappear on accepted cleanup.
+    _git(repo["primary"], "config", "core.excludesfile", str(tmp_path / "ignore"))
+    (tmp_path / "ignore").write_text("*.buildcache\n")
+    (target / "local.buildcache").write_text("private untracked artifact\n")
+    _age(repo, target)
+    cfg = _write_config(tmp_path, armed=True, min_age_days=0)
+    rc, row = _run_main(repo, tmp_path, monkeypatch, cfg=cfg, apply=True,
+                        extra=["--only-worktree", str(target), "--no-fetch"])
+    assert rc != 0
+    assert target.exists() and (target / "local.buildcache").exists()
+    assert row["apply"]["deleted"] == []
+    assert row["apply"]["pruned"] is False
+
+
+def test_exact_lsof_rc1_with_output_is_busy(monkeypatch, tmp_path):
+    # lsof returns 1 even when an open file was listed on Linux/macOS.
+    monkeypatch.setattr(wgc, "_run", lambda *args, **kw: (1, "p42\\nffile\\n", ""))
+    assert wgc.exact_target_open_handles(tmp_path) is True
+
+
+def test_exact_lsof_empty_with_warning_or_timeout_is_unknown(monkeypatch, tmp_path):
+    for result in ((1, "", "cannot inspect one pid"),
+                   (-1, "", "TimeoutExpired"), (0, "", "")):
+        monkeypatch.setattr(wgc, "_run", lambda *a, result=result, **kw: result)
+        assert wgc.exact_target_open_handles(tmp_path) is None
+
+
+def test_exact_lsof_clean_empty_is_unoccupied(monkeypatch, tmp_path):
+    monkeypatch.setattr(wgc, "_run", lambda *args, **kw: (1, "", ""))
+    assert wgc.exact_target_open_handles(tmp_path) is False
+
+
+@pytest.mark.parametrize("result", [True, None])
+def test_only_worktree_refuses_busy_or_unverifiable_handle_probe(
+    repo, tmp_path, monkeypatch, result,
+):
+    target = _add_worktree(repo, "busy", branch="lane/busy")
+    _age(repo, target)
+    cfg = _write_config(tmp_path, armed=True, min_age_days=0)
+    monkeypatch.setattr(wgc, "exact_target_open_handles", lambda path: result)
+    rc, row = _run_main(repo, tmp_path, monkeypatch, cfg=cfg, apply=True,
+                        extra=["--only-worktree", str(target), "--no-fetch"])
+    assert rc != 0
+    assert target.exists()
+    assert row["apply"]["deleted"] == []
+    assert "open handles" in row["apply"]["errors"][0]
+
+
+def test_exact_real_external_cwd_open_fd_holds_checkout(
+    repo, tmp_path, monkeypatch,
+):
+    """The accepted cleanup must observe processes even with a foreign cwd."""
+    import shutil
+    import subprocess
+    import sys
+    if shutil.which("lsof") is None:
+        pytest.skip("lsof unavailable: production exact mode must refuse")
+    target = _add_worktree(repo, "held-fd", branch="lane/held-fd")
+    _age(repo, target)
+    worker = subprocess.Popen(
+        [sys.executable, "-c",
+         "import sys,time; f=open(sys.argv[1], 'rb'); print('READY', flush=True); time.sleep(16)",
+         str(target / "README.md")],
+        cwd=str(repo["primary"]), stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE, text=True,
+    )
+    try:
+        assert worker.stdout is not None
+        assert worker.stdout.readline().strip() == "READY"
+        assert wgc.exact_target_open_handles(target) is True
+        cfg = _write_config(tmp_path, armed=True, min_age_days=0)
+        rc, row = _run_main(repo, tmp_path, monkeypatch, cfg=cfg, apply=True,
+                            extra=["--only-worktree", str(target), "--no-fetch"])
+        assert rc != 0
+        assert target.exists()
+        assert row["apply"]["deleted"] == []
+        assert "open handles" in row["apply"]["errors"][0]
+    finally:
+        worker.terminate()
+        try:
+            worker.wait(timeout=3)
+        except subprocess.TimeoutExpired:
+            worker.kill()
+            worker.wait(timeout=3)
+
+
+def test_only_worktree_absolute_root_does_not_confuse_lane_with_host(
+    repo, tmp_path, monkeypatch,
+):
+    target = _add_worktree(repo, "exact", branch="lane/exact")
+    sibling = _add_worktree(repo, "sibling", branch="lane/sibling")
+    _age(repo, target)
+    _age(repo, sibling)
+    cfg = _write_config(
+        tmp_path, armed=True, min_age_days=0, roots=[str(repo["root"])])
+    rc, row = _run_main(
+        repo, tmp_path, monkeypatch, cfg=cfg, apply=True,
+        extra=["--only-worktree", str(target), "--no-fetch"])
+    assert rc == 0, row["apply"]
+    assert row["apply"]["deleted"] == [str(target)]
+    assert not target.exists()
+    assert sibling.is_dir()
+    assert _git(repo["primary"], "rev-parse", "refs/heads/lane/exact")
+
+
+def test_only_worktree_non_fabric_branch_is_never_released(
+    repo, tmp_path, monkeypatch,
+):
+    other = _add_worktree(repo, "human", branch="claude/human")
+    _age(repo, other)
+    cfg = _write_config(
+        tmp_path, armed=True, min_age_days=0, roots=[str(repo["root"])])
+    with pytest.raises(SystemExit, match="original Fabric lane branch"):
+        _run_main(
+            repo, tmp_path, monkeypatch, cfg=cfg, apply=True,
+            extra=["--only-worktree", str(other), "--no-fetch"])
+    assert other.is_dir()
+
+
+
+# Size-precision contract: --no-sizes never means zero disk occupation.
+# Presentation/evidence only; no GC deletion eligibility changes.
+
+def test_unsized_report_does_not_claim_zero_space_or_largest_worktrees():
+    merged = wgc.Worktree(
+        path=Path("/fixture/merged"), verdict="SAFE_MERGED",
+        age_days=10, proof="published", size_kb=None)
+    kept = wgc.Worktree(
+        path=Path("/fixture/unpublished"), verdict="UNPUSHED",
+        age_days=6, reasons=["not published"], size_kb=None)
+    rows = [merged, kept]
+    summary = wgc.summarize(rows)
+    assert summary["SAFE_MERGED"] == {
+        "count": 1, "kb": 0, "size_unknown": 1}
+    assert summary["UNPUSHED"]["size_unknown"] == 1
+    metadata = dict(host="fixture", ts="time", mode="report",
+                    fetch_ok=False, proc_scan=True, pr_states="none",
+                    sizes_measured=False)
+    md = wgc.render_markdown(
+        rows, {"armed": False, "min_age_days": 7}, metadata)
+    assert "size measurement: **disabled**" in md
+    assert "| SAFE_MERGED | 1 | not measured |" in md
+    assert "| UNPUSHED | 1 | not measured |" in md
+    assert "Reclaimable now (SAFE_MERGED + SAFE_REMOTE): not measured across 1" in md
+    assert "## Kept worktree sample (sizes not measured)" in md
+    assert "0.0 GiB across 1" not in md
+    assert "- " + chr(96) + "merged" + chr(96) + " not measured" in md
+
+
+def test_known_zero_size_is_distinct_from_unknown_in_summaries():
+    known = wgc.Worktree(
+        path=Path("/fixture/empty"), verdict="SAFE_MERGED",
+        size_kb=0, proof="published")
+    unknown = wgc.Worktree(
+        path=Path("/fixture/unmeasured"), verdict="SAFE_MERGED",
+        size_kb=None, proof="published")
+    meta = dict(host="fixture", ts="time", mode="report",
+                fetch_ok=True, proc_scan=True, pr_states="none",
+                sizes_measured=True)
+    config = {"armed": False, "min_age_days": 7}
+    known_md = wgc.render_markdown([known], config, meta)
+    assert "Reclaimable now (SAFE_MERGED + SAFE_REMOTE): 0.0 GiB across 1" in known_md
+    assert wgc.summarize([known])["SAFE_MERGED"]["size_unknown"] == 0
+    mixed = wgc.summarize([known, unknown])["SAFE_MERGED"]
+    assert mixed == {"count": 2, "kb": 0, "size_unknown": 1}
+    mixed_md = wgc.render_markdown([known, unknown], config, meta)
+    assert "| SAFE_MERGED | 2 | not measured |" in mixed_md
+    assert "0.0 GiB across 2" not in mixed_md
+
+
+def test_real_no_sizes_cli_reports_unmeasured_not_zero(repo, tmp_path, monkeypatch, capsys):
+    target = _add_worktree(repo, "sized_unknown", branch="lane/sized_unknown")
+    _age(repo, target)
+    rc, payload = _run_main(repo, tmp_path, monkeypatch)
+    assert rc == 0
+    assert payload["meta"]["sizes_measured"] is False
+    item = _verdict(payload, "sized_unknown")
+    assert item["verdict"] == "SAFE_MERGED"
+    assert item["size_kb"] is None
+    assert payload["summary"]["SAFE_MERGED"]["size_unknown"] == 1
+    md = capsys.readouterr().out
+    assert "size measurement: **disabled**" in md
+    assert "Reclaimable now (SAFE_MERGED + SAFE_REMOTE): not measured across 1" in md
+    assert "## Kept worktree sample (sizes not measured)" not in md
+
+
+def test_only_worktree_refuses_ignored_artifact_created_during_lsof(
+    repo, tmp_path, monkeypatch,
+):
+    # Real Git (including no --force) removes ignored data. A worker may
+    # finish writing while the original GC performs its 45s handle probe.
+    target = _add_worktree(repo, "late-ignored", branch="lane/late-ignored")
+    _age(repo, target)
+    excludes = tmp_path / "global-ignore"
+    excludes.write_text("*.buildcache\n")
+    _git(repo["primary"], "config", "core.excludesfile", str(excludes))
+    cfg = _write_config(tmp_path, armed=True, min_age_days=0)
+    artifact = target / "accepted-worker-output.buildcache"
+    scan_witness = []
+
+    def lsof_finished_without_open_handles(path):
+        assert path.resolve() == target.resolve()
+        assert not artifact.exists()
+        # Inject while lsof is finishing, BEFORE the final ignored-file
+        # check. No process holds an open descriptor at the end.
+        artifact.write_text("material accepted worker artifact")
+        assert _git(target, "status", "--porcelain") == ""
+        scan_witness.append(True)
+        return False
+
+    monkeypatch.setattr(
+        wgc, "exact_target_open_handles", lsof_finished_without_open_handles)
+    rc, row = _run_main(
+        repo, tmp_path, monkeypatch, cfg=cfg, apply=True,
+        extra=["--only-worktree", str(target), "--no-fetch"])
+    assert scan_witness == [True]
+    assert rc != 0, "GC must refuse rather than delete a raced ignored artifact"
+    assert target.is_dir()
+    assert artifact.read_text() == "material accepted worker artifact"
+    assert row["apply"]["deleted"] == []
+    assert any("ignored" in error for error in row["apply"]["errors"])
+
+
+# Linux host compatibility regression: Ubuntu1/2 mount tracefs under
+# /sys/kernel/debug/tracing but lsof cannot stat it as the worker user.
+# The only lawful exception is this mounted, unrelated *filesystem*;
+# an unknown lsof warning, mount table, alias or target remains a HOLD.
+
+
+def test_tracefs_lsof_exemption_is_narrow_and_deterministic(tmp_path):
+    mounted = (
+        "113 44 0:14 / /sys/kernel/debug/tracing rw,nosuid,nodev,noexec "
+        "shared:303 - tracefs tracefs rw\n"
+    )
+    actual = tmp_path.resolve()
+    device = actual.stat().st_dev
+    assert wgc._tracefs_exemption_for_lsof(
+        actual, device, mounted
+    ) == ["-e", "/sys/kernel/debug/tracing"]
+    assert wgc._tracefs_exemption_for_lsof(
+        actual, device, "45 28 0:14 / /sys/kernel/tracing rw - tracefs tracefs rw\n"
+    ) == []
+    assert wgc._tracefs_exemption_for_lsof(
+        actual, device, ""
+    ) == []
+
+
+def test_tracefs_exemption_refuses_mount_alias_and_target_device(tmp_path):
+    mounted = (
+        "113 44 0:14 / /sys/kernel/debug/tracing rw,nosuid,nodev,noexec "
+        "shared:303 - tracefs tracefs rw\n"
+    )
+    f = wgc._tracefs_exemption_for_lsof
+    assert f(tmp_path, os.makedev(0, 14), mounted) is None
+    assert f(Path("/sys/kernel/debug/tracing"), tmp_path.stat().st_dev, mounted) is None
+    assert f(Path("/sys/kernel/debug/tracing/worktree"), tmp_path.stat().st_dev, mounted) is None
+    assert f(tmp_path, tmp_path.stat().st_dev, mounted * 2) is None
+
+
+def test_tracefs_exemption_fails_closed_on_invalid_mount_metadata(tmp_path):
+    mounted = "113 44 0:14 / /sys/kernel/debug/tracing rw - tracefs tracefs rw\n"
+    f = wgc._tracefs_exemption_for_lsof
+    assert f(tmp_path, tmp_path.stat().st_dev, mounted.replace("tracefs tracefs", "tmpfs tmpfs")) is None
+    assert f(tmp_path, tmp_path.stat().st_dev, "malformed") is None
+    assert f(tmp_path, tmp_path.stat().st_dev, "x" * 1_048_577) is None
+
+
+def test_tracefs_exemption_keeps_lsof_stderr_as_unknown(monkeypatch, tmp_path):
+    monkeypatch.setattr(
+        wgc, "_run", lambda *args, **kwargs: (1, "", "permission denied"))
+    assert wgc.exact_target_open_handles(tmp_path) is None
