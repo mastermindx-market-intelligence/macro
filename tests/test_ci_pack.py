@@ -4531,6 +4531,7 @@ def test_workspace_runtime_contracts_can_start_the_ci_that_validates_them() -> N
 # ---------------------------------------------------------------------------
 
 CURATED_EXCLUSIVE = {
+    "xguerrilla-identity-registry",
     "public-site-figma-baseline-contracts",
     "press-account-claim-consumer",
     # GDELT leaf suites own their exact import/read closure.
@@ -5396,6 +5397,46 @@ def test_xguerrilla_admission_scope_does_not_select_packing_probes(probe: str) -
     assert not selected, reason
 
 
+def test_xguerrilla_registry_scope_keeps_collection_and_future_dependencies() -> None:
+    """Collection's tools/ alias cannot silently omit package dependencies."""
+    job = next(job for job in PACK.load_legacy_jobs(MANIFEST, gate="code")
+               if job.job_id == "xguerrilla-identity-registry")
+    assert job.exclusive
+    scoped, _ = PACK.infer_job_scopes([job])
+    for dependency in (
+        "tools/xguerrilla/registry.py",  # ci-trigger-closure: data
+        "tools/xguerrilla/cli.py",  # ci-trigger-closure: data
+        "tools/xguerrilla/tests/test_registry.py",  # ci-trigger-closure: data
+        "tools/xguerrilla/tests/conftest.py",  # ci-trigger-closure: data
+        "tools/xguerrilla/profiles.py",  # ci-trigger-closure: data
+        "tools/xguerrilla/runtime_boundary.py",  # ci-trigger-closure: data
+        "tools/xguerrilla/validators.py",  # ci-trigger-closure: data
+        "tools/xguerrilla/drivers/base.py",  # ci-trigger-closure: data
+        "tools/xguerrilla/future_dependency.py",  # ci-trigger-closure: data
+        "tools/__init__.py",  # ci-trigger-closure: data
+        "research/agentic_media/handoffs/XG_IDENTITY_REGISTRY_V1.md",  # ci-trigger-closure: data
+    ):
+        selected, reason = PACK.select_jobs(scoped, [dependency])
+        assert [item.job_id for item in selected] == [job.job_id], (dependency, reason)
+        assert PACK._job_diff_match(scoped[0], [dependency]) == (dependency, "declared")
+    commands = "\n".join(step["run"] for step in job.definition["steps"] if "run" in step)
+    assert "python -m pytest tools/xguerrilla/tests/test_registry.py -q" in commands
+
+
+@pytest.mark.parametrize("probe", [
+    "templates/index.html",  # ci-trigger-closure: data
+    "scripts/build_free_content.py",  # ci-trigger-closure: data
+    "engine/prophet/plan_book.py",  # ci-trigger-closure: data
+])
+def test_xguerrilla_registry_scope_does_not_select_packing_probes(probe: str) -> None:
+    """The dedicated code owner adds no unrelated ordinary-probe weight."""
+    job = next(job for job in PACK.load_legacy_jobs(MANIFEST, gate="code")
+               if job.job_id == "xguerrilla-identity-registry")
+    scoped, _ = PACK.infer_job_scopes([job])
+    selected, reason = PACK.select_jobs(scoped, [probe])
+    assert not selected, reason
+
+
 def test_eval_os_acceptance_runs_on_ordinary_code_prs() -> None:
     """A data-only Neural Web job must not make an A1 code PR falsely green."""
     jobs = {job.job_id: job for job in PACK.load_legacy_jobs(MANIFEST, gate="code")}
@@ -5662,7 +5703,7 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_943),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("templates/index.html", 137, 5_945),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("scripts/build_free_content.py", 138, 5_964),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 131, 5_701),
 )
@@ -5672,6 +5713,35 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-09 (PR #7304, Watchlist source-truth test ownership):
+    Own natural contract run42569254969/job129002578412 measured
+    Hddcbdd49dc235c62db8ca56616e0938987195e49 against
+    B95724d5579aa0976542d269f588d82fcee926264 at tested merge
+    fedf33a11d9db4666d31c7ea2ee414a41fb51303. Index retained137jobs
+    and no entrants, with weight5943->5945. The added literal source-truth
+    suite increases existing signal-gate-pair-coherence weight8->10.
+    The same measurement also found unintended free-content137->138jobs,
+    5964->5974weight, and plan-book131->132jobs,5701->5711weight.
+    Both new entrants were that same owner; these broadening costs are
+    NOT funded. The vocabulary test imported engine.alert_triage solely
+    for three READ_* equalities; its computed engine import widened this
+    otherwise unrelated signal owner to engine/** and scripts/**.
+    Move only that test into already-enrolled test_alert_triage.py, retaining
+    all three real-constant assertions, every other source-truth test and
+    literal suite execution. Existing coherence tests already import the
+    real Watchlist runner, so this removes the additional dynamic-import
+    edge instead of reducing registration or hiding test collection.
+    Current main15364780 preserves the selector/dependency helpers and
+    adds only the package-local XGuerrilla registry owner to the measured
+    catalog; that exclusive tools/xguerrilla/** owner selects none of these
+    three probes. Compose only this carrier's already-measured index+2:
+    5943->5945. Keep free5964,plan-book5701,jobs137/138/131 and10packs.
+    No other carrier's allowance, new job or command is imported; runtime,
+    selectors,declared weights,timeouts and admission controls are unchanged.
+    This is source-derived repair/composition,not a newly measured repaired
+    plan or test result. Natural successor CI must qualify the actual tree;
+    any residual free-content/plan-book breadth still fails these bounds.
 
     2026-11-09 (PR #10870, dependency-coverage correction): the separate
     admission job conservatively owns tools/xguerrilla/** because pytest

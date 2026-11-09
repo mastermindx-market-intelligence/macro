@@ -313,17 +313,6 @@ def test_dry_run_never_touches_the_state_files(sentinel, monkeypatch):
 # --------------------------------------------------------------------------- #
 # 10. the typed contract itself
 # --------------------------------------------------------------------------- #
-def test_read_state_slugs_match_the_house_vocabulary():
-    """WatchlistRead mirrors engine/alert_triage.py's READ_* slugs rather than importing them
-    (the nightly runner should not pull that module in for three strings). This pins the mirror
-    so the two can never drift into two different words for the same fact."""
-    from engine import alert_triage as at
-
-    assert M.WatchlistRead.READ_OK == at.READ_OK
-    assert M.WatchlistRead.READ_OK_ZERO == at.READ_OK_ZERO
-    assert M.WatchlistRead.READ_UNAVAILABLE == at.READ_UNAVAILABLE
-
-
 def test_the_three_states_are_distinguishable_from_the_value_alone():
     """An unavailable read must not be mistakable for an empty one by any caller, including a
     future one that only looks at `tickers`."""

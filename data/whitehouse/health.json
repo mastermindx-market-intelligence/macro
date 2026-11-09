@@ -1,17 +1,10 @@
 {
   "schema": "wh_health.v1",
-  "as_of": "2026-11-08T23:42:07.806982+00:00",
+  "as_of": "2026-11-09T06:26:10.797382+00:00",
   "posts_seen": 11,
   "seen_total": 331,
-  "evaluated": 1,
+  "evaluated": 0,
   "activated": 0,
   "provider": "Claude claude-opus-4-8 (subscription)",
-  "gate_scores": [
-    {
-      "id": "wh-2026-11-07-presidential-message-on-honoring-the-american-flag",
-      "importance": 5,
-      "activated": false,
-      "degraded_reason": "served_by:deepseek"
-    }
-  ]
+  "gate_scores": []
 }
