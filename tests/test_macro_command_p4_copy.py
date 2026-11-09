@@ -1962,6 +1962,8 @@ def _visible_blob(html: str, lang: str) -> str:
     return " ".join(parser.texts)
 
 
+@pytest.mark.data_gate
+@pytest.mark.needs_full_checkout("site")
 def test_rendered_sections_have_no_repeated_visible_sentence() -> None:
     """MINOR-E2: repeated-sentence check on the rendered hub, not the head."""
     html = (ROOT / "site" / "macro_monetary.html").read_text(encoding="utf-8")
