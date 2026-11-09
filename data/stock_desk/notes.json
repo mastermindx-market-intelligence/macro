@@ -1,170 +1,176 @@
 {
   "schema": "stock_desk.v1",
-  "as_of": "2026-09-17",
-  "generated_at": "2026-09-18T08:17:32.592695+00:00",
+  "as_of": "2026-11-06",
+  "generated_at": "2026-11-09T11:20:34.235967+00:00",
   "degraded": null,
   "notes": [
     {
-      "id": "2026-09-17-BRK-B-20260918081732-1",
-      "ticker": "BRK-B",
-      "name": null,
+      "id": "2026-11-06-CNMD-20261109112034-1",
+      "ticker": "CNMD",
+      "name": "CONMED Corporation",
       "lean": "neutral",
       "conviction": "low",
       "horizon_d": 20,
-      "thesis": "The validated entry brake is active: entry is blocked and the cycle still argues for waiting. The uptrend remains intact, so extension alone is not a sound relative short thesis.",
-      "evidence": [
-        "Verdict: Extended \u2014 wait for a pullback",
-        "Entry blocked; entry z -1.15",
-        "Cycle blocked",
-        "Board direction up; 1.8% below high"
-      ],
-      "dissent": "Positive revisions and an intact calm-tape uptrend could keep momentum going without a pullback.",
-      "falsifier": {
-        "text": "BRK-B establishes a fresh high and sustains improving relative strength versus the S&P 500 for 10 trading days.",
-        "check": {
-          "kind": "soft",
-          "reason": "neutral lean \u2014 not scored"
-        }
-      },
-      "check_by": "2026-10-15",
-      "engine_verdict": "Extended \u2014 wait for a pullback"
-    },
-    {
-      "id": "2026-09-17-EBAY-20260918081732-2",
-      "ticker": "EBAY",
-      "name": null,
-      "lean": "neutral",
-      "conviction": "low",
-      "horizon_d": 20,
-      "thesis": "The unblocked entry and turn signal are constructive, but the deterministic verdict finds no clear edge and the sector basket is below its long-term trend. With selection near the middle of the board, the evidence does not support a directional relative call.",
+      "thesis": "The bottoming signal and positive daily momentum are offset by a mixed weekly trend, contracting liquidity and a left-translated prior cycle. The extension brake supports watching rather than chasing, but does not justify a relative short.",
       "evidence": [
         "Verdict: Neutral \u2014 no clear edge",
-        "Entry unblocked; entry percentile 64",
-        "Board state: TURN SIGNALED",
-        "Consumer Discretionary equal-weight basket below long-term trend"
+        "Entry axis 48th percentile; not blocked",
+        "Above 50-day and 200-day averages",
+        "Prior cycle was left-translated",
+        "Broad tape under stress"
       ],
-      "dissent": "The turn signal, positive momentum context and 7.7% distance from the high could develop into sustained relative upside.",
+      "dissent": "The fresh swing low, improving daily momentum and proximity to the 52-week high could develop into persistent leadership.",
       "falsifier": {
-        "text": "EBAY sustains improving relative strength versus the S&P 500 for 10 trading days while the turn signal remains active.",
+        "text": "The weekly trend turns bullish while the stock continues to outperform the S&P 500.",
         "check": {
           "kind": "soft",
           "reason": "neutral lean \u2014 not scored"
         }
       },
-      "check_by": "2026-10-15",
+      "check_by": "2026-12-04",
       "engine_verdict": "Neutral \u2014 no clear edge"
     },
     {
-      "id": "2026-09-17-ENSG-20260918081732-3",
-      "ticker": "ENSG",
-      "name": null,
+      "id": "2026-11-06-UHS-20261109112034-2",
+      "ticker": "UHS",
+      "name": "Universal Health Services",
+      "lean": "neutral",
+      "conviction": "low",
+      "horizon_d": 20,
+      "thesis": "The daily turn is constructive, but the weekly trend remains mixed and the Health Care basket is stretched. The validated risk controls argue against chasing the extension, while the intact uptrend provides no basis for a bearish relative call.",
+      "evidence": [
+        "Verdict: Neutral \u2014 no clear edge",
+        "Entry axis 50th percentile; not blocked",
+        "Above 50-day and 200-day averages",
+        "Daily momentum crossed up",
+        "Crowded and stretched Health Care basket"
+      ],
+      "dissent": "Strong cash generation, 30.4% net-income growth and the right-translated cycle could sustain relative outperformance despite the crowded basket.",
+      "falsifier": {
+        "text": "The weekly trend turns bullish and UHS decisively outperforms the S&P 500.",
+        "check": {
+          "kind": "soft",
+          "reason": "neutral lean \u2014 not scored"
+        }
+      },
+      "check_by": "2026-12-04",
+      "engine_verdict": "Neutral \u2014 no clear edge"
+    },
+    {
+      "id": "2026-11-06-BKSY-20261109112034-3",
+      "ticker": "BKSY",
+      "name": "BlackSky Technology Inc",
+      "lean": "neutral",
+      "conviction": "low",
+      "horizon_d": 20,
+      "thesis": "The short-term rebound has not repaired the larger weakness: BKSY remains below its 200-day average, its industry basket is below trend and the prior cycle topped early. Those risk controls support a modest relative-underperformance lean despite the unblocked daily turn.",
+      "evidence": [
+        "58.7% below 52-week high",
+        "21.2% below 200-day average",
+        "Space Economy basket below long-term trend",
+        "Prior cycle left-translated",
+        "Accounting quality flagged watch"
+      ],
+      "dissent": "A rejected swing low, positive MACD and recovery above the 50-day average could mark an early durable reversal. (softened: strong leader, momentum intact \u2014 extension is not a short (cautious-on-leader historically ~17% right); watch, don't chase)",
+      "falsifier": {
+        "text": "BKSY reclaims its 200-day average and outperforms the S&P 500 as the weekly trend turns bullish.",
+        "check": {
+          "kind": "soft",
+          "reason": "neutral lean \u2014 not scored"
+        }
+      },
+      "check_by": "2026-12-04",
+      "engine_verdict": "Neutral \u2014 no clear edge"
+    },
+    {
+      "id": "2026-11-06-RGLD-20261109112034-4",
+      "ticker": "RGLD",
+      "name": "Royal Gold",
       "lean": "constructive",
       "conviction": "low",
-      "horizon_d": 30,
-      "thesis": "The constructive base-building verdict is supported by an unblocked entry, an upward turn signal and the board's residual-alpha selection ordering. Conviction stays low because historical constructive calls have had only 30.9% directional accuracy and accounting quality remains on watch.",
+      "horizon_d": 20,
+      "thesis": "RGLD has the cleanest trend alignment in the group: a fresh-buy signal, bullish weekly regime and price above both major averages. The lean remains low-conviction because macro risk is elevated, accounting quality is flagged and the board rank itself has no validated forward edge.",
       "evidence": [
-        "Verdict: Constructive \u2014 building a base",
-        "Selection percentile 61",
-        "Entry unblocked; entry percentile 60",
-        "Board direction up; TURN SIGNALED",
-        "Accounting flag: watch"
+        "Ladder: FRESH BUY / BUY ZONE",
+        "Weekly and daily trends agree",
+        "Above 50-day and 200-day averages",
+        "Entry not blocked",
+        "Accounting quality flagged watch"
       ],
-      "dissent": "Negative momentum context and the accounting watch flag could mean the apparent base is only a temporary rebound.",
+      "dissent": "Contracting liquidity, elevated macro sensitivity and a late investor phase could overwhelm the otherwise aligned trend.",
       "falsifier": {
-        "text": "ENSG loses the turn signal and its relative trend versus the S&P 500 rolls over during the next 30 trading days.",
+        "text": "RGLD loses both its 50-day and 200-day averages while underperforming the S&P 500.",
         "check": {
           "kind": "rel_return",
-          "subject_ticker": "ENSG",
+          "subject_ticker": "RGLD",
           "vs": "SPY",
           "op": "<",
           "threshold": -0.05,
-          "horizon_d": 30
+          "horizon_d": 20
         }
       },
-      "check_by": "2026-10-29",
-      "engine_verdict": "Constructive \u2014 building a base"
-    },
-    {
-      "id": "2026-09-17-TMO-20260918081732-4",
-      "ticker": "TMO",
-      "name": null,
-      "lean": "neutral",
-      "conviction": "low",
-      "horizon_d": 20,
-      "thesis": "TMO is at its high with an intact uptrend, so the extension brake argues against chasing but not against the stock. The neutral verdict, deteriorating health-care basket and below-median quality leave no clear relative direction.",
-      "evidence": [
-        "Verdict: Neutral \u2014 no clear edge",
-        "Board direction up; HOLD \u2014 EXTENDED",
-        "Off high: 0.0%",
-        "Health Care equal-weight basket deteriorating",
-        "Quality percentile 42"
-      ],
-      "dissent": "An intact trend at the high in a calm tape can continue outperforming despite weak sector breadth.",
-      "falsifier": {
-        "text": "TMO sustains new highs and improving relative strength versus the S&P 500 for 10 trading days.",
-        "check": {
-          "kind": "soft",
-          "reason": "neutral lean \u2014 not scored"
-        }
-      },
-      "check_by": "2026-10-15",
+      "check_by": "2026-12-04",
       "engine_verdict": "Neutral \u2014 no clear edge"
     },
     {
-      "id": "2026-09-17-USPH-20260918081732-5",
-      "ticker": "USPH",
-      "name": null,
+      "id": "2026-11-06-TMDX-20261109112034-5",
+      "ticker": "TMDX",
+      "name": "TransMedics Group, Inc.",
       "lean": "cautious",
       "conviction": "low",
       "horizon_d": 20,
-      "thesis": "This is a genuine relative-weakness case rather than an extension-only short: the lagging verdict aligns with weak residual selection and negative momentum context. The entry is not blocked and price direction is up, so the bearish relative lean remains low conviction.",
+      "thesis": "The deterministic verdict identifies relative weakness, reinforced by a poor selection profile, weak entry axis and price below the 200-day average. The daily rebound prevents an avoid call, but the risk controls still favor expecting relative underperformance.",
       "evidence": [
         "Verdict: Lagging \u2014 relative weakness",
-        "Selection percentile 39",
-        "Momentum context z -0.80",
-        "Revisions z -0.51",
-        "Accounting flag: watch"
+        "Selection axis 34th percentile",
+        "Entry axis 26th percentile",
+        "Below 200-day average",
+        "Accounting quality flagged warn"
       ],
-      "dissent": "The upward price direction and unblocked entry could mark an early recovery that reverses the lagging signal.",
+      "dissent": "Exceptional reported growth, strong profitability and a fresh daily momentum turn could drive a sharp recovery from the depressed longer-term position.",
       "falsifier": {
-        "text": "USPH shifts out of the lagging state and sustains improving relative strength versus the S&P 500 for 10 trading days.",
+        "text": "TMDX reclaims its 200-day average, turns bullish on the weekly timeframe and outperforms the S&P 500.",
         "check": {
           "kind": "rel_return",
-          "subject_ticker": "USPH",
+          "subject_ticker": "TMDX",
           "vs": "SPY",
           "op": ">",
           "threshold": 0.05,
           "horizon_d": 20
         }
       },
-      "check_by": "2026-10-15",
+      "check_by": "2026-12-04",
       "engine_verdict": "Lagging \u2014 relative weakness"
     },
     {
-      "id": "2026-09-17-REXR-20260918081732-6",
-      "ticker": "REXR",
-      "name": null,
-      "lean": "neutral",
+      "id": "2026-11-06-STEP-20261109112034-6",
+      "ticker": "STEP",
+      "name": "StepStone Group",
+      "lean": "cautious",
       "conviction": "low",
       "horizon_d": 20,
-      "thesis": "The turn signal and favorable entry are offset by below-median residual selection, weak momentum context and below-median quality. With no active cycle block or additional risk caution, the provided state does not justify either a long or a relative short.",
+      "thesis": "The fresh-buy cycle signal conflicts with the deterministic relative-weakness verdict and price remains below the 200-day average. Given weak selection components and questionable accounting optics, the balance supports a low-conviction relative-underperformance lean rather than treating the tactical turn as established leadership.",
       "evidence": [
-        "Verdict: Neutral \u2014 no clear edge",
-        "Entry unblocked; entry percentile 62",
-        "Board state: TURN SIGNALED",
-        "Selection percentile 45",
-        "Quality percentile 44"
+        "Verdict: Lagging \u2014 relative weakness",
+        "Selection axis 35th percentile",
+        "Momentum context z-score -1.24",
+        "Below 200-day average",
+        "Accounting quality flagged watch"
       ],
-      "dissent": "Positive revisions and the current turn signal could overcome the weak selection context and produce relative upside.",
+      "dissent": "The bullish weekly cycle, positive MACD, strong quality factor and favorable tailwind axis could turn the rebound into sustained outperformance.",
       "falsifier": {
-        "text": "REXR sustains improving relative strength versus the S&P 500 for 10 trading days while the turn signal remains active.",
+        "text": "STEP reclaims its 200-day average and maintains outperformance versus the S&P 500 with the weekly uptrend intact.",
         "check": {
-          "kind": "soft",
-          "reason": "neutral lean \u2014 not scored"
+          "kind": "rel_return",
+          "subject_ticker": "STEP",
+          "vs": "SPY",
+          "op": ">",
+          "threshold": 0.05,
+          "horizon_d": 20
         }
       },
-      "check_by": "2026-10-15",
-      "engine_verdict": "Neutral \u2014 no clear edge"
+      "check_by": "2026-12-04",
+      "engine_verdict": "Lagging \u2014 relative weakness"
     }
   ],
   "disclaimer": "Accountable AI judgment on the deterministic top picks. The cross-sectional rank has no validated forward edge; these leans are fallible, falsifiable conditionals graded against reality \u2014 never position sizes. See the track record."

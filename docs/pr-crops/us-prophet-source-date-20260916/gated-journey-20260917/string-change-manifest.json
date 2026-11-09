@@ -1,0 +1,33 @@
+{
+  "preimage_head": "0a076cedd8094e5425e782aca976820e93ed6e8e",
+  "old_sha256": "8fe51aa611a3df4f31519732e0f231f865515609cffeda21f876b0b9c4a8d9b2",
+  "new_sha256": "c00a6e377d9c47abf88a6f048956f3d77da3bbb29b7f632ed9dc82edbe83a030",
+  "replacements": [
+    [
+      "Switch between tonight's candidate screen and the plan book",
+      "Switch between the candidate screen and the plan book"
+    ],
+    [
+      "\u5728\u4eca\u665a\u7684\u5019\u9009\u7b5b\u9009\u4e0e\u8ba1\u5212\u7c3f\u4e4b\u95f4\u5207\u6362",
+      "\u5728\u5019\u9009\u7b5b\u9009\u4e0e\u8ba1\u5212\u7c3f\u4e4b\u95f4\u5207\u6362"
+    ],
+    [
+      "more plan rows on tonight's board",
+      "more plan rows in the plan book"
+    ],
+    [
+      "\u4eca\u665a\u699c\u5355\u8fd8\u6709 {{ _life_visible_locked }} \u6761\u8ba1\u5212",
+      "\u8ba1\u5212\u7c3f\u4e2d\u53e6\u6709 {{ _life_visible_locked }} \u6761\u8ba1\u5212"
+    ],
+    [
+      "more names on tonight's board",
+      "more names in this screen"
+    ],
+    [
+      "\u4eca\u665a\u699c\u5355\u8fd8\u6709 {{ gate.locked }} \u53ea\u80a1\u7968",
+      "\u672c\u6b21\u7b5b\u9009\u8fd8\u6709 {{ gate.locked }} \u53ea\u80a1\u7968"
+    ]
+  ],
+  "only_six_literal_strings_changed": true,
+  "production": false
+}

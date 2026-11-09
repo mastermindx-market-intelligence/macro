@@ -1,0 +1,162 @@
+{
+  "schema": "mastermind.fabric_artifact_production.v1",
+  "run_id": "defense-fms-extracted-shell-tests-01a13300-a",
+  "root": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+  "parent": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+  "source_head_declared": "e664e6f02d84f7b44d01a3ee89f7c963dc89fb43",
+  "objective": "repair only tests/test_fms_ui.py after the Government Revenue page controller moved from inline HTML into templates/government-revenue-page.js.j2 (hosted CI run38524304418 failures)",
+  "artifact": {
+    "patched_file": "tests/test_fms_ui.py (the single allowed file; no product/source/data changes)",
+    "patch_file": "fms-tests.patch",
+    "patch_format": "unified diff, a/ b/ prefixes, applies with git apply -p1 and patch(1) -p1",
+    "patch_bytes": 8285,
+    "patch_sha256": "78b02cf504de3d55ada54ea6476ef5090a2d5c62bf138a20651f17384f9a80af",
+    "hunks": 7,
+    "patched_file_bytes": 18507,
+    "patched_file_sha256": "f95f89601b1f39046526c38e458d6254960b4dd590fa32d6f205c3c5bd31299d"
+  },
+  "supplied_inputs_verified": [
+    {
+      "path": "tests/test_fms_ui.py",
+      "declared_sha256": "553587f8e91f41b46dc7ed6cdeb52d153d8c87674f88db46b75a5ecd906a0f5d",
+      "declared_bytes": 15964,
+      "observed_sha256": "553587f8e91f41b46dc7ed6cdeb52d153d8c87674f88db46b75a5ecd906a0f5d",
+      "observed_bytes": 15964,
+      "match": true
+    },
+    {
+      "path": "templates/government-revenue-page.js.j2",
+      "declared_sha256": "1a64958ebbd16a777ec8e76b9e44ffbaa32b2f5dcdc18eaf6b5220d4bc0cae5f",
+      "declared_bytes": 124989,
+      "observed_sha256": "1a64958ebbd16a777ec8e76b9e44ffbaa32b2f5dcdc18eaf6b5220d4bc0cae5f",
+      "observed_bytes": 124989,
+      "match": true
+    },
+    {
+      "path": "templates/government_revenue.html.j2",
+      "declared_sha256": "104555bb470b2a01d913a15969e7ef9bef1f8bd11537e56574b86e559a6961a7",
+      "declared_bytes": 40962,
+      "observed_sha256": "104555bb470b2a01d913a15969e7ef9bef1f8bd11537e56574b86e559a6961a7",
+      "observed_bytes": 40962,
+      "match": true
+    }
+  ],
+  "environment": {
+    "python": "3.12.3",
+    "jinja2": "3.1.2 (present, used by harness render)",
+    "pytest": "9.1.1 (present, used for collection + selected run)",
+    "fastapi": "ABSENT (not installed in this lane; stubbed at import time only)",
+    "git": "present (git apply verification)",
+    "patch_1": "present (patch -p1 verification)",
+    "network": "none used; all inputs from the on-disk packet file"
+  },
+  "inputs_extraction": "supplied file bytes were extracted programmatically from the sealed packet file $HOME/lanes/tmp/defense-fms-extracted-shell-tests-01a13300-a.txt (body_sha256 9ef88b0cc8b3f058cd50f1332d52d3f7c7b563e28ca1884432877849c270b2db verified) and SHA-256-matched against each declared header, so no manual transcription is involved",
+  "checks_run": [
+    {
+      "check": "supplied-bytes SHA-256 + byte-count verification of all 3 packet files",
+      "result": "PASS (3/3 match declared values)"
+    },
+    {
+      "check": "diagnosis scan: locate each wiring symbol and each strip-list fragment in html template vs page controller",
+      "result": "CONFIRMED: rowsByMode.fms / fmsUI / createGovernmentRevenueFms / fms_case absent from html, present in page JS; all 13 JS fragments present exactly once in page JS; tab button present exactly once in html"
+    },
+    {
+      "check": "reproduce CI failures with ORIGINAL test file (direct call)",
+      "result": "REPRODUCED both: test_fms_tab_and_mode_wiring_present_in_the_shell fails on 'rowsByMode.fms' in TEMPLATE; test_fms_shell_delta_stays_inside_its_own_byte_budget fails with \"expected FMS shell fragment not found (test is stale): ',fms:[]'\"; page-fence test passed before and after"
+    },
+    {
+      "check": "repaired module: test_fms_tab_and_mode_wiring_present_in_the_shell",
+      "result": "PASS (direct call and pytest; html tab assertions kept on TEMPLATE, 4 wiring assertions moved to PAGE_JS — same 8 assertions, none deleted)"
+    },
+    {
+      "check": "repaired module: test_fms_shell_delta_stays_inside_its_own_byte_budget",
+      "result": "PASS (direct call and pytest)"
+    },
+    {
+      "check": "repaired module: test_generated_html_stays_inside_the_raw_edge_budget (unchanged)",
+      "result": "PASS"
+    },
+    {
+      "check": "measured FMS shell delta against supplied bytes",
+      "result": "html_delta=266 bytes (rendered), page_js_delta=2506 bytes (raw controller source), total=2772 bytes <= 8192-byte budget, delta > 0"
+    },
+    {
+      "check": "negative control: page-JS fragment drift (remove ,fms:[])",
+      "result": "budget test FAILS CLOSED: \"not found in the page controller script (test is stale)\""
+    },
+    {
+      "check": "negative control: HTML tab drift (data-mode=\"fms\" mutated)",
+      "result": "budget test FAILS CLOSED: \"not found in the HTML template (test is stale)\""
+    },
+    {
+      "check": "negative control: wiring symbol drift (fms_case removed from page JS)",
+      "result": "wiring test FAILS (assert fires on PAGE_JS)"
+    },
+    {
+      "check": "py_compile of patched test file",
+      "result": "PASS"
+    },
+    {
+      "check": "patch application: git apply --check, git apply, byte-compare against patched file, git apply -R --check, patch(1) -p1",
+      "result": "ALL PASS; applied result byte-identical"
+    },
+    {
+      "check": "pytest --collect-only old vs patched: test-name set comparison",
+      "result": "IDENTICAL (15 tests, same ids incl. parametrize; no test removed, renamed or weakened)"
+    },
+    {
+      "check": "budget constants unchanged",
+      "result": "RAW_HTML_BUDGET_BYTES=311_296 and FMS_SHELL_DELTA_BUDGET_BYTES=8_192 verbatim; no assertion, frozen string or negative control deleted or loosened"
+    }
+  ],
+  "measured": {
+    "html_rendered_bytes_with_fms": 42501,
+    "html_rendered_bytes_without_fms": 42235,
+    "html_delta_bytes": 266,
+    "page_js_bytes_with_fms": 124989,
+    "page_js_delta_bytes": 2506,
+    "total_delta_bytes": 2772,
+    "budget_bytes": 8192,
+    "note": "html measured through the test's own _render() path (which strips the _interfonts/_seo_head/_site_nav includes exactly as the test does); page controller measured on its raw template source"
+  },
+  "not_run_local_dependencies_missing": [
+    {
+      "tests": [
+        "test_u5_frozen_bilingual_table_present_verbatim",
+        "test_u5_vocabulary_avoids_house_banned_words",
+        "test_mutating_the_frozen_negative_fails_the_verbatim_check[*]"
+      ],
+      "reason": "templates/government-revenue-dossiers.js not supplied in packet; a clearly-marked stub was used only to allow module import and demonstrably fails loudly (missing frozen EN string), so these were NOT run as evidence; unchanged by this patch"
+    },
+    {
+      "tests": [
+        "test_fms_routes_reject_an_anonymous_reader[*]",
+        "test_fms_case_key_validation_returns_422_not_500",
+        "test_fms_case_key_validation_returns_422_when_authenticated"
+      ],
+      "reason": "fastapi not installed in this lane and app/government_revenue.py not supplied; stubbed imports fail loudly if exercised; unchanged by this patch"
+    },
+    {
+      "tests": [
+        "test_fms_site_twin_is_not_in_the_public_allowlist",
+        "test_no_fms_case_body_is_embedded_in_the_baked_html"
+      ],
+      "reason": "config/site_access.yml and site/government_revenue.html not supplied (stubs); local result is not evidence; unchanged by this patch"
+    }
+  ],
+  "limitations": [
+    "The full test module could not be executed end-to-end locally because fastapi, app/government_revenue.py, templates/government-revenue-dossiers.js, site/government_revenue.html and config/site_access.yml were not supplied; only the two repaired tests plus the unchanged page-fence test were executed against the supplied template bytes.",
+    "The two repaired tests were not executed against hosted CI; the parent owns the full-repo suite run.",
+    "Residual: the strip helper leaves the pre-existing \"fmsUI.invalidate();\" call inside renderIdentityContextInspector's invalidation chain in the stripped page JS (0 fmsStatus, 1 fmsUI residual), a conservative ~19-byte undercount identical in kind to the previously CI-green removal-list design; it does not affect the fail-closed stale guards.",
+    "The contract artifact directory /tmp/fabric-110534c8b115f3c0cab68d78fe33a3363334e449 already existed (created empty, mode 0700, by the lane runtime at packet issuance); it was used as-is without recreation, chmod, rename or deletion.",
+    "No GitHub publication, acceptance, or full-suite green is claimed."
+  ],
+  "constraints_respected": {
+    "single_file_patch": true,
+    "no_product_source_or_data_changes": true,
+    "no_tests_weakened_deleted_budgets_increased": true,
+    "no_external_requests": true,
+    "no_child_delegation": true,
+    "no_other_repo_effects": true
+  }
+}

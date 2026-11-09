@@ -1,0 +1,23 @@
+{
+  "kind": "supporting static studies; not Paper or product proof",
+  "data": "illustrative only",
+  "renderer": "SVG; PNG rendered with local sharp/librsvg",
+  "font": "DejaVu Sans fallback for study captures; final Paper uses qualified F02 font stack",
+  "locale": "EN raster studies; ZH copy and construction specified, native glyph/layout proof outstanding",
+  "files": [
+    "advanced-replay-1440-dark-en",
+    "equity-1440-dark-en",
+    "equity-390-light-en",
+    "equity-evidence-1024-light-en",
+    "equity-evidence-390-light-en",
+    "equity-source-1024-light-en",
+    "futures-1440-dark-en",
+    "futures-320-dark-en",
+    "futures-390-dark-en",
+    "futures-controls-390-dark-en",
+    "futures-evidence-390-dark-en",
+    "futures-footprint-1440-light-en",
+    "journey-chooser-return-1440-light-en",
+    "state-atlas-1440-light-en"
+  ]
+}

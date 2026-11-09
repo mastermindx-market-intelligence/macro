@@ -30,6 +30,19 @@ on the timer so a catch-up run cannot accrue at a random hour.
 Session derivation: timers fire on D+1; session = D is derived via
 derive_morning_session() which requires now >= 04:05Z and T-1 to be an XNYS
 session.  Pass ``session=`` explicitly to override (tests).
+
+Record publication: create-once records reuse the accepted atomic
+create-once primitive in engine.neuralweb.market_memory_pit.  The canonical
+record bytes are staged completely in a temporary file, fsynced, hard-linked
+to the final create-once path (an incumbent is never replaced), and the
+parent directory entry is fsynced before EXP_V2_HEAD.json may reference the
+record.  A short, zero-length, or otherwise failed write before publication
+leaves the final record absent and HEAD untouched.  A record that was
+published but whose directory fsync failed keeps its original identity and
+surfaces a typed error; it is not silently treated as a completed replay.
+An incumbent record that is unequal, empty, malformed, a symlink, or not a
+regular file is a typed ExperienceV2StoreError — never successful
+idempotence and never overwritten.
 """
 
 from __future__ import annotations
@@ -43,6 +56,7 @@ import sys
 from datetime import date, datetime, time, timezone
 from pathlib import Path
 from typing import Any
+from uuid import uuid4
 
 _REPO = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(_REPO))
@@ -87,6 +101,10 @@ class ExperienceV2ActivationError(ExperienceV2Error):
 
 class ExperienceV2SourceError(ExperienceV2Error):
     """Required source data unavailable."""
+
+
+class ExperienceV2StoreError(ExperienceV2Error):
+    """The experience-v2 store refused a create-once publication or read."""
 
 
 # ---------------------------------------------------------------------------
@@ -209,63 +227,17 @@ def load_registration_v2(repository_root: str | Path) -> dict[str, Any]:
 # ---------------------------------------------------------------------------
 
 
-def _read_sealed_bar(source_root: Path, *, session: date) -> dict[str, Any] | None:
-    """Read opportunity-eligible sealed bar for session from sources-spy-rest-v1."""
-    from scripts.capture_market_memory_technicals_v2 import (  # noqa: PLC0415
-        validate_spy_rest_source_root,
-    )
+def _read_sealed_bar(
+    source_root: Path, *, session: date, generation_id: str | None = None,
+) -> dict[str, Any] | None:
+    """Use the same verified owner selection as the technical projector."""
     from engine.neuralweb.market_memory_sources_spy import (  # noqa: PLC0415
-        SPY_FAMILY,
-        _validate_spy_rest_receipt,
-        _read_receipt_copies_by_validate,
-        _read_store_object,
-        _object_path,
-        _MAX_OBJECT_BYTES,
+        MarketMemorySourceError, read_verified_spy_rest_bar,
     )
-    from engine.neuralweb.market_memory_source_kernel import (  # noqa: PLC0415
-        _load_store_state,
-        SourceNotFound,
-        SourceStoreError,
-        _store_manifest_path,
-    )
-    from engine.neuralweb import market_memory as _mm  # noqa: PLC0415
-
-    validated = validate_spy_rest_source_root(source_root)
-    if not _store_manifest_path(validated).exists():
-        return None
     try:
-        state = _load_store_state(validated, family=SPY_FAMILY, authority=dict(_mm.AUTHORITY))
-    except Exception:  # noqa: BLE001
-        return None
-    session_str = session.isoformat()
-    for entry in reversed(state.generation["receipts"]):
-        try:
-            receipt, _ = _read_receipt_copies_by_validate(
-                validated, entry,
-                store_id=state.manifest["store_id"],
-                validate_fn=_validate_spy_rest_receipt,
-            )
-        except Exception:  # noqa: BLE001
-            continue
-        if receipt.get("session") != session_str:
-            continue
-        if not receipt.get("quality", {}).get("opportunity_eligible", False):
-            continue
-        try:
-            artifact, _ = _read_store_object(
-                _object_path(validated, receipt["artifact_sha256"]),
-                limit=_MAX_OBJECT_BYTES,
-                label="SPY REST source object",
-            )
-        except Exception:  # noqa: BLE001
-            continue
-        if artifact.get("results"):
-            return {
-                "session": session_str,
-                "bar": artifact["results"][0],
-                "source_generation_id": state.generation["generation_id"],
-            }
-    return None
+        return read_verified_spy_rest_bar(source_root, session=session, generation_id=generation_id)
+    except (MarketMemorySourceError, OSError, ValueError) as exc:
+        raise ExperienceV2SourceError(f"sealed SPY REST binding refused: {exc}") from exc
 
 
 def _read_technical_capture(
@@ -298,31 +270,125 @@ def _canonical_bytes_v2(value: Any) -> bytes:
     ).encode("utf-8")
 
 
-def _write_create_once_v2(path: Path, value: Any, *, label: str) -> None:
-    body = _canonical_bytes_v2(value)
-    path.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
+_EXPERIENCE_V2_RECORD_MAX_BYTES = 64 * 1024
+
+
+def _publish_record_v2(
+    exp_root: Path,
+    record_path: Path,
+    record: dict[str, Any],
+    *,
+    label: str,
+) -> tuple[bool, dict[str, Any]]:
+    """Publish one create-once experience-v2 record and return the stored bytes.
+
+    Composes the accepted atomic create-once primitive in
+    ``engine.neuralweb.market_memory_pit`` instead of a second storage
+    implementation: canonical bytes are staged in a temporary file, written in
+    full (zero-length writes are refused), fsynced, hard-linked to the final
+    path so an incumbent is never replaced, and the parent directory entry is
+    fsynced before this returns.  An incumbent that is unequal, empty,
+    malformed, a symlink, or not a regular file raises ``ExperienceV2StoreError``
+    instead of passing as idempotence.  The persisted record is read back from
+    disk so a lost create race reports the stored bytes, never this process's
+    losing candidate.
+    """
+    from engine.neuralweb import market_memory_pit  # noqa: PLC0415
+
+    body = _canonical_bytes_v2(record)
     try:
-        fd = os.open(
-            path,
-            os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_NOFOLLOW", 0),
-            0o600,
+        created = market_memory_pit._write_create_once(
+            exp_root, record_path, body, label=label
         )
-    except FileExistsError:
-        return  # idempotent
+        persisted, _persisted_body = market_memory_pit._read_canonical_object(
+            record_path,
+            limit=len(body),
+            label=f"published {label}",
+        )
+    except (
+        market_memory_pit.MarketMemoryCaptureError,
+        market_memory_pit.MarketMemoryStoreError,
+        OSError,
+    ) as exc:
+        raise ExperienceV2StoreError(
+            f"experience-v2 {label} publication refused: {exc}"
+        ) from exc
+    return created, persisted
+
+
+def _read_existing_record_v2(record_path: Path, *, label: str) -> dict[str, Any]:
+    """Bounded, strict read of an incumbent record; links are refused.
+
+    ``_read_canonical_object`` opens with ``O_NOFOLLOW``, requires a regular
+    non-empty file inside its byte bound, compares the bounded descriptor read
+    with the initial file size, and requires canonical strict JSON. It does
+    not independently reread or refstat the file. Empty (zero-byte), malformed,
+    symlinked, or nonregular incumbents therefore surface as typed store
+    errors rather than as idempotence evidence.  Regularity is checked first
+    with ``lstat`` so a nonregular incumbent (FIFO, device, directory) is
+    refused without ever opening it.
+    """
+    import stat  # noqa: PLC0415
+
+    from engine.neuralweb import market_memory_pit  # noqa: PLC0415
+
     try:
-        view = memoryview(body)
-        while view:
-            n = os.write(fd, view)
-            view = view[n:]
-        os.fsync(fd)
-    finally:
-        os.close(fd)
+        metadata = record_path.lstat()
+    except OSError as exc:
+        raise ExperienceV2StoreError(
+            f"existing experience-v2 record cannot be inspected ({label}): {exc}"
+        ) from exc
+    if not stat.S_ISREG(metadata.st_mode):
+        raise ExperienceV2StoreError(
+            f"existing experience-v2 record is not a regular file ({label})"
+        )
+    try:
+        payload, _body = market_memory_pit._read_canonical_object(
+            record_path,
+            limit=_EXPERIENCE_V2_RECORD_MAX_BYTES,
+            label=label,
+        )
+    except (
+        market_memory_pit.MarketMemoryCaptureError,
+        market_memory_pit.MarketMemoryStoreError,
+    ) as exc:
+        raise ExperienceV2StoreError(
+            f"existing experience-v2 record is not usable idempotence "
+            f"evidence ({label}): {exc}"
+        ) from exc
+    return payload
+
+
+def _validate_persisted_record_v2(
+    record: dict[str, Any],
+    *,
+    session: str,
+    registration_id: str,
+) -> None:
+    """Require schema/session/registration identity before HEAD may cite a record."""
+    schema = record.get("schema")
+    record_session = record.get("session")
+    record_registration = record.get("registration_id")
+    if (
+        schema != EXPERIENCE_V2_RECORD_SCHEMA
+        or record_session != session
+        or record_registration != registration_id
+    ):
+        raise ExperienceV2StoreError(
+            "existing experience-v2 record identity mismatch "
+            f"(schema={schema!r}, session={record_session!r}, "
+            f"registration_id={record_registration!r}) for {session}; "
+            "refusing idempotence and refusing to overwrite it"
+        )
 
 
 def _write_head_v2(root: Path, head: dict[str, Any]) -> None:
+    """Atomically advance HEAD with complete fsynced bytes and a durable entry."""
+    from engine.neuralweb import market_memory_pit  # noqa: PLC0415
+
     body = _canonical_bytes_v2(head)
     path = _experience_v2_head_path(root)
-    tmp = root / f".EXP_V2_HEAD.tmp.{os.getpid()}"
+    tmp = root / f".EXP_V2_HEAD.tmp.{os.getpid()}.{uuid4().hex}"
     try:
         fd = os.open(
             tmp,
@@ -332,12 +398,21 @@ def _write_head_v2(root: Path, head: dict[str, Any]) -> None:
         try:
             view = memoryview(body)
             while view:
-                n = os.write(fd, view)
-                view = view[n:]
+                written = os.write(fd, view)
+                if written <= 0:
+                    raise OSError("short write")
+                view = view[written:]
             os.fsync(fd)
         finally:
             os.close(fd)
         os.replace(tmp, path)
+        # HEAD is the pointer that references published records; its own
+        # directory entry must be durable before the caller reports success.
+        market_memory_pit._directory_fsync(root)
+    except OSError as exc:
+        raise ExperienceV2StoreError(
+            f"cannot durably advance experience-v2 HEAD: {exc}"
+        ) from exc
     finally:
         try:
             tmp.unlink(missing_ok=True)
@@ -464,11 +539,25 @@ def accrue_spy_experience_v2(
 
     session_str = session.isoformat()
 
-    # Check idempotency
+    # Check idempotency against the persisted incumbent.  A symlink, empty,
+    # malformed, or foreign-identity record fails closed as a typed store
+    # error: it is never followed, never overwritten, and never counted as a
+    # successful replay.
     records_dir = _experience_v2_records_dir(exp_root)
     record_path = records_dir / f"{session_str}.json"
-    if record_path.exists():
-        existing = json.loads(record_path.read_bytes())
+    if record_path.exists() or record_path.is_symlink():
+        existing = _read_existing_record_v2(
+            record_path, label=f"existing exp-v2 record {session_str}"
+        )
+        _validate_persisted_record_v2(
+            existing, session=session_str, registration_id=registration_id
+        )
+        # A previous link may be visible after its directory fsync failed.
+        # Reuse the owner to verify these exact bytes and establish durability
+        # before reporting idempotence; this never repairs or advances HEAD.
+        _created, existing = _publish_record_v2(
+            exp_root, record_path, existing, label=f"existing exp-v2 record {session_str}"
+        )
         return {
             "status": "already_present",
             "session": session_str,
@@ -477,8 +566,14 @@ def accrue_spy_experience_v2(
             "record": existing,
         }
 
-    # Read sealed bar
-    sealed = _read_sealed_bar(source_path, session=session)
+    # An existing technical capture owns the immutable source selection.
+    # Current HEAD only authenticates that pin's published ancestry; unrelated
+    # appends and later-known corrections are not new eligibility conditions.
+    tech_capture = _read_technical_capture(tech_path, session=session)
+    sealed = _read_sealed_bar(
+        source_path, session=session,
+        generation_id=tech_capture["source_generation_id"] if tech_capture is not None else None,
+    )
     if sealed is None:
         record = {
             "schema": EXPERIENCE_V2_RECORD_SCHEMA,
@@ -488,8 +583,13 @@ def accrue_spy_experience_v2(
             "reason": "no_opportunity_eligible_sealed_bar",
             "recorded_at": now.isoformat().replace("+00:00", "Z"),
         }
-        _write_create_once_v2(record_path, record, label=f"exp-v2 abstain {session_str}")
-        _advance_head_v2(exp_root, session_str, registration_id, record)
+        _created, persisted = _publish_record_v2(
+            exp_root, record_path, record, label=f"exp-v2 abstain {session_str}"
+        )
+        _validate_persisted_record_v2(
+            persisted, session=session_str, registration_id=registration_id
+        )
+        _advance_head_v2(exp_root, session_str, registration_id, persisted)
         return {
             "status": "abstained",
             "session": session_str,
@@ -497,8 +597,6 @@ def accrue_spy_experience_v2(
             "message": f"no sealed bar for {session_str}",
         }
 
-    # Read technicals
-    tech_capture = _read_technical_capture(tech_path, session=session)
     if tech_capture is None:
         record = {
             "schema": EXPERIENCE_V2_RECORD_SCHEMA,
@@ -508,14 +606,27 @@ def accrue_spy_experience_v2(
             "reason": "no_technicals_v2_capture",
             "recorded_at": now.isoformat().replace("+00:00", "Z"),
         }
-        _write_create_once_v2(record_path, record, label=f"exp-v2 abstain-tech {session_str}")
-        _advance_head_v2(exp_root, session_str, registration_id, record)
+        _created, persisted = _publish_record_v2(
+            exp_root, record_path, record, label=f"exp-v2 abstain-tech {session_str}"
+        )
+        _validate_persisted_record_v2(
+            persisted, session=session_str, registration_id=registration_id
+        )
+        _advance_head_v2(exp_root, session_str, registration_id, persisted)
         return {
             "status": "abstained",
             "session": session_str,
             "registration_id": registration_id,
             "message": f"no technicals-v2 capture for {session_str}",
         }
+
+    from scripts.capture_market_memory_technicals_v2 import (  # noqa: PLC0415
+        TechnicalsV2Error, validate_capture_source_binding,
+    )
+    try:
+        validate_capture_source_binding(tech_capture, sealed, session=session, as_of=now)
+    except TechnicalsV2Error as exc:
+        raise ExperienceV2SourceError(f"technical/source binding refused: {exc}") from exc
 
     feature_obj = tech_capture.get("feature_object", {})
     close_ratio = feature_obj.get("state", {}).get("price", {}).get(
@@ -533,8 +644,14 @@ def accrue_spy_experience_v2(
             "reason": "lookback_incomplete",
             "recorded_at": now.isoformat().replace("+00:00", "Z"),
         }
-        _write_create_once_v2(record_path, record, label=f"exp-v2 abstain-lookback {session_str}")
-        _advance_head_v2(exp_root, session_str, registration_id, record)
+        _created, persisted = _publish_record_v2(
+            exp_root, record_path, record,
+            label=f"exp-v2 abstain-lookback {session_str}",
+        )
+        _validate_persisted_record_v2(
+            persisted, session=session_str, registration_id=registration_id
+        )
+        _advance_head_v2(exp_root, session_str, registration_id, persisted)
         return {
             "status": "abstained",
             "session": session_str,
@@ -553,22 +670,27 @@ def accrue_spy_experience_v2(
             "session": session_str,
             "profile": "market_memory.private.spy_experience_accrual.v2",
             "ticker": "SPY",
-            "regular_session_close_authenticated": False,
-            "price_basis": "unadjusted_daily_aggregate_sealed_rest_bar",
+            "regular_session_close_authenticated": feature_obj["regular_session_close_authenticated"],
+            "price_basis": feature_obj["price_basis"],
             "price_raw_close_ratio_20_sessions": close_ratio,
         },
         "recorded_at": now.isoformat().replace("+00:00", "Z"),
     }
 
-    _write_create_once_v2(record_path, record, label=f"exp-v2 {session_str}")
-    _advance_head_v2(exp_root, session_str, registration_id, record)
+    _created, persisted = _publish_record_v2(
+        exp_root, record_path, record, label=f"exp-v2 {session_str}"
+    )
+    _validate_persisted_record_v2(
+        persisted, session=session_str, registration_id=registration_id
+    )
+    _advance_head_v2(exp_root, session_str, registration_id, persisted)
 
     return {
         "status": "admitted",
         "session": session_str,
         "registration_id": registration_id,
         "message": f"v2 admitted for {session_str}",
-        "feature": record["feature"],
+        "feature": persisted["feature"],
     }
 
 

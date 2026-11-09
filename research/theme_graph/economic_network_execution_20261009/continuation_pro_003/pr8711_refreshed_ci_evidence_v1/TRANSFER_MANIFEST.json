@@ -1,0 +1,34 @@
+{
+  "archive_bytes": 4185381,
+  "archive_sha256": "718dfac3207372bfb3d178712f85e1f847333c0acf5d3775d79ee9c43ceb0bf8",
+  "base64_chars": 5580508,
+  "file_count": 5,
+  "files": [
+    {
+      "bytes": 29242,
+      "path": "pr8711_refreshed_ci_evidence_v1/ARCHIVE_MANIFEST.json",
+      "sha256": "6b44652c3390957569f5190e31c9a89e3d49b49206ee35043f93631cde520bc5"
+    },
+    {
+      "bytes": 5690,
+      "path": "pr8711_refreshed_ci_evidence_v1/ARCHIVE_README.md",
+      "sha256": "c2c295f2feb9bf7ba32e4c008fb96f2747fffcbf80535518ebe859c098b70f40"
+    },
+    {
+      "bytes": 5551,
+      "path": "pr8711_refreshed_ci_evidence_v1/ARCHIVE_VERIFICATION.json",
+      "sha256": "87f79ddc656aacded38238d1cf0b72ccc609c411f36541309e41a078a0053dd0"
+    },
+    {
+      "bytes": 20395,
+      "path": "pr8711_refreshed_ci_evidence_v1/OBSERVATION_REPORT.md",
+      "sha256": "64a2c476c3dcf128c23d56549ecc47c9ad330df4bcc8fb64db4e4b7317d95686"
+    },
+    {
+      "bytes": 4171717,
+      "path": "pr8711_refreshed_ci_evidence_v1/PR8711_REFRESHED_CANDIDATE_CI_EVIDENCE.tar.gz",
+      "sha256": "9c6baa4681447f390cb176ebbe18ae39b6362daee64884799a0fec9bf42b00ce"
+    }
+  ],
+  "schema": "economic_network.frozen_ci_transport/v1"
+}

@@ -1,0 +1,15 @@
+{
+  "kind": "bounded_canonical_partial_render",
+  "base_commit": "96d3ddf6d500796573c0269da867409026586d94",
+  "source_bundle": "78ec0ad274f00a29",
+  "source_session": "2026-09-18",
+  "before_sha256": "574cac5491c29080426211421dbfece7ccee3bf393b918d4996db6002afbb763",
+  "after_sha256": "035aae0bebe23544f2c5abc4d73fd9c67049990233d832a0294832b1c78860e8",
+  "asset_sha256": "47a6eb04c763621586810accfc35777113ccaa982be3a520716f97f989428abd",
+  "rendered_templates": [
+    "_risk_envelope_band.html.j2",
+    "_risk_envelope_band.css.j2"
+  ],
+  "preserved": "Every byte outside existing risk section, scoped CSS, risk-button hint insertion and script content key.",
+  "full_builder": "Not rerun: same known untracked-store limitation; no collectors or market data writes."
+}
