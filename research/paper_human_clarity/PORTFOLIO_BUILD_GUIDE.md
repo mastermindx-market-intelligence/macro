@@ -1,6 +1,6 @@
 # Paper clarity — portfolio build guide
 
-Date: 2026-11-08. This is the implementation companion for the Chairman-directed Paper clarity pass. Design edits do not establish application implementation or production proof.
+Date: 2026-11-09. This is the implementation companion for the Chairman-directed Paper clarity pass and its continued workflow enhancement. Design edits do not establish application implementation or production proof.
 
 ## Authority and delivery
 
@@ -10,9 +10,9 @@ Product pages carry the current question, result, relevant limitation, and next 
 
 ## Applied index
 
-The clarity pass is applied across the 15 edited files listed in [PORTFOLIO_DISPOSITIONS.md](PORTFOLIO_DISPOSITIONS.md). That index is the current page/root directory. [APPLIED_EFFECTS.json](APPLIED_EFFECTS.json) supplies exact applied maps; the other registers preserve original proposals and preimages. Do not interpret their earlier proposal status as a new instruction to repeat a mutation.
+The initial clarity pass edited15 files. The continued pass also corrected Mastermind OS and deepened six previously edited files. [PORTFOLIO_DISPOSITIONS.md](PORTFOLIO_DISPOSITIONS.md) remains the current page/root directory. [APPLIED_EFFECTS.json](APPLIED_EFFECTS.json) and FINAL_QA.json record the first pass; [WORKFLOW_ENHANCEMENT_REGISTER.json](WORKFLOW_ENHANCEMENT_REGISTER.json) records the subsequent exact effects,104 current workflow frames, returns and visual checks. [WORKFLOW_ENHANCEMENTS.md](WORKFLOW_ENHANCEMENTS.md) carries the continued implementation contract. Earlier proposal/assessment status is historical, not an instruction to repeat a mutation.
 
-Current shared rule: Design System 9X3-0 on p-9-0, inside 9ZX-0. News has its local rule 2J5-0 in Build. The personal Paper skill enforces capture-before-removal, user-help destinations and separate builder documentation.
+Current shared rule: Design System9X3-0 on p-9-0, now inside content-fit carrier ANF-0. AND-0 adds current-variant/claim consistency; see DESIGN_DOCTRINE §8 Required review. News retains local rule2J5-0 in Build. The synchronized personal Paper skill already enforces doctrine reading, capture-before-removal, user-help destinations and separate builder documentation.
 
 Gallery parents arrange complete frames with an 80px gap. They are reference organization, not a combined product surface. Extract the current product child. New whole-frame placements preserve the existing content-node IDs.
 
@@ -165,20 +165,23 @@ The four-phone clock layout keeps Reference and Published together. Source avail
 
 ### User help and navigation contract
 
-User-help page p-J-0 has:
+User-help page p-J-0 retains saved-research, policy comparison and the source/method matrix. Calculation index and return examples moved intact to the completed calculation-help gallery RKV-0 on p-N-0:
 
 - NUB-0/NUN-0: saved-research explanation, EN dark/light.
 - NUZ-0/NVB-0: equivalent ZH explanation, dark/light.
 - NVN-0/NW0-0: policy-rate comparison, EN dark/light.
-- O17-0/O23-0: contextual return explanation, EN/ZH.
-- O1H-0/O2D-0: six-choice method indexes, EN/ZH.
+- O17-0/O23-0: original contextual return examples, now p-N-0, with light/dark companion variants.
+- O1H-0/O2D-0: original six-choice method indexes, now p-N-0, with light/dark companion variants.
+- RKV-0:32 calculation-help frames covering all six topic bodies, four locale/theme indexes and comparison/index return contexts.
+- RVI-0 on p-O-0:36 Library result/qualification/return states.
+- S89-0 on p-P-0:16 tool-method views, four tools in EN/ZH and light/dark.
 - O39-0: complete ZH source-and-method matrix, translated from M06-0.
 
 Saved-state outcomes and comparison states have separate p-K-0 roots O12-0 and O14-0. Opening these references is not a real save. An unknown outcome must be reconciled against the original request; it is not permission to resubmit or show success. “Arm” and “Armed” examples were separated from the actual Arm controls.
 
 New named entries are O30-0 (Calculation methods at M06-0), O33-0 (Tool method at 4F1-0), and O36-0 (Return calculation at 6G-0). The general index opens one topic at a time. Preserve the selected tool/market/issuer/field, vintage, units, period/currency/benchmark, source record and invoking scroll/focus. Enter/Space opens; close/Escape returns to that actual opener. Opening help never saves research, arms a watch, changes a filter or creates a second history object.
 
-[INTERNATIONAL_METHOD_BINDINGS.json](INTERNATIONAL_METHOD_BINDINGS.json) corrects the inventory to 55 board mapping records and 88 captured labels: 72 navigation candidates, nine prose false matches and seven catalogue filters. Existing real source/evidence/calculation destinations are reused. Thirteen contextual section variants and 17 selected-tool definitions remain in the source contract for the reusable help component. The Paper method index and return examples are design patterns, not proof that every topic is rendered or every route is implemented.
+[INTERNATIONAL_METHOD_BINDINGS.json](INTERNATIONAL_METHOD_BINDINGS.json) corrects the inventory to 55 board mapping records and 88 captured labels: 72 navigation candidates, nine prose false matches and seven catalogue filters. Existing real source/evidence/calculation destinations are reused. Thirteen contextual section variants and 17 selected-tool definitions remain in the source contract for the reusable help component. The six calculation topics are now rendered, and eight observed Library origins have result designs. These native designs do not prove runtime routes, focus behavior, backend adapters or source availability.
 
 The full Chinese matrix preserves the same row/status data as English. It keeps 附条件 distinct from 已获取并完成核验 and market holiday 休市 distinct from dated session 已收盘. All aligned numeric values survive. The language selector visibly chooses 中文. Source eligibility, corrections, units and all four clocks remain present.
 
@@ -194,7 +197,7 @@ Saved thesis and watch definitions remain separate from evidence, reply and revi
 
 ### Unresolved source bindings
 
-The exact seven missing tool routes and two provider-URL bindings remain in the method register. Implementing generic help does not complete those tools. Preserve the R14 desktop/mobile chronology and confirmation/refutation/expiry fixture mismatch as an explicit qualification issue; arbitrary financial fixture edits would conceal it.
+The original seven unrepresented tool origins, plus newly discovered3OZ-0, now have native result destinations. Runtime binding and source qualification for all eight origins, and the two provider URLs, remain unverified in the method register. Implementing generic help alone never completes a result tool. Preserve the R14 desktop/mobile chronology and confirmation/refutation/expiry fixture mismatch as an explicit qualification issue; arbitrary financial fixture edits would conceal it.
 
 The corrected Japan curve design is 10Y−2Y. The Macro country engine field inspected during source comparison is 10Y−3M, while the US anchor uses 10Y−2Y. Neither establishes the live Japan binding. Keep unavailable until the exact source pair is proved; the +42bp Paper fixture is not new market data.
 
@@ -221,8 +224,14 @@ Final connected-driver wording says line styles show evidence status, relationsh
 
 Popup review and future outcome states are separate. Draft and Save unavailable remain visible in the gated review. Future unknown states retain Check save status and Back to story; no false save/monitoring/delivery conclusion is shown. Dark builder notes use a matching dark wrapper AIE-0, preserving the original EN/ZH focus, same-request and return constraints.
 
+## Continued current designs and source contracts
+
+News p-5-0 /3HH-0 is the current contextual Headlines → Activity → requested help → Activity → Headlines composition. Its20 EN/ZH dark states include partial coverage, stream interruption, count-unavailable/headlines-usable and explicit focus-return examples. Older2RL-0 is preserved on Build p-3-0 under3H0-0; its publisher, missing-story, rights and review conditions remain requirements. The Paper13/91 chart fixture and original mismatched SVGs have explicit provenance in WORKFLOW_ENHANCEMENT_REGISTER.json. It is not the separate source-backed Terminal thin fixture.
+
+The continued portfolio pass consolidates Ontology’s selected oil evidence into one pair of exact-value cards; preserves duplicate tables/conditions in AXF-0; corrects Prophet Y1G save promises against13L8; moves OS’s owner-architecture note into ZMN-0; and relocates Popup9TH/9ZG unqualified forecast studies to AZR-0, leaving A5I/A7G current. Original copy, node lineage, detailed behavior and unchanged holds are in the continuation guide/register.
+
 ## Verification and future builder acceptance
 
 The applied source maps, current node parent readbacks and representative native renders are in APPLIED_EFFECTS.json and FINAL_QA.json. Visual checks covered new help, translated source matrix, supported theme/language examples, key narrow layouts and repaired fixed-height compositions. No new application tests were invented for this design/doc-only change.
 
-Before application delivery, verify each real user path in the incumbent application: meaningful states, identical calculations, permission boundaries, keyboard/touch behavior, focus/scroll return, localized text, narrow layouts and exact source owners. Use the existing component/state/data owner. A Paper button or clean screenshot does not establish a working backend or production route.
+Apply DESIGN_DOCTRINE §8’s current-variant and assurance-strength check at design acceptance. Before application delivery, verify each real user path in the incumbent application: meaningful states, identical calculations, permission boundaries, keyboard/touch behavior, focus/scroll return, localized text, narrow layouts and exact source owners. Use the existing component/state/data owner. A Paper button or clean screenshot does not establish a working backend or production route.
