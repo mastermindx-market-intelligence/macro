@@ -16490,12 +16490,6 @@ jobs:
           tests/test_causal_audit.py tests/test_causal_inventory.py
           tests/test_causal_schema.py tests/test_causal_scout.py
           tests/test_causal_targets.py tests/test_sf_brainstorm.py -q
-      - name: frozen Signal Foundry numerical battery and clock regressions
-        run: >
-          python -m pytest
-          tests/test_sf_harness.py tests/test_sf_clock_repair.py
-          tests/test_sf_results.py tests/test_sf_spec.py tests/test_sf_transforms.py
-          tests/test_sf_screen.py tests/test_sf_seeds.py -q
 
   rlt-rebalance-calendar-pulse:
     if: ${{ false }}
@@ -53263,6 +53257,9 @@ jobs:
     # Existing trusted executor/partitioner owns execution; no new workflow or runner.
     # Literal targets preserve an auditable inventory; a pytest wildcard makes
     # this owner unscoped in the current planner. Keep the inventory test in sync.
+    # Retain named imports/material inputs; opaque provider subprocesses do not
+    # own unrelated page or scoring changes. The existing closure audit binds this scope.
+    scope: exclusive
     paths:
       - "engine/signal_foundry/**"
       - "engine/trial_ledger.py"
@@ -53271,6 +53268,31 @@ jobs:
       - "scripts/codex_signal_lane.py"
       - "tests/test_sf_*.py"
       - ".github/ci/legacy-jobs.yml"
+      - "config/ai_pricing.yml"
+      - "config/capability_manifest.yml"
+      - "config/metabolism_budget.yml"
+      - "config/signal_foundry.yml"
+      - "config/signal_foundry_blocklist.yml"
+      - "engine/__init__.py"
+      - "engine/codex_lane/__init__.py"
+      - "engine/codex_lane/runner.py"
+      - "engine/codex_provider.py"
+      - "engine/llm_auth.py"
+      - "engine/metabolism/__init__.py"
+      - "engine/metabolism/budget_gate.py"
+      - "engine/neuralweb/__init__.py"
+      - "engine/neuralweb/capability_broker.py"
+      - "engine/neuralweb/key_pool.py"
+      - "engine/ollama_provider.py"
+      - "engine/provider_health.py"
+      - "engine/signal_frontier_docket.py"
+      - "engine/signal_lab.py"
+      - "lib/__init__.py"
+      - "lib/ai_costs.py"
+      - "lib/config.py"
+      - "research/evidence/signal-lab-clock-repair-20260915/recheck.py"
+      - "scripts/__init__.py"
+      - "tests/__init__.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

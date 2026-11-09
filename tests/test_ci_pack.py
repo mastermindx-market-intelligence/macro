@@ -4531,6 +4531,8 @@ def test_workspace_runtime_contracts_can_start_the_ci_that_validates_them() -> N
 # ---------------------------------------------------------------------------
 
 CURATED_EXCLUSIVE = {
+    # Foundry retains its complete named closure without opaque provider fallbacks.
+    "signal-foundry-regressions",
     "press-account-claim-consumer",
     # GDELT leaf suites own their exact import/read closure.
     "gdelt-news-leaves",
@@ -9450,9 +9452,18 @@ def test_signal_foundry_clock_regressions_have_selected_code_proof():
 
     scoped, _ = PACK.infer_job_scopes([owner])
     assert len(scoped) == 1 and scoped[0].is_scoped
+    assert scoped[0].exclusive
+    assert scoped[0].fallback_paths == ()
     for changed_path in (
         "tests/test_sf_clock_repair.py",  # ci-trigger-closure: data
         "engine/signal_foundry/harness.py",  # ci-trigger-closure: data
     ):
         selected, _ = PACK.select_jobs(scoped, [changed_path])
         assert [job.job_id for job in selected] == ["signal-foundry-regressions"]
+    for unrelated_path in (
+        "templates/index.html",  # ci-trigger-closure: data
+        "scripts/build_free_content.py",  # ci-trigger-closure: data
+        "engine/prophet/plan_book.py",  # ci-trigger-closure: data
+    ):
+        selected, _ = PACK.select_jobs(scoped, [unrelated_path])
+        assert selected == [], f"Foundry selected an unrelated path: {unrelated_path}"
