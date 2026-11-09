@@ -2833,3 +2833,38 @@ Read-only source review identified a concrete focus transition gap: a keyboard u
 The Chinese survivorship explanation also calls retained companies “winners,” adding a performance implication not established by survival. Correct that phrase without changing coverage or methodology.
 
 PR10893 and this audit remain Draft/unmerged. Incumbent PR10705 admission/calendar and all wider source, model, programme, browser and release holds remain. Continue the parent mission after this saved phase.
+
+
+## 59. Confluence keyboard reload recovery and neutral survivorship — 9 November 2026
+
+[Dependent Draft PR10893](https://github.com/mastermindx-market-intelligence/Macro/pull/10893) is at `1c868e55b99fe52d5f90310bcbd4a7546fdb2c22`. A keyboard user could activate Check access, receive a mismatching source generation and lose focus to the page body when the retry disappeared. The existing Reload latest page action was visible but received no focus. This was reproduced on the actual saved page in EN 1440 and ZH 320.
+
+The existing showState() now reveals the message and Reload action before transferring focus from the currently focused retry. After synchronous focus callbacks, it requires the same inFlight ticket and existing sameRequest epoch/user check before hiding the old control. If focus returns to retry, the control stays visible; newer public focus remains untouched. Synchronous auth invalidation wins over the outer render. Only the guarded retry visibility write remains after focus; there is no new lifecycle, auth, focus or request owner.
+
+### Consumer proof and exact boundaries
+
+**10 focused recovery cases in 10 contexts pass**, PID 77939, 16.58 seconds; **14 existing compatibility cases in 14 contexts pass**, PID 78170, 20.65 seconds. Both report zero page errors in Chrome 157.0.8103.39. The ten recovery cases use the actual saved HTML/protected pair; the fourteen compatibility cases use explicit synthetic inputs rendered by the actual controller.
+
+The focused suite checks five behaviors in each language/layout: normal focus-before-hide handoff; user focus moved while a response is pending; synchronous sign-out on Reload focus; focus returned to retry; and a callback choosing another public control. Both normal paths continue through native Enter on Reload, exact repeated-query/fragment retention, valid matching-pair hydration and sign-out restoration. Public card markup remains exact in each case. The controlled mismatch changes only the full-source hash while retaining schema and clock. AUTH and HTTP are local fixtures, not live entitlement.
+
+**92 existing page tests pass**, PID 78258, 13.23 seconds pytest/14.64 seconds process. Four original before/after status captures were visually inspected and read back exactly; final Reload actions have visible focus and retain 44px-or-larger height and containment.
+
+The six-case baseline passed two moved-focus cases and failed four expectations. Two failures reproduce one focus-loss defect in two layouts. Two callback expectations fail because the absent focus transfer never triggers their listener; they are not two independent additional product bugs. The full original 769,505-byte report is preserved losslessly in gzip, with a separately labeled readable projection replacing repeated markup with canonical hashes and excerpting very long assertions.
+
+The status function and one Chinese phrase are the only template/saved-HTML changes. Reversing both restores the parent bytes exactly. All CSS, complete card markup, method figures/motion, hero, hrefs and other script functions remain exact. Builder, page tests, protected JSON, source receipt/data/counts/ranking and tagged CTA are unchanged. Actual rendered controller/honesty components match the saved page; protected JSON matches its producer. Nine source/text files, four PNGs and the raw-report gzip read back exactly.
+
+[Implementation, workflow diagram, captures and proof](https://github.com/mastermindx-market-intelligence/Macro/blob/1c868e55b99fe52d5f90310bcbd4a7546fdb2c22/research/design_candidates/confluence_compatibility_20261109/FOCUS_RECOVERY.md) links the original/final reports and exact reproduction commands. Earlier method/layout/comparison proof keeps its own source identity.
+
+### Chinese wording and Paper alignment
+
+The survivorship explanation changes **都是活下来的赢家** to **都是留存下来的公司**, removing an unsupported performance implication. Coverage and the surrounding caveat remain unchanged. Existing R2 anatomy already says survivor bias neutrally, so it needs no customer-frame copy replacement.
+
+The existing [Build guide](https://app.paper.design/file/01M6Y3DCDDW541ZR38J1V52A9Y/p-3-0) now adds editable EN-desktop/ZH-mobile recovery states in group 2UK-0. Both show the existing message and static Reload focus ring. Eight prior text nodes explain request ownership, focus-before-hide ordering, reentrancy, current proof and source links.
+
+All 227 prior div identities, parents and styles remain exact; the recovery group adds 14 div nodes. The complete method/access examples 2SL-0 and R4 subtree 2I3-0 stay byte-exact. Tokens remain 6234666b. The final recovery examples were visually inspected and exactly the owned Build/example roots finished. [Full Paper/source receipt](PAPER_CONFLUENCE_FOCUS_RECOVERY_20261109.json) contains before/after JSX, operation receipts, source readback and final conservation.
+
+### Continuing the visible state hierarchy
+
+The qualified-zero source branch currently renders its primary outcome as an 18px H3, while unavailable and positive branches have H1 headings. Promote only the valid-empty title to H1 with explicit primary-heading spacing/type. Keep its current wording, qualified-zero predicate, source clock, explanation and exact Open Mastermind destination. Check both narrow languages using the existing qualified empty fixture; leave positive/unavailable headings and existing access owners untouched.
+
+The source and audit remain Draft/unmerged. Incumbent PR10705's admission/calendar refusal, known 960px shared-navigation defect and all wider model, source, programme, browser and release boundaries remain.
