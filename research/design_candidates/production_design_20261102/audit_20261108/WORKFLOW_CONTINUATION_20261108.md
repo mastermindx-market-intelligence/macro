@@ -2168,3 +2168,43 @@ Native parent inspection proved **7M9-0 is on p-7-0**, while **73U-0 on p-6-0** 
 All 57 Build IDs/styles/parents and unaffected text remain exact outside **7YQ, 7MV, 7MZ and 7NF**. The reference JSX remains exact, page order stays unchanged and token hash remains **ac191fd9**. The amended contract/proof modules were captured and inspected; the exact Build working indicator was released. [PAPER_PRIMARY_ESCAPE_20261109.json](PAPER_PRIMARY_ESCAPE_20261109.json) preserves source readbacks, before/after JSX and the four observed Paper operations.
 
 The parent mission continues. The next source-proven defect is in primary Browse `filters()`: it can hide a focused result or the no-results Clear action before recovering focus. Continue in that existing owner, preserve surviving/unrelated focus and the separate answer-notice focus contract, and keep closed mobile Browse closed. No model01, release, shared Tools, Catalyst or protected-style lane is reopened.
+
+
+## 44 · Primary Browse releases focus before filtered content disappears — 9 November 2026
+
+### Applied source and exact defect
+
+[GMI Draft PR10676](https://github.com/mastermindx-market-intelligence/Macro/pull/10676) advances from `2b2ab6615039e2e4172a0d0a713eae50fc237c1e` to **`b5b56537d49099c3dc5dd0534267c80576f51ced`**, tree **`27f12efbecee8924e63b7003f5f4b2ce984bacc5`**. All six changed files read back exactly; the PR body reads back exactly, Draft/unmerged and the original model/release holds remain.
+
+Four baseline cases prove that the primary filter owner hid either a focused result or the focused no-match Clear all filters action before recovering focus. This includes real Back/Forward, positive-to-positive filtering and a Clear click. A final activeElement check alone would have missed the ordering bug.
+
+The existing `filters()` now computes the retiring rows/region, releases only their owned focus through reachable destinations, and then applies visibility. Actual focus is rechecked after callbacks: a surviving redirect is respected; a redirect to another disappearing row continues the bounded fallback. A local pass guard lets a nested newer filter update win. Closed mobile Browse stays closed, unrelated focus remains untouched, and no new history/dialog/state owner is introduced.
+
+Reset chooses its existing search/heading destination before filtering. It has no second focus assignment afterward. Query/category/scope/evidence clear; selected topic, lens, qualified return, exact evidence nodes and open receipts remain. History still has its incumbent answer-render behavior; no source-node identity claim crosses history.
+
+### Proof and preservation
+
+[DESIGN_RECORD §11.35](https://github.com/mastermindx-market-intelligence/Macro/blob/b5b56537d49099c3dc5dd0534267c80576f51ced/research/theme_graph/gmi_design_20261021/DESIGN_RECORD.md) and [BROWSE_FOCUS_VALIDATION_20261109.json](https://github.com/mastermindx-market-intelligence/Macro/blob/b5b56537d49099c3dc5dd0534267c80576f51ced/research/theme_graph/gmi_design_20261021/BROWSE_FOCUS_VALIDATION_20261109.json) retain the source/input hashes, commands, full baseline/final reports and limits.
+
+| Evidence | Exact result |
+|---|---|
+| Final PID17601 | Exit0, **28 cases / 30 contexts**, Chrome157.0.8103.39, zero page errors, **52.14 s** |
+| Before-hide probe | **94 retained snapshots, zero owned hides** |
+| History and Reset | Real Back/Forward and different-positive results; pointer, Enter and Space; selected research/source/receipt preservation |
+| Focus edges | Surviving redirects, another retiring row, unavailable search, nested newer projection, unrelated focus and closed mobile state |
+| Responsive/language | EN/ZH1440/390/320 plus actual 820/821 boundary |
+| Existing regressions | Answer recovery/copy in four contexts; eight primary Escape cases |
+| Native visuals | Two final focus-recovery captures inspected at EN390/ZH320 |
+| Product source | Two exact paired-JS blocks only; all seven HTML pages and CSS byte-exact |
+
+Paired JS blob **4f207215835bdfe41cada91f496d1c8956898b25**, SHA256 **f6ec608f73ac9e2478e67174a2981bc5a7b90ce9451f762561c1e9fa2e175648**. No model/renderer regeneration. Of 95 prior qualified verifier definitions, 94 remain AST-exact; the primary Escape helper only corrects its unused intermediate-width predicate from 900 to the production 820 px boundary. All prior definitions are exact after that correction. Six top-level and four nested helpers are added.
+
+### Editable Paper build contract
+
+[Build · Interaction & receipts](https://app.paper.design/file/01M5H6EARN9YHQV17JC6ZG9BRY/p-7-0) retains **18 modules / 57 div nodes**. Existing module08 body **7NL-0** now documents primary projection-before-hide, reachability, actual focus and nested-pass behavior. Existing module10 body **7SS-0** documents Reset ordering and the lack of a post-filter focus override. Current source/proof references update in place.
+
+All 57 node IDs/styles/parents and unaffected text remain exact outside **7MV, 7MZ, 7NL, 7SS, 7NF**. Token hash remains **ac191fd9**. Three amended modules were captured and inspected; the root's working indicator was released. A malformed file ID affected read-only capture attempts, was corrected on the same file, and caused no mutation retry. [PAPER_BROWSE_FOCUS_20261109.json](PAPER_BROWSE_FOCUS_20261109.json) retains exact before/after JSX, source readbacks and the three observed edit/finish operations.
+
+This is component proof, not native OS IME, full shared shell/fonts, spoken AT, live account/admission, hosted current-head CI or deployment. Original model01 and independent shared Tools/Catalyst/protected-style holds remain untouched.
+
+The next authorized improvement is the primary field's query-only Clear action: replace its small native cancel/slash competition with one 44 px target, distinguish it from full Reset, integrate visibility in this same pre-hide owner, and preserve research/filter context. Source review also identified the required non-label wrapper, specific primary spacing/native-cancel styles and synchronous focus-callback guard.
