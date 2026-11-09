@@ -2537,6 +2537,17 @@ FENCE_MANIFEST_READER_CONTRACT = {
 }
 
 
+# Both immutable modules have identical imports and render_command's complete
+# module-global closure (render_command, EXPRESSION_RE, ManifestError). The later
+# module changes only plan balancing and exact-base replay, which this fence
+# reader does not call. Keep whole-blob admission explicit: arbitrary equal
+# modules, and even mixed qualified versions across frames, still refuse.
+FENCE_MANIFEST_RENDERER_CONTRACTS = frozenset({
+    "3cbed58986d571e40af59eb03464e9419e8055a5",
+    "471640444ecdda2496a14ffa38f66e4d0b9c5202",
+})
+
+
 def _semantic_manifest_input_is_current(
     repo: str, pull: dict[str, Any], runs: list[dict[str, Any]],
     freshness: "ProofFreshness", evidence: dict[str, Any],
@@ -2640,7 +2651,7 @@ def _reconcile_original_proof_base(
             if (gate is not None and gate.clear
                     and _semantic_manifest_input_is_current(repo, pull, runs, freshness, evidence)):
                 answer = freshness.stale_for(pull, runs, semantic_ci_base=evidence["base_sha"])
-                return answer[0], "authenticated CI covers its manifest definition input; " + answer[1]
+                return answer[0], "authenticated CI covers its manifest definition input and CI-only owned source; " + answer[1]
             return None, (
                 "original CI execution base contradicts advertised check associations; "
                 "independent anchor execution bindings remain required"
@@ -3294,12 +3305,13 @@ class ProofFreshness:
     def exact_proof_base(
         self, pull: dict[str, Any], runs: list[dict[str, Any]]
     ) -> tuple[str | None, str]:
-        """Exact main SHA the current head's GitHub Actions proof tested.
+        """Conservative common base advertised by the exact-head proof anchors.
 
-        A ``pull_request`` check run already carries the immutable event identity
-        needed here: ``pull_requests[].base.sha`` beside the exact PR number and
-        head SHA.  That is strictly stronger than inferring the base from job start
-        times.  In particular, runner queue time can never make a SHA ambiguous.
+        ``pull_requests[].base.sha`` binds a PR number/head association, but its
+        base can be an older PR-object snapshot rather than the executed merge's
+        parent. Authenticated semantic CI coverage is reconciled separately;
+        it must not silently advance the independent anchors here. Job start
+        times and runner queue time never establish either execution identity.
 
         Every non-spurious GitHub Actions run must agree.  Missing, mismatched or
         contradictory metadata is *indeterminate*, not stale: changing the branch
@@ -3457,7 +3469,9 @@ class ProofFreshness:
         frames = (advertised, sealed, head)
         for path, expected_blob in FENCE_MANIFEST_READER_CONTRACT.items():
             entries = [self._proof_input_entry(commit, path) for commit in frames]
-            if len(set(entries)) != 1 or entries[0][2] != expected_blob:
+            qualified = (FENCE_MANIFEST_RENDERER_CONTRACTS
+                         if path == "scripts/run_ci_pack.py" else {expected_blob})
+            if len(set(entries)) != 1 or entries[0][2] not in qualified:
                 return False
         import yaml
         jobs = []
@@ -3561,10 +3575,24 @@ class ProofFreshness:
                 positions = {str(c.get("sha") or ""): i for i, c in enumerate(self.commits)}
                 if (semantic_ci_base in positions and commit["sha"] in positions
                         and positions[commit["sha"]] >= positions[semantic_ci_base]):
-                    # Only this canonical semantic-CI definition input is covered.
-                    # Every other file (including fence definitions/source and any
-                    # newer manifest edit) retains the original classification.
-                    files = [name for name in files if name != ".github/ci/legacy-jobs.yml"]
+                    # The existing authenticated reader bound this CI execution
+                    # to the sealed base, not the lazy PR-association snapshot.
+                    # Reuse that base ONLY for CI's exclusive ownership. The
+                    # caller also qualified the independent fence's exact input
+                    # projection; no other anchor receives a new execution base.
+                    remaining = []
+                    for name in files:
+                        if name == ".github/ci/legacy-jobs.yml":
+                            continue
+                        owners = {gate.get("workflow") for gate in self.gates
+                                  if ownership_matches(name, gate.get("patterns"))}
+                        if (name.startswith(CI_DEFINITION_TREES)
+                                or name in self.ci_definition_files
+                                or owners != {"ci.yml"}):
+                            remaining.append(name)
+                    # Other workflow/control definitions, shared ownership and
+                    # every edit newer than the sealed base remain unchanged.
+                    files = remaining
                     if not files:
                         continue
             product_commits += 1

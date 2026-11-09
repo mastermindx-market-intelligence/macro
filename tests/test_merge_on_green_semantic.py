@@ -1819,3 +1819,187 @@ def test_original_projection_rejects_nonregular_proof_input(monkeypatch, kind, m
     fresh._commit_tree_sha = lambda commit: "1" * 40
     fresh._root_tree = lambda tree: {"input": (kind, mode, "2" * 40)}
     with pytest.raises(ValueError): fresh._proof_input_entry("3" * 40, "input")
+
+
+# Local original-reader/freshness integration; the artifact below is synthetic,
+# never replacement proof for the source-linked #10838 original run.
+import copy
+import json
+
+
+
+
+HANDOFF_HEAD = "1c8aebc676a43cf710a7a1efb4acc378770b6fbd"
+HANDOFF_ADVERTISED = "fda69f87052676d9d93d2bf34f4509a25f1ef950"
+HANDOFF_SEALED = "b5674d8ef898e503d6164922654f5ff89be9981c"
+HANDOFF_COVERED_DEFINITION = "0242fc6a26d733160fc0e3d9fc710d32508cd030"
+HANDOFF_TESTED = "9b979bd24fdfc2b9b8a3cadfdb9e4e7e23ac1023"
+HANDOFF_RUN = 42535861868
+HANDOFF_REPO = "mastermindx-market-intelligence/macro"
+
+
+def _handoff_final():
+    """Small schema-valid synthetic input for the real producer and reader."""
+    identity = dict(workflow_run_id=str(HANDOFF_RUN), workflow="ci", event="pull_request",
+                    role="pr_head", subject_head_sha=HANDOFF_HEAD,
+                    tested_tree_sha=HANDOFF_TESTED, base_sha=HANDOFF_SEALED)
+    step = {"proof_id": "local-handoff-fixture", "step_spec_sha256": "6" * 64}
+    plan = {
+        "schema": MOG.semantic_proof.PLAN_SCHEMA, **identity,
+        "authority_changed": False, "changed_from": HANDOFF_SEALED,
+        "scope_mode": "active", "reason": "local original handoff fixture",
+        "scope_summary": "local original handoff fixture", "legacy_job_count": 1,
+        "eligible_job_count": 1, "changed_files_sha256": "", "changed_files_count": 0,
+        "eligible_jobs": ["local-handoff-fixture"], "skipped_job_count": 0, "skipped_jobs": [],
+        "packs": [{"index": i, "weight": int(i == 5),
+                   "jobs": ["local-handoff-fixture"] if i == 5 else []} for i in range(6)],
+        "nonempty_pack_indices": [5], "matrix": {"include": [{"pack": 5}]}, "has_work": True,
+        "plan_sha256": "4" * 64,
+        "semantic_jobs": [{"logical_job_id": "local-handoff-fixture", "pack_index": 5,
+                           "job_exec_sha256": "5" * 64, "steps": [step]}],
+    }
+    plan["plan_sha256"] = MOG.semantic_proof.authoritative_plan_sha256(plan)
+    fragment = {
+        "schema": MOG.semantic_proof.FRAGMENT_SCHEMA, **identity,
+        "plan_sha256": plan["plan_sha256"], "pack_index": 5, "infrastructure": [],
+        "jobs": [{"logical_job_id": "local-handoff-fixture", "job_exec_sha256": "5" * 64,
+                  "infrastructure": {"outcome": "passed"},
+                  "steps": [{**step, "outcome": "passed", "failure_signature": None}]}],
+    }
+    return MOG.semantic_proof.reconcile_evidence(plan, [fragment])
+
+
+def _original_base_handoff_case(monkeypatch):
+    fresh, checks, _ = _manifest_identity_case(monkeypatch)
+    fresh.repo = HANDOFF_REPO
+    fresh.commits = [
+        {"sha": HANDOFF_SEALED, "message": "marketing-publish [skip ci]"},
+        {"sha": HANDOFF_COVERED_DEFINITION, "message": "covered definition"},
+        {"sha": HANDOFF_ADVERTISED, "message": "association snapshot"},
+    ]
+    fresh._commit_files[HANDOFF_COVERED_DEFINITION] = ([".github/ci/legacy-jobs.yml"], False)
+    # The source projection keeps all three original frames: it does not turn
+    # fence success into a new fence execution-base claim.
+    for check in checks:
+        check["head_sha"] = HANDOFF_HEAD
+        check["pull_requests"][0].update(number=10838, head={"sha": HANDOFF_HEAD}, base={"sha": HANDOFF_ADVERTISED})
+        if check["details_url"]:
+            check["details_url"] = f"https://github.com/{HANDOFF_REPO}/actions/runs/{HANDOFF_RUN}/job/1"
+    fresh._pr_files[10838] = ["engine/product.py"]
+    pull = dict(_pull(), number=10838, head={"sha": HANDOFF_HEAD}, base={"sha": HANDOFF_ADVERTISED})
+    evidence = _handoff_final()
+    run = dict(id=HANDOFF_RUN, name="ci", path=".github/workflows/ci.yml", event="pull_request",
+               head_sha=HANDOFF_HEAD, pull_requests=copy.deepcopy(checks[1]["pull_requests"]))
+    return fresh, checks, pull, evidence, run
+
+
+@pytest.mark.parametrize("control", [
+    "covered", "current-qualified-renderer", "mixed-qualified-renderers", "overlapping-owner",
+    "newer-definition", "newer-source", "independent-fence-definition",
+    "mixed-anchor", "wrong-run", "wrong-head", "tampered-digest",
+    "different-tested-commit", "reversed-parents", "nonancestor", "missing-artifact", "expired-artifact",
+])
+def test_original_reader_handoff_preserves_freshness_and_fail_closed(monkeypatch, control):
+    fresh, checks, pull, evidence, run = _original_base_handoff_case(monkeypatch)
+    if control in {"current-qualified-renderer", "mixed-qualified-renderers", "overlapping-owner"}:
+        original_entry = fresh._proof_input_entry
+        fresh._proof_input_entry = lambda commit, path: (
+            ("blob", "100644", "471640444ecdda2496a14ffa38f66e4d0b9c5202")
+            if path == "scripts/run_ci_pack.py" and (
+                control != "mixed-qualified-renderers" or commit == HANDOFF_SEALED)
+            else original_entry(commit, path))
+        # The actual advertised-to-tested interval also includes these CI-owned
+        # source/assertion edits; clearing only its first manifest hit is not a fix.
+        fresh._commit_files[HANDOFF_COVERED_DEFINITION][0].extend([
+            "engine/stock_identity/replay/naive.py", "engine/track_scoring.py",  # ci-trigger-closure: data — changed-file names passed to freshness, never source reads
+            "scripts/build_opportunity_timeline.py", "tests/test_first_party_import_names.py",  # ci-trigger-closure: data — changed-file names only
+            "tests/test_stock_identity_input_boundaries.py", "tests/test_track_scoring.py"])  # ci-trigger-closure: data — changed-file names only
+        fresh.gates[0]["patterns"].extend(["scripts/**", "tests/**"])
+    if control == "overlapping-owner":
+        fresh.gates.append({"workflow": "independent.yml", "patterns": ["engine/**", "scripts/**", "tests/**"]})
+    if control in {"newer-definition", "newer-source"}:
+        newer = "e" * 40
+        fresh.commits.insert(0, {"sha": newer, "message": "genuinely newer edit"})
+        fresh._commit_files[newer] = ([".github/ci/legacy-jobs.yml" if control == "newer-definition"
+                                      else "engine/product.py"], False)
+    if control == "independent-fence-definition":
+        fresh._commit_files[HANDOFF_COVERED_DEFINITION][0].append(".github/workflows/fences.yml")
+    if control == "mixed-anchor":
+        checks[-1]["pull_requests"][0]["base"]["sha"] = HANDOFF_SEALED
+    if control == "wrong-run": evidence["workflow_run_id"] = str(HANDOFF_RUN + 1)
+    if control == "wrong-head": evidence["subject_head_sha"] = "f" * 40
+    if control in {"wrong-run", "wrong-head"}:
+        evidence.pop("evidence_sha256")
+        evidence["evidence_sha256"] = MOG.semantic_proof.canonical_sha256(evidence)
+    if control == "tampered-digest": evidence["evidence_sha256"] = "0" * 64
+    archive = io.BytesIO()
+    with zipfile.ZipFile(archive, "w") as packed:
+        packed.writestr("ci-semantic-evidence.json", json.dumps(evidence))
+    reads, downloads = [], []
+
+    def request(method, url, token, *args, **kwargs):
+        assert method == "GET", "source qualification must never mutate a PR"
+        reads.append(url)
+        if url.endswith(f"/actions/runs/{HANDOFF_RUN}/artifacts?per_page=100"):
+            if control == "missing-artifact":
+                return 200, {"total_count": 0, "artifacts": []}
+            return 200, {"total_count": 1, "artifacts": [{
+                "name": f"ci-semantic-evidence-{HANDOFF_RUN}", "expired": control == "expired-artifact",
+                "archive_download_url": "https://api.github.com/artifact.zip"}]}
+        if "/contents/scripts/ci_semantic_proof.py?" in url and control == "missing-artifact":
+            return 200, {"type": "file"}
+        if url.endswith(f"/compare/{HANDOFF_ADVERTISED}...{HANDOFF_SEALED}?per_page=1"):
+            return 200, {"status": "diverged" if control == "nonancestor" else "ahead",
+                         "ahead_by": 12, "behind_by": 0}
+        if url.endswith(f"/git/commits/{HANDOFF_TESTED}"):
+            parents = [HANDOFF_SEALED, HANDOFF_HEAD] if control != "reversed-parents" else [HANDOFF_HEAD, HANDOFF_SEALED]
+            return 200, {"sha": "f" * 40 if control == "different-tested-commit" else HANDOFF_TESTED,
+                         "parents": [{"sha": value} for value in parents]}
+        pytest.fail(f"unexpected source read: {url}")
+
+    monkeypatch.setattr(MOG, "_request", request)
+    monkeypatch.setattr(MOG, "_download_semantic_artifact",
+                        lambda url, token: downloads.append(url) or archive.getvalue())
+    # Use the real archive parser, schema/digest validator, ancestor resolver,
+    # immutable tested-commit binder, semantic gate and freshness implementation.
+    monkeypatch.setattr(MOG, "_semantic_gate", lambda loaded: MOG.semantic_proof.semantic_gate_verdict(loaded.evidence))
+    refused = {"wrong-run", "wrong-head", "tampered-digest", "different-tested-commit",
+               "reversed-parents", "nonancestor", "missing-artifact", "expired-artifact"}
+    if control in refused:
+        with pytest.raises(MOG.semantic_proof.SemanticProofError):
+            MOG._semantic_evidence_for_run(HANDOFF_REPO, run, "read", role="pr_head", expected_base_sha=HANDOFF_ADVERTISED)
+    else:
+        loaded = MOG._semantic_evidence_for_run(HANDOFF_REPO, run, "read", role="pr_head", expected_base_sha=HANDOFF_ADVERTISED)
+        before = fresh.stale_for(pull, checks)
+        assert before[0] is True  # Installed old-association classifier's false stale.
+        count = len(reads)
+        answer = MOG._reconcile_original_proof_base(HANDOFF_REPO, pull, checks, "read", fresh, before,
+                                                   semantic_evidence=loaded)
+        expected = (False if control in {"covered", "current-qualified-renderer"}
+                    else None if control in {"mixed-anchor", "mixed-qualified-renderers"} else True)
+        assert answer[0] is expected
+        assert len(reads) == count  # Reuse the same authenticated original, no second reader.
+    assert len(downloads) <= 1
+    assert checks[-1]["pull_requests"][0]["base"]["sha"] == (HANDOFF_SEALED if control == "mixed-anchor" else HANDOFF_ADVERTISED)
+
+
+def test_matching_actual_old_base_does_not_exempt_later_exposure_source(monkeypatch):
+    """Negative geometry from Exposure f9: actual and association base both AEC."""
+    fresh, checks, pull, _, _ = _original_base_handoff_case(monkeypatch)
+    aec = "aec7f387badcdf69c9a947fafbc73b4c68470c7d"
+    later = "07977b85ab171ee9aad3e4a04bb80566642878a9"
+    exposure = "f9d9c1883b9a25ea2bd5f6b5b21f922a01307434"
+    pull.update(number=10866, head={"sha": exposure}, base={"sha": aec})
+    fresh.commits = [{"sha": later, "message": "source correction"}, {"sha": aec, "message": "old proof base"}]
+    fresh._commit_files[later] = (["engine/news_impact/prophet_adapter.py", "tests/test_news_impact_f2_amount_format.py"], False)  # ci-trigger-closure: data — simulated changed-file names, not imports/reads
+    fresh.gates[0]["patterns"].append("tests/**")
+    fresh._pr_files[10866] = ["engine/exposure.py"]
+    for check in checks:
+        check["head_sha"] = exposure
+        check["pull_requests"][0].update(number=10866, head={"sha": exposure}, base={"sha": aec})
+    loaded = MOG.semantic_proof.LoadedSemanticEvidence("semantic", {
+        "role": "pr_head", "subject_head_sha": exposure, "base_sha": aec})
+    before = fresh.stale_for(pull, checks)
+    assert before[0] is True
+    assert MOG._reconcile_original_proof_base(HANDOFF_REPO, pull, checks, "read", fresh, before,
+                                             semantic_evidence=loaded) == before
