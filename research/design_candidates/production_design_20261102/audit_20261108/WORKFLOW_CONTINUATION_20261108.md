@@ -3742,3 +3742,86 @@ Audit artifacts:
 The new native captures show a concrete layout discrepancy: current Historical review and Save/Remove controls touch, while Paper G5 gives them 12px separation; confirmation feedback overlaps Inspect demand; expired Save is disabled but insufficiently distinct visually. Continue through the existing action layout and single status owner. Keep readable wrapping at 320px, independent review/demand availability, current reading retention and terminal focus.
 
 No hosted/independent acceptance, current-market freshness, personal activity, H5/model, alert delivery, paired receipt, qualified result, public-route cutover or release is inferred. Existing denied/unknown-effect lanes and admission holds remain. The cloud execution environment remains unavailable; this phase used the already authorized native verifier and GitHub-native carrier, with all native effects reconciled.
+
+## 79. Crypto current actions — separated controls and visible outcomes (2026-11-09)
+
+### Outcome and exact candidate
+
+Current-case Historical review and Save/Remove now have **12px separation and 48px targets**. Inspect demand occupies its own row with at least a **44px target**. Save uses the existing primary treatment; Remove remains neutral. Native disabled Save has a distinct inactive treatment and no enabled hover effect. Review and demand inspection retain their independent availability.
+
+The existing status now follows the drawer body in normal flow. It no longer covers action controls. Confirmed and idempotent outcomes keep the reader. A failed action can minimally scroll the existing drawer to reveal its message while retaining the body, control, focus and disclosure, provided that action still owns focus and context.
+
+| Owner | Exact source |
+|---|---|
+| Existing dependent PR10901 | `8714a277ddcc865f831021471520667d831304b1` |
+| Source tree | `b27d503addd366b94f67ac56eeb5a44596f7ddd3` |
+| Candidate assets | `62cf3bb534f8` |
+| Source parent | `f2cb62ef2e19abbef7ebe218030c110276953912` / `a8bf00034c30` |
+| Incumbent PR9580 base | `5e496c24c962e85a4f7f514dd43dc61443b95cab` |
+| Audit parent before this section | `8b3ce5d698583c849c291e67171abcec34718596` |
+
+PR10901 remains Draft/open/unmerged/unarmed. Its [workflow map](https://github.com/mastermindx-market-intelligence/Macro/blob/8714a277ddcc865f831021471520667d831304b1/research/design_candidates/crypto_snapshot_safety_20261109/README.md) now contains **16 entries**. [CURRENT_ACTIONS.md](https://github.com/mastermindx-market-intelligence/Macro/blob/8714a277ddcc865f831021471520667d831304b1/research/design_candidates/crypto_snapshot_safety_20261109/CURRENT_ACTIONS.md) explains action layout, existing owners, feedback visibility, timeout geometry and exact acceptance. The preceding CURRENT_SAVE_READING.md has a visible extension note, so its historical strict failure-scroll promise cannot be mistaken for the refined current policy.
+
+### Repair and ownership
+
+The parent native captures showed touching current controls, a fixed status covering Inspect demand, and disabled Save resembling an enabled neutral action. Paper G5 already supplied the separated action layout. The implementation reuses the existing wrapping group, primary button treatment, disabled attribute and theme tokens. Storage-unavailable copy precedes the group; Retry stays in that group. The semantic focus keys, displayed snapshot intents and evidence destination remain unchanged.
+
+Simply moving status into normal flow would leave an unchanged failed action with its explanation below the fold. The advisory architecture/design check identified that concrete gap; root implemented the visibility rule before final acceptance. It is advisory judgment, not another required reviewer or release gate.
+
+The existing failure `report()` first keeps the original action ownership check. After displaying the status, it may reveal it only while the original control still owns focus, URL, language, history length and the captured history-state signature. It measures the visible drawer below the sticky header and changes only the existing dialog scroll by the necessary excess or deficit. Already-visible feedback causes no scroll. Unrelated programmatic focus or a newer choice prevents the reveal. There is no subsequent focus, body replacement, route effect or storage retry.
+
+An initial attempt incorrectly used the extra signature guard for every completion. That suppressed truthful confirmed feedback after newer focus changed reading metadata. The final correction scopes the signature to failure reveal; the existing confirmed reading capture independently yields an obsolete rebuild.
+
+The single `#cri-toast` node, existing polite live-region markup, copy and five-second timer remain. On timeout a nonempty hidden message retains its occupied box, avoiding scroll clamping. An initially empty hidden node takes no space. This proves timeout stability, not constant height across differently sized later messages, and is not new assistive-technology announcement certification. No second status node, timer, scroll container, history owner or storage lifecycle is added.
+
+### Native proof and explicit corrections
+
+| Process | Outcome | Pytest / subprocess / wrapper |
+|---|---|---|
+| Parent snapshot PID23285 | 21 exact inputs copied; no runtime change | — / — / 0.09 s |
+| Parent baseline PID46508 | **21 failed / 54 passed** | 47.92 / 48.311 / 48.41 s |
+| Launcher typo PID61321 | Exit 127 before candidate wrapper ran | — / — / 0.05 s |
+| Initial candidate PID62604 | **72 passed / three failed** | 58.78 / 59.135 / 59.39 s |
+| Final verified candidate PID76049 | **75 passed** | 61.75 / 62.121 / 62.38 s |
+| Publication metadata PID82775 | 28 native evidence/script files and 25 capture identities | — / — / 0.11 s |
+
+The incorrect executable path was a known no-run outcome and was reconciled before the corrected dispatch. The retained launch receipt, intermediate runtime, tests and three initial failures remain in the evidence. Native wrapper completion is not substituted for the inner pytest outcome.
+
+Final Chrome **157.0.8103.39**, **75 contexts / 81 pages**, zero page errors, external requests or WebSockets. Six new functions contribute 25 cases; 50 retained cases cover affected mutation, locale, return, newer-choice, storage and cross-tab intent behavior. The baseline, initial and final runs have the same 75 case IDs, **not identical assertions**.
+
+Two existing test functions are deliberately and reversibly changed. The failure-reading function now requires the same body, connected control, focus, disclosure and storage result while allowing only the necessary scroll to make the failed outcome visible. The nested locale-render function records the new action's actual starting scroll after locale clamping. It no longer compares an outgoing locale position against the new locale's post-feedback range. Two initial failures drove the product guard correction; the third drove this precise harness correction. They are not disguised as unchanged historical tests.
+
+New coverage includes narrow wrapping, target sizes, 12px gaps, no horizontal overflow, native Tab order, disabled hover/inertness, stable single status, confirmed/expired/failed outcomes in EN and ZH, timeout geometry, already-fitting failures and frozen Remove failure without a rebuild.
+
+All **25 final PNGs** are preserved. **13 new-scope views** were inspected: five action layouts, two disabled states and six Save/expired Remove/unconfirmed feedback views. Twelve are retained regression captures, not newly claimed visual inspections. Complete focus-ring clearance at the viewport edge remains a specific follow-up; the current phase proves its asserted control/message rectangles.
+
+### Source conservation and publication
+
+**40 source/document/evidence text files and 25 PNG binaries** were read back exactly at `8714a277ddcc865f831021471520667d831304b1`. Native blob identities match all seven changed runtime/generated/test paths and all 28 native evidence/script files; capture blobs match their native identities.
+
+Seven recorded inputs change: template/served JS, template/served CSS, browser tests and the two generated HTML pages. Fourteen inputs remain exact, including the HTML template, projection, JSON, builder, server tests and shared assets. The generated HTML differs only in two asset references per page. Template/served JS and CSS match.
+
+Seven source transformations reverse exactly. Reversing the two existing test-function changes and removing the appended tests recovers the complete parent browser module and the baseline hash. The [native publication receipt](https://github.com/mastermindx-market-intelligence/Macro/blob/8714a277ddcc865f831021471520667d831304b1/research/design_candidates/crypto_snapshot_safety_20261109/current-action-layout/PUBLICATION_RECEIPT.json) carries case-level results, source hashes, retained errors and limits. Its sibling capture references identify exactly which images received new visual inspection.
+
+### Paper applied and verified
+
+In [Crypto Intelligence · R4 references](https://app.paper.design/file/01M6Y3F0NXNDPAKJMJGCAD759Z/p-1-0):
+
+- **G5-0:** the existing 12px action specimen remains intact; its interaction note now distinguishes confirmed reading continuity from visible failure feedback.
+- **QI-0:** the existing Save / Remove scorecard row explains the same collection/drawer/status owners, separated actions, distinct disabled state and failure outcome. Source binding is `8714a27`.
+- **Build 3IP-0:** the existing ten-section guide now states target sizes, action order, single status ownership, minimum failure reveal, timeout limits and exact current proof. It directs builders to CURRENT_ACTIONS.md and retains original fixtures, saved-record identity, horizon and historical-result boundaries.
+
+All **169 existing IDs, parent relations, order and exported styles** are exact. **13 text nodes** change; all three complete JSX inverses are exact. No node, style/token operation or parallel owner is introduced. G5 stays **1440×861**, QI **1440×1200**. The three complete after frames were inspected and finished. Build 3IP's image was provider-resized to **1151×2000**; its complete ten-section content is unclipped. Height/world coordinates remain unreported, so this is not freeform-placement verification.
+
+Audit artifacts:
+
+- `PAPER_CRYPTO_CURRENT_ACTION_LAYOUT_20261109.json`
+- `PAPER_CRYPTO_CURRENT_ACTION_LAYOUT_SCENARIO_20261109.jpg`
+- `PAPER_CRYPTO_CURRENT_ACTION_LAYOUT_SCORECARD_20261109.jpg`
+- `PAPER_CRYPTO_CURRENT_ACTION_LAYOUT_BUILD_20261109.jpg`
+
+### Next safe phase
+
+The disabled mobile captures expose a smaller concrete issue: a focused Inspect demand control can sit flush with the viewport bottom, clipping part of its focus ring. Inspect keyboard clearance through the existing drawer scroll/focus owner, including the sticky header and narrow layouts. Also inspect the existing status lifecycle across panel transitions so old feedback cannot be misattributed to a new task. Establish the failure before changing an owner; do not add a second scrolling or notification system.
+
+Hosted/independent acceptance, current-market freshness, personal records, H5/model, alert delivery, paired receipts, qualified historical results, public-route replacement and release are not inferred. All earlier denied/unknown-effect lanes and admission holds remain intact. The unavailable cloud execution lane is not used; the already authorized native verifier and GitHub-native source carrier remain the established path.
