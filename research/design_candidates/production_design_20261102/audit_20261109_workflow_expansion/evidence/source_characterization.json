@@ -1,0 +1,1499 @@
+[
+  {
+    "path": "templates/intraday_flow.html.j2",
+    "blob": "8832ceba22068eccc65704f7bf6d7bbe027a9e45",
+    "chars": 111011,
+    "excerpt": null,
+    "matches": [
+      {
+        "line": 20,
+        "text": "<script>try{var th=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',th||'dark');var l=localStorage.getItem('lang')||(function(){try{var L=navigator.languages||[navigator.language||navigato"
+      },
+      {
+        "line": 382,
+        "text": "        'A fixed watchlist of institutional leaders — Mag 7, AI infrastructure/software/semis, semicap, reshoring, defense and power grid. It looks for one thing: a leader that sold off, absorbed the selling, and is bein"
+      },
+      {
+        "line": 406,
+        "text": "        {% if ift.as_of_display and ift.as_of_display.en %}"
+      },
+      {
+        "line": 407,
+        "text": "        <div class=\"ctx-stamp\" id=\"ift-stamp\">{{ t('Board built ' ~ ift.as_of_display.en, '看板构建于' ~ ift.as_of_display.zh) }}<span class=\"skel ift-skel-inline\" aria-hidden=\"true\"></span></div>"
+      },
+      {
+        "line": 420,
+        "text": "    {{ help('Each leader is sorted into one plain-word call from deterministic rules — no score, no black box. Click a card to show only those names on the board. Counts update as the tape refreshes.',"
+      },
+      {
+        "line": 501,
+        "text": "          <th data-col=\"tape\" class=\"col-tape hide-narrow\">{{ t('Tape', '盘口') }}{{ help('Where price sits vs the session’s average price (VWAP) and whether the options tape is leaning call-heavy or put-heavy. The options"
+      },
+      {
+        "line": 569,
+        "text": "      <p class=\"l-en\">The options column shows tape activity and how persistently it leans call-heavy or put-heavy. <em>The direction is approximate</em> — it is signed by a tape rule, not by matching each trade to the b"
+      },
+      {
+        "line": 586,
+        "text": "    {{ t('Options-tape direction is approximate (~soft — a tape rule, not bid/offer matching). Every call is a deterministic rule with no score and no black box. Reference levels and the dealer map are context for timing"
+      },
+      {
+        "line": 611,
+        "text": "var pulseState = {};   // ticker -> {vwap, vol_durability, higher_lows, cum_vol, bars_today, rvol_tod, session_high, session_low}"
+      },
+      {
+        "line": 614,
+        "text": "var flowAsof = null, flowRTH = false;"
+      },
+      {
+        "line": 636,
+        "text": "function snapUrl() {"
+      },
+      {
+        "line": 637,
+        "text": "  var url = window.LIVE_SNAPSHOT_URL || 'live/intraday_quotes.json';"
+      },
+      {
+        "line": 640,
+        "text": "function pulseUrl() { return 'live/flow_pulse.json'; }"
+      },
+      {
+        "line": 641,
+        "text": "function r2Url(path) {"
+      },
+      {
+        "line": 647,
+        "text": "function _etMinutes() {"
+      },
+      {
+        "line": 653,
+        "text": "function isMarketHours() { var e=_etMinutes(); return e >= (9*60+25) && e <= (16*60+5); }"
+      },
+      {
+        "line": 654,
+        "text": "function flowMetaFresh(meta) {"
+      },
+      {
+        "line": 656,
+        "text": "  if (!meta || meta.schema !== 'live_flow.meta/v2' || !meta.asof) return false;"
+      },
+      {
+        "line": 657,
+        "text": "  var stamped = Date.parse(meta.asof);"
+      },
+      {
+        "line": 662,
+        "text": "function sessionPhase() {"
+      },
+      {
+        "line": 671,
+        "text": "function computeRvol(leader, quote, pulse) {"
+      },
+      {
+        "line": 684,
+        "text": "function computeRangePos(quote) {"
+      },
+      {
+        "line": 689,
+        "text": "function computeVwapDelta(quote, pulse) {"
+      },
+      {
+        "line": 690,
+        "text": "  if (!quote || !quote.price || !pulse || !pulse.vwap) return null;"
+      },
+      {
+        "line": 691,
+        "text": "  return (quote.price - pulse.vwap) / pulse.vwap * 100;"
+      },
+      {
+        "line": 695,
+        "text": "function computeLegs(leader, quote, pulse, flow) {"
+      },
+      {
+        "line": 709,
+        "text": "  if (quote && quote.price && pulse && pulse.vwap) L2 = quote.price > pulse.vwap && quote.price > (leader.prev_close || 0);"
+      },
+      {
+        "line": 735,
+        "text": "function dealerOf(leader) {"
+      },
+      {
+        "line": 741,
+        "text": "function quotePx(quote) {"
+      },
+      {
+        "line": 746,
+        "text": "function boardPriceCoverage() {"
+      },
+      {
+        "line": 754,
+        "text": "function boardPulseCoverage() {"
+      },
+      {
+        "line": 763,
+        "text": "function feedWord(status, lane) {"
+      },
+      {
+        "line": 776,
+        "text": "function feedTipRow(status, lane) {"
+      },
+      {
+        "line": 781,
+        "text": "function feedHeadline(q, t, o) {"
+      },
+      {
+        "line": 782,
+        "text": "  var rank = { live:0, connecting:1, unavailable:2 };"
+      },
+      {
+        "line": 783,
+        "text": "  function rk(s){ var r = rank[s]; return r == null ? 1 : r; }"
+      },
+      {
+        "line": 798,
+        "text": "function computeStance(leader, quote, pulse, flow, conf) {"
+      },
+      {
+        "line": 814,
+        "text": "  var vwapDelta = computeVwapDelta(quote, pulse);"
+      },
+      {
+        "line": 821,
+        "text": "  if (vwapDelta != null && emDaily != null && emDaily > 0 && vwapDelta >= 1.5 * emDaily) extendedUp = true;"
+      },
+      {
+        "line": 822,
+        "text": "  if (intoCeiling && vwapDelta != null && vwapDelta > 0) extendedUp = true;"
+      },
+      {
+        "line": 833,
+        "text": "  var aboveVwap = vwapDelta != null ? vwapDelta > 0 : (L2 === true);"
+      },
+      {
+        "line": 836,
+        "text": "  if (aboveVwap && (extendedUp || pinWatch)) {"
+      },
+      {
+        "line": 870,
+        "text": "function fmtNum(v, dec){ return (v==null||isNaN(v)) ? '—' : Number(v).toFixed(dec!=null?dec:2); }"
+      },
+      {
+        "line": 871,
+        "text": "function fmtPct(v){ return (v==null||isNaN(v)) ? '—' : (v>=0?'+':'')+Number(v).toFixed(2)+'%'; }"
+      },
+      {
+        "line": 872,
+        "text": "function fmtDollar(v){ return (v==null||isNaN(v)) ? '—' : '$'+Number(v).toFixed(2); }"
+      },
+      {
+        "line": 873,
+        "text": "function fmtK(n){ if(n==null||isNaN(n))return '—'; n=Number(n); if(Math.abs(n)>=1e6)return (n/1e6).toFixed(1)+'M'; if(Math.abs(n)>=1e3)return (n/1e3).toFixed(1)+'K'; return n.toFixed(0); }"
+      },
+      {
+        "line": 874,
+        "text": "function esc(s){ return String(s==null?'':s).replace(/[&<>\"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;'}[c];}); }"
+      },
+      {
+        "line": 875,
+        "text": "function lz(en, zh){ return '<span class=\"l-en\">'+en+'</span><span class=\"l-zh\">'+(zh||en)+'</span>'; }"
+      },
+      {
+        "line": 878,
+        "text": "function volumeWords(rvol, volDur) {"
+      },
+      {
+        "line": 886,
+        "text": "function rangeWords(rp) {"
+      },
+      {
+        "line": 893,
+        "text": "function fetchQuotes() {"
+      },
+      {
+        "line": 895,
+        "text": "  fetch(snapUrl(), {cache:'no-cache'}).then(function(r){"
+      },
+      {
+        "line": 901,
+        "text": "    quotesStatus = boardPriceCoverage() >= 0.90 ? 'live' : 'unavailable';"
+      },
+      {
+        "line": 903,
+        "text": "    updateFlowStamp(flowAsof, flowMeta);"
+      },
+      {
+        "line": 908,
+        "text": "      quotesStatus = 'unavailable';"
+      },
+      {
+        "line": 909,
+        "text": "      updateFlowStamp(flowAsof, flowMeta);"
+      },
+      {
+        "line": 918,
+        "text": "function fetchPulse() {"
+      },
+      {
+        "line": 920,
+        "text": "  fetch(pulseUrl(), {cache:'no-cache'}).then(function(r){"
+      },
+      {
+        "line": 925,
+        "text": "    pulseStatus = boardPulseCoverage() >= 0.80 ? 'live' : 'unavailable';"
+      },
+      {
+        "line": 927,
+        "text": "    updateFlowStamp(flowAsof, flowMeta);"
+      },
+      {
+        "line": 932,
+        "text": "      pulseStatus = 'unavailable';"
+      },
+      {
+        "line": 933,
+        "text": "      updateFlowStamp(flowAsof, flowMeta);"
+      },
+      {
+        "line": 949,
+        "text": "function fetchFlow() {"
+      },
+      {
+        "line": 954,
+        "text": "  if (!tideUrl) { flowStatus = 'unavailable'; updateFlowStamp(null); return; }"
+      },
+      {
+        "line": 957,
+        "text": "    fetch(tideUrl, {cache:'no-cache'}).then(function(r){ return r.ok?r.json():null; }).catch(function(){ return null; }),"
+      },
+      {
+        "line": 958,
+        "text": "    fetch(enrichUrl, {cache:'no-cache'}).then(function(r){ return r.ok?r.json():null; }).catch(function(){ return null; }),"
+      },
+      {
+        "line": 959,
+        "text": "    fetch(metaUrl, {cache:'no-cache'}).then(function(r){ return r.ok?r.json():null; }).catch(function(){ return null; })"
+      },
+      {
+        "line": 963,
+        "text": "    var asof = metaIsV2 ? (meta.asof || null) : null;"
+      },
+      {
+        "line": 966,
+        "text": "      if (!metaIsV2) asof = tide.source_asof || (tide.meta && tide.meta.asof) || tide.asof || asof;"
+      },
+      {
+        "line": 979,
+        "text": "      // flow.enrich/v1 stamps asof TOP-LEVEL; the legacy meta probe alone read undefined,"
+      },
+      {
+        "line": 981,
+        "text": "      if (!metaIsV2) asof = enrich.source_asof || (enrich.meta && enrich.meta.asof) || enrich.asof || asof;"
+      },
+      {
+        "line": 1006,
+        "text": "    flowMeta = meta; flowAsof = asof; flowRTH = isMarketHours();"
+      },
+      {
+        "line": 1007,
+        "text": "    flowStatus = (tide || enrich) && flowMetaFresh(meta) ? 'live' : 'unavailable';"
+      },
+      {
+        "line": 1009,
+        "text": "    updateFlowStamp(asof, meta);"
+      },
+      {
+        "line": 1024,
+        "text": "      flowStatus = 'unavailable';"
+      },
+      {
+        "line": 1025,
+        "text": "      updateFlowStamp(flowAsof, flowMeta);"
+      },
+      {
+        "line": 1031,
+        "text": "function bestTier(a, b) {"
+      },
+      {
+        "line": 1036,
+        "text": "function fetchRootFlow(root) {"
+      },
+      {
+        "line": 1039,
+        "text": "  fetch(url, {cache:'no-cache'}).then(function(r){ return r.ok?r.json():null; }).then(function(d){"
+      },
+      {
+        "line": 1065,
+        "text": "function updateFlowStamp(asof, meta) {"
+      },
+      {
+        "line": 1068,
+        "text": "  var disp = (BASE_DATA && BASE_DATA.as_of_display) || {};"
+      },
+      {
+        "line": 1069,
+        "text": "  var asOfEn = disp.en || '';"
+      },
+      {
+        "line": 1070,
+        "text": "  var asOfZh = disp.zh || '';"
+      },
+      {
+        "line": 1071,
+        "text": "  if (!leaders.length || !asOfEn) {"
+      },
+      {
+        "line": 1082,
+        "text": "  function tipRowHtml(r){"
+      },
+      {
+        "line": 1086,
+        "text": "  stamp.innerHTML = lz('Board built '+asOfEn+' · '+head.en, '看板构建于'+asOfZh+' · '+head.zh)"
+      },
+      {
+        "line": 1092,
+        "text": "function computeAll() {"
+      },
+      {
+        "line": 1101,
+        "text": "             rvol:computeRvol(l,q,p), vwapDelta:computeVwapDelta(q,p), rangePos:computeRangePos(q),"
+      },
+      {
+        "line": 1105,
+        "text": "function laneCounts(rows) {"
+      },
+      {
+        "line": 1112,
+        "text": "function animateCount(el, to) {"
+      },
+      {
+        "line": 1118,
+        "text": "  function step(ts){ if (start==null) start=ts; var k=Math.min((ts-start)/dur,1); var e=1-Math.pow(1-k,3);"
+      },
+      {
+        "line": 1124,
+        "text": "function buildHero(rows, counts) {"
+      },
+      {
+        "line": 1170,
+        "text": "      sub = lz('No washout base is ready across the watchlist — check back when the tape runs.',"
+      },
+      {
+        "line": 1216,
+        "text": "      else strong.innerHTML = lz('No base is set up across the watchlist right now.','观察名单中暂无就绪布局。');"
+      },
+      {
+        "line": 1226,
+        "text": "function laneSuffix(k){ return { act:'act',get_ready:'ready',in_favour:'fav',take_profits:'profit',watch:'watch',stand_aside:'aside' }[k]||'aside'; }"
+      },
+      {
+        "line": 1227,
+        "text": "function iftSkelDone(el) {"
+      },
+      {
+        "line": 1240,
+        "text": "function buildSpotlight(rows, counts) {"
+      },
+      {
+        "line": 1282,
+        "text": "function spotCard(r, i) {"
+      },
+      {
+        "line": 1285,
+        "text": "  var vwapDelta = r.vwapDelta;"
+      },
+      {
+        "line": 1286,
+        "text": "  var vwapV = vwapDelta!=null ? '<span class=\"'+(vwapDelta>=0?'pos':'neg')+'\">'+fmtPct(vwapDelta)+'</span>' : '<span class=\"muted\">—</span>';"
+      }
+    ]
+  },
+  {
+    "path": "engine/intraday_flow.py",
+    "blob": "bc5b88bec9f0f077e8153f6b98e6bcb60611834a",
+    "chars": 34096,
+    "excerpt": null,
+    "matches": [
+      {
+        "line": 1,
+        "text": "\"\"\"engine/intraday_flow.py — Intraday Flow Tracker pure-function engine (IFT A1)."
+      },
+      {
+        "line": 3,
+        "text": "Pure-function layer; zero I/O, zero LLM. All metrics are deterministic."
+      },
+      {
+        "line": 38,
+        "text": "def vol_share_curve(bars_by_session: list[list[dict]]) -> list[float] | None:"
+      },
+      {
+        "line": 93,
+        "text": "def rvol_tod("
+      },
+      {
+        "line": 119,
+        "text": "# ── 3. Session VWAP ──────────────────────────────────────────────────────────"
+      },
+      {
+        "line": 121,
+        "text": "def session_vwap(today_bars: list[dict]) -> float | None:"
+      },
+      {
+        "line": 122,
+        "text": "    \"\"\"Compute the session VWAP from hourly bars (OHLCV)."
+      },
+      {
+        "line": 131,
+        "text": "        VWAP as a float, or None when bars are empty or total volume is zero."
+      },
+      {
+        "line": 158,
+        "text": "def volume_durability("
+      },
+      {
+        "line": 231,
+        "text": "def higher_lows(today_bars: list[dict]) -> int:"
+      },
+      {
+        "line": 265,
+        "text": "def ncp_velocity("
+      },
+      {
+        "line": 305,
+        "text": "def flow_durability("
+      },
+      {
+        "line": 370,
+        "text": "    \"\"\"Seven boolean confluence legs + K count (IFT §2.5)."
+      },
+      {
+        "line": 378,
+        "text": "    # L2: reclaim — price > session VWAP AND price > prevClose."
+      },
+      {
+        "line": 394,
+        "text": "    def __post_init__(self) -> None:"
+      },
+      {
+        "line": 408,
+        "text": "    def as_dict(self) -> dict:"
+      },
+      {
+        "line": 421,
+        "text": "def confluence_legs("
+      },
+      {
+        "line": 430,
+        "text": "    vwap: float | None = None,"
+      },
+      {
+        "line": 446,
+        "text": "    \"\"\"Compute the seven confluence legs per design §2.5."
+      },
+      {
+        "line": 458,
+        "text": "        vwap: Session VWAP."
+      },
+      {
+        "line": 484,
+        "text": "    if price is not None and vwap is not None and prev_close is not None:"
+      },
+      {
+        "line": 485,
+        "text": "        l2 = price > vwap and price > prev_close"
+      },
+      {
+        "line": 486,
+        "text": "    elif price is not None and vwap is not None:"
+      },
+      {
+        "line": 487,
+        "text": "        l2 = price > vwap"
+      },
+      {
+        "line": 531,
+        "text": "def _g(d: dict, *path):"
+      },
+      {
+        "line": 532,
+        "text": "    \"\"\"Safe nested get — returns None on any missing key or non-dict intermediate.\"\"\""
+      },
+      {
+        "line": 541,
+        "text": "def _clean(v):"
+      },
+      {
+        "line": 555,
+        "text": "def dealer_context(gex_summary: dict | None) -> dict | None:"
+      },
+      {
+        "line": 569,
+        "text": "        None when ``gex_summary`` is None.  Any missing sub-field is None."
+      },
+      {
+        "line": 641,
+        "text": "        \"Almost ready — washout base built; waiting for a reclaim above VWAP on volume.\","
+      },
+      {
+        "line": 642,
+        "text": "        \"即将就绪 — 洗盘底部已形成；等待放量收复VWAP。\","
+      },
+      {
+        "line": 646,
+        "text": "        \"In favour — trending above VWAP; ride it, no fresh entry here.\","
+      },
+      {
+        "line": 647,
+        "text": "        \"顺势而行 — 强势运行于VWAP上方；持仓，不追新入场。\","
+      },
+      {
+        "line": 668,
+        "text": "def stance("
+      },
+      {
+        "line": 672,
+        "text": "    vwap_delta_pct: float | None = None,"
+      },
+      {
+        "line": 690,
+        "text": "        vwap_delta_pct: Spot price % above VWAP (positive = above).  Used by"
+      },
+      {
+        "line": 692,
+        "text": "        price_up_on_day: True when spot > prevClose.  Used for rule 5 (Watch)."
+      },
+      {
+        "line": 695,
+        "text": "            in ``get_ready`` rule 3 and off-hours skeleton."
+      },
+      {
+        "line": 699,
+        "text": "            None or missing fields → relevant helpers are False."
+      },
+      {
+        "line": 708,
+        "text": "    def _dealer(key: str):"
+      },
+      {
+        "line": 715,
+        "text": "    # extended_up: price stretched vs IV-implied 1σ OR near hard call wall above VWAP"
+      },
+      {
+        "line": 716,
+        "text": "    def _extended_up() -> bool:"
+      },
+      {
+        "line": 720,
+        "text": "        # arm 1: vwap_delta >= 1.5 × daily expected move"
+      },
+      {
+        "line": 721,
+        "text": "        if vwap_delta_pct is not None and em is not None:"
+      },
+      {
+        "line": 723,
+        "text": "                if float(vwap_delta_pct) >= 1.5 * float(em):"
+      },
+      {
+        "line": 727,
+        "text": "        # arm 2: hard call wall close AND price above VWAP"
+      },
+      {
+        "line": 728,
+        "text": "        if cw_hard and cw_sigma is not None and vwap_delta_pct is not None:"
+      },
+      {
+        "line": 730,
+        "text": "                if bool(cw_hard) and float(cw_sigma) <= 0.5 and float(vwap_delta_pct) > 0:"
+      },
+      {
+        "line": 737,
+        "text": "    def _pin_watch() -> bool:"
+      },
+      {
+        "line": 751,
+        "text": "    def _into_ceiling() -> bool:"
+      },
+      {
+        "line": 795,
+        "text": "    def _make(key: str) -> dict:"
+      },
+      {
+        "line": 799,
+        "text": "    # Rule 1 — Take profits: up-move stretched into resistance"
+      },
+      {
+        "line": 800,
+        "text": "    # Price above VWAP AND (extended_up OR pin_watch)"
+      },
+      {
+        "line": 801,
+        "text": "    above_vwap = (vwap_delta_pct is not None and vwap_delta_pct > 0) or l2"
+      },
+      {
+        "line": 802,
+        "text": "    if above_vwap and (extended_up or pin_watch):"
+      },
+      {
+        "line": 805,
+        "text": "    # Rule 2 — Buy now (act): full continuation, not into a ceiling"
+      },
+      {
+        "line": 810,
+        "text": "    # Rule 3 — Almost ready (get_ready): base in place, trigger not fired"
+      },
+      {
+        "line": 815,
+        "text": "    # Rule 4 — In favour: trending and holding, no fresh washout"
+      },
+      {
+        "line": 820,
+        "text": "    # Rule 5 — Watch: active without structure, or trap-prone"
+      },
+      {
+        "line": 826,
+        "text": "    # Rule 6 — Stand aside (default)"
+      },
+      {
+        "line": 832,
+        "text": "def washout_context("
+      },
+      {
+        "line": 861,
+        "text": "    Defensive: returns all-None dict on empty/short/missing-column input."
+      },
+      {
+        "line": 874,
+        "text": "        log.debug(\"washout_context: missing required columns (need high/low/close)\")"
+      }
+    ]
+  },
+  {
+    "path": "templates/biocatalyst.js",
+    "blob": "ba5e4b2356012cc429cd3600ceff44b5b3d7ddea",
+    "chars": 212495,
+    "excerpt": null,
+    "matches": [
+      {
+        "line": 1,
+        "text": "(function () {"
+      },
+      {
+        "line": 10,
+        "text": "  var RADAR_API = '/api/biocatalyst/v1/catalyst-radar';"
+      },
+      {
+        "line": 11,
+        "text": "  var CHANGE_API = '/api/biocatalyst/v1/trials/change-tape';"
+      },
+      {
+        "line": 12,
+        "text": "  var PROSPECTIVE_API = '/api/biocatalyst/v1/trials/prospective-changes';"
+      },
+      {
+        "line": 13,
+        "text": "  var SCREEN_API = '/api/biocatalyst/v1/trials:screen';"
+      },
+      {
+        "line": 14,
+        "text": "  var FACETS_API = '/api/biocatalyst/v1/trials:screen/facets';"
+      },
+      {
+        "line": 15,
+        "text": "  var PEER_API = '/api/biocatalyst/v1/trial-peer-sets:resolve';"
+      },
+      {
+        "line": 16,
+        "text": "  var TRIAL_API = '/api/biocatalyst/v1/trials';"
+      },
+      {
+        "line": 36,
+        "text": "  var TAPE_OPS = { add: ['missing', 'present'], remove: ['present', 'missing'], replace: ['present', 'present'] };"
+      },
+      {
+        "line": 39,
+        "text": "  var MISSINGNESS_STATES = ['observed', 'source_null', 'source_missing', 'not_applicable', 'parser_degraded', 'license_restricted'];"
+      },
+      {
+        "line": 136,
+        "text": "    evidenceCell: null"
+      },
+      {
+        "line": 140,
+        "text": "  function byId(id) { return document.getElementById(id); }"
+      },
+      {
+        "line": 141,
+        "text": "  function lang() { return document.documentElement.getAttribute('data-lang') === 'zh' ? 'zh' : 'en'; }"
+      },
+      {
+        "line": 142,
+        "text": "  function tr(en, zh) { return lang() === 'zh' ? zh : en; }"
+      },
+      {
+        "line": 143,
+        "text": "  function str(value) { return value == null ? '' : String(value); }"
+      },
+      {
+        "line": 144,
+        "text": "  function clean(value) { return str(value).replace(/\\s+/g, ' ').trim(); }"
+      },
+      {
+        "line": 145,
+        "text": "  function arr(value) { return Array.isArray(value) ? value : []; }"
+      },
+      {
+        "line": 146,
+        "text": "  function valueAt(object, key) { return object && typeof object === 'object' ? object[key] : null; }"
+      },
+      {
+        "line": 147,
+        "text": "  function text(node, value) { node.textContent = str(value); return node; }"
+      },
+      {
+        "line": 148,
+        "text": "  function el(tag, className, value) { var node = document.createElement(tag); if (className) node.className = className; if (value != null) text(node, value); return node; }"
+      },
+      {
+        "line": 149,
+        "text": "  function clearChildren(node) { while (node.firstChild) node.removeChild(node.firstChild); }"
+      },
+      {
+        "line": 150,
+        "text": "  function isTrialId(value) { return TRIAL_ID.test(clean(value)); }"
+      },
+      {
+        "line": 151,
+        "text": "  function unique(values) { var seen = {}; return values.filter(function (value) { var key = clean(value); if (!key || seen[key]) return false; seen[key] = true; return true; }); }"
+      },
+      {
+        "line": 153,
+        "text": "  function cacheUi() {"
+      },
+      {
+        "line": 180,
+        "text": "    ui.asOf = byId('bci-asof');"
+      },
+      {
+        "line": 222,
+        "text": "  function setBiText(node, en, zh) {"
+      },
+      {
+        "line": 227,
+        "text": "  function isScreenMode() { return state.mode === 'screen'; }"
+      },
+      {
+        "line": 228,
+        "text": "  function isPeerMode() { return state.mode === 'peers'; }"
+      },
+      {
+        "line": 229,
+        "text": "  function isListMode() { return !isPeerMode(); }"
+      },
+      {
+        "line": 230,
+        "text": "  function isMilestonesMode() { return state.mode === 'milestones'; }"
+      },
+      {
+        "line": 232,
+        "text": "  function dateParts(value) {"
+      },
+      {
+        "line": 239,
+        "text": "  function dateLabel(value, precision) {"
+      },
+      {
+        "line": 250,
+        "text": "  function timestampLabel(value) {"
+      },
+      {
+        "line": 254,
+        "text": "  function clockLabel(value) {"
+      },
+      {
+        "line": 259,
+        "text": "  function observationTimestampLabel(value) {"
+      },
+      {
+        "line": 264,
+        "text": "  function precisionOf(milestone) {"
+      },
+      {
+        "line": 270,
+        "text": "  function dateTypeOf(milestone) {"
+      },
+      {
+        "line": 274,
+        "text": "  function milestoneKindOf(milestone) {"
+      },
+      {
+        "line": 278,
+        "text": "  function milestoneKindLabel(kind) {"
+      },
+      {
+        "line": 285,
+        "text": "  function dateTypeLabel(type) {"
+      },
+      {
+        "line": 294,
+        "text": "  function titleOf(trial) { return clean(valueAt(trial, 'brief_title')) || clean(valueAt(trial, 'title')) || tr('Untitled trial', '未命名试验'); }"
+      },
+      {
+        "line": 295,
+        "text": "  function nctOf(trial) { return clean(valueAt(trial, 'nct_id')); }"
+      },
+      {
+        "line": 296,
+        "text": "  function phasesOf(trial) { return unique(arr(valueAt(trial, 'phases')).map(clean)); }"
+      },
+      {
+        "line": 297,
+        "text": "  function conditionsOf(trial) { return unique(arr(valueAt(trial, 'conditions')).map(clean)); }"
+      },
+      {
+        "line": 298,
+        "text": "  function sponsorOf(trial) { var sponsor = valueAt(trial, 'sponsor'); return clean(valueAt(sponsor, 'name')); }"
+      },
+      {
+        "line": 299,
+        "text": "  function statusOf(trial) { return clean(valueAt(trial, 'status')); }"
+      },
+      {
+        "line": 300,
+        "text": "  function studyTypeOf(trial) { return clean(valueAt(trial, 'study_type')); }"
+      },
+      {
+        "line": 301,
+        "text": "  function enrollmentOf(trial) { var enrollment = valueAt(trial, 'enrollment'), count = valueAt(enrollment, 'count'); return count === 0 || count ? String(count) : ''; }"
+      },
+      {
+        "line": 302,
+        "text": "  function dateOf(trial, key) { var dates = valueAt(trial, 'dates'), value = valueAt(dates, key); return value && typeof value === 'object' ? clean(valueAt(value, 'date')) : clean(value); }"
+      },
+      {
+        "line": 304,
+        "text": "  function officialStudyUrl(url, id) {"
+      },
+      {
+        "line": 308,
+        "text": "  function withAuth(headers) {"
+      },
+      {
+        "line": 311,
+        "text": "    return window.MDXAuth.client().then(function (client) { return client.auth.getSession(); }).then(function (result) {"
+      },
+      {
+        "line": 315,
+        "text": "    }).catch(function () { return headers; });"
+      },
+      {
+        "line": 317,
+        "text": "  function currentSubject() {"
+      },
+      {
+        "line": 324,
+        "text": "  function clientCheckTimestamp() {"
+      },
+      {
+        "line": 327,
+        "text": "  function markHydration(error, kind, status) {"
+      },
+      {
+        "line": 333,
+        "text": "  function jsonContentType(response) {"
+      },
+      {
+        "line": 339,
+        "text": "  function hydrationKind(error) {"
+      },
+      {
+        "line": 347,
+        "text": "  function fetchJson(url, signal) {"
+      },
+      {
+        "line": 348,
+        "text": "    return withAuth({ Accept: 'application/json' }).then(function (headers) {"
+      },
+      {
+        "line": 349,
+        "text": "      return fetch(url, { headers: headers, credentials: 'same-origin', cache: 'no-store', signal: signal });"
+      },
+      {
+        "line": 350,
+        "text": "    }).then(function (response) {"
+      },
+      {
+        "line": 353,
+        "text": "      if (status === 404) { var missing = new Error('HTTP 404'); missing.status = 404; throw missing; }"
+      },
+      {
+        "line": 356,
+        "text": "      return Promise.resolve(response.text()).then(function (raw) {"
+      },
+      {
+        "line": 360,
+        "text": "    }, function (networkError) {"
+      },
+      {
+        "line": 366,
+        "text": "  function abort(name) {"
+      },
+      {
+        "line": 370,
+        "text": "  function isChangeMode() { return state.mode === 'changes'; }"
+      },
+      {
+        "line": 371,
+        "text": "  function isProspectiveMode() { return state.mode === 'prospective'; }"
+      },
+      {
+        "line": 372,
+        "text": "  function activeChangeKind() { return isProspectiveMode() ? state.filters.prospective_change_kind : state.filters.change_kind; }"
+      },
+      {
+        "line": 373,
+        "text": "  function activeChangeKindValues() { return isProspectiveMode() ? PROSPECTIVE_CHANGE_KIND_VALUES : CHANGE_KIND_VALUES; }"
+      },
+      {
+        "line": 374,
+        "text": "  function activeChangeKindCatalog() { return isProspectiveMode() ? PROSPECTIVE_CHANGE_KIND_CATALOG : CHANGE_KIND_CATALOG; }"
+      },
+      {
+        "line": 375,
+        "text": "  function setActiveChangeKind(value) {"
+      },
+      {
+        "line": 383,
+        "text": "  function activeApi() {"
+      },
+      {
+        "line": 390,
+        "text": "  function activeWindow() {"
+      },
+      {
+        "line": 393,
+        "text": "  function usesWindow() { return !isChangeMode() && !isScreenMode() && !isPeerMode(); }"
+      },
+      {
+        "line": 394,
+        "text": "  function activeNoun() {"
+      },
+      {
+        "line": 400,
+        "text": "  function activeSingularNoun() {"
+      },
+      {
+        "line": 406,
+        "text": "  function modeTitle() {"
+      },
+      {
+        "line": 412,
+        "text": "  function modeKicker() {"
+      },
+      {
+        "line": 418,
+        "text": "  function defaultFilters() { return { field: 'all', change_kind: '', prospective_change_kind: '', window: '90', q: '', phase: '', status: '', condition: '', sponsor: '', intervention: '', study_type: '', pc_from: '', pc"
+      },
+      {
+        "line": 419,
+        "text": "  function validAuthority(authority) {"
+      },
+      {
+        "line": 425,
+        "text": "  function safeJson(value, depth) {"
+      },
+      {
+        "line": 430,
+        "text": "    if (Array.isArray(value)) return value.length <= 512 && value.every(function (item) { return safeJson(item, depth + 1); });"
+      },
+      {
+        "line": 432,
+        "text": "    return Object.keys(value).every(function (key) { return Array.from(key).length <= 256 && safeJson(value[key], depth + 1); });"
+      },
+      {
+        "line": 434,
+        "text": "  function fullTimestamp(value) { return typeof value === 'string' && /^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?(?:Z|[+-]\\d{2}:\\d{2})$/.test(value) && Number.isFinite(Date.parse(value)); }"
+      },
+      {
+        "line": 436,
+        "text": "  function validMeta(payload) {"
+      },
+      {
+        "line": 441,
+        "text": "  function validTrial(trial) { return !!trial && typeof trial === 'object' && isTrialId(nctOf(trial)) && !!(clean(valueAt(trial, 'title')) || clean(valueAt(trial, 'brief_title'))); }"
+      },
+      {
+        "line": 446,
+        "text": "  function validCatalystRadarMilestone(milestone) {"
+      },
+      {
+        "line": 457,
+        "text": "  function validCatalystRadarTiming(timing, milestone) {"
+      },
+      {
+        "line": 467,
+        "text": "  var CATALYST_RADAR_ISSUER_STATES = { ticker_only: true, sponsor_name_absent: true, unresolved_sponsor: true, sponsor_map_unavailable: true };"
+      },
+      {
+        "line": 468,
+        "text": "  function validCatalystRadarIssuer(issuer) {"
+      },
+      {
+        "line": 474,
+        "text": "  function validCatalystRadarLineageItem(item) {"
+      },
+      {
+        "line": 485,
+        "text": "  function sameCatalystRadarLineageItem(left, right) {"
+      },
+      {
+        "line": 486,
+        "text": "    return ['from', 'to', 'from_version', 'to_version', 'observed_at', 'relation', 'predecessor_source_version', 'predecessor_exact_operation_index'].every(function (key) { return valueAt(left, key) === valueAt(right, ke"
+      },
+      {
+        "line": 488,
+        "text": "  function validCatalystRadarRevision(revision) {"
+      },
+      {
+        "line": 494,
+        "text": "  function validMilestone(item) {"
+      },
+      {
+        "line": 495,
+        "text": "    var trial = valueAt(item, 'trial'), milestone = valueAt(item, 'milestone'), timing = valueAt(item, 'timing'), evidence = valueAt(item, 'evidence'), sourceClocks = valueAt(evidence, 'source_clocks');"
+      },
+      {
+        "line": 503,
+        "text": "      !!evidence && typeof evidence === 'object' && clean(valueAt(evidence, 'provider')) === 'ClinicalTrials.gov' &&"
+      },
+      {
+        "line": 504,
+        "text": "      clean(valueAt(evidence, 'record_id')) === nctId && !!sourceClocks && typeof sourceClocks === 'object';"
+      },
+      {
+        "line": 506,
+        "text": "  function validEnvelope(payload) {"
+      }
+    ]
+  },
+  {
+    "path": "app/biocatalyst.py",
+    "blob": "18dc16edf61749879a02043b00a1bbae66123d85",
+    "chars": 168205,
+    "excerpt": null,
+    "matches": [
+      {
+        "line": 117,
+        "text": "    \"unavailable_reason\","
+      },
+      {
+        "line": 119,
+        "text": "_CHANGE_TAPE_VALUE_UNAVAILABLE_REASONS = frozenset("
+      },
+      {
+        "line": 135,
+        "text": "    \"unavailable_behavior\": \"explicit_row_marker_never_empty_and_never_guessed\","
+      },
+      {
+        "line": 200,
+        "text": "def _prospective_value_key_is_private(key: str) -> bool:"
+      },
+      {
+        "line": 230,
+        "text": "def _publication_runtime() -> tuple[type[Exception], type[Any]]:"
+      },
+      {
+        "line": 241,
+        "text": "def _trial_screen_runtime() -> tuple[type[Exception], Any, Any, Any]:"
+      },
+      {
+        "line": 259,
+        "text": "def _verify_serving_runtime() -> None:"
+      },
+      {
+        "line": 265,
+        "text": "def _catalyst_radar_runtime() -> tuple[dict[str, int | None], tuple[str, ...], Any, Any]:"
+      },
+      {
+        "line": 280,
+        "text": "# Once setup creates the public root, a missing serving dependency is a startup"
+      },
+      {
+        "line": 286,
+        "text": "def require_site_full_user(authorization: str | None = Header(default=None)) -> dict:"
+      },
+      {
+        "line": 302,
+        "text": "def _merged_private_headers(existing: Mapping[str, str] | None) -> dict[str, str]:"
+      },
+      {
+        "line": 322,
+        "text": "def _publisher() -> Any:"
+      },
+      {
+        "line": 327,
+        "text": "def _unavailable(exc: Exception | None = None) -> HTTPException:"
+      },
+      {
+        "line": 330,
+        "text": "        log.warning(\"BioCatalyst public projection unavailable (%s)\", code)"
+      },
+      {
+        "line": 333,
+        "text": "        detail=\"trial intelligence temporarily unavailable\","
+      },
+      {
+        "line": 338,
+        "text": "def _read_bundle() -> tuple[Any, dict[str, Any]]:"
+      },
+      {
+        "line": 344,
+        "text": "        raise _unavailable(exc) from None"
+      },
+      {
+        "line": 346,
+        "text": "        raise _unavailable()"
+      },
+      {
+        "line": 348,
+        "text": "    if bundle.health_unavailable_reason:"
+      },
+      {
+        "line": 350,
+        "text": "            \"BioCatalyst operational health unavailable (%s)\","
+      },
+      {
+        "line": 351,
+        "text": "            bundle.health_unavailable_reason,"
+      },
+      {
+        "line": 356,
+        "text": "def _response(payload: Mapping[str, Any], *, status_code: int = 200) -> JSONResponse:"
+      },
+      {
+        "line": 364,
+        "text": "def _fact(facts: Mapping[str, Any], key: str) -> Any:"
+      },
+      {
+        "line": 371,
+        "text": "def _text(value: object, *, maximum: int = 4096) -> str | None:"
+      },
+      {
+        "line": 380,
+        "text": "def _text_list(value: object, *, limit: int = 100, maximum: int = 512) -> list[str]:"
+      },
+      {
+        "line": 396,
+        "text": "def _named_rows(value: object, *, kind: str, limit: int) -> list[dict[str, Any]]:"
+      },
+      {
+        "line": 433,
+        "text": "def _date_value(value: object) -> dict[str, Any] | None:"
+      },
+      {
+        "line": 445,
+        "text": "def _sponsor_value(value: object) -> dict[str, Any] | None:"
+      },
+      {
+        "line": 454,
+        "text": "def _enrollment_value(value: object) -> dict[str, Any] | None:"
+      },
+      {
+        "line": 463,
+        "text": "def _countries(value: object) -> tuple[int | None, list[str]]:"
+      },
+      {
+        "line": 480,
+        "text": "def _history_json_value(value: object, *, depth: int = 0) -> Any:"
+      },
+      {
+        "line": 484,
+        "text": "        raise _unavailable()"
+      },
+      {
+        "line": 489,
+        "text": "            raise _unavailable()"
+      },
+      {
+        "line": 495,
+        "text": "        # difference.  Oversized values make the projection unavailable until"
+      },
+      {
+        "line": 498,
+        "text": "            raise _unavailable()"
+      },
+      {
+        "line": 502,
+        "text": "            raise _unavailable()"
+      },
+      {
+        "line": 509,
+        "text": "                raise _unavailable()"
+      },
+      {
+        "line": 514,
+        "text": "            raise _unavailable()"
+      },
+      {
+        "line": 516,
+        "text": "    raise _unavailable()"
+      },
+      {
+        "line": 519,
+        "text": "def _history_url(value: object, *, nct_id: str, version: int | None = None) -> str:"
+      },
+      {
+        "line": 522,
+        "text": "        raise _unavailable()"
+      },
+      {
+        "line": 526,
+        "text": "            raise _unavailable()"
+      },
+      {
+        "line": 528,
+        "text": "        raise _unavailable()"
+      },
+      {
+        "line": 532,
+        "text": "def _history_for_api(model: Mapping[str, Any], *, nct_id: str) -> dict[str, Any]:"
+      },
+      {
+        "line": 544,
+        "text": "            model.get(\"unavailable_reason\")"
+      },
+      {
+        "line": 545,
+        "text": "            if \"unavailable_reason\" in model"
+      },
+      {
+        "line": 551,
+        "text": "            \"state\": \"unavailable\","
+      },
+      {
+        "line": 555,
+        "text": "        raise _unavailable()"
+      },
+      {
+        "line": 558,
+        "text": "        raise _unavailable()"
+      },
+      {
+        "line": 569,
+        "text": "        raise _unavailable()"
+      },
+      {
+        "line": 573,
+        "text": "            raise _unavailable()"
+      },
+      {
+        "line": 583,
+        "text": "            raise _unavailable()"
+      },
+      {
+        "line": 596,
+        "text": "            raise _unavailable()"
+      },
+      {
+        "line": 609,
+        "text": "            raise _unavailable()"
+      },
+      {
+        "line": 633,
+        "text": "def _public_trial("
+      },
+      {
+        "line": 634,
+        "text": "    snapshot: Mapping[str, Any],"
+      },
+      {
+        "line": 639,
+        "text": "    facts = snapshot.get(\"facts\")"
+      },
+      {
+        "line": 640,
+        "text": "    attribution = snapshot.get(\"source_attribution\")"
+      },
+      {
+        "line": 642,
+        "text": "        raise _unavailable()"
+      },
+      {
+        "line": 649,
+        "text": "        \"nct_id\": snapshot[\"nct_id\"],"
+      },
+      {
+        "line": 664,
+        "text": "        \"retrieved_at\": snapshot.get(\"retrieved_at\"),"
+      },
+      {
+        "line": 682,
+        "text": "                \"evidence\": {"
+      },
+      {
+        "line": 684,
+        "text": "                    \"record_id\": snapshot[\"nct_id\"],"
+      },
+      {
+        "line": 687,
+        "text": "                    \"retrieved_at\": snapshot.get(\"retrieved_at\"),"
+      },
+      {
+        "line": 688,
+        "text": "                    \"coverage\": snapshot.get(\"coverage_class\"),"
+      },
+      {
+        "line": 693,
+        "text": "                    else {\"available\": False, \"unavailable_reason\": \"not_collected\"},"
+      },
+      {
+        "line": 694,
+        "text": "                    nct_id=snapshot[\"nct_id\"],"
+      },
+      {
+        "line": 701,
+        "text": "def _encode_cursor(offset: int) -> str:"
+      },
+      {
+        "line": 705,
+        "text": "def _decode_cursor(cursor: str | None) -> int:"
+      },
+      {
+        "line": 721,
+        "text": "def _query_text("
+      },
+      {
+        "line": 741,
+        "text": "def _query_limit(value: str) -> int:"
+      },
+      {
+        "line": 758,
+        "text": "def _query_iso_date(value: str | None, *, name: str) -> date | None:"
+      },
+      {
+        "line": 779,
+        "text": "def _generation_as_of_time(projection: Any) -> datetime:"
+      },
+      {
+        "line": 784,
+        "text": "        raise _unavailable()"
+      },
+      {
+        "line": 788,
+        "text": "        raise _unavailable() from None"
+      },
+      {
+        "line": 790,
+        "text": "        raise _unavailable()"
+      },
+      {
+        "line": 794,
+        "text": "def _generation_as_of_date(projection: Any) -> date:"
+      },
+      {
+        "line": 797,
+        "text": "    return _generation_as_of_time(projection).date()"
+      },
+      {
+        "line": 800,
+        "text": "def _milestone_date_interval(value: object) -> tuple[date, date, str] | None:"
+      },
+      {
+        "line": 829,
+        "text": "def _milestone_type(value: object) -> str:"
+      },
+      {
+        "line": 837,
+        "text": "def _milestone_query_binding("
+      },
+      {
+        "line": 864,
+        "text": "def _opaque_digest(value: Mapping[str, Any]) -> str:"
+      },
+      {
+        "line": 870,
+        "text": "def _resolve_peer_set_payload(payload: Any) -> tuple[tuple[str, ...], int, str | None]:"
+      },
+      {
+        "line": 912,
+        "text": "async def _read_peer_set_payload(request: Request) -> Any:"
+      },
+      {
+        "line": 939,
+        "text": "    async for chunk in request.stream():"
+      },
+      {
+        "line": 965,
+        "text": "def _peer_set_caller_binding(user: Mapping[str, Any]) -> dict[str, str]:"
+      },
+      {
+        "line": 981,
+        "text": "        raise _unavailable()"
+      },
+      {
+        "line": 985,
+        "text": "def _peer_set_query_binding("
+      },
+      {
+        "line": 995,
+        "text": "def _peer_set_cursor_key() -> bytes:"
+      },
+      {
+        "line": 1004,
+        "text": "        raise _unavailable() from None"
+      },
+      {
+        "line": 1006,
+        "text": "        raise _unavailable()"
+      },
+      {
+        "line": 1010,
+        "text": "def _peer_set_cursor_payload("
+      },
+      {
+        "line": 1023,
+        "text": "def _encode_peer_set_cursor("
+      },
+      {
+        "line": 1044,
+        "text": "def _decode_peer_set_cursor("
+      },
+      {
+        "line": 1082,
+        "text": "def _trial_screen_query_binding("
+      },
+      {
+        "line": 1098,
+        "text": "        raise _unavailable()"
+      },
+      {
+        "line": 1113,
+        "text": "def _trial_screen_cursor_key() -> bytes:"
+      },
+      {
+        "line": 1122,
+        "text": "        raise _unavailable() from None"
+      },
+      {
+        "line": 1124,
+        "text": "        raise _unavailable()"
+      },
+      {
+        "line": 1128,
+        "text": "def _trial_screen_cursor_payload("
+      }
+    ]
+  },
+  {
+    "path": "docs/ILLUSTRATIONS.md",
+    "blob": "2be2eba1b44cd86d9527e97d17174cc89acdfe1d",
+    "chars": 6160,
+    "excerpt": "# ilx / \"Signal Ink\" — the house illustration format\n\nStatus: **house standard** for illustrative / display-tier charting. Replaces inline\nPlotly fragments on dashboard surfaces.\n\n## The law\n\n- **All future illustrative / display charting uses ilx.** New display panels (macro\n  internals, regime context, sentiment gauges, flow tapes, drawdown fills) render\n  through `lib.illus.illus()`. Do not add new Plotly fragments to dashboard pages.\n- **ilx is NOT for real charting.** Interactive candle / OHLC charts, anything a user\n  zooms, pans, or hovers a crosshair over, stays on the trading stack\n  (`lightweight-charts`, the Terminal). ilx is a *sparkline-grade illustration*: a\n  small, animated, glance-tier picture of one series (or 2-3 compared), read at the\n  size it renders. No axes, no zoom, no tooltips.\n- **Honesty in motion (Design Doctrine Law 5).** Settled data is drawn once and lands\n  with a *static* glow — never a looping pulse that fakes liveness. An empty or too-\n  short series renders an honest null (`No history yet` / `暂无历史`), never a\n  fabricated chart. This is the \"nulls printed\" law applied to pictures.\n\n## Why (vs Plotly)\n\nPlotly shipped ~267 KB of inline chart fragments **plus** a 3.5 MB deferred library on\n`china.html` for ten static display charts. ilx renders the same charts as ~2-4 KB of\nSSR SVG + HTML each, animated by ~5 KB of shared CSS/JS, theme-aware and bilingual with\nno client library. See the China conversion (`scripts/build_china.py`).\n\n## API\n\n```python\nfrom lib import illus\n\nillus(series, *, kind=\"line\", accent=None, height=190, unit_en=\"\", unit_zh=None,\n      baseline=None, reference=None, bands=None, value_fmt=\"{:,.1f}\",\n      max_points=220, aria_en=\"\", aria_zh=None) -> str  # HTML <figure> fragment\n```\n\n| Param | Meaning |\n|---|---|\n| `series` | single-series kinds: `{\"dates\":[iso...], \"vals\":[float...]}`. `kind=\"multi\"`: a list of `{\"label_en\",\"label_zh\",\"color\",\"dates\",\"vals\"}` (2-3 series). |\n| `kind` | `line` · `area` · `bars` · `baseline` · `drawdown` · `multi` (see gallery). |\n| `accent` | any CSS color string (`\"var(--info)\"`, `\"#c08bd8\"`). Set as `color:` on the figure root; **all single-series ink uses `currentColor`**, so a theme flip / ZH swap flows through. |\n| `height` | figure height in px (viewBox is 560×height, x-stretched to the container). |\n| `unit_en` / `unit_zh` | end-value tag unit; emitted as paired `l-en`/`l-zh` spans. |\n| `baseline` | value of the waterline. `baseline` kind splits up/down tint here; `bars` kind becomes sign-colored around it. |\n| `reference` | a reference level (e.g. `100` for NBS-neutral, `10000` for ¥1T) drawn as a faint dashed rule + a muted HTML caption. |\n| `bands` | list of soft zone tints: `{\"hi\",\"lo\",\"tint\",\"label_en\",\"label_zh\",\"pos\"}` (`pos` = `top`/`bottom`). Used for the fear↔euphoria gauge. |\n| `value_fmt` | Python format string for the end value (default `\"{:,.1f}\"`). |\n| `max_points` | downsample threshold (default 220). |\n| `aria_en` / `aria_zh` | `aria-label` text. **aria-label is plain EN only** (it is an attribute — no bilingual span markup or CI-guarded translated `title=`/`aria`). |\n\nReturns an HTML string; never raises on bad data.\n\n## Variant gallery\n\n| kind | Picture | Use for |\n|---|---|---|\n| `line` | single ink stroke + end dot + end-value tag | most series (margin, turnover, yields, climate, construction) |\n| `area` | line + gradient veil from the curve to the floor | series where magnitude-vs-floor matters |\n| `bars` | staggered rising bars; **sign-colored** (`--up`/`--down`) when `baseline` set | discrete/monthly series (credit impulse, M1−M2 scissors, net-rising-cities breadth) |\n| `baseline` | **the signature** — line + area dual-tinted `--up` above / `--down` below the waterline, split by two clipPaths, dashed waterline | anything read as above/below zero (southbound cumulative flow) |\n| `drawdown` | 0 pinned at the top, underwater fill in `--down` downward to the curve | drawdown-from-high series (property-ETF) |\n| `multi` | 2-3 overlaid lines, per-series colors, HTML end-chips naming each line (no legend box) | comparisons (growth vs inflation) |\n\n## Animation contract\n\nKeyed on the `.ilx-in` class (added by `illus.js` via IntersectionObserver, threshold\n~0.25). In-page charts animate once; dialog charts replay on each open (the page calls\n`ilxReveal(dialogEl)` after the panel entrance settles).\n\n1. **Draw** — the ink is laid down left→right (stroke-dasharray → 0), ~950 ms\n   `cubic-bezier(.33,.62,.26,1)`, 120 ms in. `--ilx-len` (computed path length) is set\n   inline so the dash reveal is exact.\n2. **Veil** — the gradient fill fades in *under* the ink (~600 ms, ~550 ms delay).\n3. **Settle dot** — the end point lands with an overshoot\n   `cubic-bezier(.34,1.28,.5,1)` and a **static** glow (no pulse).\n4. **Bars** — rise from the baseline (`scaleY`), staggered\n   `delay = 120ms + i*9ms`, total ≤ ~700 ms.\n5. **Labels** — corners / end-tag / band / reference captions fade in after the draw.\n6. `@media (prefers-reduced-motion: reduce)` → everything at final state, no transitions.\n\n## Accent guidance\n\n- Bind to theme vars where the semantics fit: `var(--info)` (neutral/flow),\n  `var(--warn)` (heat/turnover/yields), `var(--orange)` (activity/climate),\n  `var(--up)`/`var(--down)` (dual-tint kinds — **always** these two so the ZH\n  red/green swap is automatic).\n- A page-accent hex is fine for a *signature* series (China sentiment uses `#c08bd8`\n  plum). Prefer a var when one carries the right meaning.\n- The dual-tint kinds (`baseline`, `drawdown`, signed `bars`) ignore `accent` for their\n  fills and use `--up`/`--down` directly — that is what makes the ZH swap flip red↔green\n  with no re-render.\n\n## Files\n\n- `lib/illus.py` — the SSR renderer (pure stdlib, no deps).\n- `templates/illus.css` + `site/illus.css` — layout + reveal choreography (byte-paired).\n- `templates/illus.js` + `site/illus.js` — IntersectionObserver trigger + `ilxReveal`.\n- `tests/test_illus.py` — downsampling / null / baseline-split / unique-id / multi tests.\n\nPaired copies (`templates/` ↔ `site/`) must byte-match; `python -m\nscripts.check_template_site_sync --fix` heals them.\n",
+    "matches": [
+      {
+        "line": 46,
+        "text": "| `reference` | a reference level (e.g. `100` for NBS-neutral, `10000` for ¥1T) drawn as a faint dashed rule + a muted HTML caption. |"
+      }
+    ]
+  }
+]
+

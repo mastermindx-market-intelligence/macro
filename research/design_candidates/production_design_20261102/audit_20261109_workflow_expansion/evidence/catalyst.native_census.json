@@ -1,0 +1,3967 @@
+[
+  {
+    "fileName": "Catalyst Intelligence · Decision Desk and Integration",
+    "pageName": "Catalyst Intelligence · Decision Desk · R1 · 2026-10-18",
+    "pageId": "p-1-0",
+    "url": "https://app.paper.design/file/01M6Y2VTQBVC9NA39HNG1DYWFH/p-1-0",
+    "rootNodeId": "root_node_p-1-0",
+    "nodeCount": 777,
+    "artboardCount": 10,
+    "artboards": [
+      {
+        "id": "1-0",
+        "name": "CI R1 · BioCatalyst signals · Desktop dark",
+        "childCount": 1,
+        "width": 1440,
+        "height": 1768,
+        "worldX": -5425,
+        "worldY": -884.5
+      },
+      {
+        "id": "3F-0",
+        "name": "CI R1 · BioCatalyst signals · Mobile",
+        "childCount": 3,
+        "width": 390,
+        "height": 844,
+        "worldX": -3905,
+        "worldY": -884.5
+      },
+      {
+        "id": "6F-0",
+        "name": "CI R1 · BioCatalyst signals · Desktop light",
+        "childCount": 1,
+        "width": 1440,
+        "height": 1769,
+        "worldX": -3435,
+        "worldY": -884.5
+      },
+      {
+        "id": "9T-0",
+        "name": "CI R1 · BioCatalyst setup · Desktop detail",
+        "childCount": 2,
+        "width": 620,
+        "height": 900,
+        "worldX": -1915,
+        "worldY": -884.5
+      },
+      {
+        "id": "AP-0",
+        "name": "CI R1 · BioCatalyst investor choices · Mobile",
+        "childCount": 3,
+        "width": 390,
+        "height": 844,
+        "worldX": -1215,
+        "worldY": -884.5
+      },
+      {
+        "id": "BU-0",
+        "name": "CI R1 · Save a condition · Specimen",
+        "childCount": 1,
+        "width": 450,
+        "height": 620,
+        "worldX": -745,
+        "worldY": -884.5
+      },
+      {
+        "id": "CD-0",
+        "name": "CI R1 · Source conflict and withheld case",
+        "childCount": 1,
+        "width": 1440,
+        "height": 1289,
+        "worldX": -215,
+        "worldY": -884.5
+      },
+      {
+        "id": "EV-0",
+        "name": "CI R1 · Government shared decision shell",
+        "childCount": 1,
+        "width": 1440,
+        "height": 1039,
+        "worldX": 1305,
+        "worldY": -884.5
+      },
+      {
+        "id": "HK-0",
+        "name": "CI R1 · Quiet day · Existing decisions remain",
+        "childCount": 1,
+        "width": 1440,
+        "height": 992,
+        "worldX": 2825,
+        "worldY": -884.5
+      },
+      {
+        "id": "JL-0",
+        "name": "CI R1 · Advanced research · Evidence beneath the signal",
+        "childCount": 1,
+        "width": 1080,
+        "height": 1197,
+        "worldX": 4345,
+        "worldY": -884.5
+      }
+    ],
+    "pages": [
+      {
+        "type": "page",
+        "id": "p-5-0",
+        "name": "00 · AGENT README · Read first",
+        "icon": "arrow",
+        "isActive": false
+      },
+      {
+        "type": "page",
+        "id": "p-1-0",
+        "name": "Catalyst Intelligence · Decision Desk · R1 · 2026-10-18",
+        "icon": "design",
+        "isActive": true
+      },
+      {
+        "type": "page",
+        "id": "p-8-0",
+        "name": "04A · Build · R3 workflow contract",
+        "icon": "blueprint",
+        "isActive": false
+      },
+      {
+        "type": "page",
+        "id": "p-7-0",
+        "name": "02A · Review · Case, evidence & conditions",
+        "icon": "info",
+        "isActive": false
+      },
+      {
+        "type": "page",
+        "id": "p-6-0",
+        "name": "01 · Product · Catalyst review desk",
+        "icon": "design",
+        "isActive": false
+      },
+      {
+        "type": "page",
+        "id": "p-4-0",
+        "name": "R2 · Manual review condition flow",
+        "icon": "blueprint",
+        "isActive": false
+      },
+      {
+        "type": "page",
+        "id": "p-3-0",
+        "name": "Proposed · Selected case and filters",
+        "icon": "design",
+        "isActive": false
+      },
+      {
+        "type": "page",
+        "id": "p-2-0",
+        "name": "Catalyst-to-Opportunity · Source-bound integration · 2026-10-17",
+        "icon": "design",
+        "isActive": false
+      }
+    ],
+    "fontFamilies": [
+      "Inter",
+      "System Sans-Serif",
+      "IBM Plex Mono",
+      "Menlo",
+      "System Monospace"
+    ],
+    "tokens": {
+      "items": [
+        {
+          "name": "--mx-dark-bg",
+          "value": "#0F1115"
+        },
+        {
+          "name": "--mx-dark-panel",
+          "value": "#181B21"
+        },
+        {
+          "name": "--mx-dark-panel2",
+          "value": "#1E222A"
+        },
+        {
+          "name": "--mx-dark-text",
+          "value": "#D7DCE3"
+        },
+        {
+          "name": "--mx-dark-muted",
+          "value": "#8B93A1"
+        },
+        {
+          "name": "--mx-dark-line",
+          "value": "#3A4150"
+        },
+        {
+          "name": "--mx-dark-up",
+          "value": "#45B873"
+        },
+        {
+          "name": "--mx-dark-down",
+          "value": "#E06464"
+        },
+        {
+          "name": "--mx-dark-warn",
+          "value": "#E0A030"
+        },
+        {
+          "name": "--mx-dark-act",
+          "value": "#E05555"
+        },
+        {
+          "name": "--mx-dark-ok",
+          "value": "#3DA564"
+        },
+        {
+          "name": "--mx-dark-info",
+          "value": "#5B9BF0"
+        },
+        {
+          "name": "--mx-dark-link",
+          "value": "#7AA7E0"
+        },
+        {
+          "name": "--mx-dark-orange",
+          "value": "#E08B45"
+        },
+        {
+          "name": "--mx-light-bg",
+          "value": "#F7F8FA"
+        },
+        {
+          "name": "--mx-light-panel",
+          "value": "#FFFFFF"
+        },
+        {
+          "name": "--mx-light-panel2",
+          "value": "#EEF1F6"
+        },
+        {
+          "name": "--mx-light-text",
+          "value": "#1C2430"
+        },
+        {
+          "name": "--mx-light-muted",
+          "value": "#5D6B7E"
+        },
+        {
+          "name": "--mx-light-line",
+          "value": "#C9CCD1"
+        },
+        {
+          "name": "--mx-light-up",
+          "value": "#1F9A55"
+        },
+        {
+          "name": "--mx-light-down",
+          "value": "#CF4040"
+        },
+        {
+          "name": "--mx-light-warn",
+          "value": "#B9791A"
+        },
+        {
+          "name": "--mx-light-act",
+          "value": "#C43D3D"
+        },
+        {
+          "name": "--mx-light-ok",
+          "value": "#2F8A52"
+        },
+        {
+          "name": "--mx-light-info",
+          "value": "#285FFF"
+        },
+        {
+          "name": "--mx-light-link",
+          "value": "#285FFF"
+        },
+        {
+          "name": "--mx-light-orange",
+          "value": "#C4781F"
+        },
+        {
+          "name": "--mx-dark-prov",
+          "value": "#62A0E8"
+        },
+        {
+          "name": "--mx-dark-prov-ink",
+          "value": "#62A0E8"
+        },
+        {
+          "name": "--mx-dark-tier-accent",
+          "value": "#7C5CFF"
+        },
+        {
+          "name": "--mx-dark-tier-fill",
+          "value": "#6340D8"
+        },
+        {
+          "name": "--mx-dark-tier-ink",
+          "value": "#9B86FF"
+        },
+        {
+          "name": "--mx-dark-ser-1",
+          "value": "#5B9BF0"
+        },
+        {
+          "name": "--mx-dark-ser-2",
+          "value": "#D4A017"
+        },
+        {
+          "name": "--mx-dark-ser-3",
+          "value": "#0EA5E9"
+        },
+        {
+          "name": "--mx-dark-ser-4",
+          "value": "#E08B45"
+        },
+        {
+          "name": "--mx-light-prov",
+          "value": "#2F6FD0"
+        },
+        {
+          "name": "--mx-light-prov-ink",
+          "value": "#2C62B3"
+        },
+        {
+          "name": "--mx-light-tier-accent",
+          "value": "#7C5CFF"
+        },
+        {
+          "name": "--mx-light-tier-fill",
+          "value": "#6340D8"
+        },
+        {
+          "name": "--mx-light-tier-ink",
+          "value": "#5B3FC4"
+        },
+        {
+          "name": "--mx-light-ser-1",
+          "value": "#2F63C4"
+        },
+        {
+          "name": "--mx-light-ser-2",
+          "value": "#8F6A04"
+        },
+        {
+          "name": "--mx-light-ser-3",
+          "value": "#0284C7"
+        },
+        {
+          "name": "--mx-light-ser-4",
+          "value": "#B06A25"
+        },
+        {
+          "name": "--mx-light-ink-up",
+          "value": "#1E6D47"
+        },
+        {
+          "name": "--mx-light-ink-down",
+          "value": "#B23C3D"
+        },
+        {
+          "name": "--mx-light-ink-warn",
+          "value": "#7D5922"
+        },
+        {
+          "name": "--mx-light-ink-link",
+          "value": "#2758E6"
+        },
+        {
+          "name": "--noir-canvas",
+          "value": "#080808"
+        },
+        {
+          "name": "--noir-sidebar",
+          "value": "#0C0C0C"
+        },
+        {
+          "name": "--noir-panel",
+          "value": "#121212"
+        },
+        {
+          "name": "--noir-raised",
+          "value": "#191919"
+        },
+        {
+          "name": "--noir-hover",
+          "value": "#222222"
+        },
+        {
+          "name": "--noir-selected",
+          "value": "#292929"
+        },
+        {
+          "name": "--noir-text-primary",
+          "value": "#F3F3F3"
+        },
+        {
+          "name": "--noir-text-secondary",
+          "value": "#B8B8B8"
+        },
+        {
+          "name": "--noir-text-tertiary",
+          "value": "#949494"
+        },
+        {
+          "name": "--noir-champagne",
+          "value": "#C9B99B"
+        },
+        {
+          "name": "--noir-sage",
+          "value": "#A8C2AD"
+        },
+        {
+          "name": "--noir-rose",
+          "value": "#DEA4A5"
+        },
+        {
+          "name": "--noir-steel",
+          "value": "#A7B4C2"
+        },
+        {
+          "name": "--noir-lilac",
+          "value": "#BDB2CE"
+        },
+        {
+          "name": "--market-canvas",
+          "value": "#0A0B0D"
+        },
+        {
+          "name": "--market-panel",
+          "value": "#111318"
+        },
+        {
+          "name": "--market-raised",
+          "value": "#181B20"
+        },
+        {
+          "name": "--market-line",
+          "value": "#2B3038"
+        },
+        {
+          "name": "--mx-dark-up-soft",
+          "value": "rgb(69 184 115 / 12%)"
+        },
+        {
+          "name": "--mx-dark-down-soft",
+          "value": "rgb(224 100 100 / 12%)"
+        },
+        {
+          "name": "--mx-dark-warn-soft",
+          "value": "rgb(224 160 48 / 12%)"
+        },
+        {
+          "name": "--mx-dark-info-soft",
+          "value": "rgb(91 155 240 / 12%)"
+        },
+        {
+          "name": "--mx-light-up-soft",
+          "value": "#EAF7EF"
+        },
+        {
+          "name": "--mx-light-down-soft",
+          "value": "#FCECED"
+        },
+        {
+          "name": "--mx-light-warn-soft",
+          "value": "#FFF4E2"
+        },
+        {
+          "name": "--mx-light-info-soft",
+          "value": "#EAF2FC"
+        },
+        {
+          "name": "--mx-light-scrim",
+          "value": "#1C243029"
+        },
+        {
+          "name": "--font-ui",
+          "value": "\"Inter\""
+        },
+        {
+          "name": "--fs-micro",
+          "value": "10px"
+        },
+        {
+          "name": "--fs-label",
+          "value": "11px"
+        },
+        {
+          "name": "--fs-sm",
+          "value": "12.5px"
+        },
+        {
+          "name": "--fs-body",
+          "value": "14px"
+        },
+        {
+          "name": "--fs-h3",
+          "value": "14px"
+        },
+        {
+          "name": "--fs-md",
+          "value": "15px"
+        },
+        {
+          "name": "--fs-h2",
+          "value": "17px"
+        },
+        {
+          "name": "--fs-num-lg",
+          "value": "22px"
+        },
+        {
+          "name": "--fs-h1",
+          "value": "28px"
+        },
+        {
+          "name": "--fs-num-xl",
+          "value": "38px"
+        },
+        {
+          "name": "--fs-display",
+          "value": "46px"
+        },
+        {
+          "name": "--fw-regular",
+          "value": "400"
+        },
+        {
+          "name": "--fw-medium",
+          "value": "500"
+        },
+        {
+          "name": "--fw-semibold",
+          "value": "600"
+        },
+        {
+          "name": "--fw-bold",
+          "value": "700"
+        },
+        {
+          "name": "--fw-extrabold",
+          "value": "800"
+        },
+        {
+          "name": "--bp-mobile",
+          "value": "390px"
+        },
+        {
+          "name": "--bp-tablet",
+          "value": "768px"
+        },
+        {
+          "name": "--bp-desktop",
+          "value": "1440px"
+        },
+        {
+          "name": "--sp-1",
+          "value": "4px"
+        },
+        {
+          "name": "--sp-2",
+          "value": "8px"
+        },
+        {
+          "name": "--sp-3",
+          "value": "12px"
+        },
+        {
+          "name": "--sp-4",
+          "value": "16px"
+        },
+        {
+          "name": "--sp-5",
+          "value": "20px"
+        },
+        {
+          "name": "--sp-6",
+          "value": "24px"
+        },
+        {
+          "name": "--sp-7",
+          "value": "32px"
+        },
+        {
+          "name": "--sp-8",
+          "value": "44px"
+        },
+        {
+          "name": "--r-ctl",
+          "value": "8px"
+        },
+        {
+          "name": "--r-btn",
+          "value": "10px"
+        },
+        {
+          "name": "--r-card",
+          "value": "12px"
+        },
+        {
+          "name": "--r-panel",
+          "value": "14px"
+        },
+        {
+          "name": "--r-pill",
+          "value": "999px"
+        }
+      ]
+    }
+  },
+  {
+    "fileName": "Catalyst Intelligence · Decision Desk and Integration",
+    "pageName": "Catalyst-to-Opportunity · Source-bound integration · 2026-10-17",
+    "pageId": "p-2-0",
+    "url": "https://app.paper.design/file/01M6Y2VTQBVC9NA39HNG1DYWFH/p-2-0",
+    "rootNodeId": "root_node_p-2-0",
+    "nodeCount": 315,
+    "artboardCount": 5,
+    "artboards": [
+      {
+        "id": "LK-0",
+        "name": "01 · Discover catalysts · Dated source specimen · Desktop",
+        "childCount": 4,
+        "width": 1440,
+        "height": 900,
+        "worldX": -2710,
+        "worldY": -580
+      },
+      {
+        "id": "O3-0",
+        "name": "02 · Defense evidence · Native owner context · Desktop",
+        "childCount": 4,
+        "width": 1440,
+        "height": 1160,
+        "worldX": -1190,
+        "worldY": -580
+      },
+      {
+        "id": "QE-0",
+        "name": "03 · Mobile discovery · English · 390 × 844",
+        "childCount": 2,
+        "width": 390,
+        "height": 844,
+        "worldX": 330,
+        "worldY": -580
+      },
+      {
+        "id": "RK-0",
+        "name": "04 · 防务证据 · 中文移动端 · 原始深色主题",
+        "childCount": 2,
+        "width": 390,
+        "height": 1120,
+        "worldX": 800,
+        "worldY": -580
+      },
+      {
+        "id": "T5-0",
+        "name": "05 · State distinctions + implementation contract · Not market evidence",
+        "childCount": 2,
+        "width": 1440,
+        "height": 920,
+        "worldX": 1270,
+        "worldY": -580
+      }
+    ],
+    "pages": [
+      {
+        "type": "page",
+        "id": "p-5-0",
+        "name": "00 · AGENT README · Read first",
+        "icon": "arrow",
+        "isActive": false
+      },
+      {
+        "type": "page",
+        "id": "p-1-0",
+        "name": "Catalyst Intelligence · Decision Desk · R1 · 2026-10-18",
+        "icon": "design",
+        "isActive": true
+      },
+      {
+        "type": "page",
+        "id": "p-8-0",
+        "name": "04A · Build · R3 workflow contract",
+        "icon": "blueprint",
+        "isActive": false
+      },
+      {
+        "type": "page",
+        "id": "p-7-0",
+        "name": "02A · Review · Case, evidence & conditions",
+        "icon": "info",
+        "isActive": false
+      },
+      {
+        "type": "page",
+        "id": "p-6-0",
+        "name": "01 · Product · Catalyst review desk",
+        "icon": "design",
+        "isActive": false
+      },
+      {
+        "type": "page",
+        "id": "p-4-0",
+        "name": "R2 · Manual review condition flow",
+        "icon": "blueprint",
+        "isActive": false
+      },
+      {
+        "type": "page",
+        "id": "p-3-0",
+        "name": "Proposed · Selected case and filters",
+        "icon": "design",
+        "isActive": false
+      },
+      {
+        "type": "page",
+        "id": "p-2-0",
+        "name": "Catalyst-to-Opportunity · Source-bound integration · 2026-10-17",
+        "icon": "design",
+        "isActive": false
+      }
+    ],
+    "fontFamilies": [
+      "Inter",
+      "System Sans-Serif",
+      "IBM Plex Mono",
+      "Menlo",
+      "System Monospace"
+    ],
+    "tokens": {
+      "items": [
+        {
+          "name": "--mx-dark-bg",
+          "value": "#0F1115"
+        },
+        {
+          "name": "--mx-dark-panel",
+          "value": "#181B21"
+        },
+        {
+          "name": "--mx-dark-panel2",
+          "value": "#1E222A"
+        },
+        {
+          "name": "--mx-dark-text",
+          "value": "#D7DCE3"
+        },
+        {
+          "name": "--mx-dark-muted",
+          "value": "#8B93A1"
+        },
+        {
+          "name": "--mx-dark-line",
+          "value": "#3A4150"
+        },
+        {
+          "name": "--mx-dark-up",
+          "value": "#45B873"
+        },
+        {
+          "name": "--mx-dark-down",
+          "value": "#E06464"
+        },
+        {
+          "name": "--mx-dark-warn",
+          "value": "#E0A030"
+        },
+        {
+          "name": "--mx-dark-act",
+          "value": "#E05555"
+        },
+        {
+          "name": "--mx-dark-ok",
+          "value": "#3DA564"
+        },
+        {
+          "name": "--mx-dark-info",
+          "value": "#5B9BF0"
+        },
+        {
+          "name": "--mx-dark-link",
+          "value": "#7AA7E0"
+        },
+        {
+          "name": "--mx-dark-orange",
+          "value": "#E08B45"
+        },
+        {
+          "name": "--mx-light-bg",
+          "value": "#F7F8FA"
+        },
+        {
+          "name": "--mx-light-panel",
+          "value": "#FFFFFF"
+        },
+        {
+          "name": "--mx-light-panel2",
+          "value": "#EEF1F6"
+        },
+        {
+          "name": "--mx-light-text",
+          "value": "#1C2430"
+        },
+        {
+          "name": "--mx-light-muted",
+          "value": "#5D6B7E"
+        },
+        {
+          "name": "--mx-light-line",
+          "value": "#C9CCD1"
+        },
+        {
+          "name": "--mx-light-up",
+          "value": "#1F9A55"
+        },
+        {
+          "name": "--mx-light-down",
+          "value": "#CF4040"
+        },
+        {
+          "name": "--mx-light-warn",
+          "value": "#B9791A"
+        },
+        {
+          "name": "--mx-light-act",
+          "value": "#C43D3D"
+        },
+        {
+          "name": "--mx-light-ok",
+          "value": "#2F8A52"
+        },
+        {
+          "name": "--mx-light-info",
+          "value": "#285FFF"
+        },
+        {
+          "name": "--mx-light-link",
+          "value": "#285FFF"
+        },
+        {
+          "name": "--mx-light-orange",
+          "value": "#C4781F"
+        },
+        {
+          "name": "--mx-dark-prov",
+          "value": "#62A0E8"
+        },
+        {
+          "name": "--mx-dark-prov-ink",
+          "value": "#62A0E8"
+        },
+        {
+          "name": "--mx-dark-tier-accent",
+          "value": "#7C5CFF"
+        },
+        {
+          "name": "--mx-dark-tier-fill",
+          "value": "#6340D8"
+        },
+        {
+          "name": "--mx-dark-tier-ink",
+          "value": "#9B86FF"
+        },
+        {
+          "name": "--mx-dark-ser-1",
+          "value": "#5B9BF0"
+        },
+        {
+          "name": "--mx-dark-ser-2",
+          "value": "#D4A017"
+        },
+        {
+          "name": "--mx-dark-ser-3",
+          "value": "#0EA5E9"
+        },
+        {
+          "name": "--mx-dark-ser-4",
+          "value": "#E08B45"
+        },
+        {
+          "name": "--mx-light-prov",
+          "value": "#2F6FD0"
+        },
+        {
+          "name": "--mx-light-prov-ink",
+          "value": "#2C62B3"
+        },
+        {
+          "name": "--mx-light-tier-accent",
+          "value": "#7C5CFF"
+        },
+        {
+          "name": "--mx-light-tier-fill",
+          "value": "#6340D8"
+        },
+        {
+          "name": "--mx-light-tier-ink",
+          "value": "#5B3FC4"
+        },
+        {
+          "name": "--mx-light-ser-1",
+          "value": "#2F63C4"
+        },
+        {
+          "name": "--mx-light-ser-2",
+          "value": "#8F6A04"
+        },
+        {
+          "name": "--mx-light-ser-3",
+          "value": "#0284C7"
+        },
+        {
+          "name": "--mx-light-ser-4",
+          "value": "#B06A25"
+        },
+        {
+          "name": "--mx-light-ink-up",
+          "value": "#1E6D47"
+        },
+        {
+          "name": "--mx-light-ink-down",
+          "value": "#B23C3D"
+        },
+        {
+          "name": "--mx-light-ink-warn",
+          "value": "#7D5922"
+        },
+        {
+          "name": "--mx-light-ink-link",
+          "value": "#2758E6"
+        },
+        {
+          "name": "--noir-canvas",
+          "value": "#080808"
+        },
+        {
+          "name": "--noir-sidebar",
+          "value": "#0C0C0C"
+        },
+        {
+          "name": "--noir-panel",
+          "value": "#121212"
+        },
+        {
+          "name": "--noir-raised",
+          "value": "#191919"
+        },
+        {
+          "name": "--noir-hover",
+          "value": "#222222"
+        },
+        {
+          "name": "--noir-selected",
+          "value": "#292929"
+        },
+        {
+          "name": "--noir-text-primary",
+          "value": "#F3F3F3"
+        },
+        {
+          "name": "--noir-text-secondary",
+          "value": "#B8B8B8"
+        },
+        {
+          "name": "--noir-text-tertiary",
+          "value": "#949494"
+        },
+        {
+          "name": "--noir-champagne",
+          "value": "#C9B99B"
+        },
+        {
+          "name": "--noir-sage",
+          "value": "#A8C2AD"
+        },
+        {
+          "name": "--noir-rose",
+          "value": "#DEA4A5"
+        },
+        {
+          "name": "--noir-steel",
+          "value": "#A7B4C2"
+        },
+        {
+          "name": "--noir-lilac",
+          "value": "#BDB2CE"
+        },
+        {
+          "name": "--market-canvas",
+          "value": "#0A0B0D"
+        },
+        {
+          "name": "--market-panel",
+          "value": "#111318"
+        },
+        {
+          "name": "--market-raised",
+          "value": "#181B20"
+        },
+        {
+          "name": "--market-line",
+          "value": "#2B3038"
+        },
+        {
+          "name": "--mx-dark-up-soft",
+          "value": "rgb(69 184 115 / 12%)"
+        },
+        {
+          "name": "--mx-dark-down-soft",
+          "value": "rgb(224 100 100 / 12%)"
+        },
+        {
+          "name": "--mx-dark-warn-soft",
+          "value": "rgb(224 160 48 / 12%)"
+        },
+        {
+          "name": "--mx-dark-info-soft",
+          "value": "rgb(91 155 240 / 12%)"
+        },
+        {
+          "name": "--mx-light-up-soft",
+          "value": "#EAF7EF"
+        },
+        {
+          "name": "--mx-light-down-soft",
+          "value": "#FCECED"
+        },
+        {
+          "name": "--mx-light-warn-soft",
+          "value": "#FFF4E2"
+        },
+        {
+          "name": "--mx-light-info-soft",
+          "value": "#EAF2FC"
+        },
+        {
+          "name": "--mx-light-scrim",
+          "value": "#1C243029"
+        },
+        {
+          "name": "--font-ui",
+          "value": "\"Inter\""
+        },
+        {
+          "name": "--fs-micro",
+          "value": "10px"
+        },
+        {
+          "name": "--fs-label",
+          "value": "11px"
+        },
+        {
+          "name": "--fs-sm",
+          "value": "12.5px"
+        },
+        {
+          "name": "--fs-body",
+          "value": "14px"
+        },
+        {
+          "name": "--fs-h3",
+          "value": "14px"
+        },
+        {
+          "name": "--fs-md",
+          "value": "15px"
+        },
+        {
+          "name": "--fs-h2",
+          "value": "17px"
+        },
+        {
+          "name": "--fs-num-lg",
+          "value": "22px"
+        },
+        {
+          "name": "--fs-h1",
+          "value": "28px"
+        },
+        {
+          "name": "--fs-num-xl",
+          "value": "38px"
+        },
+        {
+          "name": "--fs-display",
+          "value": "46px"
+        },
+        {
+          "name": "--fw-regular",
+          "value": "400"
+        },
+        {
+          "name": "--fw-medium",
+          "value": "500"
+        },
+        {
+          "name": "--fw-semibold",
+          "value": "600"
+        },
+        {
+          "name": "--fw-bold",
+          "value": "700"
+        },
+        {
+          "name": "--fw-extrabold",
+          "value": "800"
+        },
+        {
+          "name": "--bp-mobile",
+          "value": "390px"
+        },
+        {
+          "name": "--bp-tablet",
+          "value": "768px"
+        },
+        {
+          "name": "--bp-desktop",
+          "value": "1440px"
+        },
+        {
+          "name": "--sp-1",
+          "value": "4px"
+        },
+        {
+          "name": "--sp-2",
+          "value": "8px"
+        },
+        {
+          "name": "--sp-3",
+          "value": "12px"
+        },
+        {
+          "name": "--sp-4",
+          "value": "16px"
+        },
+        {
+          "name": "--sp-5",
+          "value": "20px"
+        },
+        {
+          "name": "--sp-6",
+          "value": "24px"
+        },
+        {
+          "name": "--sp-7",
+          "value": "32px"
+        },
+        {
+          "name": "--sp-8",
+          "value": "44px"
+        },
+        {
+          "name": "--r-ctl",
+          "value": "8px"
+        },
+        {
+          "name": "--r-btn",
+          "value": "10px"
+        },
+        {
+          "name": "--r-card",
+          "value": "12px"
+        },
+        {
+          "name": "--r-panel",
+          "value": "14px"
+        },
+        {
+          "name": "--r-pill",
+          "value": "999px"
+        }
+      ]
+    }
+  },
+  {
+    "fileName": "Catalyst Intelligence · Decision Desk and Integration",
+    "pageName": "Proposed · Selected case and filters",
+    "pageId": "p-3-0",
+    "url": "https://app.paper.design/file/01M6Y2VTQBVC9NA39HNG1DYWFH/p-3-0",
+    "rootNodeId": "root_node_p-3-0",
+    "nodeCount": 304,
+    "artboardCount": 8,
+    "artboards": [
+      {
+        "id": "10D-0",
+        "name": "BUILD · Selected case, filter and copy consistency",
+        "childCount": 10,
+        "width": 1440,
+        "height": null,
+        "worldX": null,
+        "worldY": null
+      },
+      {
+        "id": "10J-0",
+        "name": "01 · PROPOSED · Filtered list keeps selected case · 1440",
+        "childCount": 3,
+        "width": 1440,
+        "height": null,
+        "worldX": null,
+        "worldY": null
+      },
+      {
+        "id": "117-0",
+        "name": "02 · PROPOSED · Zero matches keep selected case · 390 EN",
+        "childCount": 6,
+        "width": 390,
+        "height": null,
+        "worldX": null,
+        "worldY": null
+      },
+      {
+        "id": "11D-0",
+        "name": "03 · 拟议 · 无筛选结果保留已选关注项 · 320 中文",
+        "childCount": 6,
+        "width": 320,
+        "height": null,
+        "worldX": null,
+        "worldY": null
+      },
+      {
+        "id": "11J-0",
+        "name": "04 · PROPOSED · Requested case absent · 390 EN",
+        "childCount": 5,
+        "width": 390,
+        "height": null,
+        "worldX": null,
+        "worldY": null
+      },
+      {
+        "id": "11P-0",
+        "name": "05 · 拟议 · 当前快照无所选关注项 · 320 中文",
+        "childCount": 5,
+        "width": 320,
+        "height": null,
+        "worldX": null,
+        "worldY": null
+      },
+      {
+        "id": "1HL-0",
+        "name": "06 · PROPOSED · Copy failed · Exact manual link · 390 EN",
+        "childCount": 4,
+        "width": 390,
+        "height": null,
+        "worldX": null,
+        "worldY": null
+      },
+      {
+        "id": "1I6-0",
+        "name": "07 · 拟议 · 复制失败 · 精确关注项链接 · 320 中文",
+        "childCount": 4,
+        "width": 320,
+        "height": null,
+        "worldX": null,
+        "worldY": null
+      }
+    ],
+    "pages": [
+      {
+        "type": "page",
+        "id": "p-5-0",
+        "name": "00 · AGENT README · Read first",
+        "icon": "arrow",
+        "isActive": false
+      },
+      {
+        "type": "page",
+        "id": "p-1-0",
+        "name": "Catalyst Intelligence · Decision Desk · R1 · 2026-10-18",
+        "icon": "design",
+        "isActive": true
+      },
+      {
+        "type": "page",
+        "id": "p-8-0",
+        "name": "04A · Build · R3 workflow contract",
+        "icon": "blueprint",
+        "isActive": false
+      },
+      {
+        "type": "page",
+        "id": "p-7-0",
+        "name": "02A · Review · Case, evidence & conditions",
+        "icon": "info",
+        "isActive": false
+      },
+      {
+        "type": "page",
+        "id": "p-6-0",
+        "name": "01 · Product · Catalyst review desk",
+        "icon": "design",
+        "isActive": false
+      },
+      {
+        "type": "page",
+        "id": "p-4-0",
+        "name": "R2 · Manual review condition flow",
+        "icon": "blueprint",
+        "isActive": false
+      },
+      {
+        "type": "page",
+        "id": "p-3-0",
+        "name": "Proposed · Selected case and filters",
+        "icon": "design",
+        "isActive": false
+      },
+      {
+        "type": "page",
+        "id": "p-2-0",
+        "name": "Catalyst-to-Opportunity · Source-bound integration · 2026-10-17",
+        "icon": "design",
+        "isActive": false
+      }
+    ],
+    "fontFamilies": [
+      "Inter",
+      "System Sans-Serif",
+      "IBM Plex Mono",
+      "Menlo",
+      "System Monospace"
+    ],
+    "tokens": {
+      "items": [
+        {
+          "name": "--mx-dark-bg",
+          "value": "#0F1115"
+        },
+        {
+          "name": "--mx-dark-panel",
+          "value": "#181B21"
+        },
+        {
+          "name": "--mx-dark-panel2",
+          "value": "#1E222A"
+        },
+        {
+          "name": "--mx-dark-text",
+          "value": "#D7DCE3"
+        },
+        {
+          "name": "--mx-dark-muted",
+          "value": "#8B93A1"
+        },
+        {
+          "name": "--mx-dark-line",
+          "value": "#3A4150"
+        },
+        {
+          "name": "--mx-dark-up",
+          "value": "#45B873"
+        },
+        {
+          "name": "--mx-dark-down",
+          "value": "#E06464"
+        },
+        {
+          "name": "--mx-dark-warn",
+          "value": "#E0A030"
+        },
+        {
+          "name": "--mx-dark-act",
+          "value": "#E05555"
+        },
+        {
+          "name": "--mx-dark-ok",
+          "value": "#3DA564"
+        },
+        {
+          "name": "--mx-dark-info",
+          "value": "#5B9BF0"
+        },
+        {
+          "name": "--mx-dark-link",
+          "value": "#7AA7E0"
+        },
+        {
+          "name": "--mx-dark-orange",
+          "value": "#E08B45"
+        },
+        {
+          "name": "--mx-light-bg",
+          "value": "#F7F8FA"
+        },
+        {
+          "name": "--mx-light-panel",
+          "value": "#FFFFFF"
+        },
+        {
+          "name": "--mx-light-panel2",
+          "value": "#EEF1F6"
+        },
+        {
+          "name": "--mx-light-text",
+          "value": "#1C2430"
+        },
+        {
+          "name": "--mx-light-muted",
+          "value": "#5D6B7E"
+        },
+        {
+          "name": "--mx-light-line",
+          "value": "#C9CCD1"
+        },
+        {
+          "name": "--mx-light-up",
+          "value": "#1F9A55"
+        },
+        {
+          "name": "--mx-light-down",
+          "value": "#CF4040"
+        },
+        {
+          "name": "--mx-light-warn",
+          "value": "#B9791A"
+        },
+        {
+          "name": "--mx-light-act",
+          "value": "#C43D3D"
+        },
+        {
+          "name": "--mx-light-ok",
+          "value": "#2F8A52"
+        },
+        {
+          "name": "--mx-light-info",
+          "value": "#285FFF"
+        },
+        {
+          "name": "--mx-light-link",
+          "value": "#285FFF"
+        },
+        {
+          "name": "--mx-light-orange",
+          "value": "#C4781F"
+        },
+        {
+          "name": "--mx-dark-prov",
+          "value": "#62A0E8"
+        },
+        {
+          "name": "--mx-dark-prov-ink",
+          "value": "#62A0E8"
+        },
+        {
+          "name": "--mx-dark-tier-accent",
+          "value": "#7C5CFF"
+        },
+        {
+          "name": "--mx-dark-tier-fill",
+          "value": "#6340D8"
+        },
+        {
+          "name": "--mx-dark-tier-ink",
+          "value": "#9B86FF"
+        },
+        {
+          "name": "--mx-dark-ser-1",
+          "value": "#5B9BF0"
+        },
+        {
+          "name": "--mx-dark-ser-2",
+          "value": "#D4A017"
+        },
+        {
+          "name": "--mx-dark-ser-3",
+          "value": "#0EA5E9"
+        },
+        {
+          "name": "--mx-dark-ser-4",
+          "value": "#E08B45"
+        },
+        {
+          "name": "--mx-light-prov",
+          "value": "#2F6FD0"
+        },
+        {
+          "name": "--mx-light-prov-ink",
+          "value": "#2C62B3"
+        },
+        {
+          "name": "--mx-light-tier-accent",
+          "value": "#7C5CFF"
+        },
+        {
+          "name": "--mx-light-tier-fill",
+          "value": "#6340D8"
+        },
+        {
+          "name": "--mx-light-tier-ink",
+          "value": "#5B3FC4"
+        },
+        {
+          "name": "--mx-light-ser-1",
+          "value": "#2F63C4"
+        },
+        {
+          "name": "--mx-light-ser-2",
+          "value": "#8F6A04"
+        },
+        {
+          "name": "--mx-light-ser-3",
+          "value": "#0284C7"
+        },
+        {
+          "name": "--mx-light-ser-4",
+          "value": "#B06A25"
+        },
+        {
+          "name": "--mx-light-ink-up",
+          "value": "#1E6D47"
+        },
+        {
+          "name": "--mx-light-ink-down",
+          "value": "#B23C3D"
+        },
+        {
+          "name": "--mx-light-ink-warn",
+          "value": "#7D5922"
+        },
+        {
+          "name": "--mx-light-ink-link",
+          "value": "#2758E6"
+        },
+        {
+          "name": "--noir-canvas",
+          "value": "#080808"
+        },
+        {
+          "name": "--noir-sidebar",
+          "value": "#0C0C0C"
+        },
+        {
+          "name": "--noir-panel",
+          "value": "#121212"
+        },
+        {
+          "name": "--noir-raised",
+          "value": "#191919"
+        },
+        {
+          "name": "--noir-hover",
+          "value": "#222222"
+        },
+        {
+          "name": "--noir-selected",
+          "value": "#292929"
+        },
+        {
+          "name": "--noir-text-primary",
+          "value": "#F3F3F3"
+        },
+        {
+          "name": "--noir-text-secondary",
+          "value": "#B8B8B8"
+        },
+        {
+          "name": "--noir-text-tertiary",
+          "value": "#949494"
+        },
+        {
+          "name": "--noir-champagne",
+          "value": "#C9B99B"
+        },
+        {
+          "name": "--noir-sage",
+          "value": "#A8C2AD"
+        },
+        {
+          "name": "--noir-rose",
+          "value": "#DEA4A5"
+        },
+        {
+          "name": "--noir-steel",
+          "value": "#A7B4C2"
+        },
+        {
+          "name": "--noir-lilac",
+          "value": "#BDB2CE"
+        },
+        {
+          "name": "--market-canvas",
+          "value": "#0A0B0D"
+        },
+        {
+          "name": "--market-panel",
+          "value": "#111318"
+        },
+        {
+          "name": "--market-raised",
+          "value": "#181B20"
+        },
+        {
+          "name": "--market-line",
+          "value": "#2B3038"
+        },
+        {
+          "name": "--mx-dark-up-soft",
+          "value": "rgb(69 184 115 / 12%)"
+        },
+        {
+          "name": "--mx-dark-down-soft",
+          "value": "rgb(224 100 100 / 12%)"
+        },
+        {
+          "name": "--mx-dark-warn-soft",
+          "value": "rgb(224 160 48 / 12%)"
+        },
+        {
+          "name": "--mx-dark-info-soft",
+          "value": "rgb(91 155 240 / 12%)"
+        },
+        {
+          "name": "--mx-light-up-soft",
+          "value": "#EAF7EF"
+        },
+        {
+          "name": "--mx-light-down-soft",
+          "value": "#FCECED"
+        },
+        {
+          "name": "--mx-light-warn-soft",
+          "value": "#FFF4E2"
+        },
+        {
+          "name": "--mx-light-info-soft",
+          "value": "#EAF2FC"
+        },
+        {
+          "name": "--mx-light-scrim",
+          "value": "#1C243029"
+        },
+        {
+          "name": "--font-ui",
+          "value": "\"Inter\""
+        },
+        {
+          "name": "--fs-micro",
+          "value": "10px"
+        },
+        {
+          "name": "--fs-label",
+          "value": "11px"
+        },
+        {
+          "name": "--fs-sm",
+          "value": "12.5px"
+        },
+        {
+          "name": "--fs-body",
+          "value": "14px"
+        },
+        {
+          "name": "--fs-h3",
+          "value": "14px"
+        },
+        {
+          "name": "--fs-md",
+          "value": "15px"
+        },
+        {
+          "name": "--fs-h2",
+          "value": "17px"
+        },
+        {
+          "name": "--fs-num-lg",
+          "value": "22px"
+        },
+        {
+          "name": "--fs-h1",
+          "value": "28px"
+        },
+        {
+          "name": "--fs-num-xl",
+          "value": "38px"
+        },
+        {
+          "name": "--fs-display",
+          "value": "46px"
+        },
+        {
+          "name": "--fw-regular",
+          "value": "400"
+        },
+        {
+          "name": "--fw-medium",
+          "value": "500"
+        },
+        {
+          "name": "--fw-semibold",
+          "value": "600"
+        },
+        {
+          "name": "--fw-bold",
+          "value": "700"
+        },
+        {
+          "name": "--fw-extrabold",
+          "value": "800"
+        },
+        {
+          "name": "--bp-mobile",
+          "value": "390px"
+        },
+        {
+          "name": "--bp-tablet",
+          "value": "768px"
+        },
+        {
+          "name": "--bp-desktop",
+          "value": "1440px"
+        },
+        {
+          "name": "--sp-1",
+          "value": "4px"
+        },
+        {
+          "name": "--sp-2",
+          "value": "8px"
+        },
+        {
+          "name": "--sp-3",
+          "value": "12px"
+        },
+        {
+          "name": "--sp-4",
+          "value": "16px"
+        },
+        {
+          "name": "--sp-5",
+          "value": "20px"
+        },
+        {
+          "name": "--sp-6",
+          "value": "24px"
+        },
+        {
+          "name": "--sp-7",
+          "value": "32px"
+        },
+        {
+          "name": "--sp-8",
+          "value": "44px"
+        },
+        {
+          "name": "--r-ctl",
+          "value": "8px"
+        },
+        {
+          "name": "--r-btn",
+          "value": "10px"
+        },
+        {
+          "name": "--r-card",
+          "value": "12px"
+        },
+        {
+          "name": "--r-panel",
+          "value": "14px"
+        },
+        {
+          "name": "--r-pill",
+          "value": "999px"
+        }
+      ]
+    }
+  },
+  {
+    "fileName": "Catalyst Intelligence · Decision Desk and Integration",
+    "pageName": "R2 · Manual review condition flow",
+    "pageId": "p-4-0",
+    "url": "https://app.paper.design/file/01M6Y2VTQBVC9NA39HNG1DYWFH/p-4-0",
+    "rootNodeId": "root_node_p-4-0",
+    "nodeCount": 317,
+    "artboardCount": 1,
+    "artboards": [
+      {
+        "id": "171-0",
+        "name": "R2 · Manual review · Flow and build contract",
+        "childCount": 3,
+        "width": 1440,
+        "height": null,
+        "worldX": null,
+        "worldY": null
+      }
+    ],
+    "pages": [
+      {
+        "type": "page",
+        "id": "p-5-0",
+        "name": "00 · AGENT README · Read first",
+        "icon": "arrow",
+        "isActive": false
+      },
+      {
+        "type": "page",
+        "id": "p-1-0",
+        "name": "Catalyst Intelligence · Decision Desk · R1 · 2026-10-18",
+        "icon": "design",
+        "isActive": true
+      },
+      {
+        "type": "page",
+        "id": "p-8-0",
+        "name": "04A · Build · R3 workflow contract",
+        "icon": "blueprint",
+        "isActive": false
+      },
+      {
+        "type": "page",
+        "id": "p-7-0",
+        "name": "02A · Review · Case, evidence & conditions",
+        "icon": "info",
+        "isActive": false
+      },
+      {
+        "type": "page",
+        "id": "p-6-0",
+        "name": "01 · Product · Catalyst review desk",
+        "icon": "design",
+        "isActive": false
+      },
+      {
+        "type": "page",
+        "id": "p-4-0",
+        "name": "R2 · Manual review condition flow",
+        "icon": "blueprint",
+        "isActive": false
+      },
+      {
+        "type": "page",
+        "id": "p-3-0",
+        "name": "Proposed · Selected case and filters",
+        "icon": "design",
+        "isActive": false
+      },
+      {
+        "type": "page",
+        "id": "p-2-0",
+        "name": "Catalyst-to-Opportunity · Source-bound integration · 2026-10-17",
+        "icon": "design",
+        "isActive": false
+      }
+    ],
+    "fontFamilies": [
+      "Inter",
+      "System Sans-Serif",
+      "IBM Plex Mono",
+      "Menlo",
+      "System Monospace"
+    ],
+    "tokens": {
+      "items": [
+        {
+          "name": "--mx-dark-bg",
+          "value": "#0F1115"
+        },
+        {
+          "name": "--mx-dark-panel",
+          "value": "#181B21"
+        },
+        {
+          "name": "--mx-dark-panel2",
+          "value": "#1E222A"
+        },
+        {
+          "name": "--mx-dark-text",
+          "value": "#D7DCE3"
+        },
+        {
+          "name": "--mx-dark-muted",
+          "value": "#8B93A1"
+        },
+        {
+          "name": "--mx-dark-line",
+          "value": "#3A4150"
+        },
+        {
+          "name": "--mx-dark-up",
+          "value": "#45B873"
+        },
+        {
+          "name": "--mx-dark-down",
+          "value": "#E06464"
+        },
+        {
+          "name": "--mx-dark-warn",
+          "value": "#E0A030"
+        },
+        {
+          "name": "--mx-dark-act",
+          "value": "#E05555"
+        },
+        {
+          "name": "--mx-dark-ok",
+          "value": "#3DA564"
+        },
+        {
+          "name": "--mx-dark-info",
+          "value": "#5B9BF0"
+        },
+        {
+          "name": "--mx-dark-link",
+          "value": "#7AA7E0"
+        },
+        {
+          "name": "--mx-dark-orange",
+          "value": "#E08B45"
+        },
+        {
+          "name": "--mx-light-bg",
+          "value": "#F7F8FA"
+        },
+        {
+          "name": "--mx-light-panel",
+          "value": "#FFFFFF"
+        },
+        {
+          "name": "--mx-light-panel2",
+          "value": "#EEF1F6"
+        },
+        {
+          "name": "--mx-light-text",
+          "value": "#1C2430"
+        },
+        {
+          "name": "--mx-light-muted",
+          "value": "#5D6B7E"
+        },
+        {
+          "name": "--mx-light-line",
+          "value": "#C9CCD1"
+        },
+        {
+          "name": "--mx-light-up",
+          "value": "#1F9A55"
+        },
+        {
+          "name": "--mx-light-down",
+          "value": "#CF4040"
+        },
+        {
+          "name": "--mx-light-warn",
+          "value": "#B9791A"
+        },
+        {
+          "name": "--mx-light-act",
+          "value": "#C43D3D"
+        },
+        {
+          "name": "--mx-light-ok",
+          "value": "#2F8A52"
+        },
+        {
+          "name": "--mx-light-info",
+          "value": "#285FFF"
+        },
+        {
+          "name": "--mx-light-link",
+          "value": "#285FFF"
+        },
+        {
+          "name": "--mx-light-orange",
+          "value": "#C4781F"
+        },
+        {
+          "name": "--mx-dark-prov",
+          "value": "#62A0E8"
+        },
+        {
+          "name": "--mx-dark-prov-ink",
+          "value": "#62A0E8"
+        },
+        {
+          "name": "--mx-dark-tier-accent",
+          "value": "#7C5CFF"
+        },
+        {
+          "name": "--mx-dark-tier-fill",
+          "value": "#6340D8"
+        },
+        {
+          "name": "--mx-dark-tier-ink",
+          "value": "#9B86FF"
+        },
+        {
+          "name": "--mx-dark-ser-1",
+          "value": "#5B9BF0"
+        },
+        {
+          "name": "--mx-dark-ser-2",
+          "value": "#D4A017"
+        },
+        {
+          "name": "--mx-dark-ser-3",
+          "value": "#0EA5E9"
+        },
+        {
+          "name": "--mx-dark-ser-4",
+          "value": "#E08B45"
+        },
+        {
+          "name": "--mx-light-prov",
+          "value": "#2F6FD0"
+        },
+        {
+          "name": "--mx-light-prov-ink",
+          "value": "#2C62B3"
+        },
+        {
+          "name": "--mx-light-tier-accent",
+          "value": "#7C5CFF"
+        },
+        {
+          "name": "--mx-light-tier-fill",
+          "value": "#6340D8"
+        },
+        {
+          "name": "--mx-light-tier-ink",
+          "value": "#5B3FC4"
+        },
+        {
+          "name": "--mx-light-ser-1",
+          "value": "#2F63C4"
+        },
+        {
+          "name": "--mx-light-ser-2",
+          "value": "#8F6A04"
+        },
+        {
+          "name": "--mx-light-ser-3",
+          "value": "#0284C7"
+        },
+        {
+          "name": "--mx-light-ser-4",
+          "value": "#B06A25"
+        },
+        {
+          "name": "--mx-light-ink-up",
+          "value": "#1E6D47"
+        },
+        {
+          "name": "--mx-light-ink-down",
+          "value": "#B23C3D"
+        },
+        {
+          "name": "--mx-light-ink-warn",
+          "value": "#7D5922"
+        },
+        {
+          "name": "--mx-light-ink-link",
+          "value": "#2758E6"
+        },
+        {
+          "name": "--noir-canvas",
+          "value": "#080808"
+        },
+        {
+          "name": "--noir-sidebar",
+          "value": "#0C0C0C"
+        },
+        {
+          "name": "--noir-panel",
+          "value": "#121212"
+        },
+        {
+          "name": "--noir-raised",
+          "value": "#191919"
+        },
+        {
+          "name": "--noir-hover",
+          "value": "#222222"
+        },
+        {
+          "name": "--noir-selected",
+          "value": "#292929"
+        },
+        {
+          "name": "--noir-text-primary",
+          "value": "#F3F3F3"
+        },
+        {
+          "name": "--noir-text-secondary",
+          "value": "#B8B8B8"
+        },
+        {
+          "name": "--noir-text-tertiary",
+          "value": "#949494"
+        },
+        {
+          "name": "--noir-champagne",
+          "value": "#C9B99B"
+        },
+        {
+          "name": "--noir-sage",
+          "value": "#A8C2AD"
+        },
+        {
+          "name": "--noir-rose",
+          "value": "#DEA4A5"
+        },
+        {
+          "name": "--noir-steel",
+          "value": "#A7B4C2"
+        },
+        {
+          "name": "--noir-lilac",
+          "value": "#BDB2CE"
+        },
+        {
+          "name": "--market-canvas",
+          "value": "#0A0B0D"
+        },
+        {
+          "name": "--market-panel",
+          "value": "#111318"
+        },
+        {
+          "name": "--market-raised",
+          "value": "#181B20"
+        },
+        {
+          "name": "--market-line",
+          "value": "#2B3038"
+        },
+        {
+          "name": "--mx-dark-up-soft",
+          "value": "rgb(69 184 115 / 12%)"
+        },
+        {
+          "name": "--mx-dark-down-soft",
+          "value": "rgb(224 100 100 / 12%)"
+        },
+        {
+          "name": "--mx-dark-warn-soft",
+          "value": "rgb(224 160 48 / 12%)"
+        },
+        {
+          "name": "--mx-dark-info-soft",
+          "value": "rgb(91 155 240 / 12%)"
+        },
+        {
+          "name": "--mx-light-up-soft",
+          "value": "#EAF7EF"
+        },
+        {
+          "name": "--mx-light-down-soft",
+          "value": "#FCECED"
+        },
+        {
+          "name": "--mx-light-warn-soft",
+          "value": "#FFF4E2"
+        },
+        {
+          "name": "--mx-light-info-soft",
+          "value": "#EAF2FC"
+        },
+        {
+          "name": "--mx-light-scrim",
+          "value": "#1C243029"
+        },
+        {
+          "name": "--font-ui",
+          "value": "\"Inter\""
+        },
+        {
+          "name": "--fs-micro",
+          "value": "10px"
+        },
+        {
+          "name": "--fs-label",
+          "value": "11px"
+        },
+        {
+          "name": "--fs-sm",
+          "value": "12.5px"
+        },
+        {
+          "name": "--fs-body",
+          "value": "14px"
+        },
+        {
+          "name": "--fs-h3",
+          "value": "14px"
+        },
+        {
+          "name": "--fs-md",
+          "value": "15px"
+        },
+        {
+          "name": "--fs-h2",
+          "value": "17px"
+        },
+        {
+          "name": "--fs-num-lg",
+          "value": "22px"
+        },
+        {
+          "name": "--fs-h1",
+          "value": "28px"
+        },
+        {
+          "name": "--fs-num-xl",
+          "value": "38px"
+        },
+        {
+          "name": "--fs-display",
+          "value": "46px"
+        },
+        {
+          "name": "--fw-regular",
+          "value": "400"
+        },
+        {
+          "name": "--fw-medium",
+          "value": "500"
+        },
+        {
+          "name": "--fw-semibold",
+          "value": "600"
+        },
+        {
+          "name": "--fw-bold",
+          "value": "700"
+        },
+        {
+          "name": "--fw-extrabold",
+          "value": "800"
+        },
+        {
+          "name": "--bp-mobile",
+          "value": "390px"
+        },
+        {
+          "name": "--bp-tablet",
+          "value": "768px"
+        },
+        {
+          "name": "--bp-desktop",
+          "value": "1440px"
+        },
+        {
+          "name": "--sp-1",
+          "value": "4px"
+        },
+        {
+          "name": "--sp-2",
+          "value": "8px"
+        },
+        {
+          "name": "--sp-3",
+          "value": "12px"
+        },
+        {
+          "name": "--sp-4",
+          "value": "16px"
+        },
+        {
+          "name": "--sp-5",
+          "value": "20px"
+        },
+        {
+          "name": "--sp-6",
+          "value": "24px"
+        },
+        {
+          "name": "--sp-7",
+          "value": "32px"
+        },
+        {
+          "name": "--sp-8",
+          "value": "44px"
+        },
+        {
+          "name": "--r-ctl",
+          "value": "8px"
+        },
+        {
+          "name": "--r-btn",
+          "value": "10px"
+        },
+        {
+          "name": "--r-card",
+          "value": "12px"
+        },
+        {
+          "name": "--r-panel",
+          "value": "14px"
+        },
+        {
+          "name": "--r-pill",
+          "value": "999px"
+        }
+      ]
+    }
+  },
+  {
+    "fileName": "Catalyst Intelligence · Decision Desk and Integration",
+    "pageName": "01 · Product · Catalyst review desk",
+    "pageId": "p-6-0",
+    "url": "https://app.paper.design/file/01M6Y2VTQBVC9NA39HNG1DYWFH/p-6-0",
+    "rootNodeId": "root_node_p-6-0",
+    "nodeCount": 296,
+    "artboardCount": 3,
+    "artboards": [
+      {
+        "id": "1K9-0",
+        "name": "R3 · Catalyst review desk · Desktop dark",
+        "childCount": 1,
+        "width": 1440,
+        "height": null,
+        "worldX": -3905,
+        "worldY": -885
+      },
+      {
+        "id": "1R1-0",
+        "name": "R3 · Catalyst review desk · Mobile dark",
+        "childCount": 3,
+        "width": 390,
+        "height": 844,
+        "worldX": -2385,
+        "worldY": -885
+      },
+      {
+        "id": "1NN-0",
+        "name": "R3 · Catalyst review desk · Desktop light",
+        "childCount": 1,
+        "width": 1440,
+        "height": null,
+        "worldX": -1915,
+        "worldY": -885
+      }
+    ],
+    "pages": [
+      {
+        "type": "page",
+        "id": "p-5-0",
+        "name": "00 · AGENT README · Read first",
+        "icon": "arrow",
+        "isActive": false
+      },
+      {
+        "type": "page",
+        "id": "p-1-0",
+        "name": "Catalyst Intelligence · Decision Desk · R1 · 2026-10-18",
+        "icon": "design",
+        "isActive": true
+      },
+      {
+        "type": "page",
+        "id": "p-8-0",
+        "name": "04A · Build · R3 workflow contract",
+        "icon": "blueprint",
+        "isActive": false
+      },
+      {
+        "type": "page",
+        "id": "p-7-0",
+        "name": "02A · Review · Case, evidence & conditions",
+        "icon": "info",
+        "isActive": false
+      },
+      {
+        "type": "page",
+        "id": "p-6-0",
+        "name": "01 · Product · Catalyst review desk",
+        "icon": "design",
+        "isActive": false
+      },
+      {
+        "type": "page",
+        "id": "p-4-0",
+        "name": "R2 · Manual review condition flow",
+        "icon": "blueprint",
+        "isActive": false
+      },
+      {
+        "type": "page",
+        "id": "p-3-0",
+        "name": "Proposed · Selected case and filters",
+        "icon": "design",
+        "isActive": false
+      },
+      {
+        "type": "page",
+        "id": "p-2-0",
+        "name": "Catalyst-to-Opportunity · Source-bound integration · 2026-10-17",
+        "icon": "design",
+        "isActive": false
+      }
+    ],
+    "fontFamilies": [
+      "Inter",
+      "System Sans-Serif",
+      "IBM Plex Mono",
+      "Menlo",
+      "System Monospace"
+    ],
+    "tokens": {
+      "items": [
+        {
+          "name": "--mx-dark-bg",
+          "value": "#0F1115"
+        },
+        {
+          "name": "--mx-dark-panel",
+          "value": "#181B21"
+        },
+        {
+          "name": "--mx-dark-panel2",
+          "value": "#1E222A"
+        },
+        {
+          "name": "--mx-dark-text",
+          "value": "#D7DCE3"
+        },
+        {
+          "name": "--mx-dark-muted",
+          "value": "#8B93A1"
+        },
+        {
+          "name": "--mx-dark-line",
+          "value": "#3A4150"
+        },
+        {
+          "name": "--mx-dark-up",
+          "value": "#45B873"
+        },
+        {
+          "name": "--mx-dark-down",
+          "value": "#E06464"
+        },
+        {
+          "name": "--mx-dark-warn",
+          "value": "#E0A030"
+        },
+        {
+          "name": "--mx-dark-act",
+          "value": "#E05555"
+        },
+        {
+          "name": "--mx-dark-ok",
+          "value": "#3DA564"
+        },
+        {
+          "name": "--mx-dark-info",
+          "value": "#5B9BF0"
+        },
+        {
+          "name": "--mx-dark-link",
+          "value": "#7AA7E0"
+        },
+        {
+          "name": "--mx-dark-orange",
+          "value": "#E08B45"
+        },
+        {
+          "name": "--mx-light-bg",
+          "value": "#F7F8FA"
+        },
+        {
+          "name": "--mx-light-panel",
+          "value": "#FFFFFF"
+        },
+        {
+          "name": "--mx-light-panel2",
+          "value": "#EEF1F6"
+        },
+        {
+          "name": "--mx-light-text",
+          "value": "#1C2430"
+        },
+        {
+          "name": "--mx-light-muted",
+          "value": "#5D6B7E"
+        },
+        {
+          "name": "--mx-light-line",
+          "value": "#C9CCD1"
+        },
+        {
+          "name": "--mx-light-up",
+          "value": "#1F9A55"
+        },
+        {
+          "name": "--mx-light-down",
+          "value": "#CF4040"
+        },
+        {
+          "name": "--mx-light-warn",
+          "value": "#B9791A"
+        },
+        {
+          "name": "--mx-light-act",
+          "value": "#C43D3D"
+        },
+        {
+          "name": "--mx-light-ok",
+          "value": "#2F8A52"
+        },
+        {
+          "name": "--mx-light-info",
+          "value": "#285FFF"
+        },
+        {
+          "name": "--mx-light-link",
+          "value": "#285FFF"
+        },
+        {
+          "name": "--mx-light-orange",
+          "value": "#C4781F"
+        },
+        {
+          "name": "--mx-dark-prov",
+          "value": "#62A0E8"
+        },
+        {
+          "name": "--mx-dark-prov-ink",
+          "value": "#62A0E8"
+        },
+        {
+          "name": "--mx-dark-tier-accent",
+          "value": "#7C5CFF"
+        },
+        {
+          "name": "--mx-dark-tier-fill",
+          "value": "#6340D8"
+        },
+        {
+          "name": "--mx-dark-tier-ink",
+          "value": "#9B86FF"
+        },
+        {
+          "name": "--mx-dark-ser-1",
+          "value": "#5B9BF0"
+        },
+        {
+          "name": "--mx-dark-ser-2",
+          "value": "#D4A017"
+        },
+        {
+          "name": "--mx-dark-ser-3",
+          "value": "#0EA5E9"
+        },
+        {
+          "name": "--mx-dark-ser-4",
+          "value": "#E08B45"
+        },
+        {
+          "name": "--mx-light-prov",
+          "value": "#2F6FD0"
+        },
+        {
+          "name": "--mx-light-prov-ink",
+          "value": "#2C62B3"
+        },
+        {
+          "name": "--mx-light-tier-accent",
+          "value": "#7C5CFF"
+        },
+        {
+          "name": "--mx-light-tier-fill",
+          "value": "#6340D8"
+        },
+        {
+          "name": "--mx-light-tier-ink",
+          "value": "#5B3FC4"
+        },
+        {
+          "name": "--mx-light-ser-1",
+          "value": "#2F63C4"
+        },
+        {
+          "name": "--mx-light-ser-2",
+          "value": "#8F6A04"
+        },
+        {
+          "name": "--mx-light-ser-3",
+          "value": "#0284C7"
+        },
+        {
+          "name": "--mx-light-ser-4",
+          "value": "#B06A25"
+        },
+        {
+          "name": "--mx-light-ink-up",
+          "value": "#1E6D47"
+        },
+        {
+          "name": "--mx-light-ink-down",
+          "value": "#B23C3D"
+        },
+        {
+          "name": "--mx-light-ink-warn",
+          "value": "#7D5922"
+        },
+        {
+          "name": "--mx-light-ink-link",
+          "value": "#2758E6"
+        },
+        {
+          "name": "--noir-canvas",
+          "value": "#080808"
+        },
+        {
+          "name": "--noir-sidebar",
+          "value": "#0C0C0C"
+        },
+        {
+          "name": "--noir-panel",
+          "value": "#121212"
+        },
+        {
+          "name": "--noir-raised",
+          "value": "#191919"
+        },
+        {
+          "name": "--noir-hover",
+          "value": "#222222"
+        },
+        {
+          "name": "--noir-selected",
+          "value": "#292929"
+        },
+        {
+          "name": "--noir-text-primary",
+          "value": "#F3F3F3"
+        },
+        {
+          "name": "--noir-text-secondary",
+          "value": "#B8B8B8"
+        },
+        {
+          "name": "--noir-text-tertiary",
+          "value": "#949494"
+        },
+        {
+          "name": "--noir-champagne",
+          "value": "#C9B99B"
+        },
+        {
+          "name": "--noir-sage",
+          "value": "#A8C2AD"
+        },
+        {
+          "name": "--noir-rose",
+          "value": "#DEA4A5"
+        },
+        {
+          "name": "--noir-steel",
+          "value": "#A7B4C2"
+        },
+        {
+          "name": "--noir-lilac",
+          "value": "#BDB2CE"
+        },
+        {
+          "name": "--market-canvas",
+          "value": "#0A0B0D"
+        },
+        {
+          "name": "--market-panel",
+          "value": "#111318"
+        },
+        {
+          "name": "--market-raised",
+          "value": "#181B20"
+        },
+        {
+          "name": "--market-line",
+          "value": "#2B3038"
+        },
+        {
+          "name": "--mx-dark-up-soft",
+          "value": "rgb(69 184 115 / 12%)"
+        },
+        {
+          "name": "--mx-dark-down-soft",
+          "value": "rgb(224 100 100 / 12%)"
+        },
+        {
+          "name": "--mx-dark-warn-soft",
+          "value": "rgb(224 160 48 / 12%)"
+        },
+        {
+          "name": "--mx-dark-info-soft",
+          "value": "rgb(91 155 240 / 12%)"
+        },
+        {
+          "name": "--mx-light-up-soft",
+          "value": "#EAF7EF"
+        },
+        {
+          "name": "--mx-light-down-soft",
+          "value": "#FCECED"
+        },
+        {
+          "name": "--mx-light-warn-soft",
+          "value": "#FFF4E2"
+        },
+        {
+          "name": "--mx-light-info-soft",
+          "value": "#EAF2FC"
+        },
+        {
+          "name": "--mx-light-scrim",
+          "value": "#1C243029"
+        },
+        {
+          "name": "--font-ui",
+          "value": "\"Inter\""
+        },
+        {
+          "name": "--fs-micro",
+          "value": "10px"
+        },
+        {
+          "name": "--fs-label",
+          "value": "11px"
+        },
+        {
+          "name": "--fs-sm",
+          "value": "12.5px"
+        },
+        {
+          "name": "--fs-body",
+          "value": "14px"
+        },
+        {
+          "name": "--fs-h3",
+          "value": "14px"
+        },
+        {
+          "name": "--fs-md",
+          "value": "15px"
+        },
+        {
+          "name": "--fs-h2",
+          "value": "17px"
+        },
+        {
+          "name": "--fs-num-lg",
+          "value": "22px"
+        },
+        {
+          "name": "--fs-h1",
+          "value": "28px"
+        },
+        {
+          "name": "--fs-num-xl",
+          "value": "38px"
+        },
+        {
+          "name": "--fs-display",
+          "value": "46px"
+        },
+        {
+          "name": "--fw-regular",
+          "value": "400"
+        },
+        {
+          "name": "--fw-medium",
+          "value": "500"
+        },
+        {
+          "name": "--fw-semibold",
+          "value": "600"
+        },
+        {
+          "name": "--fw-bold",
+          "value": "700"
+        },
+        {
+          "name": "--fw-extrabold",
+          "value": "800"
+        },
+        {
+          "name": "--bp-mobile",
+          "value": "390px"
+        },
+        {
+          "name": "--bp-tablet",
+          "value": "768px"
+        },
+        {
+          "name": "--bp-desktop",
+          "value": "1440px"
+        },
+        {
+          "name": "--sp-1",
+          "value": "4px"
+        },
+        {
+          "name": "--sp-2",
+          "value": "8px"
+        },
+        {
+          "name": "--sp-3",
+          "value": "12px"
+        },
+        {
+          "name": "--sp-4",
+          "value": "16px"
+        },
+        {
+          "name": "--sp-5",
+          "value": "20px"
+        },
+        {
+          "name": "--sp-6",
+          "value": "24px"
+        },
+        {
+          "name": "--sp-7",
+          "value": "32px"
+        },
+        {
+          "name": "--sp-8",
+          "value": "44px"
+        },
+        {
+          "name": "--r-ctl",
+          "value": "8px"
+        },
+        {
+          "name": "--r-btn",
+          "value": "10px"
+        },
+        {
+          "name": "--r-card",
+          "value": "12px"
+        },
+        {
+          "name": "--r-panel",
+          "value": "14px"
+        },
+        {
+          "name": "--r-pill",
+          "value": "999px"
+        }
+      ]
+    }
+  },
+  {
+    "fileName": "Catalyst Intelligence · Decision Desk and Integration",
+    "pageName": "02A · Review · Case, evidence & conditions",
+    "pageId": "p-7-0",
+    "url": "https://app.paper.design/file/01M6Y2VTQBVC9NA39HNG1DYWFH/p-7-0",
+    "rootNodeId": "root_node_p-7-0",
+    "nodeCount": 266,
+    "artboardCount": 8,
+    "artboards": [
+      {
+        "id": "27S-0",
+        "name": "R3 · Case · Phone English",
+        "childCount": 3,
+        "width": 390,
+        "height": 844,
+        "worldX": -1915,
+        "worldY": -885
+      },
+      {
+        "id": "22G-0",
+        "name": "R3 · Case · Aster evidence",
+        "childCount": 2,
+        "width": 620,
+        "height": 900,
+        "worldX": -1215,
+        "worldY": -885
+      },
+      {
+        "id": "23C-0",
+        "name": "R3 · Case · Morrow timing",
+        "childCount": 2,
+        "width": 620,
+        "height": 900,
+        "worldX": -1915,
+        "worldY": 96
+      },
+      {
+        "id": "248-0",
+        "name": "R3 · Case · Kestrel financing",
+        "childCount": 2,
+        "width": 620,
+        "height": 900,
+        "worldX": -515,
+        "worldY": -885
+      },
+      {
+        "id": "254-0",
+        "name": "R3 · Case · Lumen read-through",
+        "childCount": 2,
+        "width": 620,
+        "height": 900,
+        "worldX": 185,
+        "worldY": -885
+      },
+      {
+        "id": "260-0",
+        "name": "R3 · Sources · Company-to-trial boundary",
+        "childCount": 2,
+        "width": 620,
+        "height": 900,
+        "worldX": 885,
+        "worldY": -885
+      },
+      {
+        "id": "26W-0",
+        "name": "R3 · Saved condition · Source version changed",
+        "childCount": 2,
+        "width": 620,
+        "height": 900,
+        "worldX": 1585,
+        "worldY": -885
+      },
+      {
+        "id": "29R-0",
+        "name": "R3 · Source changed · 中文 · 320",
+        "childCount": 6,
+        "width": 320,
+        "height": null,
+        "worldX": 2285,
+        "worldY": -885
+      }
+    ],
+    "pages": [
+      {
+        "type": "page",
+        "id": "p-5-0",
+        "name": "00 · AGENT README · Read first",
+        "icon": "arrow",
+        "isActive": false
+      },
+      {
+        "type": "page",
+        "id": "p-1-0",
+        "name": "Catalyst Intelligence · Decision Desk · R1 · 2026-10-18",
+        "icon": "design",
+        "isActive": true
+      },
+      {
+        "type": "page",
+        "id": "p-8-0",
+        "name": "04A · Build · R3 workflow contract",
+        "icon": "blueprint",
+        "isActive": false
+      },
+      {
+        "type": "page",
+        "id": "p-7-0",
+        "name": "02A · Review · Case, evidence & conditions",
+        "icon": "info",
+        "isActive": false
+      },
+      {
+        "type": "page",
+        "id": "p-6-0",
+        "name": "01 · Product · Catalyst review desk",
+        "icon": "design",
+        "isActive": false
+      },
+      {
+        "type": "page",
+        "id": "p-4-0",
+        "name": "R2 · Manual review condition flow",
+        "icon": "blueprint",
+        "isActive": false
+      },
+      {
+        "type": "page",
+        "id": "p-3-0",
+        "name": "Proposed · Selected case and filters",
+        "icon": "design",
+        "isActive": false
+      },
+      {
+        "type": "page",
+        "id": "p-2-0",
+        "name": "Catalyst-to-Opportunity · Source-bound integration · 2026-10-17",
+        "icon": "design",
+        "isActive": false
+      }
+    ],
+    "fontFamilies": [
+      "Inter",
+      "System Sans-Serif",
+      "IBM Plex Mono",
+      "Menlo",
+      "System Monospace"
+    ],
+    "tokens": {
+      "items": [
+        {
+          "name": "--mx-dark-bg",
+          "value": "#0F1115"
+        },
+        {
+          "name": "--mx-dark-panel",
+          "value": "#181B21"
+        },
+        {
+          "name": "--mx-dark-panel2",
+          "value": "#1E222A"
+        },
+        {
+          "name": "--mx-dark-text",
+          "value": "#D7DCE3"
+        },
+        {
+          "name": "--mx-dark-muted",
+          "value": "#8B93A1"
+        },
+        {
+          "name": "--mx-dark-line",
+          "value": "#3A4150"
+        },
+        {
+          "name": "--mx-dark-up",
+          "value": "#45B873"
+        },
+        {
+          "name": "--mx-dark-down",
+          "value": "#E06464"
+        },
+        {
+          "name": "--mx-dark-warn",
+          "value": "#E0A030"
+        },
+        {
+          "name": "--mx-dark-act",
+          "value": "#E05555"
+        },
+        {
+          "name": "--mx-dark-ok",
+          "value": "#3DA564"
+        },
+        {
+          "name": "--mx-dark-info",
+          "value": "#5B9BF0"
+        },
+        {
+          "name": "--mx-dark-link",
+          "value": "#7AA7E0"
+        },
+        {
+          "name": "--mx-dark-orange",
+          "value": "#E08B45"
+        },
+        {
+          "name": "--mx-light-bg",
+          "value": "#F7F8FA"
+        },
+        {
+          "name": "--mx-light-panel",
+          "value": "#FFFFFF"
+        },
+        {
+          "name": "--mx-light-panel2",
+          "value": "#EEF1F6"
+        },
+        {
+          "name": "--mx-light-text",
+          "value": "#1C2430"
+        },
+        {
+          "name": "--mx-light-muted",
+          "value": "#5D6B7E"
+        },
+        {
+          "name": "--mx-light-line",
+          "value": "#C9CCD1"
+        },
+        {
+          "name": "--mx-light-up",
+          "value": "#1F9A55"
+        },
+        {
+          "name": "--mx-light-down",
+          "value": "#CF4040"
+        },
+        {
+          "name": "--mx-light-warn",
+          "value": "#B9791A"
+        },
+        {
+          "name": "--mx-light-act",
+          "value": "#C43D3D"
+        },
+        {
+          "name": "--mx-light-ok",
+          "value": "#2F8A52"
+        },
+        {
+          "name": "--mx-light-info",
+          "value": "#285FFF"
+        },
+        {
+          "name": "--mx-light-link",
+          "value": "#285FFF"
+        },
+        {
+          "name": "--mx-light-orange",
+          "value": "#C4781F"
+        },
+        {
+          "name": "--mx-dark-prov",
+          "value": "#62A0E8"
+        },
+        {
+          "name": "--mx-dark-prov-ink",
+          "value": "#62A0E8"
+        },
+        {
+          "name": "--mx-dark-tier-accent",
+          "value": "#7C5CFF"
+        },
+        {
+          "name": "--mx-dark-tier-fill",
+          "value": "#6340D8"
+        },
+        {
+          "name": "--mx-dark-tier-ink",
+          "value": "#9B86FF"
+        },
+        {
+          "name": "--mx-dark-ser-1",
+          "value": "#5B9BF0"
+        },
+        {
+          "name": "--mx-dark-ser-2",
+          "value": "#D4A017"
+        },
+        {
+          "name": "--mx-dark-ser-3",
+          "value": "#0EA5E9"
+        },
+        {
+          "name": "--mx-dark-ser-4",
+          "value": "#E08B45"
+        },
+        {
+          "name": "--mx-light-prov",
+          "value": "#2F6FD0"
+        },
+        {
+          "name": "--mx-light-prov-ink",
+          "value": "#2C62B3"
+        },
+        {
+          "name": "--mx-light-tier-accent",
+          "value": "#7C5CFF"
+        },
+        {
+          "name": "--mx-light-tier-fill",
+          "value": "#6340D8"
+        },
+        {
+          "name": "--mx-light-tier-ink",
+          "value": "#5B3FC4"
+        },
+        {
+          "name": "--mx-light-ser-1",
+          "value": "#2F63C4"
+        },
+        {
+          "name": "--mx-light-ser-2",
+          "value": "#8F6A04"
+        },
+        {
+          "name": "--mx-light-ser-3",
+          "value": "#0284C7"
+        },
+        {
+          "name": "--mx-light-ser-4",
+          "value": "#B06A25"
+        },
+        {
+          "name": "--mx-light-ink-up",
+          "value": "#1E6D47"
+        },
+        {
+          "name": "--mx-light-ink-down",
+          "value": "#B23C3D"
+        },
+        {
+          "name": "--mx-light-ink-warn",
+          "value": "#7D5922"
+        },
+        {
+          "name": "--mx-light-ink-link",
+          "value": "#2758E6"
+        },
+        {
+          "name": "--noir-canvas",
+          "value": "#080808"
+        },
+        {
+          "name": "--noir-sidebar",
+          "value": "#0C0C0C"
+        },
+        {
+          "name": "--noir-panel",
+          "value": "#121212"
+        },
+        {
+          "name": "--noir-raised",
+          "value": "#191919"
+        },
+        {
+          "name": "--noir-hover",
+          "value": "#222222"
+        },
+        {
+          "name": "--noir-selected",
+          "value": "#292929"
+        },
+        {
+          "name": "--noir-text-primary",
+          "value": "#F3F3F3"
+        },
+        {
+          "name": "--noir-text-secondary",
+          "value": "#B8B8B8"
+        },
+        {
+          "name": "--noir-text-tertiary",
+          "value": "#949494"
+        },
+        {
+          "name": "--noir-champagne",
+          "value": "#C9B99B"
+        },
+        {
+          "name": "--noir-sage",
+          "value": "#A8C2AD"
+        },
+        {
+          "name": "--noir-rose",
+          "value": "#DEA4A5"
+        },
+        {
+          "name": "--noir-steel",
+          "value": "#A7B4C2"
+        },
+        {
+          "name": "--noir-lilac",
+          "value": "#BDB2CE"
+        },
+        {
+          "name": "--market-canvas",
+          "value": "#0A0B0D"
+        },
+        {
+          "name": "--market-panel",
+          "value": "#111318"
+        },
+        {
+          "name": "--market-raised",
+          "value": "#181B20"
+        },
+        {
+          "name": "--market-line",
+          "value": "#2B3038"
+        },
+        {
+          "name": "--mx-dark-up-soft",
+          "value": "rgb(69 184 115 / 12%)"
+        },
+        {
+          "name": "--mx-dark-down-soft",
+          "value": "rgb(224 100 100 / 12%)"
+        },
+        {
+          "name": "--mx-dark-warn-soft",
+          "value": "rgb(224 160 48 / 12%)"
+        },
+        {
+          "name": "--mx-dark-info-soft",
+          "value": "rgb(91 155 240 / 12%)"
+        },
+        {
+          "name": "--mx-light-up-soft",
+          "value": "#EAF7EF"
+        },
+        {
+          "name": "--mx-light-down-soft",
+          "value": "#FCECED"
+        },
+        {
+          "name": "--mx-light-warn-soft",
+          "value": "#FFF4E2"
+        },
+        {
+          "name": "--mx-light-info-soft",
+          "value": "#EAF2FC"
+        },
+        {
+          "name": "--mx-light-scrim",
+          "value": "#1C243029"
+        },
+        {
+          "name": "--font-ui",
+          "value": "\"Inter\""
+        },
+        {
+          "name": "--fs-micro",
+          "value": "10px"
+        },
+        {
+          "name": "--fs-label",
+          "value": "11px"
+        },
+        {
+          "name": "--fs-sm",
+          "value": "12.5px"
+        },
+        {
+          "name": "--fs-body",
+          "value": "14px"
+        },
+        {
+          "name": "--fs-h3",
+          "value": "14px"
+        },
+        {
+          "name": "--fs-md",
+          "value": "15px"
+        },
+        {
+          "name": "--fs-h2",
+          "value": "17px"
+        },
+        {
+          "name": "--fs-num-lg",
+          "value": "22px"
+        },
+        {
+          "name": "--fs-h1",
+          "value": "28px"
+        },
+        {
+          "name": "--fs-num-xl",
+          "value": "38px"
+        },
+        {
+          "name": "--fs-display",
+          "value": "46px"
+        },
+        {
+          "name": "--fw-regular",
+          "value": "400"
+        },
+        {
+          "name": "--fw-medium",
+          "value": "500"
+        },
+        {
+          "name": "--fw-semibold",
+          "value": "600"
+        },
+        {
+          "name": "--fw-bold",
+          "value": "700"
+        },
+        {
+          "name": "--fw-extrabold",
+          "value": "800"
+        },
+        {
+          "name": "--bp-mobile",
+          "value": "390px"
+        },
+        {
+          "name": "--bp-tablet",
+          "value": "768px"
+        },
+        {
+          "name": "--bp-desktop",
+          "value": "1440px"
+        },
+        {
+          "name": "--sp-1",
+          "value": "4px"
+        },
+        {
+          "name": "--sp-2",
+          "value": "8px"
+        },
+        {
+          "name": "--sp-3",
+          "value": "12px"
+        },
+        {
+          "name": "--sp-4",
+          "value": "16px"
+        },
+        {
+          "name": "--sp-5",
+          "value": "20px"
+        },
+        {
+          "name": "--sp-6",
+          "value": "24px"
+        },
+        {
+          "name": "--sp-7",
+          "value": "32px"
+        },
+        {
+          "name": "--sp-8",
+          "value": "44px"
+        },
+        {
+          "name": "--r-ctl",
+          "value": "8px"
+        },
+        {
+          "name": "--r-btn",
+          "value": "10px"
+        },
+        {
+          "name": "--r-card",
+          "value": "12px"
+        },
+        {
+          "name": "--r-panel",
+          "value": "14px"
+        },
+        {
+          "name": "--r-pill",
+          "value": "999px"
+        }
+      ]
+    }
+  },
+  {
+    "fileName": "Catalyst Intelligence · Decision Desk and Integration",
+    "pageName": "04A · Build · R3 workflow contract",
+    "pageId": "p-8-0",
+    "url": "https://app.paper.design/file/01M6Y2VTQBVC9NA39HNG1DYWFH/p-8-0",
+    "rootNodeId": "root_node_p-8-0",
+    "nodeCount": 59,
+    "artboardCount": 1,
+    "artboards": [
+      {
+        "id": "2JD-0",
+        "name": "R3 · Build · Cases, source binding and motion",
+        "childCount": 11,
+        "width": 1440,
+        "height": null,
+        "worldX": 0,
+        "worldY": 0
+      }
+    ],
+    "pages": [
+      {
+        "type": "page",
+        "id": "p-5-0",
+        "name": "00 · AGENT README · Read first",
+        "icon": "arrow",
+        "isActive": false
+      },
+      {
+        "type": "page",
+        "id": "p-1-0",
+        "name": "Catalyst Intelligence · Decision Desk · R1 · 2026-10-18",
+        "icon": "design",
+        "isActive": true
+      },
+      {
+        "type": "page",
+        "id": "p-8-0",
+        "name": "04A · Build · R3 workflow contract",
+        "icon": "blueprint",
+        "isActive": false
+      },
+      {
+        "type": "page",
+        "id": "p-7-0",
+        "name": "02A · Review · Case, evidence & conditions",
+        "icon": "info",
+        "isActive": false
+      },
+      {
+        "type": "page",
+        "id": "p-6-0",
+        "name": "01 · Product · Catalyst review desk",
+        "icon": "design",
+        "isActive": false
+      },
+      {
+        "type": "page",
+        "id": "p-4-0",
+        "name": "R2 · Manual review condition flow",
+        "icon": "blueprint",
+        "isActive": false
+      },
+      {
+        "type": "page",
+        "id": "p-3-0",
+        "name": "Proposed · Selected case and filters",
+        "icon": "design",
+        "isActive": false
+      },
+      {
+        "type": "page",
+        "id": "p-2-0",
+        "name": "Catalyst-to-Opportunity · Source-bound integration · 2026-10-17",
+        "icon": "design",
+        "isActive": false
+      }
+    ],
+    "fontFamilies": [
+      "Inter",
+      "System Sans-Serif",
+      "IBM Plex Mono",
+      "Menlo",
+      "System Monospace"
+    ],
+    "tokens": {
+      "items": [
+        {
+          "name": "--mx-dark-bg",
+          "value": "#0F1115"
+        },
+        {
+          "name": "--mx-dark-panel",
+          "value": "#181B21"
+        },
+        {
+          "name": "--mx-dark-panel2",
+          "value": "#1E222A"
+        },
+        {
+          "name": "--mx-dark-text",
+          "value": "#D7DCE3"
+        },
+        {
+          "name": "--mx-dark-muted",
+          "value": "#8B93A1"
+        },
+        {
+          "name": "--mx-dark-line",
+          "value": "#3A4150"
+        },
+        {
+          "name": "--mx-dark-up",
+          "value": "#45B873"
+        },
+        {
+          "name": "--mx-dark-down",
+          "value": "#E06464"
+        },
+        {
+          "name": "--mx-dark-warn",
+          "value": "#E0A030"
+        },
+        {
+          "name": "--mx-dark-act",
+          "value": "#E05555"
+        },
+        {
+          "name": "--mx-dark-ok",
+          "value": "#3DA564"
+        },
+        {
+          "name": "--mx-dark-info",
+          "value": "#5B9BF0"
+        },
+        {
+          "name": "--mx-dark-link",
+          "value": "#7AA7E0"
+        },
+        {
+          "name": "--mx-dark-orange",
+          "value": "#E08B45"
+        },
+        {
+          "name": "--mx-light-bg",
+          "value": "#F7F8FA"
+        },
+        {
+          "name": "--mx-light-panel",
+          "value": "#FFFFFF"
+        },
+        {
+          "name": "--mx-light-panel2",
+          "value": "#EEF1F6"
+        },
+        {
+          "name": "--mx-light-text",
+          "value": "#1C2430"
+        },
+        {
+          "name": "--mx-light-muted",
+          "value": "#5D6B7E"
+        },
+        {
+          "name": "--mx-light-line",
+          "value": "#C9CCD1"
+        },
+        {
+          "name": "--mx-light-up",
+          "value": "#1F9A55"
+        },
+        {
+          "name": "--mx-light-down",
+          "value": "#CF4040"
+        },
+        {
+          "name": "--mx-light-warn",
+          "value": "#B9791A"
+        },
+        {
+          "name": "--mx-light-act",
+          "value": "#C43D3D"
+        },
+        {
+          "name": "--mx-light-ok",
+          "value": "#2F8A52"
+        },
+        {
+          "name": "--mx-light-info",
+          "value": "#285FFF"
+        },
+        {
+          "name": "--mx-light-link",
+          "value": "#285FFF"
+        },
+        {
+          "name": "--mx-light-orange",
+          "value": "#C4781F"
+        },
+        {
+          "name": "--mx-dark-prov",
+          "value": "#62A0E8"
+        },
+        {
+          "name": "--mx-dark-prov-ink",
+          "value": "#62A0E8"
+        },
+        {
+          "name": "--mx-dark-tier-accent",
+          "value": "#7C5CFF"
+        },
+        {
+          "name": "--mx-dark-tier-fill",
+          "value": "#6340D8"
+        },
+        {
+          "name": "--mx-dark-tier-ink",
+          "value": "#9B86FF"
+        },
+        {
+          "name": "--mx-dark-ser-1",
+          "value": "#5B9BF0"
+        },
+        {
+          "name": "--mx-dark-ser-2",
+          "value": "#D4A017"
+        },
+        {
+          "name": "--mx-dark-ser-3",
+          "value": "#0EA5E9"
+        },
+        {
+          "name": "--mx-dark-ser-4",
+          "value": "#E08B45"
+        },
+        {
+          "name": "--mx-light-prov",
+          "value": "#2F6FD0"
+        },
+        {
+          "name": "--mx-light-prov-ink",
+          "value": "#2C62B3"
+        },
+        {
+          "name": "--mx-light-tier-accent",
+          "value": "#7C5CFF"
+        },
+        {
+          "name": "--mx-light-tier-fill",
+          "value": "#6340D8"
+        },
+        {
+          "name": "--mx-light-tier-ink",
+          "value": "#5B3FC4"
+        },
+        {
+          "name": "--mx-light-ser-1",
+          "value": "#2F63C4"
+        },
+        {
+          "name": "--mx-light-ser-2",
+          "value": "#8F6A04"
+        },
+        {
+          "name": "--mx-light-ser-3",
+          "value": "#0284C7"
+        },
+        {
+          "name": "--mx-light-ser-4",
+          "value": "#B06A25"
+        },
+        {
+          "name": "--mx-light-ink-up",
+          "value": "#1E6D47"
+        },
+        {
+          "name": "--mx-light-ink-down",
+          "value": "#B23C3D"
+        },
+        {
+          "name": "--mx-light-ink-warn",
+          "value": "#7D5922"
+        },
+        {
+          "name": "--mx-light-ink-link",
+          "value": "#2758E6"
+        },
+        {
+          "name": "--noir-canvas",
+          "value": "#080808"
+        },
+        {
+          "name": "--noir-sidebar",
+          "value": "#0C0C0C"
+        },
+        {
+          "name": "--noir-panel",
+          "value": "#121212"
+        },
+        {
+          "name": "--noir-raised",
+          "value": "#191919"
+        },
+        {
+          "name": "--noir-hover",
+          "value": "#222222"
+        },
+        {
+          "name": "--noir-selected",
+          "value": "#292929"
+        },
+        {
+          "name": "--noir-text-primary",
+          "value": "#F3F3F3"
+        },
+        {
+          "name": "--noir-text-secondary",
+          "value": "#B8B8B8"
+        },
+        {
+          "name": "--noir-text-tertiary",
+          "value": "#949494"
+        },
+        {
+          "name": "--noir-champagne",
+          "value": "#C9B99B"
+        },
+        {
+          "name": "--noir-sage",
+          "value": "#A8C2AD"
+        },
+        {
+          "name": "--noir-rose",
+          "value": "#DEA4A5"
+        },
+        {
+          "name": "--noir-steel",
+          "value": "#A7B4C2"
+        },
+        {
+          "name": "--noir-lilac",
+          "value": "#BDB2CE"
+        },
+        {
+          "name": "--market-canvas",
+          "value": "#0A0B0D"
+        },
+        {
+          "name": "--market-panel",
+          "value": "#111318"
+        },
+        {
+          "name": "--market-raised",
+          "value": "#181B20"
+        },
+        {
+          "name": "--market-line",
+          "value": "#2B3038"
+        },
+        {
+          "name": "--mx-dark-up-soft",
+          "value": "rgb(69 184 115 / 12%)"
+        },
+        {
+          "name": "--mx-dark-down-soft",
+          "value": "rgb(224 100 100 / 12%)"
+        },
+        {
+          "name": "--mx-dark-warn-soft",
+          "value": "rgb(224 160 48 / 12%)"
+        },
+        {
+          "name": "--mx-dark-info-soft",
+          "value": "rgb(91 155 240 / 12%)"
+        },
+        {
+          "name": "--mx-light-up-soft",
+          "value": "#EAF7EF"
+        },
+        {
+          "name": "--mx-light-down-soft",
+          "value": "#FCECED"
+        },
+        {
+          "name": "--mx-light-warn-soft",
+          "value": "#FFF4E2"
+        },
+        {
+          "name": "--mx-light-info-soft",
+          "value": "#EAF2FC"
+        },
+        {
+          "name": "--mx-light-scrim",
+          "value": "#1C243029"
+        },
+        {
+          "name": "--font-ui",
+          "value": "\"Inter\""
+        },
+        {
+          "name": "--fs-micro",
+          "value": "10px"
+        },
+        {
+          "name": "--fs-label",
+          "value": "11px"
+        },
+        {
+          "name": "--fs-sm",
+          "value": "12.5px"
+        },
+        {
+          "name": "--fs-body",
+          "value": "14px"
+        },
+        {
+          "name": "--fs-h3",
+          "value": "14px"
+        },
+        {
+          "name": "--fs-md",
+          "value": "15px"
+        },
+        {
+          "name": "--fs-h2",
+          "value": "17px"
+        },
+        {
+          "name": "--fs-num-lg",
+          "value": "22px"
+        },
+        {
+          "name": "--fs-h1",
+          "value": "28px"
+        },
+        {
+          "name": "--fs-num-xl",
+          "value": "38px"
+        },
+        {
+          "name": "--fs-display",
+          "value": "46px"
+        },
+        {
+          "name": "--fw-regular",
+          "value": "400"
+        },
+        {
+          "name": "--fw-medium",
+          "value": "500"
+        },
+        {
+          "name": "--fw-semibold",
+          "value": "600"
+        },
+        {
+          "name": "--fw-bold",
+          "value": "700"
+        },
+        {
+          "name": "--fw-extrabold",
+          "value": "800"
+        },
+        {
+          "name": "--bp-mobile",
+          "value": "390px"
+        },
+        {
+          "name": "--bp-tablet",
+          "value": "768px"
+        },
+        {
+          "name": "--bp-desktop",
+          "value": "1440px"
+        },
+        {
+          "name": "--sp-1",
+          "value": "4px"
+        },
+        {
+          "name": "--sp-2",
+          "value": "8px"
+        },
+        {
+          "name": "--sp-3",
+          "value": "12px"
+        },
+        {
+          "name": "--sp-4",
+          "value": "16px"
+        },
+        {
+          "name": "--sp-5",
+          "value": "20px"
+        },
+        {
+          "name": "--sp-6",
+          "value": "24px"
+        },
+        {
+          "name": "--sp-7",
+          "value": "32px"
+        },
+        {
+          "name": "--sp-8",
+          "value": "44px"
+        },
+        {
+          "name": "--r-ctl",
+          "value": "8px"
+        },
+        {
+          "name": "--r-btn",
+          "value": "10px"
+        },
+        {
+          "name": "--r-card",
+          "value": "12px"
+        },
+        {
+          "name": "--r-panel",
+          "value": "14px"
+        },
+        {
+          "name": "--r-pill",
+          "value": "999px"
+        }
+      ]
+    }
+  }
+]
+

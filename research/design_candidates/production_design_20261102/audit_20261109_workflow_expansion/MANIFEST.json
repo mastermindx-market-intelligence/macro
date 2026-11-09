@@ -1,0 +1,150 @@
+{
+  "phase": "Catalyst native workflow complete; continue Intraday",
+  "files": [
+    {
+      "path": "CATALYST_WORKFLOW.md",
+      "bytes": 6916,
+      "sha256": "2882462464b7073b8e393323b3e964c1986e5d99ed70e90ab90b2b23d102202e"
+    },
+    {
+      "path": "PLAN.md",
+      "bytes": 5041,
+      "sha256": "75fc109392cd9c7b2bacf26123cb16c729246afdbfa3beda5b411a9481d93474"
+    },
+    {
+      "path": "evidence/catalyst.native_census.json",
+      "bytes": 87731,
+      "sha256": "c29c0b8e5aea3ba9438994f503c4605be79bf3e98cb048930c516403e39f28e1"
+    },
+    {
+      "path": "evidence/paper_operations.json",
+      "bytes": 2205155,
+      "sha256": "0e048f12c96fd1fb3b236c838a986add9b6049097dd03d78e9a75e8d1c02ee3c"
+    },
+    {
+      "path": "evidence/source_characterization.json",
+      "bytes": 50931,
+      "sha256": "64c8725285a92990717af7f8fe5c98c119964dad29651fe732b0bba9cee743b1"
+    },
+    {
+      "path": "paper/catalyst.aster.jsx",
+      "bytes": 9090,
+      "sha256": "5fe93004ef338f6f064d1cf0fa45d11b8b3c84f2591fb5b906285c2e5c60c5e4"
+    },
+    {
+      "path": "paper/catalyst.build.jsx",
+      "bytes": 18529,
+      "sha256": "d11e73e994504c2600690f219c904fbbb246da1a73826f0d4e891dee89059a37"
+    },
+    {
+      "path": "paper/catalyst.case_phone.jsx",
+      "bytes": 10020,
+      "sha256": "1b85ff657f437eb7584df844ec2f0d7c8b6226bd24806f8a6dd97dd117d74524"
+    },
+    {
+      "path": "paper/catalyst.changed.jsx",
+      "bytes": 8344,
+      "sha256": "9ddb08ba563b88a6f246822cccc399d5a9cffe3849186fc732f5414a06233e9d"
+    },
+    {
+      "path": "paper/catalyst.changed_zh.jsx",
+      "bytes": 6018,
+      "sha256": "7359fcdd2c3aed75c0bda4dd1acf2dc19a97823460b1a327402959725923945f"
+    },
+    {
+      "path": "paper/catalyst.dark.jsx",
+      "bytes": 27785,
+      "sha256": "c7c8ad33c84d43633698417eaeb003e2f7dfd5cad6bf36e33137c90da814ac1a"
+    },
+    {
+      "path": "paper/catalyst.kestrel.jsx",
+      "bytes": 9058,
+      "sha256": "edd18a3f59c17f2a8d7e0a2e06f81a369b20813d6102ef3581f57595ddcfb3fc"
+    },
+    {
+      "path": "paper/catalyst.ledger_phone.jsx",
+      "bytes": 18086,
+      "sha256": "8e05c3dbfbc73549650b766fdb52d929c36d186bac3efa18d6b894b3a17f4698"
+    },
+    {
+      "path": "paper/catalyst.light.jsx",
+      "bytes": 27877,
+      "sha256": "a31ab93caec68e03afd3b59d0874372e01b1a174093ad6c911dfd8cf8210fe58"
+    },
+    {
+      "path": "paper/catalyst.lumen.jsx",
+      "bytes": 9093,
+      "sha256": "65126267047747b8454f07a2fefb70527be404aa5d66c9a0371b75ca25ce4d07"
+    },
+    {
+      "path": "paper/catalyst.morrow.jsx",
+      "bytes": 9086,
+      "sha256": "827a8bb15fb861583b17e24240c7a3f80a5a935ab24e7429ba907c528d831329"
+    },
+    {
+      "path": "paper/catalyst.sources.jsx",
+      "bytes": 8262,
+      "sha256": "98a0b809c70a881063754a772c0eca2a09531dd25e79ed2a353b33e16d9e246f"
+    },
+    {
+      "path": "screenshots/catalyst.aster.jpg",
+      "bytes": 58296,
+      "sha256": "84a80ccb22896f1eda750c39274a9b2a181e5306febb3659bcf07974834a033f"
+    },
+    {
+      "path": "screenshots/catalyst.build.jpg",
+      "bytes": 362084,
+      "sha256": "d248fe53e3b8ae83267ded5d9251f9423fce68f692f0a2e2622bd28484ef189c"
+    },
+    {
+      "path": "screenshots/catalyst.case_phone.jpg",
+      "bytes": 46885,
+      "sha256": "7ba1c32a02ebd3e8ca539e2e1be53d3483d60e52d597dcfc719a818f377262e3"
+    },
+    {
+      "path": "screenshots/catalyst.changed.jpg",
+      "bytes": 59618,
+      "sha256": "7a0654057753f7d2aa594ea149e1ef5c3957aab94e448ee0064cf8c82f92bf84"
+    },
+    {
+      "path": "screenshots/catalyst.changed_zh.jpg",
+      "bytes": 40718,
+      "sha256": "be47e583f5e7e9b7801cd61df135cd1781fa1d6b39fc09faa44ec44f7e33f0d3"
+    },
+    {
+      "path": "screenshots/catalyst.dark.jpg",
+      "bytes": 134268,
+      "sha256": "effb2d7d4ba7bf68805f6c46463b04c32a4f6f9e43fbeae73300f0dca8f6f9f8"
+    },
+    {
+      "path": "screenshots/catalyst.kestrel.jpg",
+      "bytes": 58327,
+      "sha256": "7444a22620c86467d3d0d5030399530973b1783c3e0eee6153815aac839beabc"
+    },
+    {
+      "path": "screenshots/catalyst.ledger_phone.jpg",
+      "bytes": 44210,
+      "sha256": "978bdeafde793a0b655c0b5fddc76a3a01f7d592a69b1d86fac179cc331b0df6"
+    },
+    {
+      "path": "screenshots/catalyst.light.jpg",
+      "bytes": 139911,
+      "sha256": "8f27e7eb0980e248737e46a29a3e81d86ff7366d1d25f134f771c6e446da7bfa"
+    },
+    {
+      "path": "screenshots/catalyst.lumen.jpg",
+      "bytes": 61448,
+      "sha256": "3daa8669a4c78a4a90992b5719e481c31c1aea6a7444de80e82b4b0d458caead"
+    },
+    {
+      "path": "screenshots/catalyst.morrow.jpg",
+      "bytes": 58942,
+      "sha256": "2887e74059a53f9eaf8aeeb9d39d380c419dfa2cf7703e627c41badccbd0e172"
+    },
+    {
+      "path": "screenshots/catalyst.sources.jpg",
+      "bytes": 55208,
+      "sha256": "552836c9290658e6dce94bf6569ab927da39516b9ba7aa20c11b48aa2fd4051a"
+    }
+  ]
+}
