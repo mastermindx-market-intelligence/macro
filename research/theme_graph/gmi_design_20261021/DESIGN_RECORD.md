@@ -1345,3 +1345,74 @@ Paper file `01M5H6EARN9YHQV17JC6ZG9BRY`, page **Coverage · Companies and listin
 Build root `7M9-0` gains module 16, **Coverage uses honest units and clocks** (`9O4-0`, title `9O5-0`, body `9O7-0`); the proof module becomes 17. It spells out the accounting formula, zero-population behavior, core/extended distinction, source-clock mapping and native disclosure implementation.
 
 The local proof uses actual generated main content, shared theme/GMI CSS and unchanged production JS with external requests blocked. Brain/stale clocks are explicit fixtures. It does not establish full shared-shell/font runtime, spoken assistive-technology output, live account/admission, current hosted CI, deployment or public acceptance. PR10676 stays Draft; original model01 `EFFECT_UNKNOWN/ROOT_UNVERIFIED`, result-consumption/retry/replacement restrictions and every original release hold remain. No merge or deployment is attempted.
+
+
+## 11.33 · Recover failed interactive research through the native index — 9 Nov 2026
+
+### Defect and bounded scope
+
+At parent `e0d7550087c564529270c12049ae62782d5b0101`, the payload parse/validation catch installed a click handler on the mobile Browse button. That button is hidden while `data-gmi-ready` is absent, so the supposed recovery action was unreachable. The notice also called the source-rendered starting answer simply “the answer”, although a nondefault requested hash had not been rendered. The catch returned before the normal history listeners and observed language alone, leaving the existing full-index link on stale return context after hash/Back/Forward or lens changes.
+
+Two baseline browser cases reproduce the missing inline action/ambiguous notice and stale global index context. The first fails at the new wording assertion; its retained observation records zero inline recovery anchors. The second uses the existing global index link and fails after a real hash change. These are defect receipts, not accepted results.
+
+This phase changes only the existing frontend payload-failure branch and one initially hidden native anchor in `templates/gmi_map.html.j2`, plus paired generated output and focused verification. It uses the same retained accepted model SHA256 `e644fa48a2bb6e6affe8d1fda74556d9db5f82acadffdad839e1efe8f095359f`. No model, public JSON, producer, source admission or publication decision changes.
+
+### Reader workflow and preserved evidence
+
+The failure notice now says **Interactive research could not load. The starting topic is shown below. / 交互研究未能加载。下方显示起始主题。** One native **Open the full index / 打开完整索引** anchor appears inside the existing notice region. Its ordinary href supports keyboard activation, native link menus and opening a separate page. The starting topic remains visible and is never presented as the successfully selected requested topic.
+
+Browse, Reset and Copy remain unavailable. The source-rendered dated evidence, company/source actions, product context, Evidence coverage and native Source receipt, Theme details and taxonomy disclosures remain available. The empty Related topics section is hidden only in this failure branch: its payload container must have neither element children nor non-whitespace text, and its nearest section must remain inside the answer. The adjacent evidence-coverage section is retained. Normal topic rendering and no-JavaScript content are not rewritten by this condition.
+
+The copy keeps the 26 Feb 2024 source publication, Planned lifecycle and current-delivery/revenue limitation distinct from the 3 Nov 2026 snapshot. Recovery does not infer newer business facts.
+
+### Existing journey owner and failure boundaries
+
+The native anchor is in the markup before `restoreCompanies()` calls `refreshJourney()`. That existing owner captures the original href and qualifies all main links. No second URL parser, return policy or navigation state is introduced.
+
+Within the failure branch only:
+
+- `hashchange` and `popstate` call the existing `refreshJourney`.
+- The existing observer watches `data-lang` and `data-gmi-lens`. Lens observation is necessary because the incumbent lens action uses `history.replaceState`, which does not dispatch either history event.
+- Only a language mutation runs `languageOptions()` and rewrites the localized failure notice. Either observed attribute refreshes journey links.
+- The branch returns without setting ready, reparsing, fetching, retrying, changing the displayed topic or writing history.
+
+The original `safeReturn`/`originalHrefs` policy remains exact. Qualified context follows native index navigation; an absent or rejected context restores the original `gmi-index.html` href. Returning to the still-failed research route retains the requested context while continuing to show the explicitly identified starting topic. Language changes preserve the same focused recovery anchor and answer nodes.
+
+No-JavaScript remains a separate state with the existing `noscript` native index action. A missing bundle or exception before payload parsing is outside this catch; static global navigation remains available. A valid payload with a missing topic, or a valid topic excluded by filters, retains its existing notice and Clear filters owner. The new failure anchor stays hidden in those states.
+
+### Source and focused browser proof
+
+Final native render PID **16628**, exit 0, **1.75 s**, changes only `gmi.html` and `gmi.js` against the bound accepted-model baseline. Six other HTML pages and CSS remain byte-exact; paired JS is exact. Removing the one added native anchor from the generated explorer reproduces the canonical parent explorer exactly, including its public payload.
+
+| Delivered source | Exact Git blob / SHA256 |
+|---|---|
+| Paired GMI JS | `34b2ad1110ace6a667e87e7164ff74bde701eb85` / `74db8222c79911a06add34d076e69d7e838aa67a21740522d8c31b60e4f58896` |
+| Map template | `fd6ed9c5bfa16e0cfeb1bd964e84ab809fb6595d` / `4ef78e0c937e00472de19ff6ca676eff3d0cc64b4a328b3a9b6ea8cdcbb4cb8b` |
+| Explorer HTML | `9c142c6854de795372cc2b256d74eab6071cf3ea` / `8cdbadf83bcfb49153f4c0f258f72541349d0eb34becbf34772f00d2ccfe676d` |
+
+Final browser PID **22269**, exit 0, **20 named cases in 22 fresh anonymous contexts**, zero page errors, Chrome **157.0.8103.39**, **29.70 s**:
+
+- Six malformed-payload scenarios cover EN/ZH at 1440, 390 and 320 px; two dark scenarios cover EN320 and ZH390.
+- Eight schema faults cover categories, paths, connections, source fields, duplicate IDs, missing default ID, category labels and invalid parents.
+- Two failure journeys exercise actual hash changes, clear/Back/Forward, the existing lens `replaceState`, locale/focus retention, removal of old/unknown fields, bounded query qualification and rejected overlong context.
+- The native href is opened in a second page and activated with Enter, followed by the real index return to the still-failed research route.
+- Two boundary cases each use valid JavaScript and an actually disabled-JavaScript context: normal Clear filters/answer focus, distinct missing-topic behavior, and the existing native no-JS index route remain intact.
+- Failure scenarios assert that the empty Related section is hidden while Evidence coverage remains visible. EN390 and ZH320 also open/close Source receipt and Theme details with Enter/Space, preserving focus, URL and history.
+
+All eight final native screenshots were visually inspected across the principal and design-judgment roles. The notice/action fit, evidence hierarchy and retained disclosures have no observed overflow or empty related-content invitation. This is rendered component evidence; it does not assert spoken assistive-technology behavior.
+
+The canonical browser verifier registers these cases. All **86 existing function definitions**, compared by qualified lexical path and occurrence, remain AST-exact. Four new top-level test helpers and their two nested helpers are added. This count avoids collapsing duplicate nested helper names. The isolated `verify_payload_recovery_component.py` harness extracts those canonical definitions, serves actual generated main content and production GMI JS/CSS, blocks external requests, and uses explicit Brain/stale fixtures. It owns no product behavior. [PAYLOAD_RECOVERY_VALIDATION_20261109.json](PAYLOAD_RECOVERY_VALIDATION_20261109.json) includes exact input/source hashes, commands, retained native receipts and source self-checks.
+
+### Diagnostics retained separately
+
+Initial candidate PID 94219 passed the first 16 cases and then timed out in the rejected-context test predicate. A bounded diagnostic captured both global and inline hrefs already restored to exactly `gmi-index.html`, with no added product history writes. The test now asserts that exact attribute directly. No unproven null-serialization cause is claimed and no product behavior was changed for that predicate.
+
+The corrected pre-related candidate passed 20 cases/22 contexts at PID 1678. Its source and reports remain separately retained. Visual inspection then identified the empty Related section; the final source hides only that empty section and strengthens checks for retained disclosures. PID 22269 is the final acceptance for the delivered JS. Earlier results are not substituted for this final run.
+
+### Editable Paper and builder contract
+
+The [Research · Load recovery](https://app.paper.design/file/01M5H6EARN9YHQV17JC6ZG9BRY/p-C-0) page contains flow group `9Z7-0`: F01 EN390 Noir (`9O9-0`), F02 ZH390 Day (`9QM-0`) and F03 complete starting-topic fallback (`9Z9-0`). The first two are truthful 844 px viewports; the separate full component shows below-fold source/evidence/coverage/disclosure content. The empty Related block is absent. Existing source-receipt seed specimens are preserved.
+
+Build root `7M9-0` gains module 17, **Recover failed topic research** (`A1B-0`, title `A1C-0`, body `A1D-0`); the proof module becomes 18. It records the failure/no-JS distinction, starting-answer semantics, native anchor, incumbent projection owner, lens/history event behavior, empty-section condition and available evidence. It explicitly excludes retries and new URL/state owners.
+
+PR10676 stays Draft. The original model01 `EFFECT_UNKNOWN/ROOT_UNVERIFIED`, result-consumption/retry/replacement restrictions and every release hold remain. This local proof does not establish full shared-shell/font runtime, live account/public admission, current hosted CI, deployment or release acceptance. No fenced model result, shared Tools writer, original protected Paper style, release control or production environment is changed.

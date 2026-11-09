@@ -449,8 +449,33 @@ function usableData(value){
   }))return false;
   return ids.has(workspace.getAttribute('data-default-theme'))&&Array.from(document.querySelectorAll('[data-topic-results] [data-topic-select]')).every(function(row){return ids.has(row.getAttribute('data-topic-select'));});
 }
-function loadFailure(){noticeMessage(tr('Interactive research could not load. The answer below and the full index remain available.','交互研究未能加载。下方答案与完整索引仍可使用。'),false);}
-try{data=JSON.parse(document.getElementById('gmi-topic-data').textContent);if(!usableData(data))throw new Error('incomplete presentation data');}catch(error){loadFailure();document.querySelector('[data-browse-home]').hidden=true;var fallback=document.querySelector('[data-browse-open]');fallback.addEventListener('click',function(){location.href='gmi-index.html';});answer.querySelector('[data-gmi-copy]').hidden=true;new MutationObserver(function(){languageOptions();loadFailure();refreshJourney();}).observe(root,{attributes:true,attributeFilter:['data-lang']});return;}
+function loadFailure(){noticeMessage(tr('Interactive research could not load. The starting topic is shown below.','交互研究未能加载。下方显示起始主题。'),false);}
+try{
+  data=JSON.parse(document.getElementById('gmi-topic-data').textContent);
+  if(!usableData(data))throw new Error('incomplete presentation data');
+}catch(error){
+  loadFailure();
+  document.querySelector('[data-browse-home]').hidden=true;
+  var fallback=document.querySelector('[data-topic-notice-index]');
+  if(fallback)fallback.hidden=false;
+  answer.querySelector('[data-gmi-copy]').hidden=true;
+  var related=answer.querySelector('[data-topic-related]');
+  if(related&&!related.childElementCount&&!related.textContent.trim()){
+    var relatedSection=related.closest('section');
+    if(relatedSection&&answer.contains(relatedSection))relatedSection.hidden=true;
+  }
+  /* Keep the native recovery link on the existing journey projection. Failed
+     topic initialization never makes Browse/Copy ready or retries the payload. */
+  window.addEventListener('hashchange',refreshJourney);
+  window.addEventListener('popstate',refreshJourney);
+  new MutationObserver(function(changes){
+    if(changes.some(function(change){return change.attributeName==='data-lang';})){
+      languageOptions();loadFailure();
+    }
+    refreshJourney();
+  }).observe(root,{attributes:true,attributeFilter:['data-lang','data-gmi-lens']});
+  return;
+}
 var topics=data.topics,byId=new Map(topics.map(function(t){return[t.id,t];}));
 var defaults={theme:workspace.getAttribute('data-default-theme'),q:'',category:'',scope:'all',evidence:false};
 var state=Object.assign({},defaults),invalidTheme=false,lastHash=null;

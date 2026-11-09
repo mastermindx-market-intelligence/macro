@@ -1,0 +1,3696 @@
+{
+  "phase": "GMI failed topic-payload recovery",
+  "date": "2026-11-09",
+  "repository": "mastermindx-market-intelligence/Macro",
+  "branch": "claude/gmi-product-upgrade-20261103",
+  "pr": 10676,
+  "parent": "e0d7550087c564529270c12049ae62782d5b0101",
+  "status": "source-bound local proof; Draft and release holds unchanged",
+  "input_contract": {
+    "model_sha256": "e644fa48a2bb6e6affe8d1fda74556d9db5f82acadffdad839e1efe8f095359f",
+    "baseline_inputs": 48,
+    "model_regenerated": false,
+    "private_model_result_consumed": false,
+    "source_json_modified": false
+  },
+  "behavior": {
+    "native_inline_index": true,
+    "starting_answer_explicit": true,
+    "failure_only_history_and_lens_projection": true,
+    "existing_journey_owner": true,
+    "empty_related_hidden_only_on_payload_failure": true,
+    "source_evidence_and_disclosures_retained": true,
+    "new_route_or_state_owner": false,
+    "new_history_writes": false,
+    "payload_retry": false
+  },
+  "native_root": "/Volumes/Mastermind/agent-workspaces/verify/gmi-payload-recovery-20261109-bt0yvuue",
+  "process_receipts": {
+    "prepare": {
+      "pid": 86370,
+      "exit_code": 0,
+      "runtime_seconds": 0.14
+    },
+    "baseline_render": {
+      "pid": 86838,
+      "exit_code": 0,
+      "runtime_seconds": 1.06
+    },
+    "baseline_browser": {
+      "pid": 92024,
+      "exit_code": 1,
+      "runtime_seconds": 16.86,
+      "scope": "two expected reproduction failures"
+    },
+    "initial_candidate_render": {
+      "pid": 94002,
+      "exit_code": 0,
+      "runtime_seconds": 1.19
+    },
+    "initial_candidate_browser": {
+      "pid": 94219,
+      "exit_code": 1,
+      "runtime_seconds": 24.02,
+      "scope": "16 passed; journey rejected-context predicate timed out"
+    },
+    "diagnostic_browser": {
+      "pid": 99224,
+      "exit_code": 1,
+      "runtime_seconds": 7.71,
+      "scope": "DOM captured exact restored gmi-index.html hrefs; no product history regression observed"
+    },
+    "pre_related_browser": {
+      "pid": 1678,
+      "exit_code": 0,
+      "runtime_seconds": 29.92,
+      "cases": 20,
+      "contexts": 22,
+      "scope": "before empty Related section refinement"
+    },
+    "final_render": {
+      "pid": 16628,
+      "exit_code": 0,
+      "runtime_seconds": 1.75
+    },
+    "final_browser": {
+      "pid": 22269,
+      "exit_code": 0,
+      "runtime_seconds": 29.7,
+      "cases": 20,
+      "contexts": 22,
+      "page_errors": 0,
+      "browser": "157.0.8103.39",
+      "js_blob": "34b2ad1110ace6a667e87e7164ff74bde701eb85"
+    },
+    "final_export": {
+      "pid": 25814,
+      "bytes": 112719,
+      "sha256": "0ae199d619edccf705322b5328f99cfa832e08d3bef179392cb4bdd4ca1957c6",
+      "blob": "060bed2cd540dacce860e6ea7d38dac634534502"
+    }
+  },
+  "commands": {
+    "baseline_render": "python3 - <<'PY'\nfrom pathlib import Path\nimport hashlib,json,os,sys\nr=Path('/Volumes/Mastermind/agent-workspaces/verify/gmi-payload-recovery-20261109-bt0yvuue');manifest=json.loads((r/'input-bindings.json').read_text())\nfor row in manifest['inputs']:\n raw=(r/row['path']).read_bytes();assert hashlib.sha1(b'blob '+str(len(raw)).encode()+b'\\0'+raw).hexdigest()==row['blob'],row['path']\nraw=(r/'accepted-model.json').read_bytes();assert hashlib.sha256(raw).hexdigest()==manifest['model_sha256'];model=json.loads(raw)\nos.chdir(r);sys.path.insert(0,str(r));sys.dont_write_bytecode=True\nfrom scripts.build_gmi_explorer import render_site\nrender_site(model,r/'baseline')\nhashes={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted((r/'baseline').glob('*')) if p.is_file()}\nassert hashes==manifest['expected_outputs'],hashes\nrecord={'source_head':manifest['source_head'],'input_count':len(manifest['inputs']),'model_sha256':manifest['model_sha256'],'all_nine_outputs_exact':True,'outputs':hashes}\n(r/'baseline-render-receipt.json').write_text(json.dumps(record,indent=2)+'\\n');print(json.dumps(record),flush=True)\nPY",
+    "candidate_render": "python3 - <<'PY'\nfrom pathlib import Path\nimport hashlib,json,os,re,sys\nr=Path(\"/Volumes/Mastermind/agent-workspaces/verify/gmi-payload-recovery-20261109-bt0yvuue\");manifest=json.loads((r/'input-bindings.json').read_text());base=json.loads((r/'baseline-render-receipt.json').read_text())\nchanged_inputs=('templates/gmi.js','templates/gmi_map.html.j2')\nfor row in manifest['inputs']:\n if row['path'] in changed_inputs:continue\n raw=(r/row['path']).read_bytes();assert hashlib.sha1(b'blob '+str(len(raw)).encode()+b'\\0'+raw).hexdigest()==row['blob'],row['path']\nraw=(r/'accepted-model.json').read_bytes();assert hashlib.sha256(raw).hexdigest()==manifest['model_sha256'];model=json.loads(raw)\nos.chdir(r);sys.path.insert(0,str(r));sys.dont_write_bytecode=True\nfrom scripts.build_gmi_explorer import render_site\nrender_site(model,r/'candidate')\nhashes={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted((r/'candidate').glob('*')) if p.is_file()}\nchanged=[n for n,h in hashes.items() if base['outputs'][n]!=h];assert set(changed)=={'gmi.html','gmi.js'},changed\nassert (r/'candidate/gmi.js').read_bytes()==(r/'templates/gmi.js').read_bytes()\na=(r/'baseline/gmi.html').read_text();b=(r/'candidate/gmi.html').read_text()\npattern=r'<a class=\"gmi-action-secondary\" data-topic-notice-index href=\"gmi-index.html\" hidden>.*?</a>'\nlinks=re.findall(pattern,b,re.S);assert len(links)==1, len(links);assert b.replace(links[0],'',1)==a\nrecord={'source_head':manifest['source_head'],'model_sha256':manifest['model_sha256'],'changed_outputs':changed,'outputs':hashes,'six_other_html_and_css_exact':True,'paired_js_exact':True,'only_one_native_recovery_anchor_added_to_explorer':True,'candidate_inputs':{}}\nfor name in changed_inputs+('candidate/gmi.html',):\n raw=(r/name).read_bytes();record['candidate_inputs'][name]={'bytes':len(raw),'sha256':hashlib.sha256(raw).hexdigest(),'blob':hashlib.sha1(b'blob '+str(len(raw)).encode()+b'\\0'+raw).hexdigest()}\nrecord['generated_anchor_html']=links[0]\n(r/'candidate-render-receipt.json').write_text(json.dumps(record,indent=2)+'\\n');print(json.dumps(record),flush=True)\nPY",
+    "browser": "PYTHONDONTWRITEBYTECODE=1 python3 '/Volumes/Mastermind/agent-workspaces/verify/gmi-payload-recovery-20261109-bt0yvuue/verify_payload_recovery_component.py' --root '/Volumes/Mastermind/agent-workspaces/verify/gmi-payload-recovery-20261109-bt0yvuue' --executable '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'",
+    "final_export": "python3 - <<'PY'\nfrom pathlib import Path\nimport hashlib,json\nr=Path(\"/Volumes/Mastermind/agent-workspaces/verify/gmi-payload-recovery-20261109-bt0yvuue\")\ndef read(n):return json.loads((r/n).read_text())\ndef meta(p):\n b=p.read_bytes();return {'path':str(p),'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest(),'blob':hashlib.sha1(b'blob '+str(len(b)).encode()+b'\\0'+b).hexdigest()}\nnames={'input_bindings':'input-bindings.json','baseline_render':'baseline-render-receipt.json','candidate_render':'candidate-render-receipt.json','baseline_browser':'baseline-proof/browser-report.json','candidate_browser':'candidate-proof/browser-report.json','initial_candidate_browser':'initial-candidate-proof/browser-report.json','predicate_diagnostic':'rejected-context-diagnostic-proof/browser-report.json','pre_related_candidate_browser':'pre-related-candidate-proof/browser-report.json','pre_related_candidate_render':'pre-related-candidate-render-receipt.json'}\nv={k:read(n) for k,n in names.items()};v['source_and_test_hashes']={n:meta(r/n) for n in ['templates/gmi.js','templates/gmi_map.html.j2','verify_product_browser.py','verify_payload_recovery_component.py','initial-verify_product_browser.py','rejected-context-diagnostic-verifier.py','pre-related-gmi.js','pre-related-verifier.py']};v['screenshot_hashes']=[meta(p) for p in sorted((r/'candidate-proof').glob('*.png'))];v['receipt_files']={k:meta(r/n) for k,n in names.items()};p=r/'payload-recovery-native-receipts.json';p.write_text(json.dumps(v,ensure_ascii=False,separators=(',',':'))+'\\n');print(json.dumps({'receipt':meta(p),'pass':v['candidate_browser']['pass'],'cases':len(v['candidate_browser']['cases']),'contexts':v['candidate_browser']['contexts']}),flush=True)\nPY"
+  },
+  "self_check": {
+    "js_exact_single_block": true,
+    "map_exact_single_anchor": true,
+    "html_exact_single_anchor": true,
+    "parent_html_blob": "e765336c2b840108aff2dadb45543ea5524e6026",
+    "existing_function_definitions": 86,
+    "all_existing_functions_ast_exact": true,
+    "added_function_definitions": [
+      "payload_failure_page#0",
+      "payload_failure_page#0.damage#0",
+      "payload_failure_recovery#0",
+      "payload_failure_journey#0",
+      "payload_failure_journey#0.context_is#0",
+      "payload_failure_boundaries#0"
+    ],
+    "exact_native_hashes": {
+      "templates/gmi.js": {
+        "bytes": 54043,
+        "sha256": "74db8222c79911a06add34d076e69d7e838aa67a21740522d8c31b60e4f58896",
+        "blob": "34b2ad1110ace6a667e87e7164ff74bde701eb85"
+      },
+      "templates/gmi_map.html.j2": {
+        "bytes": 6176,
+        "sha256": "4ef78e0c937e00472de19ff6ca676eff3d0cc64b4a328b3a9b6ea8cdcbb4cb8b",
+        "blob": "fd6ed9c5bfa16e0cfeb1bd964e84ab809fb6595d"
+      },
+      "verify_product_browser.py": {
+        "bytes": 224155,
+        "sha256": "e528935102d7c2e87efd954d610e6778f115a7b5f7f093c896a27eaaceb3469f",
+        "blob": "f65bae942cc5424f6c24b9b3fc56180e1dee36ce"
+      },
+      "verify_payload_recovery_component.py": {
+        "bytes": 7022,
+        "sha256": "913a8fdca31991b63439b14f36bc46c034d68bb127e46a2e030388d14333320f",
+        "blob": "8515c52cb94689cb93e3f7b60e60b2ea2f37e22c"
+      },
+      "site/gmi.html": {
+        "bytes": 973168,
+        "sha256": "8cdbadf83bcfb49153f4c0f258f72541349d0eb34becbf34772f00d2ccfe676d",
+        "blob": "9c142c6854de795372cc2b256d74eab6071cf3ea"
+      }
+    },
+    "python_syntax_valid": true
+  },
+  "diagnostic_interpretation": "Direct DOM evidence showed both rejected-context links already restored to the exact original href. The predicate was replaced by a direct href assertion; no null-serialization cause is claimed. Initial, diagnostic and pre-related reports remain separate. The final source additionally hides only the empty Related topics section and asserts retained native disclosures.",
+  "visual_review": {
+    "final_screenshots": 8,
+    "reviewed_by_principal": 4,
+    "reviewed_by_design_judgment": 4,
+    "findings": "Failure notice and native index action fit at 1440/390/320; no empty Related section or overflow; dated evidence, coverage and disclosures retained.",
+    "paper_file": "01M5H6EARN9YHQV17JC6ZG9BRY",
+    "paper_page": "p-C-0",
+    "flow_root": "9Z7-0",
+    "phone_roots": [
+      "9O9-0",
+      "9QM-0"
+    ],
+    "full_content_root": "9Z9-0"
+  },
+  "limits": [
+    "Generated-main component proof, not full shared-shell/font runtime",
+    "External network blocked; Brain/stale are explicit fixtures",
+    "No spoken assistive-technology, authenticated account/admission, current hosted CI, deployment or public-release acceptance",
+    "No OS-native input method assertion in this phase",
+    "Bundle-load or pre-payload exceptions are outside this catch; static native navigation remains"
+  ],
+  "native_receipts": {
+    "input_bindings": {
+      "source_root": "/Volumes/Mastermind/agent-workspaces/verify/gmi-coverage-clarity-20261109-cyjureh9",
+      "inputs": [
+        {
+          "path": "config.yml",
+          "blob": "5be75249c98033d7ee0fbe55928713b1f50af627",
+          "sha256": "701229b33bbd6260c561023e2c2611a8fca24bc2c97e784cf97d55aa0357b402",
+          "bytes": 496073
+        },
+        {
+          "path": "scripts/build_gmi_explorer.py",
+          "blob": "900253d42a7b1d43ad41aa493e8032444c4570de",
+          "sha256": "7a2fd1287f20d1e5b166afa34587ad1da0cfad0191e2e8bd1fdb8ac232c77618",
+          "bytes": 15159
+        },
+        {
+          "path": "lib/shared_shell.py",
+          "blob": "cffbeba3f8fdcf7a9413d9428aec0154d97d9614",
+          "sha256": "eb1f06843b556968f15a0478d756e8312a3b6f4f4c8cb3daf047a6c438f79c1c",
+          "bytes": 5407
+        },
+        {
+          "path": "lib/config.py",
+          "blob": "b6fc888269876242597da354aaa726c20ed95802",
+          "sha256": "fa22ec934ec5294072b6bb4bf081d787f3f8ad5da4702ce3f4818b1674dbd53f",
+          "bytes": 1131
+        },
+        {
+          "path": "lib/pages.py",
+          "blob": "db175c463a31828263b57a3287afba661439a765",
+          "sha256": "9ec5d5ceeff55e5e269c5de26d1f54b9d72db1a755940f7029f47d98820014ba",
+          "bytes": 38933
+        },
+        {
+          "path": "lib/site_assets.py",
+          "blob": "03d7ce6137a30b990435cb1fee2090e61c2e95e3",
+          "sha256": "61ed68657b38b006962c653553bcd1d2e25f4ce918ce98ab30f99e7cdc09b275",
+          "bytes": 7180
+        },
+        {
+          "path": "templates/_site_nav.html.j2",
+          "blob": "d5c449e9ec498c49007c2de0ced1757a7f36b12d",
+          "sha256": "2a1f60a27bfdb2c86ab6aa60e6efd1b40515f94d1afc6d38692047f1de3d0376",
+          "bytes": 3684
+        },
+        {
+          "path": "templates/gmi_relationships.html.j2",
+          "blob": "e30d0df9e359e529c707468cf952e0aa84a36987",
+          "sha256": "7659e81e2197def5302b290e89d876befe375acd0a0e58e86edc32ed9672877d",
+          "bytes": 2591
+        },
+        {
+          "path": "templates/_navlinks.html.j2",
+          "blob": "70fee6eabeb2cfe6d92590da42aa8c3e3733e837",
+          "sha256": "da495f935455e24d117bc556d82c634b0229c9604c8fb2ad711f9542a3f29a83",
+          "bytes": 54533
+        },
+        {
+          "path": "templates/_gmi_theme_data.html.j2",
+          "blob": "0520256ae0a2f61a33702070686be769d8640124",
+          "sha256": "ce5d5e782ad08972600619b52a509f37a4acd9b0a40f2a9f2e0ad2859254ff33",
+          "bytes": 2153
+        },
+        {
+          "path": "templates/theme.css",
+          "blob": "619436f58d37a222d1db7021ba9d52bb3a05a7fa",
+          "sha256": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757",
+          "bytes": 227583
+        },
+        {
+          "path": "templates/gmi.css",
+          "blob": "4302bf7edbbb66d9356b75723785ef146e12adb5",
+          "sha256": "3bbf6c4e0a53a688f8fc1f0274213c3c5faaf43af62ed519d2c3ef5c2a571ce0",
+          "bytes": 75647
+        },
+        {
+          "path": "templates/_gmi_product_header.html.j2",
+          "blob": "babc946fd26ea9a14d0deea4901e46491b9a444d",
+          "sha256": "c60bf376a5b14d76d447f9f0b588cf660b8968b93edf497bbf3bc35fd6d95d9e",
+          "bytes": 2338
+        },
+        {
+          "path": "templates/_interfonts.html.j2",
+          "blob": "f6e84eb856ce66f732aacafe883d5c26c5d1e27e",
+          "sha256": "40ba62a3d1efa51de70993bedd5fb7ec96fcc1190f58515d765b267b2afd32cd",
+          "bytes": 1587
+        },
+        {
+          "path": "templates/_gmi_taxonomy.html.j2",
+          "blob": "99ade053147ecb6f42a9b1119af4f522df5c05b7",
+          "sha256": "32b6aba86b7375c13ada8e25fa31689923b696c12358f7a28f1ab17e9e8a70ce",
+          "bytes": 12905
+        },
+        {
+          "path": "templates/_gmi_base.html.j2",
+          "blob": "1d76c899cb2ce05b66e7d37d19b53e212e814b4d",
+          "sha256": "134ae16113ea8e7a4e35b34ca3dfb3ac565c38fa6fb9f5ad24d88b784e30ffa2",
+          "bytes": 2852
+        },
+        {
+          "path": "templates/_gmi_macros.html.j2",
+          "blob": "2b90130394a11df2e4b10fa1ab65041727d18836",
+          "sha256": "49ae1f96453dd481007cac41a4a8951be8090836e93ff9fa94507166d744749e",
+          "bytes": 7112
+        },
+        {
+          "path": "templates/shared_shell_bridge.js",
+          "blob": "00ee9b9fa4d1fba67359d3d6b95c7937aed150b7",
+          "sha256": "071ef7202d8886228342c00f0e7a3026eaba1d0103c4dcf1e6d204a7da77451b",
+          "bytes": 51296
+        },
+        {
+          "path": "templates/gmi.js",
+          "blob": "ef00b9aca6d4e343a8dea7bbd8010020fec671f1",
+          "sha256": "5c471afbcf3630347ec87b805676236d82e6f05c14af21a246ab4c188bbd4e68",
+          "bytes": 53417
+        },
+        {
+          "path": "templates/_all_tools_menu.html.j2",
+          "blob": "3259b4e5c6305fd2f9a33bea65141efb0528680a",
+          "sha256": "d4427b10f930677a285269f20070f1140f451a86228aeb185b19f5820ab1bf17",
+          "bytes": 3436
+        },
+        {
+          "path": "templates/shared_shell.css",
+          "blob": "88a0fd9e836fbffac36722dac04189c6eb24af9b",
+          "sha256": "b1918ccaa2294f18c0fd5bca123e38267251c7e9d9a7c4fce1f296ef9e4c3c1e",
+          "bytes": 467
+        },
+        {
+          "path": "templates/gmi_map.html.j2",
+          "blob": "b4f2a69ce7588d1b51296329d54d38cbcbeab4a5",
+          "sha256": "aca5fdc0b4e5b796d0a0e3794cb09fd740b9a7277a5ad1f81c07b5a181df39da",
+          "bytes": 5998
+        },
+        {
+          "path": "templates/gmi_states.html.j2",
+          "blob": "2e2f66e8f9588403a58434ae6fa80bfa181845bf",
+          "sha256": "7f399348ed2b5a9b750c90b4268c7580329ec692c6f126b6231b6c650aad01d4",
+          "bytes": 3413
+        },
+        {
+          "path": "templates/theme.js",
+          "blob": "21a1fb1627ac34badc6078cff486f98486e9b773",
+          "sha256": "918e7acece23ab6df8211305a938e569f0de4184c0fd9c0b2f1e56c50e3cac4d",
+          "bytes": 400176
+        },
+        {
+          "path": "templates/_seo_head.html.j2",
+          "blob": "1a0f1a7cd3a8499e9d873171171d374424f9ddd8",
+          "sha256": "eda59eeb5f7cf0fb83a1a6430ff523939ee43cd214fe2b4aebba7ca4561bbbee",
+          "bytes": 2335
+        },
+        {
+          "path": "templates/gmi_companies.html.j2",
+          "blob": "729e2a4a93246d87e9203abd84efdc16fb6f1aea",
+          "sha256": "7e64ba21d21cbe232d8f873feb52a9e804e4e4b6e015350bf8d8d8d04d809648",
+          "bytes": 6297
+        },
+        {
+          "path": "templates/gmi_issuer.html.j2",
+          "blob": "35b06fd42b3ef485564b504fcacecacb89383c49",
+          "sha256": "79397fc32d29c6101b19f0e2c6638e19d1708bd5497be74b44dbd0764d28c375",
+          "bytes": 3124
+        },
+        {
+          "path": "templates/data_base.js",
+          "blob": "9e7cc392f0bad0e269d26903432faa39d94a1b62",
+          "sha256": "2aaceaf98a0f534aa342bdc6e64c831a2261a04fafebab4becf50f2d7c82620a",
+          "bytes": 2367
+        },
+        {
+          "path": "templates/gmi_coverage.html.j2",
+          "blob": "2cb07355946474b2310d1dcbaa0cca112ff450c5",
+          "sha256": "76e35d0b49d7a7ded0b6eadebd5b1f69dccf056d50b88884eae670534b689c43",
+          "bytes": 8555
+        },
+        {
+          "path": "templates/_gmi_product_macros.html.j2",
+          "blob": "3e82a587bb0ad17f536d0513d85a1c0a66304999",
+          "sha256": "3315bd43243d52975eee75f42320528c5be69e40581c1b9e284e16e2b222b157",
+          "bytes": 7539
+        },
+        {
+          "path": "templates/_gmi_head.html.j2",
+          "blob": "5fe310cbe1a4a988f60f8b400e47a2de82ff06ef",
+          "sha256": "c0ad57713ab06c77beb85c70a898b2530d480caa24fc32da4c3b6a731c331589",
+          "bytes": 947
+        },
+        {
+          "path": "templates/gmi_index.html.j2",
+          "blob": "4556d16e03e06375a314c7278c4936dea36fd0e9",
+          "sha256": "631c49579cf7f04d8aeb3bfafeb620824dd57ccde6de1a5c562747ba520c43d5",
+          "bytes": 3733
+        },
+        {
+          "path": "engine/theme_graph/store.py",
+          "blob": "853bc3bb557aaf32251de0eb053bcff55604e68c",
+          "sha256": "7e9488741f4fe58343fd7f9255a4d694a3bda1cb081a35239ecda277d8ee8221",
+          "bytes": 25211
+        },
+        {
+          "path": "engine/theme_graph/identity_resolution.py",
+          "blob": "e3510e69645a96872e7080efe028633ff6836324",
+          "sha256": "5672ccebaac97633482efe73a2ed8d0d87d579ef8f1d5f4ebcaf2840482814c7",
+          "bytes": 40467
+        },
+        {
+          "path": "engine/theme_graph/change_report.py",
+          "blob": "354a48be5a56416b941fecb9942401a7f0fb7f1c",
+          "sha256": "50620da7b694bb1c929b3d2dd93a26fc1e40dc7253c4f3aa1b23b307ab905bed",
+          "bytes": 10059
+        },
+        {
+          "path": "engine/theme_graph/membership_evidence.py",
+          "blob": "3785874c443ffcd4cde2db31b1f11cafc184d7d5",
+          "sha256": "47c28abc14a27e5e3550885a415527a7da466204b54ae620e540230cbf3b8c89",
+          "bytes": 80400
+        },
+        {
+          "path": "engine/theme_graph/rights.py",
+          "blob": "d801f2e231e8a0dbf05d30e96fd0024ae70bd63b",
+          "sha256": "0a18ac0c2f5b40048352625f608b208755c2500b1943df30b850d51092b44c15",
+          "bytes": 16362
+        },
+        {
+          "path": "engine/theme_graph/probation.py",
+          "blob": "eac18b9804411c10ee8cede2d5d6f9aae2a84f1f",
+          "sha256": "02cfbb4cf0d38923aa9f06d3c0a4e4699591137bd202e268dab2cda22807b6a6",
+          "bytes": 58797
+        },
+        {
+          "path": "engine/theme_graph/identity.py",
+          "blob": "c27fb161bf401ca05387c4f07ac8e0220b801b2a",
+          "sha256": "550ae9eb7975062f129340e47b6d70f26bd747ef59a546958768478090f6548f",
+          "bytes": 10722
+        },
+        {
+          "path": "lib/dataos/temporal.py",
+          "blob": "094b149a8b9158f19cb99c4005568c12db96ed41",
+          "sha256": "4415404186f0b0d2870f42d9e4a0b95be87937863adf30cf015ed34e8bf92b67",
+          "bytes": 12847
+        },
+        {
+          "path": "lib/dataos/registry.py",
+          "blob": "65b0d69036da97760f20241468f2549b21d9c686",
+          "sha256": "0d575b03848c59e98bdd320243f896b41b201047d0c0c23559467b99185fb404",
+          "bytes": 41942
+        },
+        {
+          "path": "lib/dataos/__init__.py",
+          "blob": "1ddadafd88a59dfc90a7d68c3ae0897da1aae661",
+          "sha256": "86afe285932523c2ee7a1cb25ed0a57b3e7010fbd661aa27ea622530cb82fa30",
+          "bytes": 11768
+        },
+        {
+          "path": "lib/dataos/nulls.py",
+          "blob": "8e7f09ac172f326bab1678ac626fa1d5dc5aa0ab",
+          "sha256": "2556e7d0b2ac609306e512a61071a024b7b0b7eb0ec4ef3efaf22ce9f4387d49",
+          "bytes": 7737
+        },
+        {
+          "path": "lib/dataos/quality.py",
+          "blob": "967b943443d9507c5c0078f62848c38c3d2af48a",
+          "sha256": "a462b3264a5ec05467331c0a224bfd37c26e66012c376ed28922e4e45fa5f877",
+          "bytes": 36845
+        },
+        {
+          "path": "lib/dataos/identity.py",
+          "blob": "fb99fd182ac506a158c63ab434f09374cdbbd4f8",
+          "sha256": "47914bca76cf80101c25fcbd7c29455dd99fbc697373e5183fca505376f6e507",
+          "bytes": 111096
+        },
+        {
+          "path": "lib/dataos/price.py",
+          "blob": "be127fa853a6aafbf0bcb33b58783316ac972faa",
+          "sha256": "40aad993988e03f3c9ff4c2a221cdaeecc3569054d4a93fc0565657fce109e15",
+          "bytes": 10509
+        },
+        {
+          "path": "scripts/gmi_explorer/present.py",
+          "blob": "c5ae61d80a484c07d583831577db52881843061b",
+          "sha256": "3c8b76894628c1a09234c059a9fccf31d52adc47eee03d6e16f580a07c452257",
+          "bytes": 3841
+        },
+        {
+          "path": "scripts/gmi_explorer/model.py",
+          "blob": "2614997dd87bf7d7e2d0b61b283c6b364801e1b1",
+          "sha256": "19a760f597f7a7d99b72c2c72073757ff3a94eac123af30c4a6d370d78952dfa",
+          "bytes": 29457
+        }
+      ],
+      "model_sha256": "e644fa48a2bb6e6affe8d1fda74556d9db5f82acadffdad839e1efe8f095359f",
+      "source_head": "e0d7550087c564529270c12049ae62782d5b0101",
+      "expected_outputs": {
+        "gmi-companies.html": "fda702382d62068f8f39874bcd07bbb915ddacee6a3d4f734b337b58f3e47d3c",
+        "gmi-coverage.html": "893408143f6c0cb1db08084ad9c7c57b56386421f3a3958f1879a87f9035b745",
+        "gmi-index.html": "3e6e6f4846598bc6240f3aa69c5523a5500e7f79f7838e655ea7ecd7800536d4",
+        "gmi-issuer-mu.html": "22cc39aca77961584fad494ab0afa788b287636f7e3c5cfaecba7dbda2172bdd",
+        "gmi-relationships.html": "86243e69c432370eb83600a45cda897e29a1a63697f55e3a72ccffcf9468c377",
+        "gmi-states.html": "3b3c22bd3c57dc34586ac5b9d0800cab9d6c3259f56c9cdc5c2021117a65187e",
+        "gmi.css": "3bbf6c4e0a53a688f8fc1f0274213c3c5faaf43af62ed519d2c3ef5c2a571ce0",
+        "gmi.html": "1db2af5f7c12a1e2e91a30dad2a12f6309efaf0261ca3289db15ea700a3da1f8",
+        "gmi.js": "5c471afbcf3630347ec87b805676236d82e6f05c14af21a246ab4c188bbd4e68"
+      }
+    },
+    "baseline_render": {
+      "source_head": "e0d7550087c564529270c12049ae62782d5b0101",
+      "input_count": 48,
+      "model_sha256": "e644fa48a2bb6e6affe8d1fda74556d9db5f82acadffdad839e1efe8f095359f",
+      "all_nine_outputs_exact": true,
+      "outputs": {
+        "gmi-companies.html": "fda702382d62068f8f39874bcd07bbb915ddacee6a3d4f734b337b58f3e47d3c",
+        "gmi-coverage.html": "893408143f6c0cb1db08084ad9c7c57b56386421f3a3958f1879a87f9035b745",
+        "gmi-index.html": "3e6e6f4846598bc6240f3aa69c5523a5500e7f79f7838e655ea7ecd7800536d4",
+        "gmi-issuer-mu.html": "22cc39aca77961584fad494ab0afa788b287636f7e3c5cfaecba7dbda2172bdd",
+        "gmi-relationships.html": "86243e69c432370eb83600a45cda897e29a1a63697f55e3a72ccffcf9468c377",
+        "gmi-states.html": "3b3c22bd3c57dc34586ac5b9d0800cab9d6c3259f56c9cdc5c2021117a65187e",
+        "gmi.css": "3bbf6c4e0a53a688f8fc1f0274213c3c5faaf43af62ed519d2c3ef5c2a571ce0",
+        "gmi.html": "1db2af5f7c12a1e2e91a30dad2a12f6309efaf0261ca3289db15ea700a3da1f8",
+        "gmi.js": "5c471afbcf3630347ec87b805676236d82e6f05c14af21a246ab4c188bbd4e68"
+      }
+    },
+    "candidate_render": {
+      "source_head": "e0d7550087c564529270c12049ae62782d5b0101",
+      "model_sha256": "e644fa48a2bb6e6affe8d1fda74556d9db5f82acadffdad839e1efe8f095359f",
+      "changed_outputs": [
+        "gmi.html",
+        "gmi.js"
+      ],
+      "outputs": {
+        "gmi-companies.html": "fda702382d62068f8f39874bcd07bbb915ddacee6a3d4f734b337b58f3e47d3c",
+        "gmi-coverage.html": "893408143f6c0cb1db08084ad9c7c57b56386421f3a3958f1879a87f9035b745",
+        "gmi-index.html": "3e6e6f4846598bc6240f3aa69c5523a5500e7f79f7838e655ea7ecd7800536d4",
+        "gmi-issuer-mu.html": "22cc39aca77961584fad494ab0afa788b287636f7e3c5cfaecba7dbda2172bdd",
+        "gmi-relationships.html": "86243e69c432370eb83600a45cda897e29a1a63697f55e3a72ccffcf9468c377",
+        "gmi-states.html": "3b3c22bd3c57dc34586ac5b9d0800cab9d6c3259f56c9cdc5c2021117a65187e",
+        "gmi.css": "3bbf6c4e0a53a688f8fc1f0274213c3c5faaf43af62ed519d2c3ef5c2a571ce0",
+        "gmi.html": "8cdbadf83bcfb49153f4c0f258f72541349d0eb34becbf34772f00d2ccfe676d",
+        "gmi.js": "74db8222c79911a06add34d076e69d7e838aa67a21740522d8c31b60e4f58896"
+      },
+      "six_other_html_and_css_exact": true,
+      "paired_js_exact": true,
+      "only_one_native_recovery_anchor_added_to_explorer": true,
+      "candidate_inputs": {
+        "templates/gmi.js": {
+          "bytes": 54043,
+          "sha256": "74db8222c79911a06add34d076e69d7e838aa67a21740522d8c31b60e4f58896",
+          "blob": "34b2ad1110ace6a667e87e7164ff74bde701eb85"
+        },
+        "templates/gmi_map.html.j2": {
+          "bytes": 6176,
+          "sha256": "4ef78e0c937e00472de19ff6ca676eff3d0cc64b4a328b3a9b6ea8cdcbb4cb8b",
+          "blob": "fd6ed9c5bfa16e0cfeb1bd964e84ab809fb6595d"
+        },
+        "candidate/gmi.html": {
+          "bytes": 973168,
+          "sha256": "8cdbadf83bcfb49153f4c0f258f72541349d0eb34becbf34772f00d2ccfe676d",
+          "blob": "9c142c6854de795372cc2b256d74eab6071cf3ea"
+        }
+      },
+      "generated_anchor_html": "<a class=\"gmi-action-secondary\" data-topic-notice-index href=\"gmi-index.html\" hidden><span class=\"l-en\">Open the full index</span><span class=\"l-zh\">打开完整索引</span><svg viewBox=\"0 0 24 24\" width=\"16\" height=\"16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M4.5 12h15M13.5 6l6 6-6 6\"/></svg></a>"
+    },
+    "baseline_browser": {
+      "generated_at": "2026-11-09T08:34:19.936005+00:00",
+      "baseline": true,
+      "scope": "Failed GMI topic payload recovery on actual generated-main fixtures.\n\nThe exact public payload is fault-injected after serving. Production JS, shared\ntheme/GMI CSS and seven generated main sections are retained. External network\nis blocked; no shared-shell/font runtime, account, AT speech or release claim.",
+      "script_sha256": "5c471afbcf3630347ec87b805676236d82e6f05c14af21a246ab4c188bbd4e68",
+      "gmi_css_sha256": "3bbf6c4e0a53a688f8fc1f0274213c3c5faaf43af62ed519d2c3ef5c2a571ce0",
+      "verifier_sha256": "72a61508d43cb8089b89ce015d3d5e6a3ce9d231cffb4fc2da9e2c31e8c759f1",
+      "inputs": {
+        "source_root": "/Volumes/Mastermind/agent-workspaces/verify/gmi-coverage-clarity-20261109-cyjureh9",
+        "inputs": [
+          {
+            "path": "config.yml",
+            "blob": "5be75249c98033d7ee0fbe55928713b1f50af627",
+            "sha256": "701229b33bbd6260c561023e2c2611a8fca24bc2c97e784cf97d55aa0357b402",
+            "bytes": 496073
+          },
+          {
+            "path": "scripts/build_gmi_explorer.py",
+            "blob": "900253d42a7b1d43ad41aa493e8032444c4570de",
+            "sha256": "7a2fd1287f20d1e5b166afa34587ad1da0cfad0191e2e8bd1fdb8ac232c77618",
+            "bytes": 15159
+          },
+          {
+            "path": "lib/shared_shell.py",
+            "blob": "cffbeba3f8fdcf7a9413d9428aec0154d97d9614",
+            "sha256": "eb1f06843b556968f15a0478d756e8312a3b6f4f4c8cb3daf047a6c438f79c1c",
+            "bytes": 5407
+          },
+          {
+            "path": "lib/config.py",
+            "blob": "b6fc888269876242597da354aaa726c20ed95802",
+            "sha256": "fa22ec934ec5294072b6bb4bf081d787f3f8ad5da4702ce3f4818b1674dbd53f",
+            "bytes": 1131
+          },
+          {
+            "path": "lib/pages.py",
+            "blob": "db175c463a31828263b57a3287afba661439a765",
+            "sha256": "9ec5d5ceeff55e5e269c5de26d1f54b9d72db1a755940f7029f47d98820014ba",
+            "bytes": 38933
+          },
+          {
+            "path": "lib/site_assets.py",
+            "blob": "03d7ce6137a30b990435cb1fee2090e61c2e95e3",
+            "sha256": "61ed68657b38b006962c653553bcd1d2e25f4ce918ce98ab30f99e7cdc09b275",
+            "bytes": 7180
+          },
+          {
+            "path": "templates/_site_nav.html.j2",
+            "blob": "d5c449e9ec498c49007c2de0ced1757a7f36b12d",
+            "sha256": "2a1f60a27bfdb2c86ab6aa60e6efd1b40515f94d1afc6d38692047f1de3d0376",
+            "bytes": 3684
+          },
+          {
+            "path": "templates/gmi_relationships.html.j2",
+            "blob": "e30d0df9e359e529c707468cf952e0aa84a36987",
+            "sha256": "7659e81e2197def5302b290e89d876befe375acd0a0e58e86edc32ed9672877d",
+            "bytes": 2591
+          },
+          {
+            "path": "templates/_navlinks.html.j2",
+            "blob": "70fee6eabeb2cfe6d92590da42aa8c3e3733e837",
+            "sha256": "da495f935455e24d117bc556d82c634b0229c9604c8fb2ad711f9542a3f29a83",
+            "bytes": 54533
+          },
+          {
+            "path": "templates/_gmi_theme_data.html.j2",
+            "blob": "0520256ae0a2f61a33702070686be769d8640124",
+            "sha256": "ce5d5e782ad08972600619b52a509f37a4acd9b0a40f2a9f2e0ad2859254ff33",
+            "bytes": 2153
+          },
+          {
+            "path": "templates/theme.css",
+            "blob": "619436f58d37a222d1db7021ba9d52bb3a05a7fa",
+            "sha256": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757",
+            "bytes": 227583
+          },
+          {
+            "path": "templates/gmi.css",
+            "blob": "4302bf7edbbb66d9356b75723785ef146e12adb5",
+            "sha256": "3bbf6c4e0a53a688f8fc1f0274213c3c5faaf43af62ed519d2c3ef5c2a571ce0",
+            "bytes": 75647
+          },
+          {
+            "path": "templates/_gmi_product_header.html.j2",
+            "blob": "babc946fd26ea9a14d0deea4901e46491b9a444d",
+            "sha256": "c60bf376a5b14d76d447f9f0b588cf660b8968b93edf497bbf3bc35fd6d95d9e",
+            "bytes": 2338
+          },
+          {
+            "path": "templates/_interfonts.html.j2",
+            "blob": "f6e84eb856ce66f732aacafe883d5c26c5d1e27e",
+            "sha256": "40ba62a3d1efa51de70993bedd5fb7ec96fcc1190f58515d765b267b2afd32cd",
+            "bytes": 1587
+          },
+          {
+            "path": "templates/_gmi_taxonomy.html.j2",
+            "blob": "99ade053147ecb6f42a9b1119af4f522df5c05b7",
+            "sha256": "32b6aba86b7375c13ada8e25fa31689923b696c12358f7a28f1ab17e9e8a70ce",
+            "bytes": 12905
+          },
+          {
+            "path": "templates/_gmi_base.html.j2",
+            "blob": "1d76c899cb2ce05b66e7d37d19b53e212e814b4d",
+            "sha256": "134ae16113ea8e7a4e35b34ca3dfb3ac565c38fa6fb9f5ad24d88b784e30ffa2",
+            "bytes": 2852
+          },
+          {
+            "path": "templates/_gmi_macros.html.j2",
+            "blob": "2b90130394a11df2e4b10fa1ab65041727d18836",
+            "sha256": "49ae1f96453dd481007cac41a4a8951be8090836e93ff9fa94507166d744749e",
+            "bytes": 7112
+          },
+          {
+            "path": "templates/shared_shell_bridge.js",
+            "blob": "00ee9b9fa4d1fba67359d3d6b95c7937aed150b7",
+            "sha256": "071ef7202d8886228342c00f0e7a3026eaba1d0103c4dcf1e6d204a7da77451b",
+            "bytes": 51296
+          },
+          {
+            "path": "templates/gmi.js",
+            "blob": "ef00b9aca6d4e343a8dea7bbd8010020fec671f1",
+            "sha256": "5c471afbcf3630347ec87b805676236d82e6f05c14af21a246ab4c188bbd4e68",
+            "bytes": 53417
+          },
+          {
+            "path": "templates/_all_tools_menu.html.j2",
+            "blob": "3259b4e5c6305fd2f9a33bea65141efb0528680a",
+            "sha256": "d4427b10f930677a285269f20070f1140f451a86228aeb185b19f5820ab1bf17",
+            "bytes": 3436
+          },
+          {
+            "path": "templates/shared_shell.css",
+            "blob": "88a0fd9e836fbffac36722dac04189c6eb24af9b",
+            "sha256": "b1918ccaa2294f18c0fd5bca123e38267251c7e9d9a7c4fce1f296ef9e4c3c1e",
+            "bytes": 467
+          },
+          {
+            "path": "templates/gmi_map.html.j2",
+            "blob": "b4f2a69ce7588d1b51296329d54d38cbcbeab4a5",
+            "sha256": "aca5fdc0b4e5b796d0a0e3794cb09fd740b9a7277a5ad1f81c07b5a181df39da",
+            "bytes": 5998
+          },
+          {
+            "path": "templates/gmi_states.html.j2",
+            "blob": "2e2f66e8f9588403a58434ae6fa80bfa181845bf",
+            "sha256": "7f399348ed2b5a9b750c90b4268c7580329ec692c6f126b6231b6c650aad01d4",
+            "bytes": 3413
+          },
+          {
+            "path": "templates/theme.js",
+            "blob": "21a1fb1627ac34badc6078cff486f98486e9b773",
+            "sha256": "918e7acece23ab6df8211305a938e569f0de4184c0fd9c0b2f1e56c50e3cac4d",
+            "bytes": 400176
+          },
+          {
+            "path": "templates/_seo_head.html.j2",
+            "blob": "1a0f1a7cd3a8499e9d873171171d374424f9ddd8",
+            "sha256": "eda59eeb5f7cf0fb83a1a6430ff523939ee43cd214fe2b4aebba7ca4561bbbee",
+            "bytes": 2335
+          },
+          {
+            "path": "templates/gmi_companies.html.j2",
+            "blob": "729e2a4a93246d87e9203abd84efdc16fb6f1aea",
+            "sha256": "7e64ba21d21cbe232d8f873feb52a9e804e4e4b6e015350bf8d8d8d04d809648",
+            "bytes": 6297
+          },
+          {
+            "path": "templates/gmi_issuer.html.j2",
+            "blob": "35b06fd42b3ef485564b504fcacecacb89383c49",
+            "sha256": "79397fc32d29c6101b19f0e2c6638e19d1708bd5497be74b44dbd0764d28c375",
+            "bytes": 3124
+          },
+          {
+            "path": "templates/data_base.js",
+            "blob": "9e7cc392f0bad0e269d26903432faa39d94a1b62",
+            "sha256": "2aaceaf98a0f534aa342bdc6e64c831a2261a04fafebab4becf50f2d7c82620a",
+            "bytes": 2367
+          },
+          {
+            "path": "templates/gmi_coverage.html.j2",
+            "blob": "2cb07355946474b2310d1dcbaa0cca112ff450c5",
+            "sha256": "76e35d0b49d7a7ded0b6eadebd5b1f69dccf056d50b88884eae670534b689c43",
+            "bytes": 8555
+          },
+          {
+            "path": "templates/_gmi_product_macros.html.j2",
+            "blob": "3e82a587bb0ad17f536d0513d85a1c0a66304999",
+            "sha256": "3315bd43243d52975eee75f42320528c5be69e40581c1b9e284e16e2b222b157",
+            "bytes": 7539
+          },
+          {
+            "path": "templates/_gmi_head.html.j2",
+            "blob": "5fe310cbe1a4a988f60f8b400e47a2de82ff06ef",
+            "sha256": "c0ad57713ab06c77beb85c70a898b2530d480caa24fc32da4c3b6a731c331589",
+            "bytes": 947
+          },
+          {
+            "path": "templates/gmi_index.html.j2",
+            "blob": "4556d16e03e06375a314c7278c4936dea36fd0e9",
+            "sha256": "631c49579cf7f04d8aeb3bfafeb620824dd57ccde6de1a5c562747ba520c43d5",
+            "bytes": 3733
+          },
+          {
+            "path": "engine/theme_graph/store.py",
+            "blob": "853bc3bb557aaf32251de0eb053bcff55604e68c",
+            "sha256": "7e9488741f4fe58343fd7f9255a4d694a3bda1cb081a35239ecda277d8ee8221",
+            "bytes": 25211
+          },
+          {
+            "path": "engine/theme_graph/identity_resolution.py",
+            "blob": "e3510e69645a96872e7080efe028633ff6836324",
+            "sha256": "5672ccebaac97633482efe73a2ed8d0d87d579ef8f1d5f4ebcaf2840482814c7",
+            "bytes": 40467
+          },
+          {
+            "path": "engine/theme_graph/change_report.py",
+            "blob": "354a48be5a56416b941fecb9942401a7f0fb7f1c",
+            "sha256": "50620da7b694bb1c929b3d2dd93a26fc1e40dc7253c4f3aa1b23b307ab905bed",
+            "bytes": 10059
+          },
+          {
+            "path": "engine/theme_graph/membership_evidence.py",
+            "blob": "3785874c443ffcd4cde2db31b1f11cafc184d7d5",
+            "sha256": "47c28abc14a27e5e3550885a415527a7da466204b54ae620e540230cbf3b8c89",
+            "bytes": 80400
+          },
+          {
+            "path": "engine/theme_graph/rights.py",
+            "blob": "d801f2e231e8a0dbf05d30e96fd0024ae70bd63b",
+            "sha256": "0a18ac0c2f5b40048352625f608b208755c2500b1943df30b850d51092b44c15",
+            "bytes": 16362
+          },
+          {
+            "path": "engine/theme_graph/probation.py",
+            "blob": "eac18b9804411c10ee8cede2d5d6f9aae2a84f1f",
+            "sha256": "02cfbb4cf0d38923aa9f06d3c0a4e4699591137bd202e268dab2cda22807b6a6",
+            "bytes": 58797
+          },
+          {
+            "path": "engine/theme_graph/identity.py",
+            "blob": "c27fb161bf401ca05387c4f07ac8e0220b801b2a",
+            "sha256": "550ae9eb7975062f129340e47b6d70f26bd747ef59a546958768478090f6548f",
+            "bytes": 10722
+          },
+          {
+            "path": "lib/dataos/temporal.py",
+            "blob": "094b149a8b9158f19cb99c4005568c12db96ed41",
+            "sha256": "4415404186f0b0d2870f42d9e4a0b95be87937863adf30cf015ed34e8bf92b67",
+            "bytes": 12847
+          },
+          {
+            "path": "lib/dataos/registry.py",
+            "blob": "65b0d69036da97760f20241468f2549b21d9c686",
+            "sha256": "0d575b03848c59e98bdd320243f896b41b201047d0c0c23559467b99185fb404",
+            "bytes": 41942
+          },
+          {
+            "path": "lib/dataos/__init__.py",
+            "blob": "1ddadafd88a59dfc90a7d68c3ae0897da1aae661",
+            "sha256": "86afe285932523c2ee7a1cb25ed0a57b3e7010fbd661aa27ea622530cb82fa30",
+            "bytes": 11768
+          },
+          {
+            "path": "lib/dataos/nulls.py",
+            "blob": "8e7f09ac172f326bab1678ac626fa1d5dc5aa0ab",
+            "sha256": "2556e7d0b2ac609306e512a61071a024b7b0b7eb0ec4ef3efaf22ce9f4387d49",
+            "bytes": 7737
+          },
+          {
+            "path": "lib/dataos/quality.py",
+            "blob": "967b943443d9507c5c0078f62848c38c3d2af48a",
+            "sha256": "a462b3264a5ec05467331c0a224bfd37c26e66012c376ed28922e4e45fa5f877",
+            "bytes": 36845
+          },
+          {
+            "path": "lib/dataos/identity.py",
+            "blob": "fb99fd182ac506a158c63ab434f09374cdbbd4f8",
+            "sha256": "47914bca76cf80101c25fcbd7c29455dd99fbc697373e5183fca505376f6e507",
+            "bytes": 111096
+          },
+          {
+            "path": "lib/dataos/price.py",
+            "blob": "be127fa853a6aafbf0bcb33b58783316ac972faa",
+            "sha256": "40aad993988e03f3c9ff4c2a221cdaeecc3569054d4a93fc0565657fce109e15",
+            "bytes": 10509
+          },
+          {
+            "path": "scripts/gmi_explorer/present.py",
+            "blob": "c5ae61d80a484c07d583831577db52881843061b",
+            "sha256": "3c8b76894628c1a09234c059a9fccf31d52adc47eee03d6e16f580a07c452257",
+            "bytes": 3841
+          },
+          {
+            "path": "scripts/gmi_explorer/model.py",
+            "blob": "2614997dd87bf7d7e2d0b61b283c6b364801e1b1",
+            "sha256": "19a760f597f7a7d99b72c2c72073757ff3a94eac123af30c4a6d370d78952dfa",
+            "bytes": 29457
+          }
+        ],
+        "model_sha256": "e644fa48a2bb6e6affe8d1fda74556d9db5f82acadffdad839e1efe8f095359f",
+        "source_head": "e0d7550087c564529270c12049ae62782d5b0101",
+        "expected_outputs": {
+          "gmi-companies.html": "fda702382d62068f8f39874bcd07bbb915ddacee6a3d4f734b337b58f3e47d3c",
+          "gmi-coverage.html": "893408143f6c0cb1db08084ad9c7c57b56386421f3a3958f1879a87f9035b745",
+          "gmi-index.html": "3e6e6f4846598bc6240f3aa69c5523a5500e7f79f7838e655ea7ecd7800536d4",
+          "gmi-issuer-mu.html": "22cc39aca77961584fad494ab0afa788b287636f7e3c5cfaecba7dbda2172bdd",
+          "gmi-relationships.html": "86243e69c432370eb83600a45cda897e29a1a63697f55e3a72ccffcf9468c377",
+          "gmi-states.html": "3b3c22bd3c57dc34586ac5b9d0800cab9d6c3259f56c9cdc5c2021117a65187e",
+          "gmi.css": "3bbf6c4e0a53a688f8fc1f0274213c3c5faaf43af62ed519d2c3ef5c2a571ce0",
+          "gmi.html": "1db2af5f7c12a1e2e91a30dad2a12f6309efaf0261ca3289db15ea700a3da1f8",
+          "gmi.js": "5c471afbcf3630347ec87b805676236d82e6f05c14af21a246ab4c188bbd4e68"
+        }
+      },
+      "cases": [
+        {
+          "name": "baseline-missing-inline-action",
+          "result": "FAIL",
+          "error": "Traceback (most recent call last):\n  File \"/Volumes/Mastermind/agent-workspaces/verify/gmi-payload-recovery-20261109-bt0yvuue/verify_payload_recovery_component.py\", line 95, in <module>\n    try:action();result={'name':name,'result':'PASS'}\n        ~~~~~~^^\n  File \"/Volumes/Mastermind/agent-workspaces/verify/gmi-payload-recovery-20261109-bt0yvuue/verify_payload_recovery_component.py\", line 83, in <lambda>\n    actions=[('baseline-missing-inline-action',lambda:payload_failure_recovery(390,'en')),\n                                                      ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^\n  File \"/Volumes/Mastermind/agent-workspaces/verify/gmi-payload-recovery-20261109-bt0yvuue/verify_product_browser.py\", line 2985, in payload_failure_recovery\n    expect(notice).to_have_text('Interactive research could not load. The starting topic is shown below.' if language=='en' else '交互研究未能加载。下方显示起始主题。')\n    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/sync_api/_generated.py\", line 22839, in to_have_text\n    self._sync(\n    ~~~~~~~~~~^\n        self._impl_obj.to_have_text(\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    ...<4 lines>...\n        )\n        ^\n    )\n    ^\n  File \"/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_sync_base.py\", line 115, in _sync\n    return task.result()\n           ~~~~~~~~~~~^^\nAssertionError: Locator expected to have text 'Interactive research could not load. The starting topic is shown below.'\nActual value: Interactive research could not load. The answer below and the full index remain available. \nCall log:\n  - Expect \"to_have_text\" with timeout 5000ms\n  - waiting for locator(\"[data-topic-notice]\")\n    14 × locator resolved to <p role=\"status\" data-topic-notice=\"\">Interactive research could not load. The answer b…</p>\n       - unexpected value \"Interactive research could not load. The answer below and the full index remain available.\"\n\nAria snapshot:\n- status: Interactive research could not load. The answer below and the full index remain available.\n",
+          "contexts": 1
+        },
+        {
+          "name": "baseline-stale-failure-context",
+          "result": "FAIL",
+          "error": "Traceback (most recent call last):\n  File \"/Volumes/Mastermind/agent-workspaces/verify/gmi-payload-recovery-20261109-bt0yvuue/verify_payload_recovery_component.py\", line 95, in <module>\n    try:action();result={'name':name,'result':'PASS'}\n        ~~~~~~^^\n  File \"/Volumes/Mastermind/agent-workspaces/verify/gmi-payload-recovery-20261109-bt0yvuue/verify_payload_recovery_component.py\", line 84, in <lambda>\n    ('baseline-stale-failure-context',lambda:payload_failure_journey('en'))]\n                                             ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^\n  File \"/Volumes/Mastermind/agent-workspaces/verify/gmi-payload-recovery-20261109-bt0yvuue/verify_product_browser.py\", line 3049, in payload_failure_journey\n    context_is(gs,updated)\n    ~~~~~~~~~~^^^^^^^^^^^^\n  File \"/Volumes/Mastermind/agent-workspaces/verify/gmi-payload-recovery-20261109-bt0yvuue/verify_product_browser.py\", line 3021, in context_is\n    p.wait_for_function(\"\"\"({selector,values})=>{\n    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^\n      const a=document.querySelector(selector);if(!a)return false;\n      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    ...<4 lines>...\n      return u.pathname.endsWith('/gmi.html')&&Object.keys(v).length===Object.keys(values).length&&Object.keys(values).every(k=>v[k]===values[k]);\n      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    }\"\"\",arg={'selector':selector,'values':values},timeout=2500)\n    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/sync_api/_generated.py\", line 12761, in wait_for_function\n    self._sync(\n    ~~~~~~~~~~^\n        self._impl_obj.wait_for_function(\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    ...<4 lines>...\n        )\n        ^\n    )\n    ^\nplaywright._impl._errors.TimeoutError: Page.wait_for_function: Timeout 2500ms exceeded.\n",
+          "contexts": 1
+        }
+      ],
+      "contexts": 2,
+      "screenshots": [
+        "payload-failure-390-en-light.png"
+      ],
+      "page_errors": [],
+      "browser": "157.0.8103.39",
+      "expected_cases": 2,
+      "payload_failure_observations": [
+        {
+          "width": 390,
+          "language": "en",
+          "theme": "light",
+          "fault": "malformed",
+          "requested": "theme:aerospace_components_aftermarket",
+          "shown": "theme:hbm_packaging",
+          "notice": "Interactive research could not load. The answer below and the full index remain available.",
+          "recovery_links": 0,
+          "ready": false
+        }
+      ],
+      "payload_failure_journeys": [
+        {
+          "language": "en",
+          "initial_return": {
+            "theme": "theme:aerospace_components_aftermarket",
+            "q": "remember this",
+            "scope": "core",
+            "evidence": "1",
+            "lens": "coverage"
+          },
+          "updated_return": {
+            "theme": "theme:aerospace_components_aftermarket",
+            "q": "updated query",
+            "lens": "coverage"
+          },
+          "global_href_after_hash": "http://127.0.0.1:58304/case-2/gmi-index.html#gmi_return=gmi.html%23theme%3Dtheme%253Aaerospace_components_aftermarket%26scope%3Dcore%26evidence%3D1%26lens%3Dcoverage%26q%3Dremember%2Bthis"
+        }
+      ],
+      "complete": true,
+      "pass": false
+    },
+    "candidate_browser": {
+      "generated_at": "2026-11-09T08:45:52.293244+00:00",
+      "baseline": false,
+      "scope": "Failed GMI topic payload recovery on actual generated-main fixtures.\n\nThe exact public payload is fault-injected after serving. Production JS, shared\ntheme/GMI CSS and seven generated main sections are retained. External network\nis blocked; no shared-shell/font runtime, account, AT speech or release claim.",
+      "script_sha256": "74db8222c79911a06add34d076e69d7e838aa67a21740522d8c31b60e4f58896",
+      "gmi_css_sha256": "3bbf6c4e0a53a688f8fc1f0274213c3c5faaf43af62ed519d2c3ef5c2a571ce0",
+      "verifier_sha256": "e528935102d7c2e87efd954d610e6778f115a7b5f7f093c896a27eaaceb3469f",
+      "inputs": {
+        "source_root": "/Volumes/Mastermind/agent-workspaces/verify/gmi-coverage-clarity-20261109-cyjureh9",
+        "inputs": [
+          {
+            "path": "config.yml",
+            "blob": "5be75249c98033d7ee0fbe55928713b1f50af627",
+            "sha256": "701229b33bbd6260c561023e2c2611a8fca24bc2c97e784cf97d55aa0357b402",
+            "bytes": 496073
+          },
+          {
+            "path": "scripts/build_gmi_explorer.py",
+            "blob": "900253d42a7b1d43ad41aa493e8032444c4570de",
+            "sha256": "7a2fd1287f20d1e5b166afa34587ad1da0cfad0191e2e8bd1fdb8ac232c77618",
+            "bytes": 15159
+          },
+          {
+            "path": "lib/shared_shell.py",
+            "blob": "cffbeba3f8fdcf7a9413d9428aec0154d97d9614",
+            "sha256": "eb1f06843b556968f15a0478d756e8312a3b6f4f4c8cb3daf047a6c438f79c1c",
+            "bytes": 5407
+          },
+          {
+            "path": "lib/config.py",
+            "blob": "b6fc888269876242597da354aaa726c20ed95802",
+            "sha256": "fa22ec934ec5294072b6bb4bf081d787f3f8ad5da4702ce3f4818b1674dbd53f",
+            "bytes": 1131
+          },
+          {
+            "path": "lib/pages.py",
+            "blob": "db175c463a31828263b57a3287afba661439a765",
+            "sha256": "9ec5d5ceeff55e5e269c5de26d1f54b9d72db1a755940f7029f47d98820014ba",
+            "bytes": 38933
+          },
+          {
+            "path": "lib/site_assets.py",
+            "blob": "03d7ce6137a30b990435cb1fee2090e61c2e95e3",
+            "sha256": "61ed68657b38b006962c653553bcd1d2e25f4ce918ce98ab30f99e7cdc09b275",
+            "bytes": 7180
+          },
+          {
+            "path": "templates/_site_nav.html.j2",
+            "blob": "d5c449e9ec498c49007c2de0ced1757a7f36b12d",
+            "sha256": "2a1f60a27bfdb2c86ab6aa60e6efd1b40515f94d1afc6d38692047f1de3d0376",
+            "bytes": 3684
+          },
+          {
+            "path": "templates/gmi_relationships.html.j2",
+            "blob": "e30d0df9e359e529c707468cf952e0aa84a36987",
+            "sha256": "7659e81e2197def5302b290e89d876befe375acd0a0e58e86edc32ed9672877d",
+            "bytes": 2591
+          },
+          {
+            "path": "templates/_navlinks.html.j2",
+            "blob": "70fee6eabeb2cfe6d92590da42aa8c3e3733e837",
+            "sha256": "da495f935455e24d117bc556d82c634b0229c9604c8fb2ad711f9542a3f29a83",
+            "bytes": 54533
+          },
+          {
+            "path": "templates/_gmi_theme_data.html.j2",
+            "blob": "0520256ae0a2f61a33702070686be769d8640124",
+            "sha256": "ce5d5e782ad08972600619b52a509f37a4acd9b0a40f2a9f2e0ad2859254ff33",
+            "bytes": 2153
+          },
+          {
+            "path": "templates/theme.css",
+            "blob": "619436f58d37a222d1db7021ba9d52bb3a05a7fa",
+            "sha256": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757",
+            "bytes": 227583
+          },
+          {
+            "path": "templates/gmi.css",
+            "blob": "4302bf7edbbb66d9356b75723785ef146e12adb5",
+            "sha256": "3bbf6c4e0a53a688f8fc1f0274213c3c5faaf43af62ed519d2c3ef5c2a571ce0",
+            "bytes": 75647
+          },
+          {
+            "path": "templates/_gmi_product_header.html.j2",
+            "blob": "babc946fd26ea9a14d0deea4901e46491b9a444d",
+            "sha256": "c60bf376a5b14d76d447f9f0b588cf660b8968b93edf497bbf3bc35fd6d95d9e",
+            "bytes": 2338
+          },
+          {
+            "path": "templates/_interfonts.html.j2",
+            "blob": "f6e84eb856ce66f732aacafe883d5c26c5d1e27e",
+            "sha256": "40ba62a3d1efa51de70993bedd5fb7ec96fcc1190f58515d765b267b2afd32cd",
+            "bytes": 1587
+          },
+          {
+            "path": "templates/_gmi_taxonomy.html.j2",
+            "blob": "99ade053147ecb6f42a9b1119af4f522df5c05b7",
+            "sha256": "32b6aba86b7375c13ada8e25fa31689923b696c12358f7a28f1ab17e9e8a70ce",
+            "bytes": 12905
+          },
+          {
+            "path": "templates/_gmi_base.html.j2",
+            "blob": "1d76c899cb2ce05b66e7d37d19b53e212e814b4d",
+            "sha256": "134ae16113ea8e7a4e35b34ca3dfb3ac565c38fa6fb9f5ad24d88b784e30ffa2",
+            "bytes": 2852
+          },
+          {
+            "path": "templates/_gmi_macros.html.j2",
+            "blob": "2b90130394a11df2e4b10fa1ab65041727d18836",
+            "sha256": "49ae1f96453dd481007cac41a4a8951be8090836e93ff9fa94507166d744749e",
+            "bytes": 7112
+          },
+          {
+            "path": "templates/shared_shell_bridge.js",
+            "blob": "00ee9b9fa4d1fba67359d3d6b95c7937aed150b7",
+            "sha256": "071ef7202d8886228342c00f0e7a3026eaba1d0103c4dcf1e6d204a7da77451b",
+            "bytes": 51296
+          },
+          {
+            "path": "templates/gmi.js",
+            "blob": "ef00b9aca6d4e343a8dea7bbd8010020fec671f1",
+            "sha256": "5c471afbcf3630347ec87b805676236d82e6f05c14af21a246ab4c188bbd4e68",
+            "bytes": 53417
+          },
+          {
+            "path": "templates/_all_tools_menu.html.j2",
+            "blob": "3259b4e5c6305fd2f9a33bea65141efb0528680a",
+            "sha256": "d4427b10f930677a285269f20070f1140f451a86228aeb185b19f5820ab1bf17",
+            "bytes": 3436
+          },
+          {
+            "path": "templates/shared_shell.css",
+            "blob": "88a0fd9e836fbffac36722dac04189c6eb24af9b",
+            "sha256": "b1918ccaa2294f18c0fd5bca123e38267251c7e9d9a7c4fce1f296ef9e4c3c1e",
+            "bytes": 467
+          },
+          {
+            "path": "templates/gmi_map.html.j2",
+            "blob": "b4f2a69ce7588d1b51296329d54d38cbcbeab4a5",
+            "sha256": "aca5fdc0b4e5b796d0a0e3794cb09fd740b9a7277a5ad1f81c07b5a181df39da",
+            "bytes": 5998
+          },
+          {
+            "path": "templates/gmi_states.html.j2",
+            "blob": "2e2f66e8f9588403a58434ae6fa80bfa181845bf",
+            "sha256": "7f399348ed2b5a9b750c90b4268c7580329ec692c6f126b6231b6c650aad01d4",
+            "bytes": 3413
+          },
+          {
+            "path": "templates/theme.js",
+            "blob": "21a1fb1627ac34badc6078cff486f98486e9b773",
+            "sha256": "918e7acece23ab6df8211305a938e569f0de4184c0fd9c0b2f1e56c50e3cac4d",
+            "bytes": 400176
+          },
+          {
+            "path": "templates/_seo_head.html.j2",
+            "blob": "1a0f1a7cd3a8499e9d873171171d374424f9ddd8",
+            "sha256": "eda59eeb5f7cf0fb83a1a6430ff523939ee43cd214fe2b4aebba7ca4561bbbee",
+            "bytes": 2335
+          },
+          {
+            "path": "templates/gmi_companies.html.j2",
+            "blob": "729e2a4a93246d87e9203abd84efdc16fb6f1aea",
+            "sha256": "7e64ba21d21cbe232d8f873feb52a9e804e4e4b6e015350bf8d8d8d04d809648",
+            "bytes": 6297
+          },
+          {
+            "path": "templates/gmi_issuer.html.j2",
+            "blob": "35b06fd42b3ef485564b504fcacecacb89383c49",
+            "sha256": "79397fc32d29c6101b19f0e2c6638e19d1708bd5497be74b44dbd0764d28c375",
+            "bytes": 3124
+          },
+          {
+            "path": "templates/data_base.js",
+            "blob": "9e7cc392f0bad0e269d26903432faa39d94a1b62",
+            "sha256": "2aaceaf98a0f534aa342bdc6e64c831a2261a04fafebab4becf50f2d7c82620a",
+            "bytes": 2367
+          },
+          {
+            "path": "templates/gmi_coverage.html.j2",
+            "blob": "2cb07355946474b2310d1dcbaa0cca112ff450c5",
+            "sha256": "76e35d0b49d7a7ded0b6eadebd5b1f69dccf056d50b88884eae670534b689c43",
+            "bytes": 8555
+          },
+          {
+            "path": "templates/_gmi_product_macros.html.j2",
+            "blob": "3e82a587bb0ad17f536d0513d85a1c0a66304999",
+            "sha256": "3315bd43243d52975eee75f42320528c5be69e40581c1b9e284e16e2b222b157",
+            "bytes": 7539
+          },
+          {
+            "path": "templates/_gmi_head.html.j2",
+            "blob": "5fe310cbe1a4a988f60f8b400e47a2de82ff06ef",
+            "sha256": "c0ad57713ab06c77beb85c70a898b2530d480caa24fc32da4c3b6a731c331589",
+            "bytes": 947
+          },
+          {
+            "path": "templates/gmi_index.html.j2",
+            "blob": "4556d16e03e06375a314c7278c4936dea36fd0e9",
+            "sha256": "631c49579cf7f04d8aeb3bfafeb620824dd57ccde6de1a5c562747ba520c43d5",
+            "bytes": 3733
+          },
+          {
+            "path": "engine/theme_graph/store.py",
+            "blob": "853bc3bb557aaf32251de0eb053bcff55604e68c",
+            "sha256": "7e9488741f4fe58343fd7f9255a4d694a3bda1cb081a35239ecda277d8ee8221",
+            "bytes": 25211
+          },
+          {
+            "path": "engine/theme_graph/identity_resolution.py",
+            "blob": "e3510e69645a96872e7080efe028633ff6836324",
+            "sha256": "5672ccebaac97633482efe73a2ed8d0d87d579ef8f1d5f4ebcaf2840482814c7",
+            "bytes": 40467
+          },
+          {
+            "path": "engine/theme_graph/change_report.py",
+            "blob": "354a48be5a56416b941fecb9942401a7f0fb7f1c",
+            "sha256": "50620da7b694bb1c929b3d2dd93a26fc1e40dc7253c4f3aa1b23b307ab905bed",
+            "bytes": 10059
+          },
+          {
+            "path": "engine/theme_graph/membership_evidence.py",
+            "blob": "3785874c443ffcd4cde2db31b1f11cafc184d7d5",
+            "sha256": "47c28abc14a27e5e3550885a415527a7da466204b54ae620e540230cbf3b8c89",
+            "bytes": 80400
+          },
+          {
+            "path": "engine/theme_graph/rights.py",
+            "blob": "d801f2e231e8a0dbf05d30e96fd0024ae70bd63b",
+            "sha256": "0a18ac0c2f5b40048352625f608b208755c2500b1943df30b850d51092b44c15",
+            "bytes": 16362
+          },
+          {
+            "path": "engine/theme_graph/probation.py",
+            "blob": "eac18b9804411c10ee8cede2d5d6f9aae2a84f1f",
+            "sha256": "02cfbb4cf0d38923aa9f06d3c0a4e4699591137bd202e268dab2cda22807b6a6",
+            "bytes": 58797
+          },
+          {
+            "path": "engine/theme_graph/identity.py",
+            "blob": "c27fb161bf401ca05387c4f07ac8e0220b801b2a",
+            "sha256": "550ae9eb7975062f129340e47b6d70f26bd747ef59a546958768478090f6548f",
+            "bytes": 10722
+          },
+          {
+            "path": "lib/dataos/temporal.py",
+            "blob": "094b149a8b9158f19cb99c4005568c12db96ed41",
+            "sha256": "4415404186f0b0d2870f42d9e4a0b95be87937863adf30cf015ed34e8bf92b67",
+            "bytes": 12847
+          },
+          {
+            "path": "lib/dataos/registry.py",
+            "blob": "65b0d69036da97760f20241468f2549b21d9c686",
+            "sha256": "0d575b03848c59e98bdd320243f896b41b201047d0c0c23559467b99185fb404",
+            "bytes": 41942
+          },
+          {
+            "path": "lib/dataos/__init__.py",
+            "blob": "1ddadafd88a59dfc90a7d68c3ae0897da1aae661",
+            "sha256": "86afe285932523c2ee7a1cb25ed0a57b3e7010fbd661aa27ea622530cb82fa30",
+            "bytes": 11768
+          },
+          {
+            "path": "lib/dataos/nulls.py",
+            "blob": "8e7f09ac172f326bab1678ac626fa1d5dc5aa0ab",
+            "sha256": "2556e7d0b2ac609306e512a61071a024b7b0b7eb0ec4ef3efaf22ce9f4387d49",
+            "bytes": 7737
+          },
+          {
+            "path": "lib/dataos/quality.py",
+            "blob": "967b943443d9507c5c0078f62848c38c3d2af48a",
+            "sha256": "a462b3264a5ec05467331c0a224bfd37c26e66012c376ed28922e4e45fa5f877",
+            "bytes": 36845
+          },
+          {
+            "path": "lib/dataos/identity.py",
+            "blob": "fb99fd182ac506a158c63ab434f09374cdbbd4f8",
+            "sha256": "47914bca76cf80101c25fcbd7c29455dd99fbc697373e5183fca505376f6e507",
+            "bytes": 111096
+          },
+          {
+            "path": "lib/dataos/price.py",
+            "blob": "be127fa853a6aafbf0bcb33b58783316ac972faa",
+            "sha256": "40aad993988e03f3c9ff4c2a221cdaeecc3569054d4a93fc0565657fce109e15",
+            "bytes": 10509
+          },
+          {
+            "path": "scripts/gmi_explorer/present.py",
+            "blob": "c5ae61d80a484c07d583831577db52881843061b",
+            "sha256": "3c8b76894628c1a09234c059a9fccf31d52adc47eee03d6e16f580a07c452257",
+            "bytes": 3841
+          },
+          {
+            "path": "scripts/gmi_explorer/model.py",
+            "blob": "2614997dd87bf7d7e2d0b61b283c6b364801e1b1",
+            "sha256": "19a760f597f7a7d99b72c2c72073757ff3a94eac123af30c4a6d370d78952dfa",
+            "bytes": 29457
+          }
+        ],
+        "model_sha256": "e644fa48a2bb6e6affe8d1fda74556d9db5f82acadffdad839e1efe8f095359f",
+        "source_head": "e0d7550087c564529270c12049ae62782d5b0101",
+        "expected_outputs": {
+          "gmi-companies.html": "fda702382d62068f8f39874bcd07bbb915ddacee6a3d4f734b337b58f3e47d3c",
+          "gmi-coverage.html": "893408143f6c0cb1db08084ad9c7c57b56386421f3a3958f1879a87f9035b745",
+          "gmi-index.html": "3e6e6f4846598bc6240f3aa69c5523a5500e7f79f7838e655ea7ecd7800536d4",
+          "gmi-issuer-mu.html": "22cc39aca77961584fad494ab0afa788b287636f7e3c5cfaecba7dbda2172bdd",
+          "gmi-relationships.html": "86243e69c432370eb83600a45cda897e29a1a63697f55e3a72ccffcf9468c377",
+          "gmi-states.html": "3b3c22bd3c57dc34586ac5b9d0800cab9d6c3259f56c9cdc5c2021117a65187e",
+          "gmi.css": "3bbf6c4e0a53a688f8fc1f0274213c3c5faaf43af62ed519d2c3ef5c2a571ce0",
+          "gmi.html": "1db2af5f7c12a1e2e91a30dad2a12f6309efaf0261ca3289db15ea700a3da1f8",
+          "gmi.js": "5c471afbcf3630347ec87b805676236d82e6f05c14af21a246ab4c188bbd4e68"
+        }
+      },
+      "cases": [
+        {
+          "name": "payload-recovery-1440-en",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "payload-recovery-1440-zh",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "payload-recovery-390-en",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "payload-recovery-390-zh",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "payload-recovery-320-en",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "payload-recovery-320-zh",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "payload-recovery-dark-320-en",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "payload-recovery-dark-390-zh",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "payload-schema-categories",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "payload-schema-paths",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "payload-schema-connections",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "payload-schema-source",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "payload-schema-duplicate-id",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "payload-schema-default-id",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "payload-schema-category-label",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "payload-schema-parent",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "payload-journey-en",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "payload-journey-zh",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "payload-boundaries-en",
+          "result": "PASS",
+          "contexts": 2
+        },
+        {
+          "name": "payload-boundaries-zh",
+          "result": "PASS",
+          "contexts": 2
+        }
+      ],
+      "contexts": 22,
+      "screenshots": [
+        "payload-failure-1440-en-light.png",
+        "payload-failure-1440-zh-light.png",
+        "payload-failure-390-en-light.png",
+        "payload-failure-390-zh-light.png",
+        "payload-failure-320-en-light.png",
+        "payload-failure-320-zh-light.png",
+        "payload-failure-320-en-dark.png",
+        "payload-failure-390-zh-dark.png"
+      ],
+      "page_errors": [],
+      "browser": "157.0.8103.39",
+      "expected_cases": 20,
+      "payload_failure_observations": [
+        {
+          "width": 1440,
+          "language": "en",
+          "theme": "light",
+          "fault": "malformed",
+          "requested": "theme:aerospace_components_aftermarket",
+          "shown": "theme:hbm_packaging",
+          "notice": "Interactive research could not load. The starting topic is shown below.",
+          "recovery_links": 1,
+          "ready": false,
+          "empty_related_hidden": true,
+          "coverage_and_native_disclosures_retained": true,
+          "inline_native_action": true,
+          "keyboard_reachable": true,
+          "same_anchor_and_answer": true,
+          "locale_focus_and_URL_retained": true,
+          "height": 44
+        },
+        {
+          "width": 1440,
+          "language": "zh",
+          "theme": "light",
+          "fault": "malformed",
+          "requested": "theme:aerospace_components_aftermarket",
+          "shown": "theme:hbm_packaging",
+          "notice": "交互研究未能加载。下方显示起始主题。",
+          "recovery_links": 1,
+          "ready": false,
+          "empty_related_hidden": true,
+          "coverage_and_native_disclosures_retained": true,
+          "inline_native_action": true,
+          "keyboard_reachable": true,
+          "same_anchor_and_answer": true,
+          "locale_focus_and_URL_retained": true,
+          "height": 44
+        },
+        {
+          "width": 390,
+          "language": "en",
+          "theme": "light",
+          "fault": "malformed",
+          "requested": "theme:aerospace_components_aftermarket",
+          "shown": "theme:hbm_packaging",
+          "notice": "Interactive research could not load. The starting topic is shown below.",
+          "recovery_links": 1,
+          "ready": false,
+          "empty_related_hidden": true,
+          "coverage_and_native_disclosures_retained": true,
+          "inline_native_action": true,
+          "keyboard_reachable": true,
+          "same_anchor_and_answer": true,
+          "locale_focus_and_URL_retained": true,
+          "height": 44
+        },
+        {
+          "width": 390,
+          "language": "zh",
+          "theme": "light",
+          "fault": "malformed",
+          "requested": "theme:aerospace_components_aftermarket",
+          "shown": "theme:hbm_packaging",
+          "notice": "交互研究未能加载。下方显示起始主题。",
+          "recovery_links": 1,
+          "ready": false,
+          "empty_related_hidden": true,
+          "coverage_and_native_disclosures_retained": true,
+          "inline_native_action": true,
+          "keyboard_reachable": true,
+          "same_anchor_and_answer": true,
+          "locale_focus_and_URL_retained": true,
+          "height": 44
+        },
+        {
+          "width": 320,
+          "language": "en",
+          "theme": "light",
+          "fault": "malformed",
+          "requested": "theme:aerospace_components_aftermarket",
+          "shown": "theme:hbm_packaging",
+          "notice": "Interactive research could not load. The starting topic is shown below.",
+          "recovery_links": 1,
+          "ready": false,
+          "empty_related_hidden": true,
+          "coverage_and_native_disclosures_retained": true,
+          "inline_native_action": true,
+          "keyboard_reachable": true,
+          "same_anchor_and_answer": true,
+          "locale_focus_and_URL_retained": true,
+          "height": 44
+        },
+        {
+          "width": 320,
+          "language": "zh",
+          "theme": "light",
+          "fault": "malformed",
+          "requested": "theme:aerospace_components_aftermarket",
+          "shown": "theme:hbm_packaging",
+          "notice": "交互研究未能加载。下方显示起始主题。",
+          "recovery_links": 1,
+          "ready": false,
+          "empty_related_hidden": true,
+          "coverage_and_native_disclosures_retained": true,
+          "inline_native_action": true,
+          "keyboard_reachable": true,
+          "same_anchor_and_answer": true,
+          "locale_focus_and_URL_retained": true,
+          "height": 44
+        },
+        {
+          "width": 320,
+          "language": "en",
+          "theme": "dark",
+          "fault": "malformed",
+          "requested": "theme:aerospace_components_aftermarket",
+          "shown": "theme:hbm_packaging",
+          "notice": "Interactive research could not load. The starting topic is shown below.",
+          "recovery_links": 1,
+          "ready": false,
+          "empty_related_hidden": true,
+          "coverage_and_native_disclosures_retained": true,
+          "inline_native_action": true,
+          "keyboard_reachable": true,
+          "same_anchor_and_answer": true,
+          "locale_focus_and_URL_retained": true,
+          "height": 44
+        },
+        {
+          "width": 390,
+          "language": "zh",
+          "theme": "dark",
+          "fault": "malformed",
+          "requested": "theme:aerospace_components_aftermarket",
+          "shown": "theme:hbm_packaging",
+          "notice": "交互研究未能加载。下方显示起始主题。",
+          "recovery_links": 1,
+          "ready": false,
+          "empty_related_hidden": true,
+          "coverage_and_native_disclosures_retained": true,
+          "inline_native_action": true,
+          "keyboard_reachable": true,
+          "same_anchor_and_answer": true,
+          "locale_focus_and_URL_retained": true,
+          "height": 44
+        },
+        {
+          "width": 390,
+          "language": "zh",
+          "theme": "light",
+          "fault": "categories",
+          "requested": "theme:aerospace_components_aftermarket",
+          "shown": "theme:hbm_packaging",
+          "notice": "交互研究未能加载。下方显示起始主题。",
+          "recovery_links": 1,
+          "ready": false,
+          "empty_related_hidden": true,
+          "coverage_and_native_disclosures_retained": true,
+          "inline_native_action": true,
+          "keyboard_reachable": true,
+          "same_anchor_and_answer": true,
+          "locale_focus_and_URL_retained": true,
+          "height": 44
+        },
+        {
+          "width": 320,
+          "language": "en",
+          "theme": "light",
+          "fault": "paths",
+          "requested": "theme:aerospace_components_aftermarket",
+          "shown": "theme:hbm_packaging",
+          "notice": "Interactive research could not load. The starting topic is shown below.",
+          "recovery_links": 1,
+          "ready": false,
+          "empty_related_hidden": true,
+          "coverage_and_native_disclosures_retained": true,
+          "inline_native_action": true,
+          "keyboard_reachable": true,
+          "same_anchor_and_answer": true,
+          "locale_focus_and_URL_retained": true,
+          "height": 44
+        },
+        {
+          "width": 390,
+          "language": "zh",
+          "theme": "light",
+          "fault": "connections",
+          "requested": "theme:aerospace_components_aftermarket",
+          "shown": "theme:hbm_packaging",
+          "notice": "交互研究未能加载。下方显示起始主题。",
+          "recovery_links": 1,
+          "ready": false,
+          "empty_related_hidden": true,
+          "coverage_and_native_disclosures_retained": true,
+          "inline_native_action": true,
+          "keyboard_reachable": true,
+          "same_anchor_and_answer": true,
+          "locale_focus_and_URL_retained": true,
+          "height": 44
+        },
+        {
+          "width": 320,
+          "language": "en",
+          "theme": "light",
+          "fault": "source",
+          "requested": "theme:aerospace_components_aftermarket",
+          "shown": "theme:hbm_packaging",
+          "notice": "Interactive research could not load. The starting topic is shown below.",
+          "recovery_links": 1,
+          "ready": false,
+          "empty_related_hidden": true,
+          "coverage_and_native_disclosures_retained": true,
+          "inline_native_action": true,
+          "keyboard_reachable": true,
+          "same_anchor_and_answer": true,
+          "locale_focus_and_URL_retained": true,
+          "height": 44
+        },
+        {
+          "width": 390,
+          "language": "zh",
+          "theme": "light",
+          "fault": "duplicate-id",
+          "requested": "theme:aerospace_components_aftermarket",
+          "shown": "theme:hbm_packaging",
+          "notice": "交互研究未能加载。下方显示起始主题。",
+          "recovery_links": 1,
+          "ready": false,
+          "empty_related_hidden": true,
+          "coverage_and_native_disclosures_retained": true,
+          "inline_native_action": true,
+          "keyboard_reachable": true,
+          "same_anchor_and_answer": true,
+          "locale_focus_and_URL_retained": true,
+          "height": 44
+        },
+        {
+          "width": 320,
+          "language": "en",
+          "theme": "light",
+          "fault": "default-id",
+          "requested": "theme:aerospace_components_aftermarket",
+          "shown": "theme:hbm_packaging",
+          "notice": "Interactive research could not load. The starting topic is shown below.",
+          "recovery_links": 1,
+          "ready": false,
+          "empty_related_hidden": true,
+          "coverage_and_native_disclosures_retained": true,
+          "inline_native_action": true,
+          "keyboard_reachable": true,
+          "same_anchor_and_answer": true,
+          "locale_focus_and_URL_retained": true,
+          "height": 44
+        },
+        {
+          "width": 390,
+          "language": "zh",
+          "theme": "light",
+          "fault": "category-label",
+          "requested": "theme:aerospace_components_aftermarket",
+          "shown": "theme:hbm_packaging",
+          "notice": "交互研究未能加载。下方显示起始主题。",
+          "recovery_links": 1,
+          "ready": false,
+          "empty_related_hidden": true,
+          "coverage_and_native_disclosures_retained": true,
+          "inline_native_action": true,
+          "keyboard_reachable": true,
+          "same_anchor_and_answer": true,
+          "locale_focus_and_URL_retained": true,
+          "height": 44
+        },
+        {
+          "width": 320,
+          "language": "en",
+          "theme": "light",
+          "fault": "parent",
+          "requested": "theme:aerospace_components_aftermarket",
+          "shown": "theme:hbm_packaging",
+          "notice": "Interactive research could not load. The starting topic is shown below.",
+          "recovery_links": 1,
+          "ready": false,
+          "empty_related_hidden": true,
+          "coverage_and_native_disclosures_retained": true,
+          "inline_native_action": true,
+          "keyboard_reachable": true,
+          "same_anchor_and_answer": true,
+          "locale_focus_and_URL_retained": true,
+          "height": 44
+        }
+      ],
+      "payload_failure_journeys": [
+        {
+          "language": "en",
+          "initial_return": {
+            "theme": "theme:aerospace_components_aftermarket",
+            "q": "remember this",
+            "scope": "core",
+            "evidence": "1",
+            "lens": "coverage"
+          },
+          "updated_return": {
+            "theme": "theme:aerospace_components_aftermarket",
+            "q": "updated query",
+            "lens": "coverage"
+          },
+          "global_href_after_hash": "http://127.0.0.1:64444/case-17/gmi-index.html#gmi_return=gmi.html%23theme%3Dtheme%253Aaerospace_components_aftermarket%26lens%3Dcoverage%26q%3Dupdated%2Bquery",
+          "history_back_forward": true,
+          "lens_replaceState": true,
+          "locale_focus_retained": true,
+          "old_fields_removed": true,
+          "overlong_context_rejected": true,
+          "same_anchor_and_answer": true,
+          "native_href_and_Enter_roundtrip": true,
+          "product_history_writes_before_navigation": [
+            "replaceState"
+          ]
+        },
+        {
+          "language": "zh",
+          "initial_return": {
+            "theme": "theme:aerospace_components_aftermarket",
+            "q": "remember this",
+            "scope": "core",
+            "evidence": "1",
+            "lens": "coverage"
+          },
+          "updated_return": {
+            "theme": "theme:aerospace_components_aftermarket",
+            "q": "updated query",
+            "lens": "coverage"
+          },
+          "global_href_after_hash": "http://127.0.0.1:64444/case-18/gmi-index.html#gmi_return=gmi.html%23theme%3Dtheme%253Aaerospace_components_aftermarket%26lens%3Dcoverage%26q%3Dupdated%2Bquery",
+          "history_back_forward": true,
+          "lens_replaceState": true,
+          "locale_focus_retained": true,
+          "old_fields_removed": true,
+          "overlong_context_rejected": true,
+          "same_anchor_and_answer": true,
+          "native_href_and_Enter_roundtrip": true,
+          "product_history_writes_before_navigation": [
+            "replaceState"
+          ]
+        }
+      ],
+      "payload_failure_boundaries": [
+        {
+          "language": "en",
+          "normal_clear_filter_owner": true,
+          "missing_topic_distinct": true,
+          "noJS_native_index": true,
+          "new_failure_action_hidden_outside_payload_failure": true
+        },
+        {
+          "language": "zh",
+          "normal_clear_filter_owner": true,
+          "missing_topic_distinct": true,
+          "noJS_native_index": true,
+          "new_failure_action_hidden_outside_payload_failure": true
+        }
+      ],
+      "complete": true,
+      "pass": true
+    },
+    "initial_candidate_browser": {
+      "generated_at": "2026-11-09T08:35:16.263555+00:00",
+      "baseline": false,
+      "scope": "Failed GMI topic payload recovery on actual generated-main fixtures.\n\nThe exact public payload is fault-injected after serving. Production JS, shared\ntheme/GMI CSS and seven generated main sections are retained. External network\nis blocked; no shared-shell/font runtime, account, AT speech or release claim.",
+      "script_sha256": "fb42b942dd6483136d718470c4576b2c2a53c0629e94c95c750ad02f026ba7ab",
+      "gmi_css_sha256": "3bbf6c4e0a53a688f8fc1f0274213c3c5faaf43af62ed519d2c3ef5c2a571ce0",
+      "verifier_sha256": "72a61508d43cb8089b89ce015d3d5e6a3ce9d231cffb4fc2da9e2c31e8c759f1",
+      "inputs": {
+        "source_root": "/Volumes/Mastermind/agent-workspaces/verify/gmi-coverage-clarity-20261109-cyjureh9",
+        "inputs": [
+          {
+            "path": "config.yml",
+            "blob": "5be75249c98033d7ee0fbe55928713b1f50af627",
+            "sha256": "701229b33bbd6260c561023e2c2611a8fca24bc2c97e784cf97d55aa0357b402",
+            "bytes": 496073
+          },
+          {
+            "path": "scripts/build_gmi_explorer.py",
+            "blob": "900253d42a7b1d43ad41aa493e8032444c4570de",
+            "sha256": "7a2fd1287f20d1e5b166afa34587ad1da0cfad0191e2e8bd1fdb8ac232c77618",
+            "bytes": 15159
+          },
+          {
+            "path": "lib/shared_shell.py",
+            "blob": "cffbeba3f8fdcf7a9413d9428aec0154d97d9614",
+            "sha256": "eb1f06843b556968f15a0478d756e8312a3b6f4f4c8cb3daf047a6c438f79c1c",
+            "bytes": 5407
+          },
+          {
+            "path": "lib/config.py",
+            "blob": "b6fc888269876242597da354aaa726c20ed95802",
+            "sha256": "fa22ec934ec5294072b6bb4bf081d787f3f8ad5da4702ce3f4818b1674dbd53f",
+            "bytes": 1131
+          },
+          {
+            "path": "lib/pages.py",
+            "blob": "db175c463a31828263b57a3287afba661439a765",
+            "sha256": "9ec5d5ceeff55e5e269c5de26d1f54b9d72db1a755940f7029f47d98820014ba",
+            "bytes": 38933
+          },
+          {
+            "path": "lib/site_assets.py",
+            "blob": "03d7ce6137a30b990435cb1fee2090e61c2e95e3",
+            "sha256": "61ed68657b38b006962c653553bcd1d2e25f4ce918ce98ab30f99e7cdc09b275",
+            "bytes": 7180
+          },
+          {
+            "path": "templates/_site_nav.html.j2",
+            "blob": "d5c449e9ec498c49007c2de0ced1757a7f36b12d",
+            "sha256": "2a1f60a27bfdb2c86ab6aa60e6efd1b40515f94d1afc6d38692047f1de3d0376",
+            "bytes": 3684
+          },
+          {
+            "path": "templates/gmi_relationships.html.j2",
+            "blob": "e30d0df9e359e529c707468cf952e0aa84a36987",
+            "sha256": "7659e81e2197def5302b290e89d876befe375acd0a0e58e86edc32ed9672877d",
+            "bytes": 2591
+          },
+          {
+            "path": "templates/_navlinks.html.j2",
+            "blob": "70fee6eabeb2cfe6d92590da42aa8c3e3733e837",
+            "sha256": "da495f935455e24d117bc556d82c634b0229c9604c8fb2ad711f9542a3f29a83",
+            "bytes": 54533
+          },
+          {
+            "path": "templates/_gmi_theme_data.html.j2",
+            "blob": "0520256ae0a2f61a33702070686be769d8640124",
+            "sha256": "ce5d5e782ad08972600619b52a509f37a4acd9b0a40f2a9f2e0ad2859254ff33",
+            "bytes": 2153
+          },
+          {
+            "path": "templates/theme.css",
+            "blob": "619436f58d37a222d1db7021ba9d52bb3a05a7fa",
+            "sha256": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757",
+            "bytes": 227583
+          },
+          {
+            "path": "templates/gmi.css",
+            "blob": "4302bf7edbbb66d9356b75723785ef146e12adb5",
+            "sha256": "3bbf6c4e0a53a688f8fc1f0274213c3c5faaf43af62ed519d2c3ef5c2a571ce0",
+            "bytes": 75647
+          },
+          {
+            "path": "templates/_gmi_product_header.html.j2",
+            "blob": "babc946fd26ea9a14d0deea4901e46491b9a444d",
+            "sha256": "c60bf376a5b14d76d447f9f0b588cf660b8968b93edf497bbf3bc35fd6d95d9e",
+            "bytes": 2338
+          },
+          {
+            "path": "templates/_interfonts.html.j2",
+            "blob": "f6e84eb856ce66f732aacafe883d5c26c5d1e27e",
+            "sha256": "40ba62a3d1efa51de70993bedd5fb7ec96fcc1190f58515d765b267b2afd32cd",
+            "bytes": 1587
+          },
+          {
+            "path": "templates/_gmi_taxonomy.html.j2",
+            "blob": "99ade053147ecb6f42a9b1119af4f522df5c05b7",
+            "sha256": "32b6aba86b7375c13ada8e25fa31689923b696c12358f7a28f1ab17e9e8a70ce",
+            "bytes": 12905
+          },
+          {
+            "path": "templates/_gmi_base.html.j2",
+            "blob": "1d76c899cb2ce05b66e7d37d19b53e212e814b4d",
+            "sha256": "134ae16113ea8e7a4e35b34ca3dfb3ac565c38fa6fb9f5ad24d88b784e30ffa2",
+            "bytes": 2852
+          },
+          {
+            "path": "templates/_gmi_macros.html.j2",
+            "blob": "2b90130394a11df2e4b10fa1ab65041727d18836",
+            "sha256": "49ae1f96453dd481007cac41a4a8951be8090836e93ff9fa94507166d744749e",
+            "bytes": 7112
+          },
+          {
+            "path": "templates/shared_shell_bridge.js",
+            "blob": "00ee9b9fa4d1fba67359d3d6b95c7937aed150b7",
+            "sha256": "071ef7202d8886228342c00f0e7a3026eaba1d0103c4dcf1e6d204a7da77451b",
+            "bytes": 51296
+          },
+          {
+            "path": "templates/gmi.js",
+            "blob": "ef00b9aca6d4e343a8dea7bbd8010020fec671f1",
+            "sha256": "5c471afbcf3630347ec87b805676236d82e6f05c14af21a246ab4c188bbd4e68",
+            "bytes": 53417
+          },
+          {
+            "path": "templates/_all_tools_menu.html.j2",
+            "blob": "3259b4e5c6305fd2f9a33bea65141efb0528680a",
+            "sha256": "d4427b10f930677a285269f20070f1140f451a86228aeb185b19f5820ab1bf17",
+            "bytes": 3436
+          },
+          {
+            "path": "templates/shared_shell.css",
+            "blob": "88a0fd9e836fbffac36722dac04189c6eb24af9b",
+            "sha256": "b1918ccaa2294f18c0fd5bca123e38267251c7e9d9a7c4fce1f296ef9e4c3c1e",
+            "bytes": 467
+          },
+          {
+            "path": "templates/gmi_map.html.j2",
+            "blob": "b4f2a69ce7588d1b51296329d54d38cbcbeab4a5",
+            "sha256": "aca5fdc0b4e5b796d0a0e3794cb09fd740b9a7277a5ad1f81c07b5a181df39da",
+            "bytes": 5998
+          },
+          {
+            "path": "templates/gmi_states.html.j2",
+            "blob": "2e2f66e8f9588403a58434ae6fa80bfa181845bf",
+            "sha256": "7f399348ed2b5a9b750c90b4268c7580329ec692c6f126b6231b6c650aad01d4",
+            "bytes": 3413
+          },
+          {
+            "path": "templates/theme.js",
+            "blob": "21a1fb1627ac34badc6078cff486f98486e9b773",
+            "sha256": "918e7acece23ab6df8211305a938e569f0de4184c0fd9c0b2f1e56c50e3cac4d",
+            "bytes": 400176
+          },
+          {
+            "path": "templates/_seo_head.html.j2",
+            "blob": "1a0f1a7cd3a8499e9d873171171d374424f9ddd8",
+            "sha256": "eda59eeb5f7cf0fb83a1a6430ff523939ee43cd214fe2b4aebba7ca4561bbbee",
+            "bytes": 2335
+          },
+          {
+            "path": "templates/gmi_companies.html.j2",
+            "blob": "729e2a4a93246d87e9203abd84efdc16fb6f1aea",
+            "sha256": "7e64ba21d21cbe232d8f873feb52a9e804e4e4b6e015350bf8d8d8d04d809648",
+            "bytes": 6297
+          },
+          {
+            "path": "templates/gmi_issuer.html.j2",
+            "blob": "35b06fd42b3ef485564b504fcacecacb89383c49",
+            "sha256": "79397fc32d29c6101b19f0e2c6638e19d1708bd5497be74b44dbd0764d28c375",
+            "bytes": 3124
+          },
+          {
+            "path": "templates/data_base.js",
+            "blob": "9e7cc392f0bad0e269d26903432faa39d94a1b62",
+            "sha256": "2aaceaf98a0f534aa342bdc6e64c831a2261a04fafebab4becf50f2d7c82620a",
+            "bytes": 2367
+          },
+          {
+            "path": "templates/gmi_coverage.html.j2",
+            "blob": "2cb07355946474b2310d1dcbaa0cca112ff450c5",
+            "sha256": "76e35d0b49d7a7ded0b6eadebd5b1f69dccf056d50b88884eae670534b689c43",
+            "bytes": 8555
+          },
+          {
+            "path": "templates/_gmi_product_macros.html.j2",
+            "blob": "3e82a587bb0ad17f536d0513d85a1c0a66304999",
+            "sha256": "3315bd43243d52975eee75f42320528c5be69e40581c1b9e284e16e2b222b157",
+            "bytes": 7539
+          },
+          {
+            "path": "templates/_gmi_head.html.j2",
+            "blob": "5fe310cbe1a4a988f60f8b400e47a2de82ff06ef",
+            "sha256": "c0ad57713ab06c77beb85c70a898b2530d480caa24fc32da4c3b6a731c331589",
+            "bytes": 947
+          },
+          {
+            "path": "templates/gmi_index.html.j2",
+            "blob": "4556d16e03e06375a314c7278c4936dea36fd0e9",
+            "sha256": "631c49579cf7f04d8aeb3bfafeb620824dd57ccde6de1a5c562747ba520c43d5",
+            "bytes": 3733
+          },
+          {
+            "path": "engine/theme_graph/store.py",
+            "blob": "853bc3bb557aaf32251de0eb053bcff55604e68c",
+            "sha256": "7e9488741f4fe58343fd7f9255a4d694a3bda1cb081a35239ecda277d8ee8221",
+            "bytes": 25211
+          },
+          {
+            "path": "engine/theme_graph/identity_resolution.py",
+            "blob": "e3510e69645a96872e7080efe028633ff6836324",
+            "sha256": "5672ccebaac97633482efe73a2ed8d0d87d579ef8f1d5f4ebcaf2840482814c7",
+            "bytes": 40467
+          },
+          {
+            "path": "engine/theme_graph/change_report.py",
+            "blob": "354a48be5a56416b941fecb9942401a7f0fb7f1c",
+            "sha256": "50620da7b694bb1c929b3d2dd93a26fc1e40dc7253c4f3aa1b23b307ab905bed",
+            "bytes": 10059
+          },
+          {
+            "path": "engine/theme_graph/membership_evidence.py",
+            "blob": "3785874c443ffcd4cde2db31b1f11cafc184d7d5",
+            "sha256": "47c28abc14a27e5e3550885a415527a7da466204b54ae620e540230cbf3b8c89",
+            "bytes": 80400
+          },
+          {
+            "path": "engine/theme_graph/rights.py",
+            "blob": "d801f2e231e8a0dbf05d30e96fd0024ae70bd63b",
+            "sha256": "0a18ac0c2f5b40048352625f608b208755c2500b1943df30b850d51092b44c15",
+            "bytes": 16362
+          },
+          {
+            "path": "engine/theme_graph/probation.py",
+            "blob": "eac18b9804411c10ee8cede2d5d6f9aae2a84f1f",
+            "sha256": "02cfbb4cf0d38923aa9f06d3c0a4e4699591137bd202e268dab2cda22807b6a6",
+            "bytes": 58797
+          },
+          {
+            "path": "engine/theme_graph/identity.py",
+            "blob": "c27fb161bf401ca05387c4f07ac8e0220b801b2a",
+            "sha256": "550ae9eb7975062f129340e47b6d70f26bd747ef59a546958768478090f6548f",
+            "bytes": 10722
+          },
+          {
+            "path": "lib/dataos/temporal.py",
+            "blob": "094b149a8b9158f19cb99c4005568c12db96ed41",
+            "sha256": "4415404186f0b0d2870f42d9e4a0b95be87937863adf30cf015ed34e8bf92b67",
+            "bytes": 12847
+          },
+          {
+            "path": "lib/dataos/registry.py",
+            "blob": "65b0d69036da97760f20241468f2549b21d9c686",
+            "sha256": "0d575b03848c59e98bdd320243f896b41b201047d0c0c23559467b99185fb404",
+            "bytes": 41942
+          },
+          {
+            "path": "lib/dataos/__init__.py",
+            "blob": "1ddadafd88a59dfc90a7d68c3ae0897da1aae661",
+            "sha256": "86afe285932523c2ee7a1cb25ed0a57b3e7010fbd661aa27ea622530cb82fa30",
+            "bytes": 11768
+          },
+          {
+            "path": "lib/dataos/nulls.py",
+            "blob": "8e7f09ac172f326bab1678ac626fa1d5dc5aa0ab",
+            "sha256": "2556e7d0b2ac609306e512a61071a024b7b0b7eb0ec4ef3efaf22ce9f4387d49",
+            "bytes": 7737
+          },
+          {
+            "path": "lib/dataos/quality.py",
+            "blob": "967b943443d9507c5c0078f62848c38c3d2af48a",
+            "sha256": "a462b3264a5ec05467331c0a224bfd37c26e66012c376ed28922e4e45fa5f877",
+            "bytes": 36845
+          },
+          {
+            "path": "lib/dataos/identity.py",
+            "blob": "fb99fd182ac506a158c63ab434f09374cdbbd4f8",
+            "sha256": "47914bca76cf80101c25fcbd7c29455dd99fbc697373e5183fca505376f6e507",
+            "bytes": 111096
+          },
+          {
+            "path": "lib/dataos/price.py",
+            "blob": "be127fa853a6aafbf0bcb33b58783316ac972faa",
+            "sha256": "40aad993988e03f3c9ff4c2a221cdaeecc3569054d4a93fc0565657fce109e15",
+            "bytes": 10509
+          },
+          {
+            "path": "scripts/gmi_explorer/present.py",
+            "blob": "c5ae61d80a484c07d583831577db52881843061b",
+            "sha256": "3c8b76894628c1a09234c059a9fccf31d52adc47eee03d6e16f580a07c452257",
+            "bytes": 3841
+          },
+          {
+            "path": "scripts/gmi_explorer/model.py",
+            "blob": "2614997dd87bf7d7e2d0b61b283c6b364801e1b1",
+            "sha256": "19a760f597f7a7d99b72c2c72073757ff3a94eac123af30c4a6d370d78952dfa",
+            "bytes": 29457
+          }
+        ],
+        "model_sha256": "e644fa48a2bb6e6affe8d1fda74556d9db5f82acadffdad839e1efe8f095359f",
+        "source_head": "e0d7550087c564529270c12049ae62782d5b0101",
+        "expected_outputs": {
+          "gmi-companies.html": "fda702382d62068f8f39874bcd07bbb915ddacee6a3d4f734b337b58f3e47d3c",
+          "gmi-coverage.html": "893408143f6c0cb1db08084ad9c7c57b56386421f3a3958f1879a87f9035b745",
+          "gmi-index.html": "3e6e6f4846598bc6240f3aa69c5523a5500e7f79f7838e655ea7ecd7800536d4",
+          "gmi-issuer-mu.html": "22cc39aca77961584fad494ab0afa788b287636f7e3c5cfaecba7dbda2172bdd",
+          "gmi-relationships.html": "86243e69c432370eb83600a45cda897e29a1a63697f55e3a72ccffcf9468c377",
+          "gmi-states.html": "3b3c22bd3c57dc34586ac5b9d0800cab9d6c3259f56c9cdc5c2021117a65187e",
+          "gmi.css": "3bbf6c4e0a53a688f8fc1f0274213c3c5faaf43af62ed519d2c3ef5c2a571ce0",
+          "gmi.html": "1db2af5f7c12a1e2e91a30dad2a12f6309efaf0261ca3289db15ea700a3da1f8",
+          "gmi.js": "5c471afbcf3630347ec87b805676236d82e6f05c14af21a246ab4c188bbd4e68"
+        }
+      },
+      "cases": [
+        {
+          "name": "payload-recovery-1440-en",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "payload-recovery-1440-zh",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "payload-recovery-390-en",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "payload-recovery-390-zh",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "payload-recovery-320-en",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "payload-recovery-320-zh",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "payload-recovery-dark-320-en",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "payload-recovery-dark-390-zh",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "payload-schema-categories",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "payload-schema-paths",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "payload-schema-connections",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "payload-schema-source",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "payload-schema-duplicate-id",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "payload-schema-default-id",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "payload-schema-category-label",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "payload-schema-parent",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "payload-journey-en",
+          "result": "FAIL",
+          "error": "Traceback (most recent call last):\n  File \"/Volumes/Mastermind/agent-workspaces/verify/gmi-payload-recovery-20261109-bt0yvuue/verify_payload_recovery_component.py\", line 95, in <module>\n    try:action();result={'name':name,'result':'PASS'}\n        ~~~~~~^^\n  File \"/Volumes/Mastermind/agent-workspaces/verify/gmi-payload-recovery-20261109-bt0yvuue/verify_payload_recovery_component.py\", line 89, in <lambda>\n    actions.extend((f'payload-journey-{l}',lambda l=l:payload_failure_journey(l)) for l in ('en','zh'))\n                                                      ~~~~~~~~~~~~~~~~~~~~~~~^^^\n  File \"/Volumes/Mastermind/agent-workspaces/verify/gmi-payload-recovery-20261109-bt0yvuue/verify_product_browser.py\", line 3082, in payload_failure_journey\n    context_is(gs,None);context_is(rs,None)\n    ~~~~~~~~~~^^^^^^^^^\n  File \"/Volumes/Mastermind/agent-workspaces/verify/gmi-payload-recovery-20261109-bt0yvuue/verify_product_browser.py\", line 3021, in context_is\n    p.wait_for_function(\"\"\"({selector,values})=>{\n    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^\n      const a=document.querySelector(selector);if(!a)return false;\n      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    ...<4 lines>...\n      return u.pathname.endsWith('/gmi.html')&&Object.keys(v).length===Object.keys(values).length&&Object.keys(values).every(k=>v[k]===values[k]);\n      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    }\"\"\",arg={'selector':selector,'values':values},timeout=2500)\n    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/sync_api/_generated.py\", line 12761, in wait_for_function\n    self._sync(\n    ~~~~~~~~~~^\n        self._impl_obj.wait_for_function(\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    ...<4 lines>...\n        )\n        ^\n    )\n    ^\nplaywright._impl._errors.TimeoutError: Page.wait_for_function: Timeout 2500ms exceeded.\n",
+          "contexts": 1
+        }
+      ],
+      "contexts": 17,
+      "screenshots": [
+        "payload-failure-1440-en-light.png",
+        "payload-failure-1440-zh-light.png",
+        "payload-failure-390-en-light.png",
+        "payload-failure-390-zh-light.png",
+        "payload-failure-320-en-light.png",
+        "payload-failure-320-zh-light.png",
+        "payload-failure-320-en-dark.png",
+        "payload-failure-390-zh-dark.png"
+      ],
+      "page_errors": [],
+      "browser": "157.0.8103.39",
+      "expected_cases": 20,
+      "payload_failure_observations": [
+        {
+          "width": 1440,
+          "language": "en",
+          "theme": "light",
+          "fault": "malformed",
+          "requested": "theme:aerospace_components_aftermarket",
+          "shown": "theme:hbm_packaging",
+          "notice": "Interactive research could not load. The starting topic is shown below.",
+          "recovery_links": 1,
+          "ready": false,
+          "inline_native_action": true,
+          "keyboard_reachable": true,
+          "same_anchor_and_answer": true,
+          "locale_focus_and_URL_retained": true,
+          "height": 44
+        },
+        {
+          "width": 1440,
+          "language": "zh",
+          "theme": "light",
+          "fault": "malformed",
+          "requested": "theme:aerospace_components_aftermarket",
+          "shown": "theme:hbm_packaging",
+          "notice": "交互研究未能加载。下方显示起始主题。",
+          "recovery_links": 1,
+          "ready": false,
+          "inline_native_action": true,
+          "keyboard_reachable": true,
+          "same_anchor_and_answer": true,
+          "locale_focus_and_URL_retained": true,
+          "height": 44
+        },
+        {
+          "width": 390,
+          "language": "en",
+          "theme": "light",
+          "fault": "malformed",
+          "requested": "theme:aerospace_components_aftermarket",
+          "shown": "theme:hbm_packaging",
+          "notice": "Interactive research could not load. The starting topic is shown below.",
+          "recovery_links": 1,
+          "ready": false,
+          "inline_native_action": true,
+          "keyboard_reachable": true,
+          "same_anchor_and_answer": true,
+          "locale_focus_and_URL_retained": true,
+          "height": 44
+        },
+        {
+          "width": 390,
+          "language": "zh",
+          "theme": "light",
+          "fault": "malformed",
+          "requested": "theme:aerospace_components_aftermarket",
+          "shown": "theme:hbm_packaging",
+          "notice": "交互研究未能加载。下方显示起始主题。",
+          "recovery_links": 1,
+          "ready": false,
+          "inline_native_action": true,
+          "keyboard_reachable": true,
+          "same_anchor_and_answer": true,
+          "locale_focus_and_URL_retained": true,
+          "height": 44
+        },
+        {
+          "width": 320,
+          "language": "en",
+          "theme": "light",
+          "fault": "malformed",
+          "requested": "theme:aerospace_components_aftermarket",
+          "shown": "theme:hbm_packaging",
+          "notice": "Interactive research could not load. The starting topic is shown below.",
+          "recovery_links": 1,
+          "ready": false,
+          "inline_native_action": true,
+          "keyboard_reachable": true,
+          "same_anchor_and_answer": true,
+          "locale_focus_and_URL_retained": true,
+          "height": 44
+        },
+        {
+          "width": 320,
+          "language": "zh",
+          "theme": "light",
+          "fault": "malformed",
+          "requested": "theme:aerospace_components_aftermarket",
+          "shown": "theme:hbm_packaging",
+          "notice": "交互研究未能加载。下方显示起始主题。",
+          "recovery_links": 1,
+          "ready": false,
+          "inline_native_action": true,
+          "keyboard_reachable": true,
+          "same_anchor_and_answer": true,
+          "locale_focus_and_URL_retained": true,
+          "height": 44
+        },
+        {
+          "width": 320,
+          "language": "en",
+          "theme": "dark",
+          "fault": "malformed",
+          "requested": "theme:aerospace_components_aftermarket",
+          "shown": "theme:hbm_packaging",
+          "notice": "Interactive research could not load. The starting topic is shown below.",
+          "recovery_links": 1,
+          "ready": false,
+          "inline_native_action": true,
+          "keyboard_reachable": true,
+          "same_anchor_and_answer": true,
+          "locale_focus_and_URL_retained": true,
+          "height": 44
+        },
+        {
+          "width": 390,
+          "language": "zh",
+          "theme": "dark",
+          "fault": "malformed",
+          "requested": "theme:aerospace_components_aftermarket",
+          "shown": "theme:hbm_packaging",
+          "notice": "交互研究未能加载。下方显示起始主题。",
+          "recovery_links": 1,
+          "ready": false,
+          "inline_native_action": true,
+          "keyboard_reachable": true,
+          "same_anchor_and_answer": true,
+          "locale_focus_and_URL_retained": true,
+          "height": 44
+        },
+        {
+          "width": 390,
+          "language": "zh",
+          "theme": "light",
+          "fault": "categories",
+          "requested": "theme:aerospace_components_aftermarket",
+          "shown": "theme:hbm_packaging",
+          "notice": "交互研究未能加载。下方显示起始主题。",
+          "recovery_links": 1,
+          "ready": false,
+          "inline_native_action": true,
+          "keyboard_reachable": true,
+          "same_anchor_and_answer": true,
+          "locale_focus_and_URL_retained": true,
+          "height": 44
+        },
+        {
+          "width": 320,
+          "language": "en",
+          "theme": "light",
+          "fault": "paths",
+          "requested": "theme:aerospace_components_aftermarket",
+          "shown": "theme:hbm_packaging",
+          "notice": "Interactive research could not load. The starting topic is shown below.",
+          "recovery_links": 1,
+          "ready": false,
+          "inline_native_action": true,
+          "keyboard_reachable": true,
+          "same_anchor_and_answer": true,
+          "locale_focus_and_URL_retained": true,
+          "height": 44
+        },
+        {
+          "width": 390,
+          "language": "zh",
+          "theme": "light",
+          "fault": "connections",
+          "requested": "theme:aerospace_components_aftermarket",
+          "shown": "theme:hbm_packaging",
+          "notice": "交互研究未能加载。下方显示起始主题。",
+          "recovery_links": 1,
+          "ready": false,
+          "inline_native_action": true,
+          "keyboard_reachable": true,
+          "same_anchor_and_answer": true,
+          "locale_focus_and_URL_retained": true,
+          "height": 44
+        },
+        {
+          "width": 320,
+          "language": "en",
+          "theme": "light",
+          "fault": "source",
+          "requested": "theme:aerospace_components_aftermarket",
+          "shown": "theme:hbm_packaging",
+          "notice": "Interactive research could not load. The starting topic is shown below.",
+          "recovery_links": 1,
+          "ready": false,
+          "inline_native_action": true,
+          "keyboard_reachable": true,
+          "same_anchor_and_answer": true,
+          "locale_focus_and_URL_retained": true,
+          "height": 44
+        },
+        {
+          "width": 390,
+          "language": "zh",
+          "theme": "light",
+          "fault": "duplicate-id",
+          "requested": "theme:aerospace_components_aftermarket",
+          "shown": "theme:hbm_packaging",
+          "notice": "交互研究未能加载。下方显示起始主题。",
+          "recovery_links": 1,
+          "ready": false,
+          "inline_native_action": true,
+          "keyboard_reachable": true,
+          "same_anchor_and_answer": true,
+          "locale_focus_and_URL_retained": true,
+          "height": 44
+        },
+        {
+          "width": 320,
+          "language": "en",
+          "theme": "light",
+          "fault": "default-id",
+          "requested": "theme:aerospace_components_aftermarket",
+          "shown": "theme:hbm_packaging",
+          "notice": "Interactive research could not load. The starting topic is shown below.",
+          "recovery_links": 1,
+          "ready": false,
+          "inline_native_action": true,
+          "keyboard_reachable": true,
+          "same_anchor_and_answer": true,
+          "locale_focus_and_URL_retained": true,
+          "height": 44
+        },
+        {
+          "width": 390,
+          "language": "zh",
+          "theme": "light",
+          "fault": "category-label",
+          "requested": "theme:aerospace_components_aftermarket",
+          "shown": "theme:hbm_packaging",
+          "notice": "交互研究未能加载。下方显示起始主题。",
+          "recovery_links": 1,
+          "ready": false,
+          "inline_native_action": true,
+          "keyboard_reachable": true,
+          "same_anchor_and_answer": true,
+          "locale_focus_and_URL_retained": true,
+          "height": 44
+        },
+        {
+          "width": 320,
+          "language": "en",
+          "theme": "light",
+          "fault": "parent",
+          "requested": "theme:aerospace_components_aftermarket",
+          "shown": "theme:hbm_packaging",
+          "notice": "Interactive research could not load. The starting topic is shown below.",
+          "recovery_links": 1,
+          "ready": false,
+          "inline_native_action": true,
+          "keyboard_reachable": true,
+          "same_anchor_and_answer": true,
+          "locale_focus_and_URL_retained": true,
+          "height": 44
+        }
+      ],
+      "payload_failure_journeys": [
+        {
+          "language": "en",
+          "initial_return": {
+            "theme": "theme:aerospace_components_aftermarket",
+            "q": "remember this",
+            "scope": "core",
+            "evidence": "1",
+            "lens": "coverage"
+          },
+          "updated_return": {
+            "theme": "theme:aerospace_components_aftermarket",
+            "q": "updated query",
+            "lens": "coverage"
+          },
+          "global_href_after_hash": "http://127.0.0.1:58709/case-17/gmi-index.html#gmi_return=gmi.html%23theme%3Dtheme%253Aaerospace_components_aftermarket%26lens%3Dcoverage%26q%3Dupdated%2Bquery"
+        }
+      ],
+      "complete": false,
+      "pass": false
+    },
+    "predicate_diagnostic": {
+      "generated_at": "2026-11-09T08:37:19.098943+00:00",
+      "baseline": false,
+      "scope": "Failed GMI topic payload recovery on actual generated-main fixtures.\n\nThe exact public payload is fault-injected after serving. Production JS, shared\ntheme/GMI CSS and seven generated main sections are retained. External network\nis blocked; no shared-shell/font runtime, account, AT speech or release claim.",
+      "script_sha256": "fb42b942dd6483136d718470c4576b2c2a53c0629e94c95c750ad02f026ba7ab",
+      "gmi_css_sha256": "3bbf6c4e0a53a688f8fc1f0274213c3c5faaf43af62ed519d2c3ef5c2a571ce0",
+      "verifier_sha256": "b0abc17e3a0617f8adf5e256ed06e963ca22f1be52c3bf788bb0d7c5ca8037b8",
+      "inputs": {
+        "source_root": "/Volumes/Mastermind/agent-workspaces/verify/gmi-coverage-clarity-20261109-cyjureh9",
+        "inputs": [
+          {
+            "path": "config.yml",
+            "blob": "5be75249c98033d7ee0fbe55928713b1f50af627",
+            "sha256": "701229b33bbd6260c561023e2c2611a8fca24bc2c97e784cf97d55aa0357b402",
+            "bytes": 496073
+          },
+          {
+            "path": "scripts/build_gmi_explorer.py",
+            "blob": "900253d42a7b1d43ad41aa493e8032444c4570de",
+            "sha256": "7a2fd1287f20d1e5b166afa34587ad1da0cfad0191e2e8bd1fdb8ac232c77618",
+            "bytes": 15159
+          },
+          {
+            "path": "lib/shared_shell.py",
+            "blob": "cffbeba3f8fdcf7a9413d9428aec0154d97d9614",
+            "sha256": "eb1f06843b556968f15a0478d756e8312a3b6f4f4c8cb3daf047a6c438f79c1c",
+            "bytes": 5407
+          },
+          {
+            "path": "lib/config.py",
+            "blob": "b6fc888269876242597da354aaa726c20ed95802",
+            "sha256": "fa22ec934ec5294072b6bb4bf081d787f3f8ad5da4702ce3f4818b1674dbd53f",
+            "bytes": 1131
+          },
+          {
+            "path": "lib/pages.py",
+            "blob": "db175c463a31828263b57a3287afba661439a765",
+            "sha256": "9ec5d5ceeff55e5e269c5de26d1f54b9d72db1a755940f7029f47d98820014ba",
+            "bytes": 38933
+          },
+          {
+            "path": "lib/site_assets.py",
+            "blob": "03d7ce6137a30b990435cb1fee2090e61c2e95e3",
+            "sha256": "61ed68657b38b006962c653553bcd1d2e25f4ce918ce98ab30f99e7cdc09b275",
+            "bytes": 7180
+          },
+          {
+            "path": "templates/_site_nav.html.j2",
+            "blob": "d5c449e9ec498c49007c2de0ced1757a7f36b12d",
+            "sha256": "2a1f60a27bfdb2c86ab6aa60e6efd1b40515f94d1afc6d38692047f1de3d0376",
+            "bytes": 3684
+          },
+          {
+            "path": "templates/gmi_relationships.html.j2",
+            "blob": "e30d0df9e359e529c707468cf952e0aa84a36987",
+            "sha256": "7659e81e2197def5302b290e89d876befe375acd0a0e58e86edc32ed9672877d",
+            "bytes": 2591
+          },
+          {
+            "path": "templates/_navlinks.html.j2",
+            "blob": "70fee6eabeb2cfe6d92590da42aa8c3e3733e837",
+            "sha256": "da495f935455e24d117bc556d82c634b0229c9604c8fb2ad711f9542a3f29a83",
+            "bytes": 54533
+          },
+          {
+            "path": "templates/_gmi_theme_data.html.j2",
+            "blob": "0520256ae0a2f61a33702070686be769d8640124",
+            "sha256": "ce5d5e782ad08972600619b52a509f37a4acd9b0a40f2a9f2e0ad2859254ff33",
+            "bytes": 2153
+          },
+          {
+            "path": "templates/theme.css",
+            "blob": "619436f58d37a222d1db7021ba9d52bb3a05a7fa",
+            "sha256": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757",
+            "bytes": 227583
+          },
+          {
+            "path": "templates/gmi.css",
+            "blob": "4302bf7edbbb66d9356b75723785ef146e12adb5",
+            "sha256": "3bbf6c4e0a53a688f8fc1f0274213c3c5faaf43af62ed519d2c3ef5c2a571ce0",
+            "bytes": 75647
+          },
+          {
+            "path": "templates/_gmi_product_header.html.j2",
+            "blob": "babc946fd26ea9a14d0deea4901e46491b9a444d",
+            "sha256": "c60bf376a5b14d76d447f9f0b588cf660b8968b93edf497bbf3bc35fd6d95d9e",
+            "bytes": 2338
+          },
+          {
+            "path": "templates/_interfonts.html.j2",
+            "blob": "f6e84eb856ce66f732aacafe883d5c26c5d1e27e",
+            "sha256": "40ba62a3d1efa51de70993bedd5fb7ec96fcc1190f58515d765b267b2afd32cd",
+            "bytes": 1587
+          },
+          {
+            "path": "templates/_gmi_taxonomy.html.j2",
+            "blob": "99ade053147ecb6f42a9b1119af4f522df5c05b7",
+            "sha256": "32b6aba86b7375c13ada8e25fa31689923b696c12358f7a28f1ab17e9e8a70ce",
+            "bytes": 12905
+          },
+          {
+            "path": "templates/_gmi_base.html.j2",
+            "blob": "1d76c899cb2ce05b66e7d37d19b53e212e814b4d",
+            "sha256": "134ae16113ea8e7a4e35b34ca3dfb3ac565c38fa6fb9f5ad24d88b784e30ffa2",
+            "bytes": 2852
+          },
+          {
+            "path": "templates/_gmi_macros.html.j2",
+            "blob": "2b90130394a11df2e4b10fa1ab65041727d18836",
+            "sha256": "49ae1f96453dd481007cac41a4a8951be8090836e93ff9fa94507166d744749e",
+            "bytes": 7112
+          },
+          {
+            "path": "templates/shared_shell_bridge.js",
+            "blob": "00ee9b9fa4d1fba67359d3d6b95c7937aed150b7",
+            "sha256": "071ef7202d8886228342c00f0e7a3026eaba1d0103c4dcf1e6d204a7da77451b",
+            "bytes": 51296
+          },
+          {
+            "path": "templates/gmi.js",
+            "blob": "ef00b9aca6d4e343a8dea7bbd8010020fec671f1",
+            "sha256": "5c471afbcf3630347ec87b805676236d82e6f05c14af21a246ab4c188bbd4e68",
+            "bytes": 53417
+          },
+          {
+            "path": "templates/_all_tools_menu.html.j2",
+            "blob": "3259b4e5c6305fd2f9a33bea65141efb0528680a",
+            "sha256": "d4427b10f930677a285269f20070f1140f451a86228aeb185b19f5820ab1bf17",
+            "bytes": 3436
+          },
+          {
+            "path": "templates/shared_shell.css",
+            "blob": "88a0fd9e836fbffac36722dac04189c6eb24af9b",
+            "sha256": "b1918ccaa2294f18c0fd5bca123e38267251c7e9d9a7c4fce1f296ef9e4c3c1e",
+            "bytes": 467
+          },
+          {
+            "path": "templates/gmi_map.html.j2",
+            "blob": "b4f2a69ce7588d1b51296329d54d38cbcbeab4a5",
+            "sha256": "aca5fdc0b4e5b796d0a0e3794cb09fd740b9a7277a5ad1f81c07b5a181df39da",
+            "bytes": 5998
+          },
+          {
+            "path": "templates/gmi_states.html.j2",
+            "blob": "2e2f66e8f9588403a58434ae6fa80bfa181845bf",
+            "sha256": "7f399348ed2b5a9b750c90b4268c7580329ec692c6f126b6231b6c650aad01d4",
+            "bytes": 3413
+          },
+          {
+            "path": "templates/theme.js",
+            "blob": "21a1fb1627ac34badc6078cff486f98486e9b773",
+            "sha256": "918e7acece23ab6df8211305a938e569f0de4184c0fd9c0b2f1e56c50e3cac4d",
+            "bytes": 400176
+          },
+          {
+            "path": "templates/_seo_head.html.j2",
+            "blob": "1a0f1a7cd3a8499e9d873171171d374424f9ddd8",
+            "sha256": "eda59eeb5f7cf0fb83a1a6430ff523939ee43cd214fe2b4aebba7ca4561bbbee",
+            "bytes": 2335
+          },
+          {
+            "path": "templates/gmi_companies.html.j2",
+            "blob": "729e2a4a93246d87e9203abd84efdc16fb6f1aea",
+            "sha256": "7e64ba21d21cbe232d8f873feb52a9e804e4e4b6e015350bf8d8d8d04d809648",
+            "bytes": 6297
+          },
+          {
+            "path": "templates/gmi_issuer.html.j2",
+            "blob": "35b06fd42b3ef485564b504fcacecacb89383c49",
+            "sha256": "79397fc32d29c6101b19f0e2c6638e19d1708bd5497be74b44dbd0764d28c375",
+            "bytes": 3124
+          },
+          {
+            "path": "templates/data_base.js",
+            "blob": "9e7cc392f0bad0e269d26903432faa39d94a1b62",
+            "sha256": "2aaceaf98a0f534aa342bdc6e64c831a2261a04fafebab4becf50f2d7c82620a",
+            "bytes": 2367
+          },
+          {
+            "path": "templates/gmi_coverage.html.j2",
+            "blob": "2cb07355946474b2310d1dcbaa0cca112ff450c5",
+            "sha256": "76e35d0b49d7a7ded0b6eadebd5b1f69dccf056d50b88884eae670534b689c43",
+            "bytes": 8555
+          },
+          {
+            "path": "templates/_gmi_product_macros.html.j2",
+            "blob": "3e82a587bb0ad17f536d0513d85a1c0a66304999",
+            "sha256": "3315bd43243d52975eee75f42320528c5be69e40581c1b9e284e16e2b222b157",
+            "bytes": 7539
+          },
+          {
+            "path": "templates/_gmi_head.html.j2",
+            "blob": "5fe310cbe1a4a988f60f8b400e47a2de82ff06ef",
+            "sha256": "c0ad57713ab06c77beb85c70a898b2530d480caa24fc32da4c3b6a731c331589",
+            "bytes": 947
+          },
+          {
+            "path": "templates/gmi_index.html.j2",
+            "blob": "4556d16e03e06375a314c7278c4936dea36fd0e9",
+            "sha256": "631c49579cf7f04d8aeb3bfafeb620824dd57ccde6de1a5c562747ba520c43d5",
+            "bytes": 3733
+          },
+          {
+            "path": "engine/theme_graph/store.py",
+            "blob": "853bc3bb557aaf32251de0eb053bcff55604e68c",
+            "sha256": "7e9488741f4fe58343fd7f9255a4d694a3bda1cb081a35239ecda277d8ee8221",
+            "bytes": 25211
+          },
+          {
+            "path": "engine/theme_graph/identity_resolution.py",
+            "blob": "e3510e69645a96872e7080efe028633ff6836324",
+            "sha256": "5672ccebaac97633482efe73a2ed8d0d87d579ef8f1d5f4ebcaf2840482814c7",
+            "bytes": 40467
+          },
+          {
+            "path": "engine/theme_graph/change_report.py",
+            "blob": "354a48be5a56416b941fecb9942401a7f0fb7f1c",
+            "sha256": "50620da7b694bb1c929b3d2dd93a26fc1e40dc7253c4f3aa1b23b307ab905bed",
+            "bytes": 10059
+          },
+          {
+            "path": "engine/theme_graph/membership_evidence.py",
+            "blob": "3785874c443ffcd4cde2db31b1f11cafc184d7d5",
+            "sha256": "47c28abc14a27e5e3550885a415527a7da466204b54ae620e540230cbf3b8c89",
+            "bytes": 80400
+          },
+          {
+            "path": "engine/theme_graph/rights.py",
+            "blob": "d801f2e231e8a0dbf05d30e96fd0024ae70bd63b",
+            "sha256": "0a18ac0c2f5b40048352625f608b208755c2500b1943df30b850d51092b44c15",
+            "bytes": 16362
+          },
+          {
+            "path": "engine/theme_graph/probation.py",
+            "blob": "eac18b9804411c10ee8cede2d5d6f9aae2a84f1f",
+            "sha256": "02cfbb4cf0d38923aa9f06d3c0a4e4699591137bd202e268dab2cda22807b6a6",
+            "bytes": 58797
+          },
+          {
+            "path": "engine/theme_graph/identity.py",
+            "blob": "c27fb161bf401ca05387c4f07ac8e0220b801b2a",
+            "sha256": "550ae9eb7975062f129340e47b6d70f26bd747ef59a546958768478090f6548f",
+            "bytes": 10722
+          },
+          {
+            "path": "lib/dataos/temporal.py",
+            "blob": "094b149a8b9158f19cb99c4005568c12db96ed41",
+            "sha256": "4415404186f0b0d2870f42d9e4a0b95be87937863adf30cf015ed34e8bf92b67",
+            "bytes": 12847
+          },
+          {
+            "path": "lib/dataos/registry.py",
+            "blob": "65b0d69036da97760f20241468f2549b21d9c686",
+            "sha256": "0d575b03848c59e98bdd320243f896b41b201047d0c0c23559467b99185fb404",
+            "bytes": 41942
+          },
+          {
+            "path": "lib/dataos/__init__.py",
+            "blob": "1ddadafd88a59dfc90a7d68c3ae0897da1aae661",
+            "sha256": "86afe285932523c2ee7a1cb25ed0a57b3e7010fbd661aa27ea622530cb82fa30",
+            "bytes": 11768
+          },
+          {
+            "path": "lib/dataos/nulls.py",
+            "blob": "8e7f09ac172f326bab1678ac626fa1d5dc5aa0ab",
+            "sha256": "2556e7d0b2ac609306e512a61071a024b7b0b7eb0ec4ef3efaf22ce9f4387d49",
+            "bytes": 7737
+          },
+          {
+            "path": "lib/dataos/quality.py",
+            "blob": "967b943443d9507c5c0078f62848c38c3d2af48a",
+            "sha256": "a462b3264a5ec05467331c0a224bfd37c26e66012c376ed28922e4e45fa5f877",
+            "bytes": 36845
+          },
+          {
+            "path": "lib/dataos/identity.py",
+            "blob": "fb99fd182ac506a158c63ab434f09374cdbbd4f8",
+            "sha256": "47914bca76cf80101c25fcbd7c29455dd99fbc697373e5183fca505376f6e507",
+            "bytes": 111096
+          },
+          {
+            "path": "lib/dataos/price.py",
+            "blob": "be127fa853a6aafbf0bcb33b58783316ac972faa",
+            "sha256": "40aad993988e03f3c9ff4c2a221cdaeecc3569054d4a93fc0565657fce109e15",
+            "bytes": 10509
+          },
+          {
+            "path": "scripts/gmi_explorer/present.py",
+            "blob": "c5ae61d80a484c07d583831577db52881843061b",
+            "sha256": "3c8b76894628c1a09234c059a9fccf31d52adc47eee03d6e16f580a07c452257",
+            "bytes": 3841
+          },
+          {
+            "path": "scripts/gmi_explorer/model.py",
+            "blob": "2614997dd87bf7d7e2d0b61b283c6b364801e1b1",
+            "sha256": "19a760f597f7a7d99b72c2c72073757ff3a94eac123af30c4a6d370d78952dfa",
+            "bytes": 29457
+          }
+        ],
+        "model_sha256": "e644fa48a2bb6e6affe8d1fda74556d9db5f82acadffdad839e1efe8f095359f",
+        "source_head": "e0d7550087c564529270c12049ae62782d5b0101",
+        "expected_outputs": {
+          "gmi-companies.html": "fda702382d62068f8f39874bcd07bbb915ddacee6a3d4f734b337b58f3e47d3c",
+          "gmi-coverage.html": "893408143f6c0cb1db08084ad9c7c57b56386421f3a3958f1879a87f9035b745",
+          "gmi-index.html": "3e6e6f4846598bc6240f3aa69c5523a5500e7f79f7838e655ea7ecd7800536d4",
+          "gmi-issuer-mu.html": "22cc39aca77961584fad494ab0afa788b287636f7e3c5cfaecba7dbda2172bdd",
+          "gmi-relationships.html": "86243e69c432370eb83600a45cda897e29a1a63697f55e3a72ccffcf9468c377",
+          "gmi-states.html": "3b3c22bd3c57dc34586ac5b9d0800cab9d6c3259f56c9cdc5c2021117a65187e",
+          "gmi.css": "3bbf6c4e0a53a688f8fc1f0274213c3c5faaf43af62ed519d2c3ef5c2a571ce0",
+          "gmi.html": "1db2af5f7c12a1e2e91a30dad2a12f6309efaf0261ca3289db15ea700a3da1f8",
+          "gmi.js": "5c471afbcf3630347ec87b805676236d82e6f05c14af21a246ab4c188bbd4e68"
+        }
+      },
+      "cases": [
+        {
+          "name": "payload-journey-en",
+          "result": "FAIL",
+          "error": "Traceback (most recent call last):\n  File \"/Volumes/Mastermind/agent-workspaces/verify/gmi-payload-recovery-20261109-bt0yvuue/verify_payload_recovery_component.py\", line 95, in <module>\n    try:action();result={'name':name,'result':'PASS'}\n        ~~~~~~^^\n  File \"/Volumes/Mastermind/agent-workspaces/verify/gmi-payload-recovery-20261109-bt0yvuue/verify_payload_recovery_component.py\", line 89, in <lambda>\n    actions.extend((f'payload-journey-{l}',lambda l=l:payload_failure_journey(l)) for l in ('en','zh'))\n                                                      ~~~~~~~~~~~~~~~~~~~~~~~^^^\n  File \"/Volumes/Mastermind/agent-workspaces/verify/gmi-payload-recovery-20261109-bt0yvuue/verify_product_browser.py\", line 3083, in payload_failure_journey\n    context_is(gs,None);context_is(rs,None)\n    ~~~~~~~~~~^^^^^^^^^\n  File \"/Volumes/Mastermind/agent-workspaces/verify/gmi-payload-recovery-20261109-bt0yvuue/verify_product_browser.py\", line 3021, in context_is\n    p.wait_for_function(\"\"\"({selector,values})=>{\n    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^\n      const a=document.querySelector(selector);if(!a)return false;\n      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    ...<4 lines>...\n      return u.pathname.endsWith('/gmi.html')&&Object.keys(v).length===Object.keys(values).length&&Object.keys(values).every(k=>v[k]===values[k]);\n      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    }\"\"\",arg={'selector':selector,'values':values},timeout=2500)\n    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/sync_api/_generated.py\", line 12761, in wait_for_function\n    self._sync(\n    ~~~~~~~~~~^\n        self._impl_obj.wait_for_function(\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    ...<4 lines>...\n        )\n        ^\n    )\n    ^\nplaywright._impl._errors.TimeoutError: Page.wait_for_function: Timeout 2500ms exceeded.\n",
+          "contexts": 1
+        }
+      ],
+      "contexts": 1,
+      "screenshots": [],
+      "page_errors": [],
+      "browser": "157.0.8103.39",
+      "expected_cases": 1,
+      "payload_failure_journeys": [
+        {
+          "language": "en",
+          "initial_return": {
+            "theme": "theme:aerospace_components_aftermarket",
+            "q": "remember this",
+            "scope": "core",
+            "evidence": "1",
+            "lens": "coverage"
+          },
+          "updated_return": {
+            "theme": "theme:aerospace_components_aftermarket",
+            "q": "updated query",
+            "lens": "coverage"
+          },
+          "global_href_after_hash": "http://127.0.0.1:59831/case-1/gmi-index.html#gmi_return=gmi.html%23theme%3Dtheme%253Aaerospace_components_aftermarket%26lens%3Dcoverage%26q%3Dupdated%2Bquery",
+          "rejected_context_snapshot": {
+            "hash_length": 5003,
+            "query_length": 5000,
+            "global_href": "gmi-index.html",
+            "inline_href": "gmi-index.html",
+            "history_writes": [
+              "replaceState"
+            ],
+            "hash_events": 7
+          }
+        }
+      ],
+      "complete": true,
+      "pass": false
+    },
+    "pre_related_candidate_browser": {
+      "generated_at": "2026-11-09T08:38:12.946400+00:00",
+      "baseline": false,
+      "scope": "Failed GMI topic payload recovery on actual generated-main fixtures.\n\nThe exact public payload is fault-injected after serving. Production JS, shared\ntheme/GMI CSS and seven generated main sections are retained. External network\nis blocked; no shared-shell/font runtime, account, AT speech or release claim.",
+      "script_sha256": "fb42b942dd6483136d718470c4576b2c2a53c0629e94c95c750ad02f026ba7ab",
+      "gmi_css_sha256": "3bbf6c4e0a53a688f8fc1f0274213c3c5faaf43af62ed519d2c3ef5c2a571ce0",
+      "verifier_sha256": "0ae4e91ddbf3534e5b6eaacbd9b49f4ca9d48e7acd83d2c26cb7e6835867a5c5",
+      "inputs": {
+        "source_root": "/Volumes/Mastermind/agent-workspaces/verify/gmi-coverage-clarity-20261109-cyjureh9",
+        "inputs": [
+          {
+            "path": "config.yml",
+            "blob": "5be75249c98033d7ee0fbe55928713b1f50af627",
+            "sha256": "701229b33bbd6260c561023e2c2611a8fca24bc2c97e784cf97d55aa0357b402",
+            "bytes": 496073
+          },
+          {
+            "path": "scripts/build_gmi_explorer.py",
+            "blob": "900253d42a7b1d43ad41aa493e8032444c4570de",
+            "sha256": "7a2fd1287f20d1e5b166afa34587ad1da0cfad0191e2e8bd1fdb8ac232c77618",
+            "bytes": 15159
+          },
+          {
+            "path": "lib/shared_shell.py",
+            "blob": "cffbeba3f8fdcf7a9413d9428aec0154d97d9614",
+            "sha256": "eb1f06843b556968f15a0478d756e8312a3b6f4f4c8cb3daf047a6c438f79c1c",
+            "bytes": 5407
+          },
+          {
+            "path": "lib/config.py",
+            "blob": "b6fc888269876242597da354aaa726c20ed95802",
+            "sha256": "fa22ec934ec5294072b6bb4bf081d787f3f8ad5da4702ce3f4818b1674dbd53f",
+            "bytes": 1131
+          },
+          {
+            "path": "lib/pages.py",
+            "blob": "db175c463a31828263b57a3287afba661439a765",
+            "sha256": "9ec5d5ceeff55e5e269c5de26d1f54b9d72db1a755940f7029f47d98820014ba",
+            "bytes": 38933
+          },
+          {
+            "path": "lib/site_assets.py",
+            "blob": "03d7ce6137a30b990435cb1fee2090e61c2e95e3",
+            "sha256": "61ed68657b38b006962c653553bcd1d2e25f4ce918ce98ab30f99e7cdc09b275",
+            "bytes": 7180
+          },
+          {
+            "path": "templates/_site_nav.html.j2",
+            "blob": "d5c449e9ec498c49007c2de0ced1757a7f36b12d",
+            "sha256": "2a1f60a27bfdb2c86ab6aa60e6efd1b40515f94d1afc6d38692047f1de3d0376",
+            "bytes": 3684
+          },
+          {
+            "path": "templates/gmi_relationships.html.j2",
+            "blob": "e30d0df9e359e529c707468cf952e0aa84a36987",
+            "sha256": "7659e81e2197def5302b290e89d876befe375acd0a0e58e86edc32ed9672877d",
+            "bytes": 2591
+          },
+          {
+            "path": "templates/_navlinks.html.j2",
+            "blob": "70fee6eabeb2cfe6d92590da42aa8c3e3733e837",
+            "sha256": "da495f935455e24d117bc556d82c634b0229c9604c8fb2ad711f9542a3f29a83",
+            "bytes": 54533
+          },
+          {
+            "path": "templates/_gmi_theme_data.html.j2",
+            "blob": "0520256ae0a2f61a33702070686be769d8640124",
+            "sha256": "ce5d5e782ad08972600619b52a509f37a4acd9b0a40f2a9f2e0ad2859254ff33",
+            "bytes": 2153
+          },
+          {
+            "path": "templates/theme.css",
+            "blob": "619436f58d37a222d1db7021ba9d52bb3a05a7fa",
+            "sha256": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757",
+            "bytes": 227583
+          },
+          {
+            "path": "templates/gmi.css",
+            "blob": "4302bf7edbbb66d9356b75723785ef146e12adb5",
+            "sha256": "3bbf6c4e0a53a688f8fc1f0274213c3c5faaf43af62ed519d2c3ef5c2a571ce0",
+            "bytes": 75647
+          },
+          {
+            "path": "templates/_gmi_product_header.html.j2",
+            "blob": "babc946fd26ea9a14d0deea4901e46491b9a444d",
+            "sha256": "c60bf376a5b14d76d447f9f0b588cf660b8968b93edf497bbf3bc35fd6d95d9e",
+            "bytes": 2338
+          },
+          {
+            "path": "templates/_interfonts.html.j2",
+            "blob": "f6e84eb856ce66f732aacafe883d5c26c5d1e27e",
+            "sha256": "40ba62a3d1efa51de70993bedd5fb7ec96fcc1190f58515d765b267b2afd32cd",
+            "bytes": 1587
+          },
+          {
+            "path": "templates/_gmi_taxonomy.html.j2",
+            "blob": "99ade053147ecb6f42a9b1119af4f522df5c05b7",
+            "sha256": "32b6aba86b7375c13ada8e25fa31689923b696c12358f7a28f1ab17e9e8a70ce",
+            "bytes": 12905
+          },
+          {
+            "path": "templates/_gmi_base.html.j2",
+            "blob": "1d76c899cb2ce05b66e7d37d19b53e212e814b4d",
+            "sha256": "134ae16113ea8e7a4e35b34ca3dfb3ac565c38fa6fb9f5ad24d88b784e30ffa2",
+            "bytes": 2852
+          },
+          {
+            "path": "templates/_gmi_macros.html.j2",
+            "blob": "2b90130394a11df2e4b10fa1ab65041727d18836",
+            "sha256": "49ae1f96453dd481007cac41a4a8951be8090836e93ff9fa94507166d744749e",
+            "bytes": 7112
+          },
+          {
+            "path": "templates/shared_shell_bridge.js",
+            "blob": "00ee9b9fa4d1fba67359d3d6b95c7937aed150b7",
+            "sha256": "071ef7202d8886228342c00f0e7a3026eaba1d0103c4dcf1e6d204a7da77451b",
+            "bytes": 51296
+          },
+          {
+            "path": "templates/gmi.js",
+            "blob": "ef00b9aca6d4e343a8dea7bbd8010020fec671f1",
+            "sha256": "5c471afbcf3630347ec87b805676236d82e6f05c14af21a246ab4c188bbd4e68",
+            "bytes": 53417
+          },
+          {
+            "path": "templates/_all_tools_menu.html.j2",
+            "blob": "3259b4e5c6305fd2f9a33bea65141efb0528680a",
+            "sha256": "d4427b10f930677a285269f20070f1140f451a86228aeb185b19f5820ab1bf17",
+            "bytes": 3436
+          },
+          {
+            "path": "templates/shared_shell.css",
+            "blob": "88a0fd9e836fbffac36722dac04189c6eb24af9b",
+            "sha256": "b1918ccaa2294f18c0fd5bca123e38267251c7e9d9a7c4fce1f296ef9e4c3c1e",
+            "bytes": 467
+          },
+          {
+            "path": "templates/gmi_map.html.j2",
+            "blob": "b4f2a69ce7588d1b51296329d54d38cbcbeab4a5",
+            "sha256": "aca5fdc0b4e5b796d0a0e3794cb09fd740b9a7277a5ad1f81c07b5a181df39da",
+            "bytes": 5998
+          },
+          {
+            "path": "templates/gmi_states.html.j2",
+            "blob": "2e2f66e8f9588403a58434ae6fa80bfa181845bf",
+            "sha256": "7f399348ed2b5a9b750c90b4268c7580329ec692c6f126b6231b6c650aad01d4",
+            "bytes": 3413
+          },
+          {
+            "path": "templates/theme.js",
+            "blob": "21a1fb1627ac34badc6078cff486f98486e9b773",
+            "sha256": "918e7acece23ab6df8211305a938e569f0de4184c0fd9c0b2f1e56c50e3cac4d",
+            "bytes": 400176
+          },
+          {
+            "path": "templates/_seo_head.html.j2",
+            "blob": "1a0f1a7cd3a8499e9d873171171d374424f9ddd8",
+            "sha256": "eda59eeb5f7cf0fb83a1a6430ff523939ee43cd214fe2b4aebba7ca4561bbbee",
+            "bytes": 2335
+          },
+          {
+            "path": "templates/gmi_companies.html.j2",
+            "blob": "729e2a4a93246d87e9203abd84efdc16fb6f1aea",
+            "sha256": "7e64ba21d21cbe232d8f873feb52a9e804e4e4b6e015350bf8d8d8d04d809648",
+            "bytes": 6297
+          },
+          {
+            "path": "templates/gmi_issuer.html.j2",
+            "blob": "35b06fd42b3ef485564b504fcacecacb89383c49",
+            "sha256": "79397fc32d29c6101b19f0e2c6638e19d1708bd5497be74b44dbd0764d28c375",
+            "bytes": 3124
+          },
+          {
+            "path": "templates/data_base.js",
+            "blob": "9e7cc392f0bad0e269d26903432faa39d94a1b62",
+            "sha256": "2aaceaf98a0f534aa342bdc6e64c831a2261a04fafebab4becf50f2d7c82620a",
+            "bytes": 2367
+          },
+          {
+            "path": "templates/gmi_coverage.html.j2",
+            "blob": "2cb07355946474b2310d1dcbaa0cca112ff450c5",
+            "sha256": "76e35d0b49d7a7ded0b6eadebd5b1f69dccf056d50b88884eae670534b689c43",
+            "bytes": 8555
+          },
+          {
+            "path": "templates/_gmi_product_macros.html.j2",
+            "blob": "3e82a587bb0ad17f536d0513d85a1c0a66304999",
+            "sha256": "3315bd43243d52975eee75f42320528c5be69e40581c1b9e284e16e2b222b157",
+            "bytes": 7539
+          },
+          {
+            "path": "templates/_gmi_head.html.j2",
+            "blob": "5fe310cbe1a4a988f60f8b400e47a2de82ff06ef",
+            "sha256": "c0ad57713ab06c77beb85c70a898b2530d480caa24fc32da4c3b6a731c331589",
+            "bytes": 947
+          },
+          {
+            "path": "templates/gmi_index.html.j2",
+            "blob": "4556d16e03e06375a314c7278c4936dea36fd0e9",
+            "sha256": "631c49579cf7f04d8aeb3bfafeb620824dd57ccde6de1a5c562747ba520c43d5",
+            "bytes": 3733
+          },
+          {
+            "path": "engine/theme_graph/store.py",
+            "blob": "853bc3bb557aaf32251de0eb053bcff55604e68c",
+            "sha256": "7e9488741f4fe58343fd7f9255a4d694a3bda1cb081a35239ecda277d8ee8221",
+            "bytes": 25211
+          },
+          {
+            "path": "engine/theme_graph/identity_resolution.py",
+            "blob": "e3510e69645a96872e7080efe028633ff6836324",
+            "sha256": "5672ccebaac97633482efe73a2ed8d0d87d579ef8f1d5f4ebcaf2840482814c7",
+            "bytes": 40467
+          },
+          {
+            "path": "engine/theme_graph/change_report.py",
+            "blob": "354a48be5a56416b941fecb9942401a7f0fb7f1c",
+            "sha256": "50620da7b694bb1c929b3d2dd93a26fc1e40dc7253c4f3aa1b23b307ab905bed",
+            "bytes": 10059
+          },
+          {
+            "path": "engine/theme_graph/membership_evidence.py",
+            "blob": "3785874c443ffcd4cde2db31b1f11cafc184d7d5",
+            "sha256": "47c28abc14a27e5e3550885a415527a7da466204b54ae620e540230cbf3b8c89",
+            "bytes": 80400
+          },
+          {
+            "path": "engine/theme_graph/rights.py",
+            "blob": "d801f2e231e8a0dbf05d30e96fd0024ae70bd63b",
+            "sha256": "0a18ac0c2f5b40048352625f608b208755c2500b1943df30b850d51092b44c15",
+            "bytes": 16362
+          },
+          {
+            "path": "engine/theme_graph/probation.py",
+            "blob": "eac18b9804411c10ee8cede2d5d6f9aae2a84f1f",
+            "sha256": "02cfbb4cf0d38923aa9f06d3c0a4e4699591137bd202e268dab2cda22807b6a6",
+            "bytes": 58797
+          },
+          {
+            "path": "engine/theme_graph/identity.py",
+            "blob": "c27fb161bf401ca05387c4f07ac8e0220b801b2a",
+            "sha256": "550ae9eb7975062f129340e47b6d70f26bd747ef59a546958768478090f6548f",
+            "bytes": 10722
+          },
+          {
+            "path": "lib/dataos/temporal.py",
+            "blob": "094b149a8b9158f19cb99c4005568c12db96ed41",
+            "sha256": "4415404186f0b0d2870f42d9e4a0b95be87937863adf30cf015ed34e8bf92b67",
+            "bytes": 12847
+          },
+          {
+            "path": "lib/dataos/registry.py",
+            "blob": "65b0d69036da97760f20241468f2549b21d9c686",
+            "sha256": "0d575b03848c59e98bdd320243f896b41b201047d0c0c23559467b99185fb404",
+            "bytes": 41942
+          },
+          {
+            "path": "lib/dataos/__init__.py",
+            "blob": "1ddadafd88a59dfc90a7d68c3ae0897da1aae661",
+            "sha256": "86afe285932523c2ee7a1cb25ed0a57b3e7010fbd661aa27ea622530cb82fa30",
+            "bytes": 11768
+          },
+          {
+            "path": "lib/dataos/nulls.py",
+            "blob": "8e7f09ac172f326bab1678ac626fa1d5dc5aa0ab",
+            "sha256": "2556e7d0b2ac609306e512a61071a024b7b0b7eb0ec4ef3efaf22ce9f4387d49",
+            "bytes": 7737
+          },
+          {
+            "path": "lib/dataos/quality.py",
+            "blob": "967b943443d9507c5c0078f62848c38c3d2af48a",
+            "sha256": "a462b3264a5ec05467331c0a224bfd37c26e66012c376ed28922e4e45fa5f877",
+            "bytes": 36845
+          },
+          {
+            "path": "lib/dataos/identity.py",
+            "blob": "fb99fd182ac506a158c63ab434f09374cdbbd4f8",
+            "sha256": "47914bca76cf80101c25fcbd7c29455dd99fbc697373e5183fca505376f6e507",
+            "bytes": 111096
+          },
+          {
+            "path": "lib/dataos/price.py",
+            "blob": "be127fa853a6aafbf0bcb33b58783316ac972faa",
+            "sha256": "40aad993988e03f3c9ff4c2a221cdaeecc3569054d4a93fc0565657fce109e15",
+            "bytes": 10509
+          },
+          {
+            "path": "scripts/gmi_explorer/present.py",
+            "blob": "c5ae61d80a484c07d583831577db52881843061b",
+            "sha256": "3c8b76894628c1a09234c059a9fccf31d52adc47eee03d6e16f580a07c452257",
+            "bytes": 3841
+          },
+          {
+            "path": "scripts/gmi_explorer/model.py",
+            "blob": "2614997dd87bf7d7e2d0b61b283c6b364801e1b1",
+            "sha256": "19a760f597f7a7d99b72c2c72073757ff3a94eac123af30c4a6d370d78952dfa",
+            "bytes": 29457
+          }
+        ],
+        "model_sha256": "e644fa48a2bb6e6affe8d1fda74556d9db5f82acadffdad839e1efe8f095359f",
+        "source_head": "e0d7550087c564529270c12049ae62782d5b0101",
+        "expected_outputs": {
+          "gmi-companies.html": "fda702382d62068f8f39874bcd07bbb915ddacee6a3d4f734b337b58f3e47d3c",
+          "gmi-coverage.html": "893408143f6c0cb1db08084ad9c7c57b56386421f3a3958f1879a87f9035b745",
+          "gmi-index.html": "3e6e6f4846598bc6240f3aa69c5523a5500e7f79f7838e655ea7ecd7800536d4",
+          "gmi-issuer-mu.html": "22cc39aca77961584fad494ab0afa788b287636f7e3c5cfaecba7dbda2172bdd",
+          "gmi-relationships.html": "86243e69c432370eb83600a45cda897e29a1a63697f55e3a72ccffcf9468c377",
+          "gmi-states.html": "3b3c22bd3c57dc34586ac5b9d0800cab9d6c3259f56c9cdc5c2021117a65187e",
+          "gmi.css": "3bbf6c4e0a53a688f8fc1f0274213c3c5faaf43af62ed519d2c3ef5c2a571ce0",
+          "gmi.html": "1db2af5f7c12a1e2e91a30dad2a12f6309efaf0261ca3289db15ea700a3da1f8",
+          "gmi.js": "5c471afbcf3630347ec87b805676236d82e6f05c14af21a246ab4c188bbd4e68"
+        }
+      },
+      "cases": [
+        {
+          "name": "payload-recovery-1440-en",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "payload-recovery-1440-zh",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "payload-recovery-390-en",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "payload-recovery-390-zh",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "payload-recovery-320-en",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "payload-recovery-320-zh",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "payload-recovery-dark-320-en",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "payload-recovery-dark-390-zh",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "payload-schema-categories",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "payload-schema-paths",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "payload-schema-connections",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "payload-schema-source",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "payload-schema-duplicate-id",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "payload-schema-default-id",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "payload-schema-category-label",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "payload-schema-parent",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "payload-journey-en",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "payload-journey-zh",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "payload-boundaries-en",
+          "result": "PASS",
+          "contexts": 2
+        },
+        {
+          "name": "payload-boundaries-zh",
+          "result": "PASS",
+          "contexts": 2
+        }
+      ],
+      "contexts": 22,
+      "screenshots": [
+        "payload-failure-1440-en-light.png",
+        "payload-failure-1440-zh-light.png",
+        "payload-failure-390-en-light.png",
+        "payload-failure-390-zh-light.png",
+        "payload-failure-320-en-light.png",
+        "payload-failure-320-zh-light.png",
+        "payload-failure-320-en-dark.png",
+        "payload-failure-390-zh-dark.png"
+      ],
+      "page_errors": [],
+      "browser": "157.0.8103.39",
+      "expected_cases": 20,
+      "payload_failure_observations": [
+        {
+          "width": 1440,
+          "language": "en",
+          "theme": "light",
+          "fault": "malformed",
+          "requested": "theme:aerospace_components_aftermarket",
+          "shown": "theme:hbm_packaging",
+          "notice": "Interactive research could not load. The starting topic is shown below.",
+          "recovery_links": 1,
+          "ready": false,
+          "inline_native_action": true,
+          "keyboard_reachable": true,
+          "same_anchor_and_answer": true,
+          "locale_focus_and_URL_retained": true,
+          "height": 44
+        },
+        {
+          "width": 1440,
+          "language": "zh",
+          "theme": "light",
+          "fault": "malformed",
+          "requested": "theme:aerospace_components_aftermarket",
+          "shown": "theme:hbm_packaging",
+          "notice": "交互研究未能加载。下方显示起始主题。",
+          "recovery_links": 1,
+          "ready": false,
+          "inline_native_action": true,
+          "keyboard_reachable": true,
+          "same_anchor_and_answer": true,
+          "locale_focus_and_URL_retained": true,
+          "height": 44
+        },
+        {
+          "width": 390,
+          "language": "en",
+          "theme": "light",
+          "fault": "malformed",
+          "requested": "theme:aerospace_components_aftermarket",
+          "shown": "theme:hbm_packaging",
+          "notice": "Interactive research could not load. The starting topic is shown below.",
+          "recovery_links": 1,
+          "ready": false,
+          "inline_native_action": true,
+          "keyboard_reachable": true,
+          "same_anchor_and_answer": true,
+          "locale_focus_and_URL_retained": true,
+          "height": 44
+        },
+        {
+          "width": 390,
+          "language": "zh",
+          "theme": "light",
+          "fault": "malformed",
+          "requested": "theme:aerospace_components_aftermarket",
+          "shown": "theme:hbm_packaging",
+          "notice": "交互研究未能加载。下方显示起始主题。",
+          "recovery_links": 1,
+          "ready": false,
+          "inline_native_action": true,
+          "keyboard_reachable": true,
+          "same_anchor_and_answer": true,
+          "locale_focus_and_URL_retained": true,
+          "height": 44
+        },
+        {
+          "width": 320,
+          "language": "en",
+          "theme": "light",
+          "fault": "malformed",
+          "requested": "theme:aerospace_components_aftermarket",
+          "shown": "theme:hbm_packaging",
+          "notice": "Interactive research could not load. The starting topic is shown below.",
+          "recovery_links": 1,
+          "ready": false,
+          "inline_native_action": true,
+          "keyboard_reachable": true,
+          "same_anchor_and_answer": true,
+          "locale_focus_and_URL_retained": true,
+          "height": 44
+        },
+        {
+          "width": 320,
+          "language": "zh",
+          "theme": "light",
+          "fault": "malformed",
+          "requested": "theme:aerospace_components_aftermarket",
+          "shown": "theme:hbm_packaging",
+          "notice": "交互研究未能加载。下方显示起始主题。",
+          "recovery_links": 1,
+          "ready": false,
+          "inline_native_action": true,
+          "keyboard_reachable": true,
+          "same_anchor_and_answer": true,
+          "locale_focus_and_URL_retained": true,
+          "height": 44
+        },
+        {
+          "width": 320,
+          "language": "en",
+          "theme": "dark",
+          "fault": "malformed",
+          "requested": "theme:aerospace_components_aftermarket",
+          "shown": "theme:hbm_packaging",
+          "notice": "Interactive research could not load. The starting topic is shown below.",
+          "recovery_links": 1,
+          "ready": false,
+          "inline_native_action": true,
+          "keyboard_reachable": true,
+          "same_anchor_and_answer": true,
+          "locale_focus_and_URL_retained": true,
+          "height": 44
+        },
+        {
+          "width": 390,
+          "language": "zh",
+          "theme": "dark",
+          "fault": "malformed",
+          "requested": "theme:aerospace_components_aftermarket",
+          "shown": "theme:hbm_packaging",
+          "notice": "交互研究未能加载。下方显示起始主题。",
+          "recovery_links": 1,
+          "ready": false,
+          "inline_native_action": true,
+          "keyboard_reachable": true,
+          "same_anchor_and_answer": true,
+          "locale_focus_and_URL_retained": true,
+          "height": 44
+        },
+        {
+          "width": 390,
+          "language": "zh",
+          "theme": "light",
+          "fault": "categories",
+          "requested": "theme:aerospace_components_aftermarket",
+          "shown": "theme:hbm_packaging",
+          "notice": "交互研究未能加载。下方显示起始主题。",
+          "recovery_links": 1,
+          "ready": false,
+          "inline_native_action": true,
+          "keyboard_reachable": true,
+          "same_anchor_and_answer": true,
+          "locale_focus_and_URL_retained": true,
+          "height": 44
+        },
+        {
+          "width": 320,
+          "language": "en",
+          "theme": "light",
+          "fault": "paths",
+          "requested": "theme:aerospace_components_aftermarket",
+          "shown": "theme:hbm_packaging",
+          "notice": "Interactive research could not load. The starting topic is shown below.",
+          "recovery_links": 1,
+          "ready": false,
+          "inline_native_action": true,
+          "keyboard_reachable": true,
+          "same_anchor_and_answer": true,
+          "locale_focus_and_URL_retained": true,
+          "height": 44
+        },
+        {
+          "width": 390,
+          "language": "zh",
+          "theme": "light",
+          "fault": "connections",
+          "requested": "theme:aerospace_components_aftermarket",
+          "shown": "theme:hbm_packaging",
+          "notice": "交互研究未能加载。下方显示起始主题。",
+          "recovery_links": 1,
+          "ready": false,
+          "inline_native_action": true,
+          "keyboard_reachable": true,
+          "same_anchor_and_answer": true,
+          "locale_focus_and_URL_retained": true,
+          "height": 44
+        },
+        {
+          "width": 320,
+          "language": "en",
+          "theme": "light",
+          "fault": "source",
+          "requested": "theme:aerospace_components_aftermarket",
+          "shown": "theme:hbm_packaging",
+          "notice": "Interactive research could not load. The starting topic is shown below.",
+          "recovery_links": 1,
+          "ready": false,
+          "inline_native_action": true,
+          "keyboard_reachable": true,
+          "same_anchor_and_answer": true,
+          "locale_focus_and_URL_retained": true,
+          "height": 44
+        },
+        {
+          "width": 390,
+          "language": "zh",
+          "theme": "light",
+          "fault": "duplicate-id",
+          "requested": "theme:aerospace_components_aftermarket",
+          "shown": "theme:hbm_packaging",
+          "notice": "交互研究未能加载。下方显示起始主题。",
+          "recovery_links": 1,
+          "ready": false,
+          "inline_native_action": true,
+          "keyboard_reachable": true,
+          "same_anchor_and_answer": true,
+          "locale_focus_and_URL_retained": true,
+          "height": 44
+        },
+        {
+          "width": 320,
+          "language": "en",
+          "theme": "light",
+          "fault": "default-id",
+          "requested": "theme:aerospace_components_aftermarket",
+          "shown": "theme:hbm_packaging",
+          "notice": "Interactive research could not load. The starting topic is shown below.",
+          "recovery_links": 1,
+          "ready": false,
+          "inline_native_action": true,
+          "keyboard_reachable": true,
+          "same_anchor_and_answer": true,
+          "locale_focus_and_URL_retained": true,
+          "height": 44
+        },
+        {
+          "width": 390,
+          "language": "zh",
+          "theme": "light",
+          "fault": "category-label",
+          "requested": "theme:aerospace_components_aftermarket",
+          "shown": "theme:hbm_packaging",
+          "notice": "交互研究未能加载。下方显示起始主题。",
+          "recovery_links": 1,
+          "ready": false,
+          "inline_native_action": true,
+          "keyboard_reachable": true,
+          "same_anchor_and_answer": true,
+          "locale_focus_and_URL_retained": true,
+          "height": 44
+        },
+        {
+          "width": 320,
+          "language": "en",
+          "theme": "light",
+          "fault": "parent",
+          "requested": "theme:aerospace_components_aftermarket",
+          "shown": "theme:hbm_packaging",
+          "notice": "Interactive research could not load. The starting topic is shown below.",
+          "recovery_links": 1,
+          "ready": false,
+          "inline_native_action": true,
+          "keyboard_reachable": true,
+          "same_anchor_and_answer": true,
+          "locale_focus_and_URL_retained": true,
+          "height": 44
+        }
+      ],
+      "payload_failure_journeys": [
+        {
+          "language": "en",
+          "initial_return": {
+            "theme": "theme:aerospace_components_aftermarket",
+            "q": "remember this",
+            "scope": "core",
+            "evidence": "1",
+            "lens": "coverage"
+          },
+          "updated_return": {
+            "theme": "theme:aerospace_components_aftermarket",
+            "q": "updated query",
+            "lens": "coverage"
+          },
+          "global_href_after_hash": "http://127.0.0.1:60253/case-17/gmi-index.html#gmi_return=gmi.html%23theme%3Dtheme%253Aaerospace_components_aftermarket%26lens%3Dcoverage%26q%3Dupdated%2Bquery",
+          "history_back_forward": true,
+          "lens_replaceState": true,
+          "locale_focus_retained": true,
+          "old_fields_removed": true,
+          "overlong_context_rejected": true,
+          "same_anchor_and_answer": true,
+          "native_href_and_Enter_roundtrip": true,
+          "product_history_writes_before_navigation": [
+            "replaceState"
+          ]
+        },
+        {
+          "language": "zh",
+          "initial_return": {
+            "theme": "theme:aerospace_components_aftermarket",
+            "q": "remember this",
+            "scope": "core",
+            "evidence": "1",
+            "lens": "coverage"
+          },
+          "updated_return": {
+            "theme": "theme:aerospace_components_aftermarket",
+            "q": "updated query",
+            "lens": "coverage"
+          },
+          "global_href_after_hash": "http://127.0.0.1:60253/case-18/gmi-index.html#gmi_return=gmi.html%23theme%3Dtheme%253Aaerospace_components_aftermarket%26lens%3Dcoverage%26q%3Dupdated%2Bquery",
+          "history_back_forward": true,
+          "lens_replaceState": true,
+          "locale_focus_retained": true,
+          "old_fields_removed": true,
+          "overlong_context_rejected": true,
+          "same_anchor_and_answer": true,
+          "native_href_and_Enter_roundtrip": true,
+          "product_history_writes_before_navigation": [
+            "replaceState"
+          ]
+        }
+      ],
+      "payload_failure_boundaries": [
+        {
+          "language": "en",
+          "normal_clear_filter_owner": true,
+          "missing_topic_distinct": true,
+          "noJS_native_index": true,
+          "new_failure_action_hidden_outside_payload_failure": true
+        },
+        {
+          "language": "zh",
+          "normal_clear_filter_owner": true,
+          "missing_topic_distinct": true,
+          "noJS_native_index": true,
+          "new_failure_action_hidden_outside_payload_failure": true
+        }
+      ],
+      "complete": true,
+      "pass": true
+    },
+    "pre_related_candidate_render": {
+      "source_head": "e0d7550087c564529270c12049ae62782d5b0101",
+      "model_sha256": "e644fa48a2bb6e6affe8d1fda74556d9db5f82acadffdad839e1efe8f095359f",
+      "changed_outputs": [
+        "gmi.html",
+        "gmi.js"
+      ],
+      "outputs": {
+        "gmi-companies.html": "fda702382d62068f8f39874bcd07bbb915ddacee6a3d4f734b337b58f3e47d3c",
+        "gmi-coverage.html": "893408143f6c0cb1db08084ad9c7c57b56386421f3a3958f1879a87f9035b745",
+        "gmi-index.html": "3e6e6f4846598bc6240f3aa69c5523a5500e7f79f7838e655ea7ecd7800536d4",
+        "gmi-issuer-mu.html": "22cc39aca77961584fad494ab0afa788b287636f7e3c5cfaecba7dbda2172bdd",
+        "gmi-relationships.html": "86243e69c432370eb83600a45cda897e29a1a63697f55e3a72ccffcf9468c377",
+        "gmi-states.html": "3b3c22bd3c57dc34586ac5b9d0800cab9d6c3259f56c9cdc5c2021117a65187e",
+        "gmi.css": "3bbf6c4e0a53a688f8fc1f0274213c3c5faaf43af62ed519d2c3ef5c2a571ce0",
+        "gmi.html": "8cdbadf83bcfb49153f4c0f258f72541349d0eb34becbf34772f00d2ccfe676d",
+        "gmi.js": "fb42b942dd6483136d718470c4576b2c2a53c0629e94c95c750ad02f026ba7ab"
+      },
+      "six_other_html_and_css_exact": true,
+      "paired_js_exact": true,
+      "only_one_native_recovery_anchor_added_to_explorer": true,
+      "candidate_inputs": {
+        "templates/gmi.js": {
+          "bytes": 53773,
+          "sha256": "fb42b942dd6483136d718470c4576b2c2a53c0629e94c95c750ad02f026ba7ab",
+          "blob": "a2a4c0dd665840d01dad98cd62badf8a07b69339"
+        },
+        "templates/gmi_map.html.j2": {
+          "bytes": 6176,
+          "sha256": "4ef78e0c937e00472de19ff6ca676eff3d0cc64b4a328b3a9b6ea8cdcbb4cb8b",
+          "blob": "fd6ed9c5bfa16e0cfeb1bd964e84ab809fb6595d"
+        },
+        "candidate/gmi.html": {
+          "bytes": 973168,
+          "sha256": "8cdbadf83bcfb49153f4c0f258f72541349d0eb34becbf34772f00d2ccfe676d",
+          "blob": "9c142c6854de795372cc2b256d74eab6071cf3ea"
+        }
+      },
+      "generated_anchor_html": "<a class=\"gmi-action-secondary\" data-topic-notice-index href=\"gmi-index.html\" hidden><span class=\"l-en\">Open the full index</span><span class=\"l-zh\">打开完整索引</span><svg viewBox=\"0 0 24 24\" width=\"16\" height=\"16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M4.5 12h15M13.5 6l6 6-6 6\"/></svg></a>"
+    },
+    "source_and_test_hashes": {
+      "templates/gmi.js": {
+        "path": "/Volumes/Mastermind/agent-workspaces/verify/gmi-payload-recovery-20261109-bt0yvuue/templates/gmi.js",
+        "bytes": 54043,
+        "sha256": "74db8222c79911a06add34d076e69d7e838aa67a21740522d8c31b60e4f58896",
+        "blob": "34b2ad1110ace6a667e87e7164ff74bde701eb85"
+      },
+      "templates/gmi_map.html.j2": {
+        "path": "/Volumes/Mastermind/agent-workspaces/verify/gmi-payload-recovery-20261109-bt0yvuue/templates/gmi_map.html.j2",
+        "bytes": 6176,
+        "sha256": "4ef78e0c937e00472de19ff6ca676eff3d0cc64b4a328b3a9b6ea8cdcbb4cb8b",
+        "blob": "fd6ed9c5bfa16e0cfeb1bd964e84ab809fb6595d"
+      },
+      "verify_product_browser.py": {
+        "path": "/Volumes/Mastermind/agent-workspaces/verify/gmi-payload-recovery-20261109-bt0yvuue/verify_product_browser.py",
+        "bytes": 224155,
+        "sha256": "e528935102d7c2e87efd954d610e6778f115a7b5f7f093c896a27eaaceb3469f",
+        "blob": "f65bae942cc5424f6c24b9b3fc56180e1dee36ce"
+      },
+      "verify_payload_recovery_component.py": {
+        "path": "/Volumes/Mastermind/agent-workspaces/verify/gmi-payload-recovery-20261109-bt0yvuue/verify_payload_recovery_component.py",
+        "bytes": 7022,
+        "sha256": "913a8fdca31991b63439b14f36bc46c034d68bb127e46a2e030388d14333320f",
+        "blob": "8515c52cb94689cb93e3f7b60e60b2ea2f37e22c"
+      },
+      "initial-verify_product_browser.py": {
+        "path": "/Volumes/Mastermind/agent-workspaces/verify/gmi-payload-recovery-20261109-bt0yvuue/initial-verify_product_browser.py",
+        "bytes": 222288,
+        "sha256": "72a61508d43cb8089b89ce015d3d5e6a3ce9d231cffb4fc2da9e2c31e8c759f1",
+        "blob": "d558cbb7568c18d0abfe05593d6a311218b6edc1"
+      },
+      "rejected-context-diagnostic-verifier.py": {
+        "path": "/Volumes/Mastermind/agent-workspaces/verify/gmi-payload-recovery-20261109-bt0yvuue/rejected-context-diagnostic-verifier.py",
+        "bytes": 222910,
+        "sha256": "b0abc17e3a0617f8adf5e256ed06e963ca22f1be52c3bf788bb0d7c5ca8037b8",
+        "blob": "414224794005ac96939f54fd1f33f044684b2071"
+      },
+      "pre-related-gmi.js": {
+        "path": "/Volumes/Mastermind/agent-workspaces/verify/gmi-payload-recovery-20261109-bt0yvuue/pre-related-gmi.js",
+        "bytes": 53773,
+        "sha256": "fb42b942dd6483136d718470c4576b2c2a53c0629e94c95c750ad02f026ba7ab",
+        "blob": "a2a4c0dd665840d01dad98cd62badf8a07b69339"
+      },
+      "pre-related-verifier.py": {
+        "path": "/Volumes/Mastermind/agent-workspaces/verify/gmi-payload-recovery-20261109-bt0yvuue/pre-related-verifier.py",
+        "bytes": 223004,
+        "sha256": "0ae4e91ddbf3534e5b6eaacbd9b49f4ca9d48e7acd83d2c26cb7e6835867a5c5",
+        "blob": "6b1173da0b445b1e888b279cd15e5df86d72cfda"
+      }
+    },
+    "screenshot_hashes": [
+      {
+        "path": "/Volumes/Mastermind/agent-workspaces/verify/gmi-payload-recovery-20261109-bt0yvuue/candidate-proof/payload-failure-1440-en-light.png",
+        "bytes": 208659,
+        "sha256": "a14bff1472f0a1b88f47eeccc52956acc55beb6a82577bc80cd385d03023a761",
+        "blob": "fda4cf8daec6ce5c11c7b2f074a76fd21194ff03"
+      },
+      {
+        "path": "/Volumes/Mastermind/agent-workspaces/verify/gmi-payload-recovery-20261109-bt0yvuue/candidate-proof/payload-failure-1440-zh-light.png",
+        "bytes": 221172,
+        "sha256": "26422e7173061eb07baaceb6c161ee6872f81e8341d8f89a9fffe6cc19016fa0",
+        "blob": "b5b667cef8c5b35735daa453d1be877bb9ccb446"
+      },
+      {
+        "path": "/Volumes/Mastermind/agent-workspaces/verify/gmi-payload-recovery-20261109-bt0yvuue/candidate-proof/payload-failure-320-en-dark.png",
+        "bytes": 207474,
+        "sha256": "adce19e02578499967c4dfadf39e47a6f7c6d7fc6f11157ad37a939785920bec",
+        "blob": "e38a97d9580337358ad4fd5d40cbcd8eb1b74b97"
+      },
+      {
+        "path": "/Volumes/Mastermind/agent-workspaces/verify/gmi-payload-recovery-20261109-bt0yvuue/candidate-proof/payload-failure-320-en-light.png",
+        "bytes": 163766,
+        "sha256": "0bb12099200cb149ed07eca2a2663d762092671bede18e1679c2a720f6321a08",
+        "blob": "2bb73759a099cb819b90c9404f50fb3810573444"
+      },
+      {
+        "path": "/Volumes/Mastermind/agent-workspaces/verify/gmi-payload-recovery-20261109-bt0yvuue/candidate-proof/payload-failure-320-zh-light.png",
+        "bytes": 156988,
+        "sha256": "31d3884129a343150e4b46dc0ade47f54835fccad848b561f2e0fcb0050d840d",
+        "blob": "b77c700244830a7c5f4d22a9af00e1dec5cdb6a5"
+      },
+      {
+        "path": "/Volumes/Mastermind/agent-workspaces/verify/gmi-payload-recovery-20261109-bt0yvuue/candidate-proof/payload-failure-390-en-light.png",
+        "bytes": 167445,
+        "sha256": "e314ae85e571a44ceec33097873f29f4e169baafda3908e45741f170b9558021",
+        "blob": "2f4df21cf38302127b6e609aa024cda88c93be80"
+      },
+      {
+        "path": "/Volumes/Mastermind/agent-workspaces/verify/gmi-payload-recovery-20261109-bt0yvuue/candidate-proof/payload-failure-390-zh-dark.png",
+        "bytes": 202473,
+        "sha256": "6985725e1e334e422e6450ebd2eecd4812e5188d0f0342c91155983d347d0a13",
+        "blob": "a7b69a50639b725cc00e1b2e06a3e95f3bd8a7b1"
+      },
+      {
+        "path": "/Volumes/Mastermind/agent-workspaces/verify/gmi-payload-recovery-20261109-bt0yvuue/candidate-proof/payload-failure-390-zh-light.png",
+        "bytes": 163832,
+        "sha256": "e7d2d90a093ee5270c252d7290e88e70f2eb4feef0a2e4040c7582793539ff50",
+        "blob": "743dffb27a691dcd61a321d21ba3f2a121be250b"
+      }
+    ],
+    "receipt_files": {
+      "input_bindings": {
+        "path": "/Volumes/Mastermind/agent-workspaces/verify/gmi-payload-recovery-20261109-bt0yvuue/input-bindings.json",
+        "bytes": 11657,
+        "sha256": "51dfca7b39c75ff1cb1fb093ebeaa6cf9cca26ef4861aba9b7519b2803a64d73",
+        "blob": "bad42b8d3e8185340bb28ec4c15811b336cfb2d0"
+      },
+      "baseline_render": {
+        "path": "/Volumes/Mastermind/agent-workspaces/verify/gmi-payload-recovery-20261109-bt0yvuue/baseline-render-receipt.json",
+        "bytes": 1033,
+        "sha256": "036f8d183295f4a3112d224875e61b232b6a3de612dc321c0f8626ddfb1eaf50",
+        "blob": "7c9ba60a20a6d4dd55dbf0a1ff1d81796a673e1f"
+      },
+      "candidate_render": {
+        "path": "/Volumes/Mastermind/agent-workspaces/verify/gmi-payload-recovery-20261109-bt0yvuue/candidate-render-receipt.json",
+        "bytes": 2255,
+        "sha256": "881695878a722b4a7c8631bfd4ee2b8e972e55dcfb6d1aa7bdb79436afa34331",
+        "blob": "505fb5d21e8c624c3f4d48d894bbd82690c6037e"
+      },
+      "baseline_browser": {
+        "path": "/Volumes/Mastermind/agent-workspaces/verify/gmi-payload-recovery-20261109-bt0yvuue/baseline-proof/browser-report.json",
+        "bytes": 18800,
+        "sha256": "2463cfefb061c7678ad41c00909943442103c6a85ee84f663b080c70d563bfbc",
+        "blob": "7361fb8c00712eceb32021febb880c3a9ddbe14c"
+      },
+      "candidate_browser": {
+        "path": "/Volumes/Mastermind/agent-workspaces/verify/gmi-payload-recovery-20261109-bt0yvuue/candidate-proof/browser-report.json",
+        "bytes": 27467,
+        "sha256": "541b12caa5c6c0edcda6fa482eff4d8e9ce76843976664916f0e2658a19c3fee",
+        "blob": "e84d90a981cb1d68df753b1199ff6321c128da31"
+      },
+      "initial_candidate_browser": {
+        "path": "/Volumes/Mastermind/agent-workspaces/verify/gmi-payload-recovery-20261109-bt0yvuue/initial-candidate-proof/browser-report.json",
+        "bytes": 26067,
+        "sha256": "411c80b7f6a82ee5bd9fac371bf9cbde256cd5d0423f56d8cfb6cacd09a8b1f5",
+        "blob": "efdb1c85bfceb17c40925e0812fb26ad1fb9924c"
+      },
+      "predicate_diagnostic": {
+        "path": "/Volumes/Mastermind/agent-workspaces/verify/gmi-payload-recovery-20261109-bt0yvuue/rejected-context-diagnostic-proof/browser-report.json",
+        "bytes": 16201,
+        "sha256": "1592ff3c2143609cf7f18c50eb9c94bcc2e330a09fa42c946c76e7834379ff06",
+        "blob": "ccc9ba33763090738647f0962b7ddc06c420fd3f"
+      },
+      "pre_related_candidate_browser": {
+        "path": "/Volumes/Mastermind/agent-workspaces/verify/gmi-payload-recovery-20261109-bt0yvuue/pre-related-candidate-proof/browser-report.json",
+        "bytes": 25995,
+        "sha256": "16a7569b3701ee87c65137132d0d27cc15a9a3da68d717b9d2bec2cfecf1f5b4",
+        "blob": "278f362f902f070664099d5d2263ed417e67c236"
+      },
+      "pre_related_candidate_render": {
+        "path": "/Volumes/Mastermind/agent-workspaces/verify/gmi-payload-recovery-20261109-bt0yvuue/pre-related-candidate-render-receipt.json",
+        "bytes": 2255,
+        "sha256": "ca16fb368e1a014718819bd5838e3d80a5f616f317f8b370ccd84b38de88cb20",
+        "blob": "0ddaf38a4bd0457ecb6e3a5698c87e73f744fe9b"
+      }
+    }
+  }
+}

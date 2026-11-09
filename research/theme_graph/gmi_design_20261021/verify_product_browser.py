@@ -2930,6 +2930,248 @@ with sync_playwright() as pw:
             check(f'coverage-disclosure-{language}-{scripts}-{reduced}',lambda w=width,l=language,s=scripts,r=reduced:coverage_details_interaction(w,l,'light',s,r))
 
 
+    def payload_failure_page(c, defect, fragment=None):
+        """Inject only a public-presentation payload fault into the served document."""
+        original=(args.site/'gmi.html').read_text()
+        pattern=r'(<script\b[^>]*id="gmi-topic-data"[^>]*>)(.*?)(</script>)'
+        found=re.search(pattern,original,re.S);assert found
+        payload=json.loads(found[2])
+        default_id=re.search(r'data-default-theme="([^"]+)"',original)[1]
+        default=next(t for t in payload['topics'] if t['id']==default_id)
+        target=next(t for t in payload['topics'] if t['id']!=default_id and t['tier']=='core')
+        if defect=='malformed':
+            damaged_payload='{"topics":]'
+        else:
+            data=json.loads(json.dumps(payload));selected=next(t for t in data['topics'] if t['id']==default_id)
+            if defect=='categories':data.pop('categories')
+            elif defect in ('paths','connections'):selected[defect]=None
+            elif defect=='source':selected['connections'][0]['source']=None
+            elif defect=='duplicate-id':data['topics'].append(data['topics'][0])
+            elif defect=='default-id':data['topics'].remove(selected)
+            elif defect=='category-label':data['categories'][selected['category']]=None
+            elif defect=='parent':selected['parent']='missing-category'
+            else:raise AssertionError('Unknown fault '+defect)
+            damaged_payload=json.dumps(data)
+        def damage(route):
+            response=route.fetch();text=response.text()
+            changed=re.sub(pattern,lambda m:m[1]+damaged_payload+m[3],text,flags=re.S)
+            assert changed!=text
+            route.fulfill(response=response,body=changed)
+        c.route('**/gmi.html*',damage)
+        if fragment is None:
+            fragment=urlencode({'theme':target['id'],'q':'remember this','scope':'core','evidence':'1','lens':'coverage'})
+        p=page_for(c,'gmi.html#'+fragment)
+        return p,{'default':default,'target':target,'fragment':fragment,'defect':defect}
+
+    def payload_failure_recovery(width, language, defect='malformed', theme='light'):
+        """A failed deep link identifies its static answer and offers a native action."""
+        with context(width,theme,language,reduced_motion='reduce') as c:
+            p,fixture=payload_failure_page(c,defect)
+            notice=p.locator('[data-topic-notice]');recovery=p.locator('[data-topic-notice-index]')
+            title=p.locator('#gmi-topic-title')
+            expect(title).to_have_text(fixture['default'][language],use_inner_text=True)
+            assert fixture['default']['id']!=fixture['target']['id']
+            expect(p.locator('[data-gmi-ready]')).to_have_count(0)
+            expect(p.locator('[data-browse-home]')).not_to_be_visible()
+            expect(p.locator('[data-browse-open]')).not_to_be_visible()
+            expect(p.locator('[data-gmi-copy]')).not_to_be_visible()
+            expect(p.locator('[data-topic-notice-reset]')).not_to_be_visible()
+            expect(p.locator('.gmi-evidence-card')).to_have_count(len(fixture['default']['connections']))
+            assert p.locator('[data-topic-related]').evaluate('(n)=>n.closest("section").hidden')
+            expect(p.locator('.gmi-topic-context>section').nth(1)).to_be_visible()
+            expect(p.locator('.gmi-topic-receipt>summary')).to_be_visible()
+            observed={'width':width,'language':language,'theme':theme,'fault':defect,'requested':fixture['target']['id'],'shown':fixture['default']['id'],'notice':notice.inner_text(),'recovery_links':recovery.count(),'ready':False}
+            report.setdefault('payload_failure_observations',[]).append(observed)
+            if defect=='malformed':
+                path=args.out/f'payload-failure-{width}-{language}-{theme}.png'
+                p.screenshot(path=str(path),full_page=True);report['screenshots'].append(path.name)
+            expect(notice).to_have_text('Interactive research could not load. The starting topic is shown below.' if language=='en' else '交互研究未能加载。下方显示起始主题。')
+            expect(recovery).to_be_visible()
+            expect(recovery).to_have_text('Open the full index' if language=='en' else '打开完整索引',use_inner_text=True)
+            href=recovery.get_attribute('href')
+            assert urlsplit(href).path.endswith('/gmi-index.html')
+            returned=parse_qs(urlsplit(href).fragment)['gmi_return'][0]
+            assert urlsplit(returned).path=='gmi.html'
+            assert parse_qs(urlsplit(returned).fragment)==parse_qs(fixture['fragment'])
+            b=recovery.bounding_box();assert b['height']>=44 and b['x']>=0 and b['x']+b['width']<=width+0.5
+            assert not p.evaluate('document.documentElement.scrollWidth>innerWidth')
+            p.locator('a.gmi-product-name[href]').focus()
+            for _ in range(20):
+                p.keyboard.press('Tab')
+                if recovery.evaluate('(n)=>n===document.activeElement'):break
+            expect(recovery).to_be_focused()
+            p.keyboard.press('Shift+Tab');p.keyboard.press('Tab');expect(recovery).to_be_focused()
+            original_url=p.url;history_length=p.evaluate('history.length')
+            p.evaluate('window.__payloadRecovery=document.querySelector("[data-topic-notice-index]");window.__payloadAnswer=document.querySelector("[data-topic-answer]")')
+            for current in ('zh' if language=='en' else 'en',language):
+                p.evaluate('(v)=>document.documentElement.setAttribute("data-lang",v)',current)
+                expect(notice).to_have_text('Interactive research could not load. The starting topic is shown below.' if current=='en' else '交互研究未能加载。下方显示起始主题。')
+                expect(recovery).to_have_text('Open the full index' if current=='en' else '打开完整索引',use_inner_text=True)
+                expect(title).to_have_text(fixture['default'][current],use_inner_text=True);expect(recovery).to_be_focused()
+                assert p.evaluate('window.__payloadRecovery===document.querySelector("[data-topic-notice-index]")&&window.__payloadAnswer===document.querySelector("[data-topic-answer]")')
+                assert p.url==original_url and p.evaluate('history.length')==history_length
+                expect(p.locator('[data-gmi-ready]')).to_have_count(0)
+            if defect=='malformed' and (width,language) in ((390,'en'),(320,'zh')):
+                for selector in ('.gmi-evidence-receipt','.gmi-topic-receipt'):
+                    disclosure=p.locator(selector).first;summary=disclosure.locator(':scope>summary')
+                    expect(disclosure).not_to_have_attribute('open','')
+                    summary.focus();summary.press('Enter')
+                    expect(disclosure).to_have_attribute('open','');expect(summary).to_be_focused()
+                    summary.press('Space');expect(disclosure).not_to_have_attribute('open','');expect(summary).to_be_focused()
+                assert p.url==original_url and p.evaluate('history.length')==history_length
+            observed.update({'empty_related_hidden':True,'coverage_and_native_disclosures_retained':True,'inline_native_action':True,'keyboard_reachable':True,'same_anchor_and_answer':True,'locale_focus_and_URL_retained':True,'height':b['height']})
+
+    def payload_failure_journey(language):
+        """Failed initialization still projects current qualified context through one owner."""
+        width=390 if language=='en' else 320
+        with context(width,'light',language,reduced_motion='reduce') as c:
+            p,fixture=payload_failure_page(c,'malformed')
+            global_index=p.locator('.gmi-product-tools a[href*="gmi-index.html"]')
+            recovery=p.locator('[data-topic-notice-index]')
+            def context_is(selector, values):
+                if values is None:
+                    expect(p.locator(selector)).to_have_attribute('href','gmi-index.html')
+                    return
+                p.wait_for_function("""({selector,values})=>{
+                  const a=document.querySelector(selector);if(!a)return false;
+                  const returned=new URLSearchParams(new URL(a.href).hash.slice(1)).get('gmi_return');
+                  if(!returned)return false;
+                  const u=new URL(returned,location.href),v=Object.fromEntries(new URLSearchParams(u.hash.slice(1)));
+                  return u.pathname.endsWith('/gmi.html')&&Object.keys(v).length===Object.keys(values).length&&Object.keys(values).every(k=>v[k]===values[k]);
+                }""",arg={'selector':selector,'values':values},timeout=2500)
+            gs='.gmi-product-tools a[href*="gmi-index.html"]'
+            rs='[data-topic-notice-index]'
+            initial={k:v[0] for k,v in parse_qs(fixture['fragment']).items()}
+            context_is(gs,initial)
+            p.evaluate("""()=>{
+              window.__payloadHashEvents=0;window.__payloadHistoryWrites=[];
+              addEventListener('hashchange',()=>window.__payloadHashEvents++);
+              for(const key of ['pushState','replaceState']){
+                const original=history[key].bind(history);
+                history[key]=function(...args){window.__payloadHistoryWrites.push(key);return original(...args);};
+              }
+              window.__failedAnswer=document.querySelector('[data-topic-answer]');
+            }""")
+            initial_length=p.evaluate('history.length')
+            updated={'theme':fixture['target']['id'],'q':'updated query','lens':'coverage'}
+            p.evaluate('(v)=>{location.hash=v;}',urlencode(updated))
+            p.wait_for_function('window.__payloadHashEvents>=1')
+            observed={'language':language,'initial_return':initial,'updated_return':updated,'global_href_after_hash':global_index.get_attribute('href')}
+            report.setdefault('payload_failure_journeys',[]).append(observed)
+            # The old failure path stops before installing these context listeners.
+            context_is(gs,updated)
+            expect(recovery).to_be_visible();context_is(rs,updated)
+            recovery.focus();p.evaluate('window.__sameRecovery=document.querySelector("[data-topic-notice-index]")')
+            p.evaluate('location.hash=""');context_is(gs,{});context_is(rs,{})
+            expect(recovery).to_be_focused()
+            p.go_back();context_is(gs,updated);context_is(rs,updated)
+            p.go_back();context_is(gs,initial);context_is(rs,initial)
+            p.go_forward();context_is(gs,updated);context_is(rs,updated)
+            expect(recovery).to_be_focused()
+            assert p.evaluate('history.length')==initial_length+2
+            assert p.evaluate('window.__payloadHistoryWrites')==[]
+            # Replacing the current lens does not dispatch hashchange or popstate.
+            p.locator('.gmi-advanced>summary').click()
+            before_lens_history=p.evaluate('history.length')
+            p.locator('[data-gmi-set-lens="chain"]').click()
+            with_lens={**updated,'lens':'chain'}
+            context_is(gs,with_lens);context_is(rs,with_lens)
+            assert p.evaluate('history.length')==before_lens_history
+            assert p.evaluate('window.__payloadHistoryWrites')==['replaceState']
+            recovery.focus();old_url=p.url
+            other='zh' if language=='en' else 'en'
+            p.evaluate('(v)=>document.documentElement.setAttribute("data-lang",v)',other)
+            expect(recovery).to_have_text('Open the full index' if other=='en' else '打开完整索引',use_inner_text=True)
+            expect(recovery).to_be_focused();context_is(rs,with_lens)
+            assert p.url==old_url
+            p.evaluate('(v)=>document.documentElement.setAttribute("data-lang",v)',language)
+            expect(recovery).to_be_focused()
+            filtered={'theme':fixture['target']['id'],'q':'a'*250,'scope':'invalid','unknown':'discarded','lens':'coverage'}
+            p.evaluate('(v)=>{location.hash=v;}',urlencode(filtered))
+            qualified={'theme':fixture['target']['id'],'q':'a'*200,'lens':'coverage'}
+            context_is(gs,qualified);context_is(rs,qualified)
+            expect(recovery).to_be_focused()
+            p.evaluate('(v)=>{location.hash=v;}',urlencode({'q':'a'*5000}))
+            try:
+                context_is(gs,None);context_is(rs,None)
+            except Exception:
+                observed['rejected_context_snapshot']=p.evaluate("""()=>{
+                  const link=s=>document.querySelector(s)?.getAttribute('href');
+                  return {hash_length:location.hash.length,query_length:new URLSearchParams(location.hash.slice(1)).get('q')?.length,
+                    global_href:link('.gmi-product-tools a[href*="gmi-index.html"]'),inline_href:link('[data-topic-notice-index]'),
+                    history_writes:window.__payloadHistoryWrites,hash_events:window.__payloadHashEvents};
+                }""")
+                raise
+            assert recovery.get_attribute('href')=='gmi-index.html'
+            expect(recovery).to_be_focused()
+            p.evaluate('(v)=>{location.hash=v;}',urlencode(with_lens))
+            context_is(gs,with_lens);context_is(rs,with_lens)
+            assert p.evaluate('window.__sameRecovery===document.querySelector("[data-topic-notice-index]")&&window.__failedAnswer===document.querySelector("[data-topic-answer]")')
+            expect(p.locator('#gmi-topic-title')).to_have_text(fixture['default'][language],use_inner_text=True)
+            expect(p.locator('[data-gmi-ready]')).to_have_count(0)
+            assert p.evaluate('window.__payloadHistoryWrites')==['replaceState']
+            # Use the native href in a second page, then activate the original with Enter.
+            href=recovery.get_attribute('href')
+            other_page=c.new_page();other_page.on('pageerror',lambda e:report['page_errors'].append(str(e)));other_page.goto(href,wait_until='networkidle')
+            expect(other_page.locator('a.gmi-irow-name')).to_have_count(371)
+            back=other_page.locator('[data-gmi-return]');expect(back).to_be_visible()
+            assert parse_qs(urlsplit(back.get_attribute('href')).fragment)=={k:[v] for k,v in with_lens.items()}
+            other_page.close()
+            recovery.focus();p.keyboard.press('Enter')
+            expect(p.locator('a.gmi-irow-name')).to_have_count(371)
+            back=p.locator('[data-gmi-return]');expect(back).to_be_visible()
+            expect(back).to_have_text('Back to theme research' if language=='en' else '返回主题研究')
+            assert parse_qs(urlsplit(back.get_attribute('href')).fragment)=={k:[v] for k,v in with_lens.items()}
+            back.focus();p.keyboard.press('Enter')
+            expect(p.locator('[data-topic-notice-index]')).to_be_visible()
+            expect(p.locator('#gmi-topic-title')).to_have_text(fixture['default'][language],use_inner_text=True)
+            expect(p.locator('[data-gmi-ready]')).to_have_count(0)
+            assert parse_qs(urlsplit(p.url).fragment)=={k:[v] for k,v in with_lens.items()}
+            observed.update({'history_back_forward':True,'lens_replaceState':True,'locale_focus_retained':True,'old_fields_removed':True,'overlong_context_rejected':True,'same_anchor_and_answer':True,'native_href_and_Enter_roundtrip':True,'product_history_writes_before_navigation':['replaceState']})
+
+    def payload_failure_boundaries(language):
+        """Normal filter recovery, missing topics and actual no-JS keep their existing roles."""
+        width=390 if language=='en' else 320
+        with context(width,'light',language,reduced_motion='reduce') as c:
+            p=page_for(c,'gmi.html#q=payload-fixture-no-match-zzzz')
+            expect(p.locator('[data-gmi-ready]')).to_have_count(1)
+            expect(p.locator('[data-topic-notice-reset]')).to_be_visible()
+            assert not p.locator('[data-topic-related]').evaluate('(n)=>n.closest("section").hidden')
+            expect(p.locator('[data-topic-notice-index]')).not_to_be_visible()
+            p.evaluate('window.__goodAnswer=document.querySelector("[data-topic-answer]")')
+            reset=p.locator('[data-topic-notice-reset]');reset.focus();reset.press('Enter')
+            expect(p.locator('[data-topic-notice-region]')).not_to_be_visible()
+            expect(p.locator('[data-topic-notice-index]')).not_to_be_visible()
+            expect(p.locator('#gmi-topic-title')).to_be_focused()
+            assert p.evaluate('window.__goodAnswer===document.querySelector("[data-topic-answer]")')
+            p.goto(p.url.split('#')[0]+'#theme=theme%3Amissing-payload-fixture',wait_until='networkidle')
+            expect(p.locator('[data-topic-notice]')).to_contain_text('That topic is not available' if language=='en' else '此快照中找不到该主题')
+            expect(p.locator('[data-topic-notice-index]')).not_to_be_visible()
+            expect(p.locator('[data-topic-notice-reset]')).not_to_be_visible()
+            expect(p.locator('[data-gmi-ready]')).to_have_count(1)
+        with context(width,'light',language,java_script_enabled=False,reduced_motion='reduce') as c:
+            p=page_for(c,'gmi.html#theme=theme%3Astatic-nondefault')
+            expect(p.locator('[data-topic-notice-region]')).not_to_be_visible()
+            expect(p.locator('[data-topic-notice-index]')).not_to_be_visible()
+            expect(p.locator('[data-browse-open]')).not_to_be_visible()
+            expect(p.locator('[data-gmi-copy]')).not_to_be_visible()
+            expect(p.locator('#gmi-topic-title')).to_be_visible()
+            index=p.locator('noscript a[href*="gmi-index.html"]')
+            expect(index).to_be_visible();assert index.get_attribute('href')=='gmi-index.html'
+            index.focus();index.press('Enter');expect(p.locator('a.gmi-irow-name')).to_have_count(371)
+        report.setdefault('payload_failure_boundaries',[]).append({'language':language,'normal_clear_filter_owner':True,'missing_topic_distinct':True,'noJS_native_index':True,'new_failure_action_hidden_outside_payload_failure':True})
+
+    for width in (1440,390,320):
+        for language in ('en','zh'):
+            check(f'payload-recovery-{width}-{language}',lambda w=width,l=language:payload_failure_recovery(w,l))
+    for width,language in ((320,'en'),(390,'zh')):
+        check(f'payload-recovery-dark-{width}-{language}',lambda w=width,l=language:payload_failure_recovery(w,l,theme='dark'))
+    for number,defect in enumerate(('categories','paths','connections','source','duplicate-id','default-id','category-label','parent')):
+        check(f'payload-schema-{defect}',lambda d=defect,n=number:payload_failure_recovery(320 if n%2 else 390,'en' if n%2 else 'zh',d))
+    for language in ('en','zh'):
+        check(f'payload-journey-{language}',lambda l=language:payload_failure_journey(l))
+        check(f'payload-boundaries-{language}',lambda l=language:payload_failure_boundaries(l))
+
     browser.close()
 server.shutdown()
 report['pass'] = all(c['result']=='PASS' for c in report['cases']) and not report['page_errors']
