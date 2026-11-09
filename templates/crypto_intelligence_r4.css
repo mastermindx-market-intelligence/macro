@@ -116,6 +116,9 @@ html:not([data-theme=light]) .cri-panel{background:var(--glass-bg)}
 .cri-dialog::backdrop{background:var(--pv-dialog-backdrop)}
 .cri-dialog-header{position:sticky;top:0;display:flex;align-items:flex-start;justify-content:space-between;gap:20px;padding:24px;background:var(--panel);border-bottom:1px solid var(--line);z-index:1}
 .cri-dialog-header h2{font-size:var(--fs-num-lg);margin:5px 0 0;line-height:1.3}
+.cri-dialog .cri-dialog-parent{display:inline-flex;align-items:center;min-height:44px;max-width:100%;padding:6px 0;border:0;background:transparent;color:var(--ink-link,var(--link));font-size:var(--fs-body);font-weight:500;line-height:1.4;letter-spacing:normal;text-align:left;text-transform:none}
+.cri-dialog .cri-dialog-parent:hover{text-decoration:underline}
+.cri-dialog-header>.cri-btn-icon{width:44px;height:44px;min-width:44px;flex-shrink:0}
 .cri-dialog-body{padding:26px;overflow-wrap:anywhere}
 .cri-dialog-body h3{font-size:var(--fs-h2);margin:24px 0 10px}
 .cri-dialog-body h3:first-child{margin-top:0}

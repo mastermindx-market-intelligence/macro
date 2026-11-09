@@ -1,0 +1,25 @@
+EVENT_ORDER_DIAGNOSTIC {"events": [{"event": "read", "panel": "saved", "empty": false, "title": ""}, {"event": "read", "panel": "saved", "empty": false, "title": "Saved snapshots"}, {"event": "read", "panel": "saved-item:r4-display:2026-10-17:30:continuation", "empty": false, "title": "Saved snapshots"}, {"event": "read", "panel": "saved-item:r4-display:2026-10-17:30:continuation", "empty": false, "title": "Upside test"}, {"event": "read", "panel": "memory-saved:r4-display:2026-10-17:30:continuation", "empty": false, "title": "Upside test"}, {"event": "read", "panel": "memory-saved:r4-display:2026-10-17:30:continuation", "empty": false, "title": "Historical review"}, {"event": "read", "panel": "saved-item:r4-display:2026-10-17:30:continuation", "empty": false, "title": "Historical review"}, {"event": "capture-observer", "panel": "saved-item:r4-display:2026-10-17:30:continuation", "raw": false, "title": "Upside test"}, {"event": "hashchange-observer", "panel": "saved-item:r4-display:2026-10-17:30:continuation", "raw": true, "title": "Upside test"}], "url": "http://127.0.0.1:64447/crypto-r4.html?lang=en#scenarios?h=30&window=30&panel=saved-item%3Ar4-display%3A2026-10-17%3A30%3Acontinuation", "title": "Upside test", "raw": "[]", "active": "<button class=\"cri-btn\" type=\"button\" data-drawer-focus=\"review\">Historical review</button>"}
+F
+=================================== FAILURES ===================================
+________________________ test_disappearance_event_order ________________________
+tests/navigation_disappearance_diagnostic.py:24: in test_disappearance_event_order
+    cases.test_r4_saved_case_disappearing_during_back_does_not_restore_stale_content(factory)
+tests/test_crypto_intelligence_r4_browser.py:930: in test_r4_saved_case_disappearing_during_back_does_not_restore_stale_content
+    _wait_drawer(page, "saved-item:" + target["revision"], "Scenario unavailable")
+tests/test_crypto_intelligence_r4_browser.py:603: in _wait_drawer
+    page.wait_for_function(
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/sync_api/_generated.py:12761: in wait_for_function
+    self._sync(
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_page.py:1151: in wait_for_function
+    return await self._main_frame.wait_for_function(**locals_to_params(locals()))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_frame.py:940: in wait_for_function
+    await self._channel.send("waitForFunction", self._timeout, params)
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_connection.py:76: in send
+    return await self._connection.wrap_api_call(
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_connection.py:632: in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+E   playwright._impl._errors.TimeoutError: Page.wait_for_function: Timeout 4500ms exceeded.
+=========================== short test summary info ============================
+FAILED tests/navigation_disappearance_diagnostic.py::test_disappearance_event_order
+1 failed in 12.00s

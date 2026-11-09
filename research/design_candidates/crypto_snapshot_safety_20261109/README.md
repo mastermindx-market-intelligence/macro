@@ -1,4 +1,19 @@
-# Crypto R4 saved-snapshot safety
+# Crypto R4 saved snapshots: storage and navigation
+
+## Current phase — saved-case navigation verified
+
+The original 30-day case now remains the same case through review, parent return, native Back/Forward and locale changes. Close restores the original outer horizon. The existing drawer/history owner retains per-entry disclosures, semantic focus and reading position; missing or unreadable saved context receives explicit recovery.
+
+**39 contract + 61 browser cases have passing coverage across the initial 93-pass/7-failure run and the corrected 10-pass affected run.** Seven initial failures were classified and retained as test-harness mistakes; runtime assets did not change between the runs. Three new native navigation crops were inspected. The frozen-case reading hierarchy is the next active implementation phase.
+
+- [Navigation architecture, behavior and next work](NAVIGATION.md)
+- [Exact source, test results and qualifications](NAVIGATION_VALIDATION.json)
+- [Parent baseline output](navigation/BASELINE.txt)
+- [Initial candidate output](navigation/INITIAL_CANDIDATE.txt) and [JUnit](navigation/INITIAL_CANDIDATE_RESULTS.xml)
+- [Harness diagnostic](navigation/DISAPPEARANCE_DIAGNOSTIC.txt) and [corrected affected JUnit](navigation/HARNESS_CORRECTION_RESULTS.xml)
+- [Exact navigation transformations](navigation/SOURCE_TRANSFORMS.json)
+
+## Prior completed phase — storage safety
 
 This dependent candidate repairs the local saved-snapshot workflow in the existing R4 drawer and storage owner. It is based on [Macro PR #9580](https://github.com/mastermindx-market-intelligence/Macro/pull/9580), exact parent `5e496c24c962e85a4f7f514dd43dc61443b95cab`.
 
@@ -31,6 +46,6 @@ The saved candidate pages change only the two asset-version references each: `be
 - [Initial candidate results](CANDIDATE_RESULTS.xml) and [completed dependency checks](DEPENDENCY_RECOVERY_RESULTS.xml)
 - [Source transformations](SOURCE_TRANSFORMS.json)
 
-Paper file `01M6Y3F0NXNDPAKJMJGCAD759Z`, Build `3IP-0`, remains the full saved-case design contract. Storage safety is implemented here; parent return, route-horizon continuity, disclosure/locale/scroll restoration and the original-condition-first layout continue as distinct work.
+Paper file `01M6Y3F0NXNDPAKJMJGCAD759Z`, Build `3IP-0`, remains the full saved-case design contract. Storage and navigation phases are implemented and locally verified; the original-condition-first frozen layout remains active work.
 
 This stays a dependent Draft candidate. H5/model authority, alert integration, hosted and independent visual acceptance, public-route cutover and release gates remain with their existing owners. No production replacement or current-market freshness is claimed.

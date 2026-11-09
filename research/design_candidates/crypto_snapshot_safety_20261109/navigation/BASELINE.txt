@@ -1,0 +1,152 @@
+FFFFFFFFFFFFFFFF                                                         [100%]
+=================================== FAILURES ===================================
+_______ test_r4_saved_journey_restores_the_exact_outer_horizon[en-1440] ________
+tests/test_crypto_intelligence_r4_browser.py:652: in test_r4_saved_journey_restores_the_exact_outer_horizon
+    assert page.evaluate("new URLSearchParams(location.hash.split('?')[1]).get('h')") == "30"
+E   AssertionError: assert '7' == '30'
+E     
+E     - 30
+E     + 7
+________ test_r4_saved_journey_restores_the_exact_outer_horizon[zh-390] ________
+tests/test_crypto_intelligence_r4_browser.py:652: in test_r4_saved_journey_restores_the_exact_outer_horizon
+    assert page.evaluate("new URLSearchParams(location.hash.split('?')[1]).get('h')") == "30"
+E   AssertionError: assert '7' == '30'
+E     
+E     - 30
+E     + 7
+________ test_r4_saved_journey_restores_the_exact_outer_horizon[en-320] ________
+tests/test_crypto_intelligence_r4_browser.py:652: in test_r4_saved_journey_restores_the_exact_outer_horizon
+    assert page.evaluate("new URLSearchParams(location.hash.split('?')[1]).get('h')") == "30"
+E   AssertionError: assert '7' == '30'
+E     
+E     - 30
+E     + 7
+__________ test_r4_detached_saved_item_still_has_a_real_review_parent __________
+tests/test_crypto_intelligence_r4_browser.py:695: in test_r4_detached_saved_item_still_has_a_real_review_parent
+    _saved_parent(page).click()
+    ^^^^^^^^^^^^^^^^^^^
+tests/test_crypto_intelligence_r4_browser.py:630: in _saved_parent
+    assert control.count() == 1, "Historical review needs the correct explicit same-case destination"
+E   AssertionError: Historical review needs the correct explicit same-case destination
+E   assert 0 == 1
+E    +  where 0 = count()
+E    +    where count = <Locator frame=<Frame name= url='http://127.0.0.1:63641/crypto-r4.html?lang=en#scenarios?h=30&panel=memory-saved%3Ar4-display%3A2026-10-17%3A30%3Acontinuation'> selector='#cri-dialog >> internal:role=button[name="← Saved case"s]'>.count
+___ test_r4_truly_detached_review_opens_exact_saved_case_by_replace[en-1440] ___
+tests/test_crypto_intelligence_r4_browser.py:712: in test_r4_truly_detached_review_opens_exact_saved_case_by_replace
+    _saved_parent(page, lang, detached=True).click()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_crypto_intelligence_r4_browser.py:630: in _saved_parent
+    assert control.count() == 1, "Historical review needs the correct explicit same-case destination"
+E   AssertionError: Historical review needs the correct explicit same-case destination
+E   assert 0 == 1
+E    +  where 0 = count()
+E    +    where count = <Locator frame=<Frame name= url='http://127.0.0.1:63641/crypto-r4.html?lang=en#scenarios?h=7&window=30&panel=memory-sa...Ar4-display%3A2026-10-17%3A30%3Acontinuation'> selector='#cri-dialog >> internal:role=button[name="Open saved case"s]'>.count
+___ test_r4_truly_detached_review_opens_exact_saved_case_by_replace[zh-320] ____
+tests/test_crypto_intelligence_r4_browser.py:712: in test_r4_truly_detached_review_opens_exact_saved_case_by_replace
+    _saved_parent(page, lang, detached=True).click()
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_crypto_intelligence_r4_browser.py:630: in _saved_parent
+    assert control.count() == 1, "Historical review needs the correct explicit same-case destination"
+E   AssertionError: Historical review needs the correct explicit same-case destination
+E   assert 0 == 1
+E    +  where 0 = count()
+E    +    where count = <Locator frame=<Frame name= url='http://127.0.0.1:63641/crypto-r4.html?lang=zh#scenarios?h=7&window=30&panel=memory-saved%3Ar4-display%3A2026-10-17%3A30%3Acontinuation'> selector='#cri-dialog >> internal:role=button[name="打开已存情景"s]'>.count
+____ test_r4_saved_locale_keeps_disclosure_focus_and_reading_position[1440] ____
+tests/test_crypto_intelligence_r4_browser.py:740: in test_r4_saved_locale_keeps_disclosure_focus_and_reading_position
+    assert page.locator("#cri-dialog-body details").evaluate_all("nodes => nodes.length === 2 && nodes.every(node => node.open)")
+E   AssertionError: assert False
+E    +  where False = evaluate_all('nodes => nodes.length === 2 && nodes.every(node => node.open)')
+E    +    where evaluate_all = <Locator frame=<Frame name= url='http://127.0.0.1:63641/crypto-r4.html?lang=en#scenarios?h=30&panel=saved-item%3Ar4-display%3A2026-10-17%3A30%3Acontinuation'> selector='#cri-dialog-body details'>.evaluate_all
+E    +      where <Locator frame=<Frame name= url='http://127.0.0.1:63641/crypto-r4.html?lang=en#scenarios?h=30&panel=saved-item%3Ar4-display%3A2026-10-17%3A30%3Acontinuation'> selector='#cri-dialog-body details'> = locator('#cri-dialog-body details')
+E    +        where locator = <Page url='http://127.0.0.1:63641/crypto-r4.html?lang=en#scenarios?h=30&panel=saved-item%3Ar4-display%3A2026-10-17%3A30%3Acontinuation'>.locator
+____ test_r4_saved_locale_keeps_disclosure_focus_and_reading_position[320] _____
+tests/test_crypto_intelligence_r4_browser.py:740: in test_r4_saved_locale_keeps_disclosure_focus_and_reading_position
+    assert page.locator("#cri-dialog-body details").evaluate_all("nodes => nodes.length === 2 && nodes.every(node => node.open)")
+E   AssertionError: assert False
+E    +  where False = evaluate_all('nodes => nodes.length === 2 && nodes.every(node => node.open)')
+E    +    where evaluate_all = <Locator frame=<Frame name= url='http://127.0.0.1:63641/crypto-r4.html?lang=en#scenarios?h=30&panel=saved-item%3Ar4-display%3A2026-10-17%3A30%3Acontinuation'> selector='#cri-dialog-body details'>.evaluate_all
+E    +      where <Locator frame=<Frame name= url='http://127.0.0.1:63641/crypto-r4.html?lang=en#scenarios?h=30&panel=saved-item%3Ar4-display%3A2026-10-17%3A30%3Acontinuation'> selector='#cri-dialog-body details'> = locator('#cri-dialog-body details')
+E    +        where locator = <Page url='http://127.0.0.1:63641/crypto-r4.html?lang=en#scenarios?h=30&panel=saved-item%3Ar4-display%3A2026-10-17%3A30%3Acontinuation'>.locator
+__ test_r4_saved_parent_rechecks_the_requested_record_before_return[missing] ___
+tests/test_crypto_intelligence_r4_browser.py:754: in test_r4_saved_parent_rechecks_the_requested_record_before_return
+    parent = _saved_parent(page)
+             ^^^^^^^^^^^^^^^^^^^
+tests/test_crypto_intelligence_r4_browser.py:630: in _saved_parent
+    assert control.count() == 1, "Historical review needs the correct explicit same-case destination"
+E   AssertionError: Historical review needs the correct explicit same-case destination
+E   assert 0 == 1
+E    +  where 0 = count()
+E    +    where count = <Locator frame=<Frame name= url='http://127.0.0.1:63641/crypto-r4.html?lang=en#scenarios?h=30&panel=memory-saved%3Ar4-display%3A2026-10-17%3A30%3Acontinuation'> selector='#cri-dialog >> internal:role=button[name="← Saved case"s]'>.count
+_ test_r4_saved_parent_rechecks_the_requested_record_before_return[duplicate] __
+tests/test_crypto_intelligence_r4_browser.py:754: in test_r4_saved_parent_rechecks_the_requested_record_before_return
+    parent = _saved_parent(page)
+             ^^^^^^^^^^^^^^^^^^^
+tests/test_crypto_intelligence_r4_browser.py:630: in _saved_parent
+    assert control.count() == 1, "Historical review needs the correct explicit same-case destination"
+E   AssertionError: Historical review needs the correct explicit same-case destination
+E   assert 0 == 1
+E    +  where 0 = count()
+E    +    where count = <Locator frame=<Frame name= url='http://127.0.0.1:63641/crypto-r4.html?lang=en#scenarios?h=30&panel=memory-saved%3Ar4-display%3A2026-10-17%3A30%3Acontinuation'> selector='#cri-dialog >> internal:role=button[name="← Saved case"s]'>.count
+_ test_r4_saved_parent_rechecks_the_requested_record_before_return[unreadable] _
+tests/test_crypto_intelligence_r4_browser.py:754: in test_r4_saved_parent_rechecks_the_requested_record_before_return
+    parent = _saved_parent(page)
+             ^^^^^^^^^^^^^^^^^^^
+tests/test_crypto_intelligence_r4_browser.py:630: in _saved_parent
+    assert control.count() == 1, "Historical review needs the correct explicit same-case destination"
+E   AssertionError: Historical review needs the correct explicit same-case destination
+E   assert 0 == 1
+E    +  where 0 = count()
+E    +    where count = <Locator frame=<Frame name= url='http://127.0.0.1:63641/crypto-r4.html?lang=en#scenarios?h=30&panel=memory-saved%3Ar4-display%3A2026-10-17%3A30%3Acontinuation'> selector='#cri-dialog >> internal:role=button[name="← Saved case"s]'>.count
+_________ test_r4_locale_change_does_not_restore_a_removed_saved_case __________
+tests/test_crypto_intelligence_r4_browser.py:784: in test_r4_locale_change_does_not_restore_a_removed_saved_case
+    assert recovery.count() == 1
+E   assert 0 == 1
+E    +  where 0 = count()
+E    +    where count = <Locator frame=<Frame name= url='http://127.0.0.1:63641/crypto-r4.html?lang=en#scenarios?h=30&panel=saved-item%3Ar4-display%3A2026-10-17%3A30%3Acontinuation'> selector='#cri-dialog-body >> internal:role=button[name="查看已存快照"s]'>.count
+_____ test_r4_close_falls_back_to_the_restored_active_view_heading[hidden] _____
+tests/test_crypto_intelligence_r4_browser.py:804: in test_r4_close_falls_back_to_the_restored_active_view_heading
+    assert page.evaluate("""() => {
+E   assert False
+E    +  where False = evaluate('() => {\n      const active=document.activeElement;\n      return active.matches(\'h1,h2\') && active.closest(\'[data-view="scenarios"]\') &&\n        active.getClientRects().length > 0;\n    }')
+E    +    where evaluate = <Page url='http://127.0.0.1:63641/crypto-r4.html?lang=en#scenarios?h=7&window=30'>.evaluate
+____ test_r4_close_falls_back_to_the_restored_active_view_heading[removed] _____
+tests/test_crypto_intelligence_r4_browser.py:804: in test_r4_close_falls_back_to_the_restored_active_view_heading
+    assert page.evaluate("""() => {
+E   assert False
+E    +  where False = evaluate('() => {\n      const active=document.activeElement;\n      return active.matches(\'h1,h2\') && active.closest(\'[data-view="scenarios"]\') &&\n        active.getClientRects().length > 0;\n    }')
+E    +    where evaluate = <Page url='http://127.0.0.1:63641/crypto-r4.html?lang=en#scenarios?h=7&window=30'>.evaluate
+________ test_r4_saved_parent_focus_callback_keeps_its_new_destination _________
+tests/test_crypto_intelligence_r4_browser.py:820: in test_r4_saved_parent_focus_callback_keeps_its_new_destination
+    parent = _saved_parent(page)
+             ^^^^^^^^^^^^^^^^^^^
+tests/test_crypto_intelligence_r4_browser.py:630: in _saved_parent
+    assert control.count() == 1, "Historical review needs the correct explicit same-case destination"
+E   AssertionError: Historical review needs the correct explicit same-case destination
+E   assert 0 == 1
+E    +  where 0 = count()
+E    +    where count = <Locator frame=<Frame name= url='http://127.0.0.1:63641/crypto-r4.html?lang=en#scenarios?h=30&panel=memory-saved%3Ar4-display%3A2026-10-17%3A30%3Acontinuation'> selector='#cri-dialog >> internal:role=button[name="← Saved case"s]'>.count
+______ test_r4_legacy_saved_parent_horizon_is_repaired_in_the_same_entry _______
+tests/test_crypto_intelligence_r4_browser.py:852: in test_r4_legacy_saved_parent_horizon_is_repaired_in_the_same_entry
+    assert page.evaluate("new URLSearchParams(history.state.previous.split('?')[1]).get('h')") == "30"
+E   AssertionError: assert '7' == '30'
+E     
+E     - 30
+E     + 7
+=========================== short test summary info ============================
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_saved_journey_restores_the_exact_outer_horizon[en-1440]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_saved_journey_restores_the_exact_outer_horizon[zh-390]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_saved_journey_restores_the_exact_outer_horizon[en-320]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_detached_saved_item_still_has_a_real_review_parent
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_truly_detached_review_opens_exact_saved_case_by_replace[en-1440]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_truly_detached_review_opens_exact_saved_case_by_replace[zh-320]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_saved_locale_keeps_disclosure_focus_and_reading_position[1440]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_saved_locale_keeps_disclosure_focus_and_reading_position[320]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_saved_parent_rechecks_the_requested_record_before_return[missing]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_saved_parent_rechecks_the_requested_record_before_return[duplicate]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_saved_parent_rechecks_the_requested_record_before_return[unreadable]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_locale_change_does_not_restore_a_removed_saved_case
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_close_falls_back_to_the_restored_active_view_heading[hidden]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_close_falls_back_to_the_restored_active_view_heading[removed]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_saved_parent_focus_callback_keeps_its_new_destination
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_legacy_saved_parent_horizon_is_repaired_in_the_same_entry
+16 failed, 40 deselected in 18.61s

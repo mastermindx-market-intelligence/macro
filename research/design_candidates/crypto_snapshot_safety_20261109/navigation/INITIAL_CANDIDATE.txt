@@ -1,0 +1,77 @@
+...................................................................FFFFF [ 72%]
+F.......................F...                                             [100%]
+=================================== FAILURES ===================================
+____ test_r4_unusable_saved_version_never_borrows_current_context[missing] _____
+tests/test_crypto_intelligence_r4_browser.py:505: in test_r4_unusable_saved_version_never_borrows_current_context
+    assert page.locator("#cri-dialog-title").evaluate("node => document.activeElement===node")
+E   AssertionError: assert False
+E    +  where False = evaluate('node => document.activeElement===node')
+E    +    where evaluate = <Locator frame=<Frame name= url='http://127.0.0.1:61144/crypto-r4.html?lang=en#scenarios?h=30&panel=saved-item%3Ar4-display%3A2026-10-17%3A30%3Acontinuation'> selector='#cri-dialog-title'>.evaluate
+E    +      where <Locator frame=<Frame name= url='http://127.0.0.1:61144/crypto-r4.html?lang=en#scenarios?h=30&panel=saved-item%3Ar4-display%3A2026-10-17%3A30%3Acontinuation'> selector='#cri-dialog-title'> = locator('#cri-dialog-title')
+E    +        where locator = <Page url='http://127.0.0.1:61144/crypto-r4.html?lang=en#scenarios?h=30&panel=saved-item%3Ar4-display%3A2026-10-17%3A30%3Acontinuation'>.locator
+___ test_r4_unusable_saved_version_never_borrows_current_context[duplicates] ___
+tests/test_crypto_intelligence_r4_browser.py:505: in test_r4_unusable_saved_version_never_borrows_current_context
+    assert page.locator("#cri-dialog-title").evaluate("node => document.activeElement===node")
+E   AssertionError: assert False
+E    +  where False = evaluate('node => document.activeElement===node')
+E    +    where evaluate = <Locator frame=<Frame name= url='http://127.0.0.1:61144/crypto-r4.html?lang=en#scenarios?h=30&panel=saved-item%3Ar4-display%3A2026-10-17%3A30%3Acontinuation'> selector='#cri-dialog-title'>.evaluate
+E    +      where <Locator frame=<Frame name= url='http://127.0.0.1:61144/crypto-r4.html?lang=en#scenarios?h=30&panel=saved-item%3Ar4-display%3A2026-10-17%3A30%3Acontinuation'> selector='#cri-dialog-title'> = locator('#cri-dialog-title')
+E    +        where locator = <Page url='http://127.0.0.1:61144/crypto-r4.html?lang=en#scenarios?h=30&panel=saved-item%3Ar4-display%3A2026-10-17%3A30%3Acontinuation'>.locator
+__ test_r4_unusable_saved_version_never_borrows_current_context[bad_horizon] ___
+tests/test_crypto_intelligence_r4_browser.py:505: in test_r4_unusable_saved_version_never_borrows_current_context
+    assert page.locator("#cri-dialog-title").evaluate("node => document.activeElement===node")
+E   AssertionError: assert False
+E    +  where False = evaluate('node => document.activeElement===node')
+E    +    where evaluate = <Locator frame=<Frame name= url='http://127.0.0.1:61144/crypto-r4.html?lang=en#scenarios?h=30&panel=saved-item%3Ar4-display%3A2026-10-17%3A30%3Acontinuation'> selector='#cri-dialog-title'>.evaluate
+E    +      where <Locator frame=<Frame name= url='http://127.0.0.1:61144/crypto-r4.html?lang=en#scenarios?h=30&panel=saved-item%3Ar4-display%3A2026-10-17%3A30%3Acontinuation'> selector='#cri-dialog-title'> = locator('#cri-dialog-title')
+E    +        where locator = <Page url='http://127.0.0.1:61144/crypto-r4.html?lang=en#scenarios?h=30&panel=saved-item%3Ar4-display%3A2026-10-17%3A30%3Acontinuation'>.locator
+____ test_r4_unusable_saved_version_never_borrows_current_context[bad_date] ____
+tests/test_crypto_intelligence_r4_browser.py:505: in test_r4_unusable_saved_version_never_borrows_current_context
+    assert page.locator("#cri-dialog-title").evaluate("node => document.activeElement===node")
+E   AssertionError: assert False
+E    +  where False = evaluate('node => document.activeElement===node')
+E    +    where evaluate = <Locator frame=<Frame name= url='http://127.0.0.1:61144/crypto-r4.html?lang=en#scenarios?h=30&panel=saved-item%3Ar4-display%3A2026-10-17%3A30%3Acontinuation'> selector='#cri-dialog-title'>.evaluate
+E    +      where <Locator frame=<Frame name= url='http://127.0.0.1:61144/crypto-r4.html?lang=en#scenarios?h=30&panel=saved-item%3Ar4-display%3A2026-10-17%3A30%3Acontinuation'> selector='#cri-dialog-title'> = locator('#cri-dialog-title')
+E    +        where locator = <Page url='http://127.0.0.1:61144/crypto-r4.html?lang=en#scenarios?h=30&panel=saved-item%3Ar4-display%3A2026-10-17%3A30%3Acontinuation'>.locator
+_ test_r4_unusable_saved_version_never_borrows_current_context[missing_condition] _
+tests/test_crypto_intelligence_r4_browser.py:505: in test_r4_unusable_saved_version_never_borrows_current_context
+    assert page.locator("#cri-dialog-title").evaluate("node => document.activeElement===node")
+E   AssertionError: assert False
+E    +  where False = evaluate('node => document.activeElement===node')
+E    +    where evaluate = <Locator frame=<Frame name= url='http://127.0.0.1:61144/crypto-r4.html?lang=en#scenarios?h=30&panel=saved-item%3Ar4-display%3A2026-10-17%3A30%3Acontinuation'> selector='#cri-dialog-title'>.evaluate
+E    +      where <Locator frame=<Frame name= url='http://127.0.0.1:61144/crypto-r4.html?lang=en#scenarios?h=30&panel=saved-item%3Ar4-display%3A2026-10-17%3A30%3Acontinuation'> selector='#cri-dialog-title'> = locator('#cri-dialog-title')
+E    +        where locator = <Page url='http://127.0.0.1:61144/crypto-r4.html?lang=en#scenarios?h=30&panel=saved-item%3Ar4-display%3A2026-10-17%3A30%3Acontinuation'>.locator
+_ test_r4_unusable_saved_version_never_borrows_current_context[wrong_authority] _
+tests/test_crypto_intelligence_r4_browser.py:505: in test_r4_unusable_saved_version_never_borrows_current_context
+    assert page.locator("#cri-dialog-title").evaluate("node => document.activeElement===node")
+E   AssertionError: assert False
+E    +  where False = evaluate('node => document.activeElement===node')
+E    +    where evaluate = <Locator frame=<Frame name= url='http://127.0.0.1:61144/crypto-r4.html?lang=en#scenarios?h=30&panel=saved-item%3Ar4-display%3A2026-10-17%3A30%3Acontinuation'> selector='#cri-dialog-title'>.evaluate
+E    +      where <Locator frame=<Frame name= url='http://127.0.0.1:61144/crypto-r4.html?lang=en#scenarios?h=30&panel=saved-item%3Ar4-display%3A2026-10-17%3A30%3Acontinuation'> selector='#cri-dialog-title'> = locator('#cri-dialog-title')
+E    +        where locator = <Page url='http://127.0.0.1:61144/crypto-r4.html?lang=en#scenarios?h=30&panel=saved-item%3Ar4-display%3A2026-10-17%3A30%3Acontinuation'>.locator
+__ test_r4_saved_case_disappearing_during_back_does_not_restore_stale_content __
+tests/test_crypto_intelligence_r4_browser.py:930: in test_r4_saved_case_disappearing_during_back_does_not_restore_stale_content
+    _wait_drawer(page, "saved-item:" + target["revision"], "Scenario unavailable")
+tests/test_crypto_intelligence_r4_browser.py:603: in _wait_drawer
+    page.wait_for_function(
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/sync_api/_generated.py:12761: in wait_for_function
+    self._sync(
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_page.py:1151: in wait_for_function
+    return await self._main_frame.wait_for_function(**locals_to_params(locals()))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_frame.py:940: in wait_for_function
+    await self._channel.send("waitForFunction", self._timeout, params)
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_connection.py:76: in send
+    return await self._connection.wrap_api_call(
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_connection.py:632: in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+E   playwright._impl._errors.TimeoutError: Page.wait_for_function: Timeout 4500ms exceeded.
+=========================== short test summary info ============================
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_unusable_saved_version_never_borrows_current_context[missing]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_unusable_saved_version_never_borrows_current_context[duplicates]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_unusable_saved_version_never_borrows_current_context[bad_horizon]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_unusable_saved_version_never_borrows_current_context[bad_date]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_unusable_saved_version_never_borrows_current_context[missing_condition]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_unusable_saved_version_never_borrows_current_context[wrong_authority]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_saved_case_disappearing_during_back_does_not_restore_stale_content
+7 failed, 93 passed in 64.19s (0:01:04)

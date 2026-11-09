@@ -9,6 +9,7 @@
   var title = document.getElementById("cri-dialog-title"), kicker = document.getElementById("cri-dialog-kicker");
   var views = ["overview", "bitcoin", "markets", "scenarios"], lastTrigger = null, toastTimer = null;
   var storageKey = "mmx.crypto.r4.scenarios.v1", currentShock = "tightening";
+  var renderedHistory = null, readingSuspended = false, pendingSavedReturn = null;
   function zh() { return document.documentElement.dataset.lang === "zh"; }
   function t(en, cn) { return zh() ? cn : en; }
   function field(value, name) { return value[name + (zh() ? "_zh" : "_en")] || ""; }
@@ -34,18 +35,133 @@
     return { view: view, params: new URLSearchParams(parts.slice(1).join("?")) };
   }
   function address(view, params) { return "#" + view + (params.toString() ? "?" + params.toString() : ""); }
+  function historySignature() {
+    try { return JSON.stringify(history.state); } catch (error) { return null; }
+  }
+  function drawerFocus(key) {
+    if (key === "close") return document.getElementById("cri-dialog-close");
+    if (key === "heading") return title;
+    var matches = Array.from(dialog.querySelectorAll("[data-drawer-focus]")).filter(function (element) {
+      return element.dataset.drawerFocus === key;
+    });
+    return matches.length === 1 ? matches[0] : null;
+  }
+  function readingScope() {
+    if (!body.dataset.savedRevision && body.dataset.savedList !== "true") return null;
+    return { panel: body.dataset.panel, revision: body.dataset.savedRevision || null,
+      horizon: body.dataset.savedHorizon ? Number(body.dataset.savedHorizon) : null,
+      cutoff: body.dataset.savedCutoff || null };
+  }
+  function rememberDrawer(focusOverride) {
+    // Never capture outgoing DOM into an incoming history entry.
+    if (readingSuspended || !dialog.open || root.dataset.renderedAddress !== location.href ||
+        renderedHistory === null || historySignature() !== renderedHistory) return;
+    var scope = readingScope();
+    if (!scope || state().params.get("panel") !== scope.panel) return;
+    var active = document.activeElement, keyed = active && active.closest("[data-drawer-focus]");
+    var focus = active === title ? "heading" : active && active.id === "cri-dialog-close" ? "close" :
+      keyed && dialog.contains(keyed) ? keyed.dataset.drawerFocus : null;
+    if (typeof focusOverride === "string" && drawerFocus(focusOverride)) focus = focusOverride;
+    var reading = Object.assign({}, scope, {
+      disclosures: Array.from(body.querySelectorAll("details[data-drawer-disclosure]")).filter(function (element) {
+        return element.open;
+      }).map(function (element) { return element.dataset.drawerDisclosure; }),
+      focus: focus, scroll: Math.max(0, dialog.scrollTop)
+    });
+    var metadata = history.state && typeof history.state === "object" && !Array.isArray(history.state) ?
+      Object.assign({}, history.state) : {};
+    if (JSON.stringify(metadata.reading) === JSON.stringify(reading)) return;
+    metadata.reading = reading;
+    try {
+      history.replaceState(metadata, "", location.href);
+      renderedHistory = historySignature();
+    } catch (error) { /* Optional reading state must not break navigation. */ }
+  }
+  function savedReading() {
+    var scope = readingScope(), reading = history.state && history.state.reading;
+    if (!scope || !reading || typeof reading !== "object" || reading.panel !== scope.panel ||
+        reading.revision !== scope.revision || reading.horizon !== scope.horizon ||
+        reading.cutoff !== scope.cutoff || !Array.isArray(reading.disclosures) ||
+        typeof reading.scroll !== "number" || !isFinite(reading.scroll) || reading.scroll < 0) return null;
+    return reading;
+  }
+  function savedIdentity(s) {
+    body.dataset.savedRevision = s.revision;
+    body.dataset.savedHorizon = String(s.horizon_days);
+    body.dataset.savedCutoff = s.as_of;
+  }
+  function hasDrawerParent(panel) {
+    var metadata = history.state, current = state();
+    if (!metadata || metadata.r4 !== true || metadata.drawer !== true ||
+        !Number.isInteger(metadata.depth) || metadata.depth < 1 ||
+        typeof metadata.previous !== "string" || metadata.previous.charAt(0) !== "#") return false;
+    var parts = metadata.previous.slice(1).split("?"), params = new URLSearchParams(parts.slice(1).join("?"));
+    return views.indexOf(parts[0]) >= 0 && parts[0] === current.view && params.get("panel") === panel;
+  }
+  function drawerParent(label, action) {
+    var parent = node("button", label, "cri-dialog-parent");
+    parent.type = "button"; parent.dataset.drawerFocus = "parent";
+    parent.addEventListener("click", action); kicker.replaceChildren(parent);
+  }
+  function returnToSavedCase(revision) {
+    if (pendingSavedReturn && pendingSavedReturn.childAddress === location.href) return;
+    var addressBefore = location.href, languageBefore = zh(), subtree = body.firstChild, focusBefore = document.activeElement;
+    var collection = stored();
+    if (location.href !== addressBefore || zh() !== languageBefore || body.firstChild !== subtree || document.activeElement !== focusBefore) return;
+    var saved = collection.ready ? savedVersion(collection, revision) : null;
+    if (!collection.ready || !saved) { apply({ collection: collection }); return; }
+    if (hasDrawerParent("saved-item:" + revision)) {
+      rememberDrawer();
+      pendingSavedReturn = { revision: revision, childAddress: location.href,
+        parentAddress: location.href.split("#")[0] + history.state.previous };
+      history.back();
+    }
+    else update(null, { panel: "saved-item:" + revision, h: String(saved.horizon_days) }, true);
+  }
+  function returnToSavedList() {
+    if (hasDrawerParent("saved")) { rememberDrawer(); history.back(); }
+    else update(null, { panel: "saved" }, true);
+  }
+  function visibleInView(element, view) {
+    if (!element || !element.isConnected || !root.contains(element) ||
+        !element.getClientRects().length || element.closest("[hidden],[inert]") ||
+        getComputedStyle(element).visibility === "hidden") return false;
+    var section = element.closest("[data-view]");
+    return !section || section.dataset.view === view;
+  }
+  function viewHeading(view) {
+    return root.querySelector('[data-view="' + view + '"] h2') || root.querySelector("h1");
+  }
   function update(view, changes, replace) {
-    var current = state(), params = current.params;
+    pendingSavedReturn = null; rememberDrawer();
+    var current = state(), params = current.params, oldPanel = params.get("panel");
     Object.keys(changes || {}).forEach(function (key) { if (changes[key] == null || changes[key] === "") params.delete(key); else params.set(key, changes[key]); });
-    var metadata = replace && params.has("panel") && history.state && history.state.drawer ? history.state : { r4: true };
+    var metadata = replace && params.has("panel") && history.state && history.state.drawer ? Object.assign({}, history.state) : { r4: true };
+    if (params.get("panel") !== oldPanel) delete metadata.reading;
     history[replace ? "replaceState" : "pushState"](metadata, "", address(view || current.view, params));
     apply();
   }
   function horizon() { return state().params.get("h") === "30" ? "30" : "7"; }
   function activeScenario(id) { return (data.scenarios[horizon()] || []).find(function (s) { return s.id === id; }); }
-  function open(key, trigger, scenarioHorizon) {
-    if (trigger) lastTrigger = trigger;
-    var s = state(), previous = location.hash, alreadyOpen = s.params.has("panel");
+  function open(key, trigger, scenarioHorizon, returnFocus) {
+    pendingSavedReturn = null; rememberDrawer(returnFocus);
+    var s = state(), addressBefore = location.href, languageBefore = zh(), subtree = body.firstChild, focusBefore = document.activeElement;
+    var savedKey = /^(saved-item|memory-saved):/.test(key), retained;
+    if (savedKey) {
+      var revision = key.slice(key.indexOf(":") + 1), collection = stored();
+      if (location.href !== addressBefore || zh() !== languageBefore || body.firstChild !== subtree || document.activeElement !== focusBefore) return;
+      retained = collection.ready ? savedVersion(collection, revision) : null;
+      scenarioHorizon = retained ? String(retained.horizon_days) : null;
+      // Repair a legacy parent in place without changing its outer ancestry.
+      if (retained && key.indexOf("memory-saved:") === 0 &&
+          s.params.get("panel") === "saved-item:" + revision && s.params.get("h") !== scenarioHorizon) {
+        s.params.set("h", scenarioHorizon);
+        history.replaceState(history.state, "", address(s.view, s.params));
+        rememberDrawer(returnFocus);
+      }
+    }
+    if (trigger && !dialog.contains(trigger)) lastTrigger = trigger;
+    var previous = location.hash, alreadyOpen = s.params.has("panel");
     s.params.set("panel", key);
     if (scenarioHorizon) s.params.set("h", scenarioHorizon);
     var managed = history.state && history.state.r4 && history.state.drawer && Number.isInteger(history.state.depth);
@@ -55,6 +171,7 @@
     apply();
   }
   function close() {
+    pendingSavedReturn = null; rememberDrawer();
     if (history.state && history.state.r4 && history.state.drawer && !history.state.detachedOrigin && Number.isInteger(history.state.depth) && history.state.depth > 0) history.go(-history.state.depth);
     else update(null, { panel: null }, true);
   }
@@ -228,21 +345,36 @@
     body.appendChild(details);
   }
   function scenario(s, frozen, collection) {
-    if (!s) { title.textContent = t("Scenario unavailable", "情景暂不可用"); paragraph(t("This scenario is unavailable. The source may have changed or the saved item was removed.", "该情景不可用，原始来源可能已经变化或快照已经移除。")); return; }
+    if (!s) {
+      title.textContent = t("Scenario unavailable", "情景暂不可用");
+      paragraph(t("This scenario is unavailable. The source may have changed or the saved item was removed.", "该情景不可用，原始来源可能已经变化或快照已经移除。"));
+      if (frozen) {
+        button(t("Open saved snapshots", "查看已存快照"), function () { update(null, { panel: "saved" }, true); }).dataset.drawerFocus = "saved-recovery";
+        button(t("Open current outlook", "查看当前展望"), function () { update("overview", { panel: null }, true); });
+      }
+      return;
+    }
     title.textContent = field(s, "title");
+    if (frozen) {
+      savedIdentity(s);
+      drawerParent(hasDrawerParent("saved") ? t("← Saved snapshots", "← 已存快照") : t("Open saved snapshots", "查看已存快照"), returnToSavedList);
+    }
     paragraph(status(s)).className = "cri-warning";
     paragraph((s.asset || t("Asset unavailable", "资产暂无")) + " · " + s.horizon_days + t(" days", "天") + " · " + (s.as_of || t("Date not supplied", "未提供日期"))).className = "cri-note";
     if (s.next_check_en && !expired(s)) { heading(t("Next check", "下一步检查")); paragraph(field(s, "next_check")); }
     heading(expired(s) ? t("Sequence at the original cutoff", "原始时点的后续路径") : t("What could follow", "可能的后续变化")); paragraph(field(s, "sequence"));
     heading(expired(s) ? t("Original invalidation condition", "原始失效条件") : t("What changes the view", "什么会改变判断")); paragraph(field(s, "invalidation"));
     var details = node("details", null, "mx-disc");
-    details.appendChild(node("summary", t("Conditions and evidence", "条件与证据")));
+    var caseSummary = node("summary", t("Conditions and evidence", "条件与证据"));
+    if (frozen) { details.dataset.drawerDisclosure = "case-details"; caseSummary.dataset.drawerFocus = "case-details"; }
+    details.appendChild(caseSummary);
     details.appendChild(node("p", field(s, "condition")));
     details.appendChild(node("p", field(s, "counter")));
     details.appendChild(node("p", t("Expires: ", "到期日：") + s.expires));
     details.appendChild(node("p", t("Levels use prior daily closes. They are research conditions, not official model invalidations.", "价位来自前期日收盘，属于研究条件，并非官方模型失效位。")));
     body.appendChild(details);
-    button(t("Historical review", "历史检验"), function () { open((frozen ? "memory-saved:" + s.revision : "memory:" + s.id), null, String(s.horizon_days)); });
+    var review = button(t("Historical review", "历史检验"), function () { open((frozen ? "memory-saved:" + s.revision : "memory:" + s.id), null, String(s.horizon_days), frozen ? "review" : null); });
+    if (frozen) review.dataset.drawerFocus = "review";
     if (frozen) {
       heading(t("Original evidence snapshot", "原始证据快照"));
       var savedEvidence = s.issue_evidence;
@@ -251,6 +383,7 @@
           t(" · Broader market: ", " · 全市场：") + (savedEvidence.market_as_of || t("date unavailable", "日期暂无"))).className = "cri-note";
         var digest = node("details", null, "mx-disc"), digestSummary = node("summary",
           t("Review saved source quality and dates", "查看保存时的来源质量与日期"));
+        digest.dataset.drawerDisclosure = "saved-evidence"; digestSummary.dataset.drawerFocus = "saved-evidence";
         digest.appendChild(digestSummary);
         var digestList = node("dl");
         savedEvidence.families.filter(function (f) { return f && typeof f === "object"; }).forEach(function (f) {
@@ -283,6 +416,8 @@
   function renderDrawer(key, collection) {
     if (!key) return;
     body.replaceChildren(); dialog.classList.toggle("cri-dialog-wide", key === "comparison"); kicker.textContent = t("CRYPTO INTELLIGENCE", "加密资产情报");
+    body.dataset.panel = key;
+    delete body.dataset.savedRevision; delete body.dataset.savedHorizon; delete body.dataset.savedCutoff; delete body.dataset.savedList;
     var parts = key.split(":"), category = parts[0], id = parts.slice(1).join(":");
     if (category === "evidence") {
       var rows = id === "all" ? data.families : data.families.filter(function (f) { return f.id === id; });
@@ -359,13 +494,18 @@
     } else if (category === "saved") {
       collection = collection === undefined ? stored() : collection;
       if (!collection.ready) { savedUnavailable(); return; }
-      title.textContent = t("Saved snapshots", "已存快照");
+      title.textContent = t("Saved snapshots", "已存快照"); body.dataset.savedList = "true";
       paragraph(t("Saved in this browser. Each snapshot preserves its original evidence cutoff.", "保存在此浏览器中，每份快照保留原始证据截止日期。"));
       var items = collection.items;
       if (!items.length) paragraph(collection.entries.length ?
         t("No supported snapshots can be opened here.", "此处无法打开这些已存快照。") :
         t("Nothing saved yet. Open a scenario and save its dated conditions.", "尚未保存。打开一个情景，保存其带日期的条件。"));
-      items.forEach(function (s) { button(field(s, "title") + " · " + s.horizon_days + t(" days", "天") + " · " + s.as_of, function () { open("saved-item:" + s.revision); }); });
+      items.forEach(function (s) {
+        var entry = button(field(s, "title") + " · " + s.horizon_days + t(" days", "天") + " · " + s.as_of, function () {
+          open("saved-item:" + s.revision, null, String(s.horizon_days), "saved:" + s.revision);
+        });
+        entry.dataset.drawerFocus = "saved:" + s.revision;
+      });
     } else if (category === "memory" || category === "memory-saved") {
       title.textContent = t("Historical review", "历史检验");
       var historicalContext;
@@ -374,6 +514,8 @@
         if (!collection.ready) { savedUnavailable(); return; }
         historicalContext = savedVersion(collection, id);
         if (!historicalContext) { scenario(null, true); return; }
+        savedIdentity(historicalContext);
+        drawerParent(hasDrawerParent("saved-item:" + id) ? t("← Saved case", "← 已存情景") : t("Open saved case", "打开已存情景"), function () { returnToSavedCase(id); });
       } else historicalContext = id ? activeScenario(id) : null;
       paragraph(historicalContext ? field(historicalContext, "title") + " · BTC · " + historicalContext.horizon_days + t(" days · evidence at ", "天 · 证据日期 ") + historicalContext.as_of : "BTC · " + horizon() + t(" days · evidence at ", "天 · 证据日期 ") + (data.as_of || t("Unavailable", "暂无")));
       paragraph(t("No qualified comparison yet", "暂无合格的历史比较")).className = "cri-warning";
@@ -455,17 +597,86 @@
     limit.textContent = shock.limit[index];
     root.querySelectorAll("[data-shock]").forEach(function (b) { b.setAttribute("aria-pressed", String(b.dataset.shock === currentShock)); });
   }
-  function apply() {
-    var s = state(), h = horizon(), windowSize = s.params.get("window") === "30" ? "30" : "90";
-    root.querySelectorAll("[data-view]").forEach(function (p) { p.hidden = p.dataset.view !== s.view; });
-    root.querySelectorAll("[data-route]").forEach(function (a) { if (a.closest(".cri-tabs") && a.dataset.route === s.view) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current"); });
-    root.querySelectorAll("[data-chart-window]").forEach(function (b) { b.setAttribute("aria-pressed", String(b.dataset.chartWindow === windowSize)); });
-    root.querySelectorAll("[data-chart-panel]").forEach(function (p) { p.hidden = p.dataset.chartPanel !== windowSize; });
-    root.querySelectorAll("[data-horizon]").forEach(function (b) { b.setAttribute("aria-pressed", String(b.dataset.horizon === h)); });
-    root.querySelectorAll("[data-case-horizon]").forEach(function (p) { p.hidden = p.dataset.caseHorizon !== h; });
-    filterMarkets(); renderShock();
-    if (s.params.get("panel")) { var focusWasInside = dialog.contains(document.activeElement); renderDrawer(s.params.get("panel")); if (!dialog.open) dialog.showModal(); else if (focusWasInside && !dialog.contains(document.activeElement)) document.getElementById("cri-dialog-close").focus(); }
-    else if (dialog.open) { dialog.close(); if (lastTrigger && document.contains(lastTrigger)) lastTrigger.focus(); }
+  function apply(event) {
+    // popstate always consumes its incoming entry, even when its URL is unchanged.
+    if (event && event.type === "hashchange" &&
+        (event.newURL !== location.href || root.dataset.renderedAddress === location.href &&
+         root.dataset.renderedLanguage === String(zh()))) return;
+    var priorSuspension = readingSuspended; readingSuspended = true;
+    try {
+      var s = state(), panel = s.params.get("panel"), requestAddress = location.href, requestLanguage = zh(), requestSubtree = body.firstChild, requestFocus = document.activeElement;
+      var returning = pendingSavedReturn && pendingSavedReturn.parentAddress === requestAddress &&
+        panel === "saved-item:" + pendingSavedReturn.revision;
+      if (pendingSavedReturn && requestAddress !== pendingSavedReturn.childAddress) pendingSavedReturn = null;
+      var collection = event && event.collection, retained;
+      if (panel && (panel === "saved" || /^(scenario|saved-item|memory-saved):/.test(panel))) {
+        collection = collection === undefined ? stored() : collection;
+        if (location.href !== requestAddress || zh() !== requestLanguage ||
+            body.firstChild !== requestSubtree || document.activeElement !== requestFocus) return;
+      }
+      if (panel && /^(saved-item|memory-saved):/.test(panel)) {
+        retained = collection.ready ? savedVersion(collection, panel.slice(panel.indexOf(":") + 1)) : null;
+        if (retained && s.params.get("h") !== String(retained.horizon_days)) {
+          s.params.set("h", String(retained.horizon_days));
+          history.replaceState(history.state, "", address(s.view, s.params));
+        }
+      }
+      var h = s.params.get("h") === "30" ? "30" : "7", windowSize = s.params.get("window") === "30" ? "30" : "90";
+      root.querySelectorAll("[data-view]").forEach(function (p) { p.hidden = p.dataset.view !== s.view; });
+      root.querySelectorAll("[data-route]").forEach(function (a) { if (a.closest(".cri-tabs") && a.dataset.route === s.view) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current"); });
+      root.querySelectorAll("[data-chart-window]").forEach(function (b) { b.setAttribute("aria-pressed", String(b.dataset.chartWindow === windowSize)); });
+      root.querySelectorAll("[data-chart-panel]").forEach(function (p) { p.hidden = p.dataset.chartPanel !== windowSize; });
+      root.querySelectorAll("[data-horizon]").forEach(function (b) { b.setAttribute("aria-pressed", String(b.dataset.horizon === h)); });
+      root.querySelectorAll("[data-case-horizon]").forEach(function (p) { p.hidden = p.dataset.caseHorizon !== h; });
+      filterMarkets(); renderShock();
+      var focusWasInside = dialog.contains(document.activeElement);
+      if (panel) renderDrawer(panel, collection);
+      root.dataset.renderedAddress = location.href; root.dataset.renderedLanguage = String(zh());
+      renderedHistory = historySignature();
+      var renderedAddress = location.href, renderedLanguage = zh(), subtree = body.firstChild;
+      function ownsRender() {
+        return location.href === renderedAddress && zh() === renderedLanguage && body.firstChild === subtree;
+      }
+      if (panel) {
+        if (!dialog.open) {
+          var openingFocusEvents = 0;
+          function noteOpeningFocus() { openingFocusEvents += 1; }
+          dialog.addEventListener("focusin", noteOpeningFocus, true);
+          try { dialog.showModal(); } finally { dialog.removeEventListener("focusin", noteOpeningFocus, true); }
+          if (!ownsRender() || !dialog.open || openingFocusEvents > 1) return;
+        }
+        var reading = savedReading(), returningToCase = returning && retained && body.dataset.savedRevision === retained.revision;
+        if (reading || returningToCase) {
+          if (reading) {
+            body.querySelectorAll("details[data-drawer-disclosure]").forEach(function (element) {
+              element.open = reading.disclosures.indexOf(element.dataset.drawerDisclosure) >= 0;
+            });
+            dialog.scrollTop = reading.scroll;
+          }
+          var restored = returningToCase ? drawerFocus("review") :
+            reading && typeof reading.focus === "string" ? drawerFocus(reading.focus) : null;
+          restored = restored || title;
+          if (restored === title) title.tabIndex = -1;
+          restored.focus({ preventScroll: !!reading });
+          return; // A focus callback owns any newer destination or reading position.
+        }
+        if (focusWasInside && !dialog.contains(document.activeElement)) {
+          var fallback = /^(saved-item|memory-saved):/.test(panel) ? title : document.getElementById("cri-dialog-close");
+          if (fallback === title) title.tabIndex = -1;
+          fallback.focus({ preventScroll: true });
+        }
+      } else if (dialog.open) {
+        dialog.close();
+        if (!ownsRender() || dialog.open) return;
+        var active = document.activeElement;
+        if (active !== document.body && !dialog.contains(active) && visibleInView(active, s.view)) return;
+        var destination = visibleInView(lastTrigger, s.view) ? lastTrigger : viewHeading(s.view);
+        if (destination) {
+          if (destination.matches("h1,h2")) destination.tabIndex = -1;
+          destination.focus();
+        }
+      }
+    } finally { readingSuspended = priorSuspension; }
   }
   root.addEventListener("click", function (event) {
     var route = event.target.closest("[data-route]"), openButton = event.target.closest("[data-open]");
@@ -486,6 +697,11 @@
   document.getElementById("cri-sort").addEventListener("change", function (event) { update(null, { sort: event.target.value }, true); });
   document.getElementById("cri-reset").addEventListener("click", function () { update(null, { q: null, filter: null, sort: null }, true); });
   window.addEventListener("popstate", apply); window.addEventListener("hashchange", apply);
-  new MutationObserver(function () { apply(); }).observe(document.documentElement, { attributes: true, attributeFilter: ["data-lang"] });
+  body.addEventListener("toggle", function (event) {
+    if (body.contains(event.target) && event.target.hasAttribute("data-drawer-disclosure")) rememberDrawer();
+  }, true);
+  dialog.addEventListener("focusin", function () { rememberDrawer(); });
+  dialog.addEventListener("scrollend", function () { rememberDrawer(); });
+  new MutationObserver(function () { rememberDrawer(); apply(); }).observe(document.documentElement, { attributes: true, attributeFilter: ["data-lang"] });
   apply();
 })();

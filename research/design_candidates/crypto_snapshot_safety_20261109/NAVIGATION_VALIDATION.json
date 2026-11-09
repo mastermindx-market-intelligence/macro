@@ -1,0 +1,284 @@
+{
+  "source": {
+    "source_parent": "2c04fc37d239f4bf27b6efaed98b229256ea337e",
+    "branch": "design/crypto-snapshot-safety-20261109",
+    "old_version": "3786626cb4d5",
+    "version": "7d9cb01e7600",
+    "js_transforms": 29,
+    "css_transforms": 1,
+    "js_css_inverse_exact": true,
+    "template_site_assets_exact": true,
+    "saved_html_version_references_only": true,
+    "unchanged_inputs": [
+      "site/crypto_intelligence_r4.json",
+      "templates/crypto_intelligence_r4.html.j2",
+      "scripts/build_crypto_intelligence_r4.py",
+      "tests/test_crypto_intelligence_r4.py",
+      "lib/crypto_intelligence_view.py",
+      "site/theme.js",
+      "site/theme.css",
+      "site/illus.js",
+      "site/illus.css",
+      "site/navigation-refresh.css",
+      "site/logo_config.js",
+      "site/stock-logos.js",
+      "site/live_config.js",
+      "site/live.js"
+    ],
+    "candidate_files": {
+      "templates/crypto_intelligence_r4.js": {
+        "bytes": 53916,
+        "sha256": "812ae0c7fadbeda4d6cec64bf1878d12068ab253c892e3f20a9427f7bf2ed9ff",
+        "blob": "f3673fe3e535d6b42ff0a48f4eb69295331824ee"
+      },
+      "site/crypto_intelligence_r4.js": {
+        "bytes": 53916,
+        "sha256": "812ae0c7fadbeda4d6cec64bf1878d12068ab253c892e3f20a9427f7bf2ed9ff",
+        "blob": "f3673fe3e535d6b42ff0a48f4eb69295331824ee"
+      },
+      "templates/crypto_intelligence_r4.css": {
+        "bytes": 16985,
+        "sha256": "61648d0ce07e6582872eff63f79f590392496d8af3fef57e04bdd74e40d7513f",
+        "blob": "66829fbdcfa4a1c378fb939f15d87fd2305ff483"
+      },
+      "site/crypto_intelligence_r4.css": {
+        "bytes": 16985,
+        "sha256": "61648d0ce07e6582872eff63f79f590392496d8af3fef57e04bdd74e40d7513f",
+        "blob": "66829fbdcfa4a1c378fb939f15d87fd2305ff483"
+      },
+      "site/crypto-r4.html": {
+        "bytes": 117388,
+        "sha256": "3415c36c68179c7cf015e2df26cea68954970bd56e18038c16d0be842f30367e",
+        "blob": "2a030a863f9de33132d937b3fe6a24f2b3fadd17"
+      },
+      "site/vector-r4.html": {
+        "bytes": 117387,
+        "sha256": "42efa7a23a7a450672b9d29efd292e0d7a493fed27622838da6b53fa68553a03",
+        "blob": "77b26ab78ccccdae81e9612a541b4860391db613"
+      },
+      "tests/test_crypto_intelligence_r4_browser.py": {
+        "bytes": 49269,
+        "sha256": "a3c84a14a9bad16239dcb0a8575c57d403d594dbf20ea30a5807d3d04632c068",
+        "blob": "4d6af2959cd30b835f2427bbd6febd32a06e2538"
+      }
+    },
+    "node_check": {
+      "exit_code": 0,
+      "stderr": ""
+    },
+    "model_refresh": false,
+    "public_route_cutover": false,
+    "harness_correction": "Relocated misplaced initial-entry focus assertions; changed late popstate injection to one-shot native history.back delegation so removal precedes arrival."
+  },
+  "baseline": {
+    "command": [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "-m",
+      "pytest",
+      "-q",
+      "tests/test_crypto_intelligence_r4_browser.py",
+      "-k",
+      "saved_journey or detached_saved_item or truly_detached or saved_locale_keeps or saved_parent_rechecks or locale_change_does_not_restore or close_falls_back or saved_parent_focus_callback or legacy_saved_parent",
+      "--tb=short",
+      "--junitxml=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/navigation-baseline/junit.xml",
+      "--basetemp=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/navigation-baseline/pytest-temp"
+    ],
+    "exit_code": 1,
+    "seconds": 19.47,
+    "source_parent": "2c04fc37d239f4bf27b6efaed98b229256ea337e",
+    "test_sha256": "dd526991886a6f134b115d2726900c6c34494bf345e5aac2c3b52a2dfdd07bf2"
+  },
+  "initial_candidate": {
+    "command": [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "-m",
+      "pytest",
+      "-q",
+      "tests/test_crypto_intelligence_r4.py",
+      "tests/test_crypto_intelligence_r4_browser.py",
+      "--tb=short",
+      "--junitxml=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/navigation-final/junit.xml",
+      "--basetemp=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/navigation-final/pytest-temp"
+    ],
+    "exit_code": 1,
+    "seconds": 64.777,
+    "source_parent": "2c04fc37d239f4bf27b6efaed98b229256ea337e",
+    "candidate_version": "7d9cb01e7600",
+    "candidate_files": {
+      "templates/crypto_intelligence_r4.js": {
+        "bytes": 53916,
+        "sha256": "812ae0c7fadbeda4d6cec64bf1878d12068ab253c892e3f20a9427f7bf2ed9ff",
+        "blob": "f3673fe3e535d6b42ff0a48f4eb69295331824ee"
+      },
+      "site/crypto_intelligence_r4.js": {
+        "bytes": 53916,
+        "sha256": "812ae0c7fadbeda4d6cec64bf1878d12068ab253c892e3f20a9427f7bf2ed9ff",
+        "blob": "f3673fe3e535d6b42ff0a48f4eb69295331824ee"
+      },
+      "templates/crypto_intelligence_r4.css": {
+        "bytes": 16985,
+        "sha256": "61648d0ce07e6582872eff63f79f590392496d8af3fef57e04bdd74e40d7513f",
+        "blob": "66829fbdcfa4a1c378fb939f15d87fd2305ff483"
+      },
+      "site/crypto_intelligence_r4.css": {
+        "bytes": 16985,
+        "sha256": "61648d0ce07e6582872eff63f79f590392496d8af3fef57e04bdd74e40d7513f",
+        "blob": "66829fbdcfa4a1c378fb939f15d87fd2305ff483"
+      },
+      "site/crypto-r4.html": {
+        "bytes": 117388,
+        "sha256": "3415c36c68179c7cf015e2df26cea68954970bd56e18038c16d0be842f30367e",
+        "blob": "2a030a863f9de33132d937b3fe6a24f2b3fadd17"
+      },
+      "site/vector-r4.html": {
+        "bytes": 117387,
+        "sha256": "42efa7a23a7a450672b9d29efd292e0d7a493fed27622838da6b53fa68553a03",
+        "blob": "77b26ab78ccccdae81e9612a541b4860391db613"
+      },
+      "tests/test_crypto_intelligence_r4_browser.py": {
+        "bytes": 49200,
+        "sha256": "84a646f42bc51140e16ba4babdec6d4cc208d4f03484f478ebe3107f1fc04dff",
+        "blob": "26613d5791fa46fe96510cfb7d72f7f2fbb1a603"
+      }
+    }
+  },
+  "initial_observations": {
+    "contexts": 62,
+    "pages": 68,
+    "page_errors": [],
+    "blocked_external_requests": 0,
+    "blocked_websockets": 0,
+    "browser": "157.0.8103.39"
+  },
+  "corrected_affected": {
+    "command": [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "-m",
+      "pytest",
+      "-q",
+      "tests/test_crypto_intelligence_r4_browser.py",
+      "-k",
+      "unusable_saved_version_never_borrows_current_context or saved_parent_rechecks_the_requested_record_before_return or saved_case_disappearing_during_back_does_not_restore_stale_content",
+      "--tb=short",
+      "--junitxml=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/navigation-harness-correction/junit.xml",
+      "--basetemp=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/navigation-harness-correction/pytest-temp"
+    ],
+    "exit_code": 0,
+    "seconds": 15.405,
+    "source_parent": "2c04fc37d239f4bf27b6efaed98b229256ea337e",
+    "candidate_version": "7d9cb01e7600",
+    "candidate_files": {
+      "templates/crypto_intelligence_r4.js": {
+        "bytes": 53916,
+        "sha256": "812ae0c7fadbeda4d6cec64bf1878d12068ab253c892e3f20a9427f7bf2ed9ff",
+        "blob": "f3673fe3e535d6b42ff0a48f4eb69295331824ee"
+      },
+      "site/crypto_intelligence_r4.js": {
+        "bytes": 53916,
+        "sha256": "812ae0c7fadbeda4d6cec64bf1878d12068ab253c892e3f20a9427f7bf2ed9ff",
+        "blob": "f3673fe3e535d6b42ff0a48f4eb69295331824ee"
+      },
+      "templates/crypto_intelligence_r4.css": {
+        "bytes": 16985,
+        "sha256": "61648d0ce07e6582872eff63f79f590392496d8af3fef57e04bdd74e40d7513f",
+        "blob": "66829fbdcfa4a1c378fb939f15d87fd2305ff483"
+      },
+      "site/crypto_intelligence_r4.css": {
+        "bytes": 16985,
+        "sha256": "61648d0ce07e6582872eff63f79f590392496d8af3fef57e04bdd74e40d7513f",
+        "blob": "66829fbdcfa4a1c378fb939f15d87fd2305ff483"
+      },
+      "site/crypto-r4.html": {
+        "bytes": 117388,
+        "sha256": "3415c36c68179c7cf015e2df26cea68954970bd56e18038c16d0be842f30367e",
+        "blob": "2a030a863f9de33132d937b3fe6a24f2b3fadd17"
+      },
+      "site/vector-r4.html": {
+        "bytes": 117387,
+        "sha256": "42efa7a23a7a450672b9d29efd292e0d7a493fed27622838da6b53fa68553a03",
+        "blob": "77b26ab78ccccdae81e9612a541b4860391db613"
+      },
+      "tests/test_crypto_intelligence_r4_browser.py": {
+        "bytes": 49269,
+        "sha256": "a3c84a14a9bad16239dcb0a8575c57d403d594dbf20ea30a5807d3d04632c068",
+        "blob": "4d6af2959cd30b835f2427bbd6febd32a06e2538"
+      }
+    },
+    "runtime_unchanged_from_initial_run": true
+  },
+  "corrected_observations": {
+    "contexts": 10,
+    "pages": 10,
+    "page_errors": [],
+    "blocked_external_requests": 0,
+    "blocked_websockets": 0,
+    "browser": "157.0.8103.39"
+  },
+  "coverage_union": {
+    "initial_total": 100,
+    "initial_passed": 93,
+    "initial_failed": 7,
+    "correction_total": 10,
+    "correction_passed": 10,
+    "passing_overlap": 3,
+    "unique_cases_with_passing_coverage": 100,
+    "initial_failed_case_names": [
+      "test_r4_unusable_saved_version_never_borrows_current_context[missing_condition]",
+      "test_r4_unusable_saved_version_never_borrows_current_context[missing]",
+      "test_r4_unusable_saved_version_never_borrows_current_context[duplicates]",
+      "test_r4_unusable_saved_version_never_borrows_current_context[bad_date]",
+      "test_r4_unusable_saved_version_never_borrows_current_context[bad_horizon]",
+      "test_r4_unusable_saved_version_never_borrows_current_context[wrong_authority]",
+      "test_r4_saved_case_disappearing_during_back_does_not_restore_stale_content"
+    ],
+    "correction_case_names": [
+      "test_r4_unusable_saved_version_never_borrows_current_context[missing]",
+      "test_r4_unusable_saved_version_never_borrows_current_context[duplicates]",
+      "test_r4_unusable_saved_version_never_borrows_current_context[bad_horizon]",
+      "test_r4_unusable_saved_version_never_borrows_current_context[bad_date]",
+      "test_r4_unusable_saved_version_never_borrows_current_context[missing_condition]",
+      "test_r4_unusable_saved_version_never_borrows_current_context[wrong_authority]",
+      "test_r4_saved_parent_rechecks_the_requested_record_before_return[missing]",
+      "test_r4_saved_parent_rechecks_the_requested_record_before_return[duplicate]",
+      "test_r4_saved_parent_rechecks_the_requested_record_before_return[unreadable]",
+      "test_r4_saved_case_disappearing_during_back_does_not_restore_stale_content"
+    ]
+  },
+  "captures": [
+    {
+      "path": "navigation-return-1440-en.png",
+      "bytes": 71444,
+      "sha256": "9a6d791fecc336560f3f421a97be943af15a9b07a102c217b45ec2d060c77872",
+      "blob": "2e2405aa203eee0c69bb5934de3694a1de36968f"
+    },
+    {
+      "path": "navigation-return-320-en.png",
+      "bytes": 64073,
+      "sha256": "6ab75f0c15d1584fee849ee8c8109b9ac1cd42f03a41e48d476372f5884c9f69",
+      "blob": "69c8c66353a43f0fd9a72b177f4e4b4c1c74a642"
+    },
+    {
+      "path": "navigation-return-390-zh.png",
+      "bytes": 71987,
+      "sha256": "505db9213d42593b91067cb95a1a11b1b84f2ab6877c0a67443e09ef91e332c3",
+      "blob": "dfe17cae3fde3b84326186f569bce2c6c05b418f"
+    }
+  ],
+  "capture_review": "Three native navigation dialog crops visually inspected by the implementing principal; restored scroll can place content beneath the fixed header. No hosted or independent visual acceptance.",
+  "harness_classification": {
+    "misplaced_assertions": 6,
+    "late_injection": 1,
+    "diagnostic_pid": 59811,
+    "diagnostic": "Saved-case storage read and Upside test render preceded capture-observer; fixture [] write happened after render. Corrected seam wraps one native history.back after initial action validation and before destination read.",
+    "product_changed_after_initial_candidate": false
+  },
+  "holds": [
+    "dependent Draft",
+    "H5/model authority",
+    "alert integration",
+    "hosted/independent visual acceptance",
+    "public-route cutover",
+    "release/admission"
+  ],
+  "next_phase": "Original-condition-first frozen-case and compact review layout."
+}
