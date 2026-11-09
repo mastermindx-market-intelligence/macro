@@ -5017,6 +5017,7 @@ jobs:
       - config/theme_graph_identity_breaks.yml
       - config/theme_sources.yml
       - contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json
+      - contracts/theme_graph/activity_curation_receipt.v1.schema.json
       - contracts/theme_graph/activity_membership_history.v1.schema.json
       - contracts/theme_graph/activity_membership_proposal.v1.schema.json
       - contracts/theme_graph/membership_collection.v2.schema.json
@@ -5107,6 +5108,7 @@ jobs:
       - engine/technicals.py
       - engine/theme_graph
       - engine/theme_graph/__init__.py
+      - engine/theme_graph/activity_history_bridge.py
       - engine/theme_graph/capability.py
       - engine/theme_graph/identity.py
       - engine/theme_graph/identity_resolution.py
