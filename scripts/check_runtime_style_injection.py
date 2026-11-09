@@ -116,7 +116,8 @@ class SharedAliasIntegrityError(ValueError):
     """An expected public alias is present but cannot be bound to its named owner."""
 
 
-def _verified_shared_aliases(root: Path) -> set[Path]:
+def verified_shared_aliases(root: Path) -> set[Path]:
+    """Return the finite set of regular aliases equal to their named bundles."""
     site = root / "site"
     js_root = site.joinpath(*_JS_SUBDIR)
     aliases = set()
@@ -146,7 +147,7 @@ def _verified_shared_aliases(root: Path) -> set[Path]:
 
 def discover_counts(root: Path) -> dict[str, dict[str, int]]:
     """Count every injecting JS owner under templates/ and site/."""
-    aliases = _verified_shared_aliases(root)
+    aliases = verified_shared_aliases(root)
     out: dict[str, dict[str, int]] = {}
     for path in iter_js_files(root):
         if path in aliases:

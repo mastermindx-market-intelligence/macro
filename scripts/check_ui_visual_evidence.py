@@ -48,7 +48,8 @@ Material-change detection is DELIBERATELY MECHANICAL AND NARROW (three regex
 shapes below). This guard fails closed, so widening it into anything resembling
 a taste detector turns it into a fleet-wide block on ordinary PRs. Keep it
 narrow. Do not extend this file to judge whether a design is good — CI checks
-evidence existence and state identity only.
+evidence existence and state identity only. The two verified content-addressed
+shared bundle aliases use their named owners’ existing diff verdicts.
 
 Defensive read note: on a FAILED capture, `capture_page_evidence.py` writes
 only ``{"captured": False, "reason": ...}`` for that state row — every other
@@ -82,6 +83,8 @@ except ImportError:  # pragma: no cover — PyYAML is a standing repo dependency
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT))
+
+from scripts.check_runtime_style_injection import SharedAliasIntegrityError, verified_shared_aliases
 
 # The two permitted schema literals this module understands. It never mints a
 # third. See the ABSOLUTE PROHIBITION in the module docstring.
@@ -1118,6 +1121,12 @@ def evaluate(diff_text: str, repo_root: Path) -> list[str]:
 
     added = parse_added_lines(diff_text)
     material = material_paths(added, repo_root)
+    if any(path.startswith("site/assets/js/") for path in material):
+        try:
+            aliases = verified_shared_aliases(repo_root)
+        except SharedAliasIntegrityError as error:
+            return [str(error)]
+        material.difference_update(alias.relative_to(repo_root).as_posix() for alias in aliases)
     if not material:
         return []
     interactions = interaction_requirements(added, repo_root)
