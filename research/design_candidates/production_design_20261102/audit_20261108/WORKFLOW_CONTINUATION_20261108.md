@@ -3247,3 +3247,24 @@ File `01M6Y3F0NXNDPAKJMJGCAD759Z`:
 Start the measured footer-clearance repair, then qualify invalid asset prices and prevent small valid prices from rounding to zero. Fallback-name duplication remains a bounded consumer finding. Producer history validity, missing trend inputs and paired-window receipt work stay separate.
 
 Prior storage/navigation/frozen-case/comparison/integrity/compact proofs retain their exact source scopes; no new complete suite is claimed. PR stays Draft/unarmed/unmerged. H5/model, alerts, hosted/independent acceptance, public-route cutover, admission/release and all denied/unknown-effect action families remain held. Native historical/synthetic proof is not current freshness or production acceptance.
+
+
+## 69. Crypto footer — last action clears the shared launcher (2026-11-09)
+
+**Implemented, verified and saved; continuing into asset quote clarity.** Dependent Draft [PR #10901](https://github.com/mastermindx-market-intelligence/Macro/pull/10901) advances to **`af9322f8e870be16f6f29fc38b8b573267347bd6`**, tree `475b3b6cc80bb4f45d2868f2f8b2e0390bd22e0b`, assets `0bad44b2e1ef`, from `7fd7d84f8b53ad0cd43c5175d3c149ad0d3ccf62`.
+
+The existing `.cri` bottom reserve changes from 64px to `calc(96px + env(safe-area-inset-bottom,0px))`. Exact shared source fixes the desktop launcher 22px above the bottom; native height is 56px. A 16px separation needs 94px, rounded to 96px. Mobile already uses a safe-area inset, which the page reserve follows. No shared clearance token was present. No shared launcher, stacking, behavior, controller or breakpoint changes.
+
+Parent native readback covers four contexts/pages and 16 combinations: four views × two locales × two widths. All eight desktop combinations fail clearance; eight mobile combinations are horizontally clear and pass action/return checks. Native script: 9.045s, zero page errors or external/WebSocket traffic.
+
+**All 16 candidate combinations pass**, and all 16 model-panel open→Close paths restore the original view and footer focus. Four contexts/pages, 11.045s script / 11.575s subprocess / 11.99s wrapper, zero errors or outside traffic. Desktop control/launcher gap is 17.609–18.484px; the visible focus outline retains 11.609–12.484px clearance. Five control hit-test points are clear in every case. Four final actual-viewport screenshots inspected.
+
+Before/after comparisons preserve text, font sizes/families, all measured content/button dimensions, focus extent and launcher geometry/computed behavior. Scroll extent increases exactly 32px in all 16 combinations. The one CSS transformation reverses to the exact parent. Four runtime paths change (template/served CSS and two saved-page version references); 17 other inputs stay exact. Twelve text/source/evidence files and four PNG binaries match commit readback.
+
+The native safe-area inset is 0px. CSS support and computed 96px padding are verified; a nonzero physical-device inset is explicitly unverified. This focused CSS proof does not claim a new full-suite run.
+
+Paper `01M6Y3F0NXNDPAKJMJGCAD759Z`, comparison Build `2ZJ-0`: node `31F-0` records the 96px-plus-inset contract and exact source/proof. One text change; all **72 nodes, parent/order and styles conserved**. Root finished; full 1440×1200 screenshot inspected. No Paper style geometry was changed.
+
+[Build contract and exact proof](https://github.com/mastermindx-market-intelligence/Macro/tree/af9322f8e870be16f6f29fc38b8b573267347bd6/research/design_candidates/crypto_snapshot_safety_20261109). Applied receipt: `PAPER_CRYPTO_FOOTER_CLEARANCE_20261109.json`.
+
+Next: reject invalid quote values without discarding independent asset evidence; preserve useful sub-cent price detail and use an explicit bound below display precision. Existing BTC/scenario formatting remains with its owner. Fallback-name duplication, producer integrity and paired-window receipts remain separate bounded work. All incumbent Draft, H5/model, alert, hosted/independent acceptance, cutover, admission/release and denied/unknown-effect holds remain.

@@ -1,6 +1,17 @@
 # Paper audit and upgrade — 8–9 November 2026
 
 
+## Latest applied work — footer clearance
+
+[PR #10901](https://github.com/mastermindx-market-intelligence/Macro/pull/10901) is now `af9322f8e870be16f6f29fc38b8b573267347bd6`, assets `0bad44b2e1ef`. The existing Crypto content owner reserves 96px plus the safe-area inset so the footer action and keyboard focus outline clear the unchanged shared launcher.
+
+All **16 view/locale/width combinations and 16 model-panel return paths pass** across four native contexts/pages, with zero errors or outside traffic. Eight previously blocked desktop combinations are now clear. Content text/fonts/dimensions and launcher geometry remain exact; four final viewport captures inspected. Twelve text/source/evidence files and four PNGs match readback.
+
+Paper Build has one updated implementation/proof note across 72 conserved nodes/styles; root finished and full screenshot inspected. See [§69](WORKFLOW_CONTINUATION_20261108.md) and [applied receipt](PAPER_CRYPTO_FOOTER_CLEARANCE_20261109.json). Nonzero physical-device safe area remains unverified.
+
+Continuing into asset quote validity and small-price precision. Prior proof scopes and all holds remain.
+
+
 ## Latest applied work — Crypto Overview clarity
 
 Dependent [PR #10901](https://github.com/mastermindx-market-intelligence/Macro/pull/10901) is now `7fd7d84f8b53ad0cd43c5175d3c149ad0d3ccf62` (assets `602406872d1d`). Overview explicitly labels comparison and risk in both languages, preserves compact wrapping and aligns section headings.
