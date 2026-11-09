@@ -1,0 +1,51 @@
+{
+  "schema": "eval_os.retained_comprehension_review.v1",
+  "reviewer": "/root/a1_retained_comprehension",
+  "decision": "PARTIAL",
+  "artifact_root": "integration/",
+  "inspected": [
+    "production-4579f45-20261024/acceptance-summary.json",
+    "production-4579f45-20261024/desktop-dark-en.json",
+    "production-4579f45-20261024/mobile-light-en.json",
+    "production-4579f45-20261024/desktop-dark-en.png",
+    "production-4579f45-20261024/mobile-light-en-ceo.png",
+    "production-4579f45-20261024/mobile-detail.png",
+    "followon-landing-20261024/production-5aae3c5-20261024/asset-proof-reuse.json",
+    "followon-landing-20261024/production-5aae3c5-20261024/acceptance-summary.json"
+  ],
+  "source_identities": {
+    "original_a1": "4579f45e2b3e5dd0c98125fd4d28f4a25a7b009e",
+    "qualified_followon": "5aae3c5e97dcdcf85d0745062fe9424f1ed7c0c7",
+    "a1_record_inspected": "31c4eceb1caaa170fc9512099e0fea43f441efb6"
+  },
+  "independently_computed_artifact_hashes": null,
+  "asset_identity_basis": "Inspected retained reuse receipt reports parity of four frontend assets plus index; no independent rehash in this review.",
+  "supported": [
+    "Historical 385 canonical engines plus one registry gap versus650 artifacts and301 assessed are distinctly labelled",
+    "Healthy and Accruing are distinct in representative symbol-directory detail",
+    "Zero Validated/Disproven, Ungraded by design and missing T1 class are visibly separate; no inferred class",
+    "No promotion or trading authority; display-only disclosure",
+    "Not determined455 under Engines386 exposed the class facet denominator defect"
+  ],
+  "remaining_admin_only": [
+    "Lower-detail horizon and cohort presentation",
+    "Lawful ruler/basis and missing coverage",
+    "Distinction between incomplete evidence and substantive adverse result",
+    "Engine-specific next action"
+  ],
+  "unreturned_read": {
+    "path": "production-4579f45-20261024/auth-detail.json",
+    "attempt": "one text extraction; interrupted without content/hash/process receipt",
+    "completion": "UNCONFIRMED",
+    "repeated": false,
+    "scope": "existing-file read only; no browser/auth/production/mutation"
+  },
+  "limits": [
+    "PARTIAL retained sample; no full eight-cell independent comprehension",
+    "No fresh authenticated journey, deploy, product completion or Chairman acceptance",
+    "Does not independently review repair10171; separate non-author exact-source receipt does",
+    "No R1 native request/log prerequisite for A1",
+    "Retained301 assessed is not fresh backend299"
+  ]
+}
+

@@ -1,5 +1,5 @@
 {
-  "as_of": "2026-11-07",
+  "as_of": "2026-11-08",
   "authority": {
     "may_alert": false,
     "may_auto_promote": false,
@@ -38,10 +38,10 @@
   },
   "family": "pss_cr1_challenge_resilience_prospective",
   "gate_open": true,
-  "generated_utc": "2026-11-07T06:41:22.742701+00:00",
+  "generated_utc": "2026-11-08T06:17:59.232547+00:00",
   "ledger": {
     "advanced_today": 0,
-    "appended_today": 5,
+    "appended_today": 0,
     "challenged_control": 15,
     "earliest_action": "2026-08-18",
     "events": 47,
@@ -60,13 +60,11 @@
   "program_id": "PSS-CR1",
   "registration_ok": true,
   "scan_census": {
-    "derived_events": 5,
-    "eligible_future_rh1_sources": 63,
+    "derived_events": 0,
+    "eligible_future_rh1_sources": 58,
     "reasons": {
       "awaiting_challenge_window": 9,
       "awaiting_or_no_challenge_yet": 44,
-      "group_challenged_control": 1,
-      "group_failed_hold_diagnostic": 4,
       "no_challenge_in_complete_window": 5
     }
   },
