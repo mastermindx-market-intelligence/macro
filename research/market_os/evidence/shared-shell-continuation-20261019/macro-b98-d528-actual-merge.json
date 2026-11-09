@@ -1,0 +1,80 @@
+{
+  "schema": "mastermind.attended.macro_original_writer_merge.v1",
+  "started_at": "2026-10-20T02:14:03.145914+00:00",
+  "head": "b98c5d1bbf3f50ce7b0fdc9df8dbc9882500a1b0",
+  "incoming": "d52827f26b062f67d594350a65becf406710d4d1",
+  "preview_tree": "8339adc5846d5e81dac67533ac4828e226f87e3a",
+  "pr_fence": {
+    "head": "b98c5d1bbf3f50ce7b0fdc9df8dbc9882500a1b0",
+    "state": "open",
+    "labels": [],
+    "auto_merge": null,
+    "observed_at": "2026-10-20T02:12Z"
+  },
+  "commands": [
+    [
+      "git",
+      "merge",
+      "--no-ff",
+      "--no-commit",
+      "d52827f26b062f67d594350a65becf406710d4d1"
+    ],
+    [
+      "git",
+      "add",
+      "--sparse",
+      "--",
+      "site/etfs.html",
+      "site/us_stocks.html"
+    ]
+  ],
+  "success": true,
+  "commit_created": false,
+  "pushed": false,
+  "renderer_invoked": false,
+  "merge_exit": 1,
+  "merge_log": {
+    "path": "/tmp/shared-shell-css-visual-20261019T1107/macro-b98-d528-actual-merge.log",
+    "bytes": 773,
+    "sha256": "e0508faf5a6a6365e10ebd7776b44e8b1660732209d12cf6fa2b181b679216f6"
+  },
+  "actual_conflict_stages": {
+    "site/etfs.html": {
+      "1": "b8d1809081df4e7006760544e77f96ceccb1bff4",
+      "2": "ed26ef5dac1e269dc8bb60fd12763a798990ff08",
+      "3": "8dcc165e4f4e25f6ec83ff36f4a6501703f79c46"
+    },
+    "site/us_stocks.html": {
+      "1": "2a7633efd420607c9db2f8f263f2f9257ac08847",
+      "2": "dde7d648a1f66cec7d85ee161c5f1935f578b2d9",
+      "3": "cd0a6595626e3045a7bd7433fcf2c299cc0d6a47"
+    }
+  },
+  "index_tree": "212504aa01513491886e7f85f97e251b69de35fe",
+  "resolved_paths_vs_preview": [
+    "site/etfs.html",
+    "site/us_stocks.html"
+  ],
+  "tracked_status": {
+    "bytes": 43345,
+    "sha256": "e16a2ba62388c4f60480b5cd4d707c99755b66db98fc26e791a8c6b358aaf02a",
+    "entries": 1178
+  },
+  "resolved_files": [
+    {
+      "path": "site/etfs.html",
+      "bytes": 97332,
+      "sha256": "76acbf0e808f4ae7024451c85eccf2f0674cf554a43c8d95ad14d375a361097b",
+      "index_blob": "0fae6e38bb0f02e6160235ca5a23529a7928380b"
+    },
+    {
+      "path": "site/us_stocks.html",
+      "bytes": 742316,
+      "sha256": "7efd196446e66409b0ea3c1e883103abc7da32c58c709470936aeeed760e7d73",
+      "index_blob": "ff710d6660e8efc6c01a7b809f4ac2f433722be9"
+    }
+  ],
+  "finished_at": "2026-10-20T02:14:23.791055+00:00",
+  "final_head": "b98c5d1bbf3f50ce7b0fdc9df8dbc9882500a1b0",
+  "unmerged_final": ""
+}

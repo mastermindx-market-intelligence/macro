@@ -1,0 +1,76 @@
+{
+  "schema": "eval_os.a1_filter_count_validation.v1",
+  "base": "b6312b05adf956d4803de9d364a679be1a1a91c7",
+  "qualified_release": "5aae3c5e97dcdcf85d0745062fe9424f1ed7c0c7",
+  "qualified_and_base_app_blob": "4a8e15ae6644e684f6dc38b4cffdae373e9e8ef3",
+  "runner": "Direct exact Python test functions with installed Node client harness; not a pytest suite run.",
+  "patched_source_checks": [
+    {
+      "name": "test_translated_filter_copy_retains_canonical_values_and_counts",
+      "passed": true,
+      "seconds": 0.136669
+    },
+    {
+      "name": "test_actual_evidence_filter_row_translates_status_before_count",
+      "passed": true,
+      "seconds": 0.106705
+    },
+    {
+      "name": "test_class_and_authority_chip_counts_match_the_rows_they_filter",
+      "passed": true,
+      "seconds": 0.244474
+    }
+  ],
+  "behavioral_scope": [
+    "Actual iosRenderChips and handler-driven iosRenderTable execution",
+    "Five engine/group rows with 16 artifacts",
+    "Multiple-artifact and zero-output engines",
+    "Explicit null and missing class/authority values",
+    "Noncanonical registry-gap row remains visible",
+    "Canonical-only evidence bands preserved",
+    "Null filter toggles off on second click",
+    "Combined filters retain existing global facet count semantics",
+    "EN and ZH settings; both language spans preserved",
+    "API census and input rows remain byte-equivalent JSON"
+  ],
+  "patched_app_sha256": "5beb905b38ed2c7d0d75619164255a8849122869f3103445249849f9a77233d6",
+  "patched_test_sha256": "29049fff3bf92b4691cb83a7d542ff381c6da71f104b103c52afa5aacc7e73c8",
+  "negative_control": {
+    "app_sha256": "49a5431df90ea372fa32b5df5c44135c3118d0769613579028cecaed3911ff1d",
+    "test": "test_class_and_authority_chip_counts_match_the_rows_they_filter",
+    "exit_code": 1,
+    "expected_failure": true,
+    "failure": "AssertionError at rendered chip-count comparison",
+    "seconds": 0.126045
+  },
+  "syntax": {
+    "command": "node --check admin/static/app.js",
+    "exit_code": 0,
+    "python_test_ast_parsed": true
+  },
+  "dependency_install": {
+    "requested": "pytest==8.4.2 into isolated scratch test-deps",
+    "outcome": "denied by configured network sandbox: Operation not permitted",
+    "retried_by_agent": false,
+    "alternate_route_attempted": false,
+    "pytest_suite_run": false
+  },
+  "limitations": [
+    "No pytest runner or full-suite pass is claimed.",
+    "No browser, authenticated route, screenshot, deployed-source, or production proof.",
+    "No API/backend/classification/evidence/financial semantics changed.",
+    "No GitHub publication, approval, merge or deployment by this worker."
+  ],
+  "whitespace_check": {
+    "method": "git diff --no-index --check for each changed file",
+    "return_codes": [
+      1,
+      1
+    ],
+    "diagnostics": [
+      "",
+      ""
+    ],
+    "note": "no-index reports files differ; no whitespace diagnostics"
+  }
+}

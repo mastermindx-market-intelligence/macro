@@ -1,0 +1,11 @@
+{
+  "operation": "prepare one-shot read-only prearm observer; no host connection/execution",
+  "base": "/tmp/shared-shell-css-visual-20261019T1107/macro-beta-before-e2d-publication-20261020T0536-remote.py",
+  "base_sha256": "c53b62c77cc27142fc31f20e771a50428be6311af72249eec6140e5a068e78c0",
+  "output": "/tmp/shared-shell-css-visual-20261019T1107/macro-b312-prearm-health-remote.py",
+  "bytes": 8265,
+  "sha256": "7954353986d512b6b863c609d4f2c5e3e8f9bb6a51f7bd342e2744e3e79b6f7b",
+  "compile_pass": true,
+  "owner_source": "mastermind-terminal@93e303cc32566e72fb086af6d04ba3aa41866c5c:ops/terminal-build.sh",
+  "owner_blob": "25c24166d6a32ac851ee905afb2c36574bbb8e97"
+}
