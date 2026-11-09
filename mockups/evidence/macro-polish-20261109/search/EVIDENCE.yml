@@ -1,0 +1,8 @@
+{
+  "schema": "mastermind.page_evidence_receipt.v1",
+  "changed_paths": [
+    "templates/navigation-refresh.css",
+    "site/navigation-refresh.css"
+  ],
+  "manifest": "mockups/evidence/macro-polish-20261109/search/manifest.json"
+}

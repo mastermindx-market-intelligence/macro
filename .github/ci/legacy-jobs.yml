@@ -53361,3 +53361,35 @@ jobs:
         run: python -m pytest tests/test_public_site_figma_import_plan.py -q
       - name: reference matrix sealing contracts
         run: python -m pytest tests/test_public_site_figma_reference_matrix.py -q
+
+  macro-interaction-browser:
+    if: ${{ false }}
+    gate: code
+    scope: exclusive
+    paths:
+      - templates/theme.js
+      - site/theme.js
+      - templates/navigation-refresh.css
+      - site/navigation-refresh.css
+      - templates/dashboard.html.j2
+      - templates/theme.css
+      - templates/fonts/**
+      - templates/product-nav-icons.css
+      - templates/_site_nav.html.j2
+      - templates/_navlinks.html.j2
+      - tests/__init__.py
+      - tests/macro_polish_browser_support.py
+      - tests/test_macro_interaction_polish_browser.py
+    timeout-minutes: 8
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install interaction browser dependencies
+        run: pip install pytest playwright jinja2 markupsafe
+      - name: install Chromium
+        run: python -m playwright install --with-deps chromium
+      - name: Macro search and panel interaction contracts
+        run: MM_REQUIRE_BROWSER=1 PYTHONDONTWRITEBYTECODE=1 python -m pytest tests/test_macro_interaction_polish_browser.py -q

@@ -928,10 +928,11 @@
         icon + '<span class="idle-ticker" aria-hidden="true"></span>' +
       '</button>' +
       '<div class="search-expanded">' + icon +
-        '<input class="ticker-input" type="text" inputmode="search" maxlength="80" autocomplete="off" spellcheck="false" aria-label="' + initialCopy.input + '" aria-autocomplete="list" aria-controls="ticker-search-dropdown">' +
+        '<input class="ticker-input" type="text" inputmode="search" maxlength="80" autocomplete="off" spellcheck="false" aria-label="' + initialCopy.input + '" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-haspopup="listbox" aria-controls="ticker-search-results">' +
         '<button class="search-esc" type="button" aria-label="' + initialCopy.close + '">' + initialCopy.closeShort + '</button>' +
       '</div>' +
-      '<div class="ticker-dropdown" id="ticker-search-dropdown" role="listbox" aria-label="' + initialCopy.results + '"></div>';
+      '<span class="search-status" role="status" aria-live="polite" aria-atomic="true"></span>' +
+      '<div class="ticker-dropdown" id="ticker-search-dropdown" role="region" aria-label="' + initialCopy.results + '"></div>';
     ensureNavLogoAssets(box);
 
     var trigger = box.querySelector('.search-trigger');
@@ -943,6 +944,8 @@
     var libFailed = {};                 // market key → 'auth' | 'error' (see loadLibs)
     var pageRows = [], idleTimer = 0, idleIndex = 0, idleChars = 0, deleting = false;
     var isComposing = false;
+    var renderedQuery = '';
+    var searchStatus = box.querySelector('.search-status');
 
     function esc(value) {
       return String(value == null ? '' : value).replace(/[&<>"']/g, function (c) {
@@ -972,6 +975,7 @@
           stillLoading: '仍在加载匹配市场…',
           noMatches: '没有匹配的股票代码或公司。',
           retry: '重新加载',
+          retrying: '加载中…',
           company: '公司',
           inLibrary: '已收录',
           logoAttribution: 'Logo 由 Logo.dev 提供'
@@ -997,6 +1001,7 @@
         stillLoading: 'Still loading matching markets…',
         noMatches: 'No ticker or company matches this search.',
         retry: 'Try again',
+        retrying: 'Loading…',
         company: 'Company',
         inLibrary: 'IN LIBRARY',
         logoAttribution: 'Logos by Logo.dev'
@@ -1132,7 +1137,7 @@
 
     function reloadFailedLibs() {
       var retryable = STOCK_MARKETS.filter(function (m) { return libFailed[m.key]; });
-      if (!retryable.length) return;
+      if (!retryable.length || pending > 0) return;
       pending += retryable.length;
       render();
       retryable.forEach(function (m) {
@@ -1176,7 +1181,8 @@
     function noticeMarkup(notice) {
       if (!notice) return '';
       return '<div class="search-notice">' + esc(notice.text) +
-        (notice.action ? ' <button type="button" data-search-retry>' + esc(notice.action) + '</button>' : '') +
+        (notice.action ? ' <button type="button" data-search-retry' + (pending > 0 ? ' disabled' : '') + '>' +
+          esc(pending > 0 ? searchCopy().retrying : notice.action) + '</button>' : '') +
         '</div>';
     }
 
@@ -1279,7 +1285,7 @@
       var openLabel = curLang() === 'zh'
         ? '在终端中打开 ' + String(x.t || '')
         : 'Open ' + String(x.t || '') + ' in Terminal';
-      return '<button class="' + klass + '" type="button" role="option" data-result-index="' + index +
+      return '<button class="' + klass + '" type="button" role="option" aria-selected="false" id="ticker-search-result-' + index + '" data-result-index="' + index +
         '" style="--i:' + index + '" aria-label="' + esc(openLabel) + '">' +
           logoMarkup(x) +
           '<span><span class="ticker-symbol">' + esc(x.t) + '</span><span class="ticker-name">' +
@@ -1301,18 +1307,60 @@
       if (window.MMXStockLogo && window.MMXStockLogo.enhance) window.MMXStockLogo.enhance(dropdown);
     }
 
-    function render() {
+    function resultKey(row) {
+      return row ? row._key + ':' + row.t : '';
+    }
+
+    /* A repaint must not discard the user's place when another market arrives.
+       Keep the same result identity and recover focus only when we removed it. */
+    function render(preserveResult) {
+      var query = normalizeSearch(input.value);
+      var keepSelection = preserveResult !== false && query === renderedQuery ? resultKey(pageRows[selected]) : '';
+      var focused = document.activeElement;
+      var restore = dropdown.contains(focused);
+      var focusedRow = restore && focused.closest('[data-result-index]');
+      var focusedKey = focusedRow ? resultKey(pageRows[Number(focusedRow.getAttribute('data-result-index'))]) : '';
+      var focusedPage = restore && focused.closest('[data-search-page]');
+      var retryFocused = restore && focused.closest('[data-search-retry]');
+      var anchorKey = preserveResult !== false && query === renderedQuery ? (focusedKey || keepSelection) : '';
+      renderContent(anchorKey);
+      renderedQuery = query;
+      if (keepSelection) selected = pageRows.findIndex(function (row) { return resultKey(row) === keepSelection; });
+      paintSelection(!!keepSelection);
+      dropdown.setAttribute('aria-busy', pending > 0 ? 'true' : 'false');
+      var title = dropdown.querySelector('.search-drop-title');
+      var notice = dropdown.querySelector('.search-notice, .empty-search');
+      searchStatus.textContent = (title ? title.textContent : '') + (notice ? '. ' + notice.textContent : '');
+      if (restore && box.classList.contains('open')) {
+        var next = null;
+        if (focusedKey) {
+          var index = pageRows.findIndex(function (row) { return resultKey(row) === focusedKey; });
+          if (index >= 0) next = dropdown.querySelector('[data-result-index="' + index + '"]');
+        }
+        if (!next && focusedPage) next = dropdown.querySelector('[data-search-page="' + page + '"]');
+        if (!next && retryFocused) next = dropdown.querySelector('[data-search-retry]:not([disabled])');
+        (next || input).focus({ preventScroll: true });
+      }
+    }
+
+    function resultList(popular) {
+      return '<div class="' + (popular ? 'fan-grid' : 'results-list') + '" id="ticker-search-results" role="listbox" aria-label="' +
+        esc(searchCopy().results) + '">' + pageRows.map(function (x, i) { return resultMarkup(x, i, popular); }).join('') + '</div>';
+    }
+
+    function renderContent(anchorKey) {
       var c = searchCopy();
       var queryDisplay = input.value.trim().replace(/\s+/g, ' ');
       var query = normalizeSearch(queryDisplay);
       selected = -1;
+      pageRows = [];
       if (!query) {
         if (pending > 0) {
           dropdown.innerHTML =
             '<div class="search-drop-head"><div><div class="search-drop-title">' + esc(c.rankingTitle) + '</div>' +
             '<div class="search-drop-sub">' + esc(c.rankingSub) + '</div></div>' +
             '<span class="market-profile">' + esc(profileLabel()) + '</span></div>' +
-            '<div class="empty-search">' + esc(c.rankingEmpty) + '</div>';
+            '<div class="empty-search">' + esc(c.rankingEmpty) + '</div>' + resultList(true);
           return;
         }
         pageRows = popularRows();
@@ -1322,14 +1370,14 @@
             '<div class="search-drop-head"><div><div class="search-drop-title">' + esc(c.loadingTitle) + '</div>' +
             '<div class="search-drop-sub">' + esc(c.loadingSub) + '</div></div>' +
             '<span class="market-profile">' + esc(profileLabel()) + '</span></div>' +
-            (idleNotice ? noticeMarkup(idleNotice) : '<div class="empty-search">' + esc(c.loadingEmpty) + '</div>');
+            (idleNotice ? noticeMarkup(idleNotice) : '<div class="empty-search">' + esc(c.loadingEmpty) + '</div>') + resultList(true);
           return;
         }
         dropdown.innerHTML =
           '<div class="search-drop-head"><div><div class="search-drop-title">' + esc(c.popularTitle) + '</div>' +
           '<div class="search-drop-sub">' + esc(c.popularSub) + '</div></div>' +
           '<span class="market-profile">' + esc(profileLabel()) + '</span></div>' +
-          '<div class="fan-grid">' + pageRows.map(function (x, i) { return resultMarkup(x, i, true); }).join('') + '</div>' +
+          resultList(true) +
           noticeMarkup(idleNotice) +
           attribution();
         enhanceLogos();
@@ -1342,6 +1390,9 @@
             String(a.x.t || '').localeCompare(String(b.x.t || ''));
         }).map(function (o) { return o.x; });
       var pageSize = 8, pageCount = Math.max(1, Math.ceil(matches.length / pageSize));
+      /* Late results can move the chosen ticker across a page boundary. */
+      var anchorIndex = anchorKey ? matches.findIndex(function (row) { return resultKey(row) === anchorKey; }) : -1;
+      if (anchorIndex >= 0) page = Math.floor(anchorIndex / pageSize);
       page = Math.min(page, pageCount - 1);
       pageRows = matches.slice(page * pageSize, (page + 1) * pageSize);
       var pagination = '';
@@ -1351,7 +1402,7 @@
         var buttons = [];
         for (var i = start; i < end; i++) {
           buttons.push('<button type="button" data-search-page="' + i + '" class="' + (i === page ? 'active' : '') +
-            '" aria-label="' + (curLang() === 'zh' ? '结果第 ' + (i + 1) + ' 页' : 'Results page ' + (i + 1)) +
+            '" aria-current="' + (i === page ? 'page' : 'false') + '" aria-label="' + (curLang() === 'zh' ? '结果第 ' + (i + 1) + ' 页' : 'Results page ' + (i + 1)) +
             '">' + (i + 1) + '</button>');
         }
         pagination = '<div class="search-pagination">' + buttons.join('') + '</div>';
@@ -1373,39 +1424,63 @@
         '<div class="search-drop-sub">' + esc(c.selectTicker) + '</div></div>' +
         '<span class="market-profile">' + esc(c.allMarkets) + '</span></div>' +
         (pageRows.length
-          ? '<div class="results-list">' + pageRows.map(function (x, i) { return resultMarkup(x, i, false); }).join('') + '</div>' + pagination
-          : (notice ? '' : '<div class="empty-search">' + esc(pending > 0 ? c.stillLoading : c.noMatches) + '</div>')) +
+          ? resultList(false) + pagination
+          : (notice ? '' : '<div class="empty-search">' + esc(pending > 0 ? c.stillLoading : c.noMatches) + '</div>') + resultList(false)) +
         noticeMarkup(notice) +
         attribution();
       enhanceLogos();
     }
 
-    function paintSelection() {
+    function paintSelection(reveal) {
+      var active = null;
       dropdown.querySelectorAll('[data-result-index]').forEach(function (row, index) {
         row.classList.toggle('sel', index === selected);
         row.setAttribute('aria-selected', index === selected ? 'true' : 'false');
+        if (index === selected) active = row;
       });
+      if (active) input.setAttribute('aria-activedescendant', active.id);
+      else input.removeAttribute('aria-activedescendant');
+      if (active && reveal) {
+        /* Scroll only the results surface. scrollIntoView would move the page
+           behind the search and make closing it feel like a lost place. */
+        var rowBox = active.getBoundingClientRect(), menuBox = dropdown.getBoundingClientRect();
+        var head = dropdown.querySelector('.search-drop-head');
+        var pager = dropdown.querySelector('.search-pagination');
+        var top = menuBox.top + (head ? head.offsetHeight : 0) + 8;
+        var bottom = menuBox.bottom - (pager ? pager.offsetHeight : 0) - 8;
+        if (rowBox.top < top) dropdown.scrollTop += rowBox.top - top;
+        else if (rowBox.bottom > bottom) dropdown.scrollTop += rowBox.bottom - bottom;
+      }
     }
 
     function openSearch() {
       box.classList.add('open');
       document.body.classList.add('nav-search-focus');
       trigger.setAttribute('aria-expanded', 'true');
+      input.setAttribute('aria-expanded', 'true');
       loadLibs();
       page = 0;
       render();
-      window.requestAnimationFrame(function () { input.focus(); });
+      window.requestAnimationFrame(function () {
+        if (box.classList.contains('open')) input.focus({ preventScroll: true });
+      });
     }
 
     function closeSearch(restoreFocus) {
       box.classList.remove('open');
       document.body.classList.remove('nav-search-focus');
       trigger.setAttribute('aria-expanded', 'false');
+      input.setAttribute('aria-expanded', 'false');
+      input.removeAttribute('aria-activedescendant');
+      searchStatus.textContent = '';
       input.blur();
       selected = -1;
       if (restoreFocus) {
         window.requestAnimationFrame(function () {
-          try { trigger.focus({ preventScroll: true }); } catch (e) { trigger.focus(); }
+          if (!box.classList.contains('open') &&
+              (document.activeElement === document.body || box.contains(document.activeElement))) {
+            try { trigger.focus({ preventScroll: true }); } catch (e) { trigger.focus(); }
+          }
         });
       }
     }
@@ -1461,20 +1536,34 @@
       if (e.key === 'ArrowDown') {
         e.preventDefault();
         selected = Math.min(selected + 1, pageRows.length - 1);
-        paintSelection();
+        paintSelection(true);
       } else if (e.key === 'ArrowUp') {
         e.preventDefault();
-        selected = Math.max(selected - 1, 0);
-        paintSelection();
+        selected = selected < 0 ? pageRows.length - 1 : Math.max(selected - 1, 0);
+        paintSelection(true);
       } else if (e.key === 'Enter') {
         e.preventDefault();
         go(pageRows[selected >= 0 ? selected : 0]);
-      } else if (e.key === 'Escape') {
-        e.preventDefault();
-        closeSearch(true);
       }
     });
+    box.addEventListener('keydown', function (e) {
+      if (e.key !== 'Escape' || isComposing || e.isComposing || !box.classList.contains('open')) return;
+      e.preventDefault();
+      e.stopPropagation();
+      closeSearch(true);
+    });
+    box.addEventListener('focusout', function () {
+      window.setTimeout(function () {
+        if (box.classList.contains('open') && !box.contains(document.activeElement)) closeSearch();
+      }, 0);
+    });
+    /* Keep typing focus on pointer selection; native click alone activates.
+       Keyboard, touch and assistive clicks now follow that same action path. */
     dropdown.addEventListener('mousedown', function (e) {
+      if (e.button === 0 && e.target.closest('[data-result-index]')) e.preventDefault();
+    });
+    dropdown.addEventListener('click', function (e) {
+      if (e.defaultPrevented || e.button !== 0) return;
       if (e.target.closest('[data-search-retry]')) {
         e.preventDefault();
         reloadFailedLibs();
@@ -1484,7 +1573,8 @@
       if (pageButton) {
         e.preventDefault();
         page = Number(pageButton.getAttribute('data-search-page')) || 0;
-        render();
+        selected = -1;
+        render(false);
         return;
       }
       var row = e.target.closest('[data-result-index]');
@@ -1493,7 +1583,10 @@
       go(pageRows[Number(row.getAttribute('data-result-index'))]);
     });
     document.addEventListener('click', function (e) {
-      if (box.classList.contains('open') && !box.contains(e.target)) closeSearch();
+      /* A page/retry click can replace its own target before this bubbles.
+         Its original event path still belongs to search. */
+      var inside = box.contains(e.target) || (e.composedPath && e.composedPath().indexOf(box) !== -1);
+      if (box.classList.contains('open') && !inside) closeSearch();
     });
     document.addEventListener('mmx-markets-change', function () {
       idleIndex = idleChars = 0;

@@ -1,0 +1,14 @@
+.F.                                                                      [100%]
+=================================== FAILURES ===================================
+_________ test_curated_exclusive_scopes_cover_their_own_import_closure _________
+tests/test_ci_pack.py:5531: in test_curated_exclusive_scopes_cover_their_own_import_closure
+    misses_full = curated_exclusive_closure_findings(MANIFEST)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts/run_ci_pack.py:1891: in curated_exclusive_closure_findings
+    raise ValueError(f"{job_id} derives no closure — curation cannot be checked")
+E   ValueError: macro-interaction-browser derives no closure — curation cannot be checked
+
+NOTE: sparse worktree — data, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_ci_pack.py::test_curated_exclusive_scopes_cover_their_own_import_closure
+1 failed, 2 passed in 283.75s (0:04:43)

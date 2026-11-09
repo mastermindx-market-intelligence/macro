@@ -1,0 +1,21 @@
+{
+  "job": "macro-interaction-browser",
+  "suite_discovered": true,
+  "closure": [
+    "site/navigation-refresh.css",
+    "site/theme.js",
+    "templates/_navlinks.html.j2",
+    "templates/_site_nav.html.j2",
+    "templates/dashboard.html.j2",
+    "templates/navigation-refresh.css",
+    "templates/product-nav-icons.css",
+    "templates/theme.css",
+    "templates/theme.js",
+    "tests/__init__.py",
+    "tests/macro_polish_browser_support.py",
+    "tests/test_macro_interaction_polish_browser.py"
+  ],
+  "uncovered": [],
+  "inference_note": "derived scopes for 1/1 jobs",
+  "font_dependency_declared": true
+}
