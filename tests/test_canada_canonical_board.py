@@ -980,6 +980,8 @@ def test_ca_discovery_persists_only_zero_authority_lane_b_rows(tmp_path, monkeyp
     from engine import canada_discovery_challenger as cadc
     from lib import config
     monkeypatch.setattr(config, "data_dir", lambda: tmp_path)
+    # Bind this synthetic session to its own nightly wall clock.
+    monkeypatch.setattr(bs, "_now_iso", lambda: "2026-09-18T21:00:00+00:00")
     monkeypatch.setenv("COLLECT_LANE", "nightly")
     monkeypatch.delenv("CN_LANE", raising=False)
     monkeypatch.setattr(bs, "_read_incumbent_positions", lambda *_a, **_k: {})
