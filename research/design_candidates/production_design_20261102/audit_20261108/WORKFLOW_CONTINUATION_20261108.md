@@ -972,3 +972,61 @@ The current AI Build root `5VN-0` contains newer draft-mention review and comple
 
 Fresh read-only checks also found current, coherent updates in Market Structure’s populated phone/build, the distinct Market Memory evidence workspace’s outcome states, and Forex’s implementation index. These were preserved rather than changed to inflate coverage. Shared Tools regional navigation and Catalyst filtered selection remain the next independently useful lanes.
 
+
+## 19. Shared Tools — complete mobile category navigation
+
+**Applied and visually checked, 9 November 2026.** This is the twenty-first existing Paper file improved: [Shared Tools and Research Launcher](https://app.paper.design/file/01M6Y32A3E4XC51FQVJN98YRPH/p-1-0). The [new Build and expanded-chooser page](https://app.paper.design/file/01M6Y32A3E4XC51FQVJN98YRPH/p-2-0) keeps the implementation contract and retained controls alongside two editable mobile specimens.
+
+### Defect and applied composition
+
+The R37 desktop directory `28H-0` exposes seven regional/topic groups plus All destinations. The full mobile directory and Research screens exposed only United States, Other assets and Research, with no designed path to China, Hong Kong, Canada or International. The mobile full-directory label still meant the eleven US destinations. This was a missing designed navigation path, not an assertion that the current runtime hid those categories.
+
+Eight mobile views now use one compact **44px category trigger**. Browsing shows the current group; active search shows **All categories** as search scope. The original three-chip rails were moved, with their original IDs, to the retained-reference root `31S-0`.
+
+| Product root | Existing mode | New control | Retained original rail | Retained holder |
+|---|---|---|---|---|
+| `OZ-0` | United States · dark | `320-0` | `PT-0` | `31W-0` |
+| `UH-0` | United States · light | `32C-0` | `VB-0` | `328-0` |
+| `ZZ-0` | All categories · dark | `32O-0` | `10T-0` | `32K-0` |
+| `16H-0` | All categories · light | `330-0` | `17B-0` | `32W-0` |
+| `1CZ-0` | All categories · dark | `33C-0` | `1DT-0` | `338-0` |
+| `1JV-0` | All categories · light | `33O-0` | `1KP-0` | `33K-0` |
+| `2K1-0` | Research · dark | `340-0` | `2KX-0` | `33W-0` |
+| `2PU-0` | Research · light | `34C-0` | `2QQ-0` | `348-0` |
+
+The expanded chooser specimens are **`34K-0` / 09 (390px light EN)** and **`358-0` / 10 (320px dark ZH)**. They show Start here, the seven existing groups, and All destinations, with a visible Research selection. The nine choices are a fixture of the current inventory; builders must render the actual owner-supplied list. The chooser is an inline disclosure inside All Tools, without a second modal or focus trap. The Research context below it retains the 11 core + 20 specialist = 31 tool composition.
+
+Two no-match helpers, `1JU-0` and `1QQ-0`, now say **“Clear returns to your previous category.”** The previous wording incorrectly implied that Clear always opened the complete directory. Desktop footer `2JW-0` now matches the mobile promise: **“Browse here without changing your market or saved work.”**
+
+### Existing source owner and exact inspection
+
+Root independently fetched the affected current source at Macro **`4bd1948ac0d9ecf40301caf70cbf8cf1619fd2c4`**:
+
+| Source | Git blob | Relevant behavior |
+|---|---|---|
+| [templates/nav_market.js](https://github.com/mastermindx-market-intelligence/macro/blob/4bd1948ac0d9ecf40301caf70cbf8cf1619fd2c4/templates/nav_market.js) | `37c7ac74301661d0bc4fe1997bb37d572a8573bb` | Existing embedded All Tools controller: source collection, category construction, global search, per-opening withdrawal and native link validation. |
+| [templates/_all_tools_menu.html.j2](https://github.com/mastermindx-market-intelligence/macro/blob/4bd1948ac0d9ecf40301caf70cbf8cf1619fd2c4/templates/_all_tools_menu.html.j2) | `3259b4e5c6305fd2f9a33bea65141efb0528680a` | Shared, strictly enabled dialog host; presentation and behavior remain with the incumbent shared assets. |
+
+The current source presents a category rail. **The compact chooser is a proposed presentation extension, not a claim that this source already implements it.** It must dispatch the same category action and read the same current groups. It adds no separate route catalogue, global market selector, saved preference, provider fetch, permission owner or automatic refresh.
+
+The fetched adoption README contains historical and newer verification records. Its claimed runs were not executed by this session and were not promoted into acceptance for the new selector.
+
+### State and focus contract
+
+The six-module native Build root **`31M-0`** binds the proposal to that source:
+
+1. A nonempty tool query searches every category while retaining the prior browsing group. The display-only label All categories must not overwrite that group.
+2. Clear removes the query and returns to the previous group, with focus on search. Show available tools uses the existing reset to All destinations. Start here remains the current-section starting view.
+3. Choosing China or another group during search uses the existing category action: clear the query, change directory group, reset the directory scroll as the owner already does. It neither changes the page’s market nor opens a destination.
+4. Opening or cancelling the chooser changes no category/query. Selection closes it and returns focus to its trigger. Escape closes the chooser first and stops propagation; a later Escape dismisses All Tools normally. Locale and IME behavior retain their existing owner.
+5. Preserve withdrawn destinations for the current opening, their positions and unavailable counts, render/click/auxiliary-click/context-menu checks, exact URLs and external-tab behavior. A category or locale redraw cannot revive a withdrawn link. Explicit close/reopen re-collects source navigation.
+6. All choices remain reachable at 320px and enlarged text through the existing dialog scrolling arrangement. Optional disclosure opacity may settle within 120ms; reduced motion is immediate and input is never delayed.
+
+### Native evidence and remaining proof
+
+Before/after comparison retains **all 1,558 parsed original div IDs** across the eight amended phones and desktop Research board. There are exactly eight original-rail parent changes and the three intended text edits. Native serialization additionally materialized default `fontSize:12px` / `lineHeight:16px` on the two Research root frames; their descendant text/style records are unchanged. The root height grows by ten pixels because a 34px legacy rail is now a 44px control. No catalogue destination, description, count, badge, row order or original row style changed.
+
+The existing scrolled Research references **`2VN-0` and `2YC-0` are byte-identical**. Native screenshots check the 390px and 320px expanded choosers, the no-match screen, the Research header, the complete Build sheet and retained controls. All category labels and selected marks fit. The completed working indicators for **thirteen exact roots** were released with an observed applied response.
+
+No application tests or browser interactions were executed for this proposal. The existing All Tools test/browser owners still owe the combined Research → query → Clear, query → Show all, query → China, locale, source withdrawal, modified-link, Escape, close/reopen, focus and enlarged-text proof. No deployment, opt-in expansion or release acceptance was performed.
+
