@@ -1029,3 +1029,302 @@ class TestStalenessTripwire:
             importlib.reload(_bms)
         out = capsys.readouterr().out
         assert "::warning title=build_market_structure::" not in out
+
+
+# ===========================================================================
+# Skylit R6 cross-expiry topology Stage 0
+# ===========================================================================
+
+from scripts import research_skylit_r6_cross_expiry_topology as skylit_r6
+
+
+def _r6_state(frame, *, gate=True):
+    return {
+        "root": "SPY",
+        "target_gate_pass": gate,
+        "decision_eligible_not_before_session": "2026-09-15",
+        "base_input_sha256": "a" * 64,
+        "settled_oi_input_sha256": "b" * 64,
+        "unexpired_identity_contracts": len(frame),
+        "model_input_contract_rate": 1.0,
+        "settled_oi_contract_rate": 1.0,
+        "settled_oi_exposure_mass_coverage_on_prior_known_mass": 1.0,
+        "frame": frame,
+    }
+
+
+def _r6_row(exp, strike, exposure, right="C", spot=100.0):
+    return {
+        "root": "SPY",
+        "expiration": exp,
+        "strike": float(strike),
+        "right": right,
+        "spot": float(spot),
+        "exposure_gex": float(exposure),
+    }
+
+
+def test_magnitude_distribution_uses_gross_absolute_exposure_not_signed_net():
+    frame = pd.DataFrame([
+        _r6_row("2026-09-18", 100, 10, "C"),
+        _r6_row("2026-09-18", 100, -10, "P"),
+        _r6_row("2026-09-18", 105, 5, "C"),
+    ])
+    spec = skylit_r6._coordinate_spec(None)
+    work = skylit_r6._normalize_frame(frame, "2026-09-14", spec)
+    dist = skylit_r6._strike_distribution(work)
+    at_100 = dist.loc[dist["strike"] == 100.0].iloc[0]
+    assert at_100["gross_abs_exposure"] == 20.0
+    assert at_100["signed_net_exposure"] == 0.0
+    assert dist["gross_abs_exposure"].sum() == 25.0
+
+
+def test_equal_shape_different_scale_has_zero_wasserstein_and_unit_cosine():
+    rows = []
+    for strike, exposure in [(95, 1), (100, 2), (105, 1)]:
+        rows.append(_r6_row("2026-09-18", strike, exposure))
+        rows.append(_r6_row("2026-09-25", strike, exposure * 7))
+    got = skylit_r6.analyze_state(_r6_state(pd.DataFrame(rows)), "2026-09-14")
+    pair = got["adjacent_expiry_geometry"][0]
+    assert pair["wasserstein_1_x"] == pytest.approx(0.0, abs=1e-12)
+    assert pair["cosine_similarity"] == pytest.approx(1.0, abs=1e-12)
+    assert got["outcome_labels_opened"] is False
+    assert got["exposure_unit"] == "USD dealer-delta change per +1% spot move"
+    assert got["magnitude_semantics"].startswith("gross_absolute")
+
+
+def test_shifted_expiry_has_positive_centroid_displacement_and_wasserstein():
+    rows = []
+    for strike, exposure in [(95, 1), (100, 2), (105, 1)]:
+        rows.append(_r6_row("2026-09-18", strike, exposure))
+    for strike, exposure in [(100, 1), (105, 2), (110, 1)]:
+        rows.append(_r6_row("2026-09-25", strike, exposure))
+    got = skylit_r6.analyze_state(_r6_state(pd.DataFrame(rows)), "2026-09-14")
+    pair = got["adjacent_expiry_geometry"][0]
+    assert pair["centroid_displacement_x"] > 0
+    assert pair["wasserstein_1_x"] > 0
+    assert got["summary"]["front_back_centroid_gap_x"] > 0
+
+
+def test_equal_two_node_distribution_has_entropy_one_hhi_half():
+    frame = pd.DataFrame([
+        _r6_row("2026-09-18", 95, 1),
+        _r6_row("2026-09-18", 105, -1),
+    ])
+    work = skylit_r6._normalize_frame(frame, "2026-09-14", skylit_r6._coordinate_spec(None))
+    metrics = skylit_r6._distribution_metrics(skylit_r6._strike_distribution(work))
+    assert metrics["normalized_entropy"] == pytest.approx(1.0)
+    assert metrics["hhi"] == pytest.approx(0.5)
+    assert metrics["effective_node_count"] == pytest.approx(2.0)
+    assert metrics["top_node_share"] == pytest.approx(0.5)
+
+
+def test_expected_move_coordinate_is_explicit_and_changes_scale():
+    frame = pd.DataFrame([
+        _r6_row("2026-09-18", 95, 1),
+        _r6_row("2026-09-18", 105, 1),
+    ])
+    plain = skylit_r6.analyze_state(_r6_state(frame), "2026-09-14")
+    em = skylit_r6.analyze_state(_r6_state(frame), "2026-09-14", expected_move_pct=2.0)
+    assert plain["coordinate"]["em_normalized"] is False
+    assert em["coordinate"]["em_normalized"] is True
+    assert abs(em["by_expiry"][0]["centroid_x"]) > abs(plain["by_expiry"][0]["centroid_x"])
+
+
+def test_cosine_refuses_when_fixed_grid_clips_material_tail_mass():
+    rows = []
+    # Identical shapes would normally have cosine=1, but 2% of the exposure mass
+    # sits far outside the fallback log-moneyness grid. R6 must refuse the cosine
+    # rather than clip that tail into a boundary bin and report false precision.
+    for exp, scale in [("2026-09-18", 1), ("2026-09-25", 5)]:
+        rows.extend([
+            _r6_row(exp, 30, 2 * scale),
+            _r6_row(exp, 100, 98 * scale),
+        ])
+    got = skylit_r6.analyze_state(_r6_state(pd.DataFrame(rows)), "2026-09-14")
+    pair = got["adjacent_expiry_geometry"][0]
+    assert pair["wasserstein_1_x"] == pytest.approx(0.0, abs=1e-12)
+    assert pair["cosine_similarity"] is None
+    assert pair["cosine_available"] is False
+    assert pair["cosine_refusal_reason"] == "grid_clipped_mass"
+    assert max(
+        pair["left_grid_clipped_mass"],
+        pair["right_grid_clipped_mass"],
+    ) == pytest.approx(0.02)
+    assert got["summary"]["cosine_pairs_available"] == 0
+    assert got["summary"]["cosine_pairs_refused"] == 1
+    assert got["summary"]["max_adjacent_grid_clipped_mass"] == pytest.approx(0.02)
+
+
+def test_persistent_node_matching_requires_all_parameters_or_none():
+    frame = pd.DataFrame([
+        _r6_row("2026-09-18", 100, 10),
+        _r6_row("2026-09-25", 101, 10),
+    ])
+    state = _r6_state(frame)
+    got = skylit_r6.analyze_state(state, "2026-09-14")
+    assert got["persistent_node_matching"]["status"] == "NOT_REQUESTED"
+    assert got["summary"]["persistent_track_count"] is None
+
+    with pytest.raises(skylit_r6.R6Refusal, match="requires"):
+        skylit_r6.analyze_state(
+            state,
+            "2026-09-14",
+            node_prominence_fraction=0.5,
+        )
+
+
+def test_persistent_node_matching_tracks_prominent_normalized_location_across_expiries():
+    rows = []
+    for exp, strike in [
+        ("2026-09-18", 100),
+        ("2026-09-25", 101),
+        ("2026-10-02", 102),
+    ]:
+        rows.extend([
+            _r6_row(exp, strike, 100),
+            _r6_row(exp, 120, 10),
+        ])
+    got = skylit_r6.analyze_state(
+        _r6_state(pd.DataFrame(rows)),
+        "2026-09-14",
+        node_prominence_fraction=0.50,
+        node_match_tolerance_x=0.02,
+        node_min_expiries=3,
+    )
+    matched = got["persistent_node_matching"]
+    assert matched["status"] == "COMPLETE"
+    assert matched["candidate_node_count"] == 3
+    assert matched["persistent_track_count"] == 1
+    track = matched["tracks"][0]
+    assert track["n_expiries"] == 3
+    assert [node["strike"] for node in track["nodes"]] == [100.0, 101.0, 102.0]
+    assert track["max_match_distance_x"] < 0.02
+    assert got["summary"]["persistent_track_count"] == 1
+
+
+def test_persistent_node_matching_refuses_to_bridge_beyond_declared_tolerance():
+    rows = []
+    for exp, strike in [
+        ("2026-09-18", 100),
+        ("2026-09-25", 101),
+        ("2026-10-02", 102),
+    ]:
+        rows.append(_r6_row(exp, strike, 100))
+    got = skylit_r6.analyze_state(
+        _r6_state(pd.DataFrame(rows)),
+        "2026-09-14",
+        node_prominence_fraction=0.50,
+        node_match_tolerance_x=0.005,
+        node_min_expiries=3,
+    )
+    matched = got["persistent_node_matching"]
+    assert matched["candidate_node_count"] == 3
+    assert matched["track_count"] == 3
+    assert matched["persistent_track_count"] == 0
+    assert matched["tracks"] == []
+
+
+def test_r6_transition_detects_geometry_and_dominant_tenor_migration():
+    state0 = _r6_state(pd.DataFrame([
+        _r6_row("2026-09-18", 100, 100),
+        _r6_row("2026-10-16", 100, 10),
+    ]))
+    state1 = _r6_state(pd.DataFrame([
+        _r6_row("2026-09-18", 105, 10),
+        _r6_row("2026-10-16", 110, 200),
+    ]))
+    got = skylit_r6.analyze_transition(
+        state0,
+        state1,
+        "2026-09-14",
+        "2026-09-15",
+    )
+    assert got["status"] == "TOPOLOGY_TRANSITION_COMPLETE"
+    assert got["outcome_labels_opened"] is False
+    assert got["whole_board"]["wasserstein_1_x"] > 0
+    assert got["whole_board"]["centroid_change_x"] > 0
+    assert got["expiry_population"]["common"] == 2
+    assert got["expiry_population"]["added"] == []
+    assert got["expiry_population"]["dropped"] == []
+    assert got["tenor"]["dominant0"] == "3-7DTE"
+    assert got["tenor"]["dominant1"] == "31-90DTE"
+    assert got["persistent_nodes"]["status"] == "NOT_REQUESTED"
+
+
+def test_r6_transition_matches_persistent_tracks_one_to_one():
+    rows0 = []
+    rows1 = []
+    for exp, strike0, strike1 in [
+        ("2026-09-18", 100, 100.5),
+        ("2026-09-25", 101, 101.5),
+        ("2026-10-02", 102, 102.5),
+    ]:
+        rows0.extend([
+            _r6_row(exp, strike0, 100),
+            _r6_row(exp, 120, 10),
+        ])
+        rows1.extend([
+            _r6_row(exp, strike1, 100),
+            _r6_row(exp, 120, 10),
+        ])
+    got = skylit_r6.analyze_transition(
+        _r6_state(pd.DataFrame(rows0)),
+        _r6_state(pd.DataFrame(rows1)),
+        "2026-09-14",
+        "2026-09-15",
+        node_prominence_fraction=0.40,
+        node_match_tolerance_x=0.02,
+        node_min_expiries=3,
+    )
+    p = got["persistent_nodes"]
+    assert p["status"] == "COMPLETE"
+    assert p["continued"] == 1
+    assert p["born"] == 0
+    assert p["died"] == 0
+    assert len(p["continuations"]) == 1
+    assert abs(p["continuations"][0]["delta_x"]) < 0.02
+
+
+def test_r6_transition_refuses_root_or_coordinate_mismatch():
+    left = _r6_state(pd.DataFrame([
+        _r6_row("2026-09-18", 100, 10),
+    ]))
+    right = _r6_state(pd.DataFrame([
+        _r6_row("2026-09-18", 101, 10),
+    ]))
+    bad_root = dict(right)
+    bad_root["root"] = "QQQ"
+    with pytest.raises(skylit_r6.R6Refusal, match="same non-empty root"):
+        skylit_r6.analyze_transition(
+            left,
+            bad_root,
+            "2026-09-14",
+            "2026-09-15",
+        )
+    with pytest.raises(skylit_r6.R6Refusal, match="cannot mix"):
+        skylit_r6.analyze_transition(
+            left,
+            right,
+            "2026-09-14",
+            "2026-09-15",
+            expected_move_pct1=2.0,
+        )
+
+
+def test_unqualified_r2_state_refuses_before_topology():
+    with pytest.raises(skylit_r6.R6Refusal, match="not source-qualified"):
+        skylit_r6.analyze_state(_r6_state(pd.DataFrame([_r6_row("2026-09-18", 100, 1)]), gate=False), "2026-09-14")
+
+
+def test_tenor_buckets_preserve_absent_zero_dte_as_absent_not_zero():
+    frame = pd.DataFrame([
+        _r6_row("2026-09-18", 100, 1),  # 4 DTE
+        _r6_row("2026-10-16", 100, 2),  # 32 DTE
+    ])
+    got = skylit_r6.analyze_state(_r6_state(frame), "2026-09-14")
+    buckets = {row["tenor_bucket"]: row for row in got["by_tenor"]}
+    assert buckets["0DTE"]["present"] is False
+    assert buckets["3-7DTE"]["present"] is True
+    assert buckets["31-90DTE"]["present"] is True
+    assert got["daily_view"]["same_day_expiry_present"] is False
