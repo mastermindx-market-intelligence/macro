@@ -1,6 +1,18 @@
 # Paper audit and upgrade — 8–9 November 2026
 
-## Current implementation — Crypto compact comparison matrix (§66)
+## Current implementation — Crypto relative-state integrity (§67)
+
+Dependent Draft [PR #10901](https://github.com/mastermindx-market-intelligence/Macro/pull/10901), head `a027c389a6c5e6c207c35d5bdbecf1e24defe0fb`, now qualifies the relative value and both labels together. Missing/invalid values cannot retain a direction; genuine zero remains valid, and supplied Building history has one canonical bilingual meaning. Malformed optional relative containers retain the usable asset.
+
+**67 contract cases and four browser paths have passing coverage across two runs.** Initial result: 69 passed / two test-selector failures; corrected affected run: two passed with unchanged product source. JUnit union is 71 unique passing cases. Both runs have zero browser errors or external/WebSocket traffic. Two synthetic native drawers inspected.
+
+**13 text/source/evidence files and two PNG binaries read back exactly.** Eighteen other runtime inputs, including every saved frontend artifact, remain exact. Producer/model policy is unchanged. [Builder rule, owner map and remaining work](https://github.com/mastermindx-market-intelligence/Macro/blob/a027c389a6c5e6c207c35d5bdbecf1e24defe0fb/research/design_candidates/crypto_snapshot_safety_20261109/RELATIVE_INTEGRITY.md).
+
+Paper Build `2ZJ-0` has two further text refinements across **72 preserved nodes/styles**; proposed comparison frames remain exact. Finished and whole screenshot inspected. [Applied receipt](PAPER_CRYPTO_RELATIVE_INTEGRITY_20261109.json).
+
+**Next:** compact explicit comparison/risk labels in Overview. Producer numeric validity, missing trend votes and paired-window receipts remain separate work; all existing release/model/visual/route holds remain.
+
+## Previous implementation — Crypto compact comparison matrix (§66)
 
 [Dependent Draft PR #10901](https://github.com/mastermindx-market-intelligence/Macro/pull/10901), head `6ab9a6d09052aa66c556b26d371c5d59620622ee`, fits the current two-asset table at 320/390px with full dates and unchanged typography. At 320px, a 98px measure column plus two 91px assets fills the existing 280px region. Larger cohorts retain native keyboard scrolling and sticky measure context.
 

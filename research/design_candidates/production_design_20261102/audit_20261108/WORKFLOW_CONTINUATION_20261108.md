@@ -3147,7 +3147,7 @@ Larger cohorts retain native horizontal scrolling, a sticky measure column and k
 - Candidate: **12 passed / 118 deselected**, 9.50s / 9.768s, **12 contexts / 12 pages**, Chrome 157.0.8103.39, zero page errors or external/WebSocket traffic. Eight new compact cases plus four existing full-cohort cases.
 - Before/after native Range measurements retain exact cell text, font size and family across eight variants. Headers, dates and signed two-asset readings stay whole and inside the viewport. No page-width overflow.
 - **Four new native crops inspected:** English and Chinese two-asset layouts, English null/zero/history, Chinese larger-cohort far edge. Both themes and fine-pointer/touch cases are represented.
-- Runtime changes are one narrow CSS block, its served copy and two version references in each saved page. The CSS change and both page changes invert exactly to the parent. **Sixteen other inputs remain exact**, including JS, template, projection, JSON, builder, producer-related runtime boundary and shared assets.
+- Runtime changes are one narrow CSS block, its served copy and two version references in each saved page. The CSS change and both page changes invert exactly to the parent. **Sixteen other inputs remain exact**, including JS, template, projection, JSON, builder and shared assets.
 - **15 source/evidence text files and four PNG binaries read back exactly** at the published head.
 - The earlier **161-case complete run** is retained at its own parent/runtime. This phase ran twelve affected cases; it does not claim a new full-suite run.
 - A metadata-only script first selected all captures, including four retained cohort crops, and stopped before writing. The corrected compact-* selection completed. No runtime/test replay occurred.
@@ -3168,3 +3168,41 @@ Read-only exact-source review identified a concrete projection inconsistency: `f
 The producer's numeric-input validation and 30-observation trend-vote questions are separate findings; no histories have been fetched and no assertion is made that retained real inputs contain the counterexample. Paired-window dates/counts/Bitcoin-basis receipts remain unimplemented.
 
 The source and Paper phase is saved and read back. Continue the parent mission in this healthy session. H5/model, alerts, independent/hosted visual, public-route cutover, release/admission, denied-capture and unknown-effect worker boundaries remain.
+
+
+## 67. Crypto relative-value and bilingual state integrity — implemented
+
+### Exact source and behavior
+
+Dependent Draft [PR #10901](https://github.com/mastermindx-market-intelligence/Macro/pull/10901) now has head `a027c389a6c5e6c207c35d5bdbecf1e24defe0fb`, tree `b967bf78dbff4216f9f5a0b5285626055ae9927f`, parent `6ab9a6d09052aa66c556b26d371c5d59620622ee`. Frontend asset version stays `1bbbd2258e94`.
+
+The existing projection now qualifies each relative number and both labels together. A missing or invalid number cannot keep Leading, Lagging or Tracking in either language. Genuine finite zero and supplied finite-state labels remain. An explicitly supplied English Building history token yields the existing canonical bilingual pair, even if the raw Chinese label is absent or contradictory. Failed coverage/date qualification still takes precedence. Non-dictionary optional relative containers become an unavailable comparison without discarding the asset.
+
+Independent asset price, structure, risk, coverage and membership survive the relative qualification. Source contracts, model output and conditional scenarios are conserved. The JavaScript leaders filter stays unchanged and now receives a qualified projection; no second browser policy or classification owner is added.
+
+The producer's possible zero-denominator/nonfinite path is a code-derived counterexample, not a finding about real retained histories. No histories were fetched. Producer execution/policy, H5/model, saved artifacts and frontend templates/assets remain unchanged.
+
+### Native proof
+
+- Parent baseline: **18 failed / 14 passed / 169 deselected**, 4.54s pytest / 4.952s subprocess. Fourteen source/container failures and four bilingual Overview/filter failures reproduce the inconsistency. Four browser contexts/pages, zero page errors/external/WebSocket traffic.
+- Initial candidate: **69 passed / two failed**, 6.72s / 7.117s. All **67 contract cases** pass (39 retained + 28 added), as do both leaders-filter cases.
+- The two candidate failures are test indexing: the broad dd selector included two definitions inside the collapsed Comparison basis before the inspector's own fields. Three selectors were narrowed to the inspector's direct definition list.
+- Corrected affected run: **two passed**, 4.24s / 4.655s, unchanged product source. It verifies Overview → Markets → asset inspection → comparison in English/Chinese, null/zero/history distinctions, independent readings and storage conservation.
+- JUnit reconciliation proves **71 unique passing cases across two runs: 67 contract + four browser**. This is not a single all-passing 71-case run or a complete browser-suite rerun. Initial four and focused two contexts/pages have zero errors/external/WebSocket traffic.
+- **Two native synthetic drawer crops inspected**, English 390px and Chinese touch 320px. Fixture symbols/prices are not current quotations.
+- Three projection transformations invert to the parent. The projection and two test files are the only changed runtime/test inputs; **18 other inputs stay exact**, including all saved frontend artifacts and the existing builder.
+- **13 source/evidence text files and two PNG binaries read back exactly** at the published head. The exact initial browser input and selector corrections are retained.
+
+[RELATIVE_INTEGRITY.md](https://github.com/mastermindx-market-intelligence/Macro/blob/a027c389a6c5e6c207c35d5bdbecf1e24defe0fb/research/design_candidates/crypto_snapshot_safety_20261109/RELATIVE_INTEGRITY.md) gives the state table, source/consumer ownership, limitations and remaining build steps. [Validation and original proof](https://github.com/mastermindx-market-intelligence/Macro/tree/a027c389a6c5e6c207c35d5bdbecf1e24defe0fb/research/design_candidates/crypto_snapshot_safety_20261109/relative) retain the baseline, initial harness failure, corrected JUnit and inspected captures.
+
+### Paper and remaining implementation
+
+Crypto file `01M6Y3F0NXNDPAKJMJGCAD759Z`, page `p-3-0`, Build `2ZJ-0`: two text refinements make “null has no direction” explicit and record the correctly qualified 67-contract/four-browser proof. All **72 node IDs, parents, internal order and styles** remain. Intended and untouched texts match; proposed frames `2XH-0` and `2YI-0` remain byte-identical. The Build is finished and its whole 1440×1200 screenshot inspected.
+
+Applied responses/guards/JSX: [PAPER_CRYPTO_RELATIVE_INTEGRITY_20261109.json](PAPER_CRYPTO_RELATIVE_INTEGRITY_20261109.json).
+
+Next safe phase: the Overview's existing unlabelled “Unavailable · Stressed” summary needs explicit compact comparison and risk labels. Keep the existing paragraph/row, values and inspection control, allowing natural narrow wrapping. No explanatory paragraph or new controller is needed.
+
+Separate unresolved producer work is documented: finite positive price/ratio validity; missing 30-step input at exactly 30 observations; actual paired endpoints/counts/Bitcoin source and basis. The current repair does not implement those items, infer missing reasons or validate finite producer classifications.
+
+All H5/model, alert, hosted/independent visual, public-route cutover, admission/release, denied-capture and unknown-effect worker boundaries remain. This phase is saved and read back; continue the parent design/architecture mission in the same session.
