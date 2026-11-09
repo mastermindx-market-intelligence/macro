@@ -1,7 +1,7 @@
 {
   "schema": "influence.graph.v1",
   "as_of": "2026-06-19",
-  "generated_utc": "2026-11-06T17:45:47.362999+00:00",
+  "generated_utc": "2026-11-09T16:54:10.688135+00:00",
   "note": "Curated multi-actor influence graph: important people and the investable names/themes they are affiliated with (control, holdings, public advocacy, partnerships). Public-record only. provenance = FACT (filing/widely-reported structural fact) | DISCLOSED (self-reported trade/holding) | INFERRED (analytical link). The LLM extractor grows candidate edges; a human promotes them here.",
   "n_actors": 22,
   "n_entities": 19,
@@ -749,11 +749,10 @@
       ],
       "n_actors": 6,
       "alt_corroborated": true,
-      "alt_score": 6,
-      "alt_weighted": 2.4,
+      "alt_score": 5,
+      "alt_weighted": 1.85,
       "alt_channels": [
         "affiliation",
-        "darkpool_accum",
         "github_momentum",
         "patent_cluster",
         "retail_buzz",
@@ -799,12 +798,14 @@
       ],
       "n_actors": 4,
       "alt_corroborated": true,
-      "alt_score": 4,
-      "alt_weighted": 1.25,
+      "alt_score": 6,
+      "alt_weighted": 2.0,
       "alt_channels": [
         "affiliation",
         "github_momentum",
         "lobbying",
+        "material_8k",
+        "special_situation",
         "stocktwits_bull"
       ],
       "top_holder": {
@@ -896,11 +897,12 @@
       ],
       "n_actors": 4,
       "alt_corroborated": true,
-      "alt_score": 4,
-      "alt_weighted": 1.6,
+      "alt_score": 5,
+      "alt_weighted": 1.85,
       "alt_channels": [
         "13f_add",
         "affiliation",
+        "cnbc_pick",
         "lobbying",
         "patent_cluster"
       ],
@@ -937,13 +939,12 @@
       ],
       "n_actors": 3,
       "alt_corroborated": true,
-      "alt_score": 4,
-      "alt_weighted": 1.3,
+      "alt_score": 3,
+      "alt_weighted": 0.8,
       "alt_channels": [
         "affiliation",
         "retail_buzz",
-        "stocktwits_bull",
-        "trump"
+        "stocktwits_bull"
       ],
       "top_holder": {
         "owner": "Musk Elon",
@@ -1048,6 +1049,34 @@
         "title": "Institution",
         "shares": 174802084
       }
+    },
+    {
+      "ticker": "IEP",
+      "actors": [
+        {
+          "actor": "Carl Icahn",
+          "kind": "fund",
+          "rel": "CONTROLS",
+          "provenance": "FACT",
+          "qualitative": false
+        },
+        {
+          "actor": "Carl Icahn",
+          "kind": "fund",
+          "rel": "AFFILIATES_WITH",
+          "provenance": "DISCLOSED",
+          "qualitative": true
+        }
+      ],
+      "n_actors": 2,
+      "alt_corroborated": true,
+      "alt_score": 2,
+      "alt_weighted": 0.7,
+      "alt_channels": [
+        "affiliation",
+        "special_situation"
+      ],
+      "top_holder": null
     },
     {
       "ticker": "GOOGL",
@@ -1208,10 +1237,11 @@
       ],
       "n_actors": 1,
       "alt_corroborated": true,
-      "alt_score": 3,
-      "alt_weighted": 1.1,
+      "alt_score": 4,
+      "alt_weighted": 1.65,
       "alt_channels": [
         "affiliation",
+        "insider_mspr",
         "patent_cluster",
         "special_situation"
       ],
@@ -1234,9 +1264,10 @@
       ],
       "n_actors": 1,
       "alt_corroborated": true,
-      "alt_score": 7,
-      "alt_weighted": 3.25,
+      "alt_score": 8,
+      "alt_weighted": 3.65,
       "alt_channels": [
+        "13f_add",
         "affiliation",
         "analyst_upgrade_cluster",
         "congress_buy",
@@ -1395,7 +1426,11 @@
         "affiliation",
         "special_situation"
       ],
-      "top_holder": null
+      "top_holder": {
+        "owner": "ICAHN CARL C",
+        "title": "Institution",
+        "shares": 71201875
+      }
     },
     {
       "ticker": "LULU",
@@ -1520,33 +1555,6 @@
         "title": "Institution",
         "shares": 3648400
       }
-    },
-    {
-      "ticker": "IEP",
-      "actors": [
-        {
-          "actor": "Carl Icahn",
-          "kind": "fund",
-          "rel": "CONTROLS",
-          "provenance": "FACT",
-          "qualitative": false
-        },
-        {
-          "actor": "Carl Icahn",
-          "kind": "fund",
-          "rel": "AFFILIATES_WITH",
-          "provenance": "DISCLOSED",
-          "qualitative": true
-        }
-      ],
-      "n_actors": 2,
-      "alt_corroborated": false,
-      "alt_score": 1,
-      "alt_weighted": 0.5,
-      "alt_channels": [
-        "affiliation"
-      ],
-      "top_holder": null
     },
     {
       "ticker": "ASML",
@@ -1684,6 +1692,14 @@
   "n_candidates": 0,
   "filings": [
     {
+      "date": "2026-11-06",
+      "form": "8-K",
+      "company": "HeartSciences Inc.",
+      "ticker": null,
+      "items": "8.01",
+      "url": "https://www.sec.gov/Archives/edgar/data/1468492/000121390026116964/ea0311293-8k_heart.htm"
+    },
+    {
       "date": "2026-11-05",
       "form": "S-1/A",
       "company": "American Ventures Acquisition Corp. I",
@@ -1770,14 +1786,6 @@
       "ticker": null,
       "items": "5.02,7.01,9.01",
       "url": "https://www.sec.gov/Archives/edgar/data/2086263/000121390026112511/ea030946701ex99-1.htm"
-    },
-    {
-      "date": "2026-10-23",
-      "form": "S-1/A",
-      "company": "Cryptex Digital Market Cap ETF",
-      "ticker": "BAGZ",
-      "items": "",
-      "url": "https://www.sec.gov/Archives/edgar/data/2115027/000121390026112016/ea0309477-s1a6_cryptex.htm"
     }
   ]
 }
