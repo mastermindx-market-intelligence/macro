@@ -3660,3 +3660,85 @@ Both complete after canvases and the before scenario canvas were inspected. Both
 A remaining presentation defect is confirmed in current Save/Remove: the accepted storage path calls `renderDrawer()` directly after confirmation, rebuilding an expanded Conditions disclosure closed and losing its reading position. Preserve the existing mutation, idempotent intent, full collection, confirmation and newer-choice boundaries. Reuse the current reading owner for a freshly qualified synchronous capture/projection around the confirmed render, then intentionally focus the new action (or a usable heading fallback). Keep focus terminal and do not introduce a second reading store, extra storage read or automatic replay.
 
 The temporary cloud workspace execution environment became unavailable during read-only work; the existing native verifier and GitHub-native source carrier remained available. No failed runtime mutation was retried or re-homed. All native process outcomes above are reconciled. Other denied or unknown-effect lanes, release/admission gates, model/H5, alert, paired-receipt, qualified-result, hosted/independent and public-route acceptance boundaries remain intact.
+
+## 78. Crypto confirmed Save/Remove — retain the current reader (2026-11-09)
+
+### Outcome and source boundary
+
+Confirmed current-case Save/Remove now preserves freshly observed open conditions and scroll, then focuses the usable resulting action. Expired removal falls back to the case heading when Save is disabled. Idempotent outcomes retain the reader without another write. Failed or unconfirmed storage keeps the original body and focus. Newer navigation, locale, history metadata/entry and focus choices keep control of the UI continuation.
+
+| Owner | Exact source |
+|---|---|
+| Existing dependent source PR10901 | `f2cb62ef2e19abbef7ebe218030c110276953912` |
+| Source tree | `1d934ed25412ebc22b64ad7658f8a7771bd746c4` |
+| Candidate assets | `a8bf00034c30` |
+| Source parent | `0ec213ab7bb570a0cebc28f2e4112cde14ff59c2` / `2698fd4fd4ed` |
+| Incumbent PR9580 base | `5e496c24c962e85a4f7f514dd43dc61443b95cab` |
+| Audit parent before this section | `61c520aadcf1190ff1002486a4c1e24e544b7ac7` |
+
+PR10901 remains Draft/open/unmerged/unarmed. The source README now has **15 workflow → contract → proof entries**, and its stale next-phase wording is corrected. The focused [current mutation contract](https://github.com/mastermindx-market-intelligence/Macro/blob/f2cb62ef2e19abbef7ebe218030c110276953912/research/design_candidates/crypto_snapshot_safety_20261109/CURRENT_SAVE_READING.md) explains the outcome, failure table, existing owners, completion sequence, tests and reproduction limits.
+
+### Implementation through the existing owners
+
+The parent confirmed the storage action correctly, then rebuilt the drawer directly. That closed the disclosure and lost scroll; automatic reading capture could preserve the reset. The repair separates fresh capture, ownership, eligibility and optional persistence within the existing history-state owner.
+
+- `captureDrawerReading()` distinguishes obsolete ownership from an owned but unqualified reading. The latter can reconcile confirmed controls without reusing or clearing old metadata.
+- The capture witnesses URL, language, body subtree, history length and exact metadata signature. Current identity still requires panel/revision/horizon/cutoff.
+- The original full-collection storage, explicit intent, one write/readback, opaque-entry retention and existing capacity logic are unchanged. Rendering consumes the confirmed collection without another read.
+- Automatic capture is suspended across replacement and projection. Explicit completion capture still works inside an enclosing render's focus callback.
+- Persistence merges only `reading`, preserves other metadata and adopts `renderedHistory` only after exact intended readback. Unchanged optional failure can leave the fresh visible reading usable; it is not reported as persisted. A newer same-address metadata write or identical-metadata pushed entry ends the older continuation.
+- Shared matching, disclosure/scroll projection and usable-focus qualification serve both `apply()` and `save()`. The mutation's final focus is terminal; newer callback destinations receive no late overwrite.
+- Frozen saved-item removal retains its existing return to Saved snapshots. Current review-parent, whole-journey Close, detached cases and first-reading behavior remain covered.
+
+The reasoned architecture check found no additional concrete scope necessary. It was advisory, not an invented independent-review or release gate. Root authored and verified the candidate.
+
+### Native proof and harness correction
+
+| Process | Result | Pytest / subprocess / wrapper |
+|---|---|---|
+| Parent snapshot PID27899 | 21 exact inputs copied; no runtime change | — / — / 0.10 s |
+| Baseline PID79295 | **19 failed / 72 passed** on parent runtime | 58.32 / 58.703 / 58.80 s |
+| Initial candidate PID92711 | **Selection error, zero cases executed**; duplicated module prefix in runner selectors | 0.41 / 0.669 / 0.88 s |
+| Corrected runner PID93341 | **91 passed**, same candidate source and test bytes | 55.72 / 55.978 / 56.07 s |
+| Publication readback PID98300 | Source, case sets, metadata and capture identities verified | — / — / 0.09 s |
+
+The wrapper exits are not pytest acceptance: baseline and selection-error wrappers completed after recording inner exit codes 1 and 4. The corrected run's inner exit code is 0. Runtime assets stayed `a8bf00034c30` throughout the selector correction.
+
+Chrome **157.0.8103.39**; **91 contexts / 97 pages**; zero page errors, outside-origin requests or WebSockets. The complete selected case set equals the baseline case set. It contains 24 new mutation-reading cases plus 67 existing review, saved-return, focus, recovery and cross-tab intent cases. No entire-repository browser-suite result is claimed.
+
+The new cases exercise confirmed and idempotent Save/Remove in both locales, expired removal, unreadable and unconfirmed storage, optional history-write failure, newer focus/navigation/metadata, heading-focus navigation, a nested locale-render Save, same-URL history changes during storage and unqualified current reading. The original baseline and the selector mistake remain in the evidence.
+
+Six new 390px EN / 320px ZH mutation crops were inspected. They retain the expanded disclosure and resulting control at the reader's previous position. Fifteen other retained-workflow captures generated by this run are preserved separately, without counting them as new visual inspections.
+
+### Exact source publication
+
+**33 source/document/evidence texts and 21 PNG binaries** match published readback at the source head. Native blob identities also match for all five changed source paths and all 24 native evidence/script files; all capture blobs match their native hashes.
+
+Five paths changed: template JS, served JS, browser tests and the two HTML asset references. Sixteen inputs remain exact. Both HTML pages differ only in two asset-version references. All six source transformations reverse exactly; removing the appended tests recovers the parent browser module. Template and served JS match. Source JSON, projection, template HTML, CSS, builder, server tests and shared assets remain exact for this phase.
+
+The source evidence lives under `research/design_candidates/crypto_snapshot_safety_20261109/current-save-reading/`: input/parent receipts, transformations, baseline, failed selector runner, corrected runner, result/JUnit/observations/output files, publication receipt and capture references. The [full native receipt](https://github.com/mastermindx-market-intelligence/Macro/blob/f2cb62ef2e19abbef7ebe218030c110276953912/research/design_candidates/crypto_snapshot_safety_20261109/current-save-reading/PUBLICATION_RECEIPT.json) carries exact case-level outcomes.
+
+### Editable Paper and builder clarity
+
+In Crypto file `01M6Y3F0NXNDPAKJMJGCAD759Z`:
+
+- **G5-0:** the current-case interaction note now includes confirmed mutation reading alongside same-case review, whole-journey Close and existing recovery.
+- **QI-0:** the existing storage row is amalgamated into Save / Remove, covering the same full collection, explicit intent, exact readback and post-confirmation reading. The scorecard binds `f2cb62e`; its five-row structure remains.
+- **3IP-0:** the existing saved-case builder handoff now covers current mutation reading and current/saved navigation with clear owner boundaries. It replaces stale phase wording and separates the latest 91-case proof from historical frozen-layout evidence. Source/input conservation statements are explicitly scoped to the current phase.
+
+All **169 existing node identities, parent relationships, order and exported styles** remain exact. **16 text nodes** changed; all three complete JSX inverses are exact. No new nodes, token/style writes or replacement control plane were needed.
+
+The three full after frames were inspected and finished. G5 remains **1440×861**; QI remains **1440×1200**, with the last row fully inside the board. Build 3IP's screenshot was resized by the provider to **1162×2000**; the full ten-section content is readable and unclipped. Its height and world coordinates are unreported, so this phase does not claim freeform-canvas placement verification for that board.
+
+Audit artifacts:
+
+- `PAPER_CRYPTO_CURRENT_SAVE_READING_20261109.json`
+- `PAPER_CRYPTO_CURRENT_SAVE_READING_SCENARIO_20261109.jpg`
+- `PAPER_CRYPTO_CURRENT_SAVE_READING_SCORECARD_20261109.jpg`
+- `PAPER_CRYPTO_CURRENT_SAVE_READING_BUILD_20261109.jpg`
+
+### Next safe phase
+
+The new native captures show a concrete layout discrepancy: current Historical review and Save/Remove controls touch, while Paper G5 gives them 12px separation; confirmation feedback overlaps Inspect demand; expired Save is disabled but insufficiently distinct visually. Continue through the existing action layout and single status owner. Keep readable wrapping at 320px, independent review/demand availability, current reading retention and terminal focus.
+
+No hosted/independent acceptance, current-market freshness, personal activity, H5/model, alert delivery, paired receipt, qualified result, public-route cutover or release is inferred. Existing denied/unknown-effect lanes and admission holds remain. The cloud execution environment remains unavailable; this phase used the already authorized native verifier and GitHub-native carrier, with all native effects reconciled.
