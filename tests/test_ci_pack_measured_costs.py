@@ -491,3 +491,133 @@ def test_scoped_compaction_parity_across_cost_models():
         assert max(sum(job.weight for job in pack) for pack in compact) <= max(
             sum(job.weight for job in pack) for pack in baseline
         )
+
+
+# ── narrowed-lane width budget (2026-11-09 queue census follow-up) ──────────
+
+
+def _budget_job(job_id: str, ordinal: int, weight: int, paths: tuple[str, ...]):
+    return PACK.LegacyJob(
+        job_id=job_id,
+        definition={"if": PACK.DISABLED_IF, "runs-on": "ubuntu-latest",
+                    "steps": []},
+        ordinal=ordinal,
+        weight=weight,
+        paths=paths,
+    )
+
+
+def test_narrowed_pr_lanes_hold_the_width_budget(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The width decision, pinned where it executes: build_plan.
+
+    The 48h queue census (research/ci_pack_measured_costs_20261109/) showed
+    the shared hosted fleet saturated for long stretches — extra packs
+    serialized behind the backlog instead of starting on demand, while each
+    spent a fixed 303 s setup. A genuinely narrowed PR lane therefore
+    activates at most NARROWED_PR_MAX_ACTIVE_PACKS packs, and never loses or
+    duplicates a selected job doing so. The main full-suite baseline keeps
+    every one of its twelve named packs (pinned by the replay-parity test
+    above). Scope inference is frozen to the hand-written scopes, exactly as
+    the plan-shape tests in test_ci_pack.py freeze it: this test pins the
+    width budget, not the inference.
+    """
+    monkeypatch.setattr(
+        PACK, "infer_job_scopes", lambda jobs: (jobs, "frozen for width test")
+    )
+    heavy = [
+        _budget_job(f"heavy-{index}", index, 900, ("engine/**",))
+        for index in range(16)
+    ]
+    off_lane = [
+        _budget_job(f"off-{index}", 100 + index, 900, ("site/**",))
+        for index in range(3)
+    ]
+    plan = PACK.build_plan(
+        heavy + off_lane,
+        ["engine/prophet/plan_book.py"],
+        changed_from="0" * 40,
+        scope_mode="active",
+        pack_count=12,
+        role="pr_head",
+        event="pull_request",
+        workflow_run_id="width-budget",
+        tested_tree_sha="a" * 40,
+        subject_head_sha="a" * 40,
+        base_sha="0" * 40,
+    )
+    assert plan.role == "pr_head"
+    nonempty = [pack for pack in plan.pack_jobs if pack]
+    assert 1 <= len(nonempty) <= PACK.NARROWED_PR_MAX_ACTIVE_PACKS
+    placed = [job_id for pack in nonempty for job_id in pack]
+    assert sorted(placed) == sorted(job.job_id for job in heavy)
+    assert len(placed) == len(set(placed))
+    assert set(plan.skipped_job_ids) == {job.job_id for job in off_lane}
+
+
+def test_width_budget_keeps_runner_minutes_at_or_below_the_uncapped_lane():
+    """The budget's reason to exist: a capped lane never spends more.
+
+    Total execution seconds are grouping-invariant; every active pack adds
+    one PACK_SETUP_OVERHEAD_SECONDS. Capping the bin count therefore caps
+    runner-minutes — the quantity the saturated fleet actually rations.
+    """
+    jobs = [_budget_job(f"w-{index}", index, 900, ("engine/**",))
+            for index in range(16)]
+    capped = [p for p in PACK.compact_scoped_packs(
+        jobs, PACK.NARROWED_PR_MAX_ACTIVE_PACKS) if p]
+    uncapped = [p for p in PACK.compact_scoped_packs(jobs, 12) if p]
+    assert len(capped) <= PACK.NARROWED_PR_MAX_ACTIVE_PACKS
+    assert len(capped) <= len(uncapped)
+    capped_walls = PACK.predicted_pack_walls_seconds(capped)
+    uncapped_walls = PACK.predicted_pack_walls_seconds(uncapped)
+    assert sum(capped_walls) <= sum(uncapped_walls)
+    # The work itself is never lost to the tighter budget.
+    flat = [job for pack in capped for job in pack]
+    assert sorted(job.job_id for job in flat) == sorted(
+        job.job_id for job in jobs)
+
+
+def test_probe_packs_axis_mirrors_the_lane_grant(tmp_path):
+    """The probe packs axis reports the lane's grant, not raw demand.
+
+    Under demand the probe selections need ceil(weight/600) packs — more
+    than ten under true seconds — but build_plan grants a narrowed lane at
+    most NARROWED_PR_MAX_ACTIVE_PACKS, and the axis must mirror that grant
+    or it stops guarding runner spend. Below the cap it still follows
+    demand, so growth inside the budget stays visible.
+    """
+    import yaml
+
+    def job(name: str, path: str) -> dict:
+        return {
+            "if": PACK.DISABLED_IF,
+            "runs-on": "ubuntu-latest",
+            "steps": [{"name": "fixture", "run": "echo fixture"}],
+            "paths": [path],
+        }
+
+    # 30 engine jobs x 150 s unobserved bound = 4,500 s demand = 8 packs of
+    # 600 s: over the budget, so the axis must clip to the grant.
+    over = {"jobs": {f"engine-{index}": job(f"engine-{index}", "engine/**")
+                     for index in range(30)}}
+    manifest_over = tmp_path / "over.yml"
+    manifest_over.write_text(yaml.safe_dump(over), encoding="utf-8")
+    row = PACK.packing_probe_measurements(
+        manifest_over, [("engine/prophet/plan_book.py", 30, 999_999)],
+        max_packs=PACK.NARROWED_PR_MAX_ACTIVE_PACKS,
+    )[0]
+    assert row["packs"] == PACK.NARROWED_PR_MAX_ACTIVE_PACKS
+
+    # 12 engine jobs = 1,800 s demand = 3 packs: under the budget, so the
+    # axis follows demand exactly.
+    under = {"jobs": {f"engine-{index}": job(f"engine-{index}", "engine/**")
+                      for index in range(12)}}
+    manifest_under = tmp_path / "under.yml"
+    manifest_under.write_text(yaml.safe_dump(under), encoding="utf-8")
+    row = PACK.packing_probe_measurements(
+        manifest_under, [("engine/prophet/plan_book.py", 12, 999_999)],
+        max_packs=PACK.NARROWED_PR_MAX_ACTIVE_PACKS,
+    )[0]
+    assert row["packs"] == 3

@@ -5732,18 +5732,27 @@ PACKING_PROBES = (
     # 137/137/131, no entrant or exit on any probe — and the new weight
     # ceilings are the exact values the production
     # packing_probe_measurements returns on this source: 14,099 / 14,575 /
-    # 13,880. The packs axis now reads the honest count under true seconds:
-    # each selection needs more than 10x600 s of work, so it saturates at
-    # the twelve-pack fleet cap and PACKING_PROBE_MAX_PACKS moves 10 -> 12.
-    # The weight axis carries the growth sensitivity from here. Full
+    # 13,880. The weight axis carries the growth sensitivity from here. Full
     # history, method and receipts: research/ci_pack_measured_costs_20261109/.
     ("templates/index.html", 137, 14_099),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("scripts/build_free_content.py", 138, 14_575),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 131, 13_880),
 )
-# Twelve packs per shape was the pre-curation measurement; under measured
-# seconds these selections saturate the twelve-pack fleet cap honestly.
-PACKING_PROBE_MAX_PACKS = 12
+# 2026-11-09 width follow-up (same PR, parent adjudication comment
+# 6742621098): under true seconds each selection DEMANDS more than
+# 10x600 s of work, but the 48h queue census measured the shared hosted
+# fleet saturated (183-237 concurrent jobs, 230-338 queued; pack pickup
+# p50 160 s / p90 965 s vs 2 s/3 s idle; within-run pack start spread
+# p50 274 s / p90 971 s saturated vs 1 s idle), so wider lanes buy queue
+# delay, not wall, while each pack spends a fixed 303 s setup. The packs
+# axis now mirrors what build_plan's narrowed lane actually GRANTS under
+# NARROWED_PR_MAX_ACTIVE_PACKS — the legacy seven — and the exact measured
+# value of that grant for all three probes is 7: PACKING_PROBE_MAX_PACKS
+# moves 10 -> 7. Selection, weight ceilings and the twelve named main
+# baseline packs are unchanged; runner-minutes per narrowed lane return to
+# legacy parity (16,220/16,696/16,001 s) while measured balancing still
+# cuts the probe critical paths to 2,319/2,389/2,290 s.
+PACKING_PROBE_MAX_PACKS = 7
 
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:

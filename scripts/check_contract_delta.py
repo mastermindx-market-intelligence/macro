@@ -434,7 +434,12 @@ def _probe_rows():
             "probe": probe,
             "jobs": len(selected),
             "weight": weight,
-            "packs": max(1, min(12, -(-weight // pack.PACK_TARGET_SECONDS))),
+            # Same axis as the shared measurement: demand in 600 s packs
+            # under the narrowed-lane width budget. A base old enough to
+            # lack the constant predates the budget entirely; it keeps its
+            # own twelve-pack fleet cap.
+            "packs": max(1, min(getattr(pack, "NARROWED_PR_MAX_ACTIVE_PACKS", 12),
+                                -(-weight // pack.PACK_TARGET_SECONDS))),
             "max_jobs": max_jobs,
             "max_weight": max_weight,
             "max_packs": SPEC["max_packs"],

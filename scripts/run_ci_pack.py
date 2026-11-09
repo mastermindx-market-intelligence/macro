@@ -514,6 +514,22 @@ UNOBSERVED_JOB_COST_SECONDS = 150
 # dependency_install+test phases: min 194 / median 303 / max 390 s.
 # Paid once per pack whatever the grouping.
 PACK_SETUP_OVERHEAD_SECONDS = 303
+# Narrowed-lane WIDTH BUDGET (2026-11-09 queue census, receipts in
+# research/ci_pack_measured_costs_20261109/): a narrowed PR lane may activate
+# at most this many of the twelve fleet packs — the legacy seven. The census
+# measured the hosted fleet every lane shares: during the saturated hours
+# (13+ of the 48 observed) macro/Mastermind/mastermind-terminal held
+# 183-237 concurrent hosted jobs with a 230-338-job queued backlog, pack-job
+# runner pickup rose from 2 s/3 s (p50/p90, idle) to 160 s/965 s, and one
+# run's pack jobs no longer started together (within-run start spread
+# p50 274 s / p90 971 s / max 39,790 s, against 1 s idle). Extra packs
+# therefore buy queue delay, not wall, exactly when the org is busiest,
+# while each costs a fixed PACK_SETUP_OVERHEAD_SECONDS of runner time.
+# Capping at the legacy width keeps every narrowed lane's runner-minutes at
+# or below the legacy lane's; the measured model still BALANCES those seven
+# packs (probe critical paths 3092/2745/2921 s -> 2319/2389/2290 s at
+# identical runner totals 16,220/16,696/16,001 s).
+NARROWED_PR_MAX_ACTIVE_PACKS = 7
 
 
 @functools.lru_cache(maxsize=8)
@@ -2205,7 +2221,18 @@ def packing_probe_measurements(
             "weight": weight,
             # Runners are what the incident actually spends: the pack count
             # follows the SELECTED weight, so the weight cut is a runner cut.
-            "packs": max(1, min(12, -(-weight // PACK_TARGET_SECONDS))),
+            # The axis mirrors what build_plan's narrowed lane would actually
+            # GRANT — demand in PACK_TARGET_SECONDS packs under the width
+            # budget, not raw demand up to the fleet — because the budget is
+            # the runner-spend guarantee. Growth past the budget stays
+            # visible on the weight axis, which carries the sensitivity.
+            "packs": max(
+                1,
+                min(
+                    NARROWED_PR_MAX_ACTIVE_PACKS,
+                    -(-weight // PACK_TARGET_SECONDS),
+                ),
+            ),
             "max_jobs": max_jobs,
             "max_weight": max_weight,
             "max_packs": max_packs,
@@ -2584,8 +2611,19 @@ def build_plan(
         and not invalidated
         and len(eligible) < len(jobs)
     )
-    packs = (compact_scoped_packs(eligible, pack_count) if narrowed_pr
-             else partition_jobs(eligible, pack_count))
+    # A narrowed lane compacts under the width budget, not the raw fleet:
+    # every active pack spends PACK_SETUP_OVERHEAD_SECONDS of shared hosted
+    # capacity, and the 2026-11-09 queue census showed extra packs
+    # serializing behind the backlog instead of starting on demand. The
+    # plan DOCUMENT still describes every fleet pack (empty slots and all);
+    # only the active count and the matrix obey the budget.
+    if narrowed_pr:
+        packs = compact_scoped_packs(
+            eligible, min(pack_count, NARROWED_PR_MAX_ACTIVE_PACKS)
+        ) + [[] for _ in range(pack_count - min(pack_count,
+                                                NARROWED_PR_MAX_ACTIVE_PACKS))]
+    else:
+        packs = partition_jobs(eligible, pack_count)
     pack_jobs = tuple(tuple(job.job_id for job in pack) for pack in packs)
     pack_weights = tuple(sum(job.weight for job in pack) for pack in packs)
     eligible_job_ids = tuple(job.job_id for job in eligible)
