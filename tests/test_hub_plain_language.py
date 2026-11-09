@@ -380,10 +380,10 @@ def test_ipo_lockup_line_names_the_company_and_the_count():
     })
     assert "SmartRent" in en and "SmartRent" in zh
     assert "SWMR" not in en and "SWMR" not in zh
-    assert en.startswith("Next shares unlock:")
+    assert en.startswith("Next modeled expiry:")
     assert "Next un-lock" not in en
-    assert "15 lock-ups approaching" in en
-    assert "临近 15 只解禁" in zh
+    assert "15 modeled dates within 45d" in en
+    assert "未来45天内 15 个估算日期" in zh
     assert "15 approaching" not in en
     assert "coming soon" not in en
 
@@ -393,7 +393,7 @@ def test_ipo_lockup_line_falls_back_to_ticker_without_inventing_a_name():
         "next_lockup": "SWMR", "lockups_approaching": 15,
     })
     assert "SWMR" in en and "SWMR" in zh
-    assert "15 lock-ups approaching" in en
+    assert "15 modeled dates within 45d" in en
 
 
 def test_g_vectors_ipo_line_uses_company_name():
@@ -404,8 +404,8 @@ def test_g_vectors_ipo_line_uses_company_name():
              "next_lockup": "SWMR", "next_lockup_company": "SmartRent",
              "next_lockup_date": "2026-09-20", "lockups_approaching": 15})
     assert "SmartRent" in html
-    assert "Next shares unlock: SmartRent" in html
-    assert "15 lock-ups approaching" in html
+    assert "Next modeled expiry: SmartRent" in html
+    assert "15 modeled dates within 45d" in html
     assert "SWMR" not in html
     assert "Next un-lock" not in html
     assert "coming soon" not in html

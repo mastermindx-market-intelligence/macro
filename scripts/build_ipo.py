@@ -574,11 +574,11 @@ def _build_hero(win: dict, after: dict, pipe: dict, lk_summary: dict,
     ntk = lk_summary.get("next_ticker")
     if ntk and nd is not None and nd <= 10:
         if nd <= 1:
-            parts_en.append("and a big lock-up unlocks this week")
-            parts_zh.append("且本周有大额解禁")
+            parts_en.append("and a modeled lock-up date falls this week")
+            parts_zh.append("且本周有估算禁售到期日")
         else:
-            parts_en.append(f"and a big lock-up unlocks in {nd} days")
-            parts_zh.append(f"且 {nd} 天后有大额解禁")
+            parts_en.append(f"and a modeled lock-up date is in {nd} days")
+            parts_zh.append(f"且 {nd} 天后为估算禁售到期日")
 
     line_en = " — ".join([parts_en[0], ", ".join(parts_en[1:])]) if len(parts_en) > 1 else parts_en[0]
     line_zh = " —— ".join([parts_zh[0], "，".join(parts_zh[1:])]) if len(parts_zh) > 1 else parts_zh[0]
@@ -610,16 +610,17 @@ def _build_avoid(after: dict, pipe: dict, lk_summary: dict,
         tone = "red" if (nd is not None and nd <= 7) else "warn"
         if ntk and lk_summary.get("next_date"):
             when = _lockup_when_en(lk_summary.get("next_date"), nd)
-            sz = f" (~{_usd(nsize)})" if nsize is not None else ""
-            det_en = f"{ntk} unlocks {when}{sz}; {appr} more within 45 days."
-            det_zh = f"{ntk} 于{_lockup_when_zh(lk_summary.get('next_date'), nd)}解禁{('（约' + _usd(nsize) + '）') if nsize is not None else ''}；45 天内还有 {appr} 只。"
+            sz = f" (deal size ~{_usd(nsize)})" if nsize is not None else ""
+            dates = "date" if appr == 1 else "dates"
+            det_en = f"{ntk}: modeled expiry {when}{sz}; {appr} modeled {dates} within 45 days in total."
+            det_zh = f"{ntk}：估算到期日{_lockup_when_zh(lk_summary.get('next_date'), nd)}{('（发行规模约' + _usd(nsize) + '）') if nsize is not None else ''}；45 天内共 {appr} 个估算日期。"
         else:
-            det_en = f"{appr} names unlock within 45 days; {just} just expired."
-            det_zh = f"45 天内有 {appr} 只解禁；{just} 只刚刚解禁。"
+            det_en = f"{appr} modeled dates within 45 days; {just} in the past 30 days."
+            det_zh = f"45 天内有 {appr} 个估算日期；过去30天有 {just} 个。"
         items.append({
             "icon": "🔓",
-            "title_en": "Names near un-lock — don't add into the cliff",
-            "title_zh": "临近解禁 —— 勿加仓",
+            "title_en": "Near modeled lock-up dates — check the terms",
+            "title_zh": "临近估算到期日 —— 核对条款",
             "detail_en": det_en, "detail_zh": det_zh, "tone": tone,
         })
 

@@ -511,8 +511,8 @@ html[data-theme="light"] .cw-change{background:color-mix(in srgb,var(--tcc) 6%,v
   <div class="sec-sub">{{ t('~180 days after listing, insider / VC / PE shares un-lock into a thin float — a documented one-sided supply push. The dates below are modeled estimates, not verified release events. It is a “don’t add into the cliff” flag, not a short.','上市约180天后，内部人／风投／私募股份解禁冲击稀薄流通盘 —— 有据可查的单边供给压力。以下日期是模型估算，并非已核实的实际解禁事件。这是“临近解禁勿加仓”的提示，而非做空。') }}</div>
   <div class="card">
     <div class="cliff-lead">
-      {% if lockup_timeline.next %}{% set nd = lockup_timeline.next.days_to %}<div class="cliff-next">{{ t('Next modeled expiry','下一个估算到期日') }}: <b>{{ lockup_timeline.next.ticker }}</b> · {{ lockup_timeline.next.date }}{% if lockup_timeline.next.size_disp %} · {{ lockup_timeline.next.size_disp }}{% endif %} <span class="cliff-meta">({% if nd == 0 %}{{ t('today','今天') }}{% elif nd is not none and nd > 0 %}{{ t('in ' ~ nd ~ 'd','' ~ nd ~ '天后') }}{% elif nd is not none %}{{ t((-nd) ~ 'd ago','' ~ (-nd) ~ '天前') }}{% endif %})</span></div>{% endif %}
-      <div class="cliff-meta">{{ lockup_timeline.approaching }} {{ t('approaching ≤45d','临近 ≤45天') }} · {{ lockup_timeline.just_expired }} {{ t('just un-locked','刚解禁') }}</div>
+      {% if lockup_timeline.next %}{% set nd = lockup_timeline.next.days_to %}<div class="cliff-next">{{ t('Next modeled expiry','下一个估算到期日') }}: <b>{{ lockup_timeline.next.ticker }}</b> · {{ lockup_timeline.next.date }}{% if lockup_timeline.next.size_disp %} · {{ t('deal size','发行规模') }} {{ lockup_timeline.next.size_disp }}{% endif %} <span class="cliff-meta">({% if nd == 0 %}{{ t('today','今天') }}{% elif nd is not none and nd > 0 %}{{ t('in ' ~ nd ~ 'd','' ~ nd ~ '天后') }}{% elif nd is not none %}{{ t((-nd) ~ 'd ago','' ~ (-nd) ~ '天前') }}{% endif %})</span></div>{% endif %}
+      <div class="cliff-meta">{{ lockup_timeline.approaching }} {{ t('modeled dates ≤45d ahead','估算日期在未来≤45天') }} · {{ lockup_timeline.just_expired }} {{ t('modeled dates in past 30d','估算日期在过去30天') }}</div>
       {% if lockup_summary and lockup_summary.n is number and lockup_summary.n > 0 %}
       <div class="cliff-meta">{{ t(lockup_timeline.confirmed ~ ' of ' ~ lockup_summary.n
       ~ ' modeled dates use a prospectus-derived day count;'
@@ -526,18 +526,18 @@ html[data-theme="light"] .cw-change{background:color-mix(in srgb,var(--tcc) 6%,v
       <div class="tl-today" style="left:20%"><span class="tl-lbl">{{ t('TODAY','今天') }}</span></div>
       {% for m in lockup_timeline.markers %}
       <div class="tl-mark {{ m.size_bucket }} {{ m.status }}" tabindex="0" style="left:{{ (m.pos_frac*100)|round(1) }}%">
-        <span class="tl-tip"><b>{{ m.ticker }}</b> · {{ m.company }}<br>{{ t('modeled expiry','估算到期日') }} {{ m.expiry_date }}{% if m.size_disp %} · {{ m.size_disp }}{% endif %}<br>{{ t('lock-up','禁售') }} {{ m.lockup_days or 180 }}d{% if not m.confirmed %} <span style="color:var(--faint)">({{ t('est','估') }})</span>{% endif %}</span>
+        <span class="tl-tip"><b>{{ m.ticker }}</b> · {{ m.company }}<br>{{ t('modeled expiry','估算到期日') }} {{ m.expiry_date }}{% if m.size_disp %} · {{ t('deal size','发行规模') }} {{ m.size_disp }}{% endif %}<br>{{ t('lock-up','禁售') }} {{ m.lockup_days or 180 }}d{% if not m.confirmed %} <span style="color:var(--faint)">({{ t('est','估') }})</span>{% endif %}</span>
       </div>
       {% endfor %}
       <div class="tl-scale"><span>{{ t('30d ago','30天前') }}</span><span>{{ t('+45d','+45天') }}</span><span>{{ t('+120d','+120天') }}</span></div>
     </div>
     <div class="tl-legend">
-      <span class="k"><i style="background:var(--red)"></i>{{ t('just un-locked (supply live)','刚解禁（供给中）') }}</span>
-      <span class="k"><i style="background:var(--amber)"></i>{{ t('approaching (≤45d)','临近（≤45天）') }}</span>
-      <span class="k"><i style="background:var(--muted)"></i>{{ t('still locked','仍锁定') }}</span>
+      <span class="k"><i style="background:var(--red)"></i>{{ t('modeled date passed (≤30d)','估算日期已过（≤30天）') }}</span>
+      <span class="k"><i style="background:var(--amber)"></i>{{ t('modeled date ahead (≤45d)','估算日期在后（≤45天）') }}</span>
+      <span class="k"><i style="background:var(--muted)"></i>{{ t('modeled date ahead (>45d)','估算日期在后（>45天）') }}</span>
       <span class="k" style="margin-left:auto">{{ t('dot size = deal size','点大小＝交易规模') }}</span>
     </div>
-    <div class="note warn">{{ t('Don’t add into the cliff. This is a supply-date calendar, not a forecast — history shows no reliable tradeable edge here.','临近解禁勿加仓。这是供给日历，而非预测 —— 历史上此处没有可靠、可交易的优势。') }}{{ qtip(lockup_receipt_en or 'Field & Hanka document a small one-sided drift (~−1.5%, ~−3% for VC-backed names) with ~+40% volume around unlock. Our own event study of recent unlocks finds no measurable, tradeable edge on a small, survivorship-biased sample. Lock-up length is prospectus-confirmed where available, else the 180-day market standard.', lockup_receipt_zh or 'Field & Hanka 记录到解禁前后约 −1.5%（风投支持约 −3%）的小幅单边漂移，成交量约 +40%。我们对近期解禁的事件研究在小样本（含幸存者偏差）上未发现可测量、可交易的优势。禁售期长度在可得时取自招股书，否则取 180 天市场标准。') }}</div>
+    <div class="note warn">{{ t('Don’t add into the cliff. This is a modeled lock-up calendar, not a verified release record or a forecast — history shows no reliable tradeable edge here.','临近解禁勿加仓。这是估算禁售到期日历，并非实际解禁记录或预测 —— 历史上此处没有可靠、可交易的优势。') }}{{ qtip(lockup_receipt_en or 'Field & Hanka document a small one-sided drift (~−1.5%, ~−3% for VC-backed names) with ~+40% volume around unlock. Our own event study of recent unlocks finds no measurable, tradeable edge on a small, survivorship-biased sample. Lock-up length is prospectus-confirmed where available, else the 180-day market standard.', lockup_receipt_zh or 'Field & Hanka 记录到解禁前后约 −1.5%（风投支持约 −3%）的小幅单边漂移，成交量约 +40%。我们对近期解禁的事件研究在小样本（含幸存者偏差）上未发现可测量、可交易的优势。禁售期长度在可得时取自招股书，否则取 180 天市场标准。') }}</div>
     {% if lockup_p0 %}<div class="mini">{{ t(
       'Our event study of ' ~ lockup_p0.n_names ~ ' recent un-locks (to ' ~ lockup_p0.as_of
       ~ '): the average return vs the S&P 500 ' ~ lockup_p0.window_en
