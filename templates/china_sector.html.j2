@@ -61,6 +61,7 @@
       <span class="lad {{ 'up' if s.ladder.dir=='up' else ('down' if s.ladder.dir=='down' else 'flat') }}">{{ td(s.ladder.label) }}</span>
       {% if s.ladder.eq_badge %}<span class="eqbadge eq-{{ s.ladder.eq_dir }}">{{ t('Entry','入场') }} {{ s.ladder.eq_badge }} <span class="eqg">{{ td(s.ladder.eq_grade) }}</span></span>{{ help(s.ladder.eq_tip, s.ladder.eq_tip_zh) }}{% endif %}
     </div>
+    <p class="muted" data-etf-last-close>{% if s.last_close_date %}{{ t('ETF last close', 'ETF 最近收盘日期') }} · <time datetime="{{ s.last_close_date }}">{{ s.last_close_date }}</time>{% else %}{{ t('ETF close date unavailable', 'ETF 收盘日期不可用') }}{% endif %}</p>
     {% set e = s.ladder.entry %}
     <div class="entrybar urg-{{ e.urgency }}">
       <span class="entrytag">{{ td(e.tag) }}</span>
