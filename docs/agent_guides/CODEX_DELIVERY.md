@@ -116,7 +116,7 @@ deliberate freeze must ship a DEC record plus an expiry plan
 
 **ARM `merge-on-green`, THEN STAY.** Push the complete owned candidate, refresh its
 exact head/checks/holds and qualify the incumbent arming predicate before running
-`gh pr edit <n> --add-label merge-on-green`. The current
+`gh pr edit <n> --repo mastermindx-market-intelligence/macro --add-label merge-on-green`. The current
 `can_arm_merge_on_green` predicate requires a clean concluded binding verdict;
 do not add the label while binding checks are pending.
 **Arm LAST — never push into an already-armed pull request (measured #8163, 2026-09-29).**
