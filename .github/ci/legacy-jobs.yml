@@ -29847,6 +29847,84 @@ jobs:
         # Git policy checks inspect ignore/index metadata, not the private file.
         run: python -m pytest tests/test_marketing_approval_desk.py tests/test_marketing_card_earns_pixels.py tests/test_marketing_wire_expiry.py tools/xguerrilla/tests/test_drivers.py tools/xguerrilla/tests/test_net.py tools/xguerrilla/tests/test_ops.py tools/xguerrilla/tests/test_pilot_sim.py tools/xguerrilla/tests/test_proxies_template.py tools/xguerrilla/tests/test_state.py tools/xguerrilla/tests/test_textdrift.py tools/xguerrilla/tests/test_typing.py tools/xguerrilla/tests/test_validators.py tools/xguerrilla/tests/test_runtime_boundary.py -q
 
+  mastermind-portfolio-page:
+    if: ${{ false }}
+    gate: code
+    scope: exclusive
+    # Actual committed-page/client contracts, their direct inputs and producer
+    # source, plus shared pytest context. This owner does not execute the
+    # builder or acquire live Portfolio data; full suite and guards stay active.
+    paths:
+      - "app/__init__.py"
+      - "app/deploy/Caddyfile"
+      - "config.yml"
+      - "config/site_access.yml"
+      - "engine/__init__.py"
+      - "engine/basket_breadth_divergence.py"
+      - "engine/catalyst_tone.py"
+      - "engine/desk_ledger.py"
+      - "engine/gdelt_client.py"
+      - "engine/i18n.py"
+      - "engine/marketing/__init__.py"
+      - "engine/marketing/accounts.py"
+      - "engine/marketing/authority.py"
+      - "engine/marketing/chart_render.py"
+      - "engine/marketing/charter.py"
+      - "engine/marketing/claims.py"
+      - "engine/marketing/cmo.py"
+      - "engine/marketing/departments.py"
+      - "engine/marketing/economics.py"
+      - "engine/marketing/events.py"
+      - "engine/marketing/ledgers.py"
+      - "engine/marketing/logo_cache.py"
+      - "engine/marketing/opportunity_bus.py"
+      - "engine/marketing/publication.py"
+      - "engine/marketing/state.py"
+      - "engine/master_brain.py"
+      - "lib/__init__.py"
+      - "lib/config.py"
+      - "lib/pages.py"
+      - "lib/shared_shell.py"
+      - "lib/site_assets.py"
+      - "scripts/__init__.py"
+      - "scripts/build_mastermind.py"
+      - "scripts/worktree_sparse.py"
+      - "site/mastermind.html"
+      - "site/mastermind.js"
+      - "site/mastermind/mastermind_snapshot.json"
+      - "templates/_navlinks.html.j2"
+      - "templates/_seo_head.html.j2"
+      - "templates/_site_nav.html.j2"
+      - "templates/data_base.js"
+      - "templates/mastermind.html.j2"
+      - "templates/mastermind.js"
+      - "templates/shared_shell.css"
+      - "templates/shared_shell_bridge.js"
+      - "tests/__init__.py"
+      - "tests/conftest.py"
+      - "tests/test_mastermind_page_contract.py"
+      - "scripts/externalize_css.py"
+      - "scripts/optimize_assets.py"
+      - "site/assets/css/**"
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install page contract dependencies
+        run: pip install pytest pyyaml
+      - name: Install pinned DOM dependency
+        run: npm install --no-save --package-lock=false --prefix "${RUNNER_TEMP:?}/mastermind-page-dom" jsdom@26.1.0
+      - name: Portfolio snapshot, access and published-page contracts
+        run: |
+          export NODE_PATH="${RUNNER_TEMP:?}/mastermind-page-dom/node_modules"
+          python -m pytest tests/test_mastermind_page_contract.py -q
+
   marketing-media-pipeline:
     if: ${{ false }}
     gate: code

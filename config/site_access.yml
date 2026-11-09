@@ -306,6 +306,7 @@ public:
     # runtime publishable token it renders deterministic local monograms.
     - /stock-logos.js
     - /theme.js
+    - /mastermind.js
     # Public Help build-age clock; UI-only, no data requests or account actions.
     - /help_refresh.js
     # Presentation/runtime code required by the three public dashboard shells.

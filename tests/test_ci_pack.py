@@ -4531,6 +4531,7 @@ def test_workspace_runtime_contracts_can_start_the_ci_that_validates_them() -> N
 # ---------------------------------------------------------------------------
 
 CURATED_EXCLUSIVE = {
+    "mastermind-portfolio-page",
     "public-site-figma-baseline-contracts",
     "press-account-claim-consumer",
     # GDELT leaf suites own their exact import/read closure.
@@ -9424,3 +9425,88 @@ def test_fastship_invalid_base_reference_remains_refused(monkeypatch, base):
         PACK.build_plan(jobs, ["engine/example.py"], changed_from=base,
                         scope_mode="active", pack_count=12,
                         event="pull_request", role="pr_head")
+
+
+def test_mastermind_page_has_complete_code_gate_enrollment() -> None:
+    """The published consumer contract must run in ordinary PR code CI."""
+    job = next(job for job in PACK.load_legacy_jobs(MANIFEST, gate="code")
+               if job.job_id == "mastermind-portfolio-page")
+    assert job.exclusive
+    expected = {
+        "app/__init__.py",  # ci-trigger-closure: data
+        "app/deploy/Caddyfile",  # ci-trigger-closure: data
+        "config.yml",  # ci-trigger-closure: data
+        "config/site_access.yml",  # ci-trigger-closure: data
+        "engine/__init__.py",  # ci-trigger-closure: data
+        "engine/basket_breadth_divergence.py",  # ci-trigger-closure: data
+        "engine/catalyst_tone.py",  # ci-trigger-closure: data
+        "engine/desk_ledger.py",  # ci-trigger-closure: data
+        "engine/gdelt_client.py",  # ci-trigger-closure: data
+        "engine/i18n.py",  # ci-trigger-closure: data
+        "engine/marketing/__init__.py",  # ci-trigger-closure: data
+        "engine/marketing/accounts.py",  # ci-trigger-closure: data
+        "engine/marketing/authority.py",  # ci-trigger-closure: data
+        "engine/marketing/chart_render.py",  # ci-trigger-closure: data
+        "engine/marketing/charter.py",  # ci-trigger-closure: data
+        "engine/marketing/claims.py",  # ci-trigger-closure: data
+        "engine/marketing/cmo.py",  # ci-trigger-closure: data
+        "engine/marketing/departments.py",  # ci-trigger-closure: data
+        "engine/marketing/economics.py",  # ci-trigger-closure: data
+        "engine/marketing/events.py",  # ci-trigger-closure: data
+        "engine/marketing/ledgers.py",  # ci-trigger-closure: data
+        "engine/marketing/logo_cache.py",  # ci-trigger-closure: data
+        "engine/marketing/opportunity_bus.py",  # ci-trigger-closure: data
+        "engine/marketing/publication.py",  # ci-trigger-closure: data
+        "engine/marketing/state.py",  # ci-trigger-closure: data
+        "engine/master_brain.py",  # ci-trigger-closure: data
+        "lib/__init__.py",  # ci-trigger-closure: data
+        "lib/config.py",  # ci-trigger-closure: data
+        "lib/pages.py",  # ci-trigger-closure: data
+        "lib/shared_shell.py",  # ci-trigger-closure: data
+        "lib/site_assets.py",  # ci-trigger-closure: data
+        "scripts/__init__.py",  # ci-trigger-closure: data
+        "scripts/build_mastermind.py",  # ci-trigger-closure: data
+        "scripts/worktree_sparse.py",  # ci-trigger-closure: data
+        "site/mastermind.html",  # ci-trigger-closure: data
+        "site/mastermind.js",  # ci-trigger-closure: data
+        "site/mastermind/mastermind_snapshot.json",  # ci-trigger-closure: data
+        "templates/_navlinks.html.j2",  # ci-trigger-closure: data
+        "templates/_seo_head.html.j2",  # ci-trigger-closure: data
+        "templates/_site_nav.html.j2",  # ci-trigger-closure: data
+        "templates/data_base.js",  # ci-trigger-closure: data
+        "templates/mastermind.html.j2",  # ci-trigger-closure: data
+        "templates/mastermind.js",  # ci-trigger-closure: data
+        "templates/shared_shell.css",  # ci-trigger-closure: data
+        "templates/shared_shell_bridge.js",  # ci-trigger-closure: data
+        "tests/__init__.py",  # ci-trigger-closure: data
+        "tests/conftest.py",  # ci-trigger-closure: data
+        "tests/test_mastermind_page_contract.py",  # ci-trigger-closure: data
+        "scripts/externalize_css.py",  # ci-trigger-closure: data
+        "scripts/optimize_assets.py",  # ci-trigger-closure: data
+        "site/assets/css/**",  # ci-trigger-closure: data
+    }
+    assert set(job.paths) == expected
+    scoped, _ = PACK.infer_job_scopes([job])
+    for dependency in sorted(expected):
+        selected, reason = PACK.select_jobs(scoped, [dependency])
+        assert [item.job_id for item in selected] == [job.job_id], (dependency, reason)
+    commands = "\n".join(step["run"] for step in job.definition["steps"] if "run" in step)
+    assert "python -m pytest tests/test_mastermind_page_contract.py -q" in commands
+    assert "jsdom@26.1.0" in commands
+    assert 'export NODE_PATH="${RUNNER_TEMP:?}/mastermind-page-dom/node_modules"' in commands
+    assert any(step.get("uses") == "actions/setup-node@v4"
+               and step.get("with", {}).get("node-version") == "20"
+               for step in job.definition["steps"])
+
+
+@pytest.mark.parametrize("probe", [
+    "templates/index.html",  # ci-trigger-closure: data
+    "scripts/build_free_content.py",  # ci-trigger-closure: data
+    "engine/prophet/plan_book.py",  # ci-trigger-closure: data
+])
+def test_mastermind_page_scope_skips_unrelated_packing_probes(probe: str) -> None:
+    job = next(job for job in PACK.load_legacy_jobs(MANIFEST, gate="code")
+               if job.job_id == "mastermind-portfolio-page")
+    scoped, _ = PACK.infer_job_scopes([job])
+    selected, reason = PACK.select_jobs(scoped, [probe])
+    assert not selected, reason

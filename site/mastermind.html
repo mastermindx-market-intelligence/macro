@@ -33,7 +33,7 @@
 })();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script>try{var th=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',th||'dark');var l=localStorage.getItem('lang')||(function(){try{var L=navigator.languages||[navigator.language||navigator.userLanguage||''],i;for(i=0;i<L.length;i++)if((L[i]||'').toLowerCase().slice(0,2)==='zh')return'zh';if(/Shanghai|Hong_Kong|Macau|Urumqi|Chongqing|Harbin|Kashgar|Chungking/.test(Intl.DateTimeFormat().resolvedOptions().timeZone||''))return'zh';}catch(e){}return'';})();if(l)document.documentElement.setAttribute('data-lang',l);}catch(e){}</script>
-<title>Mastermind — 2026-11-09 03:17 UTC</title>
+<title>Mastermind — Portfolio Snapshot</title>
 
 <meta name="description" content="The Mastermind macro regime and market cycle dashboard — live regime reads, signal boards and cycle intelligence across US and global markets.">
 <link rel="canonical" href="https://www.mastermind-x.com/mastermind.html">
@@ -51,7 +51,7 @@
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="stylesheet" href="theme.css?v=9bd171a6">
-<link rel="stylesheet" href="assets/css/da64c9df.css?v=da64c9df">
+<link rel="stylesheet" href="assets/css/f549d029.css?v=f549d029">
 <link rel="preload" as="style" href="product-nav-icons.css?v=432f6a45">
 <link rel="preload" as="style" href="navigation-refresh.css?v=edfd821b">
 </head>
@@ -313,11 +313,13 @@
 <div class="panel">
   <div style="display:flex;flex-wrap:wrap;align-items:center;gap:12px">
     <h1><span class="product-icon product-icon-mastermind" aria-hidden="true"></span><span class="l-en">Mastermind</span><span class="l-zh">操盘大脑</span></h1>
-    <span class="muted"><span class="l-en">AI paper-trading desk — a daily snapshot of the live book</span><span class="l-zh">AI 模拟交易台 — 实盘账本每日快照</span></span>
-    <a class="live-btn" id="mm-live" href="http://localhost:8000" target="_blank" rel="noopener">↗ <span class="l-en">Open live dashboard</span><span class="l-zh">打开实时面板</span></a>
+    <span class="muted"><span class="l-en">AI paper-trading desk — governed point-in-time snapshot</span><span class="l-zh">AI 模拟交易台 — 受治理的时点快照</span></span>
+    <a class="live-btn" id="mm-live" href="https://bot.mastermind-x.com" target="_blank" rel="noopener">↗ <span class="l-en">Open live dashboard</span><span class="l-zh">打开实时面板</span></a>
   </div>
-  <p class="muted sm" style="margin:10px 0 0"><span class="l-en">Mastermind is an autonomous AI paper-trading agent that runs on a local server. This page is a STATIC SNAPSHOT of its dashboard, pushed twice a day. For the full interactive view — live marks, brain reasoning trace, research feed and order tickets — open the live dashboard (it runs on your local machine). Paper-only / display-only: accountability, not alpha. Not investment advice.</span><span class="l-zh">Mastermind 是运行在本地服务器上的自主 AI 模拟交易代理。本页为其面板的静态快照，每日推送两次。如需完整交互视图——实时报价、推理追踪、研究动态与下单——请打开实时面板（运行于你的本机）。仅纸面／仅展示：问责而非阿尔法。非投资建议。</span></p>
+  <p class="muted sm" style="margin:10px 0 0"><span class="l-en">This page shows a point-in-time Portfolio snapshot. The data snapshot time and freshness banner describe the holdings data. Book-status source records, when available, are dated separately. For live marks, reasoning trace, research and paper-order details, open the secured Portfolio dashboard. Paper-only / display-only: accountability, not alpha. Not investment advice.</span><span class="l-zh">本页展示 Portfolio 时点快照。数据快照时间与新鲜度提示对应持仓数据；如有账本状态来源记录，其时间将单独显示。如需实时报价、推理追踪、研究与模拟订单详情，请打开受保护的 Portfolio 面板。仅纸面／仅展示：问责而非阿尔法。非投资建议。</span></p>
 </div>
+
+<div id="mm-state" aria-live="polite"></div>
 
 <div class="mm-tabs" id="mm-tabs" role="tablist" aria-label="Book · 账本"></div>
 
@@ -326,11 +328,11 @@
 </div>
 
 <div class="panel">
-  <p class="muted" style="font-size:12px;margin:0" id="mm-foot"><span class="l-en">Static snapshot of a local AI paper-trading desk — refreshed twice daily. Paper-only / display-only; not investment advice.</span><span class="l-zh">本地 AI 模拟交易台的静态快照 — 每日刷新两次。仅纸面／仅展示；非投资建议。</span></p>
+  <p class="muted" style="font-size:12px;margin:0" id="mm-foot"><span class="l-en">Point-in-time Portfolio snapshot. Check the data snapshot time and freshness banner before use. Paper-only / display-only; not investment advice.</span><span class="l-zh">Portfolio 时点快照。使用前请检查数据快照时间与新鲜度提示。仅纸面／仅展示；非投资建议。</span></p>
 </div>
 
 <script src="theme.js?v=aa83d371" defer></script>
-<script src="mastermind.js?v=e75ad26e" defer></script>
+<script src="mastermind.js?v=2d86351e" defer></script>
 <footer class="site-footer">
   <span class="made">© 2026 Mastermind Inc</span>
 </footer>
