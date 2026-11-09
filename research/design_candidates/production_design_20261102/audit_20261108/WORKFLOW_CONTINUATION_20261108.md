@@ -2591,3 +2591,40 @@ Both guarded operations—four-node text update and finish of exactly **7M9-0**�
 The next source refresh identifies an existing Confluence availability implementation in [PR10705](https://github.com/mastermindx-market-intelligence/Macro/pull/10705), current **dce11e42c79da7bf45bdda930b473d3f6a97e54e**. Compare its current contract and newer Paper amendments before selecting any edit; do not duplicate the older §12 implementation plan. The incumbent delivery, its latest integration proof, source-generation requirements and protected hydration need separate qualification.
 
 This is a completed navigation phase within the continuing assignment. PR10676 and this audit remain Draft/unmerged. Original model01, source admission, independent-writer, protected-style and release holds remain. Native modified clicks do not establish native context-menu/system clipboard, physical IME, spoken AT, complete shared shell/fonts, live account/admission, hosted CI or deployment acceptance.
+
+## 53. Confluence current-source qualification and truthful zero state — 9 November 2026
+
+The portfolio refresh found that [incumbent PR10705](https://github.com/mastermindx-market-intelligence/Macro/pull/10705), current **dce11e42c79da7bf45bdda930b473d3f6a97e54e**, already implements the availability repair proposed in §12. Mainline still has the older defect, but duplicating that repair would create conflicting work. The current candidate's builder, template and page-test blobs are **f6a34870**, **64864e62** and **34c7fe29**, respectively.
+
+### Reconciled design and architecture
+
+Current qualification requires a parseable timezone-bearing source `generated_utc`, valid coverage and required artifact structure. Missing, date-only or invalid source time means unavailable with unknown counts. The older Paper instruction allowing proven zero with a missing source date is therefore replaced by the current qualification contract. Removing only the clock check would leave public/protected receipt and consumer comparisons inconsistent.
+
+[Public states & Build](https://app.paper.design/file/01M6Y3DCDDW541ZR38J1V52A9Y/p-3-0) now makes this distinction concrete:
+
+- **278-0** remains a qualified-zero specimen, renamed **38 · Qualified zero · Test fixture · EN**. Its source clock is **2026-07-19T04:00:00Z**, taken from the current test fixture and its available-empty case. It is not a live snapshot claim.
+- The count label is **ELIGIBLE COMBINATIONS**, heading **No eligible combinations**, and concise body **No active combination in this source has readings for both periods.**
+- The source-built clock and absent market-observation time remain distinct. The existing **Open Mastermind** action and method disclosure keep their original geometry and navigation meaning.
+- The nine-module R3 builder map now points to the actual candidate, distinguishes eligible totals from displayed cards, preserves required versus optional evidence rules and states the real action effects.
+- All **171 Build** and **20 zero-state** div identities/parents remain exact. Build styles are exact. The sole zero-state style delta is Paper's `whiteSpace: pre-wrap` normalization on the explicitly two-line clock node **29Z-0**.
+- Newer **R4 child 2I3-0** remains byte-exact: **39,643 characters /135 div nodes**. Its earlier source characterization is clearly distinguished from current candidate implementation.
+
+Four guarded operations—initial text amendment, fixture rename, two-node precision refinement and finish—returned **APPLIED_RESPONSE_OBSERVED**. The zero state and clock/proof/compatibility modules were visually inspected; both finished roots and the preserved R4 subtree read back. [PAPER_CONFLUENCE_CURRENT_CONTRACT_20261109.json](PAPER_CONFLUENCE_CURRENT_CONTRACT_20261109.json) contains full before/after JSX, exact deltas and operation results.
+
+### Remaining concrete source work
+
+The current source comparison identifies three bounded follow-ups:
+
+1. **Cached old-consumer compatibility.** The candidate's complete new reader checks source hash/time, IDs, counts and unique tickers, but the producer still emits `tier_payload.v1`. An older cached page accepts that schema and joins by ordinal combination ID while ignoring the new receipt. A new artifact with reused IDs can therefore attach its identities to an older public recipe. Use one paired protocol discriminator rejected by the frozen old reader; keep the existing endpoint, auth controller and full-artifact hash. A second recipe-key lifecycle is unnecessary.
+2. **Actual protected overwrite proof.** The producer writes an empty protected payload after a successful unavailable public render, but the overwrite-named test calls only `build_premium_payload(None)`. A seeded prior protected file and actual `render(tmp_path)` must prove the on-disk outcome. Do not claim overwrite after an earlier HTML-render/write failure.
+3. **Honest application action.** The valid-empty source link still says “Get notified when setups fire,” but `cta_url` is the existing application destination. Paper's **Open Mastermind / 打开 Mastermind** remains the intended accurate label. The unavailable action's `location.reload()` is a page reload, not a source-generation service.
+
+Required malformed rows currently reject the whole artifact. Do not silently drop them and alter rank/free identity. Required fire/month samples and optional edge/history/consistency fields remain different cases.
+
+### Custody and proof limits
+
+The [scoped adoption receipt](https://github.com/mastermindx-market-intelligence/macro/pull/10705#issuecomment-6724281889) belongs to the incumbent delivery root. Its former Draft hold was released only for that bounded source delivery; current PR10705 remains Ready/unmerged with its existing admission/merge-blocked records. This phase changed no source, label, admission, runtime, entitlement or release control.
+
+Historical **138 tests /39 browser cases /24 captures** remain tied to their older source. They were read as evidence, not rerun or recertified. The current integration has a separate semantic-proof refusal; it does not prove a Confluence implementation failure or release permission.
+
+Continue by qualifying any already active compatibility repair and legitimate source custody before implementing the paired version change and actual-render proof. The Paper correction is complete; the broader mission continues.
