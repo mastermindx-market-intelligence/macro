@@ -3968,3 +3968,40 @@ The existing Start guide is readable and its dated organization snapshot is hist
 Update only `3L7-0` and `3LF-0` in guide `3L1-0`: name the current scenario workflow and scorecard, identify G5/QI, and point directly to the source checkpoint's task → owner → contract → proof map. Preserve page IDs, the historical organization snapshot, archive decisions and candidate/proposal qualifications. This is an existing-guide correction, with exact JSX and screenshot proof; no unrelated runtime rerun is required.
 
 No hosted/public-route, cross-engine/assistive-technology, current-market, personal-record, H5/model, alert, receipt/result or release acceptance is inferred. All earlier denied/uncertain-effect lanes and admission holds remain.
+
+
+## 82. Crypto Start guide — one direct path to workflow and build proof (2026-11-09)
+
+The existing [Read first page](https://app.paper.design/file/01M6Y3F0NXNDPAKJMJGCAD759Z/p-5-0), guide `3L1-0`, now leads to the **current scenario workflow and implementation scorecard**. Its first route identifies **G5-0 and QI-0** on the existing p-1-0 page.
+
+Source qualification now points directly to the [18-task implementation map](https://github.com/mastermindx-market-intelligence/Macro/blob/480ae8eb4f0e82065c324b56058c6c6eb25674b0/research/design_candidates/crypto_snapshot_safety_20261109/README.md) at source **`480ae8eb4f0e82065c324b56058c6c6eb25674b0`**, assets **`89c2e5bd3fa3`**. It tells the builder to follow each task to its existing owner, contract and scoped proof, with the checkpoint recorded in QI/3IP. The guide no longer maintains a separate rolling inventory of implemented features. The PR #10901 URL remains.
+
+This corrects two concrete entry problems: G5's active scenario workflow was absent from the first board list, and the qualification paragraph named implemented features without a direct map. No route or page was broken, and the explicitly dated organization snapshot `baf6737` was not falsely current.
+
+### Exact edit and conservation
+
+Only `3L7-0` and `3LF-0` changed. All **11 node identities, parent relations, order and exported styles** remain exact. Existing rich-text bold and monospace styles match expected JSX exactly. The additional source URL repeats the existing monospace style. Restoring the two original leaf interiors recovers the complete before JSX.
+
+The asset/saved candidate-proposal routes, retained Z1/251 contracts, archived R3 replacement scope, R2/R1 distinction, and full usage/organization footer remain. In particular `3L9-0`, `3LB-0`, `3LD-0` and `3LH-0` are unchanged. Historical operational text does not become fresh authority through this edit.
+
+Both complete before/after frames were visually inspected. All four routes, source qualification, both source links and the historical footer remain readable. The full immutable map URL wraps within the existing guide width. The guide is reported as 1440px wide; height and world coordinates remain unreported, so no freeform-placement claim is made. The exact root was finished.
+
+### Source and proof boundary
+
+This phase changes only the editable guide and audit/PR descriptions. It does not change source/runtime `480ae8eb4f0e82065c324b56058c6c6eb25674b0` or assets `89c2e5bd3fa3`. The preceding **67-case native feedback-lifetime proof** retains its own scope; no unrelated browser suite was repeated.
+
+The map destination was already read back exactly in §81, including its 18 workflow rows. The Paper page and board identities were reconciled with the existing document. This is an internal builder guide, with its “not product UI” designation preserved.
+
+Artifacts:
+
+- `PAPER_CRYPTO_START_GUIDE_20261109.json`
+- `PAPER_CRYPTO_START_GUIDE_BEFORE_20261109.jpg`
+- `PAPER_CRYPTO_START_GUIDE_AFTER_20261109.jpg`
+
+### Next safe phase: actionable Saved recovery
+
+The just-inspected native Retry view reveals the next concrete workflow gap. A successfully read but empty Saved list tells the user to open a scenario without offering that action. A collection containing only unsupported records also ends in copy alone. The same renderer already knows these two states; missing-current-case recovery already uses **Browse scenarios / 浏览情景** through the existing route owner.
+
+Inspect and repair this bounded path: provide one clear destination through existing `update()/apply()`, preserve route context and all storage records, and distinguish genuinely empty storage from unsupported retained records. Native proof should cover empty, unsupported-only, mixed/readable, unreadable and post-Remove/Retry outcomes, with keyboard focus and history behavior. Do not fabricate saved data, silently delete unsupported records, add another router or enable held model/result features.
+
+All earlier denied/uncertain-effect lanes and admission/release boundaries remain.

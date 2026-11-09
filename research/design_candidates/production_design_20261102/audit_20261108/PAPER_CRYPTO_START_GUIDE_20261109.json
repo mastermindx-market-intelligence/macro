@@ -1,0 +1,2502 @@
+{
+  "date": "2026-11-09",
+  "file_id": "01M6Y3F0NXNDPAKJMJGCAD759Z",
+  "page_id": "p-5-0",
+  "root": "3L1-0",
+  "source": {
+    "head": "480ae8eb4f0e82065c324b56058c6c6eb25674b0",
+    "tree": "1079c54c69b3cc0e4a982caab4eef63f2ae198b2",
+    "assets": "89c2e5bd3fa3"
+  },
+  "audit_parent": {
+    "head": "3b5cf2c99f274e4622f3996edad71347c714ae4e",
+    "tree": "5985432d7ca7da948db9d68216aeacfa9560ca7e"
+  },
+  "purpose": "Connect the existing Start guide directly to the current G5/QI scenario workflow and the verified task/owner/contract/proof map, replacing its rolling feature inventory.",
+  "updates": [
+    {
+      "nodeId": "3L7-0",
+      "html": "<span style=\"font-weight:700;\">01 · READ</span> — Current scenario workflow and implementation scorecard<br /><span style=\"font-family:ui-monospace, &quot;SFMono-Regular&quot;, &quot;SF Mono&quot;, &quot;Menlo&quot;, &quot;Consolas&quot;, &quot;Liberation Mono&quot;, monospace;font-size:14px;line-height:22px;\">FILE_ID: 01M6Y3F0NXNDPAKJMJGCAD759Z · PAGE_ID: p-1-0 · BOARD_IDS: G5-0, QI-0</span><br /><span style=\"font-family:ui-monospace, &quot;SFMono-Regular&quot;, &quot;SF Mono&quot;, &quot;Menlo&quot;, &quot;Consolas&quot;, &quot;Liberation Mono&quot;, monospace;font-size:14px;line-height:22px;\">https://app.paper.design/file/01M6Y3F0NXNDPAKJMJGCAD759Z/p-1-0</span>"
+    },
+    {
+      "nodeId": "3LF-0",
+      "html": "<span style=\"font-weight:700;\">SOURCE_QUALIFICATION</span><br />R4 scorecard QI-0 explicitly replaces seven archived R3 boards. Earlier behavior contracts Z1-0/251-0 remain retained; Z1-0 identifies an R2 builder contract and rejects R1 visuals. Preserve applicable behavior rather than reviving rejected designs or historical operational instructions. Pages p-3-0 and p-4-0 combine candidate UI references with marked proposals. Draft PR #10901 contains the implemented candidate workflows. Use the implementation map below for each task’s existing owner, contract and scoped proof; QI-0 / 3IP-0 record the source checkpoint. Paired observation receipts and qualified historical comparison results remain proposed. H5/model, alerts, public-route cutover and release gates remain.<br /><span style=\"font-family:ui-monospace, &quot;SFMono-Regular&quot;, &quot;SF Mono&quot;, &quot;Menlo&quot;, &quot;Consolas&quot;, &quot;Liberation Mono&quot;, monospace;font-size:14px;line-height:22px;\">https://github.com/mastermindx-market-intelligence/Macro/blob/480ae8eb4f0e82065c324b56058c6c6eb25674b0/research/design_candidates/crypto_snapshot_safety_20261109/README.md</span><br /><span style=\"font-family:ui-monospace, &quot;SFMono-Regular&quot;, &quot;SF Mono&quot;, &quot;Menlo&quot;, &quot;Consolas&quot;, &quot;Liberation Mono&quot;, monospace;font-size:14px;line-height:22px;\">https://github.com/mastermindx-market-intelligence/Macro/pull/10901</span>"
+    }
+  ],
+  "expected_rich_inner": {
+    "3L7-0": "<span style={{ fontWeight: 700 }}>01 · READ</span> — Current scenario workflow and implementation scorecard<br /><span style={{ fontFamily: 'ui-monospace, \"SFMono-Regular\", \"SF Mono\", \"Menlo\", \"Consolas\", \"Liberation Mono\", monospace', fontSize: '14px', lineHeight: '22px' }}>FILE_ID: 01M6Y3F0NXNDPAKJMJGCAD759Z · PAGE_ID: p-1-0 · BOARD_IDS: G5-0, QI-0</span><br /><span style={{ fontFamily: 'ui-monospace, \"SFMono-Regular\", \"SF Mono\", \"Menlo\", \"Consolas\", \"Liberation Mono\", monospace', fontSize: '14px', lineHeight: '22px' }}>https://app.paper.design/file/01M6Y3F0NXNDPAKJMJGCAD759Z/p-1-0</span>",
+    "3LF-0": "<span style={{ fontWeight: 700 }}>SOURCE_QUALIFICATION</span><br />R4 scorecard QI-0 explicitly replaces seven archived R3 boards. Earlier behavior contracts Z1-0/251-0 remain retained; Z1-0 identifies an R2 builder contract and rejects R1 visuals. Preserve applicable behavior rather than reviving rejected designs or historical operational instructions. Pages p-3-0 and p-4-0 combine candidate UI references with marked proposals. Draft PR #10901 contains the implemented candidate workflows. Use the implementation map below for each task’s existing owner, contract and scoped proof; QI-0 / 3IP-0 record the source checkpoint. Paired observation receipts and qualified historical comparison results remain proposed. H5/model, alerts, public-route cutover and release gates remain.<br /><span style={{ fontFamily: 'ui-monospace, \"SFMono-Regular\", \"SF Mono\", \"Menlo\", \"Consolas\", \"Liberation Mono\", monospace', fontSize: '14px', lineHeight: '22px' }}>https://github.com/mastermindx-market-intelligence/Macro/blob/480ae8eb4f0e82065c324b56058c6c6eb25674b0/research/design_candidates/crypto_snapshot_safety_20261109/README.md</span><br /><span style={{ fontFamily: 'ui-monospace, \"SFMono-Regular\", \"SF Mono\", \"Menlo\", \"Consolas\", \"Liberation Mono\", monospace', fontSize: '14px', lineHeight: '22px' }}>https://github.com/mastermindx-market-intelligence/Macro/pull/10901</span>"
+  },
+  "operations": {
+    "edit": {
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "operation_id": "paper-estate-cont-20261108-crypto-start-guide-20261109",
+      "tool": "set_text_content",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3F0NXNDPAKJMJGCAD759Z\",\n    \"name\": \"Crypto Intelligence · R4 References and Archive\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"updates\": [\n    {\n      \"nodeId\": \"3L7-0\"\n    },\n    {\n      \"nodeId\": \"3LF-0\"\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "before": {
+        "basic_info": {
+          "fileName": "Crypto Intelligence · R4 References and Archive",
+          "pageName": "Crypto Intelligence · R4 · Design References",
+          "pageId": "p-1-0",
+          "url": "https://app.paper.design/file/01M6Y3F0NXNDPAKJMJGCAD759Z/p-1-0",
+          "rootNodeId": "root_node_p-1-0",
+          "nodeCount": 1033,
+          "artboardCount": 8,
+          "artboards": [
+            {
+              "id": "1-0",
+              "name": "R4 · 01 · Crypto Overview · Light · EN",
+              "childCount": 7,
+              "width": 1440,
+              "height": 1401,
+              "worldX": -2240,
+              "worldY": -2598.5
+            },
+            {
+              "id": "4B-0",
+              "name": "R4 · 02 · Bitcoin · Light · EN",
+              "childCount": 7,
+              "width": 1440,
+              "height": 1387,
+              "worldX": -720,
+              "worldY": -2598.5
+            },
+            {
+              "id": "8E-0",
+              "name": "R4 · 03 · Markets · Light · EN",
+              "childCount": 5,
+              "width": 1440,
+              "height": 870,
+              "worldX": -2240,
+              "worldY": -1148.5
+            },
+            {
+              "id": "BB-0",
+              "name": "R4 · 04 · Scenarios · Light · EN",
+              "childCount": 6,
+              "width": 1440,
+              "height": 1197,
+              "worldX": -720,
+              "worldY": -1148.5
+            },
+            {
+              "id": "EF-0",
+              "name": "R4 · 05 · Evidence + Hover + Source States",
+              "childCount": 2,
+              "width": 1440,
+              "height": 873,
+              "worldX": -2240,
+              "worldY": 101.5
+            },
+            {
+              "id": "G5-0",
+              "name": "R4 · 06 · Scenario + Save + Alert Contract",
+              "childCount": 2,
+              "width": 1440,
+              "height": 861,
+              "worldX": -720,
+              "worldY": 101.5
+            },
+            {
+              "id": "HX-0",
+              "name": "R4 · 07 · Responsive Journey",
+              "childCount": 2,
+              "width": 1760,
+              "height": 1437,
+              "worldX": -2240,
+              "worldY": 1161.5
+            },
+            {
+              "id": "QI-0",
+              "name": "R4 · 08 · Build + State Scorecard",
+              "childCount": 3,
+              "width": 1440,
+              "height": 1200,
+              "worldX": 800,
+              "worldY": -2598.5
+            }
+          ],
+          "pages": [
+            {
+              "type": "page",
+              "id": "p-5-0",
+              "name": "00 · AGENT README · Read first",
+              "icon": "arrow",
+              "isActive": false
+            },
+            {
+              "type": "page",
+              "id": "p-1-0",
+              "name": "Crypto Intelligence · R4 · Design References",
+              "icon": "design",
+              "isActive": true
+            },
+            {
+              "type": "page",
+              "id": "p-4-0",
+              "name": "Saved cases · Candidate UI + results proposal",
+              "icon": "design",
+              "isActive": false
+            },
+            {
+              "type": "page",
+              "id": "p-3-0",
+              "name": "Asset readings · Candidate UI + receipt proposal",
+              "icon": "design",
+              "isActive": false
+            },
+            {
+              "type": "page",
+              "id": "p-2-0",
+              "name": "Archive · Crypto R1–R3 · Not for Build",
+              "icon": "paper",
+              "isActive": false
+            }
+          ],
+          "fontFamilies": [
+            "Inter",
+            "System Sans-Serif",
+            "System Monospace"
+          ],
+          "tokens": {
+            "items": [
+              {
+                "name": "--mx-dark-bg",
+                "value": "#0F1115"
+              },
+              {
+                "name": "--mx-dark-panel",
+                "value": "#181B21"
+              },
+              {
+                "name": "--mx-dark-panel2",
+                "value": "#1E222A"
+              },
+              {
+                "name": "--mx-dark-text",
+                "value": "#D7DCE3"
+              },
+              {
+                "name": "--mx-dark-muted",
+                "value": "#8B93A1"
+              },
+              {
+                "name": "--mx-dark-line",
+                "value": "#3A4150"
+              },
+              {
+                "name": "--mx-dark-up",
+                "value": "#45B873"
+              },
+              {
+                "name": "--mx-dark-down",
+                "value": "#E06464"
+              },
+              {
+                "name": "--mx-dark-warn",
+                "value": "#E0A030"
+              },
+              {
+                "name": "--mx-dark-act",
+                "value": "#E05555"
+              },
+              {
+                "name": "--mx-dark-ok",
+                "value": "#3DA564"
+              },
+              {
+                "name": "--mx-dark-info",
+                "value": "#5B9BF0"
+              },
+              {
+                "name": "--mx-dark-link",
+                "value": "#7AA7E0"
+              },
+              {
+                "name": "--mx-dark-orange",
+                "value": "#E08B45"
+              },
+              {
+                "name": "--mx-light-bg",
+                "value": "#F7F8FA"
+              },
+              {
+                "name": "--mx-light-panel",
+                "value": "#FFFFFF"
+              },
+              {
+                "name": "--mx-light-panel2",
+                "value": "#EEF1F6"
+              },
+              {
+                "name": "--mx-light-text",
+                "value": "#1C2430"
+              },
+              {
+                "name": "--mx-light-muted",
+                "value": "#5D6B7E"
+              },
+              {
+                "name": "--mx-light-line",
+                "value": "#C9CCD1"
+              },
+              {
+                "name": "--mx-light-up",
+                "value": "#1F9A55"
+              },
+              {
+                "name": "--mx-light-down",
+                "value": "#CF4040"
+              },
+              {
+                "name": "--mx-light-warn",
+                "value": "#B9791A"
+              },
+              {
+                "name": "--mx-light-act",
+                "value": "#C43D3D"
+              },
+              {
+                "name": "--mx-light-ok",
+                "value": "#2F8A52"
+              },
+              {
+                "name": "--mx-light-info",
+                "value": "#285FFF"
+              },
+              {
+                "name": "--mx-light-link",
+                "value": "#285FFF"
+              },
+              {
+                "name": "--mx-light-orange",
+                "value": "#C4781F"
+              },
+              {
+                "name": "--mx-dark-prov",
+                "value": "#62A0E8"
+              },
+              {
+                "name": "--mx-dark-prov-ink",
+                "value": "#62A0E8"
+              },
+              {
+                "name": "--mx-dark-tier-accent",
+                "value": "#7C5CFF"
+              },
+              {
+                "name": "--mx-dark-tier-fill",
+                "value": "#6340D8"
+              },
+              {
+                "name": "--mx-dark-tier-ink",
+                "value": "#9B86FF"
+              },
+              {
+                "name": "--mx-dark-ser-1",
+                "value": "#5B9BF0"
+              },
+              {
+                "name": "--mx-dark-ser-2",
+                "value": "#D4A017"
+              },
+              {
+                "name": "--mx-dark-ser-3",
+                "value": "#0EA5E9"
+              },
+              {
+                "name": "--mx-dark-ser-4",
+                "value": "#E08B45"
+              },
+              {
+                "name": "--mx-light-prov",
+                "value": "#2F6FD0"
+              },
+              {
+                "name": "--mx-light-prov-ink",
+                "value": "#2C62B3"
+              },
+              {
+                "name": "--mx-light-tier-accent",
+                "value": "#7C5CFF"
+              },
+              {
+                "name": "--mx-light-tier-fill",
+                "value": "#6340D8"
+              },
+              {
+                "name": "--mx-light-tier-ink",
+                "value": "#5B3FC4"
+              },
+              {
+                "name": "--mx-light-ser-1",
+                "value": "#2F63C4"
+              },
+              {
+                "name": "--mx-light-ser-2",
+                "value": "#8F6A04"
+              },
+              {
+                "name": "--mx-light-ser-3",
+                "value": "#0284C7"
+              },
+              {
+                "name": "--mx-light-ser-4",
+                "value": "#B06A25"
+              },
+              {
+                "name": "--mx-light-ink-up",
+                "value": "#1E6D47"
+              },
+              {
+                "name": "--mx-light-ink-down",
+                "value": "#B23C3D"
+              },
+              {
+                "name": "--mx-light-ink-warn",
+                "value": "#7D5922"
+              },
+              {
+                "name": "--mx-light-ink-link",
+                "value": "#2758E6"
+              },
+              {
+                "name": "--noir-canvas",
+                "value": "#080808"
+              },
+              {
+                "name": "--noir-sidebar",
+                "value": "#0C0C0C"
+              },
+              {
+                "name": "--noir-panel",
+                "value": "#121212"
+              },
+              {
+                "name": "--noir-raised",
+                "value": "#191919"
+              },
+              {
+                "name": "--noir-hover",
+                "value": "#222222"
+              },
+              {
+                "name": "--noir-selected",
+                "value": "#292929"
+              },
+              {
+                "name": "--noir-text-primary",
+                "value": "#F3F3F3"
+              },
+              {
+                "name": "--noir-text-secondary",
+                "value": "#B8B8B8"
+              },
+              {
+                "name": "--noir-text-tertiary",
+                "value": "#949494"
+              },
+              {
+                "name": "--noir-champagne",
+                "value": "#C9B99B"
+              },
+              {
+                "name": "--noir-sage",
+                "value": "#A8C2AD"
+              },
+              {
+                "name": "--noir-rose",
+                "value": "#DEA4A5"
+              },
+              {
+                "name": "--noir-steel",
+                "value": "#A7B4C2"
+              },
+              {
+                "name": "--noir-lilac",
+                "value": "#BDB2CE"
+              },
+              {
+                "name": "--market-canvas",
+                "value": "#0A0B0D"
+              },
+              {
+                "name": "--market-panel",
+                "value": "#111318"
+              },
+              {
+                "name": "--market-raised",
+                "value": "#181B20"
+              },
+              {
+                "name": "--market-line",
+                "value": "#2B3038"
+              },
+              {
+                "name": "--mx-dark-up-soft",
+                "value": "rgb(69 184 115 / 12%)"
+              },
+              {
+                "name": "--mx-dark-down-soft",
+                "value": "rgb(224 100 100 / 12%)"
+              },
+              {
+                "name": "--mx-dark-warn-soft",
+                "value": "rgb(224 160 48 / 12%)"
+              },
+              {
+                "name": "--mx-dark-info-soft",
+                "value": "rgb(91 155 240 / 12%)"
+              },
+              {
+                "name": "--mx-light-up-soft",
+                "value": "#EAF7EF"
+              },
+              {
+                "name": "--mx-light-down-soft",
+                "value": "#FCECED"
+              },
+              {
+                "name": "--mx-light-warn-soft",
+                "value": "#FFF4E2"
+              },
+              {
+                "name": "--mx-light-info-soft",
+                "value": "#EAF2FC"
+              },
+              {
+                "name": "--mx-light-scrim",
+                "value": "#1C243029"
+              },
+              {
+                "name": "--font-ui",
+                "value": "\"Inter\""
+              },
+              {
+                "name": "--fs-micro",
+                "value": "10px"
+              },
+              {
+                "name": "--fs-label",
+                "value": "11px"
+              },
+              {
+                "name": "--fs-sm",
+                "value": "12.5px"
+              },
+              {
+                "name": "--fs-body",
+                "value": "14px"
+              },
+              {
+                "name": "--fs-h3",
+                "value": "14px"
+              },
+              {
+                "name": "--fs-md",
+                "value": "15px"
+              },
+              {
+                "name": "--fs-h2",
+                "value": "17px"
+              },
+              {
+                "name": "--fs-num-lg",
+                "value": "22px"
+              },
+              {
+                "name": "--fs-h1",
+                "value": "28px"
+              },
+              {
+                "name": "--fs-num-xl",
+                "value": "38px"
+              },
+              {
+                "name": "--fs-display",
+                "value": "46px"
+              },
+              {
+                "name": "--fw-regular",
+                "value": "400"
+              },
+              {
+                "name": "--fw-medium",
+                "value": "500"
+              },
+              {
+                "name": "--fw-semibold",
+                "value": "600"
+              },
+              {
+                "name": "--fw-bold",
+                "value": "700"
+              },
+              {
+                "name": "--fw-extrabold",
+                "value": "800"
+              },
+              {
+                "name": "--bp-mobile",
+                "value": "390px"
+              },
+              {
+                "name": "--bp-tablet",
+                "value": "768px"
+              },
+              {
+                "name": "--bp-desktop",
+                "value": "1440px"
+              },
+              {
+                "name": "--sp-1",
+                "value": "4px"
+              },
+              {
+                "name": "--sp-2",
+                "value": "8px"
+              },
+              {
+                "name": "--sp-3",
+                "value": "12px"
+              },
+              {
+                "name": "--sp-4",
+                "value": "16px"
+              },
+              {
+                "name": "--sp-5",
+                "value": "20px"
+              },
+              {
+                "name": "--sp-6",
+                "value": "24px"
+              },
+              {
+                "name": "--sp-7",
+                "value": "32px"
+              },
+              {
+                "name": "--sp-8",
+                "value": "44px"
+              },
+              {
+                "name": "--r-ctl",
+                "value": "8px"
+              },
+              {
+                "name": "--r-btn",
+                "value": "10px"
+              },
+              {
+                "name": "--r-card",
+                "value": "12px"
+              },
+              {
+                "name": "--r-panel",
+                "value": "14px"
+              },
+              {
+                "name": "--r-pill",
+                "value": "999px"
+              }
+            ]
+          },
+          "fileId": "01M6Y3F0NXNDPAKJMJGCAD759Z",
+          "contentHash": {
+            "tokens": "6234666b"
+          }
+        },
+        "identity": {
+          "kind": "file-id",
+          "id": "01M6Y3F0NXNDPAKJMJGCAD759Z"
+        },
+        "snapshot_sha256": "b912c47c49e13dec127f97cabe52ad3daa65034cc791ecc5906f754f6ab9881c",
+        "write_binding_ready": true,
+        "binding_error": null
+      },
+      "after": {
+        "basic_info": {
+          "fileName": "Crypto Intelligence · R4 References and Archive",
+          "pageName": "Crypto Intelligence · R4 · Design References",
+          "pageId": "p-1-0",
+          "url": "https://app.paper.design/file/01M6Y3F0NXNDPAKJMJGCAD759Z/p-1-0",
+          "rootNodeId": "root_node_p-1-0",
+          "nodeCount": 1033,
+          "artboardCount": 8,
+          "artboards": [
+            {
+              "id": "1-0",
+              "name": "R4 · 01 · Crypto Overview · Light · EN",
+              "childCount": 7,
+              "width": 1440,
+              "height": 1401,
+              "worldX": -2240,
+              "worldY": -2598.5
+            },
+            {
+              "id": "4B-0",
+              "name": "R4 · 02 · Bitcoin · Light · EN",
+              "childCount": 7,
+              "width": 1440,
+              "height": 1387,
+              "worldX": -720,
+              "worldY": -2598.5
+            },
+            {
+              "id": "8E-0",
+              "name": "R4 · 03 · Markets · Light · EN",
+              "childCount": 5,
+              "width": 1440,
+              "height": 870,
+              "worldX": -2240,
+              "worldY": -1148.5
+            },
+            {
+              "id": "BB-0",
+              "name": "R4 · 04 · Scenarios · Light · EN",
+              "childCount": 6,
+              "width": 1440,
+              "height": 1197,
+              "worldX": -720,
+              "worldY": -1148.5
+            },
+            {
+              "id": "EF-0",
+              "name": "R4 · 05 · Evidence + Hover + Source States",
+              "childCount": 2,
+              "width": 1440,
+              "height": 873,
+              "worldX": -2240,
+              "worldY": 101.5
+            },
+            {
+              "id": "G5-0",
+              "name": "R4 · 06 · Scenario + Save + Alert Contract",
+              "childCount": 2,
+              "width": 1440,
+              "height": 861,
+              "worldX": -720,
+              "worldY": 101.5
+            },
+            {
+              "id": "HX-0",
+              "name": "R4 · 07 · Responsive Journey",
+              "childCount": 2,
+              "width": 1760,
+              "height": 1437,
+              "worldX": -2240,
+              "worldY": 1161.5
+            },
+            {
+              "id": "QI-0",
+              "name": "R4 · 08 · Build + State Scorecard",
+              "childCount": 3,
+              "width": 1440,
+              "height": 1200,
+              "worldX": 800,
+              "worldY": -2598.5
+            }
+          ],
+          "pages": [
+            {
+              "type": "page",
+              "id": "p-5-0",
+              "name": "00 · AGENT README · Read first",
+              "icon": "arrow",
+              "isActive": false
+            },
+            {
+              "type": "page",
+              "id": "p-1-0",
+              "name": "Crypto Intelligence · R4 · Design References",
+              "icon": "design",
+              "isActive": true
+            },
+            {
+              "type": "page",
+              "id": "p-4-0",
+              "name": "Saved cases · Candidate UI + results proposal",
+              "icon": "design",
+              "isActive": false
+            },
+            {
+              "type": "page",
+              "id": "p-3-0",
+              "name": "Asset readings · Candidate UI + receipt proposal",
+              "icon": "design",
+              "isActive": false
+            },
+            {
+              "type": "page",
+              "id": "p-2-0",
+              "name": "Archive · Crypto R1–R3 · Not for Build",
+              "icon": "paper",
+              "isActive": false
+            }
+          ],
+          "fontFamilies": [
+            "Inter",
+            "System Sans-Serif",
+            "System Monospace"
+          ],
+          "tokens": {
+            "items": [
+              {
+                "name": "--mx-dark-bg",
+                "value": "#0F1115"
+              },
+              {
+                "name": "--mx-dark-panel",
+                "value": "#181B21"
+              },
+              {
+                "name": "--mx-dark-panel2",
+                "value": "#1E222A"
+              },
+              {
+                "name": "--mx-dark-text",
+                "value": "#D7DCE3"
+              },
+              {
+                "name": "--mx-dark-muted",
+                "value": "#8B93A1"
+              },
+              {
+                "name": "--mx-dark-line",
+                "value": "#3A4150"
+              },
+              {
+                "name": "--mx-dark-up",
+                "value": "#45B873"
+              },
+              {
+                "name": "--mx-dark-down",
+                "value": "#E06464"
+              },
+              {
+                "name": "--mx-dark-warn",
+                "value": "#E0A030"
+              },
+              {
+                "name": "--mx-dark-act",
+                "value": "#E05555"
+              },
+              {
+                "name": "--mx-dark-ok",
+                "value": "#3DA564"
+              },
+              {
+                "name": "--mx-dark-info",
+                "value": "#5B9BF0"
+              },
+              {
+                "name": "--mx-dark-link",
+                "value": "#7AA7E0"
+              },
+              {
+                "name": "--mx-dark-orange",
+                "value": "#E08B45"
+              },
+              {
+                "name": "--mx-light-bg",
+                "value": "#F7F8FA"
+              },
+              {
+                "name": "--mx-light-panel",
+                "value": "#FFFFFF"
+              },
+              {
+                "name": "--mx-light-panel2",
+                "value": "#EEF1F6"
+              },
+              {
+                "name": "--mx-light-text",
+                "value": "#1C2430"
+              },
+              {
+                "name": "--mx-light-muted",
+                "value": "#5D6B7E"
+              },
+              {
+                "name": "--mx-light-line",
+                "value": "#C9CCD1"
+              },
+              {
+                "name": "--mx-light-up",
+                "value": "#1F9A55"
+              },
+              {
+                "name": "--mx-light-down",
+                "value": "#CF4040"
+              },
+              {
+                "name": "--mx-light-warn",
+                "value": "#B9791A"
+              },
+              {
+                "name": "--mx-light-act",
+                "value": "#C43D3D"
+              },
+              {
+                "name": "--mx-light-ok",
+                "value": "#2F8A52"
+              },
+              {
+                "name": "--mx-light-info",
+                "value": "#285FFF"
+              },
+              {
+                "name": "--mx-light-link",
+                "value": "#285FFF"
+              },
+              {
+                "name": "--mx-light-orange",
+                "value": "#C4781F"
+              },
+              {
+                "name": "--mx-dark-prov",
+                "value": "#62A0E8"
+              },
+              {
+                "name": "--mx-dark-prov-ink",
+                "value": "#62A0E8"
+              },
+              {
+                "name": "--mx-dark-tier-accent",
+                "value": "#7C5CFF"
+              },
+              {
+                "name": "--mx-dark-tier-fill",
+                "value": "#6340D8"
+              },
+              {
+                "name": "--mx-dark-tier-ink",
+                "value": "#9B86FF"
+              },
+              {
+                "name": "--mx-dark-ser-1",
+                "value": "#5B9BF0"
+              },
+              {
+                "name": "--mx-dark-ser-2",
+                "value": "#D4A017"
+              },
+              {
+                "name": "--mx-dark-ser-3",
+                "value": "#0EA5E9"
+              },
+              {
+                "name": "--mx-dark-ser-4",
+                "value": "#E08B45"
+              },
+              {
+                "name": "--mx-light-prov",
+                "value": "#2F6FD0"
+              },
+              {
+                "name": "--mx-light-prov-ink",
+                "value": "#2C62B3"
+              },
+              {
+                "name": "--mx-light-tier-accent",
+                "value": "#7C5CFF"
+              },
+              {
+                "name": "--mx-light-tier-fill",
+                "value": "#6340D8"
+              },
+              {
+                "name": "--mx-light-tier-ink",
+                "value": "#5B3FC4"
+              },
+              {
+                "name": "--mx-light-ser-1",
+                "value": "#2F63C4"
+              },
+              {
+                "name": "--mx-light-ser-2",
+                "value": "#8F6A04"
+              },
+              {
+                "name": "--mx-light-ser-3",
+                "value": "#0284C7"
+              },
+              {
+                "name": "--mx-light-ser-4",
+                "value": "#B06A25"
+              },
+              {
+                "name": "--mx-light-ink-up",
+                "value": "#1E6D47"
+              },
+              {
+                "name": "--mx-light-ink-down",
+                "value": "#B23C3D"
+              },
+              {
+                "name": "--mx-light-ink-warn",
+                "value": "#7D5922"
+              },
+              {
+                "name": "--mx-light-ink-link",
+                "value": "#2758E6"
+              },
+              {
+                "name": "--noir-canvas",
+                "value": "#080808"
+              },
+              {
+                "name": "--noir-sidebar",
+                "value": "#0C0C0C"
+              },
+              {
+                "name": "--noir-panel",
+                "value": "#121212"
+              },
+              {
+                "name": "--noir-raised",
+                "value": "#191919"
+              },
+              {
+                "name": "--noir-hover",
+                "value": "#222222"
+              },
+              {
+                "name": "--noir-selected",
+                "value": "#292929"
+              },
+              {
+                "name": "--noir-text-primary",
+                "value": "#F3F3F3"
+              },
+              {
+                "name": "--noir-text-secondary",
+                "value": "#B8B8B8"
+              },
+              {
+                "name": "--noir-text-tertiary",
+                "value": "#949494"
+              },
+              {
+                "name": "--noir-champagne",
+                "value": "#C9B99B"
+              },
+              {
+                "name": "--noir-sage",
+                "value": "#A8C2AD"
+              },
+              {
+                "name": "--noir-rose",
+                "value": "#DEA4A5"
+              },
+              {
+                "name": "--noir-steel",
+                "value": "#A7B4C2"
+              },
+              {
+                "name": "--noir-lilac",
+                "value": "#BDB2CE"
+              },
+              {
+                "name": "--market-canvas",
+                "value": "#0A0B0D"
+              },
+              {
+                "name": "--market-panel",
+                "value": "#111318"
+              },
+              {
+                "name": "--market-raised",
+                "value": "#181B20"
+              },
+              {
+                "name": "--market-line",
+                "value": "#2B3038"
+              },
+              {
+                "name": "--mx-dark-up-soft",
+                "value": "rgb(69 184 115 / 12%)"
+              },
+              {
+                "name": "--mx-dark-down-soft",
+                "value": "rgb(224 100 100 / 12%)"
+              },
+              {
+                "name": "--mx-dark-warn-soft",
+                "value": "rgb(224 160 48 / 12%)"
+              },
+              {
+                "name": "--mx-dark-info-soft",
+                "value": "rgb(91 155 240 / 12%)"
+              },
+              {
+                "name": "--mx-light-up-soft",
+                "value": "#EAF7EF"
+              },
+              {
+                "name": "--mx-light-down-soft",
+                "value": "#FCECED"
+              },
+              {
+                "name": "--mx-light-warn-soft",
+                "value": "#FFF4E2"
+              },
+              {
+                "name": "--mx-light-info-soft",
+                "value": "#EAF2FC"
+              },
+              {
+                "name": "--mx-light-scrim",
+                "value": "#1C243029"
+              },
+              {
+                "name": "--font-ui",
+                "value": "\"Inter\""
+              },
+              {
+                "name": "--fs-micro",
+                "value": "10px"
+              },
+              {
+                "name": "--fs-label",
+                "value": "11px"
+              },
+              {
+                "name": "--fs-sm",
+                "value": "12.5px"
+              },
+              {
+                "name": "--fs-body",
+                "value": "14px"
+              },
+              {
+                "name": "--fs-h3",
+                "value": "14px"
+              },
+              {
+                "name": "--fs-md",
+                "value": "15px"
+              },
+              {
+                "name": "--fs-h2",
+                "value": "17px"
+              },
+              {
+                "name": "--fs-num-lg",
+                "value": "22px"
+              },
+              {
+                "name": "--fs-h1",
+                "value": "28px"
+              },
+              {
+                "name": "--fs-num-xl",
+                "value": "38px"
+              },
+              {
+                "name": "--fs-display",
+                "value": "46px"
+              },
+              {
+                "name": "--fw-regular",
+                "value": "400"
+              },
+              {
+                "name": "--fw-medium",
+                "value": "500"
+              },
+              {
+                "name": "--fw-semibold",
+                "value": "600"
+              },
+              {
+                "name": "--fw-bold",
+                "value": "700"
+              },
+              {
+                "name": "--fw-extrabold",
+                "value": "800"
+              },
+              {
+                "name": "--bp-mobile",
+                "value": "390px"
+              },
+              {
+                "name": "--bp-tablet",
+                "value": "768px"
+              },
+              {
+                "name": "--bp-desktop",
+                "value": "1440px"
+              },
+              {
+                "name": "--sp-1",
+                "value": "4px"
+              },
+              {
+                "name": "--sp-2",
+                "value": "8px"
+              },
+              {
+                "name": "--sp-3",
+                "value": "12px"
+              },
+              {
+                "name": "--sp-4",
+                "value": "16px"
+              },
+              {
+                "name": "--sp-5",
+                "value": "20px"
+              },
+              {
+                "name": "--sp-6",
+                "value": "24px"
+              },
+              {
+                "name": "--sp-7",
+                "value": "32px"
+              },
+              {
+                "name": "--sp-8",
+                "value": "44px"
+              },
+              {
+                "name": "--r-ctl",
+                "value": "8px"
+              },
+              {
+                "name": "--r-btn",
+                "value": "10px"
+              },
+              {
+                "name": "--r-card",
+                "value": "12px"
+              },
+              {
+                "name": "--r-panel",
+                "value": "14px"
+              },
+              {
+                "name": "--r-pill",
+                "value": "999px"
+              }
+            ]
+          },
+          "fileId": "01M6Y3F0NXNDPAKJMJGCAD759Z",
+          "contentHash": {
+            "tokens": "6234666b"
+          }
+        },
+        "identity": {
+          "kind": "file-id",
+          "id": "01M6Y3F0NXNDPAKJMJGCAD759Z"
+        },
+        "snapshot_sha256": "b912c47c49e13dec127f97cabe52ad3daa65034cc791ecc5906f754f6ab9881c",
+        "write_binding_ready": true,
+        "binding_error": null
+      },
+      "retry_allowed": false,
+      "production_acceptance": false
+    },
+    "finish": {
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "operation_id": "paper-estate-cont-20261108-crypto-start-guide-finish-20261109",
+      "tool": "finish_working_on_nodes",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3F0NXNDPAKJMJGCAD759Z\",\n    \"name\": \"Crypto Intelligence · R4 References and Archive\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "OK"
+          }
+        ]
+      },
+      "before": {
+        "basic_info": {
+          "fileName": "Crypto Intelligence · R4 References and Archive",
+          "pageName": "Crypto Intelligence · R4 · Design References",
+          "pageId": "p-1-0",
+          "url": "https://app.paper.design/file/01M6Y3F0NXNDPAKJMJGCAD759Z/p-1-0",
+          "rootNodeId": "root_node_p-1-0",
+          "nodeCount": 1033,
+          "artboardCount": 8,
+          "artboards": [
+            {
+              "id": "1-0",
+              "name": "R4 · 01 · Crypto Overview · Light · EN",
+              "childCount": 7,
+              "width": 1440,
+              "height": 1401,
+              "worldX": -2240,
+              "worldY": -2598.5
+            },
+            {
+              "id": "4B-0",
+              "name": "R4 · 02 · Bitcoin · Light · EN",
+              "childCount": 7,
+              "width": 1440,
+              "height": 1387,
+              "worldX": -720,
+              "worldY": -2598.5
+            },
+            {
+              "id": "8E-0",
+              "name": "R4 · 03 · Markets · Light · EN",
+              "childCount": 5,
+              "width": 1440,
+              "height": 870,
+              "worldX": -2240,
+              "worldY": -1148.5
+            },
+            {
+              "id": "BB-0",
+              "name": "R4 · 04 · Scenarios · Light · EN",
+              "childCount": 6,
+              "width": 1440,
+              "height": 1197,
+              "worldX": -720,
+              "worldY": -1148.5
+            },
+            {
+              "id": "EF-0",
+              "name": "R4 · 05 · Evidence + Hover + Source States",
+              "childCount": 2,
+              "width": 1440,
+              "height": 873,
+              "worldX": -2240,
+              "worldY": 101.5
+            },
+            {
+              "id": "G5-0",
+              "name": "R4 · 06 · Scenario + Save + Alert Contract",
+              "childCount": 2,
+              "width": 1440,
+              "height": 861,
+              "worldX": -720,
+              "worldY": 101.5
+            },
+            {
+              "id": "HX-0",
+              "name": "R4 · 07 · Responsive Journey",
+              "childCount": 2,
+              "width": 1760,
+              "height": 1437,
+              "worldX": -2240,
+              "worldY": 1161.5
+            },
+            {
+              "id": "QI-0",
+              "name": "R4 · 08 · Build + State Scorecard",
+              "childCount": 3,
+              "width": 1440,
+              "height": 1200,
+              "worldX": 800,
+              "worldY": -2598.5
+            }
+          ],
+          "pages": [
+            {
+              "type": "page",
+              "id": "p-5-0",
+              "name": "00 · AGENT README · Read first",
+              "icon": "arrow",
+              "isActive": false
+            },
+            {
+              "type": "page",
+              "id": "p-1-0",
+              "name": "Crypto Intelligence · R4 · Design References",
+              "icon": "design",
+              "isActive": true
+            },
+            {
+              "type": "page",
+              "id": "p-4-0",
+              "name": "Saved cases · Candidate UI + results proposal",
+              "icon": "design",
+              "isActive": false
+            },
+            {
+              "type": "page",
+              "id": "p-3-0",
+              "name": "Asset readings · Candidate UI + receipt proposal",
+              "icon": "design",
+              "isActive": false
+            },
+            {
+              "type": "page",
+              "id": "p-2-0",
+              "name": "Archive · Crypto R1–R3 · Not for Build",
+              "icon": "paper",
+              "isActive": false
+            }
+          ],
+          "fontFamilies": [
+            "Inter",
+            "System Sans-Serif",
+            "System Monospace"
+          ],
+          "tokens": {
+            "items": [
+              {
+                "name": "--mx-dark-bg",
+                "value": "#0F1115"
+              },
+              {
+                "name": "--mx-dark-panel",
+                "value": "#181B21"
+              },
+              {
+                "name": "--mx-dark-panel2",
+                "value": "#1E222A"
+              },
+              {
+                "name": "--mx-dark-text",
+                "value": "#D7DCE3"
+              },
+              {
+                "name": "--mx-dark-muted",
+                "value": "#8B93A1"
+              },
+              {
+                "name": "--mx-dark-line",
+                "value": "#3A4150"
+              },
+              {
+                "name": "--mx-dark-up",
+                "value": "#45B873"
+              },
+              {
+                "name": "--mx-dark-down",
+                "value": "#E06464"
+              },
+              {
+                "name": "--mx-dark-warn",
+                "value": "#E0A030"
+              },
+              {
+                "name": "--mx-dark-act",
+                "value": "#E05555"
+              },
+              {
+                "name": "--mx-dark-ok",
+                "value": "#3DA564"
+              },
+              {
+                "name": "--mx-dark-info",
+                "value": "#5B9BF0"
+              },
+              {
+                "name": "--mx-dark-link",
+                "value": "#7AA7E0"
+              },
+              {
+                "name": "--mx-dark-orange",
+                "value": "#E08B45"
+              },
+              {
+                "name": "--mx-light-bg",
+                "value": "#F7F8FA"
+              },
+              {
+                "name": "--mx-light-panel",
+                "value": "#FFFFFF"
+              },
+              {
+                "name": "--mx-light-panel2",
+                "value": "#EEF1F6"
+              },
+              {
+                "name": "--mx-light-text",
+                "value": "#1C2430"
+              },
+              {
+                "name": "--mx-light-muted",
+                "value": "#5D6B7E"
+              },
+              {
+                "name": "--mx-light-line",
+                "value": "#C9CCD1"
+              },
+              {
+                "name": "--mx-light-up",
+                "value": "#1F9A55"
+              },
+              {
+                "name": "--mx-light-down",
+                "value": "#CF4040"
+              },
+              {
+                "name": "--mx-light-warn",
+                "value": "#B9791A"
+              },
+              {
+                "name": "--mx-light-act",
+                "value": "#C43D3D"
+              },
+              {
+                "name": "--mx-light-ok",
+                "value": "#2F8A52"
+              },
+              {
+                "name": "--mx-light-info",
+                "value": "#285FFF"
+              },
+              {
+                "name": "--mx-light-link",
+                "value": "#285FFF"
+              },
+              {
+                "name": "--mx-light-orange",
+                "value": "#C4781F"
+              },
+              {
+                "name": "--mx-dark-prov",
+                "value": "#62A0E8"
+              },
+              {
+                "name": "--mx-dark-prov-ink",
+                "value": "#62A0E8"
+              },
+              {
+                "name": "--mx-dark-tier-accent",
+                "value": "#7C5CFF"
+              },
+              {
+                "name": "--mx-dark-tier-fill",
+                "value": "#6340D8"
+              },
+              {
+                "name": "--mx-dark-tier-ink",
+                "value": "#9B86FF"
+              },
+              {
+                "name": "--mx-dark-ser-1",
+                "value": "#5B9BF0"
+              },
+              {
+                "name": "--mx-dark-ser-2",
+                "value": "#D4A017"
+              },
+              {
+                "name": "--mx-dark-ser-3",
+                "value": "#0EA5E9"
+              },
+              {
+                "name": "--mx-dark-ser-4",
+                "value": "#E08B45"
+              },
+              {
+                "name": "--mx-light-prov",
+                "value": "#2F6FD0"
+              },
+              {
+                "name": "--mx-light-prov-ink",
+                "value": "#2C62B3"
+              },
+              {
+                "name": "--mx-light-tier-accent",
+                "value": "#7C5CFF"
+              },
+              {
+                "name": "--mx-light-tier-fill",
+                "value": "#6340D8"
+              },
+              {
+                "name": "--mx-light-tier-ink",
+                "value": "#5B3FC4"
+              },
+              {
+                "name": "--mx-light-ser-1",
+                "value": "#2F63C4"
+              },
+              {
+                "name": "--mx-light-ser-2",
+                "value": "#8F6A04"
+              },
+              {
+                "name": "--mx-light-ser-3",
+                "value": "#0284C7"
+              },
+              {
+                "name": "--mx-light-ser-4",
+                "value": "#B06A25"
+              },
+              {
+                "name": "--mx-light-ink-up",
+                "value": "#1E6D47"
+              },
+              {
+                "name": "--mx-light-ink-down",
+                "value": "#B23C3D"
+              },
+              {
+                "name": "--mx-light-ink-warn",
+                "value": "#7D5922"
+              },
+              {
+                "name": "--mx-light-ink-link",
+                "value": "#2758E6"
+              },
+              {
+                "name": "--noir-canvas",
+                "value": "#080808"
+              },
+              {
+                "name": "--noir-sidebar",
+                "value": "#0C0C0C"
+              },
+              {
+                "name": "--noir-panel",
+                "value": "#121212"
+              },
+              {
+                "name": "--noir-raised",
+                "value": "#191919"
+              },
+              {
+                "name": "--noir-hover",
+                "value": "#222222"
+              },
+              {
+                "name": "--noir-selected",
+                "value": "#292929"
+              },
+              {
+                "name": "--noir-text-primary",
+                "value": "#F3F3F3"
+              },
+              {
+                "name": "--noir-text-secondary",
+                "value": "#B8B8B8"
+              },
+              {
+                "name": "--noir-text-tertiary",
+                "value": "#949494"
+              },
+              {
+                "name": "--noir-champagne",
+                "value": "#C9B99B"
+              },
+              {
+                "name": "--noir-sage",
+                "value": "#A8C2AD"
+              },
+              {
+                "name": "--noir-rose",
+                "value": "#DEA4A5"
+              },
+              {
+                "name": "--noir-steel",
+                "value": "#A7B4C2"
+              },
+              {
+                "name": "--noir-lilac",
+                "value": "#BDB2CE"
+              },
+              {
+                "name": "--market-canvas",
+                "value": "#0A0B0D"
+              },
+              {
+                "name": "--market-panel",
+                "value": "#111318"
+              },
+              {
+                "name": "--market-raised",
+                "value": "#181B20"
+              },
+              {
+                "name": "--market-line",
+                "value": "#2B3038"
+              },
+              {
+                "name": "--mx-dark-up-soft",
+                "value": "rgb(69 184 115 / 12%)"
+              },
+              {
+                "name": "--mx-dark-down-soft",
+                "value": "rgb(224 100 100 / 12%)"
+              },
+              {
+                "name": "--mx-dark-warn-soft",
+                "value": "rgb(224 160 48 / 12%)"
+              },
+              {
+                "name": "--mx-dark-info-soft",
+                "value": "rgb(91 155 240 / 12%)"
+              },
+              {
+                "name": "--mx-light-up-soft",
+                "value": "#EAF7EF"
+              },
+              {
+                "name": "--mx-light-down-soft",
+                "value": "#FCECED"
+              },
+              {
+                "name": "--mx-light-warn-soft",
+                "value": "#FFF4E2"
+              },
+              {
+                "name": "--mx-light-info-soft",
+                "value": "#EAF2FC"
+              },
+              {
+                "name": "--mx-light-scrim",
+                "value": "#1C243029"
+              },
+              {
+                "name": "--font-ui",
+                "value": "\"Inter\""
+              },
+              {
+                "name": "--fs-micro",
+                "value": "10px"
+              },
+              {
+                "name": "--fs-label",
+                "value": "11px"
+              },
+              {
+                "name": "--fs-sm",
+                "value": "12.5px"
+              },
+              {
+                "name": "--fs-body",
+                "value": "14px"
+              },
+              {
+                "name": "--fs-h3",
+                "value": "14px"
+              },
+              {
+                "name": "--fs-md",
+                "value": "15px"
+              },
+              {
+                "name": "--fs-h2",
+                "value": "17px"
+              },
+              {
+                "name": "--fs-num-lg",
+                "value": "22px"
+              },
+              {
+                "name": "--fs-h1",
+                "value": "28px"
+              },
+              {
+                "name": "--fs-num-xl",
+                "value": "38px"
+              },
+              {
+                "name": "--fs-display",
+                "value": "46px"
+              },
+              {
+                "name": "--fw-regular",
+                "value": "400"
+              },
+              {
+                "name": "--fw-medium",
+                "value": "500"
+              },
+              {
+                "name": "--fw-semibold",
+                "value": "600"
+              },
+              {
+                "name": "--fw-bold",
+                "value": "700"
+              },
+              {
+                "name": "--fw-extrabold",
+                "value": "800"
+              },
+              {
+                "name": "--bp-mobile",
+                "value": "390px"
+              },
+              {
+                "name": "--bp-tablet",
+                "value": "768px"
+              },
+              {
+                "name": "--bp-desktop",
+                "value": "1440px"
+              },
+              {
+                "name": "--sp-1",
+                "value": "4px"
+              },
+              {
+                "name": "--sp-2",
+                "value": "8px"
+              },
+              {
+                "name": "--sp-3",
+                "value": "12px"
+              },
+              {
+                "name": "--sp-4",
+                "value": "16px"
+              },
+              {
+                "name": "--sp-5",
+                "value": "20px"
+              },
+              {
+                "name": "--sp-6",
+                "value": "24px"
+              },
+              {
+                "name": "--sp-7",
+                "value": "32px"
+              },
+              {
+                "name": "--sp-8",
+                "value": "44px"
+              },
+              {
+                "name": "--r-ctl",
+                "value": "8px"
+              },
+              {
+                "name": "--r-btn",
+                "value": "10px"
+              },
+              {
+                "name": "--r-card",
+                "value": "12px"
+              },
+              {
+                "name": "--r-panel",
+                "value": "14px"
+              },
+              {
+                "name": "--r-pill",
+                "value": "999px"
+              }
+            ]
+          },
+          "fileId": "01M6Y3F0NXNDPAKJMJGCAD759Z",
+          "contentHash": {
+            "tokens": "6234666b"
+          }
+        },
+        "identity": {
+          "kind": "file-id",
+          "id": "01M6Y3F0NXNDPAKJMJGCAD759Z"
+        },
+        "snapshot_sha256": "b912c47c49e13dec127f97cabe52ad3daa65034cc791ecc5906f754f6ab9881c",
+        "write_binding_ready": true,
+        "binding_error": null
+      },
+      "after": {
+        "basic_info": {
+          "fileName": "Crypto Intelligence · R4 References and Archive",
+          "pageName": "Crypto Intelligence · R4 · Design References",
+          "pageId": "p-1-0",
+          "url": "https://app.paper.design/file/01M6Y3F0NXNDPAKJMJGCAD759Z/p-1-0",
+          "rootNodeId": "root_node_p-1-0",
+          "nodeCount": 1033,
+          "artboardCount": 8,
+          "artboards": [
+            {
+              "id": "1-0",
+              "name": "R4 · 01 · Crypto Overview · Light · EN",
+              "childCount": 7,
+              "width": 1440,
+              "height": 1401,
+              "worldX": -2240,
+              "worldY": -2598.5
+            },
+            {
+              "id": "4B-0",
+              "name": "R4 · 02 · Bitcoin · Light · EN",
+              "childCount": 7,
+              "width": 1440,
+              "height": 1387,
+              "worldX": -720,
+              "worldY": -2598.5
+            },
+            {
+              "id": "8E-0",
+              "name": "R4 · 03 · Markets · Light · EN",
+              "childCount": 5,
+              "width": 1440,
+              "height": 870,
+              "worldX": -2240,
+              "worldY": -1148.5
+            },
+            {
+              "id": "BB-0",
+              "name": "R4 · 04 · Scenarios · Light · EN",
+              "childCount": 6,
+              "width": 1440,
+              "height": 1197,
+              "worldX": -720,
+              "worldY": -1148.5
+            },
+            {
+              "id": "EF-0",
+              "name": "R4 · 05 · Evidence + Hover + Source States",
+              "childCount": 2,
+              "width": 1440,
+              "height": 873,
+              "worldX": -2240,
+              "worldY": 101.5
+            },
+            {
+              "id": "G5-0",
+              "name": "R4 · 06 · Scenario + Save + Alert Contract",
+              "childCount": 2,
+              "width": 1440,
+              "height": 861,
+              "worldX": -720,
+              "worldY": 101.5
+            },
+            {
+              "id": "HX-0",
+              "name": "R4 · 07 · Responsive Journey",
+              "childCount": 2,
+              "width": 1760,
+              "height": 1437,
+              "worldX": -2240,
+              "worldY": 1161.5
+            },
+            {
+              "id": "QI-0",
+              "name": "R4 · 08 · Build + State Scorecard",
+              "childCount": 3,
+              "width": 1440,
+              "height": 1200,
+              "worldX": 800,
+              "worldY": -2598.5
+            }
+          ],
+          "pages": [
+            {
+              "type": "page",
+              "id": "p-5-0",
+              "name": "00 · AGENT README · Read first",
+              "icon": "arrow",
+              "isActive": false
+            },
+            {
+              "type": "page",
+              "id": "p-1-0",
+              "name": "Crypto Intelligence · R4 · Design References",
+              "icon": "design",
+              "isActive": true
+            },
+            {
+              "type": "page",
+              "id": "p-4-0",
+              "name": "Saved cases · Candidate UI + results proposal",
+              "icon": "design",
+              "isActive": false
+            },
+            {
+              "type": "page",
+              "id": "p-3-0",
+              "name": "Asset readings · Candidate UI + receipt proposal",
+              "icon": "design",
+              "isActive": false
+            },
+            {
+              "type": "page",
+              "id": "p-2-0",
+              "name": "Archive · Crypto R1–R3 · Not for Build",
+              "icon": "paper",
+              "isActive": false
+            }
+          ],
+          "fontFamilies": [
+            "Inter",
+            "System Sans-Serif",
+            "System Monospace"
+          ],
+          "tokens": {
+            "items": [
+              {
+                "name": "--mx-dark-bg",
+                "value": "#0F1115"
+              },
+              {
+                "name": "--mx-dark-panel",
+                "value": "#181B21"
+              },
+              {
+                "name": "--mx-dark-panel2",
+                "value": "#1E222A"
+              },
+              {
+                "name": "--mx-dark-text",
+                "value": "#D7DCE3"
+              },
+              {
+                "name": "--mx-dark-muted",
+                "value": "#8B93A1"
+              },
+              {
+                "name": "--mx-dark-line",
+                "value": "#3A4150"
+              },
+              {
+                "name": "--mx-dark-up",
+                "value": "#45B873"
+              },
+              {
+                "name": "--mx-dark-down",
+                "value": "#E06464"
+              },
+              {
+                "name": "--mx-dark-warn",
+                "value": "#E0A030"
+              },
+              {
+                "name": "--mx-dark-act",
+                "value": "#E05555"
+              },
+              {
+                "name": "--mx-dark-ok",
+                "value": "#3DA564"
+              },
+              {
+                "name": "--mx-dark-info",
+                "value": "#5B9BF0"
+              },
+              {
+                "name": "--mx-dark-link",
+                "value": "#7AA7E0"
+              },
+              {
+                "name": "--mx-dark-orange",
+                "value": "#E08B45"
+              },
+              {
+                "name": "--mx-light-bg",
+                "value": "#F7F8FA"
+              },
+              {
+                "name": "--mx-light-panel",
+                "value": "#FFFFFF"
+              },
+              {
+                "name": "--mx-light-panel2",
+                "value": "#EEF1F6"
+              },
+              {
+                "name": "--mx-light-text",
+                "value": "#1C2430"
+              },
+              {
+                "name": "--mx-light-muted",
+                "value": "#5D6B7E"
+              },
+              {
+                "name": "--mx-light-line",
+                "value": "#C9CCD1"
+              },
+              {
+                "name": "--mx-light-up",
+                "value": "#1F9A55"
+              },
+              {
+                "name": "--mx-light-down",
+                "value": "#CF4040"
+              },
+              {
+                "name": "--mx-light-warn",
+                "value": "#B9791A"
+              },
+              {
+                "name": "--mx-light-act",
+                "value": "#C43D3D"
+              },
+              {
+                "name": "--mx-light-ok",
+                "value": "#2F8A52"
+              },
+              {
+                "name": "--mx-light-info",
+                "value": "#285FFF"
+              },
+              {
+                "name": "--mx-light-link",
+                "value": "#285FFF"
+              },
+              {
+                "name": "--mx-light-orange",
+                "value": "#C4781F"
+              },
+              {
+                "name": "--mx-dark-prov",
+                "value": "#62A0E8"
+              },
+              {
+                "name": "--mx-dark-prov-ink",
+                "value": "#62A0E8"
+              },
+              {
+                "name": "--mx-dark-tier-accent",
+                "value": "#7C5CFF"
+              },
+              {
+                "name": "--mx-dark-tier-fill",
+                "value": "#6340D8"
+              },
+              {
+                "name": "--mx-dark-tier-ink",
+                "value": "#9B86FF"
+              },
+              {
+                "name": "--mx-dark-ser-1",
+                "value": "#5B9BF0"
+              },
+              {
+                "name": "--mx-dark-ser-2",
+                "value": "#D4A017"
+              },
+              {
+                "name": "--mx-dark-ser-3",
+                "value": "#0EA5E9"
+              },
+              {
+                "name": "--mx-dark-ser-4",
+                "value": "#E08B45"
+              },
+              {
+                "name": "--mx-light-prov",
+                "value": "#2F6FD0"
+              },
+              {
+                "name": "--mx-light-prov-ink",
+                "value": "#2C62B3"
+              },
+              {
+                "name": "--mx-light-tier-accent",
+                "value": "#7C5CFF"
+              },
+              {
+                "name": "--mx-light-tier-fill",
+                "value": "#6340D8"
+              },
+              {
+                "name": "--mx-light-tier-ink",
+                "value": "#5B3FC4"
+              },
+              {
+                "name": "--mx-light-ser-1",
+                "value": "#2F63C4"
+              },
+              {
+                "name": "--mx-light-ser-2",
+                "value": "#8F6A04"
+              },
+              {
+                "name": "--mx-light-ser-3",
+                "value": "#0284C7"
+              },
+              {
+                "name": "--mx-light-ser-4",
+                "value": "#B06A25"
+              },
+              {
+                "name": "--mx-light-ink-up",
+                "value": "#1E6D47"
+              },
+              {
+                "name": "--mx-light-ink-down",
+                "value": "#B23C3D"
+              },
+              {
+                "name": "--mx-light-ink-warn",
+                "value": "#7D5922"
+              },
+              {
+                "name": "--mx-light-ink-link",
+                "value": "#2758E6"
+              },
+              {
+                "name": "--noir-canvas",
+                "value": "#080808"
+              },
+              {
+                "name": "--noir-sidebar",
+                "value": "#0C0C0C"
+              },
+              {
+                "name": "--noir-panel",
+                "value": "#121212"
+              },
+              {
+                "name": "--noir-raised",
+                "value": "#191919"
+              },
+              {
+                "name": "--noir-hover",
+                "value": "#222222"
+              },
+              {
+                "name": "--noir-selected",
+                "value": "#292929"
+              },
+              {
+                "name": "--noir-text-primary",
+                "value": "#F3F3F3"
+              },
+              {
+                "name": "--noir-text-secondary",
+                "value": "#B8B8B8"
+              },
+              {
+                "name": "--noir-text-tertiary",
+                "value": "#949494"
+              },
+              {
+                "name": "--noir-champagne",
+                "value": "#C9B99B"
+              },
+              {
+                "name": "--noir-sage",
+                "value": "#A8C2AD"
+              },
+              {
+                "name": "--noir-rose",
+                "value": "#DEA4A5"
+              },
+              {
+                "name": "--noir-steel",
+                "value": "#A7B4C2"
+              },
+              {
+                "name": "--noir-lilac",
+                "value": "#BDB2CE"
+              },
+              {
+                "name": "--market-canvas",
+                "value": "#0A0B0D"
+              },
+              {
+                "name": "--market-panel",
+                "value": "#111318"
+              },
+              {
+                "name": "--market-raised",
+                "value": "#181B20"
+              },
+              {
+                "name": "--market-line",
+                "value": "#2B3038"
+              },
+              {
+                "name": "--mx-dark-up-soft",
+                "value": "rgb(69 184 115 / 12%)"
+              },
+              {
+                "name": "--mx-dark-down-soft",
+                "value": "rgb(224 100 100 / 12%)"
+              },
+              {
+                "name": "--mx-dark-warn-soft",
+                "value": "rgb(224 160 48 / 12%)"
+              },
+              {
+                "name": "--mx-dark-info-soft",
+                "value": "rgb(91 155 240 / 12%)"
+              },
+              {
+                "name": "--mx-light-up-soft",
+                "value": "#EAF7EF"
+              },
+              {
+                "name": "--mx-light-down-soft",
+                "value": "#FCECED"
+              },
+              {
+                "name": "--mx-light-warn-soft",
+                "value": "#FFF4E2"
+              },
+              {
+                "name": "--mx-light-info-soft",
+                "value": "#EAF2FC"
+              },
+              {
+                "name": "--mx-light-scrim",
+                "value": "#1C243029"
+              },
+              {
+                "name": "--font-ui",
+                "value": "\"Inter\""
+              },
+              {
+                "name": "--fs-micro",
+                "value": "10px"
+              },
+              {
+                "name": "--fs-label",
+                "value": "11px"
+              },
+              {
+                "name": "--fs-sm",
+                "value": "12.5px"
+              },
+              {
+                "name": "--fs-body",
+                "value": "14px"
+              },
+              {
+                "name": "--fs-h3",
+                "value": "14px"
+              },
+              {
+                "name": "--fs-md",
+                "value": "15px"
+              },
+              {
+                "name": "--fs-h2",
+                "value": "17px"
+              },
+              {
+                "name": "--fs-num-lg",
+                "value": "22px"
+              },
+              {
+                "name": "--fs-h1",
+                "value": "28px"
+              },
+              {
+                "name": "--fs-num-xl",
+                "value": "38px"
+              },
+              {
+                "name": "--fs-display",
+                "value": "46px"
+              },
+              {
+                "name": "--fw-regular",
+                "value": "400"
+              },
+              {
+                "name": "--fw-medium",
+                "value": "500"
+              },
+              {
+                "name": "--fw-semibold",
+                "value": "600"
+              },
+              {
+                "name": "--fw-bold",
+                "value": "700"
+              },
+              {
+                "name": "--fw-extrabold",
+                "value": "800"
+              },
+              {
+                "name": "--bp-mobile",
+                "value": "390px"
+              },
+              {
+                "name": "--bp-tablet",
+                "value": "768px"
+              },
+              {
+                "name": "--bp-desktop",
+                "value": "1440px"
+              },
+              {
+                "name": "--sp-1",
+                "value": "4px"
+              },
+              {
+                "name": "--sp-2",
+                "value": "8px"
+              },
+              {
+                "name": "--sp-3",
+                "value": "12px"
+              },
+              {
+                "name": "--sp-4",
+                "value": "16px"
+              },
+              {
+                "name": "--sp-5",
+                "value": "20px"
+              },
+              {
+                "name": "--sp-6",
+                "value": "24px"
+              },
+              {
+                "name": "--sp-7",
+                "value": "32px"
+              },
+              {
+                "name": "--sp-8",
+                "value": "44px"
+              },
+              {
+                "name": "--r-ctl",
+                "value": "8px"
+              },
+              {
+                "name": "--r-btn",
+                "value": "10px"
+              },
+              {
+                "name": "--r-card",
+                "value": "12px"
+              },
+              {
+                "name": "--r-panel",
+                "value": "14px"
+              },
+              {
+                "name": "--r-pill",
+                "value": "999px"
+              }
+            ]
+          },
+          "fileId": "01M6Y3F0NXNDPAKJMJGCAD759Z",
+          "contentHash": {
+            "tokens": "6234666b"
+          }
+        },
+        "identity": {
+          "kind": "file-id",
+          "id": "01M6Y3F0NXNDPAKJMJGCAD759Z"
+        },
+        "snapshot_sha256": "b912c47c49e13dec127f97cabe52ad3daa65034cc791ecc5906f754f6ab9881c",
+        "write_binding_ready": true,
+        "binding_error": null
+      },
+      "retry_allowed": false,
+      "production_acceptance": false
+    }
+  },
+  "checks": {
+    "nodes": 11,
+    "textUpdates": 2,
+    "all_ids_parents_order_styles_exact": true,
+    "rich_inner_exact": true,
+    "full_inverse_exact": true
+  },
+  "source_map": {
+    "url": "https://github.com/mastermindx-market-intelligence/Macro/blob/480ae8eb4f0e82065c324b56058c6c6eb25674b0/research/design_candidates/crypto_snapshot_safety_20261109/README.md",
+    "tasks": 18,
+    "exact_source_readback": {
+      "path": "research/design_candidates/crypto_snapshot_safety_20261109/README.md",
+      "sha": "336edb630b70808d03d24c0a897a8ecb249e4fd4",
+      "kind": "text",
+      "exact": true
+    }
+  },
+  "before_jsx": "(\n    <div id=\"3L1-0\" style={{ backgroundColor: '#F4F7FC', borderColor: '#D9E2EF', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', fontSynthesis: 'none', gap: '20px', MozOsxFontSmoothing: 'grayscale', overflowWrap: 'anywhere', padding: '36px', WebkitFontSmoothing: 'antialiased', width: '1440px' }}>\n      <div id=\"3L2-0\" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '10px' }}>\n        <div id=\"3L3-0\" style={{ boxSizing: 'border-box', color: '#285FFF', fontFamily: '\"Inter-Bold\", \"Inter\", system-ui, sans-serif', fontSize: '14px', fontWeight: 700, letterSpacing: '0.06em', lineHeight: '20px', overflowWrap: 'anywhere' }}>\n          INTERNAL AGENT GUIDE · NOT PRODUCT UI\n        </div>\n        <div id=\"3L4-0\" style={{ boxSizing: 'border-box', color: '#1C2430', fontFamily: '\"Inter-Bold\", \"Inter\", system-ui, sans-serif', fontSize: '30px', fontWeight: 700, lineHeight: '38px', overflowWrap: 'anywhere' }}>\n          Crypto Intelligence · R4 References and Archive\n        </div>\n        <div id=\"3L5-0\" style={{ boxSizing: 'border-box', color: '#526278', fontFamily: 'ui-monospace, \"SFMono-Regular\", \"SF Mono\", \"Menlo\", \"Consolas\", \"Liberation Mono\", monospace', fontSize: '14px', lineHeight: '22px', overflowWrap: 'anywhere', whiteSpace: 'pre-wrap' }}>\n          FILE_ID: 01M6Y3F0NXNDPAKJMJGCAD759Z<br />PAGE_ID: p-5-0<br />FILE_ROLES: retained_reference, proposal<br />GUIDE_ROLE: guide · EXPORT_AS_PRODUCT_UI: no\n        </div>\n      </div>\n      <div id=\"3L7-0\" style={{ boxSizing: 'border-box', color: '#1C2430', fontFamily: 'system-ui, sans-serif', fontSize: '17px', lineHeight: '27px', whiteSpace: 'pre-wrap' }}>\n        <span style={{ fontWeight: 700 }}>01 · READ</span> — R4 scorecard and exact replacement scope<br /><span style={{ fontFamily: 'ui-monospace, \"SFMono-Regular\", \"SF Mono\", \"Menlo\", \"Consolas\", \"Liberation Mono\", monospace', fontSize: '14px', lineHeight: '22px' }}>FILE_ID: 01M6Y3F0NXNDPAKJMJGCAD759Z · PAGE_ID: p-1-0 · BOARD_IDS: QI-0</span><br /><span style={{ fontFamily: 'ui-monospace, \"SFMono-Regular\", \"SF Mono\", \"Menlo\", \"Consolas\", \"Liberation Mono\", monospace', fontSize: '14px', lineHeight: '22px' }}>https://app.paper.design/file/01M6Y3F0NXNDPAKJMJGCAD759Z/p-1-0</span>\n      </div>\n      <div id=\"3L9-0\" style={{ boxSizing: 'border-box', color: '#1C2430', fontFamily: 'system-ui, sans-serif', fontSize: '17px', lineHeight: '27px', whiteSpace: 'pre-wrap' }}>\n        <span style={{ fontWeight: 700 }}>02 · CANDIDATE UI / PROPOSED RECEIPT</span> — Asset readings and comparison<br /><span style={{ fontFamily: 'ui-monospace, \"SFMono-Regular\", \"SF Mono\", \"Menlo\", \"Consolas\", \"Liberation Mono\", monospace', fontSize: '14px', lineHeight: '22px' }}>FILE_ID: 01M6Y3F0NXNDPAKJMJGCAD759Z · PAGE_ID: p-3-0 · BOARD_IDS: 2ZJ-0, 3N8-0</span><br /><span style={{ fontFamily: 'ui-monospace, \"SFMono-Regular\", \"SF Mono\", \"Menlo\", \"Consolas\", \"Liberation Mono\", monospace', fontSize: '14px', lineHeight: '22px' }}>https://app.paper.design/file/01M6Y3F0NXNDPAKJMJGCAD759Z/p-3-0</span>\n      </div>\n      <div id=\"3LB-0\" style={{ boxSizing: 'border-box', color: '#1C2430', fontFamily: 'system-ui, sans-serif', fontSize: '17px', lineHeight: '27px', whiteSpace: 'pre-wrap' }}>\n        <span style={{ fontWeight: 700 }}>03 · CANDIDATE UI / PROPOSED RESULTS</span> — Saved cases and historical review<br /><span style={{ fontFamily: 'ui-monospace, \"SFMono-Regular\", \"SF Mono\", \"Menlo\", \"Consolas\", \"Liberation Mono\", monospace', fontSize: '14px', lineHeight: '22px' }}>FILE_ID: 01M6Y3F0NXNDPAKJMJGCAD759Z · PAGE_ID: p-4-0 · BOARD_IDS: 3IP-0</span><br /><span style={{ fontFamily: 'ui-monospace, \"SFMono-Regular\", \"SF Mono\", \"Menlo\", \"Consolas\", \"Liberation Mono\", monospace', fontSize: '14px', lineHeight: '22px' }}>https://app.paper.design/file/01M6Y3F0NXNDPAKJMJGCAD759Z/p-4-0</span>\n      </div>\n      <div id=\"3LD-0\" style={{ boxSizing: 'border-box', color: '#1C2430', fontFamily: 'system-ui, sans-serif', fontSize: '17px', lineHeight: '27px', whiteSpace: 'pre-wrap' }}>\n        <span style={{ fontWeight: 700 }}>04 · PRESERVE</span> — Retained behavior/source contracts; respect each revision's scope<br /><span style={{ fontFamily: 'ui-monospace, \"SFMono-Regular\", \"SF Mono\", \"Menlo\", \"Consolas\", \"Liberation Mono\", monospace', fontSize: '14px', lineHeight: '22px' }}>FILE_ID: 01M6Y3F0NXNDPAKJMJGCAD759Z · PAGE_ID: p-2-0 · BOARD_IDS: Z1-0, 251-0</span><br /><span style={{ fontFamily: 'ui-monospace, \"SFMono-Regular\", \"SF Mono\", \"Menlo\", \"Consolas\", \"Liberation Mono\", monospace', fontSize: '14px', lineHeight: '22px' }}>https://app.paper.design/file/01M6Y3F0NXNDPAKJMJGCAD759Z/p-2-0</span>\n      </div>\n      <div id=\"3LF-0\" style={{ boxSizing: 'border-box', color: '#1C2430', fontFamily: 'system-ui, sans-serif', fontSize: '17px', lineHeight: '27px', whiteSpace: 'pre-wrap' }}>\n        <span style={{ fontWeight: 700 }}>SOURCE_QUALIFICATION</span><br />R4 scorecard QI-0 explicitly replaces seven archived R3 boards. Earlier behavior contracts Z1-0/251-0 remain retained; Z1-0 identifies an R2 builder contract and rejects R1 visuals. Preserve applicable behavior rather than reviving rejected designs or historical operational instructions. Pages p-3-0 and p-4-0 combine candidate UI references with marked proposals. Draft PR #10901 defines implemented asset comparison and quotes, saved-case storage/navigation/recovery, and the historical-review unavailable state. Paired observation receipts and qualified historical comparison results remain proposed evidence work. Read the exact source head and Build contracts. H5/model, alerts, public-route cutover and release gates remain.<br /><span style={{ fontFamily: 'ui-monospace, \"SFMono-Regular\", \"SF Mono\", \"Menlo\", \"Consolas\", \"Liberation Mono\", monospace', fontSize: '14px', lineHeight: '22px' }}>https://github.com/mastermindx-market-intelligence/Macro/pull/10901</span>\n      </div>\n      <div id=\"3LH-0\" style={{ boxSizing: 'border-box', color: '#1C2430', fontFamily: 'system-ui, sans-serif', fontSize: '14px', lineHeight: '22px', whiteSpace: 'pre-wrap' }}>\n        <span style={{ fontWeight: 700 }}>USE</span> · Follow the route matching the current assignment. These are reading destinations, not implementation or release approval. Inspect the exact returned page to select a board. Export only product boards, excluding guides and internal contracts.<br /><span style={{ fontWeight: 700 }}>READING PROTOCOL</span> · https://app.paper.design/file/01M6XQ0KYY6ZDDV6F3G85SX6WW/p-B-0<br /><span style={{ fontWeight: 700 }}>CURRENT ORGANIZATION CHECKPOINT</span> · Follow the source/checkpoint link on AI START: https://app.paper.design/file/01M6XQ0KYY6ZDDV6F3G85SX6WW/p-1-0<br /><span style={{ fontWeight: 700 }}>DATED SCOPE SNAPSHOT · baf6737</span> · This is evidence at that commit, not the current estate head. Read only this FILE_ID's record: https://github.com/mastermindx-market-intelligence/Mastermind/blob/baf67374d54ae69eb50a68cc54ab10fe9a5477cd/docs/paper_migrations/estate_organization/FILE_INDEX.json<br /><span style={{ fontWeight: 700 }}>OBSERVED</span> · 9 November 2026, America/Vancouver. Navigation observation only; refresh the exact target before editing.\n      </div>\n    </div>\n  )",
+  "after_jsx": "(\n    <div id=\"3L1-0\" style={{ backgroundColor: '#F4F7FC', borderColor: '#D9E2EF', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', fontSynthesis: 'none', gap: '20px', MozOsxFontSmoothing: 'grayscale', overflowWrap: 'anywhere', padding: '36px', WebkitFontSmoothing: 'antialiased', width: '1440px' }}>\n      <div id=\"3L2-0\" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '10px' }}>\n        <div id=\"3L3-0\" style={{ boxSizing: 'border-box', color: '#285FFF', fontFamily: '\"Inter-Bold\", \"Inter\", system-ui, sans-serif', fontSize: '14px', fontWeight: 700, letterSpacing: '0.06em', lineHeight: '20px', overflowWrap: 'anywhere' }}>\n          INTERNAL AGENT GUIDE · NOT PRODUCT UI\n        </div>\n        <div id=\"3L4-0\" style={{ boxSizing: 'border-box', color: '#1C2430', fontFamily: '\"Inter-Bold\", \"Inter\", system-ui, sans-serif', fontSize: '30px', fontWeight: 700, lineHeight: '38px', overflowWrap: 'anywhere' }}>\n          Crypto Intelligence · R4 References and Archive\n        </div>\n        <div id=\"3L5-0\" style={{ boxSizing: 'border-box', color: '#526278', fontFamily: 'ui-monospace, \"SFMono-Regular\", \"SF Mono\", \"Menlo\", \"Consolas\", \"Liberation Mono\", monospace', fontSize: '14px', lineHeight: '22px', overflowWrap: 'anywhere', whiteSpace: 'pre-wrap' }}>\n          FILE_ID: 01M6Y3F0NXNDPAKJMJGCAD759Z<br />PAGE_ID: p-5-0<br />FILE_ROLES: retained_reference, proposal<br />GUIDE_ROLE: guide · EXPORT_AS_PRODUCT_UI: no\n        </div>\n      </div>\n      <div id=\"3L7-0\" style={{ boxSizing: 'border-box', color: '#1C2430', fontFamily: 'system-ui, sans-serif', fontSize: '17px', lineHeight: '27px', whiteSpace: 'pre-wrap' }}>\n        <span style={{ fontWeight: 700 }}>01 · READ</span> — Current scenario workflow and implementation scorecard<br /><span style={{ fontFamily: 'ui-monospace, \"SFMono-Regular\", \"SF Mono\", \"Menlo\", \"Consolas\", \"Liberation Mono\", monospace', fontSize: '14px', lineHeight: '22px' }}>FILE_ID: 01M6Y3F0NXNDPAKJMJGCAD759Z · PAGE_ID: p-1-0 · BOARD_IDS: G5-0, QI-0</span><br /><span style={{ fontFamily: 'ui-monospace, \"SFMono-Regular\", \"SF Mono\", \"Menlo\", \"Consolas\", \"Liberation Mono\", monospace', fontSize: '14px', lineHeight: '22px' }}>https://app.paper.design/file/01M6Y3F0NXNDPAKJMJGCAD759Z/p-1-0</span>\n      </div>\n      <div id=\"3L9-0\" style={{ boxSizing: 'border-box', color: '#1C2430', fontFamily: 'system-ui, sans-serif', fontSize: '17px', lineHeight: '27px', whiteSpace: 'pre-wrap' }}>\n        <span style={{ fontWeight: 700 }}>02 · CANDIDATE UI / PROPOSED RECEIPT</span> — Asset readings and comparison<br /><span style={{ fontFamily: 'ui-monospace, \"SFMono-Regular\", \"SF Mono\", \"Menlo\", \"Consolas\", \"Liberation Mono\", monospace', fontSize: '14px', lineHeight: '22px' }}>FILE_ID: 01M6Y3F0NXNDPAKJMJGCAD759Z · PAGE_ID: p-3-0 · BOARD_IDS: 2ZJ-0, 3N8-0</span><br /><span style={{ fontFamily: 'ui-monospace, \"SFMono-Regular\", \"SF Mono\", \"Menlo\", \"Consolas\", \"Liberation Mono\", monospace', fontSize: '14px', lineHeight: '22px' }}>https://app.paper.design/file/01M6Y3F0NXNDPAKJMJGCAD759Z/p-3-0</span>\n      </div>\n      <div id=\"3LB-0\" style={{ boxSizing: 'border-box', color: '#1C2430', fontFamily: 'system-ui, sans-serif', fontSize: '17px', lineHeight: '27px', whiteSpace: 'pre-wrap' }}>\n        <span style={{ fontWeight: 700 }}>03 · CANDIDATE UI / PROPOSED RESULTS</span> — Saved cases and historical review<br /><span style={{ fontFamily: 'ui-monospace, \"SFMono-Regular\", \"SF Mono\", \"Menlo\", \"Consolas\", \"Liberation Mono\", monospace', fontSize: '14px', lineHeight: '22px' }}>FILE_ID: 01M6Y3F0NXNDPAKJMJGCAD759Z · PAGE_ID: p-4-0 · BOARD_IDS: 3IP-0</span><br /><span style={{ fontFamily: 'ui-monospace, \"SFMono-Regular\", \"SF Mono\", \"Menlo\", \"Consolas\", \"Liberation Mono\", monospace', fontSize: '14px', lineHeight: '22px' }}>https://app.paper.design/file/01M6Y3F0NXNDPAKJMJGCAD759Z/p-4-0</span>\n      </div>\n      <div id=\"3LD-0\" style={{ boxSizing: 'border-box', color: '#1C2430', fontFamily: 'system-ui, sans-serif', fontSize: '17px', lineHeight: '27px', whiteSpace: 'pre-wrap' }}>\n        <span style={{ fontWeight: 700 }}>04 · PRESERVE</span> — Retained behavior/source contracts; respect each revision's scope<br /><span style={{ fontFamily: 'ui-monospace, \"SFMono-Regular\", \"SF Mono\", \"Menlo\", \"Consolas\", \"Liberation Mono\", monospace', fontSize: '14px', lineHeight: '22px' }}>FILE_ID: 01M6Y3F0NXNDPAKJMJGCAD759Z · PAGE_ID: p-2-0 · BOARD_IDS: Z1-0, 251-0</span><br /><span style={{ fontFamily: 'ui-monospace, \"SFMono-Regular\", \"SF Mono\", \"Menlo\", \"Consolas\", \"Liberation Mono\", monospace', fontSize: '14px', lineHeight: '22px' }}>https://app.paper.design/file/01M6Y3F0NXNDPAKJMJGCAD759Z/p-2-0</span>\n      </div>\n      <div id=\"3LF-0\" style={{ boxSizing: 'border-box', color: '#1C2430', fontFamily: 'system-ui, sans-serif', fontSize: '17px', lineHeight: '27px', whiteSpace: 'pre-wrap' }}>\n        <span style={{ fontWeight: 700 }}>SOURCE_QUALIFICATION</span><br />R4 scorecard QI-0 explicitly replaces seven archived R3 boards. Earlier behavior contracts Z1-0/251-0 remain retained; Z1-0 identifies an R2 builder contract and rejects R1 visuals. Preserve applicable behavior rather than reviving rejected designs or historical operational instructions. Pages p-3-0 and p-4-0 combine candidate UI references with marked proposals. Draft PR #10901 contains the implemented candidate workflows. Use the implementation map below for each task’s existing owner, contract and scoped proof; QI-0 / 3IP-0 record the source checkpoint. Paired observation receipts and qualified historical comparison results remain proposed. H5/model, alerts, public-route cutover and release gates remain.<br /><span style={{ fontFamily: 'ui-monospace, \"SFMono-Regular\", \"SF Mono\", \"Menlo\", \"Consolas\", \"Liberation Mono\", monospace', fontSize: '14px', lineHeight: '22px' }}>https://github.com/mastermindx-market-intelligence/Macro/blob/480ae8eb4f0e82065c324b56058c6c6eb25674b0/research/design_candidates/crypto_snapshot_safety_20261109/README.md</span><br /><span style={{ fontFamily: 'ui-monospace, \"SFMono-Regular\", \"SF Mono\", \"Menlo\", \"Consolas\", \"Liberation Mono\", monospace', fontSize: '14px', lineHeight: '22px' }}>https://github.com/mastermindx-market-intelligence/Macro/pull/10901</span>\n      </div>\n      <div id=\"3LH-0\" style={{ boxSizing: 'border-box', color: '#1C2430', fontFamily: 'system-ui, sans-serif', fontSize: '14px', lineHeight: '22px', whiteSpace: 'pre-wrap' }}>\n        <span style={{ fontWeight: 700 }}>USE</span> · Follow the route matching the current assignment. These are reading destinations, not implementation or release approval. Inspect the exact returned page to select a board. Export only product boards, excluding guides and internal contracts.<br /><span style={{ fontWeight: 700 }}>READING PROTOCOL</span> · https://app.paper.design/file/01M6XQ0KYY6ZDDV6F3G85SX6WW/p-B-0<br /><span style={{ fontWeight: 700 }}>CURRENT ORGANIZATION CHECKPOINT</span> · Follow the source/checkpoint link on AI START: https://app.paper.design/file/01M6XQ0KYY6ZDDV6F3G85SX6WW/p-1-0<br /><span style={{ fontWeight: 700 }}>DATED SCOPE SNAPSHOT · baf6737</span> · This is evidence at that commit, not the current estate head. Read only this FILE_ID's record: https://github.com/mastermindx-market-intelligence/Mastermind/blob/baf67374d54ae69eb50a68cc54ab10fe9a5477cd/docs/paper_migrations/estate_organization/FILE_INDEX.json<br /><span style={{ fontWeight: 700 }}>OBSERVED</span> · 9 November 2026, America/Vancouver. Navigation observation only; refresh the exact target before editing.\n      </div>\n    </div>\n  )",
+  "before_geometry": {
+    "id": "3L1-0",
+    "name": "AGENT README | INTERNAL | NOT PRODUCT UI",
+    "component": "Frame",
+    "width": 1440,
+    "height": null,
+    "worldX": null,
+    "worldY": null,
+    "x": null,
+    "y": null,
+    "isVisible": true,
+    "isLocked": false,
+    "parentId": "root_node_p-5-0",
+    "childIds": [
+      "3L2-0",
+      "3L7-0",
+      "3L9-0",
+      "3LB-0",
+      "3LD-0",
+      "3LF-0",
+      "3LH-0"
+    ],
+    "childCount": 7,
+    "artboardId": null,
+    "textContent": null
+  },
+  "after_geometry": {
+    "id": "3L1-0",
+    "name": "AGENT README | INTERNAL | NOT PRODUCT UI",
+    "component": "Frame",
+    "width": 1440,
+    "height": null,
+    "worldX": null,
+    "worldY": null,
+    "x": null,
+    "y": null,
+    "isVisible": true,
+    "isLocked": false,
+    "parentId": "root_node_p-5-0",
+    "childIds": [
+      "3L2-0",
+      "3L7-0",
+      "3L9-0",
+      "3LB-0",
+      "3LD-0",
+      "3LF-0",
+      "3LH-0"
+    ],
+    "childCount": 7,
+    "artboardId": null,
+    "textContent": null
+  },
+  "images": [
+    {
+      "role": "BEFORE",
+      "path": "research/design_candidates/production_design_20261102/audit_20261108/PAPER_CRYPTO_START_GUIDE_BEFORE_20261109.jpg",
+      "blob": "32b3724335236ba2deef17584c183281871fccfc"
+    },
+    {
+      "role": "AFTER",
+      "path": "research/design_candidates/production_design_20261102/audit_20261108/PAPER_CRYPTO_START_GUIDE_AFTER_20261109.jpg",
+      "blob": "512e852d0c8ffcb2d549dc4def6a42b7d5c76eb8"
+    }
+  ],
+  "visual_review": {
+    "before_and_after_full_frames_inspected": true,
+    "all_routes_qualifications_and_footer_visible": true,
+    "full_url_readable": true,
+    "reported_width": 1440,
+    "world_coordinates_and_height_reported": false
+  },
+  "conservation": [
+    "Exactly two rich-text leaves changed; all 11 node identities, parents, order and exported styles remain exact.",
+    "Existing bold/monospace span styles match the expected JSX exactly; the new source URL repeats the existing monospace style.",
+    "Restoring both original leaf interiors recovers the complete before JSX.",
+    "3L9,3LB,3LD and3LH remain byte-identical within the full inverse; pages, candidate/proposal and archive meanings are preserved.",
+    "Dated organization snapshot baf6737 remains explicitly historical; it is not rewritten to claim current estate authority."
+  ],
+  "limits": [
+    "This is an internal agent/builder guide, not exported product UI.",
+    "Source/runtime remains480ae8e/assets89c2e5bd3fa3; the preceding67-case proof retains its exact scope and was not rerun for a text-only guide edit.",
+    "A direct immutable URL identifies the validated implementation map. No new router, document store or source owner is introduced.",
+    "Guide world coordinates and height remain unreported. Content and before/after screenshots are verified; freeform placement is not certified.",
+    "All existing model, alert, proposal, release, admission, denied and uncertain-effect boundaries remain."
+  ]
+}
