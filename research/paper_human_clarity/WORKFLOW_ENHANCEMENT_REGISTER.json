@@ -8964,5 +8964,105 @@
       }
     ],
     "intent": "Remove redundant slogans and builder ownership note from product; preserve advanced currency/window/regime and forward-evaluation ambitions in Build; present current weekly USD and recorded-outcome scope without counterfactual-benefit claims."
+  },
+  "portfolioSecondPass": {
+    "status": "APPLYING_VERIFIED_FINDINGS",
+    "inspectedFiles": [
+      "Mastermind OS",
+      "Mastermind AI",
+      "MarketOntology",
+      "Popups",
+      "Prophet"
+    ],
+    "prophet": {
+      "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+      "productPage": "p-C-0",
+      "board": "Y1G-0",
+      "before": [
+        {
+          "id": "Y1S-0",
+          "text": "Waiting for your account to confirm. You can close this; the save carries on, and nothing is saved twice."
+        },
+        {
+          "id": "Y25-0",
+          "text": "Read back from your account at 21:42 ET. VRT, ADBE and MU are in the list with tonight’s decisions kept as they stand."
+        },
+        {
+          "id": "Y31-0",
+          "text": "Your account didn’t answer in time. Before saving again we check the list, so nothing is saved twice."
+        }
+      ],
+      "updates": [
+        {
+          "nodeId": "Y1S-0",
+          "html": "Waiting for confirmation from October watch. Another save is unavailable while this result is pending."
+        },
+        {
+          "nodeId": "Y25-0",
+          "html": "Confirmed at 21:42 ET: VRT, ADBE and MU are in October watch."
+        },
+        {
+          "nodeId": "Y31-0",
+          "html": "Check what’s in October watch. The earlier save result remains unconfirmed."
+        }
+      ],
+      "buildPage": "p-E-0",
+      "buildRoot": "15E0-0",
+      "contract": {
+        "page": "p-D-0",
+        "root": "13L8-0",
+        "nodes": [
+          "13QZ-0",
+          "13RA-0",
+          "13RE-0"
+        ],
+        "meaning": "Security membership only. No durable operation/Prophet object ID or dated decision persistence. Membership observation cannot resolve an uncertain write or authorize retry."
+      }
+    },
+    "os": {
+      "fileId": "01M3NRCX55B452A12819WNE1RH",
+      "productPage": "p-J-0",
+      "board": "TR7-0",
+      "node": "TWB-0",
+      "parent": "TW9-0",
+      "original": "These checks belong to existing owners, not another control layer.",
+      "buildPage": "p-E-0",
+      "buildRoot": "PBR-0"
+    },
+    "popups": {
+      "fileId": "01M38EVF74SJWG1GANN5VP380Z",
+      "productPage": "p-6-0",
+      "obsoleteStudies": [
+        "9TH-0",
+        "9ZG-0"
+      ],
+      "preservedClaims": [
+        "2.4–5.6% further decline",
+        "9–12% total depth",
+        "projected-depth chart and illustrative 90th-percentile stress line"
+      ],
+      "buildPage": "p-8-0",
+      "currentUSObservedOnly": [
+        "A5I-0",
+        "A7G-0"
+      ],
+      "newSafetyGate": false,
+      "existingHold": "Preserve existing #8186 hold in AHN/AHP; do not clear or arm it."
+    },
+    "ontology": {
+      "status": "NATIVE_COMPOSITION_REVIEW_IN_PROGRESS",
+      "fileId": "01M3P1X4FR6BRTB13KA736Y1HT",
+      "roots": [
+        "44L-0",
+        "AT4-0",
+        "ATA-0"
+      ],
+      "buildRoot": "ASY-0",
+      "unitContract": "AUR-0 preserves Macro 338a1085: MA50 is a 50-observation rolling mean and its five-position change is raw units, not percent or fitted slope."
+    },
+    "ai": {
+      "status": "NO_NEW_CONFIRMED_DEFECT_IN_SELECTED_STATES",
+      "scope": "Context handover, reopened case, partial answer only; not a fresh full-file audit."
+    }
   }
 }
