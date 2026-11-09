@@ -23,6 +23,8 @@ the list is meant to grow toward the top ~200.
 from __future__ import annotations
 
 import io
+from decimal import Decimal
+from html.parser import HTMLParser
 import logging
 import re as _re
 import time
@@ -538,6 +540,113 @@ class EtfHoldingsAdapter(Adapter):
             asof = fallback_date
         return EtfHoldingsAdapter._normalize(df, ticker, asof, wcol="weight",
                                              scol="shares", mcol="market_value")
+
+    @staticmethod
+    def _parse_defiance_public_html(
+        text: str, fund: str, *, reference_date: date
+    ) -> tuple[pd.DataFrame, str]:
+        """Offline QTUM source parser; no fetch, storage or rights admission.
+
+        reference_date is explicit so historical fixture qualification never
+        borrows the wall clock. No existing collector route calls this helper.
+        """
+        if fund != "QTUM" or not isinstance(text, str):
+            raise ValueError("unsupported Defiance source")
+        if type(reference_date) is not date:
+            raise ValueError("reference_date must be a date")
+
+        class _HoldingsTable(HTMLParser):
+            def __init__(self):
+                super().__init__(convert_charrefs=True)
+                self.active = False
+                self.matched = 0
+                self.row = None
+                self.cell = None
+                self.rows = []
+
+            def handle_starttag(self, tag, attrs):
+                if tag == "table":
+                    if self.active:
+                        raise ValueError("nested holdings table")
+                    if dict(attrs).get("id") == "table-full-holdings":
+                        if self.matched:
+                            raise ValueError("duplicate holdings table")
+                        self.matched += 1
+                        self.active = True
+                elif self.active and tag == "tr":
+                    if self.row is not None:
+                        raise ValueError("nested holdings row")
+                    self.row = []
+                elif self.active and tag in ("td", "th"):
+                    if self.row is None or self.cell is not None:
+                        raise ValueError("invalid holdings cell")
+                    self.cell = []
+
+            def handle_data(self, data):
+                if self.cell is not None:
+                    self.cell.append(data)
+
+            def handle_endtag(self, tag):
+                if self.active and tag in ("td", "th"):
+                    if self.row is None or self.cell is None:
+                        raise ValueError("unmatched holdings cell")
+                    self.row.append(" ".join(" ".join(self.cell).split()))
+                    self.cell = None
+                elif self.active and tag == "tr":
+                    if self.row is None or self.cell is not None:
+                        raise ValueError("incomplete holdings row")
+                    self.rows.append(self.row)
+                    self.row = None
+                elif self.active and tag == "table":
+                    if self.row is not None or self.cell is not None:
+                        raise ValueError("incomplete holdings table")
+                    self.active = False
+
+        parser = _HoldingsTable()
+        parser.feed(text)
+        parser.close()
+        if parser.active or parser.matched != 1:
+            raise ValueError("missing or unclosed holdings table")
+        if not 51 <= len(parser.rows) <= 201:
+            raise ValueError("implausible holdings count")
+        if parser.rows[0] != ["Ticker", "Name", "CUSIP", "ETF Weight", "Shares"]:
+            raise ValueError("holdings header drift")
+        dates = _re.findall(
+            r"\bData as of\s+([01]?\d/[0-3]?\d/20\d{2})\b",
+            _re.sub(r"<[^>]+>", " ", text), flags=_re.I
+        )
+        if len(dates) != 1:
+            raise ValueError("missing or ambiguous source date")
+        asof = pd.to_datetime(dates[0], format="%m/%d/%Y", errors="raise").date()
+        age = (reference_date - asof).days
+        if age > 7 or age < 0:
+            raise ValueError("source date outside qualified horizon")
+        seen, rows, total = set(), [], Decimal("0")
+        for row in parser.rows[1:]:
+            if len(row) != 5 or not all(row):
+                raise ValueError("incomplete holdings row")
+            ticker, name, cusip, weight, shares = row
+            # Preserve published exchange-qualified aliases; never resolve IDs.
+            if ticker != "Cash&Other" and not _re.fullmatch(
+                r"[A-Z0-9][A-Z0-9./-]*(?: [A-Z0-9]{2})?", ticker
+            ):
+                raise ValueError("unsupported source ticker syntax")
+            if ticker in seen:
+                raise ValueError("duplicate source ticker")
+            seen.add(ticker)
+            if not _re.fullmatch(r"-?\d+(?:\.\d{1,3})?%", weight):
+                raise ValueError("invalid/nonfinite percent weight")
+            if not _re.fullmatch(r"-?(?:\d+|\d{1,3}(?:,\d{3})+)", shares):
+                raise ValueError("invalid share units/grouping")
+            value = Decimal(weight[:-1])
+            if not value.is_finite() or abs(value) > Decimal("100"):
+                raise ValueError("nonfinite/out-of-range weight")
+            total += value
+            rows.append({"ticker": ticker, "name": name, "source_cusip": cusip,
+                         "weight": weight, "shares": shares})
+        if not Decimal("95") <= total <= Decimal("105"):
+            raise ValueError("total weight outside qualified bounds")
+        return pd.DataFrame(rows), str(asof)
 
     # --- Defiance (dated XLSX; forward-dated T+1; probe a small date window) ---
     def _fetch_defiance(self, ticker: str, spec: dict) -> pd.DataFrame:

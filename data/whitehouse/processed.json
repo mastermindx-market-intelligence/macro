@@ -1961,6 +1961,30 @@
       "at": "2026-11-06T23:07:17.972247+00:00",
       "activated": true,
       "importance": 72
+    },
+    "https://www.whitehouse.gov/?p=54252": {
+      "id": "wh-2026-11-07-first-lady-melania-trump-and-lsu-establish-7-2-million-fostering-the-future-endo",
+      "at": "2026-11-07T20:52:14.843747+00:00",
+      "activated": false,
+      "importance": 5
+    },
+    "https://www.whitehouse.gov/?p=54263": {
+      "id": "wh-2026-11-08-icymi-ag-todd-blanche-dismantles-democrats-oversight-charade-on-the-sunday-shows",
+      "at": "2026-11-08T19:43:31.426897+00:00",
+      "activated": false,
+      "importance": 5
+    },
+    "https://www.whitehouse.gov/?p=54260": {
+      "id": "wh-2026-11-08-presidential-message-on-diwali-1f71",
+      "at": "2026-11-08T19:43:32.843875+00:00",
+      "activated": false,
+      "importance": 5
+    },
+    "https://www.whitehouse.gov/?p=54269": {
+      "id": "wh-2026-11-07-presidential-message-on-honoring-the-american-flag",
+      "at": "2026-11-08T23:42:07.804552+00:00",
+      "activated": false,
+      "importance": 5
     }
   },
   "_note": "W5 baseline \u2014 no items evaluated yet; provider absent in build env (no CLAUDE_CODE_OAUTH_TOKEN / ANTHROPIC_API_KEY / DEEPSEEK_API_KEY). Created 2026-07-02 to make dark-vs-quiet distinguishable: an empty seen={} here means the desk ran but had no provider, not that it was never invoked."

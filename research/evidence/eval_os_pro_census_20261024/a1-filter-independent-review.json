@@ -1,0 +1,31 @@
+{
+  "schema": "eval_os_independent_source_review.v1",
+  "reviewer": "/root/a1_filter_review",
+  "author": "/root/a1_probe_review; publication by /root",
+  "decision": "ACCEPT",
+  "pr": 10171,
+  "published_head": "95e8daddc71a4d72eba5748a499ff279d356d388",
+  "base": "546aeea2c7ad7d06ec9d4fa9626f1d0cf525493a",
+  "draft": true,
+  "auto_merge": null,
+  "changed_files": 2,
+  "files": {
+    "admin/static/app.js": "81d9322fc466e94aa0109d2ae54a94976007b859",
+    "tests/test_admin_intelligence_os_ui.py": "1358c91f609478a68b169448f3fac2fddf396bd4"
+  },
+  "patch_sha256": "22043bc118cff3942a28238d99d5b0817a7c208b88314b561607cf93905cf2d7",
+  "verification": [
+    "Independent source and focused behavioral review accepted",
+    "Three focused Python/Node tests passed",
+    "New regression fails against unchanged baseline",
+    "JavaScript syntax check passed",
+    "Exact published file listing and both blobs read back; no repeated tests"
+  ],
+  "limits": [
+    "No full pytest-suite pass; one dependency install denied and ended",
+    "No rendered product/authenticated browser/production acceptance",
+    "No GitHub approval, merge or production action",
+    "Bounded repair acceptance does not close A1"
+  ]
+}
+
