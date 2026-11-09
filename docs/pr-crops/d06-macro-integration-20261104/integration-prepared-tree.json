@@ -1,0 +1,21 @@
+{
+  "head": "ede62cbbc69441aca64973ee638c55be544cfc4d",
+  "protected_base": "a8a5d3523614777d88eb2579d6efab52cd862e33",
+  "expected_tree": "cd20a7b86184173ab4836d406d8f890b7643dece",
+  "previous_base": "079ba10fe079ddf947cb446afeae65ff2908046e",
+  "upstream_delta_paths": 28,
+  "registry_three_way_clean": true,
+  "registry_merged_blob": "1a35117c21adbc62989e0afb00d4b5c53c4a8483",
+  "D06_suites_preserved": 3,
+  "verified_actual_changed_paths": 4884,
+  "incoming_data_matches_protected_base": true,
+  "D06_input_hashes_still_bound_to_eb312_and_unchanged": true,
+  "resolution_pages": [
+    "site/market_structure.html",
+    "site/spvector.html"
+  ],
+  "focused_tests": 27,
+  "inline_js_files": 2,
+  "whitespace": "Generated blank-line indentation reported; no whitespace-clean claim. Original evidence logs remain byte-identical. Templates and generators unchanged.",
+  "publication_carrier": "Original typed Macro operation; no raw commit, ref update or push."
+}

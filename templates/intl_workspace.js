@@ -1185,6 +1185,15 @@
         var tableIds = new Set(tableRows.map(function (node) { return node.getAttribute('data-im-chart-table-market'); }));
         var show = !duplicate && cohortId === id && selected.length >= 2 &&
           selected.every(function (market) { return lineIds.has(market) && tableIds.has(market); });
+        var count = group.querySelector('[data-im-chart-visible-count]');
+        if (count) {
+          // Keep the source cohort total for no-JS fallback, but never
+          // announce unselected markets when the existing reducer paints.
+          var total = Number(count.getAttribute('data-im-chart-total'));
+          if (!Number.isSafeInteger(total) || total < 1 ||
+              total > controller.config.markets.length || selected.length > total) show = false;
+          count.textContent = show ? String(selected.length) : String(total);
+        }
         group.hidden = !show;
         lines.forEach(function (node) {
           // SVGGeometryElement.hidden may be only a JS expando; the actual
@@ -1254,7 +1263,7 @@
       '[data-im-inspector-origin],[data-im-inspector-payload],[data-im-inspector-enhancement],[data-im-inspector-page],'+
       '[data-im-inspector-ledger],[data-im-inspector-field],[data-im-inspector-shell],[data-im-inspector-deeper-unavailable],'+
       '[data-im-macro-market],[data-im-risk-channel],[data-im-risk-row],[data-im-risk-prompt],[data-im-compare-panel],[data-im-compare-slot],[data-im-compare-status],[data-im-compare-cohort],[data-im-compare-controls],[data-im-compare-remove],[data-im-compare-pin],[data-im-compare-pin] option,'+
-      '[data-im-chart-cohort],[data-im-chart-series],[data-im-chart-table-market],[data-im-chart-selection-unavailable]';
+      '[data-im-chart-cohort],[data-im-chart-series],[data-im-chart-table-market],[data-im-chart-visible-count],[data-im-chart-selection-unavailable]';
     selector += ',[data-im-history-panel],[data-im-history-slot],[data-im-history-prompt],[data-im-history-tabs],[data-im-scenario-field],[data-im-scenario-fields],[data-im-scenario-tab],[data-im-scenario-context],[data-im-scenario-candidate-context],[data-im-scenario-confirm-context],[data-im-scenario-confirm-reset],[data-im-scenario-result],[data-im-scenario-empty],[data-im-scenario-usd],[data-im-scenario-contribution],[data-im-scenario-rows],[data-im-scenario-announcement],[data-im-scenario-error],[data-im-scenario-action]';
     return [root].concat(owned(root, selector)).map(function (node) {
       var attrs = [], text = false, value = false;
@@ -1291,6 +1300,7 @@
       if (node.matches('[data-im-compare-panel]')) attrs.push('data-im-compare-state','data-im-compare-reason');
       if (node.matches('[data-im-compare-slot],[data-im-compare-cohort],[data-im-compare-controls],[data-im-compare-remove]')) attrs.push('hidden');
       if (node.matches('[data-im-chart-cohort],[data-im-chart-series],[data-im-chart-table-market],[data-im-chart-selection-unavailable]')) attrs.push('hidden');
+      if (node.matches('[data-im-chart-visible-count]')) text = true;
       if (node.matches('[data-im-compare-status],[data-im-compare-pin] option')) text = true;
       if (node.matches('[data-im-compare-pin] option')) attrs.push('disabled');
       if (node.matches('[data-im-compare-pin]')) value = true;
@@ -1323,7 +1333,8 @@
   }
 
   function panelValid(panel, config, source, version) {
-    if (!['overview', 'compare', 'macro', 'risk', 'history', 'library'].includes(panel.getAttribute('data-view')) ||
+    if (!['overview', 'compare', 'macro', 'risk', 'history', 'library',
+          'scanner', 'dislocations', 'transmission', 'dossier', 'scenario', 'replay', 'coverage'].includes(panel.getAttribute('data-view')) ||
         !config.horizons.includes(panel.getAttribute('data-horizon')) ||
         !config.bases.includes(panel.getAttribute('data-basis')) ||
         !panel.hasAttribute('data-source') || (version === 2 ?
@@ -1414,6 +1425,7 @@
     paintLibrary(controller,state);
     paintCompare(controller,compare);
     paintInspectorFallbacks(controller,state);
+    paintGsMarket(controller, state);
     return reported;
   }
 
@@ -1701,6 +1713,7 @@
     var hadInspector = !!controller.inspector;
     if (hadInspector) visuallyCloseInspector(controller, { release: true });
     var parsed = controller.reducer.parseQuery(controller.environment.window.location.search);
+    parsed = alignGsMarketUrl(controller, clampGsMarket(controller, parsed));
     var committed = commitResearch(controller, parsed, 'popstate');
     if (controller.pendingScenario) {
       try { controller.environment.window.history.replaceState(null,'',nextUrl(controller,controller.serializedQuery)); }
@@ -1713,6 +1726,96 @@
         try { heading.focus(); } catch (_) {}
       }
     }
+  }
+
+  function gsMarketSeamPresent(controller) {
+    // The X6 element-existence rule governs the surveillance market seam; a
+    // page that carries no [data-gs-market] surface at all keeps the incumbent
+    // legacy market semantics (history/macro selection never had gs elements).
+    return !!controller.root.querySelector('[data-gs-market], [data-gs-market-scope]');
+  }
+
+  function gsMarketPresent(controller, marketId) {
+    return marketId !== null && /^[A-Z]{2}$/.test(marketId)
+      && controller.config.markets.indexOf(marketId) !== -1
+      && !!controller.root.querySelector('[data-gs-market="' + marketId + '"]');
+  }
+
+  // W2F-X X6: clamp a URL-parsed market to the document — a market with no
+  // [data-gs-market] content element is not a selection — and, when a market
+  // param was dropped, align the address bar with the canonical serialization
+  // (replaceState: no history entry, exactly like the mount path).
+  function clampGsMarket(controller, parsed) {
+    if (!parsed.ok || !gsMarketSeamPresent(controller)) return parsed;
+    if (gsMarketPresent(controller, parsed.state.selected_market)) return parsed;
+    var cleared = controller.reducer.reduce(parsed.state, { type: 'select_market', market_id: null });
+    if (!cleared.ok) return parsed;
+    try {
+      var serialized = controller.reducer.serializeQuery(cleared.state);
+      if (serialized.ok && '?' + serialized.query !== controller.environment.window.location.search) {
+        controller.environment.window.history.replaceState(null, '', nextUrl(controller, serialized.query));
+      }
+    } catch (_) { /* the URL alignment is cosmetic; the state clamp stands */ }
+    return cleared;
+  }
+
+  function alignGsMarketUrl(controller, parsed) {
+    try {
+      if (!gsMarketSeamPresent(controller)) return parsed;
+      var raw = controller.environment.window.location.search;
+      if (raw.indexOf('market=') === -1) return parsed;
+      var serialized = controller.reducer.serializeQuery(parsed.state);
+      if (serialized.ok && '?' + serialized.query !== raw) {
+        controller.environment.window.history.replaceState(null, '', nextUrl(controller, serialized.query));
+      }
+    } catch (_) { /* cosmetic URL alignment only */ }
+    return parsed;
+  }
+
+  // W2F-X X6 scope: show only the selected market's child (or the marked
+  // default when nothing is selected) and own the selected-market marking.
+  function paintGsMarket(controller, state) {
+    var root = controller.root;
+    var selected = state.selected_market;
+    owned(root, '[data-gs-market-scope]').forEach(function (node) {
+      var children = Array.from(node.children).filter(function (child) {
+        return child.hasAttribute('data-gs-market');
+      });
+      if (!children.length) return;
+      var match = children.find(function (child) { return child.getAttribute('data-gs-market') === selected; }) || null;
+      var fallback = children.find(function (child) { return child.hasAttribute('data-gs-market-default'); }) || null;
+      var shown = match || fallback || children[0];
+      children.forEach(function (child) { child.hidden = child !== shown; });
+    });
+    owned(root, '[data-gs-market-row]').forEach(function (row) {
+      if (selected !== null && row.getAttribute('data-gs-market-row') === selected) row.setAttribute('data-gs-selected', '');
+      else row.removeAttribute('data-gs-selected');
+    });
+    owned(root, '[data-gs-select-market]').forEach(function (link) {
+      if (selected !== null && link.getAttribute('data-gs-select-market') === selected) link.setAttribute('aria-current', 'true');
+      else link.removeAttribute('aria-current');
+    });
+  }
+
+  // W2F-X X6 behaviour: one delegated click handler for the market select
+  // links. A real <a href="?view=…&market=…">, so middle-click and no-JS still
+  // navigate; enhanced clicks set the market and, when the link names a
+  // registered view, switch through the existing view-switch path.
+  function gsMarketEvent(controller, event) {
+    if (event.type !== 'click') return false;
+    var link = event.target && event.target.closest ? event.target.closest('a[data-gs-select-market]') : null;
+    if (!link || link.disabled || link.closest('[data-im-workspace]') !== controller.root) return false;
+    event.preventDefault();
+    var marketId = link.getAttribute('data-gs-select-market') || null;
+    if (gsMarketPresent(controller, marketId) && marketId !== controller.state.selected_market) {
+      dispatch(controller, { type: 'select_market', market_id: marketId });
+    }
+    var openView = link.getAttribute('data-gs-open');
+    if (openView && structuralPanels(controller, controller.state.source_reference).has(openView)
+        && openView !== controller.state.view) {
+      dispatch(controller, { type: 'set_view', view: openView });
+    }
+    return true;
   }
 
   function actionFromEvent(controller, event) {
@@ -1746,6 +1849,7 @@
   }
 
   function clickOrChange(controller, event) {
+    if (gsMarketEvent(controller,event)) return;
     if (scenarioEvent(controller,event)) return;
     if (riskEvent(controller,event)) return;
     if (compareEvent(controller,event)) return;
@@ -1862,6 +1966,7 @@
       required(root, '[data-im-issues]').setAttribute('role', 'status');
       required(root, '[data-im-unavailable]');
       var parsed = reducer.parseQuery(window.location.search);
+      parsed = alignGsMarketUrl(controller, clampGsMarket(controller, parsed));
       if (IntlWorkspaceScenario && owned(root,'[data-im-history-panel]').length) controller.scenarioDraft=IntlWorkspaceScenario.createDraft(scenarioContext(parsed.state));
       stageAndCommit(controller, parsed.state, parsed.issues, 'mount', false);
       controller.live = true;

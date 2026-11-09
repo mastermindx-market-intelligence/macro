@@ -7,8 +7,10 @@ while still trying every series when the failures are merely dead series ids.
 """
 from __future__ import annotations
 
+import json
 import socket
 import sys
+import time
 from pathlib import Path
 
 import pandas as pd
@@ -18,6 +20,7 @@ import requests
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from collectors.base import is_connection_error  # noqa: E402
+from collectors.fred import FredAdapter  # noqa: E402
 from collectors.canada_macro import (  # noqa: E402
     _ABORT_AFTER_CONSECUTIVE_CONN_ERRORS as CA_ABORT,
     CanadaMacroAdapter,
@@ -237,3 +240,278 @@ def test_runner_escape_degrades_to_failed_at_run_one_boundary():
     assert res.status == "failed"
     assert res.source == "no_stale_attr_source"
     assert "AttributeError" in (res.error or "")
+
+
+# Daily FRED API response recovery. All request bodies and credentials below are
+# synthetic; the module's autouse fixture refuses real network and data writes.
+@pytest.fixture
+def fred_api(monkeypatch):
+    cfg = {
+        "fred": {
+            "api_url": "https://fred.example.invalid/observations",
+            "csv_url": "https://fred.example.invalid/graph",
+            "retries": 4,
+            "backoff_base_s": 3,
+            "series": {"curve": {"DGS3MO": "us3m"}},
+        },
+        "sponsors": {"user_agent": "offline-fred-test"},
+    }
+    monkeypatch.setattr(config, "load", lambda: cfg)
+    monkeypatch.setattr(config, "secret", lambda _name: "FRED_KEY_CANARY")
+    waits = []
+    monkeypatch.setattr(time, "sleep", waits.append)
+    return FredAdapter(), waits
+
+
+def _fred_response(body, *, status=200, content_type="application/json"):
+    response = requests.Response()
+    response.status_code = status
+    response._content = body.encode("utf-8")
+    response.encoding = "utf-8"
+    if content_type is not None:
+        response.headers["Content-Type"] = content_type
+    response.url = (
+        "https://fred.example.invalid/observations"
+        "?api_key=FRED_KEY_CANARY&debug=QUERY_CANARY"
+    )
+    return response
+
+
+def _fred_good_response():
+    return _fred_response(json.dumps({"observations": [
+        {"date": "2026-10-19", "value": "."},
+        {"date": "2026-10-20", "value": "4.25"},
+    ]}))
+
+
+def _fred_requests(monkeypatch, outcomes):
+    remaining = iter(outcomes)
+    calls = []
+
+    def get(url, **kwargs):
+        calls.append((url, kwargs))
+        outcome = next(remaining)
+        if isinstance(outcome, Exception):
+            raise outcome
+        return outcome
+
+    monkeypatch.setattr(requests, "get", get)
+    return calls
+
+
+def _assert_fred_frame(frame):
+    pd.testing.assert_frame_equal(
+        frame,
+        pd.DataFrame(
+            {"us3m": [4.25]},
+            index=pd.Index(["2026-10-20"], name="date"),
+        ),
+    )
+
+
+def test_fred_api_malformed_json_recovers_within_request_budget(fred_api, monkeypatch):
+    adapter, waits = fred_api
+    calls = _fred_requests(monkeypatch, [
+        _fred_response("<html>temporary</html>", content_type="text/html"),
+        _fred_good_response(),
+    ])
+
+    _assert_fred_frame(adapter._fetch_api("DGS3MO", "us3m"))
+
+    assert len(calls) == 2
+    assert waits == [3]
+    assert all(call[1]["params"]["series_id"] == "DGS3MO" for call in calls)
+    assert all(call[1]["params"]["api_key"] == "FRED_KEY_CANARY" for call in calls)
+
+
+def test_fred_api_transport_and_decode_share_one_budget(fred_api, monkeypatch):
+    adapter, waits = fred_api
+    calls = _fred_requests(monkeypatch, [
+        requests.exceptions.ConnectionError("synthetic connection failure"),
+        _fred_response(""),
+        _fred_good_response(),
+    ])
+
+    _assert_fred_frame(adapter._fetch_api("DGS3MO", "us3m"))
+
+    assert len(calls) == 3
+    assert waits == [3, 6]
+
+
+@pytest.mark.parametrize(("content_type", "media_type"), [
+    ("text/html; boundary=HEADER_CANARY", "html"),
+    ("application/json", "json"),
+    ("application/problem+json", "json"),
+    ("text/plain; boundary=HEADER_CANARY", "text"),
+    ("application/octet-stream", "other"),
+    ("HEADER_CANARY", "other"),
+    (None, "missing"),
+])
+def test_fred_api_decode_exhaustion_has_bounded_safe_diagnostics(
+    fred_api, monkeypatch, caplog, content_type, media_type,
+):
+    adapter, waits = fred_api
+    body = "<html>BODY_CANARY api_key=BODY_KEY_CANARY</html>"
+    calls = _fred_requests(monkeypatch, [
+        _fred_response(body, content_type=content_type) for _ in range(4)
+    ])
+
+    with pytest.raises(ValueError) as caught:
+        adapter._fetch_api("DGS3MO", "us3m")
+
+    assert len(calls) == 4
+    assert waits == [3, 6, 12]
+    message = str(caught.value)
+    assert "invalid_json" in message
+    assert "status=200" in message
+    assert f"media_type={media_type}" in message
+    assert f"body_bytes={len(body.encode('utf-8'))}" in message
+    assert "attempt=4/4" in message
+    assert caught.value.__suppress_context__
+    diagnostic = message + caplog.text
+    for canary in (
+        "FRED_KEY_CANARY", "QUERY_CANARY", "HEADER_CANARY",
+        "BODY_CANARY", "BODY_KEY_CANARY", "https://",
+    ):
+        assert canary not in diagnostic
+
+
+def test_fred_api_mixed_failures_exhaust_exactly_four_requests(fred_api, monkeypatch):
+    adapter, waits = fred_api
+    calls = _fred_requests(monkeypatch, [
+        requests.exceptions.ConnectTimeout("synthetic timeout"),
+        _fred_response("not json"),
+        requests.exceptions.ConnectionError("synthetic connection failure"),
+        _fred_response(""),
+    ])
+
+    with pytest.raises(ValueError, match="invalid_json"):
+        adapter._fetch_api("DGS3MO", "us3m")
+
+    assert len(calls) == 4
+    assert waits == [3, 6, 12]
+
+
+@pytest.mark.parametrize("payload", [
+    {},
+    [],
+    {"observations": []},
+    {"observations": "invalid-shape"},
+])
+def test_fred_api_valid_json_bad_shape_does_not_retry(fred_api, monkeypatch, payload):
+    adapter, waits = fred_api
+    calls = _fred_requests(monkeypatch, [_fred_response(json.dumps(payload))])
+
+    with pytest.raises((KeyError, TypeError, ValueError)):
+        adapter._fetch_api("DGS3MO", "us3m")
+
+    assert len(calls) == 1
+    assert waits == []
+
+
+def test_fred_api_http_failure_uses_same_attempt_budget(fred_api, monkeypatch):
+    adapter, waits = fred_api
+    calls = _fred_requests(monkeypatch, [
+        _fred_response("synthetic service failure", status=503),
+        _fred_good_response(),
+    ])
+
+    _assert_fred_frame(adapter._fetch_api("DGS3MO", "us3m"))
+
+    assert len(calls) == 2
+    assert waits == [3]
+
+
+def test_fred_api_unexpected_programming_error_is_not_retried(fred_api, monkeypatch):
+    adapter, waits = fred_api
+    calls = _fred_requests(monkeypatch, [RuntimeError("synthetic programming error")])
+
+    with pytest.raises(RuntimeError, match="synthetic programming error"):
+        adapter._fetch_api("DGS3MO", "us3m")
+
+    assert len(calls) == 1
+    assert waits == []
+
+
+def test_fred_api_three_exhausted_series_stop_before_fourth(fred_api, monkeypatch):
+    adapter, waits = fred_api
+    adapter.cfg["series"] = {"curve": {
+        "DGS2": "us2y", "DGS10": "us10y", "T10Y2Y": "spread", "DGS3MO": "us3m",
+    }}
+    calls = _fred_requests(monkeypatch, [_fred_response("") for _ in range(12)])
+
+    with pytest.raises(RuntimeError) as caught:
+        adapter.fetch()
+
+    assert len(calls) == 12
+    assert [kwargs["params"]["series_id"] for _, kwargs in calls] == (
+        ["DGS2"] * 4 + ["DGS10"] * 4 + ["T10Y2Y"] * 4
+    )
+    assert waits == [3, 6, 12] * 3
+    assert "3 consecutive series failures with no successful frame" in str(caught.value)
+    assert "endpoint down" not in str(caught.value)
+
+
+def test_fred_api_recovery_allows_later_treasury_series(fred_api, monkeypatch):
+    adapter, waits = fred_api
+    adapter.cfg["series"] = {"curve": {
+        "DGS2": "us2y", "DGS10": "us10y", "T10Y2Y": "spread", "DGS3MO": "us3m",
+    }}
+    calls = _fred_requests(monkeypatch, [
+        *[_fred_response("") for _ in range(9)],
+        _fred_good_response(),
+        _fred_good_response(),
+    ])
+
+    frames = adapter.fetch()
+
+    assert set(frames) == {"T10Y2Y", "DGS3MO"}
+    _assert_fred_frame(frames["DGS3MO"])
+    assert len(calls) == 11
+    assert waits == [3, 6, 12, 3, 6, 12, 3]
+
+
+@pytest.mark.parametrize("partial_success", [True, False])
+def test_fred_partial_and_total_failure_redact_exception_text(
+    fred_api, monkeypatch, caplog, partial_success,
+):
+    adapter, _waits = fred_api
+    adapter.cfg["series"] = {"curve": {"DGS2": "us2y", "DGS3MO": "us3m"}}
+
+    def fetch_one(sid, col):
+        if sid == "DGS3MO" and partial_success:
+            return pd.DataFrame({col: [4.25]}, index=["2026-10-20"])
+        raise requests.exceptions.HTTPError(
+            "failure https://fred.example.invalid/observations"
+            "?api_key=FRED_KEY_CANARY&debug=QUERY_CANARY"
+        )
+
+    monkeypatch.setattr(adapter, "_fetch_one", fetch_one)
+    if partial_success:
+        assert set(adapter.fetch()) == {"DGS3MO"}
+        diagnostic = caplog.text
+        assert "FRED partial failure" in diagnostic
+    else:
+        with pytest.raises(RuntimeError) as caught:
+            adapter.fetch()
+        diagnostic = str(caught.value) + caplog.text
+    assert "REDACTED" in diagnostic
+    assert "FRED_KEY_CANARY" not in diagnostic
+    assert "QUERY_CANARY" not in diagnostic
+
+
+def test_ordinary_collect_yahoo_opts_into_same_fetch_capture(monkeypatch):
+    from scripts import collect
+    from collectors.base import FetchResult
+    from engine import pit_lag_recorder
+    calls = []
+    class OrdinaryAdapter:
+        group = "yahoo"
+    def run(adapter, **kwargs):
+        calls.append(kwargs)
+        return FetchResult("yahoo", "ok")
+    monkeypatch.setattr(collect, "run_adapter", run)
+    monkeypatch.setattr(pit_lag_recorder, "record_fetch_result", lambda *a, **k: None)
+    collect._run_one("yahoo", OrdinaryAdapter, False)
+    collect._run_one("other", OrdinaryAdapter, False)
+    assert calls == [{"full_history": False, "capture_wti_receipts": True}, {"full_history": False}]

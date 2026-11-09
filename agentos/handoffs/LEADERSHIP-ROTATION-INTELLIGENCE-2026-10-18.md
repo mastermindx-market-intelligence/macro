@@ -2,7 +2,7 @@
 workstream: WS:LEADERSHIP-ROTATION-INTELLIGENCE
 program: sector-rotation-intelligence
 session: chatgpt/sol-2026-10-18-sector-rotation
-ended_because: explicit_chairman_checkpoint_and_fresh_session_request
+ended_because: blocked
 mission_complete: false
 finalization_classification: CHECKPOINTED_CONTINUATION
 intended_resume_surface: fresh ChatGPT Pro CEO Integrator session in the same MastermindX project
@@ -14,6 +14,41 @@ macro_main_observed: b912fd97827cca925a7123aa2012e9765077f3f7
 prior_agentos_handoff: agentos/handoffs/LEADERSHIP-ROTATION-INTELLIGENCE-2026-10-14.md
 original_implementation_pr: 9196
 canonical_checkpoint_comment: https://github.com/mastermindx-market-intelligence/macro/pull/9196#issuecomment-6248890595
+model: "sol"
+ended_because_detail: "explicit_chairman_checkpoint_and_fresh_session_request"
+ended_because_classification_note: "The blocked enum records the unfinished programme and documented publication blocker at the October18 checkpoint; the session itself stopped at the Chairman's explicit checkpoint and fresh-session request."
+mission: "Complete the Sector/Theme Rotation Intelligence programme through coherent source-backed breadth publication, authenticated source-to-UI acceptance and separate scientific qualification, preserving accepted LR-W1–W5 and T01–T26 work."
+state_before: "At the 2026-10-18 checkpoint, the October14 handoff and #9196 held continuity. Accepted implementation and renderer fixes had landed, but the public breadth anchor remained October14, QLedger publication was blocked, measurement releases were unresolved, and authenticated consumer proof and predictive qualification were incomplete."
+changed:
+  - path: "agentos/handoffs/LEADERSHIP-ROTATION-INTELLIGENCE-2026-10-18.md"
+    what: "Added this additive checkpoint with the exact read-back-verified #9196 comment6248890595, accepted-work references, unresolved boundaries and successor instructions. No code, jobs, market data, provider accounts, renderers or permissions changed."
+verified:
+  - claim: "2026-11-09 metadata-repair source verification only: the original October18 handoff contains the complete original checkpoint comment6248890595 unchanged."
+    command: "GitHub GET /repos/mastermindx-market-intelligence/macro/git/blobs/7eaf5b002733365467dc44fdd1c7c49f975795c2 and GET /repos/mastermindx-market-intelligence/macro/issues/comments/6248890595; evaluate source.includes(checkpoint.body) and gitBlobSha(source) === '7eaf5b002733365467dc44fdd1c7c49f975795c2'."
+    result: "Both comparisons returned true; the entire 7,998-character checkpoint is present exactly. This is source conservation, not historical test execution, production/browser acceptance or programme completion."
+unverified:
+  - claim: "The October18 checkpoint established current complete S&P1500 breadth and coherent publication."
+    what_would_verify: "Reconcile the existing QLedger publisher and source rights, then consume a complete coherent generation through the normal publisher without bypassing its vintage guard."
+  - claim: "The October18 checkpoint established authenticated 5/15/30/60-minute source-to-UI acceptance."
+    what_would_verify: "Authorized signed-in proof of actual source clocks, coverage, relative SPY, interval behavior and access-denied states against the published generation."
+  - claim: "Predictive capability or later H1 evaluation was qualified."
+    what_would_verify: "Fresh V3 preregistration and required size/power/scientific admission gates, preserving frozen V1/V2/V2.1 rulings; software CI is not predictive evidence."
+unresolved:
+  - "At the October18 checkpoint, QLedger claims growth beyond GitHub's file limit blocked lossless publication and the public breadth anchor remained October14."
+  - "At that checkpoint #9454/#9470 release was unresolved; M2 Fabric r1/r2 failures/refusals remained protected, and no live source/entitlement/production feed or authenticated consumer acceptance was proven."
+  - "The Research Screener runtime logo_config cache mismatch needed a disjoint repair preserving #9216 generated-page custody. Predictive capability, V3 admission and remaining T18/T25 consumer obligations were incomplete."
+next_actions:
+  - "The currently assigned receiver reads this checkpoint/workstream and reconciles current source/CI/runtime/Fabric effects and applicable law, preserving live writers, refusals and uncertain effects."
+  - "Reconcile the existing #9450/#8756 QLedger path before advancing legally sourced complete breadth. Do not truncate claims or duplicate publishers. Consume normal coherent publication and verify one common session through basket, action board, theme, premium and cycle outputs before authenticated source-to-UI proof."
+  - "Reconcile current #9454/#9470 release disposition and original M2 refusal evidence under actual controls; no refused replay or unauthorized carrier. Qualify any disjoint Research Screener cache repair after #9216 custody checks, keeping V3 science separate from source release."
+do_not_redo:
+  - "Do not recreate accepted #9196/#9508/#9511/#9529/#9546/#9256 work, Terminal #881/accepted #1003, or accepted LR-W1–W5/T01–T26 work. Preserve frozen V1/V2/V2.1 and scientific dispositions."
+  - "Do not resubmit terminal M2 Fabric r1/r2 IDs, change accounts to evade cooldown or use the Executive plugin as a substitute review provider."
+  - "Do not create a second price/history/identity/clock/score/watch/control or QLedger retention plane, duplicate publishers or overwrite a live writer."
+danger_areas:
+  - "Do not truncate QLedger claims, bypass the vintage guard or relabel an October14 basket as a newer session. Anonymous protected-asset401 responses are intentional; no access-control bypass or inferred signed-in acceptance."
+  - "Preserve custody and original refusal/uncertain effects; a new chat inherits no host session, source lease or authentication. Do not restamp runtime-mutated logo_config as immutable, disclose secrets or overwrite #9216's generated contribution."
+  - "Code completion, green CI, merge and deployment do not establish source freshness, browser acceptance, predictive capability or trading authority."
 ---
 
 # Leadership Rotation Intelligence — cumulative program handoff, 2026-10-18
