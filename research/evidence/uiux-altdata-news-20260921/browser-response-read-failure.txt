@@ -1,0 +1,26 @@
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/uiux-altdata-news-20260921/research/evidence/uiux-altdata-news-20260921/verify_news.py", line 74, in <module>
+    row={'cell':name,'http':response.status,'html_sha256':hashlib.sha256(response.body()).hexdigest(),'honest_anonymous_gate':True,'native_retry_and_locale':not bool(args.base_url),'single_flight_delayed_retry':not bool(args.base_url),'safe_focus_recovery':not bool(args.base_url),'fixture_headline_order_and_translation':not bool(args.base_url),'overflow':overflow,'page_errors':errors,'passed':True}
+                                                                         ~~~~~~~~~~~~~^^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/sync_api/_generated.py", line 660, in body
+    return mapping.from_maybe_impl(self._sync(self._impl_obj.body()))
+                                   ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_sync_base.py", line 115, in _sync
+    return task.result()
+           ~~~~~~~~~~~^^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_network.py", line 882, in body
+    binary = await self._channel.send(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+    )
+    ^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_connection.py", line 76, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_connection.py", line 632, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.Error: Response.body: Protocol error (Network.getResponseBody): No resource with given identifier found
+Response body is not available for a response that was navigated away from. Read response.body() before triggering any navigation.

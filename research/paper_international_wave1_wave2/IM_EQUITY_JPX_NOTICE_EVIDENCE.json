@@ -1,0 +1,31 @@
+{
+  "status": "ACCEPTED_SCOPED_SOURCE",
+  "root": "01a1101f-2a37-7320-9a9b-5df3ce1b890d",
+  "source_hashes": {
+    "lib/exchange_holidays.py": "1da4d79c1b603432c4b994aef671d60020a0df119d6b7f1420b2a7a35ffc9e2e",
+    "tests/test_jpx_exchange_notice.py": "4fada91e79cc033418ffc7d6f1084db09c70482b0c1aa77021a6ccba1c95058d"
+  },
+  "official_notice": "https://www.jpx.co.jp/english/corporate/about-jpx/calendar/",
+  "source_read": "Parent re-read official 2026/2027 cash-equity calendar on 2026-10-08; published weekday closures only.",
+  "review": {
+    "run_id": "paper-01a1101f-jpx-notice-review-r1",
+    "verdict": "PASS",
+    "artifact_sha256": "29b4a900d6b2a34d45eb0cc4eed7cd6c5fa5979e2a5f322a270d5b357e71e226",
+    "parent_reproduction": "23 passed: 8 author + 15 independent; immutable reviewed capsule"
+  },
+  "source_custody": {
+    "current_main_blob": "ad14cd8f22925381462821e04f5f8080ef0181a8",
+    "local_before_blob": "ad14cd8f22925381462821e04f5f8080ef0181a8",
+    "checked": "2026-10-09T00:11Z",
+    "open_pr_title_search": []
+  },
+  "preserved": "CN/HK/US/CA notices, provenance and partial/half-session maps API-equal to baseline.",
+  "limits": [
+    "JP calendar notices only; no JP session/hours/FX/provider-completion or eligibility grant.",
+    "Other equity markets still require independent authentic clock and disclosure evidence."
+  ],
+  "integration_tests": {
+    "notice_and_cash_calendars": "109 passed",
+    "other_calendar_owner_regressions": "68 passed, 1 warning in 50.59s"
+  }
+}

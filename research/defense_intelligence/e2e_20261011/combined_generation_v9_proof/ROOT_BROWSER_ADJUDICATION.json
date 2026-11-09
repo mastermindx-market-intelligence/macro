@@ -1,0 +1,46 @@
+{
+  "state": "LOCAL_SOURCE_BROWSER_QUALIFIED_NOT_RELEASED",
+  "reviewed_at": "2026-10-14T05:29:12.440085+00:00",
+  "source_identity": "Base d9af0853114c32ef4e8d1cd8959eb228641ef61a plus SOURCE_FREEZE.json per-path hashes; final source commit will preserve these exact material bytes.",
+  "local_test_principal_only": true,
+  "timing": {
+    "all_pass": true,
+    "median_ms": 2789.200000010431,
+    "p95_ms": 2807.3999999910593,
+    "max_ms": 2807.3999999910593,
+    "target_ms": 3000
+  },
+  "visual_cells": 24,
+  "density_and_program_cases": 11,
+  "rtx_deeplink_receipt": "DEEPLINK.json",
+  "css_ast": "CSS_AST_EQUIVALENCE.json",
+  "js_ast": "JS_AST_EQUIVALENCE.json",
+  "visual_review": {
+    "reviewer": "assigned root principal; not an independent customer-acceptance claim",
+    "inspected": [
+      "density/390x844-dark-en-themes.png",
+      "density/390x844-light-zh-themes.png",
+      "density/1440x1000-dark-en-themes.png",
+      "density/1440x1000-light-en-themes.png",
+      "428b167ba3a396d0.png",
+      "9c67c74b7c6898f6.png",
+      "density/390x844-light-en-queue-end.png",
+      "density/390x844-dark-en-sources-open.png"
+    ],
+    "dark": "Separate subdued dark panels retain luminous hierarchy and muted provenance; contrary evidence uses canonical warning tint. Native details retain full source records.",
+    "light": "White research surfaces use hairline separation, dark ink and restrained shadow; nested theme facts use an open editorial treatment instead of duplicating dark panel fills.",
+    "behavior": "Six themes and all six evidence states remain visible; disclosures retain exact narratives. The 500-row mobile queue has bounded height, End/Home navigation and a reachable footer; the last row stays above the fixed summary.",
+    "limitations": "The complete long evidence narrative remains available above the procurement workspace. These are local source-runtime captures with an explicit test-principal dependency, not entitled installed or independent investor acceptance."
+  },
+  "next": [
+    "Commit material source and real evidence.",
+    "Integrate current main without altering accepted material bytes.",
+    "Run complete immutable candidate proof on committed source.",
+    "Push original PR9066 and obtain exact-head protected review/CI/merge.",
+    "Continue original financial CAS, publisher, installed identity and independent acceptance gates."
+  ],
+  "held_effects": [
+    "Original P2/Q3 carriers remain unreconciled; no retry or replacement.",
+    "Terminal778 custody and two entitled subjects remain separate acceptance gates."
+  ]
+}

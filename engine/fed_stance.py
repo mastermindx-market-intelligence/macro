@@ -27,14 +27,13 @@ def snapshot(latest: dict | None) -> dict:
     latest = latest or {}
     raw_fp = latest.get("fed_path") or {}
     raw_fp = raw_fp if isinstance(raw_fp, dict) else {}
-    versioned = "calculation_version" in raw_fp
-    fp = raw_fp
-    if versioned:
-        try:
-            from engine.fed_path import validated_pricing_view
-            fp = validated_pricing_view(raw_fp)
-        except Exception:  # Optional pricing cannot revive an unqualified fallback.
-            fp = {"pricing_comparison_status": "normalizer_unavailable"}
+    from engine.fed_path import consumer_pricing_view, is_versioned_pricing
+
+    versioned = is_versioned_pricing(raw_fp)
+    try:
+        fp = consumer_pricing_view(raw_fp)
+    except Exception:  # Optional pricing cannot revive an unqualified fallback.
+        fp = {"pricing_comparison_status": "normalizer_unavailable"} if versioned else {}
     gap = fp.get("gap") or {}
     cat = latest.get("catalyst_tone") or {}
     cat = cat if isinstance(cat, dict) else {}
@@ -99,7 +98,7 @@ def snapshot(latest: dict | None) -> dict:
     }
     if versioned:
         out.update({
-            "policy_pricing_version": raw_fp.get("calculation_version"),
+            "policy_pricing_version": fp.get("calculation_version"),
             "implied_bp_12m": fp.get("implied_bp_12m"),
             "implied_cut_equivalents_12m": fp.get("implied_cut_equivalents_12m"),
             "pricing_comparison_status": fp.get("pricing_comparison_status"),
