@@ -1,0 +1,17 @@
+{
+  "rule": "gex_flip_cross",
+  "severity": "warn",
+  "message": "GEX: spot crossed the gamma flip (net -31bn, spot vs flip -0.4%)",
+  "message_zh": "GEX：现价穿越 gamma 翻转点",
+  "icon": "🧲",
+  "plain_en": "Options “gravity” flipped — bigger swings more likely",
+  "plain_zh": "期权“引力”反转 — 波动可能加大",
+  "what_en": "Dealer gamma (GEX) measures how options hedging pushes the market around. Positive gamma damps moves (calmer); negative amplifies them (sharper swings, both ways). This flag means that backdrop just changed — expect the market to move more freely until it flips back.",
+  "what_zh": "做市商 gamma（GEX）衡量期权对冲如何推动市场。正 gamma 抑制波动（更平静）；负 gamma 放大波动（双向更剧烈）。此信号表示该背景刚刚改变 —在它再次反转前，市场可能波动得更自由。",
+  "anchor": "board",
+  "tier": "watch",
+  "edge_en": "Medium — changes the volatility backdrop, not the direction.",
+  "edge_zh": "中 — 改变的是波动背景，而非方向。",
+  "detail_en": "Options hedging just flipped from damping moves to amplifying them — expect bigger swings both ways.",
+  "detail_zh": "期权对冲由抑制波动转为放大波动——双向波动可能加大。"
+}

@@ -641,6 +641,9 @@ def test_receipt_shots_depict_the_source_under_test():
         # them fails this test instead of leaving the shots silently stale.
         "templates/theme.css",
         "templates/dashboard.html.j2",
+        "templates/_macro_workspace.css.j2",
+        "templates/_macro_workspace.js.j2",
+        "templates/_macro_history.js.j2",
         "templates/_risk_radar_workspace.html.j2",
         "templates/sector_central.html.j2",
         "templates/si_workspace.js",

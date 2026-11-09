@@ -47615,6 +47615,10 @@ jobs:
     # An unlisted closure file is an uncovered path. No tests/** catch-all.
     scope: exclusive
     paths:
+      # Macro workspace includes are direct inputs to the dashboard render.
+      - "templates/_macro_workspace.css.j2"
+      - "templates/_macro_workspace.js.j2"
+      - "templates/_macro_history.js.j2"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
@@ -47922,6 +47926,10 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      # Macro workspace includes are direct inputs to the dashboard render.
+      - "templates/_macro_workspace.css.j2"
+      - "templates/_macro_workspace.js.j2"
+      - "templates/_macro_history.js.j2"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
@@ -53361,3 +53369,110 @@ jobs:
         run: python -m pytest tests/test_public_site_figma_import_plan.py -q
       - name: reference matrix sealing contracts
         run: python -m pytest tests/test_public_site_figma_reference_matrix.py -q
+
+  macro-workspace-browser:
+    # Full Jinja workspace and native interactions on explicit frozen UI inputs.
+    # Imports and actual rendered templates/assets are declared; dormant collector
+    # subprocess/data traversal is not part of this hermetic browser fixture.
+    if: ${{ false }}
+    gate: code
+    scope: exclusive
+    paths:
+      - "collectors/__init__.py"
+      - "collectors/base.py"
+      - "collectors/fred.py"
+      - "collectors/yahoo.py"
+      - "config/ai_pricing.yml"
+      - "config/capability_manifest.yml"
+      - "config/delisted_symbols.yml"
+      - "engine/__init__.py"
+      - "engine/codex_lane/__init__.py"
+      - "engine/codex_lane/runner.py"
+      - "engine/codex_provider.py"
+      - "engine/event_calendar.py"
+      - "engine/gdelt_client.py"
+      - "engine/i18n.py"
+      - "engine/macro_news.py"
+      - "engine/macro_surprise.py"
+      - "engine/neuralweb/__init__.py"
+      - "engine/neuralweb/key_pool.py"
+      - "engine/news_common.py"
+      - "engine/news_events.py"
+      - "engine/news_translate.py"
+      - "engine/qbus.py"
+      - "engine/qkernel.py"
+      - "lib/__init__.py"
+      - "lib/ai_costs.py"
+      - "lib/cn_calendar.py"
+      - "lib/config.py"
+      - "lib/delisted_symbols.py"
+      - "lib/exchange_holidays.py"
+      - "lib/hk_calendar.py"
+      - "lib/market_observations.py"
+      - "lib/market_session.py"
+      - "lib/nyse_calendar.py"
+      - "lib/stooq.py"
+      - "lib/store.py"
+      - "lib/ticker_aliases.py"
+      - "lib/tsx_calendar.py"
+      - "lib/us_cash_calendar.py"
+      - "scripts/__init__.py"
+      - "scripts/capture_page_evidence.py"
+      - "site/assets/**"
+      - "site/fonts/**"
+      - "site/icons/**"
+      - "templates/_aibrief_body.html.j2"
+      - "templates/_aibrief_css.j2"
+      - "templates/_all_tools_menu.html.j2"
+      - "templates/_decision_card.html.j2"
+      - "templates/_lazy_heatmap_loader.html.j2"
+      - "templates/_macro_attio_type.css.j2"
+      - "templates/_macro_history.js.j2"
+      - "templates/_macro_sector_desk.html.j2"
+      - "templates/_macro_workspace.css.j2"
+      - "templates/_macro_workspace.js.j2"
+      - "templates/_navlinks.html.j2"
+      - "templates/_prophet_card.html.j2"
+      - "templates/_prophet_receipts.html.j2"
+      - "templates/_risk_envelope_band.css.j2"
+      - "templates/_risk_envelope_band.html.j2"
+      - "templates/_risk_radar_card.css.j2"
+      - "templates/_risk_radar_card.html.j2"
+      - "templates/_risk_radar_workspace.html.j2"
+      - "templates/_seo_head.html.j2"
+      - "templates/_site_nav.html.j2"
+      - "templates/assets/**"
+      - "templates/dashboard.html.j2"
+      - "templates/fonts/**"
+      - "templates/heatmap.js"
+      - "templates/icons/**"
+      - "templates/logo_config.js"
+      - "templates/mm_brain.js"
+      - "templates/navigation-refresh.css"
+      - "templates/onboard.css"
+      - "templates/onboard.js"
+      - "templates/risk_envelope_live.js"
+      - "templates/risk_radar_workspace.css"
+      - "templates/risk_radar_workspace.js"
+      - "templates/stock-logos.js"
+      - "templates/tablesort.js"
+      - "templates/theme.css"
+      - "templates/theme.js"
+      - "templates/tier_preview.css"
+      - "tests/__init__.py"
+      - "tests/fixtures/macro_workspace/**"
+      - "tests/macro_workspace_browser_support.py"
+      - "tests/test_macro_workspace_browser.py"
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install Macro browser fixture dependencies
+        run: pip install pytest playwright jinja2 pyyaml pandas requests beautifulsoup4
+      - name: install Chromium
+        run: python -m playwright install --with-deps chromium
+      - name: Macro workspace layout, keyboard, touch, live history and unavailable states
+        run: python -m pytest tests/test_macro_workspace_browser.py -q

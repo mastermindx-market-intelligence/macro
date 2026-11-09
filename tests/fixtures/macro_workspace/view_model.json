@@ -1,0 +1,543 @@
+{
+  "latest": {
+    "date": "2026-08-28",
+    "quad": "Q2",
+    "quad_name": "Reflation",
+    "label": "Q2 — Reflation",
+    "confidence": 0.72,
+    "fed_stance": {
+      "stance": "hawkish"
+    },
+    "dislocation": null,
+    "turning_point": null,
+    "risk_radar": {
+      "scares": [
+        {
+          "scare": "global",
+          "label_en": "Global breadth breakdown",
+          "label_zh": "全球广度破位",
+          "score": 51.5,
+          "band": "calm",
+          "firing_legs": []
+        },
+        {
+          "scare": "bubble",
+          "label_en": "Trend extension watch",
+          "label_zh": "趋势延伸观察",
+          "score": 48.0,
+          "band": "calm",
+          "firing_legs": []
+        },
+        {
+          "scare": "credit",
+          "label_en": "Credit stress",
+          "label_zh": "信用压力",
+          "score": 34.0,
+          "band": "calm",
+          "firing_legs": []
+        },
+        {
+          "scare": "growth",
+          "label_en": "Growth scare / defensive rotation",
+          "label_zh": "增长恐慌/防御轮动",
+          "score": 33.6,
+          "band": "calm",
+          "firing_legs": [
+            {
+              "leg": "growth_cyc_def",
+              "pctile": 0.72,
+              "confirmed": true
+            }
+          ]
+        },
+        {
+          "scare": "rates",
+          "label_en": "Rates / inflation shock",
+          "label_zh": "利率/通胀冲击",
+          "score": 25.9,
+          "band": "calm",
+          "firing_legs": []
+        },
+        {
+          "scare": "internals",
+          "label_en": "Breadth internals",
+          "label_zh": "内部广度",
+          "score": 20.9,
+          "band": "calm",
+          "firing_legs": []
+        },
+        {
+          "scare": "vol",
+          "label_en": "Volatility event",
+          "label_zh": "波动率事件",
+          "score": 1.2,
+          "band": "calm",
+          "firing_legs": []
+        }
+      ]
+    },
+    "rate_inflation_transmission": null,
+    "cross_asset_confirm": null,
+    "transition_state": "stable",
+    "liquidity_overlay": "neutral",
+    "conditions": null,
+    "risk_state": null,
+    "cycle_tag": "mid"
+  },
+  "mtf": null,
+  "macro_catalysts": [],
+  "event_strip": [],
+  "event_risk": null,
+  "prediction_markets": null,
+  "narrative_regime": null,
+  "ndi": null,
+  "macro_news": null,
+  "macro_brief": null,
+  "macro_news_disclaimer": "",
+  "macro_news_disclaimer_zh": "",
+  "alerts": [],
+  "pb": null,
+  "month_name": "July",
+  "commodities": [],
+  "sector_timing": {},
+  "action_board": {
+    "hold": [],
+    "avoid": [],
+    "notable": [],
+    "buy": []
+  },
+  "top_setups": [],
+  "us_standouts": {
+    "buy": [
+      {
+        "ticker": "ACME",
+        "name": "Acme Corp",
+        "sector": "Information Technology",
+        "lane": "bottoming",
+        "signal": null,
+        "signal_date": "2026-07-01",
+        "conviction": null,
+        "alpha": 0.42,
+        "alpha_z": 0.42,
+        "alpha_entry": null,
+        "alpha_sector_rank": 3,
+        "alpha_sector_n": 25,
+        "sector_rank": 3,
+        "sector_n": 25,
+        "price": 42.5,
+        "off_high": -18.0,
+        "ext_z": 0.1,
+        "demand": null,
+        "sue_z": null,
+        "insider_buyers": null,
+        "insider_net_mn": null,
+        "insider_bps": null,
+        "news_burst": null,
+        "gex_confirm": null,
+        "confluence_plus": null,
+        "altdata": null,
+        "smartmoney_chip": null,
+        "eq_grade": null,
+        "eq_grade_zh": null,
+        "eq_dir": null,
+        "eq_badge": null,
+        "stop_guidance": null,
+        "spark_svg": null,
+        "sector_capitulating": null,
+        "hold": null,
+        "dir": null,
+        "days": null,
+        "count": null,
+        "age_short": null,
+        "age_short_zh": null,
+        "align_tier": null,
+        "urgency": null,
+        "risk_sizing": null,
+        "label": null,
+        "entry_signal": null,
+        "above_trend": null,
+        "stage": null,
+        "prophet": null,
+        "score_rank": null,
+        "display_rank": null,
+        "featured": null,
+        "new": null,
+        "days_since_signal": null,
+        "theme": null,
+        "theme_confirmed": null,
+        "dossier": {
+          "action": {
+            "verb": "WAIT",
+            "verb_zh": "等待",
+            "tone": "wait"
+          },
+          "why_now": "Weekly cross fresh; daily reset underway.",
+          "no_buy_reasons": [
+            "freshness_expired",
+            "risk_veto"
+          ],
+          "stale_flags": [
+            "insider stale 45d"
+          ],
+          "authority_level": {
+            "tier": "T2 calibrated",
+            "css": "trust-t2"
+          }
+        }
+      },
+      {
+        "ticker": "ZEUS",
+        "name": "Zeus Industries",
+        "sector": "Information Technology",
+        "lane": null,
+        "signal": null,
+        "signal_date": "2026-07-01",
+        "conviction": null,
+        "alpha": 0.42,
+        "alpha_z": 0.42,
+        "alpha_entry": null,
+        "alpha_sector_rank": 3,
+        "alpha_sector_n": 25,
+        "sector_rank": 3,
+        "sector_n": 25,
+        "price": 42.5,
+        "off_high": -18.0,
+        "ext_z": 0.1,
+        "demand": null,
+        "sue_z": null,
+        "insider_buyers": null,
+        "insider_net_mn": null,
+        "insider_bps": null,
+        "news_burst": null,
+        "gex_confirm": null,
+        "confluence_plus": null,
+        "altdata": null,
+        "smartmoney_chip": null,
+        "eq_grade": null,
+        "eq_grade_zh": null,
+        "eq_dir": null,
+        "eq_badge": null,
+        "stop_guidance": null,
+        "spark_svg": null,
+        "sector_capitulating": null,
+        "hold": null,
+        "dir": null,
+        "days": null,
+        "count": null,
+        "age_short": null,
+        "age_short_zh": null,
+        "align_tier": null,
+        "urgency": null,
+        "risk_sizing": null,
+        "label": null,
+        "entry_signal": null,
+        "above_trend": null,
+        "stage": null,
+        "prophet": null,
+        "score_rank": null,
+        "display_rank": null,
+        "featured": null,
+        "new": null,
+        "days_since_signal": null,
+        "theme": null,
+        "theme_confirmed": null,
+        "dossier": null
+      }
+    ],
+    "eligible": 2
+  },
+  "us_prophet_book": {
+    "asof": "2026-07-04",
+    "intake": {
+      "early_turn_watch": []
+    },
+    "lifecycle_counts": {
+      "watch": 0,
+      "ready": 1,
+      "entered": 1,
+      "delivering": 0,
+      "overtime": 0,
+      "invalidated": 0,
+      "resolved": 0
+    },
+    "lifecycle_live_total": 2,
+    "lifecycle_grand_total": 2,
+    "plans": [
+      {
+        "id": "ACME-BULL-20260701",
+        "asset": "ACME",
+        "lifecycle_state": "entered",
+        "entry_status": "buy_now",
+        "board_read": null,
+        "_priority_score": 72.0,
+        "entry_zone": null,
+        "entry_zone_state": null,
+        "closed": false,
+        "plan_asof": "2026-07-04",
+        "recorded_at": "2026-07-04",
+        "entry_date": "2026-07-01",
+        "signal_date": "2026-07-01"
+      },
+      {
+        "id": "ZEUS-BULL-20260701",
+        "asset": "ZEUS",
+        "lifecycle_state": "ready",
+        "entry_status": "bounce_wait",
+        "board_read": null,
+        "_priority_score": 48.0,
+        "entry_zone": null,
+        "entry_zone_state": null,
+        "closed": false,
+        "plan_asof": "2026-07-04",
+        "recorded_at": "2026-07-04",
+        "entry_date": "2026-07-01",
+        "signal_date": "2026-07-01"
+      }
+    ]
+  },
+  "life_gate": null,
+  "us_prophet_episodes": {},
+  "us_board_outcomes": null,
+  "market_gamma": null,
+  "components_confirming": [],
+  "components_contradicting": [],
+  "flip_plain": null,
+  "internals": [],
+  "size_style": [],
+  "breadth_div": null,
+  "breadth_panel": null,
+  "adv_breadth": null,
+  "sector_setups": null,
+  "generated_utc": "2026-07-04 06:00",
+  "chart_liquidity": null,
+  "chart_credit_breadth": null,
+  "market_tiles": [],
+  "vix": null,
+  "chart_vix": null,
+  "positioning": [],
+  "holdings_changes": [],
+  "holdings_threshold": 5.0,
+  "accumulation": [],
+  "flows_html": "",
+  "health": [],
+  "factor_leadership": null,
+  "nowcast_hist": null,
+  "stance": null,
+  "index_health": [],
+  "alloc_card": null,
+  "risk_model": null,
+  "chart_risk_model": null,
+  "chart_curve": null,
+  "chart_vix_term": null,
+  "cross_asset": null,
+  "fear_euphoria": {
+    "fe_score": 98,
+    "band": "Euphoria"
+  },
+  "regime_snap": null,
+  "market_state": {
+    "radar": {
+      "state": "calm",
+      "state_zh": "平静",
+      "top_score": 34,
+      "label_en": "Growth scare / defensive rotation",
+      "label_zh": "增长恐慌/防御轮动",
+      "do_en": "Normal exposure.",
+      "do_zh": "正常仓位。",
+      "dd5": 0.02,
+      "dd10": 0.06,
+      "dd21": 0.13,
+      "dd_lift": 0.73,
+      "dd_base": {
+        "h5": 0.036,
+        "h10": 0.086,
+        "h21": 0.178
+      },
+      "is_loud": false,
+      "binding": false,
+      "authority": {
+        "note_en": "Advisory — sizes risk; does not override the measured tape.",
+        "note_zh": "提示性信号——仅调整仓位，不覆盖实测盘面。"
+      },
+      "cycle": {
+        "show": true,
+        "label_en": "Midterm year",
+        "label_zh": "中期选举年",
+        "in_drawdown_window": true,
+        "sector_bias": {
+          "favor": [
+            {
+              "ticker": "XLU"
+            }
+          ],
+          "avoid": [
+            {
+              "ticker": "XLY"
+            }
+          ]
+        },
+        "stat_en": "Weaker stretch.",
+        "stat_zh": "偏弱时段。",
+        "slice_en": "Calendar only.",
+        "slice_zh": "仅日历。"
+      },
+      "contagion": {
+        "level": "low",
+        "line_en": "No tracked market in risk-off.",
+        "line_zh": "追踪市场均无避险警报。",
+        "top_exporters": []
+      },
+      "cross_asset": {
+        "verdict": "converging",
+        "absorption_pctile": 0.61
+      },
+      "track": {
+        "windows": {
+          "y1": {
+            "alerts": {
+              "hit_rate": 0.4,
+              "tp": 8,
+              "n": 20
+            }
+          }
+        }
+      }
+    },
+    "components": [],
+    "color": "green",
+    "score": 62,
+    "label_en": "Risk-on",
+    "label_zh": "偏好",
+    "asof": "2026-08-28",
+    "headline_en": "Markets lean risk-on.",
+    "headline_zh": "市场偏向风险偏好。",
+    "overrides": [],
+    "flip_en": null,
+    "flip_zh": null,
+    "mtf": null
+  },
+  "signal_stack": null,
+  "vol_shock": null,
+  "froth_fragility": {
+    "score": 44,
+    "band": "watch",
+    "band_zh": "关注",
+    "provisional": true,
+    "quadrant_en": "Heat is concentrated, not broad.",
+    "quadrant_zh": "热度集中，并非全面亢奋。",
+    "face_a": {
+      "score": 70
+    },
+    "face_b": {
+      "score": 22
+    }
+  },
+  "fear_greed": {
+    "dial": 51,
+    "label_en": "Neutral",
+    "n_legs_qualifying": 6,
+    "young_tiles": []
+  },
+  "sector_heat": {
+    "as_of": "2026-08-28",
+    "rotation": [
+      {
+        "id": "ai-software",
+        "short_name": "AI Software",
+        "short_name_zh": "AI 软件",
+        "rank": 4,
+        "rank_delta_5d": 9,
+        "heat": "heating"
+      },
+      {
+        "id": "ai-agents",
+        "short_name": "AI Agents",
+        "short_name_zh": "AI 智能体",
+        "rank": 6,
+        "rank_delta_5d": 1,
+        "heat": "heating"
+      },
+      {
+        "id": "other-software",
+        "short_name": "Other Software",
+        "short_name_zh": "其他软件",
+        "rank": 8,
+        "rank_delta_5d": 6,
+        "heat": "heating"
+      },
+      {
+        "id": "semicap-equipment",
+        "short_name": "Semicap Equipment",
+        "short_name_zh": "半导体设备",
+        "rank": 11,
+        "rank_delta_5d": -2,
+        "heat": "cooling"
+      },
+      {
+        "id": "ai-hardware",
+        "short_name": "AI Hardware",
+        "short_name_zh": "AI 硬件",
+        "rank": 14,
+        "rank_delta_5d": -4,
+        "heat": "cooling"
+      },
+      {
+        "id": "cyber",
+        "short_name": "Cybersecurity",
+        "short_name_zh": "网络安全",
+        "rank": 16,
+        "rank_delta_5d": 2,
+        "heat": "heating"
+      },
+      {
+        "id": "cloud",
+        "short_name": "Cloud Infra",
+        "short_name_zh": "云基础设施",
+        "rank": 19,
+        "rank_delta_5d": 0,
+        "heat": "flat"
+      }
+    ]
+  },
+  "dispersion_regime": null,
+  "policy_lever": null,
+  "leadership_crack": {
+    "state": "BROKEN",
+    "asof": "2026-08-21",
+    "med_dd": -0.28,
+    "high_window_sessions": 63,
+    "share10": 0.7,
+    "share30": 0.4,
+    "n_total": 10,
+    "index_dd": -0.08,
+    "worst_members": [
+      {
+        "ticker": "NVDA",
+        "dd": -0.32
+      },
+      {
+        "ticker": "AVGO",
+        "dd": -0.29
+      },
+      {
+        "ticker": "TSM",
+        "dd": -0.27
+      },
+      {
+        "ticker": "ASML",
+        "dd": -0.26
+      },
+      {
+        "ticker": "AMD",
+        "dd": -0.24
+      },
+      {
+        "ticker": "AMAT",
+        "dd": -0.22
+      }
+    ],
+    "state_since": "2026-06-26",
+    "z_vel": -0.4,
+    "carnage_share_ema": 0.31
+  }
+}

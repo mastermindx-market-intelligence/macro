@@ -1,0 +1,50 @@
+/* This page index only reflects location. Native links own navigation and history. */
+(function () {
+  var nav = document.querySelector('.macro-section-links');
+  if (!nav || !('IntersectionObserver' in window)) return;
+  var links = Array.prototype.slice.call(nav.querySelectorAll('a[href^="#"]'));
+  var sections = links.map(function (link) {
+    return document.getElementById(link.getAttribute('href').slice(1));
+  });
+  if (sections.some(function (section) { return !section; })) return;
+  var observer;
+  var frame = 0;
+  var edge = 0;
+  function indicate() {
+    if (document.querySelector('.mx5-dlg.open')) return;
+    var selected = 0;
+    sections.forEach(function (section, index) {
+      if (section.getBoundingClientRect().top <= edge + 1) selected = index;
+    });
+    // A keyboard user's active card is the useful location when its section is
+    // visible below the activation band (including focus restored by a dialog).
+    sections.forEach(function (section, index) {
+      var rect = section.getBoundingClientRect();
+      if (section.contains(document.activeElement) && rect.bottom > edge &&
+          rect.top < window.innerHeight / 2) selected = index;
+    });
+    links.forEach(function (link, index) {
+      if (index === selected) link.setAttribute('aria-current', 'location');
+      else link.removeAttribute('aria-current');
+    });
+  }
+  function observe() {
+    if (observer) observer.disconnect();
+    edge = parseFloat(getComputedStyle(sections[0]).scrollMarginTop) || 86;
+    var below = Math.max(0, window.innerHeight - edge - 1);
+    observer = new IntersectionObserver(indicate, {
+      rootMargin: '-' + edge + 'px 0px -' + below + 'px 0px',
+      threshold: 0
+    });
+    sections.forEach(function (section) { observer.observe(section); });
+    indicate();
+  }
+  window.addEventListener('resize', function () {
+    if (frame) return;
+    frame = requestAnimationFrame(function () { frame = 0; observe(); });
+  });
+  document.addEventListener('focusin', indicate);
+  window.addEventListener('pageshow', indicate);
+  window.addEventListener('hashchange', indicate);
+  observe();
+})();

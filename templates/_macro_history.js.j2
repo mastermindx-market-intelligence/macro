@@ -1,0 +1,175 @@
+/* Progressive access to the existing measured path. No data fetching or scoring. */
+(function () {
+  var svg = document.querySelector('.mx5-sc-right .mx5-path-svg[data-points]');
+  if (!svg) return;
+  var plot = svg.closest('.mx5-path-plot');
+  var panel = svg.closest('.mx5-sc-right');
+  var control = panel && panel.querySelector('.macro-history-control');
+  var range = panel && panel.querySelector('.macro-history-range');
+  var output = panel && panel.querySelector('.macro-history-readout');
+  var cross = plot && plot.querySelector('.mx5-path-cross');
+  var dot = plot && plot.querySelector('.mx5-path-dot');
+  var tip = plot && plot.querySelector('.mx5-path-tip');
+  if (!plot || !control || !range || !output || !cross || !dot || !tip) return;
+  var tDate = tip.querySelector('.mx5-path-tip-date');
+  var tScore = tip.querySelector('.mx5-path-tip-score');
+  var tVerd = tip.querySelector('.mx5-path-tip-verdict');
+  var pts = readPoints();
+  var index = Math.max(0, pts.length - 1);
+  var selectedDate = pts[index] && pts[index].d;
+  var followingLatest = true;
+  var hovering = false;
+  var raf = 0;
+  var hideTimer = 0;
+  var lastX = 0;
+  var VBW = +(svg.getAttribute('data-vbw') || 1000);
+  var VBH = +(svg.getAttribute('data-vbh') || 224);
+  var COLORS = {
+    'Risk-on': ['var(--up)', 'var(--ink-up,var(--up))'],
+    'Mixed': ['var(--warn)', 'var(--ink-warn,var(--warn))'],
+    'Risk-off': ['var(--down)', 'var(--ink-down,var(--down))']
+  };
+
+  function readPoints() {
+    try {
+      var rows = JSON.parse(svg.getAttribute('data-points') || '[]');
+      if (!Array.isArray(rows)) return [];
+      return rows.filter(function (p) {
+        return p && typeof p.d === 'string' &&
+          typeof p.s === 'number' && isFinite(p.s) && p.s >= 0 && p.s <= 100 &&
+          typeof p.x === 'number' && isFinite(p.x) &&
+          typeof p.y === 'number' && isFinite(p.y);
+      });
+    } catch (_) { return []; }
+  }
+  function isZh() {
+    return (document.documentElement.getAttribute('data-lang') || '').slice(0, 2) === 'zh';
+  }
+  function pointText(p) {
+    var date = isZh() ? (p.mz || p.d) : (p.md || p.d);
+    var verdict = isZh() ? (p.vz || p.v || '') : (p.v || '');
+    var label = isZh() ? '实测合成分 ' : 'Measured blend ';
+    var provisional = p.live ? (isZh() ? ' · 盘中暂定' : ' · Provisional') : '';
+    return date + ' · ' + label + p.s + ' · ' + verdict + provisional;
+  }
+  function syncControl() {
+    if (pts.length < 2) return;
+    range.max = String(pts.length - 1);
+    range.value = String(index);
+    range.setAttribute('aria-label', isZh() ? '回看市场走势' : 'Explore market history');
+    range.setAttribute('aria-valuetext', pointText(pts[index]));
+    output.textContent = pointText(pts[index]);
+  }
+  function nearest(clientX) {
+    var rect = svg.getBoundingClientRect();
+    if (!rect.width) return index;
+    var vx = (clientX - rect.left) / rect.width * VBW;
+    var best = 0;
+    var distance = Infinity;
+    for (var i = 0; i < pts.length; i++) {
+      var delta = Math.abs(pts[i].x - vx);
+      if (delta < distance) { distance = delta; best = i; }
+    }
+    return best;
+  }
+  function show(next) {
+    if (pts.length < 2) return;
+    clearTimeout(hideTimer);
+    index = Math.max(0, Math.min(pts.length - 1, next));
+    selectedDate = pts[index].d;
+    followingLatest = index === pts.length - 1;
+    syncControl();
+    var p = pts[index];
+    var rect = svg.getBoundingClientRect();
+    var pr = plot.getBoundingClientRect();
+    if (!rect.width || !rect.height) return;
+    var sx = p.x / VBW * rect.width + rect.left - pr.left;
+    var sy = p.y / VBH * rect.height + rect.top - pr.top;
+    var colors = COLORS[p.v] || ['var(--muted)', 'var(--muted)'];
+    cross.style.left = sx + 'px';
+    cross.style.opacity = '1';
+    dot.style.left = sx + 'px';
+    dot.style.top = sy + 'px';
+    dot.style.background = colors[0];
+    dot.style.opacity = '1';
+    tDate.textContent = (isZh() ? (p.mz || p.d) : (p.md || p.d)) +
+      (p.live ? (isZh() ? ' · 盘中暂定' : ' · Provisional') : '');
+    tScore.textContent = p.s;
+    tVerd.textContent = isZh() ? (p.vz || p.v || '') : (p.v || '');
+    tVerd.style.color = colors[1];
+    var half = tip.offsetWidth / 2 || 60;
+    var clamped = Math.max(half + 2, Math.min(pr.width - half - 2, sx));
+    tip.style.left = clamped + 'px';
+    tip.style.top = sy + 'px';
+    tip.classList.add('show');
+  }
+  function hide() {
+    if (raf) { cancelAnimationFrame(raf); raf = 0; }
+    clearTimeout(hideTimer);
+    cross.style.opacity = '0';
+    dot.style.opacity = '0';
+    tip.classList.remove('show');
+  }
+  function onMove(clientX) {
+    if (pts.length < 2) return;
+    lastX = clientX;
+    if (raf) return;
+    raf = requestAnimationFrame(function () {
+      raf = 0;
+      if (hovering) show(nearest(lastX));
+    });
+  }
+  function updatePoints() {
+    var wasShowing = tip.classList.contains('show');
+    var next = readPoints();
+    if (next.length < 2) {
+      hide();
+      hovering = false;
+      pts = [];
+      if (document.activeElement === range) panel.focus({preventScroll: true});
+      range.disabled = true;
+      control.hidden = true;
+      return;
+    }
+    pts = next;
+    var retained = pts.findIndex(function (p) { return p.d === selectedDate; });
+    index = followingLatest ? pts.length - 1 :
+      (retained >= 0 ? retained : Math.min(index, pts.length - 1));
+    selectedDate = pts[index].d;
+    range.disabled = false;
+    control.hidden = false;
+    syncControl();
+    if (wasShowing) show(index);
+  }
+
+  updatePoints();
+  range.addEventListener('input', function () { show(+range.value); });
+  range.addEventListener('focus', function () { show(index); });
+  range.addEventListener('blur', hide);
+  range.addEventListener('keydown', function (event) {
+    if (event.key === 'Escape') hide();
+  });
+  svg.addEventListener('mousemove', function (event) {
+    hovering = true; onMove(event.clientX);
+  });
+  svg.addEventListener('mouseleave', function () { hovering = false; hide(); });
+  svg.addEventListener('touchstart', function (event) {
+    if (event.touches && event.touches[0]) show(nearest(event.touches[0].clientX));
+  }, {passive: true});
+  svg.addEventListener('touchmove', function (event) {
+    if (event.touches && event.touches[0]) show(nearest(event.touches[0].clientX));
+  }, {passive: true});
+  svg.addEventListener('touchend', function () {
+    clearTimeout(hideTimer); hideTimer = setTimeout(hide, 1400);
+  }, {passive: true});
+  svg.addEventListener('touchcancel', hide);
+  document.addEventListener('langchange', function () {
+    syncControl();
+    if (tip.classList.contains('show')) show(index);
+  });
+  document.addEventListener('mx5pathlive', updatePoints);
+  window.addEventListener('resize', function () {
+    if (document.activeElement === range) show(index);
+    else hide();
+  });
+})();
