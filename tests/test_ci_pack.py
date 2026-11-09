@@ -4533,6 +4533,7 @@ def test_workspace_runtime_contracts_can_start_the_ci_that_validates_them() -> N
 CURATED_EXCLUSIVE = {
     # Foundry retains its complete named closure without opaque provider fallbacks.
     "signal-foundry-regressions",
+    "public-site-figma-baseline-contracts",
     "press-account-claim-consumer",
     # GDELT leaf suites own their exact import/read closure.
     "gdelt-news-leaves",
