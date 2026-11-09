@@ -2857,34 +2857,96 @@
     "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
     "pageId": "p-5-0",
     "fixture": {
-      "origin": "2RL-0 / 359-0",
-      "symbol": "AAPL",
+      "origin": "Paper 1CA-0 / 1CX-0 plus preserved counts in359-0",
+      "provenance": "Existing Paper illustrative fixture; daily values recovered from vector geometry at5px/report. Not a verified backend or production response.",
+      "ticker": "AAPL",
       "reports24h": 13,
       "stories24h": 9,
       "reports7d": 91,
       "historyDays": 9,
-      "publicationTimeReports": 13,
-      "sources": [
-        "Benzinga",
-        "GlobeNewswire"
+      "dailyCounts28d": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        11,
+        14,
+        9,
+        12,
+        16,
+        10,
+        13,
+        15,
+        12
       ],
-      "countedDisplay": "02:35 AM",
-      "headline": "37S-0"
+      "recordedZeroDistinction": "First19 slots unrecorded, never drawn as recorded-zero dots.",
+      "countedDisplayEN": "02:35 AM",
+      "countedDisplayZH": "02:35",
+      "numericScale": "5px per report for all historical bars and rolling24h outline",
+      "coherenceCheck": "Final7UTCbins=87. Rolling7d91 can differ because its boundaries include portions of yesterday/currentday. Inherited ENapprox41.6+13<91 was rejected.",
+      "productionFixtureAlternative": {
+        "source": "terminal/e2e/news-flow-responsive.spec.ts@cfe14c49f2e0166c0ded5e6f23a274bb663d0fd3",
+        "reports24h": 2,
+        "stories24h": 2,
+        "reports7d": 3,
+        "historyDays": 6
+      }
     },
     "builderCorrections": [
       {
         "nodeId": "YM-0",
         "original": "Flow never ticks from SSE (D-W3) — nothing to freeze, only to label",
         "replacement": "Last accepted count stays visible during a stream interruption.",
-        "status": "PENDING"
+        "status": "APPLIED_RESPONSE_OBSERVED"
       },
       {
         "nodeId": "11O-0",
         "original": "Today’s outline is dashed while the feed catches up: the bar may still grow. The typical line stays — the prior 28 days are complete.",
         "replacement": "Dashed 24h bar: incomplete count. Suppress comparison; a supplied baseline does not prove complete history.",
+        "status": "APPLIED_RESPONSE_OBSERVED"
+      }
+    ],
+    "chartCorrections": [
+      {
+        "nodeId": "35X-0",
+        "originalSVG": "<svg width=\"332\" height=\"104\" viewBox=\"0 0 332 104\" xmlns=\"http://www.w3.org/2000/svg\" id=\"35X-0\" style={{ display: 'inline-block', flexShrink: 0 }}>\n                  <line x1=\"0\" y1=\"80\" x2=\"332\" y2=\"80\" stroke=\"#2A2E37\" />\n                  <line x1=\"0\" y1=\"78\" x2=\"186\" y2=\"78\" stroke=\"#6B7280\" strokeDasharray=\"1 3\" />\n                  <text x=\"93\" y=\"70\" fontFamily=\"Inter\" fontSize=\"10\" textAnchor=\"middle\" fill=\"#8A92A3\">{\"no record\"}</text>\n                  <rect x=\"198\" y=\"62\" width=\"7\" height=\"16\" fill=\"#AAB2C2B8\" />\n                  <rect x=\"209\" y=\"54\" width=\"7\" height=\"24\" fill=\"#AAB2C2B8\" />\n                  <rect x=\"220\" y=\"68\" width=\"7\" height=\"10\" fill=\"#AAB2C2B8\" />\n                  <rect x=\"231\" y=\"48\" width=\"7\" height=\"30\" fill=\"#AAB2C2B8\" />\n                  <rect x=\"242\" y=\"56\" width=\"7\" height=\"22\" fill=\"#AAB2C2B8\" />\n                  <rect x=\"253\" y=\"60\" width=\"7\" height=\"18\" fill=\"#AAB2C2B8\" />\n                  <rect x=\"264\" y=\"44\" width=\"7\" height=\"34\" fill=\"#AAB2C2B8\" />\n                  <rect x=\"275\" y=\"64\" width=\"7\" height=\"14\" fill=\"#AAB2C2B8\" />\n                  <circle cx=\"289.5\" cy=\"77\" r=\"1.5\" fill=\"#6B7280\" />\n                  <rect x=\"301\" y=\"38\" width=\"9\" height=\"40\" fill=\"none\" stroke=\"#E6E8EE\" strokeWidth=\"1.25\" />\n                  <text x=\"305.5\" y=\"32\" fontFamily=\"Inter\" fontSize=\"10\" fontWeight=\"600\" textAnchor=\"middle\" fill=\"#E6E8EE\">{\"13\"}</text>\n                  <text x=\"0\" y=\"96\" fontFamily=\"Inter\" fontSize=\"10\" fill=\"#8A92A3\">{\"28 days before today\"}</text>\n                  <text x=\"305.5\" y=\"96\" fontFamily=\"Inter\" fontSize=\"10\" textAnchor=\"middle\" fill=\"#8A92A3\">{\"24h\"}</text>\n                </svg>",
+        "reason": "Historical bars and rolling24h mark used incompatible values/scales relative to seven-day total91.",
+        "replacement": "Shared preserved nine-day design series from1CX-0; one linear5px/report scale; unrecorded history mask; rolling24h distinct from UTCbins.",
+        "status": "PENDING"
+      },
+      {
+        "nodeId": "39J-0",
+        "originalSVG": "<svg width=\"332\" height=\"104\" viewBox=\"0 0 332 104\" xmlns=\"http://www.w3.org/2000/svg\" id=\"39J-0\" style={{ display: 'inline-block', flexShrink: 0 }}>\n                  <line x1=\"0\" y1=\"80\" x2=\"332\" y2=\"80\" stroke=\"#2A2E37\" />\n                  <line x1=\"0\" y1=\"78\" x2=\"186\" y2=\"78\" stroke=\"#6B7280\" strokeDasharray=\"1 3\" />\n                  <text x=\"93\" y=\"70\" fontFamily=\"Inter\" fontSize=\"10\" textAnchor=\"middle\" fill=\"#8A92A3\">{\"no record\"}</text>\n                  <rect x=\"198\" y=\"62\" width=\"7\" height=\"16\" fill=\"#AAB2C2B8\" />\n                  <rect x=\"209\" y=\"54\" width=\"7\" height=\"24\" fill=\"#AAB2C2B8\" />\n                  <rect x=\"220\" y=\"68\" width=\"7\" height=\"10\" fill=\"#AAB2C2B8\" />\n                  <rect x=\"231\" y=\"48\" width=\"7\" height=\"30\" fill=\"#AAB2C2B8\" />\n                  <rect x=\"242\" y=\"56\" width=\"7\" height=\"22\" fill=\"#AAB2C2B8\" />\n                  <rect x=\"253\" y=\"60\" width=\"7\" height=\"18\" fill=\"#AAB2C2B8\" />\n                  <rect x=\"264\" y=\"44\" width=\"7\" height=\"34\" fill=\"#AAB2C2B8\" />\n                  <rect x=\"275\" y=\"64\" width=\"7\" height=\"14\" fill=\"#AAB2C2B8\" />\n                  <circle cx=\"289.5\" cy=\"77\" r=\"1.5\" fill=\"#6B7280\" />\n                  <rect x=\"301\" y=\"38\" width=\"9\" height=\"40\" fill=\"none\" stroke=\"#E6E8EE\" strokeWidth=\"1.25\" />\n                  <text x=\"305.5\" y=\"32\" fontFamily=\"Inter\" fontSize=\"10\" fontWeight=\"600\" textAnchor=\"middle\" fill=\"#E6E8EE\">{\"13\"}</text>\n                  <text x=\"0\" y=\"96\" fontFamily=\"Inter\" fontSize=\"10\" fill=\"#8A92A3\">{\"28 days before today\"}</text>\n                  <text x=\"305.5\" y=\"96\" fontFamily=\"Inter\" fontSize=\"10\" textAnchor=\"middle\" fill=\"#8A92A3\">{\"24h\"}</text>\n                </svg>",
+        "reason": "Historical bars and rolling24h mark used incompatible values/scales relative to seven-day total91.",
+        "replacement": "Shared preserved nine-day design series from1CX-0; one linear5px/report scale; unrecorded history mask; rolling24h distinct from UTCbins.",
         "status": "PENDING"
       }
-    ]
+    ],
+    "currentDesignNodes": {
+      "headlinesEN": "3I1-0",
+      "headlinesZH": "3MT-0",
+      "activityEN": "3J1-0",
+      "activityZH": "3NG-0",
+      "sourcesEN": "3LA-0",
+      "sourcesZH": "3OK-0",
+      "methodEN": "3LV-0",
+      "methodZH": "3P2-0"
+    }
   },
   "internationalResults": {
     "status": "PLANNED",
