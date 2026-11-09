@@ -2,9 +2,9 @@
 
 ## Applied design improvements
 
-Applied and visually checked focused improvements in fourteen existing Paper files. The work combines clearer reading paths, less repeated content, truthful source/status language, source-linked implementation guidance and an editable motion storyboard.
+Applied and visually checked focused improvements in fifteen existing Paper files. The work combines clearer reading paths, less repeated content, truthful source/status language, source-linked implementation guidance and an editable motion storyboard.
 
-**Read the [first audit and build plan](AUDIT_AND_BUILD_PLAN.md) and the [workflow continuation](WORKFLOW_CONTINUATION_20261108.md)** for exact changes, source findings, node identities, acceptance criteria and implementation sequence. The continuation includes Guide, Prophet, Market Memory, Policy Monitor, Market Ontology, Sector Intelligence and Options Watch/review plus a source-matched Flow-to-expiry journey. Risk Radar and GMI evidence details are the active next reviews.
+**Read the [first audit and build plan](AUDIT_AND_BUILD_PLAN.md) and the [workflow continuation](WORKFLOW_CONTINUATION_20261108.md)** for exact changes, source findings, node identities, acceptance criteria and implementation sequence. The continuation includes Guide, Prophet, Market Memory, Policy Monitor, Market Ontology, Sector Intelligence Options Watch/review plus a source-matched Flow-to-expiry journey, and Risk Radar’s qualification-first hierarchy. GMI public disclosure and the Company mobile composition are the active next reviews.
 
 | Surface | Open the revised design | Main outcome |
 |---|---|---|
@@ -23,6 +23,8 @@ Applied and visually checked focused improvements in fourteen existing Paper fil
 | Sector Intelligence | [Comparison](https://app.paper.design/file/01M6FAXA774QT1VRDMAG7DFQ2W/p-4-0) · [Expanded context](https://app.paper.design/file/01M6FAXA774QT1VRDMAG7DFQ2W/p-8-0) · [Cycles](https://app.paper.design/file/01M6FAXA774QT1VRDMAG7DFQ2W/p-2-0) · [Build](https://app.paper.design/file/01M6FAXA774QT1VRDMAG7DFQ2W/p-5-0) | Dossier actions first; whole-market disclosure; eight coherent timing qualification states with historical chart data preserved. |
 | Options R1 companion | [Watch/review](https://app.paper.design/file/01M5FNCKAND6CBSJNYM5FZWR8Y/p-2-0) · [Review Build](https://app.paper.design/file/01M5FNCKAND6CBSJNYM5FZWR8Y/p-3-0) · [Flow/Volatility](https://app.paper.design/file/01M5FNCKAND6CBSJNYM5FZWR8Y/p-4-0) · [Flow Build](https://app.paper.design/file/01M5FNCKAND6CBSJNYM5FZWR8Y/p-5-0) | Seventeen screen/recovery states: explicit review binding and save recovery; contract-level evidence, exact-expiry handoff plan, qualified clocks/units and honest source failures. |
 
+| Risk Radar | [Main, evidence and pickup map](https://app.paper.design/file/01M38EVF74SJWG1GANN5VP380Z/p-1-0) | Calibration status before retained probability across ten variants; rounded baseline/lift clarified; existing model, driver and return paths preserved. |
+
 The [motion reference HTML](expectation-surface-motion-reference.html) demonstrates the intended selection, pending, failure/retry, details-return and reduced-motion state model using explicit fixtures. JavaScript syntax was checked; browser execution was not verified in this session.
 
 ## Assignment and source
@@ -39,11 +41,11 @@ Canonical programme: [Macro PR #10617](https://github.com/mastermindx-market-int
 
 ## Coverage and boundaries
 
-The initial resource inventory returned 35 files and two folders. Applied native improvements now cover fourteen existing files, with exact board coverage and verification limits in the two reports. Accepted Options originals were compared with current owners and preserved; disjoint amendments provide the current-source journey. Risk Radar and GMI detail workflows are under bounded review. This is not a claim that every artboard across the estate was certified.
+The initial resource inventory returned 35 files and two folders. Applied native improvements now cover fifteen existing files, with exact board coverage and verification limits in the two reports. Accepted Options originals were compared with current owners and preserved; disjoint amendments provide the current-source journey. Risk Radar’s ten product variants and pickup map have been corrected; GMI public disclosure and Company mobile composition remain under bounded review. This is not a claim that every artboard across the estate was certified.
 
 Existing useful states, product-specific visual language, source controls and live/uncertain work were preserved. Redundant content was relocated with node identities intact. No archive/delete operation was performed. The original MASTERMIND PAGES migration, Canonical Design System and International R14 freeze remain protected.
 
-The principal retained the only canvas writer role among this session’s agents. Concurrent updates to the original Options mobile board were observed and preserved; this session’s amendment stays on separate pages. Three bounded read-only advisors contributed architecture and design judgment. The first pass’s read-only connection interruption recovered on the same native carrier. During Sector continuation, repeated connector read timeouts were isolated from the healthy Studio owner; completed operations were read back and new logical edits continued through its schema-qualified Paper adapter, without replaying any unknown or denied effect. The International rename’s uncertain response was reconciled by reading the original target without replay. Exact working indicators for completed changes were released, including Sector’s 22 affected root boards and the Options amendments’ eight Watch/review roots plus thirteen Flow/Volatility roots.
+The principal retained the only canvas writer role among this session’s agents. Concurrent updates to the original Options mobile board were observed and preserved; this session’s amendment stays on separate pages. Three bounded read-only advisors contributed architecture and design judgment. The first pass’s read-only connection interruption recovered on the same native carrier. During Sector continuation, repeated connector read timeouts were isolated from the healthy Studio owner; completed operations were read back and new logical edits continued through its schema-qualified Paper adapter, without replaying any unknown or denied effect. The International rename’s uncertain response was reconciled by reading the original target without replay. Exact working indicators for completed changes were released, including Sector’s 22 affected root boards and the Options amendments’ eight Watch/review roots plus thirteen Flow/Volatility roots, and Risk Radar’s eleven roots.
 
 ## Implementation boundary
 
