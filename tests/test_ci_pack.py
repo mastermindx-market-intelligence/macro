@@ -5703,9 +5703,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_958),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_979),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_716),
+    ("templates/index.html", 137, 5_961),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_982),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_719),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5713,6 +5713,50 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-09 (PR #8057, compose the actual #6867 lifecycle landing):
+    Preserve all 400 current owners and both complete measurement histories.
+    Accepted main f3a8cf04 measures 5958/5979/5716; this PR's separately
+    qualified contribution remains +3, giving 5961/5982/5719.
+    The changed owner blocks have unchanged preimages; main changes only
+    data-base-shim, so neither contribution overwrites the other.
+    Job ceilings 137/138/131, ten packs and all assertions remain unchanged.
+    This is source conservation and arithmetic; new natural CI is still owed.
+
+    2026-11-09 (PR #8057, retain landed ledger and original CI contribution):
+    Receiving main75e018ac includes the independent data-base-shim ledger.
+    Preserve every original subject history region and current46-line history.
+    The subject owner preimages remain unchanged; original marginal+3
+    composes current5948/5969/5706 as5951/5972/5709.
+    Keep all400 owners, all197 curated owners and every existing assertion.
+    Retain job ceilings137/138/131, ten packs and current selection rules.
+    Only source-accounting limits are composed; no runtime/admission change.
+    Prior actual product/research and paired-probe evidence stays attached
+    to its recorded generation; fresh successor hosted qualification is owed.
+
+    2026-11-09 (PR #8057, preserve actual F09 landing and complete Intelligence Desk suite transfer):
+    receiving main9a13c64 includes F09's own+2 as landed7bdfb249486d.
+    Keep that contribution, its full history and all other main source.
+    Only this carrier's accepted+3 remains: current5945/5966/5703 becomes
+    5948/5969/5706. The original H's complete historical notes remain
+    below with their original measured/composed revisions and numbers.
+    Current runner and product preimages are unchanged; catalog owners
+    commute with F09's separate data-base-shim change. This is preserving
+    source arithmetic, not a new planner or timing measurement. Keep
+    jobs137/138/131,ten packs and all selectors/assertions/admission limits.
+    The materially combined successor must earn its own natural CI proof.
+
+    2026-11-09 (#8057 conflict repair on accepted main 15364780e3f3):
+    keep all 400 current owners and the accepted XGuerrilla registry and
+    isolated admission tests/provenance. Both marketing owner preimages
+    still match the already qualified Desk transfer; the four product,
+    test and plan postimages are unchanged. Carry only the measured +3
+    onto current 5943/5964/5701 -> 5946/5967/5704. The historical +2
+    admission append was removed by its isolated-owner remedy below and
+    is not added again. Preserve job ceilings137/138/131, ten packs,
+    assertions, commands, timeouts and admission limits. These are
+    preserving accounting expectations, not a new full-tree measurement;
+    natural successor CI must qualify this composed source.
 
     2026-11-09 (PR #6867, preserve lifecycle and landed ownership-ledger steps):
     both contributions share data-base-shim. Keep all original command bytes,
@@ -5846,6 +5890,19 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     timeouts and admission/concurrency controls stay. This is measured planner
     accounting, not an elapsed-time claim; natural successor CI must qualify
     the repaired source.
+
+    2026-11-09 (#8057 actual dependency/conflict composition): preserve main
+    203c8c9b4882 and its landed #8869 archive/import correction. The complete
+    marketing-engine and unrun-marketing-desk owner preimages still equal
+    common ancestor 67a5ddb98aca, so retain the already measured Desk transfer
+    unchanged. The current runner 47164044 differs from historical 3cbed589,
+    but _job_weight is identical: receiver 3 commands / 5 test paths / 13
+    becomes 4 / 6 / 16; donor override remains 250. Compose only those three
+    units onto current weights: 5943 -> 5946, 5964 -> 5967, 5701 -> 5704.
+    These are preserving expectations from the actual hosted receipt below
+    and unchanged owner arithmetic, not a new full-tree planner measurement.
+    Keep all current suites, histories, job ceilings, ten-pack bound, timeouts
+    and admission rules. Natural current-head CI must qualify this composition.
 
     2026-11-08 (PR #6867, intraday lifecycle and ledger regression coverage):
     natural contract job 128831388767 measured head
@@ -6091,6 +6148,29 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     those two estimator units; preserve all job-count/pack ceilings,
     selectors, previous commands, runtime timeouts and admission controls.
     This is a planner workload estimate, not runtime or funding authority.
+
+    2026-11-07 (#8057 current-main composition): retain the independent
+    #8899 integrated-answer-v0 enrollment accepted on main 4380697d and
+    the #8057 complete Desk-suite transfer. Against main 67a5ddb98aca,
+    unchanged estimator metadata adds only the Desk owner's three units:
+    index 5912 -> 5915, free-content 5929 -> 5932, plan-book 5670 -> 5673.
+    These combined expectations compose the two hosted measurements below;
+    they are not a new full-tree measurement or runtime claim. The existing
+    full-checkout contract must qualify the resulting tree. Preserve every
+    suite, job-count ceiling, ten-pack bound, timeout and admission limit.
+
+    2026-11-07 (#8057): the full marketing intelligence desk suite moves
+    from the DATA marketing-engine invocation to the existing CODE
+    unrun-marketing-desk owner. Hosted contract-delta run 42342289504,
+    job 128312401279, measured head 0eff79e76ace against base 9d9183a39c4b:
+    index 137 jobs / 5912 -> 5915, free-content 137 / 5927 -> 5930,
+    plan-book 131 / 5668 -> 5671, all ten packs, no newly selected jobs.
+    The unchanged runner 3cbed589 estimates unrun-marketing-desk 13 -> 16
+    (one command plus one explicit test path); marketing-engine keeps its
+    observed 250 override. Preserve the complete suite and fund only those
+    three measured planning units. Job-count ceilings, ten-pack bounds,
+    execution timeouts, selectors and runner/admission limits stay fixed.
+    These are deterministic planner estimates, not measured runtimes.
 
     PR #8899 provenance coverage (2026-11-06): exact-head CI 42231847099,
     contract job 127939433316, head b0708d5ae2a4 against base 9a867da6f866:

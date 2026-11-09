@@ -176,7 +176,7 @@ Omit a key entirely rather than writing a weak line for it. An omitted key keeps
 
 _STAT_KEYS = (
     "eligible", "attempted", "cached", "phrased_analysis", "phrased_why",
-    "phrased_wire", "rejected", "provider_fail", "off",
+    "phrased_wire", "rejected", "provider_fail", "off", "deduplicated", "budget_skipped",
 )
 _STATS: dict[str, int] = {k: 0 for k in _STAT_KEYS}
 #: ONE preflight notice per process (a keyless host would otherwise log a wall).
@@ -301,7 +301,7 @@ def _sentence_count(text: str) -> int:
 
 
 def headline_fingerprint(text: object) -> str:
-    """The cache key for "have we already phrased THIS headline?"."""
+    """Legacy headline diagnostic; reuse now requires the fact/policy fingerprint."""
     basis = _clean(text, 400).lower()
     return hashlib.sha1(basis.encode("utf-8")).hexdigest()[:20]
 
@@ -496,7 +496,7 @@ def validate_desk_copy(text: str, fact_packet: dict, *, shape: str) -> list[str]
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Eligibility + the per-headline cache
+# Eligibility + the fact-and-policy-bound cache
 # ─────────────────────────────────────────────────────────────────────────────
 
 def eligible_packets(packets: Iterable[dict], *, max_per_tick: int) -> list[dict]:
@@ -526,8 +526,42 @@ def _cache_path(root: Path | str | None) -> Path:
     return base / CACHE_REL
 
 
+def _phrasing_policy_key(block: dict, shapes: tuple[str, ...]) -> str:
+    """Bind cache reuse to the current prompt and configured output policy.
+
+    This is not an attestation of which fallback provider served a request.
+    It neither reads credentials nor changes the existing provider/budget gates.
+    """
+    policy = {
+        "version": "fact-bound-phrasing.v1",
+        "prompt": SYSTEM_PROMPT,
+        "shapes": sorted(set(shapes)),
+        "model": _resolve_model_id(block),
+        "deepseek_model": str(block.get("deepseek_model") or DEFAULT_DEEPSEEK_MODEL),
+        "max_tokens": _int_cfg(block, "max_tokens", DEFAULT_MAX_TOKENS),
+        "caps": [WIRE_CHAR_CAP, ANALYSIS_CHAR_CAP, WHY_CHAR_CAP],
+    }
+    return hashlib.sha256(json.dumps(policy, sort_keys=True, ensure_ascii=False,
+                                    separators=(",", ":")).encode("utf-8")).hexdigest()
+
+
+def _phrasing_fingerprint(packet: dict, policy_key: str) -> str:
+    """Fingerprint the supplied facts, not the title or generated wording.
+
+    Source and ticker lists are sets for cache purposes. Ingestion/serve clocks,
+    pace, drafts and generated why-text are not model inputs and cannot buy a
+    new call. The market observation's own as_of remains a fact, not a tick clock.
+    """
+    facts = build_fact_packet(packet)
+    for key in ("source_names", "tickers", "cashtags"):
+        facts[key] = sorted(set(facts[key]))
+    raw = json.dumps({"policy": policy_key, "facts": facts}, sort_keys=True,
+                     ensure_ascii=False, separators=(",", ":"), allow_nan=False)
+    return hashlib.sha256(raw.encode("utf-8")).hexdigest()
+
+
 def load_cache(root: Path | str | None) -> dict:
-    """{story_id: {headline_sha1, ts}} — {} on any fault (a cache is never load-bearing)."""
+    """Story rows retain facts_sha256 and ts; legacy headline-only rows miss safely."""
     try:
         raw = json.loads(_cache_path(root).read_text(encoding="utf-8"))
     except (OSError, ValueError):
@@ -870,34 +904,43 @@ def attach_llm_drafts(packets: list, cfg: dict | None, *,
     candidates = eligible_packets(rows, max_per_tick=0)
     _bump("eligible", len(candidates))
 
-    pending: list[dict] = []
+    policy_key = _phrasing_policy_key(block, shapes)
+    pending: list[tuple[dict, str]] = []
+    seen: set[tuple[str, str]] = set()
     for packet in candidates:
         sid = _clean(packet.get("id"), 96)
-        fingerprint = headline_fingerprint(packet.get("headline"))
+        fingerprint = _phrasing_fingerprint(packet, policy_key)
+        identity = (sid, fingerprint)
+        if identity in seen:
+            _bump("deduplicated")
+            continue
+        seen.add(identity)
         row = cache.get(sid)
-        if isinstance(row, dict) and str(row.get("headline_sha1") or "") == fingerprint:
-            # Same story, same headline: it was phrased on an earlier tick and the
-            # store still carries that phrasing. Paying again buys nothing.
+        if isinstance(row, dict) and str(row.get("facts_sha256") or "") == fingerprint:
+            # Reuse only an equal fact packet under the same phrasing policy.
+            # Legacy headline-only rows are requalified within the existing cap.
             _bump("cached")
             continue
-        pending.append(packet)
         if max_per_tick > 0 and len(pending) >= max_per_tick:
-            break
+            _bump("budget_skipped")
+            continue
+        pending.append((packet, fingerprint))
 
     if not pending:
         return stats()
 
     touched = False
-    for packet in pending:
+    for packet, fingerprint in pending:
         _bump("attempted")
         result = phrase_packet(packet, block=block, now=stamp, shapes=shapes)
         # Cache on a REPLY, not on a success. A phrasing this model rejected for
-        # this headline will be rejected again next tick, and a 75-second daemon
+        # these same facts will be rejected again next tick, and a 75-second daemon
         # would otherwise burn a call on the same doomed story ~48 times an hour.
         # A provider FAILURE is different — that is transient, so it retries.
         if result["replied"]:
             cache[_clean(packet.get("id"), 96)] = {
                 "headline_sha1": headline_fingerprint(packet.get("headline")),
+                "facts_sha256": fingerprint,
                 "ts": _iso(stamp),
             }
             touched = True
