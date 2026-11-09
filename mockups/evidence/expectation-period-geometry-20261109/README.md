@@ -69,6 +69,16 @@ The qualified local design uses a 560px minimum table, a 120px sticky first colu
 
 Do not add another scrolling service, observer or global wrapper. Do not suppress unrelated shell controls to make a screenshot look cleaner.
 
+## Editable Paper contract
+
+The [existing build page](https://app.paper.design/file/01M5EX8RTPR7YEZD2A144XED2S/p-2-0) now consolidates this continuation into card `4FM-0` under parent `3UR-0`. Its nine Text nodes were updated, and SVG `4FR-0` was replaced by native editable SVG `4GR-0`. The illustration shows a comparable 100 → 110 run, a separate 121 capture for a new fiscal period, and conflicting 90/140 bounds retained as raw values.
+
+Three operations were observed APPLIED: text batch, illustration replacement and release of the owned parent. The parent's eleven child IDs remain identical; the preceding 152,996 JSX characters were preserved exactly. All nine texts and the new SVG identity were read back. The final card screenshot was visually inspected for legibility, overlap and clipping.
+
+[Before parent JSX](paper/BEFORE_PARENT.jsx), [after parent JSX](paper/AFTER_PARENT.jsx), [after card JSX](paper/AFTER_CARD.jsx), [editable SVG source](paper/PERIOD_GEOMETRY.svg), [screenshot](paper/PERIOD_CONTRACT.jpg) and [operation/readback receipt](paper/PAPER_RECEIPT.json) preserve the edit. The active page was the unchanged Start page while this Build-page card was edited, so the repeated adapter snapshot hash is a guard value, not evidence that the target content stayed unchanged.
+
+The card explicitly labels the implementation's source-publication and canonical-focus-evidence boundary. It does not claim that the geometry code in the unavailable workspace has been published or deployed.
+
 ## Observed local qualification
 
 These results were observed before environment loss. The executable receipts and image files are still **not canonically published**; the following is a continuity record, not a substitute for those artifacts.

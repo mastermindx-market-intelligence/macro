@@ -38,5 +38,19 @@
       "contract": "60ecebc84b9b68b06eeeda9855c1f02d2609e8d9"
     }
   },
-  "runtime_acceptance": false
+  "runtime_acceptance": false,
+  "paper": {
+    "file_id": "01M5EX8RTPR7YEZD2A144XED2S",
+    "page_id": "p-2-0",
+    "parent_id": "3UR-0",
+    "card_id": "4FM-0",
+    "svg_id": "4GR-0",
+    "operations": "3 APPLIED including release",
+    "prior_prefix_chars": 152996,
+    "exact_prior_prefix": true,
+    "text_nodes_verified": 9,
+    "new_svg_id": "4GR-0",
+    "old_svg_absent": true,
+    "parent_after_chars": 160779
+  }
 }

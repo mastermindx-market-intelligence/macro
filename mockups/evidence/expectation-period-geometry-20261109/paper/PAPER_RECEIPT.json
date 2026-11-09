@@ -1,0 +1,1824 @@
+{
+  "schema": "mastermind.paper_edit_receipt.v1",
+  "file_id": "01M5EX8RTPR7YEZD2A144XED2S",
+  "page_id": "p-2-0",
+  "parent_id": "3UR-0",
+  "card_id": "4FM-0",
+  "source_contract_commit": "7cb77696c9c3676474f00f5298383eebdae56347",
+  "implementation_published": false,
+  "operations": [
+    {
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "operation_id": "expectation-period-contract-texts-20261109-1",
+      "tool": "set_text_content",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M5EX8RTPR7YEZD2A144XED2S\",\n    \"name\": \"Expectation Surface · R1 · 2026-10-21\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"d776b76d\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"updates\": [\n    {\n      \"nodeId\": \"4FN-0\"\n    },\n    {\n      \"nodeId\": \"4FO-0\"\n    },\n    {\n      \"nodeId\": \"4FP-0\"\n    },\n    {\n      \"nodeId\": \"4GI-0\"\n    },\n    {\n      \"nodeId\": \"4GJ-0\"\n    },\n    {\n      \"nodeId\": \"4GK-0\"\n    },\n    {\n      \"nodeId\": \"4GN-0\"\n    },\n    {\n      \"nodeId\": \"4GO-0\"\n    },\n    {\n      \"nodeId\": \"4GP-0\"\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "before": {
+        "basic_info": {
+          "fileName": "Expectation Surface · R1 · 2026-10-21",
+          "pageName": "00 · Start · Estimate revisions",
+          "pageId": "p-1-0",
+          "url": "https://app.paper.design/file/01M5EX8RTPR7YEZD2A144XED2S/p-1-0",
+          "rootNodeId": "root_node_p-1-0",
+          "nodeCount": 3011,
+          "artboardCount": 5,
+          "artboards": [
+            {
+              "id": "6-0",
+              "name": "ES/1440/Dark/EN",
+              "childCount": 2,
+              "width": 1440,
+              "height": 2185,
+              "worldX": -720,
+              "worldY": -450
+            },
+            {
+              "id": "1SD-0",
+              "name": "ES/1440/Dark/ZH",
+              "childCount": 2,
+              "width": 1440,
+              "height": 2166,
+              "worldX": 2320,
+              "worldY": -450
+            },
+            {
+              "id": "WI-0",
+              "name": "ES/1440/Light/EN",
+              "childCount": 2,
+              "width": 1440,
+              "height": 2185,
+              "worldX": 800,
+              "worldY": -450
+            },
+            {
+              "id": "2NZ-0",
+              "name": "ES/390/Dark/EN",
+              "childCount": 2,
+              "width": 390,
+              "height": 3276,
+              "worldX": 3840,
+              "worldY": -450
+            },
+            {
+              "id": "392-0",
+              "name": "ES/390/Light/ZH",
+              "childCount": 2,
+              "width": 390,
+              "height": 3157,
+              "worldX": 4310,
+              "worldY": -450
+            }
+          ],
+          "pages": [
+            {
+              "type": "page",
+              "id": "p-1-0",
+              "name": "00 · Start · Estimate revisions",
+              "icon": "arrow",
+              "isActive": true
+            },
+            {
+              "type": "page",
+              "id": "p-3-0",
+              "name": "01 · Study · Coverage + methods",
+              "icon": "info",
+              "isActive": false
+            },
+            {
+              "type": "page",
+              "id": "p-2-0",
+              "name": "02 · Build · States + implementation",
+              "icon": "blueprint",
+              "isActive": false
+            }
+          ],
+          "fontFamilies": [
+            "Inter",
+            "PingFang SC",
+            "IBM Plex Mono",
+            "System Sans-Serif"
+          ],
+          "tokens": {
+            "items": [
+              {
+                "name": "--dk-bg",
+                "value": "#0F1115"
+              },
+              {
+                "name": "--dk-panel",
+                "value": "#181B21"
+              },
+              {
+                "name": "--dk-panel2",
+                "value": "#1E222A"
+              },
+              {
+                "name": "--dk-text",
+                "value": "#D7DCE3"
+              },
+              {
+                "name": "--dk-muted",
+                "value": "#8B93A1"
+              },
+              {
+                "name": "--dk-line",
+                "value": "#3A4150"
+              },
+              {
+                "name": "--dk-hair",
+                "value": "rgb(58 65 80 / 55%)"
+              },
+              {
+                "name": "--dk-flat",
+                "value": "#5F6879"
+              },
+              {
+                "name": "--dk-skel",
+                "value": "#22262F"
+              },
+              {
+                "name": "--dk-up",
+                "value": "#45B873"
+              },
+              {
+                "name": "--dk-down",
+                "value": "#E06464"
+              },
+              {
+                "name": "--dk-warn",
+                "value": "#E0A030"
+              },
+              {
+                "name": "--dk-ok",
+                "value": "#3DA564"
+              },
+              {
+                "name": "--dk-link",
+                "value": "#7AA7E0"
+              },
+              {
+                "name": "--dk-ser1",
+                "value": "#5B9BF0"
+              },
+              {
+                "name": "--dk-ser2",
+                "value": "#D4A017"
+              },
+              {
+                "name": "--dk-up-soft",
+                "value": "rgb(69 184 115 / 12%)"
+              },
+              {
+                "name": "--dk-down-soft",
+                "value": "rgb(224 100 100 / 12%)"
+              },
+              {
+                "name": "--dk-warn-soft",
+                "value": "rgb(224 160 48 / 13%)"
+              },
+              {
+                "name": "--dk-ok-soft",
+                "value": "rgb(61 165 100 / 13%)"
+              },
+              {
+                "name": "--dk-neutral-soft",
+                "value": "rgb(139 147 161 / 14%)"
+              },
+              {
+                "name": "--dk-band",
+                "value": "rgb(91 155 240 / 15%)"
+              },
+              {
+                "name": "--lt-bg",
+                "value": "#F7F8FA"
+              },
+              {
+                "name": "--lt-panel",
+                "value": "#FFFFFF"
+              },
+              {
+                "name": "--lt-panel2",
+                "value": "#EEF1F6"
+              },
+              {
+                "name": "--lt-text",
+                "value": "#1C2430"
+              },
+              {
+                "name": "--lt-muted",
+                "value": "#5D6B7E"
+              },
+              {
+                "name": "--lt-line",
+                "value": "#C9CCD1"
+              },
+              {
+                "name": "--lt-hair",
+                "value": "#E3E6EA"
+              },
+              {
+                "name": "--lt-flat",
+                "value": "#8A93A1"
+              },
+              {
+                "name": "--lt-skel",
+                "value": "#E9ECF1"
+              },
+              {
+                "name": "--lt-up",
+                "value": "#1F9A55"
+              },
+              {
+                "name": "--lt-down",
+                "value": "#CF4040"
+              },
+              {
+                "name": "--lt-ink-up",
+                "value": "#1E6D47"
+              },
+              {
+                "name": "--lt-ink-down",
+                "value": "#B23C3D"
+              },
+              {
+                "name": "--lt-warn",
+                "value": "#7D5922"
+              },
+              {
+                "name": "--lt-ok",
+                "value": "#296B48"
+              },
+              {
+                "name": "--lt-link",
+                "value": "#2758E6"
+              },
+              {
+                "name": "--lt-ser1",
+                "value": "#2F63C4"
+              },
+              {
+                "name": "--lt-ser2",
+                "value": "#8F6A04"
+              },
+              {
+                "name": "--lt-up-soft",
+                "value": "#EAF7EF"
+              },
+              {
+                "name": "--lt-down-soft",
+                "value": "#FCECED"
+              },
+              {
+                "name": "--lt-warn-soft",
+                "value": "#FFF4E2"
+              },
+              {
+                "name": "--lt-ok-soft",
+                "value": "#EAF5EE"
+              },
+              {
+                "name": "--lt-neutral-soft",
+                "value": "#EEF1F6"
+              },
+              {
+                "name": "--lt-band",
+                "value": "rgb(47 99 196 / 11%)"
+              }
+            ]
+          },
+          "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+          "contentHash": {
+            "tokens": "d776b76d"
+          }
+        },
+        "identity": {
+          "kind": "file-id",
+          "id": "01M5EX8RTPR7YEZD2A144XED2S"
+        },
+        "snapshot_sha256": "7924d31b63cf36bb58e8f9e57fb655b6b734646ac90bb8477b5b95ad27967541",
+        "write_binding_ready": true,
+        "binding_error": null
+      },
+      "after": {
+        "basic_info": {
+          "fileName": "Expectation Surface · R1 · 2026-10-21",
+          "pageName": "00 · Start · Estimate revisions",
+          "pageId": "p-1-0",
+          "url": "https://app.paper.design/file/01M5EX8RTPR7YEZD2A144XED2S/p-1-0",
+          "rootNodeId": "root_node_p-1-0",
+          "nodeCount": 3011,
+          "artboardCount": 5,
+          "artboards": [
+            {
+              "id": "6-0",
+              "name": "ES/1440/Dark/EN",
+              "childCount": 2,
+              "width": 1440,
+              "height": 2185,
+              "worldX": -720,
+              "worldY": -450
+            },
+            {
+              "id": "1SD-0",
+              "name": "ES/1440/Dark/ZH",
+              "childCount": 2,
+              "width": 1440,
+              "height": 2166,
+              "worldX": 2320,
+              "worldY": -450
+            },
+            {
+              "id": "WI-0",
+              "name": "ES/1440/Light/EN",
+              "childCount": 2,
+              "width": 1440,
+              "height": 2185,
+              "worldX": 800,
+              "worldY": -450
+            },
+            {
+              "id": "2NZ-0",
+              "name": "ES/390/Dark/EN",
+              "childCount": 2,
+              "width": 390,
+              "height": 3276,
+              "worldX": 3840,
+              "worldY": -450
+            },
+            {
+              "id": "392-0",
+              "name": "ES/390/Light/ZH",
+              "childCount": 2,
+              "width": 390,
+              "height": 3157,
+              "worldX": 4310,
+              "worldY": -450
+            }
+          ],
+          "pages": [
+            {
+              "type": "page",
+              "id": "p-1-0",
+              "name": "00 · Start · Estimate revisions",
+              "icon": "arrow",
+              "isActive": true
+            },
+            {
+              "type": "page",
+              "id": "p-3-0",
+              "name": "01 · Study · Coverage + methods",
+              "icon": "info",
+              "isActive": false
+            },
+            {
+              "type": "page",
+              "id": "p-2-0",
+              "name": "02 · Build · States + implementation",
+              "icon": "blueprint",
+              "isActive": false
+            }
+          ],
+          "fontFamilies": [
+            "Inter",
+            "PingFang SC",
+            "IBM Plex Mono",
+            "System Sans-Serif"
+          ],
+          "tokens": {
+            "items": [
+              {
+                "name": "--dk-bg",
+                "value": "#0F1115"
+              },
+              {
+                "name": "--dk-panel",
+                "value": "#181B21"
+              },
+              {
+                "name": "--dk-panel2",
+                "value": "#1E222A"
+              },
+              {
+                "name": "--dk-text",
+                "value": "#D7DCE3"
+              },
+              {
+                "name": "--dk-muted",
+                "value": "#8B93A1"
+              },
+              {
+                "name": "--dk-line",
+                "value": "#3A4150"
+              },
+              {
+                "name": "--dk-hair",
+                "value": "rgb(58 65 80 / 55%)"
+              },
+              {
+                "name": "--dk-flat",
+                "value": "#5F6879"
+              },
+              {
+                "name": "--dk-skel",
+                "value": "#22262F"
+              },
+              {
+                "name": "--dk-up",
+                "value": "#45B873"
+              },
+              {
+                "name": "--dk-down",
+                "value": "#E06464"
+              },
+              {
+                "name": "--dk-warn",
+                "value": "#E0A030"
+              },
+              {
+                "name": "--dk-ok",
+                "value": "#3DA564"
+              },
+              {
+                "name": "--dk-link",
+                "value": "#7AA7E0"
+              },
+              {
+                "name": "--dk-ser1",
+                "value": "#5B9BF0"
+              },
+              {
+                "name": "--dk-ser2",
+                "value": "#D4A017"
+              },
+              {
+                "name": "--dk-up-soft",
+                "value": "rgb(69 184 115 / 12%)"
+              },
+              {
+                "name": "--dk-down-soft",
+                "value": "rgb(224 100 100 / 12%)"
+              },
+              {
+                "name": "--dk-warn-soft",
+                "value": "rgb(224 160 48 / 13%)"
+              },
+              {
+                "name": "--dk-ok-soft",
+                "value": "rgb(61 165 100 / 13%)"
+              },
+              {
+                "name": "--dk-neutral-soft",
+                "value": "rgb(139 147 161 / 14%)"
+              },
+              {
+                "name": "--dk-band",
+                "value": "rgb(91 155 240 / 15%)"
+              },
+              {
+                "name": "--lt-bg",
+                "value": "#F7F8FA"
+              },
+              {
+                "name": "--lt-panel",
+                "value": "#FFFFFF"
+              },
+              {
+                "name": "--lt-panel2",
+                "value": "#EEF1F6"
+              },
+              {
+                "name": "--lt-text",
+                "value": "#1C2430"
+              },
+              {
+                "name": "--lt-muted",
+                "value": "#5D6B7E"
+              },
+              {
+                "name": "--lt-line",
+                "value": "#C9CCD1"
+              },
+              {
+                "name": "--lt-hair",
+                "value": "#E3E6EA"
+              },
+              {
+                "name": "--lt-flat",
+                "value": "#8A93A1"
+              },
+              {
+                "name": "--lt-skel",
+                "value": "#E9ECF1"
+              },
+              {
+                "name": "--lt-up",
+                "value": "#1F9A55"
+              },
+              {
+                "name": "--lt-down",
+                "value": "#CF4040"
+              },
+              {
+                "name": "--lt-ink-up",
+                "value": "#1E6D47"
+              },
+              {
+                "name": "--lt-ink-down",
+                "value": "#B23C3D"
+              },
+              {
+                "name": "--lt-warn",
+                "value": "#7D5922"
+              },
+              {
+                "name": "--lt-ok",
+                "value": "#296B48"
+              },
+              {
+                "name": "--lt-link",
+                "value": "#2758E6"
+              },
+              {
+                "name": "--lt-ser1",
+                "value": "#2F63C4"
+              },
+              {
+                "name": "--lt-ser2",
+                "value": "#8F6A04"
+              },
+              {
+                "name": "--lt-up-soft",
+                "value": "#EAF7EF"
+              },
+              {
+                "name": "--lt-down-soft",
+                "value": "#FCECED"
+              },
+              {
+                "name": "--lt-warn-soft",
+                "value": "#FFF4E2"
+              },
+              {
+                "name": "--lt-ok-soft",
+                "value": "#EAF5EE"
+              },
+              {
+                "name": "--lt-neutral-soft",
+                "value": "#EEF1F6"
+              },
+              {
+                "name": "--lt-band",
+                "value": "rgb(47 99 196 / 11%)"
+              }
+            ]
+          },
+          "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+          "contentHash": {
+            "tokens": "d776b76d"
+          }
+        },
+        "identity": {
+          "kind": "file-id",
+          "id": "01M5EX8RTPR7YEZD2A144XED2S"
+        },
+        "snapshot_sha256": "7924d31b63cf36bb58e8f9e57fb655b6b734646ac90bb8477b5b95ad27967541",
+        "write_binding_ready": true,
+        "binding_error": null
+      },
+      "retry_allowed": false,
+      "production_acceptance": false
+    },
+    {
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "operation_id": "expectation-period-geometry-illustration-20261109-1",
+      "tool": "write_html",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M5EX8RTPR7YEZD2A144XED2S\",\n    \"name\": \"Expectation Surface · R1 · 2026-10-21\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"d776b76d\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"4GR-0\",\n      \"name\": \"SVG\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"4GS-0\",\n      \"name\": \"SYNTHETIC CAPTURES ·…\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"4GT-0\",\n      \"name\": \"UNQUALIFIED BOUNDS S…\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"4GU-0\",\n      \"name\": \"Rect\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"4GV-0\",\n      \"name\": \"Rect\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"4GW-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"4GX-0\",\n      \"name\": \"Circle\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"4GY-0\",\n      \"name\": \"Circle\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"4GZ-0\",\n      \"name\": \"Line\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"4H0-0\",\n      \"name\": \"Circle\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"4H1-0\",\n      \"name\": \"100.00\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"4H2-0\",\n      \"name\": \"110.00\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"4H3-0\",\n      \"name\": \"121.00\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"4H4-0\",\n      \"name\": \"+10.0%\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"4H5-0\",\n      \"name\": \"Line\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"4H6-0\",\n      \"name\": \"Period changed\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"4H7-0\",\n      \"name\": \"01 Jan\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"4H8-0\",\n      \"name\": \"02 Jan\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"4H9-0\",\n      \"name\": \"03 Jan\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"4HA-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"4HB-0\",\n      \"name\": \"Period ends 31 Dec 2…\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"4HC-0\",\n      \"name\": \"31 Mar 2027\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"4HD-0\",\n      \"name\": \"Rect\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"4HE-0\",\n      \"name\": \"Rect\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"4HF-0\",\n      \"name\": \"Low\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"4HG-0\",\n      \"name\": \"High\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"4HH-0\",\n      \"name\": \"90.00\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"4HI-0\",\n      \"name\": \"140.00\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"4HJ-0\",\n      \"name\": \"31 Dec 2026\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"4HK-0\",\n      \"name\": \"31 Mar 2027\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"4HL-0\",\n      \"name\": \"No common period est…\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"4HM-0\",\n      \"name\": \"Keep both values. Wi…\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "before": {
+        "basic_info": {
+          "fileName": "Expectation Surface · R1 · 2026-10-21",
+          "pageName": "00 · Start · Estimate revisions",
+          "pageId": "p-1-0",
+          "url": "https://app.paper.design/file/01M5EX8RTPR7YEZD2A144XED2S/p-1-0",
+          "rootNodeId": "root_node_p-1-0",
+          "nodeCount": 3011,
+          "artboardCount": 5,
+          "artboards": [
+            {
+              "id": "6-0",
+              "name": "ES/1440/Dark/EN",
+              "childCount": 2,
+              "width": 1440,
+              "height": 2185,
+              "worldX": -720,
+              "worldY": -450
+            },
+            {
+              "id": "1SD-0",
+              "name": "ES/1440/Dark/ZH",
+              "childCount": 2,
+              "width": 1440,
+              "height": 2166,
+              "worldX": 2320,
+              "worldY": -450
+            },
+            {
+              "id": "WI-0",
+              "name": "ES/1440/Light/EN",
+              "childCount": 2,
+              "width": 1440,
+              "height": 2185,
+              "worldX": 800,
+              "worldY": -450
+            },
+            {
+              "id": "2NZ-0",
+              "name": "ES/390/Dark/EN",
+              "childCount": 2,
+              "width": 390,
+              "height": 3276,
+              "worldX": 3840,
+              "worldY": -450
+            },
+            {
+              "id": "392-0",
+              "name": "ES/390/Light/ZH",
+              "childCount": 2,
+              "width": 390,
+              "height": 3157,
+              "worldX": 4310,
+              "worldY": -450
+            }
+          ],
+          "pages": [
+            {
+              "type": "page",
+              "id": "p-1-0",
+              "name": "00 · Start · Estimate revisions",
+              "icon": "arrow",
+              "isActive": true
+            },
+            {
+              "type": "page",
+              "id": "p-3-0",
+              "name": "01 · Study · Coverage + methods",
+              "icon": "info",
+              "isActive": false
+            },
+            {
+              "type": "page",
+              "id": "p-2-0",
+              "name": "02 · Build · States + implementation",
+              "icon": "blueprint",
+              "isActive": false
+            }
+          ],
+          "fontFamilies": [
+            "Inter",
+            "PingFang SC",
+            "IBM Plex Mono",
+            "System Sans-Serif"
+          ],
+          "tokens": {
+            "items": [
+              {
+                "name": "--dk-bg",
+                "value": "#0F1115"
+              },
+              {
+                "name": "--dk-panel",
+                "value": "#181B21"
+              },
+              {
+                "name": "--dk-panel2",
+                "value": "#1E222A"
+              },
+              {
+                "name": "--dk-text",
+                "value": "#D7DCE3"
+              },
+              {
+                "name": "--dk-muted",
+                "value": "#8B93A1"
+              },
+              {
+                "name": "--dk-line",
+                "value": "#3A4150"
+              },
+              {
+                "name": "--dk-hair",
+                "value": "rgb(58 65 80 / 55%)"
+              },
+              {
+                "name": "--dk-flat",
+                "value": "#5F6879"
+              },
+              {
+                "name": "--dk-skel",
+                "value": "#22262F"
+              },
+              {
+                "name": "--dk-up",
+                "value": "#45B873"
+              },
+              {
+                "name": "--dk-down",
+                "value": "#E06464"
+              },
+              {
+                "name": "--dk-warn",
+                "value": "#E0A030"
+              },
+              {
+                "name": "--dk-ok",
+                "value": "#3DA564"
+              },
+              {
+                "name": "--dk-link",
+                "value": "#7AA7E0"
+              },
+              {
+                "name": "--dk-ser1",
+                "value": "#5B9BF0"
+              },
+              {
+                "name": "--dk-ser2",
+                "value": "#D4A017"
+              },
+              {
+                "name": "--dk-up-soft",
+                "value": "rgb(69 184 115 / 12%)"
+              },
+              {
+                "name": "--dk-down-soft",
+                "value": "rgb(224 100 100 / 12%)"
+              },
+              {
+                "name": "--dk-warn-soft",
+                "value": "rgb(224 160 48 / 13%)"
+              },
+              {
+                "name": "--dk-ok-soft",
+                "value": "rgb(61 165 100 / 13%)"
+              },
+              {
+                "name": "--dk-neutral-soft",
+                "value": "rgb(139 147 161 / 14%)"
+              },
+              {
+                "name": "--dk-band",
+                "value": "rgb(91 155 240 / 15%)"
+              },
+              {
+                "name": "--lt-bg",
+                "value": "#F7F8FA"
+              },
+              {
+                "name": "--lt-panel",
+                "value": "#FFFFFF"
+              },
+              {
+                "name": "--lt-panel2",
+                "value": "#EEF1F6"
+              },
+              {
+                "name": "--lt-text",
+                "value": "#1C2430"
+              },
+              {
+                "name": "--lt-muted",
+                "value": "#5D6B7E"
+              },
+              {
+                "name": "--lt-line",
+                "value": "#C9CCD1"
+              },
+              {
+                "name": "--lt-hair",
+                "value": "#E3E6EA"
+              },
+              {
+                "name": "--lt-flat",
+                "value": "#8A93A1"
+              },
+              {
+                "name": "--lt-skel",
+                "value": "#E9ECF1"
+              },
+              {
+                "name": "--lt-up",
+                "value": "#1F9A55"
+              },
+              {
+                "name": "--lt-down",
+                "value": "#CF4040"
+              },
+              {
+                "name": "--lt-ink-up",
+                "value": "#1E6D47"
+              },
+              {
+                "name": "--lt-ink-down",
+                "value": "#B23C3D"
+              },
+              {
+                "name": "--lt-warn",
+                "value": "#7D5922"
+              },
+              {
+                "name": "--lt-ok",
+                "value": "#296B48"
+              },
+              {
+                "name": "--lt-link",
+                "value": "#2758E6"
+              },
+              {
+                "name": "--lt-ser1",
+                "value": "#2F63C4"
+              },
+              {
+                "name": "--lt-ser2",
+                "value": "#8F6A04"
+              },
+              {
+                "name": "--lt-up-soft",
+                "value": "#EAF7EF"
+              },
+              {
+                "name": "--lt-down-soft",
+                "value": "#FCECED"
+              },
+              {
+                "name": "--lt-warn-soft",
+                "value": "#FFF4E2"
+              },
+              {
+                "name": "--lt-ok-soft",
+                "value": "#EAF5EE"
+              },
+              {
+                "name": "--lt-neutral-soft",
+                "value": "#EEF1F6"
+              },
+              {
+                "name": "--lt-band",
+                "value": "rgb(47 99 196 / 11%)"
+              }
+            ]
+          },
+          "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+          "contentHash": {
+            "tokens": "d776b76d"
+          }
+        },
+        "identity": {
+          "kind": "file-id",
+          "id": "01M5EX8RTPR7YEZD2A144XED2S"
+        },
+        "snapshot_sha256": "7924d31b63cf36bb58e8f9e57fb655b6b734646ac90bb8477b5b95ad27967541",
+        "write_binding_ready": true,
+        "binding_error": null
+      },
+      "after": {
+        "basic_info": {
+          "fileName": "Expectation Surface · R1 · 2026-10-21",
+          "pageName": "00 · Start · Estimate revisions",
+          "pageId": "p-1-0",
+          "url": "https://app.paper.design/file/01M5EX8RTPR7YEZD2A144XED2S/p-1-0",
+          "rootNodeId": "root_node_p-1-0",
+          "nodeCount": 3011,
+          "artboardCount": 5,
+          "artboards": [
+            {
+              "id": "6-0",
+              "name": "ES/1440/Dark/EN",
+              "childCount": 2,
+              "width": 1440,
+              "height": 2185,
+              "worldX": -720,
+              "worldY": -450
+            },
+            {
+              "id": "1SD-0",
+              "name": "ES/1440/Dark/ZH",
+              "childCount": 2,
+              "width": 1440,
+              "height": 2166,
+              "worldX": 2320,
+              "worldY": -450
+            },
+            {
+              "id": "WI-0",
+              "name": "ES/1440/Light/EN",
+              "childCount": 2,
+              "width": 1440,
+              "height": 2185,
+              "worldX": 800,
+              "worldY": -450
+            },
+            {
+              "id": "2NZ-0",
+              "name": "ES/390/Dark/EN",
+              "childCount": 2,
+              "width": 390,
+              "height": 3276,
+              "worldX": 3840,
+              "worldY": -450
+            },
+            {
+              "id": "392-0",
+              "name": "ES/390/Light/ZH",
+              "childCount": 2,
+              "width": 390,
+              "height": 3157,
+              "worldX": 4310,
+              "worldY": -450
+            }
+          ],
+          "pages": [
+            {
+              "type": "page",
+              "id": "p-1-0",
+              "name": "00 · Start · Estimate revisions",
+              "icon": "arrow",
+              "isActive": true
+            },
+            {
+              "type": "page",
+              "id": "p-3-0",
+              "name": "01 · Study · Coverage + methods",
+              "icon": "info",
+              "isActive": false
+            },
+            {
+              "type": "page",
+              "id": "p-2-0",
+              "name": "02 · Build · States + implementation",
+              "icon": "blueprint",
+              "isActive": false
+            }
+          ],
+          "fontFamilies": [
+            "Inter",
+            "PingFang SC",
+            "IBM Plex Mono",
+            "System Sans-Serif"
+          ],
+          "tokens": {
+            "items": [
+              {
+                "name": "--dk-bg",
+                "value": "#0F1115"
+              },
+              {
+                "name": "--dk-panel",
+                "value": "#181B21"
+              },
+              {
+                "name": "--dk-panel2",
+                "value": "#1E222A"
+              },
+              {
+                "name": "--dk-text",
+                "value": "#D7DCE3"
+              },
+              {
+                "name": "--dk-muted",
+                "value": "#8B93A1"
+              },
+              {
+                "name": "--dk-line",
+                "value": "#3A4150"
+              },
+              {
+                "name": "--dk-hair",
+                "value": "rgb(58 65 80 / 55%)"
+              },
+              {
+                "name": "--dk-flat",
+                "value": "#5F6879"
+              },
+              {
+                "name": "--dk-skel",
+                "value": "#22262F"
+              },
+              {
+                "name": "--dk-up",
+                "value": "#45B873"
+              },
+              {
+                "name": "--dk-down",
+                "value": "#E06464"
+              },
+              {
+                "name": "--dk-warn",
+                "value": "#E0A030"
+              },
+              {
+                "name": "--dk-ok",
+                "value": "#3DA564"
+              },
+              {
+                "name": "--dk-link",
+                "value": "#7AA7E0"
+              },
+              {
+                "name": "--dk-ser1",
+                "value": "#5B9BF0"
+              },
+              {
+                "name": "--dk-ser2",
+                "value": "#D4A017"
+              },
+              {
+                "name": "--dk-up-soft",
+                "value": "rgb(69 184 115 / 12%)"
+              },
+              {
+                "name": "--dk-down-soft",
+                "value": "rgb(224 100 100 / 12%)"
+              },
+              {
+                "name": "--dk-warn-soft",
+                "value": "rgb(224 160 48 / 13%)"
+              },
+              {
+                "name": "--dk-ok-soft",
+                "value": "rgb(61 165 100 / 13%)"
+              },
+              {
+                "name": "--dk-neutral-soft",
+                "value": "rgb(139 147 161 / 14%)"
+              },
+              {
+                "name": "--dk-band",
+                "value": "rgb(91 155 240 / 15%)"
+              },
+              {
+                "name": "--lt-bg",
+                "value": "#F7F8FA"
+              },
+              {
+                "name": "--lt-panel",
+                "value": "#FFFFFF"
+              },
+              {
+                "name": "--lt-panel2",
+                "value": "#EEF1F6"
+              },
+              {
+                "name": "--lt-text",
+                "value": "#1C2430"
+              },
+              {
+                "name": "--lt-muted",
+                "value": "#5D6B7E"
+              },
+              {
+                "name": "--lt-line",
+                "value": "#C9CCD1"
+              },
+              {
+                "name": "--lt-hair",
+                "value": "#E3E6EA"
+              },
+              {
+                "name": "--lt-flat",
+                "value": "#8A93A1"
+              },
+              {
+                "name": "--lt-skel",
+                "value": "#E9ECF1"
+              },
+              {
+                "name": "--lt-up",
+                "value": "#1F9A55"
+              },
+              {
+                "name": "--lt-down",
+                "value": "#CF4040"
+              },
+              {
+                "name": "--lt-ink-up",
+                "value": "#1E6D47"
+              },
+              {
+                "name": "--lt-ink-down",
+                "value": "#B23C3D"
+              },
+              {
+                "name": "--lt-warn",
+                "value": "#7D5922"
+              },
+              {
+                "name": "--lt-ok",
+                "value": "#296B48"
+              },
+              {
+                "name": "--lt-link",
+                "value": "#2758E6"
+              },
+              {
+                "name": "--lt-ser1",
+                "value": "#2F63C4"
+              },
+              {
+                "name": "--lt-ser2",
+                "value": "#8F6A04"
+              },
+              {
+                "name": "--lt-up-soft",
+                "value": "#EAF7EF"
+              },
+              {
+                "name": "--lt-down-soft",
+                "value": "#FCECED"
+              },
+              {
+                "name": "--lt-warn-soft",
+                "value": "#FFF4E2"
+              },
+              {
+                "name": "--lt-ok-soft",
+                "value": "#EAF5EE"
+              },
+              {
+                "name": "--lt-neutral-soft",
+                "value": "#EEF1F6"
+              },
+              {
+                "name": "--lt-band",
+                "value": "rgb(47 99 196 / 11%)"
+              }
+            ]
+          },
+          "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+          "contentHash": {
+            "tokens": "d776b76d"
+          }
+        },
+        "identity": {
+          "kind": "file-id",
+          "id": "01M5EX8RTPR7YEZD2A144XED2S"
+        },
+        "snapshot_sha256": "7924d31b63cf36bb58e8f9e57fb655b6b734646ac90bb8477b5b95ad27967541",
+        "write_binding_ready": true,
+        "binding_error": null
+      },
+      "retry_allowed": false,
+      "production_acceptance": false
+    },
+    {
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "operation_id": "expectation-period-contract-release-20261109-1",
+      "tool": "finish_working_on_nodes",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M5EX8RTPR7YEZD2A144XED2S\",\n    \"name\": \"Expectation Surface · R1 · 2026-10-21\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"d776b76d\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "OK"
+          }
+        ]
+      },
+      "before": {
+        "basic_info": {
+          "fileName": "Expectation Surface · R1 · 2026-10-21",
+          "pageName": "00 · Start · Estimate revisions",
+          "pageId": "p-1-0",
+          "url": "https://app.paper.design/file/01M5EX8RTPR7YEZD2A144XED2S/p-1-0",
+          "rootNodeId": "root_node_p-1-0",
+          "nodeCount": 3011,
+          "artboardCount": 5,
+          "artboards": [
+            {
+              "id": "6-0",
+              "name": "ES/1440/Dark/EN",
+              "childCount": 2,
+              "width": 1440,
+              "height": 2185,
+              "worldX": -720,
+              "worldY": -450
+            },
+            {
+              "id": "1SD-0",
+              "name": "ES/1440/Dark/ZH",
+              "childCount": 2,
+              "width": 1440,
+              "height": 2166,
+              "worldX": 2320,
+              "worldY": -450
+            },
+            {
+              "id": "WI-0",
+              "name": "ES/1440/Light/EN",
+              "childCount": 2,
+              "width": 1440,
+              "height": 2185,
+              "worldX": 800,
+              "worldY": -450
+            },
+            {
+              "id": "2NZ-0",
+              "name": "ES/390/Dark/EN",
+              "childCount": 2,
+              "width": 390,
+              "height": 3276,
+              "worldX": 3840,
+              "worldY": -450
+            },
+            {
+              "id": "392-0",
+              "name": "ES/390/Light/ZH",
+              "childCount": 2,
+              "width": 390,
+              "height": 3157,
+              "worldX": 4310,
+              "worldY": -450
+            }
+          ],
+          "pages": [
+            {
+              "type": "page",
+              "id": "p-1-0",
+              "name": "00 · Start · Estimate revisions",
+              "icon": "arrow",
+              "isActive": true
+            },
+            {
+              "type": "page",
+              "id": "p-3-0",
+              "name": "01 · Study · Coverage + methods",
+              "icon": "info",
+              "isActive": false
+            },
+            {
+              "type": "page",
+              "id": "p-2-0",
+              "name": "02 · Build · States + implementation",
+              "icon": "blueprint",
+              "isActive": false
+            }
+          ],
+          "fontFamilies": [
+            "Inter",
+            "PingFang SC",
+            "IBM Plex Mono",
+            "System Sans-Serif"
+          ],
+          "tokens": {
+            "items": [
+              {
+                "name": "--dk-bg",
+                "value": "#0F1115"
+              },
+              {
+                "name": "--dk-panel",
+                "value": "#181B21"
+              },
+              {
+                "name": "--dk-panel2",
+                "value": "#1E222A"
+              },
+              {
+                "name": "--dk-text",
+                "value": "#D7DCE3"
+              },
+              {
+                "name": "--dk-muted",
+                "value": "#8B93A1"
+              },
+              {
+                "name": "--dk-line",
+                "value": "#3A4150"
+              },
+              {
+                "name": "--dk-hair",
+                "value": "rgb(58 65 80 / 55%)"
+              },
+              {
+                "name": "--dk-flat",
+                "value": "#5F6879"
+              },
+              {
+                "name": "--dk-skel",
+                "value": "#22262F"
+              },
+              {
+                "name": "--dk-up",
+                "value": "#45B873"
+              },
+              {
+                "name": "--dk-down",
+                "value": "#E06464"
+              },
+              {
+                "name": "--dk-warn",
+                "value": "#E0A030"
+              },
+              {
+                "name": "--dk-ok",
+                "value": "#3DA564"
+              },
+              {
+                "name": "--dk-link",
+                "value": "#7AA7E0"
+              },
+              {
+                "name": "--dk-ser1",
+                "value": "#5B9BF0"
+              },
+              {
+                "name": "--dk-ser2",
+                "value": "#D4A017"
+              },
+              {
+                "name": "--dk-up-soft",
+                "value": "rgb(69 184 115 / 12%)"
+              },
+              {
+                "name": "--dk-down-soft",
+                "value": "rgb(224 100 100 / 12%)"
+              },
+              {
+                "name": "--dk-warn-soft",
+                "value": "rgb(224 160 48 / 13%)"
+              },
+              {
+                "name": "--dk-ok-soft",
+                "value": "rgb(61 165 100 / 13%)"
+              },
+              {
+                "name": "--dk-neutral-soft",
+                "value": "rgb(139 147 161 / 14%)"
+              },
+              {
+                "name": "--dk-band",
+                "value": "rgb(91 155 240 / 15%)"
+              },
+              {
+                "name": "--lt-bg",
+                "value": "#F7F8FA"
+              },
+              {
+                "name": "--lt-panel",
+                "value": "#FFFFFF"
+              },
+              {
+                "name": "--lt-panel2",
+                "value": "#EEF1F6"
+              },
+              {
+                "name": "--lt-text",
+                "value": "#1C2430"
+              },
+              {
+                "name": "--lt-muted",
+                "value": "#5D6B7E"
+              },
+              {
+                "name": "--lt-line",
+                "value": "#C9CCD1"
+              },
+              {
+                "name": "--lt-hair",
+                "value": "#E3E6EA"
+              },
+              {
+                "name": "--lt-flat",
+                "value": "#8A93A1"
+              },
+              {
+                "name": "--lt-skel",
+                "value": "#E9ECF1"
+              },
+              {
+                "name": "--lt-up",
+                "value": "#1F9A55"
+              },
+              {
+                "name": "--lt-down",
+                "value": "#CF4040"
+              },
+              {
+                "name": "--lt-ink-up",
+                "value": "#1E6D47"
+              },
+              {
+                "name": "--lt-ink-down",
+                "value": "#B23C3D"
+              },
+              {
+                "name": "--lt-warn",
+                "value": "#7D5922"
+              },
+              {
+                "name": "--lt-ok",
+                "value": "#296B48"
+              },
+              {
+                "name": "--lt-link",
+                "value": "#2758E6"
+              },
+              {
+                "name": "--lt-ser1",
+                "value": "#2F63C4"
+              },
+              {
+                "name": "--lt-ser2",
+                "value": "#8F6A04"
+              },
+              {
+                "name": "--lt-up-soft",
+                "value": "#EAF7EF"
+              },
+              {
+                "name": "--lt-down-soft",
+                "value": "#FCECED"
+              },
+              {
+                "name": "--lt-warn-soft",
+                "value": "#FFF4E2"
+              },
+              {
+                "name": "--lt-ok-soft",
+                "value": "#EAF5EE"
+              },
+              {
+                "name": "--lt-neutral-soft",
+                "value": "#EEF1F6"
+              },
+              {
+                "name": "--lt-band",
+                "value": "rgb(47 99 196 / 11%)"
+              }
+            ]
+          },
+          "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+          "contentHash": {
+            "tokens": "d776b76d"
+          }
+        },
+        "identity": {
+          "kind": "file-id",
+          "id": "01M5EX8RTPR7YEZD2A144XED2S"
+        },
+        "snapshot_sha256": "7924d31b63cf36bb58e8f9e57fb655b6b734646ac90bb8477b5b95ad27967541",
+        "write_binding_ready": true,
+        "binding_error": null
+      },
+      "after": {
+        "basic_info": {
+          "fileName": "Expectation Surface · R1 · 2026-10-21",
+          "pageName": "00 · Start · Estimate revisions",
+          "pageId": "p-1-0",
+          "url": "https://app.paper.design/file/01M5EX8RTPR7YEZD2A144XED2S/p-1-0",
+          "rootNodeId": "root_node_p-1-0",
+          "nodeCount": 3011,
+          "artboardCount": 5,
+          "artboards": [
+            {
+              "id": "6-0",
+              "name": "ES/1440/Dark/EN",
+              "childCount": 2,
+              "width": 1440,
+              "height": 2185,
+              "worldX": -720,
+              "worldY": -450
+            },
+            {
+              "id": "1SD-0",
+              "name": "ES/1440/Dark/ZH",
+              "childCount": 2,
+              "width": 1440,
+              "height": 2166,
+              "worldX": 2320,
+              "worldY": -450
+            },
+            {
+              "id": "WI-0",
+              "name": "ES/1440/Light/EN",
+              "childCount": 2,
+              "width": 1440,
+              "height": 2185,
+              "worldX": 800,
+              "worldY": -450
+            },
+            {
+              "id": "2NZ-0",
+              "name": "ES/390/Dark/EN",
+              "childCount": 2,
+              "width": 390,
+              "height": 3276,
+              "worldX": 3840,
+              "worldY": -450
+            },
+            {
+              "id": "392-0",
+              "name": "ES/390/Light/ZH",
+              "childCount": 2,
+              "width": 390,
+              "height": 3157,
+              "worldX": 4310,
+              "worldY": -450
+            }
+          ],
+          "pages": [
+            {
+              "type": "page",
+              "id": "p-1-0",
+              "name": "00 · Start · Estimate revisions",
+              "icon": "arrow",
+              "isActive": true
+            },
+            {
+              "type": "page",
+              "id": "p-3-0",
+              "name": "01 · Study · Coverage + methods",
+              "icon": "info",
+              "isActive": false
+            },
+            {
+              "type": "page",
+              "id": "p-2-0",
+              "name": "02 · Build · States + implementation",
+              "icon": "blueprint",
+              "isActive": false
+            }
+          ],
+          "fontFamilies": [
+            "Inter",
+            "PingFang SC",
+            "IBM Plex Mono",
+            "System Sans-Serif"
+          ],
+          "tokens": {
+            "items": [
+              {
+                "name": "--dk-bg",
+                "value": "#0F1115"
+              },
+              {
+                "name": "--dk-panel",
+                "value": "#181B21"
+              },
+              {
+                "name": "--dk-panel2",
+                "value": "#1E222A"
+              },
+              {
+                "name": "--dk-text",
+                "value": "#D7DCE3"
+              },
+              {
+                "name": "--dk-muted",
+                "value": "#8B93A1"
+              },
+              {
+                "name": "--dk-line",
+                "value": "#3A4150"
+              },
+              {
+                "name": "--dk-hair",
+                "value": "rgb(58 65 80 / 55%)"
+              },
+              {
+                "name": "--dk-flat",
+                "value": "#5F6879"
+              },
+              {
+                "name": "--dk-skel",
+                "value": "#22262F"
+              },
+              {
+                "name": "--dk-up",
+                "value": "#45B873"
+              },
+              {
+                "name": "--dk-down",
+                "value": "#E06464"
+              },
+              {
+                "name": "--dk-warn",
+                "value": "#E0A030"
+              },
+              {
+                "name": "--dk-ok",
+                "value": "#3DA564"
+              },
+              {
+                "name": "--dk-link",
+                "value": "#7AA7E0"
+              },
+              {
+                "name": "--dk-ser1",
+                "value": "#5B9BF0"
+              },
+              {
+                "name": "--dk-ser2",
+                "value": "#D4A017"
+              },
+              {
+                "name": "--dk-up-soft",
+                "value": "rgb(69 184 115 / 12%)"
+              },
+              {
+                "name": "--dk-down-soft",
+                "value": "rgb(224 100 100 / 12%)"
+              },
+              {
+                "name": "--dk-warn-soft",
+                "value": "rgb(224 160 48 / 13%)"
+              },
+              {
+                "name": "--dk-ok-soft",
+                "value": "rgb(61 165 100 / 13%)"
+              },
+              {
+                "name": "--dk-neutral-soft",
+                "value": "rgb(139 147 161 / 14%)"
+              },
+              {
+                "name": "--dk-band",
+                "value": "rgb(91 155 240 / 15%)"
+              },
+              {
+                "name": "--lt-bg",
+                "value": "#F7F8FA"
+              },
+              {
+                "name": "--lt-panel",
+                "value": "#FFFFFF"
+              },
+              {
+                "name": "--lt-panel2",
+                "value": "#EEF1F6"
+              },
+              {
+                "name": "--lt-text",
+                "value": "#1C2430"
+              },
+              {
+                "name": "--lt-muted",
+                "value": "#5D6B7E"
+              },
+              {
+                "name": "--lt-line",
+                "value": "#C9CCD1"
+              },
+              {
+                "name": "--lt-hair",
+                "value": "#E3E6EA"
+              },
+              {
+                "name": "--lt-flat",
+                "value": "#8A93A1"
+              },
+              {
+                "name": "--lt-skel",
+                "value": "#E9ECF1"
+              },
+              {
+                "name": "--lt-up",
+                "value": "#1F9A55"
+              },
+              {
+                "name": "--lt-down",
+                "value": "#CF4040"
+              },
+              {
+                "name": "--lt-ink-up",
+                "value": "#1E6D47"
+              },
+              {
+                "name": "--lt-ink-down",
+                "value": "#B23C3D"
+              },
+              {
+                "name": "--lt-warn",
+                "value": "#7D5922"
+              },
+              {
+                "name": "--lt-ok",
+                "value": "#296B48"
+              },
+              {
+                "name": "--lt-link",
+                "value": "#2758E6"
+              },
+              {
+                "name": "--lt-ser1",
+                "value": "#2F63C4"
+              },
+              {
+                "name": "--lt-ser2",
+                "value": "#8F6A04"
+              },
+              {
+                "name": "--lt-up-soft",
+                "value": "#EAF7EF"
+              },
+              {
+                "name": "--lt-down-soft",
+                "value": "#FCECED"
+              },
+              {
+                "name": "--lt-warn-soft",
+                "value": "#FFF4E2"
+              },
+              {
+                "name": "--lt-ok-soft",
+                "value": "#EAF5EE"
+              },
+              {
+                "name": "--lt-neutral-soft",
+                "value": "#EEF1F6"
+              },
+              {
+                "name": "--lt-band",
+                "value": "rgb(47 99 196 / 11%)"
+              }
+            ]
+          },
+          "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+          "contentHash": {
+            "tokens": "d776b76d"
+          }
+        },
+        "identity": {
+          "kind": "file-id",
+          "id": "01M5EX8RTPR7YEZD2A144XED2S"
+        },
+        "snapshot_sha256": "7924d31b63cf36bb58e8f9e57fb655b6b734646ac90bb8477b5b95ad27967541",
+        "write_binding_ready": true,
+        "binding_error": null
+      },
+      "retry_allowed": false,
+      "production_acceptance": false
+    }
+  ],
+  "readback": {
+    "prior_prefix_chars": 152996,
+    "exact_prior_prefix": true,
+    "text_nodes_verified": 9,
+    "new_svg_id": "4GR-0",
+    "old_svg_absent": true,
+    "parent_after_chars": 160779
+  },
+  "parent_node": {
+    "id": "3UR-0",
+    "name": "Build · Start here · Logic, motion and preserved states",
+    "component": "Frame",
+    "width": 1208,
+    "height": null,
+    "worldX": null,
+    "worldY": null,
+    "x": null,
+    "y": null,
+    "isVisible": true,
+    "isLocked": false,
+    "parentId": "root_node_p-2-0",
+    "childIds": [
+      "3US-0",
+      "3ZI-0",
+      "3XP-0",
+      "4DE-0",
+      "3YE-0",
+      "499-0",
+      "NG-0",
+      "QN-0",
+      "47N-0",
+      "4D3-0",
+      "4FM-0"
+    ],
+    "childCount": 11,
+    "artboardId": null,
+    "textContent": null
+  },
+  "visual_review": "Final native Paper card visually inspected; readable illustration/text, no observed overlap or clipping",
+  "snapshot_limitation": "Active p-1-0 guard was unchanged while exact p-2-0 nodes were modified; JSX and node reads prove the change"
+}
