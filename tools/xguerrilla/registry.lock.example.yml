@@ -1,0 +1,12 @@
+domains:
+  www.mastermind-x.com:
+    sha256: e8f80fabada834222fb647c6111ab48439457b6f1e79e9baa0cddfda13e1e2a3
+    state: admitted
+entries:
+  example.persona:
+    receipt_sha256: null
+    revision: 1
+    sha256: f35f733eac47a3535b5b24ae651516cebc614da70a2438e92c2a9d87db8b724b
+    state: proposed
+registry_revision: 1
+schema_version: 1
