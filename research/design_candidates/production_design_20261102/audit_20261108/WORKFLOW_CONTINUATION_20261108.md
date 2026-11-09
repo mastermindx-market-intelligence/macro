@@ -3268,3 +3268,50 @@ Paper `01M6Y3F0NXNDPAKJMJGCAD759Z`, comparison Build `2ZJ-0`: node `31F-0` recor
 [Build contract and exact proof](https://github.com/mastermindx-market-intelligence/Macro/tree/af9322f8e870be16f6f29fc38b8b573267347bd6/research/design_candidates/crypto_snapshot_safety_20261109). Applied receipt: `PAPER_CRYPTO_FOOTER_CLEARANCE_20261109.json`.
 
 Next: reject invalid quote values without discarding independent asset evidence; preserve useful sub-cent price detail and use an explicit bound below display precision. Existing BTC/scenario formatting remains with its owner. Fallback-name duplication, producer integrity and paired-window receipts remain separate bounded work. All incumbent Draft, H5/model, alert, hosted/independent acceptance, cutover, admission/release and denied/unknown-effect holds remain.
+
+
+## 70. Crypto quotes — valid availability, bounded precision and isolated rounding (2026-11-09)
+
+**Implemented, verified and saved; continuing into fallback identity clarity.** Dependent Draft [PR #10901](https://github.com/mastermindx-market-intelligence/Macro/pull/10901) advances from `af9322f8e870be16f6f29fc38b8b573267347bd6` to **`0c895f7bf5585f152f7bc0c6fc5eb23b6ec057c6`**, tree `0003c00fe00d26655a19dea7af1e37b3635ffe6f`, assets `4165f78946a7`.
+
+### Product and architecture
+
+The existing projection now accepts asset quotes only when finite and strictly positive. An invalid price becomes null without discarding the asset, date, relative state/value, structure, risk or eligibility. Markets and the asset inspector render **Unavailable / 暂无** explicitly.
+
+Positive quotes below 0.00000001 display **<$0.00000001**. Other sub-cent positives use up to 8 decimals with trailing zeros removed, including positive half-up boundaries. The normal money formatter is unchanged for ordinary asset prices and all Bitcoin/scenario/saved-case uses. Genuine zero and negative percentage changes retain their existing meaning.
+
+The existing server builder adds asset-only formatting with `Decimal(str(number))`, fixed decimal output and a fresh local `Context(prec=28, rounding=ROUND_HALF_UP)`. The matching asset-only JavaScript formatter uses existing Intl behavior. Only the Markets price cell and inspector Price consumer adopt the new formatter. No new source fetch, model, controller, storage key, router, identity registry or comparison calculation owner is introduced.
+
+Sub-cent parity is verified; universal currency-format parity is not claimed. The retained ordinary branch may show $1.00 server-side and $1 client-side. This is display precision after numeric parsing, not an inferred market tick size or source-quality guarantee.
+
+### Meaningful failure and passing evidence
+
+- Parent quote baseline, PID 19998: **18 failed / 19 passed / 201 deselected**. It reproduces zero/negative projection leakage, false $0.00 and missing-price ambiguity. Four browser contexts/pages, zero errors or external/WebSocket traffic.
+- Initial candidate, PID 28668: **108 passed** (100 contract + 8 browser),15.17s pytest / 15.792s subprocess. Eight contexts/pages, zero errors or external/WebSocket traffic. Four new quote cases include 18 asset Inspect→Close journeys; existing relative-integrity paths retain their scope.
+- Focused ambient-context reproduction, PID 51139: **2 failed**. A precision 2 caller raises InvalidOperation; normal precision sets caller Inexact/Rounded flags.
+- Final isolated-context builder, PID 54977: **17 passed**, 1.28s pytest / 1.61s subprocess. This rechecks 15 server-price boundary cases and 2 caller-context cases. Frontend files and browser inputs remain unchanged by that refinement.
+
+JUnit union: **110 unique passing cases = 102 contract + 8 browser**, with 15 overlapping cases between the 108-pass and 17-pass runs. This is not a complete browser-suite rerun.
+
+Six final native captures were inspected: invalid/below-limit quotes at EN390 dark/fine-pointer and ZH320 light/touch, and the existing unavailable/history relative states. The bound fits at 320px; independent data and controls remain legible. A synthetic source fixture is explicitly distinct from actual market observations.
+
+Publication readback, PID 58867, exit0: **nine changed source/served/test paths, 12 unchanged inputs**. Product and test transformations reverse to the exact parent. Generic money is conserved; retained JSON/CSS stay exact; both candidate pages change only their two asset-version references. **29 text/source/evidence files and six PNG binaries** match source commit readback.
+
+### Applied Paper companion and build contract
+
+File `01M6Y3F0NXNDPAKJMJGCAD759Z`, existing page `p-3-0`:
+
+- New **31-node companion `3N8-0`**, 1440×560, reuses existing EN390 and ZH320 quote components to show unavailable and positive-below-limit states. Inherited value styles are exactly 30px/38px; synthetic labels and builder explanations sit outside product components.
+- Existing comparison Build `2ZJ-0`: only `31F-0` changes, binding the current source and 110-case scoped proof. All 72 nodes, styles, parent/order relationships remain exact.
+- Proposed comparison roots `2XH-0` and `2YI-0` remain byte-exact, including their explicitly proposed paired-window receipt fields.
+- Both changed roots finished; final full-artboard captures inspected and saved as JPEG evidence. The Paper component styling is an editable design reference, not a claim of native inspector geometry.
+
+**Spatial qualification:** the new frame is listed on the correct page and renders fully, but its adapter world/relative position fields are null. Supported JSX/computed-style reads establish absolute positioning and dimensions but no left/top placement; exact canvas spacing/non-overlap is therefore unproven. Page-root screenshots are unsupported. No held style effect, alternate carrier, duplicate board or fabricated placement claim was used. This narrow Paper placement question does not block the independently verified source repair.
+
+[Build contract, proof and native captures](https://github.com/mastermindx-market-intelligence/Macro/tree/0c895f7bf5585f152f7bc0c6fc5eb23b6ec057c6/research/design_candidates/crypto_snapshot_safety_20261109). Applied receipt: `PAPER_CRYPTO_QUOTE_CLARITY_20261109.json`. Paper captures: `PAPER_CRYPTO_QUOTE_STATES_20261109.jpg`, `PAPER_CRYPTO_QUOTE_BUILD_20261109.jpg`.
+
+### Continuation and boundaries
+
+Next: remove redundant fallback presentation such as BTC · BTC, preserving canonical names, identity keys, routes, search and symbol-only comparison headers. Then assess stronger inspector hierarchy against the existing data and navigation contract.
+
+Producer history integrity, missing trend votes and emitted paired-window receipts remain separate owner/model work. Prior accepted proof retains its source scope. PRs remain Draft/unarmed/unmerged. H5/model, alerts, hosted/independent acceptance, public-route cutover, admission/release and all denied/unknown-effect action families remain held. Native historical/synthetic proof is not current-market freshness or production acceptance.

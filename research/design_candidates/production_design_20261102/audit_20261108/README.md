@@ -1,7 +1,19 @@
 # Paper audit and upgrade — 8–9 November 2026
 
 
-## Latest applied work — footer clearance
+## Latest applied work — quote validity and small-price clarity
+
+[PR #10901](https://github.com/mastermindx-market-intelligence/Macro/pull/10901) is now `0c895f7bf5585f152f7bc0c6fc5eb23b6ec057c6`, assets `4165f78946a7`. Invalid quotes read Unavailable / 暂无; positive sub-cent prices retain useful precision and an explicit bound below 0.00000001. Independent asset evidence and real zero relative changes remain usable.
+
+**102 contract + eight browser cases have passing coverage across two runs** (initial 108, final 17, 15 overlapping server cases). Eight native contexts/pages; zero errors or outside traffic; six native captures inspected. 29 text/source/evidence files and six PNG binaries read back exactly.
+
+Paper has a new 31-node editable quote companion and one Build note updated across 72 conserved nodes/styles. Proposed receipt states stay exact; both changed roots finished and full captures inspected. New-frame canvas position metadata is unavailable, so spacing is not claimed. See [§70](WORKFLOW_CONTINUATION_20261108.md), [receipt](PAPER_CRYPTO_QUOTE_CLARITY_20261109.json), [quote states](PAPER_CRYPTO_QUOTE_STATES_20261109.jpg) and [Build](PAPER_CRYPTO_QUOTE_BUILD_20261109.jpg).
+
+Continuing into duplicate fallback identity and inspector hierarchy. Prior proof scopes and all holds remain.
+
+
+
+## Prior applied work — footer clearance
 
 [PR #10901](https://github.com/mastermindx-market-intelligence/Macro/pull/10901) is now `af9322f8e870be16f6f29fc38b8b573267347bd6`, assets `0bad44b2e1ef`. The existing Crypto content owner reserves 96px plus the safe-area inset so the footer action and keyboard focus outline clear the unchanged shared launcher.
 
@@ -12,7 +24,7 @@ Paper Build has one updated implementation/proof note across 72 conserved nodes/
 Continuing into asset quote validity and small-price precision. Prior proof scopes and all holds remain.
 
 
-## Latest applied work — Crypto Overview clarity
+## Prior applied work — Crypto Overview clarity
 
 Dependent [PR #10901](https://github.com/mastermindx-market-intelligence/Macro/pull/10901) is now `7fd7d84f8b53ad0cd43c5175d3c149ad0d3ccf62` (assets `602406872d1d`). Overview explicitly labels comparison and risk in both languages, preserves compact wrapping and aligns section headings.
 
