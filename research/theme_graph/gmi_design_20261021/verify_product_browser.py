@@ -4350,6 +4350,235 @@ with sync_playwright() as pw:
     for width,language in ((1440,'en'),(1440,'zh'),(390,'en'),(320,'zh'),(320,'en'),(390,'zh'),(820,'en')):
         check(f'topic-description-{width}-{language}',lambda w=width,l=language:topic_description_paths(w,l))
 
+    def browse_keys_page(c,width,kind='primary'):
+        route='gmi.html?fixture=browse-keys#theme=theme%3Aconventional_dram&lens=chain&q=HBM' if kind=='primary' else 'gmi-index.html?fixture=browse-keys#lens=chain&q=HBM'
+        p=page_for(c,route)
+        if kind=='primary':expect(p.locator('[data-gmi-ready]')).to_have_count(1)
+        p.evaluate("""()=>{
+          window.__browseKeyRows=Array.from(document.querySelectorAll('[data-topic-results] [data-topic-select]'));
+          window.__browseKeyEvents=[];
+        }""")
+        return p
+
+    def browse_keys_snapshot(p):
+        return p.evaluate("""()=>{
+          const a=document.activeElement,rows=window.__browseKeyRows||[],dialog=document.querySelector('[data-browse-dialog]');
+          return {active:a.getAttribute('data-topic-select')||a.id||a.tagName,
+            stops:rows.filter(n=>n.tabIndex===0).map(n=>({id:n.getAttribute('data-topic-select'),hidden:n.hidden})),
+            href:location.href,selected:document.getElementById('gmi-topic-title')?.textContent||null,
+            dialog:!!(dialog&&dialog.open)};
+        }""")
+
+    def browse_keys_results(width,language,only=None):
+        with context(width,'dark' if language=='en' else 'light',language) as c:
+            p=browse_keys_page(c,width)
+            if width<=820:p.locator('[data-browse-open]').click()
+            rows=p.locator('[data-topic-results] [data-topic-select]:visible')
+            assert rows.count()>3
+            first=rows.nth(0);first.focus()
+            observations=[];report.setdefault('browse_result_keys',[]).append({'width':width,'language':language,'observations':observations})
+            before=browse_keys_snapshot(p)
+            p.evaluate("""()=>window.addEventListener('keydown',e=>{
+              if(e.key==='ArrowDown'){e.preventDefault();window.__browseKeyEvents.push({key:e.key,trusted:e.isTrusted,prevented:e.defaultPrevented});}
+            },{capture:true,once:true})""")
+            p.keyboard.press('ArrowDown')
+            observations.append({'phase':'consumed-trusted-ArrowDown','before':before,'after':browse_keys_snapshot(p),'events':p.evaluate('window.__browseKeyEvents')})
+            expect(first).to_be_focused()
+            assert browse_keys_snapshot(p)==before
+            assert p.evaluate('window.__browseKeyEvents')==[{'key':'ArrowDown','trusted':True,'prevented':True}]
+            if only=='consumed':return
+            # Modified and composition-marked events belong to another key owner.
+            for key in ('ArrowDown','ArrowUp','Home','End'):
+                for guard in ('ctrlKey','metaKey','altKey','shiftKey','isComposing','keyCode'):
+                    first.focus();before=browse_keys_snapshot(p)
+                    event=first.evaluate("""(n,v)=>{
+                      const init={key:v.key,bubbles:true,cancelable:true};
+                      init[v.guard]=v.guard==='keyCode'?229:true;
+                      const e=new KeyboardEvent('keydown',init);n.dispatchEvent(e);
+                      return {key:e.key,guard:v.guard,trusted:e.isTrusted,prevented:e.defaultPrevented};
+                    }""",{'key':key,'guard':guard})
+                    after=browse_keys_snapshot(p)
+                    observations.append({'phase':'guarded-'+guard,'event':event,'before':before,'after':after})
+                    assert not event['prevented'] and not event['trusted'] and after==before
+            # An attached replacement anchor is not one of this owner's rows.
+            rows.nth(1).focus();before=browse_keys_snapshot(p)
+            event=p.evaluate("""()=>{
+              const list=document.querySelector('[data-topic-results]'),row=window.__browseKeyRows.find(n=>!n.hidden);
+              const clone=row.cloneNode(true);clone.tabIndex=-1;list.append(clone);
+              const e=new KeyboardEvent('keydown',{key:'ArrowDown',bubbles:true,cancelable:true});
+              clone.dispatchEvent(e);clone.remove();return {prevented:e.defaultPrevented,trusted:e.isTrusted};
+            }""")
+            observations.append({'phase':'unowned-anchor','event':event,'before':before,'after':browse_keys_snapshot(p)})
+            assert not event['prevented'] and browse_keys_snapshot(p)==before
+            event=p.evaluate("""()=>{
+              const row=window.__browseKeyRows.find(n=>n.hidden);if(!row)throw Error('No hidden row fixture');
+              const e=new KeyboardEvent('keydown',{key:'ArrowDown',bubbles:true,cancelable:true});
+              row.dispatchEvent(e);return {prevented:e.defaultPrevented,trusted:e.isTrusted};
+            }""")
+            observations.append({'phase':'hidden-origin','event':event,'before':before,'after':browse_keys_snapshot(p)})
+            assert not event['prevented'] and browse_keys_snapshot(p)==before
+            # Plain trusted traversal still uses the same visible rows and tab stop.
+            first.focus();unchanged=browse_keys_snapshot(p)
+            for key,index in (('ArrowDown',1),('ArrowUp',0),('End',rows.count()-1),('Home',0)):
+                p.keyboard.press(key);expect(rows.nth(index)).to_be_focused()
+                after=browse_keys_snapshot(p)
+                assert after['href']==unchanged['href'] and after['selected']==unchanged['selected']
+                assert after['dialog']==(width<=820)
+                assert after['stops']==[{'id':rows.nth(index).get_attribute('data-topic-select'),'hidden':False}]
+                observations.append({'phase':'ordinary-'+key,'after':after})
+            p.evaluate("""()=>{
+              window.__browseKeyRepeat=[];
+              const listener=e=>{if(e.key==='ArrowDown')window.__browseKeyRepeat.push({repeat:e.repeat,trusted:e.isTrusted});};
+              window.addEventListener('keydown',listener,{capture:true});
+              window.__browseKeyRepeatListener=listener;
+            }""")
+            p.keyboard.down('ArrowDown');p.keyboard.down('ArrowDown');p.keyboard.up('ArrowDown')
+            expect(rows.nth(2)).to_be_focused()
+            repeat=p.evaluate('window.__browseKeyRepeat')
+            assert repeat==[{'repeat':False,'trusted':True},{'repeat':True,'trusted':True}],repeat
+            p.evaluate("window.removeEventListener('keydown',window.__browseKeyRepeatListener,{capture:true})")
+            observations.append({'phase':'ordinary-repeat','events':repeat,'after':browse_keys_snapshot(p)})
+            chosen=rows.nth(2).get_attribute('data-topic-select')
+            payload=json.loads(p.locator('#gmi-topic-data').text_content())
+            topic=next(t for t in payload['topics'] if t['id']==chosen)
+            path=args.out/f'browse-result-keyboard-{width}-{language}.png'
+            p.screenshot(path=str(path),full_page=False);report['screenshots'].append(path.name)
+            p.keyboard.press('Enter')
+            expect(p.locator('#gmi-topic-title')).to_have_text(topic[language])
+            assert parse_qs(urlsplit(p.url).fragment)['theme']==[chosen]
+            if width<=820:
+                expect(p.locator('[data-browse-dialog]')).not_to_be_visible()
+                expect(p.locator('#gmi-topic-title')).to_be_focused()
+            observations.append({'phase':'native-Enter-selection','after':browse_keys_snapshot(p)})
+
+
+    def browse_keys_close(p):
+        before=p.url;query=p.locator('[data-topic-search]').input_value()
+        p.evaluate("""()=>{window.__browseKeysClosed=new Promise(resolve=>{
+          const dialog=document.querySelector('[data-browse-dialog]');
+          dialog.addEventListener('close',event=>resolve({
+            trustedClose:event.isTrusted,open:dialog.open,
+            inHome:document.querySelector('[data-gmi-browse]').parentElement===document.querySelector('[data-browse-home]'),
+            focused:document.activeElement===document.querySelector('[data-browse-open]'),
+            query:document.querySelector('[data-topic-search]').value,href:location.href
+          }),{once:true});
+        });}""")
+        p.locator('[data-browse-close]').click()
+        settled=p.evaluate('window.__browseKeysClosed')
+        report.setdefault('browse_close_settlements',[]).append(settled)
+        assert settled['trustedClose'] and not settled['open'] and settled['inHome'] and settled['focused']
+        assert settled['query']==query and settled['href']==before
+        return settled
+
+    def browse_keys_slash(width,language,kind,only=None):
+        with context(width,'dark' if language=='en' else 'light',language) as c:
+            p=browse_keys_page(c,width,kind)
+            origin=p.locator('#gmi-topic-title') if kind=='primary' else p.locator('main a[href^="gmi.html"]').first
+            field=p.locator('[data-topic-search]') if kind=='primary' else p.locator('input[data-gmi-filter="index"]')
+            origin.focus();before=browse_keys_snapshot(p)
+            observations=[];report.setdefault('browse_slash_keys',[]).append({'width':width,'language':language,'kind':kind,'observations':observations})
+            p.evaluate("""()=>window.addEventListener('keydown',e=>{
+              if(e.key==='/'){e.preventDefault();window.__browseKeyEvents.push({key:e.key,trusted:e.isTrusted,prevented:e.defaultPrevented});}
+            },{capture:true,once:true})""")
+            p.keyboard.press('/')
+            observations.append({'phase':'consumed-trusted-slash','before':before,'after':browse_keys_snapshot(p),'events':p.evaluate('window.__browseKeyEvents')})
+            expect(origin).to_be_focused()
+            assert browse_keys_snapshot(p)==before
+            assert p.evaluate('window.__browseKeyEvents')==[{'key':'/','trusted':True,'prevented':True}]
+            if only=='consumed':return
+            for guard in ('isComposing','keyCode','ctrlKey','metaKey','altKey'):
+                origin.focus();before=browse_keys_snapshot(p)
+                event=origin.evaluate("""(n,guard)=>{
+                  const init={key:'/',bubbles:true,cancelable:true};init[guard]=guard==='keyCode'?229:true;
+                  const e=new KeyboardEvent('keydown',init);n.dispatchEvent(e);
+                  return {guard,trusted:e.isTrusted,prevented:e.defaultPrevented};
+                }""",guard)
+                observations.append({'phase':'guarded-'+guard,'event':event,'before':before,'after':browse_keys_snapshot(p)})
+                assert not event['prevented'] and not event['trusted'] and browse_keys_snapshot(p)==before
+            # Shift-marked "/" remains a valid event contract for layouts that require Shift.
+            origin.focus();url=p.url
+            event=origin.evaluate("""n=>{
+              const e=new KeyboardEvent('keydown',{key:'/',shiftKey:true,bubbles:true,cancelable:true});
+              n.dispatchEvent(e);return {key:e.key,shift:e.shiftKey,trusted:e.isTrusted,prevented:e.defaultPrevented};
+            }""")
+            expect(field).to_be_focused()
+            assert event=={'key':'/','shift':True,'trusted':False,'prevented':True} and p.url==url
+            if kind=='primary' and width<=820:
+                expect(p.locator('[data-browse-dialog]')).to_be_visible()
+                browse_keys_close(p)
+            observations.append({'phase':'shift-slash-contract','event':event,'after':browse_keys_snapshot(p)})
+            # The ordinary trusted shortcut continues to enter the existing search.
+            origin.focus();url=p.url;p.keyboard.press('/')
+            expect(field).to_be_focused();assert p.url==url
+            if kind=='primary' and width<=820:expect(p.locator('[data-browse-dialog]')).to_be_visible()
+            observations.append({'phase':'ordinary-trusted-slash','after':browse_keys_snapshot(p)})
+            path=args.out/f'browse-slash-{kind}-{width}-{language}.png'
+            p.screenshot(path=str(path),full_page=False);report['screenshots'].append(path.name)
+            field.fill('');p.keyboard.press('/')
+            expect(field).to_have_value('/');expect(field).to_be_focused()
+            observations.append({'phase':'slash-typed-in-search','after':browse_keys_snapshot(p)})
+            if kind=='primary' and width<=820:browse_keys_close(p)
+            # A controlled editable fixture proves the existing active-element exclusion.
+            p.evaluate("""()=>{
+              const n=document.createElement('div');n.id='keyboard-editable-fixture';n.contentEditable='true';
+              n.textContent='';document.querySelector('main').append(n);n.focus();
+            }""")
+            p.keyboard.press('/')
+            editable=p.locator('#keyboard-editable-fixture')
+            expect(editable).to_be_focused();expect(editable).to_have_text('/')
+            observations.append({'phase':'slash-typed-in-contenteditable','after':browse_keys_snapshot(p)})
+            editable.evaluate('n=>n.remove()')
+
+    for width,language in ((1440,'en'),(320,'zh')):
+        check(f'browse-result-keys-{width}-{language}',lambda w=width,l=language:browse_keys_results(w,l))
+        for kind in ('primary','index'):
+            check(f'browse-slash-{kind}-{width}-{language}',lambda w=width,l=language,k=kind:browse_keys_slash(w,l,k))
+
+    def browse_keys_reopen(width,language):
+        with context(width,'dark' if language=='en' else 'light',language) as c:
+            p=browse_keys_page(c,width)
+            opener=p.locator('[data-browse-open]');field=p.locator('[data-topic-search]')
+            opener.click();expect(field).to_be_focused()
+            before=browse_keys_snapshot(p)
+            phases=[];report.setdefault('browse_reopen',[]).append({'width':width,'language':language,'phases':phases})
+            # Real native close notification, with a controlled same-turn opener call.
+            reopened=p.evaluate("""()=>new Promise(resolve=>{
+              const dialog=document.querySelector('[data-browse-dialog]');
+              const browse=document.querySelector('[data-gmi-browse]');
+              const slot=document.querySelector('[data-browse-slot]');
+              const search=document.querySelector('[data-topic-search]');
+              dialog.addEventListener('close',event=>resolve({
+                trustedClose:event.isTrusted,open:dialog.open,inSlot:browse.parentElement===slot,
+                focused:document.activeElement===search,query:search.value,href:location.href
+              }),{once:true});
+              dialog.close();document.querySelector('[data-browse-open]').click();
+            })""")
+            phases.append({'phase':'old-close-after-reopen','before':before,'after':reopened})
+            assert reopened['trustedClose'] and reopened['open'] and reopened['inSlot'] and reopened['focused'],reopened
+            assert reopened['query']=='HBM' and reopened['href']==before['href']
+            # The current closure must still reparent once and return normal focus.
+            p.evaluate("""()=>{window.__browseCurrentClose=new Promise(resolve=>{
+              const dialog=document.querySelector('[data-browse-dialog]');
+              dialog.addEventListener('close',event=>resolve({
+                trustedClose:event.isTrusted,open:dialog.open,
+                inHome:document.querySelector('[data-gmi-browse]').parentElement===document.querySelector('[data-browse-home]'),
+                focused:document.activeElement===document.querySelector('[data-browse-open]'),
+                query:document.querySelector('[data-topic-search]').value,href:location.href
+              }),{once:true});
+            });}""")
+            p.locator('[data-browse-close]').click()
+            closed=p.evaluate('window.__browseCurrentClose')
+            phases.append({'phase':'current-close-settled','after':closed})
+            assert closed['trustedClose'] and not closed['open'] and closed['inHome'] and closed['focused']
+            assert closed['query']=='HBM' and closed['href']==before['href']
+            p.keyboard.press('/');expect(field).to_be_focused()
+            expect(p.locator('[data-browse-dialog]')).to_be_visible()
+            phases.append({'phase':'ordinary-reopen-after-settle','after':browse_keys_snapshot(p)})
+            assert p.url==before['href']
+
+    for width,language in ((390,'en'),(320,'zh')):
+        check(f'browse-reopen-{width}-{language}',lambda w=width,l=language:browse_keys_reopen(w,l))
+
     browser.close()
 server.shutdown()
 report['pass'] = all(c['result']=='PASS' for c in report['cases']) and not report['page_errors']

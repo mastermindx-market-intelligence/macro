@@ -1735,3 +1735,68 @@ Extend existing Build module02 with the stable-topic identity rule and the two e
 PR10676 stays Draft, with original model01 **EFFECT_UNKNOWN / ROOT_UNVERIFIED** and release holds intact. Component/production-render checks do not establish full shared shell/fonts, native OS IME, spoken assistive technology, live account/admission, current hosted CI or deployment.
 
 A separate source review found unguarded consumed/composition/modifier handling in the primary result-key navigation and the two incumbent slash shortcuts. Continue with bounded consumer reproduction and their existing owners; that next correction is not included in this phase.
+
+
+## 11.41 · Respect key ownership and a reopened Browse dialog — 9 Nov 2026
+
+### Reproduced keyboard defects
+
+At parent **fa09ffaf0b97a970a649185753579d2510863bc0**, primary Browse's ArrowUp/ArrowDown/Home/End handler moved row focus even after an earlier handler consumed the event. Its navigation also ignored composition and modifier ownership. Both existing slash handlers—the primary capture handler and legacy first-search bubble handler—likewise ignored consumed/composing events.
+
+Baseline PID **68644**, exit1, **40.81 s**, reproduces **six failures** with trusted browser keys at EN1440 and ZH320: consumed ArrowDown in Browse, consumed slash in primary research, and consumed slash in the full index. Focus changes in every case despite the earlier window-capture listener cancelling the key. All six contexts report zero page errors.
+
+### Keep the existing key owners
+
+For primary result navigation, return on **defaultPrevented**, **isComposing**, **keyCode229**, or **Ctrl/Meta/Alt/Shift**. Then require the originating anchor to be present in the current visible-row array before deriving a target. A hidden row or a replacement anchor attached by another operation cannot take over the incumbent roving stop.
+
+Preserve ordinary ArrowDown/ArrowUp/Home/End, native Enter activation, and ordinary key repeat. Navigation changes focus and the existing tab stop; it does not select a topic, rewrite the research URL, filter, rank or create a second selection owner.
+
+Add consumed/composition/229 guards to **both** slash handlers. Returning from primary capture alone is insufficient because the existing legacy handler can still receive the same event. Keep current Ctrl/Meta/Alt and editable-focus exclusions. Do not add a blanket Shift guard: a key event whose key is slash may legitimately carry Shift. A valid primary shortcut still stops propagation into the legacy shortcut after using the existing opener or search field.
+
+### The consumer test exposed a separate close-event race
+
+Initial candidate PID **73007** passed four of five executed cases, then failed the mobile ordinary-shortcut sequence; the six-case run was incomplete. This was not dismissed as a flaky focus assertion.
+
+Diagnostic PID **80285** records the actual ordering in Chrome157.0.8103.39:
+
+1. Done invokes native close; the dialog becomes closed and native focus returns.
+2. A real slash key reopens the dialog and focuses search.
+3. The previous native close event arrives while **dialog.open is true**.
+4. The unconditional close listener moves Browse back to mobile-hidden home. The modal remains open, its slot becomes empty, and focus falls to BODY.
+
+The [HTML close algorithm](https://html.spec.whatwg.org/multipage/interactive-elements.html#close-the-dialog) removes the open attribute and performs native focus restoration before queuing the close notification. The observed trace, rather than that standard alone, proves this instance of the race. The canonical diagnostic preserves all event records; its large serialized BODY is explicitly replaced with tag/length/hash metadata, and the empty slot remains exact.
+
+Two additional baseline cases run against the untouched parent asset. PID **88792** (EN390, exit1, **5.86 s**) and PID **88528** (ZH320, exit1, **7.83 s**) use actual native close notification and a controlled same-turn call through the existing opener. Both observe an open dialog whose Browse content has been moved out and whose search no longer owns focus.
+
+### Use native open state at the existing close boundary
+
+The close listener now begins with **if (dialog.open) return**. A delayed notification cannot retire the newer open dialog's content or focus. A current close still moves Browse home and returns focus through the incumbent close policy. No generation counter, second dialog controller, timer, retry, queue or document-level lifecycle is added.
+
+Ordinary shortcut and typing checks now wait for the preceding close event's actual application state—closed dialog, Browse at home, opener focused—before starting their next independent action. The dedicated early-reopen cases remain separate and explicitly exercise the stale event; the race is not hidden with a sleep or by weakening the expected result.
+
+### Final source-bound proof
+
+Final PID **94735**, exit0, **17.01 s**: **8 cases / 8 fresh anonymous contexts**, Chrome **157.0.8103.39**, zero page errors.
+
+| Contract | Observed coverage |
+|---|---|
+| Trusted consumed keys | Six cases preserve actual focus, tab stops, selected theme, dialog state and URL |
+| Result navigation | EN1440/ZH320; 48 modified/composition/229 event contracts, four hidden/unowned-origin contracts, real Arrow/Home/End traversal, trusted repeat and native Enter |
+| Slash entry | Primary and index in EN1440/ZH320; 20 ignored modifier/composition contracts, four accepted Shift-marked slash contracts, real shortcut, input typing and controlled contenteditable typing |
+| Reopened dialog | EN390/ZH320; real delayed native close leaves newer dialog, slot, search focus, query and URL intact |
+| Current close | Actual close event restores home/opener focus, then ordinary reopening works |
+| Observations | **66 result + 40 slash observations**, **6 reopen observations**, and **2 explicit ordinary close-settlement records** |
+
+Six final screenshots were generated; four were inspected: desktop/phone result focus plus primary/index ZH320 slash entry. Their existing visible focus indicators remain coherent. This phase adds no product paragraph or control.
+
+All **129 prior qualified verifier definitions remain AST-exact**; six new helpers and canonical registrations are added. Reverse the four guard additions to reconstruct parent JS blob **2f609523fe0ca15d96bf82d0a7fd0afe71297c3b** exactly. Final paired JS blob **0a7c89a16b34d43db2354b6ac9c904d22c370bd3**, SHA256 **694b2d39f509eb2cf610d88c45795f7c9853c03ddd818767488c1f7b31d03a94**. The same accepted model, **47 other bound source inputs**, all seven generated HTML pages and CSS remain byte-exact.
+
+[BROWSE_KEYS_VALIDATION_20261109.json](BROWSE_KEYS_VALIDATION_20261109.json) preserves baseline/final cases, original diagnostic hashes, all final observations, the meaningful native event trace, exact sources, commands and screenshot hashes. It distinguishes native browser events from controlled synthetic key contracts; no physical keyboard layout, OS IME or spoken-AT result is inferred.
+
+### Paper and next safe change
+
+Extend current Build module08 with the result/slash ownership guards and module06 with the delayed-native-close rule. Keep the existing eighteen modules and editable Browse states; update current source and proof references. The builder should reuse current handlers rather than adding another shortcut or dialog owner.
+
+The next design correction will reduce repeated generic/empty-topic prose so its existing company-evidence action appears earlier on phones. Retain the canonical HBM description, classification identity, published-evidence/participation distinction, existing company catalogue route and separate completeness/revenue qualification.
+
+Original Draft, model01 **EFFECT_UNKNOWN / ROOT_UNVERIFIED**, no-Ready/no-merge/no-relabel/no-enqueue and release holds remain. Generated-main checks do not establish full shared shell/fonts, physical IME/keyboard-layout behavior, spoken AT, live account/admission, current hosted CI or deployment.
