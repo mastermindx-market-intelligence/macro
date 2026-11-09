@@ -2868,3 +2868,45 @@ All 227 prior div identities, parents and styles remain exact; the recovery grou
 The qualified-zero source branch currently renders its primary outcome as an 18px H3, while unavailable and positive branches have H1 headings. Promote only the valid-empty title to H1 with explicit primary-heading spacing/type. Keep its current wording, qualified-zero predicate, source clock, explanation and exact Open Mastermind destination. Check both narrow languages using the existing qualified empty fixture; leave positive/unavailable headings and existing access owners untouched.
 
 The source and audit remain Draft/unmerged. Incumbent PR10705's admission/calendar refusal, known 960px shared-navigation defect and all wider model, source, programme, browser and release boundaries remain.
+
+
+## 60. Qualified-zero primary heading and concise source-faithful Paper heroes — 9 November 2026
+
+[Dependent Draft PR10893](https://github.com/mastermindx-market-intelligence/Macro/pull/10893) is at `26e0b8ba9ad322dc7c47a1dc1e0bead789589173`. A qualified empty source previously rendered its main result as an 18px H3 and supplied no page-content H1. It now uses the existing h1.hero-state type scale: 26px at 640px and below, 32px above, with 1.2 line-height and a local 12px lower gap.
+
+The English and Chinese title text, explanation, qualified-zero predicate, source time, count and exact Open Mastermind destination remain unchanged. Unavailable input remains distinct from valid zero. The existing qualified-zero Paper specimen already uses a 26px title; its heading now says the exact source wording, No eligible line-ups, and the builder contract names the required H1 semantics.
+
+### Source and consumer evidence
+
+Two template substitutions reverse exactly to parent `1c868e55`. The current positive saved page contains no empty-state markup, so it changes only the local CSS rule; its complete body and scripts remain exact. The unavailable body/H1, builder, existing page tests and protected JSON stay exact. Protected data still matches the actual producer. Current positive input remains 2026-11-08T11:31:29Z, receipt `4f8c3dcd8508a55978f4b27d7c4d34828bc1044881ed404120cb353b1d4dc7c1`.
+
+**92 existing page tests pass**, PID 19330, 10.96 seconds pytest /11.90 seconds process. No new permanent test or harness was added for the heading substitution. A bounded native visual/semantic inspection, PID 19455, compared before/after in four contexts: EN dark/ZH light at 320px and 1440px. Eight page observations, zero page errors, Chrome 157.0.8103.39, 7.83 seconds process. These observations are not eight new functional browser cases.
+
+The existing _make_raw() fixture with combos.long=[] qualifies as available with zero eligible rows. Its source clock is 2026-07-19T04:00:00Z and full receipt `2a6b527d7b44cad06372e6f4700f21ccc0c7fd8e560b2c01ec934cc13c6153b6`. It is explicit synthetic evidence, not a current market result. Actual builder/template rendering and the exact current tagged CTA were used; only the page-generation clock was fixed for comparison.
+
+All four pairs retain title words, body, action/href and footer exactly. H1 count changes 0→1; title and document remain contained; the 44px action remains. Both 320px titles fit on one line. Card height increases 10.1875px narrow and 17.390625px desktop through the intended heading scale/gap. All eight original PNGs were visually inspected and byte length/SHA256/Git blob verified. Six source/text files and eight PNGs read back exactly at the published head.
+
+[Heading contract, actual captures and reproduction receipts](https://github.com/mastermindx-market-intelligence/Macro/blob/26e0b8ba9ad322dc7c47a1dc1e0bead789589173/research/design_candidates/confluence_compatibility_20261109/EMPTY_HEADING.md) records the exact substitutions and bounded proof. Recovery/method/layout reports retain their original source identities; they were not rerun or relabeled.
+
+### Eight hero leads, one research sequence
+
+The two EN desktop heroes called the timing signals independent without a supporting source contract. All eight R2 variants now use the current source's concise workflow:
+
+- EN: Find signal combinations worth researching. Compare both historical periods before opening a company.
+- ZH: 寻找值得研究的信号组合。先比较两段历史，再查看公司。
+
+Targets are V8-0, 10M-0, 1FP-0, 1KI-0, 15U-0, 1TY-0, 1P4-0 and 1AO-0. The first desktop pair removes the unsupported independence claim; all variants align the same research sequence. The final English mobile copy fits in three complete lines. Initial Chinese mobile readback produced a two-character final-line widow. An explicit sentence break in the same two text nodes preserves all words and creates two balanced lines; it adds only exported pre-wrap whitespace, without changing font size.
+
+All eight final heroes and the qualified-zero card were visually inspected. R2's 1,458 div identities and parent/order relationships remain exact; every other text/style and all 24 card subtrees stay exact. In the 20-node R3 zero frame, only 295-0 changes wording. No customer node is added, replaced or deleted.
+
+Eight existing Build text nodes bind the current source, H1 contract, inspected proof, exact links and source-faithful copy. All 241 Build div identities/parents/styles remain exact. The complete method/access, recovery and R4 subtrees remain byte-exact. Tokens remain 6234666b. Full JSX inverses restore all ten edited roots except the two explicitly reversed sentence-break whitespace additions. Only the owned roots were finished.
+
+[Full Paper/source receipt](PAPER_CONFLUENCE_HEADING_HERO_20261109.json) retains the original/final JSX, operation results, visual correction and exact conservation checks.
+
+### Next source-fidelity correction and custody
+
+Read-only review identified two emitted metadata gaps: the universal description claims signals are firing right now despite snapshot-only source time, and zero/unavailable pages can still advertise the retained positive share image. Historical commit `143dded8a0a0f4f0a7e24396e8d169292135d9e0` already contains an overlapping page-local OG predicate plus separate image cleanup. Current source is diverged and did not inherit it. The fresh PR8428 read returned 404, so its current state is unresolved; do not describe that work as newly invented, closed or released.
+
+A narrowly adopted HTML predicate and neutral existing seo_desc are the next candidates. Preserve the shared metadata helper, renderer, historical image-cleanup effect, old unfulfilled/blocked visual request and existing publication/release owners. Positive image-generation failure remains a separate publication risk. No held action is retried by this record.
+
+Source and audit remain Draft/unmerged. Incumbent PR10705's admission/calendar refusal, known 960px shared-navigation issue and all wider model, source, programme, browser and release boundaries remain.

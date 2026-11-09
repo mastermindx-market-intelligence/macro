@@ -1,6 +1,16 @@
 # Paper audit and upgrade — 8–9 November 2026
 
-## Latest implementation — Confluence keyboard reload recovery
+## Latest implementation — primary empty-state heading and source-faithful heroes
+
+[Dependent Draft PR10893](https://github.com/mastermindx-market-intelligence/Macro/pull/10893) at `26e0b8ba9ad322dc7c47a1dc1e0bead789589173` gives a qualified empty result one visible H1 using the existing 26px/32px primary scale. Its words, state, source clock and Open Mastermind action stay exact. **92 existing page tests** pass; four bounded native inspection contexts compare eight page observations in EN/ZH 320/1440, with zero errors. Eight original captures and six source/text files read back exactly. The positive saved body/scripts, unavailable body/H1, builder and protected JSON remain exact.
+
+All eight Paper R2 heroes now use the concise current-source research sequence. Two EN desktop leads lose an unsupported independence claim. Two Chinese mobile leads gain a sentence break after visual review exposed a final-word widow; wording and type size stay unchanged. The zero title matches source, and eight Build nodes name the H1 contract, exact proof and source pins. All 1,458 R2, 20 zero-state and 241 Build div identities/parents remain; all 24 card subtrees and method/access, recovery and R4 examples stay exact. Only the two intended text-whitespace styles differ.
+
+[§60 and full continuation](WORKFLOW_CONTINUATION_20261108.md) and [exact Paper receipt](PAPER_CONFLUENCE_HEADING_HERO_20261109.json) preserve current changes. [Source contract](https://github.com/mastermindx-market-intelligence/Macro/blob/26e0b8ba9ad322dc7c47a1dc1e0bead789589173/research/design_candidates/confluence_compatibility_20261109/EMPTY_HEADING.md) contains actual captures and reproduction receipts.
+
+Next: correct snapshot-inaccurate metadata within existing owners, accounting for overlapping historical 143dded8 work and unresolved PR8428 status. Existing release/admission/visual holds remain. This is saved progress within the continuing estate mission.
+
+## Previous implementation — Confluence keyboard reload recovery
 
 [Dependent Draft PR10893](https://github.com/mastermindx-market-intelligence/Macro/pull/10893) at `1c868e55b99fe52d5f90310bcbd4a7546fdb2c22` now keeps keyboard recovery on its next action. When Check access receives a different source generation, the existing Reload action is revealed/described before focus moves and the retry hides. Newer focus, synchronous sign-out and callback-selected focus are preserved through the existing request/epoch/user owner.
 
