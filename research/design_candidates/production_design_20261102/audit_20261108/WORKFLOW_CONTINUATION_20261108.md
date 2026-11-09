@@ -3585,3 +3585,78 @@ Receipt: `PAPER_CRYPTO_CARD_LIFECYCLE_20261109.json`. Full JPEGs: `PAPER_CRYPTO_
 Valid current-scenario Historical review still has no explicit same-case parent action. Browser Back returns one level but does not retain that current case’s disclosure/scroll/review focus. Extend the existing history, reading and single pending-return owners with a qualified current-case context; match case ID, horizon, revision and cutoff. Preserve whole-drawer Close, detached replacement semantics, missing-case recovery, unreadable-storage handling and newer-choice safeguards.
 
 All model/H5, alert, paired-receipt, qualified-result, hosted/independent acceptance, public-route cutover, admission/release and denied/unknown-effect boundaries remain. Quote-companion freeform coordinates remain unreported. No production deployment, merge or acceptance is claimed.
+
+
+## 77. Crypto current-case review — exact return and readable entry (2026-11-09)
+
+### Implemented outcome and source ownership
+
+[Dependent Crypto PR #10901](https://github.com/mastermindx-market-intelligence/Macro/pull/10901) now records source `0ec213ab7bb570a0cebc28f2e4112cde14ff59c2`, tree `25ecc42bba02e35bc94041a6eb0a23c1d18abd86`, assets `2698fd4fd4ed`. Parent source is `bcf8e84957017181dc323ff3c3a9f4b32b218799`. It remains Draft, open, unmerged and unarmed against incumbent PR #9580.
+
+Valid current-case Historical review now exposes **← Scenario details / ← 情景详情** for a recognized immediate same-case/horizon parent, or **Open scenario details / 打开情景详情** for a detached or wrong-horizon entry. The context kicker is **Scenario / 情景**. Parent return restores the matching case’s disclosure, scroll and review-button focus. Close and Escape still exit the complete managed drawer journey and restore the outer context.
+
+A newly entered current review begins at the top with the case identity and “No qualified comparison yet” visible. The final rule distinguishes a changed URL/horizon, changed serialized history state, and native incoming entries even when URL and state serialize identically. Same-entry locale refresh retains deliberate review scroll. Generic Historical review and unresolved cases do not acquire a fabricated case parent.
+
+Current-case return remains available when the case is expired or saved storage cannot be read. Save eligibility and the storage warning/retry are separate. Native evidence Back also retains the current reader’s disclosure and semantic action focus. No historical results, freshness claims or additional data observations are created.
+
+The existing ownership stays cohesive:
+
+- `readingScope()` derives the case from the existing route and active-scenario resolver, requiring exact panel, nonblank supplied revision, valid cutoff and matching numeric horizon.
+- `history.state.reading` remains the only persisted reading owner. Its panel/revision/horizon/cutoff tuple qualifies disclosure, scroll and focus.
+- `hasDrawerParent()` accepts an optional normalized current horizon; missing `h` correctly means 7D.
+- The existing single pending saved-return intent becomes `pendingCaseReturn`, carrying the expected tuple and child/parent addresses. Duplicate activation does not enqueue another Back.
+- `apply()` keeps a local witness before clearing pending state and compares the complete identity after rendering.
+- Current controls gain semantic keys for conditions, review, explicit Save versus Remove, storage retry and demand evidence.
+- Disabled, detached, hidden, inert or unrendered restore targets fall back to the heading. No DOM/history/scroll write follows the final focus callback.
+
+### Exact implementation scope and native proof
+
+Five recorded paths change: the script template and identical served copy, the browser test module, and two HTML outputs whose only differences are their two asset-reference substitutions. Sixteen recorded inputs remain byte-identical. The view JSON, projection, builder, CSS, template and shared dependencies are retained. Twenty source transformations reverse exactly to the parent; stripping the appended test cases recovers the prior test file.
+
+The final native run, **PID 58382**, is **61 passed** in **35.64 s pytest / 35.989 s subprocess / 36.24 s wrapper**, using **Chrome 157.0.8103.39**. It used **61 contexts and 61 pages**, with **zero page errors, external requests and WebSockets**. Source/assets, selected cases and exact retained input checks are in `current-return/PUBLICATION_RECEIPT.json`.
+
+Earlier runs remain accurately labeled:
+
+| Run | Recorded result and interpretation |
+|---|---|
+| Parent baseline PID 12376 | 22 failed / 35 passed; 30.43 s pytest, 30.786 s subprocess, 30.87 s wrapper. |
+| Initial candidate PID 17024 | 55 passed / 2 failed; 32.86 s pytest, 33.693 s subprocess, 34.01 s wrapper. |
+| Timing diagnostic PID 25251 | Two isolated pages showed that the late fault listener saw already-rendered case DOM, whereas the early-installed listener changed incoming metadata while the outgoing review still rendered. 3.70 s wrapper. Diagnostic only. |
+| Fault correction PID 30048 | 2 passed; 3.90 s pytest, 4.23 s subprocess, 4.33 s wrapper. Runtime remained `54f56205be7e`. |
+| First-view run PID 44832 | 59 passed; 34.39 s pytest, 34.749 s subprocess, 34.99 s wrapper, assets `35617892939a`. |
+| Entry baseline PID 54712 | 2 failed; changed-horizon/same-ID and identical-URL native-entry cases both inherited scroll 100. 3.90 s pytest, 4.254 s subprocess, 4.35 s wrapper. |
+| Final PID 58382 | All 61 passed at `2698fd4fd4ed`, including both entry failures and every earlier affected case. |
+
+The initial two failures were corrected in the harness, with an explicit assertion that the fault reaches the outgoing review before app rendering. Later visual inspection identified a real product defect: new review content inherited the case’s bottom scroll, hiding identity and the unavailable-results notice. The product then received the bounded first-reading correction and its new-entry refinement. These are separate findings.
+
+All recorded pytest runs have zero page errors, external requests and WebSockets. The final metadata job **PID 61009**, exit 0 / 0.10 s, verifies the final 61-case set equals the prior 59 plus the two entry cases. It preserves each failed baseline, intermediate command, stdout/stderr, JUnit, observations, script and source receipt.
+
+**62 source/document/evidence text files and eight native PNGs** were read back exactly from the published commit. The eight PNGs are six final dialog crops plus two initial review crops illustrating inherited scroll. Full viewport crops were inspected. Content outside those crops is covered by the corresponding browser assertions; offscreen presentation is not certified by the images.
+
+The source README remains the concise workflow → contract → proof entry, now **14 rows**. The new [current-case build contract](https://github.com/mastermindx-market-intelligence/Macro/blob/0ec213ab7bb570a0cebc28f2e4112cde14ff59c2/research/design_candidates/crypto_snapshot_safety_20261109/CURRENT_CASE_RETURN.md) explains ownership, entry/return rules, exact proof, limitations and reproduction without adding implementation prose to the product.
+
+### Paper: missing action added and one shared review contract
+
+Applied in [Crypto Intelligence · R4 · Design References](https://app.paper.design/file/01M6Y3F0NXNDPAKJMJGCAD759Z/p-1-0):
+
+- **G5-0, Scenario + Save:** the existing mockup omitted Historical review. Outline button `3OU-0` and label `3OV-0` duplicate the exact existing Inspect-demand seed styles. The new button precedes Save in `GV-0`. Existing Inspect demand `GY-0` moves intact below that row, giving the native action order **Historical review → Save snapshot → Inspect demand**. `G9-0` states the current return, whole-journey Close, missing-case recovery and saved-case reference.
+- **QI-0, build scorecard:** the existing saved-review row becomes **Review → case**, covering the same current ID/horizon and the exact saved revision while retaining their distinction. It specifies the complete reading tuple, usable focus, parent versus Close and top-of-review entry. No extra scorecard row is added. `QM-0` binds source `0ec213a`.
+
+The two roots retain all **133 original node identities and their relative order**. **132 original styles are exact**. Reparenting `GY-0` changes its exported flex context from `flexShrink: 0` to `flex: 1`; all its other properties remain exact, and measured geometry remains **244×48**. This was a consequence of the allowed structural move; no style or token API was invoked. Both new nodes retain exact seed styles.
+
+Six original text nodes change, plus the new label. Removing the two new nodes, reversing the documented move/context export and restoring the six original texts recovers **both complete original JSX strings exactly**.
+
+The scenario board grows from **1440×800** to **1440×861**. The case card remains inside it with **40px bottom padding**; Inspect demand has **29px to the card bottom**. The new review and existing Inspect controls both measure **244×48**. The following Responsive board retains a **199px vertical gap** where their horizontal extents overlap. No artboards overlap. QI remains **1440×1200** and all five scorecard rows fit. Page 1 has **1,033 nodes and eight artboards**.
+
+Both complete after canvases and the before scenario canvas were inspected. Both roots were finished after the checks. The focused receipt records all operations, source binding, exact JSX and geometry:
+
+- `PAPER_CRYPTO_CURRENT_RETURN_20261109.json`
+- `PAPER_CRYPTO_CURRENT_RETURN_SCENARIO_20261109.jpg`
+- `PAPER_CRYPTO_CURRENT_RETURN_SCORECARD_20261109.jpg`
+- `PAPER_CRYPTO_CURRENT_RETURN_SCENARIO_BEFORE_20261109.jpg`
+
+### Next safe phase
+
+A remaining presentation defect is confirmed in current Save/Remove: the accepted storage path calls `renderDrawer()` directly after confirmation, rebuilding an expanded Conditions disclosure closed and losing its reading position. Preserve the existing mutation, idempotent intent, full collection, confirmation and newer-choice boundaries. Reuse the current reading owner for a freshly qualified synchronous capture/projection around the confirmed render, then intentionally focus the new action (or a usable heading fallback). Keep focus terminal and do not introduce a second reading store, extra storage read or automatic replay.
+
+The temporary cloud workspace execution environment became unavailable during read-only work; the existing native verifier and GitHub-native source carrier remained available. No failed runtime mutation was retried or re-homed. All native process outcomes above are reconciled. Other denied or unknown-effect lanes, release/admission gates, model/H5, alert, paired-receipt, qualified-result, hosted/independent and public-route acceptance boundaries remain intact.
