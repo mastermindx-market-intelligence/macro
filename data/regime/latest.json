@@ -4215,7 +4215,7 @@
       "reason": "version-matched + fresh",
       "calibration_version": "w2.7-loro-v1",
       "calibration_generated_at": "2026-07-02T12:32:51Z",
-      "calibration_age_days": 128
+      "calibration_age_days": 129
     },
     "lag_passport": {
       "basis": "per_leg_schedule",
@@ -9045,17 +9045,17 @@
     "context": {
       "source": "index_gex_history/SPY",
       "reconstructed": true,
-      "n_days": 2464,
+      "n_days": 2469,
       "hist_start": "2017-01-03",
-      "hist_end": "2026-10-29",
-      "sessions_behind": 6,
+      "hist_end": "2026-11-05",
+      "sessions_behind": 1,
       "stale": false,
-      "note_en": "The rebuilt multi-year record covers 2017-01-03 through 2026-10-29 and is current. The placement below compares that rebuilt record against itself, not against today's reading.",
-      "note_zh": "\u91cd\u5efa\u7684\u591a\u5e74\u8bb0\u5f55\u8986\u76d6 2017-01-03 \u81f3 2026-10-29\uff0c\u6570\u636e\u4e3a\u6700\u65b0\u3002\u4e0b\u65b9\u7684\u5b9a\u4f4d\u662f\u8be5\u91cd\u5efa\u8bb0\u5f55\u4e0e\u81ea\u8eab\u7684\u6bd4\u8f83\uff0c\u4e0d\u662f\u4e0e\u4eca\u65e5\u8bfb\u6570\u7684\u6bd4\u8f83\u3002",
-      "net_gex_latest_bn": -3.031,
-      "net_gex_pctile": 31.9,
+      "note_en": "The rebuilt multi-year record covers 2017-01-03 through 2026-11-05 and is current. The placement below compares that rebuilt record against itself, not against today's reading.",
+      "note_zh": "\u91cd\u5efa\u7684\u591a\u5e74\u8bb0\u5f55\u8986\u76d6 2017-01-03 \u81f3 2026-11-05\uff0c\u6570\u636e\u4e3a\u6700\u65b0\u3002\u4e0b\u65b9\u7684\u5b9a\u4f4d\u662f\u8be5\u91cd\u5efa\u8bb0\u5f55\u4e0e\u81ea\u8eab\u7684\u6bd4\u8f83\uff0c\u4e0d\u662f\u4e0e\u4eca\u65e5\u8bfb\u6570\u7684\u6bd4\u8f83\u3002",
+      "net_gex_latest_bn": -15.879,
+      "net_gex_pctile": 0.4,
       "recon_regime_last": "short",
-      "regime_persistence_days": 12,
+      "regime_persistence_days": 17,
       "regime_agrees_current": true
     }
   },
@@ -9441,7 +9441,7 @@
   },
   "fed_path": {
     "asof": "2026-11-06",
-    "built": "2026-11-08T06:16:35.742750+00:00",
+    "built": "2026-11-09T06:32:19.776823+00:00",
     "policy_rate": 3.88,
     "target_low": 3.75,
     "target_high": 4.0,
@@ -9449,20 +9449,20 @@
     "implied": {
       "now": 3.88,
       "m1": 3.95,
-      "m3": 4.1,
-      "m6": 4.24,
-      "m12": 4.35
+      "m3": 4.11,
+      "m6": 4.26,
+      "m12": 4.38
     },
     "implied_source_en": "ZQ fed-funds futures",
     "implied_source_zh": "ZQ \u8054\u90a6\u57fa\u91d1\u671f\u8d27",
-    "implied_bp_12m": 47,
+    "implied_bp_12m": 50,
     "implied_cuts_12m": -2,
-    "implied_cuts_6m": -1,
+    "implied_cuts_6m": -2,
     "sofr_path": {
       "m1": null,
-      "m3": 4.17,
-      "m6": 4.29,
-      "m12": 4.39
+      "m3": 4.18,
+      "m6": 4.32,
+      "m12": 4.42
     },
     "dots": [
       {
@@ -9494,8 +9494,8 @@
     "ntfs": 0.52,
     "curve_tp_adj": 1.26,
     "rate_exp_proxy": 0.58,
-    "headline_en": "Market prices ~2 hikes over the next 12m (funds 3.88% \u2192 4.35%)",
-    "headline_zh": "\u5e02\u573a\u4e3a\u672a\u676512\u4e2a\u6708\u5b9a\u4ef7\u7ea6\u52a0\u606f2\u6b21\uff08\u57fa\u91d1\u5229\u7387 3.88% \u2192 4.35%\uff09",
+    "headline_en": "Market prices ~2 hikes over the next 12m (funds 3.88% \u2192 4.38%)",
+    "headline_zh": "\u5e02\u573a\u4e3a\u672a\u676512\u4e2a\u6708\u5b9a\u4ef7\u7ea6\u52a0\u606f2\u6b21\uff08\u57fa\u91d1\u5229\u7387 3.88% \u2192 4.38%\uff09",
     "read_en": "At end-2026 the market implies 3.95% vs the Fed's 4.10% median dot (-15bp \u2014 market more dovish than the Fed). The near-term forward spread is positive \u2014 no cuts priced near-term (+0.52pp).",
     "read_zh": "\u5728end-2026\uff0c\u5e02\u573a\u9690\u542b 3.95% \u5bf9\u6bd4\u7f8e\u8054\u50a8 4.10% \u7684\u4e2d\u4f4d\u70b9\uff08-15\u57fa\u70b9 \u2014 \u5e02\u573a\u6bd4\u7f8e\u8054\u50a8\u66f4\u9e3d\u6d3e\uff09\u3002\u8fd1\u7aef\u8fdc\u671f\u5229\u5dee\u4e3a\u6b63\u2014\u2014\u8fd1\u7aef\u672a\u4e3a\u964d\u606f\u5b9a\u4ef7\uff08+0.52\u4e2a\u767e\u5206\u70b9\uff09\u3002",
     "note_en": "Display / LLM-context only. The implied path is a market PRICE (the futures-implied funds rate), not a forecast edge, and repricing is REACTIVE \u2014 it moves after data and the Fed, it does not lead. Never scored, never an MRS leg. ZQ/SR3 = keyless CME futures; dots = FRED FEDTARMD (FOMC SEP median). Cite the CME/FRED.",
@@ -9515,7 +9515,7 @@
           "basket_or_index": "EFFR",
           "vendor": "yfinance",
           "price_type": "vendor_daily_close",
-          "observation_time": "2026-11-06",
+          "observation_time": "2026-11-08",
           "observation_precision": "day",
           "vintage": null,
           "rights": "unknown",
@@ -9663,7 +9663,7 @@
           "basket_or_index": "SOFR",
           "vendor": "yfinance",
           "price_type": "vendor_daily_close",
-          "observation_time": "2026-11-06",
+          "observation_time": "2026-11-08",
           "observation_precision": "day",
           "vintage": null,
           "rights": "unknown",
@@ -9909,10 +9909,10 @@
           "effr_level_constant_between_effective_dates"
         ],
         "gap": {
-          "value_bp": 0.5,
-          "usable": true,
-          "source": "measured:fred:DFF@2026-11-05-midpoint@2026-11-07",
-          "reason": null
+          "value_bp": null,
+          "usable": false,
+          "source": null,
+          "reason": "gap_inputs_missing"
         },
         "months": [
           {
@@ -9923,15 +9923,15 @@
             "monthly_average": {
               "subject": "zq_month_average:ZQX26.CBT",
               "evidence_class": "market_implied_expectation",
-              "value": 3.87750244140625,
-              "value_state": "present",
+              "value": null,
+              "value_state": "refused",
               "unit": "pct_ann_rate",
               "target": "effr_monthly_average",
               "basket_or_index": "EFFR",
               "reference_start": "2026-11-01",
               "reference_end": "2026-11-30",
               "tenor": null,
-              "observation_time": "2026-11-06",
+              "observation_time": "2026-11-08",
               "observation_precision": "day",
               "seasonal_treatment": null,
               "rate_index": "EFFR",
@@ -9940,7 +9940,7 @@
               "source": "yfinance:ZQX26.CBT",
               "source_version": null,
               "content_ref": null,
-              "first_public_evidence": "2026-11-06",
+              "first_public_evidence": "2026-11-08",
               "first_public_precision": "day",
               "admitted_at": null,
               "cutoff": "2026-11-07",
@@ -9950,55 +9950,30 @@
               "rights": "unknown",
               "quality": [],
               "authority": "display_only",
-              "limitations": [],
-              "obs_id": "e3a688b706b9e4da"
+              "limitations": [
+                "after_cutoff"
+              ],
+              "obs_id": "f69083a34f77bfef"
             },
             "effective_dates_inside": [],
-            "status": "identified_conditional",
-            "reason": "no_intra_month_change",
+            "status": "unavailable",
+            "reason": "monthly_average_refused",
             "pre_change_rate": null,
             "pre_change_rate_source": null,
-            "identification": {
-              "status": "identified_conditional",
-              "identified": {
-                "segments": [
-                  [
-                    "2026-11-01",
-                    "2026-11-30",
-                    3.87750244140625
-                  ]
-                ],
-                "end_rate": 3.87750244140625
-              },
-              "alternatives": [],
-              "end_rate_range": [
-                3.87750243140625,
-                3.87750245140625
-              ],
-              "assumptions_used": [
-                "calendar_day_arithmetic",
-                "month_days=30",
-                "no_intra_month_change"
-              ],
-              "missing": [],
-              "residual_bp": null
-            },
+            "identification": null,
             "vs_target_midpoint": {
-              "status": "comparable_after_transformation",
-              "difference": -0.249755859375,
+              "status": "unavailable",
+              "difference": null,
               "range": null,
               "unit": "bp",
               "rule_id": "zq_month_vs_policy_midpoint.v1",
               "rule_version": "1",
-              "transform": "monthly_average_vs_level",
-              "assumptions": [
-                "effr_minus_midpoint_bp=0.5",
-                "effr_gap_applied_in=bp"
-              ],
+              "transform": null,
+              "assumptions": [],
               "limitations": [],
-              "reason": "transform:monthly_average_vs_level",
-              "left_ref": "e3a688b706b9e4da",
-              "right_ref": "d27a40ebe8862a70",
+              "reason": "operand_refused:left",
+              "left_ref": "f69083a34f77bfef",
+              "right_ref": "5587116180c8c67f",
               "left_cutoff": "2026-11-07",
               "right_cutoff": "2026-11-07"
             },
@@ -10008,7 +9983,7 @@
               "realised_days": 5,
               "remaining_days": 25
             },
-            "post_rate_sensitivity": 1.0,
+            "post_rate_sensitivity": null,
             "limitations": []
           },
           {
@@ -10019,15 +9994,15 @@
             "monthly_average": {
               "subject": "zq_month_average:ZQZ26.CBT",
               "evidence_class": "market_implied_expectation",
-              "value": 4.0149993896484375,
-              "value_state": "present",
+              "value": null,
+              "value_state": "refused",
               "unit": "pct_ann_rate",
               "target": "effr_monthly_average",
               "basket_or_index": "EFFR",
               "reference_start": "2026-12-01",
               "reference_end": "2026-12-31",
               "tenor": null,
-              "observation_time": "2026-11-06",
+              "observation_time": "2026-11-08",
               "observation_precision": "day",
               "seasonal_treatment": null,
               "rate_index": "EFFR",
@@ -10036,7 +10011,7 @@
               "source": "yfinance:ZQZ26.CBT",
               "source_version": null,
               "content_ref": null,
-              "first_public_evidence": "2026-11-06",
+              "first_public_evidence": "2026-11-08",
               "first_public_precision": "day",
               "admitted_at": null,
               "cutoff": "2026-11-07",
@@ -10046,73 +10021,42 @@
               "rights": "unknown",
               "quality": [],
               "authority": "display_only",
-              "limitations": [],
-              "obs_id": "d01779fdcac32869"
+              "limitations": [
+                "after_cutoff"
+              ],
+              "obs_id": "de611a37bff8b547"
             },
             "effective_dates_inside": [
               "2026-12-10"
             ],
-            "status": "identified_conditional",
-            "reason": "pre_change_rate:observed_effr:fred:DFF@2026-11-05",
-            "pre_change_rate": 3.88,
-            "pre_change_rate_source": "observed_effr:fred:DFF@2026-11-05",
-            "identification": {
-              "status": "identified_conditional",
-              "identified": {
-                "segments": [
-                  [
-                    "2026-12-01",
-                    "2026-12-10",
-                    3.88
-                  ],
-                  [
-                    "2026-12-10",
-                    "2026-12-31",
-                    4.070226412686434
-                  ]
-                ],
-                "end_rate": 4.070226412686434
-              },
-              "alternatives": [],
-              "end_rate_range": [
-                4.070226402686434,
-                4.070226422686434
-              ],
-              "assumptions_used": [
-                "calendar_day_arithmetic",
-                "month_days=31",
-                "effective_date=2026-12-10",
-                "pre_change_rate=3.88"
-              ],
-              "missing": [],
-              "residual_bp": null
-            },
+            "status": "unavailable",
+            "reason": "monthly_average_refused",
+            "pre_change_rate": null,
+            "pre_change_rate_source": null,
+            "identification": null,
             "vs_target_midpoint": {
-              "status": "comparable_after_transformation",
-              "difference": 13.49993896484375,
+              "status": "unavailable",
+              "difference": null,
               "range": null,
               "unit": "bp",
               "rule_id": "zq_month_vs_policy_midpoint.v1",
               "rule_version": "1",
-              "transform": "monthly_average_vs_level",
-              "assumptions": [
-                "effr_minus_midpoint_bp=0.5",
-                "effr_gap_applied_in=bp"
-              ],
+              "transform": null,
+              "assumptions": [],
               "limitations": [],
-              "reason": "transform:monthly_average_vs_level",
-              "left_ref": "d01779fdcac32869",
-              "right_ref": "d27a40ebe8862a70",
+              "reason": "operand_refused:left",
+              "left_ref": "de611a37bff8b547",
+              "right_ref": "5587116180c8c67f",
               "left_cutoff": "2026-11-07",
               "right_cutoff": "2026-11-07"
             },
             "weights": {
-              "days_pre": 9,
-              "days_post": 22,
+              "days_pre": null,
+              "days_post": null,
               "realised_days": 0,
               "remaining_days": 31
             },
-            "post_rate_sensitivity": 1.4091,
+            "post_rate_sensitivity": null,
             "limitations": []
           },
           {
@@ -10123,15 +10067,15 @@
             "monthly_average": {
               "subject": "zq_month_average:ZQF27.CBT",
               "evidence_class": "market_implied_expectation",
-              "value": 4.0749969482421875,
-              "value_state": "present",
+              "value": null,
+              "value_state": "refused",
               "unit": "pct_ann_rate",
               "target": "effr_monthly_average",
               "basket_or_index": "EFFR",
               "reference_start": "2027-01-01",
               "reference_end": "2027-01-31",
               "tenor": null,
-              "observation_time": "2026-11-06",
+              "observation_time": "2026-11-08",
               "observation_precision": "day",
               "seasonal_treatment": null,
               "rate_index": "EFFR",
@@ -10140,7 +10084,7 @@
               "source": "yfinance:ZQF27.CBT",
               "source_version": null,
               "content_ref": null,
-              "first_public_evidence": "2026-11-06",
+              "first_public_evidence": "2026-11-08",
               "first_public_precision": "day",
               "admitted_at": null,
               "cutoff": "2026-11-07",
@@ -10150,76 +10094,43 @@
               "rights": "unknown",
               "quality": [],
               "authority": "display_only",
-              "limitations": [],
-              "obs_id": "9e495001bd93bc5d"
+              "limitations": [
+                "after_cutoff"
+              ],
+              "obs_id": "95f11dc38e09687d"
             },
             "effective_dates_inside": [
               "2027-01-28"
             ],
-            "status": "identified_conditional",
-            "reason": "pre_change_rate:chained:2026-12",
-            "pre_change_rate": 4.070226412686434,
-            "pre_change_rate_source": "chained:2026-12",
-            "identification": {
-              "status": "identified_conditional",
-              "identified": {
-                "segments": [
-                  [
-                    "2027-01-01",
-                    "2027-01-28",
-                    4.070226412686434
-                  ],
-                  [
-                    "2027-01-28",
-                    "2027-01-31",
-                    4.107198063243523
-                  ]
-                ],
-                "end_rate": 4.107198063243523
-              },
-              "alternatives": [],
-              "end_rate_range": [
-                4.107198053243523,
-                4.107198073243523
-              ],
-              "assumptions_used": [
-                "calendar_day_arithmetic",
-                "month_days=31",
-                "effective_date=2027-01-28",
-                "pre_change_rate=4.07023"
-              ],
-              "missing": [],
-              "residual_bp": null
-            },
+            "status": "unavailable",
+            "reason": "monthly_average_refused",
+            "pre_change_rate": null,
+            "pre_change_rate_source": null,
+            "identification": null,
             "vs_target_midpoint": {
-              "status": "comparable_after_transformation",
-              "difference": 19.49969482421875,
+              "status": "unavailable",
+              "difference": null,
               "range": null,
               "unit": "bp",
               "rule_id": "zq_month_vs_policy_midpoint.v1",
               "rule_version": "1",
-              "transform": "monthly_average_vs_level",
-              "assumptions": [
-                "effr_minus_midpoint_bp=0.5",
-                "effr_gap_applied_in=bp"
-              ],
+              "transform": null,
+              "assumptions": [],
               "limitations": [],
-              "reason": "transform:monthly_average_vs_level",
-              "left_ref": "9e495001bd93bc5d",
-              "right_ref": "d27a40ebe8862a70",
+              "reason": "operand_refused:left",
+              "left_ref": "95f11dc38e09687d",
+              "right_ref": "5587116180c8c67f",
               "left_cutoff": "2026-11-07",
               "right_cutoff": "2026-11-07"
             },
             "weights": {
-              "days_pre": 27,
-              "days_post": 4,
+              "days_pre": null,
+              "days_post": null,
               "realised_days": 0,
               "remaining_days": 31
             },
-            "post_rate_sensitivity": 7.75,
-            "limitations": [
-              "chained_identification"
-            ]
+            "post_rate_sensitivity": null,
+            "limitations": []
           },
           {
             "contract": "ZQG27.CBT",
@@ -10229,15 +10140,15 @@
             "monthly_average": {
               "subject": "zq_month_average:ZQG27.CBT",
               "evidence_class": "market_implied_expectation",
-              "value": 4.120002746582031,
-              "value_state": "present",
+              "value": null,
+              "value_state": "refused",
               "unit": "pct_ann_rate",
               "target": "effr_monthly_average",
               "basket_or_index": "EFFR",
               "reference_start": "2027-02-01",
               "reference_end": "2027-02-28",
               "tenor": null,
-              "observation_time": "2026-11-06",
+              "observation_time": "2026-11-08",
               "observation_precision": "day",
               "seasonal_treatment": null,
               "rate_index": "EFFR",
@@ -10246,7 +10157,7 @@
               "source": "yfinance:ZQG27.CBT",
               "source_version": null,
               "content_ref": null,
-              "first_public_evidence": "2026-11-06",
+              "first_public_evidence": "2026-11-08",
               "first_public_precision": "day",
               "admitted_at": null,
               "cutoff": "2026-11-07",
@@ -10256,55 +10167,30 @@
               "rights": "unknown",
               "quality": [],
               "authority": "display_only",
-              "limitations": [],
-              "obs_id": "119cf0405a4c934b"
+              "limitations": [
+                "after_cutoff"
+              ],
+              "obs_id": "ad44b20b22d49598"
             },
             "effective_dates_inside": [],
-            "status": "identified_conditional",
-            "reason": "no_intra_month_change",
+            "status": "unavailable",
+            "reason": "monthly_average_refused",
             "pre_change_rate": null,
             "pre_change_rate_source": null,
-            "identification": {
-              "status": "identified_conditional",
-              "identified": {
-                "segments": [
-                  [
-                    "2027-02-01",
-                    "2027-02-28",
-                    4.120002746582031
-                  ]
-                ],
-                "end_rate": 4.120002746582031
-              },
-              "alternatives": [],
-              "end_rate_range": [
-                4.120002736582031,
-                4.120002756582031
-              ],
-              "assumptions_used": [
-                "calendar_day_arithmetic",
-                "month_days=28",
-                "no_intra_month_change"
-              ],
-              "missing": [],
-              "residual_bp": null
-            },
+            "identification": null,
             "vs_target_midpoint": {
-              "status": "comparable_after_transformation",
-              "difference": 24.000274658203125,
+              "status": "unavailable",
+              "difference": null,
               "range": null,
               "unit": "bp",
               "rule_id": "zq_month_vs_policy_midpoint.v1",
               "rule_version": "1",
-              "transform": "monthly_average_vs_level",
-              "assumptions": [
-                "effr_minus_midpoint_bp=0.5",
-                "effr_gap_applied_in=bp"
-              ],
+              "transform": null,
+              "assumptions": [],
               "limitations": [],
-              "reason": "transform:monthly_average_vs_level",
-              "left_ref": "119cf0405a4c934b",
-              "right_ref": "d27a40ebe8862a70",
+              "reason": "operand_refused:left",
+              "left_ref": "ad44b20b22d49598",
+              "right_ref": "5587116180c8c67f",
               "left_cutoff": "2026-11-07",
               "right_cutoff": "2026-11-07"
             },
@@ -10314,7 +10200,7 @@
               "realised_days": 0,
               "remaining_days": 28
             },
-            "post_rate_sensitivity": 1.0,
+            "post_rate_sensitivity": null,
             "limitations": []
           },
           {
@@ -10325,15 +10211,15 @@
             "monthly_average": {
               "subject": "zq_month_average:ZQH27.CBT",
               "evidence_class": "market_implied_expectation",
-              "value": 4.165000915527344,
-              "value_state": "present",
+              "value": null,
+              "value_state": "refused",
               "unit": "pct_ann_rate",
               "target": "effr_monthly_average",
               "basket_or_index": "EFFR",
               "reference_start": "2027-03-01",
               "reference_end": "2027-03-31",
               "tenor": null,
-              "observation_time": "2026-11-06",
+              "observation_time": "2026-11-08",
               "observation_precision": "day",
               "seasonal_treatment": null,
               "rate_index": "EFFR",
@@ -10342,7 +10228,7 @@
               "source": "yfinance:ZQH27.CBT",
               "source_version": null,
               "content_ref": null,
-              "first_public_evidence": "2026-11-06",
+              "first_public_evidence": "2026-11-08",
               "first_public_precision": "day",
               "admitted_at": null,
               "cutoff": "2026-11-07",
@@ -10352,267 +10238,32 @@
               "rights": "unknown",
               "quality": [],
               "authority": "display_only",
-              "limitations": [],
-              "obs_id": "e8aeec269f4a8b66"
+              "limitations": [
+                "after_cutoff"
+              ],
+              "obs_id": "330ae394f78c1f67"
             },
             "effective_dates_inside": [
               "2027-03-18"
             ],
-            "status": "identified_conditional",
-            "reason": "pre_change_rate:chained:2027-02",
-            "pre_change_rate": 4.120002746582031,
-            "pre_change_rate_source": "chained:2027-02",
-            "identification": {
-              "status": "identified_conditional",
-              "identified": {
-                "segments": [
-                  [
-                    "2027-03-01",
-                    "2027-03-18",
-                    4.120002746582031
-                  ],
-                  [
-                    "2027-03-18",
-                    "2027-03-31",
-                    4.219641549246652
-                  ]
-                ],
-                "end_rate": 4.219641549246652
-              },
-              "alternatives": [],
-              "end_rate_range": [
-                4.219641539246652,
-                4.219641559246652
-              ],
-              "assumptions_used": [
-                "calendar_day_arithmetic",
-                "month_days=31",
-                "effective_date=2027-03-18",
-                "pre_change_rate=4.12"
-              ],
-              "missing": [],
-              "residual_bp": null
-            },
-            "vs_target_midpoint": {
-              "status": "comparable_after_transformation",
-              "difference": 28.500091552734375,
-              "range": null,
-              "unit": "bp",
-              "rule_id": "zq_month_vs_policy_midpoint.v1",
-              "rule_version": "1",
-              "transform": "monthly_average_vs_level",
-              "assumptions": [
-                "effr_minus_midpoint_bp=0.5",
-                "effr_gap_applied_in=bp"
-              ],
-              "limitations": [],
-              "reason": "transform:monthly_average_vs_level",
-              "left_ref": "e8aeec269f4a8b66",
-              "right_ref": "d27a40ebe8862a70",
-              "left_cutoff": "2026-11-07",
-              "right_cutoff": "2026-11-07"
-            },
-            "weights": {
-              "days_pre": 17,
-              "days_post": 14,
-              "realised_days": 0,
-              "remaining_days": 31
-            },
-            "post_rate_sensitivity": 2.2143,
-            "limitations": [
-              "chained_identification"
-            ]
-          },
-          {
-            "contract": "ZQJ27.CBT",
-            "reference_start": "2027-04-01",
-            "reference_end": "2027-04-30",
-            "month_days": 30,
-            "monthly_average": {
-              "subject": "zq_month_average:ZQJ27.CBT",
-              "evidence_class": "market_implied_expectation",
-              "value": 4.220001220703125,
-              "value_state": "present",
-              "unit": "pct_ann_rate",
-              "target": "effr_monthly_average",
-              "basket_or_index": "EFFR",
-              "reference_start": "2027-04-01",
-              "reference_end": "2027-04-30",
-              "tenor": null,
-              "observation_time": "2026-11-06",
-              "observation_precision": "day",
-              "seasonal_treatment": null,
-              "rate_index": "EFFR",
-              "averaging_law": "arithmetic_calendar_day",
-              "curve_convention": null,
-              "source": "yfinance:ZQJ27.CBT",
-              "source_version": null,
-              "content_ref": null,
-              "first_public_evidence": "2026-11-06",
-              "first_public_precision": "day",
-              "admitted_at": null,
-              "cutoff": "2026-11-07",
-              "model_id": null,
-              "target_epoch": null,
-              "vintage": null,
-              "rights": "unknown",
-              "quality": [],
-              "authority": "display_only",
-              "limitations": [],
-              "obs_id": "aaddb8c40b3cc0b3"
-            },
-            "effective_dates_inside": [
-              "2027-04-29"
-            ],
-            "status": "identified_conditional",
-            "reason": "pre_change_rate:chained:2027-03",
-            "pre_change_rate": 4.219641549246652,
-            "pre_change_rate_source": "chained:2027-03",
-            "identification": {
-              "status": "identified_conditional",
-              "identified": {
-                "segments": [
-                  [
-                    "2027-04-01",
-                    "2027-04-29",
-                    4.219641549246652
-                  ],
-                  [
-                    "2027-04-29",
-                    "2027-04-30",
-                    4.22503662109375
-                  ]
-                ],
-                "end_rate": 4.22503662109375
-              },
-              "alternatives": [],
-              "end_rate_range": [
-                4.22503661109375,
-                4.22503663109375
-              ],
-              "assumptions_used": [
-                "calendar_day_arithmetic",
-                "month_days=30",
-                "effective_date=2027-04-29",
-                "pre_change_rate=4.21964"
-              ],
-              "missing": [],
-              "residual_bp": null
-            },
-            "vs_target_midpoint": {
-              "status": "comparable_after_transformation",
-              "difference": 34.0001220703125,
-              "range": null,
-              "unit": "bp",
-              "rule_id": "zq_month_vs_policy_midpoint.v1",
-              "rule_version": "1",
-              "transform": "monthly_average_vs_level",
-              "assumptions": [
-                "effr_minus_midpoint_bp=0.5",
-                "effr_gap_applied_in=bp"
-              ],
-              "limitations": [],
-              "reason": "transform:monthly_average_vs_level",
-              "left_ref": "aaddb8c40b3cc0b3",
-              "right_ref": "d27a40ebe8862a70",
-              "left_cutoff": "2026-11-07",
-              "right_cutoff": "2026-11-07"
-            },
-            "weights": {
-              "days_pre": 28,
-              "days_post": 2,
-              "realised_days": 0,
-              "remaining_days": 30
-            },
-            "post_rate_sensitivity": 15.0,
-            "limitations": [
-              "chained_identification"
-            ]
-          },
-          {
-            "contract": "ZQK27.CBT",
-            "reference_start": "2027-05-01",
-            "reference_end": "2027-05-31",
-            "month_days": 31,
-            "monthly_average": {
-              "subject": "zq_month_average:ZQK27.CBT",
-              "evidence_class": "market_implied_expectation",
-              "value": 4.254997253417969,
-              "value_state": "present",
-              "unit": "pct_ann_rate",
-              "target": "effr_monthly_average",
-              "basket_or_index": "EFFR",
-              "reference_start": "2027-05-01",
-              "reference_end": "2027-05-31",
-              "tenor": null,
-              "observation_time": "2026-11-06",
-              "observation_precision": "day",
-              "seasonal_treatment": null,
-              "rate_index": "EFFR",
-              "averaging_law": "arithmetic_calendar_day",
-              "curve_convention": null,
-              "source": "yfinance:ZQK27.CBT",
-              "source_version": null,
-              "content_ref": null,
-              "first_public_evidence": "2026-11-06",
-              "first_public_precision": "day",
-              "admitted_at": null,
-              "cutoff": "2026-11-07",
-              "model_id": null,
-              "target_epoch": null,
-              "vintage": null,
-              "rights": "unknown",
-              "quality": [],
-              "authority": "display_only",
-              "limitations": [],
-              "obs_id": "02b65aa46ec1a638"
-            },
-            "effective_dates_inside": [],
-            "status": "identified_conditional",
-            "reason": "no_intra_month_change",
+            "status": "unavailable",
+            "reason": "monthly_average_refused",
             "pre_change_rate": null,
             "pre_change_rate_source": null,
-            "identification": {
-              "status": "identified_conditional",
-              "identified": {
-                "segments": [
-                  [
-                    "2027-05-01",
-                    "2027-05-31",
-                    4.254997253417969
-                  ]
-                ],
-                "end_rate": 4.254997253417969
-              },
-              "alternatives": [],
-              "end_rate_range": [
-                4.254997243417969,
-                4.254997263417969
-              ],
-              "assumptions_used": [
-                "calendar_day_arithmetic",
-                "month_days=31",
-                "no_intra_month_change"
-              ],
-              "missing": [],
-              "residual_bp": null
-            },
+            "identification": null,
             "vs_target_midpoint": {
-              "status": "comparable_after_transformation",
-              "difference": 37.499725341796875,
+              "status": "unavailable",
+              "difference": null,
               "range": null,
               "unit": "bp",
               "rule_id": "zq_month_vs_policy_midpoint.v1",
               "rule_version": "1",
-              "transform": "monthly_average_vs_level",
-              "assumptions": [
-                "effr_minus_midpoint_bp=0.5",
-                "effr_gap_applied_in=bp"
-              ],
+              "transform": null,
+              "assumptions": [],
               "limitations": [],
-              "reason": "transform:monthly_average_vs_level",
-              "left_ref": "02b65aa46ec1a638",
-              "right_ref": "d27a40ebe8862a70",
+              "reason": "operand_refused:left",
+              "left_ref": "330ae394f78c1f67",
+              "right_ref": "5587116180c8c67f",
               "left_cutoff": "2026-11-07",
               "right_cutoff": "2026-11-07"
             },
@@ -10622,7 +10273,151 @@
               "realised_days": 0,
               "remaining_days": 31
             },
-            "post_rate_sensitivity": 1.0,
+            "post_rate_sensitivity": null,
+            "limitations": []
+          },
+          {
+            "contract": "ZQJ27.CBT",
+            "reference_start": "2027-04-01",
+            "reference_end": "2027-04-30",
+            "month_days": 30,
+            "monthly_average": {
+              "subject": "zq_month_average:ZQJ27.CBT",
+              "evidence_class": "market_implied_expectation",
+              "value": null,
+              "value_state": "refused",
+              "unit": "pct_ann_rate",
+              "target": "effr_monthly_average",
+              "basket_or_index": "EFFR",
+              "reference_start": "2027-04-01",
+              "reference_end": "2027-04-30",
+              "tenor": null,
+              "observation_time": "2026-11-08",
+              "observation_precision": "day",
+              "seasonal_treatment": null,
+              "rate_index": "EFFR",
+              "averaging_law": "arithmetic_calendar_day",
+              "curve_convention": null,
+              "source": "yfinance:ZQJ27.CBT",
+              "source_version": null,
+              "content_ref": null,
+              "first_public_evidence": "2026-11-08",
+              "first_public_precision": "day",
+              "admitted_at": null,
+              "cutoff": "2026-11-07",
+              "model_id": null,
+              "target_epoch": null,
+              "vintage": null,
+              "rights": "unknown",
+              "quality": [],
+              "authority": "display_only",
+              "limitations": [
+                "after_cutoff"
+              ],
+              "obs_id": "cf04d783c4c2819e"
+            },
+            "effective_dates_inside": [
+              "2027-04-29"
+            ],
+            "status": "unavailable",
+            "reason": "monthly_average_refused",
+            "pre_change_rate": null,
+            "pre_change_rate_source": null,
+            "identification": null,
+            "vs_target_midpoint": {
+              "status": "unavailable",
+              "difference": null,
+              "range": null,
+              "unit": "bp",
+              "rule_id": "zq_month_vs_policy_midpoint.v1",
+              "rule_version": "1",
+              "transform": null,
+              "assumptions": [],
+              "limitations": [],
+              "reason": "operand_refused:left",
+              "left_ref": "cf04d783c4c2819e",
+              "right_ref": "5587116180c8c67f",
+              "left_cutoff": "2026-11-07",
+              "right_cutoff": "2026-11-07"
+            },
+            "weights": {
+              "days_pre": null,
+              "days_post": null,
+              "realised_days": 0,
+              "remaining_days": 30
+            },
+            "post_rate_sensitivity": null,
+            "limitations": []
+          },
+          {
+            "contract": "ZQK27.CBT",
+            "reference_start": "2027-05-01",
+            "reference_end": "2027-05-31",
+            "month_days": 31,
+            "monthly_average": {
+              "subject": "zq_month_average:ZQK27.CBT",
+              "evidence_class": "market_implied_expectation",
+              "value": null,
+              "value_state": "refused",
+              "unit": "pct_ann_rate",
+              "target": "effr_monthly_average",
+              "basket_or_index": "EFFR",
+              "reference_start": "2027-05-01",
+              "reference_end": "2027-05-31",
+              "tenor": null,
+              "observation_time": "2026-11-08",
+              "observation_precision": "day",
+              "seasonal_treatment": null,
+              "rate_index": "EFFR",
+              "averaging_law": "arithmetic_calendar_day",
+              "curve_convention": null,
+              "source": "yfinance:ZQK27.CBT",
+              "source_version": null,
+              "content_ref": null,
+              "first_public_evidence": "2026-11-08",
+              "first_public_precision": "day",
+              "admitted_at": null,
+              "cutoff": "2026-11-07",
+              "model_id": null,
+              "target_epoch": null,
+              "vintage": null,
+              "rights": "unknown",
+              "quality": [],
+              "authority": "display_only",
+              "limitations": [
+                "after_cutoff"
+              ],
+              "obs_id": "fafda8321dc7ac6a"
+            },
+            "effective_dates_inside": [],
+            "status": "unavailable",
+            "reason": "monthly_average_refused",
+            "pre_change_rate": null,
+            "pre_change_rate_source": null,
+            "identification": null,
+            "vs_target_midpoint": {
+              "status": "unavailable",
+              "difference": null,
+              "range": null,
+              "unit": "bp",
+              "rule_id": "zq_month_vs_policy_midpoint.v1",
+              "rule_version": "1",
+              "transform": null,
+              "assumptions": [],
+              "limitations": [],
+              "reason": "operand_refused:left",
+              "left_ref": "fafda8321dc7ac6a",
+              "right_ref": "5587116180c8c67f",
+              "left_cutoff": "2026-11-07",
+              "right_cutoff": "2026-11-07"
+            },
+            "weights": {
+              "days_pre": null,
+              "days_post": null,
+              "realised_days": 0,
+              "remaining_days": 31
+            },
+            "post_rate_sensitivity": null,
             "limitations": []
           },
           {
@@ -10633,15 +10428,15 @@
             "monthly_average": {
               "subject": "zq_month_average:ZQM27.CBT",
               "evidence_class": "market_implied_expectation",
-              "value": 4.3000030517578125,
-              "value_state": "present",
+              "value": null,
+              "value_state": "refused",
               "unit": "pct_ann_rate",
               "target": "effr_monthly_average",
               "basket_or_index": "EFFR",
               "reference_start": "2027-06-01",
               "reference_end": "2027-06-30",
               "tenor": null,
-              "observation_time": "2026-11-06",
+              "observation_time": "2026-11-08",
               "observation_precision": "day",
               "seasonal_treatment": null,
               "rate_index": "EFFR",
@@ -10650,7 +10445,7 @@
               "source": "yfinance:ZQM27.CBT",
               "source_version": null,
               "content_ref": null,
-              "first_public_evidence": "2026-11-06",
+              "first_public_evidence": "2026-11-08",
               "first_public_precision": "day",
               "admitted_at": null,
               "cutoff": "2026-11-07",
@@ -10660,76 +10455,43 @@
               "rights": "unknown",
               "quality": [],
               "authority": "display_only",
-              "limitations": [],
-              "obs_id": "f1a60680ce23a716"
+              "limitations": [
+                "after_cutoff"
+              ],
+              "obs_id": "118e1e02bce8ac1e"
             },
             "effective_dates_inside": [
               "2027-06-10"
             ],
-            "status": "identified_conditional",
-            "reason": "pre_change_rate:chained:2027-05",
-            "pre_change_rate": 4.254997253417969,
-            "pre_change_rate_source": "chained:2027-05",
-            "identification": {
-              "status": "identified_conditional",
-              "identified": {
-                "segments": [
-                  [
-                    "2027-06-01",
-                    "2027-06-10",
-                    4.254997253417969
-                  ],
-                  [
-                    "2027-06-10",
-                    "2027-06-30",
-                    4.319291251046317
-                  ]
-                ],
-                "end_rate": 4.319291251046317
-              },
-              "alternatives": [],
-              "end_rate_range": [
-                4.319291241046317,
-                4.319291261046317
-              ],
-              "assumptions_used": [
-                "calendar_day_arithmetic",
-                "month_days=30",
-                "effective_date=2027-06-10",
-                "pre_change_rate=4.255"
-              ],
-              "missing": [],
-              "residual_bp": null
-            },
+            "status": "unavailable",
+            "reason": "monthly_average_refused",
+            "pre_change_rate": null,
+            "pre_change_rate_source": null,
+            "identification": null,
             "vs_target_midpoint": {
-              "status": "comparable_after_transformation",
-              "difference": 42.00030517578125,
+              "status": "unavailable",
+              "difference": null,
               "range": null,
               "unit": "bp",
               "rule_id": "zq_month_vs_policy_midpoint.v1",
               "rule_version": "1",
-              "transform": "monthly_average_vs_level",
-              "assumptions": [
-                "effr_minus_midpoint_bp=0.5",
-                "effr_gap_applied_in=bp"
-              ],
+              "transform": null,
+              "assumptions": [],
               "limitations": [],
-              "reason": "transform:monthly_average_vs_level",
-              "left_ref": "f1a60680ce23a716",
-              "right_ref": "d27a40ebe8862a70",
+              "reason": "operand_refused:left",
+              "left_ref": "118e1e02bce8ac1e",
+              "right_ref": "5587116180c8c67f",
               "left_cutoff": "2026-11-07",
               "right_cutoff": "2026-11-07"
             },
             "weights": {
-              "days_pre": 9,
-              "days_post": 21,
+              "days_pre": null,
+              "days_post": null,
               "realised_days": 0,
               "remaining_days": 30
             },
-            "post_rate_sensitivity": 1.4286,
-            "limitations": [
-              "chained_identification"
-            ]
+            "post_rate_sensitivity": null,
+            "limitations": []
           },
           {
             "contract": "ZQN27.CBT",
@@ -10739,15 +10501,15 @@
             "monthly_average": {
               "subject": "zq_month_average:ZQN27.CBT",
               "evidence_class": "market_implied_expectation",
-              "value": 4.319999694824219,
-              "value_state": "present",
+              "value": null,
+              "value_state": "refused",
               "unit": "pct_ann_rate",
               "target": "effr_monthly_average",
               "basket_or_index": "EFFR",
               "reference_start": "2027-07-01",
               "reference_end": "2027-07-31",
               "tenor": null,
-              "observation_time": "2026-11-06",
+              "observation_time": "2026-11-08",
               "observation_precision": "day",
               "seasonal_treatment": null,
               "rate_index": "EFFR",
@@ -10756,7 +10518,7 @@
               "source": "yfinance:ZQN27.CBT",
               "source_version": null,
               "content_ref": null,
-              "first_public_evidence": "2026-11-06",
+              "first_public_evidence": "2026-11-08",
               "first_public_precision": "day",
               "admitted_at": null,
               "cutoff": "2026-11-07",
@@ -10766,161 +10528,32 @@
               "rights": "unknown",
               "quality": [],
               "authority": "display_only",
-              "limitations": [],
-              "obs_id": "89389f7d04b6dcc9"
+              "limitations": [
+                "after_cutoff"
+              ],
+              "obs_id": "0a3aa35c2c1a7a7e"
             },
             "effective_dates_inside": [
               "2027-07-29"
             ],
-            "status": "identified_conditional",
-            "reason": "pre_change_rate:chained:2027-06",
-            "pre_change_rate": 4.319291251046317,
-            "pre_change_rate_source": "chained:2027-06",
-            "identification": {
-              "status": "identified_conditional",
-              "identified": {
-                "segments": [
-                  [
-                    "2027-07-01",
-                    "2027-07-29",
-                    4.319291251046317
-                  ],
-                  [
-                    "2027-07-29",
-                    "2027-07-31",
-                    4.326611836751302
-                  ]
-                ],
-                "end_rate": 4.326611836751302
-              },
-              "alternatives": [],
-              "end_rate_range": [
-                4.326611826751302,
-                4.326611846751302
-              ],
-              "assumptions_used": [
-                "calendar_day_arithmetic",
-                "month_days=31",
-                "effective_date=2027-07-29",
-                "pre_change_rate=4.31929"
-              ],
-              "missing": [],
-              "residual_bp": null
-            },
-            "vs_target_midpoint": {
-              "status": "comparable_after_transformation",
-              "difference": 43.999969482421875,
-              "range": null,
-              "unit": "bp",
-              "rule_id": "zq_month_vs_policy_midpoint.v1",
-              "rule_version": "1",
-              "transform": "monthly_average_vs_level",
-              "assumptions": [
-                "effr_minus_midpoint_bp=0.5",
-                "effr_gap_applied_in=bp"
-              ],
-              "limitations": [],
-              "reason": "transform:monthly_average_vs_level",
-              "left_ref": "89389f7d04b6dcc9",
-              "right_ref": "d27a40ebe8862a70",
-              "left_cutoff": "2026-11-07",
-              "right_cutoff": "2026-11-07"
-            },
-            "weights": {
-              "days_pre": 28,
-              "days_post": 3,
-              "realised_days": 0,
-              "remaining_days": 31
-            },
-            "post_rate_sensitivity": 10.3333,
-            "limitations": [
-              "chained_identification"
-            ]
-          },
-          {
-            "contract": "ZQQ27.CBT",
-            "reference_start": "2027-08-01",
-            "reference_end": "2027-08-31",
-            "month_days": 31,
-            "monthly_average": {
-              "subject": "zq_month_average:ZQQ27.CBT",
-              "evidence_class": "market_implied_expectation",
-              "value": 4.3300018310546875,
-              "value_state": "present",
-              "unit": "pct_ann_rate",
-              "target": "effr_monthly_average",
-              "basket_or_index": "EFFR",
-              "reference_start": "2027-08-01",
-              "reference_end": "2027-08-31",
-              "tenor": null,
-              "observation_time": "2026-11-06",
-              "observation_precision": "day",
-              "seasonal_treatment": null,
-              "rate_index": "EFFR",
-              "averaging_law": "arithmetic_calendar_day",
-              "curve_convention": null,
-              "source": "yfinance:ZQQ27.CBT",
-              "source_version": null,
-              "content_ref": null,
-              "first_public_evidence": "2026-11-06",
-              "first_public_precision": "day",
-              "admitted_at": null,
-              "cutoff": "2026-11-07",
-              "model_id": null,
-              "target_epoch": null,
-              "vintage": null,
-              "rights": "unknown",
-              "quality": [],
-              "authority": "display_only",
-              "limitations": [],
-              "obs_id": "d282469e92d6c942"
-            },
-            "effective_dates_inside": [],
-            "status": "identified_conditional",
-            "reason": "no_intra_month_change",
+            "status": "unavailable",
+            "reason": "monthly_average_refused",
             "pre_change_rate": null,
             "pre_change_rate_source": null,
-            "identification": {
-              "status": "identified_conditional",
-              "identified": {
-                "segments": [
-                  [
-                    "2027-08-01",
-                    "2027-08-31",
-                    4.3300018310546875
-                  ]
-                ],
-                "end_rate": 4.3300018310546875
-              },
-              "alternatives": [],
-              "end_rate_range": [
-                4.330001821054688,
-                4.330001841054687
-              ],
-              "assumptions_used": [
-                "calendar_day_arithmetic",
-                "month_days=31",
-                "no_intra_month_change"
-              ],
-              "missing": [],
-              "residual_bp": null
-            },
+            "identification": null,
             "vs_target_midpoint": {
-              "status": "comparable_after_transformation",
-              "difference": 45.00018310546875,
+              "status": "unavailable",
+              "difference": null,
               "range": null,
               "unit": "bp",
               "rule_id": "zq_month_vs_policy_midpoint.v1",
               "rule_version": "1",
-              "transform": "monthly_average_vs_level",
-              "assumptions": [
-                "effr_minus_midpoint_bp=0.5",
-                "effr_gap_applied_in=bp"
-              ],
+              "transform": null,
+              "assumptions": [],
               "limitations": [],
-              "reason": "transform:monthly_average_vs_level",
-              "left_ref": "d282469e92d6c942",
-              "right_ref": "d27a40ebe8862a70",
+              "reason": "operand_refused:left",
+              "left_ref": "0a3aa35c2c1a7a7e",
+              "right_ref": "5587116180c8c67f",
               "left_cutoff": "2026-11-07",
               "right_cutoff": "2026-11-07"
             },
@@ -10930,7 +10563,78 @@
               "realised_days": 0,
               "remaining_days": 31
             },
-            "post_rate_sensitivity": 1.0,
+            "post_rate_sensitivity": null,
+            "limitations": []
+          },
+          {
+            "contract": "ZQQ27.CBT",
+            "reference_start": "2027-08-01",
+            "reference_end": "2027-08-31",
+            "month_days": 31,
+            "monthly_average": {
+              "subject": "zq_month_average:ZQQ27.CBT",
+              "evidence_class": "market_implied_expectation",
+              "value": null,
+              "value_state": "refused",
+              "unit": "pct_ann_rate",
+              "target": "effr_monthly_average",
+              "basket_or_index": "EFFR",
+              "reference_start": "2027-08-01",
+              "reference_end": "2027-08-31",
+              "tenor": null,
+              "observation_time": "2026-11-08",
+              "observation_precision": "day",
+              "seasonal_treatment": null,
+              "rate_index": "EFFR",
+              "averaging_law": "arithmetic_calendar_day",
+              "curve_convention": null,
+              "source": "yfinance:ZQQ27.CBT",
+              "source_version": null,
+              "content_ref": null,
+              "first_public_evidence": "2026-11-08",
+              "first_public_precision": "day",
+              "admitted_at": null,
+              "cutoff": "2026-11-07",
+              "model_id": null,
+              "target_epoch": null,
+              "vintage": null,
+              "rights": "unknown",
+              "quality": [],
+              "authority": "display_only",
+              "limitations": [
+                "after_cutoff"
+              ],
+              "obs_id": "fa6730a5233930f1"
+            },
+            "effective_dates_inside": [],
+            "status": "unavailable",
+            "reason": "monthly_average_refused",
+            "pre_change_rate": null,
+            "pre_change_rate_source": null,
+            "identification": null,
+            "vs_target_midpoint": {
+              "status": "unavailable",
+              "difference": null,
+              "range": null,
+              "unit": "bp",
+              "rule_id": "zq_month_vs_policy_midpoint.v1",
+              "rule_version": "1",
+              "transform": null,
+              "assumptions": [],
+              "limitations": [],
+              "reason": "operand_refused:left",
+              "left_ref": "fa6730a5233930f1",
+              "right_ref": "5587116180c8c67f",
+              "left_cutoff": "2026-11-07",
+              "right_cutoff": "2026-11-07"
+            },
+            "weights": {
+              "days_pre": null,
+              "days_post": null,
+              "realised_days": 0,
+              "remaining_days": 31
+            },
+            "post_rate_sensitivity": null,
             "limitations": []
           },
           {
@@ -10941,15 +10645,15 @@
             "monthly_average": {
               "subject": "zq_month_average:ZQU27.CBT",
               "evidence_class": "market_implied_expectation",
-              "value": 4.339996337890625,
-              "value_state": "present",
+              "value": null,
+              "value_state": "refused",
               "unit": "pct_ann_rate",
               "target": "effr_monthly_average",
               "basket_or_index": "EFFR",
               "reference_start": "2027-09-01",
               "reference_end": "2027-09-30",
               "tenor": null,
-              "observation_time": "2026-11-06",
+              "observation_time": "2026-11-08",
               "observation_precision": "day",
               "seasonal_treatment": null,
               "rate_index": "EFFR",
@@ -10958,7 +10662,7 @@
               "source": "yfinance:ZQU27.CBT",
               "source_version": null,
               "content_ref": null,
-              "first_public_evidence": "2026-11-06",
+              "first_public_evidence": "2026-11-08",
               "first_public_precision": "day",
               "admitted_at": null,
               "cutoff": "2026-11-07",
@@ -10968,267 +10672,32 @@
               "rights": "unknown",
               "quality": [],
               "authority": "display_only",
-              "limitations": [],
-              "obs_id": "c74c6958e191e135"
+              "limitations": [
+                "after_cutoff"
+              ],
+              "obs_id": "00e8fcbf71e52268"
             },
             "effective_dates_inside": [
               "2027-09-16"
             ],
-            "status": "identified_conditional",
-            "reason": "pre_change_rate:chained:2027-08",
-            "pre_change_rate": 4.3300018310546875,
-            "pre_change_rate_source": "chained:2027-08",
-            "identification": {
-              "status": "identified_conditional",
-              "identified": {
-                "segments": [
-                  [
-                    "2027-09-01",
-                    "2027-09-16",
-                    4.3300018310546875
-                  ],
-                  [
-                    "2027-09-16",
-                    "2027-09-30",
-                    4.3499908447265625
-                  ]
-                ],
-                "end_rate": 4.3499908447265625
-              },
-              "alternatives": [],
-              "end_rate_range": [
-                4.349990834726563,
-                4.349990854726562
-              ],
-              "assumptions_used": [
-                "calendar_day_arithmetic",
-                "month_days=30",
-                "effective_date=2027-09-16",
-                "pre_change_rate=4.33"
-              ],
-              "missing": [],
-              "residual_bp": null
-            },
-            "vs_target_midpoint": {
-              "status": "comparable_after_transformation",
-              "difference": 45.9996337890625,
-              "range": null,
-              "unit": "bp",
-              "rule_id": "zq_month_vs_policy_midpoint.v1",
-              "rule_version": "1",
-              "transform": "monthly_average_vs_level",
-              "assumptions": [
-                "effr_minus_midpoint_bp=0.5",
-                "effr_gap_applied_in=bp"
-              ],
-              "limitations": [],
-              "reason": "transform:monthly_average_vs_level",
-              "left_ref": "c74c6958e191e135",
-              "right_ref": "d27a40ebe8862a70",
-              "left_cutoff": "2026-11-07",
-              "right_cutoff": "2026-11-07"
-            },
-            "weights": {
-              "days_pre": 15,
-              "days_post": 15,
-              "realised_days": 0,
-              "remaining_days": 30
-            },
-            "post_rate_sensitivity": 2.0,
-            "limitations": [
-              "chained_identification"
-            ]
-          },
-          {
-            "contract": "ZQV27.CBT",
-            "reference_start": "2027-10-01",
-            "reference_end": "2027-10-31",
-            "month_days": 31,
-            "monthly_average": {
-              "subject": "zq_month_average:ZQV27.CBT",
-              "evidence_class": "market_implied_expectation",
-              "value": 4.349998474121094,
-              "value_state": "present",
-              "unit": "pct_ann_rate",
-              "target": "effr_monthly_average",
-              "basket_or_index": "EFFR",
-              "reference_start": "2027-10-01",
-              "reference_end": "2027-10-31",
-              "tenor": null,
-              "observation_time": "2026-11-06",
-              "observation_precision": "day",
-              "seasonal_treatment": null,
-              "rate_index": "EFFR",
-              "averaging_law": "arithmetic_calendar_day",
-              "curve_convention": null,
-              "source": "yfinance:ZQV27.CBT",
-              "source_version": null,
-              "content_ref": null,
-              "first_public_evidence": "2026-11-06",
-              "first_public_precision": "day",
-              "admitted_at": null,
-              "cutoff": "2026-11-07",
-              "model_id": null,
-              "target_epoch": null,
-              "vintage": null,
-              "rights": "unknown",
-              "quality": [],
-              "authority": "display_only",
-              "limitations": [],
-              "obs_id": "236cb8b2e6056abb"
-            },
-            "effective_dates_inside": [
-              "2027-10-28"
-            ],
-            "status": "identified_conditional",
-            "reason": "pre_change_rate:chained:2027-09",
-            "pre_change_rate": 4.3499908447265625,
-            "pre_change_rate_source": "chained:2027-09",
-            "identification": {
-              "status": "identified_conditional",
-              "identified": {
-                "segments": [
-                  [
-                    "2027-10-01",
-                    "2027-10-28",
-                    4.3499908447265625
-                  ],
-                  [
-                    "2027-10-28",
-                    "2027-10-31",
-                    4.35004997253418
-                  ]
-                ],
-                "end_rate": 4.35004997253418
-              },
-              "alternatives": [],
-              "end_rate_range": [
-                4.35004996253418,
-                4.35004998253418
-              ],
-              "assumptions_used": [
-                "calendar_day_arithmetic",
-                "month_days=31",
-                "effective_date=2027-10-28",
-                "pre_change_rate=4.34999"
-              ],
-              "missing": [],
-              "residual_bp": null
-            },
-            "vs_target_midpoint": {
-              "status": "comparable_after_transformation",
-              "difference": 46.999847412109375,
-              "range": null,
-              "unit": "bp",
-              "rule_id": "zq_month_vs_policy_midpoint.v1",
-              "rule_version": "1",
-              "transform": "monthly_average_vs_level",
-              "assumptions": [
-                "effr_minus_midpoint_bp=0.5",
-                "effr_gap_applied_in=bp"
-              ],
-              "limitations": [],
-              "reason": "transform:monthly_average_vs_level",
-              "left_ref": "236cb8b2e6056abb",
-              "right_ref": "d27a40ebe8862a70",
-              "left_cutoff": "2026-11-07",
-              "right_cutoff": "2026-11-07"
-            },
-            "weights": {
-              "days_pre": 27,
-              "days_post": 4,
-              "realised_days": 0,
-              "remaining_days": 31
-            },
-            "post_rate_sensitivity": 7.75,
-            "limitations": [
-              "chained_identification"
-            ]
-          },
-          {
-            "contract": "ZQX27.CBT",
-            "reference_start": "2027-11-01",
-            "reference_end": "2027-11-30",
-            "month_days": 30,
-            "monthly_average": {
-              "subject": "zq_month_average:ZQX27.CBT",
-              "evidence_class": "market_implied_expectation",
-              "value": 4.349998474121094,
-              "value_state": "present",
-              "unit": "pct_ann_rate",
-              "target": "effr_monthly_average",
-              "basket_or_index": "EFFR",
-              "reference_start": "2027-11-01",
-              "reference_end": "2027-11-30",
-              "tenor": null,
-              "observation_time": "2026-11-06",
-              "observation_precision": "day",
-              "seasonal_treatment": null,
-              "rate_index": "EFFR",
-              "averaging_law": "arithmetic_calendar_day",
-              "curve_convention": null,
-              "source": "yfinance:ZQX27.CBT",
-              "source_version": null,
-              "content_ref": null,
-              "first_public_evidence": "2026-11-06",
-              "first_public_precision": "day",
-              "admitted_at": null,
-              "cutoff": "2026-11-07",
-              "model_id": null,
-              "target_epoch": null,
-              "vintage": null,
-              "rights": "unknown",
-              "quality": [],
-              "authority": "display_only",
-              "limitations": [],
-              "obs_id": "b26ef91c6ccd355f"
-            },
-            "effective_dates_inside": [],
-            "status": "identified_conditional",
-            "reason": "no_intra_month_change",
+            "status": "unavailable",
+            "reason": "monthly_average_refused",
             "pre_change_rate": null,
             "pre_change_rate_source": null,
-            "identification": {
-              "status": "identified_conditional",
-              "identified": {
-                "segments": [
-                  [
-                    "2027-11-01",
-                    "2027-11-30",
-                    4.349998474121094
-                  ]
-                ],
-                "end_rate": 4.349998474121094
-              },
-              "alternatives": [],
-              "end_rate_range": [
-                4.349998464121094,
-                4.349998484121094
-              ],
-              "assumptions_used": [
-                "calendar_day_arithmetic",
-                "month_days=30",
-                "no_intra_month_change"
-              ],
-              "missing": [],
-              "residual_bp": null
-            },
+            "identification": null,
             "vs_target_midpoint": {
-              "status": "comparable_after_transformation",
-              "difference": 46.999847412109375,
+              "status": "unavailable",
+              "difference": null,
               "range": null,
               "unit": "bp",
               "rule_id": "zq_month_vs_policy_midpoint.v1",
               "rule_version": "1",
-              "transform": "monthly_average_vs_level",
-              "assumptions": [
-                "effr_minus_midpoint_bp=0.5",
-                "effr_gap_applied_in=bp"
-              ],
+              "transform": null,
+              "assumptions": [],
               "limitations": [],
-              "reason": "transform:monthly_average_vs_level",
-              "left_ref": "b26ef91c6ccd355f",
-              "right_ref": "d27a40ebe8862a70",
+              "reason": "operand_refused:left",
+              "left_ref": "00e8fcbf71e52268",
+              "right_ref": "5587116180c8c67f",
               "left_cutoff": "2026-11-07",
               "right_cutoff": "2026-11-07"
             },
@@ -11238,7 +10707,151 @@
               "realised_days": 0,
               "remaining_days": 30
             },
-            "post_rate_sensitivity": 1.0,
+            "post_rate_sensitivity": null,
+            "limitations": []
+          },
+          {
+            "contract": "ZQV27.CBT",
+            "reference_start": "2027-10-01",
+            "reference_end": "2027-10-31",
+            "month_days": 31,
+            "monthly_average": {
+              "subject": "zq_month_average:ZQV27.CBT",
+              "evidence_class": "market_implied_expectation",
+              "value": null,
+              "value_state": "refused",
+              "unit": "pct_ann_rate",
+              "target": "effr_monthly_average",
+              "basket_or_index": "EFFR",
+              "reference_start": "2027-10-01",
+              "reference_end": "2027-10-31",
+              "tenor": null,
+              "observation_time": "2026-11-08",
+              "observation_precision": "day",
+              "seasonal_treatment": null,
+              "rate_index": "EFFR",
+              "averaging_law": "arithmetic_calendar_day",
+              "curve_convention": null,
+              "source": "yfinance:ZQV27.CBT",
+              "source_version": null,
+              "content_ref": null,
+              "first_public_evidence": "2026-11-08",
+              "first_public_precision": "day",
+              "admitted_at": null,
+              "cutoff": "2026-11-07",
+              "model_id": null,
+              "target_epoch": null,
+              "vintage": null,
+              "rights": "unknown",
+              "quality": [],
+              "authority": "display_only",
+              "limitations": [
+                "after_cutoff"
+              ],
+              "obs_id": "6c9df76ff40b105c"
+            },
+            "effective_dates_inside": [
+              "2027-10-28"
+            ],
+            "status": "unavailable",
+            "reason": "monthly_average_refused",
+            "pre_change_rate": null,
+            "pre_change_rate_source": null,
+            "identification": null,
+            "vs_target_midpoint": {
+              "status": "unavailable",
+              "difference": null,
+              "range": null,
+              "unit": "bp",
+              "rule_id": "zq_month_vs_policy_midpoint.v1",
+              "rule_version": "1",
+              "transform": null,
+              "assumptions": [],
+              "limitations": [],
+              "reason": "operand_refused:left",
+              "left_ref": "6c9df76ff40b105c",
+              "right_ref": "5587116180c8c67f",
+              "left_cutoff": "2026-11-07",
+              "right_cutoff": "2026-11-07"
+            },
+            "weights": {
+              "days_pre": null,
+              "days_post": null,
+              "realised_days": 0,
+              "remaining_days": 31
+            },
+            "post_rate_sensitivity": null,
+            "limitations": []
+          },
+          {
+            "contract": "ZQX27.CBT",
+            "reference_start": "2027-11-01",
+            "reference_end": "2027-11-30",
+            "month_days": 30,
+            "monthly_average": {
+              "subject": "zq_month_average:ZQX27.CBT",
+              "evidence_class": "market_implied_expectation",
+              "value": null,
+              "value_state": "refused",
+              "unit": "pct_ann_rate",
+              "target": "effr_monthly_average",
+              "basket_or_index": "EFFR",
+              "reference_start": "2027-11-01",
+              "reference_end": "2027-11-30",
+              "tenor": null,
+              "observation_time": "2026-11-08",
+              "observation_precision": "day",
+              "seasonal_treatment": null,
+              "rate_index": "EFFR",
+              "averaging_law": "arithmetic_calendar_day",
+              "curve_convention": null,
+              "source": "yfinance:ZQX27.CBT",
+              "source_version": null,
+              "content_ref": null,
+              "first_public_evidence": "2026-11-08",
+              "first_public_precision": "day",
+              "admitted_at": null,
+              "cutoff": "2026-11-07",
+              "model_id": null,
+              "target_epoch": null,
+              "vintage": null,
+              "rights": "unknown",
+              "quality": [],
+              "authority": "display_only",
+              "limitations": [
+                "after_cutoff"
+              ],
+              "obs_id": "58dd7b6967c36046"
+            },
+            "effective_dates_inside": [],
+            "status": "unavailable",
+            "reason": "monthly_average_refused",
+            "pre_change_rate": null,
+            "pre_change_rate_source": null,
+            "identification": null,
+            "vs_target_midpoint": {
+              "status": "unavailable",
+              "difference": null,
+              "range": null,
+              "unit": "bp",
+              "rule_id": "zq_month_vs_policy_midpoint.v1",
+              "rule_version": "1",
+              "transform": null,
+              "assumptions": [],
+              "limitations": [],
+              "reason": "operand_refused:left",
+              "left_ref": "58dd7b6967c36046",
+              "right_ref": "5587116180c8c67f",
+              "left_cutoff": "2026-11-07",
+              "right_cutoff": "2026-11-07"
+            },
+            "weights": {
+              "days_pre": null,
+              "days_post": null,
+              "realised_days": 0,
+              "remaining_days": 30
+            },
+            "post_rate_sensitivity": null,
             "limitations": []
           },
           {
@@ -11249,15 +10862,15 @@
             "monthly_average": {
               "subject": "zq_month_average:ZQZ27.CBT",
               "evidence_class": "market_implied_expectation",
-              "value": 4.334999084472656,
-              "value_state": "present",
+              "value": null,
+              "value_state": "refused",
               "unit": "pct_ann_rate",
               "target": "effr_monthly_average",
               "basket_or_index": "EFFR",
               "reference_start": "2027-12-01",
               "reference_end": "2027-12-31",
               "tenor": null,
-              "observation_time": "2026-11-06",
+              "observation_time": "2026-11-08",
               "observation_precision": "day",
               "seasonal_treatment": null,
               "rate_index": "EFFR",
@@ -11266,7 +10879,7 @@
               "source": "yfinance:ZQZ27.CBT",
               "source_version": null,
               "content_ref": null,
-              "first_public_evidence": "2026-11-06",
+              "first_public_evidence": "2026-11-08",
               "first_public_precision": "day",
               "admitted_at": null,
               "cutoff": "2026-11-07",
@@ -11276,82 +10889,47 @@
               "rights": "unknown",
               "quality": [],
               "authority": "display_only",
-              "limitations": [],
-              "obs_id": "a695e12e2af011eb"
+              "limitations": [
+                "after_cutoff"
+              ],
+              "obs_id": "3c0ce9509b97b38d"
             },
             "effective_dates_inside": [
               "2027-12-09"
             ],
-            "status": "identified_conditional",
-            "reason": "pre_change_rate:chained:2027-11",
-            "pre_change_rate": 4.349998474121094,
-            "pre_change_rate_source": "chained:2027-11",
-            "identification": {
-              "status": "identified_conditional",
-              "identified": {
-                "segments": [
-                  [
-                    "2027-12-01",
-                    "2027-12-09",
-                    4.349998474121094
-                  ],
-                  [
-                    "2027-12-09",
-                    "2027-12-31",
-                    4.329781905464504
-                  ]
-                ],
-                "end_rate": 4.329781905464504
-              },
-              "alternatives": [],
-              "end_rate_range": [
-                4.329781895464504,
-                4.329781915464504
-              ],
-              "assumptions_used": [
-                "calendar_day_arithmetic",
-                "month_days=31",
-                "effective_date=2027-12-09",
-                "pre_change_rate=4.35"
-              ],
-              "missing": [],
-              "residual_bp": null
-            },
+            "status": "unavailable",
+            "reason": "monthly_average_refused",
+            "pre_change_rate": null,
+            "pre_change_rate_source": null,
+            "identification": null,
             "vs_target_midpoint": {
-              "status": "comparable_after_transformation",
-              "difference": 45.499908447265625,
+              "status": "unavailable",
+              "difference": null,
               "range": null,
               "unit": "bp",
               "rule_id": "zq_month_vs_policy_midpoint.v1",
               "rule_version": "1",
-              "transform": "monthly_average_vs_level",
-              "assumptions": [
-                "effr_minus_midpoint_bp=0.5",
-                "effr_gap_applied_in=bp"
-              ],
+              "transform": null,
+              "assumptions": [],
               "limitations": [],
-              "reason": "transform:monthly_average_vs_level",
-              "left_ref": "a695e12e2af011eb",
-              "right_ref": "d27a40ebe8862a70",
+              "reason": "operand_refused:left",
+              "left_ref": "3c0ce9509b97b38d",
+              "right_ref": "5587116180c8c67f",
               "left_cutoff": "2026-11-07",
               "right_cutoff": "2026-11-07"
             },
             "weights": {
-              "days_pre": 8,
-              "days_post": 23,
+              "days_pre": null,
+              "days_post": null,
               "realised_days": 0,
               "remaining_days": 31
             },
-            "post_rate_sensitivity": 1.3478,
-            "limitations": [
-              "chained_identification"
-            ]
+            "post_rate_sensitivity": null,
+            "limitations": []
           }
         ],
         "refused_contracts": [],
-        "limitations": [
-          "single_day_gap"
-        ]
+        "limitations": []
       }
     }
   },
@@ -14630,7 +14208,7 @@
     "note": "Display-only meta-read across cross_asset / market_drivers / conditions / dislocation. A conviction guardrail, never scored."
   },
   "theme_revisions": {
-    "asof": "2026-11-07",
+    "asof": "2026-11-08",
     "n_themes": 18,
     "themes": {
       "nuclear_power": {
@@ -14686,7 +14264,7 @@
         "breadth": 0.133,
         "level_state": "POSITIVE",
         "est_drift_90d": 4.51,
-        "net_up_total": 6.0,
+        "net_up_total": 3.0,
         "breadth_accel": null,
         "broadening_state": "INSUFFICIENT_HISTORY",
         "coverage": 0.71,
@@ -14712,7 +14290,7 @@
           {
             "ticker": "AA",
             "breadth": 0.0,
-            "n_analysts": 8,
+            "n_analysts": 10,
             "est_chg_90d": -10.2,
             "n_covering": 14,
             "breadth_cov": 0.0
@@ -14720,10 +14298,10 @@
           {
             "ticker": "ATI",
             "breadth": 1.0,
-            "n_analysts": 8,
-            "est_chg_90d": 21.1,
-            "n_covering": 9,
-            "breadth_cov": 0.8889
+            "n_analysts": 5,
+            "est_chg_90d": 8.5,
+            "n_covering": 10,
+            "breadth_cov": 0.5
           },
           {
             "ticker": "MTRN",
@@ -14734,7 +14312,7 @@
             "breadth_cov": 0.8333
           }
         ],
-        "breadth_cov": 0.1273,
+        "breadth_cov": 0.0714,
         "broadening_proxy": true,
         "broadening_proxy_state": "ROLLING",
         "basis": "drift_30v90",
@@ -14742,14 +14320,14 @@
       },
       "data_center_power": {
         "name": "Data Center Power & Cooling",
-        "breadth": 0.485,
+        "breadth": 0.571,
         "level_state": "POSITIVE",
-        "est_drift_90d": 1.79,
-        "net_up_total": 18.0,
-        "breadth_accel": -0.515,
-        "broadening_state": "ROLLING",
-        "coverage": 0.71,
-        "n_covered": 5,
+        "est_drift_90d": 2.98,
+        "net_up_total": 21.0,
+        "breadth_accel": 0.071,
+        "broadening_state": "RISING",
+        "coverage": 0.86,
+        "n_covered": 6,
         "n_members": 7,
         "members": [
           {
@@ -14791,9 +14369,17 @@
             "est_chg_90d": 1.8,
             "n_covering": 25,
             "breadth_cov": 0.48
+          },
+          {
+            "ticker": "AEIS",
+            "breadth": 1.0,
+            "n_analysts": 3,
+            "est_chg_90d": 18.0,
+            "n_covering": 12,
+            "breadth_cov": 0.25
           }
         ],
-        "breadth_cov": 0.15,
+        "breadth_cov": 0.1667,
         "basis_days": 21
       },
       "memory_storage": {
@@ -14838,11 +14424,11 @@
       },
       "ai_semiconductors": {
         "name": "AI Semiconductors",
-        "breadth": 0.403,
+        "breadth": 0.636,
         "level_state": "POSITIVE",
-        "est_drift_90d": 19.66,
-        "net_up_total": 9.0,
-        "breadth_accel": -0.597,
+        "est_drift_90d": 20.71,
+        "net_up_total": 28.0,
+        "breadth_accel": -0.364,
         "broadening_state": "ROLLING",
         "coverage": 0.86,
         "n_covered": 6,
@@ -14857,20 +14443,12 @@
             "breadth_cov": -0.1538
           },
           {
-            "ticker": "AVGO",
-            "breadth": -0.33,
-            "n_analysts": 39,
-            "est_chg_90d": -0.6,
-            "n_covering": 48,
-            "breadth_cov": -0.2708
-          },
-          {
             "ticker": "AMD",
-            "breadth": 0.75,
-            "n_analysts": 8,
+            "breadth": 0.82,
+            "n_analysts": 11,
             "est_chg_90d": 15.1,
-            "n_covering": 50,
-            "breadth_cov": 0.12
+            "n_covering": 49,
+            "breadth_cov": 0.1837
           },
           {
             "ticker": "NVDA",
@@ -14889,6 +14467,14 @@
             "breadth_cov": 0.3571
           },
           {
+            "ticker": "ANET",
+            "breadth": 1.0,
+            "n_analysts": 3,
+            "est_chg_90d": 17.2,
+            "n_covering": 28,
+            "breadth_cov": 0.1071
+          },
+          {
             "ticker": "SMCI",
             "breadth": 1.0,
             "n_analysts": 8,
@@ -14897,16 +14483,16 @@
             "breadth_cov": 0.4706
           }
         ],
-        "breadth_cov": 0.0466,
-        "basis_days": 21
+        "breadth_cov": 0.1282,
+        "basis_days": 22
       },
       "semicap_equipment": {
         "name": "Semiconductor Equipment (WFE)",
-        "breadth": 0.591,
+        "breadth": 0.448,
         "level_state": "POSITIVE",
-        "est_drift_90d": 9.21,
+        "est_drift_90d": 13.42,
         "net_up_total": 18.0,
-        "breadth_accel": -0.409,
+        "breadth_accel": -0.552,
         "broadening_state": "ROLLING",
         "coverage": 0.4,
         "n_covered": 4,
@@ -14916,7 +14502,7 @@
             "ticker": "ACLS",
             "breadth": 0.0,
             "n_analysts": 4,
-            "est_chg_90d": 8.7,
+            "est_chg_90d": 17.7,
             "n_covering": 5,
             "breadth_cov": 0.0
           },
@@ -14930,9 +14516,9 @@
           },
           {
             "ticker": "AMAT",
-            "breadth": 1.0,
-            "n_analysts": 3,
-            "est_chg_90d": 9.8,
+            "breadth": 0.43,
+            "n_analysts": 7,
+            "est_chg_90d": 9.2,
             "n_covering": 35,
             "breadth_cov": 0.0857
           },
@@ -14946,7 +14532,7 @@
           }
         ],
         "breadth_cov": 0.1613,
-        "basis_days": 21
+        "basis_days": 22
       },
       "cybersecurity": {
         "name": "Cybersecurity",
@@ -15001,12 +14587,12 @@
       },
       "glp1_obesity": {
         "name": "GLP-1 / Obesity",
-        "breadth": 0.398,
+        "breadth": 0.273,
         "level_state": "POSITIVE",
-        "est_drift_90d": 4.52,
+        "est_drift_90d": 3.46,
         "net_up_total": 15.0,
-        "breadth_accel": 0.598,
-        "broadening_state": "RISING",
+        "breadth_accel": null,
+        "broadening_state": "INSUFFICIENT_HISTORY",
         "coverage": 0.6,
         "n_covered": 3,
         "n_members": 5,
@@ -15020,32 +14606,35 @@
             "breadth_cov": -0.0417
           },
           {
+            "ticker": "AMGN",
+            "breadth": 0.38,
+            "n_analysts": 16,
+            "est_chg_90d": 3.5,
+            "n_covering": 33,
+            "breadth_cov": 0.1818
+          },
+          {
             "ticker": "LLY",
             "breadth": 0.56,
             "n_analysts": 18,
             "est_chg_90d": 11.2,
             "n_covering": 27,
             "breadth_cov": 0.3704
-          },
-          {
-            "ticker": "AMGN",
-            "breadth": 0.75,
-            "n_analysts": 8,
-            "est_chg_90d": 4.5,
-            "n_covering": 31,
-            "breadth_cov": 0.1935
           }
         ],
-        "breadth_cov": 0.1167,
-        "basis_days": 22
+        "breadth_cov": 0.1148,
+        "broadening_proxy": true,
+        "broadening_proxy_state": "RISING",
+        "basis": "drift_30v90",
+        "proxy_drift_diff": 0.927
       },
       "defense_aerospace": {
         "name": "Defense & Aerospace",
-        "breadth": 0.197,
+        "breadth": 0.246,
         "level_state": "POSITIVE",
-        "est_drift_90d": 0.32,
-        "net_up_total": 24.0,
-        "breadth_accel": -0.403,
+        "est_drift_90d": 0.17,
+        "net_up_total": 23.0,
+        "breadth_accel": -0.354,
         "broadening_state": "ROLLING",
         "coverage": 1.0,
         "n_covered": 14,
@@ -15053,11 +14642,11 @@
         "members": [
           {
             "ticker": "BA",
-            "breadth": -1.0,
-            "n_analysts": 6,
-            "est_chg_90d": -39.5,
+            "breadth": -0.82,
+            "n_analysts": 11,
+            "est_chg_90d": -47.7,
             "n_covering": 14,
-            "breadth_cov": -0.4286
+            "breadth_cov": -0.6429
           },
           {
             "ticker": "LDOS",
@@ -15084,14 +14673,6 @@
             "breadth_cov": -0.1111
           },
           {
-            "ticker": "AXON",
-            "breadth": 0.0,
-            "n_analysts": 4,
-            "est_chg_90d": -0.0,
-            "n_covering": 20,
-            "breadth_cov": 0.0
-          },
-          {
             "ticker": "AVAV",
             "breadth": 0.17,
             "n_analysts": 12,
@@ -15114,10 +14695,18 @@
             "est_chg_90d": 9.8,
             "n_covering": 21,
             "breadth_cov": 0.0952
+          },
+          {
+            "ticker": "GD",
+            "breadth": 0.33,
+            "n_analysts": 6,
+            "est_chg_90d": 1.8,
+            "n_covering": 20,
+            "breadth_cov": 0.1
           }
         ],
-        "breadth_cov": 0.0909,
-        "basis_days": 21
+        "breadth_cov": 0.0871,
+        "basis_days": 22
       },
       "copper_steel_electrify": {
         "name": "Copper, Steel & Electrification",
@@ -15442,8 +15031,8 @@
         "breadth": -0.015,
         "level_state": "FLAT_LOW",
         "est_drift_90d": 0.34,
-        "net_up_total": 1.0,
-        "breadth_accel": 0.185,
+        "net_up_total": -1.0,
+        "breadth_accel": 0.318,
         "broadening_state": "MIXED",
         "coverage": 0.9,
         "n_covered": 9,
@@ -15460,10 +15049,10 @@
           {
             "ticker": "A",
             "breadth": -0.5,
-            "n_analysts": 4,
-            "est_chg_90d": 1.8,
+            "n_analysts": 8,
+            "est_chg_90d": 1.6,
             "n_covering": 21,
-            "breadth_cov": -0.0952
+            "breadth_cov": -0.1905
           },
           {
             "ticker": "LH",
@@ -15514,16 +15103,16 @@
             "breadth_cov": 0.1429
           }
         ],
-        "breadth_cov": 0.0055,
+        "breadth_cov": -0.0054,
         "basis_days": 21
       },
       "ag_fertilizer": {
         "name": "Agriculture & Fertilizer",
-        "breadth": -0.181,
+        "breadth": -0.484,
         "level_state": "NEGATIVE",
-        "est_drift_90d": -10.86,
-        "net_up_total": -6.0,
-        "breadth_accel": -0.681,
+        "est_drift_90d": -11.14,
+        "net_up_total": -13.0,
+        "breadth_accel": -0.817,
         "broadening_state": "MIXED",
         "coverage": 0.57,
         "n_covered": 4,
@@ -15536,6 +15125,14 @@
             "est_chg_90d": -34.9,
             "n_covering": 15,
             "breadth_cov": -0.3333
+          },
+          {
+            "ticker": "AGCO",
+            "breadth": -0.71,
+            "n_analysts": 7,
+            "est_chg_90d": -5.9,
+            "n_covering": 12,
+            "breadth_cov": -0.4167
           },
           {
             "ticker": "MOS",
@@ -15552,18 +15149,10 @@
             "est_chg_90d": -0.4,
             "n_covering": 8,
             "breadth_cov": 0.25
-          },
-          {
-            "ticker": "AGCO",
-            "breadth": 0.5,
-            "n_analysts": 4,
-            "est_chg_90d": -5.3,
-            "n_covering": 11,
-            "breadth_cov": 0.1818
           }
         ],
-        "breadth_cov": -0.043,
-        "basis_days": 21
+        "breadth_cov": -0.117,
+        "basis_days": 22
       },
       "space_satellite": {
         "name": "Space & Satellites",
@@ -15623,14 +15212,14 @@
       },
       "grid_electrification": {
         "name": "Grid & Electrification",
-        "breadth": 0.182,
+        "breadth": 0.262,
         "level_state": "POSITIVE",
-        "est_drift_90d": 2.36,
-        "net_up_total": 21.0,
-        "breadth_accel": -0.247,
-        "broadening_state": "ROLLING",
-        "coverage": 0.88,
-        "n_covered": 7,
+        "est_drift_90d": 2.09,
+        "net_up_total": 30.0,
+        "breadth_accel": 0.595,
+        "broadening_state": "RISING",
+        "coverage": 1.0,
+        "n_covered": 8,
         "n_members": 8,
         "members": [
           {
@@ -15682,6 +15271,14 @@
             "breadth_cov": 0.8889
           },
           {
+            "ticker": "AEP",
+            "breadth": 0.82,
+            "n_analysts": 11,
+            "est_chg_90d": 0.4,
+            "n_covering": 19,
+            "breadth_cov": 0.4737
+          },
+          {
             "ticker": "PWR",
             "breadth": 1.0,
             "n_analysts": 15,
@@ -15690,7 +15287,7 @@
             "breadth_cov": 0.5769
           }
         ],
-        "breadth_cov": 0.1503,
+        "breadth_cov": 0.1961,
         "basis_days": 21
       }
     },
@@ -17140,10 +16737,10 @@
         ],
         "transmission_lag_q": 0,
         "lag_note": "feels the pool now",
-        "n_ahead": 2,
+        "n_ahead": 1,
         "n_at_risk": 0,
         "n_covered": 8,
-        "divergence_share": 0.25,
+        "divergence_share": 0.125,
         "rpo_growth_yoy": 48.8,
         "rpo_n": 4
       },
@@ -17555,8 +17152,8 @@
     "note": "display-only; exit-risk mirror of the bottleneck. Buy the bottleneck, exit before the glut. GLUT_FORMING/GLUT = trim / exit clock, never a sized signal."
   },
   "guidance_gap": {
-    "asof": "2026-11-04",
-    "n_themes": 7,
+    "asof": "2026-11-05",
+    "n_themes": 8,
     "window_days": 90,
     "themes": {
       "nuclear_power": {
@@ -17629,6 +17226,26 @@
             "direction": "raise",
             "phrase": "above the high end",
             "file_date": "2026-11-04"
+          }
+        ]
+      },
+      "defense_aerospace": {
+        "name": "Defense & Aerospace",
+        "guidance_band": "NEUTRAL",
+        "n_raisers": 0,
+        "n_cutters": 1,
+        "net": -1,
+        "raisers": [],
+        "cutters": [
+          "AXON"
+        ],
+        "asof": "2026-11-05",
+        "recent": [
+          {
+            "ticker": "AXON",
+            "direction": "cut",
+            "phrase": "below our prior",
+            "file_date": "2026-11-05"
           }
         ]
       },
@@ -17734,7 +17351,7 @@
     "note": "display-only; T3 guidance-gap LANGUAGE leg \u2014 8-K 'raising/lowering guidance' language leads the consensus revision (T4) by days-to-weeks. Coarse directional band, not a numeric beat/miss; >=2 filers to leave NEUTRAL. The numeric gap (vs whisper) is the paid upgrade."
   },
   "altdata_confirmers": {
-    "asof": "2026-11-07",
+    "asof": "2026-11-08",
     "n_themes": 7,
     "themes": {
       "memory_storage": {
@@ -17866,7 +17483,7 @@
     "note": "display-only; leading rerating CONFIRMERS (insider clusters, accelerating federal awards) rolled up from data/altdata/by_ticker.json. Inverse-to-breadth and correlation-penalized in the score \u2014 a confirmer pre-revision is a tell, the same confirmer once revisions are broad is just crowding."
   },
   "foresight_cascade": {
-    "asof": "2026-11-07",
+    "asof": "2026-11-08",
     "n_themes": 18,
     "themes": [
       {
@@ -17874,7 +17491,7 @@
         "name": "Space & Satellites",
         "stage": "BROADENING (fingerprint)",
         "tier": "P",
-        "rationale": "fingerprint-only (annual member filings) TIGHT and revisions rising \u2014 awaiting real-time physical confirmation \u00b7 policy pipeline: comment close in 1d (2026-11-09); 12 proposed rule(s) last 60d; 6 final rule(s) last 60d",
+        "rationale": "fingerprint-only (annual member filings) TIGHT and revisions rising \u2014 awaiting real-time physical confirmation \u00b7 policy pipeline: comment close in 0d (2026-11-09); 14 proposed rule(s) last 60d; 7 final rule(s) last 60d",
         "entry_ready": false,
         "entry_note": "fingerprint-only thesis \u2014 awaiting real-time physical confirmation; no entry until FRED bottleneck leg fires",
         "bottleneck_band": "TIGHTENING (fingerprint)",
@@ -17943,11 +17560,11 @@
         "language_accel": 0.75,
         "policy_reg_chip": {
           "theme": "space_satellite",
-          "summary": "comment close in 1d (2026-11-09); 12 proposed rule(s) last 60d; 6 final rule(s) last 60d",
-          "days_to_comment_close": 1,
+          "summary": "comment close in 0d (2026-11-09); 14 proposed rule(s) last 60d; 7 final rule(s) last 60d",
+          "days_to_comment_close": 0,
           "days_to_rule_effective": null,
-          "prorule_inflow_60d": 12,
-          "rule_finalization_60d": 6,
+          "prorule_inflow_60d": 14,
+          "rule_finalization_60d": 7,
           "next_comment_close_date": "2026-11-09",
           "next_comment_close_title": "Improving the Effectiveness of the Robocall Mitigation Database; Call Authentication Trust Anchor; Advanced Methods To T",
           "evidence_class": "dated-structured"
@@ -17997,180 +17614,11 @@
         }
       },
       {
-        "theme": "glp1_obesity",
-        "name": "GLP-1 / Obesity",
-        "stage": "BROADENING (fingerprint)",
-        "tier": "P",
-        "rationale": "fingerprint-only (annual member filings) TIGHT and revisions rising \u2014 awaiting real-time physical confirmation \u00b7 policy pipeline: comment close in 12d (2026-11-20); 1 proposed rule(s) last 60d; 1 final rule(s) last 60d",
-        "entry_ready": false,
-        "entry_note": "fingerprint-only thesis \u2014 awaiting real-time physical confirmation; no entry until FRED bottleneck leg fires",
-        "bottleneck_band": "TIGHTENING (fingerprint)",
-        "bottleneck_text_only": false,
-        "bottleneck_fingerprint_only": true,
-        "fingerprint": {
-          "theme": "glp1_obesity",
-          "fingerprint_tightness": 0.33,
-          "leg7_member_inventory": 0.33,
-          "leg8_member_backlog": null,
-          "n_legs_live": 1,
-          "basis": "annual",
-          "provisional": true,
-          "components": {
-            "leg7_member_inventory": {
-              "value": 0.33,
-              "n_reporting": 5,
-              "latest_fy": 2025,
-              "min_required": 3,
-              "met_gate": true,
-              "description": "Median YoY change in inventory days (COGS-based, revenue fallback) across theme members. Uses COGS when available (more accurate), falls back to revenue. Negative YoY (falling) \u2192 tightening \u2192 positive value. Annual cadence; latest filed FY. Adjacency guard: only YoY when fiscal years are consecutive.",
-              "weight_provisional": 0.5,
-              "n_cogs_based": 5,
-              "n_revenue_based": 0
-            },
-            "leg8_member_backlog": {
-              "value": null,
-              "n_reporting": 1,
-              "latest_fy": 2022,
-              "min_required": 3,
-              "met_gate": false,
-              "description": "Median YoY RPO (RevenueRemainingPerformanceObligation) growth across theme members. Rising RPO \u2192 more backlog \u2192 tightening \u2192 positive value. Annual cadence; latest filed FY. Adjacency guard: only YoY when fiscal years are consecutive.",
-              "weight_provisional": 0.5
-            }
-          },
-          "_shadow_candidates": {
-            "leg7_weight": 0.5,
-            "leg8_weight": 0.5,
-            "note": "provisional equal-weight; shadow calibration pending (Wave 3a/3b)"
-          }
-        },
-        "tightness": 0.33,
-        "bottleneck_regime": false,
-        "demand_band": null,
-        "demand_strength": null,
-        "capex_yoy": null,
-        "revision_breadth": 0.398,
-        "revision_level": "POSITIVE",
-        "broadening_state": "RISING",
-        "est_drift_90d": 4.52,
-        "guidance_band": null,
-        "guidance_net": null,
-        "guidance_raisers": null,
-        "guidance_cutters": null,
-        "altdata_summary": null,
-        "n_altdata_leading": 0,
-        "altdata_members": null,
-        "glut_band": null,
-        "glut_score": null,
-        "theme_feed_summary": {
-          "source": "fda_shortages",
-          "theme": "glp1_obesity",
-          "band": "SHORTAGE_ACTIVE",
-          "label": "FDA: mixed \u2014 current 9 / discontinued 5 \u00b7 captured 0 d ago \u00b7 source generation 2026-11-06",
-          "label_zh": "FDA\uff1a\u6df7\u5408\u2014\u2014\u5f53\u524d9\uff0f\u505c\u4ea75 \u00b7 \u91c7\u96c6\u4e8e0\u5929\u524d \u00b7 \u6765\u6e90\u751f\u6210\u65e5\u671f2026-11-06",
-          "tone": "warn",
-          "rationale": "The FDA reports current shortages and formulation discontinuations.",
-          "n_active": 9,
-          "n_resolved": 0,
-          "n_discontinued": 5,
-          "source_status": "MIXED_REPORTED",
-          "freshness": {
-            "capture_qualified": true,
-            "capture_finished_at": "2026-11-07T12:43:42.819222+00:00",
-            "capture_age_s": 63175.576034,
-            "source_generation": "2026-11-06",
-            "source_generation_age_days": 2,
-            "stale": null,
-            "failed_refresh": null,
-            "capture_incomplete": false
-          }
-        },
-        "molecule_gap": {
-          "en": "no records: tirzepatide",
-          "zh": "\u65e0\u8bb0\u5f55\uff1atirzepatide"
-        },
-        "observation_split": {
-          "regulator": {
-            "en": "regulator: current 9, discontinued 5",
-            "zh": "\u76d1\u7ba1\u72b6\u6001\uff1a\u5f53\u524d9\u6761\u3001\u505c\u4ea75\u6761"
-          },
-          "manufacturer": {
-            "en": "manufacturer: available 6, limited 3, not stated 5",
-            "zh": "\u5382\u5546\u4f9b\u5e94\u60c5\u51b5\uff1a\u53ef\u4f9b6\u6761\u3001\u4f9b\u5e94\u53d7\u96503\u6761\u3001\u672a\u8bf4\u660e5\u6761"
-          },
-          "capacity": {
-            "en": "The capacity thesis is not observed from this source.",
-            "zh": "\u4ea7\u80fd\u8bba\u65ad\u672a\u83b7\u89c2\u5bdf\uff1a\u8be5\u6765\u6e90\u4e0d\u53d1\u5e03\u4ea7\u80fd\u6570\u636e\u3002"
-          }
-        },
-        "fda_details": [
-          "Semaglutide Tablet [To Be Discontinued/not stated]",
-          "Semaglutide Tablet [To Be Discontinued/not stated]",
-          "Semaglutide Tablet [To Be Discontinued/not stated]"
-        ],
-        "divergence_share": null,
-        "ppi_yoy_latest": null,
-        "language_accel": 0.0,
-        "policy_reg_chip": {
-          "theme": "glp1_obesity",
-          "summary": "comment close in 12d (2026-11-20); 1 proposed rule(s) last 60d; 1 final rule(s) last 60d",
-          "days_to_comment_close": 12,
-          "days_to_rule_effective": null,
-          "prorule_inflow_60d": 1,
-          "rule_finalization_60d": 1,
-          "next_comment_close_date": "2026-11-20",
-          "next_comment_close_title": "Design and Safety Considerations for Clinical Trials Involving Ibogaine Drug Products; Request for Information",
-          "evidence_class": "dated-structured"
-        },
-        "score": 52.1,
-        "score_detail": {
-          "score": 52.1,
-          "base": 52.1,
-          "axes": {
-            "magnitude": null,
-            "acceleration": 0.9,
-            "bottleneck": 0.4,
-            "pricing_power": 0.67,
-            "underpricing": 0.09,
-            "purity": null,
-            "timing": 0.4
-          },
-          "n_axes_live": 5,
-          "caps": [],
-          "verdict": "watch",
-          "physical_confirmed": false,
-          "earliness": 0.0882
-        },
-        "size_band": "WATCH",
-        "size_note": "thesis on unconfirmed evidence (text/fingerprint) \u2014 watch, no size until real-time physical confirms",
-        "derisk": false,
-        "size_mult": 0.06,
-        "size_detail": {
-          "band": "WATCH",
-          "derisk": false,
-          "note": "thesis on unconfirmed evidence (text/fingerprint) \u2014 watch, no size until real-time physical confirms",
-          "earliness": 0.0882,
-          "earliness_tilt": 0.7941,
-          "cluster_dilution": {
-            "cluster_id": "healthcare",
-            "cluster_size": 3,
-            "enb_cluster": 2.11,
-            "factor": 0.7033,
-            "note": "dilution = min(1, ENB=2.1 / size=3) = 0.70"
-          },
-          "size_mult_breakdown": {
-            "stage_cap": 0.1,
-            "earliness_tilt": 0.7941,
-            "cluster_dilution": 0.7033,
-            "product": 0.06
-          }
-        }
-      },
-      {
         "theme": "nuclear_power",
         "name": "Nuclear & SMR Power",
         "stage": "PRECIPICE (text)",
         "tier": "P",
-        "rationale": "language signal TIGHT, revisions undetermined \u2014 text-only; awaiting numeric physical confirmation \u00b7 customer capex accelerating (+69% YoY) confirms demand \u00b7 policy pipeline: comment close in 1d (2026-11-09); rule effective in 5d; 6 proposed rule(s) last 60d; 5 final rule(s) last 60d",
+        "rationale": "language signal TIGHT, revisions undetermined \u2014 text-only; awaiting numeric physical confirmation \u00b7 customer capex accelerating (+69% YoY) confirms demand \u00b7 policy pipeline: comment close in 0d (2026-11-09); rule effective in 4d; 6 proposed rule(s) last 60d; 5 final rule(s) last 60d",
         "entry_ready": false,
         "entry_note": "text-only thesis \u2014 awaiting numeric physical confirmation; no entry until FRED bottleneck leg fires",
         "bottleneck_band": "TIGHT (text)",
@@ -18239,9 +17687,9 @@
         "language_accel": 2.0,
         "policy_reg_chip": {
           "theme": "nuclear_power",
-          "summary": "comment close in 1d (2026-11-09); rule effective in 5d; 6 proposed rule(s) last 60d; 5 final rule(s) last 60d",
-          "days_to_comment_close": 1,
-          "days_to_rule_effective": 5,
+          "summary": "comment close in 0d (2026-11-09); rule effective in 4d; 6 proposed rule(s) last 60d; 5 final rule(s) last 60d",
+          "days_to_comment_close": 0,
+          "days_to_rule_effective": 4,
           "prorule_inflow_60d": 6,
           "rule_finalization_60d": 5,
           "next_comment_close_date": "2026-11-09",
@@ -18299,7 +17747,7 @@
         "name": "Defense & Aerospace",
         "stage": "BROADENING (text)",
         "tier": "P",
-        "rationale": "language signal TIGHT and revisions rising \u2014 text-only; awaiting numeric physical confirmation \u00b7 alt-data confirms (pre-revision): 2 gov-award accel \u00b7 1 patent cluster \u00b7 policy pipeline: comment close in 15d (2026-11-23); 5 proposed rule(s) last 60d; 4 final rule(s) last 60d",
+        "rationale": "language signal TIGHT and revisions rising \u2014 text-only; awaiting numeric physical confirmation \u00b7 alt-data confirms (pre-revision): 2 gov-award accel \u00b7 1 patent cluster \u00b7 policy pipeline: comment close in 14d (2026-11-23); 5 proposed rule(s) last 60d; 4 final rule(s) last 60d",
         "entry_ready": false,
         "entry_note": "text-only thesis \u2014 awaiting numeric physical confirmation; no entry until FRED bottleneck leg fires",
         "bottleneck_band": "TIGHT (text)",
@@ -18346,14 +17794,14 @@
         "demand_band": null,
         "demand_strength": null,
         "capex_yoy": null,
-        "revision_breadth": 0.197,
+        "revision_breadth": 0.246,
         "revision_level": "POSITIVE",
         "broadening_state": "ROLLING",
-        "est_drift_90d": 0.32,
-        "guidance_band": null,
-        "guidance_net": null,
-        "guidance_raisers": null,
-        "guidance_cutters": null,
+        "est_drift_90d": 0.17,
+        "guidance_band": "NEUTRAL",
+        "guidance_net": -1,
+        "guidance_raisers": 0,
+        "guidance_cutters": 1,
         "altdata_summary": "2 gov-award accel \u00b7 1 patent cluster",
         "n_altdata_leading": 1,
         "altdata_members": [
@@ -18371,8 +17819,8 @@
         "language_accel": 1.5,
         "policy_reg_chip": {
           "theme": "defense_aerospace",
-          "summary": "comment close in 15d (2026-11-23); 5 proposed rule(s) last 60d; 4 final rule(s) last 60d",
-          "days_to_comment_close": 15,
+          "summary": "comment close in 14d (2026-11-23); 5 proposed rule(s) last 60d; 4 final rule(s) last 60d",
+          "days_to_comment_close": 14,
           "days_to_rule_effective": null,
           "prorule_inflow_60d": 5,
           "rule_finalization_60d": 4,
@@ -18380,10 +17828,10 @@
           "next_comment_close_title": "Information Collection; Paperwork Reduction Act Changes in FAR Case 2026-011, Revolutionary Federal Acquisition Regulati",
           "evidence_class": "dated-structured"
         },
-        "score": 49.1,
+        "score": 49.0,
         "score_detail": {
-          "score": 49.1,
-          "base": 49.1,
+          "score": 49.0,
+          "base": 49.0,
           "axes": {
             "magnitude": null,
             "acceleration": 0.39,
@@ -18431,7 +17879,7 @@
         "name": "Medical Devices",
         "stage": "PRECIPICE (fingerprint)",
         "tier": "P",
-        "rationale": "fingerprint-only (annual member filings) TIGHT, revisions undetermined \u2014 awaiting real-time physical confirmation \u00b7 policy pipeline: comment close in 1d (2026-11-09); rule effective in 29d; 1 proposed rule(s) last 60d; 27 final rule(s) last 60d",
+        "rationale": "fingerprint-only (annual member filings) TIGHT, revisions undetermined \u2014 awaiting real-time physical confirmation \u00b7 policy pipeline: comment close in 0d (2026-11-09); rule effective in 28d; 1 proposed rule(s) last 60d; 27 final rule(s) last 60d",
         "entry_ready": false,
         "entry_note": "fingerprint-only thesis \u2014 awaiting real-time physical confirmation; no entry until FRED bottleneck leg fires",
         "bottleneck_band": "TIGHTENING (fingerprint)",
@@ -18500,9 +17948,9 @@
         "language_accel": 1.0,
         "policy_reg_chip": {
           "theme": "medical_devices",
-          "summary": "comment close in 1d (2026-11-09); rule effective in 29d; 1 proposed rule(s) last 60d; 27 final rule(s) last 60d",
-          "days_to_comment_close": 1,
-          "days_to_rule_effective": 29,
+          "summary": "comment close in 0d (2026-11-09); rule effective in 28d; 1 proposed rule(s) last 60d; 27 final rule(s) last 60d",
+          "days_to_comment_close": 0,
+          "days_to_rule_effective": 28,
           "prorule_inflow_60d": 1,
           "rule_finalization_60d": 27,
           "next_comment_close_date": "2026-11-09",
@@ -18558,7 +18006,7 @@
         "name": "Data Center Power & Cooling",
         "stage": "WATCH",
         "tier": "P",
-        "rationale": "supply not tight; nothing actionable yet \u00b7 policy pipeline: comment close in 22d (2026-11-30); 6 proposed rule(s) last 60d; 3 final rule(s) last 60d",
+        "rationale": "supply not tight; nothing actionable yet \u00b7 policy pipeline: comment close in 21d (2026-11-30); 6 proposed rule(s) last 60d; 4 final rule(s) last 60d",
         "entry_ready": false,
         "entry_note": "not a thesis stage \u2014 no entry",
         "bottleneck_band": "TIGHTENING",
@@ -18605,10 +18053,10 @@
         "demand_band": "ACCELERATING",
         "demand_strength": "indirect",
         "capex_yoy": 69.0,
-        "revision_breadth": 0.485,
+        "revision_breadth": 0.571,
         "revision_level": "POSITIVE",
-        "broadening_state": "ROLLING",
-        "est_drift_90d": 1.79,
+        "broadening_state": "RISING",
+        "est_drift_90d": 2.98,
         "guidance_band": "RAISING",
         "guidance_net": 2,
         "guidance_raisers": 2,
@@ -18627,11 +18075,11 @@
         "language_accel": -0.5,
         "policy_reg_chip": {
           "theme": "data_center_power",
-          "summary": "comment close in 22d (2026-11-30); 6 proposed rule(s) last 60d; 3 final rule(s) last 60d",
-          "days_to_comment_close": 22,
+          "summary": "comment close in 21d (2026-11-30); 6 proposed rule(s) last 60d; 4 final rule(s) last 60d",
+          "days_to_comment_close": 21,
           "days_to_rule_effective": null,
           "prorule_inflow_60d": 6,
-          "rule_finalization_60d": 3,
+          "rule_finalization_60d": 4,
           "next_comment_close_date": "2026-11-30",
           "next_comment_close_title": "Air Plan Approval and Air Quality Designation; TN; Attainment Plan and Redesignation of the Sullivan County Nonattainmen",
           "evidence_class": "dated-structured"
@@ -18639,10 +18087,10 @@
         "score": 45.0,
         "score_detail": {
           "score": 45.0,
-          "base": 63.5,
+          "base": 68.8,
           "axes": {
             "magnitude": 0.62,
-            "acceleration": 0.73,
+            "acceleration": 1.0,
             "bottleneck": 0.55,
             "pricing_power": 0.77,
             "underpricing": 0.71,
@@ -18687,7 +18135,7 @@
         "name": "Grid & Electrification",
         "stage": "WATCH",
         "tier": "P",
-        "rationale": "supply not tight; nothing actionable yet \u00b7 policy pipeline: comment close in 8d (2026-11-16); 1 proposed rule(s) last 60d; 1 final rule(s) last 60d",
+        "rationale": "supply not tight; nothing actionable yet \u00b7 policy pipeline: comment close in 7d (2026-11-16); 1 proposed rule(s) last 60d; 1 final rule(s) last 60d",
         "entry_ready": false,
         "entry_note": "not a thesis stage \u2014 no entry",
         "bottleneck_band": "TIGHTENING",
@@ -18734,10 +18182,10 @@
         "demand_band": "ACCELERATING",
         "demand_strength": "indirect",
         "capex_yoy": 69.0,
-        "revision_breadth": 0.182,
+        "revision_breadth": 0.262,
         "revision_level": "POSITIVE",
-        "broadening_state": "ROLLING",
-        "est_drift_90d": 2.36,
+        "broadening_state": "RISING",
+        "est_drift_90d": 2.09,
         "guidance_band": "RAISING",
         "guidance_net": 2,
         "guidance_raisers": 2,
@@ -18756,8 +18204,8 @@
         "language_accel": 1.0,
         "policy_reg_chip": {
           "theme": "grid_electrification",
-          "summary": "comment close in 8d (2026-11-16); 1 proposed rule(s) last 60d; 1 final rule(s) last 60d",
-          "days_to_comment_close": 8,
+          "summary": "comment close in 7d (2026-11-16); 1 proposed rule(s) last 60d; 1 final rule(s) last 60d",
+          "days_to_comment_close": 7,
           "days_to_rule_effective": null,
           "prorule_inflow_60d": 1,
           "rule_finalization_60d": 1,
@@ -18768,10 +18216,10 @@
         "score": 45.0,
         "score_detail": {
           "score": 45.0,
-          "base": 62.9,
+          "base": 68.2,
           "axes": {
             "magnitude": 1.0,
-            "acceleration": 0.73,
+            "acceleration": 1.0,
             "bottleneck": 0.55,
             "pricing_power": 0.73,
             "underpricing": 0.32,
@@ -18816,7 +18264,7 @@
         "name": "Memory, HBM & Storage",
         "stage": "WATCH",
         "tier": "P",
-        "rationale": "supply not tight; nothing actionable yet \u00b7 policy pipeline: comment close in 8d (2026-11-16); 2 final rule(s) last 60d",
+        "rationale": "supply not tight; nothing actionable yet \u00b7 policy pipeline: comment close in 7d (2026-11-16); 2 final rule(s) last 60d",
         "entry_ready": false,
         "entry_note": "not a thesis stage \u2014 no entry",
         "bottleneck_band": "NEUTRAL",
@@ -18887,8 +18335,8 @@
         "language_accel": 0.5,
         "policy_reg_chip": {
           "theme": "memory_storage",
-          "summary": "comment close in 8d (2026-11-16); 2 final rule(s) last 60d",
-          "days_to_comment_close": 8,
+          "summary": "comment close in 7d (2026-11-16); 2 final rule(s) last 60d",
+          "days_to_comment_close": 7,
           "days_to_rule_effective": null,
           "prorule_inflow_60d": 0,
           "rule_finalization_60d": 2,
@@ -18947,7 +18395,7 @@
         "name": "Semiconductor Equipment (WFE)",
         "stage": "WATCH",
         "tier": "P",
-        "rationale": "supply not tight; nothing actionable yet \u00b7 policy pipeline: comment close in 33d (2026-12-11)",
+        "rationale": "supply not tight; nothing actionable yet \u00b7 policy pipeline: comment close in 32d (2026-12-11)",
         "entry_ready": false,
         "entry_note": "not a thesis stage \u2014 no entry",
         "bottleneck_band": "NEUTRAL",
@@ -18994,10 +18442,10 @@
         "demand_band": "ACCELERATING",
         "demand_strength": "lagged",
         "capex_yoy": 69.0,
-        "revision_breadth": 0.591,
+        "revision_breadth": 0.448,
         "revision_level": "POSITIVE",
         "broadening_state": "ROLLING",
-        "est_drift_90d": 9.21,
+        "est_drift_90d": 13.42,
         "guidance_band": "NEUTRAL",
         "guidance_net": 1,
         "guidance_raisers": 1,
@@ -19016,8 +18464,8 @@
         "language_accel": 1.0,
         "policy_reg_chip": {
           "theme": "semicap_equipment",
-          "summary": "comment close in 33d (2026-12-11)",
-          "days_to_comment_close": 33,
+          "summary": "comment close in 32d (2026-12-11)",
+          "days_to_comment_close": 32,
           "days_to_rule_effective": null,
           "prorule_inflow_60d": 0,
           "rule_finalization_60d": 0,
@@ -19076,7 +18524,7 @@
         "name": "AI Semiconductors",
         "stage": "WATCH",
         "tier": "P",
-        "rationale": "supply not tight; nothing actionable yet \u00b7 policy pipeline: comment close in 8d (2026-11-16)",
+        "rationale": "supply not tight; nothing actionable yet \u00b7 policy pipeline: comment close in 7d (2026-11-16)",
         "entry_ready": false,
         "entry_note": "not a thesis stage \u2014 no entry",
         "bottleneck_band": "NEUTRAL",
@@ -19123,10 +18571,10 @@
         "demand_band": "ACCELERATING",
         "demand_strength": "direct",
         "capex_yoy": 69.0,
-        "revision_breadth": 0.403,
+        "revision_breadth": 0.636,
         "revision_level": "POSITIVE",
         "broadening_state": "ROLLING",
-        "est_drift_90d": 19.66,
+        "est_drift_90d": 20.71,
         "guidance_band": null,
         "guidance_net": null,
         "guidance_raisers": null,
@@ -19140,13 +18588,13 @@
         "molecule_gap": null,
         "observation_split": null,
         "fda_details": null,
-        "divergence_share": 0.25,
+        "divergence_share": 0.125,
         "ppi_yoy_latest": -2.2,
         "language_accel": -0.22,
         "policy_reg_chip": {
           "theme": "ai_semiconductors",
-          "summary": "comment close in 8d (2026-11-16)",
-          "days_to_comment_close": 8,
+          "summary": "comment close in 7d (2026-11-16)",
+          "days_to_comment_close": 7,
           "days_to_rule_effective": null,
           "prorule_inflow_60d": 0,
           "rule_finalization_60d": 0,
@@ -19157,9 +18605,9 @@
         "score": 45.0,
         "score_detail": {
           "score": 45.0,
-          "base": 48.8,
+          "base": 47.9,
           "axes": {
-            "magnitude": 0.62,
+            "magnitude": 0.56,
             "acceleration": 0.68,
             "bottleneck": 0.35,
             "pricing_power": 0.39,
@@ -19205,7 +18653,7 @@
         "name": "Copper, Steel & Electrification",
         "stage": "WATCH",
         "tier": "P",
-        "rationale": "supply not tight; nothing actionable yet \u00b7 policy pipeline: comment close in 4d (2026-11-12); 1 proposed rule(s) last 60d; 1 final rule(s) last 60d",
+        "rationale": "supply not tight; nothing actionable yet \u00b7 policy pipeline: comment close in 3d (2026-11-12); 1 proposed rule(s) last 60d; 1 final rule(s) last 60d",
         "entry_ready": false,
         "entry_note": "not a thesis stage \u2014 no entry",
         "bottleneck_band": "NEUTRAL",
@@ -19274,8 +18722,8 @@
         "language_accel": 0.0,
         "policy_reg_chip": {
           "theme": "copper_steel_electrify",
-          "summary": "comment close in 4d (2026-11-12); 1 proposed rule(s) last 60d; 1 final rule(s) last 60d",
-          "days_to_comment_close": 4,
+          "summary": "comment close in 3d (2026-11-12); 1 proposed rule(s) last 60d; 1 final rule(s) last 60d",
+          "days_to_comment_close": 3,
           "days_to_rule_effective": null,
           "prorule_inflow_60d": 1,
           "rule_finalization_60d": 1,
@@ -19334,7 +18782,7 @@
         "name": "Rare Earth & Critical Minerals",
         "stage": "WATCH",
         "tier": "P",
-        "rationale": "supply not tight; nothing actionable yet \u00b7 policy pipeline: comment close in 1d (2026-11-09); 3 final rule(s) last 60d",
+        "rationale": "supply not tight; nothing actionable yet \u00b7 policy pipeline: comment close in 0d (2026-11-09); 3 final rule(s) last 60d",
         "entry_ready": false,
         "entry_note": "not a thesis stage \u2014 no entry",
         "bottleneck_band": "NEUTRAL",
@@ -19403,8 +18851,8 @@
         "language_accel": 1.0,
         "policy_reg_chip": {
           "theme": "rare_earth_critical_min",
-          "summary": "comment close in 1d (2026-11-09); 3 final rule(s) last 60d",
-          "days_to_comment_close": 1,
+          "summary": "comment close in 0d (2026-11-09); 3 final rule(s) last 60d",
+          "days_to_comment_close": 0,
           "days_to_rule_effective": null,
           "prorule_inflow_60d": 0,
           "rule_finalization_60d": 3,
@@ -19463,7 +18911,7 @@
         "name": "Fintech & Payments",
         "stage": "WATCH",
         "tier": "P",
-        "rationale": "supply not tight; nothing actionable yet \u00b7 policy pipeline: comment close in 15d (2026-11-23); 5 proposed rule(s) last 60d; 9 final rule(s) last 60d",
+        "rationale": "supply not tight; nothing actionable yet \u00b7 policy pipeline: comment close in 14d (2026-11-23); 6 proposed rule(s) last 60d; 9 final rule(s) last 60d",
         "entry_ready": false,
         "entry_note": "not a thesis stage \u2014 no entry",
         "bottleneck_band": "NEUTRAL",
@@ -19532,10 +18980,10 @@
         "language_accel": 1.0,
         "policy_reg_chip": {
           "theme": "fintech_payments",
-          "summary": "comment close in 15d (2026-11-23); 5 proposed rule(s) last 60d; 9 final rule(s) last 60d",
-          "days_to_comment_close": 15,
+          "summary": "comment close in 14d (2026-11-23); 6 proposed rule(s) last 60d; 9 final rule(s) last 60d",
+          "days_to_comment_close": 14,
           "days_to_rule_effective": null,
-          "prorule_inflow_60d": 5,
+          "prorule_inflow_60d": 6,
           "rule_finalization_60d": 9,
           "next_comment_close_date": "2026-11-23",
           "next_comment_close_title": "Agency Information Collection Activities: Proposed Information Collection; Submission for OMB Review; Reporting Forms an",
@@ -19591,7 +19039,7 @@
         "name": "Diagnostics & Life-Science Tools",
         "stage": "WATCH",
         "tier": "P",
-        "rationale": "supply not tight; nothing actionable yet \u00b7 policy pipeline: comment close in 1d (2026-11-09); rule effective in 29d; 3 proposed rule(s) last 60d; 10 final rule(s) last 60d",
+        "rationale": "supply not tight; nothing actionable yet \u00b7 policy pipeline: comment close in 0d (2026-11-09); rule effective in 28d; 3 proposed rule(s) last 60d; 12 final rule(s) last 60d",
         "entry_ready": false,
         "entry_note": "not a thesis stage \u2014 no entry",
         "bottleneck_band": "NEUTRAL",
@@ -19662,11 +19110,11 @@
         "language_accel": 0.0,
         "policy_reg_chip": {
           "theme": "diagnostics_lifesci",
-          "summary": "comment close in 1d (2026-11-09); rule effective in 29d; 3 proposed rule(s) last 60d; 10 final rule(s) last 60d",
-          "days_to_comment_close": 1,
-          "days_to_rule_effective": 29,
+          "summary": "comment close in 0d (2026-11-09); rule effective in 28d; 3 proposed rule(s) last 60d; 12 final rule(s) last 60d",
+          "days_to_comment_close": 0,
+          "days_to_rule_effective": 28,
           "prorule_inflow_60d": 3,
-          "rule_finalization_60d": 10,
+          "rule_finalization_60d": 12,
           "next_comment_close_date": "2026-11-09",
           "next_comment_close_title": "Improving Patient Access to Deceased Donor Islet Cells and Cell Products; Request for Information",
           "evidence_class": "dated-structured"
@@ -19833,11 +19281,180 @@
         }
       },
       {
+        "theme": "glp1_obesity",
+        "name": "GLP-1 / Obesity",
+        "stage": "BROADENING (fingerprint)",
+        "tier": "P",
+        "rationale": "fingerprint-only (annual member filings) TIGHT and revisions rising \u2014 awaiting real-time physical confirmation \u00b7 policy pipeline: comment close in 11d (2026-11-20); 1 proposed rule(s) last 60d; 1 final rule(s) last 60d",
+        "entry_ready": false,
+        "entry_note": "fingerprint-only thesis \u2014 awaiting real-time physical confirmation; no entry until FRED bottleneck leg fires",
+        "bottleneck_band": "TIGHTENING (fingerprint)",
+        "bottleneck_text_only": false,
+        "bottleneck_fingerprint_only": true,
+        "fingerprint": {
+          "theme": "glp1_obesity",
+          "fingerprint_tightness": 0.33,
+          "leg7_member_inventory": 0.33,
+          "leg8_member_backlog": null,
+          "n_legs_live": 1,
+          "basis": "annual",
+          "provisional": true,
+          "components": {
+            "leg7_member_inventory": {
+              "value": 0.33,
+              "n_reporting": 5,
+              "latest_fy": 2025,
+              "min_required": 3,
+              "met_gate": true,
+              "description": "Median YoY change in inventory days (COGS-based, revenue fallback) across theme members. Uses COGS when available (more accurate), falls back to revenue. Negative YoY (falling) \u2192 tightening \u2192 positive value. Annual cadence; latest filed FY. Adjacency guard: only YoY when fiscal years are consecutive.",
+              "weight_provisional": 0.5,
+              "n_cogs_based": 5,
+              "n_revenue_based": 0
+            },
+            "leg8_member_backlog": {
+              "value": null,
+              "n_reporting": 1,
+              "latest_fy": 2022,
+              "min_required": 3,
+              "met_gate": false,
+              "description": "Median YoY RPO (RevenueRemainingPerformanceObligation) growth across theme members. Rising RPO \u2192 more backlog \u2192 tightening \u2192 positive value. Annual cadence; latest filed FY. Adjacency guard: only YoY when fiscal years are consecutive.",
+              "weight_provisional": 0.5
+            }
+          },
+          "_shadow_candidates": {
+            "leg7_weight": 0.5,
+            "leg8_weight": 0.5,
+            "note": "provisional equal-weight; shadow calibration pending (Wave 3a/3b)"
+          }
+        },
+        "tightness": 0.33,
+        "bottleneck_regime": false,
+        "demand_band": null,
+        "demand_strength": null,
+        "capex_yoy": null,
+        "revision_breadth": 0.273,
+        "revision_level": "POSITIVE",
+        "broadening_state": "INSUFFICIENT_HISTORY",
+        "est_drift_90d": 3.46,
+        "guidance_band": null,
+        "guidance_net": null,
+        "guidance_raisers": null,
+        "guidance_cutters": null,
+        "altdata_summary": null,
+        "n_altdata_leading": 0,
+        "altdata_members": null,
+        "glut_band": null,
+        "glut_score": null,
+        "theme_feed_summary": {
+          "source": "fda_shortages",
+          "theme": "glp1_obesity",
+          "band": "SHORTAGE_ACTIVE",
+          "label": "FDA: mixed \u2014 current 9 / discontinued 5 \u00b7 captured 0 d ago \u00b7 source generation 2026-11-06",
+          "label_zh": "FDA\uff1a\u6df7\u5408\u2014\u2014\u5f53\u524d9\uff0f\u505c\u4ea75 \u00b7 \u91c7\u96c6\u4e8e0\u5929\u524d \u00b7 \u6765\u6e90\u751f\u6210\u65e5\u671f2026-11-06",
+          "tone": "warn",
+          "rationale": "The FDA reports current shortages and formulation discontinuations.",
+          "n_active": 9,
+          "n_resolved": 0,
+          "n_discontinued": 5,
+          "source_status": "MIXED_REPORTED",
+          "freshness": {
+            "capture_qualified": true,
+            "capture_finished_at": "2026-11-08T08:40:28.607818+00:00",
+            "capture_age_s": 78713.735342,
+            "source_generation": "2026-11-06",
+            "source_generation_age_days": 3,
+            "stale": null,
+            "failed_refresh": null,
+            "capture_incomplete": false
+          }
+        },
+        "molecule_gap": {
+          "en": "no records: tirzepatide",
+          "zh": "\u65e0\u8bb0\u5f55\uff1atirzepatide"
+        },
+        "observation_split": {
+          "regulator": {
+            "en": "regulator: current 9, discontinued 5",
+            "zh": "\u76d1\u7ba1\u72b6\u6001\uff1a\u5f53\u524d9\u6761\u3001\u505c\u4ea75\u6761"
+          },
+          "manufacturer": {
+            "en": "manufacturer: available 6, limited 3, not stated 5",
+            "zh": "\u5382\u5546\u4f9b\u5e94\u60c5\u51b5\uff1a\u53ef\u4f9b6\u6761\u3001\u4f9b\u5e94\u53d7\u96503\u6761\u3001\u672a\u8bf4\u660e5\u6761"
+          },
+          "capacity": {
+            "en": "The capacity thesis is not observed from this source.",
+            "zh": "\u4ea7\u80fd\u8bba\u65ad\u672a\u83b7\u89c2\u5bdf\uff1a\u8be5\u6765\u6e90\u4e0d\u53d1\u5e03\u4ea7\u80fd\u6570\u636e\u3002"
+          }
+        },
+        "fda_details": [
+          "Semaglutide Tablet [To Be Discontinued/not stated]",
+          "Semaglutide Tablet [To Be Discontinued/not stated]",
+          "Semaglutide Tablet [To Be Discontinued/not stated]"
+        ],
+        "divergence_share": null,
+        "ppi_yoy_latest": null,
+        "language_accel": 0.0,
+        "policy_reg_chip": {
+          "theme": "glp1_obesity",
+          "summary": "comment close in 11d (2026-11-20); 1 proposed rule(s) last 60d; 1 final rule(s) last 60d",
+          "days_to_comment_close": 11,
+          "days_to_rule_effective": null,
+          "prorule_inflow_60d": 1,
+          "rule_finalization_60d": 1,
+          "next_comment_close_date": "2026-11-20",
+          "next_comment_close_title": "Design and Safety Considerations for Clinical Trials Involving Ibogaine Drug Products; Request for Information",
+          "evidence_class": "dated-structured"
+        },
+        "score": 41.7,
+        "score_detail": {
+          "score": 41.7,
+          "base": 41.7,
+          "axes": {
+            "magnitude": null,
+            "acceleration": 0.5,
+            "bottleneck": 0.4,
+            "pricing_power": 0.67,
+            "underpricing": 0.09,
+            "purity": null,
+            "timing": 0.4
+          },
+          "n_axes_live": 5,
+          "caps": [],
+          "verdict": "watch",
+          "physical_confirmed": false,
+          "earliness": 0.0882
+        },
+        "size_band": "WATCH",
+        "size_note": "thesis on unconfirmed evidence (text/fingerprint) \u2014 watch, no size until real-time physical confirms",
+        "derisk": false,
+        "size_mult": 0.06,
+        "size_detail": {
+          "band": "WATCH",
+          "derisk": false,
+          "note": "thesis on unconfirmed evidence (text/fingerprint) \u2014 watch, no size until real-time physical confirms",
+          "earliness": 0.0882,
+          "earliness_tilt": 0.7941,
+          "cluster_dilution": {
+            "cluster_id": "healthcare",
+            "cluster_size": 3,
+            "enb_cluster": 2.11,
+            "factor": 0.7033,
+            "note": "dilution = min(1, ENB=2.1 / size=3) = 0.70"
+          },
+          "size_mult_breakdown": {
+            "stage_cap": 0.1,
+            "earliness_tilt": 0.7941,
+            "cluster_dilution": 0.7033,
+            "product": 0.06
+          }
+        }
+      },
+      {
         "theme": "cybersecurity",
         "name": "Cybersecurity",
         "stage": "WATCH",
         "tier": "P",
-        "rationale": "supply not tight; nothing actionable yet \u00b7 policy pipeline: comment close in 1d (2026-11-09); rule effective in 748d; 4 proposed rule(s) last 60d; 5 final rule(s) last 60d",
+        "rationale": "supply not tight; nothing actionable yet \u00b7 policy pipeline: comment close in 0d (2026-11-09); rule effective in 747d; 4 proposed rule(s) last 60d; 5 final rule(s) last 60d",
         "entry_ready": false,
         "entry_note": "not a thesis stage \u2014 no entry",
         "bottleneck_band": "NEUTRAL",
@@ -19906,9 +19523,9 @@
         "language_accel": 1.0,
         "policy_reg_chip": {
           "theme": "cybersecurity",
-          "summary": "comment close in 1d (2026-11-09); rule effective in 748d; 4 proposed rule(s) last 60d; 5 final rule(s) last 60d",
-          "days_to_comment_close": 1,
-          "days_to_rule_effective": 748,
+          "summary": "comment close in 0d (2026-11-09); rule effective in 747d; 4 proposed rule(s) last 60d; 5 final rule(s) last 60d",
+          "days_to_comment_close": 0,
+          "days_to_rule_effective": 747,
           "prorule_inflow_60d": 4,
           "rule_finalization_60d": 5,
           "next_comment_close_date": "2026-11-09",
@@ -19963,7 +19580,7 @@
         "name": "Solar",
         "stage": "WATCH",
         "tier": "P",
-        "rationale": "supply not tight; nothing actionable yet \u00b7 policy pipeline: comment close in 57d (2027-01-04); 1 final rule(s) last 60d",
+        "rationale": "supply not tight; nothing actionable yet \u00b7 policy pipeline: comment close in 56d (2027-01-04); 1 final rule(s) last 60d",
         "entry_ready": false,
         "entry_note": "not a thesis stage \u2014 no entry",
         "bottleneck_band": "LOOSE",
@@ -20032,8 +19649,8 @@
         "language_accel": 0.0,
         "policy_reg_chip": {
           "theme": "solar",
-          "summary": "comment close in 57d (2027-01-04); 1 final rule(s) last 60d",
-          "days_to_comment_close": 57,
+          "summary": "comment close in 56d (2027-01-04); 1 final rule(s) last 60d",
+          "days_to_comment_close": 56,
           "days_to_rule_effective": null,
           "prorule_inflow_60d": 0,
           "rule_finalization_60d": 1,
@@ -20089,7 +19706,7 @@
         "name": "Agriculture & Fertilizer",
         "stage": "WATCH",
         "tier": "P",
-        "rationale": "supply not tight; nothing actionable yet \u00b7 policy pipeline: comment close in 2d (2026-11-10); rule effective in 58d; 10 proposed rule(s) last 60d; 11 final rule(s) last 60d",
+        "rationale": "supply not tight; nothing actionable yet \u00b7 policy pipeline: comment close in 1d (2026-11-10); rule effective in 57d; 9 proposed rule(s) last 60d; 10 final rule(s) last 60d",
         "entry_ready": false,
         "entry_note": "not a thesis stage \u2014 no entry",
         "bottleneck_band": "LOOSE",
@@ -20136,10 +19753,10 @@
         "demand_band": null,
         "demand_strength": null,
         "capex_yoy": null,
-        "revision_breadth": -0.181,
+        "revision_breadth": -0.484,
         "revision_level": "NEGATIVE",
         "broadening_state": "MIXED",
-        "est_drift_90d": -10.86,
+        "est_drift_90d": -11.14,
         "guidance_band": null,
         "guidance_net": null,
         "guidance_raisers": null,
@@ -20158,11 +19775,11 @@
         "language_accel": -0.33,
         "policy_reg_chip": {
           "theme": "ag_fertilizer",
-          "summary": "comment close in 2d (2026-11-10); rule effective in 58d; 10 proposed rule(s) last 60d; 11 final rule(s) last 60d",
-          "days_to_comment_close": 2,
-          "days_to_rule_effective": 58,
-          "prorule_inflow_60d": 10,
-          "rule_finalization_60d": 11,
+          "summary": "comment close in 1d (2026-11-10); rule effective in 57d; 9 proposed rule(s) last 60d; 10 final rule(s) last 60d",
+          "days_to_comment_close": 1,
+          "days_to_rule_effective": 57,
+          "prorule_inflow_60d": 9,
+          "rule_finalization_60d": 10,
           "next_comment_close_date": "2026-11-10",
           "next_comment_close_title": "Agency Information Collection Activities; Proposed Renewal Collection and Request for Comment; Soil and Non-Soil Fumigan",
           "evidence_class": "dated-structured"
@@ -20223,7 +19840,7 @@
       "trend": "accelerating"
     },
     "late_line_basis": "percentile_cov",
-    "late_line_threshold": 0.2023,
+    "late_line_threshold": 0.2146,
     "late_line_provisional": true,
     "note": "display-only; STAGE = where the leading edge is. T1 bottleneck LEADS, T2 demand confirms, T3 guidance pre-signals the revision, T4 revisions confirm, exit-risk caps the late ones; the 0-100 score ranks edge+quality. ENTRY is deferred to the dislocation overlay.",
     "scored": true,
@@ -20789,7 +20406,7 @@
     "note": "display-only; CANDIDATE emerging bottlenecks \u2014 industries where a majority of un-tracked companies are independently reporting physical scarcity. A candidate is on PROBATION: never a buy, never auto-added; it earns a tracked slot only when a physical correlate fires. The pre-13D discovery layer."
   },
   "subsector_scan": {
-    "asof": "2026-11-07",
+    "asof": "2026-11-08",
     "n_subsectors": 54,
     "n_scarcity_aligned": 4,
     "subsectors": [
@@ -20797,11 +20414,11 @@
         "sector": "Healthcare",
         "sub_industry": "Medical Devices",
         "n_members": 12,
-        "n_covered": 8,
-        "breadth": -0.324,
+        "n_covered": 9,
+        "breadth": -0.465,
         "level_state": "NEGATIVE",
-        "est_drift_90d": 0.06,
-        "broadening_state": "MIXED",
+        "est_drift_90d": -0.1,
+        "broadening_state": "INSUFFICIENT_HISTORY",
         "n_scarcity": 2,
         "scarcity_members": [
           "ALGN",
@@ -20816,7 +20433,7 @@
         "sub_industry": "Aerospace & Defense",
         "n_members": 12,
         "n_covered": 12,
-        "breadth": 0.145,
+        "breadth": 0.202,
         "level_state": "POSITIVE",
         "est_drift_90d": 1.26,
         "broadening_state": "ROLLING",
@@ -20833,10 +20450,10 @@
         "sector": "Technology",
         "sub_industry": "Communication Equipment",
         "n_members": 7,
-        "n_covered": 6,
+        "n_covered": 7,
         "breadth": 1.0,
         "level_state": "POSITIVE",
-        "est_drift_90d": 12.27,
+        "est_drift_90d": 16.93,
         "broadening_state": "MIXED",
         "n_scarcity": 2,
         "scarcity_members": [
@@ -20851,10 +20468,10 @@
         "sector": "Technology",
         "sub_industry": "Semiconductors",
         "n_members": 14,
-        "n_covered": 14,
-        "breadth": 0.704,
+        "n_covered": 13,
+        "breadth": 0.789,
         "level_state": "POSITIVE",
-        "est_drift_90d": 10.36,
+        "est_drift_90d": 10.93,
         "broadening_state": "ROLLING",
         "n_scarcity": 6,
         "scarcity_members": [
@@ -20877,7 +20494,7 @@
         "breadth": 0.92,
         "level_state": "POSITIVE",
         "est_drift_90d": 5.73,
-        "broadening_state": "ROLLING",
+        "broadening_state": "RISING",
         "n_scarcity": 1,
         "scarcity_members": [
           "COHR"
@@ -20904,21 +20521,6 @@
         "text_only": true
       },
       {
-        "sector": "Consumer Cyclical",
-        "sub_industry": "Packaging & Containers",
-        "n_members": 6,
-        "n_covered": 3,
-        "breadth": 0.756,
-        "level_state": "POSITIVE",
-        "est_drift_90d": 4.96,
-        "broadening_state": "RISING",
-        "n_scarcity": 0,
-        "scarcity_members": [],
-        "stage": "RE-RATING",
-        "rationale": "revisions already broad (bottleneck unknown) \u2014 likely late",
-        "text_only": true
-      },
-      {
         "sector": "Energy",
         "sub_industry": "Oil & Gas Refining & Marketing",
         "n_members": 3,
@@ -20926,21 +20528,6 @@
         "breadth": 0.753,
         "level_state": "POSITIVE",
         "est_drift_90d": 96.76,
-        "broadening_state": "ROLLING",
-        "n_scarcity": 0,
-        "scarcity_members": [],
-        "stage": "RE-RATING",
-        "rationale": "revisions already broad (bottleneck unknown) \u2014 likely late",
-        "text_only": true
-      },
-      {
-        "sector": "Technology",
-        "sub_industry": "Semiconductor Equipment & Materials",
-        "n_members": 5,
-        "n_covered": 3,
-        "breadth": 0.746,
-        "level_state": "POSITIVE",
-        "est_drift_90d": 18.46,
         "broadening_state": "ROLLING",
         "n_scarcity": 0,
         "scarcity_members": [],
@@ -21002,9 +20589,24 @@
         "sub_industry": "Insurance - Property & Casualty",
         "n_members": 7,
         "n_covered": 5,
-        "breadth": 0.578,
+        "breadth": 0.564,
         "level_state": "POSITIVE",
         "est_drift_90d": 2.22,
+        "broadening_state": "RISING",
+        "n_scarcity": 0,
+        "scarcity_members": [],
+        "stage": "RE-RATING",
+        "rationale": "revisions already broad (bottleneck unknown) \u2014 likely late",
+        "text_only": true
+      },
+      {
+        "sector": "Technology",
+        "sub_industry": "Semiconductor Equipment & Materials",
+        "n_members": 5,
+        "n_covered": 3,
+        "breadth": 0.556,
+        "level_state": "POSITIVE",
+        "est_drift_90d": 18.46,
         "broadening_state": "ROLLING",
         "n_scarcity": 0,
         "scarcity_members": [],
@@ -21178,13 +20780,28 @@
         "stage": "WATCH",
         "rationale": "revisions present (bottleneck unknown)",
         "text_only": true
+      },
+      {
+        "sector": "Consumer Cyclical",
+        "sub_industry": "Restaurants",
+        "n_members": 6,
+        "n_covered": 6,
+        "breadth": -0.431,
+        "level_state": "NEGATIVE",
+        "est_drift_90d": -1.71,
+        "broadening_state": "MIXED",
+        "n_scarcity": 0,
+        "scarcity_members": [],
+        "stage": "WATCH",
+        "rationale": "revisions present (bottleneck unknown)",
+        "text_only": true
       }
     ],
     "all_count": 54,
     "note": "display-only; the cascade signature (text scarcity x revision breadth) over all 113 sub-industries. The bottleneck is a TEXT-ONLY proxy (EDGAR scarcity language), not FRED-confirmed \u2014 a screen to investigate, not a confirmed thesis. Complements the curated 18-theme cascade and the small-cap discovery layer."
   },
   "foresight_convergence": {
-    "asof": "2026-11-07",
+    "asof": "2026-11-08",
     "n_items": 18,
     "ranked": [
       {
@@ -21254,40 +20871,6 @@
         "cross_surface": []
       },
       {
-        "theme": "defense_aerospace",
-        "name": "Defense & Aerospace",
-        "stage": "BROADENING (text)",
-        "lit_sources": [
-          "altdata",
-          "edgar_scarcity"
-        ],
-        "n_lit": 2,
-        "n_available": 3,
-        "source_available": {
-          "physical": true,
-          "demand": false,
-          "guidance": false,
-          "altdata": true,
-          "edgar_scarcity": true
-        },
-        "earliness": 0.647,
-        "earliness_absent": false,
-        "earliness_available": true,
-        "n_earliness_legs": 3,
-        "physical_confirmed": false,
-        "heat": 0.431,
-        "score": 49.1,
-        "size_band": "WATCH",
-        "signals": [
-          "altdata",
-          "edgar_scarcity"
-        ],
-        "n_signals": 2,
-        "cross_surface": [
-          "edgar_scarcity"
-        ]
-      },
-      {
         "theme": "rare_earth_critical_min",
         "name": "Rare Earth & Critical Minerals",
         "stage": "WATCH",
@@ -21316,6 +20899,40 @@
         ],
         "n_signals": 1,
         "cross_surface": []
+      },
+      {
+        "theme": "defense_aerospace",
+        "name": "Defense & Aerospace",
+        "stage": "BROADENING (text)",
+        "lit_sources": [
+          "altdata",
+          "edgar_scarcity"
+        ],
+        "n_lit": 2,
+        "n_available": 4,
+        "source_available": {
+          "physical": true,
+          "demand": false,
+          "guidance": true,
+          "altdata": true,
+          "edgar_scarcity": true
+        },
+        "earliness": 0.647,
+        "earliness_absent": false,
+        "earliness_available": true,
+        "n_earliness_legs": 3,
+        "physical_confirmed": false,
+        "heat": 0.324,
+        "score": 49.0,
+        "size_band": "WATCH",
+        "signals": [
+          "altdata",
+          "edgar_scarcity"
+        ],
+        "n_signals": 2,
+        "cross_surface": [
+          "edgar_scarcity"
+        ]
       },
       {
         "theme": "space_satellite",
@@ -21580,32 +21197,6 @@
         "cross_surface": []
       },
       {
-        "theme": "glp1_obesity",
-        "name": "GLP-1 / Obesity",
-        "stage": "BROADENING (fingerprint)",
-        "lit_sources": [],
-        "n_lit": 0,
-        "n_available": 3,
-        "source_available": {
-          "physical": true,
-          "demand": false,
-          "guidance": false,
-          "altdata": true,
-          "edgar_scarcity": true
-        },
-        "earliness": 0.088,
-        "earliness_absent": false,
-        "earliness_available": true,
-        "n_earliness_legs": 3,
-        "physical_confirmed": false,
-        "heat": 0.0,
-        "score": 52.1,
-        "size_band": "WATCH",
-        "signals": [],
-        "n_signals": 0,
-        "cross_surface": []
-      },
-      {
         "theme": "fintech_payments",
         "name": "Fintech & Payments",
         "stage": "WATCH",
@@ -21652,6 +21243,32 @@
         "physical_confirmed": false,
         "heat": 0.0,
         "score": 42.3,
+        "size_band": "WATCH",
+        "signals": [],
+        "n_signals": 0,
+        "cross_surface": []
+      },
+      {
+        "theme": "glp1_obesity",
+        "name": "GLP-1 / Obesity",
+        "stage": "BROADENING (fingerprint)",
+        "lit_sources": [],
+        "n_lit": 0,
+        "n_available": 3,
+        "source_available": {
+          "physical": true,
+          "demand": false,
+          "guidance": false,
+          "altdata": true,
+          "edgar_scarcity": true
+        },
+        "earliness": 0.088,
+        "earliness_absent": false,
+        "earliness_available": true,
+        "n_earliness_legs": 3,
+        "physical_confirmed": false,
+        "heat": 0.0,
+        "score": 41.7,
         "size_band": "WATCH",
         "signals": [],
         "n_signals": 0,
@@ -21802,43 +21419,9 @@
         ],
         "n_signals": 2,
         "cross_surface": []
-      },
-      {
-        "theme": "defense_aerospace",
-        "name": "Defense & Aerospace",
-        "stage": "BROADENING (text)",
-        "lit_sources": [
-          "altdata",
-          "edgar_scarcity"
-        ],
-        "n_lit": 2,
-        "n_available": 3,
-        "source_available": {
-          "physical": true,
-          "demand": false,
-          "guidance": false,
-          "altdata": true,
-          "edgar_scarcity": true
-        },
-        "earliness": 0.647,
-        "earliness_absent": false,
-        "earliness_available": true,
-        "n_earliness_legs": 3,
-        "physical_confirmed": false,
-        "heat": 0.431,
-        "score": 49.1,
-        "size_band": "WATCH",
-        "signals": [
-          "altdata",
-          "edgar_scarcity"
-        ],
-        "n_signals": 2,
-        "cross_surface": [
-          "edgar_scarcity"
-        ]
       }
     ],
-    "n_heating": 3,
+    "n_heating": 2,
     "max_sources": 5,
     "max_signals": 5,
     "meta_drivers": [],
@@ -21848,39 +21431,39 @@
     "note": "W4a rebuild: HEAT = n_lit_sources / n_available_sources [\u00d7 earliness when measured \u2014 dropped, not filled, when absent].  5 distinct data feeds (physical \u00b7 demand \u00b7 guidance \u00b7 altdata \u00b7 edgar_scarcity \u2014 the old subsector_scarcity + discovery_echo were one EDGAR parquet, now counted once). Dark sources leave the denominator \u2014 no outage penalty.  Earliness from engine/foresight_earliness.py (attention-based, Q3); absent below 2 usable legs \u2192 factor DROPPED (not laundered as neutral 0.5).  Physical numeric bonus \u00d71.15 when genuinely TIGHT/SOLD_OUT.  Threshold 0.40 PROVISIONAL.  Meta-driver cards emit for \u22653 co-heating same-cluster themes.  Cross-theme heats reflect agreement among AVAILABLE surfaces only \u2014 themes with different data coverage are not on a fully comparable scale."
   },
   "foresight_analyst": {
-    "regime_read": "The clearest early convergence appears in data-center power and cooling, where tightening physical conditions, accelerating customer demand, and raising guidance align. Defense and aerospace also shows a potentially early scarcity mechanism, but its physical signal remains text-only, so confidence is lower.",
-    "regime_read_zh": "\u5f53\u524d\u6700\u6e05\u6670\u7684\u65e9\u671f\u6c47\u805a\u51fa\u73b0\u5728\u6570\u636e\u4e2d\u5fc3\u7535\u529b\u4e0e\u51b7\u5374\uff1a\u5b9e\u4f53\u7ea6\u675f\u8d8b\u7d27\u3001\u5ba2\u6237\u9700\u6c42\u52a0\u901f\u4e0e\u7ba1\u7406\u5c42\u4e0a\u8c03\u6307\u5f15\u76f8\u4e92\u5370\u8bc1\u3002\u56fd\u9632\u4e0e\u822a\u7a7a\u822a\u5929\u4e5f\u5448\u73b0\u6f5c\u5728\u7684\u65e9\u671f\u7a00\u7f3a\u673a\u5236\uff0c\u4f46\u5b9e\u4f53\u4fe1\u53f7\u4ecd\u4ec5\u6765\u81ea\u6587\u672c\uff0c\u56e0\u6b64\u7f6e\u4fe1\u5ea6\u66f4\u4f4e\u3002",
+    "regime_read": "The clearest early convergence appears in data-center power and cooling, where tightening physical conditions, accelerating customer demand, and raising guidance align while revisions remain incomplete. Defense and aerospace shows a weaker but unusually early pre-revision pattern, although its scarcity evidence is still text-only and lacks numeric physical confirmation.",
+    "regime_read_zh": "\u5f53\u524d\u6700\u6e05\u6670\u7684\u65e9\u671f\u6c47\u805a\u51fa\u73b0\u5728\u6570\u636e\u4e2d\u5fc3\u7535\u529b\u4e0e\u51b7\u5374\uff1a\u5b9e\u4f53\u6761\u4ef6\u8d8b\u7d27\u3001\u5ba2\u6237\u9700\u6c42\u52a0\u901f\u548c\u7ba1\u7406\u5c42\u4e0a\u8c03\u6307\u5f15\u540c\u65f6\u51fa\u73b0\uff0c\u800c\u5206\u6790\u5e08\u4fee\u6b63\u5c1a\u672a\u5145\u5206\u5c55\u5f00\u3002\u56fd\u9632\u4e0e\u822a\u7a7a\u822a\u5929\u4e5f\u5448\u73b0\u8f83\u5f31\u4f46\u5f02\u5e38\u65e9\u671f\u7684\u4fee\u6b63\u524d\u5171\u632f\uff0c\u4e0d\u8fc7\u5176\u7a00\u7f3a\u6027\u8bc1\u636e\u4ecd\u4ec5\u6765\u81ea\u6587\u672c\uff0c\u5c1a\u7f3a\u4e4f\u6570\u503c\u5316\u5b9e\u4f53\u786e\u8ba4\u3002",
     "theses": [
       {
         "theme": "data_center_power",
-        "mechanism": "Accelerating customer demand is meeting tightening power-and-cooling constraints while management teams raise guidance, consistent with capex demand reaching constrained infrastructure providers before analyst revisions fully absorb it [demand] [physical] [guidance].",
-        "non_obvious": "The unusual pattern is simultaneous confirmation from physical conditions, customer demand, and management guidance while revision breadth remains incomplete; operational tightening appears to be reaching company outlooks before becoming a broad analyst consensus [physical] [demand] [guidance].",
+        "mechanism": "Accelerating customer capex is meeting tightening power-and-cooling capacity, giving management enough demand visibility to raise guidance before analyst revisions have fully broadened [demand] [physical] [guidance].",
+        "non_obvious": "The important pattern is not demand acceleration alone: physical tightening and guidance raises are occurring together while revision breadth remains only partial, suggesting operating evidence is moving ahead of broad analyst recognition [physical] [guidance] [revision_breadth].",
         "kill_criteria": [
-          "The physical bottleneck band loosens to NEUTRAL or weaker.",
-          "The demand band stops ACCELERATING.",
-          "The guidance band falls from RAISING to NEUTRAL or CUTTING.",
-          "Revision breadth broadens and subsequently rolls over while physical or demand confirmation weakens."
+          "The physical bottleneck band loosens to NEUTRAL.",
+          "The demand band falls from ACCELERATING.",
+          "The guidance band ceases to be RAISING or turns to cuts.",
+          "Revision breadth broadens and subsequently rolls over while physical tightening persists."
         ],
         "evidence": [
           {
-            "text": "physical: bottleneck band is TIGHTENING and physically confirmed",
+            "text": "[physical] bottleneck band is TIGHTENING and physically confirmed.",
             "ungrounded": true
           },
           {
-            "text": "demand: demand band is ACCELERATING",
+            "text": "[demand] demand band is ACCELERATING.",
             "ungrounded": true
           },
           {
-            "text": "guidance: guidance band is RAISING",
+            "text": "[guidance] guidance band is RAISING with multiple raisers.",
             "ungrounded": true
           },
           {
-            "text": "revisions: revision breadth remains incomplete",
+            "text": "[revision_breadth] analyst revisions are not yet fully broad.",
             "ungrounded": true
           }
         ],
         "evidence_display": [],
-        "dissent": "The board rationale says supply is not yet tight and nothing is actionable, so TIGHTENING may represent an emerging constraint rather than established scarcity [physical].",
+        "dissent": "The board's own rationale says supply is not yet tight and nothing is actionable, so TIGHTENING may represent an emerging constraint rather than established scarcity [rationale] [physical].",
         "confidence": "medium",
         "n_grounded": 0,
         "n_total_evidence": 4,
@@ -21888,35 +21471,34 @@
       },
       {
         "theme": "defense_aerospace",
-        "mechanism": "Government-award acceleration and patent activity are appearing alongside filing-derived subsector scarcity while revisions remain narrow, suggesting procurement and capacity pressure may be developing before broad analyst recognition [altdata] [edgar_scarcity].",
-        "non_obvious": "The hard-to-see pattern is that award acceleration and patent clustering coincide with scarcity language even though revisions are still narrow; operational and procurement evidence is moving together ahead of broad estimate participation [altdata] [edgar_scarcity].",
+        "mechanism": "Accelerating government awards and patent activity are appearing alongside filing-based subsector scarcity while revisions are only beginning to rise, consistent with awarded demand reaching constrained capacity before broad analyst recognition [altdata] [edgar_scarcity] [revision_breadth].",
+        "non_obvious": "The hard-to-see pattern is the combination of government-award acceleration, a patent cluster, and filing-language scarcity against still-narrow revisions; together they form a pre-revision capacity signal rather than a conventional guidance-led thesis [altdata] [edgar_scarcity] [revision_breadth] [guidance].",
         "kill_criteria": [
-          "Government-award acceleration disappears or reverses.",
-          "The patent cluster is not sustained by subsequent alternative-data observations.",
-          "The edgar-scarcity surface falls from TIGHT to NEUTRAL or weaker.",
-          "Numeric physical evidence becomes available and fails to confirm tightening.",
-          "Revisions broaden and then roll over without physical confirmation."
+          "Government-award acceleration disappears from the alt-data leg.",
+          "The edgar_scarcity signal falls to NEUTRAL.",
+          "Numeric physical evidence, once available, contradicts the text-based TIGHT reading.",
+          "Revision breadth broadens and then rolls over without guidance improving from NEUTRAL."
         ],
         "evidence": [
           {
-            "text": "altdata: government-award acceleration and a patent cluster",
+            "text": "[altdata] government-award acceleration and a patent cluster are present.",
             "ungrounded": true
           },
           {
-            "text": "edgar_scarcity: filing language indicates TIGHT conditions",
+            "text": "[edgar_scarcity] filing evidence indicates subsector scarcity.",
             "ungrounded": true
           },
           {
-            "text": "revisions: revision breadth remains narrow",
+            "text": "[revision_breadth] revisions are rising from a narrow base.",
             "ungrounded": true
           },
           {
-            "text": "physical: numeric confirmation is still absent",
+            "text": "[guidance] guidance remains NEUTRAL, preserving the pre-guidance character of the signal.",
             "ungrounded": true
           }
         ],
         "evidence_display": [],
-        "dissent": "The scarcity evidence is text-only and lacks numeric physical confirmation, so filing language and award activity may not translate into an actual capacity bottleneck [physical] [edgar_scarcity].",
+        "dissent": "Scarcity is text-only, physical confirmation is absent, and management guidance is neutral, so the apparent alignment may reflect filing language and procurement timing rather than a durable bottleneck [physical] [guidance] [edgar_scarcity].",
         "confidence": "low",
         "n_grounded": 0,
         "n_total_evidence": 4,
@@ -21924,12 +21506,12 @@
       }
     ],
     "confidence": "medium",
-    "asof": "2026-11-07",
+    "asof": "2026-11-08",
     "n_theses": 2,
     "disclaimer": "An AI reading of the desk's OWN deterministic convergence \u2014 checkable and forward-graded, never a price forecast."
   },
   "thesis_monitor": {
-    "asof": "2026-11-07",
+    "asof": "2026-11-08",
     "n_open": 12,
     "n_broken": 9,
     "n_weakening": 0,
@@ -21983,12 +21565,12 @@
         "llm_status": "INTACT",
         "llm_heat_at_open": 0.487,
         "llm_heat_now": 0.487,
-        "llm_opened_asof": "2026-11-07",
+        "llm_opened_asof": "2026-11-08",
         "llm_kill_criteria": [
-          "The physical bottleneck band loosens to NEUTRAL or weaker.",
-          "The demand band stops ACCELERATING.",
-          "The guidance band falls from RAISING to NEUTRAL or CUTTING.",
-          "Revision breadth broadens and subsequently rolls over while physical or demand confirmation weakens."
+          "Set the physical bottleneck band to NEUTRAL or LOOSENING while demand remains unchanged [physical].",
+          "Set the demand band to NEUTRAL or DECELERATING [demand].",
+          "Set the guidance band to NEUTRAL or CUTTING, or remove the current raisers without replacement [guidance].",
+          "Let revision breadth roll over while the physical, demand, and guidance legs fail to strengthen together [physical][demand][guidance]."
         ],
         "llm_broken_reasons": []
       },
@@ -22255,14 +21837,14 @@
         "n_criteria": 2,
         "llm_mechanism": null,
         "llm_status": "INTACT",
-        "llm_heat_at_open": 0.431,
-        "llm_heat_now": 0.431,
-        "llm_opened_asof": "2026-11-07",
+        "llm_heat_at_open": 0.324,
+        "llm_heat_now": 0.324,
+        "llm_opened_asof": "2026-11-08",
         "llm_kill_criteria": [
-          "Defense & Aerospace bottleneck band fails to convert from TIGHT (text) to TIGHTENING or TIGHT on a numeric real-time source",
-          "Edgar scarcity signal disappears or flips to an influx of new filers",
-          "Government award acceleration reverses or broadens to many small players instead of concentrating",
-          "Revisions broaden rapidly and then roll over, indicating the thesis is already priced"
+          "Remove or reverse the government-award acceleration and patent-cluster signal [altdata].",
+          "Set filing-derived scarcity to NEUTRAL or LOOSENING [edgar_scarcity].",
+          "Allow revisions to broaden and then roll over without numeric physical confirmation [edgar_scarcity].",
+          "Keep guidance NEUTRAL while the scarcity and award legs weaken rather than gain independent confirmation [guidance][altdata][edgar_scarcity]."
         ],
         "llm_broken_reasons": []
       },
@@ -23489,7 +23071,7 @@
     }
   },
   "ignition_radar": {
-    "as_of": "2026-11-07",
+    "as_of": "2026-11-08",
     "data_session": "2026-11-06",
     "state": "off",
     "k_count": 1,
@@ -23807,7 +23389,7 @@
       "n_qualifying": 32,
       "null": false,
       "floor": "state in igniting/running (pre-registered ALERT_STATES); empty when nothing clears \u2014 honest null",
-      "as_of": "2026-11-07"
+      "as_of": "2026-11-08"
     },
     "narrow_top": {
       "basket_id": "XLRE",
@@ -23821,7 +23403,7 @@
       "phase": null
     },
     "accruing": "accruing \u2014 display-only until >=30 broad-state grades + operator ruling. Forward-graded by engine/ignition_audit.py (US arm).",
-    "_timing_s": 2.39,
+    "_timing_s": 2.48,
     "forward_log": {
       "market": "us",
       "n_graded": 36,
@@ -24095,8 +23677,8 @@
   },
   "index_momentum": {
     "organ": "index_momentum.v1",
-    "as_of": "2026-11-07",
-    "data_as_of": "2026-11-06",
+    "as_of": "2026-11-08",
+    "data_as_of": "2026-11-09",
     "authority": {
       "rank": false,
       "size": false,
@@ -24186,18 +23768,6 @@
                 "quality_tag": "ordinary",
                 "us_confirm": false,
                 "global_washout_turn": false
-              },
-              {
-                "index": "SPY",
-                "grid": "2B",
-                "date": "2026-10-07",
-                "direction": "bull",
-                "depth_at_cross": -1.331,
-                "depth_pctile": 39.3,
-                "hist_vel3": 0.575,
-                "quality_tag": "ordinary",
-                "us_confirm": false,
-                "global_washout_turn": false
               }
             ]
           },
@@ -24239,18 +23809,6 @@
                 "quality_tag": "ordinary",
                 "us_confirm": false,
                 "global_washout_turn": false
-              },
-              {
-                "index": "SPY",
-                "grid": "W-FRI",
-                "date": "2026-10-09",
-                "direction": "bull",
-                "depth_at_cross": 1.392,
-                "depth_pctile": 57.8,
-                "hist_vel3": 0.354,
-                "quality_tag": "ordinary",
-                "us_confirm": false,
-                "global_washout_turn": false
               }
             ]
           }
@@ -24274,20 +23832,7 @@
             "pctile_window_days": 3528,
             "fast_reclaim": false,
             "as_of": "2026-11-06",
-            "recent_events": [
-              {
-                "index": "QQQ",
-                "grid": "1D",
-                "date": "2026-10-09",
-                "direction": "bear",
-                "depth_at_cross": 5.684,
-                "depth_pctile": 83.3,
-                "hist_vel3": -1.174,
-                "quality_tag": "ordinary",
-                "us_confirm": false,
-                "global_washout_turn": false
-              }
-            ]
+            "recent_events": []
           },
           "2B": {
             "macd": -7.034,
@@ -24552,18 +24097,6 @@
                 "quality_tag": "ordinary",
                 "us_confirm": false,
                 "global_washout_turn": false
-              },
-              {
-                "index": "SOXX",
-                "grid": "1D",
-                "date": "2026-10-08",
-                "direction": "bear",
-                "depth_at_cross": 6.002,
-                "depth_pctile": 87.5,
-                "hist_vel3": -1.347,
-                "quality_tag": "ordinary",
-                "us_confirm": false,
-                "global_washout_turn": false
               }
             ]
           },
@@ -24676,18 +24209,6 @@
                 "depth_at_cross": 4.782,
                 "depth_pctile": 79.6,
                 "hist_vel3": -0.314,
-                "quality_tag": "ordinary",
-                "us_confirm": false,
-                "global_washout_turn": false
-              },
-              {
-                "index": "MAG7",
-                "grid": "1D",
-                "date": "2026-10-08",
-                "direction": "bear",
-                "depth_at_cross": 4.707,
-                "depth_pctile": 79.2,
-                "hist_vel3": 0.101,
                 "quality_tag": "ordinary",
                 "us_confirm": false,
                 "global_washout_turn": false
@@ -24819,18 +24340,6 @@
                 "quality_tag": "trap_zone",
                 "us_confirm": false,
                 "global_washout_turn": false
-              },
-              {
-                "index": "^HSI",
-                "grid": "1D",
-                "date": "2026-10-09",
-                "direction": "bull",
-                "depth_at_cross": -6.428,
-                "depth_pctile": 11.5,
-                "hist_vel3": 0.466,
-                "quality_tag": "ordinary",
-                "us_confirm": false,
-                "global_washout_turn": false
               }
             ]
           },
@@ -24944,18 +24453,6 @@
                 "depth_pctile": 28.6,
                 "hist_vel3": -0.98,
                 "quality_tag": "ordinary",
-                "us_confirm": false,
-                "global_washout_turn": false
-              },
-              {
-                "index": "^HSCE",
-                "grid": "1D",
-                "date": "2026-10-09",
-                "direction": "bull",
-                "depth_at_cross": -4.551,
-                "depth_pctile": 20.7,
-                "hist_vel3": 0.478,
-                "quality_tag": "trap_zone",
                 "us_confirm": false,
                 "global_washout_turn": false
               }
@@ -25086,42 +24583,6 @@
                 "quality_tag": "trap_zone",
                 "us_confirm": false,
                 "global_washout_turn": false
-              },
-              {
-                "index": "3033.HK",
-                "grid": "1D",
-                "date": "2026-10-09",
-                "direction": "bull",
-                "depth_at_cross": -5.489,
-                "depth_pctile": 14.8,
-                "hist_vel3": 0.368,
-                "quality_tag": "trap_zone",
-                "us_confirm": false,
-                "global_washout_turn": false
-              },
-              {
-                "index": "3033.HK",
-                "grid": "1D",
-                "date": "2026-10-08",
-                "direction": "bear",
-                "depth_at_cross": -6.145,
-                "depth_pctile": 10.8,
-                "hist_vel3": 0.262,
-                "quality_tag": "ordinary",
-                "us_confirm": false,
-                "global_washout_turn": false
-              },
-              {
-                "index": "3033.HK",
-                "grid": "1D",
-                "date": "2026-10-07",
-                "direction": "bull",
-                "depth_at_cross": -5.687,
-                "depth_pctile": 13.1,
-                "hist_vel3": 0.618,
-                "quality_tag": "trap_zone",
-                "us_confirm": false,
-                "global_washout_turn": false
               }
             ]
           },
@@ -25241,20 +24702,7 @@
             "pctile_window_days": 3214,
             "fast_reclaim": false,
             "as_of": "2026-11-04",
-            "recent_events": [
-              {
-                "index": "000001.SS",
-                "grid": "3B",
-                "date": "2026-10-09",
-                "direction": "bear",
-                "depth_at_cross": -5.263,
-                "depth_pctile": 21.0,
-                "hist_vel3": -0.564,
-                "quality_tag": "trap_zone",
-                "us_confirm": false,
-                "global_washout_turn": false
-              }
-            ]
+            "recent_events": []
           },
           "W-FRI": {
             "macd": -11.545,
@@ -25446,17 +24894,17 @@
         "region": "INTL",
         "grids": {
           "1D": {
-            "macd": -5.42,
-            "signal": -5.369,
-            "hist": -0.051,
-            "hist_vel3": -1.209,
-            "k": 43.336,
-            "d": 61.058,
-            "depth_pctile": 19.325,
+            "macd": -5.751,
+            "signal": -5.497,
+            "hist": -0.254,
+            "hist_vel3": -1.283,
+            "k": 24.6,
+            "d": 43.277,
+            "depth_pctile": 17.698,
             "pctile_window_bars": 2520,
             "pctile_window_days": 3528,
             "fast_reclaim": false,
-            "as_of": "2026-11-06",
+            "as_of": "2026-11-09",
             "recent_events": [
               {
                 "index": "^KS11",
@@ -25479,18 +24927,6 @@
                 "depth_pctile": 9.8,
                 "hist_vel3": 1.71,
                 "quality_tag": "washout_turn",
-                "us_confirm": false,
-                "global_washout_turn": false
-              },
-              {
-                "index": "^KS11",
-                "grid": "1D",
-                "date": "2026-10-07",
-                "direction": "bear",
-                "depth_at_cross": 0.986,
-                "depth_pctile": 57.0,
-                "hist_vel3": -0.322,
-                "quality_tag": "ordinary",
                 "us_confirm": false,
                 "global_washout_turn": false
               }
@@ -25573,17 +25009,17 @@
         "region": "INTL",
         "grids": {
           "1D": {
-            "macd": -13.7,
-            "signal": -11.068,
-            "hist": -2.633,
-            "hist_vel3": -0.655,
-            "k": 0.0,
-            "d": 0.0,
-            "depth_pctile": 0.794,
+            "macd": -13.407,
+            "signal": -11.848,
+            "hist": -1.56,
+            "hist_vel3": 0.592,
+            "k": 17.93,
+            "d": 5.977,
+            "depth_pctile": 0.952,
             "pctile_window_bars": 2520,
             "pctile_window_days": 3528,
             "fast_reclaim": false,
-            "as_of": "2026-11-06",
+            "as_of": "2026-11-09",
             "recent_events": [
               {
                 "index": "^TWII",
@@ -25600,17 +25036,17 @@
             ]
           },
           "2B": {
-            "macd": -7.982,
-            "signal": -5.641,
-            "hist": -2.341,
-            "hist_vel3": -1.345,
-            "k": 0.0,
-            "d": 5.457,
-            "depth_pctile": 7.698,
+            "macd": -9.129,
+            "signal": -6.804,
+            "hist": -2.325,
+            "hist_vel3": -0.984,
+            "k": 2.051,
+            "d": 3.412,
+            "depth_pctile": 4.365,
             "pctile_window_bars": 2520,
             "pctile_window_days": 3528,
             "fast_reclaim": false,
-            "as_of": "2026-11-05",
+            "as_of": "2026-11-09",
             "recent_events": [
               {
                 "index": "^TWII",
@@ -25677,18 +25113,6 @@
                 "quality_tag": "ordinary",
                 "us_confirm": false,
                 "global_washout_turn": false
-              },
-              {
-                "index": "^TWII",
-                "grid": "W-FRI",
-                "date": "2026-10-09",
-                "direction": "bull",
-                "depth_at_cross": -0.524,
-                "depth_pctile": 42.7,
-                "hist_vel3": 0.812,
-                "quality_tag": "ordinary",
-                "us_confirm": false,
-                "global_washout_turn": false
               }
             ]
           }
@@ -25708,7 +25132,7 @@
       "fresh_crossers": []
     },
     "n_roster": 13,
-    "_timing_s": 2.06
+    "_timing_s": 2.04
   },
   "vol_shock": {
     "score": 45.1,
@@ -25981,14 +25405,14 @@
           "key": "A6_crypto",
           "label": "Crypto Fear & Greed (cross-asset)",
           "label_zh": "\u52a0\u5bc6\u6050\u60e7\u8d2a\u5a6a",
-          "value": 28,
+          "value": 29,
           "sub": null,
           "weight": 0.0,
           "available": false,
           "scored": false,
           "points": null,
-          "note": "crypto Fear&Greed 28 (fear) \u00b7 cross-asset confirm, scored 0",
-          "note_zh": "\u52a0\u5bc6\u6050\u60e7\u8d2a\u5a6a 28\uff08\u6050\u60e7\uff09\u00b7 \u8de8\u8d44\u4ea7\u786e\u8ba4\uff0c\u8ba1 0",
+          "note": "crypto Fear&Greed 29 (fear) \u00b7 cross-asset confirm, scored 0",
+          "note_zh": "\u52a0\u5bc6\u6050\u60e7\u8d2a\u5a6a 29\uff08\u6050\u60e7\uff09\u00b7 \u8de8\u8d44\u4ea7\u786e\u8ba4\uff0c\u8ba1 0",
           "color": "#888",
           "pill": "accruing",
           "thin": false
@@ -28430,59 +27854,59 @@
       {
         "ticker": "GC=F",
         "name": "Gold",
-        "price": 4074.9,
+        "price": 4131.9,
         "above50": false,
         "above200": false,
-        "pct_vs_50dma": -3.2,
-        "pct_vs_200dma": -8.3,
-        "rsi14": 48.0,
+        "pct_vs_50dma": -1.7,
+        "pct_vs_200dma": -7.0,
+        "rsi14": 52.0,
         "macd_pos": true,
-        "off_52w_high_pct": -23.4,
-        "season_this": "Nov: +1.4% avg, up 59% of years (n=27)",
-        "season_this_zh": "11\u6708\uff1a\u5e73\u5747 +1.4%\uff0c59% \u7684\u5e74\u4efd\u4e0a\u6da8\uff08n=27\uff09",
-        "mom_60d_pct": -13.2
+        "off_52w_high_pct": -22.3,
+        "season_this": "Nov: +1.5% avg, up 59% of years (n=27)",
+        "season_this_zh": "11\u6708\uff1a\u5e73\u5747 +1.5%\uff0c59% \u7684\u5e74\u4efd\u4e0a\u6da8\uff08n=27\uff09",
+        "mom_60d_pct": -11.2
       },
       {
         "ticker": "CL=F",
         "name": "Crude Oil",
-        "price": 90.83,
+        "price": 91.04,
         "above50": false,
         "above200": true,
-        "pct_vs_50dma": -5.7,
-        "pct_vs_200dma": 2.0,
+        "pct_vs_50dma": -5.4,
+        "pct_vs_200dma": 2.1,
         "rsi14": 42.0,
         "macd_pos": false,
-        "off_52w_high_pct": -19.6,
+        "off_52w_high_pct": -19.4,
         "season_this": "Nov: -3.0% avg, up 41% of years (n=27)",
         "season_this_zh": "11\u6708\uff1a\u5e73\u5747 -3.0%\uff0c41% \u7684\u5e74\u4efd\u4e0a\u6da8\uff08n=27\uff09",
-        "mom_60d_pct": 10.3
+        "mom_60d_pct": 10.7
       },
       {
         "ticker": "HG=F",
         "name": "Copper",
-        "price": 6.22,
+        "price": 6.33,
         "above50": false,
-        "above200": false,
-        "pct_vs_50dma": -5.2,
-        "pct_vs_200dma": -0.8,
-        "rsi14": 35.0,
+        "above200": true,
+        "pct_vs_50dma": -3.3,
+        "pct_vs_200dma": 1.0,
+        "rsi14": 43.0,
         "macd_pos": false,
-        "off_52w_high_pct": -8.6,
-        "season_this": "Nov: +1.4% avg, up 52% of years (n=27)",
-        "season_this_zh": "11\u6708\uff1a\u5e73\u5747 +1.4%\uff0c52% \u7684\u5e74\u4efd\u4e0a\u6da8\uff08n=27\uff09",
-        "mom_60d_pct": -7.3
+        "off_52w_high_pct": -6.9,
+        "season_this": "Nov: +1.5% avg, up 52% of years (n=27)",
+        "season_this_zh": "11\u6708\uff1a\u5e73\u5747 +1.5%\uff0c52% \u7684\u5e74\u4efd\u4e0a\u6da8\uff08n=27\uff09",
+        "mom_60d_pct": -3.9
       },
       {
         "ticker": "DX-Y.NYB",
         "name": "US Dollar",
-        "price": 102.3,
+        "price": 102.16,
         "above50": true,
         "above200": true,
-        "pct_vs_50dma": 1.1,
-        "pct_vs_200dma": 2.4,
-        "rsi14": 59.0,
+        "pct_vs_50dma": 0.9,
+        "pct_vs_200dma": 2.2,
+        "rsi14": 56.0,
         "macd_pos": false,
-        "off_52w_high_pct": -0.3,
+        "off_52w_high_pct": -0.4,
         "season_this": "Nov: +0.2% avg, up 54% of years (n=56)",
         "season_this_zh": "11\u6708\uff1a\u5e73\u5747 +0.2%\uff0c54% \u7684\u5e74\u4efd\u4e0a\u6da8\uff08n=56\uff09",
         "mom_60d_pct": 3.3
@@ -28561,9 +27985,9 @@
   },
   "freshness": {
     "asof": "2026-11-06",
-    "built_at": "2026-11-08T06:18:04Z",
-    "age_days": 2,
-    "age_sessions": 0,
+    "built_at": "2026-11-09T06:33:45Z",
+    "age_days": 3,
+    "age_sessions": 1,
     "max_age_sessions": 1,
     "stale": false,
     "note": "contract asof vs build time; the daily build lands post-close (22:40 UTC) so a consumer reading intraday should expect asof = prior session \u2014 recompute age against built_at at read time."
