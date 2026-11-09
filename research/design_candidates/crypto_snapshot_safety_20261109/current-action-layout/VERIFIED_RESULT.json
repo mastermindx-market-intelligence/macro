@@ -1,0 +1,78 @@
+{
+  "command": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_actions_wrap_with_separate_touch_targets",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_disabled_current_save_is_distinct_and_inert",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_mutation_feedback_never_covers_controls",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_feedback_timeout_keeps_action_geometry_and_reading",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_failure_feedback_does_not_scroll_when_it_already_fits",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_saved_remove_failure_feedback_is_visible_without_rebuilding",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_confirmed_mutation_preserves_the_reader",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_idempotent_mutation_keeps_reading_without_another_write",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_failed_mutation_does_not_rebuild_or_replay",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_mutation_uses_fresh_reading_when_history_persistence_fails",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_mutation_reading_persistence_yields_to_a_newer_choice",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_expired_remove_heading_callback_keeps_its_new_destination",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_mutation_inside_a_render_focus_callback_retains_its_new_intent",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_mutation_yields_its_ui_when_storage_observes_a_new_history_entry",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_mutation_with_unqualified_reading_still_reconciles_controls",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_review_returns_to_the_same_case_and_reading",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_locale_preserves_disclosure_focus_and_reading",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_scenario_retains_its_existing_reading_order",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_newer_focus_during_confirmation_survives",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_completion_focus_callbacks_keep_their_new_panel",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_programmatic_save_preserves_unrelated_focus_and_stale_save_stays_safe",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_snapshot_buttons_keep_their_visible_intent_across_tabs",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_confirmed_remove_can_be_followed_by_an_unreadable_list",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_frozen_remove_keeps_semantic_focus_across_locale",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_saved_locale_keeps_disclosure_focus_and_reading_position",
+    "tests/test_crypto_intelligence_r4_browser.py::test_r4_current_return_survives_unreadable_saved_storage",
+    "--tb=short",
+    "--junitxml=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/current-action-layout-verified/junit.xml",
+    "--basetemp=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/current-action-layout-verified/pytest-temp"
+  ],
+  "exit_code": 0,
+  "seconds": 62.121,
+  "source_parent": "f2cb62ef2e19abbef7ebe218030c110276953912",
+  "runtime_asset_version": "62cf3bb534f8",
+  "candidate_inputs": {
+    "templates/crypto_intelligence_r4.js": {
+      "bytes": 76741,
+      "sha256": "9b024c8c7f25d1d5fb17bbeaf5fe6b11d10b612adc5566e2db9a1db8d2dcefe1",
+      "blob": "9788900c770e49e03d346e030791edbd1485f442"
+    },
+    "tests/test_crypto_intelligence_r4_browser.py": {
+      "bytes": 189244,
+      "sha256": "2bfd14319f0f9d7cbd051b6d1d46a5899461be1e859ffcbf3cddfdb1dd1edc4d",
+      "blob": "26df9aedbdd1796592ac06ee69a25846cd8c385f"
+    },
+    "site/crypto-r4.html": {
+      "bytes": 129566,
+      "sha256": "2cf7940059cbfb7fbf5223aa799ae049a2893cd4822002828e177644e95c5fd9",
+      "blob": "38590d419ad00b651ce167d917ed8145ff477411"
+    },
+    "site/vector-r4.html": {
+      "bytes": 129565,
+      "sha256": "eac2e85231954801ceb0a00dfaa385f53bc796361f5b33a0c347050e502d6c73",
+      "blob": "f15697696e4b714dedaff930da8a29f83c21daae"
+    },
+    "site/crypto_intelligence_r4.js": {
+      "bytes": 76741,
+      "sha256": "9b024c8c7f25d1d5fb17bbeaf5fe6b11d10b612adc5566e2db9a1db8d2dcefe1",
+      "blob": "9788900c770e49e03d346e030791edbd1485f442"
+    },
+    "site/crypto_intelligence_r4.css": {
+      "bytes": 23538,
+      "sha256": "a8bdd3cd786ebb9d31868abee028d3cc7341565fbd7a787ffe984e526421487a",
+      "blob": "9963957f7814baa072b7c13dedf531625621acd2"
+    },
+    "templates/crypto_intelligence_r4.css": {
+      "bytes": 23538,
+      "sha256": "a8bdd3cd786ebb9d31868abee028d3cc7341565fbd7a787ffe984e526421487a",
+      "blob": "9963957f7814baa072b7c13dedf531625621acd2"
+    }
+  }
+}

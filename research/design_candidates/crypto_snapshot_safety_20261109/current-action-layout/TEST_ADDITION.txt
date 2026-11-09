@@ -1,0 +1,208 @@
+
+
+
+# Current actions must remain distinct and feedback must leave every control usable.
+def _current_action_geometry(page):
+    return page.locator("#cri-dialog").evaluate("""dialog => {
+      const box=n=>{const r=n.getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height,right:r.right,bottom:r.bottom};};
+      const feedback=document.getElementById('cri-toast'), bounds=dialog.getBoundingClientRect();
+      return {dialog:box(dialog),header:box(dialog.querySelector('.cri-dialog-header')),
+        visibleTop:Math.max(bounds.top+dialog.clientTop,dialog.querySelector('.cri-dialog-header').getBoundingClientRect().bottom),
+        visibleBottom:bounds.top+dialog.clientTop+dialog.clientHeight,
+        scroll:dialog.scrollTop,windowScroll:window.scrollY,
+        review:box(dialog.querySelector('[data-drawer-focus="review"]')),
+        snapshot:dialog.querySelector('[data-snapshot-action]')?box(dialog.querySelector('[data-snapshot-action]')):null,
+        demand:box(dialog.querySelector('[data-drawer-focus="demand-evidence"]')),
+        feedback:box(feedback),feedbackHidden:feedback.hidden,
+        controls:[...dialog.querySelectorAll('button,a,input,select,summary')].filter(n=>n.getClientRects().length && !n.closest('[hidden]')).map(box)};
+    }""")
+
+
+def _assert_feedback_clear(page, *, fully_visible=False):
+    assert page.locator("#cri-toast").count() == 1
+    assert page.locator('#cri-dialog [role="status"][aria-live="polite"]').count() == 1
+    assert page.locator("#cri-toast").is_visible()
+    geometry = _current_action_geometry(page)
+    feedback = geometry["feedback"]
+    for control in geometry["controls"]:
+        overlap_width = min(feedback["right"], control["right"]) - max(feedback["x"], control["x"])
+        overlap_height = min(feedback["bottom"], control["bottom"]) - max(feedback["y"], control["y"])
+        assert overlap_width <= 1 or overlap_height <= 1, (feedback, control)
+    assert feedback["y"] >= geometry["demand"]["bottom"] + 8
+    if fully_visible:
+        assert feedback["y"] >= geometry["visibleTop"] - 1
+        assert feedback["bottom"] <= geometry["visibleBottom"] + 1
+        active = page.evaluate("""() => {const r=document.activeElement.getBoundingClientRect();return {top:r.top,bottom:r.bottom};}""")
+        assert active["top"] >= geometry["visibleTop"] - 1
+        assert active["bottom"] <= geometry["visibleBottom"] + 1
+    return geometry
+
+
+@pytest.mark.parametrize("lang,width", [("en", 320), ("zh", 320), ("en", 390), ("zh", 390), ("en", 1440)])
+def test_r4_current_actions_wrap_with_separate_touch_targets(snapshot_page, lang, width):
+    page = snapshot_page(lang, width)
+    page.set_viewport_size({"width": width, "height": 600})
+    _open_scenario(page)
+    geometry = _current_action_geometry(page)
+    review, save, demand = geometry["review"], geometry["snapshot"], geometry["demand"]
+    assert review["height"] >= 48 and save["height"] >= 48 and demand["height"] >= 44
+    if abs(review["y"] - save["y"]) <= 1:
+        assert save["x"] - review["right"] >= 11.9
+    else:
+        assert save["y"] - review["bottom"] >= 11.9
+    assert demand["y"] - max(review["bottom"], save["bottom"]) >= 11.9
+    assert page.evaluate("document.documentElement.scrollWidth <= innerWidth")
+    assert page.locator("#cri-dialog").evaluate("n => n.scrollWidth <= n.clientWidth + 1")
+    page.locator('[data-drawer-focus="review"]').focus()
+    page.keyboard.press("Tab")
+    assert page.locator('[data-snapshot-action="save"]').evaluate("n => document.activeElement===n")
+    page.keyboard.press("Tab")
+    assert page.locator('[data-drawer-focus="demand-evidence"]').evaluate("n => document.activeElement===n")
+    assert _writes(page) == 0
+    _capture(page, f"current-actions-{lang}-{width}")
+
+
+@pytest.mark.parametrize("lang,width", [("en", 390), ("zh", 320)])
+def test_r4_disabled_current_save_is_distinct_and_inert(snapshot_page, lang, width):
+    page = snapshot_page(lang, width, at="2026-12-01T12:00:00Z")
+    page.set_viewport_size({"width": width, "height": 600})
+    _open_scenario(page)
+    save, review = page.locator('[data-snapshot-action="save"]'), page.locator('[data-drawer-focus="review"]')
+    assert save.is_disabled() and review.is_enabled()
+    style = "n => {const s=getComputedStyle(n);return {background:s.backgroundColor,color:s.color,cursor:s.cursor,filter:s.filter};}"
+    before, reference = save.evaluate(style), review.evaluate(style)
+    assert before["background"] != reference["background"] and before["color"] != reference["color"]
+    assert before["cursor"] == "not-allowed"
+    save.hover(force=True)
+    assert save.evaluate(style) == before
+    before_url, before_raw = page.url, _raw(page)
+    save.evaluate("n => n.click()")
+    assert _writes(page) == 0 and _raw(page) == before_raw and page.url == before_url
+    review.focus()
+    page.keyboard.press("Tab")
+    assert page.locator('[data-drawer-focus="demand-evidence"]').evaluate("n => document.activeElement===n")
+    assert page.locator('[data-drawer-focus="demand-evidence"]').is_enabled()
+    _capture(page, f"current-actions-disabled-{lang}-{width}")
+
+
+@pytest.mark.parametrize("outcome", ["save", "remove", "remove-expired", "unreadable", "unconfirmed"])
+@pytest.mark.parametrize("lang,width", [("en", 390), ("zh", 320)])
+def test_r4_mutation_feedback_never_covers_controls(snapshot_page, outcome, lang, width):
+    page = snapshot_page(lang, width, at="2026-12-01T12:00:00Z" if outcome == "remove-expired" else "2026-10-18T12:00:00Z")
+    page.set_viewport_size({"width": width, "height": 600})
+    _seed(page, [_frozen(_current_source(page, 30))] if outcome.startswith("remove") else [])
+    action, before_scroll = _current_mutation_reader(page, "remove" if outcome.startswith("remove") else "save", lang)
+    before_url, before_window = page.url, page.evaluate("window.scrollY")
+    page.evaluate("window.__originalFeedback=document.getElementById('cri-toast')")
+    if outcome == "unreadable":
+        page.evaluate("""() => {Storage.prototype.getItem=function(k){
+          if(k===__snapshotKey)throw new Error('Synthetic unreadable collection');
+          return __snapshotNativeGet.call(this,k);
+        };}""")
+    elif outcome == "unconfirmed":
+        page.evaluate("""() => {Storage.prototype.setItem=function(k,v){
+          if(k===__snapshotKey){__snapshotWrites+=1;return;}
+          return __snapshotNativeSet.call(this,k,v);
+        };}""")
+    action.click()
+    assert page.evaluate("__originalFeedback===document.getElementById('cri-toast') && __originalFeedback.isConnected")
+    geometry = _assert_feedback_clear(page, fully_visible=outcome in ("unreadable", "unconfirmed"))
+    assert _writes(page) == (0 if outcome == "unreadable" else 1)
+    assert page.url == before_url and page.evaluate("window.scrollY") == before_window
+    assert page.locator("#cri-dialog-body details").evaluate("n => n.open")
+    if outcome in ("unreadable", "unconfirmed"):
+        assert page.locator('[data-snapshot-action="save"]').evaluate("n => document.activeElement===n")
+        assert geometry["scroll"] >= before_scroll
+        if geometry["scroll"] > before_scroll + 1:
+            assert abs(geometry["feedback"]["bottom"] - geometry["visibleBottom"]) <= 2
+    else:
+        assert abs(geometry["scroll"] - before_scroll) <= 1
+        expected = "#cri-dialog-title" if outcome == "remove-expired" else '[data-snapshot-action="' + ("remove" if outcome == "save" else "save") + '"]'
+        assert page.locator(expected).evaluate("n => document.activeElement===n")
+    if outcome == "unconfirmed":
+        _assert_uncertain(page, lang)
+    # A deliberate read of successful feedback is separate from automatic completion.
+    page.locator("#cri-toast").scroll_into_view_if_needed()
+    _assert_feedback_clear(page)
+    if outcome in ("save", "remove-expired", "unconfirmed"):
+        _capture(page, f"current-feedback-{outcome}-{lang}-{width}")
+
+
+@pytest.mark.parametrize("lang,width", [("en", 390), ("zh", 320)])
+def test_r4_feedback_timeout_keeps_action_geometry_and_reading(snapshot_page, lang, width):
+    page = snapshot_page(lang, width)
+    page.set_viewport_size({"width": width, "height": 600})
+    action, _ = _current_mutation_reader(page, "save", lang)
+    action.click()
+    page.locator("#cri-toast").scroll_into_view_if_needed()
+    page.locator('[data-drawer-focus="demand-evidence"]').evaluate("n => n.focus({preventScroll:true})")
+    page.locator("#cri-dialog").evaluate("n => n.scrollTop=n.scrollHeight")
+    before = _assert_feedback_clear(page, fully_visible=True)
+    page.wait_for_function("document.getElementById('cri-toast').hidden", timeout=7000)
+    after = _current_action_geometry(page)
+    assert not page.locator("#cri-toast").is_visible()
+    assert after["feedback"]["height"] == before["feedback"]["height"] > 0
+    assert abs(after["scroll"] - before["scroll"]) <= 1
+    for control in ("review", "snapshot", "demand"):
+        assert after[control] == before[control]
+    assert page.locator('[data-drawer-focus="demand-evidence"]').evaluate("n => document.activeElement===n")
+    assert _writes(page) == 1
+
+
+@pytest.mark.parametrize("failure", ["unreadable", "unconfirmed"])
+@pytest.mark.parametrize("lang,width", [("en", 390), ("zh", 320)])
+def test_r4_failure_feedback_does_not_scroll_when_it_already_fits(snapshot_page, failure, lang, width):
+    page = snapshot_page(lang, width)
+    page.set_viewport_size({"width": width, "height": 1500})
+    _open_scenario(page)
+    page.locator("#cri-dialog-body summary").click()
+    action = page.locator('[data-snapshot-action="save"]')
+    action.focus()
+    before = page.locator("#cri-dialog").evaluate("n => n.scrollTop")
+    assert before == 0
+    if failure == "unreadable":
+        page.evaluate("""() => {Storage.prototype.getItem=function(k){
+          if(k===__snapshotKey)throw new Error('Synthetic unreadable collection');
+          return __snapshotNativeGet.call(this,k);
+        };}""")
+    else:
+        page.evaluate("""() => {Storage.prototype.setItem=function(k,v){
+          if(k===__snapshotKey){__snapshotWrites+=1;return;}
+          return __snapshotNativeSet.call(this,k,v);
+        };}""")
+    action.click()
+    _assert_feedback_clear(page, fully_visible=True)
+    assert page.locator("#cri-dialog").evaluate("n => n.scrollTop") == before
+    assert action.evaluate("n => document.activeElement===n")
+    assert _writes(page) == (0 if failure == "unreadable" else 1)
+
+
+@pytest.mark.parametrize("lang,width", [("en", 390), ("zh", 320)])
+def test_r4_saved_remove_failure_feedback_is_visible_without_rebuilding(snapshot_page, lang, width):
+    page = snapshot_page(lang, width)
+    page.set_viewport_size({"width": width, "height": 600})
+    target = _frozen(_current_source(page, 30))
+    _seed(page, [target])
+    _open_saved(page, target["revision"])
+    action = page.locator('[data-snapshot-action="remove"]')
+    action.scroll_into_view_if_needed()
+    action.focus()
+    old = action.element_handle()
+    before_html, before_raw, before_url = page.locator("#cri-dialog-body").inner_html(), _raw(page), page.url
+    page.evaluate("""() => {Storage.prototype.setItem=function(k,v){
+      if(k===__snapshotKey){__snapshotWrites+=1;return;}
+      return __snapshotNativeSet.call(this,k,v);
+    };}""")
+    action.click()
+    assert _writes(page) == 1 and _raw(page) == before_raw and page.url == before_url
+    assert page.locator("#cri-dialog-body").inner_html() == before_html
+    assert old.evaluate("n => n.isConnected && document.activeElement===n")
+    _assert_uncertain(page, lang)
+    box = page.locator("#cri-dialog").evaluate("""dialog=>{
+      const r=dialog.getBoundingClientRect(),f=document.getElementById('cri-toast').getBoundingClientRect();
+      const a=document.activeElement.getBoundingClientRect(),h=dialog.querySelector('.cri-dialog-header').getBoundingClientRect();
+      return {top:r.top+dialog.clientTop,bottom:r.top+dialog.clientTop+dialog.clientHeight,header:h.bottom,
+        feedback:{top:f.top,bottom:f.bottom},action:{top:a.top,bottom:a.bottom}};
+    }""")
+    assert box["feedback"]["top"] >= box["header"] and box["feedback"]["bottom"] <= box["bottom"] + 1
+    assert box["action"]["top"] >= box["header"] and box["action"]["bottom"] <= box["feedback"]["top"] - 8

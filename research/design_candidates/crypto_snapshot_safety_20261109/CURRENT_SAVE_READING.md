@@ -1,5 +1,7 @@
 # Current Save/Remove: retain the reader
 
+> **Later action-layout extension:** [Current actions and feedback](CURRENT_ACTIONS.md) retains confirmed/idempotent reading continuity and deliberately refines failure visibility. When the original action still owns the reader, a failure may minimally scroll the same drawer to reveal its message while retaining the exact body, control, focus and disclosure. Historical proof below records the preceding phase's assertions; use the linked contract for the current failure behavior.
+
 ## User outcome
 
 Saving or removing a current case keeps the open Conditions and evidence disclosure and its reading position. The confirmed action becomes the opposite action, with keyboard focus on that usable control. If removal leaves a disabled Save control—for example, after expiry—focus goes to the case heading. The case stays on the same route and history entry.

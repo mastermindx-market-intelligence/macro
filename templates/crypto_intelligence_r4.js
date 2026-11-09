@@ -310,13 +310,24 @@
   function save(s, intent, trigger) {
     if (!s || typeof s.revision !== "string" || !s.revision ||
         (intent !== "save" && intent !== "remove")) return;
-    var actionUrl = location.href, actionLang = zh(), actionHistoryLength = history.length, panel = state().params.get("panel");
+    var actionUrl = location.href, actionLang = zh(), actionHistory = historySignature(), actionHistoryLength = history.length, panel = state().params.get("panel");
     var ownedFocus = document.activeElement === trigger;
     function ownsAction() {
       return location.href === actionUrl && zh() === actionLang && history.length === actionHistoryLength &&
         trigger && trigger.isConnected && body.contains(trigger);
     }
-    function report(message) { if (ownsAction()) toast(message); }
+    function report(message) {
+      if (!ownsAction()) return;
+      toast(message);
+      if (!ownedFocus || document.activeElement !== trigger || !ownsAction() || historySignature() !== actionHistory) return;
+      var feedback = document.getElementById("cri-toast").getBoundingClientRect();
+      var frame = dialog.getBoundingClientRect(), header = dialog.querySelector(".cri-dialog-header").getBoundingClientRect();
+      var top = Math.max(frame.top + dialog.clientTop, header.bottom);
+      var bottom = frame.top + dialog.clientTop + dialog.clientHeight;
+      // Failure has no changed action to signal its outcome; keep the message visible.
+      if (feedback.bottom > bottom) dialog.scrollTop += feedback.bottom - bottom;
+      else if (feedback.top < top) dialog.scrollTop += feedback.top - top;
+    }
     var collection = stored();
     if (!collection.ready) {
       report(t("Saved snapshots couldn’t be read. No changes were made.", "无法读取已存快照，未作任何更改。"));
@@ -602,22 +613,25 @@
     details.appendChild(node("p", t("Expires: ", "到期日：") + s.expires));
     details.appendChild(node("p", t("Levels use prior daily closes. They are research conditions, not official model invalidations.", "价位来自前期日收盘，属于研究条件，并非官方模型失效位。")));
     body.appendChild(details);
+    collection = collection === undefined ? stored() : collection;
+    if (!collection.ready) paragraph(t("Saved snapshots couldn’t be read.", "无法读取已存快照。")).className = "cri-warning";
+    var actions = node("div", null, "cri-drawer-actions cri-current-actions"); body.appendChild(actions);
     button(t("Historical review", "历史检验"), function () {
       open("memory:" + s.id, null, String(s.horizon_days), "review");
-    }).dataset.drawerFocus = "review";
-    collection = collection === undefined ? stored() : collection;
+    }, actions).dataset.drawerFocus = "review";
     if (!collection.ready) {
-      paragraph(t("Saved snapshots couldn’t be read.", "无法读取已存快照。")).className = "cri-warning";
-      button(t("Try reading again", "重试读取"), function () { apply(); }).dataset.drawerFocus = "storage-retry";
+      button(t("Try reading again", "重试读取"), function () { apply(); }, actions).dataset.drawerFocus = "storage-retry";
     } else {
       var saved = savedMatches(collection, s.revision).length > 0, intent = saved ? "remove" : "save";
-      var saveButton = button(saved ? t("Remove snapshot", "移除快照") : t("Save snapshot", "保存快照"), function (event) { save(s, intent, event.currentTarget); });
+      var saveButton = button(saved ? t("Remove snapshot", "移除快照") : t("Save snapshot", "保存快照"), function (event) { save(s, intent, event.currentTarget); }, actions);
+      if (intent === "save") saveButton.classList.add("cri-btn-primary");
       saveButton.dataset.snapshotAction = intent; saveButton.dataset.drawerFocus = "snapshot-" + intent;
       saveButton.disabled = !saved && (expired(s) || s.state === "insufficient" || s.progress_state === "unavailable");
     }
+    var demandActions = node("div", null, "cri-drawer-actions cri-current-demand"); body.appendChild(demandActions);
     button(t("Inspect demand evidence", "查看需求证据"), function () {
       open("evidence:liquidity_flows", null, null, "demand-evidence");
-    }).dataset.drawerFocus = "demand-evidence";
+    }, demandActions).dataset.drawerFocus = "demand-evidence";
   }
   function comparisonBasis(asset) {
     // One bilingual copy owner: the server-rendered Markets disclosure.
