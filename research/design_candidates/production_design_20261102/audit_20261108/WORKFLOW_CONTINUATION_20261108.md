@@ -934,3 +934,41 @@ The next bounded review is looking for a navigation, comparison or recovery gap 
 This record proves applied native design changes, source inspection and scoped native visual checks. It does not establish functional browser navigation, runtime disclosure/keyboard behavior, real-account access, live data, model qualification, CI, merge or deployment.
 
 Continue demonstrated gaps with exact owner and acceptance mapping. Save/read back useful milestones and continue the parent Paper improvement mission; a phase completion is not DONE_WHEN.
+
+## 18. Shared Watchlists — unambiguous return and Chinese terminology
+
+**Applied and visually checked, 9 November 2026.** This is the twentieth existing Paper file improved in this audit: [Shared Watchlists and Save States](https://app.paper.design/file/01M6Y309YH7PJZMF23R7EDH3CM/p-1-0), with the newer [browser-retention companion](https://app.paper.design/file/01M6Y309YH7PJZMF23R7EDH3CM/p-2-0).
+
+The newer D23 work already distinguishes membership confirmation, a missing original list, an unavailable read, account changes and blocked browser retention. Its contract explicitly says that membership confirmation is not proof that the current request inserted a row. That newer work was preserved. This amendment corrects fourteen text elements: the Chinese translation of a research/trading “setup” as application settings, one inconsistent watchlist noun, and one redundant English return phrase. It does not change save intent, retention, retry, access, Undo eligibility or route behavior.
+
+| Node | Before | Applied |
+|---|---|---|
+| `2Q6-0` | 继续阅读 · 返回设置 | 继续阅读 |
+| `2PU-0` | 观察列表 | 关注列表 |
+| `2PJ-0` | Keep reading · return to setup | Keep reading |
+| `WF-0` | 当前设置仍保留。只更新了该股票的关注列表归属。 | 当前页面保持不变。只更新了该股票的关注列表归属。 |
+| `WS-0` | 未创建或修改持仓、提醒、订单或设置排序。 | 未创建或修改持仓、提醒、订单或原列表排序。 |
+| `WU-0` | 完成 · 返回设置 | 完成 · 继续阅读 |
+| `18P-0` | 继续阅读 · 返回设置 | 继续阅读 |
+| `18Q-0` | 未更改持仓、提醒、订单或设置排序。设计预览 · 未连接账户。 | 未更改持仓、提醒、订单或原列表排序。设计预览 · 未连接账户。 |
+| `1BF-0` | NVDA 已从「AI 研究」移除。当前股票设置和阅读位置保持不变。 | NVDA 已从「AI 研究」移除。当前页面和阅读位置保持不变。 |
+| `1BR-0` | 未更改持仓、提醒、订单或设置排序。 | 未更改持仓、提醒、订单或原列表排序。 |
+| `1BT-0` | 完成 · 返回设置 | 完成 · 继续阅读 |
+| `1EN-0` | 请求已发送。等待确认期间，当前设置仍保持可见。 | 请求已发送。等待确认期间，当前页面仍保持可见。 |
+| `1F4-0` | 继续阅读 · 返回设置 | 继续阅读 |
+| `1IA-0` | 继续阅读 · 返回设置 | 继续阅读 |
+
+### Native scope and preservation
+
+Affected roots are `VV-0` (saved ZH), `17N-0` (failed ZH), `1AV-0` (Undo confirmed ZH), `1E3-0` (pending ZH), `1HA-0` (access ZH), and `2RP-0` (newer EN390/ZH320 browser-retention recovery). All **226 parsed div nodes** in these six roots retain their IDs, parents and styles. Exact readback found only the fourteen listed text changes. There were no added or removed nodes.
+
+The newer read-state root `1S5-0`, account/context root `22L-0`, and D23 owner contract `2D4-0` are byte-identical before and after. Existing reference Undo designs remain separate from the new D23 proposal that grants no Undo entitlement.
+
+Native screenshots of the 320px retention phone `2NX-0` and saved reference `VV-0` show the revised labels and paragraphs fitting without clipping or horizontal overflow. “Continue reading” now names the user action without implying a settings route. The six exact affected working indicators were released with an observed applied receipt. No runtime or browser behavior test was executed for this text-only amendment.
+
+### Read-only reassessment and preserved work
+
+The current AI Build root `5VN-0` contains newer draft-mention review and completed-answer/missing-evidence guidance from another writer. Those additions already cover the suspected functional gaps and were not duplicated. The observed 42px overlap with `1MO-0` remains a layout issue: a fresh Paper catalog read still marks `update_styles` as `edit_held_schema`. No coordinate mutation, rewrite, reparenting or substitute recreation was attempted.
+
+Fresh read-only checks also found current, coherent updates in Market Structure’s populated phone/build, the distinct Market Memory evidence workspace’s outcome states, and Forex’s implementation index. These were preserved rather than changed to inflate coverage. Shared Tools regional navigation and Catalyst filtered selection remain the next independently useful lanes.
+
