@@ -3825,3 +3825,77 @@ Audit artifacts:
 The disabled mobile captures expose a smaller concrete issue: a focused Inspect demand control can sit flush with the viewport bottom, clipping part of its focus ring. Inspect keyboard clearance through the existing drawer scroll/focus owner, including the sticky header and narrow layouts. Also inspect the existing status lifecycle across panel transitions so old feedback cannot be misattributed to a new task. Establish the failure before changing an owner; do not add a second scrolling or notification system.
 
 Hosted/independent acceptance, current-market freshness, personal records, H5/model, alert delivery, paired receipts, qualified historical results, public-route replacement and release are not inferred. All earlier denied/unknown-effect lanes and admission holds remain intact. The unavailable cloud execution lane is not used; the already authorized native verifier and GitHub-native source carrier remain the established path.
+
+## 80. Crypto keyboard focus — clear the drawer edges and sticky header (2026-11-09)
+
+### User outcome and exact source
+
+Native forward and reverse keyboard movement now keeps the complete focus indicator within the existing drawer's visible reading area. It clears both the bottom edge and the actual sticky header, including a saved title that wraps after resizing. Explicit restoration with `preventScroll:true` still preserves the reader's scroll.
+
+| Owner | Exact source |
+|---|---|
+| Existing dependent PR10901 | `bbfdd6d9d039f4f08e17c6f1e917e535dd4b2ee4` |
+| Source tree | `553d665dec70a5660af09bbda63d486f53f6dc75` |
+| Candidate assets | `4f86c987c57c` |
+| Source parent | `8714a277ddcc865f831021471520667d831304b1` / `62cf3bb534f8` |
+| Incumbent PR9580 base | `5e496c24c962e85a4f7f514dd43dc61443b95cab` |
+| Audit parent | `f00c2f00e760a1c2d9d54cdb95a0228de6157ab4` |
+
+PR10901 remains Draft/open/unmerged/unarmed. Its [workflow map](https://github.com/mastermindx-market-intelligence/Macro/blob/bbfdd6d9d039f4f08e17c6f1e917e535dd4b2ee4/research/design_candidates/crypto_snapshot_safety_20261109/README.md) has **17 entries**. [DRAWER_FOCUS.md](https://github.com/mastermindx-market-intelligence/Macro/blob/bbfdd6d9d039f4f08e17c6f1e917e535dd4b2ee4/research/design_candidates/crypto_snapshot_safety_20261109/DRAWER_FOCUS.md) explains the policy, measurements, native behavior, proof, conservation and limits. CURRENT_ACTIONS.md links this later extension while preserving its historical proof scope.
+
+### Reproduced defects and bounded repair
+
+The preceding disabled-state captures showed Inspect demand's ring clipped at the mobile bottom edge. Native baseline measurements confirmed EN/390 and ZH/320 borders ending at **600.15625 / 600.0625** against a **600px** inner bottom. The existing action ring extends another 6px.
+
+Reverse Tab also left the current Conditions summary about **9–10px behind the sticky header** in EN/390, ZH/320 and EN/1440. With a longer saved title after resizing from 1440px, the saved summary remained **22.75px behind the real header**. A fixed guessed top inset would not solve those different heights reliably.
+
+The repair changes two existing source locations:
+
+- The same `.cri-dialog` uses native scroll-padding: measured header height plus a **9px requested top inset**, and **9px at the bottom**. This provides at least 8px actual clearance in the tested fractional layouts. No extra scroll-margin is combined with it.
+- A guarded ResizeObserver measures only the existing header border box, rounds its height upward and sets one CSS metric. It never focuses, scrolls, renders, persists history or accesses storage. The metric changes the browser's preferred viewing region, not the header or body's dimensions.
+
+The existing single dialog scroll owner, sticky header, native focus movement, terminal focus calls, reading projection, storage, status timer and route owners remain. No content padding, empty footer spacer, nested scroll container or focus listener is added. Current Conditions keeps its native outline; action and saved-disclosure rings retain their existing two-pixel outline with four-pixel offset.
+
+The mechanism follows [CSS Scroll Snap §4.2](https://www.w3.org/TR/css-scroll-snap-1/#scroll-padding) and the [HTML focus method](https://html.spec.whatwg.org/multipage/interaction.html#dom-focus). These sources explain the native model; measured browser behavior supplies the acceptance evidence.
+
+### Native proof, correction and conservation
+
+| Process | Outcome | Pytest / subprocess / wrapper |
+|---|---|---|
+| Parent snapshot PID26426 | 21 exact inputs copied; no runtime change | — / — / 0.08 s |
+| Baseline PID31453 | **7 failed / 41 passed** | 43.96 / 45.072 / 45.19 s |
+| Initial candidate PID39334 | **47 passed / one failed** | 39.70 / 39.956 / 40.19 s |
+| Final candidate PID44600 | **48 passed** | 43.40 / 43.656 / 43.86 s |
+| Metadata PID47111 | hashes, case identity, 22 layout samples and captures verified | — / — / 0.19 s |
+
+All three runs use the **same 48 IDs and identical test bytes**. Three new functions contribute 11 focus cases; 37 retained cases cover action layout, disabled states, confirmed/failed reading, optional history persistence, newer choices, locale, review return, programmatic focus and feedback timeout.
+
+The initial 8px CSS request fixed all five header obstructions and the ZH clipped-ring case. EN/390 retained **7.84375px** of actual bottom clearance because of fractional scroll rounding. The final product changes the requested inset to 9px; tests are unchanged. Final minimum clearance across the new outcomes is **9.25px above and 8.84375px below**. This correction and its failed initial result are retained explicitly.
+
+Chrome **157.0.8103.39**, **48 contexts / 48 pages**, zero page errors, external requests or WebSockets. Twenty-two matching before/after samples preserve exact body height, scroll height, header height and relative button/summary geometry between baseline and final. Thus the corrected focus policy does not change normal content dimensions or action spacing in those fixtures.
+
+**39 source/document/evidence texts and 32 PNG binaries** match exact source readback. Seven recorded inputs change: template/served JS and CSS, browser tests and both generated HTML asset references. Fourteen inputs stay exact. Both source transforms reverse to the parent, and removing appended tests recovers its complete browser module. Template/served assets match; both HTML pages differ only in two asset references. JSON, projection, HTML template, builder, server tests and shared assets stay exact.
+
+The [native receipt](https://github.com/mastermindx-market-intelligence/Macro/blob/bbfdd6d9d039f4f08e17c6f1e917e535dd4b2ee4/research/design_candidates/crypto_snapshot_safety_20261109/drawer-focus/PUBLICATION_RECEIPT.json) includes all cases and geometry samples. All **28 final PNGs**, three representative baseline images and one initial-rounding diagnostic are published. The **11 new final views and three baseline views** were inspected; 17 final regression views and the initial diagnostic are retained without claiming new visual inspection. This is one affected native run, not the complete application suite or another browser engine.
+
+### Paper build clarity
+
+The existing QI Save / Remove behavior cell now states complete native keyboard focus below the sticky header while retaining confirmed reading and failure visibility. Its binding is `bbfdd6d`.
+
+The existing ten-section Build 3IP guide now explains the actual header metric, nine-pixel request/eight-pixel minimum, untouched explicit restoration, latest native proof and next status-lifetime repair. It retains the original fixture, saved-record, horizon and result boundaries.
+
+Across QI and 3IP, all **101 existing IDs, parent relations, order and exported styles** remain exact. **Nine text nodes** changed; both complete JSX inverses are exact. Both full after frames were inspected and finished. QI remains **1440×1200**. The provider resized Build 3IP to **1162×2000**; all ten sections remain visible and unclipped. Its height/world coordinates remain unreported; no freeform-placement claim is made. G5's accepted action specimen is unchanged in this phase.
+
+Audit artifacts:
+
+- `PAPER_CRYPTO_DRAWER_FOCUS_20261109.json`
+- `PAPER_CRYPTO_DRAWER_FOCUS_SCORECARD_20261109.jpg`
+- `PAPER_CRYPTO_DRAWER_FOCUS_BUILD_20261109.jpg`
+
+### Next safe phase: feedback belongs to its task
+
+The source inspection found a concrete lifecycle defect. The current toast replaces text and later hides the node, while body navigation and Close never retire that text. A success/error can therefore remain in an unrelated review/evidence panel or quick reopen; after timeout, the retained blank status box carries into the next task.
+
+Retire the old status through the existing navigation/status boundary after source ownership checks and before destination rendering/reading restoration or close. Preserve fresh current mutation feedback through its existing direct render and the intentional frozen Remove → Saved outcome through one synchronous handoff. Cancel the old timer and empty only the owned old message; never erase or reissue over a newer message. Establish native failure cases before implementation.
+
+No hosted/public-route, cross-engine/assistive-technology, current-market, personal-record, H5/model, alert, receipt/result or release acceptance is inferred. All earlier denied/uncertain-effect lanes and admission holds remain.
