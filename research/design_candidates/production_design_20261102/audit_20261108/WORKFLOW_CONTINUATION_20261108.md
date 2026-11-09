@@ -1620,3 +1620,43 @@ At **05:04:31 UTC**, Catalyst PR1354 remains first in the same queue entry, AWAI
 Shared Tools head **3ce2e6090bc1e754f3201d13806b638c14f59bab** remains Draft. Natural fences run **42563123354** is successful; CI run **42563123452** remains queued at the current run-level read. The known loader-key/payload failure and four P0B receipt findings remain separate release blocks. No denied capture or gate weakening occurred.
 
 The next bounded frontend assessment concerns the existing tree's multiple Tab stops. It is diagnosis, not a claim that the new tree is already a complete roving-tab implementation. The principal continues the authorized mission with the protected queue and release holds intact.
+
+
+## 32. One keyboard entry, preserved native links, and exact release outcomes — 2026-11-09
+
+### GMI: applied source and Paper
+
+Original [Draft PR10676](https://github.com/mastermindx-market-intelligence/Macro/pull/10676) advanced by an exact-head compare-and-swap from `386937ff4b3b689be5bd4a42a1b6e17a7f3dc6eb` to **340cff37388b2567366d61985f610c7dfe654350**. All five changed files were read back byte-for-byte.
+
+The old generated tree had seven visible row Tab stops plus seven nested topic-link Tab stops. A no-match query left three empty categories visible, and the tree lacked an accessible name. Native 1440 px EN and 390 px ZH observations reproduce those defects. The existing controller now provides one visible row entry, normalizes hidden/empty rows, labels the tree from its existing bilingual heading, and moves only the focus its own search/collapse is about to hide. Information buttons and See all keep their separate roles. All 371 original link destinations survive; JavaScript-disabled markup remains native.
+
+| Current source | Exact blob |
+| --- | --- |
+| Paired GMI JavaScript | **ec0e5b7c96d1dc876c6f13d0df14daf5e0749d2b** |
+| Canonical browser verifier | **d54c50b23bf9a2ed63c1dbbbadee5e21ec0adae5** |
+| DESIGN_RECORD through §11.23 | **e9ea6c76a4b2365d58fd133d21fa816388df7909** |
+| TREE_ROVING_VALIDATION_20261109.json | **832631719453351419c97374e1c169bf9b1fd925** |
+
+The final native matrix passed **12 named cases / 24 fresh anonymous contexts**, 1440/390/320 px, EN/ZH, Chrome157.0.8103.39, zero page errors, exit0, 36.95 seconds. It checks real Tab/Shift+Tab, arrows, focus before hiding, survival of unrelated focus, zero results including empty categories, locale names, information controls, native JavaScript-disabled links and a modified click that opens and loads the selected theme separately. Two phone tree captures were inspected. Complete JS/Python syntax passed; the index and complete answer-first controller are byte-identical to the parent.
+
+The [structured record](https://github.com/mastermindx-market-intelligence/Macro/blob/340cff37388b2567366d61985f610c7dfe654350/research/theme_graph/gmi_design_20261021/TREE_ROVING_VALIDATION_20261109.json) explicitly retains the stopped fixture attempt. It had three activation passes and two timeouts waiting for a page-popup event. The actual event belongs to the browser context; the fictional origin did not intercept the first new-tab navigation. The corrected bounded loopback server exercises the same generated component and the actual native destination. Product JS was unchanged for that repair. The interrupted run is not part of the passing matrix.
+
+Paper **01M5H6EARN9YHQV17JC6ZG9BRY**, p7, root **7M9-0** keeps its ten-module / 33-node structure. Module08 now says **One keyboard entry; predictable filtering**; source identity and proof module10 match the new head. All IDs, parents, order and style declarations are exact. Five text nodes changed; unrelated text remained exact. The full native screenshot was inspected and the exact root finished through `finish_working_on_nodes`, APPLIED_RESPONSE_OBSERVED.
+
+This is bounded row-focus repair, not full ARIA/screen-reader certification. The existing no-match paragraph's announcement lifecycle remains separate. No HTML/CSS/model/source records changed. Original model01 unknown-effect, Draft, admission and release holds remain.
+
+### Catalyst: protected merge succeeded; installation was refused
+
+[PR1354](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1354) merged at **05:25:20Z**, exact merge SHA **9f13ad1226d785524e56a5e03bf5236b231242a6**. The actual [integration run42562605657](https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/42562605657) succeeded at05:24:50Z after the required aggregate succeeded. The queue entry is gone. Root read the canonical PR result and verified all six implementation/test blobs at the merge SHA still match the accepted candidate. No queue rearming, self-approval or direct merge occurred.
+
+The original installed production owner ran once with that exact full target. Its current-generation W2A check returned **CLEAN** for deployed **db06eacd8938cf44588d3906bca95bfd7122b74b**, then fetched the protected ref. Before installation it stopped with **exit65: unsupported-service-launch-hook**. The immutable preflight receipt was read back; the [sanitized release-attempt record](CATALYST_RELEASE_ATTEMPT_20261109.json) binds its digest, owner source, process IDs, accepted ref and exact refusal.
+
+Reconciliation confirms the deployment marker and canonical HEAD both remain **db06eacd…**, dirty-path count0, service active, lock released, installed owner unchanged. Read-only service metadata finds two pre-start records naming the expected shell and volume-guard paths; the other checked launch-hook fields are empty. Canonical installed source **9af75ffa…** explains this attempt completely: its embedded classifier rejects every nonempty ExecStartPre. The fetched merged owner **3acacc32…** has a separate typed, custody-bound admission path, but fetching it did not change the verifier already executing. No malformed host argv or prospective admission success is inferred. The immutable receipt's policy digest also matches the exact reviewed current-generation policy blob **d1fab9bf…**. No retry, hook change, source normalization, controller swap or alternate deployment path occurred. Production release remains refused; the separate connected-browser user-presence obstacle still limits real-account proof.
+
+### Tools: natural CI confirms the existing evidence hold
+
+Draft PR10879 remains at **3ce2e6090bc1e754f3201d13806b638c14f59bab**. Its [natural run42563123452](https://github.com/mastermindx-market-intelligence/macro/actions/runs/42563123452) produced two distinct failures: pack0 stopped in Python setup after the action's own HTTP504 download attempts; pack7 failed the required P0B closure because `site/nav_market.js` and `site/navigation-refresh.css` changed under both unchanged measured receipts. The latter confirms the already-recorded four findings. The pinned Chromium/Playwright/font/capture-family contract and original denial remain binding. No CI rerun, substitute capture or digest-only receipt rewrite was initiated.
+
+### Next safe product work
+
+The retained-answer notice on mobile instructs readers to clear filters while both reset controls are inside the closed Browse region. The next bounded repair will expose a concise answer-side action through the existing reset owner, retain topic/evidence/URL context, and return focus to the visible answer heading. Invalid-topic and failed-data notices must not offer this unrelated recovery. This is a source-proven next action, not a claim of implementation yet.
