@@ -29847,6 +29847,38 @@ jobs:
         # Git policy checks inspect ignore/index metadata, not the private file.
         run: python -m pytest tests/test_marketing_approval_desk.py tests/test_marketing_card_earns_pixels.py tests/test_marketing_wire_expiry.py tools/xguerrilla/tests/test_drivers.py tools/xguerrilla/tests/test_net.py tools/xguerrilla/tests/test_ops.py tools/xguerrilla/tests/test_pilot_sim.py tools/xguerrilla/tests/test_proxies_template.py tools/xguerrilla/tests/test_state.py tools/xguerrilla/tests/test_textdrift.py tools/xguerrilla/tests/test_typing.py tools/xguerrilla/tests/test_validators.py tools/xguerrilla/tests/test_runtime_boundary.py -q
 
+  xguerrilla-admission:
+    if: ${{ false }}  # executed inside ci-pack — NOT a disabled gate; see the ci-pack job.
+    gate: code
+    # PR #10870 admission chain: tools/xguerrilla/admission.py's regression
+    # suite first landed appended to marketing-social-publisher's run line,
+    # which re-selected that job for ordinary code PRs and pushed all three
+    # packing probes 2 weight-seconds over their composed ceilings
+    # (contract-delta: 3 introduced, 0 inherited). Curated here instead:
+    # scope: exclusive owns this package conservatively. Pytest's ancestor
+    # conftest imports profiles -> runtime_boundary and inserts tools/ into
+    # sys.path; the static resolver cannot infer that package alias. Keep
+    # existing and future package-local dependencies covered, including
+    # dependencies reached only through pytest collection.
+    # The three unrelated packing probes still do not select this job.
+    # No job-count, weight, pack, timeout, or concurrency ceiling changes.
+    scope: exclusive
+    paths:
+      - "tools/xguerrilla/**"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install deps
+        # Minimal lane deps: pytest + pyyaml only. admission.py is stdlib
+        # (hashlib/json/math/time/dataclasses/datetime/typing); net.py and
+        # persona.py import yaml. No numpy/pandas/pyarrow, zero network.
+        run: pip install pytest pyyaml
+      - name: admission chain unit tests
+        run: python -m pytest tools/xguerrilla/tests/test_admission.py -q
+
   marketing-media-pipeline:
     if: ${{ false }}
     gate: code
@@ -35176,6 +35208,115 @@ jobs:
       - name: Release Radar — coherent-target ridge governance (Wave 2B)
         run: python -m pytest tests/test_release_cpi_coherent_governance.py tests/test_release_cpi_coherent_shadow.py -q
 
+  china-intel-paper-vnext:
+    # PR #7767: keep Paper renderer contracts in their own code gate. Appending
+    # this suite to unrun-brain-desks raised all three ordinary-code packing
+    # weights by 2 (hosted contract-delta: 3 introduced, 0 inherited).
+    # This declared scope retains its complete named import/read closure and package initializers.
+    # The suite reads one template and uses the builder's Jinja environment;
+    # it does not run the builder, collectors, publishers, or subprocess paths.
+    # Keep packing ceilings and the incumbent Brain owner unchanged.
+    if: ${{ false }}
+    gate: code
+    scope: exclusive
+    paths:
+      - "collectors/__init__.py"
+      - "collectors/_drip.py"
+      - "collectors/base.py"
+      - "collectors/china_analyst.py"
+      - "collectors/china_filings.py"
+      - "collectors/china_news.py"
+      - "collectors/china_visits.py"
+      - "collectors/edgar.py"
+      - "collectors/edgar_13f.py"
+      - "collectors/edgar_flow_quality.py"
+      - "collectors/edgar_share_quality.py"
+      - "collectors/edgar_stock_quality.py"
+      - "collectors/fred.py"
+      - "collectors/openfigi.py"
+      - "collectors/yahoo.py"
+      - "config/ai_pricing.yml"
+      - "config/capability_manifest.yml"
+      - "config/delisted_symbols.yml"
+      - "engine/__init__.py"
+      - "engine/canon.py"
+      - "engine/china_altdata.py"
+      - "engine/china_basket_spine.py"
+      - "engine/china_conviction.py"
+      - "engine/china_crowding.py"
+      - "engine/china_discovery.py"
+      - "engine/china_event_calendar.py"
+      - "engine/china_extras.py"
+      - "engine/china_intel_bus.py"
+      - "engine/china_news.py"
+      - "engine/china_news_intel.py"
+      - "engine/china_radar.py"
+      - "engine/china_radar_ledger.py"
+      - "engine/china_signal_lab.py"
+      - "engine/china_validation.py"
+      - "engine/cn_newswires.py"
+      - "engine/codex_lane/__init__.py"
+      - "engine/codex_lane/runner.py"
+      - "engine/codex_provider.py"
+      - "engine/entity_resolver.py"
+      - "engine/gdelt_client.py"
+      - "engine/i18n.py"
+      - "engine/macro_surprise.py"
+      - "engine/manager_lag.py"
+      - "engine/manager_quality.py"
+      - "engine/manager_trades.py"
+      - "engine/name_resolver.py"
+      - "engine/narrative_crossmarket.py"
+      - "engine/neuralweb/__init__.py"
+      - "engine/neuralweb/key_pool.py"
+      - "engine/news_common.py"
+      - "engine/news_translate.py"
+      - "engine/qbus.py"
+      - "engine/qkernel.py"
+      - "engine/smart_money.py"
+      - "engine/trial_ledger.py"
+      - "engine/tushare_freshness.py"
+      - "engine/universe_history.py"
+      - "engine/validation.py"
+      - "lib/__init__.py"
+      - "lib/ai_costs.py"
+      - "lib/closes_panel.py"
+      - "lib/cn_calendar.py"
+      - "lib/config.py"
+      - "lib/dataos/__init__.py"
+      - "lib/dataos/identity.py"
+      - "lib/delisted_symbols.py"
+      - "lib/exchange_holidays.py"
+      - "lib/filing_value_units.py"
+      - "lib/hk_calendar.py"
+      - "lib/market_observations.py"
+      - "lib/market_session.py"
+      - "lib/nyse_calendar.py"
+      - "lib/pages.py"
+      - "lib/shared_shell.py"
+      - "lib/site_assets.py"
+      - "lib/stooq.py"
+      - "lib/store.py"
+      - "lib/ticker_aliases.py"
+      - "lib/tsx_calendar.py"
+      - "lib/us_cash_calendar.py"
+      - "scripts/__init__.py"
+      - "scripts/build_china_intel.py"
+      - "templates/china_intel.html.j2"
+      - "tests/__init__.py"
+      - "tests/test_china_intel_paper_vnext.py"
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn
+      - name: China Intelligence Paper renderer contracts
+        run: python -m pytest tests/test_china_intel_paper_vnext.py -q
+
   unrun-brain-desks:
     # master brain / AI desk / alt-data / risk brains behind the shipped desk verdicts.
     if: ${{ false }}
@@ -35196,7 +35337,7 @@ jobs:
       # test_china_intel_visits_render.py is the SOL-repair template render
       # test (renders china_intel.html.j2 through the real builder env).
       - name: china_intel_hub institutional-visit dossier block (P1)
-        run: python -m pytest tests/test_china_intel_hub_visits.py tests/test_china_intel_visits_render.py tests/test_china_intel_paper_vnext.py -q
+        run: python -m pytest tests/test_china_intel_hub_visits.py tests/test_china_intel_visits_render.py -q
       - name: China Intelligence visit-discovery metadata context (CIE-07)
         run: python -m pytest tests/test_china_intel_bus.py -q
       - name: Intelligence Hub PIT scope + W0 measurement heals + ticker-shape gate
