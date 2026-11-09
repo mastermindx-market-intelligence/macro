@@ -12837,6 +12837,9 @@ jobs:
     gate: data
     scope: exclusive
     paths:
+      - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
+      - "engine/research_codegen/prospective_contract.py"
+      - "engine/theme_graph/activity_history_bridge.py"
       - "site/aibrief.js"
       - "site/alerts.html"
       - "site/allocation_canada.html"
@@ -19471,6 +19474,9 @@ jobs:
     gate: data
     scope: exclusive
     paths:
+      - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
+      - "engine/research_codegen/prospective_contract.py"
+      - "engine/theme_graph/activity_history_bridge.py"
       - "site/basketdata/baskets.json"
       - "site/basketdata/fear_greed.json"
       - "site/basketdata/foresight_cascade.json"
@@ -24888,6 +24894,8 @@ jobs:
     # ci-control-plane-census, both declaring these same paths; see those jobs.
     runs-on: ubuntu-latest
     paths:
+      - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
+      - "engine/theme_graph/activity_history_bridge.py"
       - ".claude/hooks/model_routing_guard.py"
       - ".claude/hooks/ship_loop_guard.py"
       - ".claude/settings.json"
@@ -52460,6 +52468,8 @@ jobs:
     gate: data
     scope: exclusive
     paths:
+      - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
+      - "engine/theme_graph/activity_history_bridge.py"
       - "site/basketdata/baskets.json"
       - "site/basketdata/fear_greed.json"
       - "site/basketdata/foresight_cascade.json"
