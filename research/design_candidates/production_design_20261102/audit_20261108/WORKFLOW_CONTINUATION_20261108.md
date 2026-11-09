@@ -3899,3 +3899,72 @@ The source inspection found a concrete lifecycle defect. The current toast repla
 Retire the old status through the existing navigation/status boundary after source ownership checks and before destination rendering/reading restoration or close. Preserve fresh current mutation feedback through its existing direct render and the intentional frozen Remove → Saved outcome through one synchronous handoff. Cancel the old timer and empty only the owned old message; never erase or reissue over a newer message. Establish native failure cases before implementation.
 
 No hosted/public-route, cross-engine/assistive-technology, current-market, personal-record, H5/model, alert, receipt/result or release acceptance is inferred. All earlier denied/uncertain-effect lanes and admission holds remain.
+
+
+## 81. Crypto feedback lifetime — keep each result with its task (2026-11-09)
+
+### Outcome and source
+
+The current action now keeps its fresh result within its task. Review, evidence, native history traversal, Close/reopen, language changes and explicit Retry retire obsolete feedback and its retained timeout space. Confirmed frozen Remove still carries its truthful result into Saved snapshots, including when the list becomes unreadable. A newer result survives an older transition.
+
+Dependent [PR #10901](https://github.com/mastermindx-market-intelligence/Macro/pull/10901) is recorded at **`480ae8eb4f0e82065c324b56058c6c6eb25674b0`**, tree **`1079c54c69b3cc0e4a982caab4eef63f2ae198b2`**, assets **`89c2e5bd3fa3`**. Parent: `bbfdd6d9d039f4f08e17c6f1e917e535dd4b2ee4` / `4f86c987c57c`. It remains Draft, open, unmerged and unarmed. [Build contract](https://github.com/mastermindx-market-intelligence/Macro/blob/480ae8eb4f0e82065c324b56058c6c6eb25674b0/research/design_candidates/crypto_snapshot_safety_20261109/FEEDBACK_LIFETIME.md), [18-task implementation map](https://github.com/mastermindx-market-intelligence/Macro/blob/480ae8eb4f0e82065c324b56058c6c6eb25674b0/research/design_candidates/crypto_snapshot_safety_20261109/README.md) and [native receipt](https://github.com/mastermindx-market-intelligence/Macro/blob/480ae8eb4f0e82065c324b56058c6c6eb25674b0/research/design_candidates/crypto_snapshot_safety_20261109/feedback-lifetime/PUBLICATION_RECEIPT.json) identify the exact changes.
+
+The preceding timeout behavior correctly retained a hidden nonempty box to avoid clamping the current reader. Body navigation and Close did not empty that node. Consequently an old Save/error could appear in a new panel or quick reopen, and its hidden blank box could remain after the timer. The before/after cases establish that concrete defect.
+
+### Existing ownership and ordering
+
+The existing `#cri-toast`, `toastTimer`, `toast()`, `update()`, `apply()` and `save()` remain responsible. There is no new notification queue, persistent witness, history owner or storage lifecycle.
+
+A short-lived witness captures the stable element, timer handle and exact text. `retireToast()` cancels, hides and empties only that still-owned message. Normal timeout remains five seconds and retains its box within the originating task.
+
+Ordinary `apply()` captures its witness before storage preflight. Existing source/navigation ownership checks still run. After outgoing basis/reading capture and before destination rendering/restoration or closing, it retires that witness. A newer message makes cleanup a no-op; message identity does not decide whether navigation may proceed.
+
+Current confirmed mutation retains its direct render and fresh reading. Frozen Remove hands the returned result witness through the existing synchronous `update()`. Its intended full URL and language are captured before the history write. Matching context and witness preserve the result. A still-owned witness retargeted elsewhere retires. A superseded witness has no cleanup authority over its replacement.
+
+The final handoff falsifier covers a particularly subtle seam: a history-write callback creates result B before the older handoff A reaches `apply()`. Cleanup must remain attached to supplied A, rather than capturing and erasing B at entry. Confirmation is never emitted after `update()/apply()`, because a terminal focus callback may already have navigated elsewhere.
+
+Storage intent, one-write/exact-readback behavior, opaque collection retention, capacity rules, no-replay recovery, frozen Remove destination, source qualification, focus clearance and reduced motion remain unchanged. CSS and the HTML template are byte-identical to the parent.
+
+### Native proof and explicit corrections
+
+| Run | Result | Pytest / subprocess / wrapper |
+|---|---|---|
+| Initial parent baseline, PID 80683 | 27 failed / 39 passed; 66 cases | 63.19s / 63.564s / 63.66s |
+| Corrected new-case parent baseline, PID 89600 | 26 failed / 4 passed; 30 cases | 33.17s / 33.545s / 33.66s |
+| Verified candidate, PID 96663 | **67 passed** | **69.78s / 70.145s / 70.46s** |
+
+Final Chrome **157.0.8103.39**, **67 contexts / 67 pages**, **zero page errors, external requests and WebSockets**. All three runs record zero in those error/network fields.
+
+Two errors in newly added harness code were corrected while the product remained at the parent. Returning an unbound native Storage method from Playwright evaluation caused an invocation error; the correction performs the same restoration inside a function with no returned method. A reentrant opener selected the hidden 7-day duplicate; its corrected selector targets the displayed 30-day case. A separate control was then added for a newer result inside the handoff history write. These corrections are fully recorded and reversible. No existing parent test function changed.
+
+The final 67 cases comprise **30 new plus 37 retained**. Its case set equals the union of the initial and corrected baseline sets. The final module matches corrected-baseline bytes exactly; the initial module is recoverable by reversing the two appended-harness fixes and removing the extra control. The three runs therefore have deliberately different selected case sets; their counts are not added or represented as identical.
+
+New proof covers EN/390 and ZH/320, success/failure → review/evidence, Back, same-URL popstate, Close/reopen, locale, explicit Retry, real timer deadlines, unreadable Saved after confirmed Remove, reentrant preflight/history/focus effects and controlled writes. It checks stable status-node identity, empty/hidden/zero-height retirement and existing polite status markup. Retained cases cover current confirmed/idempotent/failed reading, locale, optional history failure, newer focus/navigation and current/saved parent return.
+
+The corrected-baseline process output was paged. After a wrong-backend receipt read returned unavailable, the original Studio Direct receipt reader recovered both original pages. This was a readback correction; execution was not replayed and no uncertain effect was moved to another carrier. Native publication readback PID 7074 exited 0 in 0.19s.
+
+### Exact publication and visual scope
+
+**39 source/document/evidence texts and 25 PNG binaries** read back exactly at the source checkpoint. The 28 native evidence/script files include all three runs, test corrections, source transforms and publication metadata. Five of the 21 recorded inputs change; 16 remain exact. All six JavaScript transformations reverse to the parent; removing appended tests restores its complete browser module. Served/template JS match, and each served HTML file changes only its two asset references.
+
+All **23 final PNGs** are retained: 10 new outcomes plus 13 retained regressions. Two corrected-baseline comparisons are also retained. The 10 new final views and both baseline comparisons were inspected. The English baseline visibly carries the old “Saved on this device.” message into Historical review; the verified view removes it. The narrow Chinese baseline crop does not show the complete old failure text, so its DOM/assertion receipt carries that claim. Verified bilingual review, evidence and Retry remain readable. [Capture references](https://github.com/mastermindx-market-intelligence/Macro/blob/480ae8eb4f0e82065c324b56058c6c6eb25674b0/research/design_candidates/crypto_snapshot_safety_20261109/feedback-lifetime/CAPTURE_REFERENCES.json) distinguish inspection from retention.
+
+### Paper build clarity
+
+The existing QI Save/Remove behavior cell now states that task changes clear old feedback while current confirmations retain reading. Its source binding is `480ae8e`. Build 3IP explains the witness, lifecycle ordering, destination-qualified handoff and newer-result rule. Earlier source, saved-record, horizon, frozen-evidence and release boundaries remain.
+
+Across QI and 3IP, all **101 existing IDs, parent relations, order and exported styles** remain exact. **Nine text nodes** changed; both complete JSX inverses are exact. Both full after frames were inspected and finished. QI remains **1440×1200**. Build 3IP is provider-resized to **1162×2000**, with all ten sections visible. Its world coordinates and height remain unreported; no placement claim is inferred. G5's accepted action specimen is unchanged in this phase.
+
+Audit artifacts:
+
+- `PAPER_CRYPTO_FEEDBACK_LIFETIME_20261109.json`
+- `PAPER_CRYPTO_FEEDBACK_LIFETIME_SCORECARD_20261109.jpg`
+- `PAPER_CRYPTO_FEEDBACK_LIFETIME_BUILD_20261109.jpg`
+
+### Next safe phase: direct builder entry
+
+The existing Start guide is readable and its dated organization snapshot is historical by design. Its first route names only the scorecard, while the active workflow also lives in G5. Its source qualification repeats a rolling feature inventory without a direct implementation-map link.
+
+Update only `3L7-0` and `3LF-0` in guide `3L1-0`: name the current scenario workflow and scorecard, identify G5/QI, and point directly to the source checkpoint's task → owner → contract → proof map. Preserve page IDs, the historical organization snapshot, archive decisions and candidate/proposal qualifications. This is an existing-guide correction, with exact JSX and screenshot proof; no unrelated runtime rerun is required.
+
+No hosted/public-route, cross-engine/assistive-technology, current-market, personal-record, H5/model, alert, receipt/result or release acceptance is inferred. All earlier denied/uncertain-effect lanes and admission holds remain.
