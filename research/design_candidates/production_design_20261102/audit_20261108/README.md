@@ -25,10 +25,17 @@ Applied and visually checked focused improvements in nineteen existing Paper fil
 | Risk Radar | [Main, evidence and pickup map](https://app.paper.design/file/01M38EVF74SJWG1GANN5VP380Z/p-1-0) | Calibration status before retained probability across ten variants; rounded baseline/lift clarified; existing model, driver and return paths preserved. |
 | Confluence Screener | [Data anatomy & authority](https://app.paper.design/file/01M6Y3DCDDW541ZR38J1V52A9Y/p-2-0) · [Public states & Build](https://app.paper.design/file/01M6Y3DCDDW541ZR38J1V52A9Y/p-3-0) · [Retained filter studies](https://app.paper.design/file/01M6Y3DCDDW541ZR38J1V52A9Y/p-4-0) | Eight simplified primary variants; four explicit public-input states; corrected zero/CTA meaning; existing protected failure context aligned; missing-input versus zero producer repair and exact test plan. |
 | Crypto Intelligence | [Saved cases, historical return & Build](https://app.paper.design/file/01M6Y3F0NXNDPAKJMJGCAD759Z/p-4-0) · [Original interaction & authority](https://app.paper.design/file/01M6Y3F0NXNDPAKJMJGCAD759Z/p-1-0) | Eight 390px/320px EN/ZH saved, review, legacy and recovery states; same-revision parent return; missing-data guard and explicit save/remove contract; ten-module Build sheet and filled scorecard. |
-| T47 ranked search | [Amended draft specimens](https://app.paper.design/file/01M6Y2SGKNTEESDJX96ZSJJGPF/p-1-0) · [Visibility Build & retained controls](https://app.paper.design/file/01M6Y2SGKNTEESDJX96ZSJJGPF/p-2-0) | Eight zero-match views with one Clear action and no misleading hidden-rank affordance; original matching/return states preserved; five-module local-state and focus contract. |
+| T47 ranked search | [Amended draft specimens](https://app.paper.design/file/01M6Y2SGKNTEESDJX96ZSJJGPF/p-1-0) · [Visibility Build & retained controls](https://app.paper.design/file/01M6Y2SGKNTEESDJX96ZSJJGPF/p-2-0) | Eight zero-match views with one Clear action and no misleading hidden-rank affordance; original matching/return states preserved; six-module local-state/focus contract, plus an original executable reference with 16 passing offline checks. |
 | BioCatalyst | [Current journey map](https://app.paper.design/file/01M6Y34XE4JKS3A40GMMZ954JE/p-2-0) · [Builder contracts](https://app.paper.design/file/01M6Y34XE4JKS3A40GMMZ954JE/p-1-0) | Current pages and 22 verified artboard destinations; explicit MedTech/archive file references; historical R9 provenance and accepted product behavior preserved. |
 
 The [motion reference HTML](expectation-surface-motion-reference.html) demonstrates the intended selection, pending, failure/retry, details-return and reduced-motion state model using explicit fixtures. JavaScript syntax was checked; browser execution was not verified in this session.
+
+
+## Executable builder reference
+
+The [ranked-search transition reference](ranked-search-state-reference.mjs) and [its tests](ranked-search-state-reference.test.mjs) make the T47 behavior directly inspectable. The pure API takes caller-owned rows, grouping and inventory identity; it preserves ranks, source objects, missing values and the pre-search disclosure choice. It performs no DOM, network, storage or navigation effects.
+
+Run `node --test ranked-search-state-reference.test.mjs` in this directory. The exact saved files passed **16 offline checks on Node v24.22.1**. This proves the isolated transition/projection examples; application integration, keyboard/focus, scrolling, source availability and progressive enhancement remain separate host checks. The Paper Build sheet links the code and exact proof boundary. See continuation §16 for hashes, source identity and the additional primary-only-result decision.
 
 ## Assignment and source
 
