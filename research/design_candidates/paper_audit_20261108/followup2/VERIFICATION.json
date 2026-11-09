@@ -1,0 +1,117 @@
+{
+  "schema": "paper_audit_followup2.verification.v1",
+  "date": "2026-11-09",
+  "governance_pin": "5c3d3885234358aefb97ecdbc59be0864df14f8b",
+  "parent_design_pr": 10872,
+  "parent_design_head": "376bc2cee3641eb7f55b113210be916a8a0f85d7",
+  "news": {
+    "file_id": "01M5EXPMQTSBFBAM8KKG83FTZH",
+    "page_id": "p-1-0",
+    "frame": "YN-0",
+    "changed_nodes": [
+      {
+        "node_id": "Z8-0",
+        "expected": "Counted 02:35 AM · all 2 sources",
+        "actual": "Counted 02:35 AM · all 2 sources",
+        "pass": true
+      },
+      {
+        "node_id": "ZC-0",
+        "expected": "Count basis stays across all accessible sources while the filter narrows stories. EN: “all 2 sources” · ZH: “全部 2 个来源”。",
+        "actual": "Count basis stays across all accessible sources while the filter narrows stories. EN: “all 2 sources” · ZH: “全部 2 个来源”。",
+        "pass": true
+      }
+    ],
+    "exact_jsx_text_only_delta": true,
+    "render_width": 360,
+    "render_inspected": true,
+    "unresolved_effects": [],
+    "released": true
+  },
+  "limits": [
+    "Paper geometry and exact text readback only.",
+    "No production copy or count/filter implementation changed.",
+    "ZH wording supplied in builder annotation; no separate ZH recovery-frame render claimed."
+  ],
+  "risk": {
+    "file_id": "01M38EVF74SJWG1GANN5VP380Z",
+    "page_id": "p-1-0",
+    "frame": "8PS-0",
+    "changed_node": "8QV-0",
+    "expected": "In the US source, 0.73× compares model risk over 21 closing observations with the 17.8% base rate (rounded to 18% here), not exposure size. Snapshot calibration remains unverified. Driver scores use separate scales; never average them into 36.",
+    "actual": "In the US source, 0.73× compares model risk over 21 closing observations with the 17.8% base rate (rounded to 18% here), not exposure size. Snapshot calibration remains unverified. Driver scores use separate scales; never average them into 36.",
+    "exact_jsx_text_only_delta": true,
+    "render_width": 1240,
+    "render_inspected": true,
+    "released": true,
+    "unresolved_effects": [],
+    "preserved": [
+      "13% and18% retained display;17.8% base rate;0.73× ratio",
+      "21D retained selection and unmatched historical cohort",
+      "unverified calibration; source/receipt qualification; existing return",
+      "current98K/9AI mobile siblings already name closing observations; no paired method paragraph"
+    ]
+  },
+  "news_review_contract": {
+    "file_id": "01M5EXPMQTSBFBAM8KKG83FTZH",
+    "page_id": "p-3-0",
+    "parent": "3H7-0",
+    "frame": "414-0",
+    "illustration": "417-0",
+    "text_readbacks": [
+      {
+        "node_id": "415-0",
+        "actual": "One feed. Different count scopes.",
+        "expected": "One feed. Different count scopes.",
+        "pass": true
+      },
+      {
+        "node_id": "416-0",
+        "actual": "The activity strip uses supplied feed-wide report counts. Catch-up chips count story rows after row.source filtering; the review-state filter selects the visible subset. A grouped story can contain several reports. Keep these counts separate.",
+        "expected": "The activity strip uses supplied feed-wide report counts. Catch-up chips count story rows after row.source filtering; the review-state filter selects the visible subset. A grouped story can contain several reports. Keep these counts separate.",
+        "pass": true
+      },
+      {
+        "node_id": "41Y-0",
+        "actual": "Existing owners: TickerNewsPanel passes snapshot.flow to NewsFlowStrip and the complete presented rows to useNewsCatchup. Keep source-filtered counts, review-filtered visible rows, unreadShown and markShown in that hook. Do not expand source selection to arbitrary grouped-report membership.",
+        "expected": "Existing owners: TickerNewsPanel passes snapshot.flow to NewsFlowStrip and the complete presented rows to useNewsCatchup. Keep source-filtered counts, review-filtered visible rows, unreadShown and markShown in that hook. Do not expand source selection to arbitrary grouped-report membership.",
+        "pass": true
+      },
+      {
+        "node_id": "41Z-0",
+        "actual": "markStoriesReviewed retains presented [sequence, item_count] pairs and the first captured evidence basis. The reviewed-through receipt advances only when every row in the current presented page is reviewed. Preserve owner, rights context and the newest stored review state.",
+        "expected": "markStoriesReviewed retains presented [sequence, item_count] pairs and the first captured evidence basis. The reviewed-through receipt advances only when every row in the current presented page is reviewed. Preserve owner, rights context and the newest stored review state.",
+        "pass": true
+      },
+      {
+        "node_id": "420-0",
+        "actual": "Presentation extension: when a source or review filter is active, make the activity count’s scope explicit beside its existing window and coverage. This recovery specimen uses “all 2 sources” / “全部 2 个来源”. Where a scope label is needed, use “Feed total” / “资讯流总计”, derived in TickerNewsPanel from the existing selected source and effective review filter. No new count, store or review effect.",
+        "expected": "Presentation extension: when a source or review filter is active, make the activity count’s scope explicit beside its existing window and coverage. This recovery specimen uses “all 2 sources” / “全部 2 个来源”. Where a scope label is needed, use “Feed total” / “资讯流总计”, derived in TickerNewsPanel from the existing selected source and effective review filter. No new count, store or review effect.",
+        "pass": true
+      },
+      {
+        "node_id": "421-0",
+        "actual": "Acceptance: select Benzinga → two New story rows, still eight feed reports. Mark shown → only A/B reviewed and C unchanged; no full-page receipt advance. Clear the filter → C remains New. A later accepted revision of A becomes Updated without replacing its first saved basis. Repeat with the review-status filter, hidden stories, account/rights changes and current-owner readback.",
+        "expected": "Acceptance: select Benzinga → two New story rows, still eight feed reports. Mark shown → only A/B reviewed and C unchanged; no full-page receipt advance. Clear the filter → C remains New. A later accepted revision of A becomes Updated without replacing its first saved basis. Repeat with the review-status filter, hidden stories, account/rights changes and current-owner readback.",
+        "pass": true
+      },
+      {
+        "node_id": "422-0",
+        "actual": "Source: mastermind-terminal / terminal/components/news/{TickerNewsPanel.tsx, useNewsCatchup.ts, NewsFlowStrip.tsx}; terminal/lib/newsReviewState.ts. All four are byte-identical at d7a83d3348a4fcb762d93221f19c4e94cbe4505e and 8fcce1194c53543361bd21dbb2e69fc6ee556152. F04 extension; proposed presentation only. Source and Paper readback do not establish browser or production acceptance.",
+        "expected": "Source: mastermind-terminal / terminal/components/news/{TickerNewsPanel.tsx, useNewsCatchup.ts, NewsFlowStrip.tsx}; terminal/lib/newsReviewState.ts. All four are byte-identical at d7a83d3348a4fcb762d93221f19c4e94cbe4505e and 8fcce1194c53543361bd21dbb2e69fc6ee556152. F04 extension; proposed presentation only. Source and Paper readback do not establish browser or production acceptance.",
+        "pass": true
+      }
+    ],
+    "preexisting_children_preserved": true,
+    "preexisting_jsx_prefix_exact": true,
+    "render_width": 612,
+    "render_inspected": true,
+    "released": true
+  },
+  "totals": {
+    "applied_response_observed": 7,
+    "unresolved_effects": [],
+    "unique_text_readbacks": 10,
+    "inspected_captures": 5
+  }
+}

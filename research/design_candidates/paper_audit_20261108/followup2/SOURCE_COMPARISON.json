@@ -1,0 +1,57 @@
+{
+  "schema": "paper_audit_followup2.source_comparison.v1",
+  "repository": "mastermindx-market-intelligence/mastermind-terminal",
+  "pins": {
+    "original": "d7a83d3348a4fcb762d93221f19c4e94cbe4505e",
+    "refreshed": "8fcce1194c53543361bd21dbb2e69fc6ee556152"
+  },
+  "files": [
+    {
+      "path": "terminal/components/news/TickerNewsPanel.tsx",
+      "original_blob": "0b0facb3839e84d54ddbf99937c74283479c120c",
+      "refreshed_blob": "0b0facb3839e84d54ddbf99937c74283479c120c",
+      "byte_identical": true,
+      "source_url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/8fcce1194c53543361bd21dbb2e69fc6ee556152/terminal/components/news/TickerNewsPanel.tsx"
+    },
+    {
+      "path": "terminal/components/news/useNewsCatchup.ts",
+      "original_blob": "4df49fca41045d6442fced974cb9bf529daa36af",
+      "refreshed_blob": "4df49fca41045d6442fced974cb9bf529daa36af",
+      "byte_identical": true,
+      "source_url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/8fcce1194c53543361bd21dbb2e69fc6ee556152/terminal/components/news/useNewsCatchup.ts"
+    },
+    {
+      "path": "terminal/lib/newsReviewState.ts",
+      "original_blob": "1440318db6fec20d6c8bfb75b2ea45183d2dd7bf",
+      "refreshed_blob": "1440318db6fec20d6c8bfb75b2ea45183d2dd7bf",
+      "byte_identical": true,
+      "source_url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/8fcce1194c53543361bd21dbb2e69fc6ee556152/terminal/lib/newsReviewState.ts"
+    },
+    {
+      "path": "terminal/components/news/NewsFlowStrip.tsx",
+      "original_blob": "418034c031ffe25856b5dc3d4d880544c171e1cc",
+      "refreshed_blob": "418034c031ffe25856b5dc3d4d880544c171e1cc",
+      "byte_identical": true,
+      "source_url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/8fcce1194c53543361bd21dbb2e69fc6ee556152/terminal/components/news/NewsFlowStrip.tsx"
+    }
+  ],
+  "supplemental": [
+    {
+      "path": "terminal/lib/newsFlowLex.ts",
+      "ref": "8fcce1194c53543361bd21dbb2e69fc6ee556152",
+      "blob": "8064b5272598e1a659ab572b07cbd0d6e7878afd",
+      "source_url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/8fcce1194c53543361bd21dbb2e69fc6ee556152/terminal/lib/newsFlowLex.ts"
+    },
+    {
+      "path": "terminal/lib/__tests__/newsCatchupPanel.test.tsx",
+      "ref": "8fcce1194c53543361bd21dbb2e69fc6ee556152",
+      "blob": "fdb1a30c1ed3ded7224a35329453f5aae2b66401",
+      "source_url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/8fcce1194c53543361bd21dbb2e69fc6ee556152/terminal/lib/__tests__/newsCatchupPanel.test.tsx"
+    }
+  ],
+  "limits": [
+    "Read-only source comparison; no runtime tests executed for this design delta.",
+    "Existing AC-E13-04 was inspected, not re-run.",
+    "The synthetic cross-count acceptance case is specified, not claimed as implemented or passed."
+  ]
+}
