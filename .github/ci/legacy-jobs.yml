@@ -26387,7 +26387,7 @@ jobs:
       - name: account team-membership tests (lib/team_membership.py)
         run: python -m pytest tests/test_account_team_fields.py -v
       - name: account actions (app/account_actions.py)
-        run: python -m pytest tests/test_account_actions.py -v
+        run: python -m pytest tests/test_account_actions.py tests/test_account_mobile_shell_controls.py -v
       - name: account getToken client identity (templates/account.js)
         run: node --test tests/js/account_get_token.test.mjs
       - name: account continuity (templates/account.js S1)

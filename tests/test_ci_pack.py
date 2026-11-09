@@ -5703,9 +5703,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_945),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_966),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_703),
+    ("templates/index.html", 137, 5_947),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_968),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_705),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5713,6 +5713,20 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    Account mobile shell (#7620, 2026-11-09): own contract-delta run
+    42618399987/job129163949433 bound H71878518887fb1c71dc1475baa0ad4f866f4fd4c
+    to basecf07e7a73334c646a09c043647c43e43ee6e4060 through tested commit
+    3d78a5237edc7329ab9717aa3b0c10fc13d1cf59, whose whole tree equals H.
+    Paired probes measured index137/5943 ->137/5945, free137/5964 ->137/5966,
+    Prophet131/5701 ->131/5703; all ten packs, no new selected owner,
+    three introduced findings and zero inherited. The sole suite token is
+    in the existing billing-emails command; no install or job is added.
+    Current main has actually landed F09's independent +2 and its complete
+    provenance below. Preserve it, then compose only this PR's measured +2:
+    5945/5966/5703 ->5947/5968/5705, with ceilings137/138/131 and ten packs.
+    This is source accounting, not a new planner run or unmerged-sibling
+    funding. All commands, selectors, assertions and runtime limits remain.
 
     F09 C3 current-main conflict repair (2026-11-09): retain the complete
     historical paired measurement below and current main's independent history.
