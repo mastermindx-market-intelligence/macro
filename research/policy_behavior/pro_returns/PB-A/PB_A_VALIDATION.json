@@ -1,0 +1,29 @@
+{
+  "status": "PASS",
+  "primary_episodes": 24,
+  "separate_challenges": 1,
+  "source_records": 84,
+  "first_public_clock_counts_primary": {
+    "MINUTE": 17,
+    "DATE_ONLY": 7
+  },
+  "immutable_forecast_sha256": "2204fc89a45fa6cb3234762316ae63ffdd9f60daae631c799e2d0d5ac55e246a",
+  "checks": [
+    "Frozen design/code/forecast identities",
+    "Source admission bounds and scoped certificates",
+    "No realized outcome keys in decision block",
+    "Required rhetoric/hypothesis fields",
+    "Joint source lineage",
+    "Allocation versus completed-settlement semantics",
+    "Forecast/outcome joins and source digests"
+  ],
+  "manifest_files_verified": 0,
+  "reproduction": [
+    "Forecast bytes identical with no outcome directory present",
+    "PB_A_OUTCOMES.json JSON content reproduced exactly",
+    "PB_A_BASELINE_PILOT.json JSON content reproduced exactly",
+    "Post-score endpoint diagnostic reproduced exactly",
+    "Casebook reconstruction and input identities reproduced exactly"
+  ],
+  "limits": "Verifies this research package, not historical served bytes, full M2, calibrated skill or production integration."
+}

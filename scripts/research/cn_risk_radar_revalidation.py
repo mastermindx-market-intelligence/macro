@@ -5,7 +5,13 @@ The module exposes pure statistical helpers for tests and a CLI added incrementa
 """
 from __future__ import annotations
 
+import sys
 from collections.abc import Mapping
+from pathlib import Path
+
+# Resolve repository imports from this checkout when invoked by file path.
+_ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(_ROOT))
 
 import numpy as np
 import pandas as pd
