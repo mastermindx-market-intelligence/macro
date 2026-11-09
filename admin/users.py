@@ -36,6 +36,7 @@ import logging
 import re
 import secrets
 import string
+from concurrent.futures import ThreadPoolExecutor
 
 from . import actions, settings
 
@@ -119,39 +120,68 @@ def _query(sql: str):
     return r.json()
 
 
+_READ_FANOUT_MAX = 4
+
+
+def _parallel_reads(**thunks):
+    """Run independent read-only admin calls concurrently.
+
+    Supabase Management-API round trips are network-bound. Several operator pages
+    historically stacked 3-4 independent reads in series, so page latency was their
+    SUM. Keep fanout small and bounded; exceptions propagate to the owning panel's
+    existing fail-soft envelope.
+    """
+    if len(thunks) <= 1:
+        return {name: fn() for name, fn in thunks.items()}
+    with ThreadPoolExecutor(
+        max_workers=min(len(thunks), _READ_FANOUT_MAX),
+        thread_name_prefix="admin-supabase",
+    ) as pool:
+        futures = {name: pool.submit(fn) for name, fn in thunks.items()}
+        return {name: future.result() for name, future in futures.items()}
+
+
 def summary() -> dict:
     if not status()["configured"]:
         return {"ok": False, **status()}
     try:
-        agg = _query(
-            "select "
-            "count(*)::int as total, "
-            "count(*) filter (where created_at > now() - interval '24 hours')::int as new_24h, "
-            "count(*) filter (where created_at > now() - interval '7 days')::int as new_7d, "
-            "count(*) filter (where created_at > now() - interval '30 days')::int as new_30d, "
-            "count(*) filter (where last_sign_in_at > now() - interval '24 hours')::int as active_24h, "
-            "count(*) filter (where last_sign_in_at > now() - interval '7 days')::int as active_7d, "
-            "count(*) filter (where email_confirmed_at is not null)::int as confirmed, "
-            "max(created_at) as newest "
-            f"from auth.users where {_ACTIVE}")
-        # Excluded (banned/anon/deleted) surfaced separately — never folded into totals.
-        excluded = _query(
-            f"select count(*)::int as excluded from auth.users where not ({_ACTIVE})")
-        # Zero-filled 30-day calendar: a generate_series scaffold LEFT JOINed to the
-        # per-day counts, so every day 0..29 appears (n=0 where none) and gap days
-        # can't shift later bars left.
-        series = _query(
-            "select to_char(d.day, 'YYYY-MM-DD') as day, coalesce(c.n, 0)::int as n "
-            "from generate_series("
-            "date_trunc('day', now()) - interval '29 days', "
-            "date_trunc('day', now()), interval '1 day') as d(day) "
-            "left join (select date_trunc('day', created_at) as day, count(*)::int as n "
-            f"from auth.users where {_ACTIVE} "
-            "and created_at > now() - interval '30 days' group by 1) as c "
-            "on c.day = d.day order by d.day")
-        providers = _query(
-            "select coalesce(raw_app_meta_data->>'provider','email') as provider, "
-            f"count(*)::int as n from auth.users where {_ACTIVE} group by 1 order by 2 desc")
+        reads = _parallel_reads(
+            agg=lambda: _query(
+                "select "
+                "count(*)::int as total, "
+                "count(*) filter (where created_at > now() - interval '24 hours')::int as new_24h, "
+                "count(*) filter (where created_at > now() - interval '7 days')::int as new_7d, "
+                "count(*) filter (where created_at > now() - interval '30 days')::int as new_30d, "
+                "count(*) filter (where last_sign_in_at > now() - interval '24 hours')::int as active_24h, "
+                "count(*) filter (where last_sign_in_at > now() - interval '7 days')::int as active_7d, "
+                "count(*) filter (where email_confirmed_at is not null)::int as confirmed, "
+                "max(created_at) as newest "
+                f"from auth.users where {_ACTIVE}"
+            ),
+            # Excluded (banned/anon/deleted) surfaced separately — never folded into totals.
+            excluded=lambda: _query(
+                f"select count(*)::int as excluded from auth.users where not ({_ACTIVE})"
+            ),
+            # Zero-filled 30-day calendar: every day 0..29 appears, including zero days.
+            series=lambda: _query(
+                "select to_char(d.day, 'YYYY-MM-DD') as day, coalesce(c.n, 0)::int as n "
+                "from generate_series("
+                "date_trunc('day', now()) - interval '29 days', "
+                "date_trunc('day', now()), interval '1 day') as d(day) "
+                "left join (select date_trunc('day', created_at) as day, count(*)::int as n "
+                f"from auth.users where {_ACTIVE} "
+                "and created_at > now() - interval '30 days' group by 1) as c "
+                "on c.day = d.day order by d.day"
+            ),
+            providers=lambda: _query(
+                "select coalesce(raw_app_meta_data->>'provider','email') as provider, "
+                f"count(*)::int as n from auth.users where {_ACTIVE} group by 1 order by 2 desc"
+            ),
+        )
+        agg = reads["agg"]
+        excluded = reads["excluded"]
+        series = reads["series"]
+        providers = reads["providers"]
         return {"ok": True, "summary": (agg or [{}])[0],
                 "excluded": (excluded or [{}])[0].get("excluded", 0),
                 "signups_daily": series or [], "providers": providers or []}

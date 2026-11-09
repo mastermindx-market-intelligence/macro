@@ -1,0 +1,38 @@
+import datetime,hashlib,json,pathlib,subprocess
+W=pathlib.Path('/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27');E=pathlib.Path('/tmp/shared-shell-css-visual-20261019T1107')
+R=json.loads((E/'macro-69-f54-candidates.json').read_text());H=R['head'];M=R['incoming'];T=R['preview_tree']
+def g(*a,check=True):
+ p=subprocess.run(['git','-C',str(W),*a],capture_output=True,text=True)
+ if check and p.returncode:raise RuntimeError((a,p.returncode,p.stderr))
+ return p
+assert g('rev-parse','HEAD').stdout.strip()==H
+assert g('symbolic-ref','--short','HEAD').stdout.strip()=='sol/market-os-shared-shell-design-20260924'
+assert g('write-tree').stdout.strip()=='6a9da6c6638b9525052131e9c1e3c26eb2242b46'
+assert not g('status','--porcelain','--untracked-files=no').stdout
+assert g('rev-parse','-q','--verify','MERGE_HEAD',check=False).returncode!=0
+refs=g('ls-remote','origin','refs/heads/sol/market-os-shared-shell-design-20260924').stdout
+assert refs.split()[0]==H
+for f in R['files']:
+ raw=pathlib.Path(f['candidate']).read_bytes();assert len(raw)==f['bytes'] and hashlib.sha256(raw).hexdigest()==f['sha256']
+start=datetime.datetime.now(datetime.timezone.utc).isoformat()
+inv={'started_at':start,'head':H,'incoming':M,'base':R['base'],'command':['git','merge','--no-ff','--no-commit',M],'source':'original shared-shell-r27','candidate_receipt_sha256':hashlib.sha256((E/'macro-69-f54-candidates.json').read_bytes()).hexdigest()}
+(E/'macro-69-f54-merge-invocation.json').write_text(json.dumps(inv,indent=2)+'\n')
+p=g('merge','--no-ff','--no-commit',M,check=False);(E/'macro-69-f54-merge.log').write_text(p.stdout+p.stderr)
+assert p.returncode==1,(p.returncode,p.stdout,p.stderr)
+assert g('rev-parse','HEAD').stdout.strip()==H and g('rev-parse','MERGE_HEAD').stdout.strip()==M
+unmerged={}
+for line in g('ls-files','-u').stdout.splitlines():
+ lead,path=line.split('\t');mode,blob,stage=lead.split();unmerged.setdefault(path,{})[stage]=blob
+assert set(unmerged)=={x['path'] for x in R['files']},unmerged
+for f in R['files']:
+ assert unmerged[f['path']]=={'1':f['base_blob'],'2':f['ours_blob'],'3':f['incoming_blob']},f['path']
+for f in R['files']:(W/f['path']).write_bytes(pathlib.Path(f['candidate']).read_bytes())
+g('add','--',*[f['path'] for f in R['files']])
+assert not g('ls-files','-u').stdout
+tree=g('write-tree').stdout.strip()
+changed=g('diff','--name-only',T,tree).stdout.splitlines();assert set(changed)=={f['path'] for f in R['files']},changed
+for f in R['files']:
+ raw=subprocess.check_output(['git','-C',str(W),'show',':'+f['path']]);assert hashlib.sha256(raw).hexdigest()==f['sha256']
+whitespace=g('diff','--cached','--check','--',*[f['path'] for f in R['files']]);assert whitespace.returncode==0
+receipt={**inv,'finished_at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'merge_exit':p.returncode,'merge_log_sha256':hashlib.sha256((E/'macro-69-f54-merge.log').read_bytes()).hexdigest(),'unmerged_before_resolution':unmerged,'unmerged_after_resolution':[],'index':tree,'only_three_conflicts_differ_from_preview':True,'candidate_hashes_match':True,'owned_whitespace_exit':whitespace.returncode,'commit_created':False,'push_started':False}
+raw=(json.dumps(receipt,indent=2)+'\n').encode();(E/'macro-69-f54-actual-merge.json').write_bytes(raw);print(raw.decode());print(json.dumps({'receipt_sha256':hashlib.sha256(raw).hexdigest()}))

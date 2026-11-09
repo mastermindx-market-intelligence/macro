@@ -1,0 +1,29 @@
+{
+  "exit_code_meaning": "Five actual frozen historical bodies exceed the unchanged value_bytes limit; retain them as execution-invalid.",
+  "frozen_corpus_sha256": "c8599aa47f10c86717d0ce74f3a39c5b2805558b953a273d8bb79ccd9a2654bd",
+  "frozen_label_file_sha256": "01a39bf10c5144c79211cb1c427121d72abd613617af16411f0ce7e6d8c5264b",
+  "operation": "agent-os-v1-closure-20261003-astra-001",
+  "private_evidence": "/Volumes/Mastermind/agent-evidence/agent-os-v1-closure-20261003-astra-001",
+  "real_scoped_judgments": {
+    "fn": 0,
+    "fp": 0,
+    "tn": 108,
+    "tp": 15
+  },
+  "replay_exit_code": 2,
+  "ruleset_unchanged": true,
+  "validator_after": {
+    "commit": "b09fea5f6d3fb8c1c3cc686dc2247fd15ba8f5d0",
+    "files": {
+      "config/pr_linkage_rules.v1.json": "2e97ad7acd0aec77ef18dbd76a1b3f2bbf8b7d4585e938498615de1917aa71aa",
+      "lib/pr_linkage_validator.py": "a757ec5b8b4ade8eab42f4bef51b2ce79fcba568d1a00e0aae11f3d71c3054f0"
+    }
+  },
+  "validator_before": {
+    "commit": "f9ed175800257b228166dabe8b3ac9a55e74e237",
+    "files": {
+      "config/pr_linkage_rules.v1.json": "2e97ad7acd0aec77ef18dbd76a1b3f2bbf8b7d4585e938498615de1917aa71aa",
+      "lib/pr_linkage_validator.py": "885997fb6c122dae995292c8b7d63f84ad088a322f6f5ccd6fe63f34f785cff9"
+    }
+  }
+}

@@ -26,6 +26,7 @@ from __future__ import annotations
 
 import os
 import re
+import shlex
 import shutil
 import subprocess
 import textwrap
@@ -34,6 +35,7 @@ from pathlib import Path
 import pytest
 import yaml
 
+from scripts.check_dag_conformance import _extract_steps_from_run
 from scripts.workflow_run_source import resolve_run_source
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -500,6 +502,148 @@ def _daily_engine_commit_step() -> tuple[dict, dict]:
     # source so these assertions keep reading what the step actually runs.
     step["run"] = resolve_run_source(step["run"], REPO_ROOT)
     return doc, step
+
+
+CORE_ENGINE_CHECKPOINT_NAME = (
+    "checkpoint core engine outputs to main (durable before tail desks)"
+)
+
+
+def _daily_engine_steps() -> list[dict]:
+    workflow = REPO_ROOT / ".github" / "workflows" / "daily.yml"
+    return yaml.safe_load(workflow.read_text())["jobs"]["engine"]["steps"]
+
+
+def test_daily_engine_checkpoints_core_outputs_before_tail_desks():
+    steps = _daily_engine_steps()
+    names = [step.get("name") for step in steps]
+    checkpoint_index = names.index(CORE_ENGINE_CHECKPOINT_NAME)
+    regional_index = next(
+        index
+        for index, name in enumerate(names)
+        if str(name).startswith("regional + desk builders")
+    )
+    membership_index = names.index(
+        "membership snapshot freshness tripwire (advisory)"
+    )
+    tail_index = names.index("timings band — tail-desks (W2)")
+
+    assert regional_index < checkpoint_index < membership_index < tail_index
+
+    checkpoint = steps[checkpoint_index]
+    assert checkpoint["if"] == "always()"
+    assert checkpoint["timeout-minutes"] == 25
+    assert checkpoint["continue-on-error"] is True
+    assert checkpoint["run"] == "bash scripts/ci/daily_engine_commit_outputs.sh"
+
+
+def test_daily_engine_keeps_final_commit_after_core_checkpoint():
+    steps = _daily_engine_steps()
+    publisher_steps = [
+        step
+        for step in steps
+        if step.get("run") == "bash scripts/ci/daily_engine_commit_outputs.sh"
+    ]
+
+    assert [step.get("name") for step in publisher_steps] == [
+        CORE_ENGINE_CHECKPOINT_NAME,
+        "commit engine outputs",
+    ]
+    assert publisher_steps[0]["continue-on-error"] is True
+    assert publisher_steps[1]["if"] == "always()"
+
+
+def test_daily_engine_core_checkpoint_is_fully_declared_in_dag():
+    dag = yaml.safe_load((REPO_ROOT / "config" / "dag.yml").read_text())
+    engine = next(
+        lane
+        for lane in dag["lanes"]
+        if lane["workflow"] == ".github/workflows/daily.yml"
+        and lane["job"] == "engine"
+    )
+    steps = engine["steps"]
+    ids = [step.get("id") for step in steps]
+    start = ids.index("checkpoint_core_precommit_inject_data_base")
+    expected = [
+        ("checkpoint_core_precommit_inject_data_base", "scripts.inject_data_base", None),
+        ("checkpoint_core_precommit_externalize_css", "scripts.externalize_css", None),
+        ("checkpoint_core_precommit_optimize_assets", "scripts.optimize_assets", None),
+        (
+            "checkpoint_core_precommit_check_template_site_sync",
+            "scripts.check_template_site_sync",
+            ["--fix"],
+        ),
+        (
+            "checkpoint_core_gold_render_audit",
+            "scripts.audit_china_gold_premium",
+            ["--strict-render"],
+        ),
+        (
+            "checkpoint_core_commodity_recovery",
+            "scripts.check_commodity_publication",
+            ["--heal-from", "$COMMODITY_ACCEPTED"],
+        ),
+        ("checkpoint_core_postrebase_inject_data_base", "scripts.inject_data_base", None),
+        ("checkpoint_core_postrebase_externalize_css", "scripts.externalize_css", None),
+        ("checkpoint_core_postrebase_optimize_assets", "scripts.optimize_assets", None),
+        (
+            "checkpoint_core_postrebase_check_template_site_sync",
+            "scripts.check_template_site_sync",
+            ["--fix"],
+        ),
+        (
+            "checkpoint_core_commodity_candidate",
+            "scripts.check_commodity_publication",
+            ["--accepted-ref", "$COMMODITY_ACCEPTED", "--candidate-ref", "$qledger_push_candidate"],
+        ),
+    ]
+
+    declared = steps[start : start + len(expected)]
+    assert [
+        (step.get("id"), step.get("module"), step.get("args"))
+        for step in declared
+    ] == expected
+
+    publisher_source = resolve_run_source(
+        "bash scripts/ci/daily_engine_commit_outputs.sh", REPO_ROOT
+    )
+    actual_modules = [
+        step.module for step in _extract_steps_from_run(publisher_source)
+    ]
+    assert [step.get("module") for step in declared] == actual_modules
+    assert steps[start + len(expected)]["id"] == "check_builder_failstreaks"
+
+
+
+@pytest.mark.parametrize(
+    ("workflow", "job", "expected_count"),
+    [
+        ("daily.yml", "engine", 4),
+        ("engine-render.yml", "engine-render", 2),
+        ("render.yml", "render", 3),
+    ],
+)
+def test_each_commodity_publication_guard_is_declared(workflow, job, expected_count):
+    """The general DAG parser caps repeated modules; these guards must be exact."""
+    dag = yaml.safe_load((REPO_ROOT / "config" / "dag.yml").read_text())
+    lane = next(
+        lane for lane in dag["lanes"]
+        if lane["workflow"] == f".github/workflows/{workflow}" and lane["job"] == job
+    )
+    declared = [
+        step for step in lane["steps"]
+        if step.get("module") == "scripts.check_commodity_publication"
+    ]
+    workflow_doc = yaml.safe_load(
+        (REPO_ROOT / ".github" / "workflows" / workflow).read_text()
+    )
+    actual = [
+        call for step in workflow_doc["jobs"][job]["steps"]
+        for call in _extract_steps_from_run(resolve_run_source(step.get("run", ""), REPO_ROOT))
+        if call.module == "scripts.check_commodity_publication"
+    ]
+    assert len(declared) == len(actual) == expected_count
+    assert len({step["id"] for step in declared}) == expected_count
 
 
 def test_daily_engine_lane_uses_quarantine_helper_for_fast_main_retries():
@@ -1823,6 +1967,58 @@ def _run_lane(
                           cwd=str(lane), capture_output=True, text=True, env=env)
 
 
+@pytest.mark.parametrize("rejects, expected_attempts, succeeds", [(0, 1, True), (1, 2, True), (5, 2, False)])
+def test_options_intel_publication_result(tmp_path, rejects, expected_attempts, succeeds):
+    """Execute the shipped shell: an unpublished brief must not produce a green job."""
+    block = _lane_block(
+        "options-intel.yml", "commit the options intelligence brief + workspace", {}
+    )
+    bare, lane, stub, _ = _lane_fixture(tmp_path, rejects=rejects)
+    brief = '{"as_of_session": "2026-10-14"}'
+    (lane / "site/options_intel_brief.json").write_text(brief)
+    (lane / "site/options.html").write_text("<html>fresh options workspace</html>")
+    before = _git_output(bare, "rev-parse", "main")
+    summary = tmp_path / "summary.md"
+    summary.touch()
+    # The shared retry helper and actual fetch/rebase/push remain in use. Only
+    # contention and Python publication preflights use the existing fixture seams.
+    r = _run_lane("PUSH_MAX_ATTEMPTS=2\n" + block, lane, stub, summary, render_ok=True)
+    output = r.stdout + r.stderr
+    assert (r.returncode == 0) is succeeds, output
+    if rejects:
+        assert int((tmp_path / "n").read_text()) == expected_attempts
+    if succeeds:
+        assert f"pushed options intelligence brief on attempt {expected_attempts}" in output
+        assert _git_output(bare, "show", "main:site/options_intel_brief.json") == brief
+        assert _git_output(bare, "show", "main:site/options.html") == "<html>fresh options workspace</html>"
+        assert "other.txt" in _git_output(bare, "ls-tree", "--name-only", "main")
+    else:
+        assert "::error title=options intelligence brief NOT pushed::" in output
+        assert "attempt budget exhausted (2 attempts)" in output
+        assert "NOT pushed" in summary.read_text()
+        assert _git_output(bare, "rev-parse", "main") == before
+    assert _git_output(bare, "show", "main:data/ledger.json") == '{"canonical": true}'
+
+
+def test_options_intel_semantic_noop_does_not_push(tmp_path):
+    block = _lane_block(
+        "options-intel.yml", "commit the options intelligence brief + workspace", {}
+    )
+    bare, lane, stub, _ = _lane_fixture(tmp_path, rejects=5)
+    (lane / "site/options_intel_brief.json").write_text("{}")
+    (lane / "site/options.html").write_text("<html>unchanged</html>")
+    _git_output(lane, "add", "site/options_intel_brief.json", "site/options.html")
+    _git_output(lane, "commit", "-m", "fixture already contains brief")
+    before = _git_output(bare, "rev-parse", "main")
+    summary = tmp_path / "summary.md"
+    summary.touch()
+    r = _run_lane(block, lane, stub, summary, render_ok=True)
+    assert r.returncode == 0, r.stdout + r.stderr
+    assert "semantic no-op" in r.stdout
+    assert (tmp_path / "n").read_text() == "0"
+    assert _git_output(bare, "rev-parse", "main") == before
+
+
 def test_render_lane_block_lands_the_render_over_a_racing_commit(tmp_path):
     block = _lane_block("render.yml", RENDER_STEP,
                         {"steps.pick.outputs.scope": "all",
@@ -2455,3 +2651,744 @@ def test_complete_jitter_cycle_is_reproducible_without_disabling_runtime_jitter(
     assert first == _backoff_complete_jitter_cycle("contention", 1, 6)
     assert len(set(first)) == 6
 
+
+
+# ---------------------------------------------------------------------------
+# GH001 is terminal for the current retry operation, with no cleanup authority.
+# All Git state below belongs to temporary synthetic repositories.
+# ---------------------------------------------------------------------------
+
+_GH001_ERROR = (
+    "remote: error: GH001: Large files detected.\n"
+    "error: failed to push some refs to 'synthetic-remote'"
+)
+
+
+def _gh001_env(tmp_path: Path, root: Path, *, rc: int = 42) -> dict[str, str]:
+    """Permit a fake rejected push only; any other Git call or sleep is a tripwire."""
+    bindir = tmp_path / "gh001-bin"
+    bindir.mkdir()
+    (bindir / "git").write_text(
+        r"""#!/bin/bash
+if [ "$(pwd -P)" != "$GH001_FIXTURE_ROOT" ]; then
+  echo "fixture Git escaped its temporary root" >&2
+  exit 97
+fi
+printf '%s\0' "$@" >> "$GH001_GIT_LOG"
+printf '\n' >> "$GH001_GIT_LOG"
+if [ "$1" = ls-tree ]; then
+  # One bounded, read-only committed QLedger path check BEFORE synthetic push.
+  if [ "$2" != -l ] || [ "$3" != synthetic-candidate ] || [ "$4" != -- ] || [ "$5" != data/qledger/claims.jsonl ]; then
+    echo "unexpected Git inspection outside one QLedger path" >&2
+    exit 97
+  fi
+  # Missing legacy path: preserve original remote-GH001 rejection test.
+  exit 0
+fi
+if [ "$1" = push ]; then
+  printf '%s\n' "$GH001_ERROR" >&2
+  exit "$GH001_RC"
+fi
+echo "unexpected Git call after terminal rejection" >&2
+exit 97
+"""
+    )
+    (bindir / "sleep").write_text(
+        '#!/bin/bash\nprintf "%s\\n" "$*" >> "$GH001_SLEEP_LOG"\n'
+        'echo "unexpected sleep after terminal rejection" >&2\nexit 96\n'
+    )
+    for name in ("git", "sleep"):
+        (bindir / name).chmod(0o755)
+    return {
+        "PATH": f"{bindir}:{os.environ['PATH']}",
+        "GH001_FIXTURE_ROOT": str(root.resolve()),
+        "GH001_GIT_LOG": str(tmp_path / "gh001-git.log"),
+        "GH001_SLEEP_LOG": str(tmp_path / "gh001-sleep.log"),
+        "GH001_ERROR": _GH001_ERROR,
+        "GH001_RC": str(rc),
+        "GITHUB_ACTIONS": "true",
+        "GITHUB_STEP_SUMMARY": str(tmp_path / "gh001-summary.md"),
+    }
+
+
+def _gh001_repository(tmp_path: Path, monkeypatch, *, rebase_kind: str) -> Path:
+    """Retain real index/stash objects and opaque interrupted-rebase bytes."""
+    root = tmp_path / "repo"
+    assert REPO_ROOT.resolve() not in root.resolve().parents
+    # Keep synthetic Git independent of the caller's repository, hooks and config.
+    for name in tuple(os.environ):
+        if name.startswith("GIT_"):
+            monkeypatch.delenv(name)
+    monkeypatch.setenv("GIT_CONFIG_NOSYSTEM", "1")
+    monkeypatch.setenv("GIT_CONFIG_GLOBAL", os.devnull)
+    monkeypatch.setenv("GIT_TERMINAL_PROMPT", "0")
+    _init_repo(root)
+    _git_output(root, "config", "core.hooksPath", os.devnull)
+    _git_output(root, "config", "commit.gpgsign", "false")
+    for name in ("staged.txt", "unstaged.txt", "mixed.txt"):
+        (root / name).write_text("base\n")
+    _git_output(root, "add", ".")
+    _git_output(root, "commit", "-qm", "synthetic base")
+    (root / "mixed.txt").write_text("retained autostash bytes\n")
+    _git_output(root, "stash", "push", "-qm", "autostash", "--", "mixed.txt")
+    stash = _git_output(root, "rev-parse", "refs/stash")
+    head = _git_output(root, "rev-parse", "HEAD")
+
+    (root / "staged.txt").write_text("staged suffix\n")
+    (root / "mixed.txt").write_text("staged mixed suffix\n")
+    _git_output(root, "add", "staged.txt", "mixed.txt")
+    (root / "mixed.txt").write_text("unstaged mixed suffix\n")
+    (root / "unstaged.txt").write_text("unstaged suffix\n")
+    (root / "untracked.bin").write_bytes(b"unpublished\x00suffix\n")
+    assert _git_output(root, "diff", "--cached", "--name-only")
+    assert _git_output(root, "diff", "--name-only")
+
+    metadata = root / ".git" / rebase_kind
+    metadata.mkdir()
+    for name, value in {
+        "head-name": "refs/heads/main\n",
+        "orig-head": head + "\n",
+        "onto": head + "\n",
+        "autostash": stash + "\n",
+        "git-rebase-todo": "opaque pending owner work\n",
+    }.items():
+        (metadata / name).write_text(value)
+    (metadata / "retained.bin").write_bytes(b"unknown\x00rebase\xffbytes")
+    return root
+
+
+def _gh001_tree_bytes(root: Path) -> dict[str, tuple]:
+    """Include every fixture file, mode and directory, including Git control state."""
+    return {
+        p.relative_to(root).as_posix(): (
+            p.stat().st_mode,
+            p.read_bytes() if p.is_file() else None,
+        )
+        for p in root.rglob("*")
+    }
+
+
+def _assert_gh001_one_push_and_no_sleep(tmp_path: Path) -> None:
+    assert (tmp_path / "gh001-git.log").read_bytes() == (
+        b"ls-tree\0-l\0synthetic-candidate\0--\0data/qledger/claims.jsonl\0\n"
+        b"push\0origin\0synthetic-candidate:refs/heads/main\0\n"
+    )
+    assert not (tmp_path / "gh001-sleep.log").exists()
+
+
+@pytest.mark.parametrize("rc", [1, 128, 142])
+@pytest.mark.parametrize(
+    "suffix",
+    [
+        "",
+        "\nhint: Updates were rejected (non-fast-forward; fetch first)",
+        "\nremote: cannot lock ref 'refs/heads/main'",
+    ],
+)
+def test_gh001_retains_first_failure_and_outranks_contention_and_alarm(tmp_path, rc, suffix):
+    error = _GH001_ERROR + suffix
+    r = run_sh(
+        r"""
+        push_retry_init "synthetic rejection"
+        push_classify "$GH001_RC" "$GH001_ERROR"
+        push_classify 1 "remote: cannot lock ref 'refs/heads/main'"
+        printf '%s\0' "$PUSH_FAIL_CLASS" "${PUSH_TERMINAL_RC:-0}" \
+          "${PUSH_TERMINAL_OUTPUT:-}" "$PUSH_STOP" "$PUSH_N_OTHER"
+        """,
+        env={"GH001_RC": str(rc), "GH001_ERROR": error},
+        cwd=tmp_path,
+    )
+    assert r.returncode == 0, r.stderr
+    fields = r.stdout.split("\0")
+    assert fields[:3] == ["push-size-rejected", str(rc), error]
+    assert "GH001" in fields[3] and "automatic retry stopped" in fields[3]
+    assert fields[4:] == ["1", ""]
+
+
+@pytest.mark.parametrize(
+    "message",
+    ["fatal: missing GH001-report.txt", "GH001 appears in a local diagnostic"],
+)
+def test_gh001_word_without_server_error_does_not_latch(tmp_path, message):
+    r = run_sh(
+        r"""
+        push_retry_init "ordinary error"
+        push_classify 1 "$GH001_ERROR"
+        printf '%s\n' "$PUSH_FAIL_CLASS" "${PUSH_TERMINAL_RC:-0}"
+        """,
+        env={"GH001_ERROR": message},
+        cwd=tmp_path,
+    )
+    assert r.returncode == 0, r.stderr
+    assert r.stdout.splitlines() == ["push-error", "0"]
+
+
+def test_gh001_successful_push_output_is_not_a_rejection(tmp_path):
+    env = _gh001_env(tmp_path, tmp_path, rc=0)
+    r = run_sh(
+        """
+        push_retry_init "successful synthetic push"
+        push_attempt
+        push_do origin synthetic-candidate:refs/heads/main
+        push_won
+        push_lost
+        echo "terminal=${PUSH_TERMINAL_RC:-0}"
+        """,
+        env=env,
+        cwd=tmp_path,
+    )
+    assert r.returncode == 0, r.stderr
+    assert "terminal=0" in r.stdout
+    assert "::error" not in r.stderr
+    _assert_gh001_one_push_and_no_sleep(tmp_path)
+
+
+@pytest.mark.parametrize("rebase_kind", ["rebase-merge", "rebase-apply"])
+def test_gh001_standalone_loop_preserves_all_git_and_worktree_bytes(
+    tmp_path, monkeypatch, rebase_kind
+):
+    root = _gh001_repository(tmp_path, monkeypatch, rebase_kind=rebase_kind)
+    before = _gh001_tree_bytes(root)
+    env = _gh001_env(tmp_path, root)
+    r = run_sh(
+        """
+        push_retry_init "synthetic retained suffix"
+        while push_attempt; do
+          if push_do origin synthetic-candidate:refs/heads/main; then
+            push_won
+            exit 0
+          fi
+          # Neither a wider budget nor a later recovery marker permits cleanup.
+          PUSH_MAX_ATTEMPTS=99
+          PUSH_DEADLINE=$((PUSH_DEADLINE + 999))
+          PUSH_ATTEMPT_INHERITED_REBASE=1
+          push_abort_rebase
+          push_backoff
+        done
+        echo "attempts=$PUSH_ATTEMPT recovery=$PUSH_RECOVERY_FAILED"
+        push_lost
+        echo "MASKED TERMINAL FAILURE"
+        """,
+        env=env,
+        cwd=root,
+    )
+    assert r.returncode == 42, (r.stdout, r.stderr)
+    assert "attempts=1 recovery=0" in r.stdout
+    assert "MASKED TERMINAL FAILURE" not in r.stdout
+    assert any(line.startswith("::error") and "GH001" in line for line in r.stderr.splitlines())
+    summary = (tmp_path / "gh001-summary.md").read_text()
+    assert "NOT pushed" in summary and "GH001" in summary and "attempts=1/99" in summary
+    assert "other=1" in summary
+    _assert_gh001_one_push_and_no_sleep(tmp_path)
+    assert _gh001_tree_bytes(root) == before
+
+
+@pytest.mark.parametrize(
+    ("helper", "expected_rc"),
+    [
+        ("push_abort_rebase", 0),
+        ("push_backoff", 0),
+        ("push_autostash_ok", 42),
+        ("push_fetch_main_for_rebase", 42),
+        ("push_prepare_inherited_rebase", 42),
+    ],
+)
+def test_gh001_terminal_helpers_do_not_inspect_or_mutate_retained_state(
+    tmp_path, monkeypatch, helper, expected_rc
+):
+    root = _gh001_repository(tmp_path, monkeypatch, rebase_kind="rebase-merge")
+    before = _gh001_tree_bytes(root)
+    env = _gh001_env(tmp_path, root)
+    r = run_sh(
+        f"""
+        push_retry_init "retained state"
+        push_attempt
+        if push_do origin synthetic-candidate:refs/heads/main; then exit 95; fi
+        PUSH_ATTEMPT_INHERITED_REBASE=1
+        if {helper}; then result=0; else result=$?; fi
+        echo "helper=$result terminal=$PUSH_TERMINAL_RC recovery=$PUSH_RECOVERY_FAILED"
+        if push_do origin different-candidate:refs/heads/main; then exit 95; else
+          echo "second_push=$?"
+        fi
+        """,
+        env=env,
+        cwd=root,
+    )
+    assert r.returncode == 0, (r.stdout, r.stderr)
+    assert f"helper={expected_rc} terminal=42 recovery=0" in r.stdout
+    assert "second_push=42" in r.stdout
+    _assert_gh001_one_push_and_no_sleep(tmp_path)
+    assert _gh001_tree_bytes(root) == before
+
+
+def test_gh001_conditional_function_returns_terminal_failure_without_errexit(tmp_path):
+    env = _gh001_env(tmp_path, tmp_path)
+    r = run_sh(
+        """
+        synthetic_publish() {
+          push_retry_init "conditional synthetic caller"
+          while push_attempt; do
+            if push_do origin synthetic-candidate:refs/heads/main; then return 0; fi
+            push_abort_rebase
+            push_backoff
+          done
+          push_lost
+        }
+        # Bash suppresses errexit inside a function tested by if. Its explicit
+        # final nonzero result still has to reach the caller.
+        if synthetic_publish; then
+          echo "MASKED TERMINAL FAILURE"
+          exit 95
+        else
+          result=$?
+          echo "conditional_result=$result"
+          exit "$result"
+        fi
+        """,
+        env=env,
+        cwd=tmp_path,
+    )
+    assert r.returncode == 42, (r.stdout, r.stderr)
+    assert "conditional_result=42" in r.stdout
+    assert "MASKED TERMINAL FAILURE" not in r.stdout
+    _assert_gh001_one_push_and_no_sleep(tmp_path)
+
+
+def test_gh001_new_explicit_retry_operation_clears_terminal_receipt(tmp_path):
+    r = run_sh(
+        r"""
+        push_retry_init "first operation"
+        push_classify 42 "$GH001_ERROR"
+        push_retry_init "new explicit operation"
+        push_attempt
+        printf '%s\0' "$PUSH_TERMINAL_RC" "$PUSH_TERMINAL_OUTPUT" \
+          "$PUSH_STOP" "$PUSH_N_OTHER" "$PUSH_ATTEMPT"
+        """,
+        env={"GH001_ERROR": _GH001_ERROR},
+        cwd=tmp_path,
+    )
+    assert r.returncode == 0, r.stderr
+    assert r.stdout.split("\0") == ["0", "", "", "0", "1", ""]
+
+
+# ---------------------------------------------------------------------------
+# Emergency GH001 prevention: a known oversized committed legacy QLedger blob
+# should never be packed for network push. This guards the existing shared
+# push_retry transport, not QLedger's separate native publication admission.
+# ---------------------------------------------------------------------------
+@pytest.mark.parametrize(
+    ("source_ref", "size", "expected_block"),
+    [
+        ("HEAD", 104_857_601, True),
+        ("HEAD", 104_857_600, False),
+        ("HEAD", 104_770_713, False),
+        ("synthetic-candidate", 136_152_822, True),
+    ],
+)
+def test_committed_qledger_oversize_refuses_network_before_git_push(
+    tmp_path, source_ref, size, expected_block
+):
+    r = run_sh(
+        r"""
+        push_retry_init "pre-network size test"
+        push_qledger_guard() { return 0; }
+        git() {
+          case "$1" in
+            ls-tree)
+              [ "$2" = "-l" ] || return 80
+              [ "$GIT_NO_LAZY_FETCH" = 1 ] || return 79
+              [ "$3" = "$SIMULATED_REF" ] || return 81
+              [ "$4" = "--" ] || return 82
+              [ "$5" = "data/qledger/claims.jsonl" ] || return 83
+              printf '100644 blob abcdefabcdefabcdefabcdefabcdefabcdefabcd %s\tdata/qledger/claims.jsonl\n' "$SIMULATED_BYTES"
+              ;;
+            push)
+              echo 'NETWORK_PUSH_WOULD_EXECUTE'
+              ;;
+            *) return 84 ;;
+          esac
+        }
+        if push_do origin "$SIMULATED_REF:refs/heads/main"; then result=0
+        else result=$?; fi
+        printf 'RESULT=%s CLASS=%s TERMINAL=%s\n' "$result" "$PUSH_FAIL_CLASS" "$PUSH_TERMINAL_RC"
+        """,
+        cwd=tmp_path,
+        env={"SIMULATED_REF": source_ref, "SIMULATED_BYTES": str(size)},
+    )
+    assert r.returncode == 0, (r.stdout, r.stderr)
+    if expected_block:
+        assert "NETWORK_PUSH_WOULD_EXECUTE" not in r.stdout
+        assert "CLASS=push-size-preflight" in r.stdout
+        assert "TERMINAL=0" not in r.stdout
+    else:
+        assert "NETWORK_PUSH_WOULD_EXECUTE" in r.stdout
+        assert "RESULT=0" in r.stdout
+
+
+
+def test_missing_promisor_blob_size_does_not_authorize_download_or_false_oversize(tmp_path):
+    """Missing objects in blob:none clones must never be lazily hydrated."""
+    r = run_sh(
+        r"""
+        push_retry_init "missing promisor QLedger"
+        push_qledger_guard() { return 0; }
+        git() {
+          if [ "$1" = ls-tree ]; then
+            test "$GIT_NO_LAZY_FETCH" = 1 || { echo BUG_LAZY_FETCH_ALLOWED; return 79; }
+            printf '100644 blob abcdefabcdefabcdefabcdefabcdefabcdefabcd -\tdata/qledger/claims.jsonl\n'
+            return 0
+          fi
+          if [ "$1" = push ]; then echo ORIGINAL_REMOTE_GH001_REMAINS_AUTHORITATIVE; return 0; fi
+          return 89
+        }
+        push_do origin HEAD:refs/heads/main
+        """,
+        cwd=tmp_path,
+    )
+    assert r.returncode == 0, (r.stdout, r.stderr)
+    assert "BUG_LAZY_FETCH_ALLOWED" not in r.stdout + r.stderr
+    assert "ORIGINAL_REMOTE_GH001_REMAINS_AUTHORITATIVE" in r.stdout
+
+def test_legacy_qledger_preflight_does_not_block_missing_native_base(tmp_path):
+    r = run_sh(
+        r"""
+        push_retry_init "native base absent"
+        push_qledger_guard() { return 0; }
+        git() {
+          if [ "$1" = ls-tree ]; then return 0; fi
+          if [ "$1" = push ]; then echo 'PUSHES_NATIVE_SNAPSHOT'; return 0; fi
+          return 77
+        }
+        push_do origin HEAD:refs/heads/main
+        """,
+        cwd=tmp_path,
+    )
+    assert r.returncode == 0, (r.stdout, r.stderr)
+    assert "PUSHES_NATIVE_SNAPSHOT" in r.stdout
+
+
+def test_qledger_size_preflight_terminal_sticky_without_second_push(tmp_path):
+    r = run_sh(
+        r"""
+        push_retry_init "oversize sticky"
+        push_qledger_guard() { return 0; }
+        git() {
+          if [ "$1" = ls-tree ]; then
+            printf '100644 blob abcdefabcdefabcdefabcdefabcdefabcdefabcd 136152822\tdata/qledger/claims.jsonl\n'
+            return 0
+          fi
+          if [ "$1" = push ]; then echo 'UNSAFE_PUSH_CALLED'; return 0; fi
+          return 75
+        }
+        if push_do origin HEAD:refs/heads/main; then exit 90; else first=$?; fi
+        if push_do origin other:refs/heads/main; then exit 91; else second=$?; fi
+        printf 'first=%s second=%s stop=%s other=%s\n' "$first" "$second" "$PUSH_STOP" "$PUSH_N_OTHER"
+        """,
+        cwd=tmp_path,
+    )
+    assert r.returncode == 0, (r.stdout, r.stderr)
+    assert "UNSAFE_PUSH_CALLED" not in r.stdout
+    assert "first=73 second=73" in r.stdout
+    assert "other=1" in r.stdout
+    assert "stop=local QLedger GH001 size preflight" in r.stdout
+
+
+def test_preflight_never_hydrates_real_blob_none_partial_clone(tmp_path):
+    """The real macstudio runner's blob:none state is a safety precondition.
+
+    Git can lazily download a missing 100MiB QLedger blob when ls-tree -l
+    computes its size. This local-file-only partial-clone witness proves the
+    optional guard does NOT hydrate that missing promised blob. Unavailable
+    local size retains the original remote GH001 fallback. No GitHub remote.
+    """
+    src = tmp_path / "local-full"
+    dst = tmp_path / "local-promisor"
+    src.mkdir()
+    env = {
+        **os.environ,
+        "GIT_CONFIG_NOSYSTEM": "1",
+        "GIT_CONFIG_GLOBAL": os.devnull,
+        "GIT_TERMINAL_PROMPT": "0",
+    }
+    for key in ("GIT_DIR", "GIT_WORK_TREE", "GIT_INDEX_FILE",
+                "GIT_OBJECT_DIRECTORY", "GIT_NO_LAZY_FETCH"):
+        env.pop(key, None)
+
+    def git(*args: str, cwd: Path | None = None, check: bool = True):
+        return subprocess.run(
+            ["git", *args], cwd=cwd, env=env, capture_output=True, text=True,
+            check=check, timeout=12,
+        )
+
+    git("init", "-q", "-b", "main", str(src))
+    git("config", "user.email", "nobody@local.invalid", cwd=src)
+    git("config", "uploadpack.allowFilter", "true", cwd=src)
+    # Configure the local source itself, not any user's global Git settings.
+    git("config", "user.name", "local fake evidence", cwd=src)
+    target = src / "data" / "qledger" / "claims.jsonl"
+    target.parent.mkdir(parents=True)
+    target.write_bytes(b"synthetic-small-source\\n")
+    git("add", "--", "data/qledger/claims.jsonl", cwd=src)
+    git("-c", "commit.gpgsign=false", "commit", "-qm", "synthetic", cwd=src)
+    blob = git("rev-parse", "HEAD:data/qledger/claims.jsonl", cwd=src).stdout.strip()
+    git("clone", "-q", "--filter=blob:none", "--no-checkout",
+        src.as_uri(), str(dst))
+    assert git("config", "--get", "remote.origin.promisor", cwd=dst).stdout.strip() == "true"
+
+    missing_env = {**env, "GIT_NO_LAZY_FETCH": "1"}
+    def available_locally() -> bool:
+        got = subprocess.run(
+            ["git", "cat-file", "-e", blob], cwd=dst, env=missing_env,
+            capture_output=True, text=True, timeout=10,
+        )
+        return got.returncode == 0
+
+    assert not available_locally(), "fixture must start with a promised missing blob"
+    got = run_sh(
+        """
+        push_retry_init "real partial-clone read-only guard"
+        git() {
+          printf '%s\\n' "$*" >> "$PREFLIGHT_TRACE"
+          command git "$@"
+        }
+        _push_qledger_committed_size_preflight origin HEAD:refs/heads/main
+        printf 'STATUS=%s TERMINAL=%s\\n' "$?" "$PUSH_TERMINAL_RC"
+        """, cwd=dst, env={**env, "PREFLIGHT_TRACE": str(tmp_path / "preflight-commands.txt")},
+    )
+    assert got.returncode == 0, (got.stdout, got.stderr)
+    assert "STATUS=0 TERMINAL=0" in got.stdout
+    assert not available_locally(), "optional guard fetched a promised QLedger blob"
+    trace = tmp_path / "preflight-commands.txt"
+    assert trace.exists(), "the no-hydration witness must actually inspect the candidate"
+    assert trace.read_text().splitlines() == ["ls-tree -l HEAD -- data/qledger/claims.jsonl"]
+
+
+@pytest.mark.parametrize("invocation", ["push_do", "push_do origin"])
+def test_qledger_preflight_never_guesses_implicit_default_push_ref(tmp_path, invocation):
+    """An unspecified default ref may not be HEAD; avoid false publisher denial."""
+    r = run_sh(
+        f"""
+        push_retry_init "opaque default push"
+        push_qledger_guard() {{ return 0; }}
+        git() {{
+          if [ "$1" = ls-tree ]; then
+            printf '100644 blob abcdefabcdefabcdefabcdefabcdefabcdefabcd 136152822\\tdata/qledger/claims.jsonl\\n'
+            return 0
+          fi
+          if [ "$1" = push ]; then echo EXPLICITLY_UNBOUND_DEFAULT_PUSH; return 0; fi
+          return 71
+        }}
+        {invocation}
+        """,
+        cwd=tmp_path,
+    )
+    assert r.returncode == 0, (r.stdout, r.stderr)
+    assert "EXPLICITLY_UNBOUND_DEFAULT_PUSH" in r.stdout
+    assert "local QLedger Git-tree blob" not in r.stderr
+
+
+# Actual caller integration: do not infer the source of a bare/default push.
+def _run_collect_tail_publication_fixture(tmp_path, size, *, working_claims=False,
+                                          candidate_available=True, branch="main"):
+    """Run the real YAML step + shared helper, with synthetic Git and legacy admission.
+
+    No collector, real repository, remote transport or source ledger is invoked.
+    The shim replaces only the canonical binding result with an admitted legacy
+    fixture; the size guard, retry control and parsed caller execute unchanged.
+    """
+    import json
+
+    workflow = yaml.safe_load((REPO_ROOT / ".github/workflows/daily.yml").read_text())
+    job = workflow["jobs"]["collect_tail"]
+    step = next(s for s in job["steps"] if s.get("name") == "commit tail data")
+    assert job["steps"][1]["with"]["ref"] == "main"
+    root = tmp_path / "synthetic-caller"
+    root.mkdir()
+    (root / ".git").mkdir()
+    shim = root / "scripts/ci/push_retry.sh"
+    shim.parent.mkdir(parents=True)
+    shim.write_text(f'. "{LIB}"\npush_qledger_guard() {{ return 0; }}\n')
+    # Preserve current main's staged-size guard; exercise its actual no-op path.
+    shutil.copyfile(REPO_ROOT / "scripts/ci/qledger_carve.sh", shim.with_name("qledger_carve.sh"))
+    if working_claims:
+        claims = root / "data/qledger/claims.jsonl"
+        claims.parent.mkdir(parents=True)
+        claims.write_text("synthetic working bytes; metadata remains authoritative\n")
+    fake_bin = root / "fake-bin"
+    fake_bin.mkdir()
+    fake_git = fake_bin / "git"
+    fake_git.write_text(textwrap.dedent('''\
+        #!/usr/bin/env python3
+        import json, os, sys
+        a = sys.argv[1:]
+        with open(os.environ["TAIL_GIT_LOG"], "a") as out:
+            out.write(json.dumps({"args": a, "lazy": os.environ.get("GIT_NO_LAZY_FETCH")}) + "\\n")
+        if a[:2] == ["ls-tree", "-l"]:
+            if os.environ["TAIL_SIZE"] != "absent":
+                print("100644 blob " + "f" * 40 + " " + os.environ["TAIL_SIZE"] + "\\tdata/qledger/claims.jsonl")
+        elif a[:2] == ["rev-parse", "--abbrev-ref"]:
+            print(os.environ["TAIL_BRANCH"])
+        elif a and a[0] == "rev-parse":
+            if os.environ["TAIL_CANDIDATE_AVAILABLE"] != "1":
+                sys.exit(128)
+            print(os.environ["TAIL_CANDIDATE"])
+        elif a == ["diff", "--cached", "--name-only", "-z", "--no-renames",
+                   "--diff-filter=d", "--", "data/qledger", "site/qledger"]:
+            # No newly staged QLedger delta: the post-rebase committed source
+            # still needs its independent size check, even with a worktree file.
+            pass
+        elif a[:3] == ["diff", "--cached", "--quiet"]:
+            sys.exit(1)
+        elif a and a[0] in ("config", "add", "commit", "fetch", "pull", "log", "ls-files", "ls-tree", "push"):
+            pass
+        else:
+            print("unexpected synthetic Git operation: " + repr(a), file=sys.stderr)
+            sys.exit(97)
+        '''))
+    fake_git.chmod(0o755)
+    log = root / "git-calls.jsonl"
+    env = {
+        **os.environ,
+        "PATH": str(fake_bin) + os.pathsep + os.environ["PATH"],
+        "GITHUB_WORKSPACE": str(root),
+        "GITHUB_STEP_SUMMARY": str(root / "summary.md"),
+        "TAIL_GIT_LOG": str(log),
+        "TAIL_CANDIDATE": "1" * 40,
+        "TAIL_BRANCH": branch,
+        "TAIL_CANDIDATE_AVAILABLE": "1" if candidate_available else "0",
+        "TAIL_SIZE": "absent" if size is None else str(size),
+    }
+    before = (root / "data/qledger/claims.jsonl").read_bytes() if working_claims else None
+    result = subprocess.run(["bash", "-eo", "pipefail", "-c", step["run"]],
+                            cwd=root, env=env, text=True, capture_output=True, timeout=15)
+    calls = [json.loads(line) for line in log.read_text().splitlines()]
+    if working_claims:
+        assert (root / "data/qledger/claims.jsonl").read_bytes() == before
+    return result, calls
+
+
+@pytest.mark.parametrize(("size", "working_claims", "blocked"), [
+    (136_152_822, False, True), (104_857_601, True, True),
+    (104_857_600, False, False), (104_770_713, True, False),
+    ("-", False, False), (None, False, False),
+])
+def test_collect_tail_real_caller_binds_checked_commit_before_network(
+    tmp_path, size, working_claims, blocked
+):
+    result, calls = _run_collect_tail_publication_fixture(
+        tmp_path, size, working_claims=working_claims
+    )
+    staged_scans = [c["args"] for c in calls if c["args"][:4] ==
+                    ["diff", "--cached", "--name-only", "-z"]]
+    assert staged_scans == [["diff", "--cached", "--name-only", "-z", "--no-renames",
+                             "--diff-filter=d", "--", "data/qledger", "site/qledger"]]
+    inspections = [c for c in calls if c["args"][:2] == ["ls-tree", "-l"]]
+    pushes = [c for c in calls if c["args"][:1] == ["push"]]
+    assert len(inspections) == 1, (result.stdout, result.stderr, calls)
+    assert inspections[0] == {
+        "args": ["ls-tree", "-l", "1" * 40, "--", "data/qledger/claims.jsonl"],
+        "lazy": "1",
+    }
+    if blocked:
+        assert result.returncode == 73, (result.stdout, result.stderr)
+        assert pushes == []
+        assert calls[-1] == inspections[0], "terminal failure must not rebase, clean, inspect or push again"
+        assert "local QLedger GH001 size preflight" in result.stderr
+    else:
+        assert result.returncode == 0, (result.stdout, result.stderr)
+        assert [c["args"] for c in pushes] == [["push", "origin", "1" * 40 + ":refs/heads/main"]]
+        assert "pushed tail data on attempt 1" in result.stdout
+
+
+def test_collect_tail_cannot_push_when_its_exact_commit_cannot_be_resolved(tmp_path):
+    result, calls = _run_collect_tail_publication_fixture(
+        tmp_path, 104_770_713, candidate_available=False
+    )
+    assert result.returncode != 0
+    assert not any(c["args"][:1] == ["push"] for c in calls)
+    assert not any(c["args"][:2] == ["ls-tree", "-l"] for c in calls)
+
+
+@pytest.mark.parametrize("branch", ["feature/synthetic", "HEAD"])
+def test_collect_tail_named_commit_still_requires_the_existing_main_guard(tmp_path, branch):
+    result, calls = _run_collect_tail_publication_fixture(
+        tmp_path, 104_770_713, branch=branch
+    )
+    assert result.returncode != 0
+    assert "not on main" in result.stdout
+    assert not any(c["args"][:1] == ["push"] for c in calls)
+    assert not any(c["args"][:2] == ["ls-tree", "-l"] for c in calls)
+
+
+def _ohlc_delivery_step():
+    document = yaml.safe_load(
+        (REPO_ROOT / ".github" / "workflows" / "daily.yml").read_text()
+    )
+    return next(
+        step for step in document["jobs"]["engine"]["steps"]
+        if "python -m scripts.publish_ohlc publish" in step.get("run", "")
+    )
+
+
+@pytest.mark.parametrize("publisher_status", [0, 31])
+def test_ohlc_delivery_workflow_cleans_key_and_preserves_publisher_status(
+    tmp_path, publisher_status
+):
+    """Execute the actual step with a local publisher stub; never contact a host."""
+    import json
+    import sys
+
+    step = _ohlc_delivery_step()
+    assert step["if"] == "always()"
+    assert step["timeout-minutes"] == 20
+    assert step["env"] == {"OHLC_DEPLOY_KEY": "${{ secrets.VPS_DEPLOY_KEY }}"}
+    package = tmp_path / "scripts"
+    package.mkdir()
+    (package / "__init__.py").write_text("")
+    (package / "publish_ohlc.py").write_text(
+        "import json, os, pathlib, stat, sys\n"
+        "args = sys.argv[1:]\n"
+        "assert args[0] == 'publish'\n"
+        "key = pathlib.Path(args[args.index('--ssh-key') + 1])\n"
+        "assert stat.S_IMODE(key.stat().st_mode) == 0o600\n"
+        "assert key.read_text() == 'synthetic-key-canary\\n'\n"
+        "assert 'OHLC_DEPLOY_KEY' not in os.environ\n"
+        "pathlib.Path('publisher-call.json').write_text(json.dumps(args))\n"
+        f"sys.exit({publisher_status})\n"
+    )
+    runner_temp = tmp_path / "runner-temp"
+    runner_temp.mkdir()
+    # Use this test's interpreter; the remainder is the unmodified workflow shell.
+    body = step["run"].replace(
+        "python -m scripts.publish_ohlc", f"{shlex.quote(sys.executable)} -m scripts.publish_ohlc"
+    )
+    result = subprocess.run(
+        ["bash", "-c", body], cwd=tmp_path, capture_output=True, text=True,
+        env={
+            **os.environ,
+            "OHLC_DEPLOY_KEY": "synthetic-key-canary",
+            "RUNNER_TEMP": str(runner_temp),
+            "GITHUB_RUN_ID": "123",
+            "GITHUB_RUN_ATTEMPT": "2",
+        },
+        check=False,
+    )
+    assert result.returncode == publisher_status, result.stderr
+    args = json.loads((tmp_path / "publisher-call.json").read_text())
+    assert args[args.index("--manifest") + 1] == "site/_tmp/ohlc-complete.json"
+    assert args[args.index("--payload-dir") + 1] == "site/ohlc"
+    assert args[args.index("--evidence-dir") + 1].endswith("/macro-ohlc-delivery/123-2")
+    assert not list(runner_temp.iterdir())
+    assert "synthetic-key-canary" not in result.stdout + result.stderr
+
+
+def test_ohlc_delivery_workflow_missing_key_is_visible_before_publish(tmp_path):
+    step = _ohlc_delivery_step()
+    result = subprocess.run(
+        ["bash", "-c", step["run"]], cwd=tmp_path,
+        env={**os.environ, "OHLC_DEPLOY_KEY": "", "RUNNER_TEMP": str(tmp_path)},
+        capture_output=True, text=True, check=False,
+    )
+    assert result.returncode == 1
+    assert "::error::OHLC origin delivery" in result.stdout
+    assert not list(tmp_path.iterdir())

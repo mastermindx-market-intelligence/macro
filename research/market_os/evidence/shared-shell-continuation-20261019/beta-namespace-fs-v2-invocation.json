@@ -1,0 +1,16 @@
+{
+  "schema": "mastermind.attended.beta_namespace_invocation.v2",
+  "started_at": "2026-10-20T03:09:58.402213+00:00",
+  "source_sha256": "7f7e3179b6f46844e13f293d78be6c4019c8564d2cc3109f45cd3e5e5089c5a5",
+  "source_bytes": 48421,
+  "binding_sha256": "7e9b812fa264611279183202c4eb576984bb8d2e8b5fd70dedbd6b34152efd2b",
+  "remote_probe_path": "/root/mastermind-beta-owner-93e303cc-ucmhwhpm/beta-namespace-fs-probe-7f7e3179.py",
+  "prior_refusal_stdout_sha256": "440316f3ed272cc744bb8340a7c2747433b00f998c4d4801e62374a0a1d5b606",
+  "prior_absence_postread_sha256": "ab2b31772fc249674e1152ebd390f54eb5d8a07013bf9e20b6fa72ed2011adfa",
+  "installed_argv_control_sha256": "c7ec86a5cc8beee0609bfb6ea77dbfc926fcbc7e43102d070e0e18b497457826",
+  "source_review": "Root plus beta_recovery_counsel NONBLOCKING at exact7f7e3179; onlyunambiguouswdns=/ serialization and rawstderr retention differ; helperfunctions unchanged.",
+  "effect_scope": "Same diagnostic continuation after confirmed pre-inner exec refusal, cache absence and child reaping. Same unused nonce. One exclusive beta cache file with exact cleanup. No bootstrap/restart/service change/public-data write/production mutation.",
+  "stage_exit": null,
+  "probe_exit": null,
+  "all_checks_pass": false
+}

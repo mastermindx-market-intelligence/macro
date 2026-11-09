@@ -4,14 +4,17 @@ import contextlib
 import json
 import os
 import plistlib
+import re
 import shutil
 import stat
 import subprocess
+import sys
 import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
 import yaml
+import pytest
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -69,9 +72,13 @@ def test_control_scripts_parse_and_requirements_are_pinned():
     }
 
 
-def test_bootstrap_check_verifies_installed_and_loaded_agent():
+def test_bootstrap_check_verifies_rendered_install_and_loaded_agent():
     source = BOOTSTRAP.read_text(encoding="utf-8")
-    assert '/usr/bin/cmp -s "$PLIST" "$DEST_PLIST"' in source
+    assert 'ENV_FILE="${EARNINGS_ENV_FILE:-}"' in source
+    assert "ERROR: EARNINGS_ENV_FILE is required" in source
+    assert 'render_plist "$PLIST" "$RENDERED_PLIST" "$ENV_FILE"' in source
+    assert '/usr/bin/cmp -s "$RENDERED_PLIST" "$DEST_PLIST"' in source
+    assert '/usr/bin/install -m 0644 "$RENDERED_PLIST" "$TMP_PLIST"' in source
     assert '"$LAUNCHCTL" print "$DOMAIN/$LABEL"' in source
     assert "EARNINGS_LAUNCHCTL" in source
     assert 'payload.get("initialized") is not True' in source
@@ -84,7 +91,7 @@ def test_plist_is_tcc_safe_secretless_and_has_two_retry_windows():
     assert payload["WorkingDirectory"] == "/Users/chriswong/earnings-ops-wt"
     assert payload["ProgramArguments"] == [
         "/Users/chriswong/earnings-ops-wt/ops/launchd/run_with_env.sh",
-        "/Users/chriswong/hub-ops-wt/.env",
+        "__EARNINGS_ENV_FILE__",
         "/Users/chriswong/earnings-ops-wt/ops/launchd/run_earnings_worker.sh",
     ]
     assert payload["StartCalendarInterval"] == [
@@ -103,6 +110,71 @@ def test_plist_is_tcc_safe_secretless_and_has_two_retry_windows():
     )
     assert "/Documents/" not in " ".join(payload["ProgramArguments"])
     assert "/Documents/" not in payload["WorkingDirectory"]
+
+
+def test_earnings_worker_never_borrows_another_worktree_env_by_default():
+    sources = "\n".join(
+        path.read_text(encoding="utf-8")
+        for path in (
+            BOOTSTRAP,
+            PLIST,
+            RUNNER,
+            ROOT / "tools" / "earnings_worker" / "README.md",
+        )
+    )
+    assert "hub-ops-wt/.env" not in sources
+    assert "__EARNINGS_ENV_FILE__" in PLIST.read_text(encoding="utf-8")
+    assert "EARNINGS_ENV_FILE is required" in BOOTSTRAP.read_text(encoding="utf-8")
+
+
+def test_bootstrap_render_contract_replaces_only_the_env_path():
+    source = BOOTSTRAP.read_text(encoding="utf-8")
+    assert 'if args[1] != placeholder:' in source
+    assert 'args[1] = env_file' in source
+    assert 'plistlib.dump(payload, handle, sort_keys=False)' in source
+    assert 'EARNINGS_ENV_FILE must be an absolute path' in source
+    assert 'EARNINGS_ENV_FILE must live outside ~/Documents' in source
+
+
+@pytest.mark.parametrize("env_file", [
+    "/approved/earnings/.env",
+    "/approved/earnings path & <binding>/.env",
+])
+def test_bootstrap_renderer_executes_the_real_template_binding(tmp_path, env_file):
+    source = BOOTSTRAP.read_text(encoding="utf-8")
+    match = re.search(r"render_plist\(\) \{.*?<<'PY'\n(.*?)\nPY", source, re.S)
+    assert match, "bootstrap must expose its actual plist renderer"
+    output = tmp_path / "rendered.plist"
+    result = subprocess.run(
+        [sys.executable, "-", str(PLIST), str(output), env_file, "__EARNINGS_ENV_FILE__"],
+        input=match.group(1), text=True, capture_output=True, check=False,
+    )
+    assert result.returncode == 0, result.stderr
+    expected = plistlib.loads(PLIST.read_bytes())
+    expected["ProgramArguments"][1] = env_file
+    assert plistlib.loads(output.read_bytes()) == expected
+
+
+@pytest.mark.parametrize("corruption", ["missing_arguments", "prebound_environment"])
+def test_bootstrap_renderer_refuses_a_malformed_or_prebound_template(tmp_path, corruption):
+    source = BOOTSTRAP.read_text(encoding="utf-8")
+    match = re.search(r"render_plist\(\) \{.*?<<'PY'\n(.*?)\nPY", source, re.S)
+    assert match
+    template = tmp_path / "invalid.plist"
+    payload = plistlib.loads(PLIST.read_bytes())
+    if corruption == "missing_arguments":
+        payload.pop("ProgramArguments")
+    else:
+        payload["ProgramArguments"][1] = "/unexpected/default.env"
+    template.write_bytes(plistlib.dumps(payload))
+    output = tmp_path / "must-not-exist.plist"
+    result = subprocess.run(
+        [sys.executable, "-", str(template), str(output), "/approved/earnings/.env", "__EARNINGS_ENV_FILE__"],
+        input=match.group(1), text=True, capture_output=True, check=False,
+    )
+    assert result.returncode != 0
+    assert "ERROR: earnings LaunchAgent" in result.stderr
+    assert not output.exists()
 
 
 def test_plist_model_matches_the_config_openai_compat_default():

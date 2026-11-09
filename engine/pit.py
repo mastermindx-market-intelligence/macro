@@ -137,7 +137,7 @@ DEFAULT_RELEASE_LAGS: dict[str, dict] = {
     "initial_claims_4wk": {"lag_bd": 5, "cadence": "W", "note": "4-week moving avg, same DOL release (#809 confirms ~5 cal d)"},
     "continued_claims": {"lag_bd": 10, "lag_bd_measured": 9, "cadence": "W", "note": "continued claims lag initial by one week; #809 ALFRED median 12 cal d (~9 bd)"},
     "wei":            {"lag_bd": 4,  "cadence": "W", "note": "NY Fed Weekly Economic Index ~Thursday for the week ending prior Saturday"},
-    "term_premium_10y": {"lag_bd": 3, "cadence": "D", "note": "ACM term premium, ~2-3 bd publication lag on daily data"},
+    "term_premium_10y": {"lag_bd": 3, "cadence": "D", "note": "Kim-Wright (Fed Board) 10y zero-coupon term premium (FRED THREEFYTP10), ~2-3 bd publication lag on daily data"},
     "stlfsi":         {"lag_bd": 6,  "cadence": "W", "note": "St. Louis Financial Stress Index, weekly ~Thursday for prior week"},
     "us_m2":          {"lag_bd": 20, "cadence": "M", "note": "Fed H.6 money stock ~4th Tuesday of following month"},
 }

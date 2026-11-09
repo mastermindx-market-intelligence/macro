@@ -686,7 +686,7 @@ def _dig(d: dict, *paths, default=None):
     return default
 
 
-def _row_features(r: dict) -> dict:
+def _row_features(r: dict, *, earnings_semantics: str = "legacy") -> dict:
     """Extract grading-relevant fields, tolerant to schema drift across revisions.
 
     Fields moved over time: score/band/composite_z/verdict/validation_status started
@@ -695,6 +695,12 @@ def _row_features(r: dict) -> dict:
     conviction.*/entry_signal.*. `signal` (with .last.quality) only appears in the
     latest schema. `align_tier` is None in the earliest revision. Every getter below
     tries the modern nested path first, then a flat fallback."""
+    revised = None
+    if earnings_semantics != "legacy":
+        from engine.us_prophet_fusion import EARNINGS_EVIDENCE_VERSION, earnings_evidence_v2
+        if earnings_semantics != EARNINGS_EVIDENCE_VERSION:
+            raise ValueError("unknown earnings semantics; no silent fallback")
+        revised = earnings_evidence_v2(r)
     conv = r.get("conviction") or {}
     sig = r.get("signal") or {}
     es = r.get("entry_signal") or {}
@@ -709,6 +715,8 @@ def _row_features(r: dict) -> dict:
     # a recomputed label; entry_status itself is NEVER backfilled.
     _estat = _dig(r, ("entry_signal", "status"), default=es.get("status"))
     return {
+        **({"earnings_evidence_v2": revised, "earnings_semantics": earnings_semantics}
+           if revised is not None else {}),
         "ticker": r.get("ticker"),
         "sector": r.get("sector"),
         "alpha": _num(r.get("alpha")),
@@ -774,7 +782,8 @@ def _row_features(r: dict) -> dict:
         "insider_cluster":      bool((r.get("insider_buyers") or 0) >= 2),
         "gex_confirm_verdict":  _dig(r, ("gex_confirm", "verdict"), default=None),
         "altdata_conv_gte2":    bool((_dig(r, ("altdata", "convergence_score"), default=0) or 0) >= 2),
-        "sue_fresh":            bool(r.get("sue_z") and (r.get("sue_fresh_days") or 999) <= 60),
+        "sue_fresh":            (bool(r.get("sue_z") and (r.get("sue_fresh_days") or 999) <= 60)
+                                 if revised is None else (revised["fresh_positive_relative"] is True)),
         "news_burst":           bool((_dig(r, ("news_burst", "n_recent"), default=0) or 0) >= 3),
         "smartmoney_add":       bool(r.get("smartmoney_chip")),
         "has_stop_guidance":    bool(r.get("stop_guidance")),
@@ -2065,6 +2074,13 @@ def _freeze_graded_prices(fresh: pd.DataFrame, stored: pd.DataFrame,
         for c in cols:
             if c not in out.columns:
                 out[c] = None
+            # pandas 3 raises where it used to upcast when a stored value does not fit
+            # the fresh column. A column no fresh row has a value for comes out of the
+            # grade as all-NaN float64, while the store holds text or None for it, which
+            # killed the grader on 2026-10-05 and left every later board ungraded. The
+            # stored value is the claim being frozen, so the fresh column gives way.
+            if out[c].dtype != prior[c].dtype:
+                out[c] = out[c].astype(object)
             out.loc[common, c] = prior.loc[common, c]
         # ERA MARKER. A row frozen at a value this ladder did not produce must not
         # inherit this ladder's stamp — that would assert a basis nobody verified. The
@@ -2620,12 +2636,15 @@ def emit_ledger(boards: list[dict], names: pd.DataFrame,
             extra_meta={"priced_through": priced_through, **era_meta},
         )
 
-    current_as_of = boards[-1].get("as_of", "")
+    # Canonical chronology also keeps the continuity read independent of caller order.
+    boards = sorted(boards, key=lambda board: board.get("as_of", ""))
+    current_as_of = max((b.get("as_of", "") for b in boards), default="")
 
-    # board_day -> buy-lane tickers, plus display metadata from the LATEST board a
-    # ticker appeared on (freshest sector / rank / tier).
+    # Metadata belongs to each original admission in this source history, not the
+    # ticker's latest appearance. Source dates are not publication/knowledge clocks.
     board_days: dict[str, set[str]] = {}
-    meta_by_tk: dict[str, dict] = {}
+    meta_by_admission: dict[tuple[str, str], dict] = {}
+    conflicting_metadata: set[tuple[str, str]] = set()
     definition_by_admission: dict[tuple[str, str], str] = {}
     n_boards_predefinition = 0
     for b in boards:
@@ -2643,8 +2662,16 @@ def emit_ledger(boards: list[dict], names: pd.DataFrame,
             if not tk:
                 continue
             day.add(tk)
-            meta_by_tk[tk] = {"sector": r.get("sector"), "rank": r.get("position"),
-                              "tier": r.get("align_tier")}
+            position = r.get("position")
+            valid_position = isinstance(position, (int, np.integer)) and not isinstance(position, (bool, np.bool_)) and position >= 0
+            metadata = {"sector": r.get("sector"), "rank": int(position) + 1 if valid_position else None,
+                        "tier": r.get("align_tier"),
+                        "rank_unavailable_reason": None if valid_position else "invalid_admission_position"}
+            key = (as_of_str, tk)
+            prior = meta_by_admission.get(key)
+            if prior is not None and prior != metadata:
+                conflicting_metadata.add(key)
+            meta_by_admission.setdefault(key, metadata)
             # The board definition belongs to the admission DATE, not to the
             # ticker's latest appearance.  A name can span an era boundary or
             # leave and re-enter under another selection instrument.
@@ -2660,6 +2687,26 @@ def emit_ledger(boards: list[dict], names: pd.DataFrame,
     n_inflight = 0
     _ob_cache: dict[str, pd.Series | None] = {}
 
+    def _admission_metadata(tk: str, d0: str) -> dict:
+        if (d0, tk) in conflicting_metadata:
+            return {"rank": None, "tier": None, "sector": None,
+                    "rank_unavailable_reason": "conflicting_admission_metadata"}
+        return meta_by_admission.get((d0, tk), {"rank_unavailable_reason": "admission_metadata_missing"})
+
+    def _evaluation_receipt(m: dict, d0: str, sc: dict | None = None) -> dict:
+        sc = sc or {}
+        return {
+            "rank_basis": "admission_one_based" if m.get("rank") is not None else "unavailable",
+            "rank_as_of": d0 if m.get("rank") is not None else None,
+            # The retained board source does not attest original delivery time.
+            "rank_known_at": None,
+            "rank_unavailable_reason": m.get("rank_unavailable_reason"),
+            "evaluation_type": "model_episode",
+            "evaluation_rule": "us_next_close_stochrsi80_trough97_h10_v1",
+            "exit_date": sc.get("exit_date") if sc.get("matured") else None,
+            "return_end_date": sc.get("exit_date") if sc.get("matured") else sc.get("mark_date"),
+        }
+
     def _unscored(tk: str, d0: str) -> dict:
         """A persistent row for an episode that cannot be priced.
 
@@ -2671,7 +2718,7 @@ def emit_ledger(boards: list[dict], names: pd.DataFrame,
         name that was never picked. Excluded from every summary number (it is not in
         `scored`), so the headline is unmoved.
         """
-        m = meta_by_tk.get(tk, {})
+        m = _admission_metadata(tk, d0)
         return {
             "t": tk, "nm": None, "sec": m.get("sector"), "grp": None, "d": d0,
             "e": None, "l": None, "p": None, "x": None, "dy": None,
@@ -2680,6 +2727,7 @@ def emit_ledger(boards: list[dict], names: pd.DataFrame,
             "xr": "no price data",
             "ed": None,
             "bd": definition_by_admission.get((d0, tk)),
+            **_evaluation_receipt(m, d0),
         }
 
     for ep in _ts.build_episodes(board_days):
@@ -2717,7 +2765,7 @@ def emit_ledger(boards: list[dict], names: pd.DataFrame,
             # not a survivorship casualty (conflating the two inflated the skip count
             # to 22 and listed liquid names like DE and F as unpriceable).
             n_inflight += 1
-            m = meta_by_tk.get(tk, {})
+            m = _admission_metadata(tk, d0)
             rows_out.append({
                 "t": tk, "nm": None, "sec": m.get("sector"), "grp": None, "d": d0,
                 "e": None, "l": None, "p": None, "x": None, "dy": None,
@@ -2725,10 +2773,11 @@ def emit_ledger(boards: list[dict], names: pd.DataFrame,
                 "rk": m.get("rank"), "tr": m.get("tier"), "fl": [], "xr": None,
                 "ed": None,
                 "bd": definition_by_admission.get((d0, tk)),
+                **_evaluation_receipt(m, d0),
             })
             continue
 
-        m = meta_by_tk.get(tk, {})
+        m = _admission_metadata(tk, d0)
         if sc["matured"]:
             st = "up" if (sc["pnl"] or 0) > 0 else "stopped"
             latest, move = sc["exit"], sc["pnl"]
@@ -2755,6 +2804,7 @@ def emit_ledger(boards: list[dict], names: pd.DataFrame,
             "xr": sc.get("exit_reason"),
             "ed": sc.get("entry_date"),
             "bd": definition_by_admission.get((d0, tk)),
+            **_evaluation_receipt(m, d0, sc),
         })
 
     summary = _ts.summarize(scored, metric="pnl", n_inflight=n_inflight,

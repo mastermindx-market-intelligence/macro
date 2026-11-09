@@ -25,6 +25,7 @@ import re
 from pathlib import Path
 
 import pytest
+from rjsmin import jsmin
 
 THEME_JS = Path(__file__).resolve().parent.parent / "templates" / "theme.js"
 #: The DEPLOYED artifact. `site/theme.js` is a committed build product — lib/site_assets.py
@@ -49,7 +50,7 @@ def deployed() -> str:
 def _save_pref_fn(src: str) -> str:
     """The body of `_savePrefToServer`, up to the next top-level comment block."""
     start = src.index("function _savePrefToServer(")
-    end = src.index("/* Hook into theme/lang events", start)
+    end = src.index("document.addEventListener('themechange'", start)
     return src[start:end]
 
 
@@ -130,23 +131,69 @@ def test_the_deployed_artifact_is_not_stale(deployed: str) -> None:
     lost-update fix merged to main while mastermind-x.com kept serving the whole-blob writer. The
     template is the source of truth, but the artifact is the thing that runs.
     """
-    body = _save_pref_fn(deployed)
-    assert "patch.theme =" in body
-    assert "patch.theme_auto =" in body
-    assert "patch.lang =" in body
-    assert "data: { prefs" not in body
-    assert "prefs: prefs" not in body
+    body = jsmin(_save_pref_fn(deployed))
+    assert jsmin("patch.theme =") in body
+    assert jsmin("patch.theme_auto =") in body
+    assert jsmin("patch.lang =") in body
+    assert jsmin("data: { prefs") not in body
+    assert jsmin("prefs: prefs") not in body
 
 
 def test_the_deployed_artifact_reads_per_field_too(deployed: str) -> None:
-    apply_fn = deployed[deployed.index("function _applyServerPrefs("):deployed.index("/* Save ONLY the atomics")]
-    assert "_sharedPref(meta, 'theme', 'theme', _isTheme)" in apply_fn
-    assert "_sharedPref(meta, 'theme_auto', 'themeAuto', _isFlag)" in apply_fn
-    assert "_sharedPref(meta, 'lang', 'lang', _isLang)" in apply_fn
+    apply_fn = deployed[deployed.index("function _applyServerPrefs("):deployed.index("function _savePrefToServer(")]
+    assert jsmin("_sharedPref(meta, 'theme', 'theme', _isTheme)") in apply_fn
+    assert jsmin("_sharedPref(meta, 'theme_auto', 'themeAuto', _isFlag)") in apply_fn
+    assert jsmin("_sharedPref(meta, 'lang', 'lang', _isLang)") in apply_fn
 
 
 def test_the_deployed_artifact_matches_the_template_for_this_block(src: str, deployed: str) -> None:
     """copy_asset() bakes config into site/theme.js, so the files are not byte-identical — but the
     preference-sync block is copied verbatim, and any drift between them means one of the two was
     hand-edited instead of regenerated."""
-    assert _save_pref_fn(src) == _save_pref_fn(deployed)
+    assert jsmin(_save_pref_fn(src)) == jsmin(_save_pref_fn(deployed))
+
+
+ACCOUNT_JS = Path(__file__).resolve().parent.parent / "templates" / "account.js"
+SITE_ACCOUNT_JS = Path(__file__).resolve().parent.parent / "site" / "account.js"
+
+
+def _owner_helper(text: str) -> str:
+    return text[text.index("function _acctOwnsPref("):text.index("function _applyServerPrefs(")]
+
+
+def test_theme_lang_have_one_owner_when_the_account_panel_claims_them(src: str) -> None:
+    """site-20 S1 follow-up: account.js posts theme/lang to /api/account/prefs with its own
+    queued/sent/acked/failed state, so this path must not write the same keys a second time —
+    a silent second writer would mask a failed save. theme_auto is browser-only and stays here."""
+    body = _save_pref_fn(src)
+    assert "var owned = _acctOwnsPref(which);" in body
+    assert "if (!owned) {" in body
+    assert "patch.theme =" in body
+    assert "if (!owned) patch.lang = curLang();" in body
+    # theme_auto is written unconditionally — never claimed by account.js.
+    theme_branch = body[body.index("if (which === 'theme')"):body.index("else if (which === 'lang')")]
+    assert theme_branch.index("if (!owned)") < theme_branch.index("patch.theme =")
+    assert theme_branch.index("patch.theme_auto =") > theme_branch.index("patch.theme =")
+    assert "owned" not in theme_branch[theme_branch.index("patch.theme_auto ="):]
+    helper = _owner_helper(src)
+    assert "acc.claimsPref(which)" in helper
+    assert "catch (e) { return false; }" in helper, "an error must read as not claimed (keep writing)"
+
+
+def test_account_js_exposes_the_claim_the_theme_writer_consults() -> None:
+    acct = ACCOUNT_JS.read_text(encoding="utf-8")
+    assert "claimsPref: function (key)" in acct
+    fn = acct[acct.index("function claimsPref("):acct.index("window.MMAccount = {")]
+    assert "if (!_mounted) return false;" in fn
+    assert "if (key !== 'theme' && key !== 'lang') return false;" in fn
+    # Every presentation-apply window releases the account claim, including
+    # a parent-owned Shared Shell context; neither incumbent guard is dropped.
+    assert "if (_hydrating || _authApplying || _mmShellApplying()) return false;" in fn
+    assert "state.acct.authenticated" in fn
+    assert SITE_ACCOUNT_JS.read_text(encoding="utf-8") == acct, "site/account.js is the paired plain copy"
+
+
+def test_the_deployed_artifact_defers_claimed_keys_too(deployed: str) -> None:
+    body = jsmin(_save_pref_fn(deployed))
+    assert jsmin("var owned = _acctOwnsPref(which);") in body
+    assert "acc.claimsPref(which)" in _owner_helper(deployed)
