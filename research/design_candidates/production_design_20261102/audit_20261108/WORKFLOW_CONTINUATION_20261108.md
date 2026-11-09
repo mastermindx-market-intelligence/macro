@@ -449,12 +449,78 @@ The entire S05 root `73X-0` was read back **byte-identical** to its preimage. Th
 
 These are applied Paper states and a source-matched implementation plan. The locale-state repair and 44px CSS amendment are not claimed as implemented runtime behavior.
 
-## Active next phase: Company R3 mobile composition
+## 11. Company R3: provisional mobile composition and period-safe recovery
 
-The empty Company R3 mobile successor can reuse the existing source-backed historical comparison and evidence sheet. Verify the target and source fragments again, assemble a disjoint mobile composition, and map the actual Company navigation and earnings-evidence boundary without inventing an existing Expectations route. Mastermind OS's newer accepted owner/recovery work remains preserved.
+**Existing file:** Terminal, [Company · Production Suite · R3](https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-S-0).
+
+The known empty 390px successor was re-read with zero children before assembly. It now reuses existing historical Study B content, native status bar, family/view control, metric and comparator controls, source action and separate next-quarter link. The new 320px and Chinese states reuse the established content and language patterns. Duplicate headings and study annotations remain in their source studies rather than being copied into the primary mobile workflow.
+
+| Root | Applied state | Key actions |
+|---|---|---|
+| `1D9K-0` | 390px EN dark, formerly empty R3 successor | Source `28EC-0`; next quarter `28FP-0` |
+| `28O8-0` | 320px EN dark, full phone composition | Source `28PF-0`; next quarter `28PH-0` |
+| `28PK-0` | 390px ZH light | Source `28R1-0`; next quarter `28R3-0` |
+| `28PX-0` | Proposed incompatible Q2/Q3 retained selection | Explicit repair `28RP-0`; publisher source `28RJ-0` |
+| `28RS-0` | Eight-module Build amendment below the compositions | Custody, navigation, typed pair, calculation, return, recovery, interaction proof and exact source pins |
+
+The main reading order is company and historical date → family/view → metric/period and comparator → reported value → prior guidance → qualified difference → source → separate next-quarter outlook. The main 390px screen fits its original 844px frame. The narrow composition wraps without clipping; the Chinese version keeps the original fiscal-period wording, explicit USD units and established light-theme positive ink. Product screens carry only the information needed to understand the comparison. Owner contracts and implementation limits sit in the Build board.
+
+### Historical fixture and arithmetic
+
+Root re-read the official NVIDIA [Q1 FY2026 release dated 28 May 2025](https://investor.nvidia.com/news/press-release-details/2025/NVIDIA-Announces-Financial-Results-for-First-Quarter-Fiscal-2026/) and [Q2 FY2026 release dated 27 August 2025](https://investor.nvidia.com/news/press-release-details/2025/NVIDIA-Announces-Financial-Results-for-Second-Quarter-Fiscal-2026/default.aspx).
+
+Q2 actual is 46.743 USD bn for the quarter ended 27 July 2025. Prior Q2 guidance is 45.000 USD bn, issued 28 May; its ±2% range is 44.10–45.90. The unrounded calculation is `(46.743 − 45.000) / 45.000 × 100 = 3.873333…%`, displayed as **+3.9% above prior guidance**, with the midpoint basis explicitly stated. Analyst consensus remains unavailable.
+
+The separate Q3 outlook is 54.0 USD bn ±2%, issued 27 August; its derived range is 52.92–55.08. That outlook is not the Q2 comparator. Public access to these releases does not establish a retained historical copy, acquisition receipt, replay eligibility or an as-known-then result. The existing evidence sheets retain their unavailable-copy limitation.
+
+### Current architecture and concrete implementation gaps
+
+Root read the following at Terminal **`cfe14c49f2e0166c0ded5e6f23a274bb663d0fd3`**:
+
+- [finPageFamilies.ts](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/cfe14c49f2e0166c0ded5e6f23a274bb663d0fd3/terminal/components/fin/finPageFamilies.ts): the seven-family map gives Lab only the existing `lab` page.
+- [ResearchWorkspaceNav.tsx](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/cfe14c49f2e0166c0ded5e6f23a274bb663d0fd3/terminal/components/fin/ResearchWorkspaceNav.tsx): family selection dispatches its current default through the existing navigation owner.
+- [MegaPane.tsx](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/cfe14c49f2e0166c0ded5e6f23a274bb663d0fd3/terminal/components/fin/MegaPane.tsx): `page=lab` mounts `TechLabPanel`; it is not an implemented Expectations view.
+- [earningsExpectationBoundary.ts](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/cfe14c49f2e0166c0ded5e6f23a274bb663d0fd3/terminal/lib/earningsExpectationBoundary.ts): the incumbent boundary admits byte-replayed reported evidence and formatted percentage guidance. Its current regex already permits signed percentages; the earlier D07 “nonnegative only” description is stale. The relevant gap is the absence of this typed dollar-guidance pair, not a missing sign in a regex.
+- The inspected `AnalysisWorkspace.tsx` and `analysisRoute.ts` retain company/page identity, validated URL and Back behavior, and company-change clearing of investigation pins. None of those pins proves restoration of the two proposed comparison inputs.
+
+At D07 **`a4bb0c93f0ef47a29687496ea52349195a8f08ae`**, [SEMANTIC_TASKS.md S12](https://github.com/mastermindx-market-intelligence/macro/blob/a4bb0c93f0ef47a29687496ea52349195a8f08ae/research/design_candidates/production_design_20261102/d07/SEMANTIC_TASKS.md) still leaves the historical comparator `OWNER_BINDING_REQUIRED`. The [D07 README](https://github.com/mastermindx-market-intelligence/macro/blob/a4bb0c93f0ef47a29687496ea52349195a8f08ae/research/design_candidates/production_design_20261102/d07/README.md) preserves the foundation and final-composition qualification boundary.
+
+The Build amendment specifies these narrow extensions:
+
+1. Extend the existing Lab navigation and content owners deliberately, retaining Technical Lab access. Reuse the seven-family mobile chooser at `p-9-1 / 5ML-0`, sheet `5Q1-0`. Do not invent an already-supported `page=expectations`, duplicate company store or independent route vocabulary.
+2. Require the existing filing/estimates/Earnings owners to supply a typed pair with the same issuer/listing, target fiscal period and period end, metric, consolidation/reporting basis, currency and numeric unit. Keep both source identities/versions and each input’s publication, acquisition and retained-copy state.
+3. Distinguish the **release quarter** from the **guidance target quarter**: the Q1 publication contains Q2 guidance. Equal duration or a prior publication date alone cannot establish compatibility. The Financials year-over-year selector is not the guidance selector.
+4. For this revenue comparison, require a finite positive midpoint and compute from unrounded values. Missing or zero does not become a denominator. Do not parse formatted strings such as `45.000 USD bn` to establish machine identity, basis or source qualification.
+5. Re-qualify after company, period, metric, basis or source changes. Current event/evidence URL pins do not establish a source-bound comparison pair. No analyst beat, price reaction, watch, alert or investigation action is implied.
+
+### Source and return behavior
+
+EN main and narrow source actions reuse `22CM-0`; the ZH action reuses `22SU-0`. Each actual invoker must be captured independently. Close restores it only while the listing, fiscal target, metric, basis and both source versions still match. Lost context uses the incumbent owner’s labeled recovery state; it must not restore stale focus or select another period silently.
+
+Next-quarter actions lead separately to the existing Q3 outlook states `1NIJ-0` / `1NPH-0`. They do not alter the Q2 comparison. The 320px source/next-quarter controls are `28PF-0` / `28PH-0`, not the original 390px nodes.
+
+### Incompatible-quarter recovery
+
+New `28PX-0` is a proposed invalid retained-state branch, not an additional eligible option in the normal Q2 comparator picker. It keeps **Q2 actual 46.743** and **Q3 guidance 54.0** visible with their publication information, and says **Comparison unavailable — Q2 actual and Q3 guidance cover different quarters.** It contains no percentage or derived comparison chart.
+
+**Use prior Q2 guidance** explicitly resolves the existing owner’s Q2 guidance object, qualifies it, and only then replaces the comparator. Failure or denied access keeps the incompatible selection with its reason; the actual period and value remain fixed. The mismatch source action opens the 27 August publisher release directly. It must not open the valid-Q2 calculation sheet as if that calculation belonged to the Q2/Q3 pair. That calculation becomes appropriate again after successful repair.
+
+### Native proof, preservation and remaining gates
+
+Final JSX readback confirmed that Study B `1NII-0`, Study G `1NPG-0`, R3 Expectations desktop `1CD3-0`, R3 brief `1BEK-0` and EN evidence sheet `22CM-0` were **byte-identical** to their preimages. Original D07 Build `1NFS-0` changed only in text node `1NGO-0`: it now points to the provisional assembly and `28RS-0` instead of describing the successor as empty; its rich-text reference styling and final F01/F02 qualification language were preserved.
+
+Native screenshots checked all four screen states, the eight-module Build sheet and updated legacy note. JSX verified main controls and source actions at 48px, next-quarter links at 44px, and recovery at 48px. Arithmetic checks reproduced the midpoint difference and both guidance ranges. Six exact affected roots were released.
+
+Implementation proof still needs the whole mismatch → source → explicit repair → qualified calculation → evidence-close path, unresolved/denied recovery, source changes, browser Back, company changes, keyboard/focus ownership, scrolling and 200% text. Optional source/disclosure motion is limited to ≤120ms opacity/chevron transitions, absent with reduced motion. The entire reading and recovery flow must issue zero watch, alert, thesis or investigation writes.
+
+This is a **provisional Paper assembly and source-matched build amendment**. It does not qualify final F01/F02 composition, resolve other writers’ unknown native effects, implement runtime owners or establish deployment/acceptance. Existing source and release holds remain intact.
+
+## Active next phase: Confluence Screener public-snapshot clarity
+
+A bounded read-only frontier check found a possible mismatch between the migrated mobile result-card presentation and its not-loaded public fields. Inspect its exact current source, existing protected-list recovery states and builder contract before selecting any amendment. Reuse existing unavailable states where they already cover the same condition.
 
 ## Verification boundary and next actions
 
 This record proves applied native design changes, source inspection and scoped native visual checks. It does not establish functional browser navigation, runtime disclosure/keyboard behavior, real-account access, live data, model qualification, CI, merge or deployment.
 
-Continue the Company mobile composition and subsequent demonstrated gaps with exact owner and acceptance mapping. Save/read back useful milestones and continue the parent Paper improvement mission; a phase completion is not DONE_WHEN.
+Continue demonstrated gaps with exact owner and acceptance mapping. Save/read back useful milestones and continue the parent Paper improvement mission; a phase completion is not DONE_WHEN.
