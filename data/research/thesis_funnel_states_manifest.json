@@ -1,6 +1,6 @@
 {
   "schema": "thesis_funnel_states.v1",
-  "as_of": "2026-11-05",
+  "as_of": "2026-11-09",
   "n_tickers": 2875,
   "state_counts": {
     "not_eligible": 2215,

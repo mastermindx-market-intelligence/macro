@@ -1,5 +1,5 @@
 {
-  "as_of": "2026-11-03",
+  "as_of": "2026-11-07",
   "price_convention": "clean",
   "criteria": {
     "a": {
@@ -7,58 +7,58 @@
       "probe1": {
         "verdict": "clean",
         "tiebreak_fired": true,
-        "slope": -0.4064,
-        "hc1_se": 0.0509,
-        "n_joined": 1749,
-        "median_diff": -2.216,
-        "median_accrued": 0.94,
-        "median_resid": -3.2814,
-        "tiebreak_dirty_median_bp": 50.98,
-        "tiebreak_clean_median_bp": 35.63,
-        "date_gap_days": 112,
+        "slope": -0.3761,
+        "hc1_se": 0.0473,
+        "n_joined": 1743,
+        "median_diff": -1.754,
+        "median_accrued": 0.9689,
+        "median_resid": -2.8431,
+        "tiebreak_dirty_median_bp": 43.1,
+        "tiebreak_clean_median_bp": 27.18,
+        "date_gap_days": 115,
         "note": "verdict keys on slope because level diffs (median_diff) absorb the date-gap market move; median_resid = diff - accrued"
       },
       "probe2": {
-        "accrued_coefficient": 0.1252,
+        "accrued_coefficient": 0.1235,
         "hc1_95ci": [
-          0.1092,
-          0.1412
+          0.1079,
+          0.1392
         ],
-        "n": 510195,
+        "n": 532619,
         "detail": "cross-sectional OLS of price_dirty_raw on [1, coupon, tenor, coupon*tenor, accrued]"
       }
     },
     "b": {
       "_fail_detail": {
-        "LQD": "median_bp=53.29 > 25.0"
+        "LQD": "median_bp=39.12 > 25.0"
       },
       "LQD": {
         "status": "FAIL",
-        "n": 20,
-        "n_joined": 1758,
-        "median_bp": 53.29,
-        "p90_bp": 138.43,
-        "share_within_25bp": 0.0,
-        "bins_occupied": 5,
-        "date_gap_days": 112,
+        "n": 25,
+        "n_joined": 1752,
+        "median_bp": 39.12,
+        "p90_bp": 129.66,
+        "share_within_25bp": 0.2,
+        "bins_occupied": 4,
+        "date_gap_days": 115,
         "gating": true
       },
       "HYG": {
         "status": "PASS",
         "n": 20,
-        "n_joined": 534,
-        "median_bp": 44.08,
-        "p90_bp": 192.16,
-        "share_within_25bp": 0.1,
+        "n_joined": 533,
+        "median_bp": 43.08,
+        "p90_bp": 166.92,
+        "share_within_25bp": 0.2,
         "bins_occupied": 5,
-        "date_gap_days": 112,
+        "date_gap_days": 115,
         "gating": false
       },
       "status": "FAIL"
     },
     "c": {
       "status": "PASS",
-      "latest_diff_bp": 20.15,
+      "latest_diff_bp": 16.47,
       "overlaps": [
         {
           "as_of": "2026-07-10",
@@ -422,9 +422,27 @@
         },
         {
           "as_of": "2026-11-02",
-          "g_spread_bp_pw": 73.85,
+          "g_spread_bp_pw": 73.51,
           "baml_oas_bp": 94.0,
-          "diff_bp": 20.15
+          "diff_bp": 20.49
+        },
+        {
+          "as_of": "2026-11-03",
+          "g_spread_bp_pw": 71.97,
+          "baml_oas_bp": 93.0,
+          "diff_bp": 21.03
+        },
+        {
+          "as_of": "2026-11-04",
+          "g_spread_bp_pw": 71.01,
+          "baml_oas_bp": 91.0,
+          "diff_bp": 19.99
+        },
+        {
+          "as_of": "2026-11-05",
+          "g_spread_bp_pw": 76.53,
+          "baml_oas_bp": 93.0,
+          "diff_bp": 16.47
         }
       ],
       "threshold_bp": 30.0
@@ -464,12 +482,12 @@
     "LQD": {
       "as_of": "2026-07-13",
       "n_rows": 3132,
-      "date_gap_days": 112
+      "date_gap_days": 115
     },
     "HYG": {
       "as_of": "2026-07-13",
       "n_rows": 1323,
-      "date_gap_days": 112
+      "date_gap_days": 115
     }
   },
   "notes": [
