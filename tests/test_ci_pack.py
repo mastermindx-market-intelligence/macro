@@ -4531,6 +4531,7 @@ def test_workspace_runtime_contracts_can_start_the_ci_that_validates_them() -> N
 # ---------------------------------------------------------------------------
 
 CURATED_EXCLUSIVE = {
+    "xguerrilla-identity-registry",
     "public-site-figma-baseline-contracts",
     "press-account-claim-consumer",
     # GDELT leaf suites own their exact import/read closure.
@@ -5332,6 +5333,11 @@ CURATED_EXCLUSIVE = {
     "global-liquidity-transmission",
     # Options scenario contract: keep the ordinary code job explicitly scoped.
     "options-scenario-contract",
+    # xguerrilla admission chain: one gate:code exclusive home for the
+    # tools/xguerrilla admission suite, selected only by edits to its own
+    # package, so the three packing probes keep their base aggregates
+    # with no ceiling moved.
+    "xguerrilla-admission",
 }
 
 
@@ -5349,6 +5355,86 @@ def test_the_curated_exclusive_set_is_actually_declared() -> None:
     """The set this file pins must be the set the manifest declares."""
     declared = {job.job_id for job in PACK.load_legacy_jobs(MANIFEST) if job.exclusive}
     assert declared == CURATED_EXCLUSIVE, sorted(declared ^ CURATED_EXCLUSIVE)
+
+
+@pytest.mark.parametrize("dependency", [
+    "tools/xguerrilla/__init__.py",  # ci-trigger-closure: data
+    "tools/xguerrilla/admission.py",  # ci-trigger-closure: data
+    "tools/xguerrilla/net.py",  # ci-trigger-closure: data
+    "tools/xguerrilla/persona.py",  # ci-trigger-closure: data
+    "tools/xguerrilla/ADMISSION.md",  # ci-trigger-closure: data
+    "tools/xguerrilla/tests/conftest.py",  # ci-trigger-closure: data
+    "tools/xguerrilla/tests/test_admission.py",  # ci-trigger-closure: data
+    "tools/xguerrilla/profiles.py",  # ci-trigger-closure: data
+    "tools/xguerrilla/runtime_boundary.py",  # ci-trigger-closure: data
+    "tools/xguerrilla/future_package_helper.py",  # ci-trigger-closure: data
+    "tools/xguerrilla/internal/future_dependency.py",  # ci-trigger-closure: data
+])
+def test_xguerrilla_admission_scope_keeps_collection_and_future_dependencies(
+    dependency: str,
+) -> None:
+    """Conftest's tools/ alias must not hide package-local input changes."""
+    job = next(job for job in PACK.load_legacy_jobs(MANIFEST, gate="code")
+               if job.job_id == "xguerrilla-admission")
+    scoped, _ = PACK.infer_job_scopes([job])
+    selected, reason = PACK.select_jobs(scoped, [dependency])
+    assert [item.job_id for item in selected] == [job.job_id], (dependency, reason)
+    commands = "\n".join(step["run"] for step in job.definition["steps"] if "run" in step)
+    assert "python -m pytest tools/xguerrilla/tests/test_admission.py -q" in commands
+
+
+@pytest.mark.parametrize("probe", [
+    "templates/index.html",  # ci-trigger-closure: data
+    "scripts/build_free_content.py",  # ci-trigger-closure: data
+    "engine/prophet/plan_book.py",  # ci-trigger-closure: data
+])
+def test_xguerrilla_admission_scope_does_not_select_packing_probes(probe: str) -> None:
+    """Conservative package ownership preserves the three packing shapes."""
+    job = next(job for job in PACK.load_legacy_jobs(MANIFEST, gate="code")
+               if job.job_id == "xguerrilla-admission")
+    scoped, _ = PACK.infer_job_scopes([job])
+    selected, reason = PACK.select_jobs(scoped, [probe])
+    assert not selected, reason
+
+
+def test_xguerrilla_registry_scope_keeps_collection_and_future_dependencies() -> None:
+    """Collection's tools/ alias cannot silently omit package dependencies."""
+    job = next(job for job in PACK.load_legacy_jobs(MANIFEST, gate="code")
+               if job.job_id == "xguerrilla-identity-registry")
+    assert job.exclusive
+    scoped, _ = PACK.infer_job_scopes([job])
+    for dependency in (
+        "tools/xguerrilla/registry.py",  # ci-trigger-closure: data
+        "tools/xguerrilla/cli.py",  # ci-trigger-closure: data
+        "tools/xguerrilla/tests/test_registry.py",  # ci-trigger-closure: data
+        "tools/xguerrilla/tests/conftest.py",  # ci-trigger-closure: data
+        "tools/xguerrilla/profiles.py",  # ci-trigger-closure: data
+        "tools/xguerrilla/runtime_boundary.py",  # ci-trigger-closure: data
+        "tools/xguerrilla/validators.py",  # ci-trigger-closure: data
+        "tools/xguerrilla/drivers/base.py",  # ci-trigger-closure: data
+        "tools/xguerrilla/future_dependency.py",  # ci-trigger-closure: data
+        "tools/__init__.py",  # ci-trigger-closure: data
+        "research/agentic_media/handoffs/XG_IDENTITY_REGISTRY_V1.md",  # ci-trigger-closure: data
+    ):
+        selected, reason = PACK.select_jobs(scoped, [dependency])
+        assert [item.job_id for item in selected] == [job.job_id], (dependency, reason)
+        assert PACK._job_diff_match(scoped[0], [dependency]) == (dependency, "declared")
+    commands = "\n".join(step["run"] for step in job.definition["steps"] if "run" in step)
+    assert "python -m pytest tools/xguerrilla/tests/test_registry.py -q" in commands
+
+
+@pytest.mark.parametrize("probe", [
+    "templates/index.html",  # ci-trigger-closure: data
+    "scripts/build_free_content.py",  # ci-trigger-closure: data
+    "engine/prophet/plan_book.py",  # ci-trigger-closure: data
+])
+def test_xguerrilla_registry_scope_does_not_select_packing_probes(probe: str) -> None:
+    """The dedicated code owner adds no unrelated ordinary-probe weight."""
+    job = next(job for job in PACK.load_legacy_jobs(MANIFEST, gate="code")
+               if job.job_id == "xguerrilla-identity-registry")
+    scoped, _ = PACK.infer_job_scopes([job])
+    selected, reason = PACK.select_jobs(scoped, [probe])
+    assert not selected, reason
 
 
 def test_eval_os_acceptance_runs_on_ordinary_code_prs() -> None:
@@ -5617,9 +5703,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_947),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_968),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_705),
+    ("templates/index.html", 137, 5_949),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_970),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_707),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5627,6 +5713,74 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-09 (PR #7217, preserving current F09 and admission receiver):
+    retain all 400 current owners and only the original 12 existing-owner
+    contributions. Eleven owners gain the financial-bridge source path;
+    unrun-brain-gateway gains its original mandatory suite before gateway.
+    Correct YAML folding preserves 2345 -> 2402 joined command characters:
+    commands 6 -> 7, test references 51 -> 52 and the 800-character bucket
+    2 -> 3 give exactly 110 -> 114. Carry only the original +4 onto current
+    5945/5966/5703 -> 5949/5970/5707. Preserve jobs 137/138/131, ten packs,
+    all existing tests, selectors, runtime/admission limits and all F09,
+    access and XGuerrilla contributions. The original 17-line history stays
+    at its #10837 anchor. This is static source accounting, not a new paired
+    planner or model/provider measurement; natural successor proof is owed.
+
+    F09 C3 current-main conflict repair (2026-11-09): retain the complete
+    historical paired measurement below and current main's independent history.
+    The data-base-shim preimage and current weight estimator still establish
+    only +2 from the accepted suite token, with no new selected owner. Apply
+    that contribution to 5943/5964/5701 -> 5945/5966/5703; keep 137/138/131 jobs
+    and ten packs. This is source accounting, not a new planner execution.
+
+    2026-11-08 (PR #10192, accepted F09 suite accounting on current main):
+    own contract-delta run42241879921/job127973971361 compared exact base
+    4b2a019bf31317b994c6f07329565a62c38f7670 with head
+    e287b58381b87d1d1495b3c6f77a194e3eb7d582: index5912->5914,
+    free-content5927->5929, Prophet5668->5670, unchanged selected jobs and
+    ten packs, three introduced findings and zero inherited. Its existing
+    data-base-shim owner adds only tests/test_beneficial_ownership.py to the
+    SharedShell command. Current catalog4f2c0d2fee46d9839560f0f958f3322e5eb9ce1a
+    retains that exact base owner; current runner computes23->25 from five
+    commands and9->10 test-path tokens in the same text-size bucket.
+    Compose only this measured +2 coverage cost onto current ceilings:
+    index5920->5922, free-content5941->5943, Prophet5678->5680.
+    Mainc9e06966920fa3b4b46341d344f90978f1fcd225 has actually landed #7352;
+    its independent +2 free-content benchmark allowance and history are
+    retained. The previous F09 candidate03f5407 conflicted with that landing;
+    this composition includes both actual source contributions once. Keep
+    selected-job ceilings137/138/131, ten packs, all assertions, selectors,
+    suites, runtime deadlines and existing provenance. No unmerged sibling
+    funding. This is source-composition arithmetic, not a new planner run;
+    old exact-base descendant UNKNOWN is unchanged, and new own CI is owed.
+
+    2026-11-09 (PR #10870, dependency-coverage correction): the separate
+    admission job conservatively owns tools/xguerrilla/** because pytest
+    conftest's tools/ package alias escapes static closure resolution. Its
+    existing collection dependencies and future package-local helpers select
+    the suite; all three packing probes remain outside that package. Every
+    command and all packing ceilings below remain unchanged.
+
+    2026-11-09 (PR #10870, one synthetic admission suite): natural contract
+    run 42536598947 / job 128902154215 measured head
+    bad01ea0772cce5209ae05cd0ad7f59341a293d9 against base
+    aec7f387badcdf69c9a947fafbc73b4c68470c7d on tested merge
+    4ccd84d857831ddceaa5d3aa887e9b24f3956f1f. Appending test_admission.py to
+    the existing marketing-social-publisher pytest command (five run commands,
+    test references 28->29, command characters 1248->1289, the same
+    800-character bucket) moved its estimator weight 62->64 and the three
+    probe weights to 5945/5966/5703, exactly +2 over their ceilings, with no
+    newly selected job and no job-count or pack-count breach. The gate's own
+    remedy was taken instead of funding: the append is reverted byte-for-byte
+    and the suite is curated into its own gate:code job `xguerrilla-admission`
+    (`scope: exclusive`, `paths:` = the suite's import closure under
+    tools/xguerrilla/), which none of the three probes selects. Probe
+    aggregates return to their base values and no ceiling moves. Job ceilings
+    137/138/131, the ten-pack bound, selectors, enrollment, assertions,
+    timeouts and admission/concurrency controls stay. This is measured planner
+    accounting, not an elapsed-time claim; natural successor CI must qualify
+    the repaired source.
 
     2026-11-09 (PR #7217, financial-bridge regression enrollment):
     Natural contract run42547747036/job128936325119 measured H0be13427e611

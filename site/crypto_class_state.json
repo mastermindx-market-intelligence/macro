@@ -2,9 +2,9 @@
   "schema": "crypto.class_state/v1",
   "tier": "display",
   "display_only": true,
-  "as_of": "2026-11-08",
+  "as_of": "2026-11-09",
   "universe_coverage": {
-    "as_of": "2026-11-08",
+    "as_of": "2026-11-09",
     "listed": 50,
     "requested": 50,
     "excluded": [
@@ -14,6 +14,14 @@
         "id": "aster-2",
         "source": "CoinGecko",
         "as_of": "2026-09-24",
+        "reason": "OLDER_SNAPSHOT"
+      },
+      {
+        "file": "market_btw.parquet",
+        "symbol": "BTW",
+        "id": "bitway",
+        "source": "CoinGecko",
+        "as_of": "2026-11-08",
         "reason": "OLDER_SNAPSHOT"
       },
       {
@@ -62,14 +70,6 @@
         "id": "ondo-finance",
         "source": "CoinGecko",
         "as_of": "2026-11-06",
-        "reason": "OLDER_SNAPSHOT"
-      },
-      {
-        "file": "market_paxg.parquet",
-        "symbol": "PAXG",
-        "id": "paxg-pax-gold",
-        "source": "CoinPaprika",
-        "as_of": "2026-09-19",
         "reason": "OLDER_SNAPSHOT"
       },
       {
@@ -178,7 +178,7 @@
       "pages_declared": false
     },
     "breadth": {
-      "as_of": "2026-11-08",
+      "as_of": "2026-11-09",
       "eligible": 44,
       "required": 10,
       "excluded": 6,
@@ -521,7 +521,7 @@
         "to_label_en": "direct total",
         "to_label_zh": "直接总量",
         "support_before": 2,
-        "support_after": 6,
+        "support_after": 7,
         "level_ratio": 0.9940386306533618,
         "regime_treatment": "continuity_adjusted"
       }
@@ -529,7 +529,7 @@
   },
   "flows": {
     "etf": "Unavailable",
-    "stablecoins": "Unavailable",
+    "stablecoins": "Falling",
     "volume": "Quiet tape"
   },
   "flow_kinds": {
@@ -540,7 +540,7 @@
     },
     "stablecoins": {
       "kind": "issuance",
-      "observation": "stale",
+      "observation": "current",
       "expected_cadence": "calendar_day"
     },
     "volume": {
@@ -557,16 +557,16 @@
   },
   "assets": {
     "ETH": {
-      "trend": "Range",
+      "trend": "Fading",
       "risk": "Stressed",
       "relative": "Tracking Bitcoin",
-      "coverage": "3,813 daily observations from Coinbase daily OHLCV."
+      "coverage": "3,814 daily observations from Coinbase daily OHLCV."
     },
     "SOL": {
-      "trend": "Range",
+      "trend": "Fading",
       "risk": "Stressed",
       "relative": "Tracking Bitcoin",
-      "coverage": "1,971 daily observations from Coinbase daily OHLCV."
+      "coverage": "1,972 daily observations from Coinbase daily OHLCV."
     }
   }
 }
