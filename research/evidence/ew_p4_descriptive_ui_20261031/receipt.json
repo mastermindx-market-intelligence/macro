@@ -1,7 +1,7 @@
 {
   "scope": "EW-P4.T1 descriptive early-warning observation UI (consumer-only), two hosts, synthetic fixtures",
   "production_authenticated": false,
-  "source_revision": "530a11df95e2ed619b0a98e233bcd971c47ffd78",
+  "source_revision": "d5b9b1d4349e13f4724671d180328d0367b7331b",
   "base": "1d253e1d25f22c61d1bcf8126b13b0229f26ccbd",
   "capture_mode": "dialog_unclipped_static_harness",
   "capture_mode_note": "#dlg-risk rendered in normal flow with its max-height/overflow removed so the whole band is captured; live dialog scrolls",
@@ -1992,9 +1992,9 @@
     "radar-states": "contact-radar-states.html"
   },
   "pr_source_equivalence": {
-    "note": "The unchanged existing probe actually recaptured all 68 static cases at source_revision after the one-line bilingual Risk Radar disclaimer repair. The probe records the exact capture source; all 31 render/fixture paths were compared to both that commit and the current workspace. This static evidence does not replace the separately retained original 175-check workspace and 32-cell visual evidence, or either live-site acceptance.",
-    "pr_branch": "sol/web-risk-radar-paper-live-20261104-c3",
-    "pr_parent_of_evidence_commit": "530a11df95e2ed619b0a98e233bcd971c47ffd78",
+    "note": "Shots were re-rendered by the edge-stripe sweep (PR #10654; local Playwright Chromium, the same probe) at source_revision, the merge of main c3c955d0 into that branch. Both sides had changed bound render inputs: the branch removed the container edge stripes from templates/theme.css, site/theme.css and templates/dashboard.html.j2, and main's #10739 (Paper Risk Radar) changed templates/dashboard.html.j2 and templates/_risk_radar_workspace.html.j2, so neither earlier capture depicted the merged tree. Band, glance, fixtures and probe are byte-identical to the previous capture, and so are all 68 shots and the five contact sheets (equal git blob ids), so only this stamp changes; the PR head carries byte-identical render inputs (equal git blob ids below), so the shots depict the PR source. tests/test_ew_p4_descriptive_ui.py re-checks every blob on the tree CI checks out.",
+    "pr_branch": "claude/ssd-confident-khayyam-877b44-37f024569f201e61",
+    "pr_parent_of_evidence_commit": "d5b9b1d4349e13f4724671d180328d0367b7331b",
     "render_files": [
       {
         "path": "site/rotation_events.js",
@@ -2142,14 +2142,14 @@
       },
       {
         "path": "templates/theme.css",
-        "blob_at_source_revision": "619436f58d37a222d1db7021ba9d52bb3a05a7fa",
-        "blob_on_pr_branch": "619436f58d37a222d1db7021ba9d52bb3a05a7fa",
+        "blob_at_source_revision": "21d30e25df658cb03a95b08f76ec797b4035e5ed",
+        "blob_on_pr_branch": "21d30e25df658cb03a95b08f76ec797b4035e5ed",
         "equal": true
       },
       {
         "path": "templates/dashboard.html.j2",
-        "blob_at_source_revision": "1e5d6fbdcbced80b0f966759012d93f59e4133f8",
-        "blob_on_pr_branch": "1e5d6fbdcbced80b0f966759012d93f59e4133f8",
+        "blob_at_source_revision": "53c772eaf96f5ec4bed31bdbc182128f5f47e3f2",
+        "blob_on_pr_branch": "53c772eaf96f5ec4bed31bdbc182128f5f47e3f2",
         "equal": true
       },
       {
@@ -2172,8 +2172,8 @@
       },
       {
         "path": "site/theme.css",
-        "blob_at_source_revision": "619436f58d37a222d1db7021ba9d52bb3a05a7fa",
-        "blob_on_pr_branch": "619436f58d37a222d1db7021ba9d52bb3a05a7fa",
+        "blob_at_source_revision": "21d30e25df658cb03a95b08f76ec797b4035e5ed",
+        "blob_on_pr_branch": "21d30e25df658cb03a95b08f76ec797b4035e5ed",
         "equal": true
       },
       {
