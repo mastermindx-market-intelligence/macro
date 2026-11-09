@@ -1,8 +1,8 @@
 ---
 id: lens_catalyst
 kind: lens
-version: 1
-title: Catalyst verification
+version: 2
+title: Event and catalyst analysis
 priority: 32
 triggers:
   - today
@@ -15,20 +15,55 @@ triggers:
   - why is
   - what happened
   - suddenly
+  - CPI
+  - PPI
+  - PCE
+  - NFP
+  - GDP
+  - FOMC
+  - ISM
+  - payrolls
+  - jobless claims
+  - auction
+  - economic calendar
+  - calendar event
+  - release radar
+  - release
+  - this release
+  - economic release
+  - earnings release
+  - options expiry
+  - options expiration
   - 今天
   - 刚刚
   - 突发
   - 新闻
   - 为什么
   - 怎么回事
+  - 消费者物价
+  - 生产者价格
+  - 非农
+  - 拍卖
+  - 经济日历
+  - 初请失业金
+  - 通胀数据
+  - 数据公布
+  - 政策声明
+  - 央行会议
+  - 会议纪要
+  - 财报
 ---
-CATALYST LENS — infer the regime from prices first, then check the wire; never the reverse.
-Law: a headline is a candidate cause, not a verdict. The tape tells you what KIND of cause to look for; the events feed tells you whether one actually fired. An answer that names a specific fresh catalyst without having checked the wire is speculation wearing a suit.
-Procedure:
-1) From the tape pattern, say what kind of catalyst WOULD produce it (supply shock, central-bank message, fiscal/issuance scare, one sector's earnings, a forced unwind).
-2) Check the events feed for that kind (and the calendar: was there a Fed decision, CPI print, auction, big earnings?). The desk's wire carries timestamps and salience — prefer a timed, sourced event over a vibe.
-3) Grade the fit out loud: did the move START when the news hit, and is the move's SIZE proportionate? A 7% oil spike explains a 2% equity fall; a routine speech does not. News that arrived AFTER the move began is narrative catch-up — say so.
-4) When two candidate catalysts land the same session (a Fed day plus a geopolitical shock), attribute by asset: which legs of the tape each one explains. Don't blend them into one mushy cause.
-5) When no verified catalyst fits, say exactly that: "the tape says inflation-shock family; the wire hasn't confirmed a driver yet — watch X." An honest unknown beats a confident guess, and flows/positioning often ARE the cause and never make headlines.
-Invalidation of this lens itself: for questions with no "now" in them (concepts, history, a name's long-term setup), skip the wire entirely — no tool spend on catalysts nobody asked about.
-Worked shape: "Before checking the wire I'd expect a supply-side oil event — and there it is: the escalation headlines at 10:40, oil +7% within the hour, long yields following. Time-stamped, proportionate, and it explains four of the five legs. The semis leg is separate — that one's on the capex story."
+CATALYST LENS — infer the regime from prices first only for TAPE-LED questions; EVENT-LED questions start with the named event and its evidence.
+Law: a schedule, a reference guide and a headline do not establish a published result or verified market effect.
+
+EVENT-LED:
+1) Bind publisher, family, geography, reference period, scheduled date/time and stage. Keep scheduled, published, first-observed and assessment clocks distinct. Date-only evidence is not an intraday receipt; postponement or unverified publication stays unresolved.
+2) Before release: explain what matters, legitimate expectations, relevant regime context and conditional scenarios. No forecast is not no context: supported facts and a labelled reading guide remain useful. A benchmark is not automatically consensus; missing estimates remain missing.
+3) After release: separate official facts, reproducible calculations, statistical estimates and interpretation. Compare matching units and periods; include prior revisions. Explain decisive components, an alternative mechanism and the discriminating evidence. Keep a central-bank decision, statement, projections and press conference distinct.
+4) Correction: update the current interpretation and withdraw claims dependent on superseded facts. For historical questions preserve the requested information cutoff, not today's revised data. Multiple articles about the same economic episode are not independent analogues.
+5) Reaction: use timestamp-matched market observations and account for overlapping catalysts. Co-movement, timing and a plausible mechanism are not proof of causation. Separate release surprise from what was priced. Missing price coverage is not unpriced opportunity; a regime inferred after the reaction is not pre-event conditioning.
+6) Auctions: distinguish nominal, inflation-linked and floating-rate measures. Use source-defined auction subtotals for bid-to-cover and competitive-award denominators for bidder shares; indirect bidders are not synonymous with foreign buyers. A when-issued tail needs its timestamp-matched when-issued benchmark, not the reported median yield. Without it, the tail stays unavailable.
+
+TAPE-LED: describe the cross-asset pattern and competing explanations first, then check relevant timed evidence through permitted tools. Name contradictory assets and overlapping events; retain an honest unknown when no catalyst is verified. A later headline alone cannot explain an earlier move; investigate earlier information without inventing it.
+
+Finish with meaning, limits and the next one or two observable checks, not a compulsory trade. Concepts or historical method questions need no live-wire lookup; historical event claims need as-of evidence. No tool or source access is granted by this guide. Never imply a dossier was read unless supplied or retrieved. Keep existing lane budgets; no background agent, probability, signal, rank, size or execution authority is created.

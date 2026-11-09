@@ -5617,9 +5617,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_943),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_964),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_701),
+    ("templates/index.html", 137, 5_945),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_966),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_703),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5627,6 +5627,34 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-09 #7285 current-main composition: preserve all existing funding,
+    including #10710's distinct options-question browser argument. This lane's
+    doctrine argument adds exactly +2 to unrun-brain-gateway: six commands,
+    51->52 test tokens, 2345->2382 command characters, unchanged //800 term2,
+    weight110->112. Restore its recorded independent +2 to each current probe:
+    5943/5964/5701 -> 5945/5966/5703. No new whole-tree planner execution is
+    claimed; natural current-head CI must qualify this composition. Preserve
+    all job, ten-pack, runtime and admission limits and every earlier record.
+
+    2026-11-07 #7285 conflict composition: preserve current main's independent
+    #8899 +2 free-content/Prophet contribution, then add this owner's recorded
+    +2 to all three probes. Expected ceilings are index5914, free5931 and
+    Prophet5672. This composes recorded planning deltas; it is not a new paired
+    measurement. Job/pack/runtime/admission limits remain unchanged.
+
+    2026-11-06 analyst-method code ownership (#7285): actual paired
+    contract-delta run42311572786/job128214017556, head cc909ae7d98a
+    against base e7806d54c0bc, measured index137jobs/5912->5914,
+    free137jobs/5927->5929 and Prophet131jobs/5668->5670; all ten packs
+    on both sides and no newly selected jobs. The existing unrun-brain-gateway
+    command gains the previously data-only analyst-doctrine suite, costing
+    +2 estimated weight units. These are planner estimates, not measured
+    runtime seconds. Raise only the three weight ceilings to those exact
+    values, without padding. Preserve job ceilings137/138/131, the ten-pack
+    bound, timeout/admission limits, all suites and normal inferred coverage.
+    Actual source log SHA256
+    805dbb569d2e42510a66f522132bf84a96d896f1a36613a49796a06d12725fc2.
 
     2026-11-08 (PR #10837, explicit synthetic harness enrollment, recomposed on
     current main 005baca8b092abe82acb4462eb6710af8f59a1c8): natural
