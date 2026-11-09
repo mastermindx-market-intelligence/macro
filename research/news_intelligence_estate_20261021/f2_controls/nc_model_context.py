@@ -556,12 +556,16 @@ def nc_m05b() -> None:
     third, a different spelling of the same unit, must stay a manifestation so
     the fingerprint does not split on spelling.
     """
+    from hashlib import sha256
+    from engine.news_impact.producer import PRODUCER_VERSION
     from engine.news_impact.producer_facts import run as facts_run
     outdir = Path(tempfile.mkdtemp(dir=RESULTS_SCRATCH, prefix="m05b_"))
-    rows_path = RESULTS_SCRATCH / "m05b_events.jsonl"
+    generation = outdir / "source"
+    generation.mkdir()
+    rows_path = generation / "events.jsonl"
     fact_3 = "fact_c1b2c3d4e5f6a7b8c9d0e1f4"
     t_latest = "2026-04-03T14:00:00Z"
-    with rows_path.open("w") as fh:
+    with rows_path.open("w", encoding="utf-8") as fh:
         for fid, unit, observed in ((FACT_1, "percent", T_OBSERVED), (FACT_2, "pp", T_LATER),
                                     (fact_3, "percentage points", t_latest)):
             event = t1_event()
@@ -569,8 +573,17 @@ def nc_m05b() -> None:
             event["observed_at"] = observed
             event["incremental_amount"] = point_qty(value=5, unit=unit, currency="NA",
                                                     basis="incremental")
-            fh.write(json.dumps({"case_id": "SYNTH-CASE-1", "shadow": True,
-                                 "novelty_source": "SYNTH", "event": event}) + "\n")
+            fh.write(json.dumps({"case_id": "SYNTH-CASE-1", "shadow": False,
+                                 "novelty_source": "label_provisional", "event": event}) + "\n")
+    # Synthetic fixture of the adjudicated format; the three source events and
+    # the two-revision/one-manifestation predicate remain the accepted control.
+    raw = rows_path.read_bytes()
+    (generation / "events_report.json").write_text(json.dumps({
+        "producer_version": PRODUCER_VERSION, "mode": "adjudicated",
+        "n_cases": 3, "n_emitted": 3,
+        "emitted": {"synthetic": 3}, "deferred": {}, "rejected": {},
+        "events_sha256": sha256(raw).hexdigest(), "events_bytes": len(raw),
+    }, sort_keys=True) + "\n", encoding="utf-8")
     report_run = facts_run([rows_path], outdir, as_of=t_latest)
     n_records = report_run.get("n_records", {})
     held = n_records.get("fact_revision", 0) == 2 and n_records.get("manifestation", 0) == 1
