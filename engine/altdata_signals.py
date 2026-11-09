@@ -124,6 +124,7 @@ _CH = {
     "stocktwits_bull":   ("Stocktwits bullish", "Stocktwits 看多"),
     "activist_13d":      ("Activist 13D filing", "维权股东 13D"),
     "special_situation": ("Special situation", "特殊事件"),
+    "short_squeeze":     ("Short squeeze fuel", "轧空燃料"),
 }
 
 
@@ -225,7 +226,7 @@ def chip(rec: dict | None, *, root=None) -> dict | None:
     tinfo = convergence_tier(chans, trump, root=root)
     tier = tinfo["tier"]
     cof = tinfo["cofiring_score"]
-    labels = [{"en": _CH.get(c, (c, c))[0], "zh": _CH.get(c, (c, c))[1]} for c in chans]
+    labels = [{"en": channel_display(c)[0], "zh": channel_display(c)[1]} for c in chans]
     if cof >= 2:
         # headline the INDEPENDENT-event count (#23), noting when channels collapsed
         collapsed = "" if cof == score else f" (from {score} channels)"
@@ -233,7 +234,7 @@ def chip(rec: dict | None, *, root=None) -> dict | None:
         head = {"en": f"{cof}-event alt-data convergence{collapsed}",
                 "zh": f"{cof}独立事件替代数据汇聚{collapsed_zh}"}
     elif score >= 1:
-        en, zh = _CH.get(chans[0], (chans[0], chans[0]))
+        en, zh = channel_display(chans[0])
         head = {"en": en, "zh": zh}
     else:
         head = {"en": "alt-data signal", "zh": "替代数据信号"}

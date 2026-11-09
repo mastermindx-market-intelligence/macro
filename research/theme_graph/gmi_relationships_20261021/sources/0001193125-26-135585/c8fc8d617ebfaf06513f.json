@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-04-01T10:05:49Z",
+ "accession": "0001193125-26-135585",
+ "cik": "0001122411",
+ "doc_byte_length": 10672453,
+ "doc_sha256": "54e7a8d18f45ee907ceb168aeb47634502dd81e9059e41b4ceb5ffac768280af",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-04-01",
+ "form": "20-F",
+ "period_of_report": "2025-12-31",
+ "primary_document": "d50802d20f.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 1601221,
+  "byte_start": 1600437,
+  "normalized": "We have also entered into various non-exclusive technology license agreements with other companies involved in the semiconductor manufacturing process, including Infineon Technologies AG, TDK Corporation, and DECA Technologies Inc. The technology we license from these companies includes solder bumping, redistribution, ultra CSP assembly, advanced QFN assembly, wafer-level packaging, and other technologies used in the production of package types, such as BCC, flip chip BGA, film BGA, aQFN, and chip embedding. One of our license agreements with Infineon Technologies AG will remain in effect until expiration of the patents licensed by the agreement, and the other automatically renews each year unless otherwise agreed between the parties.",
+  "normalized_sha256": "84c3d7b9af787448a7612e8b06f23bd7b44165426e90162cfb8ead0e0295b504",
+  "raw": "We have also entered into various <span style=\"white-space:nowrap\">non-exclusive</span> technology license agreements with other companies involved in the semiconductor manufacturing process, including Infineon Technologies AG, TDK Corporation, and DECA Technologies Inc. The technology we license from these companies includes solder bumping, redistribution, ultra CSP assembly, advanced QFN assembly, wafer-level packaging, and other technologies used in the production of package types, such as BCC, flip chip BGA, film BGA, aQFN, and chip embedding. One of our license agreements with Infineon Technologies AG will remain in effect until expiration of the patents licensed by the agreement, and the other automatically renews each year unless otherwise agreed between the parties.",
+  "raw_sha256": "c8fc8d617ebfaf06513ff7dfc44eb447ee188cb6064aad0682445be8d278b5f6"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1122411/000119312526135585/d50802d20f.htm",
+ "xbrl_contexts": []
+}

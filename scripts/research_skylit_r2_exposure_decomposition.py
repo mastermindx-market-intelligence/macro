@@ -4,6 +4,7 @@ import argparse
 import hashlib
 import json
 import sys
+from contextlib import redirect_stdout
 from datetime import date
 from itertools import permutations
 from pathlib import Path
@@ -243,7 +244,10 @@ def build_settled_state(
     session_day = _canonical_session(session, calendar_api)
     oi_publication_session = _next_session(session, calendar_api)
     if store is None:
-        store = store_api.resolve_thetadata_store(required=True, purpose="skylit-r2-stage0")
+        try:
+            store = store_api.resolve_thetadata_store(required=True, purpose="skylit-r2-stage0")
+        except RuntimeError as exc:
+            raise R2Refusal(str(exc)) from exc
 
     base_raw = store_api.chain(session, root.upper(), store=store)
     if base_raw is None or base_raw.empty:
@@ -746,12 +750,14 @@ def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
 def main(argv: list[str] | None = None) -> int:
     args = _parse_args(argv)
     try:
-        result = analyze_pair(
-            args.session0,
-            args.session1,
-            args.root,
-            store=args.store,
-        )
+        # Existing reader/resolver diagnostics stay visible without corrupting JSON stdout.
+        with redirect_stdout(sys.stderr):
+            result = analyze_pair(
+                args.session0,
+                args.session1,
+                args.root,
+                store=args.store,
+            )
     except R2Refusal as exc:
         print(json.dumps(
             {"schema": SCHEMA, "status": "REFUSED", "reason": str(exc)},

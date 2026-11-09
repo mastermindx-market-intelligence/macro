@@ -1,0 +1,183 @@
+{
+  "cell": "v2-sector-cycles__light__en__390",
+  "view": "v2",
+  "url": "/sector_cycles.html",
+  "theme": "light",
+  "lang": "en",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "variant": null,
+  "js": true,
+  "steps": [],
+  "head": "b601c02749a34fd83877393d59ee88e6045207cd",
+  "pins": {
+    "chromium": "149.0.7827.55",
+    "playwright": "1.61.1",
+    "host": "darwin/arm64",
+    "executable": {
+      "name": "chrome-headless-shell",
+      "sha256": "11e393326c7d20a7c56641a7c65def33ea9c280da3b0b74cf8563b07989a0ee3"
+    },
+    "launch_args": [
+      "--disable-skia-runtime-opts",
+      "--disable-partial-raster",
+      "--disable-gpu",
+      "--force-color-profile=srgb",
+      "--disable-font-subpixel-positioning",
+      "--font-render-hinting=none",
+      "--disable-lcd-text"
+    ],
+    "font_pin": "/p0b-font-pin/pin.css",
+    "clock": "2026-11-05T12:00:00Z",
+    "locale": "en-US",
+    "timezone": "UTC",
+    "dpr": 1
+  },
+  "http_status": 200,
+  "notes": [],
+  "scrollWidth": 390,
+  "scrollHeight": 4774,
+  "data_theme": "light",
+  "data_lang": "en",
+  "html_lang": "en",
+  "computed_bg": "rgb(232, 235, 241)",
+  "boxes": {
+    "heading": {
+      "selector": "#sc-hero-title",
+      "x": 14,
+      "y": 760,
+      "w": 362,
+      "h": 22,
+      "visible": true,
+      "text": "Sector rotation overlay"
+    },
+    "asof": {
+      "selector": "#sc-asof",
+      "x": 61,
+      "y": 477,
+      "w": 78,
+      "h": 15,
+      "visible": true,
+      "text": "2026-11-03"
+    },
+    "generation": {
+      "selector": "[data-gen]",
+      "x": 28,
+      "y": 477,
+      "w": 230,
+      "h": 34,
+      "visible": true,
+      "text": "Generation History matches the current read"
+    },
+    "stale_guard": null,
+    "chips": {
+      "selector": "#sc-chips",
+      "x": 14,
+      "y": 978,
+      "w": 362,
+      "h": 56,
+      "visible": true,
+      "text": "☰ Series 5 ▾"
+    },
+    "chart": {
+      "selector": "#sc-chart",
+      "x": 14,
+      "y": 1034,
+      "w": 362,
+      "h": 440,
+      "visible": true,
+      "text": "WASHED-OUT MID-CYCLE EUPHORIC Low Mid High 2020 2022 2024 2026 TODAY"
+    },
+    "inspector": {
+      "selector": "#sc-detail",
+      "x": 0,
+      "y": 844,
+      "w": 390,
+      "h": 777,
+      "visible": false,
+      "text": "Close Sector rotation · 2026-11-03Every sector on the same clock — near the top means the move is late, near the bottom means it is washed out. Switch to Price for what actually happened, and tap a se"
+    },
+    "compare_tray": null,
+    "fixture_label": null,
+    "tape_asof": null,
+    "strip_asof": null,
+    "basket_on": null,
+    "members": null,
+    "companies_unavailable": null,
+    "stance_unavailable": null
+  },
+  "fixture_labels": {
+    "count": 0,
+    "visible": 0,
+    "texts": []
+  },
+  "fixture_text": [],
+  "size_mult_text": [
+    {
+      "el": "code.scf-code",
+      "visible": false,
+      "in_details": true,
+      "details_open": false,
+      "text": "engine/sector_central.py:453 size_mult = 1.0 (W4.6: every cell ships 1.0; size lever only, never direction; C17; cycles_"
+    }
+  ],
+  "stripe_audit": {
+    "scope": "body",
+    "flagged": []
+  },
+  "next_turn_labels": [
+    "▲ ref: Peak was proj. Sep ’25 — elapsed ↓ Headwind RS +3.5% #9",
+    "▼ Next ▼ Apr ’27 ↓ Headwind RS -6.6% #10",
+    "▲ ref: Peak was proj. Jul ’26 — elapsed ↔ Mixed RS +9.1% #5",
+    "▲ ref: Peak was proj. Aug ’25 — elapsed ↔ Mixed RS +10.3% #4",
+    "▼ ref: Trough was proj. Jun ’26 — elapsed ↔ Mixed RS +11.6% #3",
+    "▲ ref: Peak was proj. Aug ’25 — elapsed ↔ Mixed RS +9.1% #6",
+    "▲ ref: Peak was proj. Jun ’26 — elapsed ↑ Tailwind RS +9% #7",
+    "▲ ref: Peak was proj. May ’24 — elapsed ↑ Tailwind RS +12.7% #2",
+    "▲ Next ▲ Nov ’26 ↑ Tailwind RS +7.9% #8",
+    "▲ ref: Peak was proj. Oct ’25 — elapsed ↑ Tailwind RS +12.9% #1",
+    "▲ ref: Peak was proj. Oct ’26 — elapsed ↔ Mixed RS -9.8% #11"
+  ],
+  "cycles_ctx": null,
+  "assertions": {
+    "scroll_width_within_viewport": true,
+    "console_errors": 0,
+    "console_errors_unexpected": 0,
+    "size_mult_visible": false,
+    "page_errors": 0,
+    "fixture_label_visible": false,
+    "theme_applied": true,
+    "lang_applied": true,
+    "zh_latin": null,
+    "expect_visible_any": null
+  },
+  "console_errors": [],
+  "console_errors_expected": [],
+  "page_errors": [],
+  "failed_requests": [],
+  "interceptions": [],
+  "serve": {
+    "counts": {
+      "out": 35,
+      "head-fallback": 8
+    },
+    "head_fallback": [
+      "/account.js",
+      "/live.js",
+      "/live_config.js",
+      "/logo_config.js",
+      "/macro-desk.css",
+      "/nav_market.js",
+      "/navigation-refresh.css",
+      "/stock-logos.js"
+    ],
+    "missing": []
+  },
+  "zh_latin": null,
+  "png": {
+    "file": "cells/v2-sector-cycles__light__en__390.png",
+    "sha256": "94c82a13f462f170b4f7f93531b1fd64d660563dbb574c384493e4e0aeaca2ad"
+  }
+}
