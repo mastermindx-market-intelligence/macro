@@ -1,0 +1,878 @@
+{
+  "method": "Current main weights applied to historical eligible job IDs; not a hosted concurrency prediction. Exclude plans naming jobs absent from this main. No source selector or gate changes. Per-pack startup and queue excluded; adding 20 packs at 198s median checkout costs ~66 runner-minutes in checkout alone.",
+  "runs": [
+    {
+      "run": "39228592753",
+      "global": false,
+      "count": 134,
+      "observed_plan_weights": [
+        1400,
+        299,
+        298,
+        299,
+        298,
+        297,
+        297,
+        297,
+        297,
+        298,
+        297,
+        297
+      ],
+      "simulations": {
+        "8": {
+          "max_weight": 1400,
+          "nonempty": 8
+        },
+        "12": {
+          "max_weight": 1400,
+          "nonempty": 12
+        },
+        "16": {
+          "max_weight": 1400,
+          "nonempty": 16
+        },
+        "24": {
+          "max_weight": 1400,
+          "nonempty": 24
+        },
+        "32": {
+          "max_weight": 1400,
+          "nonempty": 32
+        }
+      }
+    },
+    {
+      "run": "39237548874",
+      "global": false,
+      "count": 83,
+      "observed_plan_weights": [
+        142,
+        140,
+        140,
+        140,
+        140,
+        140,
+        141,
+        141,
+        141,
+        140,
+        141,
+        141
+      ],
+      "simulations": {
+        "8": {
+          "max_weight": 212,
+          "nonempty": 8
+        },
+        "12": {
+          "max_weight": 142,
+          "nonempty": 12
+        },
+        "16": {
+          "max_weight": 107,
+          "nonempty": 16
+        },
+        "24": {
+          "max_weight": 96,
+          "nonempty": 24
+        },
+        "32": {
+          "max_weight": 96,
+          "nonempty": 32
+        }
+      }
+    },
+    {
+      "run": "39233122614",
+      "global": false,
+      "count": 107,
+      "observed_plan_weights": [
+        1400,
+        272,
+        248,
+        247,
+        248,
+        248,
+        248,
+        247,
+        246,
+        246,
+        246,
+        247
+      ],
+      "simulations": {
+        "8": {
+          "max_weight": 1400,
+          "nonempty": 8
+        },
+        "12": {
+          "max_weight": 1400,
+          "nonempty": 12
+        },
+        "16": {
+          "max_weight": 1400,
+          "nonempty": 16
+        },
+        "24": {
+          "max_weight": 1400,
+          "nonempty": 24
+        },
+        "32": {
+          "max_weight": 1400,
+          "nonempty": 32
+        }
+      }
+    },
+    {
+      "run": "39233721469",
+      "global": false,
+      "count": 107,
+      "observed_plan_weights": [
+        1400,
+        274,
+        272,
+        250,
+        251,
+        250,
+        251,
+        251,
+        251,
+        250,
+        249,
+        250
+      ],
+      "simulations": {
+        "8": {
+          "max_weight": 1400,
+          "nonempty": 8
+        },
+        "12": {
+          "max_weight": 1400,
+          "nonempty": 12
+        },
+        "16": {
+          "max_weight": 1400,
+          "nonempty": 16
+        },
+        "24": {
+          "max_weight": 1400,
+          "nonempty": 24
+        },
+        "32": {
+          "max_weight": 1400,
+          "nonempty": 32
+        }
+      }
+    },
+    {
+      "run": "39228597930",
+      "excluded_missing": [
+        "deploy-git-store-maintenance"
+      ]
+    },
+    {
+      "run": "39229273374",
+      "global": false,
+      "count": 106,
+      "observed_plan_weights": [
+        1400,
+        274,
+        272,
+        247,
+        247,
+        246,
+        246,
+        245,
+        245,
+        245,
+        245,
+        246
+      ],
+      "simulations": {
+        "8": {
+          "max_weight": 1400,
+          "nonempty": 8
+        },
+        "12": {
+          "max_weight": 1400,
+          "nonempty": 12
+        },
+        "16": {
+          "max_weight": 1400,
+          "nonempty": 16
+        },
+        "24": {
+          "max_weight": 1400,
+          "nonempty": 24
+        },
+        "32": {
+          "max_weight": 1400,
+          "nonempty": 32
+        }
+      }
+    },
+    {
+      "run": "39232626567",
+      "global": true,
+      "count": 255,
+      "observed_plan_weights": [
+        1400,
+        459,
+        459,
+        459,
+        459,
+        459,
+        460,
+        460,
+        459,
+        459,
+        458,
+        458
+      ],
+      "simulations": {
+        "8": {
+          "max_weight": 1400,
+          "nonempty": 8
+        },
+        "12": {
+          "max_weight": 1400,
+          "nonempty": 12
+        },
+        "16": {
+          "max_weight": 1400,
+          "nonempty": 16
+        },
+        "24": {
+          "max_weight": 1400,
+          "nonempty": 24
+        },
+        "32": {
+          "max_weight": 1400,
+          "nonempty": 32
+        }
+      }
+    },
+    {
+      "run": "39236414524",
+      "global": false,
+      "count": 108,
+      "observed_plan_weights": [
+        1400,
+        272,
+        267,
+        268,
+        268,
+        268,
+        268,
+        266,
+        266,
+        267,
+        266,
+        266
+      ],
+      "simulations": {
+        "8": {
+          "max_weight": 1400,
+          "nonempty": 8
+        },
+        "12": {
+          "max_weight": 1400,
+          "nonempty": 12
+        },
+        "16": {
+          "max_weight": 1400,
+          "nonempty": 16
+        },
+        "24": {
+          "max_weight": 1400,
+          "nonempty": 24
+        },
+        "32": {
+          "max_weight": 1400,
+          "nonempty": 32
+        }
+      }
+    },
+    {
+      "run": "39238690990",
+      "global": false,
+      "count": 94,
+      "observed_plan_weights": [
+        1400,
+        272,
+        219,
+        219,
+        218,
+        217,
+        217,
+        219,
+        218,
+        218,
+        218,
+        219
+      ],
+      "simulations": {
+        "8": {
+          "max_weight": 1400,
+          "nonempty": 8
+        },
+        "12": {
+          "max_weight": 1400,
+          "nonempty": 12
+        },
+        "16": {
+          "max_weight": 1400,
+          "nonempty": 16
+        },
+        "24": {
+          "max_weight": 1400,
+          "nonempty": 24
+        },
+        "32": {
+          "max_weight": 1400,
+          "nonempty": 32
+        }
+      }
+    },
+    {
+      "run": "39236263674",
+      "global": false,
+      "count": 112,
+      "observed_plan_weights": [
+        1400,
+        296,
+        294,
+        295,
+        295,
+        295,
+        293,
+        293,
+        293,
+        296,
+        294,
+        294
+      ],
+      "simulations": {
+        "8": {
+          "max_weight": 1400,
+          "nonempty": 8
+        },
+        "12": {
+          "max_weight": 1400,
+          "nonempty": 12
+        },
+        "16": {
+          "max_weight": 1400,
+          "nonempty": 16
+        },
+        "24": {
+          "max_weight": 1400,
+          "nonempty": 24
+        },
+        "32": {
+          "max_weight": 1400,
+          "nonempty": 32
+        }
+      }
+    },
+    {
+      "run": "39233825272",
+      "global": false,
+      "count": 110,
+      "observed_plan_weights": [
+        1400,
+        274,
+        272,
+        271,
+        271,
+        271,
+        271,
+        271,
+        270,
+        269,
+        270,
+        269
+      ],
+      "simulations": {
+        "8": {
+          "max_weight": 1400,
+          "nonempty": 8
+        },
+        "12": {
+          "max_weight": 1400,
+          "nonempty": 12
+        },
+        "16": {
+          "max_weight": 1400,
+          "nonempty": 16
+        },
+        "24": {
+          "max_weight": 1400,
+          "nonempty": 24
+        },
+        "32": {
+          "max_weight": 1400,
+          "nonempty": 32
+        }
+      }
+    },
+    {
+      "run": "39228917299",
+      "excluded_missing": [
+        "research-vault"
+      ]
+    },
+    {
+      "run": "39236332532",
+      "global": false,
+      "count": 102,
+      "observed_plan_weights": [
+        1400,
+        274,
+        272,
+        250,
+        251,
+        251,
+        251,
+        251,
+        250,
+        250,
+        250,
+        250
+      ],
+      "simulations": {
+        "8": {
+          "max_weight": 1400,
+          "nonempty": 8
+        },
+        "12": {
+          "max_weight": 1400,
+          "nonempty": 12
+        },
+        "16": {
+          "max_weight": 1400,
+          "nonempty": 16
+        },
+        "24": {
+          "max_weight": 1400,
+          "nonempty": 24
+        },
+        "32": {
+          "max_weight": 1400,
+          "nonempty": 32
+        }
+      }
+    },
+    {
+      "run": "39235975546",
+      "global": true,
+      "count": 255,
+      "observed_plan_weights": [
+        1400,
+        460,
+        460,
+        459,
+        459,
+        458,
+        458,
+        458,
+        458,
+        458,
+        458,
+        458
+      ],
+      "simulations": {
+        "8": {
+          "max_weight": 1400,
+          "nonempty": 8
+        },
+        "12": {
+          "max_weight": 1400,
+          "nonempty": 12
+        },
+        "16": {
+          "max_weight": 1400,
+          "nonempty": 16
+        },
+        "24": {
+          "max_weight": 1400,
+          "nonempty": 24
+        },
+        "32": {
+          "max_weight": 1400,
+          "nonempty": 32
+        }
+      }
+    },
+    {
+      "run": "39233246363",
+      "global": false,
+      "count": 107,
+      "observed_plan_weights": [
+        1400,
+        194,
+        194,
+        193,
+        192,
+        192,
+        193,
+        192,
+        192,
+        192,
+        192,
+        192
+      ],
+      "simulations": {
+        "8": {
+          "max_weight": 1400,
+          "nonempty": 8
+        },
+        "12": {
+          "max_weight": 1400,
+          "nonempty": 12
+        },
+        "16": {
+          "max_weight": 1400,
+          "nonempty": 16
+        },
+        "24": {
+          "max_weight": 1400,
+          "nonempty": 24
+        },
+        "32": {
+          "max_weight": 1400,
+          "nonempty": 32
+        }
+      }
+    },
+    {
+      "run": "39235580372",
+      "global": false,
+      "count": 105,
+      "observed_plan_weights": [
+        274,
+        272,
+        194,
+        195,
+        195,
+        195,
+        195,
+        196,
+        194,
+        194,
+        193,
+        195
+      ],
+      "simulations": {
+        "8": {
+          "max_weight": 312,
+          "nonempty": 8
+        },
+        "12": {
+          "max_weight": 274,
+          "nonempty": 12
+        },
+        "16": {
+          "max_weight": 274,
+          "nonempty": 16
+        },
+        "24": {
+          "max_weight": 274,
+          "nonempty": 24
+        },
+        "32": {
+          "max_weight": 274,
+          "nonempty": 32
+        }
+      }
+    },
+    {
+      "run": "39228626106",
+      "global": false,
+      "count": 82,
+      "observed_plan_weights": [
+        143,
+        142,
+        142,
+        142,
+        143,
+        143,
+        142,
+        143,
+        141,
+        142,
+        141,
+        141
+      ],
+      "simulations": {
+        "8": {
+          "max_weight": 215,
+          "nonempty": 8
+        },
+        "12": {
+          "max_weight": 143,
+          "nonempty": 12
+        },
+        "16": {
+          "max_weight": 109,
+          "nonempty": 16
+        },
+        "24": {
+          "max_weight": 96,
+          "nonempty": 24
+        },
+        "32": {
+          "max_weight": 96,
+          "nonempty": 32
+        }
+      }
+    },
+    {
+      "run": "39233775390",
+      "global": false,
+      "count": 116,
+      "observed_plan_weights": [
+        1400,
+        274,
+        272,
+        269,
+        269,
+        268,
+        268,
+        268,
+        268,
+        268,
+        268,
+        268
+      ],
+      "simulations": {
+        "8": {
+          "max_weight": 1400,
+          "nonempty": 8
+        },
+        "12": {
+          "max_weight": 1400,
+          "nonempty": 12
+        },
+        "16": {
+          "max_weight": 1400,
+          "nonempty": 16
+        },
+        "24": {
+          "max_weight": 1400,
+          "nonempty": 24
+        },
+        "32": {
+          "max_weight": 1400,
+          "nonempty": 32
+        }
+      }
+    },
+    {
+      "run": "39230039622",
+      "global": false,
+      "count": 97,
+      "observed_plan_weights": [
+        1400,
+        168,
+        167,
+        166,
+        167,
+        166,
+        166,
+        167,
+        166,
+        166,
+        166,
+        164
+      ],
+      "simulations": {
+        "8": {
+          "max_weight": 1400,
+          "nonempty": 8
+        },
+        "12": {
+          "max_weight": 1400,
+          "nonempty": 12
+        },
+        "16": {
+          "max_weight": 1400,
+          "nonempty": 16
+        },
+        "24": {
+          "max_weight": 1400,
+          "nonempty": 24
+        },
+        "32": {
+          "max_weight": 1400,
+          "nonempty": 32
+        }
+      }
+    },
+    {
+      "run": "39234426974",
+      "global": false,
+      "count": 124,
+      "observed_plan_weights": [
+        1400,
+        301,
+        301,
+        302,
+        301,
+        302,
+        301,
+        300,
+        300,
+        300,
+        301,
+        300
+      ],
+      "simulations": {
+        "8": {
+          "max_weight": 1400,
+          "nonempty": 8
+        },
+        "12": {
+          "max_weight": 1400,
+          "nonempty": 12
+        },
+        "16": {
+          "max_weight": 1400,
+          "nonempty": 16
+        },
+        "24": {
+          "max_weight": 1400,
+          "nonempty": 24
+        },
+        "32": {
+          "max_weight": 1400,
+          "nonempty": 32
+        }
+      }
+    },
+    {
+      "run": "39234350662",
+      "global": false,
+      "count": 18,
+      "observed_plan_weights": [
+        159,
+        152,
+        90,
+        86,
+        58,
+        44,
+        18,
+        18,
+        18,
+        20,
+        19,
+        20
+      ],
+      "simulations": {
+        "8": {
+          "max_weight": 159,
+          "nonempty": 8
+        },
+        "12": {
+          "max_weight": 159,
+          "nonempty": 12
+        },
+        "16": {
+          "max_weight": 159,
+          "nonempty": 16
+        },
+        "24": {
+          "max_weight": 159,
+          "nonempty": 18
+        },
+        "32": {
+          "max_weight": 159,
+          "nonempty": 18
+        }
+      }
+    },
+    {
+      "run": "39232473798",
+      "global": true,
+      "count": 255,
+      "observed_plan_weights": [
+        1400,
+        460,
+        460,
+        459,
+        459,
+        458,
+        458,
+        458,
+        458,
+        458,
+        458,
+        458
+      ],
+      "simulations": {
+        "8": {
+          "max_weight": 1400,
+          "nonempty": 8
+        },
+        "12": {
+          "max_weight": 1400,
+          "nonempty": 12
+        },
+        "16": {
+          "max_weight": 1400,
+          "nonempty": 16
+        },
+        "24": {
+          "max_weight": 1400,
+          "nonempty": 24
+        },
+        "32": {
+          "max_weight": 1400,
+          "nonempty": 32
+        }
+      }
+    },
+    {
+      "run": "39233349598",
+      "global": false,
+      "count": 116,
+      "observed_plan_weights": [
+        1400,
+        272,
+        264,
+        265,
+        264,
+        264,
+        262,
+        263,
+        263,
+        264,
+        264,
+        263
+      ],
+      "simulations": {
+        "8": {
+          "max_weight": 1400,
+          "nonempty": 8
+        },
+        "12": {
+          "max_weight": 1400,
+          "nonempty": 12
+        },
+        "16": {
+          "max_weight": 1400,
+          "nonempty": 16
+        },
+        "24": {
+          "max_weight": 1400,
+          "nonempty": 24
+        },
+        "32": {
+          "max_weight": 1400,
+          "nonempty": 32
+        }
+      }
+    }
+  ]
+}

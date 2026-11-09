@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2025-12-17T19:22:38Z",
+ "accession": "0001140361-25-045801",
+ "cik": "0000810136",
+ "doc_byte_length": 2832969,
+ "doc_sha256": "d8cbc894fb591653384b5569dac28f569a54636fbaa899f583491b78edee3d68",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2025-12-17",
+ "form": "10-K",
+ "period_of_report": "2025-10-31",
+ "primary_document": "ef20057458_10k.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 73367,
+  "byte_start": 72996,
+  "normalized": "For fiscal year 2024, Customer A, B and C accounted for approximately 15%, 12% and 9% of consolidated revenue, respectively. For fiscal year 2023, Customer A, B and C accounted for approximately 14%, 10% and 13% of consolidated revenue, respectively. No other customer represented 10% or more of consolidated revenue in any of the three fiscal years.",
+  "normalized_sha256": "81eb8f4fe5708044238e633758a39d76bc80bfa8ba858b242288075a128d8175",
+  "raw": " For fiscal year 2024, Customer A, B and C accounted for approximately 15%, 12% and 9% of\n          consolidated revenue, respectively. For fiscal year 2023, Customer A, B and C accounted for approximately 14%, 10% and 13% of consolidated revenue, respectively. No other customer represented 10% or more of consolidated revenue in any of the\n          three fiscal years.",
+  "raw_sha256": "68bef4e94f5c6ba909388eccda3ba2e353ea04c5e5250e88071cb76d382b9612"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/810136/000114036125045801/ef20057458_10k.htm",
+ "xbrl_contexts": []
+}

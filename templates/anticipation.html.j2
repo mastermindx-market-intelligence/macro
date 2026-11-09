@@ -166,6 +166,7 @@
   function T(en,zh){ return '<span class="l-en">'+en+'</span><span class="l-zh">'+(zh||en)+'</span>'; }
   function f1(x){ return (x==null||isNaN(x))?'—':(Math.round(x*10)/10); }
   function pct(x){ return (x==null||isNaN(x))?'—':((x>=0?'+':'')+f1(x)+'%'); }
+  function asofFor(a){ return (a&&a.as_of)||DATA.as_of||''; }
   document.getElementById('asof').textContent = DATA.as_of||'';
   document.getElementById('ngo').innerHTML = (DATA.go_legs?DATA.go_legs.length:0)+' '+T('validated legs','已验证因子');
 
@@ -215,6 +216,10 @@
     term:['yield curve','收益率曲线'],gold:['gold','黄金'],vrp:['volatility premium','波动率溢价'],
     tsmom:['price trend','价格趋势'],dollar:['the dollar','美元'],netliq:['net liquidity','净流动性'],mtg:['mortgage rates','按揭利率']};
   function legName(h){ if(!h.dir_legs||!h.dir_legs.length) return null; return LEGLAB[h.dir_legs[0]]||[h.dir_legs[0],h.dir_legs[0]]; }
+  function volChip(a){ var v=a&&a.vol_cone_ann; if(typeof v!=='number'||!isFinite(v)) return '';
+    return '<span class="chip">'+T('expected vol (yearly)','预期年化波动')+' '+
+      Math.round(100*v)+'%</span>';
+  }
   function setAsset(tk){
     var a=BY[tk]; if(!a) return;
     document.querySelectorAll('.pick').forEach(function(e){ e.classList.toggle('on', e.dataset.tk===tk); });
@@ -223,7 +228,7 @@
     var idxTip=T('Percentile of how stretched / fragile this asset looks vs its OWN history (trend extension, vol regime, deterioration velocity). Display-only: a higher score only makes the cone WIDER and more left-skewed. It is NOT a valuation, a crash forecast, or a sell signal.','相对自身历史的拉伸/脆弱度百分位（趋势拉伸、波动率状态、恶化速度）。仅展示：分数越高仅使锥体更宽、更左偏。并非估值、崩盘预测或卖出信号。');
     document.getElementById('htitle').innerHTML =
       '<span class="nm">'+a.asset+'</span><span class="grp">'+a.name+' · '+a.group+'</span>'+
-      '<span class="idxbadge '+bandClass(a.index_band)+' help">'+T('Stretch/Fragility','拉伸/脆弱度')+' '+(a.anticipation_index!=null?Math.round(a.anticipation_index):'—')+'/100 · '+T(bw[0],bw[1])+'<span class="tip">'+idxTip+'</span></span>'+
+      '<span class="idxbadge '+bandClass(a.index_band)+' help">'+T('Stretch/Fragility','拉伸/脆弱度')+' '+(a.anticipation_index!=null?Math.round(a.anticipation_index):'—')+'/100 · '+T(bw[0],bw[1])+'<span class="tip">'+idxTip+'</span></span>'+volChip(a)+
       (a.macro?'<span class="chip '+(a.macro.stress_pct>=70?'hot':(a.macro.stress_pct>=50?'warn':'ok'))+'">'+T('market stress','市场压力')+' '+Math.round(a.macro.stress_pct)+'% · '+T('widens cone','加宽锥体')+' ×'+a.macro.width_mult+'</span>':'');
     document.getElementById('conebox').innerHTML = renderCone(a);
     // horizon cards — DIRECTION block (colored) + RISK block (neutral), split
@@ -248,7 +253,7 @@
           why+pill+'</div>'+
         '<div class="rblock"><div class="rlab">'+T('RISK · validated','风险 · 已验证')+'</div>'+
           '<div class="rv"><span class="neg">'+T('typical dip','常见回撤')+' '+pct(h.dd_avg)+'</span> · <span class="neg">'+T('worst','最坏')+' '+pct(h.dd_tail)+'</span></div>'+
-          '<div class="rv2">'+T('median return','中位收益')+' '+pct(rq.p50)+(h.thin?' · '+T('low-n','样本少'):'')+'</div>'+
+          '<div class="rv2">'+rv2Line(h)+'</div>'+
         '</div></div>';
     });
     document.getElementById('cards').innerHTML = ch;
@@ -273,6 +278,17 @@
         '<span class="chip'+(a.horizons.long&&a.horizons.long.underpowered?' warn':'')+'">'+T('long n','长周期 n')+' '+((a.horizons.long||{}).cell_n||0)+'</span>'+
         (a.macro?'<span class="chip">'+T('macro overlay','宏观叠加')+' '+(a.macro.go_legs||[]).length+'</span>':'')+
       '</div><ul class="tagline" style="margin:8px 0 0;padding-left:18px">'+cav+'</ul>';
+    document.getElementById('asof').textContent = asofFor(a);
+  }
+
+  function rv2Line(h){
+    var rq=h.ret_q||{};
+    var out=T('median return','中位收益')+' '+pct(rq.p50)+
+      ' · '+T('typical run-up','常见上冲')+' '+pct(h.mfe_med);
+    if(typeof h.cell_n==='number'&&isFinite(h.cell_n)){
+      out+=' · '+T('samples','样本数')+' '+h.cell_n;
+    }
+    return out+(h.thin?' · '+T('low-n','样本少'):'');
   }
 
   // selector

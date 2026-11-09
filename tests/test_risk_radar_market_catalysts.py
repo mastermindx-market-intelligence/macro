@@ -596,11 +596,7 @@ class TestC7OASRollover:
 class TestC8VolInstabilityVeto:
 
     def test_veto_active_when_vol_high(self, monkeypatch):
-        """Large VIX daily swings -> 21d realized-vol pctile >= 0.80 -> veto active=True.
-
-        Uses a fixed random seed for reproducibility.  Verified: with seed=42 and randn*8
-        on the last 50 bars, p_now ≈ 0.98 >= 0.80.
-        """
+        """Large VIX daily swings -> evaluated active veto."""
         n = 600
         vix_closes = np.full(n, 20.0)
         np.random.seed(42)
@@ -610,22 +606,57 @@ class TestC8VolInstabilityVeto:
                             lambda g, nm: v if (g, nm) == ("yahoo", "_VIX") else None)
         veto = rmc._c8_vol_instability_veto()
         assert veto["active"] is True
+        assert veto["evaluated"] is True
+        assert veto["state"] == "active"
         assert veto["p_now"] >= 0.80
 
-    def test_veto_inactive_when_calm(self, monkeypatch):
-        """Flat VIX -> low daily changes -> low inst pctile -> veto inactive."""
+    def test_veto_clear_when_evaluation_completes_below_threshold(self, monkeypatch):
+        """A finite low percentile is measured clear, not unknown."""
         n = 600
-        vix_closes = np.full(n, 15.0)
+        vix_closes = 15.0 + np.sin(np.arange(n) / 13.0)
         v = pd.DataFrame({"close": vix_closes}, index=pd.bdate_range("2015-01-02", periods=n))
         monkeypatch.setattr(rmc.store, "read",
                             lambda g, nm: v if (g, nm) == ("yahoo", "_VIX") else None)
+        monkeypatch.setattr(
+            rmc, "pct_rank_window",
+            lambda values, window: pd.Series(0.20, index=values.index),
+        )
         veto = rmc._c8_vol_instability_veto()
         assert veto["active"] is False
+        assert veto["evaluated"] is True
+        assert veto["state"] == "clear"
+        assert veto["p_now"] == 0.20
 
-    def test_veto_inactive_when_vix_missing(self, monkeypatch):
+    def test_veto_unknown_when_vix_missing(self, monkeypatch):
         monkeypatch.setattr(rmc.store, "read", lambda g, n: None)
         veto = rmc._c8_vol_instability_veto()
-        assert veto["active"] is False
+        assert veto["active"] is None
+        assert veto["evaluated"] is False
+        assert veto["state"] == "unknown"
+        assert veto["p_now"] is None
+
+    def test_veto_unknown_when_percentile_non_finite(self, monkeypatch):
+        n = 600
+        v = pd.DataFrame(
+            {"close": 15.0 + np.sin(np.arange(n) / 13.0)},
+            index=pd.bdate_range("2015-01-02", periods=n),
+        )
+        monkeypatch.setattr(rmc.store, "read",
+                            lambda g, nm: v if (g, nm) == ("yahoo", "_VIX") else None)
+        monkeypatch.setattr(
+            rmc, "pct_rank_window",
+            lambda values, window: pd.Series(np.nan, index=values.index),
+        )
+        veto = rmc._c8_vol_instability_veto()
+        assert veto == {
+            "active": None,
+            "evaluated": False,
+            "state": "unknown",
+            "p_now": None,
+            "detail": "VIX instability percentile non-finite — veto not evaluated",
+            "label_en": "Volatility veto unknown",
+            "label_zh": "波动否决状态未知",
+        }
 
 
 # ---------------------------------------------------------------------------
@@ -1183,3 +1214,58 @@ class TestFrozenSemantics:
         assert result["n_fresh"] == 0       # no internals fired
         assert result["market_confirmed"] is False
         assert result["market_confirmed_raw"] is False
+
+
+
+# ---------------------------------------------------------------------------
+# C8 tri-state confirmation contract
+# ---------------------------------------------------------------------------
+
+def _patch_confirmation_contract_inputs(monkeypatch, veto):
+    fresh = {"key": "fresh_internal", "label_en": "Fresh", "label_zh": "新鲜",
+             "fired": True, "fresh": True, "accruing": True, "channel": "internals"}
+    absent = {"key": "absent_internal", "label_en": "Absent", "label_zh": "缺失",
+              "fired": False, "fresh": False, "accruing": True, "channel": "internals"}
+    mood = {"key": "mood", "label_en": "Mood", "label_zh": "情绪",
+            "fired": False, "fresh": False, "accruing": True, "channel": "mood"}
+    tape = {"key": "tape", "label_en": "Tape", "label_zh": "盘面",
+            "fired": False, "fresh": False, "accruing": True, "channel": "tape"}
+    monkeypatch.setattr(rmc.store, "read", lambda *a: None)
+    monkeypatch.setattr(rmc, "_c1_thrust_confluence", lambda breadth: fresh)
+    monkeypatch.setattr(rmc, "_c2_msi_swing", lambda breadth: absent)
+    monkeypatch.setattr(rmc, "_c3_washout_thrust20", lambda root: absent)
+    monkeypatch.setattr(rmc, "_c4_ftd", lambda root: absent)
+    monkeypatch.setattr(rmc, "_c5_retest_divergence", lambda breadth, root: absent)
+    monkeypatch.setattr(rmc, "_c6_vix_term_resolution", lambda: absent)
+    monkeypatch.setattr(rmc, "_c7_oas_rollover", lambda: absent)
+    monkeypatch.setattr(rmc, "_c8_vol_instability_veto", lambda: veto)
+    monkeypatch.setattr(rmc, "_c9_naaim_regrossing", lambda: mood)
+    monkeypatch.setattr(rmc, "_c10_news_tone_recovering", lambda: mood)
+    monkeypatch.setattr(rmc, "_c11_cot_es_washout", lambda: mood)
+    monkeypatch.setattr(rmc, "_c12_fast_reclaim", lambda: tape)
+
+
+def test_raw_confirmation_with_unknown_veto_fails_closed(monkeypatch):
+    _patch_confirmation_contract_inputs(monkeypatch, {
+        "active": None, "evaluated": False, "state": "unknown", "p_now": None,
+    })
+    result = rmc.compute()
+    assert result["market_confirmed_raw"] is True
+    assert result["market_confirmed"] is False
+    assert result["veto"]["state"] == "unknown"
+
+
+def test_raw_confirmation_with_clear_evaluated_veto_can_confirm(monkeypatch):
+    _patch_confirmation_contract_inputs(monkeypatch, {
+        "active": False, "evaluated": True, "state": "clear", "p_now": 0.20,
+    })
+    result = rmc.compute()
+    assert result["market_confirmed_raw"] is True
+    assert result["market_confirmed"] is True
+
+
+def test_raw_confirmation_with_legacy_false_but_no_evaluation_fails_closed(monkeypatch):
+    _patch_confirmation_contract_inputs(monkeypatch, {"active": False})
+    result = rmc.compute()
+    assert result["market_confirmed_raw"] is True
+    assert result["market_confirmed"] is False

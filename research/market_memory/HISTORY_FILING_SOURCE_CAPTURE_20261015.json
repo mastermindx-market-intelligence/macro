@@ -1,0 +1,29 @@
+{
+  "bytes": 4182981,
+  "capture_kind": "byte_identical_read_only_source_snapshot",
+  "captured_at_utc": "2026-10-15T11:47:03.923749+00:00",
+  "content_sha256": "5309ece0cd66b33d69abb8055afa05333d00bcfb43ace87d7997b3655946446f",
+  "filing_identity_owner": "engine.earnings_release.filing_key",
+  "historical_ticker_identity_proven": false,
+  "intraday_publication_time_verified": false,
+  "new_provider_requests": 0,
+  "point_in_time_eligible": false,
+  "producer_module_sha256": "872984343dfa1f087c6b1777ee4bceeeb404b18c1b75ae90c2620e473fc731d4",
+  "retained_ref": "web_test_runs:market-time-machine-20261015-filings/earnings_8k_dates.parquet",
+  "schema": "market_memory.retained_filing_source_capture.v1",
+  "source": {
+    "content_sha256": null,
+    "evidence_kind": "unqualified_snapshot",
+    "file_bytes": 4182981,
+    "file_version": "statv1:a8eada95d71e5f35ccb5ae0068dccb9352575c123bd1af0450e89608b2747198",
+    "file_version_basis": "device_inode_size_mtime_ctime_not_content_hash",
+    "filesystem_mtime": "2026-10-05T06:28:04.256850+00:00",
+    "filesystem_mtime_is_data_freshness": false,
+    "limitations": "Concrete local Macro checkout data. File presence does not establish current production freshness or point-in-time reconstruction.",
+    "ref": "macro_snapshot:edgar/earnings_8k_dates.parquet",
+    "registry_admission": "NOT_INFERRED_FROM_FILE_PRESENCE",
+    "relative_path": "edgar/earnings_8k_dates.parquet",
+    "root_alias": "macro_snapshot"
+  },
+  "source_original_not_modified": true
+}

@@ -1,0 +1,6 @@
+{
+  "result": "PASS",
+  "checks": 238,
+  "grid_points": 103,
+  "scope": "independent synthetic arithmetic only; no API, contract qualification, Save, watch or browser proof"
+}

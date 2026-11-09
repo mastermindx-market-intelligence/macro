@@ -1,0 +1,63 @@
+{
+  "schema": "eval_os.snb_source_adjudication.v1",
+  "observed_at": "2026-10-14T17:42:02.283331+00:00",
+  "base_source": "ae48fac361ac77b13e81d2bfe8c2c0e1b386df07",
+  "source_hashes": {
+    "research/SNB_FLOOR_RATE_CASE_2015_01_15.md": "5c2bd6ea27734d480695ddc8018bcfd9693ab228dc6716d7c0c6fa10e521043a",
+    "engine/neuralweb/eval/benchmark_snb_floor_rate_2015-01-15.json": "71f6170823758cd44a2b73b93689f623fad5ee796ceffbe0dcd83f832746427e",
+    "engine/neuralweb/response_eval.py": "f91939e4e6a443456d1d45ed28cd16797b7454c87fe53bbb8a9178a4d99c0753",
+    "tests/test_response_eval.py": "c3b1cd792a9cdcb8202fca8e216fc5739f4ef613c8e7124715cb29ce110835e9",
+    ".github/ci/legacy-jobs.yml": "04eeb25d14441b018b9ed44b9c83ccf0c31d3a578c14bb17cfaa98f82f68c40c"
+  },
+  "manifest_jobs": 314,
+  "all_execution_definitions_order_prior_paths_preserved": true,
+  "added_paths_by_job": {
+    "flow-surface": {
+      "research/SNB_FLOOR_RATE_CASE_2015_01_15.md": 1
+    },
+    "fif-kernel-guards": {
+      "research/SNB_FLOOR_RATE_CASE_2015_01_15.md": 1
+    },
+    "eval-os-a1": {
+      "research/SNB_FLOOR_RATE_CASE_2015_01_15.md": 1,
+      "engine/neuralweb/eval/benchmark_snb_floor_rate_2015-01-15.json": 1
+    },
+    "biocatalyst-serving": {
+      "research/SNB_FLOOR_RATE_CASE_2015_01_15.md": 1
+    },
+    "biocatalyst-history": {
+      "research/SNB_FLOOR_RATE_CASE_2015_01_15.md": 1
+    },
+    "crypto-assistant-context": {
+      "research/SNB_FLOOR_RATE_CASE_2015_01_15.md": 1
+    },
+    "defense-rail-laws": {
+      "research/SNB_FLOOR_RATE_CASE_2015_01_15.md": 1
+    },
+    "unrun-government-revenue-candidate-projection": {
+      "research/SNB_FLOOR_RATE_CASE_2015_01_15.md": 1
+    },
+    "unrun-government-revenue-grader": {
+      "research/SNB_FLOOR_RATE_CASE_2015_01_15.md": 1
+    },
+    "research-price-panel": {
+      "research/SNB_FLOOR_RATE_CASE_2015_01_15.md": 1
+    },
+    "ticker-news-qbus": {
+      "research/SNB_FLOOR_RATE_CASE_2015_01_15.md": 1
+    }
+  },
+  "evaluator_ast_unchanged_except_two_admission_sets": true,
+  "all_prior_benchmark_bytes_preserved": true,
+  "oracle_excluded_from_answer_packet": true,
+  "arithmetic": {
+    "deposit_reduction_bps": 50,
+    "old_libor_width_bps": 100,
+    "new_libor_width_bps": 100,
+    "endpoint_shift_bps": -50
+  },
+  "source_review": "Root reviewed official SNB release; independent review not claimed. Input contains announcement facts only, without later FX returns or implementation dates absent from the supplied release.",
+  "historical_byte_custody_proven": false,
+  "independent_model_observation": false,
+  "production_proven": false
+}
