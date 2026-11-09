@@ -5703,9 +5703,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_952),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_973),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_710),
+    ("templates/index.html", 137, 5_954),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_975),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_712),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5713,6 +5713,44 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-09 (PR #6867, preserving current F09 receiver): retain the
+    landed beneficial-ownership argument in the existing Shared Shell step
+    and append the original lifecycle enrollment after its Node handshake.
+    Current owner weight 25 -> 34 keeps exactly the original +9 contribution;
+    carry ceilings 5945/5966/5703 -> 5954/5975/5712, retaining job ceilings
+    137/138/131, ten packs and every assertion, selector and runtime limit.
+    Both original lifecycle history entries and all main provenance remain
+    at their existing anchors. This is source-derived accounting, not a new
+    paired planner measurement; natural successor CI must qualify this head.
+
+    F09 C3 current-main conflict repair (2026-11-09): retain the complete
+    historical paired measurement below and current main's independent history.
+    The data-base-shim preimage and current weight estimator still establish
+    only +2 from the accepted suite token, with no new selected owner. Apply
+    that contribution to 5943/5964/5701 -> 5945/5966/5703; keep 137/138/131 jobs
+    and ten packs. This is source accounting, not a new planner execution.
+
+    2026-11-08 (PR #10192, accepted F09 suite accounting on current main):
+    own contract-delta run42241879921/job127973971361 compared exact base
+    4b2a019bf31317b994c6f07329565a62c38f7670 with head
+    e287b58381b87d1d1495b3c6f77a194e3eb7d582: index5912->5914,
+    free-content5927->5929, Prophet5668->5670, unchanged selected jobs and
+    ten packs, three introduced findings and zero inherited. Its existing
+    data-base-shim owner adds only tests/test_beneficial_ownership.py to the
+    SharedShell command. Current catalog4f2c0d2fee46d9839560f0f958f3322e5eb9ce1a
+    retains that exact base owner; current runner computes23->25 from five
+    commands and9->10 test-path tokens in the same text-size bucket.
+    Compose only this measured +2 coverage cost onto current ceilings:
+    index5920->5922, free-content5941->5943, Prophet5678->5680.
+    Mainc9e06966920fa3b4b46341d344f90978f1fcd225 has actually landed #7352;
+    its independent +2 free-content benchmark allowance and history are
+    retained. The previous F09 candidate03f5407 conflicted with that landing;
+    this composition includes both actual source contributions once. Keep
+    selected-job ceilings137/138/131, ten packs, all assertions, selectors,
+    suites, runtime deadlines and existing provenance. No unmerged sibling
+    funding. This is source-composition arithmetic, not a new planner run;
+    old exact-base descendant UNKNOWN is unchanged, and new own CI is owed.
 
     2026-11-09 (#6867 preserving conflict repair on main 15364780e3f3):
     keep all 400 accepted owners and the registry/admission test additions.
