@@ -77,9 +77,9 @@ No older customer/build frame is deleted or rewritten in this milestone. Origina
 
 Before: useful Sector Central, native Sector, GMI and sleeve designs existed across several files, with competing navigation and unevenly connected state stories. After: one reviewed Shared Shell composition, exact extraction targets and a source-mapped design contract now connect the daily brief, sector investigation, economic evidence, exact company, saved research and analytical depth.
 
-The package contains **42 new editable top-level Frames**:
+The package contains **47 new editable top-level Frames**:
 
-- Product p-B-0: 26 compositions — eleven desktop journeys, ten mobile journeys, four Chinese/theme variants and one 768px tablet composition.
+- Product p-B-0: 31 compositions — eleven desktop journeys, ten 390px mobile journeys, four Chinese/theme variants, one 768px tablet composition and five critical 320px compositions.
 - States/help p-C-0: eight atlases plus five full regional/recovery/mobile-analysis compositions.
 - Build p-D-0: design map, source/interaction contracts, and extraction/acceptance guidance.
 
@@ -137,6 +137,11 @@ Use the exact root IDs below. These are ordinary editable Frames with artboardId
 | B01 | MBQ-0 | p-D-0 | B01 · Round 2 design map · Build only |
 | B02 | MHA-0 | p-D-0 | B02 · Source & interaction contracts · Build only |
 | B03 | MIV-0 | p-D-0 | B03 · Extraction, behavior & Round 3 gates · Build only |
+| N01 | MKK-0 | p-B-0 | N01 · Brief · 320 · Dark EN |
+| N02 | MP7-0 | p-B-0 | N02 · Explore · 320 · Dark EN |
+| N03 | MTE-0 | p-B-0 | N03 · Compare · 320 · Dark EN |
+| N04 | MXQ-0 | p-B-0 | N04 · Research · 320 · Dark EN |
+| N05 | N1T-0 | p-B-0 | N05 · Cycle chart & exact values · 320 · Dark EN · historical specimen |
 
 ## Product decisions and why they matter
 
@@ -226,7 +231,7 @@ Additional implementation rules:
 
 The suite reuses the Shared Shell composition and existing Noir doctrine. Desktop navigation remains persistent; the tablet/mobile Shell is compact. Customer screens use neutral surface depth, one clear selected state, restrained direction ink, explicit units and a small hierarchy of type. Technical content is in Build.
 
-Reviewed rendered sizes are 1440, 768 and 390. Dark EN covers the core product. Light EN covers source and access views; Light ZH covers Brief and regional mobile; Dark ZH covers research and regional desktop. This is meaningful language/theme coverage, not a claim that every Cartesian combination has been rendered.
+Reviewed rendered sizes are 1440, 768, 390 and 320. The five 320px compositions cover Brief, Explore, Compare, Research, and cycle chart/exact values; they are explicit layouts, not a claim based on scaling a 390px screenshot. Dark EN covers the core product. Light EN covers source and access views; Light ZH covers Brief and regional mobile; Dark ZH covers research and regional desktop. This is meaningful language/theme coverage, not a claim that every Cartesian combination has been rendered.
 
 At implementation, use the incumbent semantic tokens and components. Paper contains explicit values because this file has no token definitions and token mutation is held by the adapter; do not turn this into a second runtime token owner.
 
@@ -240,7 +245,7 @@ At implementation, use the incumbent semantic tokens and components. Paper conta
 
 ## Verification performed
 
-Every new composition was inspected through its actual rendered Paper screenshot. The final page-root readback confirmed 26 Product, 13 States/help and three Build roots matching the manifest. A representative exact-root JSX extraction succeeded for KAP-0 with node IDs and formula text intact. Exact owned-node working indicators were released via finish_working_on_nodes; the result was APPLIED_RESPONSE_OBSERVED.
+Every new composition was inspected through its actual rendered Paper screenshot. The final page-root readbacks confirmed 31 Product, 13 States/help and three Build roots matching the manifest. The final Product readback after the 320px additions matched all 31 exact roots. A representative exact-root JSX extraction succeeded for KAP-0 with node IDs and formula text intact. Exact owned-node working indicators were released via finish_working_on_nodes; the result was APPLIED_RESPONSE_OBSERVED.
 
 Corrections made during review included:
 
@@ -254,9 +259,12 @@ Corrections made during review included:
 - Save recovery moved above the mobile draft.
 - A mobile cycle value label was moved out of the series path.
 - Tablet active navigation was corrected to Brief; mobile Explore now says View sector.
+- Five actual 320px compositions were added to meet the inherited narrow-width requirement. Compact tabs retain their labels, Brief bars use a label/value row above the plot, paired metrics fit deliberately, comparison labels have aligned height, and the cycle chart uses readable exact-value alternatives.
 - An unnecessary generic portfolio-allocation disclaimer was removed from the customer source screen; the actual evidence limits remain next to their claim.
 
 A bounded visual critic freshly inspected J36-0, IZM-0, JL2-0, K4E-0 and KAP-0 and found no material fit, clipping, sign or comparison-basis defect. A separate bounded interaction critique informed unknown-save, account, revision, mismatch and fixed-window states. Both were reasoning-only assignments; neither edited source or Paper, and both received explicit terminal closure. They do not constitute formal source approval or production acceptance.
+
+A frame count does not close the previously reported missing-state rows, 430px defects or the 134-row capability matrix. Round 3 must reconcile those stable obligations against the precise new or retained design and eventual consumer proof. The current 320px work verifies these five compositions only.
 
 No implementation tests, CI, authenticated browser paths, production deployment or natural-time producer proof were performed or claimed in this design round.
 
@@ -288,6 +296,6 @@ The current user explicitly requested four separate conversational rounds. The n
 
 The canonical research masterplan is revision 0.2 on the same existing plan branch. This unmerged planning amendment is not an adopted runtime/organizational status change. No Executive, Agent OS lifecycle, Linear completion or Slack dispatch has been advanced.
 
-DO_NOT_REDO: retain the source census, accepted existing code, prior design lineage, the new 42 exact frames, all 134 capability rows, all B/P/J obligations, the G4P-0 review-only canary and existing release holds. Do not delete competing Terminal UX before complete Shared Shell parity/redirect/return proof. Do not start the Fable-led T3 implementation before the requested final packet.
+DO_NOT_REDO: retain the source census, accepted existing code, prior design lineage, the new 47 exact frames, all 134 capability rows, all B/P/J obligations, the G4P-0 review-only canary and existing release holds. Do not delete competing Terminal UX before complete Shared Shell parity/redirect/return proof. Do not start the Fable-led T3 implementation before the requested final packet.
 
 Primary next action: in Round 3, consume this guide and masterplan 0.2; refresh the affected route/generation/registry/persistence contracts and exact current candidate heads, then harden the implementation dependency graph and falsifiable acceptance. Preserve the rest of the census instead of restarting it.
