@@ -1,12 +1,12 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "PLNT-BULL-20260513",
-  "asof": "2026-11-07",
+  "asof": "2026-11-08",
   "phase": "overtime",
   "detection_phase": "overtime",
-  "management_confidence": 41.5,
+  "management_confidence": 43.8,
   "raw_confidence": 44.9,
-  "delta_vs_base": -18.5,
+  "delta_vs_base": -16.2,
   "recommended_action": null,
   "human_state": "Closed",
   "components": {
@@ -20,7 +20,7 @@
     "dist_to_stop_r": 1.689,
     "dist_to_t1_r": 0.811,
     "dist_to_t2_r": 2.311,
-    "horizon_pct_used": 175.6,
+    "horizon_pct_used": 177.8,
     "p1": 0.4596,
     "p2": 0.2298,
     "p3": null,
@@ -45,8 +45,8 @@
   "_first_trigger_ts": "2026-08-21",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 79,
-  "tau": 1.7556,
+  "days_elapsed": 80,
+  "tau": 1.7778,
   "closed": true,
   "outcome": "INVALIDATED"
 }

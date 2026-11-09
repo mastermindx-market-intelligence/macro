@@ -1,6 +1,11 @@
 {
   "_debounce": {
     "label": {
+      "cn_defense": {
+        "bucket": "2026-11-06",
+        "count": 1,
+        "from": "neutral"
+      },
       "cn_insurers": {
         "bucket": "2026-11-06",
         "count": 1,
@@ -42,7 +47,7 @@
     "label": "neutral",
     "name": "Home Appliances",
     "name_zh": "\u5bb6\u7535",
-    "rank": 6,
+    "rank": 7,
     "reco": "hold",
     "score": 56
   },
@@ -50,7 +55,7 @@
     "label": "neutral",
     "name": "Autos & NEV Makers",
     "name_zh": "\u6c7d\u8f66\u6574\u8f66",
-    "rank": 10,
+    "rank": 11,
     "reco": "hold",
     "score": 45
   },
@@ -103,12 +108,12 @@
     "score": 33
   },
   "cn_defense": {
-    "label": "neutral",
+    "label": "emerging",
     "name": "Defense & Aerospace",
     "name_zh": "\u519b\u5de5\u822a\u5929",
-    "rank": 11,
+    "rank": 9,
     "reco": "hold",
-    "score": 45
+    "score": 47
   },
   "cn_food_bev": {
     "label": "neutral",
@@ -164,13 +169,13 @@
     "name_zh": "\u7a00\u571f\u6c38\u78c1",
     "rank": 20,
     "reco": "avoid",
-    "score": 31
+    "score": 32
   },
   "cn_robotics": {
     "label": "emerging",
     "name": "Robotics & Automation",
     "name_zh": "\u673a\u5668\u4eba\u4e0e\u81ea\u52a8\u5316",
-    "rank": 9,
+    "rank": 10,
     "reco": "enter",
     "score": 47
   },
@@ -202,8 +207,8 @@
     "label": "emerging",
     "name": "Solar / Photovoltaics",
     "name_zh": "\u5149\u4f0f",
-    "rank": 7,
+    "rank": 6,
     "reco": "hold",
-    "score": 55
+    "score": 56
   }
 }
