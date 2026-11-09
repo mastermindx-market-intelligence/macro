@@ -3410,3 +3410,47 @@ No runtime tests were rerun for these reference-copy/page-name edits. The prior2
 Continue examining the candidate's remaining task affordances, navigation and deterministic state behavior. Implement the next evidenced defect through the existing owners with affected proof.
 
 All prior Draft, H5/model, alert, qualified historical result, hosted/independent acceptance, public-route cutover, admission/release and denied/unknown-effect boundaries remain. Paper reference alignment is not production acceptance.
+
+
+## 73. Crypto current-case recovery — explicit absence and preserved navigation context (2026-11-09)
+
+**Implemented, verified and saved; continuing into native-link and keyboard navigation consistency.** Dependent Draft [PR #10901](https://github.com/mastermindx-market-intelligence/Macro/pull/10901) advances from `ce97e52d0cd131de2a1ca7e750574fcdc9482adb` to **`059b9a6acd6d84726e20781b52a66e0c2a5ec651`**, tree `73fc6f0eb400cc2bcb129558c8df3555780badc8`, assets `29d1c4abafba`.
+
+### Product correction
+
+An unresolved named current historical-review request previously fell through to generic BTC/horizon/cutoff context, silently dropping the requested identity. Missing current-scenario requests also mentioned saved-item removal and offered no direct recovery.
+
+Both now show **Scenario unavailable / 情景暂不可用**, with a snapshot-and-horizon-specific explanation and one **Browse scenarios / 浏览情景** action. An explicit empty target `memory:` is also unavailable; intentional bare `memory` remains generic, and a valid current-case review retains its exact case.
+
+The action uses the existing route helper to replace the failed entry, clear only its panel and open Scenarios. Selected horizon, chart window, search, filter and sort remain. Existing close/focus behavior lands on the destination heading; a subsequent valid case can open and close without reviving the failed request.
+
+The product change is three replacements inside the existing missing-scenario/current-review branches. Frozen saved-case wording, actions and qualification remain unchanged. No new router, history primitive, focus registry, storage write/retry, producer, model, CSS or template.
+
+### Native evidence and conservation
+
+Parent baseline, PID 13476: **six failed / 11 passed**, 30.86s pytest / 31.255s subprocess. Candidate, PID 19457: **17 passed**, 10.71s pytest / 11.059s subprocess. Both use 17 contexts/pages with zero page errors, external requests or WebSocket traffic.
+
+The passing scope comprises six missing/malformed current-case recovery paths in EN390/ZH320, four valid/generic review controls, six existing unusable-saved-record cases and one existing missing-current/legacy-saved path. Recovery is keyboard-operated; selected route parameters, history length, valid 30-day follow-on inspection, Escape return focus and opaque retained storage are checked.
+
+Four native captures were inspected; both request categories intentionally render the same concise unavailable screen in each locale. The control paths retain exact current or generic identity and never gain a save action.
+
+Publication readback, PID 22466, exit 0: **five changed source/served/test paths, 16 unchanged inputs**. Product and appended-test inverses recover the parent. Both retained HTML pages change only two asset-version references, and served JavaScript matches its template. No data or visible server-rendered content changes. **22 text/source/evidence files and four PNGs** match source commit readback.
+
+[Build contract](https://github.com/mastermindx-market-intelligence/Macro/blob/059b9a6acd6d84726e20781b52a66e0c2a5ec651/research/design_candidates/crypto_snapshot_safety_20261109/SCENARIO_RECOVERY.md) · [Complete focused proof](https://github.com/mastermindx-market-intelligence/Macro/tree/059b9a6acd6d84726e20781b52a66e0c2a5ec651/research/design_candidates/crypto_snapshot_safety_20261109/scenario-recovery). This is affected proof, not a complete browser-suite rerun.
+
+### Applied Paper contract alignment
+
+File `01M6Y3F0NXNDPAKJMJGCAD759Z`, existing page `p-1-0`:
+
+- `G5-0`: one contract note explains missing current-case recovery, retained horizon and the updated saved-case page/states 09–18.
+- `QI-0`: six final text changes bind Draft PR10901 at 059b9a6, distinguish the incumbent base, update the scorecard date, mark three accepted saved-case capabilities **Implemented · Draft**, and name the Markets task accurately.
+- **121 nodes** remain exact in styles, IDs, parent/order relationships. Full JSX inverses recover the before-images after reversing only seven final text changes. An overlong state-example cell was restored to its exact original contents after visual inspection; all states remain linked in the page-level note.
+- Both roots finished, and both full-artboard JPEGs were inspected. Alert integration and public-route cutover remain explicitly gated.
+
+Receipt: `PAPER_CRYPTO_SCENARIO_RECOVERY_20261109.json`. Captures: `PAPER_CRYPTO_SCENARIO_RECOVERY_20261109.jpg`, `PAPER_CRYPTO_SCENARIO_SCORECARD_20261109.jpg`.
+
+### Next safe work
+
+Make native route destinations preserve the same horizon/context as ordinary activation. Repair focused in-section navigation so its active control survives the outgoing view becoming hidden. Use the existing route/address/apply owners and qualify synchronous focus callbacks; do not introduce another navigation controller.
+
+Expired current-card qualification and same-case return from valid current review remain distinct subsequent work. All prior H5/model, alert, qualified-result, hosted/independent visual acceptance, public-route cutover, admission/release and denied/unknown-effect boundaries remain. Local historical/synthetic proof is not production acceptance.

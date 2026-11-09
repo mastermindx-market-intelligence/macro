@@ -1,7 +1,17 @@
 # Paper audit and upgrade — 8–9 November 2026
 
 
-## Latest applied work — source-aligned references and builder navigation
+## Latest applied work — current-case recovery
+
+[PR #10901](https://github.com/mastermindx-market-intelligence/Macro/pull/10901) is now `059b9a6acd6d84726e20781b52a66e0c2a5ec651`, assets `29d1c4abafba`. Missing current scenarios and named review targets stay explicitly unavailable. **Browse scenarios** preserves the selected horizon and route context; valid and intentionally generic review remain distinct.
+
+**17 affected browser cases pass** across 17 contexts/pages with zero errors or outside traffic. The parent reproduced six failures. Four native captures inspected. Five source/served/test paths change; 16 inputs remain exact. All 22 text/source/evidence files and four PNGs match readback.
+
+Paper's scenario contract and scorecard have seven final text changes across 121 conserved nodes/styles. Accepted saved-case capabilities now read **Implemented · Draft**, with the correct source and page references. Two roots finished and full captures inspected. See [§73](WORKFLOW_CONTINUATION_20261108.md), [receipt](PAPER_CRYPTO_SCENARIO_RECOVERY_20261109.json) and [scorecard](PAPER_CRYPTO_SCENARIO_SCORECARD_20261109.jpg).
+
+Continuing into native-link context parity and in-section keyboard navigation. Prior proof scopes and all holds remain.
+
+## Prior applied work — source-aligned references and builder navigation
 
 The Chinese mobile Markets reference now names the actual price and asset/BTC ratio measures, states their observation-step basis and identifies the absent paired window. Desktop Markets leads with **Explore assets**.
 
