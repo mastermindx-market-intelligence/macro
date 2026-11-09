@@ -1,0 +1,21 @@
+{
+  "scope": "Static artifact validation; no browser execution",
+  "script_checks": [
+    {
+      "script": 0,
+      "exit_code": 0,
+      "output": ""
+    },
+    {
+      "script": 1,
+      "exit_code": 0,
+      "output": ""
+    }
+  ],
+  "original_native_path_preserved": true,
+  "pinned_css_blob": "cda4f3e53a34c5e996b49bdac5732357ed94b2d5",
+  "pinned_js_blob": "dfe818277c5068fe665337531f89d4fe7976565b",
+  "reduced_motion_controls_present": true,
+  "demo_has_no_fetch_or_storage": true,
+  "browser_animation_proven": false
+}

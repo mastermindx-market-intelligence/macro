@@ -95,5 +95,5 @@ Missing data uses a static three-source illustration rather than a fabricated pr
 
 ## Verification limits and continuation
 
-These are editable Paper designs and build contracts. Real browser animation, runtime source parity, authenticated navigation and deployment were not proven by native screenshots. Continue the two demonstrated Search and Watchlists native gaps, then close out the complete expansion packet with exact-head source readback.
+These are editable Paper designs and build contracts. Real browser animation, runtime source parity, authenticated navigation and deployment were not proven by native screenshots. The subsequent shared-state and bounded AI/Comparison phases are included in the final README and verification packet. The broader implementation programme remains open.
 

@@ -1,0 +1,519 @@
+[
+  {
+    "fileName": "Mastermind AI",
+    "pageName": "R10 · Build + Implementation Boundaries",
+    "pageId": "p-9-0",
+    "url": "https://app.paper.design/file/01M3P1QEHS5XXQY85BJT6QR2E1/p-9-0",
+    "rootNodeId": "root_node_p-9-0",
+    "nodeCount": 231,
+    "artboardCount": 3,
+    "artboards": [
+      {
+        "id": "1MO-0",
+        "name": "00 · R10 · Noir · Builder map + interaction",
+        "childCount": 3,
+        "width": 1440,
+        "height": 1200,
+        "worldX": 0,
+        "worldY": 0
+      },
+      {
+        "id": "5M0-0",
+        "name": "R10 · Preserved Implementation Boundaries",
+        "childCount": 2,
+        "width": 1440,
+        "height": 900,
+        "worldX": 1560,
+        "worldY": 0
+      },
+      {
+        "id": "5VN-0",
+        "name": "Source gaps · Answer evidence and non-monitoring save",
+        "childCount": 9,
+        "width": 1440,
+        "height": null,
+        "worldX": null,
+        "worldY": null
+      }
+    ],
+    "pages": [
+      {
+        "type": "page",
+        "id": "p-C-0",
+        "name": "00 · AGENT README · Read first",
+        "icon": "arrow",
+        "isActive": false
+      },
+      {
+        "type": "page",
+        "id": "p-1-0",
+        "name": "00 · R10 · Chat workbench · Start here",
+        "icon": "arrow",
+        "isActive": false
+      },
+      {
+        "type": "page",
+        "id": "p-B-0",
+        "name": "Proposed · Draft mention context",
+        "icon": "design",
+        "isActive": false
+      },
+      {
+        "type": "page",
+        "id": "p-8-0",
+        "name": "R10 · Save + Resume · Recovery",
+        "icon": null,
+        "isActive": true
+      },
+      {
+        "type": "page",
+        "id": "p-9-0",
+        "name": "R10 · Build + Implementation Boundaries",
+        "icon": null,
+        "isActive": false
+      },
+      {
+        "type": "divider",
+        "id": "p-A-0"
+      },
+      {
+        "type": "page",
+        "id": "p-2-0",
+        "name": "01 · Interaction + Recovery · R2 References",
+        "icon": null,
+        "isActive": false
+      },
+      {
+        "type": "page",
+        "id": "p-3-0",
+        "name": "02 · Answer Craft · R7–R8 References",
+        "icon": null,
+        "isActive": false
+      },
+      {
+        "type": "page",
+        "id": "p-4-0",
+        "name": "03 · Legacy Reference + Assets",
+        "icon": null,
+        "isActive": false
+      },
+      {
+        "type": "page",
+        "id": "p-5-0",
+        "name": "04 · Retained Shared Shell · Research Reading + Evidence",
+        "icon": null,
+        "isActive": false
+      },
+      {
+        "type": "page",
+        "id": "p-7-0",
+        "name": "05 · SOURCE ONLY · Chat Live Baseline",
+        "icon": null,
+        "isActive": false
+      },
+      {
+        "type": "page",
+        "id": "p-6-0",
+        "name": "99 · QA HOLD · Duplicate Shared Shell Transfer · Not for Build",
+        "icon": null,
+        "isActive": false
+      }
+    ],
+    "fontFamilies": [
+      "System Sans-Serif",
+      "Inter",
+      "Menlo",
+      "Arial",
+      "System Monospace"
+    ],
+    "tokens": {
+      "items": [
+        {
+          "name": "--mx-dark-bg",
+          "value": "#0F1115"
+        },
+        {
+          "name": "--mx-dark-panel",
+          "value": "#181B21"
+        },
+        {
+          "name": "--mx-dark-panel2",
+          "value": "#1E222A"
+        },
+        {
+          "name": "--mx-dark-text",
+          "value": "#D7DCE3"
+        },
+        {
+          "name": "--mx-dark-muted",
+          "value": "#8B93A1"
+        },
+        {
+          "name": "--mx-dark-line",
+          "value": "#3A4150"
+        },
+        {
+          "name": "--mx-dark-up",
+          "value": "#45B873"
+        },
+        {
+          "name": "--mx-dark-down",
+          "value": "#E06464"
+        },
+        {
+          "name": "--mx-dark-warn",
+          "value": "#E0A030"
+        },
+        {
+          "name": "--mx-dark-act",
+          "value": "#E05555"
+        },
+        {
+          "name": "--mx-dark-ok",
+          "value": "#3DA564"
+        },
+        {
+          "name": "--mx-dark-info",
+          "value": "#5B9BF0"
+        },
+        {
+          "name": "--mx-dark-link",
+          "value": "#7AA7E0"
+        },
+        {
+          "name": "--mx-dark-orange",
+          "value": "#E08B45"
+        },
+        {
+          "name": "--mx-light-bg",
+          "value": "#F7F8FA"
+        },
+        {
+          "name": "--mx-light-panel",
+          "value": "#FFFFFF"
+        },
+        {
+          "name": "--mx-light-panel2",
+          "value": "#EEF1F6"
+        },
+        {
+          "name": "--mx-light-text",
+          "value": "#1C2430"
+        },
+        {
+          "name": "--mx-light-muted",
+          "value": "#5D6B7E"
+        },
+        {
+          "name": "--mx-light-line",
+          "value": "#C9CCD1"
+        },
+        {
+          "name": "--mx-light-up",
+          "value": "#1F9A55"
+        },
+        {
+          "name": "--mx-light-down",
+          "value": "#CF4040"
+        },
+        {
+          "name": "--mx-light-warn",
+          "value": "#B9791A"
+        },
+        {
+          "name": "--mx-light-act",
+          "value": "#C43D3D"
+        },
+        {
+          "name": "--mx-light-ok",
+          "value": "#2F8A52"
+        },
+        {
+          "name": "--mx-light-info",
+          "value": "#285FFF"
+        },
+        {
+          "name": "--mx-light-link",
+          "value": "#285FFF"
+        },
+        {
+          "name": "--mx-light-orange",
+          "value": "#C4781F"
+        },
+        {
+          "name": "--mx-dark-prov",
+          "value": "#62A0E8"
+        },
+        {
+          "name": "--mx-dark-prov-ink",
+          "value": "#62A0E8"
+        },
+        {
+          "name": "--mx-dark-tier-accent",
+          "value": "#7C5CFF"
+        },
+        {
+          "name": "--mx-dark-tier-fill",
+          "value": "#6340D8"
+        },
+        {
+          "name": "--mx-dark-tier-ink",
+          "value": "#9B86FF"
+        },
+        {
+          "name": "--mx-dark-ser-1",
+          "value": "#5B9BF0"
+        },
+        {
+          "name": "--mx-dark-ser-2",
+          "value": "#D4A017"
+        },
+        {
+          "name": "--mx-dark-ser-3",
+          "value": "#0EA5E9"
+        },
+        {
+          "name": "--mx-dark-ser-4",
+          "value": "#E08B45"
+        },
+        {
+          "name": "--mx-light-prov",
+          "value": "#2F6FD0"
+        },
+        {
+          "name": "--mx-light-prov-ink",
+          "value": "#2C62B3"
+        },
+        {
+          "name": "--mx-light-tier-accent",
+          "value": "#7C5CFF"
+        },
+        {
+          "name": "--mx-light-tier-fill",
+          "value": "#6340D8"
+        },
+        {
+          "name": "--mx-light-tier-ink",
+          "value": "#5B3FC4"
+        },
+        {
+          "name": "--mx-light-ser-1",
+          "value": "#2F63C4"
+        },
+        {
+          "name": "--mx-light-ser-2",
+          "value": "#8F6A04"
+        },
+        {
+          "name": "--mx-light-ser-3",
+          "value": "#0284C7"
+        },
+        {
+          "name": "--mx-light-ser-4",
+          "value": "#B06A25"
+        },
+        {
+          "name": "--mx-light-ink-up",
+          "value": "#1E6D47"
+        },
+        {
+          "name": "--mx-light-ink-down",
+          "value": "#B23C3D"
+        },
+        {
+          "name": "--mx-light-ink-warn",
+          "value": "#7D5922"
+        },
+        {
+          "name": "--mx-light-ink-link",
+          "value": "#2758E6"
+        },
+        {
+          "name": "--noir-canvas",
+          "value": "#080808"
+        },
+        {
+          "name": "--noir-sidebar",
+          "value": "#0C0C0C"
+        },
+        {
+          "name": "--noir-panel",
+          "value": "#121212"
+        },
+        {
+          "name": "--noir-raised",
+          "value": "#191919"
+        },
+        {
+          "name": "--noir-hover",
+          "value": "#222222"
+        },
+        {
+          "name": "--noir-selected",
+          "value": "#292929"
+        },
+        {
+          "name": "--noir-text-primary",
+          "value": "#F3F3F3"
+        },
+        {
+          "name": "--noir-text-secondary",
+          "value": "#B8B8B8"
+        },
+        {
+          "name": "--noir-text-tertiary",
+          "value": "#949494"
+        },
+        {
+          "name": "--noir-steel",
+          "value": "#A7B4C2"
+        },
+        {
+          "name": "--noir-champagne",
+          "value": "#C9B99B"
+        },
+        {
+          "name": "--noir-sage",
+          "value": "#A8C2AD"
+        },
+        {
+          "name": "--noir-rose",
+          "value": "#DEA4A5"
+        },
+        {
+          "name": "--font-ui",
+          "value": "\"Inter\""
+        },
+        {
+          "name": "--fs-micro",
+          "value": "10px"
+        },
+        {
+          "name": "--fs-label",
+          "value": "11px"
+        },
+        {
+          "name": "--fs-sm",
+          "value": "12.5px"
+        },
+        {
+          "name": "--fs-body",
+          "value": "14px"
+        },
+        {
+          "name": "--fs-h3",
+          "value": "14px"
+        },
+        {
+          "name": "--fs-md",
+          "value": "15px"
+        },
+        {
+          "name": "--fs-h2",
+          "value": "17px"
+        },
+        {
+          "name": "--fs-num-lg",
+          "value": "22px"
+        },
+        {
+          "name": "--fs-h1",
+          "value": "28px"
+        },
+        {
+          "name": "--fs-num-xl",
+          "value": "38px"
+        },
+        {
+          "name": "--fs-display",
+          "value": "46px"
+        },
+        {
+          "name": "--fw-regular",
+          "value": "400"
+        },
+        {
+          "name": "--fw-medium",
+          "value": "500"
+        },
+        {
+          "name": "--fw-semibold",
+          "value": "600"
+        },
+        {
+          "name": "--fw-bold",
+          "value": "700"
+        },
+        {
+          "name": "--fw-extrabold",
+          "value": "800"
+        },
+        {
+          "name": "--bp-mobile",
+          "value": "390px"
+        },
+        {
+          "name": "--bp-tablet",
+          "value": "768px"
+        },
+        {
+          "name": "--bp-desktop",
+          "value": "1440px"
+        },
+        {
+          "name": "--sp-1",
+          "value": "4px"
+        },
+        {
+          "name": "--sp-2",
+          "value": "8px"
+        },
+        {
+          "name": "--sp-3",
+          "value": "12px"
+        },
+        {
+          "name": "--sp-4",
+          "value": "16px"
+        },
+        {
+          "name": "--sp-5",
+          "value": "20px"
+        },
+        {
+          "name": "--sp-6",
+          "value": "24px"
+        },
+        {
+          "name": "--sp-7",
+          "value": "32px"
+        },
+        {
+          "name": "--sp-8",
+          "value": "44px"
+        },
+        {
+          "name": "--r-ctl",
+          "value": "8px"
+        },
+        {
+          "name": "--r-btn",
+          "value": "10px"
+        },
+        {
+          "name": "--r-card",
+          "value": "12px"
+        },
+        {
+          "name": "--r-panel",
+          "value": "14px"
+        },
+        {
+          "name": "--r-pill",
+          "value": "999px"
+        }
+      ]
+    }
+  }
+]
+
