@@ -2951,3 +2951,53 @@ The root read historical 143dded8 directly and the operative PR8332 paragraph. T
 The next bounded implementation is the existing Crypto saved-case contract from §13. Fresh PR9580 remains Draft/unmerged at 5e496c24c962e85a4f7f514dd43dc61443b95cab. Its visible Remove action still calls a toggle that can append the case if it disappeared after the drawer opened; its reader also collapses unreadable storage to an empty list. Carry explicit Save/Remove intent into the existing owner, preserve unrelated full collection content and verify outcomes. Keep personal storage untouched, use synthetic consumer proof, and work in a separately owned dependent source branch. Existing Paper states/compositions, H5/model authority, alerts, hosted/visual acceptance, public-route cutover and release holds remain.
 
 Confluence source/audit remain Draft and unmerged; incumbent PR10705 admission/calendar and all wider source, model, browser, programme and release boundaries remain.
+
+
+## 62. Crypto R4 — explicit snapshot intent, confirmed effects and truthful saved-state recovery
+
+### Delivered source and Paper outcome
+
+The original saved-snapshot owner could reinterpret a visible Remove as a Save after another tab changed storage, and could discard unrelated records while removing through its filtered/sliced display array. Unreadable collections appeared empty. Several unconfirmed writes announced removal. The existing `memory-saved` lookup could borrow current context when the requested saved version was missing.
+
+These paths are repaired in dependent Draft [Macro PR #10901](https://github.com/mastermindx-market-intelligence/Macro/pull/10901), head `2c04fc37d239f4bf27b6efaed98b229256ea337e`, tree `c47e1d02373379b75258241c86bf3745b80fb28b`, on `design/crypto-snapshot-safety-20261109`. Its base is the existing R4 branch at PR #9580 head `5e496c24c962e85a4f7f514dd43dc61443b95cab`. PR #9580 remains an open Draft. The incumbent branch and its original host workspace were not modified.
+
+Paper file `01M6Y3F0NXNDPAKJMJGCAD759Z` now records the implemented storage scope and exact source pin in Build `3IP-0`. Eight Build texts were updated. State 16 / `3JY-0` received one copy correction: the general unreadable-list message no longer claims that no change occurred. All **48 existing nodes retain IDs, parents, order and styles** across the two owned roots; both were finished and read back. The state-16 specimen and three changed Build text areas were visually inspected. No product frame was replaced.
+
+### Runtime behavior
+
+- Save/Remove intent is captured from the displayed control. A late click does not become its opposite after another tab writes.
+- Already-present Save and already-absent Remove make no write. The former preserves the original save time and evidence digest; the latter never recaptures or appends.
+- Remove deletes all exact revision matches from the full readable array, including duplicates beyond the display window, while retaining unrelated parsed entries and their order.
+- Only an actual new Save applies the existing fifty-recognized-snapshot retention policy. Opaque entries are preserved.
+- The existing reader distinguishes ready empty data, unsupported retained entries, an unusable exact requested version and an unavailable collection. Both saved-item and memory-saved require one usable exact version with original fields, real dates and supported saved horizon. Legacy digest absence remains supported.
+- A single write is followed by exact serialized readback. Throw-before-write, write-then-throw, dropped write, readback failure and mismatched readback remain unconfirmed, without success, redirect or automatic replay.
+- Storage confirmation is separate from subsequent UI reads. A confirmed removal may be followed by an unreadable list; the completion remains confirmed and the list message stays neutral.
+- A newer route/language/focus owner wins. Programmatic activation does not displace unrelated focus. A focus callback opening another drawer cannot be overridden by late removal focus.
+
+This is a read/write/readback confirmation contract, **not atomic cross-tab compare-and-swap**. The tested sequential stale-intent paths do not establish simultaneous cross-tab linearizability.
+
+### Exact inputs and preservation
+
+The owned verification root is `/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm`. Twenty-one initial inputs were fetched at the incumbent SHA, verified against Git blobs and copied to a retained exact parent snapshot before testing. Sixteen unchanged original inputs were byte-checked after the repair. Twenty further exact-parent dependency files were restored only to resolve three missing imports in existing Python tests; no credentials or live data were copied.
+
+Ten recorded JS transformations reverse exactly to the original source. Template and served JS are identical at blob `e0dd8e3cd11368dc666c48e3f9c1f74e0d15db96`. The builder's actual three-source version calculation changes `be2ec2a278c4` to `3786626cb4d5`. Each saved candidate HTML changes only its two CSS/JS query references. The HTML template, CSS, source JSON, builder, model projection and shared assets remain exact.
+
+The source/evidence packet is [crypto_snapshot_safety_20261109](https://github.com/mastermindx-market-intelligence/Macro/tree/2c04fc37d239f4bf27b6efaed98b229256ea337e/research/design_candidates/crypto_snapshot_safety_20261109). It contains the build contract, validation/commands, original failure output, preserved harness corrections, original candidate JUnit, the dependency recovery result, reversible source transformations and ten before/after native capture files. All **13 text/source files and 10 binary capture paths** were read back exactly from the published commit.
+
+### Actual proof and harness qualifications
+
+Original-source baseline PID **31744**: **34 failed, 1 passed, 5 deselected**, 34.66 seconds pytest / 35.580 seconds subprocess, using 35 contexts / 41 pages and no page errors. One failure was a test locator that matched both the background and drawer Historical review buttons. Its first corrected rerun PID **42362** exposed an unsupported Python Locator method; this also remains a harness failure. The final focused parent-source rerun PID **46452**, with a drawer-scoped locator and supported DOM focus evaluation, demonstrated actual unrelated-focus loss: **1 failed, 39 deselected**, 9.26 / 11.164 seconds. The qualified baseline therefore demonstrates 34 failing behavior/copy cases across shared defects, not 34 independent bugs.
+
+Candidate PID **54338**: **76 passed, 3 failed**, 46.99 seconds pytest / 47.652 seconds subprocess. All **40 browser cases passed**. Its browser fixture used Chrome **157.0.8103.39**, **41 fresh contexts / 47 pages**, **zero page errors**. The original 32 view/theme/locale/width permutations remain inside the existing first case. New tests use actual second-tab writes and synthetic local records. The final harness serves an exact ephemeral HTTP origin, rejects other origins and blocks WebSockets; no external request or socket was attempted. Drawer navigation waits for the actual existing hashchange render rather than a fixed delay.
+
+The three candidate failures were missing `lib.illus` imports in the isolated subset, blocking existing preview-builder/shadow-hook tests. After exact-parent dependency hydration, PID **75853** ran only those three unchanged checks: **3 passed, 36 deselected**, 2.19 / 3.131 seconds. Together the passing results cover **40 browser + 39 contract cases**. They are not a single 79-pass run. The synthetic preview-builder test confirms its legacy-route sentinels survive; it does not build current market data or admit a production route.
+
+Native Node syntax validation passed. Eight final dialog-element crops were inspected and their retained PNG bytes were verified. These are local synthetic-state crops. The current desktop toast is viewport-centered and can extend outside a drawer crop; no full-viewport toast placement or hosted/independent visual acceptance is claimed.
+
+### Remaining accepted work and immediate next action
+
+Storage safety is complete for this bounded phase. The parent mission remains active. The next safe phase stays in the same owner and adds the explicit saved-case parent return, saved-horizon route continuity, same-revision disclosure/scroll/semantic-focus preservation and the original-condition-first frozen layout.
+
+Required next proof: a 30-day saved case opened from a 7-day view → review → parent → Close restores the exact 7-day ancestor; native Back/Forward; detached saved-item with a real review parent; truly detached review; a record becoming missing/unreadable before return; locale changes with no history/storage effects; visible-opener fallback; 320/390 target fit and reentrant focus. The original full Close semantics must remain intact. A frozen status derived from today’s expiry must not be mislabeled as the original-cutoff status.
+
+No H5/model authority, collector, alert, public-route cutover, hosted deployment, release/admission or independent visual approval changed. Earlier absolute holds, denied capture families and EFFECT_UNKNOWN workers remain fenced. This phase is **verify → save/readback → continue**, not mission finalization.

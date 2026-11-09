@@ -1,6 +1,16 @@
 # Paper audit and upgrade — 8–9 November 2026
 
-## Latest implementation — metadata truth and heading navigation
+## Current implementation — Crypto saved-snapshot safety (§62)
+
+Dependent Draft [PR #10901](https://github.com/mastermindx-market-intelligence/Macro/pull/10901), head `2c04fc37d239f4bf27b6efaed98b229256ea337e`, now repairs explicit Save/Remove intent, full-collection preservation, exact saved-version resolution, truthful write confirmation and newer-focus ownership. Parent PR #9580 remains unchanged at `5e496c24c962e85a4f7f514dd43dc61443b95cab`.
+
+Passing coverage: **40 browser cases / 41 contexts / 47 pages / zero page errors**, plus all **39 existing contract cases**. Initial candidate result was 76 passed / 3 missing-import failures; after exact-parent dependency restoration, those three cases passed separately. Original-source failures and two harness corrections are retained without relabeling. Eight final dialog crops were inspected; full-viewport desktop toast placement and hosted visual acceptance remain unproved.
+
+Paper Crypto Build `3IP-0` and unavailable-state `3JY-0` have nine applied text updates, exact readback, 48 original nodes/parents/order/styles preserved and both roots finished. [PAPER_CRYPTO_SNAPSHOT_SAFETY_20261109.json](PAPER_CRYPTO_SNAPSHOT_SAFETY_20261109.json) records source, Paper and verification evidence. Source/evidence files and ten native capture paths were read back at the exact published commit.
+
+**Active next work:** saved 30-day horizon from a 7-day ancestor, explicit review → same-case parent return, same-revision reading-state restoration and the accepted original-condition-first layout. H5/model, alerts, release/admission, independent/hosted visual acceptance and public-route cutover remain held. The mission continues autonomously.
+
+## Previous implementation — metadata truth and heading navigation
 
 [Dependent Draft PR10893](https://github.com/mastermindx-market-intelligence/Macro/pull/10893) at `05699e5fa2e307266d49245cf2fc7a619087f7b4` removes the right-now claim from all three descriptions, uses existing generic image metadata for empty/unavailable source, and exposes every combination name as an H3 without changing geometry. The image condition adopts historical 143dded8's retained template work; image generation/cleanup and its original unfulfilled visual request remain separate.
 
