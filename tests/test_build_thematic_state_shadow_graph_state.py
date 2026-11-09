@@ -404,6 +404,9 @@ def test_t9_source_shape():
         "engine.theme_graph.theme_state_owner_readers",
         # M2 B2a (ORCH-PIPE 2026-10-22): ACTIVITY_MEMBERSHIP_STATE fold mode — amendment ratified by the seat's merge.
         "engine.theme_graph.materialize", "engine.theme_graph.store", "hashlib",
+        # GMI activity binding: the events file is read ONLY through the bridge's
+        # shared load_bound_activity_events helper (same as build_theme_graph).
+        "engine.theme_graph.activity_history_bridge",
     }
     seen = set()
     for node in ast.walk(tree):
