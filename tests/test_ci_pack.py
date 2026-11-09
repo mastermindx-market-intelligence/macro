@@ -5703,9 +5703,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_945),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_966),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_703),
+    ("templates/index.html", 137, 5_967),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_988),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_725),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5713,6 +5713,21 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    RIC rates source accounting (2026-11-09, PR #7909): own contract-delta
+    run42639369282/job129236031310 compares base
+    b84bd66ab8313db879f68f97995486cf0aa7f782 with head
+    62ccb50b81dfa757b017b5f6c1073fa2ad5f6158. It measures
+    5945/5966/5703 -> 5967/5988/5725, three introduced findings and zero
+    inherited, unchanged selected jobs, no new owner, and ten packs.
+    The existing unrun-macro-panels DATA owner gains the original named
+    ten-suite command: 7 -> 8 commands, 37 -> 47 test-path occurrences,
+    and 1520 -> 1979 joined characters. The unchanged estimator gives
+    82 -> 104: +1 command, +20 suite-token weight, +1 text-size bucket.
+    Packing probes include DATA owners; this accounting does not claim
+    CODE execution of those scientific suites. Preserve all existing
+    provenance and the 137/138/131 job ceilings and ten-pack limit.
+    Source: https://github.com/mastermindx-market-intelligence/Macro/pull/7909#issuecomment-6743123051
 
     F09 C3 current-main conflict repair (2026-11-09): retain the complete
     historical paired measurement below and current main's independent history.
