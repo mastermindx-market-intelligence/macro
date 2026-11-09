@@ -1403,3 +1403,48 @@ The Build now names the implemented copy contract, current JS head, measured sum
 The original model01 **EFFECT_UNKNOWN / ROOT_UNVERIFIED** and no-consume/no-retry/no-replacement fences remain untouched. PR10676 stays Draft with no native auto-merge or labels and every no-Ready/no-un-draft/no-enqueue/no-relabel/no-merge/no-deploy hold. The bounded natural-CI query on the preceding cc47 head still returned no PR-triggered runs; no run was manually issued.
 
 Terminal PR1354 remains a separate protected delivery: at **03:59:50 UTC**, exact head **45472fcedad31292d660d54731d4da472ca04f1e** was Ready, open and behind an advancing base, with its existing auto-merge present, eleven browser shards still running, and no completed failed job. Raw PR data reported mergeable true; the normalized false did not demonstrate a conflict. Existing protected checks, the qualified merge SHA, exact-sha deployment owner and eventual live browser/account proof remain necessary. Chrome's separate extension-UI user-presence boundary is not bypassed by these anonymous component tests.
+
+
+## 28. GMI — generated Theme details label and no-JavaScript parity
+
+**Implemented, rendered and read back on 9 November 2026.** Original Draft PR10676 advances from **83f05e360844da4b28d9bbb2d82079908809ba5f** to **696f370a3b47c2abc893a7c111b5669cce66d654**. The source macro now says **Theme details / 主题详情**, matching the existing Paper design and remaining distinct from **Source receipt / 来源凭证**.
+
+### Existing renderer, exact accepted input
+
+The accepted model was located through two immutable source receipts, not through the unknown worker run:
+
+| Binding | Evidence |
+| --- | --- |
+| Accepted input locator | PUBLIC_ATTRIBUTION_VALIDATION_20261104.json, blob **8fa8b7e01d76d2344212433b7b2b6d2e38189636**, names the principal verification carrier's `native-render-model.json`. |
+| Accepted input hash | PUBLIC_KNOWLEDGE_CLOCK_VALIDATION_20261104.json, blob **3c2ae8d2d5ed62468f95e42d060c5fb0a99e68bd**, binds that saved model to SHA256 **e644fa48a2bb6e6affe8d1fda74556d9db5f82acadffdad839e1efe8f095359f**. |
+| Observed file | Present, regular, 1,744,779 bytes, exact hash match; rechecked before and after rendering. |
+| Current renderer | `scripts.build_gmi_explorer.render_site`, blob **900253d42a7b1d43ad41aa493e8032444c4570de**, retains `_public_render_model → make_env → templates → lib.pages.write_page`. |
+
+A new isolated verification directory materialized **48 exact current source inputs**. Forty-four matched the read-only existing source reference; four changed files were obtained as exact Git blobs. The original verification mirror, source checkout, saved input and live site were not modified. No model generation, coverage proof or worker-result consumption occurred.
+
+The unchanged renderer first reproduced committed `site/gmi.html` **byte-for-byte**: SHA256 **12f2f5aee1ded9d656878db968e3c218e7797c659c89043f12346a14f013f190**. After the one bilingual macro edit, it produced a one-line target delta; the eight other generated HTML/CSS/JS outputs were byte-identical between runs. The actual generated diff was transported against the canonical prior page and its full native-output Git/SHA256 hashes checked. The target was not independently hand-edited.
+
+The saved-model coverage output is known to differ from the earlier committed snapshot. That difference was neither adopted nor published. Public records, dates, search payload, source receipt, shared shell and every other committed page remain unchanged.
+
+### Exact publication and native proof
+
+| Published path | Blob |
+| --- | --- |
+| `templates/_gmi_product_macros.html.j2` | **3e82a587bb0ad17f536d0513d85a1c0a66304999** |
+| `site/gmi.html` | **f821055256f57d3fa777e77c14c4a555ef4375cf** |
+| `research/theme_graph/gmi_design_20261021/DESIGN_RECORD.md` (§11.21) | **2aa03aac7234fe01a7ee5b8550883b064fbd3f56** |
+| `research/theme_graph/gmi_design_20261021/DISCLOSURE_LABEL_VALIDATION_20261109.json` | **6641f9f7ee8f2e8ec7e8a5324728b505399fe186** |
+
+All four published texts were read back exactly. The source comparison contains one commit and precisely these four paths.
+
+**Twelve fresh native Chrome cases passed**, with zero page errors, at 1440/390/320 px × EN/ZH × JavaScript enabled/actually disabled, all with reduced motion. Checks cover the distinct visible labels, the admitted card and exact receipt/source/hash bytes, native Enter/Space disclosure behavior, retained focus and targets of at least 44 px. Desktop measures 44 px; wrapped mobile measures 53.59375 px. Chrome is **157.0.8103.39**; the native run exited 0 in 9.96 s.
+
+The browser proof uses extracted actual generated explorer DOM with exact candidate JS and complete GMI/shared theme CSS, all networking blocked. Static EN/ZH root attributes are explicit presentation fixtures, not a claim that a disabled-JavaScript language switch works. Full shared-shell, fonts, account, admission, production or live release remain outside this bounded proof. The exact copy/locale JavaScript from §27 remains unchanged, with its prior 42/32 context proof retained.
+
+### Paper and remaining boundaries
+
+The existing S06 Build **7M9-0** in **01M5H6EARN9YHQV17JC6ZG9BRY**, p7, now records the completed static/generated label alignment and exact current source. Only **7MA-0, 7MV-0, 7MZ-0, 7NB-0 and 7NF-0** changed text. All **27 node IDs, parents and style declarations** remain exact. The complete eight-module native screenshot was inspected and the exact root finished. This closes the specific module 06 label gap; it does not imply all GMI release work is complete.
+
+Original model01 **EFFECT_UNKNOWN / ROOT_UNVERIFIED**, no-consume/no-retry/no-replacement and all Draft/admission/release holds remain. No Ready, un-draft, relabel, enqueue, merge or deployment was performed.
+
+The parallel Catalyst delivery made actual CI progress at **04:13:08 UTC**: desktop-2/3/4 and tablet-3 passed, leaving seven browser shards running with no completed failure. Exact head **45472fcedad31292d660d54731d4da472ca04f1e** and the existing native auto-merge request remain unchanged; behind-base status is not evidence of a merge conflict. Protected delivery and real live-account/browser proof are still owed.
