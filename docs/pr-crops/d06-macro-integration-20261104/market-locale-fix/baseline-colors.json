@@ -1,0 +1,44 @@
+{
+  "phase": "baseline",
+  "producer_regimes": {
+    "long": 50,
+    "short": 25
+  },
+  "source_before": {
+    "templates/market_structure.html.j2": "75d07b074bad490b2a9ede4610b521e77d18ac9fa5c8f7c83ff55202bb14a0e8",
+    "site/market_structure.html": "ba01eb5e681e72a805206da80a111d31a0eb4ac4c4eb36d98133afcf2dab66df",
+    "site/theme.css": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757",
+    "data/market_structure/latest.json": "e949dfb47087919f714fba594328b789544227d76e3cd94fdffc50ec0c4490b1"
+  },
+  "contexts": [
+    {
+      "width": 390,
+      "theme": "light",
+      "locale": "zh",
+      "palette": {
+        "up": "rgb(207, 64, 64)",
+        "down": "rgb(31, 154, 85)",
+        "legacyDown": "rgb(192, 57, 43)"
+      },
+      "bars": 75,
+      "classification_color_matches": 50,
+      "colors": {
+        "rgb(207, 64, 64)": 50,
+        "rgb(192, 57, 43)": 25
+      },
+      "all_producer_regimes_retained": true,
+      "image": {
+        "path": "docs/pr-crops/d06-macro-integration-20261104/market-locale-fix/gex-colors-baseline-390-light-zh.png",
+        "sha256": "b132116b13d74abc11daa5599b94876cfda9fd40d6378f6c39a2782c1d653063"
+      }
+    }
+  ],
+  "status": "expected_failure_reproduced",
+  "source_after": {
+    "templates/market_structure.html.j2": "75d07b074bad490b2a9ede4610b521e77d18ac9fa5c8f7c83ff55202bb14a0e8",
+    "site/market_structure.html": "ba01eb5e681e72a805206da80a111d31a0eb4ac4c4eb36d98133afcf2dab66df",
+    "site/theme.css": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757",
+    "data/market_structure/latest.json": "e949dfb47087919f714fba594328b789544227d76e3cd94fdffc50ec0c4490b1"
+  },
+  "source_stable": true
+}

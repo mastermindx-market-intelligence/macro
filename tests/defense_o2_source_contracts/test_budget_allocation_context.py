@@ -139,3 +139,92 @@ def test_existing_collected_input_reads_stored_body_only_and_validates_receipt(t
  store=OwnerReadStore(PDF);loaded=a.load_collected_allocation_context_input(tmp_path,store=store)
  assert loaded==(r,PDF) and store.calls==[(r['immutable_object_key'],dict(expected_byte_length=len(PDF),max_byte_length=len(PDF)))]
  with pytest.raises(ValueError):a.load_collected_allocation_context_input(tmp_path,store=OwnerReadStore(PDF+b'\n'))
+
+AG_FIRST='2026-10-18T04:10:00+00:00'
+AG_GRAPH='2026-10-18T04:20:00+00:00'
+AG_ASOF='2026-10-18T05:00:00+00:00'
+
+def _agreement_graph():
+ from tests.test_government_program_public_agreement import graph as ag_graph, claim as ag_claim
+ g=ag_graph();g['public_agreement_assertions']=[ag_claim(g)]
+ return g
+
+def _mixed_theme_module(budget_candidate):
+ name='budget_theme_minor_candidate_mixed'
+ spec=importlib.util.spec_from_file_location(name,Path(os.environ.get('DEFENSE_THEME_MODULE',str(REPO/'engine/government_revenue/program_theme_context.py'))))
+ t=importlib.util.module_from_spec(spec);sys.modules[name]=t;spec.loader.exec_module(t)
+ t._SCHEMA_ROOT=budget_candidate._root()/'contracts/government_revenue'
+ (t._SCHEMA_ROOT/'government_program_theme_public_disclosure.v1_1.schema.json').symlink_to(REPO/'contracts/government_revenue/government_program_theme_public_disclosure.v1_1.schema.json')
+ return t
+
+def _mixed_setup(budget_candidate,monkeypatch,graph_pair,ag_g):
+ _,graph_data=graph_pair
+ # One candidate context module instance owns every OwnerSnapshot so disclosure
+ # recomposition sees the same classes; the disclosure file itself is unpatched.
+ t=_mixed_theme_module(budget_candidate)
+ owners={'budget':t.OwnerSnapshot('budget',json.dumps(graph_data).encode(),NOW,'O2local_document_context_structural_test','qualified_public_display'),
+         'ontology':t.OwnerSnapshot('program_ontology',json.dumps(ag_g).encode(),AG_GRAPH,'synthetic-reviewed-source-only','qualified_public_display')}
+ bref=dict(owner_key='budget',pointer='/documents/2/allocations/1',row_id=graph_data['documents'][-1]['context_id'])
+ aref=dict(owner_key='ontology',pointer='/public_agreement_assertions/0',row_id=ag_g['public_agreement_assertions'][0]['id'])
+ monkeypatch.setitem(sys.modules,'program_theme_context',t)
+ spec=importlib.util.spec_from_file_location('budget_theme_disclosure_candidate_mixed',Path(os.environ.get('DEFENSE_DISCLOSURE_MODULE',str(REPO/'engine/government_revenue/program_theme_disclosure.py'))))
+ d=importlib.util.module_from_spec(spec);sys.modules['budget_theme_disclosure_candidate_mixed']=d;spec.loader.exec_module(d)
+ return t,d,owners,bref,aref
+
+def test_golden_dome_mixed_allocation_and_agreement_keeps_both_partial_sources(budget_candidate,graph,monkeypatch):
+ ag_g=_agreement_graph();t,d,owners,bref,aref=_mixed_setup(budget_candidate,monkeypatch,graph,ag_g)
+ a1={'golden_dome':{'funding_stage':dict(state='partial',reason_code='mixed_allocation_and_prototype_agreement',references=[bref,aref]),
+                    'next_event':dict(state='partial',reason_code='reported_launch_availability_target',references=[aref])}}
+ p=t.compose_program_theme_context(a1,owners=owners,generated_at=AG_ASOF,as_of=AG_ASOF)
+ assert t.validate_program_theme_context(p,owners=owners)
+ rail=p['themes'][0]['rails']['funding_stage']
+ assert rail['state']=='partial' and [r['row_id'] for r in rail['references']]==[bref['row_id'],aref['row_id']]
+ assert set(p['owner_bindings'])=={'budget','ontology'} and '24379' not in json.dumps(p)
+ receipts={k:dict(state='available',sha256=sha256(v.raw_bytes).hexdigest(),owner_alias_state='unchanged') for k,v in owners.items()}
+ public=d.disclose_program_themes(p,owners=owners,current_owner_receipts=receipts)
+ golden=public['themes'][0]
+ assert public['schema_version']=='1.1.0'
+ assert golden['rail_states']['funding_stage']=='partial' and golden['rail_states']['next_event']=='partial'
+ assert golden['research_state']=='EVIDENCE_INSUFFICIENT'
+ by={s['owner_key']:s for s in golden['sources']}
+ assert set(by)=={'budget','ontology'}
+ assert by['budget']['pointer']=='/documents/2/allocations/1' and by['ontology']['pointer']=='/public_agreement_assertions/0'
+ assert by['budget']['documentary_class']=='allocation_plan'
+ assert by['ontology']['documentary_class']=='prototype_agreement' and by['ontology']['source_publication_date']=='2026-07-13'
+ assert 'allocation-plan' in golden['known_en'] and 'prototype agreement' in golden['known_en']
+ assert '955' in golden['known_en'] and '1.75' in golden['known_en']
+ assert 'do not add it to named-party values' in golden['known_en']
+ assert '2028' in golden['next_en']
+
+@pytest.mark.parametrize('field,expected',[
+ ('drop_budget','mixed_allocation_agreement_classes_required'),
+ ('drop_agreement','mixed_allocation_agreement_classes_required'),
+ ('double_budget','mixed_allocation_agreement_classes_required'),
+ ('double_agreement','mixed_allocation_agreement_classes_required'),
+ ('stale_state','mixed_allocation_agreement_scope_invalid'),
+ ('wrong_documentary_class','policy_context_reference_required'),
+ ('wrong_theme','mixed_allocation_agreement_scope_invalid'),
+ ('wrong_rail','mixed_allocation_agreement_scope_invalid'),
+ ('wrong_state','mixed_allocation_agreement_scope_invalid'),
+ ('allocation_reason','prototype_agreement_stage_promotion'),
+ ('agreement_reason','allocation_stage_promotion'),
+ ('nato_mixed_code','mixed_documentary_context_scope_invalid'),
+])
+def test_mixed_allocation_agreement_scope_and_class_negatives(budget_candidate,graph,monkeypatch,field,expected):
+ ag_g=_agreement_graph();t,_,owners,bref,aref=_mixed_setup(budget_candidate,monkeypatch,graph,ag_g)
+ rail=dict(state='partial',reason_code='mixed_allocation_and_prototype_agreement',references=[bref,aref])
+ if field=='drop_budget':rail['references']=[aref]
+ elif field=='drop_agreement':rail['references']=[bref]
+ elif field=='double_budget':rail['references']=[bref,dict(bref)]
+ elif field=='double_agreement':rail['references']=[bref,aref,dict(aref)]
+ elif field=='stale_state':rail['state']='stale'
+ elif field=='wrong_documentary_class':rail['references']=[bref,dict(owner_key='ontology',pointer='/evidence/0',row_id=ag_g['evidence'][0]['evidence_id'])]
+ elif field=='wrong_theme':assignments={'nato_fms_demand':{'funding_stage':rail}}
+ elif field=='wrong_rail':assignments={'golden_dome':{'exposure':rail}}
+ elif field=='wrong_state':rail['state']='supported'
+ elif field=='allocation_reason':rail['reason_code']='allocation_plan_only'
+ elif field=='agreement_reason':rail['reason_code']='prototype_agreement_only'
+ elif field=='nato_mixed_code':rail['reason_code']='mixed_documentary_context'
+ if field not in ('wrong_theme','wrong_rail'):assignments={'golden_dome':{'funding_stage':rail}}
+ with pytest.raises(ValueError,match=expected):
+  t.compose_program_theme_context(assignments,owners=owners,generated_at=AG_ASOF,as_of=AG_ASOF)
