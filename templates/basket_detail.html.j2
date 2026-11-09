@@ -263,7 +263,7 @@
   .mo-band { border:1px solid var(--line); border-radius:var(--r-card,12px); margin-top:10px;
     background:var(--panel); overflow:hidden; }
   .mo-band::before { content:""; display:block; height:2px;
-    background:linear-gradient(90deg,var(--info),color-mix(in srgb,var(--info) 15%,transparent)); }
+    background:linear-gradient(90deg,var(--info),var(--mc-accent-12)); }
   /* Light is a paper workspace: neutral hairline and white data tiles, not the
      dark surface's luminous accent edge. The method tile remains recessive. */
   html[data-theme="light"] .mo-band { box-shadow:var(--card-shadow); }
@@ -282,7 +282,7 @@
   .mo-field label { color:var(--muted); font-size:9.5px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; }
   .mo-field select,.mo-field input { width:100%; min-height:36px; border:1px solid var(--line); border-radius:var(--r-ctl,8px);
     background:var(--panel2); color:var(--text); padding:7px 9px; font:inherit; }
-  .mo-field select:focus,.mo-field input:focus { outline:2px solid color-mix(in srgb,var(--info) 55%,transparent); outline-offset:1px; }
+  .mo-field select:focus,.mo-field input:focus { outline:2px solid var(--link); outline-offset:1px; }
   .mo-summary { display:grid; grid-template-columns:minmax(120px,.7fr) repeat(3,minmax(105px,.55fr)) minmax(210px,1.4fr);
     gap:8px; padding:11px 16px 0; }
   .mo-stat { background:var(--panel2); border:1px solid var(--line); border-radius:var(--r-ctl,8px); padding:8px 10px; min-width:0; }
@@ -296,8 +296,8 @@
   .mo-table thead th { position:sticky; top:0; z-index:1; background:var(--panel2); cursor:default; }
   .mo-table td:first-child { font-weight:690; }
   .mo-state { display:inline-flex; align-items:center; gap:5px; border-radius:var(--r-ctl,8px); padding:1px 7px; font-size:10.5px; font-weight:700; }
-  .mo-state.obs { color:var(--ink-info,var(--info)); background:color-mix(in srgb,var(--info) 10%,transparent);
-    border:1px solid color-mix(in srgb,var(--info) 30%,var(--line)); }
+  .mo-state.obs { color:var(--ink-info,var(--info)); background:var(--mc-accent-10);
+    border:1px solid var(--line); }
   .mo-state.miss { color:var(--muted); background:var(--panel2); border:1px solid var(--line); }
   .mo-method { margin:11px 16px 0; border-top:1px solid var(--line); padding:9px 0 12px; color:var(--muted); font-size:11px; }
   .mo-method summary { cursor:pointer; color:var(--text); font-weight:650; }
