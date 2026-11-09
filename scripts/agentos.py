@@ -4321,6 +4321,18 @@ def build_state(
             "active_builds_age_hours": age_hours,
             "worktrees": worktrees.get("count", 0),
             "uncommitted_worktrees": worktrees.get("uncommitted") or [],
+            # COVERAGE, not degradation: a truncated input is the generator saying it gave
+            # up looking, which is a different fact from "there is nothing there".  None
+            # when there is no artifact at all — negating a flag that does not exist would
+            # assert a completeness this run never measured.
+            "coverage": {
+                "open_prs_complete": (
+                    None if builds is None else not bool(builds.get("open_prs_truncated"))
+                ),
+                "merged_window_complete": (
+                    None if builds is None else not bool(builds.get("merged_truncated"))
+                ),
+            },
             "degraded": degraded.items,
         },
         # ---- pure function of the authored records + join inputs ----
@@ -4442,10 +4454,17 @@ def _md_link(path: str) -> str:
 
 
 def cmd_status(args: argparse.Namespace) -> int:
-    """Materialize agent_os_state.v1 + docs/AGENT_OS_STATE.md.  ALWAYS exits 0.
+    """Materialize agent_os_state.v1 + docs/AGENT_OS_STATE.md.
 
-    I1: this writes two files and returns 0.  It has no gate, no dispatch, and no caller
-    that reads its output to decide what may run.
+    I1: this writes two files and gates nothing — no dispatch, and no caller that reads
+    its output to decide what may run.
+
+    Exit **0** on every input it can construct, with one exception: **3 =
+    COVERAGE-TRUNCATED**, when ``active_builds.v1`` reports that the generator itself
+    truncated an input (``open_prs_truncated`` / ``merged_truncated``).  Both outputs are
+    STILL written on exit 3 — a flagged fresh artifact beats a stale one — so the code
+    adds a machine-readable distinction (unknown-because-absent vs
+    unknown-because-we-stopped-looking) without ever withholding the view.
     """
     store_root = Path(args.root) if args.root else _DEFAULT_STORE
     degraded = Degraded()
@@ -4505,6 +4524,25 @@ def cmd_status(args: argparse.Namespace) -> int:
         f"{len(degraded.items)} degraded input(s)",
         flush=True,
     )
+
+    # COVERAGE-TRUNCATED (I4 addendum): the artifact is written and complete as a
+    # document; what is missing is the window it covers.  Say so in the machine channel
+    # and leave via 3, so no reader has to parse prose to tell "absent" from "we stopped".
+    truncated_inputs = [
+        label for label, flag in (
+            ("open PR list", (builds or {}).get("open_prs_truncated")),
+            ("merged window", (builds or {}).get("merged_truncated")),
+        ) if flag
+    ]
+    if truncated_inputs:
+        print(
+            f"::error title=agentos-coverage::active_builds.v1 truncated the "
+            f"{' and the '.join(truncated_inputs)} — PR state is incomplete, so a wave may "
+            "read 'unknown' while its PR is open or merged; outputs written anyway "
+            "(COVERAGE-TRUNCATED)",
+            flush=True,
+        )
+        return 3
     return 0
 
 

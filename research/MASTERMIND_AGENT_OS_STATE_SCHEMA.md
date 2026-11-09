@@ -501,6 +501,7 @@ command produced it.
     "workstreams": 24,
     "active_builds": "data/governance/active_builds.json@2026-08-12T06:00:00Z",
     "worktrees": 31,
+    "coverage": {"open_prs_complete": true, "merged_window_complete": true},
     "degraded": ["terminal repo not checked out — terminal workstreams show stale PR state"]
   },
   "program_registry": {
@@ -661,6 +662,17 @@ individually-valid records **cannot produce**.
 
 The split is exactly I4: a malformed record is a lie about the org and must stop the writer; a
 missing *join* is incomplete information and must not stop anyone.
+
+**Coverage-truncated (exit 3) — `COVERAGE-TRUNCATED`.** A join input the generator itself
+truncated is neither a malformed record (stop the writer) nor a missing join (warn and pass).
+The artifact exists; the window it covers is bounded by a cap the generator applied. So a
+`waves[].pr` may read `unknown` because the generator *stopped looking*, not because the PR
+does not exist — and the two facts look identical in `degraded`. `status` must record the
+distinction in `inputs.coverage` (`open_prs_complete`, `merged_window_complete`: the negation
+of the artifact's `open_prs_truncated` / `merged_truncated`, `null` when there is no artifact
+to measure), still write both outputs — a flagged fresh artifact beats a stale one — and exit
+**3**. Exit 3 is how automation tells unknown-because-absent (exit 0, `degraded`) from
+unknown-because-we-stopped-looking (exit 3, `inputs.coverage`).
 
 ---
 

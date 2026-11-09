@@ -23,10 +23,18 @@ Tests
 19. render_unknown_mergeability     — UNKNOWN annotation line rendered when PRs remain UNKNOWN.
 20. render_no_unknown_annotation    — UNKNOWN line absent when all PRs resolved.
 21. collect_null_files_typed_error  — explicit GitHub files:null degrades one PR without crashing.
+22. open_pr_set_above_old_cap       — a >cap open-PR set enumerates fully, truncated False.
+23. open_pr_fetch_at_the_ceiling    — exactly-at-limit is the honest truncated sentinel.
+24. merged_window_above_old_cap     — a >cap merged window enumerates fully across pages.
+25. merged_page_failure_partial     — a mid-sweep page failure keeps partial rows, flags truncated.
+26. merged_runaway_guard            — exhausting the page guard flags truncated.
+27. pre_filter_truncation_survives  — the exact-cutoff filter must not clear the flag.
 """
 from __future__ import annotations
 
+import re
 import sys
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from unittest import mock
 
@@ -36,7 +44,10 @@ import pytest
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from scripts.build_active_build_map import (
+    _collect_open_prs,
     _collect_pr_files,
+    _collect_recent_merged,
+    build_map,
     compute_collisions,
     is_protected_path,
     protected_paths_for_pr,
@@ -260,7 +271,7 @@ def test_render_merged_truncated_note():
     )
     md = render_markdown(payload)
     assert "window truncated" in md
-    assert "showing most recent 500" in md
+    assert "most recent 500" not in md, "the note must not name a cap the sweep no longer uses"
 
 
 def test_render_no_merged_truncated_note_when_false():
@@ -271,7 +282,6 @@ def test_render_no_merged_truncated_note_when_false():
     )
     md = render_markdown(payload)
     assert "window truncated" not in md
-    assert "showing most recent 500" not in md
 
 
 def test_render_files_error_flag():
@@ -335,3 +345,154 @@ def test_collect_pr_files_treats_null_files_as_typed_error():
         result = _collect_pr_files(123)
 
     assert result == ([], False, True, "UNKNOWN")
+
+
+# ---------------------------------------------------------------------------
+# 22-27: fetch coverage — a cap must never silently shrink the join
+# ---------------------------------------------------------------------------
+
+def _stamp(days_ago: float) -> str:
+    return (datetime.now(timezone.utc) - timedelta(days=days_ago)).strftime(
+        "%Y-%m-%dT%H:%M:%SZ"
+    )
+
+
+def _gh_open_row(number: int, days_ago: float = 0.5) -> dict:
+    """One row as ``gh pr list --state open --json …`` renders it."""
+    return {
+        "number": number,
+        "title": f"PR {number}",
+        "headRefName": f"lane/{number}",
+        "updatedAt": _stamp(days_ago),
+        "isDraft": False,
+        "mergeStateStatus": "CLEAN",
+    }
+
+
+def _rest_row(
+    number: int, merged_days_ago: float = 1.0, updated_days_ago: float | None = None
+) -> dict:
+    """One row as the REST pulls list renders it (snake_case, ISO-Z)."""
+    updated = merged_days_ago if updated_days_ago is None else updated_days_ago
+    return {
+        "number": number,
+        "title": f"merged {number}",
+        "merged_at": _stamp(merged_days_ago),
+        "updated_at": _stamp(updated),
+    }
+
+
+def _fake_gh(open_rows, merged_pages, repo: str = "owner/repo"):
+    """Stand-in for ``_run_gh``: open list, repo view, REST pages, per-PR view.
+
+    A ``None`` entry in *merged_pages* simulates a page whose fetch failed.
+    """
+    calls: list[list[str]] = []
+
+    def runner(args, timeout=30):
+        calls.append(list(args))
+        if args[:2] == ["repo", "view"]:
+            return {"nameWithOwner": repo}
+        if args[:2] == ["pr", "list"]:
+            return open_rows
+        if args[0] == "api":
+            page = int(re.search(r"[?&]page=(\d+)", args[1]).group(1))
+            return merged_pages[page - 1] if page <= len(merged_pages) else []
+        if args[:2] == ["pr", "view"]:
+            return {"files": [], "mergeStateStatus": "CLEAN"}
+        raise AssertionError(f"unexpected gh call: {args}")
+
+    runner.calls = calls
+    return runner
+
+
+def test_open_pr_set_above_the_old_cap_enumerates_fully():
+    """>100 open PRs is the live shape (560 measured): every one must reach the map."""
+    open_rows = [_gh_open_row(n) for n in range(1, 251)]
+    pages = [[_rest_row(n) for n in range(9000, 9010)]]
+
+    with mock.patch("scripts.build_active_build_map._run_gh",
+                    side_effect=_fake_gh(open_rows, pages)):
+        payload = build_map(merged_days=14)
+
+    assert len(payload["open_prs"]) == 250
+    assert payload["open_prs_truncated"] is False
+    assert payload["merged_truncated"] is False
+    assert [pr["number"] for pr in payload["open_prs"]] == list(range(1, 251))
+
+
+def test_open_pr_fetch_at_the_ceiling_is_flagged_truncated():
+    """Exactly-at-the-limit cannot be proven complete, so the flag must be honest."""
+    from scripts.build_active_build_map import _OPEN_PR_FETCH_LIMIT
+
+    open_rows = [_gh_open_row(n) for n in range(1, _OPEN_PR_FETCH_LIMIT + 1)]
+    with mock.patch("scripts.build_active_build_map._run_gh",
+                    side_effect=_fake_gh(open_rows, [[]])):
+        prs, truncated = _collect_open_prs()
+
+    assert len(prs) == _OPEN_PR_FETCH_LIMIT
+    assert truncated is True
+
+
+def test_merged_window_above_the_old_cap_enumerates_fully():
+    """>500 merged in the window: every page is walked, the short last page ends the sweep."""
+    pages = [
+        [_rest_row(n) for n in range(100, 200)],
+        [_rest_row(n) for n in range(200, 300)],
+        [_rest_row(n) for n in range(300, 350)],
+    ]
+    with mock.patch("scripts.build_active_build_map._run_gh",
+                    side_effect=_fake_gh([_gh_open_row(1)], pages)):
+        recent, truncated = _collect_recent_merged(14)
+
+    assert truncated is False
+    assert len(recent) == 250
+    assert recent[0]["merged_at"].endswith("Z"), "artifact keeps gh's ISO-Z convention"
+    assert set(recent[0]) == {"number", "title", "merged_at"}, "entry shape unchanged"
+
+
+def test_merged_page_failure_keeps_partial_rows_and_flags_truncated():
+    """A page we could not read ends the sweep: partial rows survive, the flag says so."""
+    pages = [[_rest_row(n) for n in range(100, 200)], None]
+    with mock.patch("scripts.build_active_build_map._run_gh",
+                    side_effect=_fake_gh([_gh_open_row(1)], pages)):
+        recent, truncated = _collect_recent_merged(14)
+
+    assert truncated is True
+    assert len(recent) == 100, "rows already fetched must survive a later page failure"
+
+
+def test_merged_runaway_guard_flags_truncated(monkeypatch):
+    """Exhausting the page guard is not proof of coverage, so it must set the flag."""
+    monkeypatch.setattr("scripts.build_active_build_map._MERGED_MAX_PAGES", 2)
+    pages = [
+        [_rest_row(n) for n in range(100, 200)],
+        [_rest_row(n) for n in range(200, 300)],
+    ]
+    with mock.patch("scripts.build_active_build_map._run_gh",
+                    side_effect=_fake_gh([_gh_open_row(1)], pages)):
+        recent, truncated = _collect_recent_merged(14)
+
+    assert truncated is True
+    assert len(recent) == 200
+
+
+def test_pre_filter_truncation_survives_the_cutoff_filter(monkeypatch):
+    """The flag is fetch arithmetic, never the filtered length.
+
+    The live artifact carried 496 rows with the flag set while the cap was 500: a
+    post-filter rewrite would have cleared a true truncation.
+    """
+    monkeypatch.setattr("scripts.build_active_build_map._MERGED_FETCH_LIMIT", 150)
+    pages = [
+        [_rest_row(n) for n in range(100, 200)],
+        # Updated inside the window (so the stop condition cannot fire) but MERGED
+        # outside it: the exact-cutoff filter drops these only after the ceiling was hit.
+        [_rest_row(n, merged_days_ago=30, updated_days_ago=1) for n in range(300, 400)],
+    ]
+    with mock.patch("scripts.build_active_build_map._run_gh",
+                    side_effect=_fake_gh([_gh_open_row(1)], pages)):
+        recent, truncated = _collect_recent_merged(14)
+
+    assert len(recent) == 100, "the cutoff filter still trims the out-of-window rows"
+    assert truncated is True, "a shorter filtered list must not clear the truncation flag"

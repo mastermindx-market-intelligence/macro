@@ -211,11 +211,35 @@ def test_auxiliary_truncation_degrades_parent_but_not_readiness(
     builds.write_text(json.dumps(payload), encoding="utf-8")
 
     out = tmp_path / "state.json"
-    assert _status(store, out, "--now", FROZEN,
-                   "--active-builds", str(builds)).returncode == 0
+    result = _status(store, out, "--now", FROZEN, "--active-builds", str(builds))
+    assert result.returncode == 3, result.stdout + result.stderr
+    assert "::error title=agentos-coverage::" in result.stdout
+    assert out.exists() and out.with_suffix(".md").exists(), (
+        "a flagged fresh artifact beats a stale one — both outputs must still be written"
+    )
     state = _state(out)
     assert any("TRUNCATED" in item for item in state["inputs"]["degraded"])
+    assert state["inputs"]["coverage"] == {
+        "open_prs_complete": False,
+        "merged_window_complete": False,
+    }
     assert state["readiness"]["degraded"] == []
+
+
+def test_complete_coverage_exits_zero_and_records_it(
+    store: Path, builds: Path, tmp_path: Path
+) -> None:
+    """The default fixture is untruncated: exit 0, no TRUNCATED item, coverage recorded."""
+    out = tmp_path / "state.json"
+    result = _status(store, out, "--now", FROZEN, "--active-builds", str(builds))
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert "::error title=agentos-coverage::" not in result.stdout
+    state = _state(out)
+    assert not any("TRUNCATED" in item for item in state["inputs"]["degraded"])
+    assert state["inputs"]["coverage"] == {
+        "open_prs_complete": True,
+        "merged_window_complete": True,
+    }
 
 
 def test_malformed_non_workstream_degrades_parent_only(
@@ -416,14 +440,20 @@ def test_missing_readiness_dependency_fails_closed_but_view_stays_degraded(
 # ------------------------------------------------------------- I1: no execution
 
 
-def test_status_and_brief_always_exit_zero(store: Path, tmp_path: Path) -> None:
+def test_status_and_brief_always_exit_zero(
+    store: Path, builds: Path, tmp_path: Path
+) -> None:
     """Nothing added here can block anything, including on a store full of garbage."""
     (store / "workstreams" / "WS-GARBAGE.md").write_text("not even frontmatter\n",
                                                          encoding="utf-8")
     out = tmp_path / "state.json"
-    assert _status(store, out, "--now", FROZEN).returncode == 0
+    # Inject the fixture: the exit contract now also reports COVERAGE-TRUNCATED (exit 3)
+    # for the repo's own artifact, and this test is about the garbage store, not about
+    # whichever truncation flags tonight's committed active_builds.json happens to carry.
+    assert _status(store, out, "--now", FROZEN,
+                   "--active-builds", str(builds)).returncode == 0
     assert _run("brief", "--root", str(store), "--now", FROZEN,
-                "--no-remember").returncode == 0
+                "--no-remember", "--active-builds", str(builds)).returncode == 0
 
 
 def test_generator_holds_no_gate_vocabulary() -> None:
