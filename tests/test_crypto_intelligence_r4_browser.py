@@ -253,7 +253,6 @@ def test_r4_saved_snapshot_retains_horizon_and_original_cutoff(browser, page_url
     page.goto(page_url + "#scenarios?h=30")
     page.locator('[data-open="scenario:continuation"]:visible').first.click()
     assert not page.locator('[data-snapshot-action]').is_disabled()
-    original_cutoff = page.locator("#cri-dialog-body .cri-note").first.inner_text()
     page.locator('[data-snapshot-action]').click()
     saved = page.evaluate('JSON.parse(localStorage.getItem("mmx.crypto.r4.scenarios.v1"))')
     assert len(saved) == 1
@@ -267,11 +266,12 @@ def test_r4_saved_snapshot_retains_horizon_and_original_cutoff(browser, page_url
     page.locator("#cri-dialog-close").click()
     page.locator('[data-open="saved"]').click()
     page.locator('#cri-dialog-body button').last.click()
-    assert "original conditions" in page.locator("#cri-dialog-body").inner_text()
-    assert "Original evidence snapshot" in page.locator("#cri-dialog-body").inner_text()
-    assert original_cutoff in page.locator("#cri-dialog-body").inner_text()
+    assert page.locator("#cri-dialog-body").get_by_text(saved[0]["condition_en"], exact=True).is_visible()
+    assert page.locator('[data-drawer-disclosure="saved-evidence"] > summary').inner_text().startswith("Original evidence")
+    assert saved[0]["as_of"] in page.locator("#cri-dialog-body").inner_text()
+    assert str(saved[0]["horizon_days"]) + " days" in page.locator("#cri-dialog-body").inner_text()
     page.locator("#cri-dialog-body details").last.evaluate("(element) => element.open = true")
-    assert "stale" in page.locator("#cri-dialog-body").inner_text()
+    assert "Stale at capture" in page.locator("#cri-dialog-body").inner_text()
     page.locator("#cri-dialog-body").get_by_role("button", name="Historical review").click()
     assert "30 days" in page.locator("#cri-dialog-body").inner_text()
     assert "No qualified comparison yet" in page.locator("#cri-dialog-body").inner_text()
@@ -986,3 +986,313 @@ def test_r4_storage_preflight_yields_to_newer_navigation_or_focus(snapshot_page,
         assert "Saved in this browser" not in page.locator("#cri-dialog-body").inner_text()
     assert page.evaluate("__preflightFocus.isConnected && document.activeElement===__preflightFocus")
     assert _writes(page) == 0
+
+
+def _layout_frozen(page):
+    data = page.evaluate("JSON.parse(document.getElementById('cri-data').textContent)")
+    target = _frozen(data["scenarios"]["30"][0])
+    target["issue_evidence"] = {
+        "bitcoin_as_of": data["as_of"],
+        "market_as_of": data["market_as_of"],
+        "families": [
+            {key: family.get(key) for key in ("id", "label_en", "label_zh", "state_en", "state_zh", "quality", "snapshot_as_of", "source")}
+            for family in data["families"]
+        ],
+    }
+    return target
+
+
+def _layout_bounds(page):
+    return page.locator("#cri-dialog").evaluate("""dialog => {
+      const header=dialog.querySelector('.cri-dialog-header').getBoundingClientRect();
+      const active=document.activeElement.getBoundingClientRect();
+      return {viewport:innerWidth, documentWidth:document.documentElement.scrollWidth,
+        dialogWidth:dialog.clientWidth, contentWidth:dialog.scrollWidth,
+        headerBottom:header.bottom, activeTop:active.top, activeBottom:active.bottom,
+        viewportBottom:innerHeight};
+    }""")
+
+
+@pytest.mark.parametrize("lang,width,theme,motion", [
+    ("en", 1440, "dark", "no-preference"), ("zh", 1440, "light", "no-preference"),
+    ("en", 390, "light", "no-preference"), ("zh", 390, "dark", "no-preference"),
+    ("en", 320, "dark", "reduce"), ("zh", 320, "light", "reduce"),
+])
+def test_r4_frozen_layout_frontloads_the_complete_condition(snapshot_page, lang, width, theme, motion):
+    page = snapshot_page(lang, width, start="#scenarios?h=7")
+    page.emulate_media(reduced_motion=motion)
+    page.locator("html").evaluate("(node, theme) => node.dataset.theme=theme", theme)
+    target = _layout_frozen(page)
+    _seed(page, [target])
+    before = _raw(page)
+    _open_saved_from_list(page, target, lang)
+    if (lang, width) in [("en", 1440), ("zh", 390), ("en", 320)]:
+        _capture(page, f"layout-saved-{lang}-{width}-{theme}")
+    condition = page.locator("#cri-dialog-body").get_by_text(target["condition_" + lang], exact=True)
+    assert condition.is_visible(), "The complete original condition must be visible without expanding details."
+    assert condition.evaluate("node => !node.closest('details')")
+    assert page.locator("#cri-dialog-body").get_by_role("heading", name="Original condition" if lang == "en" else "原始条件", exact=True).count() == 1
+    assert page.locator(".cri-saved-status").inner_text() == ("At cutoff · " if lang == "en" else "快照时 · ") + target["progress_" + lang]
+    meta = page.locator(".cri-saved-meta").inner_text()
+    assert target["asset"] in meta and target["as_of"] in meta and str(target["horizon_days"]) in meta
+    assert ("cutoff" if lang == "en" else "截止") in meta
+    disclosures = page.locator("#cri-dialog-body details")
+    assert disclosures.count() == 2 and disclosures.evaluate_all("nodes => nodes.every(node => !node.open)")
+    case = page.locator('[data-drawer-disclosure="case-details"]')
+    evidence = page.locator('[data-drawer-disclosure="saved-evidence"]')
+    assert case.locator("summary").inner_text() == ("Original case details" if lang == "en" else "原始情景详情")
+    assert evidence.locator("summary").inner_text().startswith("Original evidence" if lang == "en" else "原始证据")
+    assert "6" in evidence.locator("summary").inner_text()
+    assert not page.locator("#cri-dialog-body").get_by_text(target["sequence_" + lang], exact=True).is_visible()
+    assert not page.locator("#cri-dialog-body").get_by_role("heading", name="Next check" if lang == "en" else "下一步检查", exact=True).count()
+    review = page.locator('[data-drawer-focus="review"]')
+    assert review.evaluate("node => node.getBoundingClientRect().height") >= 48
+    assert review.evaluate("node => node.getBoundingClientRect().bottom <= innerHeight"), "The primary action should fit the closed saved case."
+    sizes = page.locator('#cri-dialog .cri-dialog-header button, #cri-dialog-body summary, #cri-dialog-body button').evaluate_all(
+        "nodes => nodes.map(node => {const b=node.getBoundingClientRect();return {width:b.width,height:b.height}})")
+    assert all(size["height"] >= 44 for size in sizes), sizes
+    metrics = _layout_bounds(page)
+    assert metrics["documentWidth"] <= metrics["viewport"] and metrics["contentWidth"] <= metrics["dialogWidth"]
+    case.locator("summary").focus()
+    page.keyboard.press("Enter")
+    assert case.evaluate("node => node.open")
+    assert case.locator("summary").evaluate("node => document.activeElement===node")
+    case_text = case.inner_text()
+    for key in ("sequence", "invalidation", "counter", "next_check"):
+        assert target[key + "_" + lang] in case_text
+    assert target["expires"] in case_text
+    assert target["levels"]["start"] in case_text and target["levels"]["end"] in case_text
+    assert "60" in case_text and "$64,681" in case_text and "$86,595" in case_text
+    page.keyboard.press("Space")
+    assert not case.evaluate("node => node.open")
+    evidence.locator("summary").focus()
+    page.keyboard.press("Space")
+    assert evidence.evaluate("node => node.open")
+    assert evidence.locator("summary").evaluate("node => document.activeElement===node")
+    evidence_text = evidence.inner_text()
+    for family in target["issue_evidence"]["families"]:
+        assert family["label_" + lang] in evidence_text and family["state_" + lang] in evidence_text
+        assert family["snapshot_as_of"] in evidence_text
+    assert ("Stale at capture" if lang == "en" else "保存时已过时") in evidence_text
+    assert ("Snapshot only" if lang == "en" else "仅快照") in evidence_text
+    assert target["issue_evidence"]["bitcoin_as_of"] in evidence_text
+    assert target["issue_evidence"]["market_as_of"] in evidence_text
+    assert "snapshot_only" not in evidence_text
+    assert ("Snapshot " if lang == "en" else "快照 ") in evidence_text
+    if (lang, width) in [("en", 1440), ("zh", 390)]:
+        _capture(page, f"layout-evidence-{lang}-{width}-{theme}")
+    if motion == "reduce":
+        effects = page.locator("#cri-dialog").evaluate("""dialog => [...dialog.querySelectorAll('*')].map(node => {
+          const s=getComputedStyle(node);return {animation:s.animationName,transition:s.transitionDuration};
+        })""")
+        assert all(item["animation"] == "none" and all(float(value.strip().removesuffix("s")) == 0 for value in item["transition"].split(",")) for item in effects)
+    assert _raw(page) == before and _writes(page) == 0
+
+
+def test_r4_frozen_expiry_is_distinct_from_original_progress(snapshot_page):
+    page = snapshot_page(width=320, at="2026-12-01T12:00:00Z")
+    target = _layout_frozen(page)
+    target["progress_en"] = "Original demand was still unconfirmed"
+    _seed(page, [target])
+    before = _raw(page)
+    _open_saved(page, target["revision"])
+    state = page.locator(".cri-saved-status").inner_text()
+    assert state.startswith("Expired") and "At cutoff" not in state
+    case = page.locator('[data-drawer-disclosure="case-details"]')
+    case.locator("summary").click()
+    assert "Progress at cutoff" in case.inner_text() and target["progress_en"] in case.inner_text()
+    assert target["expires"] in case.inner_text()
+    assert page.locator('[data-snapshot-action="remove"]').is_enabled()
+    assert _raw(page) == before and _writes(page) == 0
+
+
+@pytest.mark.parametrize("lang,width", [("en", 320), ("zh", 390)])
+def test_r4_frozen_legacy_layout_keeps_the_case_without_inventing_evidence(snapshot_page, lang, width):
+    page = snapshot_page(lang, width)
+    target = _layout_frozen(page)
+    del target["issue_evidence"]
+    _seed(page, [target])
+    before = _raw(page)
+    _open_saved(page, target["revision"])
+    assert page.locator("#cri-dialog-body").get_by_text(target["condition_" + lang], exact=True).is_visible()
+    assert page.locator('[data-drawer-disclosure="saved-evidence"]').count() == 0
+    assert ("Evidence digest was not preserved" if lang == "en" else "旧快照未保存原始证据摘要") in page.locator("#cri-dialog-body").inner_text()
+    assert page.locator("#cri-dialog-body details").count() == 1
+    assert target["as_of"] in page.locator("#cri-dialog-body").inner_text()
+    assert _raw(page) == before and _writes(page) == 0
+    if lang == "en":
+        _capture(page, "layout-legacy-en-320")
+
+
+@pytest.mark.parametrize("lang,width", [("en", 320), ("zh", 390)])
+def test_r4_saved_review_disclosure_keeps_qualifications_and_locale_focus(snapshot_page, lang, width):
+    page = snapshot_page(lang, width, start="#scenarios?h=7")
+    target = _layout_frozen(page)
+    if lang == "en":
+        target["asset"] = "TEST-ASSET"
+    _seed(page, [target])
+    before = _raw(page)
+    _open_saved_from_list(page, target, lang)
+    _review_saved(page, lang)
+    _capture(page, f"layout-review-{lang}-{width}")
+    assert target["asset"] in page.locator("#cri-dialog-body").inner_text()
+    assert target["as_of"] in page.locator("#cri-dialog-body").inner_text()
+    assert ("No performance result is available for this saved case." if lang == "en" else "此已存情景尚无可用的表现检验结果。") in page.locator("#cri-dialog-body").inner_text()
+    details = page.locator('[data-drawer-disclosure="review-requirements"]')
+    assert details.count() == 1 and not details.evaluate("node => node.open")
+    summary = details.locator("summary")
+    assert summary.inner_text() == ("What would qualify a comparison" if lang == "en" else "什么样的比较才合格")
+    assert not details.get_by_text("Point-in-time history" if lang == "en" else "时点历史", exact=True).is_visible()
+    summary.focus()
+    page.keyboard.press("Enter")
+    assert details.evaluate("node => node.open")
+    assert details.locator("dt").count() == 4
+    before_history, before_url = page.evaluate("history.length"), page.url
+    other = "zh" if lang == "en" else "en"
+    page.locator("html").evaluate("(node, lang) => node.dataset.lang=lang", other)
+    page.wait_for_function("(lang) => document.getElementById('cri-dialog-title').textContent===(lang==='zh'?'历史检验':'Historical review')", arg=other)
+    details = page.locator('[data-drawer-disclosure="review-requirements"]')
+    assert details.evaluate("node => node.open")
+    assert details.locator("summary").evaluate("node => document.activeElement===node")
+    assert page.url == before_url and page.evaluate("history.length") == before_history
+    assert details.locator("dt").count() == 4
+    metrics = _layout_bounds(page)
+    assert metrics["activeTop"] >= metrics["headerBottom"] - 1, metrics
+    assert metrics["documentWidth"] <= metrics["viewport"] and metrics["contentWidth"] <= metrics["dialogWidth"]
+    assert _raw(page) == before and _writes(page) == 0
+
+
+@pytest.mark.parametrize("kind,lang,width", [
+    ("missing", "en", 320), ("unreadable", "en", 320),
+    ("missing", "zh", 390), ("unreadable", "zh", 390),
+])
+def test_r4_saved_recovery_actions_have_clear_targets_and_spacing(snapshot_page, kind, lang, width):
+    page = snapshot_page(lang, width)
+    target = _layout_frozen(page)
+    if kind == "unreadable":
+        page.evaluate("() => __snapshotNativeSet.call(localStorage,__snapshotKey,'{unreadable')")
+        page.locator('#crypto-intelligence [data-open="saved"]').click()
+    else:
+        _open_saved(page, target["revision"])
+    group = page.locator(".cri-drawer-actions")
+    assert group.count() == 1 and group.locator("button").count() == 2
+    bounds = group.locator("button").evaluate_all("nodes => nodes.map(node => {const b=node.getBoundingClientRect();return {x:b.x,y:b.y,right:b.right,bottom:b.bottom,height:b.height}})")
+    assert bounds[0]["height"] >= 48 and bounds[1]["height"] >= 44, bounds
+    assert bounds[1]["x"] - bounds[0]["right"] >= 7.5 or bounds[1]["y"] - bounds[0]["bottom"] >= 7.5, bounds
+    if (kind, lang) in [("missing", "en"), ("unreadable", "zh")]:
+        _capture(page, f"layout-recovery-{kind}-{lang}-{width}")
+    before_history = page.evaluate("history.length")
+    if kind == "unreadable":
+        _seed(page, [])
+    group.locator("button").first.focus()
+    page.keyboard.press("Enter")
+    _wait_drawer(page, "saved", "Saved snapshots" if lang == "en" else "已存快照")
+    assert page.evaluate("history.length") == before_history and _writes(page) == 0
+    metrics = _layout_bounds(page)
+    assert metrics["documentWidth"] <= metrics["viewport"] and metrics["contentWidth"] <= metrics["dialogWidth"]
+
+
+@pytest.mark.parametrize("lang,width", [("en", 320), ("zh", 1440)])
+def test_r4_current_scenario_retains_its_existing_reading_order(snapshot_page, lang, width):
+    page = snapshot_page(lang, width)
+    _open_scenario(page)
+    source = _scenario(page)
+    assert page.locator("#cri-dialog-body").get_by_role("heading", name="Next check" if lang == "en" else "下一步检查", exact=True).count() == 1
+    assert page.locator("#cri-dialog-body").get_by_text(source["sequence_" + lang], exact=True).is_visible()
+    assert page.locator("#cri-dialog-body").get_by_text(source["invalidation_" + lang], exact=True).is_visible()
+    assert page.locator("#cri-dialog-body details").count() == 1
+    assert page.locator("#cri-dialog-body summary").inner_text() == ("Conditions and evidence" if lang == "en" else "条件与证据")
+    assert not page.locator("#cri-dialog-body").get_by_text(source["condition_" + lang], exact=True).is_visible()
+    if os.environ.get("MMX_CRYPTO_LAYOUT_CURRENT_PROOF"):
+        out = Path(os.environ["MMX_CRYPTO_LAYOUT_CURRENT_PROOF"])
+        out.mkdir(parents=True, exist_ok=True)
+        proof = page.locator("#cri-dialog").evaluate("""dialog => ({
+          html:dialog.outerHTML,
+          rows:[...dialog.querySelectorAll('h2,h3,p,summary,button')].map(node => {
+            const b=node.getBoundingClientRect();return {text:node.textContent,x:b.x,y:b.y,width:b.width,height:b.height};
+          })
+        })""")
+        (out / f"current-{lang}-{width}.json").write_text(json.dumps(proof, ensure_ascii=False, indent=2) + "\n")
+
+
+@pytest.mark.parametrize("lang,at", [("en", "2026-12-01T12:00:00Z"), ("zh", "2026-10-18T12:00:00Z")])
+def test_r4_frozen_missing_progress_is_not_reconstructed(snapshot_page, lang, at):
+    page = snapshot_page(lang, 320, at=at)
+    target = _layout_frozen(page)
+    del target["progress_" + lang]
+    target.pop("levels", None)
+    _seed(page, [target])
+    before = _raw(page)
+    _open_saved(page, target["revision"])
+    if lang == "en":
+        assert page.locator(".cri-saved-status").inner_text().startswith("Expired")
+        case = page.locator('[data-drawer-disclosure="case-details"]')
+        case.locator("summary").click()
+        assert "Progress at cutoff" in case.inner_text() and "Not preserved" in case.inner_text()
+        assert "Conditional · confirmation pending" not in case.inner_text()
+    else:
+        assert page.locator(".cri-saved-status").inner_text() == "原始进展暂无"
+        assert "条件路径 · 等待确认" not in page.locator("#cri-dialog-body").inner_text()
+    assert _raw(page) == before and _writes(page) == 0
+
+
+@pytest.mark.parametrize("lang", ["en", "zh"])
+def test_r4_frozen_remove_keeps_semantic_focus_across_locale(snapshot_page, lang):
+    page = snapshot_page(lang, 320)
+    target = _layout_frozen(page)
+    _seed(page, [target])
+    before = _raw(page)
+    _open_saved_from_list(page, target, lang)
+    remove = page.locator('[data-snapshot-action="remove"]')
+    remove.focus()
+    before_url, before_history = page.url, page.evaluate("history.length")
+    other = "zh" if lang == "en" else "en"
+    page.locator("html").evaluate("(node, lang) => node.dataset.lang=lang", other)
+    page.wait_for_function("(title) => document.getElementById('cri-dialog-title').textContent===title", arg=target["title_" + other])
+    assert page.locator('[data-snapshot-action="remove"]').evaluate("node => document.activeElement===node")
+    assert page.url == before_url and page.evaluate("history.length") == before_history
+    assert _raw(page) == before and _writes(page) == 0
+
+
+@pytest.mark.parametrize("digest", [
+    {"families": "unreadable"},
+    {"families": [None, [], {}, 4]},
+])
+def test_r4_frozen_present_unreadable_digest_is_distinct_from_legacy_absence(snapshot_page, digest):
+    page = snapshot_page(width=390)
+    target = _layout_frozen(page)
+    target["issue_evidence"] = digest
+    _seed(page, [target])
+    before = _raw(page)
+    _open_saved(page, target["revision"])
+    text = page.locator("#cri-dialog-body").inner_text()
+    assert "The saved evidence digest is incomplete or unreadable." in text
+    assert "Evidence digest was not preserved" not in text
+    assert page.locator("#cri-dialog-body").get_by_text(target["condition_en"], exact=True).is_visible()
+    assert page.locator('[data-drawer-disclosure="saved-evidence"]').count() == 0
+    assert _raw(page) == before and _writes(page) == 0
+
+
+@pytest.mark.parametrize("lang", ["en", "zh"])
+def test_r4_frozen_partial_evidence_does_not_certify_malformed_fields(snapshot_page, lang):
+    page = snapshot_page(lang, 320)
+    target = _layout_frozen(page)
+    family = deepcopy(target["issue_evidence"]["families"][0])
+    family["label_" + lang] = {"malformed": True}
+    family["snapshot_as_of"] = "2026-02-30"
+    family["quality"] = {"malformed": True}
+    invalid = dict(family, **{"state_" + lang: {"malformed": True}})
+    target["issue_evidence"] = {"bitcoin_as_of": {"invalid": "clock"}, "market_as_of": "2026-02-30", "families": [family, invalid, {}, None]}
+    _seed(page, [target])
+    before = _raw(page)
+    _open_saved(page, target["revision"])
+    evidence = page.locator('[data-drawer-disclosure="saved-evidence"]')
+    assert ("1 captured reading" if lang == "en" else "1项留存读数") in evidence.locator("summary").inner_text()
+    evidence.locator("summary").click()
+    text = evidence.inner_text()
+    assert family["id"] in text and family["state_" + lang] in text
+    assert ("Some saved evidence entries could not be read." if lang == "en" else "部分已存证据条目无法读取。") in text
+    assert ("Snapshot date unavailable" if lang == "en" else "快照日期暂无") in text
+    assert ("Quality unavailable" if lang == "en" else "质量未知") in text
+    assert "[object Object]" not in text and "2026-02-30" not in text
+    assert _raw(page) == before and _writes(page) == 0

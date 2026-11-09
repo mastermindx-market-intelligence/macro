@@ -130,6 +130,34 @@ html:not([data-theme=light]) .cri-panel{background:var(--glass-bg)}
 .cri-dialog-body .cri-btn{margin-top:16px}
 .cri-dialog-body a{color:var(--ink-link,var(--link))}
 .cri-dialog-body .cri-large-number{font-size:var(--fs-display);font-variant-numeric:tabular-nums;color:var(--text);font-weight:700}
+/* Frozen saved-case reading hierarchy; current scenarios keep their existing presentation. */
+.cri-dialog-saved .cri-dialog-header>div{min-width:0}
+.cri-saved-kicker{display:block;margin-top:8px;line-height:1.4}
+.cri-dialog-saved .cri-dialog-header h2{font-size:var(--fs-h1);letter-spacing:-.02em}
+.cri-dialog-body .cri-saved-meta{margin:0;color:var(--muted);font-size:var(--fs-sm)}
+.cri-dialog-body .cri-saved-status{margin:12px 0 22px;padding:12px;border-left:0;font-size:var(--fs-sm);font-weight:600;color:var(--ink-warn,var(--warn))}
+.cri-saved-case>h3{font-size:var(--fs-body);margin:20px 0 8px}
+.cri-dialog-body .cri-case-condition{margin:0 0 20px;color:var(--text);font-size:var(--fs-md);line-height:1.6}
+.cri-saved-details{margin:0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.cri-saved-details>summary{min-height:44px;box-sizing:border-box;padding:12px 0;color:var(--text);font-size:var(--fs-body);line-height:1.5;cursor:pointer}
+.cri-saved-details>summary:focus-visible{outline:2px solid var(--link);outline-offset:4px}
+.cri-dialog-body .cri-saved-details dl{margin:8px 0 12px}
+.cri-dialog-body .cri-saved-details dl>div{padding:12px 0}
+.cri-dialog-body .cri-saved-details dl>div:last-child{border-bottom:0}
+.cri-dialog-body .cri-saved-note{font-size:var(--fs-sm);line-height:1.6;margin:12px 0;color:var(--muted)}
+.cri-saved-evidence{margin-top:20px;padding:0 14px;border:1px solid var(--line);border-radius:var(--r-btn,10px)}
+.cri-saved-evidence>summary{color:var(--ink-link,var(--link));font-weight:600}
+.cri-disclosure-meta,.cri-captured-meta{display:block;margin-top:4px;font-size:var(--fs-sm);font-weight:400;line-height:1.5;color:var(--muted)}
+.cri-saved-actions{display:flex;flex-direction:column;gap:8px;margin-top:24px}
+.cri-drawer-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
+.cri-dialog-body :is(.cri-saved-actions,.cri-drawer-actions)>.cri-btn{margin-top:0;min-height:44px}
+.cri-dialog-body :is(.cri-saved-actions,.cri-drawer-actions)>.cri-btn-primary{min-height:48px}
+.cri-saved-actions>.cri-btn-remove{background:transparent;border-color:transparent;color:var(--muted)}
+.cri-saved-actions>.cri-btn-remove:hover{color:var(--text);background:var(--panel2)}
+.cri-dialog-body .cri-review-identity{margin:0 0 6px;font-weight:600;color:var(--text)}
+.cri-review-state{padding:16px;margin:20px 0;background:var(--surface-warn-subtle);border-radius:var(--r-ctl,8px)}
+.cri-dialog-body .cri-review-state h3{margin:0;font-size:var(--fs-h2);line-height:1.5;color:var(--ink-warn,var(--warn))}
+.cri-dialog-body .cri-review-state p{margin:8px 0 0;color:var(--text)}
 .cri-toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);max-width:calc(100% - 40px);background:var(--panel);border:1px solid var(--line);box-shadow:var(--popover-shadow);color:var(--text);padding:14px 20px;border-radius:var(--r-btn,10px);font-size:var(--fs-body);z-index:2000}
 .cri-sr{position:absolute;width:1px;height:1px;padding:0;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 html[data-lang=zh] .cri :is(h1,h2,h3,.cri-kicker,.cri-case-label){letter-spacing:0;text-transform:none}

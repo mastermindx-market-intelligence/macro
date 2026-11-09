@@ -23,11 +23,11 @@
   }
   function paragraph(text) { var element = node("p", text); body.appendChild(element); return element; }
   function heading(text) { body.appendChild(node("h3", text)); }
-  function button(text, action) { var element = node("button", text, "cri-btn"); element.type = "button"; element.addEventListener("click", action); body.appendChild(element); return element; }
-  function definition(rows) {
+  function button(text, action, parent) { var element = node("button", text, "cri-btn"); element.type = "button"; element.addEventListener("click", action); (parent || body).appendChild(element); return element; }
+  function definition(rows, parent) {
     var list = node("dl");
     rows.forEach(function (row) { var item = node("div"); item.append(node("dt", row[0]), node("dd", row[1] == null ? t("Unavailable", "暂无") : row[1])); list.appendChild(item); });
-    body.appendChild(list);
+    (parent || body).appendChild(list);
   }
   function link(text, url) { var a = node("a", text); a.href = url; var p = node("p"); p.appendChild(a); body.appendChild(p); }
   function state() {
@@ -86,6 +86,7 @@
     return reading;
   }
   function savedIdentity(s) {
+    dialog.classList.add("cri-dialog-saved");
     body.dataset.savedRevision = s.revision;
     body.dataset.savedHorizon = String(s.horizon_days);
     body.dataset.savedCutoff = s.as_of;
@@ -101,7 +102,8 @@
   function drawerParent(label, action) {
     var parent = node("button", label, "cri-dialog-parent");
     parent.type = "button"; parent.dataset.drawerFocus = "parent";
-    parent.addEventListener("click", action); kicker.replaceChildren(parent);
+    parent.addEventListener("click", action);
+    kicker.replaceChildren(parent, node("span", t("Saved snapshot", "已存快照"), "cri-saved-kicker"));
   }
   function returnToSavedCase(revision) {
     if (pendingSavedReturn && pendingSavedReturn.childAddress === location.href) return;
@@ -223,8 +225,9 @@
   function savedUnavailable() {
     title.textContent = t("Saved snapshots unavailable", "已存快照暂不可用");
     paragraph(t("Saved snapshots couldn’t be read.", "无法读取已存快照。")).className = "cri-warning";
-    button(t("Try reading again", "重试读取"), function () { apply(); });
-    button(t("Open current outlook", "查看当前展望"), function () { update("overview", { panel: null }, true); });
+    var actions = node("div", null, "cri-drawer-actions"); body.appendChild(actions);
+    button(t("Try reading again", "重试读取"), function () { apply(); }, actions).classList.add("cri-btn-primary");
+    button(t("Open current outlook", "查看当前展望"), function () { update("overview", { panel: null }, true); }, actions);
   }
   function expired(s) { return !s.expires || s.expires < new Date().toISOString().slice(0, 10); }
   function snapshotEvidence() {
@@ -318,12 +321,14 @@
     var restoredAction = body.querySelector("[data-snapshot-action]") || document.getElementById("cri-dialog-close");
     if (restoredAction && restoredAction.isConnected) restoredAction.focus();
   }
-  function status(s) {
-    if (expired(s)) return t("Expired · historical context only", "已到期 · 仅供历史参考");
+  function progressStatus(s) {
     if (s.state === "insufficient") return t("Insufficient price history", "价格历史不足");
     if (s.progress_en) return field(s, "progress");
     if (s.levels && ((s.id === "continuation" && s.levels.position === "above") || (s.id === "failure" && s.levels.position === "below"))) return t("Price condition met · demand unconfirmed", "价格条件已满足 · 需求尚未确认");
     return t("Conditional · confirmation pending", "条件路径 · 等待确认");
+  }
+  function status(s) {
+    return expired(s) ? t("Expired · historical context only", "已到期 · 仅供历史参考") : progressStatus(s);
   }
   function evidence(family) {
     heading(field(family, "label"));
@@ -344,21 +349,122 @@
     details.appendChild(node("p", t("Related readings are not independent votes, and this is not a forecast probability.", "相关读数不是独立投票，也不代表预测概率。")));
     body.appendChild(details);
   }
+  function savedText(value) { return typeof value === "string" && value.trim() ? value : null; }
+  function savedProgress(s) { return savedText(field(s, "progress")); }
+  function savedScenario(s) {
+    savedIdentity(s); body.classList.add("cri-saved-case");
+    drawerParent(hasDrawerParent("saved") ? t("← Saved snapshots", "← 已存快照") : t("Open saved snapshots", "查看已存快照"), returnToSavedList);
+    paragraph(s.asset + " · " + s.horizon_days + t(" days · cutoff ", "天 · 截止 ") + s.as_of).className = "cri-saved-meta";
+    var progress = savedProgress(s);
+    paragraph(expired(s) ? status(s) : progress ? t("At cutoff · ", "快照时 · ") + progress :
+      t("Original progress unavailable", "原始进展暂无")).className = "cri-warning cri-saved-status";
+    heading(t("Original condition", "原始条件"));
+    paragraph(field(s, "condition")).className = "cri-case-condition";
+
+    var details = node("details", null, "mx-disc cri-saved-details");
+    var summary = node("summary", t("Original case details", "原始情景详情"));
+    details.dataset.drawerDisclosure = "case-details"; summary.dataset.drawerFocus = "case-details";
+    details.appendChild(summary);
+    var rows = [];
+    if (expired(s)) rows.push([t("Progress at cutoff", "快照时进展"), progress || t("Not preserved", "未保存")]);
+    rows.push([t("Sequence at cutoff", "当时的后续路径"), field(s, "sequence")],
+      [t("Original invalidation condition", "原始失效条件"), field(s, "invalidation")],
+      [t("Counterpoint at cutoff", "当时的反向因素"), field(s, "counter")]);
+    if (field(s, "next_check")) rows.push([t("Next check recorded then", "当时记录的下一步检查"), field(s, "next_check")]);
+    rows.push([t("Expiry", "到期日"), s.expires]);
+    var levels = s.levels;
+    if (levels && levels.available === true && levels.basis === "prior_daily_closes" &&
+        Number.isInteger(levels.lookback_days) && levels.lookback_days > 0 &&
+        savedDay(levels.start) && savedDay(levels.end) && levels.start <= levels.end && levels.end < s.as_of) {
+      rows.push([t("Prior-close basis", "前期收盘价依据"),
+        levels.lookback_days + t(" prior daily closes · ", "个此前日收盘价 · ") + levels.start + " – " + levels.end]);
+      if (typeof levels.low === "number" && isFinite(levels.low) && typeof levels.high === "number" &&
+          isFinite(levels.high) && levels.low > 0 && levels.high >= levels.low)
+        rows.push([t("Prior-close range", "前期收盘区间"), money(levels.low) + " – " + money(levels.high)]);
+    } else rows.push([t("Prior-close basis", "前期收盘价依据"), t("The original range window is unavailable.", "原始区间窗口暂无。")]);
+    definition(rows, details);
+    details.appendChild(node("p", t("Levels use prior daily closes. They are research conditions, not official model invalidations.", "价位来自前期日收盘，属于研究条件，并非官方模型失效位。"), "cri-saved-note"));
+    body.appendChild(details);
+
+    var savedEvidence = s.issue_evidence;
+    var retainedFamilies = savedEvidence && Array.isArray(savedEvidence.families) ? savedEvidence.families : [];
+    var families = retainedFamilies.filter(function (f) {
+      return f && typeof f === "object" && !Array.isArray(f) &&
+        (savedText(field(f, "label")) || savedText(f.id)) && savedText(field(f, "state"));
+    });
+    if (families.length) {
+      var digest = node("details", null, "mx-disc cri-saved-details cri-saved-evidence");
+      var digestSummary = node("summary", t("Original evidence", "原始证据"));
+      digest.dataset.drawerDisclosure = "saved-evidence"; digestSummary.dataset.drawerFocus = "saved-evidence";
+      digestSummary.appendChild(node("span", families.length + (families.length === 1 ? t(" captured reading", "项留存读数") : t(" captured readings", "项留存读数")), "cri-disclosure-meta"));
+      digest.appendChild(digestSummary);
+      digest.appendChild(node("p", t("Bitcoin snapshot: ", "比特币快照：") + (savedDay(savedEvidence.bitcoin_as_of) ? savedEvidence.bitcoin_as_of : t("date unavailable", "日期暂无")) +
+        t(" · Broader-market snapshot: ", " · 全市场快照：") + (savedDay(savedEvidence.market_as_of) ? savedEvidence.market_as_of : t("date unavailable", "日期暂无")), "cri-saved-note"));
+      if (families.length !== retainedFamilies.length)
+        digest.appendChild(node("p", t("Some saved evidence entries could not be read.", "部分已存证据条目无法读取。"), "cri-saved-note"));
+      var digestList = node("dl");
+      families.forEach(function (f) {
+        var item = node("div"), name = node("dt", savedText(field(f, "label")) || savedText(f.id));
+        var reading = node("dd", savedText(field(f, "state")));
+        var quality = f.quality === "observed" ? t("Observed at capture", "保存时有观测") :
+          f.quality === "snapshot_only" ? t("Snapshot only", "仅快照") :
+          f.quality === "stale" ? t("Stale at capture", "保存时已过时") :
+          f.quality === "insufficient" || f.quality === "missing" ? t("Incomplete at capture", "保存时不完整") :
+          t("Quality unavailable", "质量未知");
+        reading.appendChild(node("span", quality + " · " + (savedDay(f.snapshot_as_of) ?
+          t("Snapshot ", "快照 ") + f.snapshot_as_of : t("Snapshot date unavailable", "快照日期暂无")), "cri-captured-meta"));
+        item.append(name, reading); digestList.appendChild(item);
+      });
+      digest.appendChild(digestList);
+      digest.appendChild(node("p", t("These are the readings saved at issue time, not current evidence or validated forecast performance.", "这些读数属于原始时点，并非最新证据或已验证的预测表现。"), "cri-saved-note"));
+      body.appendChild(digest);
+    } else {
+      heading(t("Original evidence", "原始证据"));
+      paragraph(Object.prototype.hasOwnProperty.call(s, "issue_evidence") ?
+        t("The saved evidence digest is incomplete or unreadable. Original conditions and cutoff remain available.", "已存证据摘要不完整或无法读取。原始条件与截止日期仍可查看。") :
+        t("Evidence digest was not preserved in this older snapshot. Its original conditions and cutoff remain visible, but source quality cannot be reconstructed.", "旧快照未保存原始证据摘要。原始条件与时间仍可查看，但无法恢复当时的来源质量。")).className = "cri-warning";
+    }
+    var actions = node("div", null, "cri-saved-actions"); body.appendChild(actions);
+    var review = button(t("Historical review", "历史检验"), function () { open("memory-saved:" + s.revision, null, String(s.horizon_days), "review"); }, actions);
+    review.classList.add("cri-btn-primary"); review.dataset.drawerFocus = "review";
+    var remove = button(t("Remove from this device", "从本设备移除"), function (event) { save(s, "remove", event.currentTarget); }, actions);
+    remove.classList.add("cri-btn-remove"); remove.dataset.snapshotAction = "remove"; remove.dataset.drawerFocus = "remove";
+  }
+  function reviewRequirements() {
+    return [[t("Point-in-time history", "时点历史"), t("Source availability and revisions retained", "保留来源可用时间与修订")],
+      [t("Independent episodes", "独立事件"), t("Overlapping warnings are not separate cases", "重叠预警不算独立案例")],
+      [t("Counterexamples", "反例"), t("Failures shown alongside matches", "失败案例与匹配案例并列")],
+      [t("Forecast evaluation", "预测检验"), t("Simple baselines, held-out periods and calibration", "简单基线、留出区间与校准")]];
+  }
+  function savedReview(s) {
+    body.classList.add("cri-saved-review");
+    paragraph(field(s, "title") + " · " + s.asset + " · " + s.horizon_days + t(" days", "天")).className = "cri-review-identity";
+    paragraph(t("Evidence cutoff · ", "证据截止日期 · ") + s.as_of).className = "cri-saved-meta";
+    var result = node("section", null, "cri-review-state");
+    result.append(node("h3", t("No qualified comparison yet", "暂无合格的历史比较")),
+      node("p", t("No performance result is available for this saved case.", "此已存情景尚无可用的表现检验结果。")));
+    body.appendChild(result);
+    var details = node("details", null, "mx-disc cri-saved-details");
+    var summary = node("summary", t("What would qualify a comparison", "什么样的比较才合格"));
+    details.dataset.drawerDisclosure = "review-requirements"; summary.dataset.drawerFocus = "review-requirements";
+    details.appendChild(summary);
+    details.appendChild(node("p", t("A historical match must preserve the scenario's issue-time evidence, horizon and eligible universe. Similar-looking charts alone do not establish predictive value.", "历史匹配必须保留情景发布时的证据、周期与合格样本。图形相似本身不能证明预测价值。"), "cri-saved-note"));
+    definition(reviewRequirements(), details); body.appendChild(details);
+  }
   function scenario(s, frozen, collection) {
     if (!s) {
       title.textContent = t("Scenario unavailable", "情景暂不可用");
       paragraph(t("This scenario is unavailable. The source may have changed or the saved item was removed.", "该情景不可用，原始来源可能已经变化或快照已经移除。"));
       if (frozen) {
-        button(t("Open saved snapshots", "查看已存快照"), function () { update(null, { panel: "saved" }, true); }).dataset.drawerFocus = "saved-recovery";
-        button(t("Open current outlook", "查看当前展望"), function () { update("overview", { panel: null }, true); });
+        var actions = node("div", null, "cri-drawer-actions"); body.appendChild(actions);
+        var recover = button(t("Open saved snapshots", "查看已存快照"), function () { update(null, { panel: "saved" }, true); }, actions);
+        recover.classList.add("cri-btn-primary"); recover.dataset.drawerFocus = "saved-recovery";
+        button(t("Open current outlook", "查看当前展望"), function () { update("overview", { panel: null }, true); }, actions);
       }
       return;
     }
     title.textContent = field(s, "title");
-    if (frozen) {
-      savedIdentity(s);
-      drawerParent(hasDrawerParent("saved") ? t("← Saved snapshots", "← 已存快照") : t("Open saved snapshots", "查看已存快照"), returnToSavedList);
-    }
+    if (frozen) { savedScenario(s); return; }
     paragraph(status(s)).className = "cri-warning";
     paragraph((s.asset || t("Asset unavailable", "资产暂无")) + " · " + s.horizon_days + t(" days", "天") + " · " + (s.as_of || t("Date not supplied", "未提供日期"))).className = "cri-note";
     if (s.next_check_en && !expired(s)) { heading(t("Next check", "下一步检查")); paragraph(field(s, "next_check")); }
@@ -366,56 +472,29 @@
     heading(expired(s) ? t("Original invalidation condition", "原始失效条件") : t("What changes the view", "什么会改变判断")); paragraph(field(s, "invalidation"));
     var details = node("details", null, "mx-disc");
     var caseSummary = node("summary", t("Conditions and evidence", "条件与证据"));
-    if (frozen) { details.dataset.drawerDisclosure = "case-details"; caseSummary.dataset.drawerFocus = "case-details"; }
     details.appendChild(caseSummary);
     details.appendChild(node("p", field(s, "condition")));
     details.appendChild(node("p", field(s, "counter")));
     details.appendChild(node("p", t("Expires: ", "到期日：") + s.expires));
     details.appendChild(node("p", t("Levels use prior daily closes. They are research conditions, not official model invalidations.", "价位来自前期日收盘，属于研究条件，并非官方模型失效位。")));
     body.appendChild(details);
-    var review = button(t("Historical review", "历史检验"), function () { open((frozen ? "memory-saved:" + s.revision : "memory:" + s.id), null, String(s.horizon_days), frozen ? "review" : null); });
-    if (frozen) review.dataset.drawerFocus = "review";
-    if (frozen) {
-      heading(t("Original evidence snapshot", "原始证据快照"));
-      var savedEvidence = s.issue_evidence;
-      if (savedEvidence && Array.isArray(savedEvidence.families) && savedEvidence.families.length) {
-        paragraph(t("Bitcoin: ", "比特币：") + (savedEvidence.bitcoin_as_of || t("date unavailable", "日期暂无")) +
-          t(" · Broader market: ", " · 全市场：") + (savedEvidence.market_as_of || t("date unavailable", "日期暂无"))).className = "cri-note";
-        var digest = node("details", null, "mx-disc"), digestSummary = node("summary",
-          t("Review saved source quality and dates", "查看保存时的来源质量与日期"));
-        digest.dataset.drawerDisclosure = "saved-evidence"; digestSummary.dataset.drawerFocus = "saved-evidence";
-        digest.appendChild(digestSummary);
-        var digestList = node("dl");
-        savedEvidence.families.filter(function (f) { return f && typeof f === "object"; }).forEach(function (f) {
-          var item = node("div"), name = node("dt", field(f, "label") || f.id || t("Unknown reading", "未知读数"));
-          var detail = node("dd", (field(f, "state") || t("Unavailable", "暂无")) + " · " +
-            (f.quality || "unknown") + " · " + (f.snapshot_as_of || t("date unavailable", "日期暂无")));
-          item.append(name, detail); digestList.appendChild(item);
-        });
-        digest.appendChild(digestList); body.appendChild(digest);
-        paragraph(t("These are the readings saved at issue time, not current evidence or validated forecast performance.", "这些读数属于原始时点，并非最新证据或已验证的预测表现。")).className = "cri-note";
-      } else paragraph(t("Evidence digest was not preserved in this older snapshot. Its original conditions and cutoff remain visible, but source quality cannot be reconstructed.", "旧快照未保存原始证据摘要。原始条件与时间仍可查看，但无法恢复当时的来源质量。")).className = "cri-warning";
-    }
-    if (!frozen) {
-      collection = collection === undefined ? stored() : collection;
-      if (!collection.ready) {
-        paragraph(t("Saved snapshots couldn’t be read.", "无法读取已存快照。")).className = "cri-warning";
-        button(t("Try reading again", "重试读取"), function () { apply(); });
-      } else {
-        var saved = savedMatches(collection, s.revision).length > 0, intent = saved ? "remove" : "save";
-        var saveButton = button(saved ? t("Remove snapshot", "移除快照") : t("Save snapshot", "保存快照"), function (event) { save(s, intent, event.currentTarget); });
-        saveButton.dataset.snapshotAction = intent;
-        saveButton.disabled = !saved && (expired(s) || s.state === "insufficient" || s.progress_state === "unavailable");
-      }
-      button(t("Inspect demand evidence", "查看需求证据"), function () { open("evidence:liquidity_flows"); });
+    button(t("Historical review", "历史检验"), function () { open("memory:" + s.id, null, String(s.horizon_days)); });
+    collection = collection === undefined ? stored() : collection;
+    if (!collection.ready) {
+      paragraph(t("Saved snapshots couldn’t be read.", "无法读取已存快照。")).className = "cri-warning";
+      button(t("Try reading again", "重试读取"), function () { apply(); });
     } else {
-      paragraph(t("This saved version preserves its original conditions and cutoff.", "该保存版本保留原始条件与证据日期。"));
-      button(t("Remove from this device", "从本设备移除"), function (event) { save(s, "remove", event.currentTarget); }).dataset.snapshotAction = "remove";
+      var saved = savedMatches(collection, s.revision).length > 0, intent = saved ? "remove" : "save";
+      var saveButton = button(saved ? t("Remove snapshot", "移除快照") : t("Save snapshot", "保存快照"), function (event) { save(s, intent, event.currentTarget); });
+      saveButton.dataset.snapshotAction = intent;
+      saveButton.disabled = !saved && (expired(s) || s.state === "insufficient" || s.progress_state === "unavailable");
     }
+    button(t("Inspect demand evidence", "查看需求证据"), function () { open("evidence:liquidity_flows"); });
   }
   function renderDrawer(key, collection) {
     if (!key) return;
-    body.replaceChildren(); dialog.classList.toggle("cri-dialog-wide", key === "comparison"); kicker.textContent = t("CRYPTO INTELLIGENCE", "加密资产情报");
+    body.replaceChildren(); body.classList.remove("cri-saved-case", "cri-saved-review");
+    dialog.classList.remove("cri-dialog-saved"); dialog.classList.toggle("cri-dialog-wide", key === "comparison"); kicker.textContent = t("CRYPTO INTELLIGENCE", "加密资产情报");
     body.dataset.panel = key;
     delete body.dataset.savedRevision; delete body.dataset.savedHorizon; delete body.dataset.savedCutoff; delete body.dataset.savedList;
     var parts = key.split(":"), category = parts[0], id = parts.slice(1).join(":");
@@ -516,12 +595,13 @@
         if (!historicalContext) { scenario(null, true); return; }
         savedIdentity(historicalContext);
         drawerParent(hasDrawerParent("saved-item:" + id) ? t("← Saved case", "← 已存情景") : t("Open saved case", "打开已存情景"), function () { returnToSavedCase(id); });
+        savedReview(historicalContext); return;
       } else historicalContext = id ? activeScenario(id) : null;
       paragraph(historicalContext ? field(historicalContext, "title") + " · BTC · " + historicalContext.horizon_days + t(" days · evidence at ", "天 · 证据日期 ") + historicalContext.as_of : "BTC · " + horizon() + t(" days · evidence at ", "天 · 证据日期 ") + (data.as_of || t("Unavailable", "暂无")));
       paragraph(t("No qualified comparison yet", "暂无合格的历史比较")).className = "cri-warning";
       paragraph(t("A historical match must preserve the scenario's issue-time evidence, horizon and eligible universe. Similar-looking charts alone do not establish predictive value.", "历史匹配必须保留情景发布时的证据、周期与合格样本。图形相似本身不能证明预测价值。"));
       heading(t("Required before results", "结果发布前需要"));
-      definition([[t("Point-in-time history", "时点历史"), t("Source availability and revisions retained", "保留来源可用时间与修订")], [t("Independent episodes", "独立事件"), t("Overlapping warnings are not separate cases", "重叠预警不算独立案例")], [t("Counterexamples", "反例"), t("Failures shown alongside matches", "失败案例与匹配案例并列")], [t("Forecast evaluation", "预测检验"), t("Simple baselines, held-out periods and calibration", "简单基线、留出区间与校准")]]);
+      definition(reviewRequirements());
     } else if (category === "research") {
       title.textContent = t("Research behind the scenarios", "情景背后的研究");
       heading(t("Macro transmission", "宏观传导"));
