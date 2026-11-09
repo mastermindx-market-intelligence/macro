@@ -28,14 +28,19 @@ with zero jobs (see ``tests/test_workflow_file_size.py`` for that postmortem).  
 data-staleness instrument can only infer that hours-to-days later, through its
 weekend padding.  Asking GitHub "did a run get created?" sees it immediately.
 
-WHAT THIS CHECKS.  Four questions, in the order a human would ask them:
+WHAT THIS CHECKS.  Five questions (A-D, F; E is the sentinel heartbeat), in the order a
+human would ask them:
 
   A. RUN CREATED   — did daily.yml produce a run at all since the last completed
                      NYSE session's fire window?  Catches: the workflow-file strand,
                      a disabled workflow, a deleted/renamed cron, GitHub dropping
                      the schedule.  This is the check that would have fired on
                      2026-08-12 at 08:00Z, ~9.5h into the outage.
-  B. RUN CONCLUDED — did one of those runs actually finish ``success``?  Catches
+  B. RUN CONCLUDED — did one of those runs actually finish ``success`` WITH a green
+                     ``engine`` job?  A DST-gate no-op (et_gate only, every downstream
+                     job skipped) concludes ``success`` in seconds and used to satisfy
+                     this check on its own — 2026-10-19→11-09 AI-brief freeze: green
+                     no-op runs masked a chronically cancelled engine.  Catches
                      the 2026-08-12 signature: six dispatches force-cancelled by a
                      live fleet session, one stuck queued.  A FRESH in-flight run is
                      INDETERMINATE, never a breach — the nightly legitimately runs
@@ -71,6 +76,14 @@ us read 07-31).  One shared NYSE anchor would call that healthy state stale and,
 the other direction, paper over a real freeze.  See MARKET_BOARDS for the per-market
 budgets, the mainland's table-independent holiday floor, and the one market
 (International) that no single exchange calendar can govern.
+
+  F. BRIEF AGE     — is the freshest AI brief (site/ vs data/regime/, by
+                     ``generated_at``) older than 2x its ``refresh_days`` WHILE the data
+                     clock (Prophet ``source_asof``) is already newer than the brief's
+                     ``state_asof``?  Catches the 2026-10-19→11-09 freeze: the briefs sat
+                     at 2026-10-18 for three weeks behind exit-0 wrappers and green
+                     no-op runs.  The data-clock gate is what keeps a weekend or holiday
+                     (data not newer than the brief) from manufacturing a breach.
 
 VERDICT DISCIPLINE (borrowed verbatim from freshness_sentinel).  Blindness is never
 a breach.  An unreadable API response, an empty run list, a missing index file, an
@@ -541,8 +554,35 @@ def is_et_gate_skip(row: dict, *, now: datetime) -> bool:
     return intended_schedule_cron(when) not in title
 
 
-def counts_as_bake(row: dict, recent: list, *, now: datetime) -> bool:
+def engine_job_verdict(jobs: "list[dict] | None") -> "str | None":
+    """Classify one run from its job list: ``"success"`` (the engine job concluded
+    success), ``"noop"`` (no engine job, or it was skipped — the DST-gate shape where
+    only et_gate ran) or ``"not_success"`` (the engine job ran and did not succeed).
+    ``None`` = no usable job list (blindness: callers fall back to the heuristics).
+    2026-10-19→11-09 AI-brief freeze: a run-level ``success`` is NOT a bake."""
+    if not isinstance(jobs, list) or not jobs:
+        return None
+    engine = [
+        j for j in jobs
+        if isinstance(j, dict)
+        and str(j.get("name") or "").split("/")[-1].strip().lower() == "engine"
+    ]
+    if not engine:
+        return "noop"
+    conclusions = {j.get("conclusion") for j in engine}
+    if "success" in conclusions:
+        return "success"
+    if conclusions <= {"skipped", None} and "skipped" in conclusions:
+        return "noop"
+    return "not_success"
+
+
+def counts_as_bake(row: dict, recent: list, *, now: datetime,
+                   run_jobs: "dict | None" = None) -> bool:
     """A success that ran the nightly, not an et_gate no-op.
+
+    When ``run_jobs`` (run id -> job list) has a usable list for this run, the engine
+    job must have concluded success; otherwise the run-level heuristics below decide.
 
     31851452961's display_title was just ``daily`` and run_started_at equalled
     created_at (queued pending), so duration cannot identify a skip.  An
@@ -553,6 +593,9 @@ def counts_as_bake(row: dict, recent: list, *, now: datetime) -> bool:
         return False
     if is_et_gate_skip(row, now=now):
         return False
+    verdict = engine_job_verdict((run_jobs or {}).get(row.get("id")))
+    if verdict is not None:
+        return verdict == "success"
     if row.get("event") == "schedule":
         title = " ".join(str(row.get(k) or "") for k in ("display_title", "name"))
         named = EDT_CRON in title or EST_CRON in title
@@ -1232,6 +1275,133 @@ def evaluate_sentinel_heartbeat(
 
 
 # ─────────────────────────────────────────────────────────────────────────────
+# check F — AI Daily Brief age, against the data clock
+# ─────────────────────────────────────────────────────────────────────────────
+# WHY. The three briefs (engine/master_brain.py -> site/{master,china,btc}_brief.json,
+# mirrored in data/regime/) froze at 2026-10-18 while every other instrument stayed
+# green: the producing step was skipped whenever the engine job was cancelled upstream,
+# wrappers exited 0, and DST-gate no-op runs satisfied check B. Age alone is not a
+# breach (a weekend legitimately leaves a brief 3 days old), so the breach needs BOTH:
+# the freshest brief is older than 2x its cadence AND the data clock (Prophet
+# ``source_asof``) is already newer than the brief's ``state_asof`` — the brief is
+# provably behind data it could have used. Blindness is never a breach.
+#
+# The two clocks land on main in different steps: Prophet checkpoints ``source_asof``
+# EARLY in the engine job (daily.yml "checkpoint Prophet outputs") while the briefs
+# commit at the job's END ("commit engine outputs"). A healthy bake therefore has a
+# mid-run window where source_asof already advanced but tonight's brief has not landed
+# — the exact breach shape, produced by a healthy night (a Tuesday 08:00Z read after a
+# weekend: brief from Sat, data clock from Mon, engine started ~06:20Z). While a fresh
+# daily run is in flight (check B's ``live_fresh``) that shape is DEFERRED to a warning,
+# never paged; the next read after the run concludes judges it — a night cancelled at
+# the engine tail still trips at the 14:00Z/20:00Z reads, which is how the chronic
+# 2026-10-19→11-09 freeze is caught the same day.
+BRIEF_LENSES: tuple[dict, ...] = (
+    {"lens": "macro", "file": "master_brief.json", "refresh_days": 1},
+    {"lens": "china", "file": "china_brief.json", "refresh_days": 1},
+    {"lens": "btc", "file": "btc_brief.json", "refresh_days": 3},
+)
+BRIEF_MAX_AGE_CADENCES = 2.0
+_BRIEFS_NOT_REQUESTED = object()
+
+
+def load_briefs(root: Path) -> "dict[str, list[dict | None]]":
+    """lens -> [site copy, data/regime copy] (each parsed dict or None). The key is
+    always present so a read failure can never drop a lens from the registry."""
+    return {
+        spec["lens"]: [
+            load_index(root / "site" / spec["file"]),
+            load_index(root / "data" / "regime" / spec["file"]),
+        ]
+        for spec in BRIEF_LENSES
+    }
+
+
+def _freshest_brief(copies: object) -> "dict | None":
+    """The copy with the newer parseable ``generated_at`` (unparseable loses; tie -> first)."""
+    best, best_ts = None, None
+    for copy in copies if isinstance(copies, (list, tuple)) else ():
+        if not isinstance(copy, dict):
+            continue
+        ts = _parse_dt(copy.get("generated_at"))
+        if best is None or (ts is not None and (best_ts is None or ts > best_ts)):
+            best, best_ts = copy, ts
+    return best
+
+
+def evaluate_brief_freshness(
+    briefs: object, source_asof: "date | None", now: datetime, *,
+    in_flight: bool = False,
+) -> "tuple[list[str], list[str], dict]":
+    """Check F — pure. ``briefs`` is :func:`load_briefs` output; ``source_asof`` is the
+    data clock check C already read (None = unreadable -> INDETERMINATE).
+    ``in_flight`` (check B's live_fresh) defers a would-be breach to a WARNING: the
+    mid-run clock skew above means a healthy bake reads as a breach while it runs.
+    Deferred is not green — the warn keeps the deferral visible in the log, and the
+    next read after the run concludes grades it as a fail."""
+    fail: list[str] = []
+    warn: list[str] = []
+    facts: dict[str, Any] = {}
+    if briefs is _BRIEFS_NOT_REQUESTED:
+        return fail, warn, facts
+    states: dict[str, Any] = {}
+    facts["briefs"] = states
+    if not isinstance(briefs, dict):
+        briefs = {}
+    graded = 0
+    for spec in BRIEF_LENSES:
+        lens = spec["lens"]
+        brief = _freshest_brief(briefs.get(lens))
+        gen = _parse_dt((brief or {}).get("generated_at"))
+        if gen is None:
+            continue
+        graded += 1
+        rd = brief.get("refresh_days")
+        if isinstance(rd, bool) or not isinstance(rd, (int, float)) or rd <= 0:
+            rd = spec["refresh_days"]
+        age_days = (now - gen).total_seconds() / 86400.0
+        state_asof = _parse_date(brief.get("state_asof")) or gen.date()
+        states[lens] = {"generated_at": brief.get("generated_at"), "age_days": round(age_days, 2),
+                        "state_asof": state_asof.isoformat(), "refresh_days": rd}
+        if (age_days > BRIEF_MAX_AGE_CADENCES * rd and source_asof is not None
+                and source_asof > state_asof):
+            if in_flight:
+                states[lens]["deferred_in_flight"] = True
+                warn.append(
+                    f"BRIEF OVERDUE, DEFERRED [Check F] [{lens}]: freshest brief "
+                    f"generated {gen.isoformat()} ({age_days:.1f}d old, limit "
+                    f"{BRIEF_MAX_AGE_CADENCES:g}x refresh_days={rd}) already reads "
+                    f"behind the data clock (source_asof {source_asof.isoformat()}), "
+                    "but a daily run is currently in flight and its engine tail "
+                    "commits the briefs after Prophet's early checkpoint — this read "
+                    "cannot yet distinguish a healthy bake from the freeze. The next "
+                    "read after the run concludes grades it; silence then is the "
+                    "freeze."
+                )
+            else:
+                fail.append(
+                    f"BRIEF STALE [Check F] [{lens}]: freshest brief generated "
+                    f"{gen.isoformat()} ({age_days:.1f}d old, limit "
+                    f"{BRIEF_MAX_AGE_CADENCES:g}x refresh_days={rd}) reads "
+                    f"state_asof={state_asof.isoformat()} while the data clock "
+                    f"(source_asof) is {source_asof.isoformat()}. The AI brief step did not "
+                    "run or did not publish — 2026-10-19→11-09 freeze shape."
+                )
+    if graded == 0:
+        warn.append(
+            "CHECK F INDETERMINATE: no readable AI brief (site/ or data/regime/) — "
+            "brief freshness is UNGRADED, not green. If the path is right, check the "
+            "lane's sparse-checkout list."
+        )
+    elif source_asof is None:
+        warn.append(
+            "CHECK F INDETERMINATE: data clock (Prophet source_asof) unreadable — "
+            "brief age cannot be compared against it"
+        )
+    return fail, warn, facts
+
+
+# ─────────────────────────────────────────────────────────────────────────────
 # lane-latch acceptance exemption — the board-acceptance step must always page
 # ─────────────────────────────────────────────────────────────────────────────
 # scripts/prophet_board_acceptance.py (daily.yml's engine job) prints
@@ -1249,10 +1419,12 @@ ACCEPTANCE_STEP_MARKER = "prophet-board-acceptance"
 
 def fetch_run_jobs(repo: str, token: "str | None", run_id: object, *,
                     timeout: float = 30.0) -> "list[dict] | None":
-    """Job list for one run — used ONLY to test the lane-latch acceptance
-    exemption, and only ever called for a single run (see its one caller), so it
-    costs at most one extra GitHub read per red wake. Any transport failure -> None
-    (the exemption then does not apply — see ``job_failed_at_acceptance_step``)."""
+    """Job list for one run — called for at most the handful of runs in this wake's
+    window: the lane-latch acceptance exemption's one red run, and (check B) each
+    recent concluded-success candidate that ``counts_as_bake`` must classify, so a
+    DST-gate no-op can no longer satisfy the bake check by run conclusion alone.
+    Any transport failure -> None (the exemption then does not apply, and check B
+    falls back to its documented heuristics — see ``counts_as_bake``)."""
     url = (
         f"https://api.github.com/repos/{repo}/actions/runs/{run_id}/jobs?per_page=100"
     )
@@ -1295,8 +1467,10 @@ def evaluate(
     boards: "dict[str, dict | None] | None" = None,
     sentinel_heartbeat: object = _HEARTBEAT_NOT_REQUESTED,
     acceptance_failed: bool = False,
+    run_jobs: "dict | None" = None,
+    briefs: object = _BRIEFS_NOT_REQUESTED,
 ) -> dict:
-    """Pure verdict over checks A-E.  See module docstring for the contract.
+    """Pure verdict over checks A-F.  See module docstring for the contract.
 
     ``sentinel_heartbeat`` is the already-fetched /live/staleness.json document
     for check E (None when the caller never fetched it — that check then reads
@@ -1304,6 +1478,9 @@ def evaluate(
     ``acceptance_failed`` is a precomputed fact (see
     ``job_failed_at_acceptance_step``) rather than a live fetch, keeping this
     function's own no-network/no-clock/no-filesystem contract intact.
+    ``run_jobs`` maps run id -> that run's job list (check B: a success only counts
+    as a bake when its ``engine`` job succeeded; None = not fetched, heuristics only).
+    ``briefs`` is :func:`load_briefs` output for check F (default: not requested).
     """
     fail: list[str] = []
     warn: list[str] = []
@@ -1387,11 +1564,19 @@ def evaluate(
         facts["conclusions"] = [f"{s}/{c or '-'}" for s, c in conclusions]
         skips = [
             r for r in recent
-            if r.get("conclusion") == "success" and not counts_as_bake(r, recent, now=now)
+            if r.get("conclusion") == "success"
+            and not counts_as_bake(r, recent, now=now, run_jobs=run_jobs)
         ]
         if skips:
             facts["gate_skips"] = [r.get("id") for r in skips]
-        real_success = any(counts_as_bake(r, recent, now=now) for r in recent)
+            skip_ids = {r.get("id") for r in skips}
+            conclusions = [
+                (st, f"{c}(no-bake)" if r.get("id") in skip_ids else c)
+                for r, (st, c) in zip(recent, conclusions)
+            ]
+            facts["conclusions"] = [f"{s}/{c or '-'}" for s, c in conclusions]
+        real_success = any(
+            counts_as_bake(r, recent, now=now, run_jobs=run_jobs) for r in recent)
         if real_success:
             baked = True
         elif any(s != "completed" for s, _ in conclusions) and not wedged:
@@ -1529,6 +1714,13 @@ def evaluate(
     fail.extend(e_fail)
     warn.extend(e_warn)
     facts.update(e_facts)
+
+    # ── F. AI BRIEF AGE (vs the data clock check C read) ─────────────────────
+    f_fail, f_warn, f_facts = evaluate_brief_freshness(
+        briefs, src, now, in_flight=live_fresh)
+    fail.extend(f_fail)
+    warn.extend(f_warn)
+    facts.update(f_facts)
 
     return {
         "ok": not fail,
@@ -2026,11 +2218,27 @@ def main(argv: "list[str] | None" = None) -> int:
             )
             acceptance_failed = job_failed_at_acceptance_step(jobs)
 
+    # Check B engine-job proof: a run-level success only counts as a bake when its
+    # engine job succeeded (DST-gate no-ops conclude success too). One jobs read per
+    # success run since the boundary (at most a handful); offline mode never fetches.
+    run_jobs: "dict | None" = None
+    if runs is not None and not args.runs_json:
+        _, boundary_b = expected_fire_after(now)
+        run_jobs = {}
+        for r in runs:
+            dt = _parse_dt(r.get("created_at"))
+            if dt is not None and dt >= boundary_b and r.get("conclusion") == "success":
+                jobs = fetch_run_jobs(args.repo, os.environ.get("GITHUB_TOKEN"), r.get("id"))
+                if jobs is not None:
+                    run_jobs[r.get("id")] = jobs
+
     report = evaluate(runs, load_index(args.index_json), now,
                       max_sessions_behind=args.max_sessions_behind,
                       boards=load_market_boards(args.site_root),
                       sentinel_heartbeat=heartbeat_doc,
-                      acceptance_failed=acceptance_failed)
+                      acceptance_failed=acceptance_failed,
+                      run_jobs=run_jobs,
+                      briefs=load_briefs(args.site_root))
 
     for line in report["warnings"]:
         print(f"::warning title=nightly-liveness::{line}", flush=True)

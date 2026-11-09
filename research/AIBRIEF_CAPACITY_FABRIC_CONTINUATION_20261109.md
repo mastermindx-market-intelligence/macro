@@ -42,7 +42,53 @@ Source handoff: GLM53_VPS_Capacity_Fabric_Execution_Handoff_20261109 (Chairman a
    failed: `publication frozen: baseline_source_or_owner_not_qualified` (exit 75), job
    129006177716.
 
-## Fix packet P1 (this branch, pending collision check vs #10727/#10740/#7179)
+## Fix packet P1 — SPLIT by the #10725 single-writer law (2026-11-09)
+
+**Macro PR #10725** ("Restore daily AI Brief generation and China/HK render
+delivery", owner mastermidx4, head 51fd9c1c, updated 2026-11-09T07:01Z, armed
+`merge-on-green` + `merge-blocked`) is the ORIGINAL generation-restoration
+carrier and already rewrites daily.yml's brief steps (relocates scorer /
+master brain / build_aibrief EARLY after a `refresh regime inputs` step gated
+on its outcome, adds an early `daily_engine_aibrief_checkpoint.sh` checkpoint,
+passes `--regime-inputs-attempted`) and touches build_aibrief.py (liquidity/
+cortex copy truthfulness — hunks disjoint from mine). Its only red:
+`ci-authority/codex/merge-queue-pilot` fail (run 129027000984); all ci-pack-*,
+ci-authority, ci-gate, contract-delta, fence-pack green. Per "one source
+writer per overlapping file" this session does NOT dual-write its files.
+
+- **Shipped on this branch (disjoint vertical — #10725 touches none of it):**
+  `scripts/check_nightly_liveness.py` (check B engine-job verdict; NEW check F
+  brief-age-vs-data-clock with mid-run deferral), `.github/workflows/
+  nightly-liveness.yml` (sparse-checkout + the 6 brief copies),
+  `tests/test_nightly_liveness.py`. Check F trips on the live freeze (truthful
+  alert EXPECTED until the producer restoration lands — not a regression).
+- **Deferred packet (kept at `/tmp/p1_deferred_aibrief.patch`, 390 lines):**
+  daily.yml step hardening (`if: always()` + timeouts + `exit $rc`),
+  build_aibrief.py fresher-source selection + stale chip + freshness receipt,
+  `templates/_aibrief_body.html.j2` bilingual chip, tests/test_aibrief_page.py,
+  tests/test_daily_aibrief_steps.py. Re-apply AFTER #10725 merges (rebase) or
+  hand hunks to its owner; fixes owed on re-apply from the review below.
+- **Reviewer verdict on the pre-split packet (opus, adversarial): FAIL —
+  both blockers now resolved by the split.** (1) master-brain `always()` +
+  `timeout-minutes: 30` can eat the runner's post-cancel grace so
+  `commit engine outputs` is never scheduled (daily.yml's own evidence at its
+  line ~5294) — dropped with daily.yml; hand to #10725's owner as design
+  evidence (their gate `if: steps.regime_inputs.outcome == 'success'` also
+  skips on job cancel — the residual skip hole their carrier keeps). (2)
+  check F false-paged every Tuesday 08:00Z (Prophet source_asof commits early
+  at daily.yml ~2872, briefs commit late at ~5167, engine starts ~06:20Z) —
+  FIXED here: check B's `live_fresh` defers the breach to a visible WARN while
+  a fresh daily run is in flight; a night cancelled at the tail still trips at
+  the 14:00Z/20:00Z reads (tests pin both windows). Also fixed: stale
+  `fetch_run_jobs` docstring. Deferred-packet follow-ups owed: chip needs CSS +
+  dual-theme evidence + chairman design rule check (no accent stripe), chip
+  only on aibrief.html today (dashboard/china/hk pass raw briefs), unknown-age
+  brief still shows "Updated daily", `aibrief_freshness.json` WILL be committed
+  by `daily_engine_commit_outputs.sh` (`git add site/`) so its "never
+  committed" docstring is false — .gitignore it or reword, `published_at` is
+  build time not deploy time.
+
+
 
 - daily.yml: steps ~3923 (scorer), ~3934 (master brain), ~4444 (build_aibrief):
   `if: always()` + `timeout-minutes` + `continue-on-error: true` — matching the file's own
