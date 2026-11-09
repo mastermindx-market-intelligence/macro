@@ -74,6 +74,13 @@ decided_by: ceo-sol
 decided_at: 2026-09-17
 ---
 
+## Dated source decision
+
+This is the 2026-09-17 source decision and its original receipts. The recorded draft, installation and
+ceremony state is historical. Current protected source and the current installation owner govern any
+new action; retaining this record does not authorize a ceremony or change a present runtime boundary.
+
+
 ## The contract in one table
 
 | Condition | Default path-only call | `allow_symlink=True` call |
@@ -93,12 +100,14 @@ malformed opt-in is refused rather than handed a false "no ACL" answer.
 
 ## Reversibility
 
-Source-only, nothing installed: revert is one commit and restores the pre-repair `fs_security.py` and
-`release_manifest.py` bytes. No released artifact, installed host or ceremony depends on the change.
+At the 2026-09-17 source snapshot, nothing was installed: a revert would restore the pre-repair `fs_security.py` and
+`release_manifest.py` bytes. No dependency of a then-released artifact, installed host or ceremony was claimed at that snapshot.
 
 ## What is NOT claimed
 
-- #757 is DRAFT/HOLD-FOR-SOL. Its head is a reviewed source candidate, not a merged or released artifact;
+- As observed on 2026-09-17, #757 was DRAFT/HOLD-FOR-SOL. Its then-head was a reviewed source candidate,
+  not an observed merged or released artifact;
   the install ceremony is not authorized by this decision.
-- The decision says nothing about the health of the currently installed release beyond "do not restart it";
+- The decision's "do not restart it" instruction concerns the then-installed release and does not establish
+  the health or permissions of a current installation;
   see `DSC:INSTALLER-MANIFEST-REFUSES-TRACKED-SYMLINKS-SINCE-583`.

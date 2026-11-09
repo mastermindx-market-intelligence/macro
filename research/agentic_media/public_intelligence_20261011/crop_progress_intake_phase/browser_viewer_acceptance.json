@@ -1,0 +1,27 @@
+{
+  "browser": "Chrome existing profile 1",
+  "url": "https://www.mastermind-x.com/research_vault.html?doc=usda-nass-2026-10-13-crop-progress",
+  "initial_state": "signed_out_three_summary_preview",
+  "authentication": "Saved email/password autofilled by browser; normal Sign in submission returned start.html; exact source URL opened afterward. No plaintext credential read or export.",
+  "result": "ACTUAL_ORIGINAL_PDF_VIEWER_ACCEPTED",
+  "source_title": "Crop Progress,",
+  "agency": "U.S. Department of Agriculture, National Agricultural Statistics Service",
+  "original_visible_release_date": "October 13, 2026",
+  "page_count": 16,
+  "visible_page": "1 / 16",
+  "viewport": {
+    "width": 1728,
+    "height": 694
+  },
+  "horizontal_overflow": false,
+  "download_clicked": false,
+  "signup_created": false,
+  "follow_written": false,
+  "dedicated_report_page_accepted": false,
+  "press_draft_accepted": false,
+  "publication": false,
+  "cutover": false,
+  "proof": "cua_repl getAXState and screenshot; DOM-visible modal title/page thumbnails/page counter; same account origin, no settings or entitlement changes.",
+  "recorded_at": "2026-10-14T17:10:46.712669+00:00",
+  "observation_window": "After17:02 installed inspection and before17:07 planner observation on2026-10-14"
+}

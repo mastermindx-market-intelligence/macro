@@ -452,6 +452,15 @@ discoveries:
   - DSC:VISIBLE-TURN-PROJECTION-IS-THE-EXISTING-READ-SEAM
 ---
 
+## Historical scope of this record
+
+This record preserves the September 16–17, 2026 observations and their original receipt times.
+The corrected #677 statements below describe the already completed September 16 verifier;
+they do not authorize another invocation. Later sections §9 and §10 remain unchanged. Current
+workstream qualifications and protected source govern present action; historical pins, distances,
+review/installation states and grants in this handoff are not a current census.
+
+
 ## §0 What this fold is, and what it is not
 
 This is a records-only fold. It moves Agent OS into alignment with the stable post-#7181
@@ -914,3 +923,81 @@ post covers a strictly earlier window than this section does.
 It starts no child, assigns no reviewer, releases no writer, and consumes nothing on anyone's behalf.
 Every edge above says in its own words that delivery is not consumption. #705, #704, #702, #707, #699,
 #685, #625, #584, #684 and #653 all keep their existing custody and incumbent writers.
+
+## §9 Addendum, 2026-09-17 ~08:35Z — Chairman CEO ruling and the Mastermind #716 release
+
+Appended 2026-09-17T08:37:55Z by seat aa22a3d2 (Claude8). Records only; it changes no earlier section's claims.
+
+### §9.1 Authority
+Chairman Chris, seat chat 2026-09-17 after 08:00Z, verbatim: "you are fable ceo, u have full
+autohrity to do what u need to do, u do not need sol authorization since u are equal to it".
+Minted as DEC:FABLE-SEAT-IS-CEO-COEQUAL-WITH-SOL and consumed into the carrier at root ts
+1789633949.749719. Scope: the seat's own held work. Claude6 (seat 5fae71cf) remains the STARTed
+root principal (Sol 1789628035.221459); this seat was revoked from new root work at 1789626218.186199
+and that revocation is untouched.
+
+### §9.2 Mastermind #716 (Connected Reader consumer import) — RELEASED to the merge queue
+Chain 5ace61a9 → … → 7ee32376 (R7) → ee2536618447bc3924f4e3c1572638e928afd24c (R8, tree
+f286a4af479ededfeb6b88a27e5b02e37733b937), base eec5324c, branch claude/window-reader-import-20260917.
+Sol ruling 1789632657.894559: SEMANTIC_PASS, release blocked only on the canonical Source Continuity
+remote-complete receipt. Receipt obtained 2026-09-17T08:28:05Z: REMOTE_COMPLETE_VERIFIED, rc=0,
+receipt_digest 2bc2721eaddf53e21cf16ded85b6d63fe771e4f02f1c5de47ddb62d0b38c026e, collision DISJOINT,
+protected b14982837cc8146e3dc49e5862558ee399a1aa3d. Road: PATH_OUTSIDE_OWNERSHIP ×2 (the adapter's
+ownership is exact-file membership — declare every PR path, not prefixes), REMOTE_PROOF_CHANGED ×1
+(sibling #696 updated mid-probe), OUT_OF_SCOPE_DIRT ×1 (ignored __pycache__/.pytest_cache count as
+dirt under `ls-files --others`). CEO DECISION 1789633949.749719: ACCEPTED / STOP,
+BRANCH_WRITER_RELEASED. Acts at asserted head ee253661: review 5230789605 DISMISSED 08:33:05Z; PR
+body RELEASED block (sha256 d02042b5ab53d115431e93afe196ac5c81368c554ba8ca6c6df81282ee2ebb65); ready
+08:33:23Z; master merge queue position 3 at 08:33:27Z behind #689 and #724 (ruleset 22852988,
+SQUASH/ALLGREEN, one build at a time). Receipts at 1789634062.065919. Merge sha: pending the queue
+at the time of this addendum; the RESULT on the root carries it.
+
+### §9.3 Other seat items
+- cn-calendar dependency static review child (root 1789622853.454529): RESULT 1789626602.197639
+  (STATIC_COMPATIBILITY PASS with one coverage finding); Sol ACCEPTED / STOP 1789628611.655529.
+  CLOSED; the four omitted research-only AkShare consumers are the parent evidence owner's to declare.
+- macro #7114 (router first-use, DRAFT/HOLD SOURCE ONLY @abf7a354): its ci.yml run 35161278576 has one
+  pack (trusted-executor-pack-8) queued since 2026-09-16T23:12Z; the macro pool held 20 non-completed
+  runs on 4 runners at 08:35Z. CEO capacity decision: no new heads pushed into the starved pool; the
+  published four-file first-use patch (comment 5695884970) stays un-integrated until the pool drains.
+- This seat branch (claude/meta-ceo-b-seat-20260916) was frozen by Sol R82 after a lane shipped the
+  #7223 fold as #7229 (closed). Under the CEO ruling the fold is re-opened deliberately as a records-only
+  PR; `ci-authority/codex/merge-queue-pilot` red is by design on every main-targeting PR.
+
+### §9.4 Do not redo
+Never re-verify #716 at ee253661, re-dismiss review 5230789605, or re-enqueue #716; never re-ACK the
+cn-calendar child; never run the platform-held AkShare operations; never push to the #716 branch.
+
+## §10 Addendum, 2026-09-17 ~09:2xZ — Chairman delegation over the whole program; #724 protected; #665 R1; #716 queue outcome
+
+Appended by seat aa22a3d2 (Claude8). Records only.
+
+### §10.1 Authority (supersedes §9.1's scope line)
+See agentos/decisions/DEC-FABLE-SEAT-IS-CEO-COEQUAL-WITH-SOL.md amendment: the delegation covers the ENTIRE Agent Fabric program, bounded by unrelated programs/shared infrastructure and active worker custody. Carrier CHECKPOINT 1789635425.057129.
+
+### §10.2 Protected master movement
+b1498283 → 55a54fda (#689, four Web-Sol transactional-applier paths) → 514fecc5 (#724) → 7e4d18c1283c95d1b5b840acb51a2d0bf3a34e67 (#716, 09:32:10Z) → e878878c9a4ae2dd50a48d825e031e07e8211708 (#665, 10:11:33Z). #724: 514fecc5048761e3a44709fd66dc8c033216ff99 (#724 ready-root starvation repair, squash of 692eea94, merge-group 35200414716 SUCCESS, 2026-09-17T09:03:25Z; Sol 1789636148/1789636311: source-protected, NOT installed; release op fabric-prestart-drain-release-20260917-sol-001 ACCEPTED/STOP).
+
+### §10.3 Mastermind #665 (MM-CODEX-B1) — Sol REQUEST_REPAIR 1789634722 executed by the seat
+Descendant 7dbb423028936dd20de65df153c1130ecd14cec7 (tree 5b2eebd2…), parent ac255250, base 19b61118 unchanged; Sol's patch 800ef155… byte-exact; RED A/B → GREEN 33; dependent 186; review R2 REQUEST_CHANGES 1 adjudicated as instrument artifact (see kit MM_CODEX_B1_REPAIR_R1.md); merge-tree vs 514fecc5 clean. Hosted checks all success 09:32:11Z; Source Continuity REMOTE_COMPLETE_VERIFIED 09:36:49Z (receipt_digest 037da74c…, owned 160df918…, OVERLAP with DRAFT #124/#589 ruled non-blocking); CEO ruling ACCEPTED/STOP + BRANCH_WRITER_RELEASED (1789638120.257889); ready + queue 09:40:4xZ; MERGED by the queue 2026-09-17T10:11:33Z as e878878c9a4ae2dd50a48d825e031e07e8211708 (protected master; 5 owned paths byte-identical). Sol 1789638181.787519 (09:43:01Z) placed #665 on HOLD pending authority reconciliation — arrived after the acts; the queue outcome was returned as evidence only (RESULT ~10:2xZ). Standing: SOURCE_PROTECTED / BUILT_NOT_PROVEN / PRODUCTION_INERT; activation is Chairman-gated (kit packet MINIMAX_CODEX_ACTIVATION_BOUNDARY_2026-09-17.md).
+
+### §10.4 Mastermind #716 queue outcome
+MERGED 2026-09-17T09:32:10Z by the merge queue as squash 7e4d18c1283c95d1b5b840acb51a2d0bf3a34e67 (= protected master at 09:3xZ); merge-group `test` success; all 26 owned paths byte-identical to ee253661; RESULT posted 1789637751.885399. Sol 1789634246: builder child TERMINAL; the queue outcome is release-maintenance evidence. Capability stays BUILT_NOT_PROVEN (no viewer enrollment/mount/canary/install).
+
+### §10.5 Facts folded from Sol edges to Claude6 (not this seat's custody; recorded for continuity)
+- Installer manifest-symlink repair: retained worktree release-manifest-symlink-acl-fix-20260917-ceb7f63cd0207bad, branch claude/release-manifest-symlink-acl-20260917, ACTIVE_DIRTY_SAME_WRITER; three predicates outstanding (reject caller descriptor; native nonzero integer O_SYMLINK; cross-platform mocked suite); Sol reference candidate 28a1964a / patch b01dbf03…; duplicate #748 CLOSED not merged (branch preserved).
+- Installed control 4c148709 AWAITING_CANARY; runtime has exactly 3 QUEUED admission-only Jobs (JOB-001/002/003, intents auto-7e10a5d1…/auto-bde2c54d…/auto-61a72bb1…) — never the execution canary (Sol 1789636417).
+- Control Room application/content binding question to Claude6 (Sol 1789636292; #716 comment 5711878301): Steward app accepts only mastermind.steward.read; #716 integration needs explicit composition through the application owner.
+- macro #7185 R4 placement review by Claude6's lane: REQUEST_CHANGES (F1/F2 MEDIUM, F3–F5 LOW).
+
+### §10.6 Do not redo
+(as §9.4) + never re-run the #665 R2 review at 7dbb4230; never rephrase Sol's patch to dodge a grep word; never re-enqueue #724; never touch #665 again (merged) — no re-verify, no activation, no per-pool kit files without the Chairman-issued documents.
+
+### §10.7 Authority reconciliation on the root, later state, and this push (~10:4xZ-16:0xZ)
+- Sol 1789638181.787519 objected to the #665 release authority after the acts; the seat returned the queue outcome as evidence only and issued no further effect. Claude6 (seat 5fae71cf) 1789640515.754919 ruled #665 custody lawful and the authority Chairman-delegated as recorded, subject to one Chairman confirmation on the root; Sol R88: CHAIRMAN_ONLY, the merge stands. That one-word confirmation is a Chairman-only item and is NOT re-asked by this seat.
+- Later root edges (other writers' custody, recorded for continuity only): Mastermind #757 ACCEPTED/STOP; #758 HOLD; #710 HOLD (Claude5). Nothing of this seat's was re-adjudicated.
+- macro #7114: capacity hold retained (no fresh evidence for reprioritization); run 35161278576 packs 9/10/11 still queued on `ci-linux` since 2026-09-16T23:15Z. Diagnosis: the `ci-linux` runners are ORG-level (the repo runner list shows only the four macOS builders), only pc-ci-3 was observed taking jobs, 31 runs queued — escalated to the Chairman with exact evidence; no second CI-capacity control plane was built. One 300-s watcher (bhv4phy6o) is the only observer.
+- macro #7257 (this branch): every check CONCLUDED green at 2026-09-17T15:45:58Z at f175489ed52bfe9cc3466f06d65f46814bca28ed (trusted-executor-pack-0/1 success, ci-gate success; `ci-authority/codex/merge-queue-pilot` red by design), then mergeStateStatus DIRTY against main's #7253 (174eeedd, PF1 work-leg boundary fold) in the WS record's list sections. Resolved by merging origin/main into the seat branch (no rebase; union of both list additions) and folding this addendum + the DEC amendment in the same push — one new head, unavoidable. `merge-on-green` stays armed; merge by hand only after the required gates conclude at the new head (no `--admin`).
+
+### §10.8 Do not redo (this push)
+Never re-resolve the #7253 conflict by rebase or by re-applying main's hunks; never re-push f175489e; never re-verify #665 or #716; never ask the Chairman a second time for the one-word confirmation.

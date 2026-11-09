@@ -1,0 +1,332 @@
+{
+  "schema": "china_continuation.implementation_evidence.v1",
+  "mission_complete": false,
+  "state": "BUILT_NOT_PROVEN",
+  "carrier": "sol/cn-act-now-coherence-20260921",
+  "source_base": "887917fbb1190ddee5dcfc76de557ddb195d0c7b",
+  "procedure_pin": "4c1b3d389286df2a4b5b98a4d4491f2c8a1263f2",
+  "engine_implemented": true,
+  "release_allowed": false,
+  "remaining_required_guard": null,
+  "remaining_guard_write": "COMPLETE",
+  "source_sha256": {
+    "engine/china_act_now.py": "fcb9c8996294e1f9cf0fe5e6835c27785ef4006cf43b9aba58cebff0b05cc8f7",
+    "templates/_china_act_now_board.html.j2": "5b675277a749806129a92968acd0de77dc51d39fcdfeef8a3cebcde5eb16ebcc",
+    "tests/test_china_act_now.py": "e7d26abbea0981fdff457721dc8d0dbe129db69a44e597adfaa5b34721e22086",
+    "research/cn_prophet_audit/continuation_entry_20260923/browser_proof.py": "acfc9a3f20deb48c4cb2a9c5340be102d27109dc9dd73d7d1224244c94ae6f8e"
+  },
+  "tests": {
+    "current_passed": 331,
+    "current_failed": 0,
+    "waived": 0,
+    "scope": "same seven affected owner suites; not full repository",
+    "suites": [
+      "tests/test_china_act_now.py",
+      "tests/test_china_board_rank.py",
+      "tests/test_china_board_rank_v3.py",
+      "tests/test_china_board_rank_v4.py",
+      "tests/test_china_intel_interest.py",
+      "tests/test_cn_board_unified_grid.py",
+      "tests/test_stock_board_v2.py"
+    ],
+    "final_log": "final-note-tests.txt",
+    "log_sha256": "44480d6d3bbdecaeba367462dbeae9be82caef97d1544cca68c5f4916c04e3c0",
+    "qualified_red": {
+      "failed": 7,
+      "passed": 1,
+      "log": "minor-review-red-qualified.txt"
+    },
+    "development_only_logs": [
+      "minor-review-red.txt",
+      "minor-review-runtime-preflight.txt"
+    ],
+    "red_log_normalization": {
+      "minor-review-red.txt": {
+        "raw_sha256": "914cff5d4e8d79451a7d78a27c85bb035dd5757df3867c59952f973cc3c3cc67",
+        "sha256": "bb18a9645d430f79a841adb738406ef8e30c6dd9c1d2381d1ba3455e0159aa27",
+        "normalization": "trailing whitespace only; no result/assertion changes"
+      },
+      "minor-review-red-qualified.txt": {
+        "raw_sha256": "e5741910285b6d9c465ed3239d157034a82ca4aeb1a7b435ff9e027b6d25976d",
+        "sha256": "ac3660e2739ecbd0a9c5f2cd78f5a5159d45cf3c61456cf19ca6a17acf08da87",
+        "normalization": "trailing whitespace only; no result/assertion changes"
+      }
+    },
+    "new_semantic_red_failed": 4
+  },
+  "browser": {
+    "directory": "mixed-browser",
+    "board_captures": 56,
+    "hover_captures": 32,
+    "input_commit": "88a3f1cfd18f391d2802e9086dc00f6fe5545607",
+    "sector_count": 16,
+    "theme_count": 22,
+    "cycle_rows": 53,
+    "proof_sha256": "d2d85d1415536850cc22ee08c9379f60096ff1849c1526fe5a3be33bb5f7f7bb",
+    "scope": "immutable mixed-input component plus labelled negative scenarios; not full-page/live/historical availability proof",
+    "note_assertions": "presence/absence/exact bilingual text in every capture; partial variant included"
+  },
+  "input_commit": "88a3f1cfd18f391d2802e9086dc00f6fe5545607",
+  "input_as_of": "2026-09-22",
+  "continuation_cases": [
+    "cn_pharma_cxo"
+  ],
+  "raw_lanes_unchanged_in_snapshot": true,
+  "stock_admission_changed": false,
+  "scores_changed": false,
+  "deployed": false,
+  "prior_checkpoint": {
+    "schema": "china_continuation.blocked_candidate.v1",
+    "mission_complete": false,
+    "engine_implemented": false,
+    "source_head": "d0561c3c3bbad86c3d8c2e89a77ca85135fefafb",
+    "carrier": "sol/cn-act-now-coherence-20260921",
+    "engine_diff_empty": true,
+    "local_test_candidate_already_applied": true,
+    "test_file_sha256": "b78a940a600e33a89d001c06abbf9bf5669fd9e790d6e589c339849a66868068",
+    "patch_sha256": "2f7e3dc90a1046756534503ae618dc7fa8854f97820dc2dd7ece7da120fb0561",
+    "red_log_sha256": "df6a685baf2a179dc79024c88228dc61a4713078e69635ab69285090b5f34d48",
+    "test_result": {
+      "failed": 8,
+      "deselected": 95,
+      "stage": "missing_observed_at_API",
+      "independent_semantic_mutation_kills": false
+    },
+    "incumbent_direct_probe": {
+      "final_label": "dominant",
+      "final_reco": "accumulate",
+      "clean_entry": false,
+      "observed_buy_now_count": 0,
+      "observed_wait_pullback_count": 1
+    },
+    "write_effect": "PLATFORM_BLOCKED_BEFORE_ENGINE_EFFECT",
+    "do_not_redo": "Do not reapply patch in this worktree: the tests are already present. No engine write or tested implementation exists.",
+    "red_log_raw_sha256": "62c0c44d05063d3eeb06465288cd36be93228109cab8d91ac739d715ba1e4042",
+    "log_normalization": "Trailing whitespace removed only to satisfy repository diff guard; results and failure details unchanged."
+  },
+  "observed_compatibility_base": "fc5c1fc49e4f552d8e3e55b5528a6d280d7415e8",
+  "release_gates_remaining": [
+    "current-head hosted CI",
+    "independent review",
+    "integrated current-base proof",
+    "authenticated full-path production proof"
+  ],
+  "review": {
+    "source_sha": "cf9bf71040f9e49cef8bef639b998d7b81abb09f",
+    "receipt": "cf9-review-receipt.json",
+    "status": "PARTIAL",
+    "closure": "SOL_CLOSED_STOP_ACKNOWLEDGED",
+    "new_semantic_review": "REQUIRED",
+    "parent_adjudication": "Core derived-advice fix closed. Accept theme-only copy, muted-note hierarchy, partial-note browser coverage, positive render controls. Reject a new material card as necessary for reused prose; reject per-theme settling as a requirement of the single-clock source. No release or production approval."
+  },
+  "recovery": {
+    "host_read_ready": true,
+    "earlier_document_effect": "RESOLVED_ABSENT_THEN_WRITTEN",
+    "document": "review-adjudication.md",
+    "template_write": "SUCCEEDED_ON_ORIGINAL_CARRIER",
+    "no_new_template_test_execution_claim": false,
+    "latest_source_verification": "COMPLETE_ORIGINAL_CARRIER",
+    "publication": {
+      "state": "PUSHED",
+      "runtime_semantic_head": "06db2fed7cb95e736afc0b9a5c9dbc3d3d2adce8",
+      "same_carrier": true
+    }
+  },
+  "previous_template_hold_evidence": {
+    "source_sha256": {
+      "engine/china_act_now.py": "de95ca8791e60be7d05c857df215bb0540d3821aa97a3a67b8c72cf45a78bc67",
+      "templates/_china_act_now_board.html.j2": "0330d431fa97e2d169c7ccd47388a7edf7b04c5e337189b17e1ca2e5adfb420d",
+      "tests/test_china_act_now.py": "e636ffd7e1705ce24f867b7ee8c1e5c1f8191ee274f094cee7eeb080dc9d6b37"
+    },
+    "tests": {
+      "initial_continuation_contracts_passed": 8,
+      "then_full_coherence_suite_passed": 103,
+      "current_passed": 130,
+      "current_failed": 2,
+      "waived": 0,
+      "final_log_sha256": "18aa0b3e67abb22b0be27144ff29ed4715912c6df605cfed7c09bf6a3073b143",
+      "raw_log_sha256": "18aa0b3e67abb22b0be27144ff29ed4715912c6df605cfed7c09bf6a3073b143",
+      "normalization": "trailing whitespace only",
+      "member_observation_red_failed": 20,
+      "owner_regression_passed": 290,
+      "owner_regression_failed": 0,
+      "current_action_log": "observation-tests.txt",
+      "current_action_log_sha256": "c74683671a24cb8ffaa705eb16d0b940771c4e021ec0ce04b2eadcf151e07f49",
+      "owner_log": "owner-tests.txt",
+      "owner_log_sha256": "b8f37e772013e4e7e1b5c8cac91d14e24b27b69b6721b452b259032637f9b719",
+      "observation_red_sha256": "ca56475872fe6277e0517257688d562e71d2856bfaace7867f0b04ba3c2929ff",
+      "previous_final_log": "final-tests.txt (historical 108/1, superseded)",
+      "failures": [
+        "test_unavailable_theme_suppresses_unqualified_metrics_but_retains_source_reads",
+        "test_unsettled_current_session_is_disclosed_without_inventing_finality"
+      ],
+      "final_log": "recovered-owner-tests.txt"
+    },
+    "browser": {
+      "captures": 48,
+      "overflow_count": 0,
+      "page_error_count": 0,
+      "proof_sha256": "9db1f40df057166e4bf050b7151b5895b898ab646d8f7cb7329a0ab239eea932",
+      "scope": "Controlled missing-member, conflict, final-demotion, unsettled-clock and duplicate-cycle fixtures derived from the frozen theme input; not production observations. Real sector/cycle input remains unqualified.",
+      "clock_basis": "injected qualification clock; not historical availability proof",
+      "source_hashes_match": true
+    },
+    "remaining_required_guard": "degraded template data-status/type and distinct settling explanation"
+  },
+  "previous_319_source_evidence": {
+    "source_base": "8229b1efea8f0270ad76a56e1a7634894c73f8bc",
+    "source_sha256": {
+      "engine/china_act_now.py": "f0eb565a355d6f76f99a4b42486b5c5f1ebb0e007315c132b3853383b8b37719",
+      "templates/_china_act_now_board.html.j2": "37e231d296eebbe96aa116695bfcc8eb540c8254b0aebfd44649a73965fe29b8",
+      "tests/test_china_act_now.py": "d434baa9aff11c509a08120df614773f494c310595f65689c4b9053edf7e84c1"
+    },
+    "tests": {
+      "current_passed": 319,
+      "current_failed": 0,
+      "waived": 0,
+      "scope": "seven affected owner suites; not full repository",
+      "suites": [
+        "tests/test_china_act_now.py",
+        "tests/test_china_board_rank.py",
+        "tests/test_china_board_rank_v3.py",
+        "tests/test_china_board_rank_v4.py",
+        "tests/test_china_intel_interest.py",
+        "tests/test_cn_board_unified_grid.py",
+        "tests/test_stock_board_v2.py"
+      ],
+      "final_log": "template-owner-tests.txt",
+      "log_sha256": "0b5b84c9b126b4f9d721d391041b772980d0ad43b5dcd486ee75106896f551f0",
+      "extra_degraded_cases_red_failed": 4,
+      "extra_degraded_cases_red_passed": 1,
+      "logs": {
+        "template-owner-tests.txt": {
+          "sha256": "0b5b84c9b126b4f9d721d391041b772980d0ad43b5dcd486ee75106896f551f0",
+          "raw_sha256": "0b5b84c9b126b4f9d721d391041b772980d0ad43b5dcd486ee75106896f551f0",
+          "normalization": "trailing whitespace only"
+        },
+        "neutral-status-red.txt": {
+          "sha256": "346d58f4700cbac2281708d871f05d0f81483030eb6195fc23c4f06991e4fa92",
+          "raw_sha256": "cd1b815a50ba9fb59de7b6b892aa6fde7292f5161a791bb17131afbdbf2b9a97",
+          "normalization": "trailing whitespace only"
+        },
+        "template-browser-tests.txt": {
+          "sha256": "02efba81a6a217c7993bb1bd77e1c0e00cca4a5398b00121cf44144e1e5a8d6a",
+          "raw_sha256": "02efba81a6a217c7993bb1bd77e1c0e00cca4a5398b00121cf44144e1e5a8d6a",
+          "normalization": "trailing whitespace only"
+        }
+      }
+    },
+    "browser": {
+      "captures": 48,
+      "hover_captures": 24,
+      "overflow_count": 0,
+      "page_error_count": 0,
+      "proof_sha256": "a6bc2dcde1449fd5ae3d819b9146b421c75c3c1d925f6832f15ca03966838467",
+      "scope": "Controlled missing-member, conflict, final-demotion, unsettled-clock and duplicate-cycle fixtures derived from the frozen theme input; not production observations. Real sector/cycle input remains unqualified.",
+      "clock_basis": "injected qualification clock; not historical availability proof",
+      "source_hashes_match": true,
+      "interaction": "native keyboard-focus popover; responsive viewport, not touch proof"
+    },
+    "review": {
+      "status": "PARTIAL",
+      "source_sha": "f3ba3ea60950e579f4645ee9cb4acf7d2f597a61",
+      "findings": "independent-review.md",
+      "closed_session": "e7be3921-6443-4228-b0f9-fece5413a761",
+      "source_acceptance": false,
+      "new_semantic_review": "REQUIRED"
+    }
+  },
+  "current_composition_tree": "30d2274b10bb6aa3655679c988184f5770062970",
+  "previous_324_evidence": {
+    "source_sha256": {
+      "engine/china_act_now.py": "0b3da78e010b9126eaf311b4dfac0013d0fb58518cf06881de41306bd1636ab0",
+      "templates/_china_act_now_board.html.j2": "bcca18fc3e979abec029579389c19adba015a4b6d4c48688ec0e35875cf55568",
+      "tests/test_china_act_now.py": "b9f732ab4a18c03d3031cb99c7f427c86a29ca55506c82fb0aafd9868265a424",
+      "research/cn_prophet_audit/continuation_entry_20260923/browser_proof.py": "cef9a161206ef2dfb8f58f2d556a6b6852ee836c62d41c487b51d9a1b62d2116"
+    },
+    "tests": {
+      "current_passed": 331,
+      "current_failed": 0,
+      "waived": 0,
+      "scope": "same seven affected owner suites; not full repository",
+      "suites": [
+        "tests/test_china_act_now.py",
+        "tests/test_china_board_rank.py",
+        "tests/test_china_board_rank_v3.py",
+        "tests/test_china_board_rank_v4.py",
+        "tests/test_china_intel_interest.py",
+        "tests/test_cn_board_unified_grid.py",
+        "tests/test_stock_board_v2.py"
+      ],
+      "final_log": "derived-advice-qualified-tests.txt",
+      "log_sha256": "46d9389d7ebaa7fd5528d917b60a77d24f0352345be1202f49e94bbd45b399df",
+      "qualified_red": {
+        "failed": 7,
+        "passed": 1,
+        "log": "minor-review-red-qualified.txt"
+      },
+      "development_only_logs": [
+        "minor-review-red.txt",
+        "minor-review-runtime-preflight.txt"
+      ],
+      "red_log_normalization": {
+        "minor-review-red.txt": {
+          "raw_sha256": "914cff5d4e8d79451a7d78a27c85bb035dd5757df3867c59952f973cc3c3cc67",
+          "sha256": "bb18a9645d430f79a841adb738406ef8e30c6dd9c1d2381d1ba3455e0159aa27",
+          "normalization": "trailing whitespace only; no result/assertion changes"
+        },
+        "minor-review-red-qualified.txt": {
+          "raw_sha256": "e5741910285b6d9c465ed3239d157034a82ca4aeb1a7b435ff9e027b6d25976d",
+          "sha256": "ac3660e2739ecbd0a9c5f2cd78f5a5159d45cf3c61456cf19ca6a17acf08da87",
+          "normalization": "trailing whitespace only; no result/assertion changes"
+        }
+      },
+      "new_semantic_red_failed": 4
+    },
+    "browser": {
+      "captures": 48,
+      "popover_captures": 24,
+      "page_error_count": 0,
+      "overflow_count": 0,
+      "proof_sha256": "ade0de4df9336a0716eb4101ed4b3560bbcd202008e4c5b60590ed58e4fd1fca",
+      "source_hashes_match": true,
+      "scope": "frozen repository themes and labelled negative perturbations; no actual mixed/full-page/production claim",
+      "translation": "real incumbent translator and same-source member names; existing numeric English fallback remains"
+    },
+    "review": {
+      "reviewed_source": "887917fbb1190ddee5dcfc76de557ddb195d0c7b",
+      "status": "PARTIAL",
+      "prior_source_majors_closed": true,
+      "dark_light_independently_adjudicated": true,
+      "report": "template-independent-review.md",
+      "report_sha256": "3ac2069d19950dd2642219a221354439177ac48025508d6ba802a315102077fe",
+      "closure": "template-review-closure.md",
+      "active_child": false,
+      "minor_A_B": "repaired locally; current candidate review owed",
+      "harness_C": "incumbent names and translator used; source numeric fallback disclosed"
+    }
+  },
+  "semantic_parent": "cf9bf71040f9e49cef8bef639b998d7b81abb09f",
+  "development_log_digests": {
+    "derived-advice-red.txt": {
+      "raw": "4da2c2ca39bfa03f75aeb4ef45a897771cd4d78b0fd1ed89b0844f6027d565f9",
+      "normalized": "4da2c2ca39bfa03f75aeb4ef45a897771cd4d78b0fd1ed89b0844f6027d565f9",
+      "change": "trailing whitespace only"
+    },
+    "derived-advice-tests.txt": {
+      "raw": "8783c3be6e43b4969503de4404fa960708a5e89b11fc4b7139686503d5652bed",
+      "normalized": "8783c3be6e43b4969503de4404fa960708a5e89b11fc4b7139686503d5652bed",
+      "change": "trailing whitespace only"
+    },
+    "derived-advice-qualified-tests.txt": {
+      "raw": "46d9389d7ebaa7fd5528d917b60a77d24f0352345be1202f49e94bbd45b399df",
+      "normalized": "46d9389d7ebaa7fd5528d917b60a77d24f0352345be1202f49e94bbd45b399df",
+      "change": "trailing whitespace only"
+    },
+    "mixed-browser-tests.txt": {
+      "raw": "30076e860629399ca6905b5af78ef9d19426f231522dcb4b2179ff96b9bda46d",
+      "normalized": "30076e860629399ca6905b5af78ef9d19426f231522dcb4b2179ff96b9bda46d",
+      "change": "trailing whitespace only"
+    }
+  }
+}

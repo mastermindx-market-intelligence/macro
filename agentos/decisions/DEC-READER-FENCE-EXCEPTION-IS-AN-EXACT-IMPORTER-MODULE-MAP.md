@@ -18,7 +18,8 @@ answer: >
 rationale: >
   The fence exists to keep the Reader a package-and-tests-only surface, and an exact importer->module map
   preserves that purpose while making the exception readable in one place: the set of legal importers is a
-  literal dict, so a NEW importer of either Reader module and ANY importer of `live_window_read` still fail.
+  literal dict, so a new importer outside the existing package/test roots fails unless its exact map entry
+  permits that module. No external importer of `live_window_read` is admitted by the exception.
   The design's own shape decides which module may be excepted — the Steward needs the composition entry
   point (`owner_read_resource`), not the read module (`live_window_read`) — so the exception is narrower than
   the seam it serves. An explicit map also keeps the architecture question visible to the next reader, where
@@ -44,7 +45,7 @@ alternatives:
       point to keep in step and a new surface for the fence to have to reason about.
 evidence:
   - "Mastermind #758, OPEN/DRAFT/HOLD-FOR-SOL at head 55800d57f42f73a6c093e1432da16b78e3d2ab83 (read 2026-09-17 with `gh pr view 758 -R mastermindx-market-intelligence/Mastermind --json state,isDraft,headRefOid,mergeCommit,title`), chain 34f1be5f -> 4021683f -> 55800d57, base e878878c."
-  - "At 55800d57, `gh api -H 'Accept: application/vnd.github.raw' repos/.../contents/tests/test_mastermind_window_reader_static_fences.py?ref=55800d57...`: `EXTERNAL_IMPORTER_EXCEPTIONS` at :31-38 maps exactly those two importer paths, each to the single-element frozenset `{integrations.mastermind_window_reader.owner_read_resource}`; the fenced `modules` set at :42-45 still holds BOTH `...live_window_read` and `...owner_read_resource`; `allowed_roots` at :48-51 is unchanged; the exception is applied only after the package/test root check, so it can never re-permit a package-internal file."
+  - "At 55800d57, `gh api -H 'Accept: application/vnd.github.raw' repos/.../contents/tests/test_mastermind_window_reader_static_fences.py?ref=55800d57...`: `EXTERNAL_IMPORTER_EXCEPTIONS` at :31-38 maps exactly those two importer paths, each to the single-element frozenset `{integrations.mastermind_window_reader.owner_read_resource}`; the fenced `modules` set at :42-45 still holds BOTH `...live_window_read` and `...owner_read_resource`; `allowed_roots` at :48-51 is unchanged; the exception is applied only after the package/test root check; package-internal and package-test files remain skipped by that unchanged root check."
   - "Patch sha256 e6faf8d6b505304a…; RED 1 failed with exactly two offenders -> GREEN; mutants M1-M4 killed (child-session receipts)."
   - "Hosted required `test` run 35221207639 SUCCESS; FULL non-author re-review APPROVE, record sha256 bc2d3a054d6b5797… (child-session receipts)."
   - "Sol scope ruling edge 1789644750.659619 authorized exactly this exception shape (child-session receipt)."
@@ -56,6 +57,13 @@ reversibility: easy
 decided_by: ceo-sol
 decided_at: 2026-09-17
 ---
+
+## Dated source decision
+
+This is the 2026-09-17 decision and its cited source evidence. PR status, installation and permission
+claims below refer to that snapshot. Current protected source and the current operation govern any
+future action; this record does not issue a present-day release or enrollment grant.
+
 
 ## The exception, exactly
 
@@ -79,8 +87,11 @@ therefore newly legal, and both of them are named files rather than a package, a
 
 - Any importer of `integrations.mastermind_window_reader.live_window_read` outside the package and its tests
   — the exception map names only `owner_read_resource`, so the read module keeps its original closure.
-- Any third file importing either Reader module: a new importer simply has no entry in the map.
-- Any package-internal or package-test file: the `allowed_roots` branch runs first and is unchanged.
+- Any third file outside the existing allowed package/test roots importing either Reader module:
+  a new external importer has no entry in the map.
+
+Package-internal and package-test files are not refused by this exception map: the unchanged
+`allowed_roots` branch skips them before the external-importer map is consulted.
 
 ## Known blindness, carried as awareness rather than repaired
 
@@ -91,6 +102,7 @@ piece of work with its own carrier.
 
 ## What is NOT claimed
 
-- #758 remains DRAFT/HOLD-FOR-SOL. This decision records the fence exception's shape, not a merge, a
+- As observed on 2026-09-17, #758 was DRAFT/HOLD-FOR-SOL. This decision records the fence exception's
+  shape at that source snapshot, not a current merge status, a
   browser/host binding, or any production behaviour: browser/host binding is a separate gate, and no
   enrollment, grant, #714 activation or production claim is made here.

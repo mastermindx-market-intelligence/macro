@@ -22,15 +22,20 @@ What is pinned here, and why each one is worth a test:
 """
 from __future__ import annotations
 
+import datetime as dt
 import json
 import os
 import re
 import shutil
 import subprocess
 import sys
+import threading
 from pathlib import Path
 
 import pytest
+import yaml
+
+from scripts import agentos
 
 REPO = Path(__file__).resolve().parent.parent
 STORE = REPO / "agentos"
@@ -614,6 +619,17 @@ def test_readiness_states_explain_graph_and_authored_progress(
         parent.read_text(encoding="utf-8"),
         count=1,
     )
+    # 2026-10-05 regold: the D2C wave itself is now authored in_progress (delivered on
+    # PR #8432, Sol-held), and an in_progress wave outranks a blocked parent in
+    # _reason_for_wave — so the wave status is synthesized back to todo in the same
+    # fixture copy. The blocked-parent exemplar rides neither live status any more.
+    parent_text, synthesized = re.subn(
+        r"(?m)^(  - id: D2C\n    title: [^\n]*\n    status: )\S+",
+        r"\1todo",
+        parent_text,
+        count=1,
+    )
+    assert synthesized == 1, "D2C wave block not found in the fixture copy"
     parent.write_text(parent_text, encoding="utf-8")
 
     out = tmp_path / "state.json"
@@ -637,9 +653,10 @@ def test_readiness_states_explain_graph_and_authored_progress(
     assert waiting["reason_code"] == "unmet_dependencies"
     assert waiting["unmet_dependencies"] == ["WS:PROPHET-US-ENTRY-TIMING#W1"]
 
-    # D2C is the current unfinished authored wave; the former TRANSMISSION wave no
-    # longer exists by design (folded to the completed TRANSMISSION-FOLD), so the
-    # blocked-parent exemplar rides D2C rather than resurrecting a dead wave id.
+    # D2C (no declared wave dependencies) carries the blocked-parent exemplar; the
+    # former TRANSMISSION wave no longer exists by design (folded to the completed
+    # TRANSMISSION-FOLD), and both the parent and the wave status are synthesized
+    # above, so this assertion rides no live authored status.
     parent_blocked = records[("GMI-THEME-GRAPH", "D2C")]
     assert parent_blocked["state"] == "blocked"
     assert parent_blocked["reason_code"] == "workstream_blocked"
@@ -747,19 +764,27 @@ def test_readiness_maps_every_authored_status_and_keeps_unknown_fail_soft() -> N
         )
 
 
-def test_phase2b_closeout_makes_w4_eligible_without_starting_it(
+def test_frozen_phase2b_closeout_makes_w4_eligible_without_starting_it(
     store: Path, builds: Path, tmp_path: Path
 ) -> None:
-    """The deployed E2E closes W2B; it does not silently begin the hook wave."""
+    """A frozen Phase 2b fixture makes unstarted W4 eligible without authoring it."""
     agentos = _load_cli()
-    authored, _ = agentos.parse_record(
-        store / "workstreams" / "WS-AGENT-OS.md"
-    )
+    path = store / "workstreams" / "WS-AGENT-OS.md"
+    authored, body = agentos.parse_record(path)
     waves = {wave["id"]: wave for wave in authored["waves"]}
     assert waves["W2B"]["status"] == "done"
     assert waves["W2B"]["pr"] == 5649
-    assert waves["W4"]["status"] == "todo"
     assert waves["W4"]["depends_on"] == ["W1", "W2", "W2B"]
+    # The live program may advance through W4 and close. Freeze only this test's
+    # pre-W4 state, retaining the accepted dependency graph and W2B receipt.
+    authored["status"] = "active"
+    authored.pop("claim", None)
+    waves["W4"]["status"] = "todo"
+    waves["W4"].pop("pr", None)
+    waves["W4"].pop("next_action", None)
+    path.write_text("---\n" + yaml.safe_dump(authored, sort_keys=False)
+                    + "---\n" + body, encoding="utf-8")
+    before = path.read_bytes()
 
     output = tmp_path / "closed.json"
     assert _status(
@@ -778,6 +803,7 @@ def test_phase2b_closeout_makes_w4_eligible_without_starting_it(
         readiness[("AGENT-OS", "W4")]["reason_code"],
         readiness[("AGENT-OS", "W4")]["unmet_dependencies"],
     ) == ("ready", "dependencies_satisfied", [])
+    assert path.read_bytes() == before
 
 
 def test_terminal_records_keep_dependencies_but_report_no_unmet_dependencies() -> None:
@@ -1063,6 +1089,174 @@ def _load_cli():
     return module
 
 
+# -------------------------------------------------- bounded uncommitted visibility
+
+
+def test_status_worktree_scan_checks_small_sets_without_degradation(monkeypatch):
+    """A one-worktree nightly must not publish an avoidable 'scan skipped' gap."""
+    agentos = _load_cli()
+    from scripts import audit_stranded_work as stranded
+
+    monkeypatch.setattr(stranded, "worktree_branches", lambda: {"main": "/tmp/wt-main"})
+    calls = []
+
+    def dirty(path, *, timeout=None):
+        calls.append((path, timeout))
+        return ["engine/manual_fix.py"]
+
+    monkeypatch.setattr(stranded, "dirty_source_paths", dirty)
+    degraded = agentos.Degraded()
+    result = agentos.scan_worktrees(degraded, auto_small=True)
+
+    assert result["uncommitted"] == [{"branch": "main", "source_files": 1}]
+    assert degraded.items == []
+    assert calls == [("/tmp/wt-main", agentos.UNCOMMITTED_STATUS_TIMEOUT_SECONDS)]
+
+
+def test_status_worktree_auto_scan_stays_bounded_on_large_hosts(monkeypatch):
+    """The 276-worktree host failure mode stays opt-in rather than slowing every brief."""
+    agentos = _load_cli()
+    from scripts import audit_stranded_work as stranded
+
+    count = agentos.STATUS_AUTO_UNCOMMITTED_WORKTREE_LIMIT + 1
+    branches = {f"branch-{i}": f"/tmp/wt-{i}" for i in range(count)}
+    monkeypatch.setattr(stranded, "worktree_branches", lambda: branches)
+
+    def must_not_run(*_args, **_kwargs):
+        raise AssertionError("large default scan must not call git status")
+
+    monkeypatch.setattr(stranded, "dirty_source_paths", must_not_run)
+    degraded = agentos.Degraded()
+    result = agentos.scan_worktrees(degraded, auto_small=True)
+
+    assert result["uncommitted"] == []
+    assert any(f"skipped over {count} worktrees" in item for item in degraded.items)
+
+
+def test_brief_style_default_does_not_auto_scan_even_one_worktree(monkeypatch):
+    """Executive/CEO brief keeps its cheap default and frozen read budget."""
+    agentos = _load_cli()
+    from scripts import audit_stranded_work as stranded
+
+    monkeypatch.setattr(stranded, "worktree_branches", lambda: {"main": "/tmp/wt-main"})
+
+    def must_not_run(*_args, **_kwargs):
+        raise AssertionError("brief-style default must not call git status")
+
+    monkeypatch.setattr(stranded, "dirty_source_paths", must_not_run)
+    degraded = agentos.Degraded()
+    result = agentos.scan_worktrees(degraded)
+
+    assert result["uncommitted"] == []
+    assert any("skipped over 1 worktrees" in item for item in degraded.items)
+
+
+def test_scan_uncommitted_force_flag_still_scans_large_hosts(monkeypatch):
+    agentos = _load_cli()
+    from scripts import audit_stranded_work as stranded
+
+    count = agentos.STATUS_AUTO_UNCOMMITTED_WORKTREE_LIMIT + 1
+    branches = {f"branch-{i}": f"/tmp/wt-{i}" for i in range(count)}
+    monkeypatch.setattr(stranded, "worktree_branches", lambda: branches)
+    calls = []
+
+    def clean(path, *, timeout=None):
+        calls.append((path, timeout))
+        return []
+
+    monkeypatch.setattr(stranded, "dirty_source_paths", clean)
+    degraded = agentos.Degraded()
+    result = agentos.scan_worktrees(degraded, deep=True)
+
+    assert result["uncommitted"] == []
+    assert len(calls) == count
+    assert {timeout for _path, timeout in calls} == {agentos.UNCOMMITTED_STATUS_TIMEOUT_SECONDS}
+    assert degraded.items == []
+
+
+def test_worktree_scan_failure_is_degraded_not_silently_clean(monkeypatch):
+    """A failed git status cannot be indistinguishable from a clean worktree."""
+    agentos = _load_cli()
+    from scripts import audit_stranded_work as stranded
+
+    monkeypatch.setattr(stranded, "worktree_branches", lambda: {"main": "/tmp/wt-main"})
+
+    def timeout(_path, *, timeout=None):
+        raise subprocess.TimeoutExpired(["git", "status"], timeout or 0)
+
+    monkeypatch.setattr(stranded, "dirty_source_paths", timeout)
+    degraded = agentos.Degraded()
+    result = agentos.scan_worktrees(degraded, auto_small=True)
+
+    assert result["uncommitted"] == []
+    assert any(
+        "uncommitted-work scan failed for 'main'" in item and "TimeoutExpired" in item
+        for item in degraded.items
+    )
+
+
+def test_stranded_work_dirty_status_accepts_a_caller_timeout(monkeypatch):
+    """Agent OS may bound git status without changing the standalone audit defaults."""
+    from scripts import audit_stranded_work as stranded
+
+    calls = []
+
+    def fake_git(*args, cwd=stranded.REPO, timeout=None):
+        calls.append((args, str(cwd), timeout))
+        return subprocess.CompletedProcess(["git", *args], 0, stdout=" M engine/fix.py\n", stderr="")
+
+    monkeypatch.setattr(stranded, "git", fake_git)
+    assert stranded.dirty_source_paths("/tmp/wt-main", timeout=2.5) == ["engine/fix.py"]
+    assert calls == [(('status', '--porcelain'), '/tmp/wt-main', 2.5)]
+
+
+def test_stranded_work_dirty_status_rejects_nonzero_git(monkeypatch):
+    from scripts import audit_stranded_work as stranded
+
+    monkeypatch.setattr(
+        stranded,
+        "git",
+        lambda *args, **kwargs: subprocess.CompletedProcess(
+            ["git", *args], 128, stdout="", stderr="fatal: status unavailable"
+        ),
+    )
+    with pytest.raises(RuntimeError, match="git status failed"):
+        stranded.dirty_source_paths("/tmp/wt-main")
+
+
+def test_stranded_work_worktree_list_rejects_nonzero_git(monkeypatch):
+    from scripts import audit_stranded_work as stranded
+
+    monkeypatch.setattr(
+        stranded,
+        "git",
+        lambda *args, **kwargs: subprocess.CompletedProcess(
+            ["git", *args], 128, stdout="", stderr="fatal: worktree list unavailable"
+        ),
+    )
+    with pytest.raises(RuntimeError, match="git worktree list failed"):
+        stranded.worktree_branches()
+
+
+def test_stranded_work_filters_generated_governance_views(monkeypatch):
+    """Nightly-generated advisory docs must not report themselves as stranded hand-work."""
+    from scripts import audit_stranded_work as stranded
+
+    status = """ M docs/ACTIVE_BUILD_MAP.md
+ M docs/AGENT_OS_STATE.md
+ M docs/PROJECT_ACTIVE_BUILD_MAP.md
+ M engine/manual_fix.py
+"""
+    monkeypatch.setattr(
+        stranded,
+        "git",
+        lambda *args, **kwargs: subprocess.CompletedProcess(
+            ["git", *args], 0, stdout=status, stderr=""
+        ),
+    )
+    assert stranded.dirty_source_paths("/tmp/wt-main") == ["engine/manual_fix.py"]
+
+
 def test_recommendation_never_marks_an_option_it_rejects() -> None:
     """The arrow is what the CEO acts on, so a wrong arrow is worse than none.
 
@@ -1118,3 +1312,221 @@ def test_ceo_brief_envelope_keys_match_the_spec(store: Path, builds: Path) -> No
     for item in payload["blocked"]:
         assert "record_stale_days" in item, "blocked must not claim an unmeasured block age"
         assert "blocked_days" not in item
+
+
+# Bounded Git-date acquisition: these tests run in this existing CI-owned suite.
+
+def batch_reader():
+    reader = getattr(agentos, "git_dates_batch", None)
+    assert callable(reader), "bounded canonical git date acquisition is absent"
+    return reader
+
+
+def _history_payload(rows):
+    return "".join(
+        f"\x1e{date}\0\n{rel}\0"
+        for date, rel in rows
+    )
+
+
+def test_batched_dates_use_two_history_walks_and_preserve_input_order(monkeypatch):
+    reader = batch_reader()
+    paths = [
+        agentos._ROOT / "agentos" / "workstreams" / name
+        for name in ("WS-ZETA.md", "WS-ALPHA.md", "WS-BETA.md")
+    ]
+    rels = [path.relative_to(agentos._ROOT).as_posix() for path in paths]
+    calls = []
+
+    def git(*args, **_kwargs):
+        calls.append(args)
+        assert args[-4] == "--"
+        requested = list(args[-3:])
+        assert requested == rels
+        if "--diff-filter=A" in args:
+            return _history_payload([
+                ("2026-03-03", rels[0]),
+                ("2026-02-02", rels[1]),
+                ("2026-01-01", rels[0]),
+            ])
+        return _history_payload([
+            ("2026-04-04", rels[1]),
+            ("2026-03-03", rels[0]),
+            ("2026-02-02", rels[2]),
+            ("2026-01-01", rels[0]),
+        ])
+
+    monkeypatch.setattr(agentos, "_git", git)
+    result = reader(paths)
+
+    assert list(result) == paths
+    assert result[paths[0]] == ("2026-01-01", "2026-03-03")
+    assert result[paths[1]] == ("2026-02-02", "2026-04-04")
+    assert result[paths[2]] == (None, "2026-02-02")
+    assert len(calls) == 2
+
+
+def test_submission_consumes_inputs_in_bounded_path_batches(monkeypatch):
+    reader = batch_reader()
+    monkeypatch.setattr(agentos, "_GIT_DATE_PATH_BATCH_SIZE", 4)
+    yielded = []
+    calls = []
+
+    def paths():
+        for i in range(10):
+            path = agentos._ROOT / "agentos" / "workstreams" / f"WS-{i}.md"
+            yielded.append(path)
+            yield path
+
+    def git(*args, **_kwargs):
+        calls.append(args)
+        if len(calls) == 1:
+            assert len(yielded) == 4
+        requested = list(args[args.index("--") + 1:])
+        return _history_payload([
+            ("2026-01-01", rel)
+            for rel in requested
+        ])
+
+    monkeypatch.setattr(agentos, "_git", git)
+    result = reader(paths())
+
+    assert len(result) == 10
+    assert len(calls) == 6  # two Git walks for each of three bounded path batches
+
+
+def test_empty_input_does_not_invoke_git(monkeypatch):
+    reader = batch_reader()
+
+    def forbidden(*_args, **_kwargs):
+        raise AssertionError("empty store must not invoke Git")
+
+    monkeypatch.setattr(agentos, "_git", forbidden)
+    assert reader([]) == {}
+
+
+def test_repeat_read_observes_new_dates_without_a_persistent_cache(monkeypatch):
+    reader = batch_reader()
+    path = agentos._ROOT / "agentos" / "workstreams" / "WS-ONE.md"
+    rel = path.relative_to(agentos._ROOT).as_posix()
+    answer = [("2026-01-01", "2026-02-02")]
+
+    def git(*args, **_kwargs):
+        created, updated = answer[0]
+        date = created if "--diff-filter=A" in args else updated
+        return _history_payload([(date, rel)]) if date else ""
+
+    monkeypatch.setattr(agentos, "_git", git)
+    assert reader([path]) == {path: answer[0]}
+    answer[0] = ("2026-03-03", "2026-04-04")
+    assert reader([path]) == {path: answer[0]}
+
+
+def test_batched_git_failure_falls_back_to_existing_per_path_oracle(monkeypatch):
+    reader = batch_reader()
+    paths = [
+        agentos._ROOT / "agentos" / "workstreams" / f"WS-{i}.md"
+        for i in range(3)
+    ]
+    monkeypatch.setattr(agentos, "_git", lambda *_args, **_kwargs: None)
+    calls = []
+
+    def dates(path):
+        calls.append(path)
+        return "2026-01-01", "2026-02-02"
+
+    monkeypatch.setattr(agentos, "git_dates", dates)
+    assert reader(paths) == {
+        path: ("2026-01-01", "2026-02-02")
+        for path in paths
+    }
+    assert calls == paths
+
+
+def test_build_records_uses_one_batch_and_keeps_sorted_workstream_output(tmp_path, monkeypatch):
+    batch_reader()
+    store = agentos.Store(tmp_path / "agentos")
+    for key in ("ZETA", "ALPHA"):
+        store.records[f"WS/{key}"] = {
+            "key": key, "title": key, "status": "proposed", "waves": [],
+        }
+        store.paths[f"WS/{key}"] = tmp_path / f"WS-{key}.md"
+    calls = []
+
+    def batch(paths):
+        paths = list(paths)
+        calls.append(paths)
+        return {path: ("2026-01-01", "2026-02-02") for path in paths}
+
+    monkeypatch.setattr(agentos, "git_dates_batch", batch)
+    rows, _ = agentos.build_records(
+        store,
+        now=dt.datetime(2026, 9, 7, tzinfo=dt.timezone.utc),
+        builds=None,
+        p0_status=None,
+        worktrees={"branches": []},
+    )
+    assert len(calls) == 1
+    assert calls[0] == [store.paths["WS/ALPHA"], store.paths["WS/ZETA"]]
+    assert [row["key"] for row in rows] == ["ALPHA", "ZETA"]
+    assert all(
+        row["created"] == "2026-01-01" and row["updated"] == "2026-02-02"
+        for row in rows
+    )
+
+
+@pytest.fixture
+def history(tmp_path, monkeypatch):
+    root = tmp_path / "repo"
+    root.mkdir()
+    def git(*args, date=None):
+        env = dict(os.environ, GIT_AUTHOR_NAME="Fixture", GIT_COMMITTER_NAME="Fixture",
+            GIT_AUTHOR_EMAIL="fixture@example.test", GIT_COMMITTER_EMAIL="fixture@example.test")
+        if date:
+            env.update(GIT_AUTHOR_DATE=date + "T12:00:00+0000", GIT_COMMITTER_DATE=date + "T12:00:00+0000")
+        return subprocess.check_output(["git", "-C", str(root), *args], env=env,
+            text=True, stderr=subprocess.DEVNULL, timeout=10)
+    git("init", "-q")
+    git("config", "core.hooksPath", str(tmp_path / "no-hooks"))
+    first, renamed, other = [root / name for name in ("old.md", "renamed.md", "other.md")]
+    first.write_text("original\n")
+    other.write_text("other\n")
+    git("add", "--", ".")
+    git("commit", "-qm", "initial", date="2026-01-01")
+    first.write_text("original\nchanged\n")
+    git("add", "--", ".")
+    git("commit", "-qm", "modify", date="2026-02-02")
+    git("mv", "old.md", "renamed.md")
+    git("commit", "-qm", "rename", date="2026-03-03")
+    first.write_text("readded\n")
+    git("add", "--", "old.md")
+    git("commit", "-qm", "readd", date="2026-04-04")
+    (root / "untracked.md").write_text("untracked\n")
+    monkeypatch.setattr(agentos, "_ROOT", root)
+    return root, git
+
+
+@pytest.mark.parametrize("name", ["old.md", "renamed.md", "other.md", "untracked.md", "absent.md"])
+def test_real_git_rename_readd_and_missing_paths_match_canonical_dates(history, name):
+    root, _ = history
+    path = root / name
+    expected = agentos.git_dates(path)
+    assert batch_reader()([path])[path] == expected
+    if name == "old.md":
+        assert expected == ("2026-01-01", "2026-04-04")
+    elif name == "other.md":
+        assert expected == ("2026-01-01", "2026-01-01")
+    elif name in {"untracked.md", "absent.md"}:
+        assert expected == (None, None)
+
+
+def test_git_read_failures_keep_existing_unknown_semantics(monkeypatch):
+    monkeypatch.setattr(agentos, "_git", lambda *args, **kwargs: None)
+    paths = [agentos._ROOT / f"WS-{i}.md" for i in range(9)]
+    assert batch_reader()(paths) == {path: (None, None) for path in paths}
+
+
+def test_path_outside_repository_does_not_gain_history(tmp_path):
+    path = tmp_path / "outside.md"
+    path.write_text("not an organizational record")
+    assert batch_reader()([path]) == {path: (None, None)}

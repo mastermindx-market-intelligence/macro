@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-05-06T20:08:07Z",
+ "accession": "0001376474-26-000348",
+ "cik": "0000724910",
+ "doc_byte_length": 875372,
+ "doc_sha256": "48742aff3518665567272323aaed7d174bdfaef734004f4ec91b485e3ea9cfba",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-05-06",
+ "form": "10-K",
+ "period_of_report": "2026-03-31",
+ "primary_document": "nvec-20260331_10k.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 76945,
+  "byte_start": 76667,
+  "normalized": "We rely on distributors who stock and resell our products in more than 75 countries. Distributors of our products include America II Electronics, Inc., Angst+Pfister Sensors and Power, and Digi-Key Corporation. Our distributor agreements generally renew annually.",
+  "normalized_sha256": "6ac77f918ce465187ecc79c71648b888fa0330f9f43d25ee4a76c4c05aa2e2ee",
+  "raw": "We rely on distributors who stock and resell our products in more than 75&#160;countries. Distributors of our products include America&#160;II Electronics,&#160;Inc., Angst+Pfister Sensors and Power, and Digi-Key Corporation. Our distributor agreements generally renew annually.",
+  "raw_sha256": "2269a2e96e77b01447dcdce7a91f55a13dcf6a4450ca4d8aaec0dc9e09750c69"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/724910/000137647426000348/nvec-20260331_10k.htm",
+ "xbrl_contexts": []
+}

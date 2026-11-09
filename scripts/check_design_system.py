@@ -108,7 +108,28 @@ BANNED_VOCABULARY_SEED: tuple[str, ...] = (
 # --- rule patterns ----------------------------------------------------------
 
 HEX_RE = re.compile(r"#(?:[0-9a-fA-F]{3,4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})\b")
-FUNC_COLOR_RE = re.compile(r"\b(?:rgba?|hsla?)\s*\(")
+# Colour FUNCTIONS are colour decisions, CSS Color 4/5 included — a
+# `color-mix(in srgb, var(--up) 13%, transparent)` picks a colour exactly as
+# `rgba(...)` does, and the mix belongs in theme.css as a token, not inline
+# (measured gap: PR #7554's review, 2026-09-20 — a color-mix on a changed line
+# reported blocking=0 because only rgb/hsl were covered).  Three shapes:
+#   - unambiguous names (color-mix, hwb, oklab, oklch, light-dark, device-cmyk)
+#     match on the name plus the IMMEDIATE `(` a CSS function token requires,
+#     so prose like "light-dark (two art directions)" cannot fire;
+#   - `lab(`/`lch(` are real identifiers elsewhere in the estate (a JS label
+#     helper `lab(lo, ...)` in options.html.j2; prose "factor/index lab
+#     (factors ..." in theme.css), so they additionally require a CSS colour
+#     first argument: a number/percentage, `from`, `none`, `var(` or `calc(`;
+#   - bare `color(` is everyday prose ("verdict color (--ms-c ...)"), so it
+#     requires a predefined colourspace ident or relative-colour `from`.
+# The rgb/hsl alternative keeps its historical `\s*` verbatim so the legacy
+# census is byte-stable.
+FUNC_COLOR_RE = re.compile(
+    r"\b(?:rgba?|hsla?)\s*\("
+    r"|\b(?:color-mix|hwb|oklab|oklch|light-dark|device-cmyk)\("
+    r"|\b(?:lab|lch)\(\s*(?:from\b|none\b|var\(|calc\(|[+-]?\.?\d)"
+    r"|\bcolor\(\s*(?:from\b|srgb-linear\b|srgb\b|display-p3\b|a98-rgb\b"
+    r"|prophoto-rgb\b|rec2020\b|xyz(?:-d50|-d65)?\b)")
 FONT_FAMILY_RE = re.compile(r"font-family\s*:\s*([^;}\n]+)")
 RADIUS_RE = re.compile(r"border-radius\s*:\s*([^;}\n]+)")
 CUSTOM_PROP_RE = re.compile(r"(--[A-Za-z0-9_-]+)\s*:\s*([^;}\n]+)")
