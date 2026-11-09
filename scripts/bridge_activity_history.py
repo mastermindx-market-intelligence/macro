@@ -21,6 +21,12 @@ Run:
   python3 scripts/bridge_activity_history.py --recorded-at 2026-10-21T23:00:00Z \
       --use-ruling research/theme_graph/issuer_disclosures_20261011/C01_GRAPH_MEMBERSHIP_USE_RULING.json
 
+A relative ``--use-ruling`` resolves against the repo root, never the cwd, and the
+bridge receipt row records it repo-relative. A ratified proposal whose target is not
+a ``micro_theme``/``sub_theme`` crosswalk node is REFUSED
+``ACTIVITY_TARGET_TIER_NOT_ADMITTED``; a rerun that differs from the event on file
+only in ``--recorded-at`` is SKIPPED ``ALREADY_BRIDGED``.
+
 Every refusal is typed and printed as one ``REFUSED: <code>: <detail>`` line with
 exit 2 — never a traceback. A per-proposal REFUSED outcome prints the plan and
 exits 3, writing nothing in that run.
@@ -40,8 +46,18 @@ ROOT = Path(__file__).resolve().parent.parent
 
 
 def _default_ruling_paths() -> list[str]:
-    """Sorted ruling revisions at the default glob under the repo root (absolute)."""
-    return sorted(str(p) for p in ROOT.glob(bridge.DEFAULT_USE_RULING_GLOB))
+    """Sorted ruling revisions at the default glob, as repo-relative POSIX paths.
+
+    Relative so the bridge receipt row records a path that names the artifact on
+    every checkout (``use_ruling_path``), never this host's absolute location."""
+    return sorted(p.relative_to(ROOT).as_posix()
+                  for p in ROOT.glob(bridge.DEFAULT_USE_RULING_GLOB))
+
+
+def _target_tiers() -> dict[str, str]:
+    """Node tiers from the crosswalk: the bridge never appends an event whose target
+    is not a micro/sub theme (the loaders would refuse the whole ledger for it)."""
+    return bridge.activity_target_tiers_from_crosswalk_path(ROOT / bridge.DEFAULT_CROSSWALK_PATH)
 
 
 def _cmd(args: argparse.Namespace) -> int:
@@ -59,7 +75,7 @@ def _cmd(args: argparse.Namespace) -> int:
     plan = bridge.plan_bridge(
         ledger_rows, receipts_dir=receipts_dir, ruling_paths=ruling_paths,
         recorded_at=args.recorded_at, existing_events=existing_events,
-        allow_fixture=False)
+        allow_fixture=False, target_tiers=_target_tiers, root=ROOT)
     refused = any(d["outcome"] == "REFUSED" for d in plan)
     if args.dry_run or refused:
         counts = bridge.plan_counts(
@@ -80,8 +96,9 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--receipts-dir", default=None,
                         help=f"curation receipt directory (default: {bridge.DEFAULT_RECEIPTS_DIR})")
     parser.add_argument("--use-ruling", action="append", default=None, metavar="PATH",
-                        help="Chairman ruling revision file; repeatable (default: sorted glob "
-                             f"{bridge.DEFAULT_USE_RULING_GLOB})")
+                        help="Chairman ruling revision file, a relative path resolving "
+                             "against the repo root (never the cwd); repeatable (default: "
+                             f"sorted glob {bridge.DEFAULT_USE_RULING_GLOB})")
     parser.add_argument("--recorded-at", required=True, help="zoned ISO-8601 instant")
     parser.add_argument("--events-out", default=None,
                         help=f"default: {bridge.DEFAULT_EVENTS_PATH}")

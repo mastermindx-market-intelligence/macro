@@ -71,8 +71,13 @@ def test_shipped_caddyfile_line_numbers_match_known_blocks() -> None:
     cache selector adds eleven lines, moving it to line 860. The trusted
     Baskets moved-stub redirect matcher adds ten lines before the five fixed
     rewrites: those move to 360, 369, 402, 440 and 870. Movers adds nine
-    more lines before those blocks: 369, 378, 411, 449 and 879. The two peer-stamped
-    lines (121, 146), proxy COUNT (7), every classification and topology guard
+    more lines before those blocks: 369, 378, 411, 449 and 879. The X-guerrilla
+    bio-ref matcher (@x_ref, /x/<child-id> 301 → /?ref=<id>, bio policy
+    BL-1…BL-7) adds seventeen more lines before those blocks: those move to
+    386, 395, 428, 466 and 896. The @x_ref double-dot guard
+    (`not path *..*`) adds one more: 387, 396, 429, 467 and 897. Public-www
+    TLS certificate comments then move only that final proxy to 901. The two
+    peer-stamped lines (121, 146), proxy COUNT (7), every classification and topology guard
     are unchanged. If you find yourself changing a count or classification
     here, you almost certainly widened the static-access boundary — read
     the @open_html route block commentary before doing that."""
@@ -81,11 +86,11 @@ def test_shipped_caddyfile_line_numbers_match_known_blocks() -> None:
     assert proxies == {
         121: SAFE_PEER_STAMPED,
         146: SAFE_PEER_STAMPED,
-        369: SAFE_FIXED_REWRITE,
-        378: SAFE_FIXED_REWRITE,
-        411: SAFE_FIXED_REWRITE,
-        449: SAFE_FIXED_REWRITE,
-        879: SAFE_FIXED_REWRITE,
+        387: SAFE_FIXED_REWRITE,
+        396: SAFE_FIXED_REWRITE,
+        429: SAFE_FIXED_REWRITE,
+        467: SAFE_FIXED_REWRITE,
+        901: SAFE_FIXED_REWRITE,
     }
 
 

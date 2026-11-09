@@ -1,6 +1,6 @@
 {
   "as_of_trade_date": "06112026",
-  "freshness": "fresh",
+  "freshness": "slow",
   "bellwethers": [
     {
       "ticker": "^HSI",
@@ -364,8 +364,8 @@
     }
   ],
   "banner": null,
-  "cbbc_total_contracts": 34941,
-  "dw_total_contracts": 40864,
+  "cbbc_total_contracts": 29073,
+  "dw_total_contracts": 34045,
   "sld_call_levels_in_store": 5470,
   "sld_max_issue_date": "2026-11-06",
   "sld_freshness": "fresh",
