@@ -3178,7 +3178,7 @@ with sync_playwright() as pw:
         with context(width,theme,language,reduced_motion='reduce' if width==320 else 'no-preference') as c:
             p=page_for(c,'gmi.html#scope=core&lens=chain')
             field=p.locator('[data-topic-search]');dialog=p.locator('[data-browse-dialog]');opener=p.locator('[data-browse-open]')
-            narrow=width<=900
+            narrow=width<=820
             if narrow:opener.click();expect(dialog).to_be_visible()
             data=json.loads(p.locator('#gmi-topic-data').text_content())
             default_id=p.locator('[data-gmi-explorer]').get_attribute('data-default-theme')
@@ -3313,6 +3313,263 @@ with sync_playwright() as pw:
         for language in ('en','zh'):
             theme='dark' if (width,language) in ((390,'en'),(320,'zh')) else 'light'
             check(f'primary-escape-{width}-{language}',lambda w=width,l=language,t=theme:primary_escape_contract(w,l,t))
+
+
+    def browse_focus_hash(p,fragment):
+        p.evaluate("""fragment=>new Promise(resolve=>{
+          if(location.hash==='#'+fragment){resolve();return;}
+          addEventListener('hashchange',()=>requestAnimationFrame(()=>resolve()),{once:true});
+          location.hash=fragment;
+        })""",fragment)
+
+    def browse_focus_page(c,open_browse=True):
+        """Instrument owned hides at mutation time on the actual generated primary Browse."""
+        p=page_for(c,'gmi.html')
+        data=json.loads(p.locator('#gmi-topic-data').text_content())
+        default=p.locator('[data-gmi-explorer]').get_attribute('data-default-theme')
+        params={'theme':default,'lens':'chain','gmi_return':'gmi-index.html#q=HBM&lens=coverage','fixture_key':'browse-focus'}
+        fixture={'params':params,'a':urlencode(params),'b':urlencode({**params,'q':'zz-no-match-primary-focus'}),
+                 'extended':urlencode({**params,'scope':'extended'}),'default':default,'topics':data['topics']}
+        browse_focus_hash(p,fixture['a'])
+        narrow=p.evaluate('matchMedia("(max-width:820px)").matches');fixture['narrow']=narrow
+        if narrow and open_browse:
+            p.locator('[data-browse-open]').click()
+            expect(p.locator('[data-browse-dialog]')).to_be_visible()
+        p.evaluate("""()=>{
+          const search=document.querySelector('[data-topic-search]'),results=document.querySelector('[data-topic-results]');
+          const empty=document.querySelector('[data-topic-no-results]'),dialog=document.querySelector('[data-browse-dialog]');
+          const s=window.__browseFocus={phase:'setup',ownedHides:[],events:[],writes:[],tracked:new Set(),
+            answer:document.querySelector('[data-topic-answer]'),browse:document.querySelector('[data-gmi-browse]')};
+          s.key=n=>{
+            if(!n)return null;
+            if(n===search)return 'search';
+            if(n===document.querySelector('[data-topic-category-filter]'))return 'category';
+            if(n===document.querySelector('[data-browse-close]'))return 'done';
+            if(n===document.querySelector('[data-browse-open]'))return 'opener';
+            if(n===document.querySelector('#gmi-topic-title'))return 'title';
+            if(n===document.querySelector('[data-topic-notice-reset]'))return 'answer-clear';
+            if(n===empty.querySelector('[data-topic-reset]'))return 'empty-clear';
+            if(n.matches?.('[data-topic-select]')&&results.contains(n))return 'row:'+n.getAttribute('data-topic-select');
+            return n.id||n.tagName;
+          };
+          const desc=Object.getOwnPropertyDescriptor(HTMLElement.prototype,'hidden');
+          Object.defineProperty(HTMLElement.prototype,'hidden',{...desc,set(value){
+            const managed=this===results||this===empty||this.matches?.('[data-topic-notice-region],[data-topic-notice-reset]')||
+              (this.hasAttribute('data-topic-select')&&results.contains(this));
+            if(managed){
+              const name=this===results?'results':this===empty?'empty':s.key(this),active=s.key(document.activeElement);
+              if(value===true&&this.contains(document.activeElement))s.ownedHides.push({phase:s.phase,node:name,active});
+              if(this===results||this===empty||s.tracked.has(this.getAttribute('data-topic-select')))
+                s.events.push({kind:'hidden',phase:s.phase,node:name,value,active});
+            }
+            desc.set.call(this,value);
+          }});
+          const focus=HTMLElement.prototype.focus;
+          HTMLElement.prototype.focus=function(options){
+            if(this===search||this===document.querySelector('[data-browse-close]')||
+               this===document.querySelector('[data-browse-open]')||this===document.querySelector('#gmi-topic-title'))
+              s.events.push({kind:'focus',phase:s.phase,target:s.key(this),before:s.key(document.activeElement),preventScroll:!!options?.preventScroll});
+            return focus.call(this,options);
+          };
+          for(const method of ['pushState','replaceState']){
+            const original=history[method].bind(history);
+            history[method]=function(...args){s.writes.push({phase:s.phase,method});return original(...args);};
+          }
+          s.read=()=>({
+            focus:s.key(document.activeElement),query:search.value,category:document.querySelector('[data-topic-category-filter]').value,
+            scope:document.querySelector('input[name="gmi-scope"]:checked').value,evidence:document.querySelector('[data-evidence-only]').checked,
+            visible:[...results.querySelectorAll('[data-topic-select]')].filter(n=>!n.hidden).map(n=>n.getAttribute('data-topic-select')),
+            resultsHidden:results.hidden,emptyHidden:empty.hidden,count:document.querySelector('[data-topic-count]').textContent,
+            title:document.querySelector('#gmi-topic-title').textContent,url:location.href,history_length:history.length,
+            dialogOpen:dialog.open,browseAtHome:document.querySelector('[data-browse-home]').contains(s.browse),
+            sameAnswer:s.answer===document.querySelector('[data-topic-answer]'),ownedHides:[...s.ownedHides],
+            writes:[...s.writes],events:[...s.events]
+          });
+        }""")
+        return p,fixture
+
+    def browse_focus_history(width,language,only=None):
+        with context(width,'dark' if width in (390,820) else 'light',language) as c:
+            p,f=browse_focus_page(c);field=p.locator('[data-topic-search]')
+            observed={'width':width,'language':language,'narrow':f['narrow'],'phases':[]}
+            report.setdefault('browse_focus_history',[]).append(observed)
+            def saved(phase):
+                v=p.evaluate('window.__browseFocus.read()');observed['phases'].append({'phase':phase,**v})
+                assert not v['ownedHides'],v['ownedHides'];return v
+            if only!='positive':
+                browse_focus_hash(p,f['b']);expect(p.locator('[data-topic-no-results]')).to_be_visible()
+                browse_focus_hash(p,f['a']);expect(p.locator('.gmi-topic-option:visible')).to_have_count(len(f['topics']))
+                length=p.evaluate('history.length')
+                if only!='empty':
+                    row=p.locator('[data-topic-results] [data-topic-select]').first;row.focus()
+                    row.evaluate("(n)=>window.__browseFocus.tracked.add(n.getAttribute('data-topic-select'))")
+                else:field.focus()
+                p.evaluate("window.__browseFocus.phase='back-result'")
+                p.go_back();expect(field).to_have_value('zz-no-match-primary-focus')
+                v=saved('back-result');expect(field).to_be_focused()
+                assert v['dialogOpen']==f['narrow'] and v['history_length']==length and not v['writes']
+                if only is None and (width,language) in ((390,'en'),(320,'zh')):
+                    path=args.out/f'browse-focus-recovered-{width}-{language}.png';p.screenshot(path=str(path),full_page=False)
+                    report['screenshots'].append(path.name)
+                if only=='result':return
+                clear=p.locator('[data-topic-no-results] [data-topic-reset]');clear.focus()
+                p.evaluate("window.__browseFocus.phase='forward-empty'")
+                p.go_forward();expect(field).to_have_value('')
+                v=saved('forward-empty');expect(field).to_be_focused()
+                assert v['dialogOpen']==f['narrow'] and v['history_length']==length and not v['writes']
+                assert parse_qs(urlsplit(p.url).fragment)=={k:[x] for k,x in f['params'].items()}
+                if only=='empty':return
+            # A focused core row disappears even though the positive-results container stays.
+            row=p.locator('[data-topic-results] [data-topic-select="'+f['default']+'"]')
+            row.focus();row.evaluate("(n)=>window.__browseFocus.tracked.add(n.getAttribute('data-topic-select'))")
+            p.evaluate("window.__browseFocus.phase='positive-to-positive'")
+            browse_focus_hash(p,f['extended'])
+            v=saved('positive-to-positive');expect(field).to_be_focused()
+            assert not v['resultsHidden'] and v['visible'] and f['default'] not in v['visible']
+            assert v['dialogOpen']==f['narrow'] and not v['writes']
+            if only=='positive':return
+            surviving=next(t for t in f['topics'] if t['id'] in v['visible'])
+            survivor=p.locator('[data-topic-results] [data-topic-select="'+surviving['id']+'"]');survivor.focus()
+            p.evaluate("window.__browseFocus.phase='surviving-row'")
+            browse_focus_hash(p,urlencode({**f['params'],'scope':'extended','q':surviving['en']}))
+            v=saved('surviving-row');expect(survivor).to_be_focused()
+            assert v['sameAnswer'] and not v['writes']
+            category=p.locator('[data-topic-category-filter]');category.focus()
+            p.evaluate("window.__browseFocus.phase='surviving-category'")
+            browse_focus_hash(p,f['a']);v=saved('surviving-category');expect(category).to_be_focused()
+            other=p.locator('[data-browse-close]') if f['narrow'] else p.locator('a.gmi-product-name')
+            other.focus();p.evaluate("window.__browseFocus.phase='unrelated-control'")
+            browse_focus_hash(p,f['b']);v=saved('unrelated-control');expect(other).to_be_focused()
+            assert v['dialogOpen']==f['narrow'] and not v['writes']
+            observed['pass']=True
+
+    def browse_focus_resets(width,language):
+        with context(width,'light',language,reduced_motion='reduce') as c:
+            p,f=browse_focus_page(c);field=p.locator('[data-topic-search]')
+            observed={'width':width,'language':language,'phases':[]};report.setdefault('browse_focus_resets',[]).append(observed)
+            p.evaluate("""()=>{
+              const cards=document.querySelector('[data-topic-connections]');window.__browseResetCards=[...cards.children];
+              const receipt=cards.querySelector('details');if(receipt)receipt.open=true;
+            }""")
+            def saved(phase):
+                v=p.evaluate('window.__browseFocus.read()');observed['phases'].append({'phase':phase,**v})
+                assert not v['ownedHides'],v['ownedHides']
+                assert p.evaluate("window.__browseResetCards.every((n,i)=>n.isConnected&&n===document.querySelector('[data-topic-connections]').children[i])")
+                assert p.locator('.gmi-evidence-receipt').evaluate('(n)=>n.open')
+                return v
+            for activation in ('click','Enter','Space'):
+                field.fill('reset-no-match-'+activation)
+                p.locator('[data-topic-category-filter]').select_option(next(t for t in f['topics'] if t['id']==f['default'])['category'])
+                p.locator('input[name="gmi-scope"][value="extended"]').check();p.locator('[data-evidence-only]').check()
+                clear=p.locator('[data-topic-no-results] [data-topic-reset]');expect(clear).to_be_visible();clear.focus()
+                p.evaluate("(phase)=>window.__browseFocus.phase=phase",'reset-'+activation)
+                length=p.evaluate('history.length');writes=p.evaluate('window.__browseFocus.writes.length')
+                if activation=='click':clear.click()
+                else:clear.press(activation)
+                v=saved('reset-'+activation);expect(field).to_be_focused()
+                assert v['query']==v['category']=='' and v['scope']=='all' and not v['evidence']
+                assert v['dialogOpen']==f['narrow'] and v['history_length']==length
+                assert [x['method'] for x in v['writes'][writes:]]==['replaceState']
+                assert parse_qs(urlsplit(p.url).fragment)=={k:[x] for k,x in f['params'].items()}
+            # The clear action must not focus search a second time after a valid redirect.
+            field.fill('redirect-clear-no-match')
+            clear=p.locator('[data-topic-no-results] [data-topic-reset]');clear.focus()
+            field.evaluate("n=>n.addEventListener('focus',()=>document.querySelector('[data-topic-category-filter]').focus(),{once:true})")
+            p.evaluate("window.__browseFocus.phase='reset-redirect'")
+            clear.click();v=saved('reset-redirect')
+            expect(p.locator('[data-topic-category-filter]')).to_be_focused();assert v['query']==''
+            # Answer-side Clear remains a separate title-owned recovery and leaves mobile Browse closed.
+            for activation in ('Enter','Space'):
+                if f['narrow'] and not p.locator('[data-browse-dialog]').evaluate('(n)=>n.open'):
+                    p.locator('[data-browse-open]').click()
+                field.fill('answer-no-match-'+activation)
+                if f['narrow']:p.locator('[data-browse-close]').click()
+                clear=p.locator('[data-topic-notice-reset]');expect(clear).to_be_visible();clear.focus()
+                p.evaluate("(phase)=>window.__browseFocus.phase=phase",'answer-'+activation)
+                clear.press(activation);v=saved('answer-'+activation)
+                expect(p.locator('#gmi-topic-title')).to_be_focused()
+                assert not v['dialogOpen'] and v['query']=='' and v['sameAnswer']
+            observed['pass']=True
+
+    def browse_focus_edges(width,language):
+        with context(width,'dark',language) as c:
+            p,f=browse_focus_page(c);field=p.locator('[data-topic-search]')
+            observed={'width':width,'language':language,'phases':[]};report.setdefault('browse_focus_edges',[]).append(observed)
+            def saved(phase):
+                v=p.evaluate('window.__browseFocus.read()');observed['phases'].append({'phase':phase,**v})
+                assert not v['ownedHides'],v['ownedHides'];return v
+            def focus_default():
+                browse_focus_hash(p,f['a'])
+                p.locator('[data-topic-results] [data-topic-select="'+f['default']+'"]').focus()
+                p.evaluate("(id)=>window.__browseFocus.tracked.add(id)",f['default'])
+            focus_default()
+            field.evaluate("n=>n.addEventListener('focus',()=>document.querySelector('[data-topic-category-filter]').focus(),{once:true})")
+            p.evaluate("window.__browseFocus.phase='redirect-survivor'")
+            browse_focus_hash(p,f['b']);v=saved('redirect-survivor')
+            expect(p.locator('[data-topic-category-filter]')).to_be_focused()
+            assert v['dialogOpen']==f['narrow'] and not v['writes']
+            focus_default()
+            field.evaluate("""(n,id)=>n.addEventListener('focus',()=>{
+              const other=[...document.querySelectorAll('[data-topic-results] [data-topic-select]')].find(r=>r.getAttribute('data-topic-select')!==id&&!r.hidden);
+              other.focus();
+            },{once:true})""",f['default'])
+            p.evaluate("window.__browseFocus.phase='redirect-retiring'")
+            browse_focus_hash(p,f['b']);v=saved('redirect-retiring')
+            expect(p.locator('[data-browse-close]') if f['narrow'] else p.locator('#gmi-topic-title')).to_be_focused()
+            assert v['dialogOpen']==f['narrow'] and not v['writes']
+            focus_default();field.evaluate('(n)=>n.disabled=true')
+            p.evaluate("window.__browseFocus.phase='disabled-search-fallback'")
+            browse_focus_hash(p,f['b']);v=saved('disabled-search-fallback')
+            expect(p.locator('[data-browse-close]') if f['narrow'] else p.locator('#gmi-topic-title')).to_be_focused()
+            assert v['dialogOpen']==f['narrow'] and not v['writes']
+            field.evaluate('(n)=>n.disabled=false')
+            # Capture the incumbent normal input result, then require a nested pass to win.
+            browse_focus_hash(p,f['a']);field.fill('HBM')
+            expected=p.locator('.gmi-topic-option:visible').evaluate_all("(nodes)=>nodes.map(n=>n.getAttribute('data-topic-select'))")
+            field.fill('');p.locator('[data-topic-results] [data-topic-select="'+f['default']+'"]').focus()
+            field.evaluate("""n=>n.addEventListener('focus',()=>{
+              n.value='HBM';n.dispatchEvent(new Event('input',{bubbles:true}));
+            },{once:true})""")
+            p.evaluate("window.__browseFocus.phase='nested-newer-filter'")
+            writes=p.evaluate('window.__browseFocus.writes.length')
+            browse_focus_hash(p,f['b']);v=saved('nested-newer-filter')
+            expect(field).to_be_focused();assert v['query']=='HBM'
+            assert v['visible']==expected and v['emptyHidden'] and not v['resultsHidden']
+            assert parse_qs(urlsplit(p.url).fragment)=={k:[x] for k,x in {**f['params'],'q':'HBM'}.items()}
+            assert [x['method'] for x in v['writes'][writes:]]==['replaceState']
+            assert v['count']==(str(len(expected))+' of '+str(len(f['topics']))+' topics' if language=='en' else str(len(f['topics']))+' 个主题中显示 '+str(len(expected))+' 个')
+            assert v['dialogOpen']==f['narrow']
+            observed['pass']=True
+
+    def browse_focus_closed(language):
+        width=390 if language=='en' else 320
+        with context(width,'light',language) as c:
+            p,f=browse_focus_page(c,open_browse=False)
+            observed={'width':width,'language':language,'phases':[]};report.setdefault('browse_focus_closed',[]).append(observed)
+            assert f['narrow'];expect(p.locator('[data-topic-search]')).not_to_be_visible()
+            for name,selector,fragment in [('opener','[data-browse-open]',f['b']),('title','#gmi-topic-title',f['a']),('brand','a.gmi-product-name',f['b'])]:
+                target=p.locator(selector);target.focus()
+                p.evaluate("(phase)=>window.__browseFocus.phase=phase",'closed-'+name)
+                browse_focus_hash(p,fragment)
+                v=p.evaluate('window.__browseFocus.read()');observed['phases'].append({'phase':name,**v})
+                assert not v['ownedHides'] and not v['writes']
+                expect(target).to_be_focused()
+                assert not v['dialogOpen'] and v['browseAtHome']
+                assert not any(e['kind']=='focus' and e['phase']=='closed-'+name and e['target']=='search' for e in v['events'])
+            observed['pass']=True
+
+    for width,language in [(w,l) for w in (1440,390,320) for l in ('en','zh')]+[(820,'en'),(821,'zh')]:
+        check(f'browse-focus-history-{width}-{language}',lambda w=width,l=language:browse_focus_history(w,l))
+    for width,language in ((1440,'en'),(1440,'zh'),(390,'en'),(320,'zh')):
+        check(f'browse-focus-reset-{width}-{language}',lambda w=width,l=language:browse_focus_resets(w,l))
+    for width in (1440,390):
+        for language in ('en','zh'):
+            check(f'browse-focus-edges-{width}-{language}',lambda w=width,l=language:browse_focus_edges(w,l))
+    for language in ('en','zh'):
+        check(f'browse-focus-closed-{language}',lambda l=language:browse_focus_closed(l))
+
+    for width,language in ((820,'en'),(821,'zh')):
+        check(f'primary-escape-breakpoint-{width}-{language}',lambda w=width,l=language:primary_escape_contract(w,l))
 
     browser.close()
 server.shutdown()

@@ -514,17 +514,42 @@ function retireCopy(recoverFocus){
 }
 function writeURL(mode){var p=new URLSearchParams(location.hash.slice(1));p.set('theme',state.theme);[['q',state.q],['category',state.category],['scope',state.scope==='all'?'':state.scope],['evidence',state.evidence?'1':'']].forEach(function(pair){if(pair[1])p.set(pair[0],pair[1]);else p.delete(pair[0]);});var next='#'+p.toString();if(next!==location.hash){retireCopy(true);history[mode==='push'?'pushState':'replaceState'](null,'',next);}lastHash=location.hash;refreshJourney();}
 function matches(t){return(!state.category||t.paths.some(function(path){return path.length&&path[0].id===state.category;}))&&(state.scope==='all'||t.tier===state.scope)&&(!state.evidence||t.connections.length>0)&&(!norm(state.q)||searchText.get(t.id).includes(norm(state.q)));}
+var filterPass=0;
 function filters(){
+  var pass=++filterPass;
   search.value=state.q;category.value=state.category;evidence.checked=state.evidence;scopes.forEach(function(s){s.checked=s.value===state.scope;});
   var count=0,firstVisible=null,selectedVisible=null;
-  rows.forEach(function(row){
-    var t=byId.get(row.getAttribute('data-topic-select'));row.hidden=!matches(t);row.tabIndex=-1;
-    if(!row.hidden){count++;if(!firstVisible)firstVisible=row;if(t.id===state.theme)selectedVisible=row;}
+  var projected=rows.map(function(row){
+    var t=byId.get(row.getAttribute('data-topic-select')),hidden=!matches(t);
+    if(!hidden){count++;if(!firstVisible)firstVisible=row;if(t.id===state.theme)selectedVisible=row;}
+    return{row:row,topic:t,hidden:hidden};
+  });
+  var empty=document.querySelector('[data-topic-no-results]');
+  var retiring=projected.filter(function(item){return item.hidden;}).map(function(item){return item.row;});
+  retiring.push(count>0?empty:results);
+  function ownsRetiringFocus(){return retiring.some(function(node){return node.contains(document.activeElement);});}
+  if(ownsRetiringFocus()){
+    /* Release only this pass's disappearing focus. Native modal containment and
+       the actual visible Browse presentation determine reachable destinations. */
+    var targets=dialog.open?[search,dialog.querySelector('[data-browse-close]')]:
+      [search,openButton,document.getElementById('gmi-topic-title')];
+    for(var i=0;i<targets.length&&pass===filterPass&&ownsRetiringFocus();i++){
+      var target=targets[i];
+      if(target&&target.isConnected&&!target.disabled&&!target.closest('[hidden],[inert]')&&
+        target.getClientRects().length&&getComputedStyle(target).visibility==='visible'&&
+        !retiring.some(function(node){return node.contains(target);}))target.focus({preventScroll:true});
+    }
+  }
+  /* A synchronous focus handler may have projected newer filter state. */
+  if(pass!==filterPass)return;
+  projected.forEach(function(item){
+    var row=item.row,t=item.topic;if(row.hidden!==item.hidden)row.hidden=item.hidden;row.tabIndex=-1;
     if(t.id===state.theme)row.setAttribute('aria-current','true');else row.removeAttribute('aria-current');
   });
   if(selectedVisible||firstVisible)(selectedVisible||firstVisible).tabIndex=0;
   document.querySelector('[data-topic-count]').textContent=tr(count+' of '+topics.length+' topics',topics.length+' 个主题中显示 '+count+' 个');
-  document.querySelector('[data-topic-no-results]').hidden=count>0;results.hidden=count===0;
+  if(empty.hidden!==(count>0))empty.hidden=count>0;
+  if(results.hidden!==(count===0))results.hidden=count===0;
   var selected=byId.get(state.theme),outside=!matches(selected);
   answer.querySelector('[data-topic-category]').textContent=label(data.categories[state.category&&selected.paths.some(function(path){return path.length&&path[0].id===state.category;})?state.category:selected.category]);
   noticeMessage(invalidTheme?tr('That topic is not available in this snapshot. Showing the available starting topic.','此快照中找不到该主题，现显示可用的起始主题。'):outside?tr('This topic is outside your filters.','当前主题不在筛选范围内。'):'',!invalidTheme&&outside);
@@ -589,7 +614,7 @@ document.addEventListener('click',function(event){if(event.target.closest('[data
 results.addEventListener('keydown',function(event){var a=event.target.closest('[data-topic-select]');if(!a)return;var visible=rows.filter(function(r){return!r.hidden;}),i=visible.indexOf(a),target;if(event.key==='ArrowDown')target=visible[Math.min(i+1,visible.length-1)];else if(event.key==='ArrowUp')target=visible[Math.max(i-1,0)];else if(event.key==='Home')target=visible[0];else if(event.key==='End')target=visible[visible.length-1];if(target){event.preventDefault();rows.forEach(function(r){r.tabIndex=-1;});target.tabIndex=0;target.focus();}});
 function updateFilters(){state.q=search.value.slice(0,200);state.category=category.value;state.scope=scopes.find(function(s){return s.checked;}).value;state.evidence=evidence.checked;invalidTheme=false;writeURL('replace');filters();answer.querySelector('[data-topic-category]').textContent=label(data.categories[state.category&&byId.get(state.theme).paths.some(function(path){return path.length&&path[0].id===state.category;})?state.category:byId.get(state.theme).category]);}
 search.addEventListener('input',updateFilters);category.addEventListener('change',updateFilters);evidence.addEventListener('change',updateFilters);scopes.forEach(function(s){s.addEventListener('change',updateFilters);});
-document.querySelectorAll('[data-topic-reset]').forEach(function(b){b.addEventListener('click',function(){state=Object.assign({},defaults,{theme:state.theme});invalidTheme=false;writeURL('replace');filters();if(b.hasAttribute('data-topic-notice-reset'))document.getElementById('gmi-topic-title').focus({preventScroll:true});else search.focus();});});
+document.querySelectorAll('[data-topic-reset]').forEach(function(b){b.addEventListener('click',function(){state=Object.assign({},defaults,{theme:state.theme});invalidTheme=false;writeURL('replace');if(b.hasAttribute('data-topic-notice-reset'))document.getElementById('gmi-topic-title').focus({preventScroll:true});else search.focus({preventScroll:true});filters();});});
 search.addEventListener('keydown',function(event){
   if(event.key!=='Escape')return;
   if(event.defaultPrevented||event.isComposing||event.keyCode===229){event.stopPropagation();return;}

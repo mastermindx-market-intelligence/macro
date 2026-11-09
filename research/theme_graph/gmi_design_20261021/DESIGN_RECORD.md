@@ -1463,3 +1463,39 @@ A native parent read confirms that current Build root **7M9-0 belongs to p-7-0**
 Paper navigation is now **Build · Interaction & receipts** (`p-7-0`) and **Reference · Preservation rules** (`p-6-0`). The reference remains available and its content is preserved; only page names/icons change. This clarifies where future builders find current interaction contracts without archiving useful rules. Current source/proof references are updated in place.
 
 Original model01 `EFFECT_UNKNOWN/ROOT_UNVERIFIED` and all release holds remain. These checks do not establish native OS IME interaction, full shared shell/fonts, spoken assistive technology, live account/admission, current hosted CI, deployment or public release. The existing Draft stays unmerged.
+
+
+## 11.35 · Recover Browse focus before results disappear — 9 Nov 2026
+
+### Defect and the existing projection owner
+
+At parent `2b2ab6615039e2e4172a0d0a713eae50fc237c1e`, primary Browse assigns result-row and empty/results visibility while the disappearing subtree can still own focus. Four actual-browser baseline cases reproduce this at the mutation itself: Back from a focused result into no matches, Forward from the focused no-match Clear all filters action into results, a positive-to-positive filter change hiding the focused row, and clicking Clear all filters. A later focus call does not undo that ordering defect.
+
+The existing `filters()` owner now computes the complete visible-row projection and the retiring rows/region before applying any visibility changes. It recovers only focus inside a retiring subtree. Search remains the first choice. An open native Browse dialog can fall back to its Done button; the sidebar can use a reachable Browse opener or the selected topic heading. Each candidate must still be connected, enabled, visible, outside hidden/inert ancestors and outside every retiring subtree. The bounded loop inspects actual activeElement after focus: a listener redirect to a surviving control is respected; a redirect into another retiring row continues to the next valid destination.
+
+A local monotonically increasing filter-pass number protects synchronous reentrancy. If a focus listener starts a newer filter update, the older pass returns before applying stale rows, counts, notice or region visibility. This is a local projection guard, not an additional query, history, queue or dialog owner. Hidden values are written only when they change. Existing category/scope/evidence controls, selection, count wording and roving row entry remain under the same owner.
+
+The existing Reset handler now writes its cleared-filter URL and chooses its established destination **before** calling `filters()`: the answer-side recovery action goes to the topic heading; sidebar/drawer Reset goes to search. There is no second focus assignment after filters, so a surviving intentional focus redirect is not overwritten. Reset still retains the selected topic, lens and qualified return, and does not rerender the answer: source-card nodes and open receipts remain exact. History restoration itself still uses its existing answer-render path; the proof does not claim source-node identity across history.
+
+### Browser proof at the hide boundary
+
+Final PID **17601**, exit0, **28 cases / 30 fresh anonymous contexts**, Chrome **157.0.8103.39**, zero page errors, **52.14 s**. The test wraps the actual hidden-property setter and inspects focus before the mutation. All **94 retained probe snapshots** contain **zero owned hides**.
+
+- Eight history cases cover EN/ZH at 1440, 390 and 320 px plus the actual 820/821 px layout boundary. Real Back/Forward restores positive, no-match and different-positive result sets. Surviving row/control focus is retained; unrelated focus is not pulled into search. Restoration adds no product history writes and retains qualified navigation fields.
+- Four Reset cases use pointer click, Enter and Space on the no-match action; they retain selected research, exact evidence nodes and open receipts while clearing only the established full filter set. An intentional search-focus redirect to Category survives. The answer-side action retains its heading destination.
+- Four edge cases cover focus redirected to a surviving control, focus redirected into another retiring row, an unavailable search target and a nested input/filter update. The nested newer projection wins and produces its one legitimate replaceState.
+- Two closed-mobile cases retain opener/heading/brand focus without focusing the inaccessible search field or opening the drawer.
+- Two existing answer-filter recovery cases use two contexts each to retain asynchronous copy resolve/reject, manual fallback and exact source/receipt behavior.
+- Eight existing primary Escape cases retain the accepted event/native-dismissal contract, including the newly exercised 820/821 px boundary.
+
+The prior primary-Escape helper's unused intermediate-width predicate is corrected from 900 to the actual CSS breakpoint, **820 px**. Of **95 prior qualified verifier definitions**, 94 remain AST-exact and that one outer definition changes only by this threshold. After accounting for the threshold, every prior definition is AST-exact. Six top-level helpers and four nested helpers are added. This is a test-boundary correction; no product breakpoint changes.
+
+The paired JS is blob **4f207215835bdfe41cada91f496d1c8956898b25**, SHA256 **f6ec608f73ac9e2478e67174a2981bc5a7b90ce9451f762561c1e9fa2e175648**. Only the two exact filter/reset blocks change in product JS. All seven HTML pages and CSS remain byte-exact; renderer and model inputs are not regenerated. Two final EN390/ZH320 captures were inspected.
+
+[BROWSE_FOCUS_VALIDATION_20261109.json](BROWSE_FOCUS_VALIDATION_20261109.json) binds the four expected baseline failures, final 28 cases, input/output hashes, commands, source comparison and limits. `verify_browse_focus_component.py` extracts the canonical helpers and runs the actual product main/CSS/JS in isolated anonymous browser contexts.
+
+### Builder guidance and delivery boundary
+
+Extend existing Build module08 (`7NL-0`) with primary Browse's projection-before-hide, modal reachability, actual-focus and reentrant-pass contract. Extend module10 (`7SS-0`) with Reset's focus-before-filter ordering and the absence of a second focus assignment. Keep the existing eighteen modules and their source-bound proof module; no duplicate controller or explanatory product paragraph is added.
+
+The source remains in Draft PR10676 with original model01 `EFFECT_UNKNOWN/ROOT_UNVERIFIED` and all release holds unchanged. This component proof does not establish native OS IME, spoken assistive-technology output, full shared-shell/font runtime, live account/admission, current hosted CI or deployment. No held model result, independent lane, protected original style or production release is changed.
