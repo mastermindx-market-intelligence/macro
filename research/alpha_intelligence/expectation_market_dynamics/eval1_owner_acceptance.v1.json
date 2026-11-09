@@ -1,0 +1,26 @@
+{
+  "schema": "k3e.eval1_owner_acceptance/v1",
+  "registration_id": "K3E-EVAL-1-V1",
+  "registration_digest_sha256": "1ca158a213fca3f90c5c4fdc1359d40bf9146f2400cb10d8caa202b18f293bd4",
+  "registration_source_commit": "01fcaf748c2794aa717b25d3e34ad1f53c539801",
+  "owner_workstream": "WS:EVAL-OS-MEASUREMENT-LAW",
+  "accepted": true,
+  "registration_path": "research/alpha_intelligence/expectation_market_dynamics/eval1_preregistration.v1.json",
+  "registration_pr": 8584,
+  "registration_source_committed_at_utc": "2026-10-07T06:48:25Z",
+  "acting_custodian": {
+    "actor": "Information-to-Price Meta-CEO seat (Claude session 2fc05761)",
+    "role": "K3E EVAL-1 custodian",
+    "authority": "Chairman directive of 2026-10-06 delegating owner blocks of this program to the seat",
+    "decision_record": "DEC:K3E-EVAL1-CUSTODY-UNDER-CHAIRMAN-DIRECTIVE-2026-10-07",
+    "is_sol_ruling": false,
+    "drafted_by": "orchestrator lane B (Opus 5.5) under the seat"
+  },
+  "acceptance_scope": [
+    "Accepts exactly the registration bytes whose canonical JSON digest is registration_digest_sha256, as introduced on first-parent main by registration_source_commit.",
+    "No outcome, label or forward return is read before boundary_at recorded in the activation receipt.",
+    "Accepting the registration consumes no trial; trial consumption is a separate custodian ruling after the forward evaluator lands and admission is verified on main.",
+    "Grants no model, predictive, rank, gate, size, trade, Prophet, product or production authority; research-only measurement."
+  ],
+  "supersession": "The eval-law owner (WS:EVAL-OS-MEASUREMENT-LAW) may supersede this registration only with a later, separately registered version; outcomes already read stay attached to this registration and a committed trial stays counted."
+}

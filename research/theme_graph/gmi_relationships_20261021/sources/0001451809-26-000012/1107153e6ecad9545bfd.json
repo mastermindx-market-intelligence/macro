@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-11T21:06:57Z",
+ "accession": "0001451809-26-000012",
+ "cik": "0001451809",
+ "doc_byte_length": 1797085,
+ "doc_sha256": "568771611c495d5ee81c5aa62e4061177df08c685c30ad77b993be6c0a20008b",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-11",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "sitm-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 302956,
+  "byte_start": 302617,
+  "normalized": "Based on the sell-through information provided to us from distributors who identify end customers, we believe that the majority of our products sold to Pernas Electronics Co. Ltd (\"Pernas\") and Quantek Technology Corporation (\"Quantek\") are in turn incorporated into products of Apple Inc. (“Apple”), our largest end customer.",
+  "normalized_sha256": "4d6e5206ca89e10dd306a59a20d24f74cd6535a77b6ce0886239cfdb22ff45fe",
+  "raw": "Based on the sell-through information provided to us from distributors who identify end customers, we believe that the majority of our products sold to Pernas Electronics Co. Ltd (\"Pernas\") and Quantek Technology Corporation (\"Quantek\") are in turn incorporated into products of Apple Inc. (&#8220;Apple&#8221;), our largest end customer. ",
+  "raw_sha256": "1107153e6ecad9545bfd3523213a9ef03f9b942da88251a26cc738b5b536be34"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1451809/000145180926000012/sitm-20251231.htm",
+ "xbrl_contexts": []
+}

@@ -57,7 +57,7 @@ from engine.options_hub import (
 from engine.levels_publish import levels_payload_from_gex, LEVELS_PREFIX
 from engine.vex_engine import compute_vex
 from engine.moves_engine import moves_payload, per_ticker_calibration
-from lib.nyse_calendar import expected_last_session, sessions_between
+from lib.nyse_calendar import expected_last_session, is_session, sessions_between
 
 try:
     from engine.grading_stats import wilson_ci as _wilson_ci
@@ -217,7 +217,7 @@ DEFAULT_ROOTS = [
 # R2 helpers (mirrored from scripts/live_flow_poller._r2_client/_upload_r2)   #
 # --------------------------------------------------------------------------- #
 
-def _r2_client():
+def _r2_client(*, single_attempt: bool = False):
     """Build a boto3 S3 client for R2, or None if creds absent."""
     ep = os.environ.get("R2_ENDPOINT")
     ak = os.environ.get("R2_ACCESS_KEY_ID")
@@ -231,7 +231,8 @@ def _r2_client():
             region_name="auto",
             signature_version="s3v4",
             max_pool_connections=16,
-            retries={"max_attempts": 3, "mode": "standard"},
+            retries=({"total_max_attempts": 1, "mode": "standard"} if single_attempt
+                     else {"max_attempts": 3, "mode": "standard"}),
         )
         try:
             cfg = Config(**kw,
@@ -307,6 +308,26 @@ def _write_json(path: Path, data: dict) -> None:
             path.name, counter[0],
         )
     path.write_text(json.dumps(clean, allow_nan=False, default=str), encoding="utf-8")
+
+
+def capture_built_scenario_sources(descriptor, viewer, *, operation_id: str,
+                                  out_dir: Path, s3=None, bucket=None,
+                                  destination=None, source_save_decision=None,
+                                  retention_decision=None, current_viewer=None, clock=None):
+    """Deliberate PRIVATE capture of expected bytes already serialized by this producer.
+
+    This is not called by the nightly loop and does not build/recompute/fetch or
+    upload a public head. A native caller must supply current Save/retention and
+    private-destination bindings. No binding is configured by importing this file.
+    Browser bytes and arbitrary source paths are not accepted. The composer
+    checks exact expected identities before retention and emits metadata only;
+    it does not verify native TS scenario math or apply a canonical save.
+    """
+    from engine.options_scenario_capture import capture_built_scenario_sources as capture
+    return capture(descriptor, viewer, operation_id=operation_id, out_dir=out_dir,
+        s3=s3, bucket=bucket, destination=destination,
+        source_save_decision=source_save_decision, retention_decision=retention_decision,
+        current_viewer=current_viewer, clock=clock)
 
 
 def _publish_aggregates(
@@ -514,6 +535,8 @@ def build_root(
     asof: str,
     theta_store: str | Path | None,
     polygon_gex_dir: Path | None = None,
+    *,
+    exposure_context: dict | None = None,
 ) -> tuple[dict, dict, dict]:
     """Build vol + gex + vex payloads for one root.
 
@@ -550,7 +573,27 @@ def build_root(
     # the OI parquet for `asof` (which OPRA already reports as end-of-t-1 data).
     oi_t1 = _load_oi_for_date(root, asof, theta_store)
 
-    gex_payload = compute_gex(greeks_asof, oi_t1, asof, root)
+    from engine.options_exposure_projection import compose_native_exposure_context
+    projection_inputs = None
+    if exposure_context is not None:
+        exposure_context = dict(exposure_context)
+        projection_inputs = exposure_context.pop("_projection_inputs", None)
+    projection_input_status = None
+    if projection_inputs is not None:
+        selected_session = (exposure_context.get("clocks") or {}).get("source_session")
+        projection_input_status = {"scope": "separate_selected_capture", "source_session": selected_session,
+            "legacy_source_session": asof, "spot_basis": "per_contract_captured_underlying_price", "state": "selected_capture"}
+        if selected_session != asof:
+            projection_input_status["state"] = "withheld_source_session_mismatch"
+            exposure_context, projection_inputs = None, None
+    projection_greeks, projection_oi = projection_inputs if projection_inputs is not None else (greeks_asof, oi_t1)
+    exposure_context = compose_native_exposure_context(projection_greeks, projection_oi, asof, root,
+                                                       context=exposure_context)
+    extra_inputs = {"exposure_inputs": projection_inputs} if projection_inputs is not None else {}
+    gex_payload = compute_gex(greeks_asof, oi_t1, asof, root,
+                             exposure_context=exposure_context, **extra_inputs)
+    if projection_input_status is not None:
+        gex_payload["exposure_projection_input"] = projection_input_status
 
     # ── CONTRACT v2: attach gex history from polygon_gex summary parquet ──────
     if polygon_gex_dir is not None:
@@ -693,9 +736,11 @@ def build_cross_root(
 # --------------------------------------------------------------------------- #
 
 def _positive_finite(value) -> float | None:
+    if isinstance(value, (bool, np.bool_)):
+        return None
     try:
         num = float(value)
-    except (TypeError, ValueError):
+    except (TypeError, ValueError, OverflowError):
         return None
     return num if np.isfinite(num) and num > 0 else None
 
@@ -723,15 +768,19 @@ def resolve_moves_inputs(
     if theta_spot is not None and theta_iv is not None:
         return {"spot": theta_spot, "atm_iv_pct": theta_iv, "input_source": "thetadata_eod", "asof": asof}
 
-    if snapshot_asof_ceiling is None:
-        snapshot_asof_ceiling = expected_last_session().isoformat()
     try:
         floor_session = _date.fromisoformat(asof)
-        ceiling_session = _date.fromisoformat(snapshot_asof_ceiling)
+        settled_ceiling = expected_last_session()
+        ceiling_session = (settled_ceiling if snapshot_asof_ceiling is None
+                           else _date.fromisoformat(snapshot_asof_ceiling))
+        # A replay bound may narrow, but never overrule, the settled-session limit.
+        ceiling_session = min(ceiling_session, settled_ceiling)
     except (TypeError, ValueError):
         return {"spot": None, "atm_iv_pct": None, "input_source": None, "asof": None}
-    if ceiling_session < floor_session:
-        ceiling_session = floor_session
+    if ceiling_session < floor_session or not is_session(floor_session):
+        # An explicit historical ceiling is a bound, never permission to widen it.
+        # An invalid source day cannot become a valid minimum for a later snapshot.
+        return {"spot": None, "atm_iv_pct": None, "input_source": None, "asof": None}
 
     if snapshot_loader is None:
         from collectors.thetadata import snapshot_greeks
@@ -741,33 +790,46 @@ def resolve_moves_inputs(
     except Exception as exc:  # noqa: BLE001 — snapshot fallback is fail-soft per root
         log.warning("options_hub_builder: ThetaData snapshot fallback %s failed: %s", root, exc)
         snap = None
-    if snap is None or snap.empty:
+    if not isinstance(snap, pd.DataFrame) or snap.empty:
         return {"spot": None, "atm_iv_pct": None, "input_source": None, "asof": None}
 
     frame = snap.copy()
-    if not {"root", "snapshot_ts", "underlying_price", "expiration", "strike", "implied_vol"}.issubset(frame.columns):
+    if not frame.columns.is_unique or not {"root", "snapshot_ts", "underlying_price", "expiration", "strike", "implied_vol"}.issubset(frame.columns):
         return {"spot": None, "atm_iv_pct": None, "input_source": None, "asof": None}
     frame = frame[frame["root"].astype(str).str.upper() == root.upper()].copy()
     if frame.empty:
         return {"spot": None, "atm_iv_pct": None, "input_source": None, "asof": None}
-    stamp = pd.to_datetime(frame["snapshot_ts"], errors="coerce")
-    valid_days = stamp.dt.date.dropna()
-    if valid_days.empty:
+    try:
+        raw_stamp = frame["snapshot_ts"]
+        # A number is not a vendor timestamp: pandas would otherwise interpret it
+        # as nanoseconds since epoch and could manufacture an apparently valid day.
+        if any(pd.api.types.is_number(value) for value in raw_stamp):
+            return {"spot": None, "atm_iv_pct": None, "input_source": None, "asof": None}
+        stamp = pd.to_datetime(raw_stamp, errors="coerce")
+        # Keep the collector's date convention; do not coerce mixed clocks to UTC
+        # or silently discard malformed same-root rows from the accepted chain.
+        if stamp.isna().any():
+            return {"spot": None, "atm_iv_pct": None, "input_source": None, "asof": None}
+        snapshot_days = stamp.dt.date
+        snapshot_session = snapshot_days.max()
+    except (AttributeError, TypeError, ValueError, OverflowError):
         return {"spot": None, "atm_iv_pct": None, "input_source": None, "asof": None}
-    snapshot_session = valid_days.max()
     snapshot_asof = str(snapshot_session)
-    # The fallback may legitimately be one settled session NEWER than the EOD store
-    # (the exact production shape on 2026-09-18). It may never move backward or
-    # accept a vendor timestamp beyond the exchange's latest settled session.
-    if snapshot_session < floor_session or snapshot_session > ceiling_session:
+    # A later settled session may be accepted within the original floor/ceiling.
+    # A weekend, exchange holiday or unsettled future day is never a source session.
+    if (not is_session(snapshot_session)
+            or snapshot_session < floor_session or snapshot_session > ceiling_session):
         return {"spot": None, "atm_iv_pct": None, "input_source": None, "asof": None}
-    frame = frame[stamp.dt.date.astype(str) == snapshot_asof].copy()
+    frame = frame[snapshot_days == snapshot_session].copy()
     if frame.empty:
         return {"spot": None, "atm_iv_pct": None, "input_source": None, "asof": None}
 
-    spot_values = pd.to_numeric(frame["underlying_price"], errors="coerce")
-    spot_values = spot_values[np.isfinite(spot_values) & (spot_values > 0)]
-    spot = _positive_finite(spot_values.median()) if not spot_values.empty else None
+    try:
+        spot_values = pd.to_numeric(frame["underlying_price"], errors="coerce")
+        spot_values = spot_values[np.isfinite(spot_values) & (spot_values > 0)]
+        spot = _positive_finite(spot_values.median()) if not spot_values.empty else None
+    except (TypeError, ValueError, OverflowError):
+        return {"spot": None, "atm_iv_pct": None, "input_source": None, "asof": None}
     if spot is None:
         return {"spot": None, "atm_iv_pct": None, "input_source": None, "asof": None}
 
@@ -790,10 +852,12 @@ def resolve_moves_inputs(
 def _moves_publishable(payload: dict, root: str, minimum_asof: str) -> bool:
     """Publish a current-or-newer moves object, including an explicit current null.
 
-    The snapshot fallback can be one session newer than the settled EOD store. It is
+    The snapshot fallback can be a later settled session than the EOD store. It is
     lawful to advance `moves/v1` to that vendor-stamped session; it is never lawful to
     publish a payload older than the settled source date. A current explicit null still
     clears an older R2 band instead of letting stale expectations survive indefinitely.
+    Invalid or not-yet-settled source dates remain unpublishable even when the
+    resolver returns no inputs and the payload therefore carries an explicit null.
     """
     payload_asof = payload.get("asof") if isinstance(payload, dict) else None
     try:
@@ -807,6 +871,9 @@ def _moves_publishable(payload: dict, root: str, minimum_asof: str) -> bool:
         and str(payload.get("root") or "").upper() == root.upper()
         and payload_session is not None
         and payload_session >= minimum_session
+        and payload_session <= expected_last_session()
+        and is_session(minimum_session)
+        and is_session(payload_session)
     )
 
 
@@ -856,6 +923,14 @@ def _gex_publish_decision(
       - gex_payload:  possibly mutated (no_data_reason added for genuine empty store)
       - is_guarded:   True when upload was suppressed by the mid-backfill guard
     """
+    from engine.options_exposure_projection import fit_gex_transport
+
+    fits, gex_payload = fit_gex_transport(gex_payload)
+    if not fits:
+        log.warning("options_hub_builder: GEX envelope exceeds existing SSE budget for %s; "
+                    "skipping publication to preserve last-good object", root)
+        return False, gex_payload, True
+
     if gex_payload.get("by_strike"):
         return True, gex_payload, False
 
@@ -1100,20 +1175,44 @@ def _heal_gex_history(root: str, missed: list[str], theta_store,
 
 def publish_gex_history_index(root: str, asof: str, theta_store,
                               polygon_gex_dir: Path | None, out_dir: Path,
-                              s3, bucket: str, heal_budget: int) -> int:
+                              s3, bucket: str, heal_budget: int,
+                              *, outcome: dict | None = None) -> int:
     """List the plane, heal missed sessions within budget, publish dates.json.
 
     Returns how many snapshots were healed (the caller decrements its global
     budget). The index is written AFTER healing so it reflects the plane as
     this run leaves it; a listing failure skips both (no blind heal, no lying
     index).
+
+    When `outcome` is a dict, it is filled in-place with the detailed truth the
+    integer return cannot carry: a listing failure returns 0 exactly like a
+    genuine zero-heal, so callers that must not confuse the two read
+    `outcome["status"]` — "success", "list_failed" (index never attempted) or
+    "index_upload_unconfirmed" (the upload returned False, which is never proof
+    the remote index is absent). Existing callers that pass no `outcome` keep
+    the integer-healed-count contract unchanged. A pre-upload exception leaves
+    index_attempted=False; an upload exception leaves it True with an unknown
+    acknowledgement. The caller may retain this partial report on exceptions.
     """
+    # Record each phase BEFORE it can fail. The optional report survives an
+    # exception without asserting that an upload was reached when it was not.
+    if outcome is not None:
+        outcome.clear()
+        outcome.update(status="list_unconfirmed", list_ok=None,
+                       index_attempted=False, index_uploaded=None, healed=0)
     existing = _list_gex_history_dates(s3, bucket, root)
     if existing is None:
+        if outcome is not None:
+            outcome.update(status="list_failed", list_ok=False,
+                           index_attempted=False, index_uploaded=None, healed=0)
         return 0
+    if outcome is not None:
+        outcome.update(status="index_not_attempted", list_ok=True)
     missed = gex_history_missed_sessions(existing, asof)
     healed = _heal_gex_history(root, missed, theta_store, polygon_gex_dir,
                                out_dir, s3, bucket, heal_budget)
+    if outcome is not None:
+        outcome["healed"] = len(healed)
     index = build_gex_dates_index(
         list(existing) + healed, root=root,
         asof=_datetime.now(_timezone.utc).isoformat(timespec="seconds"),
@@ -1121,7 +1220,13 @@ def publish_gex_history_index(root: str, asof: str, theta_store,
     rel = f"gex_history/{root}/dates.json"
     local = out_dir / rel
     _write_json(local, index)
-    _upload_r2(s3, bucket, local, f"{R2_PREFIX}{rel}")
+    if outcome is not None:
+        outcome.update(status="index_upload_unconfirmed", index_attempted=True)
+    index_uploaded = _upload_r2(s3, bucket, local, f"{R2_PREFIX}{rel}")
+    if outcome is not None:
+        outcome.update(status="success" if index_uploaded else "index_upload_unconfirmed",
+                       list_ok=True, index_attempted=True,
+                       index_uploaded=index_uploaded, healed=len(healed))
     still = [d for d in missed if d not in healed]
     if still:
         log.info("options_hub_builder: gex_history %s still missing %d session(s): %s",
@@ -1190,6 +1295,99 @@ def _load_grades_board_rows_by_root(data_root: Path) -> dict[str, list[dict]]:
 # CLI entry point
 # --------------------------------------------------------------------------- #
 
+def _options_hub_input_root_or_none() -> Path | None:
+    """The explicit Hub input root, or None when the legacy paths stay.
+
+    Unset and empty both keep the legacy expressions. An empty string must not
+    become the current directory (``Path("")`` is ``.``). A non-empty value must
+    already be an absolute directory. This only inspects the variable. It does
+    not create the directory or open its children.
+    """
+    if "OPTIONS_HUB_INPUT_ROOT" not in os.environ:
+        return None
+    raw = os.environ["OPTIONS_HUB_INPUT_ROOT"]
+    if raw == "":
+        return None
+    path = Path(raw)
+    if not path.is_absolute() or not path.is_dir():
+        raise SystemExit(
+            "OPTIONS_HUB_INPUT_ROOT must be an absolute directory that already "
+            f"exists. Refusing {raw!r} before any write, network, or compute."
+        )
+    return path
+
+
+def resolve_options_hub_read_inputs(data_root: Path, repo_root: Path) -> dict[str, Path]:
+    """The five named Hub reads.
+
+    With no input root, each path is the expression this builder used before
+    the seam. With a root, only those five reads move under its ``data/`` and
+    ``site/`` children. The output directory, ``data_root``, R2, and ThetaData
+    are not decided here.
+    """
+    root = _options_hub_input_root_or_none()
+    if root is None:
+        return {
+            "polygon_gex_dir": data_root / _POLYGON_GEX_SUBDIR,
+            "gex_latest_path": data_root / _GEX_LATEST_REL,
+            "fear_greed_path": repo_root / "site" / _FEAR_GREED_REL,
+            "tape_flow_dir": data_root / _TAPE_FLOW_SUBDIR,
+            "live_flow_out_dir": data_root / "live_flow_out",
+        }
+    return {
+        "polygon_gex_dir": root / "data" / _POLYGON_GEX_SUBDIR,
+        "gex_latest_path": root / "data" / _GEX_LATEST_REL,
+        "fear_greed_path": root / "site" / _FEAR_GREED_REL,
+        "tape_flow_dir": root / "data" / _TAPE_FLOW_SUBDIR,
+        "live_flow_out_dir": root / "data" / "live_flow_out",
+    }
+
+
+def load_exposure_contexts(path: str | None) -> dict[str, dict]:
+    """Read explicitly supplied owner receipts; no discovery, enrollment or default store."""
+    if path is None:
+        return {}
+    with Path(path).open("rb") as source:
+        raw = source.read(32 * 1024 * 1024 + 1)
+    if len(raw) > 32 * 1024 * 1024:
+        raise ValueError("Exposure receipt exceeds 32 MiB")
+    data = json.loads(raw)
+    if not isinstance(data, dict) or data.get("schema") != "options_hub.exposure_contexts/v1" or not isinstance(data.get("roots"), dict):
+        raise ValueError("Invalid exposure receipt envelope")
+    for root, context in data["roots"].items():
+        if not re.fullmatch(r"[A-Z][A-Z0-9.]{0,11}", root) or not isinstance(context, dict) or context.get("root") != root:
+            raise ValueError("Exposure receipt root mismatch")
+        if not re.fullmatch(r"[0-9a-f]{64}", str(context.get("input_sha256", ""))):
+            raise ValueError("Exposure receipt needs exact input digest")
+        spec = context.pop("source_inputs", None)
+        if spec is not None:
+            if (context.get("kind") != "dated_provider_approximation" or not context.get("contract_identity")
+                    or not isinstance(spec, dict) or set(spec) != {"schema", "greeks", "oi"}
+                    or spec["schema"] != "options_hub.projection_inputs/v1" or spec["greeks"] == spec["oi"]):
+                raise ValueError("Scoped projection source-input descriptor invalid")
+            import io
+            import pyarrow.parquet as pq
+            from lib.symbol_directory_receipts import _read_regular_file
+            from engine.options_exposure_projection import exposure_input_digest
+            frames = []
+            for kind in ("greeks", "oi"):
+                name = spec[kind]
+                if (not isinstance(name, str) or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.-]{0,199}\.parquet", name)
+                        or Path(name).name != name):
+                    raise ValueError("Projection inputs must be sibling Parquet basenames")
+                body = _read_regular_file(Path(path).parent / name, label="projection " + kind, limit=1024 * 1024)
+                source = pq.ParquetFile(io.BytesIO(body))
+                if (source.metadata.num_rows > 64 or len(source.schema_arrow.names) > 64
+                        or sum(source.metadata.row_group(i).total_byte_size for i in range(source.metadata.num_row_groups)) > 2*1024*1024):
+                    raise ValueError("Scoped projection Parquet exceeds decoded bounds")
+                frames.append(source.read().to_pandas())
+            session = (context.get("clocks") or {}).get("source_session")
+            if exposure_input_digest(frames[0], frames[1], session, root) != context["input_sha256"]:
+                raise ValueError("Scoped projection source inputs do not match context")
+            context["_projection_inputs"] = tuple(frames)
+    return data["roots"]
+
+
 def main() -> None:
     logging.basicConfig(
         level=logging.INFO,
@@ -1208,7 +1406,14 @@ def main() -> None:
     ap.add_argument("--no-publish", dest="publish", action="store_false")
     ap.add_argument("--theta-store", default=None, metavar="PATH",
                     help="Override thetadata store root")
+    ap.add_argument("--exposure-context", default=None, metavar="JSON",
+                    help="Explicit admitted owner receipts, bound to exact source inputs (no default)")
     args = ap.parse_args()
+    exposure_contexts = load_exposure_contexts(args.exposure_context)
+
+    # A relative, missing, or non-directory input root stops here, before the
+    # watchdog, data_dir, mkdir, the store, or R2. Unset and empty do not.
+    _options_hub_input_root_or_none()
 
     # Armed before the first store touch: the 2026-08-07 wedge happened during
     # startup, so a watchdog armed any later would have been armed too late.
@@ -1222,17 +1427,20 @@ def main() -> None:
     moves_learned_mult = _load_learned_band_mult(data_root)
     moves_grades_by_root = _load_grades_board_rows_by_root(data_root)
 
+    # Output stays on data_root or the explicit --out. The input root cannot move it.
+    _repo_root = Path(__file__).resolve().parent.parent
+    _reads = resolve_options_hub_read_inputs(data_root, _repo_root)
     out_dir = Path(args.out) if args.out else (data_root / "live_flow_out" / "options_hub")
     out_dir.mkdir(parents=True, exist_ok=True)
 
     # CONTRACT v2 data paths (resolved once; graceful-absent throughout)
-    polygon_gex_dir = data_root / _POLYGON_GEX_SUBDIR
-    gex_latest_path = data_root / _GEX_LATEST_REL
-    # fear_greed.json lives under site/ (git-tracked, not data/)
-    _repo_root = Path(__file__).resolve().parent.parent
-    fear_greed_path = _repo_root / "site" / _FEAR_GREED_REL
-    tape_flow_dir = data_root / _TAPE_FLOW_SUBDIR
-    live_flow_out_dir = data_root / "live_flow_out"  # poller archive root
+    polygon_gex_dir = _reads["polygon_gex_dir"]
+    gex_latest_path = _reads["gex_latest_path"]
+    # fear_greed.json lives under site/ (git-tracked, not data/) unless the
+    # input root names a different site/ child.
+    fear_greed_path = _reads["fear_greed_path"]
+    tape_flow_dir = _reads["tape_flow_dir"]
+    live_flow_out_dir = _reads["live_flow_out_dir"]  # poller archive root
 
     # WP-RESOLVER — store resolution is canonical: --theta-store CLI wins, then
     # engine.thetadata_store.resolve_thetadata_store (THETADATA_STORE env →
@@ -1341,7 +1549,8 @@ def main() -> None:
         heartbeat(f"root {root} ({_root_idx + 1}/{len(roots)})")
         _root_start = time.monotonic()
         try:
-            vol_payload, gex_payload, vex_payload = build_root(root, asof, theta_store, polygon_gex_dir)
+            context_kwargs = {"exposure_context": exposure_contexts[root]} if root in exposure_contexts else {}
+            vol_payload, gex_payload, vex_payload = build_root(root, asof, theta_store, polygon_gex_dir, **context_kwargs)
 
             # ── R3 OI suite (oi_time / max_pain / oi_change) — computed HERE so
             # the wall-budget check below envelopes its cost (a slow chain skips

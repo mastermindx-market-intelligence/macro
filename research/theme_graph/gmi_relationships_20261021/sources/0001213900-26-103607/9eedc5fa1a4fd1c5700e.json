@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-09-25T21:20:01Z",
+ "accession": "0001213900-26-103607",
+ "cik": "0001951089",
+ "doc_byte_length": 2850643,
+ "doc_sha256": "6b49884fb76ff3459c9ff7a501d855060ce7ff183a605ddb96109fadd30ebe88",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-09-25",
+ "form": "20-F",
+ "period_of_report": "2026-06-30",
+ "primary_document": "ea0302128-20f_critical.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 1044955,
+  "byte_start": 1044358,
+  "normalized": "Under the offtake agreement, REalloys will purchase 15% of Tanbreez’s annual rare earth concentrate production, with priority rights in respect of concentrate volumes containing elevated concentrations of the critical HREE dysprosium and terbium, together with a right of first refusal over additional volumes. Deliveries under the REalloys Offtake Agreement will be made FOB Tanbreez port in Southern Greenland, with pricing linked to international rare earth oxide benchmarks on an element-by-element basis. Commercial shipments are expected to commence following the start of production.",
+  "normalized_sha256": "3c1ee524e046df061a5ca6da5a64757ac5ac79e6ff6f85934e876c5def47f8d1",
+  "raw": " Under the offtake agreement, REalloys will purchase 15% of Tanbreez&#8217;s annual rare earth concentrate production, with priority rights in respect of concentrate volumes containing elevated concentrations of the critical HREE dysprosium and terbium, together with a right of first refusal over additional volumes. Deliveries under the REalloys Offtake Agreement will be made FOB Tanbreez port in Southern Greenland, with pricing linked to international rare earth oxide benchmarks on an element-by-element basis. Commercial shipments are expected to commence following the start of production.",
+  "raw_sha256": "9eedc5fa1a4fd1c5700e77bea4f0e11939989d6cfed4c02a51adc1172d2d8407"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1951089/000121390026103607/ea0302128-20f_critical.htm",
+ "xbrl_contexts": []
+}

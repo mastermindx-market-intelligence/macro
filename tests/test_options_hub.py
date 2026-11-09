@@ -727,6 +727,51 @@ class TestVolPayloadSchema:
 
 
 # --------------------------------------------------------------------------- #
+# R5 prerequisite: expiry-resolved vanna/charm projection
+# --------------------------------------------------------------------------- #
+
+def test_by_expiry_projects_existing_vanna_and_charm_without_new_math():
+    asof = "2025-01-10"
+    greeks = pd.DataFrame([
+        _make_greeks_row(
+            date=asof, expiration="2025-02-21", strike=500.0, right="C",
+            underlying_price=500.0, vanna=0.001, charm=-0.002,
+        ),
+        _make_greeks_row(
+            date=asof, expiration="2025-06-20", strike=500.0, right="C",
+            underlying_price=500.0, vanna=0.003, charm=-0.004,
+        ),
+    ])
+    oi = pd.DataFrame([
+        {
+            "expiration": "2025-02-21", "strike": 500.0, "right": "C",
+            "open_interest": 1000.0, "date": asof,
+        },
+        {
+            "expiration": "2025-06-20", "strike": 500.0, "right": "C",
+            "open_interest": 2000.0, "date": asof,
+        },
+    ])
+
+    result = compute_gex(greeks, oi, asof, "SPY")
+    by_expiry = result["by_expiry"]
+    assert [row["exp"] for row in by_expiry] == ["2025-02-21", "2025-06-20"]
+    assert all("vanna_net" in row and "charm_net" in row for row in by_expiry)
+
+    # On this one-strike, fully in-window fixture, expiry aggregation must reconcile
+    # exactly to the already-published by-strike greek totals. This proves the new
+    # projection is only another grouping of the existing owner-native exposures.
+    assert sum(row["vanna_net"] for row in by_expiry) == pytest.approx(
+        sum(row["vanna_net"] for row in result["by_strike"]), abs=1e-4
+    )
+    assert sum(row["charm_net"] for row in by_expiry) == pytest.approx(
+        sum(row["charm_net"] for row in result["by_strike"]), abs=1e-4
+    )
+    assert any(abs(row["vanna_net"]) > 0 for row in by_expiry)
+    assert any(abs(row["charm_net"]) > 0 for row in by_expiry)
+
+
+# --------------------------------------------------------------------------- #
 # CONTRACT: by_strike windowing — 470-strike synthetic
 # --------------------------------------------------------------------------- #
 
@@ -1064,3 +1109,60 @@ class TestGexProfileBlock:
         assert result["profile"] is None
         # and the payload still carries the key, so consumers never KeyError
         assert "profile" in result
+
+
+# --------------------------------------------------------------------------- #
+# M01 — missing Greek inputs must not aggregate to a fake zero.
+# Appended only: stale drafts #7483 and #7402 also touch this file.
+# --------------------------------------------------------------------------- #
+
+def _m01_oi(right="C", strike=500.0, oi=100.0):
+    return {
+        "expiration": "2025-03-21",
+        "strike": strike,
+        "right": right,
+        "open_interest": oi,
+        "date": "2025-01-10",
+    }
+
+
+def test_absent_vanna_column_is_null_not_zero():
+    """(a) No vanna column: the strike's vanna_net is unknown, not 0.0."""
+    asof = "2025-01-10"
+    greeks = pd.DataFrame([_make_greeks_row(date=asof)]).drop(columns=["vanna"])
+    result = compute_gex(greeks, pd.DataFrame([_m01_oi()]), asof, "SPY")
+    assert result["by_strike"], "in-window strike must still be published"
+    assert result["by_strike"][0]["vanna_net"] is None
+
+
+def test_missing_gamma_and_iv_is_null_and_headline_incomplete():
+    """(b) gamma NaN and iv NaN: that strike's gamma_net is None, and the
+    headline is not presented as a complete book."""
+    asof = "2025-01-10"
+    greeks = pd.DataFrame([_make_greeks_row(
+        date=asof, gamma=np.nan, implied_vol=np.nan,
+    )])
+    result = compute_gex(greeks, pd.DataFrame([_m01_oi()]), asof, "SPY")
+    assert result["by_strike"], "in-window strike must still be published"
+    assert result["by_strike"][0]["gamma_net"] is None
+    assert result["net_gex_bn"] is None
+    assert result["coverage"]["n_gamma_missing"] == 1
+    assert "net_gex_known_bn" in result
+
+
+def test_equal_call_and_put_cancel_to_real_zero():
+    """(c) Pin: a same-strike call and put of equal size are an observed 0.0,
+    not a missing input."""
+    asof = "2025-01-10"
+    greeks = pd.DataFrame([
+        _make_greeks_row(date=asof, right="C", gamma=0.01, delta=0.5, vanna=0.0, charm=0.0),
+        _make_greeks_row(date=asof, right="P", gamma=0.01, delta=-0.5, vanna=0.0, charm=0.0),
+    ])
+    oi = pd.DataFrame([
+        _m01_oi(right="C", oi=1000.0),
+        _m01_oi(right="P", oi=1000.0),
+    ])
+    result = compute_gex(greeks, oi, asof, "SPY")
+    assert len(result["by_strike"]) == 1
+    assert result["by_strike"][0]["gamma_net"] == 0.0
+    assert result["net_gex_bn"] == 0.0

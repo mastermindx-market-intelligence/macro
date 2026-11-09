@@ -19,8 +19,10 @@ suite pins:
 from __future__ import annotations
 
 import json
+from datetime import date, datetime, timezone
 
 import pandas as pd
+import pytest
 
 from scripts.build_options_hub_nightly import (
     _attach_gex_history,
@@ -238,6 +240,14 @@ from scripts.build_options_hub_nightly import (  # noqa: E402
     _build_moves_payload,
 )
 from engine.moves_engine import moves_payload  # noqa: E402
+import scripts.build_options_hub_nightly as hub_builder  # noqa: E402
+from lib.nyse_calendar import expected_last_session as calendar_last_session  # noqa: E402
+
+
+@pytest.fixture(autouse=True)
+def _freeze_moves_settled_session(monkeypatch):
+    # Historical snapshot fixtures must not acquire acceptance from the wall clock.
+    monkeypatch.setattr(hub_builder, "expected_last_session", lambda: date(2026, 9, 18))
 
 
 def _theta_snapshot(*, root="INTC", asof="2026-09-17", spot=107.02, iv=0.6252):
@@ -264,16 +274,27 @@ def _theta_snapshot(*, root="INTC", asof="2026-09-17", spot=107.02, iv=0.6252):
     ])
 
 
-def test_moves_inputs_prefer_same_session_thetadata_eod_pair():
+def test_moves_inputs_prefer_same_session_thetadata_eod_pair(monkeypatch):
+    calls = []
+
+    def unused_snapshot(root):
+        calls.append(root)
+        return _theta_snapshot()
+
+    def unused_calendar():
+        raise AssertionError("complete EOD inputs must not enter fallback")
+
+    monkeypatch.setattr(hub_builder, "expected_last_session", unused_calendar)
     got = resolve_moves_inputs(
         "INTC", "2026-09-17",
         {"spot_ref": 108.0}, {"atm_iv": 55.0},
-        snapshot_loader=lambda _root: _theta_snapshot(),
+        snapshot_loader=unused_snapshot,
     )
     assert got == {
         "spot": 108.0, "atm_iv_pct": 55.0,
         "input_source": "thetadata_eod", "asof": "2026-09-17",
     }
+    assert calls == []
 
 
 def test_moves_inputs_fall_back_to_same_session_thetadata_snapshot():
@@ -405,3 +426,232 @@ def test_moves_publishable_rejects_cross_root_or_regressing_session():
     assert _moves_publishable(p, "INTC", "2026-09-16")
     malformed = {**p, "asof": "9999-99-99"}
     assert not _moves_publishable(malformed, "INTC", "2026-09-17")
+
+
+@pytest.mark.parametrize(
+    ("floor", "ceiling", "latest"),
+    [
+        ("2026-09-18", "2026-09-17", "2026-09-18"),
+        ("2026-09-21", "2026-09-22", "2026-09-18"),
+        ("2026-09-19", "2026-09-21", "2026-09-21"),
+    ],
+)
+def test_moves_invalid_snapshot_window_refuses_before_loading(
+    monkeypatch, floor, ceiling, latest,
+):
+    monkeypatch.setattr(hub_builder, "expected_last_session", lambda: date.fromisoformat(latest))
+    calls = []
+
+    def snapshot(root):
+        calls.append(root)
+        return _theta_snapshot(asof=floor)
+
+    got = resolve_moves_inputs(
+        "INTC", floor, {"spot_ref": None}, {"atm_iv": None},
+        snapshot_loader=snapshot, snapshot_asof_ceiling=ceiling,
+    )
+    assert got == {"spot": None, "atm_iv_pct": None, "input_source": None, "asof": None}
+    assert calls == []
+
+
+def test_moves_explicit_future_ceiling_cannot_bypass_latest_settled_session():
+    got = resolve_moves_inputs(
+        "INTC", "2026-09-17", {"spot_ref": None}, {"atm_iv": None},
+        snapshot_loader=lambda _root: _theta_snapshot(asof="2026-09-21"),
+        snapshot_asof_ceiling="2026-09-21",
+    )
+    assert got == {"spot": None, "atm_iv_pct": None, "input_source": None, "asof": None}
+
+
+@pytest.mark.parametrize(
+    ("floor", "snapshot_day", "ceiling"),
+    [
+        ("2026-09-18", "2026-09-19", "2026-09-21"),  # Saturday inside bounds
+        ("2026-09-04", "2026-09-07", "2026-09-08"),  # Labor Day
+        ("2025-01-08", "2025-01-09", "2025-01-10"),  # one-off NYSE closure
+    ],
+)
+def test_moves_snapshot_day_must_be_a_real_nyse_session(
+    monkeypatch, floor, snapshot_day, ceiling,
+):
+    monkeypatch.setattr(hub_builder, "expected_last_session", lambda: date.fromisoformat(ceiling))
+    got = resolve_moves_inputs(
+        "INTC", floor, {"spot_ref": None}, {"atm_iv": None},
+        snapshot_loader=lambda _root: _theta_snapshot(asof=snapshot_day),
+        snapshot_asof_ceiling=ceiling,
+    )
+    assert got == {"spot": None, "atm_iv_pct": None, "input_source": None, "asof": None}
+
+
+@pytest.mark.parametrize("hour,minute,accepted", [(20, 59, False), (21, 0, True)])
+def test_moves_default_ceiling_uses_the_real_exchange_settle_buffer(
+    monkeypatch, hour, minute, accepted,
+):
+    now = datetime(2026, 9, 18, hour, minute, tzinfo=timezone.utc)
+    monkeypatch.setattr(
+        hub_builder, "expected_last_session", lambda: calendar_last_session(now),
+    )
+    payload = _build_moves_payload(
+        "INTC", "2026-09-17", {"spot_ref": None}, {"atm_iv": None},
+        calibration=None, learned_band_mult=None, regime=None,
+        snapshot_loader=lambda _root: _theta_snapshot(asof="2026-09-18"),
+    )
+    if accepted:
+        assert payload["asof"] == "2026-09-18"
+        assert payload["input_source"] == "thetadata_snapshot"
+        assert payload["expected_move"] is not None
+    else:
+        assert payload["asof"] == "2026-09-17"
+        assert payload["input_source"] is None
+        assert payload["expected_move"] is None
+    assert _moves_publishable(payload, "INTC", "2026-09-17")
+
+
+@pytest.mark.parametrize(
+    "case",
+    ["invalid", "missing", "mixed-awareness", "mixed-offsets", "numeric", "boolean"],
+)
+def test_moves_malformed_vendor_clocks_write_a_publishable_current_null(tmp_path, case):
+    frame = _theta_snapshot()
+    if case == "invalid":
+        stamps = [pd.Timestamp("2026-09-17 16:00:00"), "not-a-vendor-timestamp"]
+    elif case == "missing":
+        stamps = [pd.Timestamp("2026-09-17 16:00:00"), pd.NaT]
+    elif case == "mixed-awareness":
+        stamps = [
+            pd.Timestamp("2026-09-17 16:00:00"),
+            pd.Timestamp("2026-09-17 16:00:00-04:00"),
+        ]
+    elif case == "mixed-offsets":
+        stamps = [
+            pd.Timestamp("2026-09-17 16:00:00-04:00"),
+            pd.Timestamp("2026-09-17 16:00:00+00:00"),
+        ]
+    elif case == "numeric":
+        stamps = [pd.Timestamp("2026-09-17 16:00:00").value] * 2
+    else:
+        stamps = [True, True]
+    frame["snapshot_ts"] = pd.Series(stamps, dtype=object)
+    before = frame.copy(deep=True)
+    payload = _build_moves_payload(
+        "INTC", "2026-09-17", {"spot_ref": None}, {"atm_iv": None},
+        calibration=None, learned_band_mult=None, regime=None,
+        snapshot_loader=lambda _root: frame,
+    )
+    assert payload["asof"] == "2026-09-17"
+    assert payload["input_source"] is None
+    assert payload["expected_move"] is None
+    assert payload["no_data_reason"] == "no_current_spot_iv_pair"
+    assert _moves_publishable(payload, "INTC", "2026-09-17")
+    path = tmp_path / "moves" / "INTC.json"
+    _write_json(path, payload)
+    assert json.loads(path.read_text(encoding="utf-8")) == payload
+    pd.testing.assert_frame_equal(frame, before)
+
+
+@pytest.mark.parametrize("kind", ["none", "mapping", "list", "scalar", "missing-column", "duplicate-column"])
+def test_moves_malformed_snapshot_shapes_become_current_null(kind):
+    if kind == "none":
+        frame = None
+    elif kind == "mapping":
+        frame = {"root": "INTC"}
+    elif kind == "list":
+        frame = [{"root": "INTC"}]
+    elif kind == "scalar":
+        frame = 42
+    elif kind == "missing-column":
+        frame = _theta_snapshot().drop(columns=["snapshot_ts"])
+    else:
+        frame = _theta_snapshot()
+        frame = pd.concat([frame, frame[["snapshot_ts"]]], axis=1)
+    payload = _build_moves_payload(
+        "INTC", "2026-09-17", {"spot_ref": None}, {"atm_iv": None},
+        calibration=None, learned_band_mult=None, regime=None,
+        snapshot_loader=lambda _root: frame,
+    )
+    assert payload["asof"] == "2026-09-17"
+    assert payload["expected_move"] is None
+    assert payload["input_source"] is None
+    assert _moves_publishable(payload, "INTC", "2026-09-17")
+
+
+@pytest.mark.parametrize("field", ["spot", "iv"])
+@pytest.mark.parametrize(
+    "case", ["none", "zero", "negative", "nan", "infinity", "boolean", "numpy-bool", "overflow"],
+)
+def test_moves_invalid_eod_value_falls_back_as_a_whole_source_pair(field, case):
+    invalid = {
+        "none": None, "zero": 0, "negative": -1, "nan": float("nan"),
+        "infinity": float("inf"), "boolean": True,
+        "numpy-bool": pd.Series([True]).iloc[0], "overflow": 10**400,
+    }[case]
+    gex = {"spot_ref": invalid if field == "spot" else 108.0}
+    vol = {"atm_iv": invalid if field == "iv" else 55.0}
+    calls = []
+
+    def snapshot(root):
+        calls.append(root)
+        return _theta_snapshot()
+
+    got = resolve_moves_inputs(
+        "INTC", "2026-09-17", gex, vol, snapshot_loader=snapshot,
+    )
+    assert got == {
+        "spot": 107.02, "atm_iv_pct": 62.52,
+        "input_source": "thetadata_snapshot", "asof": "2026-09-17",
+    }
+    assert calls == ["INTC"]
+
+
+@pytest.mark.parametrize("zone", [None, "America/New_York"])
+def test_moves_uniform_vendor_clock_keeps_its_own_represented_date(zone):
+    frame = _theta_snapshot()
+    if zone is not None:
+        frame["snapshot_ts"] = frame["snapshot_ts"].dt.tz_localize(zone)
+    before = frame.copy(deep=True)
+    got = resolve_moves_inputs(
+        "INTC", "2026-09-17", {"spot_ref": None}, {"atm_iv": None},
+        snapshot_loader=lambda _root: frame,
+    )
+    assert got == {
+        "spot": 107.02, "atm_iv_pct": 62.52,
+        "input_source": "thetadata_snapshot", "asof": "2026-09-17",
+    }
+    pd.testing.assert_frame_equal(frame, before)
+
+
+@pytest.mark.parametrize("invalid_floor", ["2026-09-19", "2026-09-21"])
+def test_moves_invalid_source_date_cannot_be_requalified_by_a_null_payload(invalid_floor):
+    calls = []
+
+    def snapshot(root):
+        calls.append(root)
+        return _theta_snapshot(asof=invalid_floor)
+
+    payload = _build_moves_payload(
+        "INTC", invalid_floor, {"spot_ref": None}, {"atm_iv": None},
+        calibration=None, learned_band_mult=None, regime=None,
+        snapshot_loader=snapshot, snapshot_asof_ceiling=invalid_floor,
+    )
+    assert payload["asof"] == invalid_floor  # preserve the observed date; never relabel it
+    assert payload["expected_move"] is None
+    assert calls == []
+    assert not _moves_publishable(payload, "INTC", invalid_floor)
+
+
+def test_moves_transport_failure_preserves_current_null_and_does_not_retry():
+    calls = []
+
+    def snapshot(root):
+        calls.append(root)
+        raise RuntimeError("synthetic unavailable snapshot")
+
+    payload = _build_moves_payload(
+        "INTC", "2026-09-17", {"spot_ref": None}, {"atm_iv": None},
+        calibration=None, learned_band_mult=None, regime=None,
+        snapshot_loader=snapshot,
+    )
+    assert calls == ["INTC"]
+    assert payload["expected_move"] is None
+    assert payload["input_source"] is None
+    assert _moves_publishable(payload, "INTC", "2026-09-17")

@@ -1,0 +1,27 @@
+{
+  "scope": "Report structural validation only; not an empirical market test or production acceptance",
+  "status": "PASS",
+  "required_artifacts": 21,
+  "executive_questions": 30,
+  "wave_contracts": 12,
+  "fields_per_wave": {
+    "R0": 17,
+    "R1": 17,
+    "R2": 17,
+    "R3": 17,
+    "R4": 17,
+    "R5": 17,
+    "R6": 17,
+    "R7": 17,
+    "R8": 17,
+    "R9": 17,
+    "R10": 17,
+    "R11": 17
+  },
+  "primitive_variants": 40,
+  "literature_entries": 31,
+  "registered_source_ids": 212,
+  "json_files_parsed": 10,
+  "local_links_checked": 44,
+  "errors": []
+}

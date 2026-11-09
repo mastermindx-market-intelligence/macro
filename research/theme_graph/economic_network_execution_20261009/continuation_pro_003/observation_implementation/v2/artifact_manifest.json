@@ -1,0 +1,83 @@
+{
+  "admission": "NOT_ADMITTED",
+  "artifact_version": "v2",
+  "artifacts": [
+    {
+      "bytes": 42756,
+      "name": "relationship_observations.py",
+      "sha256": "85c07b309ff7b7220ec12f2b3f25c924a2ef4c9ab495ce9030f61038cbb9e8c7"
+    },
+    {
+      "bytes": 49406,
+      "name": "test_company_relationship_observations.py",
+      "sha256": "a73700e639c8e97a4ff84951b48358abe63b1f5048560d03b0e40f2310ac44da"
+    },
+    {
+      "bytes": 10133,
+      "name": "implementation_return.md",
+      "sha256": "ba4dd017ed8e4090aea14584ee89b983ed3f5e0656992d227ba2929b8f6247ea"
+    }
+  ],
+  "authority": {
+    "gate": false,
+    "prediction": false,
+    "rank": false,
+    "size": false,
+    "trade": false
+  },
+  "corrections": [
+    "UNCHANGED_OUTCOME_DRIFT_BEFORE_ABSTENTION",
+    "ACTUAL_COLLECTOR_TEST_NETWORK_IMPORT_GUARD_CONTROLS",
+    "AMBIGUOUS_FINAL_WRITE_NONMATCHING_READBACK_EFFECT_UNKNOWN"
+  ],
+  "git_operations_this_continuation": false,
+  "graph1_projection": null,
+  "incumbent_inspector_sha256": "a558922c0586a5532f3912524b48f3cf592c3c6c9c21f689e3d416976e9cae55",
+  "incumbent_store_sha256": "7ba42eb8f74c034413997707a35156e67342fb9a30ca2b80dde0f11d1dc7e2bd",
+  "intentional_import_controls_prepared": 18,
+  "lane": "/root/native_adoption_frontier",
+  "native_application_and_publication": "PRINCIPAL_OWNED",
+  "native_operations_this_continuation": false,
+  "native_tests": "NOT_RUN_BY_THIS_LANE",
+  "native_write_fence": [
+    "engine/company_intelligence/relationship_observations.py",
+    "tests/test_company_relationship_observations.py"
+  ],
+  "preserved_v1_artifacts": [
+    {
+      "bytes": 42432,
+      "name": "relationship_observations.py",
+      "sha256": "4239285b177d2947173404f96f1672394b6f246e70ea4a82885e25ca8990196b"
+    },
+    {
+      "bytes": 43659,
+      "name": "test_company_relationship_observations.py",
+      "sha256": "80acae7aadcecec3214fe86d77c99da841d2544629d35380ec11b5d9cc94d67e"
+    },
+    {
+      "bytes": 18426,
+      "name": "implementation_return.md",
+      "sha256": "1f6331c43ac797f5814025fe3aef5c76860217694a0af4ef0bfad5600f289395"
+    },
+    {
+      "bytes": 2334,
+      "name": "artifact_manifest.json",
+      "sha256": "96b7cce353a6e65baca5d89f4a80a562cde9d60ad4f002233ee6e0bf0b1b9c60"
+    }
+  ],
+  "real_evidence_execution": "NOT_RUN_BY_THIS_LANE",
+  "schema": "research.prepared_observation_artifact_manifest/v1",
+  "state": "FROZEN_PREPARED_CORRECTION_NATIVE_EXECUTION_NOT_RUN",
+  "store_operations_this_continuation": false,
+  "syntax_check": {
+    "application_imports": false,
+    "child_characters": 5510,
+    "child_sha256": "a7daa01bd00787fa88d24399854dd3e02e993eb7e5cc24c9b9e6048cbe655a04",
+    "source_test_and_child": true,
+    "status": "PASS_COMPILE_ONLY",
+    "tests_executed": false
+  },
+  "test_functions_prepared": 24,
+  "v1_known_review_findings": 3,
+  "v1_runtime_proof_promoted": false
+}

@@ -1,0 +1,42 @@
+[
+  {
+    "accession": "0000070858-22-000112",
+    "expected_period_end": "2022-06-30",
+    "expected_span_ref": null,
+    "expected_unit": "USD",
+    "expected_value_text": "2889000000",
+    "fiscal_year": 2022,
+    "form_type": "10-Q",
+    "format_class": "ixbrl_inline",
+    "issuer": "BAC",
+    "label_class": "extract_positive",
+    "pack_id": "PK03",
+    "polarity": "positive",
+    "reason": "bac-20220630.htm | us-gaap:NetIncomeLoss @ i83a4b126f3894112bbbd612f750edaa9_D20220401-20220630 (ConsolidationItemsAxis=us-gaap:OperatingSegmentsMember; StatementBusinessSegmentsAxis=bac:ConsumerBankingSegmentMember) | 'Net income $ 6,247 $ 9,224 $ 2,889 $ 3,038 $ 1,151 $ 992' | Segment net income for the largest segment by total revenue net of interest expense, Consumer Banking, for the three months ended June 30, 2022; Business Segment Information note, in millions.",
+    "section_family": "segments",
+    "split": "held_out",
+    "target_id": "segment_profit_or_loss",
+    "target_kind": "extract",
+    "trial_id": "PK03|0000070858-22-000112|extract|segment_profit_or_loss"
+  },
+  {
+    "accession": "0000070858-22-000112",
+    "expected_period_end": "2022-06-30",
+    "expected_span_ref": null,
+    "expected_unit": "USD",
+    "expected_value_text": "9136000000",
+    "fiscal_year": 2022,
+    "form_type": "10-Q",
+    "format_class": "ixbrl_inline",
+    "issuer": "BAC",
+    "label_class": "extract_positive",
+    "pack_id": "PK03",
+    "polarity": "positive",
+    "reason": "bac-20220630.htm | bac:RevenuesNetOfInterestExpenseFullTaxEquivalentBasis @ i83a4b126f3894112bbbd612f750edaa9_D20220401-20220630 (ConsolidationItemsAxis=us-gaap:OperatingSegmentsMember; StatementBusinessSegmentsAxis=bac:ConsumerBankingSegmentMember) | 'Total revenue, net of interest expense 22,791 21,576 9,136 8,186 5,433 5,065' | Largest business segment by total revenue, net of interest expense, for the three months ended June 30, 2022: Consumer Banking (vs GWIM 5,433; Global Banking 5,006; Global Markets 4,502); Business Segment Information note, in millions, full tax-equivalent basis.",
+    "section_family": "segments",
+    "split": "held_out",
+    "target_id": "segment_revenue",
+    "target_kind": "extract",
+    "trial_id": "PK03|0000070858-22-000112|extract|segment_revenue"
+  }
+]
