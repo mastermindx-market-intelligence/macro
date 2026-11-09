@@ -4,15 +4,15 @@ Updated: 9 November 2026.
 
 ## Outcome
 
-The Chairman-directed clarity pass is applied in the actual Paper designs. **16 product/design files have now been edited across the18 audited product/system files.** The first pass edited15; the continued pass also relocated the OS readiness architecture note and deepened six previously edited files. The initial inventory contained 39 resources, including folders, archives, migration/recovery copies, unrelated design work and technical canaries. Those categories are recorded below and are not counted as production screens.
+The Chairman-directed clarity pass is applied in the actual Paper designs. **16 product/design files have now been edited across the 18 audited product/system files.** The first pass edited15; the continued pass also relocated the OS readiness architecture note and deepened six previously edited files. The initial inventory contained 39 resources, including folders, archives, migration/recovery copies, unrelated design work and technical canaries. Those categories are recorded below and are not counted as production screens.
 
 News Intelligence now separates its readable activity view, optional source/count explanation, and full architecture references. The same placement rule is applied across the eligible current portfolio. This is a design outcome. Application implementation, live navigation, backend qualification and production delivery are separate acceptance.
 
 ## Where to start
 
-- [Current News journey](https://app.paper.design/file/01M5EXPMQTSBFBAM8KKG83FTZH/p-5-0):3HH-0,20 EN/ZH dark states with contextual Activity, Sources, Method and return examples.
+- [Current News journey](https://app.paper.design/file/01M5EXPMQTSBFBAM8KKG83FTZH/p-5-0):3HH-0, 20 EN/ZH dark states with contextual Activity, Sources, Method and return examples.
 - [Independent News rail](https://app.paper.design/file/01M5EXPMQTSBFBAM8KKG83FTZH/p-2-0):27L-0. Earlier compact count/help studies are marked references on p-4-0; their fixtures are preserved.
-- [International calculation help](https://app.paper.design/file/01M3P1TW5Y3XWQC37ADDS8K5AG/p-N-0):RKV-0,32 frames. [Library results](https://app.paper.design/file/01M3P1TW5Y3XWQC37ADDS8K5AG/p-O-0):RVI-0,36 frames. [Tool methods](https://app.paper.design/file/01M3P1TW5Y3XWQC37ADDS8K5AG/p-P-0):S89-0,16 frames.
+- [International calculation help](https://app.paper.design/file/01M3P1TW5Y3XWQC37ADDS8K5AG/p-N-0):RKV-0, 32 frames. [Library results](https://app.paper.design/file/01M3P1TW5Y3XWQC37ADDS8K5AG/p-O-0):RVI-0, 36 frames. [Tool methods](https://app.paper.design/file/01M3P1TW5Y3XWQC37ADDS8K5AG/p-P-0):S89-0, 16 frames.
 - [Canonical human-first law](https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-9-0): 9X3-0 inside content-fit frame ANF-0; AND-0 adds the current-variant/claim consistency check.
 - [News implementation guide](NEWS_INTELLIGENCE_BUILD_GUIDE.md), [portfolio implementation guide](PORTFOLIO_BUILD_GUIDE.md), and [continued workflow contracts](WORKFLOW_ENHANCEMENTS.md). [Initial applied maps](APPLIED_EFFECTS.json)/[initial verification](FINAL_QA.json) preserve the first pass; [continued exact effects and verification](WORKFLOW_ENHANCEMENT_REGISTER.json) records the later work.
 - [Source doctrine §8](../../docs/DESIGN_DOCTRINE.md#8-paper-product-clarity-and-builder-separation--8-november-2026).
@@ -42,7 +42,7 @@ Unknown, stale, partial, unconfirmed, unavailable and permission-limited states 
 | [GMI Explorer](https://app.paper.design/file/01M5H6EARN9YHQV17JC6ZG9BRY/p-6-0) | Current product explanations condensed; methods, source and implementation detail preserved. | Build `p-6-0` |
 | [Sector Intelligence](https://app.paper.design/file/01M6FAXA774QT1VRDMAG7DFQ2W/p-4-0) | Current and journey copy simplified; unqualified ≤1-month probabilities unavailable; historical priors retained. | Build `p-5-0` |
 | [International Markets](https://app.paper.design/file/01M3P1TW5Y3XWQC37ADDS8K5AG/p-O-0) |84 calculation/result/tool-help frames; eight origin bindings; concise current tool scopes and distinct qualification states. | Calculation p-N; tool help p-P; earlier saved/source help p-J; Build p-M |
-| [PROPHET](https://app.paper.design/file/01M3NT5Y3G5HTJHVR0K5W2MDJM/p-1-0) | Prior separation retained; Y1G save states now promise only supported membership/outcome facts. |1CBX-0 on Build p-E preserves original assurances and13L8 contract pointer |
+| [PROPHET](https://app.paper.design/file/01M3NT5Y3G5HTJHVR0K5W2MDJM/p-1-0) | Prior separation retained; Y1G save states now promise only supported membership/outcome facts. |1CBX-0 on Build p-E preserves original assurances and 13L8 contract pointer |
 | [Mastermind OS](https://app.paper.design/file/01M3NRCX55B452A12819WNE1RH/p-J-0) | Readiness architecture sentence moved; operational evidence/access/unknown-effect limits remain. | ZMN-0 under PBR-0 on Build p-E |
 
 Original node IDs were retained when moving notes. Where a fixed-height product wrapper needed replacement, the original complete frame remains archived and the new product root has explicit lineage. Gallery/placement frames only organize whole frames; extract the named product child, not a gallery or a Build page.
@@ -53,9 +53,9 @@ The work used resource/page inventories, targeted copy searches, complete JSX fo
 
 The initial variant pass is supplemented by the original Hub, International, Terminal, Design System, Sector and Prophet registers, and then WORKFLOW_ENHANCEMENT_REGISTER.json. Earlier proposed/uninspected fields describe their original audit snapshot. This directory and the latest scoped applied record identify subsequent changes.
 
-The continuation natively verified104 current frames in the named News/International workflow families, including four existing help roots moved intact. It also checked selected current OS, AI, Ontology, Popup and Prophet states and applied the concrete findings. Exact36 result-to-method bindings, eight Library origins and24 calculation-index actions are recorded. This count is not a count of every estate frame.
+The continuation natively verified104 current frames in the named News/International workflow families, including four existing help roots moved intact. It also checked selected current OS, AI, Ontology, Popup and Prophet states and applied the concrete findings. Exact36 result-to-method bindings, eight Library origins and 24 calculation-index actions are recorded. This count is not a count of every estate frame.
 
-The initial canvas pass verified all20 then-new gallery/placement parents and21 row memberships. New placement carriers have no overlap with other roots whose bounds were measurable; inactive-page unmeasured bounds are explicitly retained in FINAL_QA.json. The admitted Paper duplication operation placed those carriers in available canvas space.
+The initial canvas pass verified all 20 then-new gallery/placement parents and 21 row memberships. New placement carriers have no overlap with other roots whose bounds were measurable; inactive-page unmeasured bounds are explicitly retained in FINAL_QA.json. The admitted Paper duplication operation placed those carriers in available canvas space.
 
 ## Semantics repaired while simplifying
 
@@ -112,7 +112,7 @@ The AAPL Paper chart fixture was reconciled across locales without claiming it w
 
 Mastermind protected pin: 5c3d3885234358aefb97ecdbc59be0864df14f8b. Macro admission/base pin: ad00e5676aa94d22918b3b92d8026bd45328536c. News Terminal implementation was checked at f0af84bbd6c28c2f6477bd8ffc031903979023bd. The later Macro main doctrine at 86f9aa3238dfbcba7262f9d6777cd43c0dc167bb remains an exact prefix of this branch's doctrine; §8 is additive.
 
-The continued source base is Macro b5674d8ef898e503d6164922654f5ff89be9981c; News runtime was separately inspected at Terminal cfe14c49f2e0166c0ded5e6f23a274bb663d0fd3. Initial PR #10867 is merged at6b25578ad1b7c10e724b25170e2d0ab46acbead1. Current source acceptance follows the exact PR/merge receipt for branch sol/paper-workflow-depth-20261108-c3-2335.
+The continued source base is Macro b5674d8ef898e503d6164922654f5ff89be9981c; News runtime was separately inspected at Terminal cfe14c49f2e0166c0ded5e6f23a274bb663d0fd3. Initial PR #10867 is merged at 6b25578ad1b7c10e724b25170e2d0ab46acbead1. Current source acceptance follows the exact PR/merge receipt for branch sol/paper-workflow-depth-20261108-c3-2335.
 
 Paper edits are observed applied effects on one C3 carrier. The GitHub branch owns the durable plan, full original wording, old/new targets, formulas, source contracts and verification. The personal Paper skill is separately committed and synchronized. No Slack handoff, deployment, trade, runtime save or background execution is implied.
 
