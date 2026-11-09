@@ -252,12 +252,10 @@
     "status": "PRESENT"
   },
   "corrections": {
-    "changed_fingerprints": [
-      "bond_desk_health_score_level:bond_desk_health_score_level:03ff434fef20651a"
-    ],
-    "correction_state": "superseded",
-    "note": "Same reference period as the predecessor print, but one or more owner-native metrics changed value: this print supersedes the prior one as a revision.",
-    "predecessor_generation_id": "national_debt_liabilities-US-fe37fa799ae96798"
+    "changed_fingerprints": [],
+    "correction_state": "none",
+    "note": "Same reference period as the predecessor print; no tracked metric changed value (no-change republication).",
+    "predecessor_generation_id": "national_debt_liabilities-US-93e1abe4aa8b08de"
   },
   "drivers": {
     "balance_sheet": [
@@ -378,11 +376,11 @@
     ]
   },
   "generation": {
-    "built_at": "2026-11-08T06:28:26Z",
+    "built_at": "2026-11-09T06:41:31Z",
     "calculation_as_of": "2026-11-05",
-    "code_version": "9c377cfb6201005e195590887b292c737d18255c",
-    "content_sha256": "93e1abe4aa8b08de29ded9d4911cae9f7b0705253a49c47b46cbeed4018d2005",
-    "generation_id": "national_debt_liabilities-US-93e1abe4aa8b08de",
+    "code_version": "df80d43dc64ec32b78dff8acbfac3f11a7ce71c0",
+    "content_sha256": "364f450d7bb228a34101f409b14d06044bbb17302f748d5c5c30527a644f91a6",
+    "generation_id": "national_debt_liabilities-US-364f450d7bb228a3",
     "producer": "engine.market_os.macro_workspaces.national_debt",
     "rendered_at": null
   },
