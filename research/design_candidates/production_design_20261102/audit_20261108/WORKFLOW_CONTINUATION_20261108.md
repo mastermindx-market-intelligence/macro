@@ -2358,3 +2358,53 @@ A screenshot-output forwarding error occurred after the actual Copy module image
 The primary search promises company/product matching, but the result row shows only taxonomy and a count. At this source, **NVIDIA H200** and **24GB** each find the existing HBM topic through a public connection field, yet neither match appears in its row. Continue by using the existing secondary text slot for one exact Company/Product/Platform match hint when the visible topic/parent does not already explain the query. Restore the parent on Clear; keep ranking, counts, selected research and public-data admission unchanged. The **Micron** substring query also matches a taxonomy name, so field explanations must be attached only to the individually matching field.
 
 Original model01 and all release/independent-lane holds remain. This is component/controlled-clipboard proof, without system clipboard, full shared shell/fonts, native OS IME, spoken AT, actual BFCache, live account/admission, current hosted CI or deployment acceptance.
+
+
+## 48 · Company and product search explains the result — 9 November 2026
+
+### Applied source
+
+[GMI Draft PR10676](https://github.com/mastermindx-market-intelligence/Macro/pull/10676) advances from `60f131e086e614487d86ebf089aa52b1af2630f0` to **`ba8a81b6470f88f71bc7c2ec90cede39aba8a9b0`**, tree **`8f393bad2110fd60cf4b206a23dea546b5647724`**. Six source files and the PR body read back exactly. Draft/unmerged and original model/release holds remain.
+
+The existing search already matches public company/ticker/product/platform values. It now reveals one exact field match in the result's existing secondary label position, keeping the topic, native anchor and total connection badge. **NVIDIA H200** shows **Platform: NVIDIA H200**; **24GB** shows the exact product value. Chinese uses 公司 / 证券代码 / 产品 / 平台 without translating or inventing the source values.
+
+Use the existing normalized whole query inside one field. Suppress an unnecessary hint when the currently visible canonical topic or parent already explains it. Empty, whitespace-only, unmatched and cross-field-only queries retain the canonical parent. Supplied connection order and then company/ticker/product/platform order make the hint deterministic. This is an explanation, not new eligibility or ranking.
+
+The writes occur only after the incumbent filter-pass guard and touch the two direct language text nodes with equality checks. Count, title, anchor, order, focus, selected research, existing filters, URL and public admission keep their owners. The count remains all published connections for that topic, not matching companies.
+
+### Consumer and layout proof
+
+[DESIGN_RECORD §11.39](https://github.com/mastermindx-market-intelligence/Macro/blob/ba8a81b6470f88f71bc7c2ec90cede39aba8a9b0/research/theme_graph/gmi_design_20261021/DESIGN_RECORD.md) and [SEARCH_MATCH_VALIDATION_20261109.json](https://github.com/mastermindx-market-intelligence/Macro/blob/ba8a81b6470f88f71bc7c2ec90cede39aba8a9b0/research/theme_graph/gmi_design_20261021/SEARCH_MATCH_VALIDATION_20261109.json) retain baseline, diagnostic and final evidence.
+
+| Evidence | Observed result |
+|---|---|
+| Final PID 52303 | Exit0, **13 cases / 13 contexts**, Chrome157.0.8103.39, zero page errors; **25.60 s** |
+| Seven complete workflows | EN/ZH1440, EN/ZH390/320 and EN820; field types, case/whitespace, Clear/Reset, retained filters and actual result selection |
+| Match boundary | Micron keeps both HBM and crop-micronutrient results; only HBM receives the company hint. MU 24GB retains a cross-field result without inventing a single-field explanation |
+| Continuity | Two actual Back/Forward/Enter journeys preserve the focused anchor through locale changes |
+| Regression | Two unchanged primary Clear and two Browse focus-edge cases pass |
+| Geometry and observations | **74 search snapshots / 49 geometry checks**; no clipped values, badge overlap or page overflow; result targets at least 44 px |
+| Visuals | Five final desktop/EN390/ZH320 company/product/platform captures inspected |
+| Preservation | Seven HTML pages/CSS byte-exact; all **121 prior verifier definitions AST-exact**; all JS outside the helper/label projection exactly reconstructs the parent |
+
+Baseline PID **33186** reproduces two rows whose matched field was invisible. Two new-test diagnostics remain retained: a raw bilingual-badge assertion duplicated the shared numeral, and a global Reset selector resolved to inert answer recovery after the native dialog reparented Browse. The final tests use the original count-node identity/current-language rendering and the existing Browse-scoped Reset. Product JS stayed unchanged across candidate runs.
+
+Paired JS blob **cf2aa0de56bd3ee4b09808aa96d8492f9506d4f2**, SHA256 **2fabd10c90100dac6144093205f757adcc4ed9f4c28e618ecd74d551878d5b43**. The canonical validation retains every case result and all new match observations/geometry. Repeated existing-regression detail stays in the hashed complete native report; the focused export projection is explicit.
+
+### Editable Paper states and builder contract
+
+[Browse · Search and filters](https://app.paper.design/file/01M5H6EARN9YHQV17JC6ZG9BRY/p-D-0) appends **A76-0**, Company and platform matches, inside the existing **A1F-0** flow. It contains **Q05 EN390 Noir A7F-0** and **Q06 ZH320 Day A94-0**, both truthful 844 px phone frames. The controls show All categories, All scope and evidence unchecked. Micron has two results; NVIDIA H200 has one. The retained conventional-DRAM research remains behind the native dialog; new search results do not silently substitute it.
+
+The new section creates 123 Paper nodes, including 105 div nodes after Paper conversion. All **174 prior flow div nodes** remain exact in ID, parent, style and text. The original current-product EN phone seed **6DR-0** also reads back exactly. No original product treatment is restyled.
+
+Build remains **18 modules / 57 nodes**. Existing module08 body **7NL-0** explains exact-field matching, canonical visible-language suppression, stable field order, direct text projection and count meaning. Only that body plus source/proof nodes **7MV,7MZ,7NF** change; all IDs, parents and styles are exact. Tokens remain **ac191fd9**. The new states, amended module and proof were captured and inspected; exact working roots A1F/7M9 were released. Four observed Paper operations cover insertion, naming, guide text and finish.
+
+[PAPER_SEARCH_MATCH_20261109.json](PAPER_SEARCH_MATCH_20261109.json) retains source readbacks, editable source HTML, complete before/after flow and guide, node checks, operation receipts and the evidence boundary.
+
+### Next source-specific correction
+
+The desktop visual exposed an existing semantic error: **Conventional DRAM (non-HBM)** receives the HBM-specific description. Both `renderAnswer()` and the server `topic_answer()` macro test for an HBM substring. Exactly two current topic names match; only canonical **theme:hbm_packaging** should receive that specialized sentence.
+
+Continue by binding that sentence to the exact topic ID in both renderers. Keep each existing bilingual generic fallback and the default HBM output unchanged; prove client selection and server rendering for HBM and conventional DRAM. No new sector prose, model field or public observation is needed.
+
+Original model01, release and independent-lane holds remain. This feature explains an exact public-field subset of existing matches; it does not claim all search causes or current commercial exposure. Full shared shell/fonts, native OS IME, spoken AT, live account/admission, current hosted CI and deployment remain outside this proof.
