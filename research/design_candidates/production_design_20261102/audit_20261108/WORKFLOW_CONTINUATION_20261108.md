@@ -1731,3 +1731,30 @@ Paper [GMI p7](https://app.paper.design/file/01M5H6EARN9YHQV17JC6ZG9BRY/p-7-0), 
 DOM/accessibility-tree checks do not establish spoken screen-reader behavior or full shell/fonts/account/live-serving acceptance. Catalyst remains merged with its one refused/reconciled production attempt; Tools retains its capture and integration boundaries. No release retry or alternate browser path occurred.
 
 The next source-backed improvement is the index feedback host: it starts hidden, updates nested counts/no-match text, then reveals the role-bearing paragraph. A persistent outer status owner can reuse those existing bilingual spans and render functions while preserving the same empty-gap contract. This section does not claim that next amendment is implemented.
+
+## 35. Index result feedback keeps one persistent owner — 9 November 2026
+
+[GMI Draft PR10676](https://github.com/mastermindx-market-intelligence/Macro/pull/10676) now points to **472146a6532a7bd48db5cdc433ff4e36ecfee456**, parent `37c7cf217f9d63605843a8b1e860f3e4139486b4`, tree `456e5947bf4b93905f8ab321e63a15a6584263e0`. All ten changed files read back byte-for-byte. Original-carrier expected-head publication preserved Draft/model/release boundaries.
+
+The index now has one persistent polite/atomic wrapper around its existing visual feedback paragraph. Status attributes moved from the hidden paragraph to that wrapper, with no nested status role. Its bilingual count/no-match spans, matching-row calculations, category/subgroup totals, current language owner and URL/disclosure behavior remain. The only JS change is an idempotent visibility assignment in `indexHidden()`; the existing focus-release call stays outside that guard.
+
+The scoped empty-gap rule follows the whole feedback paragraph, so zero-result feedback keeps its space even though the inner count span is hidden. Actual search-to-legend spacing is **12 px** initially/after Clear and **42.75 px** for positive/no-match feedback in all six tested EN/ZH widths. Repeated equivalent queries and duplicate language notifications cause no status-content mutation. Disabled JavaScript leaves the feedback empty and preserves all 371 native index destinations.
+
+| Source | Exact blob |
+| --- | --- |
+| Paired JS | **d578f494935c7c2dbc9e6f352d2669e885fef488** |
+| Paired CSS | **d12725489b7c8baad38ec53570c8f7e25f759606** |
+| Shared macro | **9b876f4b543e6335e695991fbca689c8005fa653** |
+| Generated index | **29d9a58633f05f05a73abba58d5c867750d8a0a7** |
+| Canonical verifier | **cc73d06d334051ccd6d36a39993f0ab23b37ecb7** |
+| Extracting harness | **dc2d9b1517cd8bff91d43fe0c34f2dacf20d954d** |
+| DESIGN_RECORD through §11.26 | **a7b3b5f0fb54b0b0e7ed01cf49bb1a1b281c5962** |
+| INDEX_STATUS_VALIDATION_20261109.json | **02e7d3addae530ba94ff597e713896de8ce33ee7** |
+
+The qualified renderer reproduced the baseline from 48 exact inputs and the unchanged accepted model. Only one index wrapper line and paired assets changed among nine outputs; explorer HTML and five other HTML outputs remain exact. The renderer's 262,301-byte index was reconstructed from its one checked changed span and verified against the complete candidate SHA-256/Git blob.
+
+Baseline PID76771 reproduced the missing persistent owner in two cases. Candidate PID78730 passed **14 cases / 14 fresh anonymous contexts**, Chrome157.0.8103.39, zero page errors, exit0, 19.78 seconds. Eight status/static cases cover transitions, singular/plural wording, locale/no-op behavior, exact accessibility-tree content, identity, focus, history, disclosure restoration and geometry. All six existing filtered-index cases were rerun because the amended helper serves row/shortcut hiding: they retain counts, sticky targets, stale observer rejection, hidden/unrelated-focus rules and Back/Forward behavior. Four native phone captures were inspected. The [structured receipt](https://github.com/mastermindx-market-intelligence/Macro/blob/472146a6532a7bd48db5cdc433ff4e36ecfee456/research/theme_graph/gmi_design_20261021/INDEX_STATUS_VALIDATION_20261109.json) and adjacent extracting harness contain exact commands/source.
+
+Paper [GMI p7](https://app.paper.design/file/01M5H6EARN9YHQV17JC6ZG9BRY/p-7-0), Build **7M9-0**, retains eleven modules and all 36 IDs/parents/order/styles. Four text nodes align the source identity, index feedback contract and proof. The native full-frame screenshot was inspected and the exact root finished. **PAPER_INDEX_STATUS_20261109.json** records readback. Spoken assistive-technology output and full-shell/fonts/live-account/serving/release acceptance remain separate.
+
+Next useful feature: an authored 44 px Clear search button can replace the small native cancel affordance only after enhancement, reuse the existing Escape/input path, and preserve tree expansion plus index URL/disclosure context. Current empty fields and JavaScript-disabled native behavior should remain. The separate index header also contains a duplicated title/date introduction; source review is evaluating an index-only consolidation while protecting navigation and qualified returns. Neither next step is claimed implemented here.
