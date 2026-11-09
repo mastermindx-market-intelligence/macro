@@ -37,6 +37,10 @@ Build 47N-0 explains the actual gap: the breadth builder has a known-period comp
 
 The replacement motion sequence retires old values when the selected context changes, shows the pending selection, and commits labels/chart/values together. A refresh of the same security, metric and fiscal period may retain explicitly dated last values while a newer snapshot loads. An explicitly selected snapshot or changed fiscal period follows the context-change rule. Reduced motion commits directly. “Show numbers” expands beneath the chart rather than replacing it.
 
+The existing runnable [motion reference](../evidence-motion-reference.html) now includes an Expectations study inside Reference controls. It uses synthetic Example Co. readings and explicit delivery controls, reuses the existing theme/language/reduced-motion controls, and leaves the GMI route/history owner intact. The new behavior retires changed-context fields, retains same-context dated readings on refresh/failure, commits complete bundles, and rejects obsolete request identities including A→B→A. Animation follows data acceptance and does not interpolate numbers. Paper Build 4CY-0 links this study.
+
+The expanded verifier passes 14 source/DOM checks: the original nine test bodies are unchanged and five consequential cases were added. The tests include EN/ZH preservation, late arrivals before and after settlement, and manual/system reduced motion. No network, storage, timer service or production loader was added. Real-browser layout and rendered animation remain unverified.
+
 ### Options: the selected evidence now matches the question
 
 The Volatility specimen now uses the supplied 23 October 2026 / 2D smile. Its 95%, ATM and 105% entries are 40.8%, 36.9% and 34.0%; unsupported wings stay blank. The 236.5 reference strike is an ATM display proxy, not observed spot. Source date precision stays explicit, separate from the one-day band's older clock.
@@ -97,11 +101,12 @@ Original motion, compact News controls, Options controls and selected former com
 
 ## Verification and limits
 
-- 169 edit operations returned APPLIED_RESPONSE_OBSERVED, including targeted release calls.
+- 171 edit operations returned APPLIED_RESPONSE_OBSERVED, including targeted release calls.
 - Two Options calls returned INVALID_ARGUMENT without an applied receipt. Exact original-target readback established unchanged text/children before a corrected same-carrier attempt. They are not unresolved effects.
 - One batch returned three per-node errors because the requested nodes were Frames. The successful nodes were retained; the actual Chinese Text nodes were read and corrected separately.
-- All 139 final edited Text nodes matched exact readback. Two hidden locale nodes required get_node_info because get_jsx omits hidden content.
+- All 142 final edited Text nodes matched exact readback. Two hidden locale nodes required get_node_info because get_jsx omits hidden content.
 - 36 final JSX surface snapshots and 15 supplemental node captures are retained.
+- The interactive reference passes all 14 source/DOM checks; exact tested hashes and limits are in [MOTION_REFERENCE_VERIFICATION.json](MOTION_REFERENCE_VERIFICATION.json).
 - 28 rendered Paper screenshots show the inspected layouts. News's 44px styles are verified; actual hit testing remains a consumer proof obligation.
 - The old local file browser-preview attempt was security-policy denied. It was not replayed through another scheme or carrier. No browser, keyboard, screen-reader, animation-runtime, network, persistence, alert execution or production proof is claimed.
 - No new service, queue, retry owner, ranking owner, watcher, runtime state, trade or deployment was created.

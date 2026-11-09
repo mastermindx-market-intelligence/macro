@@ -1,0 +1,52 @@
+{
+  "schema": "mastermind.paper_motion_reference.verification.v2",
+  "date": "2026-11-09",
+  "baseline_source_head": "2584eaaf01d5817a44c67443aef89c6c74d462ef",
+  "command": "node research/design_candidates/paper_audit_20261108/verify-motion-reference.cjs",
+  "execution": {
+    "result": "PASS",
+    "checks": 14,
+    "passed": [
+      "Open evidence preserves the query and pins the source snapshot",
+      "Back restores the original scroll position and triggering control",
+      "Forward puts the evidence heading in view",
+      "Current appearance/language/motion survive Back with a matching URL",
+      "History and reload cannot undo the simulated current access denial",
+      "Reload restores a qualified theme return position",
+      "A direct evidence link returns safely without assuming an origin history entry",
+      "Empty results retain the query and expose an explicit clear action",
+      "A failed read keeps the dated example without pretending it is current",
+      "Expectations context changes retire the complete previous reading",
+      "Expectations refresh and failure retain the same complete dated bundle",
+      "Expectations latest response commits labels, value, period and clock together",
+      "Expectations rejects late A→B→A and overlapping-refresh responses",
+      "Expectations manual and system reduced motion preserve the accepted reading"
+    ],
+    "limitation": "Source DOM harness only; browser layout, motion rendering and installed integration remain unverified."
+  },
+  "source_selfcheck": {
+    "originalNineBodiesUnchanged": true,
+    "noNetworkOrPersistenceCalls": true
+  },
+  "simulation": "Synthetic Example Co. EPS/Revenue readings. Explicit in-memory delivery controls; no network, storage, timer service or production owner.",
+  "scope": "Context retirement, dated same-context refresh/failure, whole-bundle commit, obsolete response rejection and reduced-motion intent. Existing GMI tests remain unchanged.",
+  "limits": [
+    "Browser preview is not established; the prior local-file security-policy refusal was not replayed through another scheme or carrier.",
+    "No real DOM accessibility tree, browser paint, animation rendering, disabled-control focus behavior or product integration is proven.",
+    "The Expectations study does not implement fiscal-period calculations, explicit historic-snapshot selection, live source entitlement or chart data binding."
+  ],
+  "inputs": [
+    {
+      "path": "research/design_candidates/paper_audit_20261108/evidence-motion-reference.html",
+      "bytes": 31522,
+      "sha256": "315b7097b20940ceee97519167f7937d0fe50326509590bf8d8d1759bab7b73f",
+      "git_blob_sha": "b1331c57fcc75885cbb031897c0fe8e49d8a9985"
+    },
+    {
+      "path": "research/design_candidates/paper_audit_20261108/verify-motion-reference.cjs",
+      "bytes": 12876,
+      "sha256": "873eaf431ff04b2fc098d43ebfcde6047fe200d58fb56cb8957c2dda1cb6e944",
+      "git_blob_sha": "6a8d7aa1b5b91f2128d25d95ff773f4acdcea2bd"
+    }
+  ]
+}

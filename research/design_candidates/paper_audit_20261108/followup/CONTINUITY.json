@@ -19,10 +19,11 @@
     "Previous five-file audit, merged #10865.",
     "These ten-file mutations after exact source/canvas reconciliation.",
     "Accepted existing calculations or neighboring concurrent Memory/Policy work.",
-    "Denied local-file browser preview; no carrier/scheme replay."
+    "Denied local-file browser preview; no carrier/scheme replay.",
+    "Expanded motion reference: 14 source/DOM checks pass; the nine baseline test bodies remain unchanged."
   ],
   "effects": {
-    "observed": 169,
+    "observed": 171,
     "reconciled_validation_rejections": 2,
     "unresolved": []
   },
@@ -46,5 +47,11 @@
   "source_status_owner": "GitHub PR and commit receipts, not this static file.",
   "current_pr": 10872,
   "source_repair_head": "7e8382d695b3568aa0c0c82c7245f80cb5c78fd5",
-  "source_parent_before_visual_extension": "bbfe49afa54e33f0e842c2ff45f15d1b54adec19"
+  "source_parent_before_visual_extension": "bbfe49afa54e33f0e842c2ff45f15d1b54adec19",
+  "current_motion_reference": {
+    "file": "research/design_candidates/paper_audit_20261108/evidence-motion-reference.html",
+    "verifier": "research/design_candidates/paper_audit_20261108/verify-motion-reference.cjs",
+    "checks": 14,
+    "product_runtime_proven": false
+  }
 }

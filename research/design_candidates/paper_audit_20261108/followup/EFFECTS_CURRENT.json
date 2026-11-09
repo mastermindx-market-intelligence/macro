@@ -10857,5 +10857,102 @@
       },
       "result": "OK"
     }
+  },
+  {
+    "operation_id": "paper-audit-20261109-expectations-runnable-study-v1",
+    "tool": "write_html",
+    "arguments": {
+      "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+      "targetNodeId": "3YE-0",
+      "mode": "insert-children",
+      "html": "<div layer-name=\"Runnable transition study · source reference\" style=\"display:flex;flex-direction:column;gap:6px;padding-top:12px;width:100%;\"><div style=\"font-family:Inter;font-size:16px;font-weight:600;line-height:24px;color:var(--dk-text);\">Run the transition study</div><div style=\"font-family:Inter;font-size:14px;line-height:22px;color:var(--dk-muted);\">In evidence-motion-reference.html, open Reference controls → Expectations. Switch measure or refresh; then deliver the latest, earlier or failed response. The study is in research/design_candidates/paper_audit_20261108/ under PR #10872.</div><div style=\"font-family:Inter;font-size:13px;line-height:20px;color:var(--dk-muted);\">14 source/DOM checks pass. EN/ZH, manual and system reduced motion, and A→B→A are exercised. Browser layout and rendered animation remain unverified. This disposable study does not replace the existing product loader.</div></div>"
+    },
+    "receipt": {
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false,
+      "before": {
+        "identity": {
+          "kind": "file-id",
+          "id": "01M5EX8RTPR7YEZD2A144XED2S"
+        },
+        "snapshot_sha256": "e08e607fee301ee070f2a5bec53e62f112ea09f87caca8d0eed0bdad658b5b11"
+      },
+      "after": {
+        "identity": {
+          "kind": "file-id",
+          "id": "01M5EX8RTPR7YEZD2A144XED2S"
+        },
+        "snapshot_sha256": "e08e607fee301ee070f2a5bec53e62f112ea09f87caca8d0eed0bdad658b5b11"
+      },
+      "result": {
+        "createdNodes": [
+          {
+            "id": "4CY-0",
+            "name": "Runnable transition study · source reference",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "4CZ-0",
+            "name": "Run the transition s…",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "4D0-0",
+            "name": "In evidence-motion-r…",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "4D1-0",
+            "name": "14 source/DOM checks…",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          }
+        ]
+      }
+    }
+  },
+  {
+    "operation_id": "paper-audit-20261109-expectations-runnable-study-finish-v1",
+    "tool": "finish_working_on_nodes",
+    "arguments": {
+      "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+      "nodeIds": [
+        "3UR-0"
+      ]
+    },
+    "receipt": {
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false,
+      "before": {
+        "identity": {
+          "kind": "file-id",
+          "id": "01M5EX8RTPR7YEZD2A144XED2S"
+        },
+        "snapshot_sha256": "e08e607fee301ee070f2a5bec53e62f112ea09f87caca8d0eed0bdad658b5b11"
+      },
+      "after": {
+        "identity": {
+          "kind": "file-id",
+          "id": "01M5EX8RTPR7YEZD2A144XED2S"
+        },
+        "snapshot_sha256": "e08e607fee301ee070f2a5bec53e62f112ea09f87caca8d0eed0bdad658b5b11"
+      },
+      "result": "OK"
+    }
   }
 ]

@@ -27,39 +27,39 @@
     },
     {
       "path": "research/design_candidates/paper_audit_20261108/followup/RESULTS.md",
-      "bytes": 16734,
-      "git_blob_sha": "0c6c7471b0d0b8917de28ab67a9d74b35215bdd1",
-      "sha256": "339982101fed8e86e55c61f37302acc71f05fde163adda008b269b41d54ffbfd"
+      "bytes": 17901,
+      "sha256": "b5e5fe7fb286bd30ab4006c00832d88d951a235a5109b1f8cd09df874216c653",
+      "git_blob_sha": "b902099d8b774abc0a5ee9285fe52628d245f830"
     },
     {
       "path": "research/design_candidates/paper_audit_20261108/followup/BUILD_PLAN.md",
-      "bytes": 20753,
-      "git_blob_sha": "b39682b7bd938407772c13c3008140d0a419be94",
-      "sha256": "9bbca56946168c37ef32c02d0a9c174b47efb4b60d0ef2795e6df54aef6a6399"
+      "bytes": 21879,
+      "sha256": "0274419d3b27d963c2b420700646c36f00a189c56025cd4a52686ec944c0e02b",
+      "git_blob_sha": "081da20155ffbd1c844bb29c9295df2352d65d98"
     },
     {
       "path": "research/design_candidates/paper_audit_20261108/followup/EFFECTS_CURRENT.json",
-      "bytes": 337815,
-      "git_blob_sha": "ec0a346b4f8f27cce0a2ca493711aed730167d66",
-      "sha256": "f251ed8a1d301374d3eac71d143b1e756b8f24424964b699fe69d86b5df3ba25"
+      "bytes": 341398,
+      "sha256": "bfa319e3c42fc06c5fa4195f907e1768881e7a2cce3f9ea1faaa22a3f5bb7d25",
+      "git_blob_sha": "a9be1a537d9a069789d0178155c31b6a2658d812"
     },
     {
       "path": "research/design_candidates/paper_audit_20261108/followup/NODE_MIGRATION.json",
-      "bytes": 5060,
-      "git_blob_sha": "ce4c5d7d66310191eb5a1c7f5ae7f615c2f2d442",
-      "sha256": "8cc21c695d1b9388250c4c30896f01c7a30e9765715c40a6d4b0c7db44cd8429"
+      "bytes": 5192,
+      "sha256": "d3a5efe626f58a10c09c9812d58eb1dd88eab1db359727cba36521b33a0b0e79",
+      "git_blob_sha": "3f2a19447e0efb063491eed30123e26cb1489c5d"
     },
     {
       "path": "research/design_candidates/paper_audit_20261108/followup/VERIFICATION.json",
-      "bytes": 89585,
-      "git_blob_sha": "67a87818d08a349578d7dc31dc57e5dfa8971672",
-      "sha256": "36b8fd1252f585c691f4a99758c1ada50207b311a74f0335b061753fdc15dba1"
+      "bytes": 91773,
+      "sha256": "e60eb8d11bc0b828b1ebc15df92ee4bb7fb22431a7cd4571fe023fa8909cd6e6",
+      "git_blob_sha": "fbb8f83635a7809c3103cb216d1dfa44d499b424"
     },
     {
       "path": "research/design_candidates/paper_audit_20261108/followup/CONTINUITY.json",
-      "bytes": 2759,
-      "git_blob_sha": "d18837d712bfef5c7e1e21e17992f289cd5b220e",
-      "sha256": "6c79ee05c2b46908fc0893c8b9c2ca08d03e6b409a78504effaefe375ff1f58c"
+      "bytes": 3148,
+      "sha256": "5fec0c83966cbde858cc5ba2db17aaf5e579d6e9986ff3493de9685abe46d679",
+      "git_blob_sha": "2f7d5a1ceb7cc5a415e811395116c4ad518dfa04"
     },
     {
       "path": "research/design_candidates/paper_audit_20261108/followup/post/extra_nodes.json",
@@ -99,9 +99,9 @@
     },
     {
       "path": "research/design_candidates/paper_audit_20261108/followup/post/expectations_build.jsx",
-      "bytes": 127396,
-      "git_blob_sha": "70182ed0b7e80d1036510301601214338d21cbc1",
-      "sha256": "be01a72f39a3032516216227349b01f6125ff1e892fb7e400bb7e14c6795f407"
+      "bytes": 128722,
+      "sha256": "cba52aa5104ee41f856082d9ab7be3b0aa90fc4d882efd021f74a57a694800c5",
+      "git_blob_sha": "a2caa8f9169ec9294815c81e7714e2576eaf5a35"
     },
     {
       "path": "research/design_candidates/paper_audit_20261108/followup/post/sector_retained_catalogue.jsx",
@@ -279,21 +279,21 @@
     },
     {
       "path": "research/design_candidates/paper_audit_20261108/README.md",
-      "bytes": 3949,
-      "git_blob_sha": "657eaba7e2001a33216c80376d35dd47a7f2befa",
-      "sha256": "172c4778dd07559e5aae67b0f4efd2e1c3dde7169bcc9dfe2bab766feca2061d"
+      "bytes": 4376,
+      "sha256": "87daf561dc04cb61fb69e5ae63c3d5eb5e59f57e5226c73460f83730299ea085",
+      "git_blob_sha": "48351235945ba5ce86e42442568c84f43ab1086b"
     },
     {
       "path": "research/design_candidates/paper_audit_20261108/followup/README.md",
-      "bytes": 1865,
-      "git_blob_sha": "ab45ec25e2c45a7eb054b37700db0e5255f3a4fa",
-      "sha256": "c5fa570042b6eb10bc507d383d30c2cace05c3baeeb4d43bc9cb9d4f19aca063"
+      "bytes": 2261,
+      "sha256": "be8196169c4edbc9f8e860e8e0c20eb22faeda401b2be1b42fc14b29ed09237b",
+      "git_blob_sha": "bcc27de2faca7702103f3bc557b4d37b0a7cc786"
     },
     {
       "path": "research/design_candidates/paper_audit_20261108/followup/PROOF_MANIFEST.json",
       "bytes": 12425,
-      "git_blob_sha": "6737185398e8b39bff2152bc1f40ed263265f56b",
-      "sha256": "f7183a57e3f3f85f7ef42bd536be083d0a7f287641823f76245c9f4de2dd5761"
+      "sha256": "bf003bf0fed64789de1aafd603e4eccdc5c843ffa92e34817ffec77401f82c08",
+      "git_blob_sha": "b28bf57d88b805bb3c4bd18dc39cb8ae166c4f80"
     },
     {
       "path": "research/design_candidates/paper_audit_20261108/followup/proof/expectation-rollover.jpg",
@@ -303,9 +303,9 @@
     },
     {
       "path": "research/design_candidates/paper_audit_20261108/followup/proof/expectation-motion.jpg",
-      "bytes": 52275,
-      "git_blob_sha": "efc637ff4eb81f53bd750145a885ca024006a5e2",
-      "sha256": "ad1ca3c139e995ed97a34584b9fa1e83ff67bba1f721acd4157410bda6a08fc3"
+      "bytes": 85713,
+      "sha256": "c74550d1d397d0c9ead908f964c70aaa1d940b9463331dd3012cb5e5593b6984",
+      "git_blob_sha": "8aca185e861ff5935aa33b2c7b8cf486c1c2781e"
     },
     {
       "path": "research/design_candidates/paper_audit_20261108/followup/proof/expectation-mobile.jpg",
@@ -540,6 +540,24 @@
       "bytes": 105017,
       "git_blob_sha": "8d2004d64d51781b1e49b239d3995307013dc7c5",
       "sha256": "5f9524597b752ddd94239ef91c51287422e90b38ed549dcb12dab038364e7ef8"
+    },
+    {
+      "path": "research/design_candidates/paper_audit_20261108/evidence-motion-reference.html",
+      "bytes": 31522,
+      "sha256": "315b7097b20940ceee97519167f7937d0fe50326509590bf8d8d1759bab7b73f",
+      "git_blob_sha": "b1331c57fcc75885cbb031897c0fe8e49d8a9985"
+    },
+    {
+      "path": "research/design_candidates/paper_audit_20261108/verify-motion-reference.cjs",
+      "bytes": 12876,
+      "sha256": "873eaf431ff04b2fc098d43ebfcde6047fe200d58fb56cb8957c2dda1cb6e944",
+      "git_blob_sha": "6a8d7aa1b5b91f2128d25d95ff773f4acdcea2bd"
+    },
+    {
+      "path": "research/design_candidates/paper_audit_20261108/followup/MOTION_REFERENCE_VERIFICATION.json",
+      "bytes": 3012,
+      "sha256": "67d66dd3ab6ecb27e389d7e54ce300b03d2e777f611ccfff5f868a9c4fafa783",
+      "git_blob_sha": "9ba6b6f3186ae5434648aa62ffac2ade31ff6cf7"
     }
   ]
 }

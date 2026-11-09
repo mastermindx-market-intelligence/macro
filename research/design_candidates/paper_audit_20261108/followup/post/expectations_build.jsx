@@ -194,6 +194,17 @@
             <text x="18" y="204" fontFamily="Inter" fontSize="10.5" fill="#8B93A1">{"Same result, clock and focus"}</text>
           </g>
         </svg>
+        <div id="4CY-0" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '6px', paddingTop: '12px', width: '100%' }}>
+          <div id="4CZ-0" style={{ boxSizing: 'border-box', color: 'var(--dk-text)', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '16px', fontWeight: 600, lineHeight: '24px' }}>
+            Run the transition study
+          </div>
+          <div id="4D0-0" style={{ boxSizing: 'border-box', color: 'var(--dk-muted)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '14px', lineHeight: '22px' }}>
+            In evidence-motion-reference.html, open Reference controls → Expectations. Switch measure or refresh; then deliver the latest, earlier or failed response. The study is in research/design_candidates/paper_audit_20261108/ under PR #10872.
+          </div>
+          <div id="4D1-0" style={{ boxSizing: 'border-box', color: 'var(--dk-muted)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', lineHeight: '20px' }}>
+            14 source/DOM checks pass. EN/ZH, manual and system reduced motion, and A→B→A are exercised. Browser layout and rendered animation remain unverified. This disposable study does not replace the existing product loader.
+          </div>
+        </div>
       </div>
       <div id="499-0" style={{ backgroundColor: 'var(--dk-panel)', borderColor: 'var(--dk-line)', borderRadius: '10px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '20px', padding: '24px', width: '1160px' }}>
         <div id="49A-0" style={{ boxSizing: 'border-box', color: 'var(--dk-text)', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '22px', fontWeight: 600, lineHeight: '30px' }}>

@@ -8,15 +8,15 @@
     "terminal": "d7a83d3348a4fcb762d93221f19c4e94cbe4505e"
   },
   "effects": {
-    "total": 171,
-    "applied_response_observed": 169,
+    "total": 173,
+    "applied_response_observed": 171,
     "invalid_argument_reconciled": 2,
     "partial_frame_target_errors_reconciled": 3,
     "unresolved": []
   },
   "text_readback": {
-    "count": 139,
-    "passed": 139,
+    "count": 142,
+    "passed": 142,
     "checks": [
       {
         "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
@@ -1265,6 +1265,33 @@
         "actual": "Help 17X-0 explains expectedMoveFromIv; it adds no calculation or interaction. Reuse terminal/lib/volTenorComparison.ts:134 at d7a83d3348a4fcb762d93221f19c4e94cbe4505e. The percent estimate uses a trading-day horizon/252; a price range additionally requires a finite positive spot with its own non-empty observation time. Keep IV and spot in the admitted source context. Preserve the selected view and its existing return through 150-0. Provide a figure name that states both inputs and the percent-only fallback; this static diagram needs no animation.",
         "surface": "options_build",
         "status": "PASS"
+      },
+      {
+        "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+        "nodeId": "4CZ-0",
+        "expected": "Run the transition study",
+        "actual": "Run the transition study",
+        "op": "paper-audit-20261109-expectations-runnable-study-v1",
+        "surface": "expectations_build",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+        "nodeId": "4D0-0",
+        "expected": "In evidence-motion-reference.html, open Reference controls → Expectations. Switch measure or refresh; then deliver the latest, earlier or failed response. The study is in research/design_candidates/paper_audit_20261108/ under PR #10872.",
+        "actual": "In evidence-motion-reference.html, open Reference controls → Expectations. Switch measure or refresh; then deliver the latest, earlier or failed response. The study is in research/design_candidates/paper_audit_20261108/ under PR #10872.",
+        "op": "paper-audit-20261109-expectations-runnable-study-v1",
+        "surface": "expectations_build",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+        "nodeId": "4D1-0",
+        "expected": "14 source/DOM checks pass. EN/ZH, manual and system reduced motion, and A→B→A are exercised. Browser layout and rendered animation remain unverified. This disposable study does not replace the existing product loader.",
+        "actual": "14 source/DOM checks pass. EN/ZH, manual and system reduced motion, and A→B→A are exercised. Browser layout and rendered animation remain unverified. This disposable study does not replace the existing product loader.",
+        "op": "paper-audit-20261109-expectations-runnable-study-v1",
+        "surface": "expectations_build",
+        "status": "PASS"
       }
     ]
   },
@@ -1308,7 +1335,7 @@
       "key": "expectations_build",
       "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
       "nodeId": "3UR-0",
-      "chars": 127140,
+      "chars": 128459,
       "state": "OBSERVED"
     },
     {
@@ -2291,9 +2318,9 @@
     }
   ],
   "local_artifact_check": {
-    "json_files_valid": 11,
+    "json_files_valid": 13,
     "new_discovery_frontmatter_contracts": 3,
-    "method": "Focused local JSON/frontmatter checks against the inspected discovery field contract; not the full repository validator or hosted CI."
+    "method": "Current local continuation JSON files parsed; three discovery frontmatter shapes were checked earlier and the repaired canonical repository fence passed. Hosted final-head CI and browser proof remain separate."
   },
   "ci_repair": {
     "original_head": "790a71c3460c04863b9bc3b193d24d938fdd44ab",
@@ -2358,5 +2385,13 @@
     "originalSibling": "9ZT-0",
     "source": "https://github.com/mastermindx-market-intelligence/macro/pull/10872",
     "qualified": "Static source navigation, not runtime or programme acceptance."
+  },
+  "motion_reference": {
+    "path": "MOTION_REFERENCE_VERIFICATION.json",
+    "checks": 14,
+    "result": "PASS",
+    "preserved_baseline_checks": 9,
+    "new_behavior_checks": 5,
+    "limitations": "Source/DOM harness; browser layout, accessibility tree, rendered animation and production integration remain unverified."
   }
 }

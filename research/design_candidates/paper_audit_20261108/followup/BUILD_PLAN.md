@@ -63,6 +63,10 @@ Use obsolete-response protection inside the existing loader. Request generation 
 
 **Acceptance:** rapid A→B→A, out-of-order responses, failed same-selection refresh, failed changed selection, fiscal rollover during refresh, absent horizon, keyboard disclosure, browser Back and reduced motion. The real path must never show a new label over an old result.
 
+**Working study:** [evidence-motion-reference.html](../evidence-motion-reference.html) → Reference controls → Expectations. Switch between the synthetic EPS and Revenue contexts, or refresh the current context. Deliver latest, deliver one retained earlier response, or fail latest. Start an A refresh, select B, return to A, then deliver the earlier response to inspect why request identity must supplement context identity. The study shares theme/language/reduced-motion controls but does not write GMI history, issue service requests, store data, or replace the existing product loader.
+
+The expanded verifier has 14 passing source/DOM cases (nine retained, five new). It proves the simulated reading bundle and request transitions, not actual browser painting, focus behavior under real disabled controls, access enforcement, fiscal rollover during a real refresh, explicit historical-snapshot selection, chart integration or production. Keep those consumer proofs in the acceptance above. The Paper storyboard remains the intended full chart presentation; the working study isolates the value/label/clock transition.
+
 ## F03 — Options source fidelity and read-only interpretation
 
 Reuse terminal/lib/volTenorComparison.ts and VolComparePanel; the arithmetic is already implemented at the retained Terminal pin.

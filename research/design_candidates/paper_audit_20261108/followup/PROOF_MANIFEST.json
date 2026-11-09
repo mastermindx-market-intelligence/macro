@@ -13,9 +13,9 @@
   {
     "key": "expectation-motion",
     "path": "proof/expectation-motion.jpg",
-    "bytes": 52275,
-    "sha256": "ad1ca3c139e995ed97a34584b9fa1e83ff67bba1f721acd4157410bda6a08fc3",
-    "git_blob_sha": "efc637ff4eb81f53bd750145a885ca024006a5e2",
+    "bytes": 85713,
+    "sha256": "c74550d1d397d0c9ead908f964c70aaa1d940b9463331dd3012cb5e5593b6984",
+    "git_blob_sha": "8aca185e861ff5935aa33b2c7b8cf486c1c2781e",
     "paper_file_id": "01M5EX8RTPR7YEZD2A144XED2S",
     "paper_node_id": "3YE-0",
     "mime_type": "image/jpeg",
