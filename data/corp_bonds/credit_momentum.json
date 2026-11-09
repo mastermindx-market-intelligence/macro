@@ -1,6 +1,6 @@
 {
   "organ": "credit_momentum.v1",
-  "as_of": "2026-11-07",
+  "as_of": "2026-11-08",
   "data_session": "2026-11-05",
   "authority": {
     "rank": false,
@@ -652,7 +652,7 @@
           "signal": -8.8015,
           "hist": 1.4456,
           "hist_vel3": -0.1338,
-          "k": 75.9685,
+          "k": 75.9686,
           "d": 80.0437,
           "depth_pctile": 10.0953,
           "as_of": "2026-11-06",
@@ -664,7 +664,7 @@
           "signal": -10.458,
           "hist": 0.2752,
           "hist_vel3": 1.4102,
-          "k": 54.3717,
+          "k": 54.3718,
           "d": 40.4156,
           "depth_pctile": 4.1612,
           "as_of": "2026-11-05",
@@ -1036,17 +1036,17 @@
       "series_id": "market_ig_gspread",
       "orientation": "spread",
       "severity_note": "spread: widening = deterioration",
-      "level": 76.5291,
-      "d1": 5.5192,
-      "d21": 18.9187,
+      "level": 119.7261,
+      "d1": 5.8282,
+      "d21": 23.3301,
       "velocity": {
-        "vel21": 18.9187,
-        "vel63": 13.8721,
+        "vel21": 23.3301,
+        "vel63": 9.5475,
         "vel21_pctile": 97.6744,
         "vel63_pctile": null,
         "vel21_pctile_post2021": 97.6744,
         "vel63_pctile_post2021": null,
-        "accel_vel21": 6.2037
+        "accel_vel21": 6.2014
       },
       "grids": {
         "1D": null,
@@ -1061,17 +1061,17 @@
       "series_id": "market_hy_gspread",
       "orientation": "spread",
       "severity_note": "spread: widening = deterioration",
-      "level": 477.2652,
-      "d1": 17.4246,
-      "d21": 110.9521,
+      "level": 521.3313,
+      "d1": 14.0031,
+      "d21": 93.392,
       "velocity": {
-        "vel21": 110.9521,
-        "vel63": 120.4239,
+        "vel21": 93.392,
+        "vel63": 92.4822,
         "vel21_pctile": 97.6744,
         "vel63_pctile": null,
         "vel21_pctile_post2021": 97.6744,
         "vel63_pctile_post2021": null,
-        "accel_vel21": 19.4568
+        "accel_vel21": 15.4772
       },
       "grids": {
         "1D": null,
@@ -1095,15 +1095,15 @@
         "series_id": "theme_ai_hardware_credit_gspread",
         "orientation": "spread",
         "severity_note": "spread: widening = deterioration",
-        "level": 98.3038,
-        "d1": 7.6111,
-        "d21": 35.4831,
+        "level": 130.7801,
+        "d1": 7.8804,
+        "d21": 19.8334,
         "velocity": {
-          "vel21": 35.4831,
-          "vel63": 39.2517,
-          "vel21_pctile": 94.1176,
+          "vel21": 19.8334,
+          "vel63": -15.4024,
+          "vel21_pctile": 97.0588,
           "vel63_pctile": null,
-          "vel21_pctile_post2021": 94.1176,
+          "vel21_pctile_post2021": 97.0588,
           "vel63_pctile_post2021": null,
           "accel_vel21": null
         },
@@ -1119,17 +1119,17 @@
         "series_id": "theme_ai_hardware_credit_price",
         "orientation": "price",
         "severity_note": null,
-        "level": 97.8197,
-        "d1": 0.0526,
-        "d21": -0.5251,
+        "level": 96.9629,
+        "d1": 0.0399,
+        "d21": -0.2296,
         "velocity": {
-          "vel21": -0.5251,
-          "vel63": -2.3667,
-          "vel21_pctile": 72.093,
+          "vel21": -0.2296,
+          "vel63": -1.3579,
+          "vel21_pctile": 62.7907,
           "vel63_pctile": null,
-          "vel21_pctile_post2021": 72.093,
+          "vel21_pctile_post2021": 62.7907,
           "vel63_pctile_post2021": null,
-          "accel_vel21": 0.315
+          "accel_vel21": 0.3091
         },
         "grids": {
           "1D": null,
@@ -1151,15 +1151,15 @@
         "series_id": "theme_ai_power_credit_gspread",
         "orientation": "spread",
         "severity_note": "spread: widening = deterioration",
-        "level": 88.6635,
-        "d1": 4.2237,
-        "d21": 32.7564,
+        "level": 120.8731,
+        "d1": 4.6382,
+        "d21": 37.0254,
         "velocity": {
-          "vel21": 32.7564,
-          "vel63": 30.2833,
-          "vel21_pctile": 94.4444,
+          "vel21": 37.0254,
+          "vel63": 5.649,
+          "vel21_pctile": 97.2222,
           "vel63_pctile": null,
-          "vel21_pctile_post2021": 94.4444,
+          "vel21_pctile_post2021": 97.2222,
           "vel63_pctile_post2021": null,
           "accel_vel21": null
         },
@@ -1175,17 +1175,17 @@
         "series_id": "theme_ai_power_credit_price",
         "orientation": "price",
         "severity_note": null,
-        "level": 98.5657,
-        "d1": 0.0607,
-        "d21": 0.7026,
+        "level": 97.5806,
+        "d1": 0.0469,
+        "d21": 0.5419,
         "velocity": {
-          "vel21": 0.7026,
-          "vel63": -0.7179,
-          "vel21_pctile": 97.6744,
+          "vel21": 0.5419,
+          "vel63": -0.3683,
+          "vel21_pctile": 95.3488,
           "vel63_pctile": null,
-          "vel21_pctile_post2021": 97.6744,
+          "vel21_pctile_post2021": 95.3488,
           "vel63_pctile_post2021": null,
-          "accel_vel21": 0.2298
+          "accel_vel21": 0.2289
         },
         "grids": {
           "1D": null,
@@ -1207,12 +1207,12 @@
         "series_id": "theme_dc_reit_credit_gspread",
         "orientation": "spread",
         "severity_note": "spread: widening = deterioration",
-        "level": 86.876,
-        "d1": 4.0666,
-        "d21": 16.2245,
+        "level": 138.267,
+        "d1": 4.5466,
+        "d21": 42.1998,
         "velocity": {
-          "vel21": 16.2245,
-          "vel63": 28.3806,
+          "vel21": 42.1998,
+          "vel63": 5.678,
           "vel21_pctile": 97.2973,
           "vel63_pctile": null,
           "vel21_pctile_post2021": 97.2973,
@@ -1231,17 +1231,17 @@
         "series_id": "theme_dc_reit_credit_price",
         "orientation": "price",
         "severity_note": null,
-        "level": 97.1096,
-        "d1": 0.1674,
-        "d21": 0.7694,
+        "level": 95.9224,
+        "d1": 0.1551,
+        "d21": 0.198,
         "velocity": {
-          "vel21": 0.7694,
-          "vel63": 0.1253,
-          "vel21_pctile": 97.6744,
+          "vel21": 0.198,
+          "vel63": 0.2034,
+          "vel21_pctile": 79.0698,
           "vel63_pctile": null,
-          "vel21_pctile_post2021": 97.6744,
+          "vel21_pctile_post2021": 79.0698,
           "vel63_pctile_post2021": null,
-          "accel_vel21": 0.3634
+          "accel_vel21": 0.3651
         },
         "grids": {
           "1D": null,
@@ -1263,12 +1263,12 @@
         "series_id": "theme_hyperscaler_credit_gspread",
         "orientation": "spread",
         "severity_note": "spread: widening = deterioration",
-        "level": 125.8863,
-        "d1": 3.5381,
-        "d21": 46.1654,
+        "level": 163.4107,
+        "d1": 3.9268,
+        "d21": 54.7675,
         "velocity": {
-          "vel21": 46.1654,
-          "vel63": 46.7577,
+          "vel21": 54.7675,
+          "vel63": 49.2353,
           "vel21_pctile": 96.9697,
           "vel63_pctile": null,
           "vel21_pctile_post2021": 96.9697,
@@ -1287,17 +1287,17 @@
         "series_id": "theme_hyperscaler_credit_price",
         "orientation": "price",
         "severity_note": null,
-        "level": 93.3399,
-        "d1": 0.1383,
-        "d21": 0.1476,
+        "level": 92.1439,
+        "d1": 0.1262,
+        "d21": -0.0905,
         "velocity": {
-          "vel21": 0.1476,
-          "vel63": -1.7436,
-          "vel21_pctile": 88.3721,
+          "vel21": -0.0905,
+          "vel63": -1.8576,
+          "vel21_pctile": 74.4186,
           "vel63_pctile": null,
-          "vel21_pctile_post2021": 88.3721,
+          "vel21_pctile_post2021": 74.4186,
           "vel63_pctile_post2021": null,
-          "accel_vel21": 0.4919
+          "accel_vel21": 0.4921
         },
         "grids": {
           "1D": null,
@@ -1319,12 +1319,12 @@
         "series_id": "theme_memory_credit_gspread",
         "orientation": "spread",
         "severity_note": "spread: widening = deterioration",
-        "level": 136.0583,
-        "d1": 8.4588,
-        "d21": 16.8188,
+        "level": 189.9384,
+        "d1": 8.9007,
+        "d21": 28.4477,
         "velocity": {
-          "vel21": 16.8188,
-          "vel63": -136.1503,
+          "vel21": 28.4477,
+          "vel63": -131.8569,
           "vel21_pctile": 89.1892,
           "vel63_pctile": null,
           "vel21_pctile_post2021": 89.1892,
@@ -1344,17 +1344,17 @@
         "series_id": "theme_memory_credit_price",
         "orientation": "price",
         "severity_note": null,
-        "level": 95.2738,
-        "d1": 0.0132,
-        "d21": -0.4341,
+        "level": 93.5829,
+        "d1": -0.0002,
+        "d21": -0.6531,
         "velocity": {
-          "vel21": -0.4341,
-          "vel63": -9.1547,
-          "vel21_pctile": 79.0698,
+          "vel21": -0.6531,
+          "vel63": -8.7594,
+          "vel21_pctile": 81.3953,
           "vel63_pctile": null,
-          "vel21_pctile_post2021": 79.0698,
+          "vel21_pctile_post2021": 81.3953,
           "vel63_pctile_post2021": null,
-          "accel_vel21": 0.2898
+          "accel_vel21": 0.2905
         },
         "grids": {
           "1D": null,
@@ -1376,17 +1376,17 @@
         "series_id": "theme_neocloud_credit_gspread",
         "orientation": "spread",
         "severity_note": "spread: widening = deterioration",
-        "level": 1189.5861,
-        "d1": 91.4739,
-        "d21": 428.6969,
+        "level": 1286.2383,
+        "d1": 95.8814,
+        "d21": 433.6264,
         "velocity": {
-          "vel21": 428.6969,
-          "vel63": 622.9827,
+          "vel21": 433.6264,
+          "vel63": 644.123,
           "vel21_pctile": 97.6744,
           "vel63_pctile": null,
           "vel21_pctile_post2021": 97.6744,
           "vel63_pctile_post2021": null,
-          "accel_vel21": 76.5676
+          "accel_vel21": 78.1004
         },
         "grids": {
           "1D": null,
@@ -1401,17 +1401,17 @@
         "series_id": "theme_neocloud_credit_price",
         "orientation": "price",
         "severity_note": null,
-        "level": 78.209,
-        "d1": -2.1654,
-        "d21": -11.2449,
+        "level": 75.8058,
+        "d1": -2.1916,
+        "d21": -10.8074,
         "velocity": {
-          "vel21": -11.2449,
-          "vel63": -19.6713,
+          "vel21": -10.8074,
+          "vel63": -19.2729,
           "vel21_pctile": 0.0,
           "vel63_pctile": null,
           "vel21_pctile_post2021": 0.0,
           "vel63_pctile_post2021": null,
-          "accel_vel21": -1.4462
+          "accel_vel21": -1.4166
         },
         "grids": {
           "1D": null,
@@ -1433,12 +1433,12 @@
         "series_id": "theme_telecom_legacy_gspread",
         "orientation": "spread",
         "severity_note": "spread: widening = deterioration",
-        "level": 92.4699,
-        "d1": 2.5813,
-        "d21": 25.6642,
+        "level": 111.8761,
+        "d1": 2.8173,
+        "d21": 20.1383,
         "velocity": {
           "vel21": null,
-          "vel63": 23.3387,
+          "vel63": 12.9393,
           "vel21_pctile": null,
           "vel63_pctile": null,
           "vel21_pctile_post2021": null,
@@ -1457,17 +1457,17 @@
         "series_id": "theme_telecom_legacy_price",
         "orientation": "price",
         "severity_note": null,
-        "level": 90.2874,
-        "d1": 0.1963,
-        "d21": -0.038,
+        "level": 89.5012,
+        "d1": 0.1864,
+        "d21": -0.0098,
         "velocity": {
-          "vel21": -0.038,
-          "vel63": -2.4366,
-          "vel21_pctile": 86.0465,
+          "vel21": -0.0098,
+          "vel63": -2.0417,
+          "vel21_pctile": 83.7209,
           "vel63_pctile": null,
-          "vel21_pctile_post2021": 86.0465,
+          "vel21_pctile_post2021": 83.7209,
           "vel63_pctile_post2021": null,
-          "accel_vel21": 1.0651
+          "accel_vel21": 0.9859
         },
         "grids": {
           "1D": null,
@@ -1923,12 +1923,6 @@
       "n_snapshots": 64,
       "fallen_angel_candidates": [
         {
-          "isin": "US524660BA49",
-          "name": "LEGGETT + PLATT INC SR UNSECURED 11/51 3.5",
-          "last_ig_date": "2026-10-01",
-          "first_hy_date": "2026-10-06"
-        },
-        {
           "isin": "US524660AY34",
           "name": "LEGGETT + PLATT INC SR UNSECURED 11/27 3.5",
           "last_ig_date": "2026-09-24",
@@ -1939,6 +1933,12 @@
           "name": "FLOWERS FOODS INC SR UNSECURED 03/31 2.4",
           "last_ig_date": "2026-09-24",
           "first_hy_date": "2026-10-19"
+        },
+        {
+          "isin": "US524660BA49",
+          "name": "LEGGETT + PLATT INC SR UNSECURED 11/51 3.5",
+          "last_ig_date": "2026-10-01",
+          "first_hy_date": "2026-10-06"
         }
       ],
       "rising_star_candidates": [
@@ -1960,9 +1960,9 @@
     },
     "orcl": {
       "issuer": "ORCL",
-      "g_spread_bp_pw": 247.03,
-      "ig_peer_median_bp": 83.98,
-      "premium_vs_ig_peers_bp": 163.04,
+      "g_spread_bp_pw": 285.13,
+      "ig_peer_median_bp": 108.07,
+      "premium_vs_ig_peers_bp": 177.06,
       "peer_group": "IG-segment bonds at matched maturity bucket (no per-bond ratings available; BBB-median deferred)",
       "note": "live \u2014 labeled vs IG peers at matched maturity"
     }
@@ -1971,7 +1971,7 @@
     {
       "theme": "ai_hardware_credit",
       "quadrant": "converging_bad",
-      "credit_d21_bp": 35.48,
+      "credit_d21_bp": 19.83,
       "equity_return_21d": -39.84,
       "n_equity_tickers": 2,
       "note": null
@@ -1979,7 +1979,7 @@
     {
       "theme": "ai_power_credit",
       "quadrant": "converging_bad",
-      "credit_d21_bp": 32.76,
+      "credit_d21_bp": 37.03,
       "equity_return_21d": -6.67,
       "n_equity_tickers": 3,
       "note": null
@@ -1987,7 +1987,7 @@
     {
       "theme": "dc_reit_credit",
       "quadrant": "converging_bad",
-      "credit_d21_bp": 16.22,
+      "credit_d21_bp": 42.2,
       "equity_return_21d": -0.45,
       "n_equity_tickers": 2,
       "note": null
@@ -1995,7 +1995,7 @@
     {
       "theme": "hyperscaler_credit",
       "quadrant": "converging_bad",
-      "credit_d21_bp": 46.17,
+      "credit_d21_bp": 54.77,
       "equity_return_21d": -8.82,
       "n_equity_tickers": 5,
       "note": null
@@ -2003,7 +2003,7 @@
     {
       "theme": "memory_credit",
       "quadrant": "converging_bad",
-      "credit_d21_bp": 16.82,
+      "credit_d21_bp": 28.45,
       "equity_return_21d": -35.6,
       "n_equity_tickers": 3,
       "note": null
@@ -2011,7 +2011,7 @@
     {
       "theme": "neocloud_credit",
       "quadrant": "converging_bad",
-      "credit_d21_bp": 428.7,
+      "credit_d21_bp": 433.63,
       "equity_return_21d": -43.12,
       "n_equity_tickers": 1,
       "note": null
@@ -2019,12 +2019,12 @@
     {
       "theme": "telecom_legacy",
       "quadrant": "converging_bad",
-      "credit_d21_bp": 25.66,
+      "credit_d21_bp": 20.14,
       "equity_return_21d": -5.97,
       "n_equity_tickers": 2,
       "note": null
     }
   ],
-  "_timing_s": 17.77,
+  "_timing_s": 19.3,
   "_n_ledger_new": 0
 }
