@@ -263,14 +263,17 @@ def test_the_loading_and_error_states_are_additive_only(theme):
     )
 
 
-def test_no_consumer_wires_the_new_primitives_yet(theme):
-    """Blast-radius guard for THIS PR: additive only, zero consumers estate-wide.
+def test_loading_primitives_have_only_declared_consumers(theme):
+    """Keep the loading/error migration's declared consumer boundary exact.
 
-    The shell builder (P-MP1-SHELL / PR #6049 lane) owns wiring .skel/.mx-error into
-    actual markup next. A consumer appearing in the same PR that ports the primitive
-    would be undisclosed scope creep against this PR's own stated blast radius.
+    PR #6055 introduced these primitives without consumers; PR #6076 later
+    shipped the shell adoption. The original zero-consumer guard described the
+    port PR's temporary scope, not the subsequently merged estate. These six
+    consumers already exist on protected main 790e6e1e and precede H4.
+    Both an undeclared new consumer and loss of an existing consumer require an
+    explicit migration-boundary update. Primitive/style assertions stay separate.
     """
-    offenders = []
+    consumers = []
     for path in sorted((ROOT / "templates").rglob("*")):
         if not path.is_file() or path.suffix not in {".j2", ".html"}:
             continue
@@ -287,10 +290,20 @@ def test_no_consumer_wires_the_new_primitives_yet(theme):
             for cls in re.findall(r'class=["\']([^"\']*)["\']', text)
         )
         if has_skel or "mx-error" in text:
-            offenders.append(path.relative_to(ROOT).as_posix())
-    assert not offenders, (
-        f"unexpected consumers of .skel/.mx-error found: {offenders} — this PR is "
-        "additive-only; wiring belongs to the shell builder (P-MP1-SHELL)"
+            consumers.append(path.relative_to(ROOT).as_posix())
+    expected = {
+        "templates/_prophet_card.html.j2",
+        "templates/_us_early_observations.html.j2",
+        "templates/dashboard.html.j2",
+        "templates/gmi_states.html.j2",
+        "templates/intraday_flow.html.j2",
+        "templates/sector_central.html.j2",
+    }
+    actual = set(consumers)
+    assert actual == expected, (
+        "loading/error consumer boundary changed: "
+        f"unexpected={sorted(actual - expected)}, missing={sorted(expected - actual)}; "
+        "update the declared migration scope with deliberate template changes"
     )
 
 

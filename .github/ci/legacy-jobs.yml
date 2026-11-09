@@ -22012,8 +22012,6 @@ jobs:
       # the gh-annotation guard above). ci-main-heartbeat.yml runs this job on a
       # schedule against main with NO path filter, which is what keeps the guard
       # from rotting red on main invisibly again.
-      - name: data-base shim guard (lib.pages units + committed-page tripwire + source guard)
-        run: python -m pytest tests/test_site_shim.py -q
       # Same module, same class of post-render page rewrite: externalize_css lifts
       # inline <style> into hashed sheets via lib.pages.externalize_css_text and
       # writes through write_page. Also unwired until now.
@@ -22027,8 +22025,6 @@ jobs:
       # that creates the link). That accreted 3 dead stylesheets / 92,412 bytes.
       # Writing THROUGH to templates/ is deliberately not the fix — see the module
       # docstrings in scripts/externalize_css.py.
-      - name: inline-CSS externalization units + pair-skip guards
-        run: python -m pytest tests/test_externalize_css.py -q
       # design-system packet PR-0(a)(b): the site --fs-* type ramp at :root and the
       # three shared .mx-* primitives. Same job because it is the same file — a
       # templates/theme.css edit is what breaks all of it, and this job is already the
@@ -22037,8 +22033,8 @@ jobs:
       # check resolves the cascade in stdlib rather than importorskip-ing playwright
       # and reporting green while proving nothing. Deps are the set installed above
       # (pytest is the whole closure here — the suite imports only re/pathlib).
-      - name: design-system foundations (site type ramp at :root + shared .mx-* primitives)
-        run: python -m pytest tests/test_design_system_foundations.py -q
+      - name: Site shim, CSS externalization and design-system foundations
+        run: python -m pytest tests/test_site_shim.py tests/test_externalize_css.py tests/test_design_system_foundations.py -q
 
   data-base-shim:
     if: ${{ false }}
@@ -22080,7 +22076,7 @@ jobs:
       # Forex contracts and Shared Shell finite-route/document coverage.
       # These modules share one Python setup; retain their original order.
       - name: Builder shims, Forex context and Shared Shell contracts
-        run: python -m pytest tests/test_builder_shim_writes.py tests/test_forex_context_bus.py tests/test_export_shared_shell_routes.py tests/test_shared_shell_injection.py tests/test_hk_lookup_template.py tests/test_redirect_stub_page_only.py tests/test_movers_stub_page_only.py tests/test_special_sits_intel.py tests/test_special_situations_premium.py tests/test_beneficial_ownership.py -q
+        run: python -m pytest tests/test_builder_shim_writes.py tests/test_forex_context_bus.py tests/test_export_shared_shell_routes.py tests/test_shared_shell_injection.py tests/test_hk_lookup_template.py tests/test_redirect_stub_page_only.py tests/test_movers_stub_page_only.py tests/test_special_sits_intel.py tests/test_special_situations_premium.py tests/test_beneficial_ownership.py tests/test_ownership_ledger.py -q
       - name: Shared Shell exact first-party parent handshake
         run: node --test tests/js/shared_shell_bridge.test.cjs
 
