@@ -21948,6 +21948,11 @@ jobs:
         run: python -m pytest tests/test_export_shared_shell_routes.py tests/test_shared_shell_injection.py tests/test_hk_lookup_template.py tests/test_redirect_stub_page_only.py tests/test_movers_stub_page_only.py tests/test_special_sits_intel.py tests/test_special_situations_premium.py tests/test_beneficial_ownership.py -q
       - name: Shared Shell exact first-party parent handshake
         run: node --test tests/js/shared_shell_bridge.test.cjs
+      # Intraday Flow lifecycle P0 and history-preserving append: all inputs are
+      # synthetic or temporary. Keep the broad market-artifact owner DATA;
+      # select only the hermetic append class from that existing test module.
+      - name: Intraday Flow snapshot lifecycle and ledger preservation
+        run: python -m pytest tests/test_intraday_flow_lifecycle_js.py tests/test_intraday_flow_timing_lifecycle.py tests/test_intraday_flow_stance.py tests/test_intraday_flow.py::TestAppendLedger -q
 
   forex-r26-consumer:
     if: ${{ false }}
