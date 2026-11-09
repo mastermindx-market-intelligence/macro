@@ -70,7 +70,10 @@ _FIRST_WORD = re.compile(r"\s*([A-Za-z'’]+)")
 BIO_HOST = "www.mastermind-x.com"
 #: The path IS the attribution key (BL-2): the registry's immutable child id,
 #: never the handle, and never a campaign parameter.
-BIO_PATH_RE = re.compile(r"^/x/[a-z0-9]{4,32}$")
+#: Registry ids are dotted (desk.and.dusk, mila.lifts, wren.mp4): a bare
+#: [a-z0-9] class refuses 4 of the 5 registered children, so the shape admits
+#: interior single dots only — 4-32 chars, no leading/trailing/double dot.
+BIO_PATH_RE = re.compile(r"^/x/(?!.*\.\.)[a-z0-9][a-z0-9.]{2,30}[a-z0-9]$")
 #: Hosts that resolve to somebody else's estate. Refused even when they redirect
 #: to us: with posts and replies URL-free (BL-9) the bio is the single hop, so
 #: BL-3 requires that hop to be org-controlled end to end.
@@ -84,10 +87,17 @@ _BARE_LINK_HOSTS = {
 #: X autolinks a bare host too, so a URL is not only `scheme://`: the token
 #: matcher also names the hosts that matter. Order matters — the scheme and
 #: `www.` alternatives win at any position they can match.
+#: The last alternative is the general scheme-less host: any dotted host with
+#: an alphabetic TLD (two labels minimum), because a gate cannot maintain a
+#: list of everybody else's domains. Its shape refuses prose look-alikes:
+#: "e.g."/"i.e." end on a one-letter label, "v1.2"/"2.0.1" end on a number,
+#: and a sentence-final "done." carries no second label at all.
 _LINK_TOKEN = re.compile(
     r"(?i)(?:https?://[^\s<>\"'`]+"
     r"|www\.[^\s<>\"'`]+"
-    r"|(?<![\w.@/-])(?:%s)(?:/[^\s<>\"'`]*)?(?![\w-]))"
+    r"|(?<![\w.@/-])(?:%s)(?:/[^\s<>\"'`]*)?(?![\w-])"
+    r"|(?<![\w.@/-])(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z]{2,}"
+    r"(?:/[^\s<>\"'`]*)?(?![\w-]))"
     % "|".join(re.escape(h) for h in sorted(_BARE_LINK_HOSTS))
 )
 #: Sentence punctuation is not part of a link.
@@ -373,20 +383,21 @@ def _bio_link_violations(
             f"bio link {link!r} has a trailing slash — the canonical form ends "
             f"at the child id (BL-10)"
         )
-    elif not BIO_PATH_RE.match(path):
+    elif not BIO_PATH_RE.fullmatch(path):
         out.append(
             f"bio link path {path!r} is not the settled destination shape "
-            f"^/x/[a-z0-9]{{4,32}}$ (BL-2)"
+            f"/x/<4-32 lowercase letters/digits with single interior dots> (BL-2)"
         )
 
-    if BIO_PATH_RE.match(path):
+    if BIO_PATH_RE.fullmatch(path):
         slug = path[len("/x/"):]
         if child_id is not None:
             wanted = str(child_id or "").strip()
-            if not re.fullmatch(r"[a-z0-9]{4,32}", wanted):
+            if not BIO_PATH_RE.fullmatch(f"/x/{wanted}"):
                 out.append(
                     f"child_id {child_id!r} is not a valid attribution key "
-                    f"([a-z0-9]{{4,32}}) — the path cannot bind to it"
+                    f"(4-32 lowercase letters/digits with single interior dots) — "
+                    f"the path cannot bind to it"
                 )
             elif path != f"/x/{wanted}":
                 out.append(
