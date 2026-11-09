@@ -2853,7 +2853,7 @@
     "canonicalBindings": "research/paper_human_clarity/INTERNATIONAL_METHOD_BINDINGS.json"
   },
   "news": {
-    "status": "IN_PROGRESS",
+    "status": "NATIVE_DESIGN_VERIFIED",
     "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
     "pageId": "p-5-0",
     "fixture": {
@@ -2912,13 +2912,15 @@
         "nodeId": "YM-0",
         "original": "Flow never ticks from SSE (D-W3) — nothing to freeze, only to label",
         "replacement": "Last accepted count stays visible during a stream interruption.",
-        "status": "APPLIED_RESPONSE_OBSERVED"
+        "status": "NATIVE_READBACK_VERIFIED",
+        "readback": "Last accepted count stays visible during a stream interruption."
       },
       {
         "nodeId": "11O-0",
         "original": "Today’s outline is dashed while the feed catches up: the bar may still grow. The typical line stays — the prior 28 days are complete.",
         "replacement": "Dashed 24h bar: incomplete count. Suppress comparison; a supplied baseline does not prove complete history.",
-        "status": "APPLIED_RESPONSE_OBSERVED"
+        "status": "NATIVE_READBACK_VERIFIED",
+        "readback": "Dashed 24h bar: incomplete count. Suppress comparison; a supplied baseline does not prove complete history."
       }
     ],
     "chartCorrections": [
@@ -2927,14 +2929,16 @@
         "originalSVG": "<svg width=\"332\" height=\"104\" viewBox=\"0 0 332 104\" xmlns=\"http://www.w3.org/2000/svg\" id=\"35X-0\" style={{ display: 'inline-block', flexShrink: 0 }}>\n                  <line x1=\"0\" y1=\"80\" x2=\"332\" y2=\"80\" stroke=\"#2A2E37\" />\n                  <line x1=\"0\" y1=\"78\" x2=\"186\" y2=\"78\" stroke=\"#6B7280\" strokeDasharray=\"1 3\" />\n                  <text x=\"93\" y=\"70\" fontFamily=\"Inter\" fontSize=\"10\" textAnchor=\"middle\" fill=\"#8A92A3\">{\"no record\"}</text>\n                  <rect x=\"198\" y=\"62\" width=\"7\" height=\"16\" fill=\"#AAB2C2B8\" />\n                  <rect x=\"209\" y=\"54\" width=\"7\" height=\"24\" fill=\"#AAB2C2B8\" />\n                  <rect x=\"220\" y=\"68\" width=\"7\" height=\"10\" fill=\"#AAB2C2B8\" />\n                  <rect x=\"231\" y=\"48\" width=\"7\" height=\"30\" fill=\"#AAB2C2B8\" />\n                  <rect x=\"242\" y=\"56\" width=\"7\" height=\"22\" fill=\"#AAB2C2B8\" />\n                  <rect x=\"253\" y=\"60\" width=\"7\" height=\"18\" fill=\"#AAB2C2B8\" />\n                  <rect x=\"264\" y=\"44\" width=\"7\" height=\"34\" fill=\"#AAB2C2B8\" />\n                  <rect x=\"275\" y=\"64\" width=\"7\" height=\"14\" fill=\"#AAB2C2B8\" />\n                  <circle cx=\"289.5\" cy=\"77\" r=\"1.5\" fill=\"#6B7280\" />\n                  <rect x=\"301\" y=\"38\" width=\"9\" height=\"40\" fill=\"none\" stroke=\"#E6E8EE\" strokeWidth=\"1.25\" />\n                  <text x=\"305.5\" y=\"32\" fontFamily=\"Inter\" fontSize=\"10\" fontWeight=\"600\" textAnchor=\"middle\" fill=\"#E6E8EE\">{\"13\"}</text>\n                  <text x=\"0\" y=\"96\" fontFamily=\"Inter\" fontSize=\"10\" fill=\"#8A92A3\">{\"28 days before today\"}</text>\n                  <text x=\"305.5\" y=\"96\" fontFamily=\"Inter\" fontSize=\"10\" textAnchor=\"middle\" fill=\"#8A92A3\">{\"24h\"}</text>\n                </svg>",
         "reason": "Historical bars and rolling24h mark used incompatible values/scales relative to seven-day total91.",
         "replacement": "Shared preserved nine-day design series from1CX-0; one linear5px/report scale; unrecorded history mask; rolling24h distinct from UTCbins.",
-        "status": "PENDING"
+        "status": "NATIVE_READBACK_VERIFIED",
+        "replacementNodeId": "3TU-0"
       },
       {
         "nodeId": "39J-0",
         "originalSVG": "<svg width=\"332\" height=\"104\" viewBox=\"0 0 332 104\" xmlns=\"http://www.w3.org/2000/svg\" id=\"39J-0\" style={{ display: 'inline-block', flexShrink: 0 }}>\n                  <line x1=\"0\" y1=\"80\" x2=\"332\" y2=\"80\" stroke=\"#2A2E37\" />\n                  <line x1=\"0\" y1=\"78\" x2=\"186\" y2=\"78\" stroke=\"#6B7280\" strokeDasharray=\"1 3\" />\n                  <text x=\"93\" y=\"70\" fontFamily=\"Inter\" fontSize=\"10\" textAnchor=\"middle\" fill=\"#8A92A3\">{\"no record\"}</text>\n                  <rect x=\"198\" y=\"62\" width=\"7\" height=\"16\" fill=\"#AAB2C2B8\" />\n                  <rect x=\"209\" y=\"54\" width=\"7\" height=\"24\" fill=\"#AAB2C2B8\" />\n                  <rect x=\"220\" y=\"68\" width=\"7\" height=\"10\" fill=\"#AAB2C2B8\" />\n                  <rect x=\"231\" y=\"48\" width=\"7\" height=\"30\" fill=\"#AAB2C2B8\" />\n                  <rect x=\"242\" y=\"56\" width=\"7\" height=\"22\" fill=\"#AAB2C2B8\" />\n                  <rect x=\"253\" y=\"60\" width=\"7\" height=\"18\" fill=\"#AAB2C2B8\" />\n                  <rect x=\"264\" y=\"44\" width=\"7\" height=\"34\" fill=\"#AAB2C2B8\" />\n                  <rect x=\"275\" y=\"64\" width=\"7\" height=\"14\" fill=\"#AAB2C2B8\" />\n                  <circle cx=\"289.5\" cy=\"77\" r=\"1.5\" fill=\"#6B7280\" />\n                  <rect x=\"301\" y=\"38\" width=\"9\" height=\"40\" fill=\"none\" stroke=\"#E6E8EE\" strokeWidth=\"1.25\" />\n                  <text x=\"305.5\" y=\"32\" fontFamily=\"Inter\" fontSize=\"10\" fontWeight=\"600\" textAnchor=\"middle\" fill=\"#E6E8EE\">{\"13\"}</text>\n                  <text x=\"0\" y=\"96\" fontFamily=\"Inter\" fontSize=\"10\" fill=\"#8A92A3\">{\"28 days before today\"}</text>\n                  <text x=\"305.5\" y=\"96\" fontFamily=\"Inter\" fontSize=\"10\" textAnchor=\"middle\" fill=\"#8A92A3\">{\"24h\"}</text>\n                </svg>",
         "reason": "Historical bars and rolling24h mark used incompatible values/scales relative to seven-day total91.",
         "replacement": "Shared preserved nine-day design series from1CX-0; one linear5px/report scale; unrecorded history mask; rolling24h distinct from UTCbins.",
-        "status": "PENDING"
+        "status": "NATIVE_READBACK_VERIFIED",
+        "replacementNodeId": "3UC-0"
       }
     ],
     "currentDesignNodes": {
@@ -2946,6 +2950,204 @@
       "sourcesZH": "3OK-0",
       "methodEN": "3LV-0",
       "methodZH": "3P2-0"
+    },
+    "currentPageName": "Product · Activity & returns",
+    "designStates": [
+      {
+        "state": "headlines",
+        "locale": "en",
+        "nodeId": "3I1-0",
+        "theme": "dark",
+        "width": 390
+      },
+      {
+        "state": "headlines",
+        "locale": "zh",
+        "nodeId": "3MT-0",
+        "theme": "dark",
+        "width": 390
+      },
+      {
+        "state": "activity",
+        "locale": "en",
+        "nodeId": "3J1-0",
+        "theme": "dark",
+        "width": 390
+      },
+      {
+        "state": "activity",
+        "locale": "zh",
+        "nodeId": "3NG-0",
+        "theme": "dark",
+        "width": 390
+      },
+      {
+        "state": "sources",
+        "locale": "en",
+        "nodeId": "3LA-0",
+        "theme": "dark",
+        "width": 390
+      },
+      {
+        "state": "sources",
+        "locale": "zh",
+        "nodeId": "3OK-0",
+        "theme": "dark",
+        "width": 390
+      },
+      {
+        "state": "method",
+        "locale": "en",
+        "nodeId": "3LV-0",
+        "theme": "dark",
+        "width": 390
+      },
+      {
+        "state": "method",
+        "locale": "zh",
+        "nodeId": "3P2-0",
+        "theme": "dark",
+        "width": 390
+      },
+      {
+        "state": "partial",
+        "locale": "en",
+        "nodeId": "3PX-0",
+        "theme": "dark",
+        "width": 390
+      },
+      {
+        "state": "partial",
+        "locale": "zh",
+        "nodeId": "3SJ-0",
+        "theme": "dark",
+        "width": 390
+      },
+      {
+        "state": "interrupted",
+        "locale": "en",
+        "nodeId": "3Q7-0",
+        "theme": "dark",
+        "width": 390
+      },
+      {
+        "state": "interrupted",
+        "locale": "zh",
+        "nodeId": "3SQ-0",
+        "theme": "dark",
+        "width": 390
+      },
+      {
+        "state": "unavailable",
+        "locale": "en",
+        "nodeId": "3QK-0",
+        "theme": "dark",
+        "width": 390
+      },
+      {
+        "state": "unavailable",
+        "locale": "zh",
+        "nodeId": "3SZ-0",
+        "theme": "dark",
+        "width": 390
+      },
+      {
+        "state": "return",
+        "locale": "en",
+        "nodeId": "3RU-0",
+        "theme": "dark",
+        "width": 390
+      },
+      {
+        "state": "return",
+        "locale": "zh",
+        "nodeId": "3T7-0",
+        "theme": "dark",
+        "width": 390
+      },
+      {
+        "state": "partial_activity",
+        "locale": "en",
+        "nodeId": "3V2-0",
+        "theme": "dark",
+        "width": 390
+      },
+      {
+        "state": "partial_activity",
+        "locale": "zh",
+        "nodeId": "3WQ-0",
+        "theme": "dark",
+        "width": 390
+      },
+      {
+        "state": "help_return",
+        "locale": "en",
+        "nodeId": "3YE-0",
+        "theme": "dark",
+        "width": 390
+      },
+      {
+        "state": "help_return",
+        "locale": "zh",
+        "nodeId": "3ZL-0",
+        "theme": "dark",
+        "width": 390
+      }
+    ],
+    "referenceRelocation": {
+      "nodeId": "2RL-0",
+      "fromPage": "p-1-0",
+      "toPage": "p-3-0",
+      "parentId": "3H0-0",
+      "name": "REF · Publisher return conditions · original layout",
+      "productLayoutSupersededBy": "3HH-0 / p-5-0",
+      "originalPublisherAndReviewConditionsPreserved": true
+    },
+    "visualQA": [
+      {
+        "nodeId": "3I1-0",
+        "verdict": "PASS after 44px-wide tab target repair; clear hierarchy and compact glance; article and review remain primary."
+      },
+      {
+        "nodeId": "3HW-0",
+        "verdict": "PASS: four focused panes fit at390px, aligned spacing, readable contrast, no clipped content; method detail is confined to requested help."
+      },
+      {
+        "nodeId": "3MR-0",
+        "verdict": "COPY/LAYOUT PASS; chart rejected for original locale fixture geometry drift. Rebuild labels from the exact EN chart geometry before final acceptance."
+      },
+      {
+        "nodeId": "3J1-0",
+        "verdict": "PASS after shared-fixture correction: all historical bars and rolling24h mark share linear scale; no-record run distinct; no clipping."
+      },
+      {
+        "nodeId": "3V0-0",
+        "verdict": "PASS: EN/ZH use identical chart geometry; partial outline is dashed and qualification visible; help return has full focus outline without layout shift."
+      },
+      {
+        "nodeId": "3PV-0",
+        "verdict": "PASS: three compact degraded states preserve meaning; count-unavailable has no count/provenance numbers and keeps headline; reading-anchor focus visible."
+      },
+      {
+        "nodeId": "3SH-0",
+        "verdict": "PASS: same state/return semantics in Chinese, readable labels and touch targets, no clipping."
+      },
+      {
+        "nodeId": "355-0",
+        "verdict": "PASS: both prior inconsistent charts repaired; parent reference flow auto-fits, no clipped labels or overflow."
+      },
+      {
+        "nodeId": "Y0-0 / 11C-0",
+        "verdict": "PASS: corrected stream and history qualifications fit their reference state panels."
+      }
+    ],
+    "implementationGuide": "research/paper_human_clarity/WORKFLOW_ENHANCEMENTS.md",
+    "focusRules": {
+      "helpBack": "restore the exact help opener in Activity",
+      "escapeHelp": "one level back; preserve IME",
+      "escapeActivity": "restore Activity opener in Headlines",
+      "headlinesAction": "restore valid reading anchor/scroll, otherwise feed heading",
+      "review": "navigation never marks reviewed"
     }
   },
   "internationalResults": {
@@ -2971,5 +3173,1383 @@
     "numericFixtureVerified": false
   },
   "runtimeNavigationVerified": false,
-  "runtimeImplementationChanged": false
+  "runtimeImplementationChanged": false,
+  "effects": [
+    {
+      "tool": "create_page",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-method-page-20261108-01",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "d1532ab38e44b61b9083492dfe67257c6c46f4c20fd9436e94c36c1e25abb822",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-gallery-20261108-01",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-ranking-row-01",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-ranking-enlight-header-01",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-ranking-enlight-body-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-ranking-enlight-body-1",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-intl-ranking-enlight-body-2",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-ranking-zh-light-head",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-ranking-zh-light-row-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-ranking-zh-light-row-1",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-ranking-zh-light-row-2",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-ranking-en-dark-head",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-ranking-en-dark-row-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-ranking-en-dark-row-1",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-ranking-en-dark-row-2",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-ranking-zh-dark-head",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-ranking-zh-dark-row-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-ranking-zh-dark-row-1",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-ranking-zh-dark-row-2",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "set_text_content",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-ranking-render-repair-01",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-clocks-row-01",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-clocks-en-light-head",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-clocks-en-light-row-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-clocks-en-light-row-1",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-clocks-en-light-row-2",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-clocks-en-light-row-3",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-clocks-zh-light-head",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-clocks-zh-light-row-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-clocks-zh-light-row-1",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-clocks-zh-light-row-2",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-clocks-zh-light-row-3",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-clocks-en-dark-head",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-clocks-en-dark-row-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-clocks-en-dark-row-1",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-clocks-en-dark-row-2",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-clocks-en-dark-row-3",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-clocks-zh-dark-head",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-clocks-zh-dark-row-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-clocks-zh-dark-row-1",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-clocks-zh-dark-row-2",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-clocks-zh-dark-row-3",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-eligibility-row-01",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-eligibility-en-light-head",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-eligibility-en-light-row-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-eligibility-en-light-row-1",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-eligibility-en-light-row-2",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-eligibility-en-light-row-3",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-eligibility-zh-light-head",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-eligibility-zh-light-row-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-eligibility-zh-light-row-1",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-eligibility-zh-light-row-2",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-eligibility-zh-light-row-3",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-eligibility-en-dark-head",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-eligibility-en-dark-row-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-eligibility-en-dark-row-1",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-eligibility-en-dark-row-2",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-eligibility-en-dark-row-3",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-eligibility-zh-dark-head",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-eligibility-zh-dark-row-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-eligibility-zh-dark-row-1",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-eligibility-zh-dark-row-2",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-eligibility-zh-dark-row-3",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-scenario-row-01",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-scenario-en-light-head",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-scenario-en-light-row-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-scenario-en-light-row-1",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-scenario-en-light-row-2",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-scenario-zh-light-head",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-scenario-zh-light-row-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-scenario-zh-light-row-1",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-scenario-zh-light-row-2",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-scenario-en-dark-head",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-scenario-en-dark-row-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-scenario-en-dark-row-1",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-scenario-en-dark-row-2",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-scenario-zh-dark-head",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-scenario-zh-dark-row-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-scenario-zh-dark-row-1",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-scenario-zh-dark-row-2",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-transmission-row-01",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-transmission-en-light-head",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-transmission-en-light-row-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-transmission-en-light-row-1",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-transmission-en-light-row-2",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-transmission-en-light-row-3",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-transmission-zh-light-head",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-transmission-zh-light-row-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-transmission-zh-light-row-1",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-transmission-zh-light-row-2",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-transmission-zh-light-row-3",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-transmission-en-dark-head",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-transmission-en-dark-row-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-transmission-en-dark-row-1",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-transmission-en-dark-row-2",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-transmission-en-dark-row-3",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-transmission-zh-dark-head",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-transmission-zh-dark-row-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-transmission-zh-dark-row-1",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-transmission-zh-dark-row-2",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-transmission-zh-dark-row-3",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "finish_working_on_nodes",
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "operationId": "clarity-depth-method-release-01",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f",
+      "after": "640cd29a4c5e433b4e6cf8df9efe63872464a0241c77f337e21fcd0546d9ca4f"
+    },
+    {
+      "tool": "create_page",
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "operationId": "clarity-depth-news-journey-page-01",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "a54342e37e813030da443c337b2f9449d9e099efeb9770f971cb9527a32bc9ae",
+      "after": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e"
+    },
+    {
+      "tool": "set_text_content",
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "operationId": "clarity-depth-news-state-copy-fix-01",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e",
+      "after": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "operationId": "clarity-depth-news-gallery-01",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e",
+      "after": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "operationId": "clarity-depth-news-en-row-01",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e",
+      "after": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "operationId": "clarity-depth-news-headlines-en-header",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e",
+      "after": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "operationId": "clarity-depth-news-headlines-en-glance",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e",
+      "after": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "operationId": "clarity-depth-news-headlines-en-filters",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e",
+      "after": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "operationId": "clarity-depth-news-headlines-en-story",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e",
+      "after": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "operationId": "clarity-depth-news-headlines-en-review",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e",
+      "after": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "operationId": "clarity-depth-news-activity-en-header",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e",
+      "after": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "operationId": "clarity-depth-news-activity-en-count",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e",
+      "after": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "operationId": "clarity-depth-news-activity-en-history",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e",
+      "after": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "operationId": "clarity-depth-news-activity-en-chart",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e",
+      "after": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "operationId": "clarity-depth-news-activity-en-timing",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e",
+      "after": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "operationId": "clarity-depth-news-activity-en-help",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e",
+      "after": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "operationId": "clarity-depth-news-sources-en-header",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e",
+      "after": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "operationId": "clarity-depth-news-sources-en-list",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e",
+      "after": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "operationId": "clarity-depth-news-sources-en-scope",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e",
+      "after": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "operationId": "clarity-depth-news-sources-en-timing",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e",
+      "after": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "operationId": "clarity-depth-news-method-en-header",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e",
+      "after": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "operationId": "clarity-depth-news-method-en-content",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e",
+      "after": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "operationId": "clarity-depth-news-headlines-target-fix-01",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e",
+      "after": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "operationId": "clarity-depth-news-zh-row-01",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e",
+      "after": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "operationId": "clarity-depth-news-headlines-zh-clone",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e",
+      "after": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "operationId": "clarity-depth-news-activity-zh-clone",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e",
+      "after": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "operationId": "clarity-depth-news-sources-zh-clone",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e",
+      "after": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "operationId": "clarity-depth-news-method-zh-clone",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e",
+      "after": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e"
+    },
+    {
+      "tool": "set_text_content",
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "operationId": "clarity-depth-news-zh-copy-01",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e",
+      "after": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "operationId": "clarity-depth-news-zh-native-chart-01",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e",
+      "after": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e"
+    },
+    {
+      "tool": "rename_nodes",
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "operationId": "clarity-depth-news-zh-layer-names-01",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e",
+      "after": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "operationId": "clarity-depth-news-state-en-row",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "afd918516d22c96d55008c3e4f8cc4c67236354ae5b3b0f21d5164e4f8e64dc0",
+      "after": "7b4fa022dbc9fffb3db8f97fbe4eb7e793b0cc093fa7b81a46c3d7fe1fe68fd7"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "operationId": "clarity-depth-news-partial-en-shell",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "7b4fa022dbc9fffb3db8f97fbe4eb7e793b0cc093fa7b81a46c3d7fe1fe68fd7",
+      "after": "2eac8d93d3fae3d2fe088ebb1dcfff4689a9561b378d8fe95863ba2996da1e6c"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "operationId": "clarity-depth-news-partial-en-count",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "2eac8d93d3fae3d2fe088ebb1dcfff4689a9561b378d8fe95863ba2996da1e6c",
+      "after": "27e1738b734e9a53116e4733880cc939fcfabffd0333adabcc6931ceca3a29ff"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "operationId": "clarity-depth-news-partial-en-status",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "27e1738b734e9a53116e4733880cc939fcfabffd0333adabcc6931ceca3a29ff",
+      "after": "ce00104003b4ed981b4c26f462dc327542d1b8080c8db6bff3e407065de5ac10"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "operationId": "clarity-depth-news-partial-en-actions",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "ce00104003b4ed981b4c26f462dc327542d1b8080c8db6bff3e407065de5ac10",
+      "after": "b3115504838fcbd182c23a3c9a45fbaf21c663102e90a1f4ae84f36d26cbcde7"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "operationId": "clarity-depth-news-interrupted-en-shell",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "b3115504838fcbd182c23a3c9a45fbaf21c663102e90a1f4ae84f36d26cbcde7",
+      "after": "d07bf2885b802d8580054f72f71a743ce30d2525935f914255623f90303e68a5"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "operationId": "clarity-depth-news-interrupted-en-count",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "d07bf2885b802d8580054f72f71a743ce30d2525935f914255623f90303e68a5",
+      "after": "f66ca4cbe67b06caa4eb4410bbfb62194a5de1e28ffffcbd962c6ebc7c550f68"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "operationId": "clarity-depth-news-interrupted-en-status",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "f66ca4cbe67b06caa4eb4410bbfb62194a5de1e28ffffcbd962c6ebc7c550f68",
+      "after": "c82e29585396a50191105d3046bfbf49c11593c97c9469ccda7fbf1f4fdc1416"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "operationId": "clarity-depth-news-interrupted-en-time",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "c82e29585396a50191105d3046bfbf49c11593c97c9469ccda7fbf1f4fdc1416",
+      "after": "3ec042a988fefa5b66a381fcdc55dfc7b188659d570faebf7462731e4ee04842"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "operationId": "clarity-depth-news-interrupted-en-actions",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "3ec042a988fefa5b66a381fcdc55dfc7b188659d570faebf7462731e4ee04842",
+      "after": "8ad8aacb55ab8d5a78e816d3e5b9add792e57a69bafb69b65d41609bbb103e41"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "operationId": "clarity-depth-news-unavailable-en-shell",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "8ad8aacb55ab8d5a78e816d3e5b9add792e57a69bafb69b65d41609bbb103e41",
+      "after": "ec93aca3ac472286ec977c79b31812309c8ea8b1f484b76c0a4a0d6249523fc2"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "operationId": "clarity-depth-news-unavailable-en-status",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "ec93aca3ac472286ec977c79b31812309c8ea8b1f484b76c0a4a0d6249523fc2",
+      "after": "b7bdecced2f929c4c027b56a9bd6526b893df64d1e959339f3ab5071843c0771"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "operationId": "clarity-depth-news-unavailable-en-story",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "b7bdecced2f929c4c027b56a9bd6526b893df64d1e959339f3ab5071843c0771",
+      "after": "6cb02283c8b98bbbe959713b61e8d4126e0e959902090cf7fb3617966c7ddbd4"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "operationId": "clarity-depth-news-shared-fixture-en-01",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "6cb02283c8b98bbbe959713b61e8d4126e0e959902090cf7fb3617966c7ddbd4",
+      "after": "37db33a02c6acf0b02ba372ab1781123aa143a8246bf5e1a8454f53415383c70"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "operationId": "clarity-depth-news-shared-fixture-zh-01",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "37db33a02c6acf0b02ba372ab1781123aa143a8246bf5e1a8454f53415383c70",
+      "after": "385386d654700d0fa7ff86f6fe8c3719ff42bdc5eae75d2f545f6bc8458f7c37"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "operationId": "clarity-depth-news-return-en-clone",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "385386d654700d0fa7ff86f6fe8c3719ff42bdc5eae75d2f545f6bc8458f7c37",
+      "after": "06e0642b5ffaf3887a68d789fbbddf60a26028615469bab3fee989d6e2d6f8ac"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "operationId": "clarity-depth-news-state-zh-row",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "06e0642b5ffaf3887a68d789fbbddf60a26028615469bab3fee989d6e2d6f8ac",
+      "after": "8b7df5e76e312bf6bf5ecb10d8021a6980089d4d5862d01ec865566286725061"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "operationId": "clarity-depth-news-partial-zh-clone",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "8b7df5e76e312bf6bf5ecb10d8021a6980089d4d5862d01ec865566286725061",
+      "after": "544ee387c8b709a931d9e60d6fc90c88afa5772b3eb336edcaa8d6020e2edca0"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "operationId": "clarity-depth-news-interrupted-zh-clone",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "544ee387c8b709a931d9e60d6fc90c88afa5772b3eb336edcaa8d6020e2edca0",
+      "after": "bde00152c7609481c04fa1b01aa63e432c798086884ed70e74274ef3ce02bb9c"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "operationId": "clarity-depth-news-unavailable-zh-clone",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "bde00152c7609481c04fa1b01aa63e432c798086884ed70e74274ef3ce02bb9c",
+      "after": "2673cf278e475b6f380398bb5f0ab43e15f227cc64ef5a9d9d9011c5cd37b4b2"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "operationId": "clarity-depth-news-return-zh-clone",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "2673cf278e475b6f380398bb5f0ab43e15f227cc64ef5a9d9d9011c5cd37b4b2",
+      "after": "869a42028e1b7d6cccaef5a758041a2a8aed95470d2c7bc2c3e38dbae1c16983"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "operationId": "clarity-depth-news-legacy-chart-35X-0-01",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "869a42028e1b7d6cccaef5a758041a2a8aed95470d2c7bc2c3e38dbae1c16983",
+      "after": "869a42028e1b7d6cccaef5a758041a2a8aed95470d2c7bc2c3e38dbae1c16983"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "operationId": "clarity-depth-news-legacy-chart-39J-0-01",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "869a42028e1b7d6cccaef5a758041a2a8aed95470d2c7bc2c3e38dbae1c16983",
+      "after": "869a42028e1b7d6cccaef5a758041a2a8aed95470d2c7bc2c3e38dbae1c16983"
+    },
+    {
+      "tool": "set_text_content",
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "operationId": "clarity-depth-news-zh-degraded-copy-01",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "869a42028e1b7d6cccaef5a758041a2a8aed95470d2c7bc2c3e38dbae1c16983",
+      "after": "869a42028e1b7d6cccaef5a758041a2a8aed95470d2c7bc2c3e38dbae1c16983"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "operationId": "clarity-depth-news-return-focus-en-01",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "869a42028e1b7d6cccaef5a758041a2a8aed95470d2c7bc2c3e38dbae1c16983",
+      "after": "4e627f7373d401fa75547c0005accccc5803ff37fe2b9cd9f2fc72a009d1d8d2"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "operationId": "clarity-depth-news-return-focus-zh-01",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "4e627f7373d401fa75547c0005accccc5803ff37fe2b9cd9f2fc72a009d1d8d2",
+      "after": "ae7e42a1cfbb6fa0a9d99bea68a4d5c3e206e81e3a616085658fa7b79157871c"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "operationId": "clarity-depth-news-detail-states-row",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "ae7e42a1cfbb6fa0a9d99bea68a4d5c3e206e81e3a616085658fa7b79157871c",
+      "after": "e4a8b795ee8ce15d145f156844053231c2f6c5664b110a70f30539926a43ab56"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "operationId": "clarity-depth-news-partial-activity-en-clone",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "e4a8b795ee8ce15d145f156844053231c2f6c5664b110a70f30539926a43ab56",
+      "after": "76ddab8cb1a79d11eb821573b70411088c5bcae5a74a418a9b0545f9d5c7dbba"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "operationId": "clarity-depth-news-partial-activity-en-chart",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "76ddab8cb1a79d11eb821573b70411088c5bcae5a74a418a9b0545f9d5c7dbba",
+      "after": "76ddab8cb1a79d11eb821573b70411088c5bcae5a74a418a9b0545f9d5c7dbba"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "operationId": "clarity-depth-news-partial-activity-en-qualification",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "76ddab8cb1a79d11eb821573b70411088c5bcae5a74a418a9b0545f9d5c7dbba",
+      "after": "c1b5ad6ea33d08f3898a095d739d3f9a45f7e14529a4a874cb7fd62f679ee456"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "operationId": "clarity-depth-news-partial-activity-zh-clone",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "c1b5ad6ea33d08f3898a095d739d3f9a45f7e14529a4a874cb7fd62f679ee456",
+      "after": "de6c9ae40e99cb26b9e2403395ba97e31c0059259b3f13d830352f87f8849894"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "operationId": "clarity-depth-news-partial-activity-zh-chart",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "de6c9ae40e99cb26b9e2403395ba97e31c0059259b3f13d830352f87f8849894",
+      "after": "de6c9ae40e99cb26b9e2403395ba97e31c0059259b3f13d830352f87f8849894"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "operationId": "clarity-depth-news-partial-activity-zh-qualification",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "de6c9ae40e99cb26b9e2403395ba97e31c0059259b3f13d830352f87f8849894",
+      "after": "defeadf17521741e0edbc03f8d27e37bb7e07065bacfad6c13cb898c9f604534"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "operationId": "clarity-depth-news-help-return-en-clone",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "defeadf17521741e0edbc03f8d27e37bb7e07065bacfad6c13cb898c9f604534",
+      "after": "8cf2d8600f0192c4c3f29133e21c79f2404180af3a4a7e5f41ef3e4a62d91d87"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "operationId": "clarity-depth-news-help-return-en-focus",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "8cf2d8600f0192c4c3f29133e21c79f2404180af3a4a7e5f41ef3e4a62d91d87",
+      "after": "8455e4aa380b29bc5bfbda519153a962f68d8d1290926202b608f2e46b329e40"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "operationId": "clarity-depth-news-help-return-zh-clone",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "8455e4aa380b29bc5bfbda519153a962f68d8d1290926202b608f2e46b329e40",
+      "after": "55d9ba135c443e22ba52c60ee4fc2f2a2220b6004599b981dbb328ea0df5dbc8"
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "operationId": "clarity-depth-news-help-return-zh-focus",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "55d9ba135c443e22ba52c60ee4fc2f2a2220b6004599b981dbb328ea0df5dbc8",
+      "after": "3d0a8ca44516fd19a8298818158d4cbe42386c6baa3b8cc7e1478fe92298b219"
+    },
+    {
+      "tool": "move_nodes",
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "operationId": "clarity-depth-news-legacy-return-to-build-01",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "3d0a8ca44516fd19a8298818158d4cbe42386c6baa3b8cc7e1478fe92298b219",
+      "after": "3d0a8ca44516fd19a8298818158d4cbe42386c6baa3b8cc7e1478fe92298b219"
+    },
+    {
+      "tool": "rename_nodes",
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "operationId": "clarity-depth-news-design-authority-names-01",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "3d0a8ca44516fd19a8298818158d4cbe42386c6baa3b8cc7e1478fe92298b219",
+      "after": "cb61fc8cfbec4c19fd54e69234e7fc7b769f9fe125beebb0ebc76c34180c6959"
+    },
+    {
+      "tool": "set_text_content",
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "operationId": "clarity-depth-news-authority-copy-01",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "cb61fc8cfbec4c19fd54e69234e7fc7b769f9fe125beebb0ebc76c34180c6959",
+      "after": "cb61fc8cfbec4c19fd54e69234e7fc7b769f9fe125beebb0ebc76c34180c6959"
+    },
+    {
+      "tool": "update_pages",
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "operationId": "clarity-depth-news-product-page-name-01",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "cb61fc8cfbec4c19fd54e69234e7fc7b769f9fe125beebb0ebc76c34180c6959",
+      "after": "59c397658d7d604f684d079ac760bede28baa9605b68a481ea683ccded483405"
+    }
+  ]
 }
