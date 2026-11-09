@@ -2270,3 +2270,45 @@ One read-only preflight returned DESKTOP_BUSY with no Paper call sent. A subsequ
 The existing unsupported-native-dialog branch still navigates to bare `gmi-index.html`, discarding the qualified return to the current research. The same initialized page already has a full-index link maintained by `refreshJourney()`. Continue by using that incumbent qualified destination in the existing fallback, and prove an actual opener → index → return journey under an explicitly injected dialog-capability fault. This is separate from malformed-payload recovery and does not require a new modal or URL owner.
 
 Original model01, release, shared Tools, Catalyst and protected-style holds remain. Current component proof does not establish full shared shell/fonts, OS-native IME, spoken AT, live account/admission, current hosted CI or deployment.
+
+
+## 46 · Native-Browse fallback retains the return to research — 9 November 2026
+
+### Applied source
+
+[GMI Draft PR10676](https://github.com/mastermindx-market-intelligence/Macro/pull/10676) advances from `1015aa9501ad9cb4d6519b9c89b791c8f7bcf167` to **`c19d6185f0d06b9ef8af3fb8979d121d32e36c39`**, tree **`d82976521b76f699c2b10312533975cce5535110`**. Six changed files and the updated PR body read back exactly. Draft/unmerged status and all original model/release holds remain.
+
+The existing opener's unsupported-`showModal` branch navigated to bare `gmi-index.html`, dropping the current research's qualified return. It now calls `refreshJourney()` and navigates using the existing Browse index anchor's current href. The established `safeReturn()`/journey owner retains validation, query bounds and permitted fields. No new URL builder, modal implementation, observer or state owner is added.
+
+Source inspection rejected an additional hypothesis before edits: native top-layer presentation does not remove the dialog from its DOM ancestry inside `main`. The emitted template and opened runtime both retain that ancestry. The existing journey selector is unchanged; ordinary Browse already qualified its index link correctly.
+
+### Actual consumer proof
+
+[DESIGN_RECORD §11.37](https://github.com/mastermindx-market-intelligence/Macro/blob/c19d6185f0d06b9ef8af3fb8979d121d32e36c39/research/theme_graph/gmi_design_20261021/DESIGN_RECORD.md) and [DIALOG_RETURN_VALIDATION_20261109.json](https://github.com/mastermindx-market-intelligence/Macro/blob/c19d6185f0d06b9ef8af3fb8979d121d32e36c39/research/theme_graph/gmi_design_20261021/DIALOG_RETURN_VALIDATION_20261109.json) retain exact input/source hashes, baseline/final reports, commands and limits.
+
+| Evidence | Result |
+|---|---|
+| Final PID26102 | Exit0, **12 cases / 12 contexts**, Chrome157.0.8103.39, zero page errors; **27.08 s** |
+| Ten real journeys | Unavailable and supported Browse → index → return at EN/ZH390/320 plus EN820 |
+| Retained context | Explicit nondefault topic, query, category, scope, evidence and lens through the owner's qualified projection |
+| Qualification boundary | Extra fixture-only hash field dropped; expected destination comes from the existing qualified anchor |
+| Capability fault | Only the current dialog instance loses showModal; prototype untouched; returned fresh document opens normally |
+| Baseline PID24930 | Two missing-return failures, two supported-path passes; four contexts, zero page errors, **11.83 s** |
+| Regression | Existing EN390/ZH320 Escape guard/clear/native-dismissal cases pass |
+| Visuals | Four final index/returned-Browse captures inspected |
+
+Paired JS is blob **15b39754aa170a97cd9468a4823142718ff6284a**, SHA256 **c6d7011f82f6c2c09e40a20f05d6cbc13bfef8d5d82c7a70439ff4656c742838**. Only one existing branch changes. All seven HTML pages and CSS remain byte-exact; no model/renderer regeneration. All **111 prior qualified verifier definitions remain AST-exact**; one new canonical helper records the round trip.
+
+This is controlled missing-capability proof, not certification for a particular historical browser. Ordinary supported cases are regressions, not a claimed selector repair. Full shared-shell/fonts, OS-native IME, spoken AT, live account/admission, current hosted CI and deployment remain outside this proof.
+
+### Paper builder contract
+
+[Build · Interaction & receipts](https://app.paper.design/file/01M5H6EARN9YHQV17JC6ZG9BRY/p-7-0) retains **18 modules / 57 nodes**. Existing responsive module06 body **7NB-0** now describes the qualified native fallback, unchanged ordinary dialog owner, permitted-state boundary and separation from failed-payload recovery. Source/proof references update in place. Existing Q01–Q04 Browse flow reads back exactly; no new product specimen is added.
+
+All node IDs/parents, unaffected text and other styles remain exact. The text edit's paragraph breaks cause Paper to add **whiteSpace: pre-wrap** to this owned **7NB-0** body; that observed text-layout normalization is explicitly recorded rather than reported as byte-exact style preservation. No original product style or token changes. Token hash remains **ac191fd9**. The amended guidance and proof were captured and inspected; the exact Build working indicator was released. [PAPER_DIALOG_RETURN_20261109.json](PAPER_DIALOG_RETURN_20261109.json) retains the before/after guide, explicit normalization, source readbacks and two observed Paper operations.
+
+### Next safe source finding
+
+The existing manual-copy retirement path still renders the fallback hidden before its late focus call. Earlier copy assertions check final focus after Close/context changes; they do not observe the hiding setter. Continue with a bounded pre-hide probe for the address/Close controls, then preserve the incumbent attempt, timer, promise and locale ownership while ordering focus before visibility. Do not repeat accepted copy proof without this new falsifier or add a parallel clipboard lifecycle.
+
+Original model01, release and all independent lane holds remain.
