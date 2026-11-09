@@ -16,6 +16,7 @@ import hashlib
 import pytest
 
 from engine.company_intelligence.vehicle_guidance import extract_vehicle_guidance
+from engine.company_intelligence.documents import DocumentError, SourceSpan, verify_span
 from engine.earnings_release.binding import bind_release_document
 from engine.earnings_release.receipts import (
     ReceiptReplayError,
@@ -219,16 +220,20 @@ def test_revision_does_not_emit_prior_range():
     assert all((i["low"], i["high"]) != (100_000, 103_000) for i in items)
 
 
-def test_prior_range_without_revision_language_stays_introduced():
+def test_explicit_same_period_prior_comparison_is_revised():
     body = _page(
         "<p>The Company expects deliveries of vehicles to be between 90,000 and "
         "95,000 vehicles for the first quarter of 2024, compared to the previous "
-        "outlook of between 100,000 and 103,000 vehicles.</p>",
+        "vehicle delivery outlook of between 100,000 and 103,000 vehicles for "
+        "the same quarter.</p>",
     )
-    _, items = _extract(body)
+    bound, items = _extract(body)
     assert len(items) == 1
     assert (items[0]["low"], items[0]["high"]) == (90_000, 95_000)
-    assert items[0]["status"] == "introduced"
+    assert items[0]["status"] == "revised"
+    evidence = _verified_evidence(bound, items[0])
+    assert "previous" in evidence and "same quarter" in evidence
+    assert "100,000 and 103,000" in evidence
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -383,14 +388,305 @@ def test_receipt_replay_refuses_edited_body():
 
 
 def test_tampered_span_address_refuses():
-    # A span whose bytes no longer reproduce the cited text cannot verify.
-    bound = _bound(ORIGINAL_BODY)
-    items = extract_vehicle_guidance(
-        bound=bound, document_id="doc_test", event_id="evt_test"
-    )
+    bound, items = _extract(ORIGINAL_BODY)
     assert items, "baseline extraction must succeed before tampering"
-    receipt = dict(items[0]["source_span"]["receipt"])
-    receipt["text_sha256"] = "0" * 64
-    encoded = bound.source.encode("utf-8")
-    sliced = encoded[receipt["span_start_byte"]:receipt["span_end_byte"]]
-    assert hashlib.sha256(sliced).hexdigest() != receipt["text_sha256"]
+    span = _native_span(items[0]["source_span"])
+    verify_span(span, segment_text=bound.source, body_sha256=bound.revision.source_sha256)
+    receipt = dict(span.receipt)
+    receipt["span_start_byte"] += 1
+    tampered = dataclasses.replace(span, receipt=receipt)
+    with pytest.raises(DocumentError, match="replayed bytes"):
+        verify_span(tampered, segment_text=bound.source,
+                    body_sha256=bound.revision.source_sha256)
+
+
+# Source-association regressions for PR7575 findings5755465666. These call the
+# real public extractor and native binding/replay APIs, without provider data.
+def _native_span(payload):
+    return SourceSpan(**{
+        field.name: payload[field.name] for field in dataclasses.fields(SourceSpan)
+    })
+
+
+def _verified_evidence(bound, item):
+    span = _native_span(item["source_span"])
+    verify_span(span, segment_text=bound.source,
+                body_sha256=bound.revision.source_sha256)
+    raw = bound.source.encode("utf-8")
+    receipt = span.receipt
+    return raw[receipt["span_start_byte"]:receipt["span_end_byte"]].decode("utf-8")
+
+
+@pytest.mark.parametrize("actual_first", [False, True])
+def test_receipt_stays_on_the_selected_plain_digit_forecast(actual_first):
+    actual = (
+        "<p>Actual deliveries were between 100,000 and 103,000 vehicles "
+        "in the fourth quarter of 2023.</p>"
+    )
+    forecast = (
+        "<p>The Company expects deliveries of vehicles to be between "
+        "100000 and 103000 vehicles for the first quarter of 2024.</p>"
+    )
+    parts = (actual, forecast) if actual_first else (forecast, actual)
+    bound, items = _extract(_page(*parts))
+    assert len(items) == 1
+    item = items[0]
+    assert (item["low"], item["high"], item["horizon"]) == (100000, 103000, "FY2024 Q1")
+    evidence = _verified_evidence(bound, item)
+    assert "The Company expects" in evidence
+    assert "100000 and 103000" in evidence
+    assert "first quarter of 2024" in evidence
+    assert "Actual deliveries" not in evidence
+    assert "fourth quarter of 2023" not in evidence
+
+
+@pytest.mark.parametrize("body", [SPLIT_BODY, ADJACENT_HEADING_BODY, TABLE_BULLET_BODY])
+def test_receipt_includes_the_native_context_used_for_the_assertion(body):
+    bound, items = _extract(body)
+    assert len(items) == 1
+    evidence = _verified_evidence(bound, items[0])
+    assert "Company expects" in evidence
+    assert "100,000" in evidence and "103,000" in evidence
+    assert "quarter of 2024" in evidence.lower()
+
+
+def test_unicode_and_inline_markup_keep_native_byte_coordinates():
+    body = _page(
+        "<p>北京 — The Company expects deliveries of vehicles to be between "
+        "<b>100000</b> and <b>103000</b> vehicles for Q1 2024.</p>"
+    )
+    bound, items = _extract(body)
+    assert len(items) == 1
+    evidence = _verified_evidence(bound, items[0])
+    assert "北京" in evidence and "<b>100000</b>" in evidence
+    assert "The Company expects" in evidence and "Q1 2024" in evidence
+
+
+@pytest.mark.parametrize("false_assertion", [
+    "The Company does not expect deliveries to be between 100,000 and 103,000 vehicles for Q1 2024.",
+    "The Company expects deliveries not to be between 100,000 and 103,000 vehicles for Q1 2024.",
+    "The Company expects production to be between 100,000 and 103,000 vehicles for Q1 2024.",
+    "Actual deliveries were between 100,000 and 103,000 vehicles for Q1 2024.",
+    "The Company expects revenue growth. Actual deliveries were between 100,000 and 103,000 vehicles for Q1 2024.",
+    "Analysts expect deliveries to be between 100,000 and 103,000 vehicles for Q1 2024.",
+    "The Company expects its competitor's deliveries to be between 100,000 and 103,000 vehicles for Q1 2024.",
+    "If the Company expects deliveries to be between 100,000 and 103,000 vehicles for Q1 2024, capacity will suffice.",
+    "It is not true that the Company expects deliveries to be between 100,000 and 103,000 vehicles for Q1 2024.",
+])
+def test_false_affirmative_or_metric_scope_cannot_borrow_outlook(false_assertion):
+    body = _page(
+        "<h2>Business Outlook — Q1 2024</h2>",
+        f"<p>{false_assertion}</p>",
+        "<p>The Company expects deliveries of vehicles to be between "
+        "50,000 and 60,000 vehicles for Q2 2024.</p>",
+    )
+    bound, items = _extract(body)
+    assert [(item["low"], item["high"], item["horizon"]) for item in items] == [
+        (50_000, 60_000, "FY2024 Q2")
+    ]
+    assert "50,000 and 60,000" in _verified_evidence(bound, items[0])
+
+
+@pytest.mark.parametrize("assertion", [
+    "The Company expects deliveries to be between 100,000 and 103,000 vehicles next quarter. Revenue grew in Q1 2024.",
+    "The Company expects deliveries to be between 100,000 and 103,000 vehicles for the second quarter.",
+    "The Company expects deliveries to be between 100,000 and 103,000 vehicles for Q1 2024 and Q2 2024.",
+    "The Company expects deliveries to be between 100,000 and 103,000 vehicles for Q5 2024.",
+])
+def test_unrelated_or_conflicting_period_cannot_be_donated(assertion):
+    body = _page("<h2>Business Outlook — Q1 2024</h2>", f"<p>{assertion}</p>")
+    _, items = _extract(body, report_date="2024-03-31")
+    assert items == []
+
+
+def test_compatible_partial_quarter_uses_the_adjacent_explicit_heading():
+    body = _page(
+        "<h2>Business Outlook — Q2 2024</h2>",
+        "<p>The Company expects deliveries to be between 100000 and 103000 "
+        "vehicles for the second quarter.</p>",
+    )
+    bound, items = _extract(body)
+    assert len(items) == 1 and items[0]["horizon"] == "FY2024 Q2"
+    assert "Q2 2024" in _verified_evidence(bound, items[0])
+
+
+@pytest.mark.parametrize("placement", ["before_sentence", "after_sentence", "same_clause"])
+def test_unrelated_previous_factory_does_not_mark_guidance_revised(placement):
+    assertion = (
+        "The Company expects deliveries to be between 100,000 and 103,000 "
+        "vehicles for Q1 2024."
+    )
+    factory = "The Company previously opened a factory."
+    text = factory + " " + assertion if placement == "before_sentence" else assertion + " " + factory
+    if placement == "same_clause":
+        text = "Having previously opened a factory, " + assertion
+    bound, items = _extract(_page(f"<p>{text}</p>"))
+    assert len(items) == 1 and items[0]["status"] == "introduced"
+    _verified_evidence(bound, items[0])
+
+
+@pytest.mark.parametrize("prior_period,accepted", [
+    ("Q1 2024", True), ("Q2 2024", False), ("Q1 2023", False),
+])
+def test_prior_comparison_must_identify_the_same_delivery_period(prior_period, accepted):
+    body = _page(
+        "<p>The Company expects deliveries to be between 76,000 and 78,000 "
+        "vehicles for Q1 2024, compared to its previous vehicle delivery "
+        f"outlook of between 100,000 and 103,000 vehicles for {prior_period}.</p>"
+    )
+    bound, items = _extract(body)
+    if not accepted:
+        assert items == []
+        return
+    assert len(items) == 1
+    assert (items[0]["low"], items[0]["high"], items[0]["status"]) == (76000, 78000, "revised")
+    evidence = _verified_evidence(bound, items[0])
+    assert "previous vehicle delivery outlook" in evidence and prior_period in evidence
+
+
+@pytest.mark.parametrize("comparison", [
+    "compared to the previous outlook of between 100,000 and 103,000 vehicles",
+    "with the previous vehicle delivery outlook of between 100,000 and 103,000 vehicles",
+    "as a revised delivery outlook",
+])
+def test_ambiguous_previous_outlook_cannot_invent_revision_status(comparison):
+    body = _page(
+        "<p>The Company expects deliveries to be between 90,000 and 95,000 "
+        f"vehicles for Q1 2024, {comparison}.</p>"
+    )
+    _, items = _extract(body)
+    assert items == []
+
+
+@pytest.mark.parametrize("split", [False, True])
+def test_native_unread_boundary_blocks_context_donation(split):
+    if split:
+        parts = [
+            "<p>For the first quarter of 2024, the Company expects:</p>",
+            "<center>The preceding outlook is unrelated.</center>",
+            "<p>Deliveries of vehicles to be between 100,000 and 103,000 vehicles.</p>",
+        ]
+    else:
+        parts = [
+            "<h2>Business Outlook — Q1 2024</h2>",
+            "<center>The preceding outlook is unrelated.</center>",
+            "<p>The Company expects deliveries to be between 100,000 and 103,000 vehicles.</p>",
+        ]
+    _, items = _extract(_page(*parts))
+    assert items == []
+
+
+def test_tampered_parsed_block_cannot_override_native_source_text():
+    bound = _bound(ORIGINAL_BODY)
+    blocks = list(bound.document.blocks)
+    index = next(i for i, block in enumerate(blocks) if "100,000" in block.text)
+    blocks[index] = dataclasses.replace(blocks[index],
+                                        text=blocks[index].text.replace("100,000", "90,000"))
+    tampered = dataclasses.replace(
+        bound, document=dataclasses.replace(bound.document, blocks=tuple(blocks))
+    )
+    assert extract_vehicle_guidance(
+        bound=tampered, document_id="doc_test", event_id="evt_test"
+    ) == []
+
+
+@pytest.mark.parametrize("introduction", [
+    "<p>The Company expects for Q1 2024:</p>",
+    "<p>For Q1 2024:</p><p>The Company expects:</p>",
+    "<p>The Company expects vehicle deliveries for Q1 2024:</p>",
+])
+def test_explicit_split_introduction_orders_keep_their_source_context(introduction):
+    body = _page(
+        introduction,
+        "<p>Deliveries of vehicles to be between 100000 and 103000 vehicles.</p>",
+    )
+    bound, items = _extract(body)
+    assert len(items) == 1
+    assert items[0]["horizon"] == "FY2024 Q1"
+    evidence = _verified_evidence(bound, items[0])
+    assert "Company expects" in evidence and "Q1 2024" in evidence
+
+
+@pytest.mark.parametrize("assertion", [
+    "The Company expects deliveries to be between 100000 and 103000 vehicles, and revenue grew in Q1 2024.",
+    "The Company expects deliveries to be between 100000 and 103000 vehicles and revenue grew in Q1 2024.",
+    "Revenue grew in Q1 2024, and the Company expects deliveries to be between 100000 and 103000 vehicles.",
+])
+def test_another_metrics_period_cannot_qualify_the_delivery_range(assertion):
+    _, items = _extract(_page(f"<p>{assertion}</p>"), report_date="2024-03-31")
+    assert items == []
+
+
+@pytest.mark.parametrize("introduction", [
+    "It is not true that the Company expects for Q1 2024:",
+    "If the Company expects for Q1 2024:",
+    "Analysts say the Company expects for Q1 2024:",
+    "For next quarter, the Company expects:",
+    "For Q5 2024, the Company expects:",
+])
+def test_split_introduction_requires_an_affirmative_issuer(introduction):
+    body = _page(
+        f"<p>{introduction}</p>",
+        "<p>Deliveries of vehicles to be between 100000 and 103000 vehicles.</p>",
+    )
+    _, items = _extract(body)
+    assert items == []
+
+
+@pytest.mark.parametrize("earlier,expected", [
+    ("The Company expects revenue growth.", []),
+    ("The Company expects deliveries to be between 50000 and 60000 vehicles for Q2 2024.",
+     [(50000, 60000, "FY2024 Q2")]),
+])
+def test_explicit_other_pronoun_antecedent_cannot_borrow_the_issuer(earlier, expected):
+    body = _page(
+        f"<p>{earlier} A competitor says it expects deliveries to be between "
+        "100000 and 103000 vehicles for Q1 2024.</p>"
+    )
+    bound, items = _extract(body)
+    assert [(item["low"], item["high"], item["horizon"]) for item in items] == expected
+    for item in items:
+        _verified_evidence(bound, item)
+
+
+def test_preposed_previous_range_is_refused_instead_of_labeled_introduced():
+    body = _page(
+        "<p>Compared to its previous vehicle delivery outlook of between 100000 "
+        "and 103000 vehicles for Q1 2024, the Company expects deliveries to be "
+        "between 76000 and 78000 vehicles for Q1 2024.</p>"
+    )
+    _, items = _extract(body)
+    assert items == []
+
+
+@pytest.mark.parametrize("assertion", [
+    "The Company expects deliveries to be between 100000 and 103000 vehicles for Q1 <b>2024</b>.",
+    "The Company ex<b>pect</b>s deliveries to be between 100000 and 103000 vehicles for Q1 2024.",
+    "The Company expects deliveries to be between 100<b>000</b> and 103<b>000</b> vehicles for Q1 2024.",
+    "The Company expects deliveries to be between 100,<b>000</b> and 103,<b>000</b> vehicles for Q1 2024.",
+])
+def test_inline_markup_uses_native_parser_semantics_and_exact_raw_receipts(assertion):
+    bound, items = _extract(_page(f"<p>{assertion}</p>"))
+    assert len(items) == 1
+    assert (items[0]["low"], items[0]["high"], items[0]["horizon"]) == (
+        100000, 103000, "FY2024 Q1"
+    )
+    evidence = _verified_evidence(bound, items[0])
+    assert assertion in evidence
+
+
+def test_tampered_native_table_cell_cannot_override_the_raw_source():
+    bound = _bound(TABLE_BULLET_BODY)
+    blocks = list(bound.document.blocks)
+    index = next(i for i, block in enumerate(blocks) if block.table is not None)
+    table = blocks[index].table
+    cell = dataclasses.replace(table.rows[0][0],
+                               text=table.rows[0][0].text.replace("100,000", "90,000"))
+    tampered_table = dataclasses.replace(table, rows=((cell,),))
+    blocks[index] = dataclasses.replace(blocks[index], table=tampered_table)
+    tampered = dataclasses.replace(
+        bound, document=dataclasses.replace(bound.document, blocks=tuple(blocks))
+    )
+    assert extract_vehicle_guidance(
+        bound=tampered, document_id="doc_test", event_id="evt_test"
+    ) == []

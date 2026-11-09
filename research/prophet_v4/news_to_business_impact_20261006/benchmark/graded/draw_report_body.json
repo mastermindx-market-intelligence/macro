@@ -1,0 +1,305 @@
+{
+ "body": {
+  "T1": {
+   "ambiguous": {
+    "available": 7,
+    "body_unavailable": 0,
+    "drawn": 7,
+    "reasons": {}
+   },
+   "negative": {
+    "available": 9,
+    "body_unavailable": 0,
+    "drawn": 9,
+    "reasons": {}
+   },
+   "no_change": {
+    "available": 3,
+    "body_unavailable": 0,
+    "drawn": 3,
+    "reasons": {}
+   },
+   "positive": {
+    "available": 49,
+    "body_unavailable": 0,
+    "drawn": 49,
+    "reasons": {}
+   }
+  },
+  "T2": {
+   "ambiguous": {
+    "available": 11,
+    "body_unavailable": 0,
+    "drawn": 11,
+    "reasons": {}
+   },
+   "negative": {
+    "available": 7,
+    "body_unavailable": 0,
+    "drawn": 7,
+    "reasons": {}
+   },
+   "no_change": {
+    "available": 1,
+    "body_unavailable": 0,
+    "drawn": 1,
+    "reasons": {}
+   },
+   "positive": {
+    "available": 47,
+    "body_unavailable": 0,
+    "drawn": 47,
+    "reasons": {}
+   }
+  },
+  "T3": {
+   "ambiguous": {
+    "available": 1,
+    "body_unavailable": 0,
+    "drawn": 1,
+    "reasons": {}
+   },
+   "negative": {
+    "available": 2,
+    "body_unavailable": 0,
+    "drawn": 2,
+    "reasons": {}
+   },
+   "no_change": {
+    "available": 2,
+    "body_unavailable": 0,
+    "drawn": 2,
+    "reasons": {}
+   },
+   "positive": {
+    "available": 18,
+    "body_unavailable": 0,
+    "drawn": 18,
+    "reasons": {}
+   }
+  }
+ },
+ "body_totals": {
+  "available": 157,
+  "body_unavailable": 0,
+  "drawn": 157
+ },
+ "drawn_cells": {
+  "T1": {
+   "ambiguous": {
+    "drawn": 7,
+    "short": 23,
+    "target": 30
+   },
+   "negative": {
+    "drawn": 9,
+    "short": 41,
+    "target": 50
+   },
+   "no_change": {
+    "drawn": 3,
+    "short": 27,
+    "target": 30
+   },
+   "positive": {
+    "drawn": 49,
+    "short": 41,
+    "target": 90
+   }
+  },
+  "T2": {
+   "ambiguous": {
+    "drawn": 11,
+    "short": 19,
+    "target": 30
+   },
+   "negative": {
+    "drawn": 7,
+    "short": 43,
+    "target": 50
+   },
+   "no_change": {
+    "drawn": 1,
+    "short": 29,
+    "target": 30
+   },
+   "positive": {
+    "drawn": 47,
+    "short": 43,
+    "target": 90
+   }
+  },
+  "T3": {
+   "ambiguous": {
+    "drawn": 1,
+    "short": 29,
+    "target": 30
+   },
+   "negative": {
+    "drawn": 2,
+    "short": 48,
+    "target": 50
+   },
+   "no_change": {
+    "drawn": 2,
+    "short": 28,
+    "target": 30
+   },
+   "positive": {
+    "drawn": 18,
+    "short": 72,
+    "target": 90
+   }
+  }
+ },
+ "families": {
+  "hits": {
+   "T1": 990,
+   "T2": 1084,
+   "T3": 709
+  },
+  "overlaps": {
+   "T1&T2": 17,
+   "T1&T2&T3": 2,
+   "T1&T3": 13,
+   "T2&T3": 13
+  }
+ },
+ "feeders": {
+  "event_log": 101,
+  "regex": 2736,
+  "reject": 0,
+  "reject_not_on_tape": 1731
+ },
+ "frame": {
+  "excluded_reasons": {
+   "no_cik": 1271,
+   "no_qualifying_8k": 1331
+  },
+  "frame_cells": {
+   "T1": {
+    "ambiguous": 7,
+    "negative": 11,
+    "no_change": 3,
+    "positive": 56
+   },
+   "T2": {
+    "ambiguous": 12,
+    "negative": 12,
+    "no_change": 5,
+    "positive": 86
+   },
+   "T3": {
+    "ambiguous": 4,
+    "negative": 7,
+    "no_change": 3,
+    "positive": 29
+   }
+  },
+  "kind": "body_available",
+  "n_candidates_in_frame": 235,
+  "n_candidates_pre_frame": 2837,
+  "n_status_entries": 2837,
+  "n_status_entries_outside_pool": 0,
+  "pre_frame_cells": {
+   "T1": {
+    "ambiguous": 190,
+    "negative": 205,
+    "no_change": 34,
+    "positive": 600
+   },
+   "T2": {
+    "ambiguous": 131,
+    "negative": 94,
+    "no_change": 44,
+    "positive": 849
+   },
+   "T3": {
+    "ambiguous": 58,
+    "negative": 57,
+    "no_change": 13,
+    "positive": 562
+   }
+  },
+  "status_map_sha256": "66ce529d9aaaed9470f0e136e7eee90bda51f0e98f60fbd40e0746d9a03cac82"
+ },
+ "funnel": {
+  "candidate": 2837,
+  "low_value": 4,
+  "no_family": 31754,
+  "non_english": 11348,
+  "outside_window": 7856,
+  "seendate_dropped": 1311,
+  "seendate_dropped_by_reason": {
+   "seendate_blank": 1311
+  },
+  "total": 55110
+ },
+ "holdout": {
+  "groups": 2336,
+  "largest": {
+   "key": "hg:5c803892ceb42ed3",
+   "size": 47
+  },
+  "size_histogram": {
+   "1": 2130,
+   "11": 4,
+   "12": 1,
+   "18": 1,
+   "19": 2,
+   "2": 127,
+   "3": 34,
+   "4": 10,
+   "47": 1,
+   "5": 12,
+   "6": 11,
+   "8": 1,
+   "9": 2
+  }
+ },
+ "issuers": {
+  "preferred_variant_resolved": 371,
+  "resolved": 1566,
+  "unresolved": 1271,
+  "unresolved_by_reason": {
+   "ambiguous_ticker": 0,
+   "malformed_identifier": 0,
+   "name_only_mention": 0,
+   "no_mention": 914,
+   "not_listed_at_asof": 0,
+   "unknown_ticker": 357
+  }
+ },
+ "manifest_sha256": "bd2f1b0b06c1334d1329206834f988d21a264bd09644ef8cb9d75b0b39214cbe",
+ "pool_cells": {
+  "T1": {
+   "ambiguous": 190,
+   "negative": 205,
+   "no_change": 34,
+   "positive": 600
+  },
+  "T2": {
+   "ambiguous": 131,
+   "negative": 94,
+   "no_change": 44,
+   "positive": 849
+  },
+  "T3": {
+   "ambiguous": 58,
+   "negative": 57,
+   "no_change": 13,
+   "positive": 562
+  }
+ },
+ "sampler_version": "ni-sampler-1",
+ "tags": {
+  "indirect_transfer": 439,
+  "near_duplicate": 2
+ },
+ "tape_sha256": "bab574014865532c63977e44f12be0e8a3234ba9faa8253d2717e43d67580e17",
+ "version": "ni-tape-draw-1",
+ "window": {
+  "end": "2026-10-14",
+  "start": "2026-07-17"
+ }
+}

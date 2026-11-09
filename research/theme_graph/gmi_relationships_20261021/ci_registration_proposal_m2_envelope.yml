@@ -1,0 +1,27 @@
+# CI registration PROPOSAL — GMI ORCH-REL M2 relationship envelope
+# (REL-M2-ENV-BUILD lane, 2026-10-22).
+#
+# FRAGMENT for the GMI COMPLETION seat to fold into job
+# `company-intelligence-relationships` (the M1 proposal in
+# ci_registration_proposal.yml, already widened by the m2_harvest /
+# m2_keys / m2_judge / m2_precision fragments).  Registration is a
+# CI-authority change owned by the seat, NOT by this lane: this file proposes
+# `paths_add:` / `steps_add:` and touches no .github/ or config/ path.
+#
+# `paths_add` lists every repo path the M2 envelope suite imports or opens
+# that is NOT already in the M1 `paths:` or the other m2 fragments: the
+# envelope engine module, the measure CLI, the suite itself, and the
+# predeclared panel (the leaves/resolver pins, scripts/__init__.py, the
+# package/edges data files, the M1 extraction file and conftest.py are all
+# already listed upstream).  Proven by exporting exactly the union of the M1
+# paths + all fragments' paths_add with `git archive` at the lane commit and
+# running tests/test_relationship_m2_envelope.py inside that export (rc 0 —
+# see the lane return).
+paths_add:
+  - "engine/company_intelligence/relationships/envelope.py"
+  - "scripts/relationship_m2_envelope.py"
+  - "research/theme_graph/gmi_relationships_20261021/m2_inputs/envelope_panel_v1.json"
+  - "tests/test_relationship_m2_envelope.py"
+steps_add:
+  - name: Relationship M2 envelope (§8.2 measures)
+    run: python -m pytest tests/test_relationship_m2_envelope.py -q

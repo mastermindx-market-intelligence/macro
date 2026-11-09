@@ -154,30 +154,39 @@ def list_users(*, tier: str | None = None, status: str | None = None,
     where_sql = " and ".join(where)
 
     try:
-        count_rows = users._query(
-            "select count(*)::int as n from auth.users u "
-            f"left join public.user_entitlements e on e.user_id = u.id where {where_sql}")
+        reads = users._parallel_reads(
+            count=lambda: users._query(
+                "select count(*)::int as n from auth.users u "
+                f"left join public.user_entitlements e on e.user_id = u.id where {where_sql}"
+            ),
+            rows=lambda: users._query(
+                "select u.id::text as user_id, "
+                "u.email as email, "
+                f"{users.display_name_sql('u')} as name, "
+                "coalesce(u.raw_app_meta_data->>'provider','email') as provider, "
+                "coalesce(e.tier,'free') as tier, coalesce(e.status,'none') as status, "
+                "coalesce(e.source,'') as source, "
+                "e.stripe_customer_id, "
+                "to_char(e.current_period_end,'YYYY-MM-DD') as current_period_end, "
+                "to_char(e.updated_at,'YYYY-MM-DD HH24:MI') as updated_at, "
+                "to_char(u.created_at,'YYYY-MM-DD') as created "
+                "from auth.users u "
+                "left join public.user_entitlements e on e.user_id = u.id "
+                f"where {where_sql} "
+                f"order by coalesce(e.updated_at, u.created_at) desc nulls last "
+                f"limit {page_size} offset {offset}"
+            ),
+            summary=lambda: users._query(
+                "select coalesce(e.tier,'free') as tier, "
+                "coalesce(e.status,'none') as status, count(*)::int as n "
+                "from auth.users u left join public.user_entitlements e on e.user_id = u.id "
+                "group by 1,2 order by 1,2"
+            ),
+        )
+        count_rows = reads["count"]
         total = (count_rows or [{}])[0].get("n", 0)
-        rows = users._query(
-            "select u.id::text as user_id, "
-            "u.email as email, "
-            f"{users.display_name_sql('u')} as name, "
-            "coalesce(u.raw_app_meta_data->>'provider','email') as provider, "
-            "coalesce(e.tier,'free') as tier, coalesce(e.status,'none') as status, "
-            "coalesce(e.source,'') as source, "
-            "e.stripe_customer_id, "
-            "to_char(e.current_period_end,'YYYY-MM-DD') as current_period_end, "
-            "to_char(e.updated_at,'YYYY-MM-DD HH24:MI') as updated_at, "
-            "to_char(u.created_at,'YYYY-MM-DD') as created "
-            "from auth.users u "
-            "left join public.user_entitlements e on e.user_id = u.id "
-            f"where {where_sql} "
-            f"order by coalesce(e.updated_at, u.created_at) desc nulls last limit {page_size} offset {offset}")
-        # tier×status roster totals (unfiltered) for the filter chips
-        summary = users._query(
-            "select coalesce(e.tier,'free') as tier, coalesce(e.status,'none') as status, count(*)::int as n "
-            "from auth.users u left join public.user_entitlements e on e.user_id = u.id "
-            "group by 1,2 order by 1,2")
+        rows = reads["rows"]
+        summary = reads["summary"]
         return {
             "ok": True,
             "users": rows or [],

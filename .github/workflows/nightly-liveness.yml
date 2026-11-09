@@ -80,6 +80,9 @@ jobs:
             site/factordata/hk_standouts.json
             site/factordata/canada_standouts.json
             site/factordata/intl_setups.json
+            site/basketdata/baskets.json
+            site/basketdata/action_board.json
+            site/sectordata/sector_central.json
             data/risk_radar_intl/cn_forward_log.jsonl
             data/risk_radar_intl/hk_forward_log.jsonl
           sparse-checkout-cone-mode: false
@@ -97,3 +100,46 @@ jobs:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
           DISCORD_WEBHOOK_WATCHLIST: ${{ secrets.DISCORD_WEBHOOK_WATCHLIST }}
         run: python3 scripts/check_nightly_liveness.py
+
+  queue-hostage:
+    # SEPARATE JOB, not a step of `liveness` above, on purpose. The two answer
+    # different questions and must not share a fate: `liveness` grades ONE lane
+    # (daily.yml) against the NYSE calendar, and it stayed correctly silent through
+    # the whole 2026-09-25 render outage because daily.yml routes `macstudio` — a
+    # live label — and ran green all three days. This job asks the lane-agnostic
+    # question instead: is ANY self-hosted-addressed job sitting queued with no
+    # runner able to take it? That covers every lane we own, including the ones
+    # nobody thought to watch. As its own job, a `liveness` breach cannot mask it
+    # and its own breach cannot mask a `liveness` one.
+    #
+    # ubuntu-latest is load-bearing, not a cost choice: a watchdog for "no runner
+    # can take this job" must never need a runner from the pool under test.
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          filter: blob:none
+          # The check reads the declared label model to tell a hosted label from a
+          # self-hosted one and to explain a breach; `engine` is only for the
+          # best-effort push transport, which is imported lazily and never gates.
+          sparse-checkout: |
+            scripts
+            engine
+            .github/runner-policy.yml
+          sparse-checkout-cone-mode: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      # PyYAML is the only third-party import. Without it the check still works
+      # (it falls back to hosted-label prefix families) but annotates itself blind
+      # on every look, and a watchdog that cries wolf nightly is a dead watchdog.
+      - run: python3 -m pip install --quiet pyyaml
+      - name: runner queue hostage (fails if a job is held queued with no runner that can take it)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          DISCORD_WEBHOOK_WATCHLIST: ${{ secrets.DISCORD_WEBHOOK_WATCHLIST }}
+        run: python3 scripts/check_runner_queue_hostage.py

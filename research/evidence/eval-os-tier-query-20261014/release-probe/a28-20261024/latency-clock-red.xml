@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="3.341" timestamp="2026-10-23T23:42:26.082775-07:00" hostname="m2studio"><testcase classname="tests.test_fundamental_forensics_latency" name="test_f_recorder_failure_never_changes_status_or_body" time="0.966"><failure message="assert b'{&quot;schema&quot;:&quot;...&quot;:&quot;missing&quot;}}' == b'{&quot;schema&quot;:&quot;...&quot;:&quot;missing&quot;}}'&#10;  &#10;  At index 184 diff: b'2' != b'1'&#10;  Use -v to get more diff">paid_client = &lt;starlette.testclient.TestClient object at 0x11045c980&gt;
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x109b11b50&gt;
+
+    def test_f_recorder_failure_never_changes_status_or_body(
+        paid_client, monkeypatch
+    ) -&gt; None:
+        baseline = paid_client.get(_HEALTH_PATH)
+        assert baseline.status_code == 200
+    
+        def _refuses(*_args, **_kwargs):
+            raise RuntimeError("recorder refused")
+    
+        monkeypatch.setattr(RECORDER, "record", _refuses)
+        degraded = paid_client.get(_HEALTH_PATH)
+        assert degraded.status_code == baseline.status_code
+&gt;       assert degraded.content == baseline.content
+E       assert b'{"schema":"...":"missing"}}' == b'{"schema":"...":"missing"}}'
+E         
+E         At index 184 diff: b'2' != b'1'
+E         Use -v to get more diff
+
+tests/test_fundamental_forensics_latency.py:300: AssertionError</failure></testcase></testsuite></testsuites>
