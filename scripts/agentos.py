@@ -1504,6 +1504,247 @@ def _evaluation_finding_error(value: Any) -> str | None:
     return None
 
 
+_PROJECT_CORRECTION_KEYS = frozenset({"schema", "work_ref", "supersedes", "actor_ref",
+    "request_sha256", "corrected_on", "source_commit", "predecessor_sha256",
+    "reference_closure_sha256", "correction_reason", "evidence"})
+
+
+class _CorrectionReferenceLoader(getattr(yaml, "CSafeLoader", yaml.SafeLoader)):
+    """The canonical parser's bounded, duplicate-refusing capture variant."""
+
+
+def _correction_mapping(loader, node, deep=False):
+    result = {}
+    for key_node, value_node in node.value:
+        key = loader.construct_object(key_node, deep=True)
+        if type(key) is not str or key in result:
+            raise ValueError("project_discovery_reference_record")
+        result[key] = loader.construct_object(value_node, deep=deep)
+    return result
+
+
+_CorrectionReferenceLoader.add_constructor(
+    yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG, _correction_mapping)
+
+
+def parse_project_discovery_reference_text(text: str) -> dict[str, Any]:
+    """Parse complete captured bytes; no filesystem or ambient module lookup."""
+    match = FRONTMATTER_RE.match(text)
+    if not match:
+        raise ValueError("project_discovery_reference_record")
+    value = yaml.load(match.group(1), Loader=_CorrectionReferenceLoader)
+    budget = [8192]
+    def check(node, depth=0, stack=frozenset()):
+        budget[0] -= 1
+        if depth > 48 or budget[0] < 0:
+            raise ValueError("project_discovery_reference_record")
+        if isinstance(node, (dict, list)):
+            if id(node) in stack:
+                raise ValueError("project_discovery_reference_record")
+            for child in (node.values() if isinstance(node, dict) else node):
+                check(child, depth + 1, stack | {id(node)})
+    if type(value) is not dict:
+        raise ValueError("project_discovery_reference_record")
+    check(value)
+    return value
+
+
+def _project_correction_store_present(root: Path) -> bool:
+    """Only correction-aware named validation needs the complete graph.
+
+    This is a source read inside the incumbent validator. An unreadable or
+    malformed DSC selects its existing complete validation route, never an
+    incomplete positive. No marker means historical named validation remains
+    unchanged.
+    """
+    for path in sorted((root / "discoveries").glob("*.md")):
+        try:
+            if "project_correction" in parse_project_discovery_reference_text(path.read_text(encoding="utf-8")):
+                return True
+        except (OSError, ValueError, yaml.YAMLError, RecursionError):
+            return True
+    return False
+
+
+def _project_correction_error(value: Any) -> bool:
+    """Closed provenance shape only; never proof of permission or claim truth."""
+    if type(value) is not dict or set(value) != _PROJECT_CORRECTION_KEYS:
+        return True
+    if value["schema"] != "agentos.project_discovery_correction.v1":
+        return True
+    for field, prefix in (("work_ref", "WS:"), ("supersedes", "DSC:")):
+        ref = value[field]
+        if (type(ref) is not str or not ref.startswith(prefix)
+                or not 2 <= len(ref[len(prefix):]) <= 64
+                or re.fullmatch(r"[A-Z0-9]+(?:-[A-Z0-9]+)*", ref[len(prefix):]) is None):
+            return True
+    if (type(value["actor_ref"]) is not str
+            or re.fullmatch(r"workspace:[0-9a-f]{64}", value["actor_ref"]) is None):
+        return True
+    for field, size in (("request_sha256", 64), ("source_commit", 40),
+                        ("predecessor_sha256", 64), ("reference_closure_sha256", 64)):
+        if type(value[field]) is not str or re.fullmatch(r"[0-9a-f]{" + str(size) + r"}", value[field]) is None:
+            return True
+    if _as_date(value["corrected_on"]) is None:
+        return True
+    reason, evidence = value["correction_reason"], value["evidence"]
+    if (type(reason) is not str or not reason.strip() or len(reason.encode("utf-8")) > 2048
+            or type(evidence) is not list or not 1 <= len(evidence) <= 8):
+        return True
+    if any(type(item) is not str or not item.strip() or len(item.encode("utf-8")) > 1024
+           for item in evidence):
+        return True
+    return len(set(evidence)) != len(evidence)
+
+
+class ProjectDiscoveryCorrectionScopeError(ValueError):
+    """Bounded record identities for the existing canonical problem reporter."""
+    def __init__(self, *identities):
+        super().__init__("project_discovery_correction_scope")
+        self.identities = tuple(dict.fromkeys(identities))
+
+
+def qualify_project_discovery_correction(
+    records: dict[str, dict[str, Any]], *, work_ref: str, discovery_ref: str,
+    replacement_ref: str | None,
+) -> list[str]:
+    """Qualify one complete owner-supplied reference universe, without I/O.
+
+    Before a draft, OLD is the active chain tip and NEW is absent/unreferenced.
+    During canonical validation, the current active corrected tip is supplied
+    without NEW. This is one shared interpretation of correction scope and
+    reciprocal lineage; caller dictionaries never establish capture coverage.
+    """
+    import posixpath
+    tip = "DSC/" + discovery_ref[4:]
+    selected_ws = "WS/" + work_ref[3:]
+    if (type(records) is not dict or selected_ws not in records or tip not in records
+            or records[tip].get("superseded_by") is not None):
+        raise ProjectDiscoveryCorrectionScopeError(tip)
+    if replacement_ref is not None and "DSC/" + replacement_ref[4:] in records:
+        raise ProjectDiscoveryCorrectionScopeError(tip, "DSC/" + replacement_ref[4:])
+    incoming: dict[str, list[str]] = {}
+    for ident, rec in records.items():
+        if not ident.startswith("DSC/"):
+            continue
+        raw = rec.get("superseded_by")
+        if raw is not None:
+            names, malformed = _citations(raw, "DSC")
+            if malformed or len(names) != 1:
+                raise ProjectDiscoveryCorrectionScopeError(tip, ident)
+            incoming.setdefault("DSC/" + names[0], []).append(ident)
+    chain, cursor = [], tip
+    while cursor is not None:
+        if cursor in chain or len(chain) >= 64 or cursor not in records:
+            raise ProjectDiscoveryCorrectionScopeError(tip, *chain)
+        rec = records[cursor]
+        if rec.get("scope") != [work_ref]:
+            raise ProjectDiscoveryCorrectionScopeError(tip, cursor)
+        chain.append(cursor)
+        prior = incoming.get(cursor, [])
+        marker = rec.get("project_correction")
+        if marker is None:
+            if prior:
+                raise ProjectDiscoveryCorrectionScopeError(tip, cursor, *prior)
+            cursor = None
+        else:
+            if _project_correction_error(marker) or marker["work_ref"] != work_ref:
+                raise ProjectDiscoveryCorrectionScopeError(tip, cursor)
+            predecessor = "DSC/" + marker["supersedes"][4:]
+            if prior != [predecessor]:
+                raise ProjectDiscoveryCorrectionScopeError(tip, cursor, *prior)
+            cursor = predecessor
+    chain.reverse()
+    if replacement_ref is not None and len(chain) >= 64:
+        raise ProjectDiscoveryCorrectionScopeError(tip)
+    members = {"DSC:" + ident[4:] for ident in chain}
+    refs = members | ({replacement_ref} if replacement_ref is not None else set())
+    paths = {"agentos/discoveries/DSC-" + ref[4:] + ".md": ref for ref in refs}
+    for ident, rec in records.items():
+        if ident.startswith("DSC/"):
+            names, malformed = _citations(rec.get("superseded_by"), "DSC")
+            if malformed:
+                raise ProjectDiscoveryCorrectionScopeError(tip, ident)
+            named = {"DSC:" + key for key in names}
+            marker = rec.get("project_correction")
+            if "project_correction" in rec and _project_correction_error(marker):
+                raise ProjectDiscoveryCorrectionScopeError(tip, ident)
+            back = marker.get("supersedes") if type(marker) is dict else None
+            if (named & refs or back in refs) and ident not in chain:
+                raise ProjectDiscoveryCorrectionScopeError(tip, ident)
+            continue
+        if not ident.startswith(("WS/", "DEC/", "HND/")):
+            raise ProjectDiscoveryCorrectionScopeError(tip)
+        names, malformed = _citations(rec.get("discoveries"), "DSC")
+        if malformed:
+            raise ProjectDiscoveryCorrectionScopeError(tip, ident)
+        hits = {"DSC:" + key for key in names} & refs
+        if replacement_ref is not None and replacement_ref in hits:
+            raise ProjectDiscoveryCorrectionScopeError(tip, ident)
+        if ident.startswith("WS/"):
+            if ident != selected_ws and (hits or rec.get("program") == work_ref):
+                raise ProjectDiscoveryCorrectionScopeError(tip, ident)
+            artifacts = rec.get("artifacts") or []
+            if type(artifacts) is not list or any(type(item) is not str for item in artifacts):
+                raise ProjectDiscoveryCorrectionScopeError(tip, ident)
+            for entry in artifacts:
+                resolved = _resolve_path(entry.strip(), rec)
+                if resolved is not None:
+                    # A correction cannot prove exclusive impact through an
+                    # absolute or repository-escaping alias in any repo root.
+                    if (posixpath.isabs(resolved[1]) or "\\" in resolved[1]
+                            or posixpath.normpath(resolved[1]) == ".."
+                            or posixpath.normpath(resolved[1]).startswith("../")):
+                        raise ProjectDiscoveryCorrectionScopeError(tip, ident)
+                    resolved = (resolved[0], posixpath.normpath(resolved[1]))
+                if resolved is not None and resolved[0] == "macro" and resolved[1] in paths:
+                    if ident != selected_ws or paths[resolved[1]] == replacement_ref:
+                        raise ProjectDiscoveryCorrectionScopeError(tip, ident)
+        elif hits and ident.startswith("HND/"):
+            works, malformed = _citations(rec.get("workstream"), "WS")
+            if malformed or works != [work_ref[3:]]:
+                raise ProjectDiscoveryCorrectionScopeError(tip, ident)
+        elif hits:
+            if rec.get("affects") != [work_ref]:
+                raise ProjectDiscoveryCorrectionScopeError(tip, ident)
+            for other, ws in records.items():
+                if other.startswith("WS/") and other != selected_ws and ident[4:] in _refs(ws.get("decisions"), "DEC"):
+                    raise ProjectDiscoveryCorrectionScopeError(tip, ident, other)
+    return ["DSC:" + ident[4:] for ident in chain]
+
+
+def _check_project_discovery_corrections(records, paths):
+    problems, qualified = [], set()
+    for ident, rec in records.items():
+        if not ident.startswith("DSC/") or "project_correction" not in rec:
+            continue
+        marker = rec["project_correction"]
+        if _project_correction_error(marker):
+            continue  # record-local validator owns this finding.
+        try:
+            cursor, visited = ident, set()
+            while records.get(cursor, {}).get("superseded_by") is not None:
+                if cursor in visited or len(visited) >= 64:
+                    raise ProjectDiscoveryCorrectionScopeError(ident, *visited)
+                visited.add(cursor)
+                names, malformed = _citations(records[cursor]["superseded_by"], "DSC")
+                if malformed or len(names) != 1:
+                    raise ProjectDiscoveryCorrectionScopeError(ident, cursor)
+                cursor = "DSC/" + names[0]
+            if cursor in qualified:
+                continue
+            qualify_project_discovery_correction(records, work_ref=marker["work_ref"],
+                discovery_ref="DSC:" + cursor[4:], replacement_ref=None)
+            qualified.add(cursor)
+        except ProjectDiscoveryCorrectionScopeError as exc:
+            for bad in set(exc.identities) | {ident}:
+                if bad in paths:
+                    problems.append(Problem(paths[bad], "project-correction-scope",
+                        "project discovery correction requires an exclusive, reciprocal workstream chain",
+                        hard=True))
+    return problems
+
+
 def check_discovery(rec: dict[str, Any], path: Path) -> list[Problem]:
     out: list[Problem] = []
     for field in ("key", "claim", "falsifier", "so_what", "kind",
@@ -1528,6 +1769,8 @@ def check_discovery(rec: dict[str, Any], path: Path) -> list[Problem]:
     _date(rec, "verified_at", path, out)
     _date(rec, "expires", path, out)
     _check_supersession(rec, "DSC", path, out)
+    if "project_correction" in rec and _project_correction_error(rec["project_correction"]):
+        out.append(Problem(path, "bad-project-correction", "project_correction must match its closed provenance schema", hard=True))
 
     # The two admission gates, made STRUCTURAL rather than merely non-empty.  A
     # `_require` check passes on `falsifier: "no"` and `verified_by: vibes`, which is
@@ -1742,6 +1985,8 @@ def check_references(records: dict[str, dict[str, Any]], paths: dict[str, Path])
                             f"{prefix}:{new} replaces this record, but does not list it "
                             f"under 'supersedes'", hard=False)
                 )
+
+    out.extend(_check_project_discovery_corrections(records, paths))
 
     # Citation counts drive discovery GC.  HANDOFFS COUNT: a discovery cited only by a
     # handoff used to read as uncited and became a 90-day GC candidate, which is the
@@ -3274,7 +3519,8 @@ def cmd_validate(args: argparse.Namespace) -> int:
 
     # Knowledge plane only. Skipping the directory walk does not dispatch,
     # rank, or decide whether a record's work may run.
-    if path_args and _paths_cover_handoff_joins(store_root, path_args):
+    if (path_args and _paths_cover_handoff_joins(store_root, path_args)
+            and not _project_correction_store_present(store_root)):
         store = _load_named_store(store_root, path_args, programs)
     else:
         store = load_store(store_root, programs)

@@ -1,0 +1,8 @@
+{
+  "status": "Added after126-session results, exploratory, no blind-holdout claim",
+  "reason": "A slow2W recovery may need more than sixmonths; avoid concluding exitclock fitness solely from126-session cap",
+  "change": "Only arm-anchored horizon126 versus252; fixed original first-fresh entries and all7policies",
+  "event_comparability": "Use only episodes with252 complete sessions for BOTH horizon comparisons; no outcome-value selection",
+  "account": "All known original watches, single position,0cashyield,10bpcost; mark open ends, do not force liquidation",
+  "frozen_utc": "2026-10-13T02:41:19.183389+00:00"
+}
