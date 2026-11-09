@@ -3216,7 +3216,7 @@
     ]
   },
   "dollar_channel": {
-    "asof": "2026-11-08",
+    "asof": "2026-11-09",
     "usd_dir": "strengthening",
     "roc_pct": null,
     "state": {
@@ -3265,7 +3265,14 @@
       "HG=F": -0.17,
       "CL=F": -0.02
     },
-    "scenario": null,
+    "scenario": {
+      "key": "em_crisis_capital_flight",
+      "label": {
+        "en": "EM crisis / capital flight",
+        "zh": "新兴市场危机"
+      },
+      "n_active": 1
+    },
     "display_only": true
   },
   "hero": {
