@@ -1,0 +1,7 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/dashboard.html.j2
+  - templates/_macro_workspace.css.j2
+  - templates/_macro_workspace.js.j2
+  - templates/_macro_history.js.j2
+manifest: mockups/evidence/macro-workspace-20261109/manifest.json

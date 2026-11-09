@@ -1,7 +1,7 @@
 {
   "scope": "EW-P4.T1 descriptive early-warning observation UI (consumer-only), two hosts, synthetic fixtures",
   "production_authenticated": false,
-  "source_revision": "530a11df95e2ed619b0a98e233bcd971c47ffd78",
+  "source_revision": "fca9114d922d21a3b88e6406b02e2368da66db9c",
   "base": "1d253e1d25f22c61d1bcf8126b13b0229f26ccbd",
   "capture_mode": "dialog_unclipped_static_harness",
   "capture_mode_note": "#dlg-risk rendered in normal flow with its max-height/overflow removed so the whole band is captured; live dialog scrolls",
@@ -1992,14 +1992,50 @@
     "radar-states": "contact-radar-states.html"
   },
   "pr_source_equivalence": {
-    "note": "The unchanged existing probe actually recaptured all 68 static cases at source_revision after the one-line bilingual Risk Radar disclaimer repair. The probe records the exact capture source; all 31 render/fixture paths were compared to both that commit and the current workspace. This static evidence does not replace the separately retained original 175-check workspace and 32-cell visual evidence, or either live-site acceptance.",
-    "pr_branch": "sol/web-risk-radar-paper-live-20261104-c3",
-    "pr_parent_of_evidence_commit": "530a11df95e2ed619b0a98e233bcd971c47ffd78",
+    "note": "The unchanged existing probe genuinely recaptured all 68 static cases at source_revision after the Macro workspace composition and unavailable-priorities correction. All 34 render/fixture paths, including the three extracted Jinja inputs, were compared with both the captured commit and the current workspace. This static evidence does not prove the history/index interactions; their separate 31-case browser suite and five asserted-state images provide that fixture proof. Neither is live production acceptance.",
+    "pr_branch": "sol/web-macro-experience-redesign-20261109-astra-02",
+    "pr_parent_of_evidence_commit": "fca9114d922d21a3b88e6406b02e2368da66db9c",
     "render_files": [
       {
         "path": "site/rotation_events.js",
         "blob_at_source_revision": "a096019ce32d901f76e8cd7a198c1ccc3f3dac52",
         "blob_on_pr_branch": "a096019ce32d901f76e8cd7a198c1ccc3f3dac52",
+        "equal": true
+      },
+      {
+        "path": "site/rotation_glance.css",
+        "blob_at_source_revision": "5d1653f8f99f71685e5123fae22767240819fdda",
+        "blob_on_pr_branch": "5d1653f8f99f71685e5123fae22767240819fdda",
+        "equal": true
+      },
+      {
+        "path": "site/si_workspace.js",
+        "blob_at_source_revision": "2c7667c39b5a2a5171b5ef036ef45206fb0702fc",
+        "blob_on_pr_branch": "2c7667c39b5a2a5171b5ef036ef45206fb0702fc",
+        "equal": true
+      },
+      {
+        "path": "site/theme.css",
+        "blob_at_source_revision": "619436f58d37a222d1db7021ba9d52bb3a05a7fa",
+        "blob_on_pr_branch": "619436f58d37a222d1db7021ba9d52bb3a05a7fa",
+        "equal": true
+      },
+      {
+        "path": "templates/_macro_history.js.j2",
+        "blob_at_source_revision": "97d8500ba92ae3b9a5caa12bed055b3bb2365168",
+        "blob_on_pr_branch": "97d8500ba92ae3b9a5caa12bed055b3bb2365168",
+        "equal": true
+      },
+      {
+        "path": "templates/_macro_workspace.css.j2",
+        "blob_at_source_revision": "abd384735c3cb11a8811ce55ee68fef71124e789",
+        "blob_on_pr_branch": "abd384735c3cb11a8811ce55ee68fef71124e789",
+        "equal": true
+      },
+      {
+        "path": "templates/_macro_workspace.js.j2",
+        "blob_at_source_revision": "74cb8f784fd9e4f0bad5106b1ff49e050208ef87",
+        "blob_on_pr_branch": "74cb8f784fd9e4f0bad5106b1ff49e050208ef87",
         "equal": true
       },
       {
@@ -2015,9 +2051,45 @@
         "equal": true
       },
       {
+        "path": "templates/_risk_radar_workspace.html.j2",
+        "blob_at_source_revision": "7fc267f500e3f4f85a4685420f07a42228caecb9",
+        "blob_on_pr_branch": "7fc267f500e3f4f85a4685420f07a42228caecb9",
+        "equal": true
+      },
+      {
+        "path": "templates/dashboard.html.j2",
+        "blob_at_source_revision": "69f131fbadfeb3ec1ca0f16c2a18ad2661fff8b2",
+        "blob_on_pr_branch": "69f131fbadfeb3ec1ca0f16c2a18ad2661fff8b2",
+        "equal": true
+      },
+      {
         "path": "templates/rotation_events.js",
         "blob_at_source_revision": "a096019ce32d901f76e8cd7a198c1ccc3f3dac52",
         "blob_on_pr_branch": "a096019ce32d901f76e8cd7a198c1ccc3f3dac52",
+        "equal": true
+      },
+      {
+        "path": "templates/rotation_glance.css",
+        "blob_at_source_revision": "5d1653f8f99f71685e5123fae22767240819fdda",
+        "blob_on_pr_branch": "5d1653f8f99f71685e5123fae22767240819fdda",
+        "equal": true
+      },
+      {
+        "path": "templates/sector_central.html.j2",
+        "blob_at_source_revision": "9266e9413a62ae1ba72942f30a9904824593690d",
+        "blob_on_pr_branch": "9266e9413a62ae1ba72942f30a9904824593690d",
+        "equal": true
+      },
+      {
+        "path": "templates/si_workspace.js",
+        "blob_at_source_revision": "2c7667c39b5a2a5171b5ef036ef45206fb0702fc",
+        "blob_on_pr_branch": "2c7667c39b5a2a5171b5ef036ef45206fb0702fc",
+        "equal": true
+      },
+      {
+        "path": "templates/theme.css",
+        "blob_at_source_revision": "619436f58d37a222d1db7021ba9d52bb3a05a7fa",
+        "blob_on_pr_branch": "619436f58d37a222d1db7021ba9d52bb3a05a7fa",
         "equal": true
       },
       {
@@ -2051,6 +2123,18 @@
         "equal": true
       },
       {
+        "path": "tests/fixtures/ew_p4_observation/malformed_blank_pair.json",
+        "blob_at_source_revision": "d1fe7eedd55c7a62d75c3b64234438a8647a8e80",
+        "blob_on_pr_branch": "d1fe7eedd55c7a62d75c3b64234438a8647a8e80",
+        "equal": true
+      },
+      {
+        "path": "tests/fixtures/ew_p4_observation/malformed_calendar.json",
+        "blob_at_source_revision": "fd434f0fa1be7b41fb5d5eb86f63b2737d8e4cc0",
+        "blob_on_pr_branch": "fd434f0fa1be7b41fb5d5eb86f63b2737d8e4cc0",
+        "equal": true
+      },
+      {
         "path": "tests/fixtures/ew_p4_observation/malformed_future.json",
         "blob_at_source_revision": "30d86cba6dcf7f127b90dbba9c06340895eb6098",
         "blob_on_pr_branch": "30d86cba6dcf7f127b90dbba9c06340895eb6098",
@@ -2060,6 +2144,12 @@
         "path": "tests/fixtures/ew_p4_observation/malformed_id.json",
         "blob_at_source_revision": "7644ff22b6490d1f52c525c20026472c65010c82",
         "blob_on_pr_branch": "7644ff22b6490d1f52c525c20026472c65010c82",
+        "equal": true
+      },
+      {
+        "path": "tests/fixtures/ew_p4_observation/malformed_missing_recorded.json",
+        "blob_at_source_revision": "2ca4c6f59e42ea2501372650de086f3c4a62296b",
+        "blob_on_pr_branch": "2ca4c6f59e42ea2501372650de086f3c4a62296b",
         "equal": true
       },
       {
@@ -2108,78 +2198,6 @@
         "path": "tests/probe_ew_p4_descriptive_ui_browser.py",
         "blob_at_source_revision": "9961f3d02347a41c4fd3e573be4946ce24c7a071",
         "blob_on_pr_branch": "9961f3d02347a41c4fd3e573be4946ce24c7a071",
-        "equal": true
-      },
-      {
-        "path": "tests/fixtures/ew_p4_observation/malformed_blank_pair.json",
-        "blob_at_source_revision": "d1fe7eedd55c7a62d75c3b64234438a8647a8e80",
-        "blob_on_pr_branch": "d1fe7eedd55c7a62d75c3b64234438a8647a8e80",
-        "equal": true
-      },
-      {
-        "path": "tests/fixtures/ew_p4_observation/malformed_calendar.json",
-        "blob_at_source_revision": "fd434f0fa1be7b41fb5d5eb86f63b2737d8e4cc0",
-        "blob_on_pr_branch": "fd434f0fa1be7b41fb5d5eb86f63b2737d8e4cc0",
-        "equal": true
-      },
-      {
-        "path": "tests/fixtures/ew_p4_observation/malformed_missing_recorded.json",
-        "blob_at_source_revision": "2ca4c6f59e42ea2501372650de086f3c4a62296b",
-        "blob_on_pr_branch": "2ca4c6f59e42ea2501372650de086f3c4a62296b",
-        "equal": true
-      },
-      {
-        "path": "templates/rotation_glance.css",
-        "blob_at_source_revision": "5d1653f8f99f71685e5123fae22767240819fdda",
-        "blob_on_pr_branch": "5d1653f8f99f71685e5123fae22767240819fdda",
-        "equal": true
-      },
-      {
-        "path": "site/rotation_glance.css",
-        "blob_at_source_revision": "5d1653f8f99f71685e5123fae22767240819fdda",
-        "blob_on_pr_branch": "5d1653f8f99f71685e5123fae22767240819fdda",
-        "equal": true
-      },
-      {
-        "path": "templates/theme.css",
-        "blob_at_source_revision": "619436f58d37a222d1db7021ba9d52bb3a05a7fa",
-        "blob_on_pr_branch": "619436f58d37a222d1db7021ba9d52bb3a05a7fa",
-        "equal": true
-      },
-      {
-        "path": "templates/dashboard.html.j2",
-        "blob_at_source_revision": "1e5d6fbdcbced80b0f966759012d93f59e4133f8",
-        "blob_on_pr_branch": "1e5d6fbdcbced80b0f966759012d93f59e4133f8",
-        "equal": true
-      },
-      {
-        "path": "templates/_risk_radar_workspace.html.j2",
-        "blob_at_source_revision": "7fc267f500e3f4f85a4685420f07a42228caecb9",
-        "blob_on_pr_branch": "7fc267f500e3f4f85a4685420f07a42228caecb9",
-        "equal": true
-      },
-      {
-        "path": "templates/sector_central.html.j2",
-        "blob_at_source_revision": "9266e9413a62ae1ba72942f30a9904824593690d",
-        "blob_on_pr_branch": "9266e9413a62ae1ba72942f30a9904824593690d",
-        "equal": true
-      },
-      {
-        "path": "templates/si_workspace.js",
-        "blob_at_source_revision": "2c7667c39b5a2a5171b5ef036ef45206fb0702fc",
-        "blob_on_pr_branch": "2c7667c39b5a2a5171b5ef036ef45206fb0702fc",
-        "equal": true
-      },
-      {
-        "path": "site/theme.css",
-        "blob_at_source_revision": "619436f58d37a222d1db7021ba9d52bb3a05a7fa",
-        "blob_on_pr_branch": "619436f58d37a222d1db7021ba9d52bb3a05a7fa",
-        "equal": true
-      },
-      {
-        "path": "site/si_workspace.js",
-        "blob_at_source_revision": "2c7667c39b5a2a5171b5ef036ef45206fb0702fc",
-        "blob_on_pr_branch": "2c7667c39b5a2a5171b5ef036ef45206fb0702fc",
         "equal": true
       }
     ],

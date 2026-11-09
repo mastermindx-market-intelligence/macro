@@ -26,6 +26,22 @@ The shared navigation cold-load shift remains with held carrier #10261 (approxim
 
 The first source-bound full-page capture revealed an empty priorities card when all contributing observations were absent. A final bilingual unavailable message now fills that specific state while retaining the evidence action. The affected browser and incumbent priorities suites passed **8/8** in 5.87 seconds. Earlier captures remain intermediate; the release packet is recaptured after this correction.
 
-## Next proof
+## Release path
 
-Commit source; recapture EW, W9 and the full workspace from that commit; bind actual input bytes and screenshot hashes; run the required receipt/visual guards; publish a ready PR through the existing merge controller. Then obtain the merged SHA, covering Jinja render, and actual live browser proof. Source/CI alone are insufficient.
+Source commit, genuine recapture and receipt binding are complete below. Publish the ready PR through the existing merge controller. Then obtain the merged SHA, covering Jinja render, and actual live browser proof. Source/CI alone are insufficient.
+
+## Committed-source capture and final checks
+
+Capture source: `fca9114d922d21a3b88e6406b02e2368da66db9c`.
+
+- Full workspace: **16/16** populated/unavailable × desktop/mobile × EN/ZH × light/dark, using `scripts/capture_page_evidence.py`. No page console errors, failed responses, duplicate visible headings, raw slugs, placeholders or horizontal overflow in the recorded viewport measurements. The heuristic as-of/source flags are not a semantic verdict; the measured path visibly identifies its settled date, while supporting source detail remains in the existing evidence destinations.
+- Full browser suite rerun on that source: **31 passed** in 31.91 seconds. Five screenshots were captured inside asserted interaction states, with actual source blobs and image hashes recorded in `journeys.json`.
+- Existing W9 capture owner: **74/74** states, source SHA recorded in `mockups/evidence/macro-w9/manifest.json`; no fabricated receipt or screenshot reuse.
+- Existing EW probe: **68/68** states, with 34 render/fixture input blobs verified against the capture source and current workspace. The three extracted includes remain bound by the existing receipt and required-path test.
+- Both exact-source EW/W9 binding checks: **2 passed** in 2.15 seconds.
+- P0B closure returned success: this Macro-only composition does not change its pinned regional construction inputs. No redundant regional capture was minted for this branch.
+- Actual CI matcher confirms all three new includes select `dashboard-render-contract`, `ew-p4-descriptive-ui`, and the new workspace browser owner. The existing data-gated engine-render owner already covers them through inference; its assignment is preserved.
+
+[Workspace visual gallery](../../../mockups/evidence/macro-workspace-20261109/README.md) and [capture manifest](../../../mockups/evidence/macro-workspace-20261109/manifest.json) are the reviewable main-page artifacts. Bounded source/ownership and visual advisors supplied findings; the implementing principal performed self-check and verification. No independent GitHub approval or production acceptance is claimed.
+
+Final visual-evidence guard and forward-only design ratchet returned success after the unavailable-priorities correction (zero blocking design findings). Runtime style-injection allowance is unchanged and passed. The source/evidence packet is ready for the normal PR/CI/merge/render path; it has not yet been accepted on the served production page.
