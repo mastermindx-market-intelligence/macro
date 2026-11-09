@@ -490,27 +490,41 @@ function announce(message){announcement.textContent=message;}
 function readURL(){var p=new URLSearchParams(location.hash.slice(1));var requested=p.get('theme')||defaults.theme;invalidTheme=!byId.has(requested);state={theme:invalidTheme?defaults.theme:requested,q:txt(p.get('q')).slice(0,200),category:category.querySelector('option[value="'+CSS.escape(p.get('category')||'')+'"]')?(p.get('category')||''):'',scope:['core','extended'].includes(p.get('scope'))?p.get('scope'):'all',evidence:p.get('evidence')==='1'};}
 /* Copy feedback belongs to one explicit action and its current research URL.
    Retiring the UI attempt cannot cancel a system clipboard write already issued. */
-var activeCopy=null,copyResetTimer=null,copyAnnouncement=null;
+var activeCopy=null,copyResetTimer=null,copyAnnouncement=null,copyRenderPass=0;
 function currentCopy(attempt){return activeCopy===attempt&&attempt.url===location.href&&attempt.theme===state.theme;}
 function copyMessage(attempt){return attempt.status==='copied'?tr('Link copied to clipboard.','链接已复制到剪贴板。'):tr('Copy was unavailable. Select and copy the address shown.','暂无法自动复制。请选择并复制所显示的地址。');}
 function copyAnnounce(attempt){copyAnnouncement=copyMessage(attempt);announce(copyAnnouncement);}
-function renderCopyFeedback(){
-  var attempt=activeCopy;
-  if(attempt&&!currentCopy(attempt)){retireCopy(false);return;}
-  var fallback=answer.querySelector('.gmi-copy-fallback'),failed=!!attempt&&attempt.status==='failed';
-  answer.querySelector('[data-gmi-copy]').disabled=!!attempt&&attempt.status==='pending';
-  answer.querySelector('[data-copy-label]').textContent=attempt&&attempt.status==='copied'?tr('Link copied','链接已复制'):attempt&&attempt.status==='pending'?tr('Copying…','正在复制…'):tr('Copy link','复制链接');
-  fallback.hidden=!failed;
+function renderCopyFeedback(recoverFocus){
+  var pass=++copyRenderPass,attempt=activeCopy;
+  if(attempt&&!currentCopy(attempt))return retireCopy(recoverFocus);
+  var fallback=answer.querySelector('.gmi-copy-fallback'),button=answer.querySelector('[data-gmi-copy]');
+  var failed=!!attempt&&attempt.status==='failed',pending=!!attempt&&attempt.status==='pending';
+  if(button.disabled!==pending)button.disabled=pending;
+  /* Focus callbacks and other synchronous reentry may start a newer render.
+     Only the current projection may hide or clear the fallback. */
+  if(pass!==copyRenderPass)return false;
+  answer.querySelector('[data-copy-label]').textContent=attempt&&attempt.status==='copied'?tr('Link copied','链接已复制'):pending?tr('Copying…','正在复制…'):tr('Copy link','复制链接');
+  if(!failed&&recoverFocus!==false&&fallback.contains(document.activeElement)){
+    var targets=[button,document.getElementById('gmi-topic-title')];
+    for(var i=0;i<targets.length&&pass===copyRenderPass&&fallback.contains(document.activeElement);i++){
+      var target=targets[i];
+      if(target&&target.isConnected&&!target.disabled&&!target.closest('[hidden],[inert]')&&
+        target.getClientRects().length&&getComputedStyle(target).visibility==='visible')target.focus({preventScroll:true});
+    }
+  }
+  if(pass!==copyRenderPass)return false;
+  if(fallback.hidden!==!failed)fallback.hidden=!failed;
+  if(pass!==copyRenderPass)return false;
   document.getElementById('gmi-share-url').value=failed?attempt.url:'';
   if(copyAnnouncement!==null&&announcement.textContent===copyAnnouncement&&attempt&&attempt.status!=='pending')copyAnnounce(attempt);
+  return true;
 }
 function retireCopy(recoverFocus){
-  var fallback=answer.querySelector('.gmi-copy-fallback'),focused=fallback.contains(document.activeElement);
   activeCopy=null;
   if(copyResetTimer!==null){clearTimeout(copyResetTimer);copyResetTimer=null;}
   if(copyAnnouncement!==null&&announcement.textContent===copyAnnouncement)announcement.textContent='';
-  copyAnnouncement=null;renderCopyFeedback();
-  if(recoverFocus===true&&focused)answer.querySelector('[data-gmi-copy]').focus({preventScroll:true});
+  copyAnnouncement=null;
+  return renderCopyFeedback(recoverFocus);
 }
 function writeURL(mode){var p=new URLSearchParams(location.hash.slice(1));p.set('theme',state.theme);[['q',state.q],['category',state.category],['scope',state.scope==='all'?'':state.scope],['evidence',state.evidence?'1':'']].forEach(function(pair){if(pair[1])p.set(pair[0],pair[1]);else p.delete(pair[0]);});var next='#'+p.toString();if(next!==location.hash){retireCopy(true);history[mode==='push'?'pushState':'replaceState'](null,'',next);}lastHash=location.hash;refreshJourney();}
 function matches(t){return(!state.category||t.paths.some(function(path){return path.length&&path[0].id===state.category;}))&&(state.scope==='all'||t.tier===state.scope)&&(!state.evidence||t.connections.length>0)&&(!norm(state.q)||searchText.get(t.id).includes(norm(state.q)));}
@@ -642,26 +656,30 @@ document.addEventListener('keydown',function(event){if(event.key!=='/'||event.ct
 function releaseCopyFocus(event){if(activeCopy&&activeCopy.status==='pending'&&(event.type==='blur'||!answer.querySelector('[data-gmi-copy]').contains(event.target)))activeCopy.ownsFocus=false;}
 document.addEventListener('focusin',releaseCopyFocus);document.addEventListener('pointerdown',releaseCopyFocus);window.addEventListener('blur',releaseCopyFocus);
 answer.querySelector('[data-gmi-copy]').addEventListener('click',async function(){
-  var button=this;retireCopy(false);writeURL('replace');
+  var button=this,url=location.href,theme=state.theme;
+  if(!retireCopy()||location.href!==url||state.theme!==theme)return;
+  writeURL('replace');
   var attempt={url:location.href,theme:state.theme,status:'pending',ownsFocus:document.activeElement===button};activeCopy=attempt;renderCopyFeedback();
   try{
+    if(!currentCopy(attempt))return;
     if(!navigator.clipboard||!navigator.clipboard.writeText)throw new Error('clipboard unavailable');
     await navigator.clipboard.writeText(attempt.url);
     if(!currentCopy(attempt))return;
-    attempt.status='copied';renderCopyFeedback();copyAnnounce(attempt);
-    copyResetTimer=setTimeout(function(){if(activeCopy===attempt)retireCopy(false);},2500);
+    attempt.status='copied';renderCopyFeedback();if(!currentCopy(attempt))return;copyAnnounce(attempt);
+    copyResetTimer=setTimeout(function(){if(activeCopy===attempt)retireCopy();},2500);
   }catch(error){
     if(!currentCopy(attempt))return;
-    attempt.status='failed';renderCopyFeedback();copyAnnounce(attempt);
+    attempt.status='failed';renderCopyFeedback();if(!currentCopy(attempt))return;copyAnnounce(attempt);
     if(attempt.ownsFocus&&(document.activeElement===button||document.activeElement===document.body)){
-      var input=document.getElementById('gmi-share-url');input.focus({preventScroll:true});input.select();
+      var input=document.getElementById('gmi-share-url');input.focus({preventScroll:true});
+      if(currentCopy(attempt)&&document.activeElement===input)input.select();
     }
   }finally{
-    if(activeCopy===attempt){if(currentCopy(attempt))button.disabled=false;else retireCopy(false);}
+    if(activeCopy===attempt){if(currentCopy(attempt))button.disabled=false;else retireCopy();}
   }
 });
-answer.querySelector('[data-copy-close]').addEventListener('click',function(){retireCopy(false);answer.querySelector('[data-gmi-copy]').focus();});
-window.addEventListener('hashchange',restore);window.addEventListener('popstate',restore);window.addEventListener('pagehide',retireCopy);
+answer.querySelector('[data-copy-close]').addEventListener('click',function(){retireCopy();});
+window.addEventListener('hashchange',restore);window.addEventListener('popstate',restore);window.addEventListener('pagehide',function(){retireCopy(false);});
 new MutationObserver(function(changes){if(changes.some(function(change){return change.attributeName==='data-gmi-lens';}))retireCopy(true);if(changes.some(function(change){return change.attributeName==='data-lang';})){sync(true);companies();}else refreshJourney();}).observe(root,{attributes:true,attributeFilter:['data-lang','data-gmi-lens']});
 restore();
 workspace.setAttribute('data-gmi-ready','');

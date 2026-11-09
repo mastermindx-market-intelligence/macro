@@ -1,0 +1,4172 @@
+{
+  "phase": "GMI manual-copy retirement and effect ownership",
+  "date": "2026-11-09",
+  "repository": "mastermindx-market-intelligence/Macro",
+  "branch": "claude/gmi-product-upgrade-20261103",
+  "pr": 10676,
+  "parent": "c19d6185f0d06b9ef8af3fb8979d121d32e36c39",
+  "status": "SOURCE_AND_COMPONENT_PROOF_ONLY_DRAFT_HELD",
+  "behavior": {
+    "visibility_owner": "Existing renderCopyFeedback recovers focus before retiring the manual-copy fallback; active attempt, timer and owned announcement retire before recovery.",
+    "recovery": "If the retiring fallback owns focus, try reachable current Copy then topic title with preventScroll; inspect actual focus after callbacks and preserve surviving redirects. Unrelated focus remains.",
+    "local_render_guard": "A local render pass stops superseded synchronous projection after disabled-state preparation, focus and hiding. It is distinct from currentCopy's attempt/URL/theme identity.",
+    "effect_guard": "Outer Copy yields when retirement is superseded or synchronous recovery changes URL/theme before normalization. After pending rendering, currentCopy must still hold before issuing writeText.",
+    "completion_guard": "After completion rendering, validate the current attempt before announcement/timer continuation. After failure focus, select only if that attempt still owns the focused field.",
+    "lifecycle": "Injected pagehide cleanup explicitly passes false to suppress focus recovery; this does not establish BFCache behavior.",
+    "retained": "Existing URL, filter, selection, locale, answer and public-data owners remain unchanged; already-issued system writes cannot be cancelled."
+  },
+  "native_root": "/Volumes/Mastermind/agent-workspaces/verify/gmi-copy-focus-20261109-g_wehs_x",
+  "processes": {
+    "prepare": {
+      "pid": 50709,
+      "exit_code": 0,
+      "runtime_seconds": 0.19
+    },
+    "baseline_probe": {
+      "pid": 73534,
+      "exit_code": 0,
+      "runtime_seconds": 0.13
+    },
+    "baseline": {
+      "pid": 73607,
+      "exit_code": 1,
+      "runtime_seconds": 5.26,
+      "cases": 2,
+      "contexts": 2,
+      "expected_owned_hide_failures": 2
+    },
+    "initial_patch": {
+      "pid": 87241,
+      "exit_code": 0,
+      "runtime_seconds": 0.14
+    },
+    "candidate_prepare": {
+      "pid": 94807,
+      "exit_code": 0,
+      "runtime_seconds": 0.18
+    },
+    "diagnostic": {
+      "pid": 95180,
+      "exit_code": 1,
+      "runtime_seconds": 25.11,
+      "passed": 21,
+      "executed": 22,
+      "planned": 28,
+      "reason": "Test assumed disabling Copy automatically emits blur. Native observation retained focus and emitted no blur; this was a fixture assumption failure."
+    },
+    "diagnostic_preservation": {
+      "pid": 98569,
+      "exit_code": 0,
+      "runtime_seconds": 0.07
+    },
+    "fixture_correction": {
+      "pid": 98754,
+      "exit_code": 0,
+      "runtime_seconds": 0.18
+    },
+    "final_prepare": {
+      "pid": 99563,
+      "exit_code": 0,
+      "runtime_seconds": 0.16
+    },
+    "candidate": {
+      "pid": 99607,
+      "exit_code": 0,
+      "runtime_seconds": 54.32,
+      "cases": 28,
+      "contexts": 50,
+      "page_errors": 0,
+      "browser": "157.0.8103.39"
+    },
+    "export": {
+      "pid": 4325,
+      "exit_code": 0,
+      "runtime_seconds": 0.1,
+      "bytes": 128058,
+      "sha256": "0f299ec72bdafce7145179743f45861f8958b5567c0e8f92e750de9dd3173978",
+      "blob": "f113c0c082adadb28304df2d381f872833eb6b3c"
+    }
+  },
+  "commands": {
+    "prepare": "python3 - <<'PY'\nfrom pathlib import Path\nimport json,hashlib,shutil,tempfile\nprevious=Path('/Volumes/Mastermind/agent-workspaces/verify/gmi-dialog-return-20261109-i86fvpcx')\nroot=Path(tempfile.mkdtemp(prefix='gmi-copy-focus-20261109-',dir='/Volumes/Mastermind/agent-workspaces/verify'))\n(root/'templates').mkdir()\nfor name in ('theme.css','gmi.js'):shutil.copy2(previous/'templates'/name,root/'templates'/name)\nfor lane in ('baseline','candidate'):shutil.copytree(previous/'candidate',root/lane)\nshutil.copy2(previous/'verify_product_browser.py',root/'baseline-verify_product_browser.py')\nshutil.copy2(previous/'verify_product_browser.py',root/'verify_product_browser.py')\ndef meta(p):\n b=p.read_bytes();return {'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest(),'blob':hashlib.sha1(b'blob '+str(len(b)).encode()+b'\\0'+b).hexdigest()}\nbinding={'source_head':'c19d6185f0d06b9ef8af3fb8979d121d32e36c39','source_root':str(previous),'retained_model_sha256':json.loads((previous/'input-bindings.json').read_text())['retained_model_sha256'],'inputs':{p.name:meta(p) for p in sorted((root/'baseline').iterdir()) if p.is_file()},'theme_css':meta(root/'templates/theme.css'),'canonical_verifier':meta(root/'verify_product_browser.py')}\nassert binding['inputs']['gmi.js']['blob']=='15b39754aa170a97cd9468a4823142718ff6284a'\nassert binding['canonical_verifier']['blob']=='47f22a4796eedca910daa803911608d6259e2376'\n(root/'input-bindings.json').write_text(json.dumps(binding,ensure_ascii=False,indent=2)+'\\n')\nprint(json.dumps({'root':str(root),'source_head':binding['source_head'],'baseline_files':len(binding['inputs'])}),flush=True)\nPY",
+    "probe": "python3 - <<'PY'\nfrom pathlib import Path\nimport ast,json,hashlib\nr=Path('/Volumes/Mastermind/agent-workspaces/verify/gmi-copy-focus-20261109-g_wehs_x');s=(r/'baseline-verify_product_browser.py').read_text();marker='\\n    browser.close()\\nserver.shutdown()';assert s.count(marker)==1;s=s.replace(marker,(r/'copy-focus-definitions.py').read_text()+marker);ast.parse(s);ast.parse((r/'verify_copy_focus_component.py').read_text());(r/'verify_product_browser.py').write_text(s);print(json.dumps({'probe_syntax':'PASS','product_changed':False}),flush=True)\nPY",
+    "baseline": "PYTHONDONTWRITEBYTECODE=1 python3 '/Volumes/Mastermind/agent-workspaces/verify/gmi-copy-focus-20261109-g_wehs_x/verify_copy_focus_component.py' --root '/Volumes/Mastermind/agent-workspaces/verify/gmi-copy-focus-20261109-g_wehs_x' --executable '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' --baseline",
+    "initial_patch": "python3 - <<'PY'\nfrom pathlib import Path\nimport shutil,subprocess,json,hashlib\nr=Path(\"/Volumes/Mastermind/agent-workspaces/verify/gmi-copy-focus-20261109-g_wehs_x\")\nshutil.copy2(r/'verify_product_browser.py',r/'baseline-probe-verify_product_browser.py')\nshutil.copy2(r/'verify_copy_focus_component.py',r/'baseline-verify_copy_focus_component.py')\nshutil.copy2(r/'copy-focus-definitions.py',r/'baseline-copy-focus-definitions.py')\nshutil.copy2(r/'candidate/gmi.js',r/'templates/gmi.js')\np=subprocess.run(['node','--check',str(r/'candidate/gmi.js')],capture_output=True,text=True)\nprint(json.dumps({'node_check_exit':p.returncode,'output':p.stdout+p.stderr,'candidate_sha256':hashlib.sha256((r/'candidate/gmi.js').read_bytes()).hexdigest()}),flush=True)\nraise SystemExit(p.returncode)\nPY",
+    "candidate_prepare": "python3 - <<'PY'\nfrom pathlib import Path\nimport ast,json,hashlib,shutil,subprocess\nr=Path(\"/Volumes/Mastermind/agent-workspaces/verify/gmi-copy-focus-20261109-g_wehs_x\")\ns=(r/'baseline-verify_product_browser.py').read_text();marker='\\n    browser.close()\\nserver.shutdown()';assert s.count(marker)==1\ns=s.replace(marker,(r/'copy-focus-definitions.py').read_text()+marker)\nast.parse(s);ast.parse((r/'verify_copy_focus_component.py').read_text());(r/'verify_product_browser.py').write_text(s)\nshutil.copy2(r/'candidate/gmi.js',r/'templates/gmi.js')\np=subprocess.run(['node','--check',str(r/'candidate/gmi.js')],capture_output=True,text=True);assert p.returncode==0,p.stderr\nprint(json.dumps({'syntax':'PASS','js_sha256':hashlib.sha256((r/'candidate/gmi.js').read_bytes()).hexdigest(),'verifier_sha256':hashlib.sha256((r/'verify_product_browser.py').read_bytes()).hexdigest(),'harness_sha256':hashlib.sha256((r/'verify_copy_focus_component.py').read_bytes()).hexdigest()}),flush=True)\nPY",
+    "diagnostic_and_final_browser": "PYTHONDONTWRITEBYTECODE=1 python3 '/Volumes/Mastermind/agent-workspaces/verify/gmi-copy-focus-20261109-g_wehs_x/verify_copy_focus_component.py' --root '/Volumes/Mastermind/agent-workspaces/verify/gmi-copy-focus-20261109-g_wehs_x' --executable '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'",
+    "diagnostic_preservation": "python3 - <<'PY'\nfrom pathlib import Path\nimport shutil,json\nr=Path(\"/Volumes/Mastermind/agent-workspaces/verify/gmi-copy-focus-20261109-g_wehs_x\")\nshutil.copytree(r/'candidate-proof',r/'candidate-diagnostic-proof')\nshutil.copy2(r/'verify_product_browser.py',r/'diagnostic-verify_product_browser.py')\nshutil.copy2(r/'verify_copy_focus_component.py',r/'diagnostic-verify_copy_focus_component.py')\nprint(json.dumps({'preserved':'candidate-diagnostic-proof','source_changed':False}),flush=True)\nPY",
+    "cloud_self_check": "python3 - <<'PY'\nfrom pathlib import Path\nimport ast,json,hashlib,difflib,subprocess\nr=Path('/workspace/scratch/80f6cfc448fd/gmi-copy-focus');p=r.parent/'gmi-dialog-return'\ndef meta(f):\n b=f.read_bytes();return {'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest(),'blob':hashlib.sha1(b'blob '+str(len(b)).encode()+b'\\0'+b).hexdigest()}\ndef qualified(tree):\n out={}\n def visit(n,path=()):\n  if isinstance(n,(ast.FunctionDef,ast.AsyncFunctionDef,ast.ClassDef)):\n   path=(*path,n.name)\n   if isinstance(n,(ast.FunctionDef,ast.AsyncFunctionDef)):\n    key='.'.join(path);assert key not in out,key;out[key]=ast.dump(n,include_attributes=False)\n  for child in ast.iter_child_nodes(n):visit(child,path)\n visit(tree);return out\nbefore=qualified(ast.parse((p/'candidate-verify_product_browser.py').read_text()));after=qualified(ast.parse((r/'candidate-verify.py').read_text()));changed=[k for k,v in before.items() if after.get(k)!=v];assert not changed,changed\nast.parse((r/'verify_copy_focus_component.py').read_text())\na=(p/'candidate-gmi.js').read_text();b=(r/'candidate-gmi.js').read_text();(r/'gmi.js.diff').write_text(''.join(difflib.unified_diff(a.splitlines(True),b.splitlines(True),fromfile='parent/gmi.js',tofile='candidate/gmi.js')))\nproc=subprocess.run(['node','--check',str(r/'candidate-gmi.js')],capture_output=True,text=True);assert proc.returncode==0,proc.stderr\nout={'parent':'c19d6185f0d06b9ef8af3fb8979d121d32e36c39','prior_definitions':len(before),'all_prior_ast_exact':not changed,'new_definitions':sorted(set(after)-set(before)),'syntax':'PASS','source_files':{n:meta(r/n) for n in ('candidate-gmi.js','candidate-verify.py','verify_copy_focus_component.py')},'parent_files':{'gmi.js':meta(p/'candidate-gmi.js'),'verifier':meta(p/'candidate-verify_product_browser.py')}}\n(r/'source-self-check.json').write_text(json.dumps(out,indent=2)+'\\n');print(json.dumps(out),flush=True)\nprint((r/'gmi.js.diff').read_text())\nPY",
+    "export": "python3 - <<'PY'\nfrom pathlib import Path\nimport ast,json,hashlib\nr=Path(\"/Volumes/Mastermind/agent-workspaces/verify/gmi-copy-focus-20261109-g_wehs_x\")\nexpected=json.loads(\"{\\\"candidate-gmi.js\\\":{\\\"bytes\\\":57243,\\\"sha256\\\":\\\"4ca7c46fd9a9720819ce8153c54998114cee3dc9cf9fc305bf92bc7be165152e\\\",\\\"blob\\\":\\\"c5d32d689ffae6caedf72a8afef317c9900c4428\\\"},\\\"candidate-verify.py\\\":{\\\"bytes\\\":292118,\\\"sha256\\\":\\\"795e2215a942b1dd779ee0cc6e58db92628843a08e33ae4cd3b0b9dbfc40fa6c\\\",\\\"blob\\\":\\\"0de73186399ccfcd76d8f1f1a33b5ef860a749f5\\\"},\\\"verify_copy_focus_component.py\\\":{\\\"bytes\\\":8823,\\\"sha256\\\":\\\"4ddaf33f231ef6bb434e49d618193fb9c75ee375c4a123604e6bf4c93287cd2d\\\",\\\"blob\\\":\\\"528fda4019268aa9b7c52a42808547dbb41fdbc0\\\"}}\")\ndef meta(p):\n b=p.read_bytes();return {'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest(),'blob':hashlib.sha1(b'blob '+str(len(b)).encode()+b'\\0'+b).hexdigest()}\nunchanged=[]\nfor p in sorted((r/'baseline').iterdir()):\n if p.name=='gmi.js':continue\n assert p.read_bytes()==(r/'candidate'/p.name).read_bytes(),p.name;unchanged.append(p.name)\nassert (r/'templates/gmi.js').read_bytes()==(r/'candidate/gmi.js').read_bytes()\nsource={name:meta(r/name) for name in ('templates/gmi.js','candidate/gmi.js','verify_product_browser.py','verify_copy_focus_component.py')}\nfor path,key in [('candidate/gmi.js','candidate-gmi.js'),('verify_product_browser.py','candidate-verify.py'),('verify_copy_focus_component.py','verify_copy_focus_component.py')]:assert source[path]==expected[key],(path,source[path],expected[key])\na=(r/'baseline/gmi.js').read_text();b=(r/'candidate/gmi.js').read_text()\nscope={'before_copy_owner_exact':a.split('var activeCopy=')[0]==b.split('var activeCopy=')[0],\n 'navigation_filters_answer_and_input_owners_exact':a[a.index('function writeURL(mode)'):a.index(\"answer.querySelector('[data-gmi-copy]').addEventListener\")]==b[b.index('function writeURL(mode)'):b.index(\"answer.querySelector('[data-gmi-copy]').addEventListener\")],\n 'locale_observer_and_initialization_exact':a[a.index('new MutationObserver(function(changes){if(changes.some'):]==b[b.index('new MutationObserver(function(changes){if(changes.some'):],\n 'attempt_identity_and_messages_exact':a[a.index('function currentCopy(attempt)'):a.index('function renderCopyFeedback')]==b[b.index('function currentCopy(attempt)'):b.index('function renderCopyFeedback')]}\nassert all(scope.values()),scope\nchecks={'copy_owner_scope':scope,'unchanged_outputs':unchanged,'sources':source,'native_cloud_hashes_exact':True}\n(r/'source-checks.json').write_text(json.dumps(checks,indent=2)+'\\n')\nbase=json.loads((r/'baseline-proof/browser-report.json').read_text());diag=json.loads((r/'candidate-diagnostic-proof/browser-report.json').read_text());candidate=json.loads((r/'candidate-proof/browser-report.json').read_text())\nassert candidate['pass'] and len(candidate['cases'])==28 and candidate['contexts']==50\nobs=candidate['copy_focus_observations'];interactive=[x for x in obs if x['interactive']];lifecycle=[x for x in obs if not x['interactive']]\nassert not any(x['ownedHides'] for x in interactive)\nreceipt={'input_bindings':json.loads((r/'input-bindings.json').read_text()),'source_checks':checks,'baseline_browser':base,'diagnostic_browser':diag,'candidate_browser':candidate,\n 'observation_summary':{'interactive_snapshots':len(interactive),'interactive_owned_hides':sum(len(x['ownedHides']) for x in interactive),'lifecycle_snapshots':len(lifecycle),'explicit_pagehide_owned_hides':sum(len(x['ownedHides']) for x in lifecycle),'pagehide_focus_calls':sum(len(x['focusCalls']) for x in lifecycle)},\n 'receipt_files':{name:meta(r/path) for name,path in {'input_bindings':'input-bindings.json','source_checks':'source-checks.json','baseline_browser':'baseline-proof/browser-report.json','diagnostic_browser':'candidate-diagnostic-proof/browser-report.json','candidate_browser':'candidate-proof/browser-report.json','baseline_probe_verifier':'baseline-probe-verify_product_browser.py','baseline_harness':'baseline-verify_copy_focus_component.py','diagnostic_verifier':'diagnostic-verify_product_browser.py','diagnostic_harness':'diagnostic-verify_copy_focus_component.py'}.items()},\n 'screenshot_hashes':[{'name':p.name,**meta(p)} for p in sorted((r/'candidate-proof').glob('*.png'))]}\nout=r/'copy-focus-native-receipts.json';out.write_text(json.dumps(receipt,ensure_ascii=False,indent=2)+'\\n')\nprint(json.dumps({'receipt':str(out),**meta(out),'observations':receipt['observation_summary'],'screenshots':[x['name'] for x in receipt['screenshot_hashes']],'source_checks':checks}),flush=True)\nPY"
+  },
+  "source_self_check": {
+    "parent": "c19d6185f0d06b9ef8af3fb8979d121d32e36c39",
+    "prior_definitions": 112,
+    "all_prior_ast_exact": true,
+    "new_definitions": [
+      "copy_focus_before_effect",
+      "copy_focus_destinations",
+      "copy_focus_failure",
+      "copy_focus_failure_redirect",
+      "copy_focus_new_attempt",
+      "copy_focus_page",
+      "copy_focus_pagehide",
+      "copy_focus_record",
+      "copy_focus_retirement"
+    ],
+    "syntax": "PASS",
+    "source_files": {
+      "candidate-gmi.js": {
+        "bytes": 57243,
+        "sha256": "4ca7c46fd9a9720819ce8153c54998114cee3dc9cf9fc305bf92bc7be165152e",
+        "blob": "c5d32d689ffae6caedf72a8afef317c9900c4428"
+      },
+      "candidate-verify.py": {
+        "bytes": 292118,
+        "sha256": "795e2215a942b1dd779ee0cc6e58db92628843a08e33ae4cd3b0b9dbfc40fa6c",
+        "blob": "0de73186399ccfcd76d8f1f1a33b5ef860a749f5"
+      },
+      "verify_copy_focus_component.py": {
+        "bytes": 8823,
+        "sha256": "4ddaf33f231ef6bb434e49d618193fb9c75ee375c4a123604e6bf4c93287cd2d",
+        "blob": "528fda4019268aa9b7c52a42808547dbb41fdbc0"
+      }
+    },
+    "parent_files": {
+      "gmi.js": {
+        "bytes": 56306,
+        "sha256": "c6d7011f82f6c2c09e40a20f05d6cbc13bfef8d5d82c7a70439ff4656c742838",
+        "blob": "15b39754aa170a97cd9468a4823142718ff6284a"
+      },
+      "verifier": {
+        "bytes": 276430,
+        "sha256": "dd3798db26a5a90a7b89dc23b9d66ad11fb508518229fcd2cc0326f0c04eedb7",
+        "blob": "47f22a4796eedca910daa803911608d6259e2376"
+      }
+    },
+    "native": {
+      "copy_owner_scope": {
+        "before_copy_owner_exact": true,
+        "navigation_filters_answer_and_input_owners_exact": true,
+        "locale_observer_and_initialization_exact": true,
+        "attempt_identity_and_messages_exact": true
+      },
+      "unchanged_outputs": [
+        "gmi-companies.html",
+        "gmi-coverage.html",
+        "gmi-index.html",
+        "gmi-issuer-mu.html",
+        "gmi-relationships.html",
+        "gmi-states.html",
+        "gmi.css",
+        "gmi.html"
+      ],
+      "sources": {
+        "templates/gmi.js": {
+          "bytes": 57243,
+          "sha256": "4ca7c46fd9a9720819ce8153c54998114cee3dc9cf9fc305bf92bc7be165152e",
+          "blob": "c5d32d689ffae6caedf72a8afef317c9900c4428"
+        },
+        "candidate/gmi.js": {
+          "bytes": 57243,
+          "sha256": "4ca7c46fd9a9720819ce8153c54998114cee3dc9cf9fc305bf92bc7be165152e",
+          "blob": "c5d32d689ffae6caedf72a8afef317c9900c4428"
+        },
+        "verify_product_browser.py": {
+          "bytes": 292118,
+          "sha256": "795e2215a942b1dd779ee0cc6e58db92628843a08e33ae4cd3b0b9dbfc40fa6c",
+          "blob": "0de73186399ccfcd76d8f1f1a33b5ef860a749f5"
+        },
+        "verify_copy_focus_component.py": {
+          "bytes": 8823,
+          "sha256": "4ddaf33f231ef6bb434e49d618193fb9c75ee375c4a123604e6bf4c93287cd2d",
+          "blob": "528fda4019268aa9b7c52a42808547dbb41fdbc0"
+        }
+      },
+      "native_cloud_hashes_exact": true
+    }
+  },
+  "native_receipts": {
+    "input_bindings": {
+      "source_head": "c19d6185f0d06b9ef8af3fb8979d121d32e36c39",
+      "source_root": "/Volumes/Mastermind/agent-workspaces/verify/gmi-dialog-return-20261109-i86fvpcx",
+      "retained_model_sha256": "e644fa48a2bb6e6affe8d1fda74556d9db5f82acadffdad839e1efe8f095359f",
+      "inputs": {
+        "gmi-companies.html": {
+          "bytes": 65156,
+          "sha256": "fda702382d62068f8f39874bcd07bbb915ddacee6a3d4f734b337b58f3e47d3c",
+          "blob": "c4b1c81c92c270411c6698a473b55354a05dc8a5"
+        },
+        "gmi-coverage.html": {
+          "bytes": 75416,
+          "sha256": "893408143f6c0cb1db08084ad9c7c57b56386421f3a3958f1879a87f9035b745",
+          "blob": "5df5c79f27a467894d125da61d3cf88b3969edf9"
+        },
+        "gmi-index.html": {
+          "bytes": 262285,
+          "sha256": "3e6e6f4846598bc6240f3aa69c5523a5500e7f79f7838e655ea7ecd7800536d4",
+          "blob": "d0cff23fec423c3480ea12ee200c272396fd53a0"
+        },
+        "gmi-issuer-mu.html": {
+          "bytes": 65585,
+          "sha256": "22cc39aca77961584fad494ab0afa788b287636f7e3c5cfaecba7dbda2172bdd",
+          "blob": "3a4515417dbc651737c954799fa6f234d7a178da"
+        },
+        "gmi-relationships.html": {
+          "bytes": 61988,
+          "sha256": "86243e69c432370eb83600a45cda897e29a1a63697f55e3a72ccffcf9468c377",
+          "blob": "8a693c57b649b300a5c3e53e9d24cfa9c92987c7"
+        },
+        "gmi-states.html": {
+          "bytes": 64663,
+          "sha256": "3b3c22bd3c57dc34586ac5b9d0800cab9d6c3259f56c9cdc5c2021117a65187e",
+          "blob": "6f31a9ea9deb80794422096fd4233a566502de6e"
+        },
+        "gmi.css": {
+          "bytes": 75903,
+          "sha256": "2b78466300f695abd0cb13fd22bd51e969eff0d68dbff9c22e8eac33ce375ba4",
+          "blob": "fcfa6cf06646f0406ca366d5f015205c72176bce"
+        },
+        "gmi.html": {
+          "bytes": 973514,
+          "sha256": "7231f4e9abff833dd7517b8b2d38b0554821491c430e092e95840e0e69b544f1",
+          "blob": "a7fcc7db25acbe1cf85dbf63807bbceedc3b4a8a"
+        },
+        "gmi.js": {
+          "bytes": 56306,
+          "sha256": "c6d7011f82f6c2c09e40a20f05d6cbc13bfef8d5d82c7a70439ff4656c742838",
+          "blob": "15b39754aa170a97cd9468a4823142718ff6284a"
+        }
+      },
+      "theme_css": {
+        "bytes": 227583,
+        "sha256": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757",
+        "blob": "619436f58d37a222d1db7021ba9d52bb3a05a7fa"
+      },
+      "canonical_verifier": {
+        "bytes": 276430,
+        "sha256": "dd3798db26a5a90a7b89dc23b9d66ad11fb508518229fcd2cc0326f0c04eedb7",
+        "blob": "47f22a4796eedca910daa803911608d6259e2376"
+      }
+    },
+    "source_checks": {
+      "copy_owner_scope": {
+        "before_copy_owner_exact": true,
+        "navigation_filters_answer_and_input_owners_exact": true,
+        "locale_observer_and_initialization_exact": true,
+        "attempt_identity_and_messages_exact": true
+      },
+      "unchanged_outputs": [
+        "gmi-companies.html",
+        "gmi-coverage.html",
+        "gmi-index.html",
+        "gmi-issuer-mu.html",
+        "gmi-relationships.html",
+        "gmi-states.html",
+        "gmi.css",
+        "gmi.html"
+      ],
+      "sources": {
+        "templates/gmi.js": {
+          "bytes": 57243,
+          "sha256": "4ca7c46fd9a9720819ce8153c54998114cee3dc9cf9fc305bf92bc7be165152e",
+          "blob": "c5d32d689ffae6caedf72a8afef317c9900c4428"
+        },
+        "candidate/gmi.js": {
+          "bytes": 57243,
+          "sha256": "4ca7c46fd9a9720819ce8153c54998114cee3dc9cf9fc305bf92bc7be165152e",
+          "blob": "c5d32d689ffae6caedf72a8afef317c9900c4428"
+        },
+        "verify_product_browser.py": {
+          "bytes": 292118,
+          "sha256": "795e2215a942b1dd779ee0cc6e58db92628843a08e33ae4cd3b0b9dbfc40fa6c",
+          "blob": "0de73186399ccfcd76d8f1f1a33b5ef860a749f5"
+        },
+        "verify_copy_focus_component.py": {
+          "bytes": 8823,
+          "sha256": "4ddaf33f231ef6bb434e49d618193fb9c75ee375c4a123604e6bf4c93287cd2d",
+          "blob": "528fda4019268aa9b7c52a42808547dbb41fdbc0"
+        }
+      },
+      "native_cloud_hashes_exact": true
+    },
+    "baseline_browser": {
+      "generated_at": "2026-11-09T09:49:12.799656+00:00",
+      "baseline": true,
+      "scope": "Manual-copy focus ordering on actual generated-main fixtures.\n\nA controlled clipboard fixture and before-hide probe observe only the existing\ncopy-feedback owner. No system clipboard, shared-shell/fonts, native OS IME,\nAT speech, live account, actual BFCache or release acceptance is claimed.",
+      "script_sha256": "c6d7011f82f6c2c09e40a20f05d6cbc13bfef8d5d82c7a70439ff4656c742838",
+      "gmi_css_sha256": "2b78466300f695abd0cb13fd22bd51e969eff0d68dbff9c22e8eac33ce375ba4",
+      "verifier_sha256": "17d79b28423f544d74a0d94e11d83e05cac93d36e6255dff709434e30c224444",
+      "inputs": {
+        "source_head": "c19d6185f0d06b9ef8af3fb8979d121d32e36c39",
+        "source_root": "/Volumes/Mastermind/agent-workspaces/verify/gmi-dialog-return-20261109-i86fvpcx",
+        "retained_model_sha256": "e644fa48a2bb6e6affe8d1fda74556d9db5f82acadffdad839e1efe8f095359f",
+        "inputs": {
+          "gmi-companies.html": {
+            "bytes": 65156,
+            "sha256": "fda702382d62068f8f39874bcd07bbb915ddacee6a3d4f734b337b58f3e47d3c",
+            "blob": "c4b1c81c92c270411c6698a473b55354a05dc8a5"
+          },
+          "gmi-coverage.html": {
+            "bytes": 75416,
+            "sha256": "893408143f6c0cb1db08084ad9c7c57b56386421f3a3958f1879a87f9035b745",
+            "blob": "5df5c79f27a467894d125da61d3cf88b3969edf9"
+          },
+          "gmi-index.html": {
+            "bytes": 262285,
+            "sha256": "3e6e6f4846598bc6240f3aa69c5523a5500e7f79f7838e655ea7ecd7800536d4",
+            "blob": "d0cff23fec423c3480ea12ee200c272396fd53a0"
+          },
+          "gmi-issuer-mu.html": {
+            "bytes": 65585,
+            "sha256": "22cc39aca77961584fad494ab0afa788b287636f7e3c5cfaecba7dbda2172bdd",
+            "blob": "3a4515417dbc651737c954799fa6f234d7a178da"
+          },
+          "gmi-relationships.html": {
+            "bytes": 61988,
+            "sha256": "86243e69c432370eb83600a45cda897e29a1a63697f55e3a72ccffcf9468c377",
+            "blob": "8a693c57b649b300a5c3e53e9d24cfa9c92987c7"
+          },
+          "gmi-states.html": {
+            "bytes": 64663,
+            "sha256": "3b3c22bd3c57dc34586ac5b9d0800cab9d6c3259f56c9cdc5c2021117a65187e",
+            "blob": "6f31a9ea9deb80794422096fd4233a566502de6e"
+          },
+          "gmi.css": {
+            "bytes": 75903,
+            "sha256": "2b78466300f695abd0cb13fd22bd51e969eff0d68dbff9c22e8eac33ce375ba4",
+            "blob": "fcfa6cf06646f0406ca366d5f015205c72176bce"
+          },
+          "gmi.html": {
+            "bytes": 973514,
+            "sha256": "7231f4e9abff833dd7517b8b2d38b0554821491c430e092e95840e0e69b544f1",
+            "blob": "a7fcc7db25acbe1cf85dbf63807bbceedc3b4a8a"
+          },
+          "gmi.js": {
+            "bytes": 56306,
+            "sha256": "c6d7011f82f6c2c09e40a20f05d6cbc13bfef8d5d82c7a70439ff4656c742838",
+            "blob": "15b39754aa170a97cd9468a4823142718ff6284a"
+          }
+        },
+        "theme_css": {
+          "bytes": 227583,
+          "sha256": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757",
+          "blob": "619436f58d37a222d1db7021ba9d52bb3a05a7fa"
+        },
+        "canonical_verifier": {
+          "bytes": 276430,
+          "sha256": "dd3798db26a5a90a7b89dc23b9d66ad11fb508518229fcd2cc0326f0c04eedb7",
+          "blob": "47f22a4796eedca910daa803911608d6259e2376"
+        }
+      },
+      "cases": [
+        {
+          "name": "copy-focus-close-390-en",
+          "result": "FAIL",
+          "error": "Traceback (most recent call last):\n  File \"/Volumes/Mastermind/agent-workspaces/verify/gmi-copy-focus-20261109-g_wehs_x/verify_copy_focus_component.py\", line 87, in <module>\n    try:action();result={'name':name,'result':'PASS'}\n        ~~~~~~^^\n  File \"/Volumes/Mastermind/agent-workspaces/verify/gmi-copy-focus-20261109-g_wehs_x/verify_copy_focus_component.py\", line 82, in <lambda>\n    actions=[(f'copy-focus-{mode}-{w}-{l}',lambda w=w,l=l,m=mode:copy_focus_retirement(w,l,m)) for w,l,mode in ((390,'en','close'),(320,'zh','history'))]\n                                                                 ~~~~~~~~~~~~~~~~~~~~~^^^^^^^\n  File \"/Volumes/Mastermind/agent-workspaces/verify/gmi-copy-focus-20261109-g_wehs_x/verify_product_browser.py\", line 3934, in copy_focus_retirement\n    assert not v['ownedHides'],v['ownedHides']\n           ^^^^^^^^^^^^^^^^^^^\nAssertionError: [{'phase': 'close', 'value': True, 'active': 'close'}]\n",
+          "contexts": 1
+        },
+        {
+          "name": "copy-focus-history-320-zh",
+          "result": "FAIL",
+          "error": "Traceback (most recent call last):\n  File \"/Volumes/Mastermind/agent-workspaces/verify/gmi-copy-focus-20261109-g_wehs_x/verify_copy_focus_component.py\", line 87, in <module>\n    try:action();result={'name':name,'result':'PASS'}\n        ~~~~~~^^\n  File \"/Volumes/Mastermind/agent-workspaces/verify/gmi-copy-focus-20261109-g_wehs_x/verify_copy_focus_component.py\", line 82, in <lambda>\n    actions=[(f'copy-focus-{mode}-{w}-{l}',lambda w=w,l=l,m=mode:copy_focus_retirement(w,l,m)) for w,l,mode in ((390,'en','close'),(320,'zh','history'))]\n                                                                 ~~~~~~~~~~~~~~~~~~~~~^^^^^^^\n  File \"/Volumes/Mastermind/agent-workspaces/verify/gmi-copy-focus-20261109-g_wehs_x/verify_product_browser.py\", line 3934, in copy_focus_retirement\n    assert not v['ownedHides'],v['ownedHides']\n           ^^^^^^^^^^^^^^^^^^^\nAssertionError: [{'phase': 'history', 'value': True, 'active': 'address'}]\n",
+          "contexts": 1
+        }
+      ],
+      "contexts": 2,
+      "screenshots": [],
+      "page_errors": [],
+      "browser": "157.0.8103.39",
+      "expected_cases": 2,
+      "copy_focus_retirement": [
+        {
+          "width": 390,
+          "language": "en",
+          "mode": "close",
+          "phase": "close",
+          "url": "http://127.0.0.1:57329/case-1/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain",
+          "focus": "copy",
+          "hidden": true,
+          "address": "",
+          "disabled": false,
+          "label": "Copy link",
+          "announcement": "",
+          "writes": [
+            "http://127.0.0.1:57329/case-1/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+          ],
+          "ownedHides": [
+            {
+              "phase": "close",
+              "value": true,
+              "active": "close"
+            }
+          ],
+          "focusCalls": [
+            {
+              "phase": "close",
+              "target": "copy",
+              "preventScroll": false
+            }
+          ]
+        },
+        {
+          "width": 320,
+          "language": "zh",
+          "mode": "history",
+          "phase": "history",
+          "url": "http://127.0.0.1:57329/case-2/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain",
+          "focus": "copy",
+          "hidden": true,
+          "address": "",
+          "disabled": false,
+          "label": "复制链接",
+          "announcement": "",
+          "writes": [
+            "http://127.0.0.1:57329/case-2/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain&q=Micron"
+          ],
+          "ownedHides": [
+            {
+              "phase": "history",
+              "value": true,
+              "active": "address"
+            }
+          ],
+          "focusCalls": [
+            {
+              "phase": "history",
+              "target": "copy",
+              "preventScroll": true
+            }
+          ]
+        }
+      ],
+      "complete": true,
+      "pass": false
+    },
+    "diagnostic_browser": {
+      "generated_at": "2026-11-09T09:54:16.272458+00:00",
+      "baseline": false,
+      "scope": "Manual-copy focus ordering on actual generated-main fixtures.\n\nA controlled clipboard fixture and before-hide probe observe only the existing\ncopy-feedback owner. No system clipboard, shared-shell/fonts, native OS IME,\nAT speech, live account, actual BFCache or release acceptance is claimed.",
+      "script_sha256": "455c626472eaf4a196186fd79939b093076e70840369c2a9e9b506c1b0f3afa7",
+      "gmi_css_sha256": "2b78466300f695abd0cb13fd22bd51e969eff0d68dbff9c22e8eac33ce375ba4",
+      "verifier_sha256": "3fe1cadce60472a0068c6b0bbfaf79bb0bf992efe8d81e86938db7df257be476",
+      "inputs": {
+        "source_head": "c19d6185f0d06b9ef8af3fb8979d121d32e36c39",
+        "source_root": "/Volumes/Mastermind/agent-workspaces/verify/gmi-dialog-return-20261109-i86fvpcx",
+        "retained_model_sha256": "e644fa48a2bb6e6affe8d1fda74556d9db5f82acadffdad839e1efe8f095359f",
+        "inputs": {
+          "gmi-companies.html": {
+            "bytes": 65156,
+            "sha256": "fda702382d62068f8f39874bcd07bbb915ddacee6a3d4f734b337b58f3e47d3c",
+            "blob": "c4b1c81c92c270411c6698a473b55354a05dc8a5"
+          },
+          "gmi-coverage.html": {
+            "bytes": 75416,
+            "sha256": "893408143f6c0cb1db08084ad9c7c57b56386421f3a3958f1879a87f9035b745",
+            "blob": "5df5c79f27a467894d125da61d3cf88b3969edf9"
+          },
+          "gmi-index.html": {
+            "bytes": 262285,
+            "sha256": "3e6e6f4846598bc6240f3aa69c5523a5500e7f79f7838e655ea7ecd7800536d4",
+            "blob": "d0cff23fec423c3480ea12ee200c272396fd53a0"
+          },
+          "gmi-issuer-mu.html": {
+            "bytes": 65585,
+            "sha256": "22cc39aca77961584fad494ab0afa788b287636f7e3c5cfaecba7dbda2172bdd",
+            "blob": "3a4515417dbc651737c954799fa6f234d7a178da"
+          },
+          "gmi-relationships.html": {
+            "bytes": 61988,
+            "sha256": "86243e69c432370eb83600a45cda897e29a1a63697f55e3a72ccffcf9468c377",
+            "blob": "8a693c57b649b300a5c3e53e9d24cfa9c92987c7"
+          },
+          "gmi-states.html": {
+            "bytes": 64663,
+            "sha256": "3b3c22bd3c57dc34586ac5b9d0800cab9d6c3259f56c9cdc5c2021117a65187e",
+            "blob": "6f31a9ea9deb80794422096fd4233a566502de6e"
+          },
+          "gmi.css": {
+            "bytes": 75903,
+            "sha256": "2b78466300f695abd0cb13fd22bd51e969eff0d68dbff9c22e8eac33ce375ba4",
+            "blob": "fcfa6cf06646f0406ca366d5f015205c72176bce"
+          },
+          "gmi.html": {
+            "bytes": 973514,
+            "sha256": "7231f4e9abff833dd7517b8b2d38b0554821491c430e092e95840e0e69b544f1",
+            "blob": "a7fcc7db25acbe1cf85dbf63807bbceedc3b4a8a"
+          },
+          "gmi.js": {
+            "bytes": 56306,
+            "sha256": "c6d7011f82f6c2c09e40a20f05d6cbc13bfef8d5d82c7a70439ff4656c742838",
+            "blob": "15b39754aa170a97cd9468a4823142718ff6284a"
+          }
+        },
+        "theme_css": {
+          "bytes": 227583,
+          "sha256": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757",
+          "blob": "619436f58d37a222d1db7021ba9d52bb3a05a7fa"
+        },
+        "canonical_verifier": {
+          "bytes": 276430,
+          "sha256": "dd3798db26a5a90a7b89dc23b9d66ad11fb508518229fcd2cc0326f0c04eedb7",
+          "blob": "47f22a4796eedca910daa803911608d6259e2376"
+        }
+      },
+      "cases": [
+        {
+          "name": "copy-focus-close-390-en",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "copy-focus-close-320-zh",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "copy-focus-close-320-en",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "copy-focus-close-390-zh",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "copy-focus-close-820-en",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "copy-focus-Enter-390-en",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "copy-focus-Space-320-zh",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "copy-focus-history-390-en",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "copy-focus-history-320-zh",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "copy-focus-destination-unavailable-390-en",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "copy-focus-destination-outside-320-zh",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "copy-focus-destination-inside-390-en",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "copy-focus-destination-unrelated-320-zh",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "copy-focus-new-pending-390-en",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "copy-focus-new-pending-320-zh",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "copy-focus-new-failure-390-en",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "copy-focus-new-failure-320-zh",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "copy-focus-outer-copy-390-en",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "copy-focus-outer-copy-320-zh",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "copy-focus-before-effect-navigation-390-en",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "copy-focus-before-effect-normalization-390-en",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "copy-focus-before-effect-disabled-blur-390-en",
+          "result": "FAIL",
+          "error": "Traceback (most recent call last):\n  File \"/Volumes/Mastermind/agent-workspaces/verify/gmi-copy-focus-20261109-g_wehs_x/verify_copy_focus_component.py\", line 113, in <module>\n    try:action();result={'name':name,'result':'PASS'}\n        ~~~~~~^^\n  File \"/Volumes/Mastermind/agent-workspaces/verify/gmi-copy-focus-20261109-g_wehs_x/verify_copy_focus_component.py\", line 103, in <lambda>\n    check(f'copy-focus-before-effect-{mode}-{width}-{language}',lambda w=width,l=language,m=mode:copy_focus_before_effect(w,l,m))\n                                                                                                 ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^\n  File \"/Volumes/Mastermind/agent-workspaces/verify/gmi-copy-focus-20261109-g_wehs_x/verify_product_browser.py\", line 4060, in copy_focus_before_effect\n    assert v['blurEvents']==[{'trusted':True,'disabled':True}],v\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: {'phase': 'disabled-blur', 'url': 'http://127.0.0.1:59640/case-22/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain', 'focus': 'copy', 'hidden': True, 'address': '', 'disabled': True, 'label': 'Copying…', 'announcement': '', 'writes': ['http://127.0.0.1:59640/case-22/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain'], 'hides': [], 'ownedHides': [], 'focusCalls': [], 'selects': [], 'blurEvents': []}\n",
+          "contexts": 1
+        }
+      ],
+      "contexts": 22,
+      "screenshots": [
+        "copy-fallback-390-en.png",
+        "copy-fallback-320-zh.png"
+      ],
+      "page_errors": [],
+      "browser": "157.0.8103.39",
+      "regression_fixture_adjustment": "Only clipboard original HTML acquisition is replaced with the same generated main, payload and candidate inline assets; accepted behavior assertions are unchanged. No shared shell acceptance.",
+      "expected_cases": 28,
+      "copy_focus_observations": [
+        {
+          "width": 390,
+          "language": "en",
+          "mode": "close",
+          "interactive": true,
+          "phase": "close",
+          "url": "http://127.0.0.1:59640/case-1/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain",
+          "focus": "copy",
+          "hidden": true,
+          "address": "",
+          "disabled": false,
+          "label": "Copy link",
+          "announcement": "",
+          "writes": [
+            "http://127.0.0.1:59640/case-1/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+          ],
+          "hides": [
+            {
+              "phase": "setup",
+              "value": false,
+              "active": "copy",
+              "disabled": false,
+              "address": ""
+            },
+            {
+              "phase": "close",
+              "value": true,
+              "active": "copy",
+              "disabled": false,
+              "address": "http://127.0.0.1:59640/case-1/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "ownedHides": [],
+          "focusCalls": [
+            {
+              "phase": "close",
+              "target": "copy",
+              "preventScroll": true
+            }
+          ],
+          "selects": [
+            {
+              "phase": "setup",
+              "active": "address",
+              "address": "http://127.0.0.1:59640/case-1/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "blurEvents": []
+        },
+        {
+          "width": 320,
+          "language": "zh",
+          "mode": "close",
+          "interactive": true,
+          "phase": "close",
+          "url": "http://127.0.0.1:59640/case-2/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain",
+          "focus": "copy",
+          "hidden": true,
+          "address": "",
+          "disabled": false,
+          "label": "复制链接",
+          "announcement": "",
+          "writes": [
+            "http://127.0.0.1:59640/case-2/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+          ],
+          "hides": [
+            {
+              "phase": "setup",
+              "value": false,
+              "active": "copy",
+              "disabled": false,
+              "address": ""
+            },
+            {
+              "phase": "close",
+              "value": true,
+              "active": "copy",
+              "disabled": false,
+              "address": "http://127.0.0.1:59640/case-2/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "ownedHides": [],
+          "focusCalls": [
+            {
+              "phase": "close",
+              "target": "copy",
+              "preventScroll": true
+            }
+          ],
+          "selects": [
+            {
+              "phase": "setup",
+              "active": "address",
+              "address": "http://127.0.0.1:59640/case-2/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "blurEvents": []
+        },
+        {
+          "width": 320,
+          "language": "en",
+          "mode": "close",
+          "interactive": true,
+          "phase": "close",
+          "url": "http://127.0.0.1:59640/case-3/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain",
+          "focus": "copy",
+          "hidden": true,
+          "address": "",
+          "disabled": false,
+          "label": "Copy link",
+          "announcement": "",
+          "writes": [
+            "http://127.0.0.1:59640/case-3/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+          ],
+          "hides": [
+            {
+              "phase": "setup",
+              "value": false,
+              "active": "copy",
+              "disabled": false,
+              "address": ""
+            },
+            {
+              "phase": "close",
+              "value": true,
+              "active": "copy",
+              "disabled": false,
+              "address": "http://127.0.0.1:59640/case-3/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "ownedHides": [],
+          "focusCalls": [
+            {
+              "phase": "close",
+              "target": "copy",
+              "preventScroll": true
+            }
+          ],
+          "selects": [
+            {
+              "phase": "setup",
+              "active": "address",
+              "address": "http://127.0.0.1:59640/case-3/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "blurEvents": []
+        },
+        {
+          "width": 390,
+          "language": "zh",
+          "mode": "close",
+          "interactive": true,
+          "phase": "close",
+          "url": "http://127.0.0.1:59640/case-4/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain",
+          "focus": "copy",
+          "hidden": true,
+          "address": "",
+          "disabled": false,
+          "label": "复制链接",
+          "announcement": "",
+          "writes": [
+            "http://127.0.0.1:59640/case-4/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+          ],
+          "hides": [
+            {
+              "phase": "setup",
+              "value": false,
+              "active": "copy",
+              "disabled": false,
+              "address": ""
+            },
+            {
+              "phase": "close",
+              "value": true,
+              "active": "copy",
+              "disabled": false,
+              "address": "http://127.0.0.1:59640/case-4/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "ownedHides": [],
+          "focusCalls": [
+            {
+              "phase": "close",
+              "target": "copy",
+              "preventScroll": true
+            }
+          ],
+          "selects": [
+            {
+              "phase": "setup",
+              "active": "address",
+              "address": "http://127.0.0.1:59640/case-4/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "blurEvents": []
+        },
+        {
+          "width": 820,
+          "language": "en",
+          "mode": "close",
+          "interactive": true,
+          "phase": "close",
+          "url": "http://127.0.0.1:59640/case-5/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain",
+          "focus": "copy",
+          "hidden": true,
+          "address": "",
+          "disabled": false,
+          "label": "Copy link",
+          "announcement": "",
+          "writes": [
+            "http://127.0.0.1:59640/case-5/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+          ],
+          "hides": [
+            {
+              "phase": "setup",
+              "value": false,
+              "active": "copy",
+              "disabled": false,
+              "address": ""
+            },
+            {
+              "phase": "close",
+              "value": true,
+              "active": "copy",
+              "disabled": false,
+              "address": "http://127.0.0.1:59640/case-5/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "ownedHides": [],
+          "focusCalls": [
+            {
+              "phase": "close",
+              "target": "copy",
+              "preventScroll": true
+            }
+          ],
+          "selects": [
+            {
+              "phase": "setup",
+              "active": "address",
+              "address": "http://127.0.0.1:59640/case-5/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "blurEvents": []
+        },
+        {
+          "width": 390,
+          "language": "en",
+          "mode": "Enter",
+          "interactive": true,
+          "phase": "Enter",
+          "url": "http://127.0.0.1:59640/case-6/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain",
+          "focus": "copy",
+          "hidden": true,
+          "address": "",
+          "disabled": false,
+          "label": "Copy link",
+          "announcement": "",
+          "writes": [
+            "http://127.0.0.1:59640/case-6/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+          ],
+          "hides": [
+            {
+              "phase": "setup",
+              "value": false,
+              "active": "copy",
+              "disabled": false,
+              "address": ""
+            },
+            {
+              "phase": "Enter",
+              "value": true,
+              "active": "copy",
+              "disabled": false,
+              "address": "http://127.0.0.1:59640/case-6/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "ownedHides": [],
+          "focusCalls": [
+            {
+              "phase": "Enter",
+              "target": "copy",
+              "preventScroll": true
+            }
+          ],
+          "selects": [
+            {
+              "phase": "setup",
+              "active": "address",
+              "address": "http://127.0.0.1:59640/case-6/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "blurEvents": []
+        },
+        {
+          "width": 320,
+          "language": "zh",
+          "mode": "Space",
+          "interactive": true,
+          "phase": "Space",
+          "url": "http://127.0.0.1:59640/case-7/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain",
+          "focus": "copy",
+          "hidden": true,
+          "address": "",
+          "disabled": false,
+          "label": "复制链接",
+          "announcement": "",
+          "writes": [
+            "http://127.0.0.1:59640/case-7/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+          ],
+          "hides": [
+            {
+              "phase": "setup",
+              "value": false,
+              "active": "copy",
+              "disabled": false,
+              "address": ""
+            },
+            {
+              "phase": "Space",
+              "value": true,
+              "active": "copy",
+              "disabled": false,
+              "address": "http://127.0.0.1:59640/case-7/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "ownedHides": [],
+          "focusCalls": [
+            {
+              "phase": "Space",
+              "target": "copy",
+              "preventScroll": true
+            }
+          ],
+          "selects": [
+            {
+              "phase": "setup",
+              "active": "address",
+              "address": "http://127.0.0.1:59640/case-7/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "blurEvents": []
+        },
+        {
+          "width": 390,
+          "language": "en",
+          "mode": "history",
+          "interactive": true,
+          "phase": "history",
+          "url": "http://127.0.0.1:59640/case-8/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain",
+          "focus": "copy",
+          "hidden": true,
+          "address": "",
+          "disabled": false,
+          "label": "Copy link",
+          "announcement": "",
+          "writes": [
+            "http://127.0.0.1:59640/case-8/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain&q=Micron"
+          ],
+          "hides": [
+            {
+              "phase": "setup",
+              "value": false,
+              "active": "copy",
+              "disabled": false,
+              "address": ""
+            },
+            {
+              "phase": "history",
+              "value": true,
+              "active": "copy",
+              "disabled": false,
+              "address": "http://127.0.0.1:59640/case-8/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain&q=Micron"
+            }
+          ],
+          "ownedHides": [],
+          "focusCalls": [
+            {
+              "phase": "history",
+              "target": "copy",
+              "preventScroll": true
+            }
+          ],
+          "selects": [
+            {
+              "phase": "setup",
+              "active": "address",
+              "address": "http://127.0.0.1:59640/case-8/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain&q=Micron"
+            }
+          ],
+          "blurEvents": []
+        },
+        {
+          "width": 390,
+          "language": "en",
+          "mode": "forward",
+          "interactive": true,
+          "phase": "forward",
+          "url": "http://127.0.0.1:59640/case-8/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain&q=Micron",
+          "focus": "copy",
+          "hidden": true,
+          "address": "",
+          "disabled": false,
+          "label": "Copy link",
+          "announcement": "",
+          "writes": [
+            "http://127.0.0.1:59640/case-8/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain&q=Micron",
+            "http://127.0.0.1:59640/case-8/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+          ],
+          "hides": [
+            {
+              "phase": "setup",
+              "value": false,
+              "active": "copy",
+              "disabled": false,
+              "address": ""
+            },
+            {
+              "phase": "history",
+              "value": true,
+              "active": "copy",
+              "disabled": false,
+              "address": "http://127.0.0.1:59640/case-8/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain&q=Micron"
+            },
+            {
+              "phase": "history",
+              "value": false,
+              "active": "copy",
+              "disabled": false,
+              "address": ""
+            },
+            {
+              "phase": "forward",
+              "value": true,
+              "active": "copy",
+              "disabled": false,
+              "address": "http://127.0.0.1:59640/case-8/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "ownedHides": [],
+          "focusCalls": [
+            {
+              "phase": "history",
+              "target": "copy",
+              "preventScroll": true
+            },
+            {
+              "phase": "forward",
+              "target": "copy",
+              "preventScroll": true
+            }
+          ],
+          "selects": [
+            {
+              "phase": "setup",
+              "active": "address",
+              "address": "http://127.0.0.1:59640/case-8/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain&q=Micron"
+            },
+            {
+              "phase": "history",
+              "active": "address",
+              "address": "http://127.0.0.1:59640/case-8/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "blurEvents": []
+        },
+        {
+          "width": 320,
+          "language": "zh",
+          "mode": "history",
+          "interactive": true,
+          "phase": "history",
+          "url": "http://127.0.0.1:59640/case-9/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain",
+          "focus": "copy",
+          "hidden": true,
+          "address": "",
+          "disabled": false,
+          "label": "复制链接",
+          "announcement": "",
+          "writes": [
+            "http://127.0.0.1:59640/case-9/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain&q=Micron"
+          ],
+          "hides": [
+            {
+              "phase": "setup",
+              "value": false,
+              "active": "copy",
+              "disabled": false,
+              "address": ""
+            },
+            {
+              "phase": "history",
+              "value": true,
+              "active": "copy",
+              "disabled": false,
+              "address": "http://127.0.0.1:59640/case-9/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain&q=Micron"
+            }
+          ],
+          "ownedHides": [],
+          "focusCalls": [
+            {
+              "phase": "history",
+              "target": "copy",
+              "preventScroll": true
+            }
+          ],
+          "selects": [
+            {
+              "phase": "setup",
+              "active": "address",
+              "address": "http://127.0.0.1:59640/case-9/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain&q=Micron"
+            }
+          ],
+          "blurEvents": []
+        },
+        {
+          "width": 320,
+          "language": "zh",
+          "mode": "forward",
+          "interactive": true,
+          "phase": "forward",
+          "url": "http://127.0.0.1:59640/case-9/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain&q=Micron",
+          "focus": "copy",
+          "hidden": true,
+          "address": "",
+          "disabled": false,
+          "label": "复制链接",
+          "announcement": "",
+          "writes": [
+            "http://127.0.0.1:59640/case-9/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain&q=Micron",
+            "http://127.0.0.1:59640/case-9/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+          ],
+          "hides": [
+            {
+              "phase": "setup",
+              "value": false,
+              "active": "copy",
+              "disabled": false,
+              "address": ""
+            },
+            {
+              "phase": "history",
+              "value": true,
+              "active": "copy",
+              "disabled": false,
+              "address": "http://127.0.0.1:59640/case-9/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain&q=Micron"
+            },
+            {
+              "phase": "history",
+              "value": false,
+              "active": "copy",
+              "disabled": false,
+              "address": ""
+            },
+            {
+              "phase": "forward",
+              "value": true,
+              "active": "copy",
+              "disabled": false,
+              "address": "http://127.0.0.1:59640/case-9/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "ownedHides": [],
+          "focusCalls": [
+            {
+              "phase": "history",
+              "target": "copy",
+              "preventScroll": true
+            },
+            {
+              "phase": "forward",
+              "target": "copy",
+              "preventScroll": true
+            }
+          ],
+          "selects": [
+            {
+              "phase": "setup",
+              "active": "address",
+              "address": "http://127.0.0.1:59640/case-9/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain&q=Micron"
+            },
+            {
+              "phase": "history",
+              "active": "address",
+              "address": "http://127.0.0.1:59640/case-9/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "blurEvents": []
+        },
+        {
+          "width": 390,
+          "language": "en",
+          "mode": "unavailable",
+          "interactive": true,
+          "phase": "unavailable",
+          "url": "http://127.0.0.1:59640/case-10/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain",
+          "focus": "title",
+          "hidden": true,
+          "address": "",
+          "disabled": false,
+          "label": "Copy link",
+          "announcement": "",
+          "writes": [
+            "http://127.0.0.1:59640/case-10/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+          ],
+          "hides": [
+            {
+              "phase": "setup",
+              "value": false,
+              "active": "copy",
+              "disabled": false,
+              "address": ""
+            },
+            {
+              "phase": "unavailable",
+              "value": true,
+              "active": "title",
+              "disabled": false,
+              "address": "http://127.0.0.1:59640/case-10/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "ownedHides": [],
+          "focusCalls": [
+            {
+              "phase": "unavailable",
+              "target": "title",
+              "preventScroll": true
+            }
+          ],
+          "selects": [
+            {
+              "phase": "setup",
+              "active": "address",
+              "address": "http://127.0.0.1:59640/case-10/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "blurEvents": []
+        },
+        {
+          "width": 320,
+          "language": "zh",
+          "mode": "outside",
+          "interactive": true,
+          "phase": "outside",
+          "url": "http://127.0.0.1:59640/case-11/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain",
+          "focus": "browse",
+          "hidden": true,
+          "address": "",
+          "disabled": false,
+          "label": "复制链接",
+          "announcement": "",
+          "writes": [
+            "http://127.0.0.1:59640/case-11/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+          ],
+          "hides": [
+            {
+              "phase": "setup",
+              "value": false,
+              "active": "copy",
+              "disabled": false,
+              "address": ""
+            },
+            {
+              "phase": "outside",
+              "value": true,
+              "active": "browse",
+              "disabled": false,
+              "address": "http://127.0.0.1:59640/case-11/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "ownedHides": [],
+          "focusCalls": [
+            {
+              "phase": "outside",
+              "target": "copy",
+              "preventScroll": true
+            }
+          ],
+          "selects": [
+            {
+              "phase": "setup",
+              "active": "address",
+              "address": "http://127.0.0.1:59640/case-11/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "blurEvents": []
+        },
+        {
+          "width": 390,
+          "language": "en",
+          "mode": "inside",
+          "interactive": true,
+          "phase": "inside",
+          "url": "http://127.0.0.1:59640/case-12/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain",
+          "focus": "title",
+          "hidden": true,
+          "address": "",
+          "disabled": false,
+          "label": "Copy link",
+          "announcement": "",
+          "writes": [
+            "http://127.0.0.1:59640/case-12/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+          ],
+          "hides": [
+            {
+              "phase": "setup",
+              "value": false,
+              "active": "copy",
+              "disabled": false,
+              "address": ""
+            },
+            {
+              "phase": "inside",
+              "value": true,
+              "active": "title",
+              "disabled": false,
+              "address": "http://127.0.0.1:59640/case-12/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "ownedHides": [],
+          "focusCalls": [
+            {
+              "phase": "inside",
+              "target": "copy",
+              "preventScroll": true
+            },
+            {
+              "phase": "inside",
+              "target": "title",
+              "preventScroll": true
+            }
+          ],
+          "selects": [
+            {
+              "phase": "setup",
+              "active": "address",
+              "address": "http://127.0.0.1:59640/case-12/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "blurEvents": []
+        },
+        {
+          "width": 320,
+          "language": "zh",
+          "mode": "unrelated",
+          "interactive": true,
+          "phase": "unrelated",
+          "url": "http://127.0.0.1:59640/case-13/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain",
+          "focus": "title",
+          "hidden": true,
+          "address": "",
+          "disabled": false,
+          "label": "复制链接",
+          "announcement": "",
+          "writes": [
+            "http://127.0.0.1:59640/case-13/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+          ],
+          "hides": [
+            {
+              "phase": "setup",
+              "value": false,
+              "active": "copy",
+              "disabled": false,
+              "address": ""
+            },
+            {
+              "phase": "unrelated",
+              "value": true,
+              "active": "title",
+              "disabled": false,
+              "address": "http://127.0.0.1:59640/case-13/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "ownedHides": [],
+          "focusCalls": [],
+          "selects": [
+            {
+              "phase": "setup",
+              "active": "address",
+              "address": "http://127.0.0.1:59640/case-13/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "blurEvents": []
+        },
+        {
+          "width": 390,
+          "language": "en",
+          "mode": "new-pending",
+          "interactive": true,
+          "phase": "new-pending",
+          "url": "http://127.0.0.1:59640/case-14/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain",
+          "focus": "copy",
+          "hidden": true,
+          "address": "",
+          "disabled": true,
+          "label": "Copying…",
+          "announcement": "",
+          "writes": [
+            "http://127.0.0.1:59640/case-14/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain",
+            "http://127.0.0.1:59640/case-14/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+          ],
+          "hides": [
+            {
+              "phase": "setup",
+              "value": false,
+              "active": "copy",
+              "disabled": false,
+              "address": ""
+            },
+            {
+              "phase": "new-pending",
+              "value": true,
+              "active": "copy",
+              "disabled": false,
+              "address": "http://127.0.0.1:59640/case-14/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "ownedHides": [],
+          "focusCalls": [
+            {
+              "phase": "new-pending",
+              "target": "copy",
+              "preventScroll": true
+            }
+          ],
+          "selects": [
+            {
+              "phase": "setup",
+              "active": "address",
+              "address": "http://127.0.0.1:59640/case-14/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "blurEvents": []
+        },
+        {
+          "width": 390,
+          "language": "en",
+          "mode": "new-pending-settled",
+          "interactive": true,
+          "phase": "new-pending",
+          "url": "http://127.0.0.1:59640/case-14/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain",
+          "focus": "BODY",
+          "hidden": true,
+          "address": "",
+          "disabled": false,
+          "label": "Link copied",
+          "announcement": "Link copied to clipboard.",
+          "writes": [
+            "http://127.0.0.1:59640/case-14/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain",
+            "http://127.0.0.1:59640/case-14/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+          ],
+          "hides": [
+            {
+              "phase": "setup",
+              "value": false,
+              "active": "copy",
+              "disabled": false,
+              "address": ""
+            },
+            {
+              "phase": "new-pending",
+              "value": true,
+              "active": "copy",
+              "disabled": false,
+              "address": "http://127.0.0.1:59640/case-14/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "ownedHides": [],
+          "focusCalls": [
+            {
+              "phase": "new-pending",
+              "target": "copy",
+              "preventScroll": true
+            }
+          ],
+          "selects": [
+            {
+              "phase": "setup",
+              "active": "address",
+              "address": "http://127.0.0.1:59640/case-14/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "blurEvents": []
+        },
+        {
+          "width": 320,
+          "language": "zh",
+          "mode": "new-pending",
+          "interactive": true,
+          "phase": "new-pending",
+          "url": "http://127.0.0.1:59640/case-15/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain",
+          "focus": "copy",
+          "hidden": true,
+          "address": "",
+          "disabled": true,
+          "label": "正在复制…",
+          "announcement": "",
+          "writes": [
+            "http://127.0.0.1:59640/case-15/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain",
+            "http://127.0.0.1:59640/case-15/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+          ],
+          "hides": [
+            {
+              "phase": "setup",
+              "value": false,
+              "active": "copy",
+              "disabled": false,
+              "address": ""
+            },
+            {
+              "phase": "new-pending",
+              "value": true,
+              "active": "copy",
+              "disabled": false,
+              "address": "http://127.0.0.1:59640/case-15/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "ownedHides": [],
+          "focusCalls": [
+            {
+              "phase": "new-pending",
+              "target": "copy",
+              "preventScroll": true
+            }
+          ],
+          "selects": [
+            {
+              "phase": "setup",
+              "active": "address",
+              "address": "http://127.0.0.1:59640/case-15/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "blurEvents": []
+        },
+        {
+          "width": 320,
+          "language": "zh",
+          "mode": "new-pending-settled",
+          "interactive": true,
+          "phase": "new-pending",
+          "url": "http://127.0.0.1:59640/case-15/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain",
+          "focus": "BODY",
+          "hidden": true,
+          "address": "",
+          "disabled": false,
+          "label": "链接已复制",
+          "announcement": "链接已复制到剪贴板。",
+          "writes": [
+            "http://127.0.0.1:59640/case-15/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain",
+            "http://127.0.0.1:59640/case-15/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+          ],
+          "hides": [
+            {
+              "phase": "setup",
+              "value": false,
+              "active": "copy",
+              "disabled": false,
+              "address": ""
+            },
+            {
+              "phase": "new-pending",
+              "value": true,
+              "active": "copy",
+              "disabled": false,
+              "address": "http://127.0.0.1:59640/case-15/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "ownedHides": [],
+          "focusCalls": [
+            {
+              "phase": "new-pending",
+              "target": "copy",
+              "preventScroll": true
+            }
+          ],
+          "selects": [
+            {
+              "phase": "setup",
+              "active": "address",
+              "address": "http://127.0.0.1:59640/case-15/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "blurEvents": []
+        },
+        {
+          "width": 390,
+          "language": "en",
+          "mode": "new-failure",
+          "interactive": true,
+          "phase": "new-failure",
+          "url": "http://127.0.0.1:59640/case-16/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain",
+          "focus": "address",
+          "hidden": false,
+          "address": "http://127.0.0.1:59640/case-16/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain",
+          "disabled": false,
+          "label": "Copy link",
+          "announcement": "Copy was unavailable. Select and copy the address shown.",
+          "writes": [
+            "http://127.0.0.1:59640/case-16/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+          ],
+          "hides": [
+            {
+              "phase": "setup",
+              "value": false,
+              "active": "BODY",
+              "disabled": false,
+              "address": ""
+            },
+            {
+              "phase": "new-failure",
+              "value": true,
+              "active": "copy",
+              "disabled": false,
+              "address": "http://127.0.0.1:59640/case-16/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            },
+            {
+              "phase": "new-failure",
+              "value": false,
+              "active": "copy",
+              "disabled": false,
+              "address": ""
+            }
+          ],
+          "ownedHides": [],
+          "focusCalls": [
+            {
+              "phase": "new-failure",
+              "target": "copy",
+              "preventScroll": true
+            }
+          ],
+          "selects": [
+            {
+              "phase": "setup",
+              "active": "address",
+              "address": "http://127.0.0.1:59640/case-16/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            },
+            {
+              "phase": "new-failure",
+              "active": "address",
+              "address": "http://127.0.0.1:59640/case-16/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "blurEvents": []
+        },
+        {
+          "width": 320,
+          "language": "zh",
+          "mode": "new-failure",
+          "interactive": true,
+          "phase": "new-failure",
+          "url": "http://127.0.0.1:59640/case-17/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain",
+          "focus": "address",
+          "hidden": false,
+          "address": "http://127.0.0.1:59640/case-17/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain",
+          "disabled": false,
+          "label": "复制链接",
+          "announcement": "暂无法自动复制。请选择并复制所显示的地址。",
+          "writes": [
+            "http://127.0.0.1:59640/case-17/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+          ],
+          "hides": [
+            {
+              "phase": "setup",
+              "value": false,
+              "active": "copy",
+              "disabled": false,
+              "address": ""
+            },
+            {
+              "phase": "new-failure",
+              "value": true,
+              "active": "copy",
+              "disabled": false,
+              "address": "http://127.0.0.1:59640/case-17/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            },
+            {
+              "phase": "new-failure",
+              "value": false,
+              "active": "copy",
+              "disabled": false,
+              "address": ""
+            }
+          ],
+          "ownedHides": [],
+          "focusCalls": [
+            {
+              "phase": "new-failure",
+              "target": "copy",
+              "preventScroll": true
+            }
+          ],
+          "selects": [
+            {
+              "phase": "setup",
+              "active": "address",
+              "address": "http://127.0.0.1:59640/case-17/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            },
+            {
+              "phase": "new-failure",
+              "active": "address",
+              "address": "http://127.0.0.1:59640/case-17/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "blurEvents": []
+        },
+        {
+          "width": 390,
+          "language": "en",
+          "mode": "outer-copy",
+          "interactive": true,
+          "phase": "outer-copy",
+          "url": "http://127.0.0.1:59640/case-18/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain",
+          "focus": "BODY",
+          "hidden": true,
+          "address": "",
+          "disabled": true,
+          "label": "Copying…",
+          "announcement": "",
+          "writes": [
+            "http://127.0.0.1:59640/case-18/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain",
+            "http://127.0.0.1:59640/case-18/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+          ],
+          "hides": [
+            {
+              "phase": "setup",
+              "value": false,
+              "active": "copy",
+              "disabled": false,
+              "address": ""
+            },
+            {
+              "phase": "outer-copy",
+              "value": true,
+              "active": "copy",
+              "disabled": false,
+              "address": "http://127.0.0.1:59640/case-18/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "ownedHides": [],
+          "focusCalls": [
+            {
+              "phase": "outer-copy",
+              "target": "copy",
+              "preventScroll": true
+            }
+          ],
+          "selects": [
+            {
+              "phase": "setup",
+              "active": "address",
+              "address": "http://127.0.0.1:59640/case-18/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "blurEvents": []
+        },
+        {
+          "width": 390,
+          "language": "en",
+          "mode": "outer-copy-settled",
+          "interactive": true,
+          "phase": "outer-copy",
+          "url": "http://127.0.0.1:59640/case-18/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain",
+          "focus": "BODY",
+          "hidden": true,
+          "address": "",
+          "disabled": false,
+          "label": "Link copied",
+          "announcement": "Link copied to clipboard.",
+          "writes": [
+            "http://127.0.0.1:59640/case-18/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain",
+            "http://127.0.0.1:59640/case-18/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+          ],
+          "hides": [
+            {
+              "phase": "setup",
+              "value": false,
+              "active": "copy",
+              "disabled": false,
+              "address": ""
+            },
+            {
+              "phase": "outer-copy",
+              "value": true,
+              "active": "copy",
+              "disabled": false,
+              "address": "http://127.0.0.1:59640/case-18/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "ownedHides": [],
+          "focusCalls": [
+            {
+              "phase": "outer-copy",
+              "target": "copy",
+              "preventScroll": true
+            }
+          ],
+          "selects": [
+            {
+              "phase": "setup",
+              "active": "address",
+              "address": "http://127.0.0.1:59640/case-18/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "blurEvents": []
+        },
+        {
+          "width": 320,
+          "language": "zh",
+          "mode": "outer-copy",
+          "interactive": true,
+          "phase": "outer-copy",
+          "url": "http://127.0.0.1:59640/case-19/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain",
+          "focus": "BODY",
+          "hidden": true,
+          "address": "",
+          "disabled": true,
+          "label": "正在复制…",
+          "announcement": "",
+          "writes": [
+            "http://127.0.0.1:59640/case-19/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain",
+            "http://127.0.0.1:59640/case-19/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+          ],
+          "hides": [
+            {
+              "phase": "setup",
+              "value": false,
+              "active": "copy",
+              "disabled": false,
+              "address": ""
+            },
+            {
+              "phase": "outer-copy",
+              "value": true,
+              "active": "copy",
+              "disabled": false,
+              "address": "http://127.0.0.1:59640/case-19/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "ownedHides": [],
+          "focusCalls": [
+            {
+              "phase": "outer-copy",
+              "target": "copy",
+              "preventScroll": true
+            }
+          ],
+          "selects": [
+            {
+              "phase": "setup",
+              "active": "address",
+              "address": "http://127.0.0.1:59640/case-19/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "blurEvents": []
+        },
+        {
+          "width": 320,
+          "language": "zh",
+          "mode": "outer-copy-settled",
+          "interactive": true,
+          "phase": "outer-copy",
+          "url": "http://127.0.0.1:59640/case-19/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain",
+          "focus": "BODY",
+          "hidden": true,
+          "address": "",
+          "disabled": false,
+          "label": "链接已复制",
+          "announcement": "链接已复制到剪贴板。",
+          "writes": [
+            "http://127.0.0.1:59640/case-19/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain",
+            "http://127.0.0.1:59640/case-19/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+          ],
+          "hides": [
+            {
+              "phase": "setup",
+              "value": false,
+              "active": "copy",
+              "disabled": false,
+              "address": ""
+            },
+            {
+              "phase": "outer-copy",
+              "value": true,
+              "active": "copy",
+              "disabled": false,
+              "address": "http://127.0.0.1:59640/case-19/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "ownedHides": [],
+          "focusCalls": [
+            {
+              "phase": "outer-copy",
+              "target": "copy",
+              "preventScroll": true
+            }
+          ],
+          "selects": [
+            {
+              "phase": "setup",
+              "active": "address",
+              "address": "http://127.0.0.1:59640/case-19/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "blurEvents": []
+        },
+        {
+          "width": 390,
+          "language": "en",
+          "mode": "navigation",
+          "interactive": true,
+          "phase": "navigation",
+          "url": "http://127.0.0.1:59640/case-20/gmi.html?fixture=copy-focus#theme=theme%3Aconventional_dram&lens=chain",
+          "focus": "copy",
+          "hidden": true,
+          "address": "",
+          "disabled": false,
+          "label": "Copy link",
+          "announcement": "",
+          "writes": [
+            "http://127.0.0.1:59640/case-20/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+          ],
+          "hides": [
+            {
+              "phase": "setup",
+              "value": false,
+              "active": "copy",
+              "disabled": false,
+              "address": ""
+            },
+            {
+              "phase": "navigation",
+              "value": true,
+              "active": "copy",
+              "disabled": false,
+              "address": "http://127.0.0.1:59640/case-20/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "ownedHides": [],
+          "focusCalls": [
+            {
+              "phase": "navigation",
+              "target": "copy",
+              "preventScroll": true
+            }
+          ],
+          "selects": [
+            {
+              "phase": "setup",
+              "active": "address",
+              "address": "http://127.0.0.1:59640/case-20/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "blurEvents": []
+        },
+        {
+          "width": 390,
+          "language": "en",
+          "mode": "normalization",
+          "interactive": true,
+          "phase": "setup",
+          "url": "http://127.0.0.1:59640/case-21/gmi.html?fixture=copy-normalization#theme=theme%3Ahbm_packaging",
+          "focus": "BODY",
+          "hidden": true,
+          "address": "",
+          "disabled": true,
+          "label": "Copying…",
+          "announcement": "",
+          "writes": [
+            "http://127.0.0.1:59640/case-21/gmi.html?fixture=copy-normalization#theme=theme%3Ahbm_packaging"
+          ],
+          "hides": [],
+          "ownedHides": [],
+          "focusCalls": [],
+          "selects": [],
+          "blurEvents": []
+        },
+        {
+          "width": 390,
+          "language": "en",
+          "mode": "disabled-blur",
+          "interactive": true,
+          "phase": "disabled-blur",
+          "url": "http://127.0.0.1:59640/case-22/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain",
+          "focus": "copy",
+          "hidden": true,
+          "address": "",
+          "disabled": true,
+          "label": "Copying…",
+          "announcement": "",
+          "writes": [
+            "http://127.0.0.1:59640/case-22/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+          ],
+          "hides": [],
+          "ownedHides": [],
+          "focusCalls": [],
+          "selects": [],
+          "blurEvents": []
+        }
+      ],
+      "complete": false,
+      "pass": false
+    },
+    "candidate_browser": {
+      "generated_at": "2026-11-09T09:55:31.006276+00:00",
+      "baseline": false,
+      "scope": "Manual-copy focus ordering on actual generated-main fixtures.\n\nA controlled clipboard fixture and before-hide probe observe only the existing\ncopy-feedback owner. No system clipboard, shared-shell/fonts, native OS IME,\nAT speech, live account, actual BFCache or release acceptance is claimed.",
+      "script_sha256": "4ca7c46fd9a9720819ce8153c54998114cee3dc9cf9fc305bf92bc7be165152e",
+      "gmi_css_sha256": "2b78466300f695abd0cb13fd22bd51e969eff0d68dbff9c22e8eac33ce375ba4",
+      "verifier_sha256": "795e2215a942b1dd779ee0cc6e58db92628843a08e33ae4cd3b0b9dbfc40fa6c",
+      "inputs": {
+        "source_head": "c19d6185f0d06b9ef8af3fb8979d121d32e36c39",
+        "source_root": "/Volumes/Mastermind/agent-workspaces/verify/gmi-dialog-return-20261109-i86fvpcx",
+        "retained_model_sha256": "e644fa48a2bb6e6affe8d1fda74556d9db5f82acadffdad839e1efe8f095359f",
+        "inputs": {
+          "gmi-companies.html": {
+            "bytes": 65156,
+            "sha256": "fda702382d62068f8f39874bcd07bbb915ddacee6a3d4f734b337b58f3e47d3c",
+            "blob": "c4b1c81c92c270411c6698a473b55354a05dc8a5"
+          },
+          "gmi-coverage.html": {
+            "bytes": 75416,
+            "sha256": "893408143f6c0cb1db08084ad9c7c57b56386421f3a3958f1879a87f9035b745",
+            "blob": "5df5c79f27a467894d125da61d3cf88b3969edf9"
+          },
+          "gmi-index.html": {
+            "bytes": 262285,
+            "sha256": "3e6e6f4846598bc6240f3aa69c5523a5500e7f79f7838e655ea7ecd7800536d4",
+            "blob": "d0cff23fec423c3480ea12ee200c272396fd53a0"
+          },
+          "gmi-issuer-mu.html": {
+            "bytes": 65585,
+            "sha256": "22cc39aca77961584fad494ab0afa788b287636f7e3c5cfaecba7dbda2172bdd",
+            "blob": "3a4515417dbc651737c954799fa6f234d7a178da"
+          },
+          "gmi-relationships.html": {
+            "bytes": 61988,
+            "sha256": "86243e69c432370eb83600a45cda897e29a1a63697f55e3a72ccffcf9468c377",
+            "blob": "8a693c57b649b300a5c3e53e9d24cfa9c92987c7"
+          },
+          "gmi-states.html": {
+            "bytes": 64663,
+            "sha256": "3b3c22bd3c57dc34586ac5b9d0800cab9d6c3259f56c9cdc5c2021117a65187e",
+            "blob": "6f31a9ea9deb80794422096fd4233a566502de6e"
+          },
+          "gmi.css": {
+            "bytes": 75903,
+            "sha256": "2b78466300f695abd0cb13fd22bd51e969eff0d68dbff9c22e8eac33ce375ba4",
+            "blob": "fcfa6cf06646f0406ca366d5f015205c72176bce"
+          },
+          "gmi.html": {
+            "bytes": 973514,
+            "sha256": "7231f4e9abff833dd7517b8b2d38b0554821491c430e092e95840e0e69b544f1",
+            "blob": "a7fcc7db25acbe1cf85dbf63807bbceedc3b4a8a"
+          },
+          "gmi.js": {
+            "bytes": 56306,
+            "sha256": "c6d7011f82f6c2c09e40a20f05d6cbc13bfef8d5d82c7a70439ff4656c742838",
+            "blob": "15b39754aa170a97cd9468a4823142718ff6284a"
+          }
+        },
+        "theme_css": {
+          "bytes": 227583,
+          "sha256": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757",
+          "blob": "619436f58d37a222d1db7021ba9d52bb3a05a7fa"
+        },
+        "canonical_verifier": {
+          "bytes": 276430,
+          "sha256": "dd3798db26a5a90a7b89dc23b9d66ad11fb508518229fcd2cc0326f0c04eedb7",
+          "blob": "47f22a4796eedca910daa803911608d6259e2376"
+        }
+      },
+      "cases": [
+        {
+          "name": "copy-focus-close-390-en",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "copy-focus-close-320-zh",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "copy-focus-close-320-en",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "copy-focus-close-390-zh",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "copy-focus-close-820-en",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "copy-focus-Enter-390-en",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "copy-focus-Space-320-zh",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "copy-focus-history-390-en",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "copy-focus-history-320-zh",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "copy-focus-destination-unavailable-390-en",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "copy-focus-destination-outside-320-zh",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "copy-focus-destination-inside-390-en",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "copy-focus-destination-unrelated-320-zh",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "copy-focus-new-pending-390-en",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "copy-focus-new-pending-320-zh",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "copy-focus-new-failure-390-en",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "copy-focus-new-failure-320-zh",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "copy-focus-outer-copy-390-en",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "copy-focus-outer-copy-320-zh",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "copy-focus-before-effect-navigation-390-en",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "copy-focus-before-effect-normalization-390-en",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "copy-focus-before-effect-pending-render-390-en",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "copy-focus-before-effect-pending-render-320-zh",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "copy-focus-failure-redirect-390-en",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "copy-focus-pagehide-320-zh",
+          "result": "PASS",
+          "contexts": 1
+        },
+        {
+          "name": "clipboard-context-regression-390",
+          "result": "PASS",
+          "contexts": 21
+        },
+        {
+          "name": "answer-recovery-regression-390-en",
+          "result": "PASS",
+          "contexts": 2
+        },
+        {
+          "name": "answer-recovery-regression-320-zh",
+          "result": "PASS",
+          "contexts": 2
+        }
+      ],
+      "contexts": 50,
+      "screenshots": [
+        "copy-fallback-390-en.png",
+        "copy-fallback-320-zh.png",
+        "answer-recovery-390-en.png",
+        "answer-recovery-320-zh.png"
+      ],
+      "page_errors": [],
+      "browser": "157.0.8103.39",
+      "regression_fixture_adjustment": "Only clipboard original HTML acquisition is replaced with the same generated main, payload and candidate inline assets; accepted behavior assertions are unchanged. No shared shell acceptance.",
+      "expected_cases": 28,
+      "copy_focus_observations": [
+        {
+          "width": 390,
+          "language": "en",
+          "mode": "close",
+          "interactive": true,
+          "phase": "close",
+          "url": "http://127.0.0.1:60522/case-1/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain",
+          "focus": "copy",
+          "hidden": true,
+          "address": "",
+          "disabled": false,
+          "label": "Copy link",
+          "announcement": "",
+          "writes": [
+            "http://127.0.0.1:60522/case-1/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+          ],
+          "hides": [
+            {
+              "phase": "setup",
+              "value": false,
+              "active": "copy",
+              "disabled": false,
+              "address": ""
+            },
+            {
+              "phase": "close",
+              "value": true,
+              "active": "copy",
+              "disabled": false,
+              "address": "http://127.0.0.1:60522/case-1/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "ownedHides": [],
+          "focusCalls": [
+            {
+              "phase": "close",
+              "target": "copy",
+              "preventScroll": true
+            }
+          ],
+          "selects": [
+            {
+              "phase": "setup",
+              "active": "address",
+              "address": "http://127.0.0.1:60522/case-1/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "pendingCallbacks": []
+        },
+        {
+          "width": 320,
+          "language": "zh",
+          "mode": "close",
+          "interactive": true,
+          "phase": "close",
+          "url": "http://127.0.0.1:60522/case-2/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain",
+          "focus": "copy",
+          "hidden": true,
+          "address": "",
+          "disabled": false,
+          "label": "复制链接",
+          "announcement": "",
+          "writes": [
+            "http://127.0.0.1:60522/case-2/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+          ],
+          "hides": [
+            {
+              "phase": "setup",
+              "value": false,
+              "active": "copy",
+              "disabled": false,
+              "address": ""
+            },
+            {
+              "phase": "close",
+              "value": true,
+              "active": "copy",
+              "disabled": false,
+              "address": "http://127.0.0.1:60522/case-2/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "ownedHides": [],
+          "focusCalls": [
+            {
+              "phase": "close",
+              "target": "copy",
+              "preventScroll": true
+            }
+          ],
+          "selects": [
+            {
+              "phase": "setup",
+              "active": "address",
+              "address": "http://127.0.0.1:60522/case-2/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "pendingCallbacks": []
+        },
+        {
+          "width": 320,
+          "language": "en",
+          "mode": "close",
+          "interactive": true,
+          "phase": "close",
+          "url": "http://127.0.0.1:60522/case-3/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain",
+          "focus": "copy",
+          "hidden": true,
+          "address": "",
+          "disabled": false,
+          "label": "Copy link",
+          "announcement": "",
+          "writes": [
+            "http://127.0.0.1:60522/case-3/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+          ],
+          "hides": [
+            {
+              "phase": "setup",
+              "value": false,
+              "active": "copy",
+              "disabled": false,
+              "address": ""
+            },
+            {
+              "phase": "close",
+              "value": true,
+              "active": "copy",
+              "disabled": false,
+              "address": "http://127.0.0.1:60522/case-3/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "ownedHides": [],
+          "focusCalls": [
+            {
+              "phase": "close",
+              "target": "copy",
+              "preventScroll": true
+            }
+          ],
+          "selects": [
+            {
+              "phase": "setup",
+              "active": "address",
+              "address": "http://127.0.0.1:60522/case-3/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "pendingCallbacks": []
+        },
+        {
+          "width": 390,
+          "language": "zh",
+          "mode": "close",
+          "interactive": true,
+          "phase": "close",
+          "url": "http://127.0.0.1:60522/case-4/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain",
+          "focus": "copy",
+          "hidden": true,
+          "address": "",
+          "disabled": false,
+          "label": "复制链接",
+          "announcement": "",
+          "writes": [
+            "http://127.0.0.1:60522/case-4/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+          ],
+          "hides": [
+            {
+              "phase": "setup",
+              "value": false,
+              "active": "copy",
+              "disabled": false,
+              "address": ""
+            },
+            {
+              "phase": "close",
+              "value": true,
+              "active": "copy",
+              "disabled": false,
+              "address": "http://127.0.0.1:60522/case-4/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "ownedHides": [],
+          "focusCalls": [
+            {
+              "phase": "close",
+              "target": "copy",
+              "preventScroll": true
+            }
+          ],
+          "selects": [
+            {
+              "phase": "setup",
+              "active": "address",
+              "address": "http://127.0.0.1:60522/case-4/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "pendingCallbacks": []
+        },
+        {
+          "width": 820,
+          "language": "en",
+          "mode": "close",
+          "interactive": true,
+          "phase": "close",
+          "url": "http://127.0.0.1:60522/case-5/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain",
+          "focus": "copy",
+          "hidden": true,
+          "address": "",
+          "disabled": false,
+          "label": "Copy link",
+          "announcement": "",
+          "writes": [
+            "http://127.0.0.1:60522/case-5/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+          ],
+          "hides": [
+            {
+              "phase": "setup",
+              "value": false,
+              "active": "copy",
+              "disabled": false,
+              "address": ""
+            },
+            {
+              "phase": "close",
+              "value": true,
+              "active": "copy",
+              "disabled": false,
+              "address": "http://127.0.0.1:60522/case-5/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "ownedHides": [],
+          "focusCalls": [
+            {
+              "phase": "close",
+              "target": "copy",
+              "preventScroll": true
+            }
+          ],
+          "selects": [
+            {
+              "phase": "setup",
+              "active": "address",
+              "address": "http://127.0.0.1:60522/case-5/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "pendingCallbacks": []
+        },
+        {
+          "width": 390,
+          "language": "en",
+          "mode": "Enter",
+          "interactive": true,
+          "phase": "Enter",
+          "url": "http://127.0.0.1:60522/case-6/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain",
+          "focus": "copy",
+          "hidden": true,
+          "address": "",
+          "disabled": false,
+          "label": "Copy link",
+          "announcement": "",
+          "writes": [
+            "http://127.0.0.1:60522/case-6/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+          ],
+          "hides": [
+            {
+              "phase": "setup",
+              "value": false,
+              "active": "copy",
+              "disabled": false,
+              "address": ""
+            },
+            {
+              "phase": "Enter",
+              "value": true,
+              "active": "copy",
+              "disabled": false,
+              "address": "http://127.0.0.1:60522/case-6/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "ownedHides": [],
+          "focusCalls": [
+            {
+              "phase": "Enter",
+              "target": "copy",
+              "preventScroll": true
+            }
+          ],
+          "selects": [
+            {
+              "phase": "setup",
+              "active": "address",
+              "address": "http://127.0.0.1:60522/case-6/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "pendingCallbacks": []
+        },
+        {
+          "width": 320,
+          "language": "zh",
+          "mode": "Space",
+          "interactive": true,
+          "phase": "Space",
+          "url": "http://127.0.0.1:60522/case-7/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain",
+          "focus": "copy",
+          "hidden": true,
+          "address": "",
+          "disabled": false,
+          "label": "复制链接",
+          "announcement": "",
+          "writes": [
+            "http://127.0.0.1:60522/case-7/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+          ],
+          "hides": [
+            {
+              "phase": "setup",
+              "value": false,
+              "active": "copy",
+              "disabled": false,
+              "address": ""
+            },
+            {
+              "phase": "Space",
+              "value": true,
+              "active": "copy",
+              "disabled": false,
+              "address": "http://127.0.0.1:60522/case-7/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "ownedHides": [],
+          "focusCalls": [
+            {
+              "phase": "Space",
+              "target": "copy",
+              "preventScroll": true
+            }
+          ],
+          "selects": [
+            {
+              "phase": "setup",
+              "active": "address",
+              "address": "http://127.0.0.1:60522/case-7/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "pendingCallbacks": []
+        },
+        {
+          "width": 390,
+          "language": "en",
+          "mode": "history",
+          "interactive": true,
+          "phase": "history",
+          "url": "http://127.0.0.1:60522/case-8/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain",
+          "focus": "copy",
+          "hidden": true,
+          "address": "",
+          "disabled": false,
+          "label": "Copy link",
+          "announcement": "",
+          "writes": [
+            "http://127.0.0.1:60522/case-8/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain&q=Micron"
+          ],
+          "hides": [
+            {
+              "phase": "setup",
+              "value": false,
+              "active": "copy",
+              "disabled": false,
+              "address": ""
+            },
+            {
+              "phase": "history",
+              "value": true,
+              "active": "copy",
+              "disabled": false,
+              "address": "http://127.0.0.1:60522/case-8/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain&q=Micron"
+            }
+          ],
+          "ownedHides": [],
+          "focusCalls": [
+            {
+              "phase": "history",
+              "target": "copy",
+              "preventScroll": true
+            }
+          ],
+          "selects": [
+            {
+              "phase": "setup",
+              "active": "address",
+              "address": "http://127.0.0.1:60522/case-8/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain&q=Micron"
+            }
+          ],
+          "pendingCallbacks": []
+        },
+        {
+          "width": 390,
+          "language": "en",
+          "mode": "forward",
+          "interactive": true,
+          "phase": "forward",
+          "url": "http://127.0.0.1:60522/case-8/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain&q=Micron",
+          "focus": "copy",
+          "hidden": true,
+          "address": "",
+          "disabled": false,
+          "label": "Copy link",
+          "announcement": "",
+          "writes": [
+            "http://127.0.0.1:60522/case-8/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain&q=Micron",
+            "http://127.0.0.1:60522/case-8/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+          ],
+          "hides": [
+            {
+              "phase": "setup",
+              "value": false,
+              "active": "copy",
+              "disabled": false,
+              "address": ""
+            },
+            {
+              "phase": "history",
+              "value": true,
+              "active": "copy",
+              "disabled": false,
+              "address": "http://127.0.0.1:60522/case-8/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain&q=Micron"
+            },
+            {
+              "phase": "history",
+              "value": false,
+              "active": "copy",
+              "disabled": false,
+              "address": ""
+            },
+            {
+              "phase": "forward",
+              "value": true,
+              "active": "copy",
+              "disabled": false,
+              "address": "http://127.0.0.1:60522/case-8/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "ownedHides": [],
+          "focusCalls": [
+            {
+              "phase": "history",
+              "target": "copy",
+              "preventScroll": true
+            },
+            {
+              "phase": "forward",
+              "target": "copy",
+              "preventScroll": true
+            }
+          ],
+          "selects": [
+            {
+              "phase": "setup",
+              "active": "address",
+              "address": "http://127.0.0.1:60522/case-8/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain&q=Micron"
+            },
+            {
+              "phase": "history",
+              "active": "address",
+              "address": "http://127.0.0.1:60522/case-8/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "pendingCallbacks": []
+        },
+        {
+          "width": 320,
+          "language": "zh",
+          "mode": "history",
+          "interactive": true,
+          "phase": "history",
+          "url": "http://127.0.0.1:60522/case-9/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain",
+          "focus": "copy",
+          "hidden": true,
+          "address": "",
+          "disabled": false,
+          "label": "复制链接",
+          "announcement": "",
+          "writes": [
+            "http://127.0.0.1:60522/case-9/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain&q=Micron"
+          ],
+          "hides": [
+            {
+              "phase": "setup",
+              "value": false,
+              "active": "copy",
+              "disabled": false,
+              "address": ""
+            },
+            {
+              "phase": "history",
+              "value": true,
+              "active": "copy",
+              "disabled": false,
+              "address": "http://127.0.0.1:60522/case-9/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain&q=Micron"
+            }
+          ],
+          "ownedHides": [],
+          "focusCalls": [
+            {
+              "phase": "history",
+              "target": "copy",
+              "preventScroll": true
+            }
+          ],
+          "selects": [
+            {
+              "phase": "setup",
+              "active": "address",
+              "address": "http://127.0.0.1:60522/case-9/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain&q=Micron"
+            }
+          ],
+          "pendingCallbacks": []
+        },
+        {
+          "width": 320,
+          "language": "zh",
+          "mode": "forward",
+          "interactive": true,
+          "phase": "forward",
+          "url": "http://127.0.0.1:60522/case-9/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain&q=Micron",
+          "focus": "copy",
+          "hidden": true,
+          "address": "",
+          "disabled": false,
+          "label": "复制链接",
+          "announcement": "",
+          "writes": [
+            "http://127.0.0.1:60522/case-9/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain&q=Micron",
+            "http://127.0.0.1:60522/case-9/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+          ],
+          "hides": [
+            {
+              "phase": "setup",
+              "value": false,
+              "active": "copy",
+              "disabled": false,
+              "address": ""
+            },
+            {
+              "phase": "history",
+              "value": true,
+              "active": "copy",
+              "disabled": false,
+              "address": "http://127.0.0.1:60522/case-9/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain&q=Micron"
+            },
+            {
+              "phase": "history",
+              "value": false,
+              "active": "copy",
+              "disabled": false,
+              "address": ""
+            },
+            {
+              "phase": "forward",
+              "value": true,
+              "active": "copy",
+              "disabled": false,
+              "address": "http://127.0.0.1:60522/case-9/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "ownedHides": [],
+          "focusCalls": [
+            {
+              "phase": "history",
+              "target": "copy",
+              "preventScroll": true
+            },
+            {
+              "phase": "forward",
+              "target": "copy",
+              "preventScroll": true
+            }
+          ],
+          "selects": [
+            {
+              "phase": "setup",
+              "active": "address",
+              "address": "http://127.0.0.1:60522/case-9/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain&q=Micron"
+            },
+            {
+              "phase": "history",
+              "active": "address",
+              "address": "http://127.0.0.1:60522/case-9/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "pendingCallbacks": []
+        },
+        {
+          "width": 390,
+          "language": "en",
+          "mode": "unavailable",
+          "interactive": true,
+          "phase": "unavailable",
+          "url": "http://127.0.0.1:60522/case-10/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain",
+          "focus": "title",
+          "hidden": true,
+          "address": "",
+          "disabled": false,
+          "label": "Copy link",
+          "announcement": "",
+          "writes": [
+            "http://127.0.0.1:60522/case-10/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+          ],
+          "hides": [
+            {
+              "phase": "setup",
+              "value": false,
+              "active": "copy",
+              "disabled": false,
+              "address": ""
+            },
+            {
+              "phase": "unavailable",
+              "value": true,
+              "active": "title",
+              "disabled": false,
+              "address": "http://127.0.0.1:60522/case-10/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "ownedHides": [],
+          "focusCalls": [
+            {
+              "phase": "unavailable",
+              "target": "title",
+              "preventScroll": true
+            }
+          ],
+          "selects": [
+            {
+              "phase": "setup",
+              "active": "address",
+              "address": "http://127.0.0.1:60522/case-10/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "pendingCallbacks": []
+        },
+        {
+          "width": 320,
+          "language": "zh",
+          "mode": "outside",
+          "interactive": true,
+          "phase": "outside",
+          "url": "http://127.0.0.1:60522/case-11/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain",
+          "focus": "browse",
+          "hidden": true,
+          "address": "",
+          "disabled": false,
+          "label": "复制链接",
+          "announcement": "",
+          "writes": [
+            "http://127.0.0.1:60522/case-11/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+          ],
+          "hides": [
+            {
+              "phase": "setup",
+              "value": false,
+              "active": "copy",
+              "disabled": false,
+              "address": ""
+            },
+            {
+              "phase": "outside",
+              "value": true,
+              "active": "browse",
+              "disabled": false,
+              "address": "http://127.0.0.1:60522/case-11/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "ownedHides": [],
+          "focusCalls": [
+            {
+              "phase": "outside",
+              "target": "copy",
+              "preventScroll": true
+            }
+          ],
+          "selects": [
+            {
+              "phase": "setup",
+              "active": "address",
+              "address": "http://127.0.0.1:60522/case-11/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "pendingCallbacks": []
+        },
+        {
+          "width": 390,
+          "language": "en",
+          "mode": "inside",
+          "interactive": true,
+          "phase": "inside",
+          "url": "http://127.0.0.1:60522/case-12/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain",
+          "focus": "title",
+          "hidden": true,
+          "address": "",
+          "disabled": false,
+          "label": "Copy link",
+          "announcement": "",
+          "writes": [
+            "http://127.0.0.1:60522/case-12/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+          ],
+          "hides": [
+            {
+              "phase": "setup",
+              "value": false,
+              "active": "copy",
+              "disabled": false,
+              "address": ""
+            },
+            {
+              "phase": "inside",
+              "value": true,
+              "active": "title",
+              "disabled": false,
+              "address": "http://127.0.0.1:60522/case-12/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "ownedHides": [],
+          "focusCalls": [
+            {
+              "phase": "inside",
+              "target": "copy",
+              "preventScroll": true
+            },
+            {
+              "phase": "inside",
+              "target": "title",
+              "preventScroll": true
+            }
+          ],
+          "selects": [
+            {
+              "phase": "setup",
+              "active": "address",
+              "address": "http://127.0.0.1:60522/case-12/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "pendingCallbacks": []
+        },
+        {
+          "width": 320,
+          "language": "zh",
+          "mode": "unrelated",
+          "interactive": true,
+          "phase": "unrelated",
+          "url": "http://127.0.0.1:60522/case-13/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain",
+          "focus": "title",
+          "hidden": true,
+          "address": "",
+          "disabled": false,
+          "label": "复制链接",
+          "announcement": "",
+          "writes": [
+            "http://127.0.0.1:60522/case-13/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+          ],
+          "hides": [
+            {
+              "phase": "setup",
+              "value": false,
+              "active": "copy",
+              "disabled": false,
+              "address": ""
+            },
+            {
+              "phase": "unrelated",
+              "value": true,
+              "active": "title",
+              "disabled": false,
+              "address": "http://127.0.0.1:60522/case-13/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "ownedHides": [],
+          "focusCalls": [],
+          "selects": [
+            {
+              "phase": "setup",
+              "active": "address",
+              "address": "http://127.0.0.1:60522/case-13/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "pendingCallbacks": []
+        },
+        {
+          "width": 390,
+          "language": "en",
+          "mode": "new-pending",
+          "interactive": true,
+          "phase": "new-pending",
+          "url": "http://127.0.0.1:60522/case-14/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain",
+          "focus": "copy",
+          "hidden": true,
+          "address": "",
+          "disabled": true,
+          "label": "Copying…",
+          "announcement": "",
+          "writes": [
+            "http://127.0.0.1:60522/case-14/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain",
+            "http://127.0.0.1:60522/case-14/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+          ],
+          "hides": [
+            {
+              "phase": "setup",
+              "value": false,
+              "active": "copy",
+              "disabled": false,
+              "address": ""
+            },
+            {
+              "phase": "new-pending",
+              "value": true,
+              "active": "copy",
+              "disabled": false,
+              "address": "http://127.0.0.1:60522/case-14/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "ownedHides": [],
+          "focusCalls": [
+            {
+              "phase": "new-pending",
+              "target": "copy",
+              "preventScroll": true
+            }
+          ],
+          "selects": [
+            {
+              "phase": "setup",
+              "active": "address",
+              "address": "http://127.0.0.1:60522/case-14/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "pendingCallbacks": []
+        },
+        {
+          "width": 390,
+          "language": "en",
+          "mode": "new-pending-settled",
+          "interactive": true,
+          "phase": "new-pending",
+          "url": "http://127.0.0.1:60522/case-14/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain",
+          "focus": "BODY",
+          "hidden": true,
+          "address": "",
+          "disabled": false,
+          "label": "Link copied",
+          "announcement": "Link copied to clipboard.",
+          "writes": [
+            "http://127.0.0.1:60522/case-14/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain",
+            "http://127.0.0.1:60522/case-14/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+          ],
+          "hides": [
+            {
+              "phase": "setup",
+              "value": false,
+              "active": "copy",
+              "disabled": false,
+              "address": ""
+            },
+            {
+              "phase": "new-pending",
+              "value": true,
+              "active": "copy",
+              "disabled": false,
+              "address": "http://127.0.0.1:60522/case-14/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "ownedHides": [],
+          "focusCalls": [
+            {
+              "phase": "new-pending",
+              "target": "copy",
+              "preventScroll": true
+            }
+          ],
+          "selects": [
+            {
+              "phase": "setup",
+              "active": "address",
+              "address": "http://127.0.0.1:60522/case-14/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "pendingCallbacks": []
+        },
+        {
+          "width": 320,
+          "language": "zh",
+          "mode": "new-pending",
+          "interactive": true,
+          "phase": "new-pending",
+          "url": "http://127.0.0.1:60522/case-15/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain",
+          "focus": "copy",
+          "hidden": true,
+          "address": "",
+          "disabled": true,
+          "label": "正在复制…",
+          "announcement": "",
+          "writes": [
+            "http://127.0.0.1:60522/case-15/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain",
+            "http://127.0.0.1:60522/case-15/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+          ],
+          "hides": [
+            {
+              "phase": "setup",
+              "value": false,
+              "active": "copy",
+              "disabled": false,
+              "address": ""
+            },
+            {
+              "phase": "new-pending",
+              "value": true,
+              "active": "copy",
+              "disabled": false,
+              "address": "http://127.0.0.1:60522/case-15/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "ownedHides": [],
+          "focusCalls": [
+            {
+              "phase": "new-pending",
+              "target": "copy",
+              "preventScroll": true
+            }
+          ],
+          "selects": [
+            {
+              "phase": "setup",
+              "active": "address",
+              "address": "http://127.0.0.1:60522/case-15/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "pendingCallbacks": []
+        },
+        {
+          "width": 320,
+          "language": "zh",
+          "mode": "new-pending-settled",
+          "interactive": true,
+          "phase": "new-pending",
+          "url": "http://127.0.0.1:60522/case-15/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain",
+          "focus": "BODY",
+          "hidden": true,
+          "address": "",
+          "disabled": false,
+          "label": "链接已复制",
+          "announcement": "链接已复制到剪贴板。",
+          "writes": [
+            "http://127.0.0.1:60522/case-15/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain",
+            "http://127.0.0.1:60522/case-15/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+          ],
+          "hides": [
+            {
+              "phase": "setup",
+              "value": false,
+              "active": "copy",
+              "disabled": false,
+              "address": ""
+            },
+            {
+              "phase": "new-pending",
+              "value": true,
+              "active": "copy",
+              "disabled": false,
+              "address": "http://127.0.0.1:60522/case-15/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "ownedHides": [],
+          "focusCalls": [
+            {
+              "phase": "new-pending",
+              "target": "copy",
+              "preventScroll": true
+            }
+          ],
+          "selects": [
+            {
+              "phase": "setup",
+              "active": "address",
+              "address": "http://127.0.0.1:60522/case-15/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "pendingCallbacks": []
+        },
+        {
+          "width": 390,
+          "language": "en",
+          "mode": "new-failure",
+          "interactive": true,
+          "phase": "new-failure",
+          "url": "http://127.0.0.1:60522/case-16/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain",
+          "focus": "address",
+          "hidden": false,
+          "address": "http://127.0.0.1:60522/case-16/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain",
+          "disabled": false,
+          "label": "Copy link",
+          "announcement": "Copy was unavailable. Select and copy the address shown.",
+          "writes": [
+            "http://127.0.0.1:60522/case-16/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+          ],
+          "hides": [
+            {
+              "phase": "setup",
+              "value": false,
+              "active": "copy",
+              "disabled": false,
+              "address": ""
+            },
+            {
+              "phase": "new-failure",
+              "value": true,
+              "active": "copy",
+              "disabled": false,
+              "address": "http://127.0.0.1:60522/case-16/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            },
+            {
+              "phase": "new-failure",
+              "value": false,
+              "active": "copy",
+              "disabled": false,
+              "address": ""
+            }
+          ],
+          "ownedHides": [],
+          "focusCalls": [
+            {
+              "phase": "new-failure",
+              "target": "copy",
+              "preventScroll": true
+            }
+          ],
+          "selects": [
+            {
+              "phase": "setup",
+              "active": "address",
+              "address": "http://127.0.0.1:60522/case-16/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            },
+            {
+              "phase": "new-failure",
+              "active": "address",
+              "address": "http://127.0.0.1:60522/case-16/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "pendingCallbacks": []
+        },
+        {
+          "width": 320,
+          "language": "zh",
+          "mode": "new-failure",
+          "interactive": true,
+          "phase": "new-failure",
+          "url": "http://127.0.0.1:60522/case-17/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain",
+          "focus": "address",
+          "hidden": false,
+          "address": "http://127.0.0.1:60522/case-17/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain",
+          "disabled": false,
+          "label": "复制链接",
+          "announcement": "暂无法自动复制。请选择并复制所显示的地址。",
+          "writes": [
+            "http://127.0.0.1:60522/case-17/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+          ],
+          "hides": [
+            {
+              "phase": "setup",
+              "value": false,
+              "active": "copy",
+              "disabled": false,
+              "address": ""
+            },
+            {
+              "phase": "new-failure",
+              "value": true,
+              "active": "copy",
+              "disabled": false,
+              "address": "http://127.0.0.1:60522/case-17/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            },
+            {
+              "phase": "new-failure",
+              "value": false,
+              "active": "copy",
+              "disabled": false,
+              "address": ""
+            }
+          ],
+          "ownedHides": [],
+          "focusCalls": [
+            {
+              "phase": "new-failure",
+              "target": "copy",
+              "preventScroll": true
+            }
+          ],
+          "selects": [
+            {
+              "phase": "setup",
+              "active": "address",
+              "address": "http://127.0.0.1:60522/case-17/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            },
+            {
+              "phase": "new-failure",
+              "active": "address",
+              "address": "http://127.0.0.1:60522/case-17/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "pendingCallbacks": []
+        },
+        {
+          "width": 390,
+          "language": "en",
+          "mode": "outer-copy",
+          "interactive": true,
+          "phase": "outer-copy",
+          "url": "http://127.0.0.1:60522/case-18/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain",
+          "focus": "BODY",
+          "hidden": true,
+          "address": "",
+          "disabled": true,
+          "label": "Copying…",
+          "announcement": "",
+          "writes": [
+            "http://127.0.0.1:60522/case-18/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain",
+            "http://127.0.0.1:60522/case-18/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+          ],
+          "hides": [
+            {
+              "phase": "setup",
+              "value": false,
+              "active": "copy",
+              "disabled": false,
+              "address": ""
+            },
+            {
+              "phase": "outer-copy",
+              "value": true,
+              "active": "copy",
+              "disabled": false,
+              "address": "http://127.0.0.1:60522/case-18/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "ownedHides": [],
+          "focusCalls": [
+            {
+              "phase": "outer-copy",
+              "target": "copy",
+              "preventScroll": true
+            }
+          ],
+          "selects": [
+            {
+              "phase": "setup",
+              "active": "address",
+              "address": "http://127.0.0.1:60522/case-18/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "pendingCallbacks": []
+        },
+        {
+          "width": 390,
+          "language": "en",
+          "mode": "outer-copy-settled",
+          "interactive": true,
+          "phase": "outer-copy",
+          "url": "http://127.0.0.1:60522/case-18/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain",
+          "focus": "BODY",
+          "hidden": true,
+          "address": "",
+          "disabled": false,
+          "label": "Link copied",
+          "announcement": "Link copied to clipboard.",
+          "writes": [
+            "http://127.0.0.1:60522/case-18/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain",
+            "http://127.0.0.1:60522/case-18/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+          ],
+          "hides": [
+            {
+              "phase": "setup",
+              "value": false,
+              "active": "copy",
+              "disabled": false,
+              "address": ""
+            },
+            {
+              "phase": "outer-copy",
+              "value": true,
+              "active": "copy",
+              "disabled": false,
+              "address": "http://127.0.0.1:60522/case-18/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "ownedHides": [],
+          "focusCalls": [
+            {
+              "phase": "outer-copy",
+              "target": "copy",
+              "preventScroll": true
+            }
+          ],
+          "selects": [
+            {
+              "phase": "setup",
+              "active": "address",
+              "address": "http://127.0.0.1:60522/case-18/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "pendingCallbacks": []
+        },
+        {
+          "width": 320,
+          "language": "zh",
+          "mode": "outer-copy",
+          "interactive": true,
+          "phase": "outer-copy",
+          "url": "http://127.0.0.1:60522/case-19/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain",
+          "focus": "BODY",
+          "hidden": true,
+          "address": "",
+          "disabled": true,
+          "label": "正在复制…",
+          "announcement": "",
+          "writes": [
+            "http://127.0.0.1:60522/case-19/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain",
+            "http://127.0.0.1:60522/case-19/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+          ],
+          "hides": [
+            {
+              "phase": "setup",
+              "value": false,
+              "active": "copy",
+              "disabled": false,
+              "address": ""
+            },
+            {
+              "phase": "outer-copy",
+              "value": true,
+              "active": "copy",
+              "disabled": false,
+              "address": "http://127.0.0.1:60522/case-19/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "ownedHides": [],
+          "focusCalls": [
+            {
+              "phase": "outer-copy",
+              "target": "copy",
+              "preventScroll": true
+            }
+          ],
+          "selects": [
+            {
+              "phase": "setup",
+              "active": "address",
+              "address": "http://127.0.0.1:60522/case-19/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "pendingCallbacks": []
+        },
+        {
+          "width": 320,
+          "language": "zh",
+          "mode": "outer-copy-settled",
+          "interactive": true,
+          "phase": "outer-copy",
+          "url": "http://127.0.0.1:60522/case-19/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain",
+          "focus": "BODY",
+          "hidden": true,
+          "address": "",
+          "disabled": false,
+          "label": "链接已复制",
+          "announcement": "链接已复制到剪贴板。",
+          "writes": [
+            "http://127.0.0.1:60522/case-19/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain",
+            "http://127.0.0.1:60522/case-19/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+          ],
+          "hides": [
+            {
+              "phase": "setup",
+              "value": false,
+              "active": "copy",
+              "disabled": false,
+              "address": ""
+            },
+            {
+              "phase": "outer-copy",
+              "value": true,
+              "active": "copy",
+              "disabled": false,
+              "address": "http://127.0.0.1:60522/case-19/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "ownedHides": [],
+          "focusCalls": [
+            {
+              "phase": "outer-copy",
+              "target": "copy",
+              "preventScroll": true
+            }
+          ],
+          "selects": [
+            {
+              "phase": "setup",
+              "active": "address",
+              "address": "http://127.0.0.1:60522/case-19/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "pendingCallbacks": []
+        },
+        {
+          "width": 390,
+          "language": "en",
+          "mode": "navigation",
+          "interactive": true,
+          "phase": "navigation",
+          "url": "http://127.0.0.1:60522/case-20/gmi.html?fixture=copy-focus#theme=theme%3Aconventional_dram&lens=chain",
+          "focus": "copy",
+          "hidden": true,
+          "address": "",
+          "disabled": false,
+          "label": "Copy link",
+          "announcement": "",
+          "writes": [
+            "http://127.0.0.1:60522/case-20/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+          ],
+          "hides": [
+            {
+              "phase": "setup",
+              "value": false,
+              "active": "copy",
+              "disabled": false,
+              "address": ""
+            },
+            {
+              "phase": "navigation",
+              "value": true,
+              "active": "copy",
+              "disabled": false,
+              "address": "http://127.0.0.1:60522/case-20/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "ownedHides": [],
+          "focusCalls": [
+            {
+              "phase": "navigation",
+              "target": "copy",
+              "preventScroll": true
+            }
+          ],
+          "selects": [
+            {
+              "phase": "setup",
+              "active": "address",
+              "address": "http://127.0.0.1:60522/case-20/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "pendingCallbacks": []
+        },
+        {
+          "width": 390,
+          "language": "en",
+          "mode": "normalization",
+          "interactive": true,
+          "phase": "setup",
+          "url": "http://127.0.0.1:60522/case-21/gmi.html?fixture=copy-normalization#theme=theme%3Ahbm_packaging",
+          "focus": "BODY",
+          "hidden": true,
+          "address": "",
+          "disabled": true,
+          "label": "Copying…",
+          "announcement": "",
+          "writes": [
+            "http://127.0.0.1:60522/case-21/gmi.html?fixture=copy-normalization#theme=theme%3Ahbm_packaging"
+          ],
+          "hides": [],
+          "ownedHides": [],
+          "focusCalls": [],
+          "selects": [],
+          "pendingCallbacks": []
+        },
+        {
+          "width": 390,
+          "language": "en",
+          "mode": "pending-render",
+          "interactive": true,
+          "phase": "pending-render",
+          "url": "http://127.0.0.1:60522/case-22/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain",
+          "focus": "copy",
+          "hidden": true,
+          "address": "",
+          "disabled": true,
+          "label": "Copying…",
+          "announcement": "",
+          "writes": [
+            "http://127.0.0.1:60522/case-22/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+          ],
+          "hides": [],
+          "ownedHides": [],
+          "focusCalls": [
+            {
+              "phase": "pending-render",
+              "target": "copy",
+              "preventScroll": false
+            }
+          ],
+          "selects": [],
+          "pendingCallbacks": [
+            {
+              "kind": "injected-disabled-callback",
+              "disabled": true
+            }
+          ]
+        },
+        {
+          "width": 390,
+          "language": "en",
+          "mode": "pending-render-settled",
+          "interactive": true,
+          "phase": "pending-render",
+          "url": "http://127.0.0.1:60522/case-22/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain",
+          "focus": "copy",
+          "hidden": true,
+          "address": "",
+          "disabled": false,
+          "label": "Link copied",
+          "announcement": "Link copied to clipboard.",
+          "writes": [
+            "http://127.0.0.1:60522/case-22/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+          ],
+          "hides": [],
+          "ownedHides": [],
+          "focusCalls": [
+            {
+              "phase": "pending-render",
+              "target": "copy",
+              "preventScroll": false
+            }
+          ],
+          "selects": [],
+          "pendingCallbacks": [
+            {
+              "kind": "injected-disabled-callback",
+              "disabled": true
+            }
+          ]
+        },
+        {
+          "width": 320,
+          "language": "zh",
+          "mode": "pending-render",
+          "interactive": true,
+          "phase": "pending-render",
+          "url": "http://127.0.0.1:60522/case-23/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain",
+          "focus": "BODY",
+          "hidden": true,
+          "address": "",
+          "disabled": true,
+          "label": "正在复制…",
+          "announcement": "",
+          "writes": [
+            "http://127.0.0.1:60522/case-23/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+          ],
+          "hides": [],
+          "ownedHides": [],
+          "focusCalls": [
+            {
+              "phase": "pending-render",
+              "target": "copy",
+              "preventScroll": false
+            }
+          ],
+          "selects": [],
+          "pendingCallbacks": [
+            {
+              "kind": "injected-disabled-callback",
+              "disabled": true
+            }
+          ]
+        },
+        {
+          "width": 320,
+          "language": "zh",
+          "mode": "pending-render-settled",
+          "interactive": true,
+          "phase": "pending-render",
+          "url": "http://127.0.0.1:60522/case-23/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain",
+          "focus": "BODY",
+          "hidden": true,
+          "address": "",
+          "disabled": false,
+          "label": "链接已复制",
+          "announcement": "链接已复制到剪贴板。",
+          "writes": [
+            "http://127.0.0.1:60522/case-23/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+          ],
+          "hides": [],
+          "ownedHides": [],
+          "focusCalls": [
+            {
+              "phase": "pending-render",
+              "target": "copy",
+              "preventScroll": false
+            }
+          ],
+          "selects": [],
+          "pendingCallbacks": [
+            {
+              "kind": "injected-disabled-callback",
+              "disabled": true
+            }
+          ]
+        },
+        {
+          "width": 390,
+          "language": "en",
+          "mode": "failure-focus-redirect",
+          "interactive": true,
+          "phase": "failure-focus-redirect",
+          "url": "http://127.0.0.1:60522/case-24/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain",
+          "focus": "title",
+          "hidden": false,
+          "address": "http://127.0.0.1:60522/case-24/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain",
+          "disabled": false,
+          "label": "Copy link",
+          "announcement": "Copy was unavailable. Select and copy the address shown.",
+          "writes": [
+            "http://127.0.0.1:60522/case-24/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+          ],
+          "hides": [
+            {
+              "phase": "failure-focus-redirect",
+              "value": false,
+              "active": "copy",
+              "disabled": false,
+              "address": ""
+            }
+          ],
+          "ownedHides": [],
+          "focusCalls": [
+            {
+              "phase": "failure-focus-redirect",
+              "target": "title",
+              "preventScroll": false
+            }
+          ],
+          "selects": [],
+          "pendingCallbacks": []
+        },
+        {
+          "width": 320,
+          "language": "zh",
+          "mode": "pagehide",
+          "interactive": false,
+          "phase": "pagehide",
+          "url": "http://127.0.0.1:60522/case-25/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain",
+          "focus": "address",
+          "hidden": true,
+          "address": "",
+          "disabled": false,
+          "label": "复制链接",
+          "announcement": "",
+          "writes": [
+            "http://127.0.0.1:60522/case-25/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+          ],
+          "hides": [
+            {
+              "phase": "setup",
+              "value": false,
+              "active": "copy",
+              "disabled": false,
+              "address": ""
+            },
+            {
+              "phase": "pagehide",
+              "value": true,
+              "active": "address",
+              "disabled": false,
+              "address": "http://127.0.0.1:60522/case-25/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "ownedHides": [
+            {
+              "phase": "pagehide",
+              "value": true,
+              "active": "address",
+              "disabled": false,
+              "address": "http://127.0.0.1:60522/case-25/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "focusCalls": [],
+          "selects": [
+            {
+              "phase": "setup",
+              "active": "address",
+              "address": "http://127.0.0.1:60522/case-25/gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain"
+            }
+          ],
+          "pendingCallbacks": []
+        }
+      ],
+      "navigation_geometry": [
+        {
+          "width": 390,
+          "language": "en",
+          "route": "/case-47/gmi.html",
+          "targets": [
+            {
+              "text": "Theme research",
+              "left": 16,
+              "right": 132.65625,
+              "height": 44
+            },
+            {
+              "text": "Company evidence",
+              "left": 136.65625,
+              "right": 253.328125,
+              "height": 55.5
+            },
+            {
+              "text": "Relationships",
+              "left": 257.328125,
+              "right": 374,
+              "height": 44
+            }
+          ]
+        },
+        {
+          "width": 390,
+          "language": "en",
+          "route": "/case-47/gmi.html",
+          "targets": [
+            {
+              "text": "Theme research",
+              "left": 16,
+              "right": 132.65625,
+              "height": 44
+            },
+            {
+              "text": "Company evidence",
+              "left": 136.65625,
+              "right": 253.328125,
+              "height": 55.5
+            },
+            {
+              "text": "Relationships",
+              "left": 257.328125,
+              "right": 374,
+              "height": 44
+            }
+          ]
+        },
+        {
+          "width": 390,
+          "language": "en",
+          "route": "/case-48/gmi.html",
+          "targets": [
+            {
+              "text": "Theme research",
+              "left": 16,
+              "right": 132.65625,
+              "height": 44
+            },
+            {
+              "text": "Company evidence",
+              "left": 136.65625,
+              "right": 253.328125,
+              "height": 55.5
+            },
+            {
+              "text": "Relationships",
+              "left": 257.328125,
+              "right": 374,
+              "height": 44
+            }
+          ]
+        },
+        {
+          "width": 390,
+          "language": "en",
+          "route": "/case-48/gmi.html",
+          "targets": [
+            {
+              "text": "Theme research",
+              "left": 16,
+              "right": 132.65625,
+              "height": 44
+            },
+            {
+              "text": "Company evidence",
+              "left": 136.65625,
+              "right": 253.328125,
+              "height": 55.5
+            },
+            {
+              "text": "Relationships",
+              "left": 257.328125,
+              "right": 374,
+              "height": 44
+            }
+          ]
+        },
+        {
+          "width": 320,
+          "language": "zh",
+          "route": "/case-49/gmi.html",
+          "targets": [
+            {
+              "text": "主题研究",
+              "left": 16,
+              "right": 109.328125,
+              "height": 44
+            },
+            {
+              "text": "公司证据",
+              "left": 113.328125,
+              "right": 206.671875,
+              "height": 44
+            },
+            {
+              "text": "公司关系",
+              "left": 210.671875,
+              "right": 304,
+              "height": 44
+            }
+          ]
+        },
+        {
+          "width": 320,
+          "language": "zh",
+          "route": "/case-49/gmi.html",
+          "targets": [
+            {
+              "text": "主题研究",
+              "left": 16,
+              "right": 109.328125,
+              "height": 44
+            },
+            {
+              "text": "公司证据",
+              "left": 113.328125,
+              "right": 206.671875,
+              "height": 44
+            },
+            {
+              "text": "公司关系",
+              "left": 210.671875,
+              "right": 304,
+              "height": 44
+            }
+          ]
+        },
+        {
+          "width": 320,
+          "language": "zh",
+          "route": "/case-50/gmi.html",
+          "targets": [
+            {
+              "text": "主题研究",
+              "left": 16,
+              "right": 109.328125,
+              "height": 44
+            },
+            {
+              "text": "公司证据",
+              "left": 113.328125,
+              "right": 206.671875,
+              "height": 44
+            },
+            {
+              "text": "公司关系",
+              "left": 210.671875,
+              "right": 304,
+              "height": 44
+            }
+          ]
+        },
+        {
+          "width": 320,
+          "language": "zh",
+          "route": "/case-50/gmi.html",
+          "targets": [
+            {
+              "text": "主题研究",
+              "left": 16,
+              "right": 109.328125,
+              "height": 44
+            },
+            {
+              "text": "公司证据",
+              "left": 113.328125,
+              "right": 206.671875,
+              "height": 44
+            },
+            {
+              "text": "公司关系",
+              "left": 210.671875,
+              "right": 304,
+              "height": 44
+            }
+          ]
+        }
+      ],
+      "complete": true,
+      "pass": true
+    },
+    "observation_summary": {
+      "interactive_snapshots": 32,
+      "interactive_owned_hides": 0,
+      "lifecycle_snapshots": 1,
+      "explicit_pagehide_owned_hides": 1,
+      "pagehide_focus_calls": 0
+    },
+    "receipt_files": {
+      "input_bindings": {
+        "bytes": 2393,
+        "sha256": "0783a9c32b0879b5a40172eb57a654cffc344c449517ab9982a69bb59d83cb92",
+        "blob": "68984eab028cf4d04238f8feecf74a8f70dd1783"
+      },
+      "source_checks": {
+        "bytes": 1308,
+        "sha256": "58b06612aec129d76503dd775223bb64e13bf9d3242a9a5f3c40eb48ef2bc680",
+        "blob": "2453aa1023b63daab39054cb8943af22af51b188"
+      },
+      "baseline_browser": {
+        "bytes": 7068,
+        "sha256": "56e5d0f83142108cf6ddbd1e78625b07b1ce99d9ec9a18920ddb7f1bb78ef95b",
+        "blob": "4e2bafe48a0a16ecc948ac52ebd637857f4568d7"
+      },
+      "diagnostic_browser": {
+        "bytes": 48581,
+        "sha256": "0f88369c0c46f8cb56356d92e1bc144d937009ce51286955f97f39f20a2b097d",
+        "blob": "d9390ca6bc377274b880b8e47b24f22378fbccaa"
+      },
+      "candidate_browser": {
+        "bytes": 57946,
+        "sha256": "fbd72a62fe2b30b89432c5d4820537bae5a982fd76d3c04c5b061e834afdd9c3",
+        "blob": "e23a3618ce011b89da16f307b192a81565c14494"
+      },
+      "baseline_probe_verifier": {
+        "bytes": 280610,
+        "sha256": "17d79b28423f544d74a0d94e11d83e05cac93d36e6255dff709434e30c224444",
+        "blob": "8e93216a5cbb53bc89049423604a49631a35b116"
+      },
+      "baseline_harness": {
+        "bytes": 6135,
+        "sha256": "1c785140b93448cecb9053e1fe4d50aee0a6a4d3de12d187ba90bdc403ba4d00",
+        "blob": "106d6052180f36cb6a85b6845bf9fba52b30c98c"
+      },
+      "diagnostic_verifier": {
+        "bytes": 291725,
+        "sha256": "3fe1cadce60472a0068c6b0bbfaf79bb0bf992efe8d81e86938db7df257be476",
+        "blob": "3be5a00d75ae991f8932c4357545a1185ff485a3"
+      },
+      "diagnostic_harness": {
+        "bytes": 8821,
+        "sha256": "9f15edb7728d3f13cf1e4480ad9bc0319a85562b0c41f131cf5613e1883307e8",
+        "blob": "b37cb8166fa00c0f54a996bf8c1bb6896aa42c28"
+      }
+    },
+    "screenshot_hashes": [
+      {
+        "name": "answer-recovery-320-zh.png",
+        "bytes": 133966,
+        "sha256": "cb30d3a3cdd69dad142e692a616d60c55109e669eb09b4f8449e16318ef406a6",
+        "blob": "69564b05491f76e9aef9772fe48ea4ab66a19b4b"
+      },
+      {
+        "name": "answer-recovery-390-en.png",
+        "bytes": 141547,
+        "sha256": "dfc51c6841713f4c4b5d3dc71b732c87c7b25a43c74c59f74e4c71d5f15b2d06",
+        "blob": "b473c04cf122aa684773886ca51869a71ddc7598"
+      },
+      {
+        "name": "copy-fallback-320-zh.png",
+        "bytes": 101696,
+        "sha256": "3e774c4811dfbda01a3967cf07efd5fc14561b489998c3f41cb6e2c30ba2361a",
+        "blob": "8512c66a792086cf2ea079565b37c31cbe166744"
+      },
+      {
+        "name": "copy-fallback-390-en.png",
+        "bytes": 125351,
+        "sha256": "68cdf718865c4cfc6d5436f299ea037fc76877e1eaf41dd5cd18dc05d171c044",
+        "blob": "a36f868026251265db1092729506991cb6f9ad6a"
+      }
+    ]
+  },
+  "paper": {
+    "file": "01M5H6EARN9YHQV17JC6ZG9BRY",
+    "page": "p-7-0",
+    "root": "7M9-0",
+    "extend_existing_module": "7NI-0",
+    "modules": 18,
+    "nodes": 57,
+    "new_ui_specimens": false,
+    "visual_review": {
+      "inspected": [
+        "copy-fallback-390-en.png",
+        "copy-fallback-320-zh.png",
+        "answer-recovery-390-en.png",
+        "answer-recovery-320-zh.png"
+      ],
+      "findings": "Manual-copy field remains selected, localized and contained at EN390/ZH320; Close remains visible; source-card/receipt and answer recovery render without horizontal page overflow. This phase changes behavior and builder guidance, not product visual styles."
+    }
+  },
+  "limits": [
+    "Generated-main/CSS/JS component proof; no full shared-shell or fonts acceptance",
+    "Clipboard outcomes and pending-render setter callback are explicit injections; no operating-system clipboard writes",
+    "Chrome retained focus when Copy was disabled; no automatic native disabled-button blur is claimed",
+    "Injected pagehide verifies focus suppression/retirement, not actual BFCache",
+    "Native OS IME, spoken assistive technology, live account/admission, current hosted CI and deployment are unproven",
+    "Original model01 EFFECT_UNKNOWN/ROOT_UNVERIFIED and all Draft/release holds remain unchanged"
+  ]
+}

@@ -1,0 +1,123 @@
+"""Manual-copy focus ordering on actual generated-main fixtures.
+
+A controlled clipboard fixture and before-hide probe observe only the existing
+copy-feedback owner. No system clipboard, shared-shell/fonts, native OS IME,
+AT speech, live account, actual BFCache or release acceptance is claimed.
+"""
+import argparse
+import ast
+from datetime import datetime, timezone
+import hashlib
+import http.server
+import json
+import re
+from pathlib import Path
+import threading
+import traceback
+from urllib.parse import parse_qs, urlencode, urlsplit
+from bs4 import BeautifulSoup
+from playwright.sync_api import sync_playwright, expect
+
+parser=argparse.ArgumentParser()
+parser.add_argument('--root',type=Path,required=True)
+parser.add_argument('--executable',required=True)
+parser.add_argument('--baseline',action='store_true')
+parser.add_argument('--case',default='')
+args=parser.parse_args()
+args.site=args.root/('baseline' if args.baseline else 'candidate')
+args.out=args.root/('baseline-proof' if args.baseline else 'candidate-proof')
+args.out.mkdir(exist_ok=True)
+source=args.site
+script=(source/'gmi.js').read_text()
+style=(args.root/'templates/theme.css').read_text()+'\n'+(source/'gmi.css').read_text()
+parts={}
+for name in ('gmi.html','gmi-index.html','gmi-companies.html','gmi-issuer-mu.html','gmi-coverage.html','gmi-relationships.html','gmi-states.html'):
+    soup=BeautifulSoup((source/name).read_text(),'html.parser');main=soup.select_one('main#main');assert main is not None
+    extra=[]
+    for selector in ('#gmi-topic-data','[data-gmi-announcement]','[data-browse-dialog]'):
+        node=soup.select_one(selector)
+        if node is not None and main not in node.parents:extra.append(str(node))
+    parts[name]=str(main)+''.join(extra)
+report={'generated_at':datetime.now(timezone.utc).isoformat(),'baseline':args.baseline,'scope':__doc__.strip(),
+        'script_sha256':hashlib.sha256(script.encode()).hexdigest(),
+        'gmi_css_sha256':hashlib.sha256((source/'gmi.css').read_bytes()).hexdigest(),
+        'verifier_sha256':hashlib.sha256((args.root/'verify_product_browser.py').read_bytes()).hexdigest(),
+        'inputs':json.loads((args.root/'input-bindings.json').read_text()),
+        'cases':[],'contexts':0,'screenshots':[],'page_errors':[]}
+documents={}
+class Fixture(http.server.BaseHTTPRequestHandler):
+    def do_GET(self):
+        body=documents.get(urlsplit(self.path).path)
+        if body is None:self.send_error(404);return
+        payload=body.encode()
+        self.send_response(200);self.send_header('Content-Type','text/html; charset=utf-8');self.send_header('Content-Length',str(len(payload)));self.end_headers();self.wfile.write(payload)
+    def log_message(self,*args):pass
+server=http.server.ThreadingHTTPServer(('127.0.0.1',0),Fixture)
+threading.Thread(target=server.serve_forever,daemon=True).start()
+base=f'http://127.0.0.1:{server.server_port}'
+context_routes={}
+def component_html(name,theme='light',language='en'):
+    return '<!doctype html><html data-lang="'+language+'" data-theme="'+theme+'"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>'+style+'</style></head><body class="page-macro gmi-page gmi-product">'+parts[name]+'<script>'+script+'</script></body></html>'
+with sync_playwright() as pw:
+    browser=pw.chromium.launch(executable_path=args.executable,headless=True)
+    report['browser']=browser.version
+    def context(width=1440,theme='light',language='en',**kwargs):
+        c=browser.new_context(viewport={'width':width,'height':1000 if width>800 else 844},device_scale_factor=1,**kwargs)
+        report['contexts']+=1;prefix='/case-'+str(report['contexts'])+'/'
+        context_routes[c]=prefix
+        for name,part in parts.items():
+            documents[prefix+name]=component_html(name,theme,language)
+            documents['/'+name]=documents[prefix+name]
+        def serve(route):
+            if not route.request.url.startswith(base+'/'):return route.abort()
+            route.continue_()
+        c.route('**/*',serve)
+        c.on('page',lambda p:p.on('pageerror',lambda e:report['page_errors'].append(str(e))))
+        return c
+    def page_for(c,route='gmi.html'):
+        p=c.new_page();p.goto(base+context_routes[c]+route,wait_until='networkidle');return p
+    verifier=args.root/'verify_product_browser.py';parsed=ast.parse(verifier.read_text())
+    names={'copy_focus_page','copy_focus_failure','copy_focus_record','copy_focus_retirement','copy_focus_destinations',
+           'copy_focus_new_attempt','copy_focus_before_effect','copy_focus_failure_redirect','copy_focus_pagehide',
+           'clipboard_context_paths','answer_filter_recovery_paths','gmi_navigation_fit'}
+    definitions=sorted([n for n in ast.walk(parsed) if isinstance(n,ast.FunctionDef) and n.name in names and n.col_offset==4],key=lambda n:n.lineno)
+    assert {n.name for n in definitions}==names and len(definitions)==len(names)
+    # Preserve the accepted assertions; serve their same generated main in this isolated fixture.
+    clipboard=next(n for n in definitions if n.name=='clipboard_context_paths')
+    original=next(n for n in clipboard.body if isinstance(n,ast.Assign) and any(isinstance(t,ast.Name) and t.id=='original' for t in n.targets))
+    original.value=ast.Call(func=ast.Name(id='component_html',ctx=ast.Load()),args=[ast.Constant('gmi.html')],keywords=[])
+    ast.fix_missing_locations(original)
+    report['regression_fixture_adjustment']='Only clipboard original HTML acquisition is replaced with the same generated main, payload and candidate inline assets; accepted behavior assertions are unchanged. No shared shell acceptance.'
+    exec(compile(ast.Module(body=definitions,type_ignores=[]),str(verifier),'exec'),globals())
+    actions=[]
+    def check(name,action):actions.append((name,action))
+    for width,language in ((390,'en'),(320,'zh'),(320,'en'),(390,'zh'),(820,'en')):
+        check(f'copy-focus-close-{width}-{language}',lambda w=width,l=language:copy_focus_retirement(w,l,'close'))
+    for width,language,mode in ((390,'en','Enter'),(320,'zh','Space'),(390,'en','history'),(320,'zh','history')):
+        check(f'copy-focus-{mode}-{width}-{language}',lambda w=width,l=language,m=mode:copy_focus_retirement(w,l,m))
+    for width,language,mode in ((390,'en','unavailable'),(320,'zh','outside'),(390,'en','inside'),(320,'zh','unrelated')):
+        check(f'copy-focus-destination-{mode}-{width}-{language}',lambda w=width,l=language,m=mode:copy_focus_destinations(w,l,m))
+    for width,language,mode in ((390,'en','new-pending'),(320,'zh','new-pending'),(390,'en','new-failure'),(320,'zh','new-failure'),(390,'en','outer-copy'),(320,'zh','outer-copy')):
+        check(f'copy-focus-{mode}-{width}-{language}',lambda w=width,l=language,m=mode:copy_focus_new_attempt(w,l,m))
+    for width,language,mode in ((390,'en','navigation'),(390,'en','normalization'),(390,'en','pending-render'),(320,'zh','pending-render')):
+        check(f'copy-focus-before-effect-{mode}-{width}-{language}',lambda w=width,l=language,m=mode:copy_focus_before_effect(w,l,m))
+    check('copy-focus-failure-redirect-390-en',lambda:copy_focus_failure_redirect(390,'en'))
+    check('copy-focus-pagehide-320-zh',lambda:copy_focus_pagehide(320,'zh'))
+    check('clipboard-context-regression-390',lambda:clipboard_context_paths(390))
+    for width,language in ((390,'en'),(320,'zh')):
+        check(f'answer-recovery-regression-{width}-{language}',lambda w=width,l=language:answer_filter_recovery_paths(w,l))
+    actions=[(name,action) for name,action in actions if not args.case or args.case==name];assert actions,'No matching case selected'
+    report['expected_cases']=len(actions)
+    for name,action in actions:
+        before=report['contexts']
+        try:action();result={'name':name,'result':'PASS'}
+        except Exception:result={'name':name,'result':'FAIL','error':traceback.format_exc(limit=5)[:3500]}
+        result['contexts']=report['contexts']-before;report['cases'].append(result);print(json.dumps(result,ensure_ascii=False),flush=True)
+        if result['result']=='FAIL' and not args.baseline:break
+    browser.close()
+server.shutdown();server.server_close()
+report['complete']=len(report['cases'])==report['expected_cases']
+report['pass']=report['complete'] and all(x['result']=='PASS' for x in report['cases']) and not report['page_errors']
+(args.out/'browser-report.json').write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n')
+print(json.dumps({'browser':report['browser'],'passed':sum(x['result']=='PASS' for x in report['cases']),'total':len(report['cases']),'expected_cases':report['expected_cases'],'contexts':report['contexts'],'page_errors':report['page_errors'],'report':str(args.out/'browser-report.json')},ensure_ascii=False),flush=True)
+raise SystemExit(0 if report['pass'] else 1)

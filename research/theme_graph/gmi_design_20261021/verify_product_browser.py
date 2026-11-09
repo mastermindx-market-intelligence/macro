@@ -3871,6 +3871,245 @@ with sync_playwright() as pw:
         for width,language in ((390,'en'),(320,'zh'),(320,'en'),(390,'zh'),(820,'en')):
             check(f'dialog-return-{capability}-{width}-{language}',lambda w=width,l=language,c=capability:browse_dialog_return(w,l,c))
 
+    def copy_focus_page(c, route='gmi.html?fixture=copy-focus#theme=theme%3Ahbm_packaging&lens=chain'):
+        c.add_init_script("""(()=>{
+          window.__copyFocusClipboard={writes:[]};
+          Object.defineProperty(navigator,'clipboard',{configurable:true,value:{
+            writeText(url){return new Promise((resolve,reject)=>window.__copyFocusClipboard.writes.push({url,resolve,reject}));}
+          }});
+        })();""")
+        p=page_for(c,route)
+        expect(p.locator('[data-gmi-ready]')).to_have_count(1)
+        p.evaluate("""()=>{
+          const box=document.querySelector('.gmi-copy-fallback'),button=document.querySelector('[data-gmi-copy]');
+          const s=window.__copyFocus={phase:'setup',hides:[],ownedHides:[],focus:[],selects:[],pendingCallbacks:[]};
+          s.key=n=>n===button?'copy':n===document.querySelector('#gmi-share-url')?'address':
+            n===document.querySelector('[data-copy-close]')?'close':n===document.querySelector('#gmi-topic-title')?'title':
+            n===document.querySelector('[data-browse-open]')?'browse':n?.id||n?.tagName;
+          const desc=Object.getOwnPropertyDescriptor(HTMLElement.prototype,'hidden');
+          Object.defineProperty(HTMLElement.prototype,'hidden',{...desc,set(value){
+            if(this===box){
+              const event={phase:s.phase,value,active:s.key(document.activeElement),disabled:button.disabled,
+                address:document.querySelector('#gmi-share-url').value};
+              s.hides.push(event);if(value===true&&this.contains(document.activeElement))s.ownedHides.push(event);
+            }
+            desc.set.call(this,value);
+          }});
+          const focus=HTMLElement.prototype.focus;
+          HTMLElement.prototype.focus=function(options){
+            if(this===button||this===document.querySelector('#gmi-topic-title'))s.focus.push({phase:s.phase,target:s.key(this),preventScroll:!!options?.preventScroll});
+            return focus.call(this,options);
+          };
+          const select=HTMLInputElement.prototype.select;
+          HTMLInputElement.prototype.select=function(){
+            if(this.id==='gmi-share-url')s.selects.push({phase:s.phase,active:s.key(document.activeElement),address:this.value});
+            return select.call(this);
+          };
+          s.read=()=>({phase:s.phase,url:location.href,focus:s.key(document.activeElement),
+            hidden:box.hidden,address:document.querySelector('#gmi-share-url').value,disabled:button.disabled,
+            label:document.querySelector('[data-copy-label]').textContent,announcement:document.querySelector('[data-gmi-announcement]').textContent,
+            writes:window.__copyFocusClipboard.writes.map(x=>x.url),hides:[...s.hides],ownedHides:[...s.ownedHides],
+            focusCalls:[...s.focus],selects:[...s.selects],pendingCallbacks:[...s.pendingCallbacks]});
+        }""")
+        return p
+
+    def copy_focus_failure(p):
+        before=p.evaluate('window.__copyFocusClipboard.writes.length')
+        p.locator('[data-gmi-copy]').click()
+        expect(p.locator('[data-gmi-copy]')).to_be_disabled()
+        p.evaluate("(i)=>window.__copyFocusClipboard.writes[i].reject(new Error('controlled copy failure'))",before)
+        expect(p.locator('.gmi-copy-fallback')).to_be_visible()
+        expect(p.locator('#gmi-share-url')).to_be_focused()
+        expect(p.locator('#gmi-share-url')).to_have_value(p.url)
+        return before
+
+    def copy_focus_record(p,width,language,mode,interactive=True):
+        v=p.evaluate('window.__copyFocus.read()')
+        report.setdefault('copy_focus_observations',[]).append({'width':width,'language':language,'mode':mode,'interactive':interactive,**v})
+        if interactive:assert not v['ownedHides'],v['ownedHides']
+        return v
+
+    def copy_focus_retirement(width,language,mode):
+        with context(width,'dark' if language=='en' else 'light',language) as c:
+            p=copy_focus_page(c)
+            if mode=='history':
+                p.evaluate("""()=>new Promise(resolve=>{
+                  addEventListener('hashchange',()=>requestAnimationFrame(()=>resolve()),{once:true});
+                  location.hash='theme=theme%3Ahbm_packaging&lens=chain&q=Micron';
+                })""")
+            copy_focus_failure(p)
+            if mode=='close' and (width,language) in ((390,'en'),(320,'zh')):
+                path=args.out/f'copy-fallback-{width}-{language}.png'
+                p.screenshot(path=str(path));report['screenshots'].append(path.name)
+            p.evaluate('(mode)=>window.__copyFocus.phase=mode',mode)
+            if mode=='close':p.locator('[data-copy-close]').click()
+            elif mode in ('Enter','Space'):
+                p.locator('[data-copy-close]').focus();p.keyboard.press(mode)
+            elif mode=='history':
+                p.go_back();expect(p.locator('[data-topic-search]')).to_have_value('')
+            else:raise AssertionError(mode)
+            expect(p.locator('.gmi-copy-fallback')).not_to_be_visible()
+            v=copy_focus_record(p,width,language,mode)
+            expect(p.locator('[data-gmi-copy]')).to_be_focused()
+            assert v['address']=='' and not v['disabled']
+            assert all(x['preventScroll'] for x in v['focusCalls'])
+            if mode=='history':
+                copy_focus_failure(p);p.evaluate("window.__copyFocus.phase='forward'")
+                p.go_forward();expect(p.locator('[data-topic-search]')).to_have_value('Micron')
+                expect(p.locator('.gmi-copy-fallback')).not_to_be_visible()
+                expect(p.locator('[data-gmi-copy]')).to_be_focused()
+                v=copy_focus_record(p,width,language,'forward')
+                assert v['address']=='' and not v['disabled'] and len(v['writes'])==2
+
+    def copy_focus_destinations(width,language,mode):
+        with context(width,'dark' if language=='en' else 'light',language) as c:
+            p=copy_focus_page(c);copy_focus_failure(p)
+            p.evaluate("""mode=>{
+              const s=window.__copyFocus,button=document.querySelector('[data-gmi-copy]');
+              s.phase=mode;s.focus=[];
+              if(mode==='unavailable')button.style.display='none';
+              else if(mode==='outside')button.addEventListener('focus',()=>document.querySelector('[data-browse-open]').focus(),{once:true});
+              else if(mode==='inside')button.addEventListener('focus',()=>document.querySelector('#gmi-share-url').focus(),{once:true});
+              else if(mode==='unrelated')document.querySelector('#gmi-topic-title').focus();
+            }""",mode)
+            if mode=='unrelated':
+                p.evaluate("window.__copyFocus.focus=[]")
+                p.locator('[data-copy-close]').evaluate('(n)=>n.click()')
+            else:p.locator('[data-copy-close]').click()
+            expect(p.locator('.gmi-copy-fallback')).not_to_be_visible()
+            expected='[data-browse-open]' if mode=='outside' else '#gmi-topic-title'
+            expect(p.locator(expected)).to_be_focused()
+            v=copy_focus_record(p,width,language,mode)
+            assert v['address']=='' and len(v['writes'])==1
+            if mode=='unrelated':assert v['focusCalls']==[]
+            else:assert all(x['preventScroll'] for x in v['focusCalls'])
+
+    def copy_focus_new_attempt(width,language,mode):
+        with context(width,'dark' if language=='en' else 'light',language) as c:
+            p=copy_focus_page(c);copy_focus_failure(p)
+            p.evaluate("""mode=>{
+              const s=window.__copyFocus,button=document.querySelector('[data-gmi-copy]');
+              s.phase=mode;s.focus=[];
+              button.addEventListener('focus',()=>{
+                if(mode==='new-failure')Object.defineProperty(navigator,'clipboard',{configurable:true,value:undefined});
+                button.click();
+              },{once:true});
+            }""",mode)
+            if mode=='outer-copy':p.locator('[data-gmi-copy]').evaluate('(n)=>n.click()')
+            else:p.locator('[data-copy-close]').click()
+            v=copy_focus_record(p,width,language,mode)
+            if mode=='new-failure':
+                expect(p.locator('.gmi-copy-fallback')).to_be_visible()
+                expect(p.locator('#gmi-share-url')).to_be_focused()
+                expect(p.locator('#gmi-share-url')).to_have_value(p.url)
+                expect(p.locator('[data-gmi-copy]')).to_be_enabled()
+                assert len(v['writes'])==1 and v['announcement']
+            else:
+                expect(p.locator('[data-gmi-copy]')).to_be_disabled()
+                expect(p.locator('[data-copy-label]')).to_have_text('Copying…' if language=='en' else '正在复制…')
+                expect(p.locator('.gmi-copy-fallback')).not_to_be_visible()
+                assert len(v['writes'])==2 and v['address']==''
+                p.evaluate('window.__copyFocusClipboard.writes[1].resolve()')
+                expect(p.locator('[data-copy-label]')).to_have_text('Link copied' if language=='en' else '链接已复制')
+                expect(p.locator('[data-gmi-copy]')).to_be_enabled()
+                copy_focus_record(p,width,language,mode+'-settled')
+
+    def copy_focus_before_effect(width,language,mode):
+        with context(width,'dark' if language=='en' else 'light',language) as c:
+            if mode=='normalization':
+                p=copy_focus_page(c,'gmi.html?fixture=copy-normalization')
+                assert urlsplit(p.url).fragment==''
+                p.locator('[data-gmi-copy]').click()
+                expect(p.locator('[data-gmi-copy]')).to_be_disabled()
+                v=copy_focus_record(p,width,language,mode)
+                assert len(v['writes'])==1 and v['writes'][0]==p.url
+                assert parse_qs(urlsplit(p.url).fragment)['theme']==['theme:hbm_packaging']
+                assert urlsplit(p.url).query=='fixture=copy-normalization'
+                return
+            p=copy_focus_page(c)
+            if mode=='navigation':
+                copy_focus_failure(p)
+                destination='theme:conventional_dram'
+                p.evaluate("""id=>{
+                  window.__copyFocus.phase='navigation';
+                  document.querySelector('[data-gmi-copy]').addEventListener('focus',()=>{
+                    location.hash='theme='+encodeURIComponent(id)+'&lens=chain';
+                  },{once:true});
+                  document.querySelector('[data-gmi-copy]').click();
+                }""",destination)
+                topic=next(t for t in json.loads(p.locator('#gmi-topic-data').text_content())['topics'] if t['id']==destination)
+                expect(p.locator('#gmi-topic-title')).to_have_text(topic[language])
+                p.evaluate('()=>new Promise(requestAnimationFrame)')
+                v=copy_focus_record(p,width,language,mode)
+                assert parse_qs(urlsplit(p.url).fragment)['theme']==[destination]
+                assert len(v['writes'])==1 and not v['disabled'] and v['hidden']
+            elif mode=='pending-render':
+                p.evaluate("""()=>{
+                  const s=window.__copyFocus,button=document.querySelector('[data-gmi-copy]');
+                  s.phase='pending-render';
+                  const desc=Object.getOwnPropertyDescriptor(HTMLButtonElement.prototype,'disabled');
+                  let injected=false;
+                  Object.defineProperty(HTMLButtonElement.prototype,'disabled',{...desc,set(value){
+                    desc.set.call(this,value);
+                    if(this===button&&value===true&&!injected){
+                      injected=true;s.pendingCallbacks.push({kind:'injected-disabled-callback',disabled:button.disabled});
+                      // Explicit synchronous fault; this Chrome did not blur automatically.
+                      window.dispatchEvent(new PopStateEvent('popstate'));
+                      button.focus();button.click();
+                    }
+                  }});
+                }""")
+                p.locator('[data-gmi-copy]').click()
+                expect(p.locator('[data-gmi-copy]')).to_be_disabled()
+                v=copy_focus_record(p,width,language,mode)
+                assert v['pendingCallbacks']==[{'kind':'injected-disabled-callback','disabled':True}],v
+                assert len(v['writes'])==1 and v['writes'][0]==p.url
+                p.evaluate('window.__copyFocusClipboard.writes[0].resolve()')
+                expect(p.locator('[data-copy-label]')).to_have_text('Link copied' if language=='en' else '链接已复制')
+                copy_focus_record(p,width,language,mode+'-settled')
+            else:raise AssertionError(mode)
+
+    def copy_focus_failure_redirect(width,language):
+        with context(width,'dark' if language=='en' else 'light',language) as c:
+            p=copy_focus_page(c)
+            p.evaluate("""()=>{
+              window.__copyFocus.phase='failure-focus-redirect';
+              document.querySelector('#gmi-share-url').addEventListener('focus',()=>{
+                document.querySelector('#gmi-topic-title').focus();
+              },{once:true});
+            }""")
+            p.locator('[data-gmi-copy]').click()
+            p.evaluate("window.__copyFocusClipboard.writes[0].reject(new Error('controlled failure'))")
+            expect(p.locator('.gmi-copy-fallback')).to_be_visible()
+            expect(p.locator('#gmi-topic-title')).to_be_focused()
+            v=copy_focus_record(p,width,language,'failure-focus-redirect')
+            assert v['selects']==[] and len(v['writes'])==1 and v['address']==p.url
+
+    def copy_focus_pagehide(width,language):
+        with context(width,'dark' if language=='en' else 'light',language) as c:
+            p=copy_focus_page(c);copy_focus_failure(p)
+            p.evaluate("""()=>{
+              window.__copyFocus.phase='pagehide';window.__copyFocus.focus=[];
+              window.dispatchEvent(new PageTransitionEvent('pagehide',{persisted:true}));
+            }""")
+            expect(p.locator('.gmi-copy-fallback')).not_to_be_visible()
+            v=copy_focus_record(p,width,language,'pagehide',interactive=False)
+            assert v['focusCalls']==[] and v['address']=='' and not v['disabled'] and v['announcement']==''
+            assert len(v['ownedHides'])==1 and v['ownedHides'][0]['phase']=='pagehide'
+
+    for width,language in ((390,'en'),(320,'zh'),(320,'en'),(390,'zh'),(820,'en')):
+        check(f'copy-focus-close-{width}-{language}',lambda w=width,l=language:copy_focus_retirement(w,l,'close'))
+    for width,language,mode in ((390,'en','Enter'),(320,'zh','Space'),(390,'en','history'),(320,'zh','history')):
+        check(f'copy-focus-{mode}-{width}-{language}',lambda w=width,l=language,m=mode:copy_focus_retirement(w,l,m))
+    for width,language,mode in ((390,'en','unavailable'),(320,'zh','outside'),(390,'en','inside'),(320,'zh','unrelated')):
+        check(f'copy-focus-destination-{mode}-{width}-{language}',lambda w=width,l=language,m=mode:copy_focus_destinations(w,l,m))
+    for width,language,mode in ((390,'en','new-pending'),(320,'zh','new-pending'),(390,'en','new-failure'),(320,'zh','new-failure'),(390,'en','outer-copy'),(320,'zh','outer-copy')):
+        check(f'copy-focus-{mode}-{width}-{language}',lambda w=width,l=language,m=mode:copy_focus_new_attempt(w,l,m))
+    for width,language,mode in ((390,'en','navigation'),(390,'en','normalization'),(390,'en','pending-render'),(320,'zh','pending-render')):
+        check(f'copy-focus-before-effect-{mode}-{width}-{language}',lambda w=width,l=language,m=mode:copy_focus_before_effect(w,l,m))
+    check('copy-focus-failure-redirect-390-en',lambda:copy_focus_failure_redirect(390,'en'))
+    check('copy-focus-pagehide-320-zh',lambda:copy_focus_pagehide(320,'zh'))
+
     browser.close()
 server.shutdown()
 report['pass'] = all(c['result']=='PASS' for c in report['cases']) and not report['page_errors']

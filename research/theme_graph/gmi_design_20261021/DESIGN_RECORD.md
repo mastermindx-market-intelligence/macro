@@ -1585,3 +1585,47 @@ Paired JS blob **15b39754aa170a97cd9468a4823142718ff6284a**, SHA256 **c6d7011f82
 Extend existing Build module06 body **7NB-0** with this native-capability fallback: reuse the qualified full-index destination, retain the ordinary dialog owner and distinguish valid-payload capability failure from failed topic data. The existing index and Browse workflow specimens already show these destinations; no duplicate UI or extra explanatory product text is needed. The eighteen-module guide and current product styles remain intact.
 
 Original model01 `EFFECT_UNKNOWN/ROOT_UNVERIFIED`, Draft and all release holds remain. The focused proof does not establish legacy-browser support, full shared shell/fonts, native OS IME, spoken AT, live account/admission, hosted current-head CI or deployment.
+
+
+## 11.38 · Retire manual-copy feedback before it hides focus — 9 Nov 2026
+
+### Confirmed problem and existing owner
+
+At parent `c19d6185f0d06b9ef8af3fb8979d121d32e36c39`, Close and history retirement hide the manual-copy panel before moving its focused Close button or address field. The prior final-focus assertion could pass after that order violation. An actual hidden-property probe now observes focus immediately before the native setter. Baseline PID **73607**, exit1, **5.26 s**, reproduces both defects: EN390 Close and ZH320 actual Back.
+
+Keep visibility and its conditional recovery together in **renderCopyFeedback**. Retirement invalidates the old attempt, clears its timer and only its owned announcement, then enters that renderer. Before hiding a panel that still contains focus, try the current reachable Copy button and then the existing topic heading with `preventScroll`. Re-read actual focus after each callback: retain a surviving redirect, but move again if a callback redirects into the retiring panel. Skip hidden, inert, disconnected or disabled destinations. An unrelated focused control is untouched. Close delegates this owner and has no late focus override.
+
+### Separate rendering from the copy attempt
+
+The renderer's local pass counter protects only its synchronous projection. If a callback starts a newer render during disabled-state preparation, recovery or hiding, the older pass returns before clearing the newer address or feedback. It does not grant permission to enable a newer pending button. The existing attempt object plus full URL and selected theme continue to decide whether asynchronous completion belongs to the current view.
+
+Copy captures its invocation URL/theme before retirement. If recovery starts a newer attempt or changes that context, the outer action yields **before** normalizing the URL. This matters when a focus callback assigns a new hash: its hashchange event is asynchronous, so checking only the render pass could overwrite that navigation from old state. Ordinary normalization still runs when context is unchanged and produces one canonical write.
+
+After rendering pending feedback, require `currentCopy(attempt)` before issuing `clipboard.writeText`. After success/failure rendering, check it again before announcing or installing continuation. After failure focuses the address, select it only if the same attempt remains current and the field still actually owns focus. Locale-only rendering preserves the attempt; a render-pass change alone must not discard a valid asynchronous completion.
+
+Page exit is deliberately different: the explicit pagehide wrapper calls `retireCopy(false)`. It invalidates the same state and hides the old panel without programmatic focus recovery. An already-issued system clipboard write cannot be cancelled. No corrective write, retry queue, persistence, URL builder or second copy lifecycle is added.
+
+### Proof and rejected fixture assumption
+
+Final PID **99607**, exit0, **54.32 s**: **28 cases / 50 fresh anonymous contexts**, Chrome **157.0.8103.39**, zero page errors. The focused matrix includes:
+
+- Close at EN/ZH390/320 and EN820, trusted Enter/Space, and actual Back/Forward while the manual field owns focus.
+- Unavailable Copy, redirects to surviving or retiring controls, and unrelated focus.
+- A newer pending attempt or immediately failed attempt started by recovery, plus a programmatic outer Copy that must not start an extra write.
+- Navigation during recovery without manually dispatching hashchange, ordinary bare-URL normalization, and explicitly injected synchronous pending-render supersession before write issuance.
+- A failure-focus redirect that must not be followed by stale address selection, and separately qualified pagehide focus suppression.
+- The unchanged **clipboard_context_paths(390)** regression in 21 contexts, including late success/failure, ABA, timers, history, locale and focus intent; two unchanged answer-recovery cases in four contexts preserve filters, source-card identity and open receipts.
+
+There are **32 interactive observation snapshots / zero owned hides**. The one separate injected-pagehide snapshot intentionally records a focused-panel hide and **zero recovery focus calls**; it is not counted as an interactive guarantee or actual BFCache proof. Four final native captures—EN390/ZH320 manual fallback and answer recovery—were inspected.
+
+Diagnostic PID **95180** passed 21 cases, then failed a test assumption: this Chrome did **not** emit blur when the focused Copy button was disabled. The retained report shows focus still on Copy and an empty blur log. The corrected test explicitly hooks the disabled setter to inject a synchronous retirement/new attempt. Its meaning is callback supersession before clipboard issuance, not a claim about automatic native blur. Product behavior was not changed to manufacture that browser event.
+
+Only the paired JavaScript changes in product output. All seven HTML pages and CSS are byte-exact. All **112 prior qualified verifier definitions remain AST-exact**; nine new helpers and their canonical registrations are added. The component harness substitutes only the legacy clipboard test's original-HTML acquisition with the same generated main, payload and inline assets; its accepted behavioral assertions remain unchanged.
+
+Paired JS blob **c5d32d689ffae6caedf72a8afef317c9900c4428**, SHA256 **4ca7c46fd9a9720819ce8153c54998114cee3dc9cf9fc305bf92bc7be165152e**. [COPY_FOCUS_VALIDATION_20261109.json](COPY_FOCUS_VALIDATION_20261109.json) retains full baseline, diagnostic and final reports, exact input/output hashes, commands, screenshot hashes and the source self-check.
+
+### Paper and release boundary
+
+Extend existing Build module07 body **7NI-0** with pre-hide recovery, local projection versus attempt identity, effect-time guards and the pagehide exception. Keep the same eighteen modules / 57 nodes; the visible product already has the manual-copy panel and needs no added explanatory UI or duplicate specimen.
+
+PR10676 remains Draft with the original model01 `EFFECT_UNKNOWN/ROOT_UNVERIFIED` and all release holds. Controlled clipboard/component proof does not establish operating-system clipboard access, full shared shell/fonts, native OS IME, spoken assistive technology, actual BFCache, live account/admission, current hosted CI or deployment.
