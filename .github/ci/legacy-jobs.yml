@@ -50317,6 +50317,7 @@ jobs:
       - "contracts/intelligence_workspace/datapoint_value.schema.json"
       - "contracts/market_ontology/nuclear_theme_research.evidence.v1.schema.json"
       - "contracts/market_ontology/nuclear_theme_research.v1.schema.json"
+      - "contracts/market_ontology/robotics_theme_research.v1.schema.json"
       - "contracts/market_ontology/semiconductor_theme_research.v1.schema.json"
       - "contracts/market_os/security_state.v1.schema.json"
       - "contracts/theme_graph/curation_assertion.v1.schema.json"
