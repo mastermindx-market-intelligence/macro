@@ -1,0 +1,76 @@
+{
+  "source_pin": "1c85878983323f9ab38fff56a15771166d0f8aeb",
+  "scope": "Actual function extraction; synthetic inputs; computeRvol stubbed null; no browser or runtime market proof",
+  "python": {
+    "missing": {
+      "L1_washout_recent": null,
+      "L2_reclaim": null,
+      "L3_rvol_elevated": null,
+      "L4_vol_durable": null,
+      "L5_flow_bid": null,
+      "L6_upturn_organ": null,
+      "L7_leader_quality": null,
+      "K": 0
+    },
+    "known_trap": {
+      "L1_washout_recent": null,
+      "L2_reclaim": null,
+      "L3_rvol_elevated": null,
+      "L4_vol_durable": null,
+      "L5_flow_bid": null,
+      "L6_upturn_organ": null,
+      "L7_leader_quality": false,
+      "K": 0
+    }
+  },
+  "javascript": {
+    "missing": {
+      "legs": [
+        null,
+        false,
+        false,
+        false,
+        null,
+        false,
+        null
+      ],
+      "K": 0
+    },
+    "status_only": {
+      "legs": [
+        true,
+        false,
+        false,
+        false,
+        null,
+        false,
+        null
+      ],
+      "K": 1
+    },
+    "squeeze_only": {
+      "legs": [
+        true,
+        false,
+        false,
+        false,
+        null,
+        false,
+        null
+      ],
+      "K": 1
+    },
+    "known_trap": {
+      "legs": [
+        null,
+        false,
+        false,
+        false,
+        null,
+        false,
+        null
+      ],
+      "K": 0
+    }
+  }
+}

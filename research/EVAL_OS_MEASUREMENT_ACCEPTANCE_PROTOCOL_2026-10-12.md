@@ -1,0 +1,17 @@
+# Evaluation OS finite measurement acceptance protocol
+
+Root-approved synthetic INTERNAL QA only, frozen before implementation tests. Protocol EVAL-OS-MEASUREMENT-SYNTHETIC-QA-V1. Original commissioning root01a1333d-b0c0-7f33-9259-dd718391d9e4 explicitly authorized this bounded owner extension. Outcome access remains false.
+
+The immutable executable freeze and sixteen independently specified expected cases are in engine/neuralweb/eval/benchmark_eval_os_measurement_v1.json. The existing response_eval owner validates reported measurement meanings, using exact compatible numerical primitives lazily. It does not become a production financial evaluator, trial owner or validation authority. No rubric, fixed tags or score_response semantics change; all existing user-facing telemetry prohibitions apply.
+
+The estimand is deterministic correctness of stated contracts and arithmetic on literal synthetic inputs. Primary target, cohort, information cutoff, baseline, missingness, source rights, dependence, limits and joint acceptance are frozen in the JSON. Financial empirical power is not asserted: this finite QA accepts only exact oracle agreement for all registered cases, within absolute tolerance1e-12. A protected empirical comparison still requires its existing owner's rights, split/reveal, powered joint rule, admission and actual outcomes; this protocol cannot admit it.
+
+Registered coverage is one positive/adversarial pair for each of seven classes, plus a quantile pair. Ranking keeps the original eligible population. State labels require a declared taxonomy and availability. Detector matching is one alarm per event with expiry, missed events and false-alarm exposure. Descriptive/generative checks compare frozen typed source facts, and different windows are legitimate distinct readings. Salience requires an independent reference and representative coverage.
+
+Observations o1/o2 overlap in b1 and o3 lies in b2: independent blocks=2, distinct rows=3. Duplicates or additional overlapping intervals cannot inflate independent blocks. Trial configurations=2 and looks=3 are separately enumerated and bounded. The synthetic inspected holdout stays marked contaminated; it supplies no prospective financial evidence. Mutants must catch inflated block counts, altered trial/look counts, erased contamination and changed primary target. No financial trial registration or reserved holdout is created/read/reset.
+
+Completion requires actual class payload consumption, exact positive values, intended negative reasons, protocol mutants, unchanged incumbent rubric tests and independent exact-diff review. It supplies internal QA acceptance, not product release, mature economic evidence or new financial authority.
+
+Pre-test clarifications (before any new acceptance run): exact target/unit keys distinguish reading scopes, caller oracle/contract tampering cannot change frozen reference expectations, and observation rows are bounded at16 before overlap grouping. These clarify the synthetic QA contract; no empirical outcomes were accessed.
+
+Implementation-review closures preserve the frozen primary target, metric, population and literal expected values: frozen occurrence bodies/classes are immutable; unmatched alarm/event time shapes and every reading scope are validated; original ranking eligibility now carries the already-declared known-at<=decision cutoff. Independent review supplied erasure/rewrite/class-tamper mutants. These are contract hardening corrections, not outcome-selected acceptance changes or new financial experiments.

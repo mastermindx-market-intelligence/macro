@@ -1,0 +1,24 @@
+{
+  "schema": "tiingo.original_readonly_preflight_actual_parent_consumption/v1",
+  "root": "01a12ab6-92cb-7c42-a711-42673ebb6b50",
+  "recorded_at_utc": "2026-10-13T02:55:53.865323+00:00",
+  "original_tool_session": 88284,
+  "original_exit_code": 0,
+  "actual_original_terminal_return_consumed": true,
+  "method_sha256": "c34984167bad9bdb5eccee7a3bba9a9b826d032a78d0ee83dd24de3f236c5aaa",
+  "plan_sha256": "e61d27bf194a541279a3829f455a776df2fa52bc53ad631d958ce3692868cd63",
+  "original_log_sha256": "54a1754abfdb1e77b3ae7c4b3827a28ec1ec7014027a8399f51075d5ed70e2e8",
+  "result": {
+    "selected_original_never_admitted_symbols": 1893,
+    "source_pins_verified": true,
+    "held_symbols_excluded": 30,
+    "existing_eod_symbol_collisions": 0,
+    "original_run_settled": true,
+    "credentials_read": false,
+    "network_requests": 0
+  },
+  "provider_requests": 0,
+  "credentials_read": false,
+  "archive_writes": 0,
+  "capture_complete_claimed": false
+}

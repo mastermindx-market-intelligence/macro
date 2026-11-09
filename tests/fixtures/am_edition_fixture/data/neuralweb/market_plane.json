@@ -1,0 +1,12 @@
+{
+  "asof": "2026-09-08",
+  "verdict": {
+    "verdict": "RISK_ON",
+    "score": 75,
+    "label_en": "Risk-on",
+    "label_zh": "风险偏好"
+  },
+  "contradiction_count": 0,
+  "stale": false,
+  "gaps": []
+}

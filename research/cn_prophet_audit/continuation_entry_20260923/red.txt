@@ -1,0 +1,200 @@
+FFFFFFFF                                                                 [100%]
+=================================== FAILURES ===================================
+_______ test_continuation_final_accumulate_enters_buy_without_new_bottom _______
+
+    def test_continuation_final_accumulate_enters_buy_without_new_bottom():
+        ti = _continuation_fixture()
+>       b = _continuation_board(ti)
+            ^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_china_act_now.py:1104:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+ti = {'as_of': '2026-09-21', 'themes': [{'id': 'cn_example', 'name': 'Example leader', 'name_zh': '示例领涨主题', 'score': 75, .....'id': 'cn_example', 'name': 'Example leader', 'name_zh': '示例领涨主题', 'score': 75, ...}], 'reduce': [], 'conflicted': []}}
+clock = '2026-09-21T10:00:00+00:00', cycles = None
+
+    def _continuation_board(ti, clock="2026-09-21T10:00:00+00:00", cycles=None):
+        from datetime import datetime
+        from engine.china_act_now import assemble_act_now
+>       return assemble_act_now([], ti, cycles, observed_at=datetime.fromisoformat(clock))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: assemble_act_now() got an unexpected keyword argument 'observed_at'
+
+tests/test_china_act_now.py:1099: TypeError
+_______ test_continuation_preserves_raw_lanes_and_exact_source_evidence ________
+
+    def test_continuation_preserves_raw_lanes_and_exact_source_evidence():
+        from copy import deepcopy
+        ti = _continuation_fixture()
+        original = deepcopy(ti)
+>       b = _continuation_board(ti)
+            ^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_china_act_now.py:1115:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+ti = {'as_of': '2026-09-21', 'themes': [{'id': 'cn_example', 'name': 'Example leader', 'name_zh': '示例领涨主题', 'score': 75, .....'id': 'cn_example', 'name': 'Example leader', 'name_zh': '示例领涨主题', 'score': 75, ...}], 'reduce': [], 'conflicted': []}}
+clock = '2026-09-21T10:00:00+00:00', cycles = None
+
+    def _continuation_board(ti, clock="2026-09-21T10:00:00+00:00", cycles=None):
+        from datetime import datetime
+        from engine.china_act_now import assemble_act_now
+>       return assemble_act_now([], ti, cycles, observed_at=datetime.fromisoformat(clock))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: assemble_act_now() got an unexpected keyword argument 'observed_at'
+
+tests/test_china_act_now.py:1099: TypeError
+_ test_continuation_remains_buyable_across_three_months_of_clean_flag_changes __
+
+    def test_continuation_remains_buyable_across_three_months_of_clean_flag_changes():
+        from datetime import date, timedelta
+        from lib import cn_calendar
+        day, count = date(2026, 6, 22), 0
+        while day <= date(2026, 9, 21):
+            if cn_calendar.is_session(day):
+                ti = _continuation_fixture(day.isoformat(), clean=bool(count % 2))
+>               b = _continuation_board(ti, day.isoformat() + "T10:00:00+00:00")
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_china_act_now.py:1133:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+ti = {'as_of': '2026-06-22', 'themes': [{'id': 'cn_example', 'name': 'Example leader', 'name_zh': '示例领涨主题', 'score': 75, .....'id': 'cn_example', 'name': 'Example leader', 'name_zh': '示例领涨主题', 'score': 75, ...}], 'reduce': [], 'conflicted': []}}
+clock = '2026-06-22T10:00:00+00:00', cycles = None
+
+    def _continuation_board(ti, clock="2026-09-21T10:00:00+00:00", cycles=None):
+        from datetime import datetime
+        from engine.china_act_now import assemble_act_now
+>       return assemble_act_now([], ti, cycles, observed_at=datetime.fromisoformat(clock))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: assemble_act_now() got an unexpected keyword argument 'observed_at'
+
+tests/test_china_act_now.py:1099: TypeError
+___ test_continuation_final_hold_trim_avoid_overrides_stale_affirmative_lane ___
+
+    def test_continuation_final_hold_trim_avoid_overrides_stale_affirmative_lane():
+        for final in ("hold", "trim", "avoid"):
+            for clean in (True, False):
+>               b = _continuation_board(_continuation_fixture(clean=clean, final=final))
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_china_act_now.py:1144:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+ti = {'as_of': '2026-09-21', 'themes': [{'id': 'cn_example', 'name': 'Example leader', 'name_zh': '示例领涨主题', 'score': 75, .....me': 'Example leader', 'name_zh': '示例领涨主题', 'score': 75, ...}], 'add_on_pullback': [], 'reduce': [], 'conflicted': []}}
+clock = '2026-09-21T10:00:00+00:00', cycles = None
+
+    def _continuation_board(ti, clock="2026-09-21T10:00:00+00:00", cycles=None):
+        from datetime import datetime
+        from engine.china_act_now import assemble_act_now
+>       return assemble_act_now([], ti, cycles, observed_at=datetime.fromisoformat(clock))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: assemble_act_now() got an unexpected keyword argument 'observed_at'
+
+tests/test_china_act_now.py:1099: TypeError
+______ test_continuation_same_session_correction_removes_buy_immediately _______
+
+    def test_continuation_same_session_correction_removes_buy_immediately():
+        ti = _continuation_fixture()
+>       assert _continuation_board(ti)["display_lanes"]["buy_now"]
+               ^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_china_act_now.py:1154:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+ti = {'as_of': '2026-09-21', 'themes': [{'id': 'cn_example', 'name': 'Example leader', 'name_zh': '示例领涨主题', 'score': 75, .....'id': 'cn_example', 'name': 'Example leader', 'name_zh': '示例领涨主题', 'score': 75, ...}], 'reduce': [], 'conflicted': []}}
+clock = '2026-09-21T10:00:00+00:00', cycles = None
+
+    def _continuation_board(ti, clock="2026-09-21T10:00:00+00:00", cycles=None):
+        from datetime import datetime
+        from engine.china_act_now import assemble_act_now
+>       return assemble_act_now([], ti, cycles, observed_at=datetime.fromisoformat(clock))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: assemble_act_now() got an unexpected keyword argument 'observed_at'
+
+tests/test_china_act_now.py:1099: TypeError
+______ test_continuation_missing_stale_future_and_non_session_fail_closed ______
+
+    def test_continuation_missing_stale_future_and_non_session_fail_closed():
+        for session in (None, "bad", "2026-09-18", "2026-09-22", "2026-09-20"):
+>           b = _continuation_board(_continuation_fixture(session))
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_china_act_now.py:1162:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+ti = {'as_of': None, 'themes': [{'id': 'cn_example', 'name': 'Example leader', 'name_zh': '示例领涨主题', 'score': 75, ...}], 'ac...'id': 'cn_example', 'name': 'Example leader', 'name_zh': '示例领涨主题', 'score': 75, ...}], 'reduce': [], 'conflicted': []}}
+clock = '2026-09-21T10:00:00+00:00', cycles = None
+
+    def _continuation_board(ti, clock="2026-09-21T10:00:00+00:00", cycles=None):
+        from datetime import datetime
+        from engine.china_act_now import assemble_act_now
+>       return assemble_act_now([], ti, cycles, observed_at=datetime.fromisoformat(clock))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: assemble_act_now() got an unexpected keyword argument 'observed_at'
+
+tests/test_china_act_now.py:1099: TypeError
+_______ test_continuation_requires_complete_final_non_us_recommendation ________
+
+    def test_continuation_requires_complete_final_non_us_recommendation():
+        from copy import deepcopy
+        for changes in ({"label": "emerging"}, {"regime_demoted": True},
+                        {"chase_demoted": True}, {"ext_abs": None},
+                        {"ext_abs": float("nan")}, {"textures": {}}, {"reco": "enter"}):
+            ti = _continuation_fixture()
+            ti["themes"][0].update(changes)
+>           assert _continuation_board(ti)["display_lanes"]["buy_now"] == []
+                   ^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_china_act_now.py:1177:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+ti = {'as_of': '2026-09-21', 'themes': [{'id': 'cn_example', 'name': 'Example leader', 'name_zh': '示例领涨主题', 'score': 75, .....'id': 'cn_example', 'name': 'Example leader', 'name_zh': '示例领涨主题', 'score': 75, ...}], 'reduce': [], 'conflicted': []}}
+clock = '2026-09-21T10:00:00+00:00', cycles = None
+
+    def _continuation_board(ti, clock="2026-09-21T10:00:00+00:00", cycles=None):
+        from datetime import datetime
+        from engine.china_act_now import assemble_act_now
+>       return assemble_act_now([], ti, cycles, observed_at=datetime.fromisoformat(clock))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: assemble_act_now() got an unexpected keyword argument 'observed_at'
+
+tests/test_china_act_now.py:1099: TypeError
+_____ test_continuation_never_overrides_source_conflict_or_defensive_read ______
+
+    def test_continuation_never_overrides_source_conflict_or_defensive_read():
+        from copy import deepcopy
+        for lane in ("conflicted", "reduce"):
+            ti = _continuation_fixture()
+            item = deepcopy(ti["act_now"]["add_on_pullback"][0])
+            item.update(action="avoid", action_en="AVOID", action_zh="回避")
+            ti["act_now"][lane] = [item]
+>           b = _continuation_board(ti)
+                ^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_china_act_now.py:1194:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+ti = {'as_of': '2026-09-21', 'themes': [{'id': 'cn_example', 'name': 'Example leader', 'name_zh': '示例领涨主题', 'score': 75, ....., 'reduce': [], 'conflicted': [{'id': 'cn_example', 'name': 'Example leader', 'name_zh': '示例领涨主题', 'score': 75, ...}]}}
+clock = '2026-09-21T10:00:00+00:00', cycles = None
+
+    def _continuation_board(ti, clock="2026-09-21T10:00:00+00:00", cycles=None):
+        from datetime import datetime
+        from engine.china_act_now import assemble_act_now
+>       return assemble_act_now([], ti, cycles, observed_at=datetime.fromisoformat(clock))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: assemble_act_now() got an unexpected keyword argument 'observed_at'
+
+tests/test_china_act_now.py:1099: TypeError
+
+NOTE: sparse worktree — .agents, .claude, .codex, .cursor, .github, .grok, .warp, admin, app, browser, calibration, collectors, content, contracts, data, docs, finviz_themes, knowledge, mockups, ops, orch, properties, reports, requirements, research, site, tools, ux-evidence, verify_shots, worker not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_china_act_now.py::test_continuation_final_accumulate_enters_buy_without_new_bottom
+FAILED tests/test_china_act_now.py::test_continuation_preserves_raw_lanes_and_exact_source_evidence
+FAILED tests/test_china_act_now.py::test_continuation_remains_buyable_across_three_months_of_clean_flag_changes
+FAILED tests/test_china_act_now.py::test_continuation_final_hold_trim_avoid_overrides_stale_affirmative_lane
+FAILED tests/test_china_act_now.py::test_continuation_same_session_correction_removes_buy_immediately
+FAILED tests/test_china_act_now.py::test_continuation_missing_stale_future_and_non_session_fail_closed
+FAILED tests/test_china_act_now.py::test_continuation_requires_complete_final_non_us_recommendation
+FAILED tests/test_china_act_now.py::test_continuation_never_overrides_source_conflict_or_defensive_read
+8 failed, 95 deselected in 18.59s
