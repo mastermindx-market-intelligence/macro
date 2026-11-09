@@ -1,6 +1,6 @@
 # Sector Intelligence in Shared Shell — four-round masterplan
 
-**Revision:** 0.2 — Rounds 1–2: source census, architecture amendment and reviewed Paper design baseline, 9 November 2026.  
+**Revision:** 0.3 — Rounds 1–3: source census, reviewed Paper design and source-grounded architecture hardening, 9 November 2026 (America/Vancouver).  
 **Status:** proposed build contract under active development; not the final Fable/T3 execution packet.  
 **Parent:** Macro [#7646](https://github.com/mastermindx-market-intelligence/macro/issues/7646), operation sector-central-redesign-20260921-sol-001, WS:SECTOR-INTELLIGENCE-COMPLETION.  
 **Canonical plan family:** research/sector_completion_20261021/. This document amends the 21 October masterplan and its capability matrix; it does not create another program, lifecycle, task registry or analytical owner.
@@ -14,7 +14,7 @@ The current Chairman directive explicitly asks for four conversational rounds:
 3. Revisit and harden architecture against the designs and unresolved contracts.
 4. Freeze a final masterplan for a Fable-led team using T3 to implement end to end.
 
-This document is the persistent, progressively revised output of those rounds. Round 1 established the source census and architecture/design brief. Round 2 has now produced and visually reviewed 47 editable Paper frames, their state contracts, a source-to-field map and an exact extraction manifest. The next requested turn is Round 3 architecture hardening. The planning amendment remains unmerged; design completion does not establish application production acceptance. The future Fable/T3 handoff remains Round 4.
+This document is the persistent, progressively revised output of those rounds. Round 1 established the source census and architecture/design brief. Round 2 produced and visually reviewed 47 editable Paper Frames, their state contracts, source-to-field map and exact extraction manifest. Round 3 has now traced the affected source architecture, resolved the durable-save owner, specified typed research admission and analytical semantics, mapped all 134 capability IDs and 24 legacy anchors, and hardened the integration and acceptance sequence. The [Round 3 architecture contract](https://github.com/mastermindx-market-intelligence/macro/blob/851331e6aa2cfc9a60fd8de536059c35a08ac94f/research/sector_completion_20261021/ROUND3_ARCHITECTURE_CONTRACT_2026-11-09.md) is the detailed amendment; §11 records the decisions and remaining final-packet obligations. The next requested turn is Round 4 finalization. This planning amendment remains unmerged; source/design evidence does not establish application production acceptance.
 
 ### Amendment to the destination
 
@@ -39,13 +39,15 @@ The Chairman's current four-round boundary controls this planning session. No au
 | Source | Pin / observed state |
 |---|---|
 | Mastermind protected procedure | master 3652d8907df1738de551dd3032b42aa2a2acb482; skillpack schema mastermind.sol_skillpack.v1, version 1.0.1, bootstrap major 1 |
-| Macro source and committed data | main 36ff39c98dfee8190d0a3f7aaaef9df86921226e |
-| Terminal / Shared Shell source | protected master 1377853d02fdb0295c0848d7127fdee4ca36714b |
+| Round 1 Macro source/data baseline | main 36ff39c98dfee8190d0a3f7aaaef9df86921226e; retained historical census |
+| Round 3 affected Macro source/data refresh | main 9a13c64bf69f782332afa29efb09fe48ee30b857; candidate identities and contract evidence in §11 and the architecture contract |
+| Round 1 Terminal / Shared Shell baseline | protected master 1377853d02fdb0295c0848d7127fdee4ca36714b; retained historical census |
+| Round 3 affected Terminal / Shared Shell refresh | protected master 1c0bf028cf72539a4d3fcb17fa137ee474d764f9; actual gateway, catalog, navigation, Investigation and alert owners inspected |
 | Paper | Round 1: exact-file read-only census and three screenshots. Round 2: 47 new editable Frames across Product, States/help and Build in the existing R4 file; actual screenshot review and exact-root readback; §7.6 and the Round 2 guide contain the manifest. |
 | Live Beta | /sectors rendered the Shared Shell 404. Following visible Discover navigation reached /discover and a signup/sign-in gate in the unauthenticated inspection browser |
 | Verification not performed in Round 1 | No authenticated product journey, producer job, deployed source-identity proof, test rerun, release, destructive cleanup or Paper mutation |
 
-GitHub search indexes were older than the pinned repositories. Actual source reads and native PR metadata control the census. PR states below are point-in-time observations; refresh only affected heads/custody/holds before implementation.
+GitHub search indexes were older than the pinned repositories. Actual source reads and native PR metadata control the census. Sections 1–10 preserve their original evidence and design history. Where an affected contract/status is updated, §11 and the linked Round 3 contract take precedence; unrefreshed facts retain their original pin. This is not a fresh live-route, CI, scientific-run or deployed-binding audit. Refresh only affected heads, custody, holds and execution facts at the next modifying step.
 
 ## 1. Product thesis and architecture decisions
 
@@ -619,53 +621,122 @@ Do not report completion percentages from blank fields or artboard counts. The f
 | Round | Output | Gate into next round |
 |---|---|---|
 | 1 — census and architecture | Completed in revision 0.1; source frontier, route finding, Paper targets and preservation decisions retained | Exact source save/readback completed; census reused |
-| 2 — Paper design | Completed in revision 0.2: 47 editable frames, reviewed screenshots, preservation ledger, source-to-field and interaction contract, exact extraction manifest | Actual visual review and source save/readback; backend mismatches and full acceptance obligations remain explicit |
-| 3 — architecture hardening | Resolve exact query/generation/correction/entry-kind/save/alert seams, packet scopes and operational tests | No ambiguous implementation promises, no silent source/design contradictions |
-| 4 — final masterplan | Version 1.0 of this same document, resolved matrix amendments, final Paper IDs, ordered T3 packets and acceptance/release/rollback plan | Concrete source-linked Fable/T3 handoff; delivery and actual pickup/START remain distinct |
+| 2 — Paper design | Completed in revision 0.2: 47 editable Frames, reviewed screenshots, preservation ledger, source-to-field and interaction contract, exact extraction manifest | Actual visual review and source save/readback; design does not close implementation evidence |
+| 3 — architecture hardening | Completed in revision 0.3: affected source/candidate refresh, owner and contract rulings, 134 stable-ID mappings, 24 anchors, integration order and discriminating acceptance | [Architecture contract](https://github.com/mastermindx-market-intelligence/macro/blob/851331e6aa2cfc9a60fd8de536059c35a08ac94f/research/sector_completion_20261021/ROUND3_ARCHITECTURE_CONTRACT_2026-11-09.md) saved/read back; remaining implementation and final-packet obligations are explicit |
+| 4 — final masterplan | Next: version 1.0 of this same document, resolved matrix amendments, final Paper/delta references, exact T3 packets and acceptance/release/rollback plan | Concrete source-linked Fable/T3 handoff; delivery and actual pickup/START remain distinct |
 
-**Next action for Round 3:** consume revision 0.2 and the exact Round 2 guide; refresh the affected route/exporter/generation candidates (Terminal #1244/#1339 and Macro #10777 with its supersession chain) and their live custody. Trace one coherent dated producer generation through the retained gateway/serializer into the intended Beta sector consumer before freezing the dependency graph. Then resolve research registration, save/revision/rights and scientific qualification against the new interaction states. Map every named destination and inherited capability to a real owner, design target, implementation action and falsifiable acceptance. Reuse the census and accepted work; do not repeat the design round or dispatch Fable before Round 4.
+### 11.1 Round 3 architectural rulings
 
-### Questions Round 3 must settle through evidence
+The [full contract](https://github.com/mastermindx-market-intelligence/macro/blob/851331e6aa2cfc9a60fd8de536059c35a08ac94f/research/sector_completion_20261021/ROUND3_ARCHITECTURE_CONTRACT_2026-11-09.md) contains the immutable source index, wire/return/persistence semantics, real industry admission requirements, candidate composition map and all capability/anchor mappings. It is an appendix to this plan, not a new lifecycle, service, capability owner or implementation registry.
 
-- Which exact portions of [#10703](https://github.com/mastermindx-market-intelligence/macro/pull/10703)/[#10707](https://github.com/mastermindx-market-intelligence/macro/pull/10707) are incorporated or superseded by current [#10777](https://github.com/mastermindx-market-intelligence/macro/pull/10777)?
-- What exact generation/publication and cursor contract lands with [#1339](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1339)?
-- Which current route exporter revision should [#1244](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1244) consume, and how does it compose with other active work?
-- Which capability rows already have accepted source/Paper/browser evidence that has not been entered into the matrix?
-- What is the current native correction/supersession contract beyond none_native?
-- Which breadth/history source has genuine available-at/PIT membership, versus reconstructed current-cohort history?
-- What real data and owner-bundle witnesses admit each registry entry kind and vertical?
-- Which saved-research/watch/alert behaviors actually have durable owners and delivery receipts? What exact pending payload/version, request lookup and partial-success contract implements A01/A06/MS01 without duplicate effects?
-- Which source-owned descriptive sort is permissible while measured context has may_rank=false, and how does the consumer retain all authority caps?
-- How do priced, advancing, declining, unchanged and missing observations map to each distinct denominator without relabeling one as another?
-- How do correction identity, newer observations and membership changes preserve the immutable saved side without claiming unsupported causal decomposition?
-- Which actor/access generation clears private responses, drafts and thumbnails before any new-account frame appears?
-- What is the row-by-row disposition of the historical missing-state/430px defects and every new action destination, rather than a proxy based on frame counts?
-- Which scientific cells are currently qualified, prior-only, accruing, underpowered or explicitly stopped?
-- Which exact 24 anchors and public/native state encodings need compatibility proof?
-- What measured performance budget and supported population bound should be frozen?
-- Which authenticated Beta account/access path will supply the required acceptance without changing security scope?
+| Decision | Ruling and practical effect |
+|---|---|
+| One product and host | Retain one SectorIntelligenceWorkspace in Beta Shared Shell. Reuse native source and Macro producers. Brief, Explore, Research and Watches are jobs inside the same experience; selected dossier/Cycles depth preserves the investigation. |
+| One coherent data path | Integrate Macro #10780's existing generation publisher/reader/API with Terminal #1339's parser/gateway and #1244's entrance. Current protected Terminal source still consumes static families; these candidates are unmerged. Source-session, publication, received and older Brief baseline times remain distinct. |
+| Route and compatibility | Add sectorJob through the existing codec. A clean /sectors opens Brief; old URLs without that field keep their original Explore/detail meaning. Keep the bounded return envelope, all current aliases, 24 exact anchors and dynamic theme/read/narrative identities. |
+| Durable research owner | Extend Investigation v2 admission, immutable revisions, expected_revision CAS, operation receipts and recovery journal. No new Saved Research database. Sector/GMI references are not yet admitted by the existing Options sector_origin type. |
+| Actor and access lifetime | Add expected-actor equality checks to the relevant incumbent operations and original-status lookup; reuse the annotation route's existing pattern and Shell identity. Invalidate private state on actor or entitlement-generation changes. This is a proposed race-prevention requirement, not an observed production leak. |
+| Independent effects | Save, watch membership, note synchronization, alert activation, trigger and delivery retain separate outcomes. Preserve exact unknown operations. New rotation/exposure/event alerts require a real evaluator and activation idempotency in the existing alerts owner. |
+| Typed research | Extend the existing registry/binding with versioned theme, company_profile and sector_profile variants. Each available directory entry needs real loader, identity/rights, composer, evidence selector, renderer and return proof. A module or removed hold is insufficient. |
+| Correct leadership | Display existing producer ordinals for the named horizon. Central array order is conviction; momentum.lead is primarily 21-session. The 63-session view must use the actual 63-session source rank. Keep display-only authority caps. |
+| Honest math and history | Relative wealth, arithmetic excess, rising/priced and unchanged-excluding breadth remain distinct. Current-cohort reconstruction is labeled until effective/knowledge-time membership, availability and turn-confirmation contracts support as-known views. |
+| Full Cycles reuse | Retain anchored rhythm, observed phase age, original family/selection/timing/DNA/outcome controls and useful candidate components. Current source retains hazard parity failure; historical qualification cannot enable an unqualified current MODEL. |
+| Preserve unique candidates | #10777 does not contain #10707's source-bound dossier captureView/applyView component. Compare and integrate unique behavior from #10703/#10707; PR recency is not supersession evidence. |
+| Evidence-based completion | All 134 rows and 24 anchors are mapped, not accepted. Preserve their source/design/served evidence obligations and the historical narrow-width/missing-state defects. |
 
-Round 2 supplies truthful available/partial/unavailable designs for these seams. Round 3 must resolve the contracts through source and consumer evidence so the final build packet does not guess.
+The product improvements are practical: a measured opening that identifies leadership and participation; explicit disagreement between horizons; contribution and coverage that use the same cohort; source-grounded industry explanations and counterevidence; exact company/sector return; and a saved original that can be compared with a later observation without rewriting history. Existing native signal lanes remain separately qualified and reachable in depth.
+
+### 11.2 Affected candidate frontier
+
+Point-in-time source metadata from this round:
+
+| Carrier | Exact inspected head | Observed status / integration relevance |
+|---|---|---|
+| Terminal #1244 | 43fa33c7423daca90237e5b34f26b08fe0b5c24d | Open, non-Draft, unmerged; /sectors and generated catalog |
+| Terminal #1339 | 7ded5375caf0aa595ca740bf0df36b175471192e | Open, non-Draft, unmerged; gateway/parser; shared route path overlaps #1244 |
+| Macro #10780 | 91add9613ad29dcfb82ff75036dd6519cfc6c06f | Open, non-Draft, unmerged; generation reader/API/projection; also an active matrix writer |
+| Macro #10777 | 99968fd0533b39410040b01caf51f3e5b050c5be | Open, non-Draft, unmerged; Cycles/central/regional integration donor |
+| Macro #10703 | 9fc460ff36345387c3a2c5435b079852e8488da0 | Draft, unmerged; D05 composition, return and regional work; holds preserved |
+| Macro #10707 | 74930f6931773b23072f91590319dc39fe5a7d07 | Draft, unmerged; unique dossier component semantics; holds preserved |
+| GMI #10676 | b3cb43f384c94d401977839d00e54d2c0689caed | Draft, unmerged; native topic/return progress; no hold removed |
+| Nuclear #9124 | e6fc0959d15804be00ec7c6e54e732f83a13cc70 | Draft, unmerged; preserve existing successor |
+
+Native mergeability was false for #1244, #1339 and #10777 at inspection. Older PR prose may describe another head. This round did not audit every CI run or current runtime writer; refresh real custody, exact current head and binding release requirements before modifying those candidates. The source dependency map is complete enough for packet preparation, not an authorization to seize an active branch.
+
+The protected route catalog omits /sectors; the #1244 catalog includes it and an updated inventory source. Use the existing exporter and accepted inventory, not manual generated-JSON edits. The generation candidate's app mount exists; deployed root binding and the actual authenticated source-to-screen journey still require proof.
+
+### 11.3 Resolution of the ten Round 2 evidence questions
+
+| Guide agenda | Architecture disposition | Remaining implementation proof |
+|---|---|---|
+| R3-01 route/generation | Actual source chain, route/export gap, bounded API and parser documented | Integrated exact head, deployed reader root and one authorized served generation |
+| R3-02 registry kinds | Versioned closed union and real loader/evidence/renderer chain specified | Every admitted vertical's real dated and negative witness |
+| R3-03 persistence | Investigation v2 plus existing annotations/watchlist/alerts owners selected | Sector admission, actor checks, CAS/recovery/partial outcome and actual readback |
+| R3-04 corrections | Preserve assertion predecessor revision and immutable saved reference; extend evidence-diff resolvers | Real correction/tombstone and comparable current/original display |
+| R3-05 history | Effective time, knowledge time and availability are separate; current basket history is reconstructed | Owner-backed historical witnesses; no manufactured replay |
+| R3-06 timing/model | Existing rhythm/phase-age retained; versioned turn knowledge and current parity gate required | Detector semantic comparison, exact input epoch and permitted scientific disposition |
+| R3-07 region/rights/account | Identity/taxonomy and rights remain owner-bound; actor/access generation retires private state | Real regional population and cross-market/account/access negative paths |
+| R3-08 ordering | Producer order by exact horizon/cohort/basis; authority flags unchanged | Tie/missing/conviction-versus-RS and source-ordinal consumer proof |
+| R3-09 deep capabilities | Every stable ID mapped; unique candidate behavior and retained depth identified | Full controls, all destinations, historical defects and row-level source/design/served evidence |
+| R3-10 return/quality | Existing public/full bounds retained; additive codec and logical-anchor restoration; concrete profile/budgets selected | Back/Forward/reload/changed-generation proof, actual measured latency and accessible responsive journeys |
+
+A01/A06/MS01 keep Check save status as the primary uncertain-save control. The existing Investigation owner also permits exact original-operation replay; any exposed replay control requires original-status reconciliation, the same actor/operation/fingerprint and proof of the installed owner contract. That is an explicit final-packet design delta, not an already implemented Paper action.
+
+The previous performance candidates in §6 are now refined by contract §9.1: local acknowledgement p95 ≤100 ms, first useful warm view ≤1.5 s and cold authenticated view ≤3 s on a pinned 390px/DPR2/4×CPU/10-down/2-up Mbps/80ms reference profile, with desktop comparison. Measure at least 30 warm and 30 cold navigations per principal profile. Keep the existing 4 MiB/6-second transport bounds. Exercise the 11-sector/49-basket baseline, declared parser/history bounds, and 320/390/430/768/1440 layouts. These are proposed implementation acceptance targets; no production benchmark was run.
+
+### 11.4 Capability coverage and implementation dependency order
+
+The [134-row planning join and 24-anchor map](https://github.com/mastermindx-market-intelligence/macro/blob/851331e6aa2cfc9a60fd8de536059c35a08ac94f/research/sector_completion_20261021/ROUND3_ARCHITECTURE_CONTRACT_2026-11-09.md) preserve every incumbent stable ID. At the refreshed main pin, all 134 accepted_candidate_sha_to_record, evidence_link_to_record and final_disposition_to_record cells remain blank. This does not imply no code exists. #10780 changes that CSV, so this round preserved the active writer's matrix and supplied a read-only join for the final reconciliation.
+
+A07 is a navigation/depth atlas, not complete design coverage. Native calls/Bottoming Watch, confluence/four universes, actual flows, full Cycles controls/DNA/narratives/timing/outcomes, real industry evidence, and old 430px/missing-state defects remain explicit retained obligations. Historical SC-066/SC-092 labels must be matched by original wording; they are not automatically R3A-66/R3A-92.
+
+Use the following order within the existing P01–P23/B01–B12/J01–J15 assignments:
+
+1. Reconcile exact source, custody and overlapping candidates; preserve unique donor behavior.
+2. Admit the route and coherent generation chain; prove one real authenticated read.
+3. Bind Brief/Explore/dossier/compare and exact navigation to current source semantics.
+4. Integrate full Cycles depth and finite scientific disposition.
+5. Bind each real research vertical through existing query/evidence owners.
+6. Admit Investigation references and complete independent save/watch/note/alert behavior.
+7. Close retained depth, regional/access/compatibility and every capability disposition.
+8. Use normal release, actual served journeys and next natural update/no-change; prove rollback and then retire duplicate UX.
+
+The detailed contract names paths, seams, existing B/P/J linkage and exit evidence for each dependency group. Compatible source research and path-disjoint UI work may overlap after contract freeze. Shared source has one integration writer. These are implementation dependencies, not newly admitted Executive waves.
+
+### 11.5 Exact Round 4 continuation
+
+The next turn finalizes this same plan at version 1.0. It must bind exact worker packets to current carriers/owned paths, retained donor behavior and real owner adapter grammar; reconcile the remaining design-detail and recovery-control deltas; join the 134 rows with the existing matrix writer and name their evidence owners; and finalize release, natural update, rollback and retirement proof.
+
+Each packet must include current exact base/head, allowed diff, B/P/J and row IDs, request/response examples, real and negative fixtures, rights/identity/recovery constraints, focused validation, user-path evidence, current holds/custody and a source-linked return. Fable leads direction, integration and acceptance; T3 execution uses the existing admission/capacity systems. This round does not dispatch that team.
+
+The permitted authenticated Beta account/access path and installed runtime admission are implementation prerequisites to verify, not invented credentials or a new request for human debugging. Preserve genuine holds and the original uncertain Paper effect. Deliver the full final brief through GitHub at the requested final boundary; transport and actual pickup remain separate events.
 
 ## 12. Continuity and evidence disposition
 
-Rounds 1–2 are complete for the Chairman's expressly separated conversational scope after exact source save/readback. The four-round planning mission and product implementation remain incomplete. The next intended turn is architecture hardening (Round 3), followed by the final Fable/T3 masterplan (Round 4). Bounded Round 2 outcome: PROVEN_OUTCOME. Application production acceptance: not established.
+Rounds 1–3 are complete for the Chairman's expressly separated conversational scope after exact source save/readback. The four-round planning mission and product implementation remain incomplete. The next intended turn is Round 4: final masterplan and Fable/T3 packet. Bounded Round 3 outcome: PROVEN_OUTCOME. Application production acceptance: not established.
 
-**DO_NOT_REDO:** accepted Central landing; merged Shared Shell foundation; merged research/private-publication foundation; Technology and Robotics source; accepted Leadership Rotation/replay repairs; existing native components/gateway/return owner. Do not revive Terminal [#1055](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1055) or Nuclear [#8002](https://github.com/mastermindx-market-intelligence/macro/pull/8002). Do not recreate the old masterplan, matrix, graph or routing registry.
+**DO_NOT_REDO:** accepted Central landing; merged Shared Shell foundation; merged research/private-publication foundation; Technology and Robotics source; accepted Leadership Rotation/replay repairs; existing native components/gateway/return owner; Investigation v2 and current alert/annotation owners; the exact 47 reviewed Paper Frames. Do not revive Terminal [#1055](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1055) or Nuclear [#8002](https://github.com/mastermindx-market-intelligence/macro/pull/8002). Do not recreate the old masterplan, matrix, graph, identity, save or routing registry.
 
-**Effects across Rounds 1–2:** source-document authoring on sol/sector-shared-shell-masterplan-20261109-c3, the existing research entrypoint amendment, and new disjoint Paper pages/frames in the existing R4 file. Round 1 included bounded read-only public Beta navigation. Round 2 included no application code change, release, deployment, route deletion, Fable/Slack dispatch or autonomous background runner. All new Paper effects have observed receipts; the historical unrelated Paper operation paper-v21-current-app-board-20261103-sector-001 remains fenced to its original carrier and target.
+**Effects across Rounds 1–3:** source-document authoring on sol/sector-shared-shell-masterplan-20261109-c3, the existing research entrypoint amendment, and Round 2's disjoint Paper pages/frames in the existing R4 file. Round 1 included bounded read-only public Beta navigation. Round 3 read affected source/metadata and wrote documentation only. It changed no application code, Paper node, account, runtime configuration, release, deployment, route retirement, Fable/Slack dispatch or background runner. All new Round 2 Paper effects had observed receipts; the unrelated paper-v21-current-app-board-20261103-sector-001 operation remains fenced to its original carrier and target.
 
-**Source custody:** current assigned session owns this new documentation amendment. Existing implementation PR writers, holds, review requirements and unknown effects retain their original owners. The plan does not retarget a STARTED worker.
+**Source custody:** the assigned principal owns this documentation amendment. Existing implementation PR writers, actual holds, required reviews and uncertain effects retain their original boundaries. The plan does not retarget a STARTED worker or clear a hold.
 
-**Routing:** Round 1 used principal synthesis and three reasoning specialists for conflicting architecture/domain semantics. Round 2 used principal composition plus two bounded visual/interaction reasoning critics; neither child edited source or Paper, and both received explicit ACCEPTED / STOP. Future Fable/T3 execution is not launched.
+**Routing:** Round 1 used principal synthesis and three reasoning specialists. Round 2 used principal composition plus two bounded visual/interaction critics. Round 3 used three bounded research/persistence/quant architecture specialists, all read-only, with material findings source-checked by the principal. All round-specific critics received explicit ACCEPTED / STOP. This accepts their bounded reasoning return, not formal source approval or production. No implementation worker or Fable/T3 execution was launched.
 
-**Refresh policy:** preserve these pins and exact reviewed design targets as the evidence baseline. In Round 3 refresh the affected contracts, current candidate heads/custody and relevant release constraints before resolving their implementation promises. Later implementation must obtain actual served and natural-update proof. Unrelated repository movement is not a reason to repeat the entire audit.
+**Refresh policy:** retain the procedure pin, source semantics and exact reviewed designs. Refresh only materially affected current heads, custody, release controls and runtime facts before the next modifying step. Actual served/natural-update/scientific evidence is still owed by implementation. Unrelated repository movement is not a reason to repeat the complete census.
 
-**Durable continuity:** the same branch carries the masterplan, Round 2 guide and launch-brief pointer. A dated Round 2 continuation record is proposed under the existing agentos/handoffs family; it does not change active workstream ownership, status, wave admission or an existing writer's custody. An unmerged documentation proposal is not protected-source or runtime adoption.
+**Durable continuity:** this branch carries revision 0.3, the Round 3 architecture contract, the Round 2 guide with a consumption amendment, the existing launch pointer and the same dated November 9 handoff updated for Round 3. No active workstream owner/status/wave or runtime admission changed. Unmerged source documentation is durable planning evidence, not protected-source or runtime adoption.
 
 ## Source index
 
 All blob links below are pinned. PR links are native status/implementation carriers observed during Round 1 and must be refreshed before changing their work. New Round 2 design evidence is linked separately and does not refresh those PR status claims.
+
+### Round 3 source refresh and architecture
+
+- [Round 3 architecture contract: exact source index, 134 mappings, 24 anchors and implementation gates](https://github.com/mastermindx-market-intelligence/macro/blob/851331e6aa2cfc9a60fd8de536059c35a08ac94f/research/sector_completion_20261021/ROUND3_ARCHITECTURE_CONTRACT_2026-11-09.md)
+- Refreshed affected protected sources: Macro 9a13c64bf69f782332afa29efb09fe48ee30b857; Terminal 1c0bf028cf72539a4d3fcb17fa137ee474d764f9. The detailed contract has the immutable source file links.
+- Candidate identities and bounded completion are in §11–§12. Historical sections below retain their original source pin.
+
 
 [S01]: https://github.com/mastermindx-market-intelligence/macro/blob/36ff39c98dfee8190d0a3f7aaaef9df86921226e/research/sector_completion_20261021/MASTERPLAN_2026-10-21.md
 [S02]: https://github.com/mastermindx-market-intelligence/macro/blob/36ff39c98dfee8190d0a3f7aaaef9df86921226e/research/sector_completion_20261021/CAPABILITY_MATRIX_2026-10-21.csv
