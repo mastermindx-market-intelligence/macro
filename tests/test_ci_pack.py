@@ -5703,9 +5703,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_948),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_969),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_706),
+    ("templates/index.html", 137, 5_952),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_973),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_710),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5713,6 +5713,58 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-09 (PR #8133, retain landed ledger and original CI contribution):
+    Receiving main75e018ac includes the independent data-base-shim ledger.
+    Preserve every original subject history region and current46-line history.
+    The subject owner preimages remain unchanged; original marginal+4
+    composes current5948/5969/5706 as5952/5973/5710.
+    Keep all400 owners, all197 curated owners and every existing assertion.
+    Retain job ceilings137/138/131, ten packs and current selection rules.
+    Only source-accounting limits are composed; no runtime/admission change.
+    Prior actual product/research and paired-probe evidence stays attached
+    to its recorded generation; fresh successor hosted qualification is owed.
+
+    2026-11-09 (PR #8133, preserve actual F09 landing and R2-D1 and R3 research coverage):
+    receiving main9a13c64 includes F09's own+2 as landed7bdfb249486d.
+    Keep that contribution, its full history and all other main source.
+    Only this carrier's accepted+4 remains: current5945/5966/5703 becomes
+    5949/5970/5707. The original H's complete historical notes remain
+    below with their original measured/composed revisions and numbers.
+    Current runner and product preimages are unchanged; catalog owners
+    commute with F09's separate data-base-shim change. This is preserving
+    source arithmetic, not a new planner or timing measurement. Keep
+    jobs137/138/131,ten packs and all selectors/assertions/admission limits.
+    The materially combined successor must earn its own natural CI proof.
+
+    PR8133 source conflict repair (2026-11-09): preserve current main's
+    complete owner catalog and packing history. Its unrun-factor-research
+    owner is byte-identical to the accepted base owner; restore only this
+    PR's two nested synthetic-test arguments. Old/current weight functions
+    match and no observed-time override applies: commands5->5, test-path
+    occurrences26->28, joined command text1164->1275 characters, weight58->62.
+    Apply only this own +4 to current ceilings5943/5964/5701, giving
+    5947/5968/5705; jobs137/138/131 and the ten-pack bound are unchanged.
+    This is static source attribution, not a new planner/runtime observation.
+    Do not include or fund an unmerged sibling's enrollment. Preserve the
+    earlier generation's provenance below; natural successor CI must qualify
+    this current-main composition.
+
+    PR8133 current-main composition (2026-11-07): preserve main0cd9a4135c9b
+    and its complete accepted GSC/gateway accounting below. The original
+    hosted paired measurement was run42305762236/job128194540418,
+    head76c48e3794b0 against exact base26946d4f7b92: index5912->5916,
+    free5927->5931, Prophet5668->5672, no newly selected jobs. Enrolling
+    the two unchanged nested R2-D1/R3 suites changed the existing
+    unrun-factor-research planning estimate58->62. Its current-main owner
+    is byte-identical after removing only those two accepted suite args;
+    run_ci_pack remains blob3cbed58986d571e40af59eb03464e9419e8055a5.
+    Carry only that measured +4 onto current ceilings5914/5933/5672:
+    5918/5937/5676. This is source arithmetic, not a new planner or runtime
+    measurement. Preserve job-count ceilings137/138/131, ten packs, every
+    selector, assertion, timeout and runtime/admission bound. No unmerged
+    sibling contribution is included; natural successor CI must qualify
+    the integrated source. The original baseline settlement stays unknown.
 
     2026-11-09 (PR #10226, reconcile the actual #10192 landing):
     #10192 merged as7bdfb249486d409ee8634501842c31f51af74c7c.
