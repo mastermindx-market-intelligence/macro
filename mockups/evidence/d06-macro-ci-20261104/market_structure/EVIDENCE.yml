@@ -1,0 +1,4 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/market_structure.html.j2
+manifest: mockups/evidence/d06-macro-ci-20261104/market_structure/manifest.json

@@ -24,7 +24,8 @@ from tests.test_spvector_page import _env, _spvector_vm  # noqa: E402
 
 def _render(disloc: dict) -> str:
     """Render the page from the shared spvector vm and return the chips section."""
-    vm = dict(_spvector_vm(), disloc=disloc)
+    base = _spvector_vm()
+    vm = dict(base, disloc={**base["disloc"], **disloc})
     html = _env().get_template("spvector.html.j2").render(**vm, C=C)
     start = html.index('<div class="chips">')
     end = html.index("<!-- ===== risk-score leg breakdown")
@@ -71,30 +72,36 @@ def test_chip_names_the_redeploy_gate():
 
 def test_legs_both_quiet():
     sec = _render(_legs_vm(False, False))
-    assert "Fed-put inputs" in sec
-    assert "美联储看跌条件" in sec
-    assert "Sahm recession signal quiet" in sec
-    assert "low enough for the Fed to ease" in sec
-    assert "萨姆衰退信号未触发" in sec
-    assert "通胀预期低到足以让美联储宽松" in sec
+    assert "Fed-put model components" in sec
+    assert "美联储看跌模型分项" in sec
+    assert "Recession flag" in sec
+    assert "false" in sec
+    assert "Inflation restriction flag" in sec
+    assert "false" in sec
+    assert "衰退标记" in sec
+    assert "通胀限制标记" in sec
     assert "firing" not in sec
     assert "too high" not in sec
 
 
 def test_recession_firing_with_low_inflation():
     sec = _render(_legs_vm(True, False))
-    assert "Sahm recession signal firing" in sec
-    assert "萨姆衰退信号已触发" in sec
-    assert "low enough for the Fed to ease" in sec
+    assert "Recession flag" in sec
+    assert "true" in sec
+    assert "衰退标记" in sec
+    assert "Inflation restriction flag" in sec
+    assert "false" in sec
     assert "quiet" not in sec
     assert "too high" not in sec
 
 
 def test_inflation_too_high_with_quiet_recession():
     sec = _render(_legs_vm(False, True))
-    assert "Sahm recession signal quiet" in sec
-    assert "inflation expectations too high for the Fed to ease" in sec
-    assert "通胀预期过高，美联储难以宽松" in sec
+    assert "Recession flag" in sec
+    assert "false" in sec
+    assert "Inflation restriction flag" in sec
+    assert "true" in sec
+    assert "通胀限制标记" in sec
     assert "firing" not in sec
     assert "low enough" not in sec
 
@@ -108,7 +115,7 @@ def test_no_legs_renders_no_leg_line():
         if with_key:
             disloc["put_legs"] = None
         sec = _render(disloc)
-        assert "Fed-put inputs" not in sec
+        assert "Fed-put model components" not in sec
         assert "Sahm" not in sec
         assert "None" not in sec
 
@@ -144,8 +151,8 @@ def test_zh_twins_differ():
     assert pairs and len(pairs) == len(en_spans)
     for en, zh in pairs:
         assert en != zh, f"l-zh twin copies the EN text: {en!r}"
-    for want in ("Re-deploy gate", "再部署闸门", "Sahm recession signal firing",
-                 "inflation expectations too high for the Fed to ease"):
+    for want in ("Re-deploy gate", "再部署闸门", "Recession flag",
+                 "Inflation restriction flag"):
         assert want in sec
 
 

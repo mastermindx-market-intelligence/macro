@@ -5616,9 +5616,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_943),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_964),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_701),
+    ("templates/index.html", 137, 5_947),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_968),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_705),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5626,6 +5626,30 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-08 (PR #10734, integration after archive #10862 landed):
+    Protected main fca91c2b preserves the three original D06 owner
+    preimages and all 397 current owners. Carry only the original measured
+    four-unit contribution below onto its accepted probe weights:
+    index 5943 -> 5947, free-content 5964 -> 5968, Prophet 5701 -> 5705.
+    Preserve the landed marketing contribution, all 394 unrelated owner
+    blocks, current QLedger/research/calculator coverage, and every prior
+    accounting record. Job ceilings 137/138/131, ten packs, selectors,
+    suites, DATA assignments, deadlines and admission bounds are unchanged.
+    This is static arithmetic and exact-owner composition, not a new
+    planner, pytest or runtime measurement. Fresh own-head CI is required.
+
+    D06 (2026-11-04): completed differential census against eb7ebc890073,
+    recorded in docs/pr-crops/d06-macro-ci-20261104/contract-delta-before.log:
+    index137jobs/5912->5916, free137jobs/5927->5931, Prophet131jobs/5668->5672,
+    all ten packs, no selected-job entrants or exits. Registering the D06
+    Stage and S&P page suites adds two planning-weight units to each existing
+    owner: unrun-builders-render51->53 and unrun-vector-baskets37->39. The
+    Market Structure owner options-estate-guards32->34 remains exclusive
+    and selects on none of these probes. Fund only the exact four-unit
+    coverage increase per probe. These are heuristic planner estimates,
+    not runtime evidence; job/pack ceilings, selectors, data-gate assignment,
+    coverage, estimator, timeouts and admission bounds remain unchanged.
 
     2026-11-08 (PR #10837, explicit synthetic harness enrollment, recomposed on
     current main 005baca8b092abe82acb4462eb6710af8f59a1c8): natural

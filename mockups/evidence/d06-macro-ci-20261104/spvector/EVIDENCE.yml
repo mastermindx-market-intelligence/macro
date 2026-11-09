@@ -1,0 +1,4 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/spvector.html.j2
+manifest: mockups/evidence/d06-macro-ci-20261104/spvector/manifest.json

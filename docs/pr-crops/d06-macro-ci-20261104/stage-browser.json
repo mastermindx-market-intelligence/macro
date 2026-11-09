@@ -1,0 +1,227 @@
+{
+  "status": "passed",
+  "surface": "stage",
+  "matrix": [
+    {
+      "width": 1440,
+      "theme": "dark",
+      "locale": "en",
+      "metrics": {
+        "width": 1440,
+        "scroll": 1440,
+        "wrap": 1440
+      },
+      "six_tasks": true,
+      "all_subviews": true,
+      "advanced": [
+        "filter-search-sort",
+        "watchlist",
+        "row-expansion",
+        "filtered-raw-unit-CSV",
+        "keyboard-screener-and-flow-sort-focus",
+        "keyboard-earnings-sort-focus",
+        "keyboard-earnings-reader-and-filtered-empty"
+      ],
+      "requests": {
+        "screener.json": 1,
+        "stage_board_weekly.json": 1,
+        "stage_board_daily.json": 1,
+        "industry_ranks.json": 1,
+        "industry_heatmap.json": 1,
+        "ec_industry_heatmap.json": 1,
+        "industry_flows.json": 1,
+        "earnings_table.json": 1,
+        "earnings_season.json": 1,
+        "earnings_compare.json": 1,
+        "altdata_trending.json": 1,
+        "research_index.json": 1
+      },
+      "image": {
+        "path": "docs/pr-crops/d06-macro-ci-20261104/stage-1440-dark-en.png",
+        "sha256": "8c77703c74489e09ad97e5607a56a031247a9c821182e728000bb489e6087c52"
+      }
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "locale": "zh",
+      "metrics": {
+        "width": 1440,
+        "scroll": 1440,
+        "wrap": 1440
+      },
+      "six_tasks": true,
+      "all_subviews": true,
+      "advanced": [],
+      "requests": {
+        "screener.json": 1,
+        "stage_board_weekly.json": 1,
+        "stage_board_daily.json": 1,
+        "industry_ranks.json": 1,
+        "industry_heatmap.json": 1,
+        "ec_industry_heatmap.json": 1,
+        "industry_flows.json": 1,
+        "earnings_table.json": 1,
+        "earnings_season.json": 1,
+        "earnings_compare.json": 1,
+        "altdata_trending.json": 1,
+        "research_index.json": 1
+      },
+      "image": {
+        "path": "docs/pr-crops/d06-macro-ci-20261104/stage-1440-light-zh.png",
+        "sha256": "5f2b1d220b405986731b0397ea47727b42c57f314d942315ca11114326f848bc"
+      }
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "locale": "en",
+      "metrics": {
+        "width": 390,
+        "scroll": 390,
+        "wrap": 390
+      },
+      "six_tasks": true,
+      "all_subviews": true,
+      "advanced": [],
+      "requests": {
+        "screener.json": 1,
+        "stage_board_weekly.json": 1,
+        "stage_board_daily.json": 1,
+        "industry_ranks.json": 1,
+        "industry_heatmap.json": 1,
+        "ec_industry_heatmap.json": 1,
+        "industry_flows.json": 1,
+        "earnings_table.json": 1,
+        "earnings_season.json": 1,
+        "earnings_compare.json": 1,
+        "altdata_trending.json": 1,
+        "research_index.json": 1
+      },
+      "image": {
+        "path": "docs/pr-crops/d06-macro-ci-20261104/stage-390-light-en.png",
+        "sha256": "2b31fe55ec00faa519e678d2122db61adc4d79a0a0282baf87d329fc43ebcbd6"
+      }
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "locale": "zh",
+      "metrics": {
+        "width": 390,
+        "scroll": 390,
+        "wrap": 390
+      },
+      "six_tasks": true,
+      "all_subviews": true,
+      "advanced": [],
+      "requests": {
+        "screener.json": 1,
+        "stage_board_weekly.json": 1,
+        "stage_board_daily.json": 1,
+        "industry_ranks.json": 1,
+        "industry_heatmap.json": 1,
+        "ec_industry_heatmap.json": 1,
+        "industry_flows.json": 1,
+        "earnings_table.json": 1,
+        "earnings_season.json": 1,
+        "earnings_compare.json": 1,
+        "altdata_trending.json": 1,
+        "research_index.json": 1
+      },
+      "image": {
+        "path": "docs/pr-crops/d06-macro-ci-20261104/stage-390-dark-zh.png",
+        "sha256": "e6ce28b22db8881d42623eabde5ad96a670a3eeee49506047f8b217e90862cab"
+      }
+    },
+    {
+      "width": 320,
+      "theme": "light",
+      "locale": "en",
+      "metrics": {
+        "width": 320,
+        "scroll": 320,
+        "wrap": 320
+      },
+      "six_tasks": true,
+      "all_subviews": true,
+      "advanced": [],
+      "requests": {
+        "screener.json": 1,
+        "stage_board_weekly.json": 1,
+        "stage_board_daily.json": 1,
+        "industry_ranks.json": 1,
+        "industry_heatmap.json": 1,
+        "ec_industry_heatmap.json": 1,
+        "industry_flows.json": 1,
+        "earnings_table.json": 1,
+        "earnings_season.json": 1,
+        "earnings_compare.json": 1,
+        "altdata_trending.json": 1,
+        "research_index.json": 1
+      },
+      "image": {
+        "path": "docs/pr-crops/d06-macro-ci-20261104/stage-320-light-en.png",
+        "sha256": "141d4bd2f537855ecc3eed01002f2f92a47063434bcc42efb203aea2c643da61"
+      }
+    }
+  ],
+  "edge_cases": [
+    {
+      "case": "failed-screener-retained-filters-deduplicated-pending-retry",
+      "image": {
+        "path": "docs/pr-crops/d06-macro-ci-20261104/stage-recovered-filtered.png",
+        "sha256": "adec93d2f6b2121d79e0d4d4962b89686a35163546ea3c0d9cd266d672456b2e"
+      }
+    },
+    {
+      "case": "late-weekly-failure-and-recovery-preserve-selected-daily",
+      "image": {
+        "path": "docs/pr-crops/d06-macro-ci-20261104/stage-independent-board.png",
+        "sha256": "042a5de9961638b37237da8c0f3371803ce3a3e2aa2d50dced72ac4367da8d7c"
+      }
+    },
+    {
+      "case": "malformed-season-invalid-JSON-stale-valid-empty-and-independent-siblings",
+      "image": {
+        "path": "docs/pr-crops/d06-macro-ci-20261104/stage-valid-empty-research.png",
+        "sha256": "49bd127afd28d43ee299c9447d0e4982b98d4fdffdd36af99db9aad64443bed3"
+      }
+    },
+    {
+      "case": "nonempty-stale-and-degraded-earnings-en",
+      "image": {
+        "path": "docs/pr-crops/d06-macro-ci-20261104/stage-nonempty-earnings-en.png",
+        "sha256": "827f8526d212d146e5d4d35da7c60ad1abffc807727129100c44acaef1161b61"
+      }
+    },
+    {
+      "case": "nonempty-stale-and-degraded-earnings-zh",
+      "image": {
+        "path": "docs/pr-crops/d06-macro-ci-20261104/stage-nonempty-earnings-zh.png",
+        "sha256": "26cc6beae53b85d3ea25ca4c676f2b0fba2d1f613ba824ea44903fd48d3ee16d"
+      }
+    },
+    {
+      "case": "population-unknown",
+      "image": {
+        "path": "docs/pr-crops/d06-macro-ci-20261104/stage-arc-unknown.png",
+        "sha256": "f4c548ba57a70c5b0788a7d43b7293743b63f4268121b45919bb53b483ad0d2c"
+      }
+    },
+    {
+      "case": "population-empty",
+      "image": {
+        "path": "docs/pr-crops/d06-macro-ci-20261104/stage-arc-empty.png",
+        "sha256": "051328ed1246a102d198c10d6db2a118851418b5b807eb6c9dcbff2d6a0848d4"
+      }
+    }
+  ],
+  "scope": "Actual renderer/assets; explicit synthetic 12-file data fixtures, plus actual pinned-context page.",
+  "source_hashes": {
+    "scripts/verify_d06_macro.py": "5855f2a79e94b30b8cd2127058b4f3fccc00dd7986ba65e2c5df9133f312ff52",
+    "templates/market_structure.html.j2": "5ae738754c3af03b04c62b314a020cce4cf74078c48ab623418442db404d3494",
+    "templates/stage_analysis.html.j2": "fe8307c9ceb5b6f562ec3d51541f516c1f0a92ce00dba5611b9d98ef8fa2f72b",
+    "templates/spvector.html.j2": "8c6ea6ddfcd23fd4444230db9cecf65b60613338dbfac344a7641e1755d8c15f"
+  }
+}

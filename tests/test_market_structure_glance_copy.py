@@ -50,9 +50,9 @@ def test_systematic_stances_are_plain_language() -> None:
     src = _src()
     for required in (
         "Systematic funds: aligned",
-        "systematic buying is already in the price",
-        "systematic funds are stepping back",
-        "systematic flows aren't pushing either way",
+        "Modeled fund exposure is increasing in both strategies",
+        "Modeled fund exposure is decreasing in both strategies",
+        "The two fund models show no shared direction",
     ):
         assert required in src
     for banned in (
@@ -66,11 +66,11 @@ def test_systematic_stances_are_plain_language() -> None:
 
 def test_weekly_range_kpis_use_plain_labels() -> None:
     src = _src()
-    kpi = src[src.index('<div class="kpi-row" style="margin-top:8px">', src.index("PANEL 6")):]
-    assert "typical range (about 68% of weeks)" in kpi
-    assert "wide range (about 95% of weeks)" in kpi
-    assert "typical range (±1σ" not in kpi
-    assert "wide range (±2σ" not in kpi
+    kpi = src[src.index('data-weekly-range', src.index("PANEL 6")):]
+    assert "Inner range (1σ)" in kpi and "Outer range (2σ)" in kpi
+    assert "Unavailable — no supplied band" in kpi
+    assert "The coverage assumptions are not observed probabilities or price boundaries." in kpi
+    assert "about 68% of weeks" not in kpi and "about 95% of weeks" not in kpi
 
 
 def test_footer_is_short_model_guidance() -> None:
@@ -87,8 +87,8 @@ def test_committed_page_matches_market_structure_copy_contract() -> None:
     html = SITE.read_text(encoding="utf-8")
     for required in (
         "Systematic fund flows",
-        "typical range (about 68% of weeks)",
-        "wide range (about 95% of weeks)",
+        "Inner range (1σ)",
+        "Outer range (2σ)",
         "Market context, not buy or sell signals.",
     ):
         assert required in html
@@ -104,11 +104,15 @@ def test_committed_page_matches_market_structure_copy_contract() -> None:
 def test_chinese_fallback_copy_uses_the_same_fund_name() -> None:
     # Covers dormant missing-data and funds-cutting branches, not just today's snapshot.
     for path in (TEMPLATE, SITE):
-        assert "机器资金" not in path.read_text(encoding="utf-8")
+        html = path.read_text(encoding="utf-8")
+        # Shared navigation is a separate owner; check this page's reading path.
+        body = html[html.index('<div class="wrap">'):]
+        assert "机器资金" not in body
 
 
-def test_weekly_model_ranges_retain_the_approximation_qualifier() -> None:
+def test_weekly_model_ranges_do_not_claim_measured_coverage() -> None:
     for path in (TEMPLATE, SITE):
         html = path.read_text(encoding="utf-8")
-        assert "typical range (about 68% of weeks)" in html
-        assert "wide range (about 95% of weeks)" in html
+        assert "Inner range (1σ)" in html and "Outer range (2σ)" in html
+        assert "Their names are not a verified coverage rate." in html
+        assert "about 68% of weeks" not in html and "about 95% of weeks" not in html

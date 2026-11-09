@@ -120,7 +120,8 @@ def test_warmup_shows_honest_empty_states():
     """Warm-up must render honest plain-word empty states, not crash."""
     html = _render_warmup()
     assert 'class="empty"' in html
-    assert "runs tonight" in html.lower() or "warming up" in html.lower()
+    assert "Stage population unavailable" in html
+    assert "No completed classification population is supplied in this file." in html
 
 
 def test_warmup_still_has_nav_and_footer():
@@ -311,11 +312,10 @@ def test_no_target_week_renders_unavailable_not_warming_up(tmp_path):
     assert "Priced <b>" not in html
 
 
-def test_warmup_with_no_artifact_still_says_warming_up():
-    """The genuine first-run state keeps its warm-up copy — the §2.4 unavailable
-    branch must not swallow it."""
+def test_absent_artifact_does_not_invent_a_scheduled_first_run():
+    """An absent artifact does not establish why it is absent or a future schedule."""
     html = _render_warmup()
-    assert "The first stage read runs tonight" in html
+    assert "No completed classification population is supplied in this file." in html
     assert "Stage read unavailable" not in html
 
 
@@ -591,9 +591,9 @@ def test_w7_research_and_altdata_own_empty_states():
     html = _render_with_fixture()
     assert "function resEmpty()" in html
     assert "function altEmpty()" in html
-    assert "Company primers are being written" in html
-    assert "公司简介正在撰写中" in html
-    assert "The Screener and Stage Board are unaffected" in html
+    assert "No company research entries supplied" in html
+    assert "未提供公司研究记录" in html
+    assert "unaffected" not in html
     assert "host.innerHTML=resEmpty()" in html
     assert "host.innerHTML=altEmpty()" in html
     assert "host.innerHTML=ernEmpty()" not in html
@@ -605,7 +605,7 @@ def test_w7_research_empty_never_says_earnings_unavailable():
     assert "Earnings data unavailable" not in res_fn
     assert "Earnings calls aren" not in res_fn
     assert "财报数据不可用" not in res_fn
-    assert "Company primers are being written" in res_fn
+    assert "No company research entries supplied" in res_fn
 
 
 def test_w7_one_published_ec_scale_on_the_page():
@@ -643,18 +643,17 @@ def test_w7_pipeline_strings_removed_from_page():
     html = _render_with_fixture()
     for banned in _W7_PIPELINE_BAN:
         assert banned not in html, f"banned pipeline string still on page: {banned!r}"
-    assert "Earnings calls aren" in html
-    assert "财报电话会暂时无法加载" in html
-    assert "Our earnings feed is down; the Screener, Stage Board and Industries are unaffected." in html
-    assert "showing the last complete set of earnings calls" in html
+    assert "'earnings_table.json':['Earnings calls','财报电话会']" in html
+    assert "This calls file reports incomplete history." in html
+    assert "unaffected" not in html and "feed is down" not in html
 
 
-def test_w7_indempty_is_the_file_arm():
-    """C7: region arm unreachable after M2; file arm, no 'generated tonight'."""
+def test_industry_empty_is_distinct_from_a_read_failure():
+    """A ready empty file cannot be labeled as a request failure."""
     html = _render_with_fixture()
     ind = html.split("function indEmpty()", 1)[1].split("function ", 1)[0]
-    assert "Industry rankings aren" in ind
-    assert "The file for this view didn" in ind
+    assert "No supplied entries for this view" in ind
+    assert "The file loaded." in ind
     assert "generated tonight" not in ind
     assert "Try another region" not in ind
     assert "今晚生成" not in ind
@@ -701,21 +700,15 @@ def test_w7_r2_retired_desk_gauge_cutoffs_are_gone():
     assert "ernSortKey='ec_combined'" not in html
 
 
-def test_w7_r2_load_failure_empty_states_name_the_surface():
-    """m1: a genuine fetch failure is not a first-run warm-up."""
+def test_read_failure_names_the_selected_slice_and_has_explicit_retry():
     html = _render_with_fixture()
-    assert "Screener isn" in html
-    assert "选股器暂时无法加载" in html
-    assert "The board isn" in html
-    assert "榜单暂时无法加载" in html
-    screener_fn = html.split("function loadScreener()", 1)[1].split(
-        "/* =====================================================================", 1)[0]
-    assert "Warming up" not in screener_fn
-    assert "Stage Board and Industries are unaffected" in screener_fn
-    board_fn = html.split("function renderBoard()", 1)[1].split(
-        "function renderBoardProv()", 1)[0]
-    assert "Warming up" not in board_fn
-    assert "Screener and Industries are unaffected" in board_fn
+    assert "'screener.json':['Screener','选股器']" in html
+    assert "'stage_board_weekly.json':['Weekly stage board','周线阶段看板']" in html
+    assert "'stage_board_daily.json':['Daily stage board','日线阶段看板']" in html
+    state = _extract_js_fn(html, "sliceStatus")
+    assert "could not load" in state and "未能加载" in state
+    assert 'data-retry-slice' in state
+    assert "Warming up" not in state and "unaffected" not in state
 
 
 @_needs_node
@@ -958,8 +951,8 @@ def test_w7_r4_altdata_empty_copy_is_observable_only():
     region = empty_fn + "\n" + why_fn + "\n" + cap_block + "\n" + col_empty
     assert "No trending topics to show right now." in region
     assert "暂无热门话题可显示。" in region
-    assert "feeds haven" in region and "t updated" in region
-    assert "数据源尚未更新" in region
+    assert "Update dates unavailable" in region
+    assert "更新日期暂缺" in region
     for banned in ("wired", "live", "实时"):
         assert banned not in region, f"empty-state region still says {banned!r}"
     assert "drawing attention" not in region
@@ -1015,8 +1008,8 @@ process.stdout.write(JSON.stringify(out));
     out = json.loads(res.stdout)
     # absent / no asof → outage, never a freshness word
     for lane, absent_word, seed_word, live_word in (
-        ("en", "not updating", "seed only", "live"),
-        ("zh", "未更新", "仅种子", "实时"),
+        ("en", "Update date unavailable", "seed only", "live"),
+        ("zh", "更新日期暂缺", "仅种子", "实时"),
     ):
         abs_ = out[lane]["absent"]
         noasof = out[lane]["no_asof"]

@@ -76,7 +76,7 @@ def _region(html, start, end):
 
 
 def _header(html):
-    return _region(html, '<div class="h1">', '<div class="tag">')
+    return _region(html, '<h1 class="h1">', '<div class="tag">')
 
 
 def _scorecard(html):
@@ -134,15 +134,15 @@ def test_log_summary_missing_or_empty_is_none(tmp_path):
 def test_overlay_card_shows_the_forward_log():
     card = _overlay_card({"overlay_log": dict(LOG)}, dict(NOVETO))
     for s in ("Forward log", "向前记录", "76", "430", "Jun 12, 2026 → Oct 16, 2026",
-              "no veto has fired yet.", "尚未触发否决。"):
+              "no veto flag has been recorded.", "尚未记录否决标记。"):
         assert s in card, f"overlay card missing forward-log copy: {s!r}"
     assert "the veto fired" not in card
 
 
 def test_overlay_card_counts_veto_days():
     card = _overlay_card({"overlay_log": dict(LOG, vetoes=3)}, dict(NOVETO))
-    assert "the veto fired on 3 of them." in card
-    assert "其中 3 天触发否决。" in card
+    assert "a veto flag was recorded on 3 dates." in card
+    assert "其中 3 个日期记录了否决标记。" in card
     assert "no veto has fired yet" not in card
 
 
@@ -233,6 +233,6 @@ def test_tax_note_uses_the_rendered_turnover():
     note = _region(html, '<div class="note r">', '<div class="foot">')
     assert "1.65×/yr" in note, note
     assert "1.65×/年" in note, note
-    assert "Taxable-account warning" in note, note
+    assert "Tax scenario" in note, note
     assert "~1.5" not in note, note
     assert "约 1.5" not in note, note

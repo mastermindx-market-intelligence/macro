@@ -1,0 +1,33 @@
+{
+  "actual_ci_base": "eb7ebc890073b9498e026e9b2102c4a74fbc9d15",
+  "merge_base": "52abe2e183833a216267942a99513e6c9cbe062f",
+  "results": [
+    {
+      "label": "manifest",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/run_ci_pack.py",
+        "--workflow",
+        ".github/ci/legacy-jobs.yml",
+        "--validate-only"
+      ],
+      "exit_code": 0,
+      "seconds": 2.23,
+      "log": "/tmp/d06-macro-c4-11l44i0i/macro-ci-manifest.log"
+    },
+    {
+      "label": "design_ratchet",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/check_design_system.py",
+        "--mode",
+        "enforce-added",
+        "--diff-file",
+        "/tmp/d06-macro-c4-11l44i0i/macro-ci-design.diff"
+      ],
+      "exit_code": 0,
+      "seconds": 5.16,
+      "log": "/tmp/d06-macro-c4-11l44i0i/macro-ci-design_ratchet.log"
+    }
+  ]
+}

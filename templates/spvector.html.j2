@@ -8,8 +8,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 {% include "_interfonts.html.j2" %}
 <script>try{var t=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',t||'dark');var l=localStorage.getItem('lang')||(function(){try{var L=navigator.languages||[navigator.language||navigator.userLanguage||''],i;for(i=0;i<L.length;i++)if((L[i]||'').toLowerCase().slice(0,2)==='zh')return'zh';if(/Shanghai|Hong_Kong|Macau|Urumqi|Chongqing|Harbin|Kashgar|Chungking/.test(Intl.DateTimeFormat().resolvedOptions().timeZone||''))return'zh';}catch(e){}return'';})();if(l)document.documentElement.setAttribute('data-lang',l);}catch(e){}</script>
-<title>US Allocation Strategy — S&amp;P / Macro Vector</title>
-{% set seo_title = "US Allocation Strategy: S&P Vector — Mastermind" %}{% set seo_desc = "A rules-based S&P 500 allocation strategy — macro vector reads, current stance and track record." %}{% set seo_path = "spvector.html" %}
+<title>S&amp;P 500 / T-bill model allocation — Mastermind</title>
+{% set seo_title = "US Allocation Strategy: S&P Vector — Mastermind" %}{% set seo_desc = "Mechanical S&P 500 and T-bill model allocation, source dates, historical study and recorded shadow assessment." %}{% set seo_path = "spvector.html" %}
 {% include "_seo_head.html.j2" %}
 {% include '_plotly_head.html.j2' %}
 <style>
@@ -119,121 +119,171 @@ html[data-lang="zh"] .win{color:var(--ink-act, var(--red))}
 html[data-lang="zh"] .lose{color:var(--ink-ok, var(--green))}
 </style>
 {% include "_state_inks.html.j2" %}{% include "_vector_polish.html.j2" %}
+<style>
+/* D06: quiet materials, one primary allocation, and readable depth. */
+html body::before{display:none}
+.wrap{max-width:1220px;padding:28px 28px 64px}
+.wrap .grid>*{min-width:0}
+.wrap .h1{font-size:clamp(27px,3vw,38px);line-height:1.2;margin:6px 0 12px;font-weight:650;letter-spacing:-.035em}
+.wrap .section-title{font-size:12px;margin:28px 0 12px;letter-spacing:.06em}
+.wrap .card{border-radius:var(--r-card,12px);padding:24px;box-shadow:none;background:var(--card)}
+.wrap .card h2,.wrap .card h3{font-size:17px;font-weight:600;margin:0 0 12px}
+.wrap .tag{background:transparent;color:var(--muted);padding:8px 0;font-weight:400}
+.wrap .allocbar{height:12px;border-radius:var(--r-ctl,8px);margin:18px 0 10px}
+.wrap .seg-spy{background:var(--blue)}.wrap .seg-cash{background:var(--muted)}
+.wrap .allocation-number{font-size:64px;font-weight:600;letter-spacing:-.05em;line-height:1.05;color:var(--ink)}
+.wrap .allocation-number small{font-size:16px;letter-spacing:0;font-weight:500}
+.wrap .allocation-split{display:flex;align-items:baseline;gap:24px;flex-wrap:wrap;margin:18px 0 8px}
+.wrap .cash-number{font-size:24px;font-weight:500;color:var(--muted)}
+.wrap .source-line{font-size:12px;color:var(--muted);line-height:1.65;margin-top:10px}
+.wrap .dialnum{font-size:44px;font-weight:600}
+.wrap .pill{background:transparent!important;color:var(--text);padding:0;font-size:14px}
+.wrap .chips{gap:8px;margin-top:16px}
+.wrap .chip{font-size:12px;font-weight:400;padding:6px 10px;border-radius:var(--r-ctl,8px)}
+.wrap .chip b{font-weight:600}
+.wrap .note{border:0;background:var(--bg);padding:14px 16px;border-radius:var(--r-ctl,8px);line-height:1.6}
+.wrap .spv-details{margin-top:16px;border:1px solid var(--grid);border-radius:var(--r-btn,10px);padding:0 18px;background:var(--card)}
+.wrap .spv-details>summary{min-height:52px;display:list-item;align-content:center;cursor:pointer;font-weight:600;padding:14px 0;color:var(--ink)}
+.wrap .spv-details[open]{padding-bottom:20px}
+.wrap .spv-details .section-title:first-of-type{margin-top:10px}
+.wrap .table-scroll{overflow-x:auto;max-width:100%;overscroll-behavior-inline:contain}
+.wrap .legtbl{min-width:580px}.wrap .gtable{min-width:410px}.wrap .tbl{min-width:350px}
+.wrap .legtbl th{font-weight:500;line-height:1.4}
+.wrap .range-controls{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0 4px}
+.wrap .range-controls button{min-width:52px;min-height:44px;padding:8px 12px;border:1px solid var(--grid);border-radius:var(--r-ctl,8px);background:var(--card);color:var(--muted);font:inherit;font-size:13px;cursor:pointer}
+.wrap .range-controls button[aria-pressed="true"]{background:var(--bg);color:var(--ink);border-color:var(--blue);font-weight:600}
+.wrap .range-controls button:disabled{opacity:.55;cursor:default}
+.wrap :is(button,a,summary,[tabindex]):focus-visible{outline:2px solid var(--blue);outline-offset:3px}
+.wrap .js-plotly-plot{max-width:100%}
+.wrap #spv-study > .spv-plot > .section-title,.wrap #spv-study > .spv-plot > .card > .sub{display:none}
+.wrap #spv-study > .spv-plot > .card{padding:0;border:0;border-radius:0;box-shadow:none;background:transparent}
+.wrap blockquote{margin:12px 0;padding:12px 16px;border:1px solid var(--grid);border-radius:var(--r-ctl,8px);font-size:13px;color:var(--muted);overflow-wrap:anywhere}
+.wrap .shadow-state{font-weight:600;color:var(--ink)}
+.wrap .study-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+.wrap .score .v{font-weight:600}
+@media(max-width:640px){
+ .wrap{padding:20px 16px 48px}.wrap .card{padding:18px 14px}
+ .wrap .allocation-number{font-size:54px}.wrap .spv-details{padding-left:12px;padding-right:12px}
+ .wrap .dialwrap{gap:14px;align-items:flex-start}.wrap .dialnum{font-size:38px}
+ .wrap .grid{gap:12px}.wrap .section-title{margin-top:24px}
+ .wrap .sub{font-size:13px;line-height:1.6}
+}
+@media(prefers-reduced-motion:reduce){.wrap *{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+</style>
 </head>
 <body>
 {% include "_site_nav.html.j2" %}
 <div class="wrap">
-
-  <div class="section-title">{{ t('Allocation Strategy · in depth','仓位策略 · 深度') }}</div>
-  <div class="h1">{{ t('How much S&P 500 — vs T-bills — to hold right now','当前应持有多少标普500 — 相对短期国债') }}</div>
-  <div class="sub" style="margin-bottom:6px">{{ t('As of','截至') }} {{ as_of }} · SPY {{ '$%s'|format('{:,.2f}'.format(price)) }}</div>
+  <div class="section-title">{{ t('Allocation model · S&P Vector','仓位模型 · 标普向量') }}</div>
+  <h1 class="h1">{{ t('S&P 500 / T-bill model allocation','标普500 / 短期国债模型仓位') }}</h1>
+  <div class="sub">{{ t('Stored SPY close','已记录的 SPY 收盘价') }} · {{ as_of }} · {{ '$%s'|format('{:,.2f}'.format(price)) }}</div>
   {% if bench_start %}<div class="sub faint">{{ t('Backtest window','回测窗口') }}
     {{ bench_start }} → {{ as_of }} ({{ sc.years }}y)</div>{% endif %}
-  <div class="tag">{{ t('A drawdown / Sharpe engine — not a CAGR-beater','回撤 / 夏普引擎 — 并非跑赢年化收益的工具') }}</div>
+  <div class="tag">{{ t('Mechanical output and historical context. Source completeness is not certified by this page.','机械模型输出及历史背景。本页不认证数据源的完整性。') }}</div>
 
-  <!-- ===== recommended split + posture ===== -->
-  <div class="grid cols-2" style="margin-top:14px">
-    <div class="card">
-      <h3>{{ t('Recommended allocation right now','当前建议仓位') }}</h3>
-      <div class="allocbar">
-        {% if equity_w %}<div class="seg-spy" style="flex:{{ equity_w }}"><span>{{ t('S&P 500','标普500') }}</span><span>{{ equity_w }}%</span></div>{% endif %}
-        {% if cash_w %}<div class="seg-cash" style="flex:{{ cash_w }}"><span>{{ t('T-bills','短债') }}</span><span>{{ cash_w }}%</span></div>{% endif %}
+  <!-- ===== mechanical split + model readings ===== -->
+  <div style="margin-top:16px">
+    <section class="card" id="spv-allocation" aria-labelledby="spv-allocation-title">
+      <h2 id="spv-allocation-title">{{ t('Mechanical strategy allocation','机械策略仓位') }}</h2>
+      <div class="allocation-split">
+        <div class="allocation-number" data-equity-weight="{{ equity_w }}">{{ equity_w }}% <small>{{ t('equity','股票') }}</small></div>
+        <div class="cash-number">{{ cash_w }}% {{ t('T-bills','短债') }}</div>
       </div>
-      <div class="legend">
-        <span><i style="background:var(--blue)"></i>{{ t('S&P 500 (SPY)','标普500 (SPY)') }}</span>
-        <span><i style="background:#9aa4b2"></i>{{ t('3-mo T-bills (cash carry)','3个月国债（现金套息）') }}</span>
+      <div class="allocbar" aria-hidden="true">
+        {% if equity_w %}<div class="seg-spy" style="flex:{{ equity_w }}"></div>{% endif %}
+        {% if cash_w %}<div class="seg-cash" style="flex:{{ cash_w }}"></div>{% endif %}
       </div>
-      {% if last_switch %}<div class="sub" style="margin-top:12px">{{ t('Last change','上次调整') }}: <b style="color:var(--ink)">{{ last_switch.date }}</b> — {{ last_switch.frm }}% → {{ last_switch.to }}%</div>{% endif %}
-      <div class="sub faint" style="margin-top:8px;font-size:12px">{{ t(next_note, next_note_zh) }}</div>
-    </div>
-    <div class="card">
-      <h3>{{ t('Macro de-risk score','宏观降险评分') }} <span class="faint" style="font-weight:500">(0–100)</span></h3>
-      <div class="dialwrap">
-        <div class="dialnum" style="color:{{ band_color }}">{{ score }}</div>
-        <div>
-          <span class="pill" style="background:{{ band_color }}">{{ t(band_label, band_label_zh) }}</span>
-          <div class="sub" style="margin-top:8px">{{ t('Higher = more risk-off. The score sets the equity weight via graded bands (below); a Fed-put-gated re-deploy buys validated washouts.','分数越高越偏避险。该分数通过分级区间（见下）设定股票权重；并由美联储看跌期权门控的再部署逻辑买入经验证的恐慌底。') }}</div>
-        </div>
-      </div>
-      <div class="chips">
-        <span class="chip" style="border-color:{{ '#cfa' if not disloc.put_absent else '#f6b' }}">{{ t('Fed-put','美联储看跌') }}: <b>{{ t('present','在场') if not disloc.put_absent else t('absent (knife)','缺席（落刀）') }}</b></span>
-        <span class="chip">{{ t('Re-deploy gate','再部署闸门') }}: <b>{{
-            t(disloc.verdict, disloc.verdict_zh) }}</b></span>
-        <span class="chip">{{ t('Capitulation','投降') }}: <b>{{ disloc.capitulation }}/3</b></span>
-      </div>
-      {% if disloc.put_legs %}<div class="sub faint">{{
-        t('Fed-put inputs','美联储看跌条件') }}: {{
-        t('Sahm recession signal quiet','萨姆衰退信号未触发')
-        if not disloc.put_legs.recession else
-        t('Sahm recession signal firing','萨姆衰退信号已触发') }} · {{
-        t('inflation expectations low enough for the Fed to ease',
-          '通胀预期低到足以让美联储宽松') if not disloc.put_legs.fedput_off
-        else t('inflation expectations too high for the Fed to ease',
-          '通胀预期过高，美联储难以宽松') }}</div>{% endif %}
-    </div>
-  </div>
+      <div class="legend"><span><i style="background:var(--blue)"></i>{{ t('S&P 500 (SPY)','标普500 (SPY)') }}</span><span><i style="background:var(--muted)"></i>{{ t('3-month T-bills','3个月国债') }}</span></div>
+      <div class="source-line">{{ t('Allocation model date','仓位模型日期') }} · {{ allocation_as_of or t('Unavailable','暂无数据') }}</div>
+      {% if last_switch %}<div class="sub" style="margin-top:12px">{{ t('Last model weight change','最近模型权重变化') }} · {{ last_switch.date }} · {{ last_switch.frm }}% → {{ last_switch.to }}%</div>{% endif %}
+      <div class="sub faint" style="margin-top:12px">{{ t(next_note, next_note_zh) }}</div>
+    </section>
 
-  {% if overlay %}
-  <!-- ===== LLM context / knife-veto overlay (advisory, never in the backtest) ===== -->
-  <div class="card" style="margin-top:14px;{% if overlay.veto %}border-color:var(--red){% endif %}">
-    <h3 style="margin-bottom:6px">{% if overlay.veto %}<span style="color:var(--ink-act, var(--red))">⚠ {{ t('LLM knife-veto active','LLM 接刀否决生效') }}</span>{% else %}{{ t('LLM context / veto overlay','LLM 背景 / 否决叠加') }}{% if not overlay.enabled %} <span class="faint" style="font-weight:500">· {{ t('off','关闭') }}</span>{% endif %}{% endif %}</h3>
-    {% if not overlay.enabled %}
-    <div class="sub">{{ t('No DeepSeek key configured — the mechanical recommendation stands. When enabled, this firewalled layer digests the FOMC tone (and, on a stress day, the shock-reversibility read) and can veto a buyable-washout redeploy if it judges the shock a regime break. It is logged forward and NEVER enters the backtest or the score.','未配置 DeepSeek 密钥 —— 以机械建议为准。启用后，该防火墙层会消化 FOMC 基调（压力日则读取冲击可逆性），并在判断冲击为周期破裂时否决可买入恐慌底的再部署。它仅向前记录，绝不进入回测或评分。') }}</div>
-    {% elif overlay.veto %}
-    <div class="sub" style="margin-bottom:6px">{{ overlay.veto_reason }}</div>
-    <div class="sub faint">{{ t('Live recommendation','实时建议') }} <b style="color:var(--ink)">{{ (overlay.overlay_weight*100)|round|int }}% {{ t('equity','股票') }}</b> ({{ t('mechanical would redeploy to','机械逻辑将再部署至') }} {{ (overlay.mechanical_weight*100)|round|int }}%). {{ overlay.disclaimer }}</div>
-    {% else %}
-    <div class="sub" style="margin-bottom:6px">{{ overlay.note }}</div>
-    <div class="sub faint">{{ t('No veto — the mechanical recommendation stands.','无否决 —— 以机械建议为准。') }} {{ overlay.disclaimer }}</div>
-    {% endif %}
-    {% if overlay_log %}<div class="sub faint">{{ t('Forward log','向前记录') }}:
-      {{ overlay_log.days }} {{ t('trading days logged','个交易日已记录') }}
-      ({{ overlay_log.first }} → {{ overlay_log.last }}; {{ overlay_log.rows }}
-      {{ t('builds','次构建') }}) —
-      {% if overlay_log.vetoes %}
-      {{ t('the veto fired on {v} of them.','其中 {v} 天触发否决。')
-        |replace('{v}', overlay_log.vetoes|string) }}{% else %}
-      {{ t('no veto has fired yet.','尚未触发否决。') }}
-      {% endif %}</div>{% endif %}
-  </div>
-  {% endif %}
-
-  <!-- ===== risk-score leg breakdown ===== -->
-  <div class="section-title">{{ t('What is driving the score','分数由什么驱动') }}</div>
-  <div class="card">
-    <div class="sub" style="margin-bottom:4px">{{ t('Each leg adds points to the 0–100 score (renormalised weighted mean). The bar below is the current score, split by contribution — so you can see exactly what is risk-on or risk-off today.','各分项为 0–100 分数贡献分值（归一化加权平均）。下方进度条为当前分数，按贡献拆分 — 让你一眼看清今天是什么在加风险或降风险。') }}</div>
-    <div class="riskbar">
-      {% for lg in legs %}{% if lg.active and lg.points %}<div style="width:{{ lg.points }}%;background:{{ lg.color }}" title="{{ lg.label }}: {{ lg.points }} pts"></div>{% endif %}{% endfor %}
-    </div>
-    <div class="sub faint" style="font-size:12px">{{ t('Filled width = the score out of 100. Empty = headroom (calm).','填充宽度 = 满分100中的得分。空白 = 余量（平静）。') }}</div>
-    <table class="legtbl">
-      <tr><th class="l">{{ t('Risk leg','风险分项') }}</th><th>{{ t('Intensity','强度') }}</th><th>{{ t('Weight','权重') }}</th><th>{{ t('Pub lag','发布滞后') }}</th><th>{{ t('Points','贡献分') }}</th></tr>
-      {% for lg in legs %}
-      <tr>
-        <td class="l"><span class="dot" style="background:{{ lg.color }}"></span>{{ t(lg.label, lg.label_zh) }}</td>
-        <td>{{ (lg.value|round|int ~ '/100') if lg.value is not none else '—' }}</td>
-        <td>{{ '%.1f'|format(lg.weight) }}</td>
-        <td>{{ lg.lag }}d</td>
-        <td><b>{{ ('%.1f'|format(lg.points)) if lg.points is not none else '—' }}</b></td>
-      </tr>
-      {% endfor %}
-      <tr><td class="l"><b>{{ t('Composite score','综合分数') }}</b></td><td></td><td></td><td></td><td><b>{{ score }}</b></td></tr>
-    </table>
   </div>
 
   <!-- ===== strategy chart ===== -->
+  <section class="card" id="spv-study" aria-labelledby="spv-study-title" style="margin-top:18px">
+    <div class="study-head"><h2 id="spv-study-title">{{ t('Price, model risk and equity weight','价格、模型风险与股票权重') }}</h2><span class="sub">{{ t('Three panels · shared time axis','三个面板 · 同一时间轴') }}</span></div>
+    <div class="range-controls" role="group" aria-label="{{ 'Model study range' }}">
+      {% for label in ['1Y','5Y','10Y','All'] %}<button type="button" data-spv-range="{{ loop.index0 }}" aria-pressed="{{ 'true' if label == '5Y' else 'false' }}" disabled>{{ t(label, {'1Y':'1年','5Y':'5年','10Y':'10年','All':'全部'}[label]) }}</button>{% endfor %}
+    </div>
+    <div class="spv-plot">
   <div class="section-title">{{ t('The strategy in action · S&P 500 with the model on top','策略实战 · 标普500 叠加模型') }}</div>
   <div class="card">{{ charts.strategy|safe }}
     <div class="sub" style="margin-top:8px">{{ t('Green = fully invested, amber = trimmed, clear = defensive. ▲/▼ mark every allocation change. The strategy equity (blue) is rescaled onto the price axis so you can read protection vs participation directly. Use the range buttons to zoom.','绿色 = 满仓，琥珀 = 减仓，空白 = 防守。▲/▼ 标注每次仓位变动。策略净值（蓝）已缩放至价格轴，可直接对比保护与参与度。用范围按钮缩放。') }}</div>
   </div>
+    </div>
+    <p class="sub">{{ t('Green = fully invested; amber = trimmed; clear = defensive. Triangles mark model weight changes, not executed trades. Strategy equity is rescaled onto the price axis. Range controls update all three panels together. Older line samples may be thinned or rounded; change markers retain model dates.','绿色 = 满仓；琥珀色 = 减仓；无色 = 防守。三角标记表示模型权重变化，并非已执行交易。策略净值缩放至价格轴。范围控件同步更新三个面板。较早的折线样本可能抽稀或取整；变化标记保留模型日期。') }}</p>
+  </section>
+
+    <section class="card" id="spv-model-readings" style="margin-top:18px" aria-labelledby="spv-risk-title">
+      <h2 id="spv-risk-title">{{ t('Model risk score','模型风险评分') }} <span class="faint">(0–100)</span></h2>
+      <div class="dialwrap">
+        <div class="dialnum" style="color:{{ band_color }}">{{ score if score is not none else '—' }}</div>
+        <div>
+          <span class="pill">{% if score is none %}{{ t('Unavailable','暂无数据') }}{% elif not score_current_available %}{{ t('Last available reading','最近可用读数') }}{% elif band_key == 'low' %}{{ t('Low model risk','模型风险低') }}{% elif band_key == 'elevated' %}{{ t('Elevated model risk','模型风险偏高') }}{% elif band_key == 'high' %}{{ t('High model risk','模型风险高') }}{% else %}{{ t('Extreme model risk','模型风险极高') }}{% endif %}</span>
+          <div class="source-line">{{ t('Score contributor date','评分来源日期') }} · {{ score_as_of or t('Unavailable','暂无数据') }}<br>{{ t('Aligned SPY session','对齐的 SPY 交易日') }} · {{ score_aligned_as_of or t('Unavailable','暂无数据') }}</div>
+        </div>
+      </div>
+      <div class="chips">
+        <span class="chip">{{ t('Capitulation model','恐慌模型') }}: <b>{% if disloc.cap_available %}{{ disloc.capitulation }}/3{% else %}{{ t('Unavailable','暂无数据') }}{% endif %}</b></span>
+        <span class="chip">{{ t('Fed-put absent flag','美联储看跌缺席标记') }}: <b>{% if disloc.put_available %}{{ t('true','真') if disloc.put_absent else t('false','假') }}{% else %}{{ t('Unavailable','暂无数据') }}{% endif %}</b></span>
+      </div>
+      <div class="source-line">{{ t('Capitulation date','恐慌模型日期') }} · {{ disloc.cap_as_of or '—' }}<br>{{ t('Fed-put model date','美联储看跌模型日期') }} · {{ disloc.put_as_of or '—' }}</div>
+      <p class="sub">{{ t('Underlying input freshness and completeness are not supplied. A zero score or false model flag does not establish healthy feeds.','底层输入的新鲜度及完整性未提供。零分或假标记不能证明数据源正常。') }}</p>
+      <details class="spv-details" id="spv-gate">
+        <summary>{{ t('Re-deploy gate · model logic','再部署闸门 · 模型逻辑') }}</summary>
+        <div class="sub">{{ t('Re-deploy gate','再部署闸门') }}: {% if disloc.gate_model_available %}<b>{{ t(disloc.verdict, disloc.verdict_zh) }}</b>{% else %}{{ t('Model output unavailable','模型输出暂无数据') }}{% endif %}</div>
+        <p class="sub faint">{{ t('This is the rule output from the available model frames, not a verified assessment of live policy or market conditions.','这是可用模型数据产生的规则输出，并非对实时政策或市场状况的已验证判断。') }}</p>
+        {% if disloc.put_legs %}<div class="sub">{{ t('Fed-put model components','美联储看跌模型分项') }} · {{ disloc.put_legs_as_of or t('Date unavailable','日期暂缺') }}<br>
+          {{ t('Recession flag','衰退标记') }}: {{ t('true','真') if disloc.put_legs.recession else t('false','假') }} ·
+          {{ t('Inflation restriction flag','通胀限制标记') }}: {{ t('true','真') if disloc.put_legs.fedput_off else t('false','假') }}</div>{% endif %}
+      </details>
+    </section>
+
+  <!-- ===== LLM context / recorded shadow assessment ===== -->
+  <section class="card" id="spv-shadow" aria-labelledby="spv-shadow-title" style="margin-top:18px">
+    <h2 id="spv-shadow-title">{{ t('Shadow assessment · recorded only','影子评估 · 仅作记录') }}</h2>
+    <div class="shadow-state">{{ t('Not applied to allocation','未应用于仓位') }}</div>
+    <p class="sub">{{ t('The mechanical allocation above remains the model output. The shadow assessment does not change that weight, the score or the backtest.','上方机械仓位仍为模型输出。影子评估不会改变该权重、评分或回测。') }}</p>
+    {% if overlay and overlay.enabled %}
+      <div class="sub">{{ t('Recorded shadow equity weight','已记录的影子股票权重') }} · <b>{{ (overlay.overlay_weight*100)|round|int }}%</b> · {{ t('Mechanical equity weight','机械股票权重') }} · <b>{{ equity_w }}%</b></div>
+      <div class="source-line">{{ t('Recorded veto flag','已记录的否决标记') }} · {{ t('true','真') if overlay.veto else t('false','假') }}</div>
+      {% if overlay.veto_reason or overlay.note %}<div class="source-line">{{ t('Recorded shadow rationale','已记录的影子理由') }}</div><blockquote>{{ overlay.veto_reason if overlay.veto_reason else overlay.note }}</blockquote>{% endif %}
+    {% else %}<p class="sub faint">{{ t('No shadow assessment is available for this page build.','本次页面构建没有可用的影子评估。') }}</p>{% endif %}
+    {% if overlay_log %}<div class="source-line">{{ t('Forward log','向前记录') }}:
+      {{ overlay_log.days }} {{ t('distinct model dates','个不同模型日期') }}
+      ({{ overlay_log.first }} → {{ overlay_log.last }}; {{ overlay_log.rows }} {{ t('records','条记录') }}) —
+      {% if overlay_log.vetoes %}{{ t('a veto flag was recorded on {v} dates.','其中 {v} 个日期记录了否决标记。')|replace('{v}', overlay_log.vetoes|string) }}{% else %}{{ t('no veto flag has been recorded.','尚未记录否决标记。') }}{% endif %}
+    </div>{% endif %}
+  </section>
+
+  <!-- ===== risk-score leg breakdown ===== -->
+  <details class="spv-details" id="spv-breakdown">
+    <summary>{{ t('Risk-score breakdown and model lags','风险评分分解与模型滞后') }}</summary>
+    <div class="source-line">{{ t('Breakdown contributor date','分解来源日期') }} · {{ legs_as_of or t('Unavailable','暂无数据') }} · {{ t('Independent of the headline aligned session','与顶部对齐交易日分别标注') }}</div>
+    <p class="sub">{{ t('Contributions use the model’s renormalised weighted mean. Missing components remain unavailable; unfilled space is not evidence of calm markets.','分项贡献采用模型的归一化加权平均。缺失分项保持暂无数据；空白不代表市场平静。') }}</p>
+    {% if legs_score is not none %}<div class="riskbar" aria-hidden="true">{% for lg in legs %}{% if lg.active and lg.points %}<div style="width:{{ lg.points }}%;background:{{ lg.color }}"></div>{% endif %}{% endfor %}</div>{% endif %}
+    <div class="table-scroll" tabindex="0" role="region" aria-label="Risk-score component table">
+      <table class="legtbl">
+        <thead><tr><th class="l">{{ t('Risk leg','风险分项') }}</th><th>{{ t('Intensity','强度') }}</th><th>{{ t('Weight','权重') }}</th><th>{{ t('Model lag · trading days','模型滞后 · 交易日') }}</th><th>{{ t('Points','贡献分') }}</th></tr></thead>
+        <tbody>{% for lg in legs %}<tr><td class="l"><span class="dot" style="background:{{ lg.color }}"></span>{{ t(lg.label, lg.label_zh) }}</td><td>{{ (lg.value|round|int ~ '/100') if lg.value is not none else '—' }}</td><td>{{ '%.1f'|format(lg.weight) }}</td><td>{{ lg.lag }}</td><td>{{ ('%.1f'|format(lg.points)) if lg.points is not none else '—' }}</td></tr>{% endfor %}
+        <tr><td class="l"><b>{{ t('Breakdown composite','分解综合分') }}</b></td><td></td><td></td><td></td><td><b>{{ ('%g'|format(legs_score)) if legs_score is not none else '—' }}</b></td></tr></tbody>
+      </table>
+    </div>
+  </details>
 
   <!-- ===== growth + drawdown ===== -->
+  <details class="spv-details" id="spv-history">
+    <summary>{{ t('Historical growth and drawdown','历史增长与回撤') }}</summary>
   <div class="grid cols-2">
     <div class="card"><h3>{{ t('Growth of $1 (log) — vs buy & hold','1美元增长（对数）— 对比买入持有') }}</h3>{{ charts.growth|safe }}</div>
     <div class="card"><h3>{{ t('Underwater (drawdown) — vs buy & hold','水下回撤 — 对比买入持有') }}</h3>{{ charts.dd|safe }}</div>
   </div>
-  <div class="note b" style="margin-top:14px">{{ t('Honest framing: the headline CAGR includes the T-bill carry earned on the de-risked sleeve; net of carry it roughly matches buy & hold. The robust, verified edge is the higher Sharpe and the ~40% shallower max drawdown. It stays mostly invested and WILL lag the index in prolonged bulls — that give-up is the premium paid for crash protection, banked when the cycle breaks.','诚实说明：标题年化收益包含降险部分赚取的国债套息；扣除套息后大致与买入持有持平。稳健、已验证的优势是更高的夏普比率与约浅 40% 的最大回撤。它大部分时间在场，在长牛市中必然跑输指数 — 这一让步是为崩盘保护支付的保费，在周期破裂时兑现。') }}</div>
+    <div class="note b">{{ t('Historical results depend on this sample, inputs and assumptions. Headline CAGR includes T-bill carry on the defensive sleeve; ex-carry results are shown separately. Relative returns and drawdown protection can change across periods.','历史结果取决于样本、输入及假设。标题年化收益包含防守部分的短债利息；扣息结果另列。不同区间的相对收益和回撤保护可能变化。') }}</div>
+  </details>
 
+  <details class="spv-details" id="spv-scorecard"><summary>{{ t("Historical scorecard and resampling basis","历史记分卡与重抽样依据") }}</summary>
   <!-- ===== scorecard tiles ===== -->
   <div class="section-title">{{ t('Backtest scorecard · {y} years vs buy & hold'|replace('{y}', sc.years|string), '回测记分卡 · {y} 年对比买入持有'|replace('{y}', sc.years|string)) }}</div>
   <div class="grid cols-4">
@@ -251,36 +301,38 @@ html[data-lang="zh"] .lose{color:var(--ink-ok, var(--green))}
   }}</div>{% endif %}
   <div class="grid cols-3" style="margin-top:18px">
     <div class="card score"><div class="k">Sortino</div><div class="v {{ 'win' if sc.sortino >= sc.hodl_sortino else 'lose' }}">{{ sc.sortino }}</div><div class="sub">{{ t('buy & hold','买入持有') }} {{ sc.hodl_sortino }}</div></div>
-    <div class="card score"><div class="k">{{ t('After-tax CAGR (taxable, 35%)','税后年化（应税，35%）') }}</div><div class="v">{{ at.after_tax_cagr }}%</div><div class="sub">{{ t('buy & hold','买入持有') }} {{ at.hodl_cagr }}% · {{ t('cum. tax','累计税') }} {{ at.cumulative_tax_paid_x }}×</div></div>
+    <div class="card score"><div class="k">{{ t('After-tax CAGR (35% scenario)','税后年化（35%情景）') }}</div><div class="v">{{ at.after_tax_cagr }}%</div><div class="sub">{{ t('buy & hold','买入持有') }} {{ at.hodl_cagr }}% · {{ t('cum. tax','累计税') }} {{ at.cumulative_tax_paid_x }}×</div></div>
     <div class="card score"><div class="k">{{ t('Carry contribution','套息贡献') }}</div><div class="v">+{{ sc.carry_pp }}pp</div><div class="sub">{{ t('rate-regime dependent (~0 in ZIRP)','取决于利率环境（零利率时≈0）') }}</div></div>
   </div>
 
+  </details>
+
   <!-- ===== allocation rule-book ===== -->
-  <div class="section-title">{{ t('The rule-book · risk band → equity weight','规则手册 · 风险区间 → 股票权重') }}</div>
-  <div class="card">
-    <table class="gtable">
-      <tr><th>{{ t('Risk band','风险区间') }}</th><th>{{ t('Score','分数') }}</th><th>{{ t('S&P 500 weight','标普500权重') }}</th><th>{{ t('T-bills','短债') }}</th></tr>
-      {% for b in bands %}
-      <tr><td class="rh {{ 'cur' if b.cur }}">{{ t(b.label, b.label_zh) }}{% if b.cur %} ◀{% endif %}</td>
-        <td class="{{ 'cur' if b.cur }}">{{ b.rng }}</td>
-        <td class="{{ 'cur' if b.cur }}"><b>{{ b.weight }}%</b></td>
-        <td class="{{ 'cur' if b.cur }}">{{ 100 - b.weight }}%</td></tr>
-      {% endfor %}
-    </table>
-    <div class="sub faint" style="margin-top:8px;font-size:12px">{{ t('A new band must hold 5 trading days before it takes effect (hysteresis kills whipsaw). On a buyable washout (capitulation with the Fed-put present) the model over-rides back to fully invested and holds ~42 days to ride the recovery. Bands are pre-registered, not tuned per result.','新区间须连续保持 5 个交易日才生效（滞后机制抑制频繁换仓）。在可买入的恐慌底（投降且美联储看跌在场）时，模型会强制回到满仓并持有约 42 天以参与反弹。区间为预先登记，非按结果调参。') }}</div>
-  </div>
+  <details class="spv-details" id="spv-rules">
+    <summary>{{ t('The rule-book · risk band to equity weight','规则手册 · 风险区间到股票权重') }}</summary>
+    <div class="table-scroll" tabindex="0" role="region" aria-label="Allocation bands">
+      <table class="gtable"><thead><tr><th>{{ t('Risk band','风险区间') }}</th><th>{{ t('Score','分数') }}</th><th>{{ t('S&P 500 weight','标普500权重') }}</th><th>{{ t('T-bills','短债') }}</th></tr></thead><tbody>
+        {% for b in bands %}<tr><td class="rh {{ 'cur' if b.cur }}">{{ t(b.label, b.label_zh) }}{% if b.cur %} ◀{% endif %}</td><td class="{{ 'cur' if b.cur }}">{{ b.rng }}</td><td class="{{ 'cur' if b.cur }}"><b>{{ b.weight }}%</b></td><td class="{{ 'cur' if b.cur }}">{{ 100 - b.weight }}%</td></tr>{% endfor %}
+      </tbody></table>
+    </div>
+    <p class="sub">{{ t('The existing model requires a new band to persist for five trading days. Its re-deploy rule uses the capitulation and Fed-put model flags and a 42-session hold. Those rules can make the mechanical weight differ from the score’s simple band weight.','现有模型要求新区间持续五个交易日。其再部署规则使用恐慌与美联储看跌模型标记，并持有42个交易日。因此机械权重可能不同于评分对应的简单区间权重。') }}</p>
+  </details>
 
   <!-- ===== bear ledger ===== -->
-  <div class="section-title">{{ t('Independent bear episodes · the true sample size','独立熊市事件 · 真实样本量') }}</div>
-  <div class="card">
-    <table class="tbl">
-      <tr><th>{{ t('Peak','峰值') }}</th><th>{{ t('Trough','谷底') }}</th><th class="n">{{ t('S&P drawdown','标普回撤') }}</th></tr>
-      {% for e in episodes %}<tr><td>{{ e.peak }}</td><td>{{ e.trough }}</td><td class="n lose">{{ e.drawdown_pct }}%{% if e.ongoing %} ({{ t('ongoing','进行中') }}){% endif %}</td></tr>{% endfor %}
-    </table>
-    <div class="sub faint" style="margin-top:8px;font-size:12px">{{ t('Only ~4 independent ≥20% bears govern a get-out / get-back-in switch — effective-N, not the day count, bounds confidence. The edge is validated by leave-one-crisis-out + an AQR-style permutation null (real Sharpe & drawdown beat every random-timing shuffle, p=0.0), and holds under point-in-time (ALFRED) macro vintages.','只有约 4 次独立的 ≥20% 熊市决定一次离场/再入场切换 — 决定置信度的是有效样本量，而非天数。该优势通过留一危机检验 + AQR 式置换零假设验证（真实夏普与回撤击败每一次随机择时洗牌，p=0.0），并在时点（ALFRED）宏观数据下依然成立。') }}</div>
-  </div>
+  <details class="spv-details" id="spv-ledger">
+    <summary>{{ t('Historical bear-episode ledger','历史熊市事件台账') }}</summary>
+    <div class="table-scroll" tabindex="0" role="region" aria-label="Historical bear episodes"><table class="tbl">
+      <thead><tr><th>{{ t('Peak','峰值') }}</th><th>{{ t('Trough','谷底') }}</th><th class="n">{{ t('S&P drawdown','标普回撤') }}</th></tr></thead><tbody>
+      {% for e in episodes %}<tr><td>{{ e.peak }}</td><td>{{ e.trough }}</td><td class="n lose">{{ e.drawdown_pct }}%{% if e.ongoing %} ({{ t('ongoing','进行中') }}){% endif %}</td></tr>{% else %}<tr><td colspan="3">{{ t('No qualifying episodes in the supplied sample.','所提供样本中没有符合条件的事件。') }}</td></tr>{% endfor %}
+      </tbody></table></div>
+    <p class="sub faint">{{ t('Episodes are identified from the supplied price history using the existing 20% drawdown rule. Daily observations and overlapping regimes are not independent trials. This page does not certify point-in-time validity or out-of-sample performance.','事件采用现有20%回撤规则，从所提供的价格历史中识别。每日观测与重叠市场阶段并非独立试验。本页不认证时点有效性或样本外表现。') }}</p>
+  </details>
 
-  <div class="note r">{{ t('Taxable-account warning: switching realises short-term capital gains that buy & hold defers — best run in a tax-advantaged account. The low {x}×/yr turnover keeps this manageable.','应税账户提示：切换会实现买入持有可递延的短期资本利得 — 最好在税收优惠账户中运行。{x}×/年 的低换手使其可控。')|replace('{x}', sc.turnover_annual|string) }}</div>
+  <details class="spv-details" id="spv-methods">
+    <summary>{{ t('Costs, carry and tax assumptions','成本、利息与税务假设') }}</summary>
+    <div class="note r">{{ t('Tax scenario: turnover is {x}×/yr. The comparison applies a 35% short-term gains assumption; it is a sensitivity scenario, not account-specific tax advice. Results are before final liquidation.','税务情景：换手率为 {x}×/年。对比采用35%的短期资本利得假设；这是敏感性情景，并非针对账户的税务建议。结果未计最终清算。')|replace('{x}', sc.turnover_annual|string) }}</div>
+    <p class="sub">{{ t('Backtest holdings take effect on the next bar. Trading cost is 3 basis points per unit of turnover. Cash carry uses the existing calendar-day convention and bill-yield inputs. The shadow assessment is excluded.','回测持仓在下一根价格柱生效。每单位换手计3个基点交易成本。现金利息沿用现有自然日惯例及国债收益率输入。影子评估不计入。') }}</p>
+  </details>
 
   <div class="foot">
     {{ t('Built', '生成于') }} {{ built }}<br>
@@ -290,4 +342,22 @@ html[data-lang="zh"] .lose{color:var(--ink-ok, var(--green))}
 <!-- shared theme + language toggles: wires .theme-switch + .lang-toggle, persists
      the choice, and re-themes the Plotly charts (font + axes) on every toggle. -->
 <script src="theme.js"></script>
+<script>
+(function(){
+  function init(){
+    var section=document.getElementById('spv-study'),plot=section&&section.querySelector('.js-plotly-plot');
+    var buttons=section?Array.from(section.querySelectorAll('[data-spv-range]')):[];
+    function sync(){var menu=plot&&plot.layout&&plot.layout.updatemenus&&plot.layout.updatemenus[0];if(!menu)return false;buttons.forEach(function(b,i){b.disabled=false;b.setAttribute('aria-pressed',String(i===menu.active));});return true;}
+    if(plot&&plot.layout&&plot.layout.updatemenus){
+      window.Plotly.relayout(plot,{'updatemenus[0].visible':false});sync();
+      buttons.forEach(function(button,i){button.addEventListener('click',function(){var menu=plot.layout.updatemenus[0],args=Object.assign({},menu.buttons[i].args[0]);args['updatemenus[0].active']=i;window.Plotly.relayout(plot,args).then(sync);});});
+      if(plot.on)plot.on('plotly_relayout',sync);
+    }
+    document.querySelectorAll('.spv-details').forEach(function(details){details.addEventListener('toggle',function(){if(details.open)requestAnimationFrame(function(){details.querySelectorAll('.js-plotly-plot').forEach(function(p){if(window.Plotly.Plots)window.Plotly.Plots.resize(p);});});});});
+    function language(){var zh=document.documentElement.getAttribute('data-lang')==='zh';var ranges=section&&section.querySelector('.range-controls');if(ranges)ranges.setAttribute('aria-label',zh?'模型研究范围':'Model study range');var labels={'spv-breakdown':['Risk-score component table','风险评分分项表'],'spv-rules':['Allocation bands','仓位区间表'],'spv-ledger':['Historical bear episodes','历史熊市事件表']};Object.keys(labels).forEach(function(id){var table=document.querySelector('#'+id+' .table-scroll');if(table)table.setAttribute('aria-label',labels[id][zh?1:0]);});}
+    language();document.addEventListener('langchange',language);
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+</script>
 </body></html>

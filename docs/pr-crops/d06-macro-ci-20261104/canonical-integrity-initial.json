@@ -1,0 +1,323 @@
+{
+  "schema": "d06.macro_ci.canonical_integrity.v1",
+  "verified_at": "2026-11-04T12:05:16.607814+00:00",
+  "state_count": 72,
+  "source_still_matches_functional_receipt": true,
+  "pages": [
+    {
+      "route": "/market_structure.html",
+      "states": 24,
+      "rest": 8,
+      "hover": 8,
+      "focus": 8,
+      "integrity": "passed",
+      "console_errors": [],
+      "failed_responses": [],
+      "registry_gaps": [
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "free"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "essential"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "pro"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "loading"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "empty"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "stale"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "error"
+        }
+      ],
+      "metrics": {
+        "asof_present": false,
+        "by_viewport": {
+          "desktop": {
+            "document_height_px": 3073,
+            "elements_wider_than_viewport": 0,
+            "horizontal_overflow": false
+          },
+          "mobile": {
+            "document_height_px": 4308,
+            "elements_wider_than_viewport": 0,
+            "horizontal_overflow": false
+          }
+        },
+        "console_error_count": 0,
+        "document_height_px": 3073,
+        "duplicate_heading_texts": [],
+        "elements_wider_than_viewport": 0,
+        "heading_counts": {
+          "h1": 1,
+          "h2": 5,
+          "h3": 0,
+          "h4": 0,
+          "h5": 0,
+          "h6": 0
+        },
+        "horizontal_overflow": false,
+        "long_paragraph_count": 0,
+        "measured_in": {
+          "access": "anonymous",
+          "locale": "en",
+          "theme": "dark",
+          "viewport": "desktop"
+        },
+        "panel_count": 8,
+        "payload_bytes_total": 542688,
+        "raw_slug_hit_count": 0,
+        "raw_slug_hits": [],
+        "request_count": 19,
+        "screenshot_completion": 1.0,
+        "section_count": 0,
+        "source_present": true,
+        "todo_placeholder_hit_count": 0,
+        "todo_placeholder_hits": [],
+        "visible_word_count": 522
+      },
+      "manifest": "mockups/evidence/d06-macro-ci-20261104/market_structure/manifest.json"
+    },
+    {
+      "route": "/stage_analysis.html",
+      "states": 24,
+      "rest": 8,
+      "hover": 8,
+      "focus": 8,
+      "integrity": "passed",
+      "console_errors": [],
+      "failed_responses": [],
+      "registry_gaps": [
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "free"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "essential"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "pro"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "loading"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "empty"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "stale"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "error"
+        }
+      ],
+      "metrics": {
+        "asof_present": true,
+        "by_viewport": {
+          "desktop": {
+            "document_height_px": 1838,
+            "elements_wider_than_viewport": 606,
+            "horizontal_overflow": false
+          },
+          "mobile": {
+            "document_height_px": 2751,
+            "elements_wider_than_viewport": 606,
+            "horizontal_overflow": false
+          }
+        },
+        "console_error_count": 0,
+        "document_height_px": 1838,
+        "duplicate_heading_texts": [],
+        "elements_wider_than_viewport": 606,
+        "heading_counts": {
+          "h1": 1,
+          "h2": 1,
+          "h3": 0,
+          "h4": 0,
+          "h5": 0,
+          "h6": 0
+        },
+        "horizontal_overflow": false,
+        "long_paragraph_count": 0,
+        "measured_in": {
+          "access": "anonymous",
+          "locale": "en",
+          "theme": "dark",
+          "viewport": "desktop"
+        },
+        "panel_count": 0,
+        "payload_bytes_total": 2075915,
+        "raw_slug_hit_count": 0,
+        "raw_slug_hits": [],
+        "request_count": 17,
+        "screenshot_completion": 1.0,
+        "section_count": 0,
+        "source_present": false,
+        "todo_placeholder_hit_count": 0,
+        "todo_placeholder_hits": [],
+        "visible_word_count": 13679
+      },
+      "manifest": "mockups/evidence/d06-macro-ci-20261104/stage_analysis/manifest.json"
+    },
+    {
+      "route": "/spvector.html",
+      "states": 24,
+      "rest": 8,
+      "hover": 8,
+      "focus": 8,
+      "integrity": "passed",
+      "console_errors": [],
+      "failed_responses": [],
+      "registry_gaps": [
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "free"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "essential"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "pro"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "loading"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "empty"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "stale"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "error"
+        }
+      ],
+      "metrics": {
+        "asof_present": false,
+        "by_viewport": {
+          "desktop": {
+            "document_height_px": 2531,
+            "elements_wider_than_viewport": 34,
+            "horizontal_overflow": false
+          },
+          "mobile": {
+            "document_height_px": 2941,
+            "elements_wider_than_viewport": 51,
+            "horizontal_overflow": false
+          }
+        },
+        "console_error_count": 0,
+        "document_height_px": 2531,
+        "duplicate_heading_texts": [],
+        "elements_wider_than_viewport": 34,
+        "heading_counts": {
+          "h1": 1,
+          "h2": 4,
+          "h3": 2,
+          "h4": 0,
+          "h5": 0,
+          "h6": 0
+        },
+        "horizontal_overflow": false,
+        "long_paragraph_count": 0,
+        "measured_in": {
+          "access": "anonymous",
+          "locale": "en",
+          "theme": "dark",
+          "viewport": "desktop"
+        },
+        "panel_count": 13,
+        "payload_bytes_total": 4033304,
+        "raw_slug_hit_count": 0,
+        "raw_slug_hits": [],
+        "request_count": 19,
+        "screenshot_completion": 1.0,
+        "section_count": 0,
+        "source_present": false,
+        "todo_placeholder_hit_count": 0,
+        "todo_placeholder_hits": [],
+        "visible_word_count": 374
+      },
+      "manifest": "mockups/evidence/d06-macro-ci-20261104/spvector/manifest.json"
+    }
+  ],
+  "visual_gate": {
+    "exit_code": 1,
+    "command": [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "scripts/check_ui_visual_evidence.py",
+      "--diff-file",
+      "/tmp/d06-macro-c4-11l44i0i/macro-ci-ui.diff"
+    ],
+    "base": "52abe2e183833a216267942a99513e6c9cbe062f",
+    "log": "visual-gate.log",
+    "diff_sha256": "6bafc778fc5ed1d32f65869eee8a08c3d44b1e5022dc98026229c8b6b8052553"
+  }
+}

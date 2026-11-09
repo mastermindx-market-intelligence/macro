@@ -30749,6 +30749,8 @@ jobs:
       - "templates/options.html.j2"
       - "tests/test_build_flow_leaders.py"
       - "tests/test_build_market_structure_page.py"
+      - "tests/test_d06_market_structure.py"
+      - "tests/fixtures/market_structure_latest.json"
       - "tests/test_market_structure_glance_copy.py"
       - "tests/test_build_options_command.py"
       - "tests/test_build_options_screener.py"
@@ -30799,7 +30801,7 @@ jobs:
       - name: flow-leaders engine + builder suites (washout-flip pins, pick-lab flow books)
         run: python -m pytest tests/test_flow_leaders.py tests/test_build_flow_leaders.py -q
       - name: market-structure engine + nw-context + page suites (week_map emission pins)
-        run: python -m pytest tests/test_market_structure.py tests/test_market_structure_nw.py tests/test_build_market_structure_page.py tests/test_market_structure_glance_copy.py -q
+        run: python -m pytest tests/test_market_structure.py tests/test_market_structure_nw.py tests/test_build_market_structure_page.py tests/test_market_structure_glance_copy.py tests/test_d06_market_structure.py -q
       # P1 unrun backfill 2026-08-14: tests/test_options_gap_discipline.py joins the
       # options-screener step.  It was named by no `run:` step in any workflow, so the
       # GAP DISCIPLINE law — what the screener and flow-leaders builders may publish
@@ -34849,7 +34851,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn
       - name: page/render builders whose output ships to the site
-        run: python -m pytest tests/test_ai_desk_page.py tests/test_build_chart_data.py tests/test_build_odds_observability.py tests/test_build_sector_map.py tests/test_committee_template.py tests/test_confluence_screener_page.py tests/test_contagion_card_render.py tests/test_darkpool_desk.py tests/test_options_estate_redirect_stubs.py tests/test_macro_signals_render.py tests/test_nav_icon_refresh.py tests/test_nav_submenu_icons.py tests/test_sector_nav_links.py tests/test_site_semantics_refs.py tests/test_sp500_heatmap_caps.py tests/test_stage_analysis_page.py tests/test_stocktable_data.py tests/test_template_items_footgun.py tests/test_trading_journal_xlsx.py tests/test_us_stocks_w8g_table.py tests/test_factor_seasonality.py tests/test_seasonality_now_call_strip.py tests/test_methodology_disclosures.py tests/test_seasonality_page_claims.py -q
+        run: python -m pytest tests/test_ai_desk_page.py tests/test_build_chart_data.py tests/test_build_odds_observability.py tests/test_build_sector_map.py tests/test_committee_template.py tests/test_confluence_screener_page.py tests/test_contagion_card_render.py tests/test_darkpool_desk.py tests/test_options_estate_redirect_stubs.py tests/test_macro_signals_render.py tests/test_nav_icon_refresh.py tests/test_nav_submenu_icons.py tests/test_sector_nav_links.py tests/test_site_semantics_refs.py tests/test_sp500_heatmap_caps.py tests/test_stage_analysis_page.py tests/test_d06_stage_analysis.py tests/test_stocktable_data.py tests/test_template_items_footgun.py tests/test_trading_journal_xlsx.py tests/test_us_stocks_w8g_table.py tests/test_factor_seasonality.py tests/test_seasonality_now_call_strip.py tests/test_methodology_disclosures.py tests/test_seasonality_page_claims.py -q
 
   macro-signals-conditions:
     if: ${{ false }}  # executed inside ci-pack, not a disabled gate
@@ -35804,7 +35806,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn
       - name: vector allocation surfaces + the calibration ledger and basket pulse they read
-        run: python -m pytest tests/test_basket_turn_watch.py tests/test_btc_overrides.py tests/test_regime_dynamics_null_gaps.py tests/test_signal_surface_bugfixes.py tests/test_spvector_page.py tests/test_trial_log_refresh.py tests/test_validation_effective_t.py tests/test_vector_conviction.py -q
+        run: python -m pytest tests/test_basket_turn_watch.py tests/test_btc_overrides.py tests/test_regime_dynamics_null_gaps.py tests/test_signal_surface_bugfixes.py tests/test_spvector_page.py tests/test_d06_spvector.py tests/test_trial_log_refresh.py tests/test_validation_effective_t.py tests/test_vector_conviction.py -q
       # W23-L11 (S&P Vector, 2026-10-20): the chip that read "Dislocation" computes the re-deploy
       # gate, and the two Fed-put inputs (Sahm recession, 10y breakeven) now print beneath it.
       - name: W23-L11 spvector re-deploy gate chip + Fed-put input legs

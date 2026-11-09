@@ -1,0 +1,11 @@
+{
+  "schema": "d06.macro_ci.help_viewport_observation.v1",
+  "status": "failed",
+  "source_parent": "40d395a898c8c6749b4c9998a71fc9196e544c2e",
+  "source_html_sha256": "54ad8e25432bb9162d1337fd2fbadc279f48a9acbbfb282b63d93e4a70553c9f",
+  "purpose": "Resolve apparent low-opacity tooltip in full-page capture by observing actual settled viewport state without style changes.",
+  "reduced_motion": "no-preference",
+  "rows": [],
+  "error": "Error('Locator.hover: Error: strict mode violation: locator(\"[data-driver=\\\\\"gex\\\\\"] .help\") resolved to 3 elements:\\n    1) <span tabindex=\"0\" role=\"button\" aria-label=\"Read context\" class=\"help help-upgraded\" aria-describedby=\"msp-help-0\" data-tip-zh=\"净GEX（做市商期权敞口）柱状图（绿=吸收，红=放大）。灰/蓝线：标普500对照每日翻转点。可切换时间窗口。数据自2026-06-15起。\" data-tip-en=\"Net GEX (dealer options exposure) bars (green = absorbing, red = amplifying). Grey/blue line: SPX against the daily flip level. Toggle the time window. Series from 2026-06-15.\">…</span> aka get_by_role(\"button\", name=\"Read context\", description=\"Net GEX (dealer options exposure) bars (green = absorbing, red = amplifying). Grey/blue line: SPX against the daily flip level. Toggle the time window. Series from 2026-06-15. 净GEX（做市商期权敞口）柱状图（绿=吸收，红=放大）。灰/蓝线：标普500对照每日翻转点。可切换时间窗口。数据自2026-06-15起。\")\\n    2) <span class=\"help\" tabindex=\"0\" aria-label=\"Read context\" aria-describedby=\"msp-help-1\">…</span> aka get_by_text(\"? How shock absorbers\")\\n    3) <span tabindex=\"0\" role=\"button\" aria-label=\"Read context\" class=\"help help-upgraded\" aria-describedby=\"msp-help-2\" data-tip-zh=\"翻转点是重建出的标普500水平，做市商净伽马在此变号——对冲从吸收回档转为放大波动。选股窗口是生产者用来划分1个月隐含相关性的两年百分位（选股行情对比个股同涨同跌）。两者都不是预测；夜间快照到达时重算。\" data-tip-en=\"The flip is the reconstructed SPX level where dealer net gamma changes sign — hedging switches from absorbing dips to amplifying them. The stock-picker windows are the two-year percentiles the producer uses to classify 1-month implied correlation (a stock-pic…>…</span> aka get_by_text(\"? The flip is the\")\\n\\nCall log:\\n  - waiting for locator(\"[data-driver=\\\\\"gex\\\\\"] .help\")\\n')",
+  "finished_at": "2026-11-04T12:08:36.667964+00:00"
+}

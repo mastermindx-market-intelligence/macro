@@ -103,10 +103,11 @@ _ALLOWED_UNRESOLVED: frozenset[tuple[str, str, str]] = frozenset({
 
 
 # These are immutable historical evidence, not current executable consumers.
-# #10862 archived the M2189 objects; #10734 retains the implementation, security
-# and runtime holds. The missing helper is NOT admitted or restored here.
-# Keep their unresolved dependencies explicit, and check every other import.
-# Any later executable enrollment must requalify/retire this classification.
+# #10862 archived the M2189 objects; #10734 now supplies their source helper.
+# Normal source resolution does not lift implementation, security or runtime
+# holds, or authorize historical consumers to execute. Keep every identity seal
+# and ordinary import check; missing-helper fixtures retain explicit unresolved
+# classification. Any executable enrollment still requires its own disposition.
 # Columns: repository path, UTF-8 byte count, SHA256, imported module, name.
 _D06_ARCHIVAL_IMPORTS: tuple[tuple[str, int, str, str, str], ...] = (
     (
@@ -522,10 +523,9 @@ def test_module_getattr_makes_a_module_opaque(tmp_path):
 
 def test_every_first_party_import_resolves():
     missing_modules, missing_names, _, archived = _sweep(REPO, _D06_ARCHIVAL_IMPORTS)
-    expected = tuple((rel, module, name) for rel, _, _, module, name in _D06_ARCHIVAL_IMPORTS)
-    assert archived == expected, (
-        "historical dependencies must remain explicitly unresolved and unenrolled; "
-        f"requalify the archival classification if a dependency is admitted: {archived}"
+    assert archived == (), (
+        "historical imports must now resolve to the restored source helper; "
+        f"sealed classification does not permit a missing dependency: {archived}"
     )
     problems = list(missing_modules) + list(missing_names)
     assert not problems, (
@@ -578,6 +578,28 @@ def test_exact_archives_are_visible_as_unresolved(tmp_path, package_kind):
     assert archived == tuple(
         (rel, module, name) for rel, _, _, module, name in _D06_ARCHIVAL_IMPORTS
     )
+
+
+def test_restored_helper_resolves_sealed_imports_without_execution(tmp_path):
+    _archive_fixture(tmp_path)
+    helper = tmp_path / "scripts" / "verify_d06_macro.py"
+    helper.write_text(
+        "raise AssertionError('source resolution must never execute the helper')\n",
+        encoding="utf-8",
+    )
+    active = tmp_path / "scripts" / "active_consumer.py"
+    active.write_text(
+        "from scripts.verify_d06_macro import intentionally_missing_export\n",
+        encoding="utf-8",
+    )
+
+    modules, names, checked, archived = _sweep(tmp_path, _D06_ARCHIVAL_IMPORTS)
+    assert not modules
+    assert checked == 4
+    assert archived == ()
+    assert len(names) == 1
+    assert "scripts/active_consumer.py" in names[0]
+    assert "intentionally_missing_export" in names[0]
 
 
 @pytest.mark.parametrize("relative", [

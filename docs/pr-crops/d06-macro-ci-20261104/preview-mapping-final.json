@@ -1,0 +1,91 @@
+{
+  "schema": "d06.macro_ci.preview_mapping.v1",
+  "created_at": "2026-11-04T11:56:56.887869+00:00",
+  "preview": "/tmp/d06-macro-c4-11l44i0i/ci-visual-preview",
+  "source_parent": "40d395a898c8c6749b4c9998a71fc9196e544c2e",
+  "preview_git_identity": null,
+  "generated_html": {
+    "site/market_structure.html": {
+      "sha256": "efdfad4eb2570b9cc98d4f73a2a67c4a5cfe359de8314da1c9893f0186ffd10f",
+      "bytes": 221335,
+      "preview_sha256": "efdfad4eb2570b9cc98d4f73a2a67c4a5cfe359de8314da1c9893f0186ffd10f"
+    },
+    "site/stage_analysis.html": {
+      "sha256": "984a78b8678d28a949c4a7d2aa1756c199275ca5fff81eeefad02341e63077c2",
+      "bytes": 251140,
+      "preview_sha256": "984a78b8678d28a949c4a7d2aa1756c199275ca5fff81eeefad02341e63077c2"
+    },
+    "site/spvector.html": {
+      "sha256": "84bd933deae1e913332e645954a96a15f9c2405f0d6b6047b0eb28a4351d0b28",
+      "bytes": 361863,
+      "preview_sha256": "84bd933deae1e913332e645954a96a15f9c2405f0d6b6047b0eb28a4351d0b28"
+    }
+  },
+  "stagedata": {
+    "source": "/tmp/d06-macro-c4-11l44i0i/stage-pinned-inputs/public/stagedata",
+    "files": {
+      "altdata_trending.json": {
+        "bytes": 1194,
+        "sha256": "4c9d6abc09b72726199fdb8c9e4897337f42621a8f2d5ca5e7a8893df75c3354"
+      },
+      "earnings_compare.json": {
+        "bytes": 1268550,
+        "sha256": "f3add86b238a25367b56b7ef288a984c3cfa64bc078b4e670b84c6c98a093b36"
+      },
+      "earnings_season.json": {
+        "bytes": 23870,
+        "sha256": "e04ed4d9f2ec48f7be756a03b6a2343cf29d0da80f83e4f176d435a33db9a2a3"
+      },
+      "earnings_table.json": {
+        "bytes": 599853,
+        "sha256": "606962ba809656a6c80aecaa3ab7cc2d330305cd43e9d45e84c636bc1ae58130"
+      },
+      "ec_industry.json": {
+        "bytes": 442511,
+        "sha256": "881971e39b8eeb0efec7d7c0543d271a5b61bd11d0672c910c4e4878442b3f99"
+      },
+      "ec_industry_heatmap.json": {
+        "bytes": 180242,
+        "sha256": "ee5cb22e19bf4ac9b081ebf42be350f1fa0a62af5d3623aa7550a0d1396475fb"
+      },
+      "industry_flows.json": {
+        "bytes": 104067,
+        "sha256": "0686e7bb058d19459cfad343f11da40e6bf65f33e135fe7f949ad4bd9bf634d1"
+      },
+      "industry_heatmap.json": {
+        "bytes": 9273,
+        "sha256": "815f5d1247283601dd1dcb4b42e92db6962e0d9f8ba7e2c543f0335f6cd93883"
+      },
+      "industry_name_pctile.json": {
+        "bytes": 21296,
+        "sha256": "46abeb9de2459b8c0af953039157df416a11a2b7c81f8246e9458d60ed53c023"
+      },
+      "industry_ranks.json": {
+        "bytes": 17141,
+        "sha256": "2d6115d5cd4f7c0e9c3d049956260d3f7911c3e63fadfd99e194ae83814e69e8"
+      },
+      "research_index.json": {
+        "bytes": 857,
+        "sha256": "1651583352f01137456a1dfe69f942437d2ce1d7b3863e4e76658d3fe6a266ba"
+      },
+      "screener.json": {
+        "bytes": 1698798,
+        "sha256": "8722fe340e77b82faee4ba67858a345bd61721fad9d026a14c31cb28a47a6989"
+      },
+      "stage_board_daily.json": {
+        "bytes": 1699048,
+        "sha256": "34abc5cdbd6b28be41179fc0a76512942589e2e371fb42f88e2450f3813664f7"
+      },
+      "stage_board_weekly.json": {
+        "bytes": 1698807,
+        "sha256": "1dbd8951637b8cb8e9cb1d15b4f90d2243d2de5f03c19f2e3104055f74c5d357"
+      }
+    }
+  },
+  "assets": "Read-only symlinks to current owned site; only stagedata maps to the exact existing producer snapshot.",
+  "verified_at": "2026-11-04T12:22:02.601941+00:00",
+  "source_phase_receipts": [
+    "source-verification.json",
+    "market-help-fix/source-verification.json"
+  ]
+}
