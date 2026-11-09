@@ -285,6 +285,7 @@ Record original file/page/node, disposition (keep, rewrite, user disclosure, bui
 - Desktop and narrow layouts remain readable in supported EN/ZH and themes; do not shrink text, add ellipses to critical qualifiers or bury the primary action to fit.
 - Builder documents retain source owners, dependencies, full semantics and discriminating acceptance cases. Their references agree with the current code or explicitly identify a source/design gap.
 - Inspect actual Paper screenshots after edits and record exact nodes. Paper proof, implemented code, browser proof and production acceptance are separate.
+- **Verify the current variant family.** The existing directory identifies current product/state roots; predecessors and alternatives are clearly marked and cannot remain additional unmarked current targets. Review equivalent EN/ZH, theme and viewport variants together against the identified fixture and governing behavior contract. Charts, tables and summaries must agree with that case; shared observations retain their values, signs, units, dates and states. Intentional subsets or different cases are explicit. Compare user-facing assurances with the contract: simplifying copy must not add guarantees of background continuation, once-only effects or durable retention. Unsupported future behavior stays clearly identified as proposed. Record unresolved mismatches against the affected roots and withhold production-ready acceptance for those variants.
 
 ### News Intelligence precedent
 
