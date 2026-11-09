@@ -1208,3 +1208,65 @@ This phase changed Paper, not application behavior. Browser focus/scroll, cold-r
 Read-only review found the Shared Research longread and outline already had coherent section destinations and a return to reading. The distinct Options Research Desk R1 mobile brief already distinguishes session identity, missing latest brief, earlier research and live Terminal continuation. Neither was rewritten.
 
 MedTech R14's two delivery choices are only 27px high against its own 44px minimum. The available Paper catalog still holds `update_styles` under `edit_held_schema`; no direct height edit or substitute recreation was attempted. The channel/schedule meaning of “In-app” versus “Daily digest” is also not established, so no email or delivery behavior was invented. This bounded layout issue does not block independent design work.
+
+
+## 23. Catalyst — implemented selection/copy correction and actual consumer proof
+
+### Bounded source ownership
+
+The source mismatch documented in §§20–21 was still present after the original Catalyst PR1038 merged. The follow-up refreshed the affected Terminal source to protected **929e008f689bc834662f52f845d070db3fc8eb00**; the relevant component, workspace, decoder, fixture, lexicon and test preimages were unchanged from the prior inspected source. The original programme's entitlement, adverse-case, scientific and production obligations were preserved rather than claimed by this UI repair.
+
+A new operation-bound Terminal workspace was acquired through the installed owner: **paper-catalyst-selection-copy-20261109**, branch **sol/web-paper-catalyst-selection-copy-20261109**. A first acquisition returned NOT_APPLIED/REPOSITORY_SOURCE_UNAVAILABLE. Read-only diagnosis established the canonical source binding, present base object and absence of a registered operation workspace; a bounded requalified acquisition on that same operation and carrier succeeded. The primary checkout, original PR1038 branches and other writers were not modified.
+
+The installed Next guide, current local instructions, existing workspace/read owner and protected delivery controls were inspected. Three read-only advisors remained judgment contributors; the principal implemented the bounded diff directly.
+
+### Corrected behavior
+
+| Situation | Actual component behavior in the follow-up |
+| --- | --- |
+| Explicit eligible Defense case, then Energy filter | The list changes to Energy; the selected Defense detail and copy target remain Defense, with a short outside-filter notice. |
+| Explicit eligible case, then zero matching rows | The empty list and its one Clear action remain alongside the selected detail. Clear restores the list without changing the explicit case. |
+| Explicit case absent from the current eligible snapshot | A missing-case notice appears; no unrelated detail or copy action substitutes for it. |
+| No valid explicit selection | Defaulting to the first visible watch waits for URL synchronization. A genuinely empty filtered list has no implicit detail. |
+| Delayed copy completion | Only the current attempt may publish success/failure, and only within its current case/read context. |
+| Clipboard rejection or unavailable clipboard API | The labelled read-only field contains the exact URL prepared for that attempt, including the actual selected case. Select link focuses and selects that same value without another clipboard write or navigation. |
+| History, selection, new read/account, ineligible read or unmount | Old feedback and fallback URLs are retired; returning to an earlier case does not revive them. |
+| Explicit Inspect, superseding navigation, or focused-detail removal | Focus follows the current explicit action, cannot be redirected by an obsolete animation-frame callback, and recovers to a retained notice/heading if the focused detail disappears. Typing in the filter retains focus. |
+
+The workspace passes its existing **current result object** as an opaque read context. This adds no lifecycle, identity, query, cache, account store, retry queue, entitlement decision or API. The independent Defense panel remains outside the market list/detail readiness guard. Source values, source dates, coverage distinctions, source disclosures and destinations retain their current owners.
+
+The clipboard guard suppresses stale feedback; an already issued operating-system clipboard write cannot be cancelled. The URL parser's existing validity rule is preserved.
+
+### Exact source and executable verification
+
+[Terminal PR1354](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1354) carries commit **45472fcedad31292d660d54731d4da472ca04f1e**. The typed commit and push each returned APPLIED; publisher readback and GitHub readback agree on that head.
+
+The six source/test files are the Catalyst view, its workspace, its CSS module, its lexicon, the existing React test suite and the existing browser spec. The commit also contains an implementation explanation, original verification output, a six-blob/seven-image manifest and seven unmodified browser captures under [docs/verification/catalyst-selection-copy-20261109](https://github.com/mastermindx-market-intelligence/mastermind-terminal/tree/45472fcedad31292d660d54731d4da472ca04f1e/docs/verification/catalyst-selection-copy-20261109).
+
+| Executed check | Observed result |
+| --- | --- |
+| Existing React suite with new selection/copy falsifiers | **46 passed**, 0 failed; Vitest 2.1.9; process exit 0 |
+| TypeScript over the complete six-file implementation/test diff | `npx tsc --noEmit`, exit 0 |
+| New targeted browser journeys using the existing Playwright configuration | **18 passed**, 0 failed, no retries; process exit 0 |
+| Exact source readback and diff whitespace check | Source text matches the submitted implementation; whitespace check exit 0 |
+| Native visual review | Seven captures inspected: desktop EN zero/fallback, tablet ZH zero/fallback, mobile ZH zero/fallback and mobile EN fallback |
+
+Browser coverage used desktop 1440×900, tablet 820×1180, mobile EN 390×844 and mobile ZH 320×780. The assertions exercise the real changed components with synthetic route fixtures: retained selection through zero results/Clear, missing-case suppression, exact manual URL, text selection, focus, minimum 44px copy/select targets and no horizontal overflow. Component tests additionally cover same-case overlapping attempts, late success and rejection, A→B→A and same-case history, unchanged source dates on a new accepted read, the actual workspace's account/refresh transitions, read ineligibility, unmount and focused-detail removal.
+
+These actual-component and browser checks are distinct from the earlier **22 pure-reference checks**. They are also distinct from PR1038's historical denied test action on old tree **62c78e3fd498ed5c8c2896f4912e084f95420362**, which was not replayed or represented as completed.
+
+### Delivery state at this milestone
+
+PR1354 was read back **OPEN, Ready, MERGEABLE**, at the exact published head. It carries only the scoped **merge-on-green** opt-in. Native auto-merge was enabled against that exact head and read back with `autoMergeRequest`; the repository's merge queue controls the actual merge strategy.
+
+Protected master requires **Quote Hub tests**, **Terminal typecheck + tests** and **Ingest + signal-layer tests**, with strict status enforcement and conversation resolution. No native approval requirement was returned by the observed branch protection; no approval, self-approval or review impersonation was performed. The current source author/committer is the installed publisher identity `review-bot`; PR author and native opt-in actor are the existing authenticated `mastermindxryan` account.
+
+At this readback, CI jobs were **QUEUED**, the PR was behind the advancing protected base, and `mergeCommit`/`mergedAt` were null. Pending checks are not pass, auto-merge enrollment is not merge, and no deployment or live acceptance is claimed. Continue on the same PR/carrier through actual CI, protected merge and the applicable git-gated deployment/live proof; preserve any newly observed gate.
+
+The design programme PR10617 stays Draft with its existing holds. This separately authorized implementation follow-up does not release that entire design programme.
+
+### Independent preservation judgment
+
+The current Shared Market Search and Comparison file **01M6Y31C449F02KGRNPGK94Q8D** now has a newer **R42** compact Companies/Tools page, root **14V-0**, while p1 is explicitly Reference. Two bounded read-only reviews and the principal's exact JSX read confirmed that its existing contract already distinguishes current Companies/Tools delivery from the wider mixed-search proposal, cached results from refresh failure, Clear from Close, and selected destination from missing venue/currency metadata.
+
+The inspected EN/ZH mobile specimens, recovery action and source-bound Back/focus contract provide no justified competing correction. That family was preserved; its static-result clipping and virtual-keyboard behavior remain implementation proof points already named in its own Build. No new canvas page, duplicate search owner or extra recovery feature was added.
