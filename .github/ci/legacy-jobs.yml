@@ -331,6 +331,10 @@ jobs:
     # Keep generated-site identities even when absent from a local sparse checkout.
     # Canonical closure and ancestor tests enforce this exact curated scope.
     paths:
+      # Lane 5 v1.1 (2026-11-10): contract-delta widening — the registry's
+      # lazy issuer-economics binding (and its lazy dedupe_source_roots edge).
+      - "engine/market_ontology/issuer_economics.py"
+      - "engine/leadership_rotation_context.py"
       # Shared profile registry: exact static import/read closure (lane 5 v2).
       - "contracts/market_ontology/technology_economic_change.evidence.v2.schema.json"
       - "contracts/market_ontology/technology_economic_change.v1.schema.json"
@@ -2509,6 +2513,10 @@ jobs:
     # C19 WP32 P5/P6: generation-correction identity coherence + warm-cache denial silence on a synthetic ticker (offline).
     timeout-minutes: 10
     paths:
+      # Lane 5 v1.1 (2026-11-10): contract-delta widening — the registry's
+      # lazy issuer-economics binding (and its lazy dedupe_source_roots edge).
+      - "engine/market_ontology/issuer_economics.py"
+      - "engine/leadership_rotation_context.py"
       # Shared profile registry: exact static import/read closure (lane 5 v2).
       - "contracts/market_ontology/technology_economic_change.evidence.v2.schema.json"
       - "contracts/market_ontology/technology_economic_change.v1.schema.json"
@@ -3593,6 +3601,10 @@ jobs:
     # C19 WP22: DHI non-AAPL integrated-answer traversal on the published event workspace (offline).
     timeout-minutes: 10
     paths:
+      # Lane 5 v1.1 (2026-11-10): contract-delta widening — the registry's
+      # lazy issuer-economics binding (and its lazy dedupe_source_roots edge).
+      - "engine/market_ontology/issuer_economics.py"
+      - "engine/leadership_rotation_context.py"
       # Shared profile registry: exact static import/read closure (lane 5 v2).
       - "contracts/market_ontology/technology_economic_change.evidence.v2.schema.json"
       - "contracts/market_ontology/technology_economic_change.v1.schema.json"
@@ -7682,6 +7694,9 @@ jobs:
     # Intelligence binder, crosswalk) and the app the transport mounts on.
     scope: exclusive
     paths:
+      # Lane 5 v1.1 (2026-11-10): contract-delta widening — the registry's
+      # lazy issuer-economics binding (and its lazy dedupe_source_roots edge).
+      - "engine/leadership_rotation_context.py"
       # Shared profile registry: exact static import/read closure (lane 5 v2).
       - "engine/market_ontology/technology_economic_change.py"
       - "engine/market_ontology/technology_research_registration.py"
@@ -8215,6 +8230,10 @@ jobs:
     # opaque fallback patterns to this hermetic job.
     scope: exclusive
     paths:
+      # Lane 5 v1.1 (2026-11-10): contract-delta widening — the registry's
+      # lazy issuer-economics binding (and its lazy dedupe_source_roots edge).
+      - "engine/market_ontology/issuer_economics.py"
+      - "engine/leadership_rotation_context.py"
       # Shared profile registry: exact static import/read closure (lane 5 v2).
       - "contracts/market_ontology/technology_economic_change.evidence.v2.schema.json"
       - "contracts/market_ontology/technology_economic_change.v1.schema.json"
@@ -9357,6 +9376,10 @@ jobs:
     # 846 tracked / 127 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      # Lane 5 v1.1 (2026-11-10): contract-delta widening — the registry's
+      # lazy issuer-economics binding (and its lazy dedupe_source_roots edge).
+      - "engine/market_ontology/issuer_economics.py"
+      - "engine/leadership_rotation_context.py"
       # Shared profile registry: exact static import/read closure (lane 5 v2).
       - "engine/market_ontology/technology_economic_change.py"
       - "engine/market_ontology/technology_research_registration.py"
@@ -12480,6 +12503,10 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      # Lane 5 v1.1 (2026-11-10): contract-delta widening — the registry's
+      # lazy issuer-economics binding (and its lazy dedupe_source_roots edge).
+      - "engine/market_ontology/issuer_economics.py"
+      - "engine/leadership_rotation_context.py"
       # Shared profile registry: exact static import/read closure (lane 5 v2).
       - "contracts/market_ontology/technology_economic_change.evidence.v2.schema.json"
       - "contracts/market_ontology/technology_economic_change.v1.schema.json"
@@ -17079,6 +17106,10 @@ jobs:
     # Dynamic Ontology assets and canonical navigation are included explicitly.
     scope: exclusive
     paths:
+      # Lane 5 v1.1 (2026-11-10): contract-delta widening — the registry's
+      # lazy issuer-economics binding (and its lazy dedupe_source_roots edge).
+      - "engine/market_ontology/issuer_economics.py"
+      - "engine/leadership_rotation_context.py"
       # Shared profile registry: exact static import/read closure (lane 5 v2).
       - "contracts/market_ontology/technology_economic_change.evidence.v2.schema.json"
       - "contracts/market_ontology/technology_economic_change.v1.schema.json"
@@ -28145,6 +28176,10 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      # Lane 5 v1.1 (2026-11-10): contract-delta widening — the registry's
+      # lazy issuer-economics binding (and its lazy dedupe_source_roots edge).
+      - "engine/market_ontology/issuer_economics.py"
+      - "engine/leadership_rotation_context.py"
       # Shared profile registry: exact static import/read closure (lane 5 v2).
       - "engine/market_ontology/technology_economic_change.py"
       - "engine/market_ontology/technology_research_registration.py"
@@ -29001,6 +29036,10 @@ jobs:
     # 846 tracked / 74 concrete.
     scope: exclusive
     paths:
+      # Lane 5 v1.1 (2026-11-10): contract-delta widening — the registry's
+      # lazy issuer-economics binding (and its lazy dedupe_source_roots edge).
+      - "engine/market_ontology/issuer_economics.py"
+      - "engine/leadership_rotation_context.py"
       # Shared profile registry: exact static import/read closure (lane 5 v2).
       - "engine/market_ontology/technology_economic_change.py"
       - "engine/market_ontology/technology_research_registration.py"
@@ -31380,6 +31419,10 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      # Lane 5 v1.1 (2026-11-10): contract-delta widening — the registry's
+      # lazy issuer-economics binding (and its lazy dedupe_source_roots edge).
+      - "engine/market_ontology/issuer_economics.py"
+      - "engine/leadership_rotation_context.py"
       # Shared profile registry: exact static import/read closure (lane 5 v2).
       - "contracts/market_ontology/technology_economic_change.evidence.v2.schema.json"
       - "contracts/market_ontology/technology_economic_change.v1.schema.json"
@@ -33265,6 +33308,9 @@ jobs:
     # the five scripts are closure imports, not tree scans.
     scope: exclusive
     paths:
+      # Lane 5 v1.1 (2026-11-10): contract-delta widening — the registry's
+      # lazy issuer-economics binding (and its lazy dedupe_source_roots edge).
+      - "engine/market_ontology/issuer_economics.py"
       # Shared profile registry: exact static import/read closure (lane 5 v2).
       - "engine/market_ontology/technology_economic_change.py"
       - "engine/market_ontology/technology_research_registration.py"
@@ -34111,6 +34157,9 @@ jobs:
     # no named closure file was removed.
     scope: exclusive
     paths:
+      # Lane 5 v1.1 (2026-11-10): contract-delta widening — the registry's
+      # lazy issuer-economics binding (and its lazy dedupe_source_roots edge).
+      - "engine/leadership_rotation_context.py"
       # Shared profile registry: exact static import/read closure (lane 5 v2).
       - "engine/market_ontology/technology_economic_change.py"
       - "engine/market_ontology/technology_research_registration.py"
@@ -40646,6 +40695,9 @@ jobs:
     # 846 tracked / 74 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      # Lane 5 v1.1 (2026-11-10): contract-delta widening — the registry's
+      # lazy issuer-economics binding (and its lazy dedupe_source_roots edge).
+      - "engine/leadership_rotation_context.py"
       # Shared profile registry: exact static import/read closure (lane 5 v2).
       - "engine/market_ontology/technology_economic_change.py"
       - "engine/market_ontology/technology_research_registration.py"
@@ -41203,6 +41255,9 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      # Lane 5 v1.1 (2026-11-10): contract-delta widening — the registry's
+      # lazy issuer-economics binding (and its lazy dedupe_source_roots edge).
+      - "engine/market_ontology/issuer_economics.py"
       # Shared profile registry: exact static import/read closure (lane 5 v2).
       - "contracts/market_ontology/technology_economic_change.evidence.v2.schema.json"
       - "contracts/market_ontology/technology_economic_change.v1.schema.json"
@@ -44604,6 +44659,10 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      # Lane 5 v1.1 (2026-11-10): contract-delta widening — the registry's
+      # lazy issuer-economics binding (and its lazy dedupe_source_roots edge).
+      - "engine/market_ontology/issuer_economics.py"
+      - "engine/leadership_rotation_context.py"
       # Shared profile registry: exact static import/read closure (lane 5 v2).
       - "contracts/market_ontology/technology_economic_change.evidence.v2.schema.json"
       - "contracts/market_ontology/technology_economic_change.v1.schema.json"
@@ -45887,6 +45946,10 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      # Lane 5 v1.1 (2026-11-10): contract-delta widening — the registry's
+      # lazy issuer-economics binding (and its lazy dedupe_source_roots edge).
+      - "engine/market_ontology/issuer_economics.py"
+      - "engine/leadership_rotation_context.py"
       # Shared profile registry: exact static import/read closure (lane 5 v2).
       - "contracts/market_ontology/technology_economic_change.evidence.v2.schema.json"
       - "contracts/market_ontology/technology_economic_change.v1.schema.json"
@@ -51219,6 +51282,10 @@ jobs:
     # The qledger-cluster-honest-ci code owner retains grader/readiness suites.
     scope: exclusive
     paths:
+      # Lane 5 v1.1 (2026-11-10): contract-delta widening — the registry's
+      # lazy issuer-economics binding (and its lazy dedupe_source_roots edge).
+      - "engine/market_ontology/issuer_economics.py"
+      - "engine/leadership_rotation_context.py"
       # Shared profile registry: exact static import/read closure (lane 5 v2).
       - "contracts/market_ontology/technology_economic_change.evidence.v2.schema.json"
       - "contracts/market_ontology/technology_economic_change.v1.schema.json"
