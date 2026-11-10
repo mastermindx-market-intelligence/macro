@@ -24,6 +24,7 @@ import json
 import math
 import sys
 import types
+from contextlib import nullcontext
 from pathlib import Path
 
 import numpy as np
@@ -511,3 +512,341 @@ def test_rerun_of_refuses_to_overwrite_the_original_output():
         stage1.main(["--rerun-of", "dd67262e7ab8", "--rerun-defect", "x", "--dry-run"])
     with pytest.raises(SystemExit):
         stage1.main(["--rerun-of", "dd67262e7ab8", "--out-dir", "research/grey_deer/rerun", "--dry-run"])
+
+
+# ── red-team repairs RT-01 / RT-02 / RT-04 / RT-05 (synthetic only) ──────────
+
+
+def _labels_frame(n_rows: int) -> dict:
+    y = np.zeros(n_rows, dtype=float)
+    y[::7] = 1.0
+    a = np.full(n_rows, 0.01)
+    a[::7] = 0.08
+    return {h: {"Y": pd.Series(y), "A": pd.Series(a)} for h in stage1.HORIZONS}
+
+
+def _one_block_fits(n_rows: int, *, abstain_m3_first_at_h5: bool) -> dict:
+    """One contiguous block per horizon. h=5 can abstain M3-ALL at origin 0."""
+    fits: dict = {}
+    configs = stage1.BINARY_CLAIM_CONFIGS + stage1.QUANTILE_CLAIM_CONFIGS + (stage1.SENSITIVITY_CONFIG,)
+    for h in stage1.HORIZONS:
+        origin_idx = stage1.evaluation_origin_indices(n_rows, h)
+        s0, e0 = int(origin_idx[0]), int(origin_idx[-1])
+        n = e0 - s0 + 1
+        assert n == len(origin_idx)  # the fold union is one contiguous span
+        for cid in configs:
+            kind = "quantile" if cid in stage1.QUANTILE_CLAIM_CONFIGS else "binary"
+            issued = np.ones(n, dtype=bool)
+            reasons = np.full(n, None, dtype=object)
+            if abstain_m3_first_at_h5 and h == 5 and cid == "M3-ALL":
+                issued[0] = False
+                reasons[0] = "FIT_NONCONVERGENCE"
+            rec: dict = {"kind": kind, "block": [s0, e0], "issued": issued, "reasons": reasons}
+            if kind == "binary":
+                if cid == "B0":
+                    rec["p"] = np.full(n, 0.05)
+                elif cid == stage1.SENSITIVITY_CONFIG:
+                    rec["p"] = np.linspace(0.03, 0.35, n)
+                else:
+                    rec["p"] = np.linspace(0.02, 0.40, n)
+            else:
+                rec["q"] = {"0.5": np.full(n, 0.01), "0.8": np.full(n, 0.03), "0.9": np.full(n, 0.05)}
+            fits[(h, 1, cid)] = rec
+    return {"fits": fits}
+
+
+def _point_metrics_on(fits: dict, n_rows: int):
+    dates = [d.strftime("%Y-%m-%d") for d in pd.bdate_range("2021-07-06", periods=n_rows)]
+    rv20 = np.linspace(0.08, 0.30, n_rows)
+    comp = stage1.build_comparison_sets(fits, n_rows, _labels_frame(n_rows))
+    report = stage1.compute_point_metrics(comp, n_rows, rv20, dates)
+    return comp, report
+
+
+def test_rt01_sensitivity_row_survives_binary_abstention():
+    """M3-ALL abstains origin 0 at h=5; M3-ALL-C0.1 issues. The row must return."""
+    n_rows = 400
+    comp, report = _point_metrics_on(_one_block_fits(n_rows, abstain_m3_first_at_h5=True), n_rows)
+    cell = comp[5]["binary"]
+    n_eval = len(cell["eval_origin_idx"])
+    n_common = len(cell["origin_idx"])
+    assert n_eval == 80
+    assert n_common == 79
+    assert len(cell["sensitivity"]["mask"]) == n_common
+    assert len(cell["sensitivity"]["p"]) == n_common
+    # The pre-fix mask lived at evaluation length and does not index y.
+    common = np.ones(n_eval, dtype=bool)
+    common[0] = False
+    old_mask = common & np.ones(n_eval, dtype=bool)
+    assert len(old_mask) != len(cell["y"])
+    with pytest.raises(IndexError):
+        cell["y"][old_mask]
+
+    sens = report[5]["binary"]["sensitivity"]
+    c01_issued_on_comparison = int(cell["sensitivity"]["mask"].sum())
+    assert sens["n"] == c01_issued_on_comparison == n_common
+    assert sens["metrics"]["n"] == n_common
+
+
+def test_rt01_no_abstention_sensitivity_matches_pre_fix_indexing():
+    """Where lengths agree, the sensitivity metrics match the old indexing."""
+    n_rows = 400
+    _comp, report = _point_metrics_on(_one_block_fits(n_rows, abstain_m3_first_at_h5=False), n_rows)
+    h = 5
+    origin_idx = stage1.evaluation_origin_indices(n_rows, h)
+    n_eval = len(origin_idx)
+    common = np.ones(n_eval, dtype=bool)
+    sens_issued = np.ones(n_eval, dtype=bool)
+    sens_p = np.linspace(0.03, 0.35, n_eval)
+    p_b0 = np.full(n_eval, 0.05)
+    y_full = np.zeros(n_rows, dtype=float)
+    y_full[::7] = 1.0
+    y_eval = np.isfinite(y_full[origin_idx]) & (y_full[origin_idx] > 0)
+    old_mask = common & sens_issued
+    expected = stage1.binary_metric_set(
+        sens_p[old_mask],
+        y_eval[common][old_mask],
+        p0=p_b0[common][old_mask],
+        alphas=stage1.alpha_grid(h),
+    )
+    got = report[h]["binary"]["sensitivity"]["metrics"]
+    assert json.dumps(got, sort_keys=True) == json.dumps(expected, sort_keys=True)
+    assert got["n"] == n_eval
+
+
+def _inc_cells(drop_first: bool) -> tuple[pd.Series, dict]:
+    n = 80
+    index = pd.bdate_range("2024-01-02", periods=n)
+    close = pd.Series(np.full(n, 100.0), index=index)
+    eval_idx = np.arange(0, 30)
+
+    def cell_for() -> dict:
+        mask = np.ones(len(eval_idx), dtype=bool)
+        if drop_first:
+            mask[0] = False
+        kept = eval_idx[mask]
+        return {
+            "eval_origin_idx": eval_idx.copy(),
+            "origin_idx": kept.copy(),
+            "y": np.zeros(len(kept), dtype=bool),
+            "a": np.zeros(len(kept), dtype=float),
+            "episodes": [],
+        }
+
+    return close, {h: {"binary": cell_for()} for h in stage1.HORIZONS}
+
+
+def test_rt02_inc_evaluation_origins_follow_the_union(monkeypatch):
+    """Binary abstention splits the two counts; no abstention leaves them equal."""
+
+    def _run(drop_first: bool) -> dict:
+        close, comp = _inc_cells(drop_first)
+
+        def fake_inputs(_deviations=None):
+            return {
+                "audit_script_blob": "synthetic",
+                "calibration_blob_sha": "synthetic",
+                "spy": close,
+                "probability_for_h": lambda _h: pd.Series(0.2, index=close.index),
+            }
+
+        monkeypatch.setattr(stage1, "_inc_replay_inputs", fake_inputs)
+        table = stage1.run_inc(comp, close, deviations=[])
+        assert "blocked" not in table, table
+        return table
+
+    abstained = _run(True)
+    clean = _run(False)
+    for h in stage1.HORIZONS:
+        row_a = abstained["horizons"][f"h{h}"]
+        row_c = clean["horizons"][f"h{h}"]
+        assert row_a["evaluation_origins"] == 30
+        assert row_a["comparison_set_origins"] == 29
+        assert row_a["evaluation_origins"] > row_a["comparison_set_origins"]
+        # Native-label metrics use the union INC covers, not the comparison set.
+        assert row_a["metrics_vs_native_label"]["n"] == row_a["evaluation_origins"]
+        # Early warning stays on the comparison set.
+        outside = row_a["early_warning_vs_protocol_episodes"]["false_alarm_time"]["sessions_outside_every_episode"]
+        assert outside == row_a["comparison_set_origins"]
+        assert row_c["evaluation_origins"] == row_c["comparison_set_origins"] == 30
+        assert row_c["metrics_vs_native_label"]["n"] == 30
+        assert (
+            row_c["early_warning_vs_protocol_episodes"]["false_alarm_time"]["sessions_outside_every_episode"] == 30
+        )
+
+
+def _canned_identities() -> dict:
+    return {
+        "schema": stage1.SCHEMA,
+        "prereg": {
+            "path": stage1.PREREG_PATH,
+            "blob_sha": stage1.PREREG_BLOB,
+            "sha256": stage1.PREREG_SHA256,
+        },
+        "manifest": {
+            "path": stage1.MANIFEST_PATH,
+            "blob_sha": stage1.MANIFEST_BLOB,
+            "version": stage1.MANIFEST_VERSION,
+        },
+        "run": {
+            "utc": "canned",
+            "commit_sha": "canned-commit",
+            "script_blob_sha": "canned-script",
+            "test_blob_sha": "canned-test",
+        },
+    }
+
+
+def _provenance_from_markdown(text: str) -> dict:
+    found = {}
+    for line in text.splitlines():
+        if not line.startswith("- ") or ": `" not in line:
+            continue
+        key, rest = line[2:].split(": `", 1)
+        if key in stage1.PROVENANCE_KEYS and rest.endswith("`"):
+            found[key] = rest[:-1]
+    return found
+
+
+def _assert_six_provenance(directory: Path, expected: dict) -> dict:
+    payload = json.loads((directory / stage1.RESULTS_JSON_NAME).read_text(encoding="utf-8"))
+    prov = payload["provenance"]
+    assert set(prov) == set(stage1.PROVENANCE_KEYS)
+    for key in stage1.PROVENANCE_KEYS:
+        assert isinstance(prov[key], str) and prov[key] == expected[key]
+    assert payload["manifest"]["version"] == prov["manifest_version"]
+    assert payload["sample"]["subframe_content_sha256"] == prov["subframe_content_sha256"]
+    assert payload["prereg"]["blob_sha"] == prov["prereg_git_blob"]
+    assert payload["run"]["commit_sha"] == prov["commit_sha"]
+    assert payload["run"]["script_blob_sha"] == prov["script_blob_sha"]
+    assert payload["run"]["test_blob_sha"] == prov["test_blob_sha"]
+    note = (directory / stage1.RESULTS_MD_NAME).read_text(encoding="utf-8")
+    assert _provenance_from_markdown(note) == expected
+    return payload
+
+
+def test_rt04_both_artifacts_carry_six_provenance_fields(tmp_path, monkeypatch):
+    """A synthetic main() run and the BLOCKED path both write all six fields."""
+    canned = _canned_identities()
+    monkeypatch.setattr(stage1, "verify_identities", lambda **_kwargs: {
+        "schema": canned["schema"],
+        "prereg": dict(canned["prereg"]),
+        "manifest": dict(canned["manifest"]),
+        "run": dict(canned["run"]),
+    })
+    monkeypatch.setattr(stage1, "trial_ledger_scope", lambda: nullcontext())
+    monkeypatch.setattr(stage1.trial_ledger, "register_trials", _raise_assertion)
+    monkeypatch.setattr(stage1.subprocess, "run", _raise_assertion)
+    stub = types.ModuleType("collectors.massive_stock_day")
+    stub.load_ticker = lambda *_a, **_k: pd.DataFrame({"date": ["2024-01-02"], "close": [100.0]})
+    monkeypatch.setitem(sys.modules, "collectors.massive_stock_day", stub)
+
+    subframe = "ab" * 32
+    sample_info = {
+        "subframe_content_sha256": subframe,
+        "rows": 2,
+        "first_date": "2024-01-02",
+        "last_date": "2024-01-03",
+        "pre_window_rows_dropped": 0,
+    }
+    window = pd.DataFrame({"date": ["2024-01-02", "2024-01-03"], "close": [100.0, 101.0]})
+    monkeypatch.setattr(stage1, "sample_identity", lambda _df: (dict(sample_info), window.copy()))
+    monkeypatch.setattr(stage1, "integrity_checks", lambda _window: [])
+    monkeypatch.setattr(stage1, "build_labels", lambda _close: {})
+    monkeypatch.setattr(stage1, "build_features", lambda _close: pd.DataFrame())
+    monkeypatch.setattr(stage1, "run_fits", lambda *_a, **_k: {})
+
+    def fake_eval(*, out_dir, identities, sample_info, **_rest):
+        payload = {
+            "schema": stage1.SCHEMA,
+            "prereg": identities["prereg"],
+            "manifest": identities["manifest"],
+            "run": identities["run"],
+            "sample": dict(sample_info),
+            "trial_budget": {
+                "family": stage1.TRIAL_FAMILY,
+                "budget": stage1.TRIAL_BUDGET,
+                "basis": "itemized",
+            },
+            "gates": [],
+            "episodes": {},
+            "comparison_sets": {},
+            "negative_control": {},
+            "inc": {"blocked": "INC_SOURCE_UNAVAILABLE", "detail": "synthetic"},
+            "deviations": [],
+            "blocked": [],
+        }
+        stage1.write_artifacts(Path(out_dir), payload)
+
+    monkeypatch.setattr(stage1, "evaluate_and_write", fake_eval)
+
+    known = {
+        "manifest_version": stage1.MANIFEST_VERSION,
+        "subframe_content_sha256": subframe,
+        "prereg_git_blob": stage1.PREREG_BLOB,
+        "commit_sha": "canned-commit",
+        "script_blob_sha": "canned-script",
+        "test_blob_sha": "canned-test",
+    }
+    ok_dir = tmp_path / "ok"
+    assert stage1.main(["--skip-hydrate", "--out-dir", str(ok_dir)]) == 0
+    _assert_six_provenance(ok_dir, known)
+
+    stub.load_ticker = lambda *_a, **_k: pd.DataFrame()
+    blocked_dir = tmp_path / "blocked"
+    assert stage1.main(["--skip-hydrate", "--out-dir", str(blocked_dir)]) == 2
+    blocked = json.loads((blocked_dir / stage1.RESULTS_JSON_NAME).read_text(encoding="utf-8"))
+    assert blocked["blocked"][0]["type"] == "SOURCE_UNREADABLE"
+    unknown_subframe = blocked["provenance"]["subframe_content_sha256"]
+    assert unknown_subframe.startswith("UNKNOWN:")
+    blocked_expected = dict(known)
+    blocked_expected["subframe_content_sha256"] = unknown_subframe
+    _assert_six_provenance(blocked_dir, blocked_expected)
+
+    def boom(**_kwargs):
+        raise stage1.Blocked("PREREG_IDENTITY_MISMATCH", "synthetic refusal before identity")
+
+    monkeypatch.setattr(stage1, "verify_identities", boom)
+    early_dir = tmp_path / "early"
+    assert stage1.main(["--out-dir", str(early_dir)]) == 2
+    early = json.loads((early_dir / stage1.RESULTS_JSON_NAME).read_text(encoding="utf-8"))
+    assert early["blocked"][0]["type"] == "PREREG_IDENTITY_MISMATCH"
+    early_expected = {key: early["provenance"][key] for key in stage1.PROVENANCE_KEYS}
+    assert all(value.startswith("UNKNOWN:") for value in early_expected.values())
+    _assert_six_provenance(early_dir, early_expected)
+
+
+def test_rt05_census_typed_exclusions_keep_existing_keys():
+    rows = stage1.census_populations(1321, 3)
+    assert len(rows) == len(stage1.HORIZONS) * 2
+    typed_keys = {"PRE_ENTITLEMENT", "WARMUP", "IMMATURE", "TRAINING_FOLD_THIN"}
+    old_keys = ("population", "horizon", "pre_entitlement", "warmup", "immature", "eligible")
+    for row in rows:
+        assert set(row["typed_exclusions"]) == typed_keys
+        for key in typed_keys:
+            assert type(row["typed_exclusions"][key]) is int
+        assert row["typed_exclusions"]["TRAINING_FOLD_THIN"] == 0
+        assert row["pre_entitlement"] == 3 == row["typed_exclusions"]["PRE_ENTITLEMENT"]
+        assert row["warmup"] == row["typed_exclusions"]["WARMUP"]
+        assert row["immature"] == row["typed_exclusions"]["IMMATURE"]
+        for key in old_keys:
+            assert key in row
+    assert {row["population"] for row in rows} == {"P-all", "P-active"}
+    assert all(row["blocked"] == "OBSERVER_NOT_ON_MAIN" for row in rows if row["population"] == "P-active")
+
+    fits = {
+        "blocks": {
+            "h5/b1": {"thin": True},
+            "h5/b2": {"thin": False},
+            "h10/b1": {"thin": True},
+            "h21/b4": {"thin": True},
+        }
+    }
+    merged = stage1.merge_training_fold_thin(rows, fits)
+    # The same count as summing len(folds[h]["thin_blocks"]) over horizons.
+    thin_total = sum(1 for value in fits["blocks"].values() if value.get("thin"))
+    assert thin_total == 3
+    for row in merged:
+        assert row["typed_exclusions"]["TRAINING_FOLD_THIN"] == thin_total
+        assert row["pre_entitlement"] == 3
+        assert set(row["typed_exclusions"]) == typed_keys

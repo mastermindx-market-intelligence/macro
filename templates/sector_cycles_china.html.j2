@@ -48,6 +48,15 @@
     </div>
   </header>
 
+  {% with lock_renderer='sector_cycles.js', lock_fill='sc-cards',
+    lock_hide='#sc-tabs,.cyc-stage,.cyc-cards-hd,#sc-cards,.cyc-asof',
+    lock_en='Members get each Shenwan sector and A-share basket '
+    ~ 'on the cycle clock, its scorecard, and the typical '
+    ~ 'next-turn rhythm.',
+    lock_zh='会员可查看每个申万行业与 A 股主题篮子的周期时钟、记分卡，以及典型的下一拐点节奏。' %}
+  {% include "_cycle_locked_slot.html.j2" %}
+  {% endwith %}
+
   {# ---- EXPERIMENTAL / honest-forecast provenance frame (Phase-0) ---- #}
   <div class="sc-provenance" role="note">
     <span class="sc-prov-chip">⚗︎ <span class="l-en">EXPERIMENTAL</span><span class="l-zh">实验性</span></span>
@@ -128,7 +137,7 @@
 <script src="mm_charts.js"></script>
 <script>window.SC_EXTRA_DATA=['sector_cycles_china_narr_data.js','sector_cycles_china_dna_data.js'];window.SC_SERIES_DATA='sector_cycles_china_series_data.js';</script>
 <script src="sector_cycles.js"></script>
-<script>try{document.getElementById('sc-asof').textContent=(window.SECTOR_CYCLES&&window.SECTOR_CYCLES.meta||{}).asOf||'';}catch(e){}</script>
+<script>document.addEventListener('DOMContentLoaded',function(){try{document.getElementById('sc-asof').textContent=(window.SECTOR_CYCLES&&window.SECTOR_CYCLES.meta||{}).asOf||'';}catch(e){}});</script>
 <script src="theme.js"></script>
 <!-- RC-R14: rotation-event chips on basket cards (display-only context) -->
 <style>

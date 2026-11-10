@@ -1,0 +1,5 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/ipo.html.j2
+  - site/ipo.html
+manifest: mockups/evidence/b-f09-ipo-terms/manifest.json

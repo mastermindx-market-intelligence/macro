@@ -1,0 +1,802 @@
+{
+  "axes": {
+    "access": [
+      "anonymous"
+    ],
+    "force_states": [
+      {
+        "attribute": null,
+        "kind": "hover",
+        "name": "card-hover",
+        "spec": "card-hover:hover(.cyc-card)",
+        "value": ".cyc-card"
+      },
+      {
+        "attribute": null,
+        "kind": "focus",
+        "name": "tab-focus",
+        "spec": "tab-focus:focus(.sc-tab)",
+        "value": ".sc-tab"
+      }
+    ],
+    "locales": [
+      "en",
+      "zh"
+    ],
+    "themes": [
+      "dark",
+      "light"
+    ],
+    "viewports": {
+      "desktop": [
+        1440,
+        900
+      ],
+      "mobile": [
+        390,
+        844
+      ]
+    }
+  },
+  "excluded": [],
+  "generated_at": "2026-11-02",
+  "honesty": {
+    "access": "anonymous only; no credential is entered, stored, or synthesized, so no premium payload can enter these artifacts",
+    "authority": "this tool measures and screenshots; it scores, ranks, and judges nothing",
+    "force_states": "a forced state is either a class/attribute toggled on <body> or a real browser hover/focus applied to a selector before the shot; it shows that state's presentation, not data the page returned; metrics are measured on the rest cells only, and a state that did not take is recorded as a gap",
+    "gaps": "states that were not captured are recorded with a reason; nothing is inferred for them"
+  },
+  "outcome": "captured",
+  "pages": [
+    {
+      "console_errors": [],
+      "failed_responses": [],
+      "gaps": [
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "free"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "essential"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "pro"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "loading"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "empty"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "stale"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "error"
+        }
+      ],
+      "metrics": {
+        "asof_present": true,
+        "by_viewport": {
+          "desktop": {
+            "document_height_px": 2568,
+            "elements_wider_than_viewport": 21,
+            "horizontal_overflow": false
+          },
+          "mobile": {
+            "document_height_px": 4106,
+            "elements_wider_than_viewport": 20,
+            "horizontal_overflow": false
+          }
+        },
+        "console_error_count": 0,
+        "document_height_px": 2568,
+        "duplicate_heading_texts": [],
+        "elements_wider_than_viewport": 21,
+        "heading_counts": {
+          "h1": 1,
+          "h2": 2,
+          "h3": 0,
+          "h4": 0,
+          "h5": 0,
+          "h6": 0
+        },
+        "horizontal_overflow": false,
+        "long_paragraph_count": 0,
+        "measured_in": {
+          "access": "anonymous",
+          "locale": "en",
+          "theme": "dark",
+          "viewport": "desktop"
+        },
+        "panel_count": 13,
+        "payload_bytes_total": 532462,
+        "raw_slug_hit_count": 0,
+        "raw_slug_hits": [],
+        "request_count": 31,
+        "screenshot_completion": 1.0,
+        "section_count": 0,
+        "source_present": false,
+        "todo_placeholder_hit_count": 0,
+        "todo_placeholder_hits": [],
+        "visible_word_count": 632
+      },
+      "page_id": "sector_cycles.html",
+      "registry_route": "sector_cycles.html",
+      "route": "sector_cycles.html",
+      "route_kind": "explicit_override",
+      "states": [
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 1021461,
+          "captured": true,
+          "file": "394ac9d7107344ef.png",
+          "force_state": null,
+          "height": 2568,
+          "locale": "en",
+          "sha256": "394ac9d7107344ef6043749dcda453df30e6c6aa24ebd82a00585c260d5467d2",
+          "theme": "dark",
+          "timing": {
+            "cls": 0.6894223385155447,
+            "inp_proxy_ms": null,
+            "lcp_ms": 116,
+            "resource_count": 30,
+            "server_timing": [],
+            "transfer_bytes": 5608975
+          },
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "card-hover",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 971517,
+          "captured": true,
+          "file": "196bb201ef46fa91--card-hover.png",
+          "force_state": "card-hover",
+          "height": 2568,
+          "locale": "en",
+          "sha256": "196bb201ef46fa914c786c78be180a67f71cc284e1e7d11a31007f7c4db83847",
+          "theme": "dark",
+          "timing": {
+            "cls": 1.7712084190672153e-06,
+            "inp_proxy_ms": null,
+            "lcp_ms": 228,
+            "resource_count": 30,
+            "server_timing": [],
+            "transfer_bytes": 5608975
+          },
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "tab-focus",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 1022061,
+          "captured": true,
+          "file": "72f0b672ab7eefe8--tab-focus.png",
+          "force_state": "tab-focus",
+          "height": 2568,
+          "locale": "en",
+          "sha256": "72f0b672ab7eefe8e2b935a77b810ff52d69968af11e33d5a222c0e389c3e44f",
+          "theme": "dark",
+          "timing": {
+            "cls": 0.689423381421334,
+            "inp_proxy_ms": null,
+            "lcp_ms": 76,
+            "resource_count": 30,
+            "server_timing": [],
+            "transfer_bytes": 5608975
+          },
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 987773,
+          "captured": true,
+          "file": "cded72a8c0baac83.png",
+          "force_state": null,
+          "height": 2568,
+          "locale": "en",
+          "sha256": "cded72a8c0baac83a7f229481769c142f9355c14f63ea3ecbcfbc35accdcdeec",
+          "theme": "light",
+          "timing": {
+            "cls": 0.6875956008639029,
+            "inp_proxy_ms": null,
+            "lcp_ms": 68,
+            "resource_count": 30,
+            "server_timing": [],
+            "transfer_bytes": 5608975
+          },
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "card-hover",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 942360,
+          "captured": true,
+          "file": "766e4b6705a78034--card-hover.png",
+          "force_state": "card-hover",
+          "height": 2568,
+          "locale": "en",
+          "sha256": "766e4b6705a780344f57f00d106103e2be1847b06cc326e4e1dc0ad2250bb4a2",
+          "theme": "light",
+          "timing": {
+            "cls": 0.6875956008639029,
+            "inp_proxy_ms": null,
+            "lcp_ms": 68,
+            "resource_count": 30,
+            "server_timing": [],
+            "transfer_bytes": 5608975
+          },
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "tab-focus",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 988300,
+          "captured": true,
+          "file": "068266cf51a05f36--tab-focus.png",
+          "force_state": "tab-focus",
+          "height": 2568,
+          "locale": "en",
+          "sha256": "068266cf51a05f3647a4f01d8e7cc02c630bcb9dffdbc6db55e1977aa512d627",
+          "theme": "light",
+          "timing": {
+            "cls": 0.6875968397519882,
+            "inp_proxy_ms": null,
+            "lcp_ms": 76,
+            "resource_count": 30,
+            "server_timing": [],
+            "transfer_bytes": 5608975
+          },
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 1030613,
+          "captured": true,
+          "file": "5dcfd413fdfcbfae.png",
+          "force_state": null,
+          "height": 2555,
+          "locale": "zh",
+          "sha256": "5dcfd413fdfcbfae1135c9fb4ef51a490662b8f0eb7478fcbf30f94a5719487f",
+          "theme": "dark",
+          "timing": {
+            "cls": 0.698327149517546,
+            "inp_proxy_ms": null,
+            "lcp_ms": 96,
+            "resource_count": 32,
+            "server_timing": [],
+            "transfer_bytes": 5658247
+          },
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "card-hover",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 978949,
+          "captured": true,
+          "file": "cb096a458bd89fc2--card-hover.png",
+          "force_state": "card-hover",
+          "height": 2555,
+          "locale": "zh",
+          "sha256": "cb096a458bd89fc269ee2d49c5b9d2ecd32244d008c4cc5c05a8ac9e570e8673",
+          "theme": "dark",
+          "timing": {
+            "cls": 0.6983272425354591,
+            "inp_proxy_ms": null,
+            "lcp_ms": 100,
+            "resource_count": 32,
+            "server_timing": [],
+            "transfer_bytes": 5658247
+          },
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "tab-focus",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 1031065,
+          "captured": true,
+          "file": "b9a8ee38d464a8e6--tab-focus.png",
+          "force_state": "tab-focus",
+          "height": 2555,
+          "locale": "zh",
+          "sha256": "b9a8ee38d464a8e658c55f2b9ec1927b02148b1bdadff2a853327709b82a2e90",
+          "theme": "dark",
+          "timing": {
+            "cls": 0.6983282854412484,
+            "inp_proxy_ms": null,
+            "lcp_ms": 96,
+            "resource_count": 32,
+            "server_timing": [],
+            "transfer_bytes": 5658247
+          },
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 1000130,
+          "captured": true,
+          "file": "937047754fda30ef.png",
+          "force_state": null,
+          "height": 2555,
+          "locale": "zh",
+          "sha256": "937047754fda30efc4ee531876de2f95dcaab1d5ec6f5edc2d239a7b87743080",
+          "theme": "light",
+          "timing": {
+            "cls": 0.6964541420935277,
+            "inp_proxy_ms": null,
+            "lcp_ms": 208,
+            "resource_count": 32,
+            "server_timing": [],
+            "transfer_bytes": 5658247
+          },
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "card-hover",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 952928,
+          "captured": true,
+          "file": "a99c2ab571a197af--card-hover.png",
+          "force_state": "card-hover",
+          "height": 2555,
+          "locale": "zh",
+          "sha256": "a99c2ab571a197af2c35242364700965cf6fe448ab01e02e35d2dd205a229e2c",
+          "theme": "light",
+          "timing": {
+            "cls": 0.6964541848265096,
+            "inp_proxy_ms": null,
+            "lcp_ms": 236,
+            "resource_count": 32,
+            "server_timing": [],
+            "transfer_bytes": 5658247
+          },
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "tab-focus",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 1000158,
+          "captured": true,
+          "file": "ebbce89189e3c10f--tab-focus.png",
+          "force_state": "tab-focus",
+          "height": 2555,
+          "locale": "zh",
+          "sha256": "ebbce89189e3c10fc99339eab4c5b8845fad968dbc82d50411f5c99aa6b74982",
+          "theme": "light",
+          "timing": {
+            "cls": 0.6964553207502119,
+            "inp_proxy_ms": null,
+            "lcp_ms": 100,
+            "resource_count": 32,
+            "server_timing": [],
+            "transfer_bytes": 5658247
+          },
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 487383,
+          "captured": true,
+          "file": "d3e384c5e538a5d4.png",
+          "force_state": null,
+          "height": 4106,
+          "locale": "en",
+          "sha256": "d3e384c5e538a5d47c58b017f6f3c13bba017ba3d8ae5f1f51fb46475c5a3faa",
+          "theme": "dark",
+          "timing": {
+            "cls": 0.23476419855830774,
+            "inp_proxy_ms": null,
+            "lcp_ms": 76,
+            "resource_count": 29,
+            "server_timing": [],
+            "transfer_bytes": 5584319
+          },
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "card-hover",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 475826,
+          "captured": true,
+          "file": "fc191229ae6ff8d3--card-hover.png",
+          "force_state": "card-hover",
+          "height": 4106,
+          "locale": "en",
+          "sha256": "fc191229ae6ff8d3873a7225ea2445f0b9128672f4b1d0606dff6695c5be50b9",
+          "theme": "dark",
+          "timing": {
+            "cls": 0.23476419855830774,
+            "inp_proxy_ms": null,
+            "lcp_ms": 76,
+            "resource_count": 29,
+            "server_timing": [],
+            "transfer_bytes": 5584319
+          },
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "tab-focus",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 487561,
+          "captured": true,
+          "file": "98661f798b835f9a--tab-focus.png",
+          "force_state": "tab-focus",
+          "height": 4106,
+          "locale": "en",
+          "sha256": "98661f798b835f9a4b7bfb388e15c62b725e5c0d07c3654b4ab1c9e10ae3c27b",
+          "theme": "dark",
+          "timing": {
+            "cls": 0.23477182930707127,
+            "inp_proxy_ms": null,
+            "lcp_ms": 76,
+            "resource_count": 29,
+            "server_timing": [],
+            "transfer_bytes": 5584319
+          },
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 477098,
+          "captured": true,
+          "file": "f69e1ef58b40caed.png",
+          "force_state": null,
+          "height": 4106,
+          "locale": "en",
+          "sha256": "f69e1ef58b40caed0751b1550175a2891df408f4de36c7285b40ff95151e3282",
+          "theme": "light",
+          "timing": {
+            "cls": 0.23476391149268214,
+            "inp_proxy_ms": null,
+            "lcp_ms": 76,
+            "resource_count": 29,
+            "server_timing": [],
+            "transfer_bytes": 5584319
+          },
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "card-hover",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 469168,
+          "captured": true,
+          "file": "52899ba9ccf10742--card-hover.png",
+          "force_state": "card-hover",
+          "height": 4106,
+          "locale": "en",
+          "sha256": "52899ba9ccf107424f68b839372e7831cba86be067af645583993687988e6482",
+          "theme": "light",
+          "timing": {
+            "cls": 0.23476482342098418,
+            "inp_proxy_ms": null,
+            "lcp_ms": 80,
+            "resource_count": 29,
+            "server_timing": [],
+            "transfer_bytes": 5584319
+          },
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "tab-focus",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 477003,
+          "captured": true,
+          "file": "81a7d3f5dbe4e6ed--tab-focus.png",
+          "force_state": "tab-focus",
+          "height": 4106,
+          "locale": "en",
+          "sha256": "81a7d3f5dbe4e6edf37ba0ea278deb98804ca53de02048098e87d3aa1b220106",
+          "theme": "light",
+          "timing": {
+            "cls": 0.23477182930707127,
+            "inp_proxy_ms": null,
+            "lcp_ms": 80,
+            "resource_count": 29,
+            "server_timing": [],
+            "transfer_bytes": 5584319
+          },
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 486154,
+          "captured": true,
+          "file": "23bca937639d2c37.png",
+          "force_state": null,
+          "height": 4020,
+          "locale": "zh",
+          "sha256": "23bca937639d2c37a1a9469753a1f5dc9598b4cda9e69d2b6308011219d4c6ff",
+          "theme": "dark",
+          "timing": {
+            "cls": 0.26400153758738315,
+            "inp_proxy_ms": null,
+            "lcp_ms": 116,
+            "resource_count": 31,
+            "server_timing": [],
+            "transfer_bytes": 5633675
+          },
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "card-hover",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 487506,
+          "captured": true,
+          "file": "fbda1bb0d6504f8f--card-hover.png",
+          "force_state": "card-hover",
+          "height": 4020,
+          "locale": "zh",
+          "sha256": "fbda1bb0d6504f8fea85347911422712ebe6bab81327c0d93626c1329d23c965",
+          "theme": "dark",
+          "timing": {
+            "cls": 0.2640021624500596,
+            "inp_proxy_ms": null,
+            "lcp_ms": 84,
+            "resource_count": 31,
+            "server_timing": [],
+            "transfer_bytes": 5633675
+          },
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "tab-focus",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 486453,
+          "captured": true,
+          "file": "a28934d131db3425--tab-focus.png",
+          "force_state": "tab-focus",
+          "height": 4020,
+          "locale": "zh",
+          "sha256": "a28934d131db34259bff0fecdc0265add326cf83af5419a4c664a8a20fa11a67",
+          "theme": "dark",
+          "timing": {
+            "cls": 0.26400916833614674,
+            "inp_proxy_ms": null,
+            "lcp_ms": 84,
+            "resource_count": 31,
+            "server_timing": [],
+            "transfer_bytes": 5633675
+          },
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 477386,
+          "captured": true,
+          "file": "38ef0016e37721a6.png",
+          "force_state": null,
+          "height": 4020,
+          "locale": "zh",
+          "sha256": "38ef0016e37721a630f00b04e097a3d4db26fad4e193936cec09822a22c68b7d",
+          "theme": "light",
+          "timing": {
+            "cls": 0.26400153758738315,
+            "inp_proxy_ms": null,
+            "lcp_ms": 80,
+            "resource_count": 31,
+            "server_timing": [],
+            "transfer_bytes": 5633675
+          },
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "card-hover",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 483376,
+          "captured": true,
+          "file": "f9945c0e0670dc9b--card-hover.png",
+          "force_state": "card-hover",
+          "height": 4020,
+          "locale": "zh",
+          "sha256": "f9945c0e0670dc9b9380c3a2bdfb0c914dbdf367d2396af713267f0e92df8d5a",
+          "theme": "light",
+          "timing": {
+            "cls": 0.2640021624500596,
+            "inp_proxy_ms": null,
+            "lcp_ms": 84,
+            "resource_count": 31,
+            "server_timing": [],
+            "transfer_bytes": 5633675
+          },
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "tab-focus",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 477486,
+          "captured": true,
+          "file": "af1a5f74361789d2--tab-focus.png",
+          "force_state": "tab-focus",
+          "height": 4020,
+          "locale": "zh",
+          "sha256": "af1a5f74361789d25fc82e8c2a056dd42b7bd3dd9db01c1de8875ad44288836b",
+          "theme": "light",
+          "timing": {
+            "cls": 0.26400916833614674,
+            "inp_proxy_ms": null,
+            "lcp_ms": 84,
+            "resource_count": 31,
+            "server_timing": [],
+            "transfer_bytes": 5633675
+          },
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        }
+      ]
+    }
+  ],
+  "schema": "mastermind.p0_evidence.v2",
+  "selection": {
+    "explicit_routes": [
+      "sector_cycles.html"
+    ],
+    "max_pages": 30,
+    "mode": "explicit_routes",
+    "note": "--routes overrode registry selection; the --priority and --repo filters were not applied",
+    "priority": null,
+    "registry": "data/product_experience/page_registry.json",
+    "registry_rows": 0,
+    "repo": null,
+    "selected": 1
+  },
+  "target": {
+    "base_url": null,
+    "kind": "site_dir",
+    "resolved_gitdir_or_none": null,
+    "resolved_sha_or_none": null,
+    "resolved_sha_source": "no git directory was found at or above --site-dir; nothing resolved",
+    "site_dir": "/Volumes/Mastermind/agent-workspaces/claude/44ff44e73b840f81/seat-state/orch2/wave39/www_n10t"
+  },
+  "timing_basis": "lab",
+  "tool": {
+    "module_ref": "scripts/capture_page_evidence.py",
+    "module_sha256": "9b6e643c1c784eb81b584be4cb063092ae71c4a16fe01498130891e84cd0de42",
+    "user_agent": "mastermind-page-census/1.0 (internal product observability)",
+    "version": "1.4.0"
+  },
+  "totals": {
+    "pages": 1,
+    "states_attempted": 24,
+    "states_captured": 24
+  }
+}

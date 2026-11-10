@@ -1,0 +1,850 @@
+[
+  {
+    "viewport": "mobile",
+    "viewport_width": 390,
+    "viewport_height": 844,
+    "theme": "dark",
+    "locale": "en",
+    "access": "synthetic_fixture_session",
+    "captured": true,
+    "file": "8abc2e2735dcd2b8--findings-default.png",
+    "sha256": "8abc2e2735dcd2b89a18e36213afb51bb149aeb795a99654fa0ad4ed1ad5e2d9",
+    "bytes": 155227,
+    "width": 362,
+    "height": 1276,
+    "applied_theme": "dark",
+    "applied_locale": "en",
+    "force_state": {
+      "name": "findings_default",
+      "operation": "Actual fixture-case input through real Handler/loader; native details click and element screenshot"
+    },
+    "base_url": "http://127.0.0.1:61519",
+    "capture_tool_module_sha256": "1d6dac3002d3fb5d8a15e8975439091e8347a704495f85653509d2902159a8c5",
+    "assets": {
+      "/app.js": {
+        "status": 200,
+        "sha256": "6728183681df41e488494fd2f310c4ee62d990252149af9a118b97cc2a513772"
+      },
+      "/styles.css": {
+        "status": 200,
+        "sha256": "203f9d806f35441e598189654b91b0c97243feecb5319c5943df3617e0cabe60"
+      }
+    },
+    "visible_text": "RECORDED DISAGREEMENTS\nContext annotations only · These recorded readings retain their original scope and dates; they do not establish current validation.\nSOURCE AS OF\n2026-10-11\nFINDINGS WITHOUT AN ENGINE ASSOCIATION\n1\nNUMERIC SOURCE VERIFICATION\nUnavailable in this view\nNo source-verification receipt is available in this view.\nRecorded findings · 2\nLabel lag\n·\nContext note\nSYNTHETIC-cross-horizon-label-lag · 2026-10-11\nsynthetic/synthetic-immature.json\nSYNTHETIC short-window label changed / 合成短窗口标签已变化\nExact artifact association\nsynthetic/synthetic-partial.json\nSYNTHETIC longer-window structural label unchanged / 合成长窗口结构标签未变化\nExact artifact association\nSYNTHETIC recorded context: the short-window label changes before the slower structural label. This is not scientific falsification or current outcome evidence. / 合成记录：短窗口标签先于较慢的结构标签变化；这不是科学证伪，也不是当前结果证据。\nLabel tension\n·\nContext tension\nSYNTHETIC-unbound-label-tension · 2026-10-10\nsynthetic/unregistered-short-window.json\nSYNTHETIC source reading A / 合成来源读数 A\nNo engine association\nsynthetic/unregistered-long-window.json\nSYNTHETIC source reading B / 合成来源读数 B\nNo engine association\nSYNTHETIC recorded context whose paths have no canonical T4 owner. Preserve this gap; do not attach it to an engine by name similarity. / 此合成记录的路径没有登记的 T4 所有者；保留缺口，不按名称相似性归属引擎。\nRecorded source gaps · 1\nSYNTHETIC recorded report: current source qualification and request-scoped numerical attribution are unavailable. / 合成记录：当前来源资格与本次请求范围的数值归因不可用。\nRecorded source\nPATH\ndata/neuralweb/confluence_graph.json\nSOURCE DIGEST\nc90db9cb1a94d2a51e18de600e40f82b89e2cc8f2bc4e6918ab112ec1c89fad9",
+    "geometry": {
+      "width": 360,
+      "scrollWidth": 360,
+      "children": [
+        {
+          "width": 328,
+          "scrollWidth": 328
+        },
+        {
+          "width": 328,
+          "scrollWidth": 328
+        },
+        {
+          "width": 328,
+          "scrollWidth": 328
+        },
+        {
+          "width": 328,
+          "scrollWidth": 328
+        },
+        {
+          "width": 328,
+          "scrollWidth": 328
+        },
+        {
+          "width": 328,
+          "scrollWidth": 328
+        },
+        {
+          "width": 328,
+          "scrollWidth": 328
+        },
+        {
+          "width": 328,
+          "scrollWidth": 328
+        },
+        {
+          "width": 328,
+          "scrollWidth": 328
+        }
+      ]
+    },
+    "api": {
+      "source_sha256": "c90db9cb1a94d2a51e18de600e40f82b89e2cc8f2bc4e6918ab112ec1c89fad9",
+      "status": "recorded",
+      "rejected": 0,
+      "unbound": 1,
+      "detail_records": 1
+    },
+    "band_dispositions": [
+      [
+        "engine/synthetic-supported-scope-unknown.py::synthetic-fixture",
+        "Accruing"
+      ],
+      [
+        "engine/synthetic-unclassified.py::synthetic-fixture",
+        "Accruing"
+      ],
+      [
+        "engine/synthetic-descriptive.py::synthetic-fixture",
+        "Ungraded by design"
+      ],
+      [
+        "engine/synthetic-immature.py::synthetic-fixture",
+        "Degraded"
+      ],
+      [
+        "engine/synthetic-partial.py::synthetic-fixture",
+        "Degraded"
+      ],
+      [
+        "engine/synthetic-retired.py::synthetic-fixture",
+        "Degraded"
+      ],
+      [
+        "engine/synthetic-falsified.py::synthetic-fixture",
+        "Disproven"
+      ]
+    ]
+  },
+  {
+    "viewport": "mobile",
+    "viewport_width": 390,
+    "viewport_height": 844,
+    "theme": "dark",
+    "locale": "zh",
+    "access": "synthetic_fixture_session",
+    "captured": true,
+    "file": "772212acc95b6a33--findings-default.png",
+    "sha256": "772212acc95b6a331aab6cca791b2cf8466548ca135972ed0591c44be346d560",
+    "bytes": 157296,
+    "width": 362,
+    "height": 1260,
+    "applied_theme": "dark",
+    "applied_locale": "zh",
+    "force_state": {
+      "name": "findings_default",
+      "operation": "Actual fixture-case input through real Handler/loader; native details click and element screenshot"
+    },
+    "base_url": "http://127.0.0.1:61519",
+    "capture_tool_module_sha256": "1d6dac3002d3fb5d8a15e8975439091e8347a704495f85653509d2902159a8c5",
+    "assets": {
+      "/app.js": {
+        "status": 200,
+        "sha256": "6728183681df41e488494fd2f310c4ee62d990252149af9a118b97cc2a513772"
+      },
+      "/styles.css": {
+        "status": 200,
+        "sha256": "203f9d806f35441e598189654b91b0c97243feecb5319c5943df3617e0cabe60"
+      }
+    },
+    "visible_text": "记录的观点分歧\n仅作背景注释 · 这些记录保留原有范围和日期，不能据此确认当前验证状态。\n来源时间\n2026-10-11\n无法关联到引擎的条目\n1\n数值来源核验\n此视图暂不可核验\n此视图暂无数值来源核验凭据。\n记录条目 · 2\n标签滞后\n·\n背景说明\nSYNTHETIC-cross-horizon-label-lag · 2026-10-11\nsynthetic/synthetic-immature.json\nSYNTHETIC short-window label changed / 合成短窗口标签已变化\n输出文件精确关联\nsynthetic/synthetic-partial.json\nSYNTHETIC longer-window structural label unchanged / 合成长窗口结构标签未变化\n输出文件精确关联\nSYNTHETIC recorded context: the short-window label changes before the slower structural label. This is not scientific falsification or current outcome evidence. / 合成记录：短窗口标签先于较慢的结构标签变化；这不是科学证伪，也不是当前结果证据。\n标签分歧\n·\n背景分歧\nSYNTHETIC-unbound-label-tension · 2026-10-10\nsynthetic/unregistered-short-window.json\nSYNTHETIC source reading A / 合成来源读数 A\n未关联引擎\nsynthetic/unregistered-long-window.json\nSYNTHETIC source reading B / 合成来源读数 B\n未关联引擎\nSYNTHETIC recorded context whose paths have no canonical T4 owner. Preserve this gap; do not attach it to an engine by name similarity. / 此合成记录的路径没有登记的 T4 所有者；保留缺口，不按名称相似性归属引擎。\n记录的来源缺口 · 1\nSYNTHETIC recorded report: current source qualification and request-scoped numerical attribution are unavailable. / 合成记录：当前来源资格与本次请求范围的数值归因不可用。\n记录来源\n路径\ndata/neuralweb/confluence_graph.json\n来源内容摘要\nc90db9cb1a94d2a51e18de600e40f82b89e2cc8f2bc4e6918ab112ec1c89fad9",
+    "geometry": {
+      "width": 360,
+      "scrollWidth": 360,
+      "children": [
+        {
+          "width": 328,
+          "scrollWidth": 328
+        },
+        {
+          "width": 328,
+          "scrollWidth": 328
+        },
+        {
+          "width": 328,
+          "scrollWidth": 328
+        },
+        {
+          "width": 328,
+          "scrollWidth": 328
+        },
+        {
+          "width": 328,
+          "scrollWidth": 328
+        },
+        {
+          "width": 328,
+          "scrollWidth": 328
+        },
+        {
+          "width": 328,
+          "scrollWidth": 328
+        },
+        {
+          "width": 328,
+          "scrollWidth": 328
+        },
+        {
+          "width": 328,
+          "scrollWidth": 328
+        }
+      ]
+    },
+    "api": {
+      "source_sha256": "c90db9cb1a94d2a51e18de600e40f82b89e2cc8f2bc4e6918ab112ec1c89fad9",
+      "status": "recorded",
+      "rejected": 0,
+      "unbound": 1,
+      "detail_records": 1
+    },
+    "band_dispositions": [
+      [
+        "engine/synthetic-supported-scope-unknown.py::synthetic-fixture",
+        "Accruing"
+      ],
+      [
+        "engine/synthetic-unclassified.py::synthetic-fixture",
+        "Accruing"
+      ],
+      [
+        "engine/synthetic-descriptive.py::synthetic-fixture",
+        "Ungraded by design"
+      ],
+      [
+        "engine/synthetic-immature.py::synthetic-fixture",
+        "Degraded"
+      ],
+      [
+        "engine/synthetic-partial.py::synthetic-fixture",
+        "Degraded"
+      ],
+      [
+        "engine/synthetic-retired.py::synthetic-fixture",
+        "Degraded"
+      ],
+      [
+        "engine/synthetic-falsified.py::synthetic-fixture",
+        "Disproven"
+      ]
+    ]
+  },
+  {
+    "viewport": "mobile",
+    "viewport_width": 390,
+    "viewport_height": 844,
+    "theme": "light",
+    "locale": "en",
+    "access": "synthetic_fixture_session",
+    "captured": true,
+    "file": "e7fe35b9fc652821--findings-default.png",
+    "sha256": "e7fe35b9fc652821c17275a796f7a525824e0c2c9832fbbd3dc1f6e43dc0366a",
+    "bytes": 152844,
+    "width": 362,
+    "height": 1276,
+    "applied_theme": "light",
+    "applied_locale": "en",
+    "force_state": {
+      "name": "findings_default",
+      "operation": "Actual fixture-case input through real Handler/loader; native details click and element screenshot"
+    },
+    "base_url": "http://127.0.0.1:61519",
+    "capture_tool_module_sha256": "1d6dac3002d3fb5d8a15e8975439091e8347a704495f85653509d2902159a8c5",
+    "assets": {
+      "/app.js": {
+        "status": 200,
+        "sha256": "6728183681df41e488494fd2f310c4ee62d990252149af9a118b97cc2a513772"
+      },
+      "/styles.css": {
+        "status": 200,
+        "sha256": "203f9d806f35441e598189654b91b0c97243feecb5319c5943df3617e0cabe60"
+      }
+    },
+    "visible_text": "RECORDED DISAGREEMENTS\nContext annotations only · These recorded readings retain their original scope and dates; they do not establish current validation.\nSOURCE AS OF\n2026-10-11\nFINDINGS WITHOUT AN ENGINE ASSOCIATION\n1\nNUMERIC SOURCE VERIFICATION\nUnavailable in this view\nNo source-verification receipt is available in this view.\nRecorded findings · 2\nLabel lag\n·\nContext note\nSYNTHETIC-cross-horizon-label-lag · 2026-10-11\nsynthetic/synthetic-immature.json\nSYNTHETIC short-window label changed / 合成短窗口标签已变化\nExact artifact association\nsynthetic/synthetic-partial.json\nSYNTHETIC longer-window structural label unchanged / 合成长窗口结构标签未变化\nExact artifact association\nSYNTHETIC recorded context: the short-window label changes before the slower structural label. This is not scientific falsification or current outcome evidence. / 合成记录：短窗口标签先于较慢的结构标签变化；这不是科学证伪，也不是当前结果证据。\nLabel tension\n·\nContext tension\nSYNTHETIC-unbound-label-tension · 2026-10-10\nsynthetic/unregistered-short-window.json\nSYNTHETIC source reading A / 合成来源读数 A\nNo engine association\nsynthetic/unregistered-long-window.json\nSYNTHETIC source reading B / 合成来源读数 B\nNo engine association\nSYNTHETIC recorded context whose paths have no canonical T4 owner. Preserve this gap; do not attach it to an engine by name similarity. / 此合成记录的路径没有登记的 T4 所有者；保留缺口，不按名称相似性归属引擎。\nRecorded source gaps · 1\nSYNTHETIC recorded report: current source qualification and request-scoped numerical attribution are unavailable. / 合成记录：当前来源资格与本次请求范围的数值归因不可用。\nRecorded source\nPATH\ndata/neuralweb/confluence_graph.json\nSOURCE DIGEST\nc90db9cb1a94d2a51e18de600e40f82b89e2cc8f2bc4e6918ab112ec1c89fad9",
+    "geometry": {
+      "width": 360,
+      "scrollWidth": 360,
+      "children": [
+        {
+          "width": 328,
+          "scrollWidth": 328
+        },
+        {
+          "width": 328,
+          "scrollWidth": 328
+        },
+        {
+          "width": 328,
+          "scrollWidth": 328
+        },
+        {
+          "width": 328,
+          "scrollWidth": 328
+        },
+        {
+          "width": 328,
+          "scrollWidth": 328
+        },
+        {
+          "width": 328,
+          "scrollWidth": 328
+        },
+        {
+          "width": 328,
+          "scrollWidth": 328
+        },
+        {
+          "width": 328,
+          "scrollWidth": 328
+        },
+        {
+          "width": 328,
+          "scrollWidth": 328
+        }
+      ]
+    },
+    "api": {
+      "source_sha256": "c90db9cb1a94d2a51e18de600e40f82b89e2cc8f2bc4e6918ab112ec1c89fad9",
+      "status": "recorded",
+      "rejected": 0,
+      "unbound": 1,
+      "detail_records": 1
+    },
+    "band_dispositions": [
+      [
+        "engine/synthetic-supported-scope-unknown.py::synthetic-fixture",
+        "Accruing"
+      ],
+      [
+        "engine/synthetic-unclassified.py::synthetic-fixture",
+        "Accruing"
+      ],
+      [
+        "engine/synthetic-descriptive.py::synthetic-fixture",
+        "Ungraded by design"
+      ],
+      [
+        "engine/synthetic-immature.py::synthetic-fixture",
+        "Degraded"
+      ],
+      [
+        "engine/synthetic-partial.py::synthetic-fixture",
+        "Degraded"
+      ],
+      [
+        "engine/synthetic-retired.py::synthetic-fixture",
+        "Degraded"
+      ],
+      [
+        "engine/synthetic-falsified.py::synthetic-fixture",
+        "Disproven"
+      ]
+    ]
+  },
+  {
+    "viewport": "mobile",
+    "viewport_width": 390,
+    "viewport_height": 844,
+    "theme": "light",
+    "locale": "zh",
+    "access": "synthetic_fixture_session",
+    "captured": true,
+    "file": "745a220db8f756a9--findings-default.png",
+    "sha256": "745a220db8f756a9184338f2a7de3f83dd9e6e54576ce0c1a37bdd6edffb6641",
+    "bytes": 153303,
+    "width": 362,
+    "height": 1260,
+    "applied_theme": "light",
+    "applied_locale": "zh",
+    "force_state": {
+      "name": "findings_default",
+      "operation": "Actual fixture-case input through real Handler/loader; native details click and element screenshot"
+    },
+    "base_url": "http://127.0.0.1:61519",
+    "capture_tool_module_sha256": "1d6dac3002d3fb5d8a15e8975439091e8347a704495f85653509d2902159a8c5",
+    "assets": {
+      "/app.js": {
+        "status": 200,
+        "sha256": "6728183681df41e488494fd2f310c4ee62d990252149af9a118b97cc2a513772"
+      },
+      "/styles.css": {
+        "status": 200,
+        "sha256": "203f9d806f35441e598189654b91b0c97243feecb5319c5943df3617e0cabe60"
+      }
+    },
+    "visible_text": "记录的观点分歧\n仅作背景注释 · 这些记录保留原有范围和日期，不能据此确认当前验证状态。\n来源时间\n2026-10-11\n无法关联到引擎的条目\n1\n数值来源核验\n此视图暂不可核验\n此视图暂无数值来源核验凭据。\n记录条目 · 2\n标签滞后\n·\n背景说明\nSYNTHETIC-cross-horizon-label-lag · 2026-10-11\nsynthetic/synthetic-immature.json\nSYNTHETIC short-window label changed / 合成短窗口标签已变化\n输出文件精确关联\nsynthetic/synthetic-partial.json\nSYNTHETIC longer-window structural label unchanged / 合成长窗口结构标签未变化\n输出文件精确关联\nSYNTHETIC recorded context: the short-window label changes before the slower structural label. This is not scientific falsification or current outcome evidence. / 合成记录：短窗口标签先于较慢的结构标签变化；这不是科学证伪，也不是当前结果证据。\n标签分歧\n·\n背景分歧\nSYNTHETIC-unbound-label-tension · 2026-10-10\nsynthetic/unregistered-short-window.json\nSYNTHETIC source reading A / 合成来源读数 A\n未关联引擎\nsynthetic/unregistered-long-window.json\nSYNTHETIC source reading B / 合成来源读数 B\n未关联引擎\nSYNTHETIC recorded context whose paths have no canonical T4 owner. Preserve this gap; do not attach it to an engine by name similarity. / 此合成记录的路径没有登记的 T4 所有者；保留缺口，不按名称相似性归属引擎。\n记录的来源缺口 · 1\nSYNTHETIC recorded report: current source qualification and request-scoped numerical attribution are unavailable. / 合成记录：当前来源资格与本次请求范围的数值归因不可用。\n记录来源\n路径\ndata/neuralweb/confluence_graph.json\n来源内容摘要\nc90db9cb1a94d2a51e18de600e40f82b89e2cc8f2bc4e6918ab112ec1c89fad9",
+    "geometry": {
+      "width": 360,
+      "scrollWidth": 360,
+      "children": [
+        {
+          "width": 328,
+          "scrollWidth": 328
+        },
+        {
+          "width": 328,
+          "scrollWidth": 328
+        },
+        {
+          "width": 328,
+          "scrollWidth": 328
+        },
+        {
+          "width": 328,
+          "scrollWidth": 328
+        },
+        {
+          "width": 328,
+          "scrollWidth": 328
+        },
+        {
+          "width": 328,
+          "scrollWidth": 328
+        },
+        {
+          "width": 328,
+          "scrollWidth": 328
+        },
+        {
+          "width": 328,
+          "scrollWidth": 328
+        },
+        {
+          "width": 328,
+          "scrollWidth": 328
+        }
+      ]
+    },
+    "api": {
+      "source_sha256": "c90db9cb1a94d2a51e18de600e40f82b89e2cc8f2bc4e6918ab112ec1c89fad9",
+      "status": "recorded",
+      "rejected": 0,
+      "unbound": 1,
+      "detail_records": 1
+    },
+    "band_dispositions": [
+      [
+        "engine/synthetic-supported-scope-unknown.py::synthetic-fixture",
+        "Accruing"
+      ],
+      [
+        "engine/synthetic-unclassified.py::synthetic-fixture",
+        "Accruing"
+      ],
+      [
+        "engine/synthetic-descriptive.py::synthetic-fixture",
+        "Ungraded by design"
+      ],
+      [
+        "engine/synthetic-immature.py::synthetic-fixture",
+        "Degraded"
+      ],
+      [
+        "engine/synthetic-partial.py::synthetic-fixture",
+        "Degraded"
+      ],
+      [
+        "engine/synthetic-retired.py::synthetic-fixture",
+        "Degraded"
+      ],
+      [
+        "engine/synthetic-falsified.py::synthetic-fixture",
+        "Disproven"
+      ]
+    ]
+  },
+  {
+    "viewport": "mobile",
+    "viewport_width": 390,
+    "viewport_height": 844,
+    "theme": "dark",
+    "locale": "en",
+    "access": "synthetic_fixture_session",
+    "captured": true,
+    "file": "e3ee06586c0820a2--findings-all-rejected.png",
+    "sha256": "e3ee06586c0820a203a0e5f8ee78413b5e8bccfc78872bf744a4e99949433701",
+    "bytes": 50996,
+    "width": 362,
+    "height": 605,
+    "applied_theme": "dark",
+    "applied_locale": "en",
+    "force_state": {
+      "name": "findings_all-rejected",
+      "operation": "Actual fixture-case input through real Handler/loader; native details click and element screenshot"
+    },
+    "base_url": "http://127.0.0.1:61519",
+    "capture_tool_module_sha256": "1d6dac3002d3fb5d8a15e8975439091e8347a704495f85653509d2902159a8c5",
+    "assets": {
+      "/app.js": {
+        "status": 200,
+        "sha256": "6728183681df41e488494fd2f310c4ee62d990252149af9a118b97cc2a513772"
+      },
+      "/styles.css": {
+        "status": 200,
+        "sha256": "203f9d806f35441e598189654b91b0c97243feecb5319c5943df3617e0cabe60"
+      }
+    },
+    "visible_text": "RECORDED DISAGREEMENTS\nContext annotations only · These recorded readings retain their original scope and dates; they do not establish current validation.\nSOURCE AS OF\n2026-10-11\nFINDINGS WITHOUT AN ENGINE ASSOCIATION\n0\nREJECTED OWNER RECORDS\n1\nNUMERIC SOURCE VERIFICATION\nUnavailable in this view\nNo source-verification receipt is available in this view.\nNo supported findings could be displayed from this partial report.\nRecorded source gaps · 1\nRecorded source\nPATH\ndata/neuralweb/confluence_graph.json\nSOURCE DIGEST\nd0c3f69b1a435d6fd829873ba66b3565fa6e623fd3e54dc37a88fe544dfbe367",
+    "geometry": {
+      "width": 360,
+      "scrollWidth": 360,
+      "children": [
+        {
+          "width": 328,
+          "scrollWidth": 328
+        },
+        {
+          "width": 328,
+          "scrollWidth": 328
+        },
+        {
+          "width": 328,
+          "scrollWidth": 328
+        },
+        {
+          "width": 328,
+          "scrollWidth": 328
+        },
+        {
+          "width": 328,
+          "scrollWidth": 328
+        },
+        {
+          "width": 328,
+          "scrollWidth": 328
+        }
+      ]
+    },
+    "api": {
+      "source_sha256": "d0c3f69b1a435d6fd829873ba66b3565fa6e623fd3e54dc37a88fe544dfbe367",
+      "status": "partial",
+      "rejected": 1,
+      "unbound": 0,
+      "detail_records": 0
+    },
+    "band_dispositions": [
+      [
+        "engine/synthetic-supported-scope-unknown.py::synthetic-fixture",
+        "Accruing"
+      ],
+      [
+        "engine/synthetic-unclassified.py::synthetic-fixture",
+        "Accruing"
+      ],
+      [
+        "engine/synthetic-descriptive.py::synthetic-fixture",
+        "Ungraded by design"
+      ],
+      [
+        "engine/synthetic-immature.py::synthetic-fixture",
+        "Degraded"
+      ],
+      [
+        "engine/synthetic-partial.py::synthetic-fixture",
+        "Degraded"
+      ],
+      [
+        "engine/synthetic-retired.py::synthetic-fixture",
+        "Degraded"
+      ],
+      [
+        "engine/synthetic-falsified.py::synthetic-fixture",
+        "Disproven"
+      ]
+    ]
+  },
+  {
+    "viewport": "mobile",
+    "viewport_width": 390,
+    "viewport_height": 844,
+    "theme": "dark",
+    "locale": "zh",
+    "access": "synthetic_fixture_session",
+    "captured": true,
+    "file": "632eeaed16b071c3--findings-all-rejected.png",
+    "sha256": "632eeaed16b071c3ecf29972205394aac3822e6ef77b250f3acc1b05aa0f5daa",
+    "bytes": 51153,
+    "width": 362,
+    "height": 572,
+    "applied_theme": "dark",
+    "applied_locale": "zh",
+    "force_state": {
+      "name": "findings_all-rejected",
+      "operation": "Actual fixture-case input through real Handler/loader; native details click and element screenshot"
+    },
+    "base_url": "http://127.0.0.1:61519",
+    "capture_tool_module_sha256": "1d6dac3002d3fb5d8a15e8975439091e8347a704495f85653509d2902159a8c5",
+    "assets": {
+      "/app.js": {
+        "status": 200,
+        "sha256": "6728183681df41e488494fd2f310c4ee62d990252149af9a118b97cc2a513772"
+      },
+      "/styles.css": {
+        "status": 200,
+        "sha256": "203f9d806f35441e598189654b91b0c97243feecb5319c5943df3617e0cabe60"
+      }
+    },
+    "visible_text": "记录的观点分歧\n仅作背景注释 · 这些记录保留原有范围和日期，不能据此确认当前验证状态。\n来源时间\n2026-10-11\n无法关联到引擎的条目\n0\n未能显示的所有者记录\n1\n数值来源核验\n此视图暂不可核验\n此视图暂无数值来源核验凭据。\n此不完整记录中暂无可显示的有效条目。\n记录的来源缺口 · 1\n记录来源\n路径\ndata/neuralweb/confluence_graph.json\n来源内容摘要\nd0c3f69b1a435d6fd829873ba66b3565fa6e623fd3e54dc37a88fe544dfbe367",
+    "geometry": {
+      "width": 360,
+      "scrollWidth": 360,
+      "children": [
+        {
+          "width": 328,
+          "scrollWidth": 328
+        },
+        {
+          "width": 328,
+          "scrollWidth": 328
+        },
+        {
+          "width": 328,
+          "scrollWidth": 328
+        },
+        {
+          "width": 328,
+          "scrollWidth": 328
+        },
+        {
+          "width": 328,
+          "scrollWidth": 328
+        },
+        {
+          "width": 328,
+          "scrollWidth": 328
+        }
+      ]
+    },
+    "api": {
+      "source_sha256": "d0c3f69b1a435d6fd829873ba66b3565fa6e623fd3e54dc37a88fe544dfbe367",
+      "status": "partial",
+      "rejected": 1,
+      "unbound": 0,
+      "detail_records": 0
+    },
+    "band_dispositions": [
+      [
+        "engine/synthetic-supported-scope-unknown.py::synthetic-fixture",
+        "Accruing"
+      ],
+      [
+        "engine/synthetic-unclassified.py::synthetic-fixture",
+        "Accruing"
+      ],
+      [
+        "engine/synthetic-descriptive.py::synthetic-fixture",
+        "Ungraded by design"
+      ],
+      [
+        "engine/synthetic-immature.py::synthetic-fixture",
+        "Degraded"
+      ],
+      [
+        "engine/synthetic-partial.py::synthetic-fixture",
+        "Degraded"
+      ],
+      [
+        "engine/synthetic-retired.py::synthetic-fixture",
+        "Degraded"
+      ],
+      [
+        "engine/synthetic-falsified.py::synthetic-fixture",
+        "Disproven"
+      ]
+    ]
+  },
+  {
+    "viewport": "mobile",
+    "viewport_width": 390,
+    "viewport_height": 844,
+    "theme": "light",
+    "locale": "en",
+    "access": "synthetic_fixture_session",
+    "captured": true,
+    "file": "cceed6a7b5676708--findings-all-rejected.png",
+    "sha256": "cceed6a7b56767080afaf61dc9b1a4bdcc12ae08026112ba0863d7217050e973",
+    "bytes": 50236,
+    "width": 362,
+    "height": 605,
+    "applied_theme": "light",
+    "applied_locale": "en",
+    "force_state": {
+      "name": "findings_all-rejected",
+      "operation": "Actual fixture-case input through real Handler/loader; native details click and element screenshot"
+    },
+    "base_url": "http://127.0.0.1:61519",
+    "capture_tool_module_sha256": "1d6dac3002d3fb5d8a15e8975439091e8347a704495f85653509d2902159a8c5",
+    "assets": {
+      "/app.js": {
+        "status": 200,
+        "sha256": "6728183681df41e488494fd2f310c4ee62d990252149af9a118b97cc2a513772"
+      },
+      "/styles.css": {
+        "status": 200,
+        "sha256": "203f9d806f35441e598189654b91b0c97243feecb5319c5943df3617e0cabe60"
+      }
+    },
+    "visible_text": "RECORDED DISAGREEMENTS\nContext annotations only · These recorded readings retain their original scope and dates; they do not establish current validation.\nSOURCE AS OF\n2026-10-11\nFINDINGS WITHOUT AN ENGINE ASSOCIATION\n0\nREJECTED OWNER RECORDS\n1\nNUMERIC SOURCE VERIFICATION\nUnavailable in this view\nNo source-verification receipt is available in this view.\nNo supported findings could be displayed from this partial report.\nRecorded source gaps · 1\nRecorded source\nPATH\ndata/neuralweb/confluence_graph.json\nSOURCE DIGEST\nd0c3f69b1a435d6fd829873ba66b3565fa6e623fd3e54dc37a88fe544dfbe367",
+    "geometry": {
+      "width": 360,
+      "scrollWidth": 360,
+      "children": [
+        {
+          "width": 328,
+          "scrollWidth": 328
+        },
+        {
+          "width": 328,
+          "scrollWidth": 328
+        },
+        {
+          "width": 328,
+          "scrollWidth": 328
+        },
+        {
+          "width": 328,
+          "scrollWidth": 328
+        },
+        {
+          "width": 328,
+          "scrollWidth": 328
+        },
+        {
+          "width": 328,
+          "scrollWidth": 328
+        }
+      ]
+    },
+    "api": {
+      "source_sha256": "d0c3f69b1a435d6fd829873ba66b3565fa6e623fd3e54dc37a88fe544dfbe367",
+      "status": "partial",
+      "rejected": 1,
+      "unbound": 0,
+      "detail_records": 0
+    },
+    "band_dispositions": [
+      [
+        "engine/synthetic-supported-scope-unknown.py::synthetic-fixture",
+        "Accruing"
+      ],
+      [
+        "engine/synthetic-unclassified.py::synthetic-fixture",
+        "Accruing"
+      ],
+      [
+        "engine/synthetic-descriptive.py::synthetic-fixture",
+        "Ungraded by design"
+      ],
+      [
+        "engine/synthetic-immature.py::synthetic-fixture",
+        "Degraded"
+      ],
+      [
+        "engine/synthetic-partial.py::synthetic-fixture",
+        "Degraded"
+      ],
+      [
+        "engine/synthetic-retired.py::synthetic-fixture",
+        "Degraded"
+      ],
+      [
+        "engine/synthetic-falsified.py::synthetic-fixture",
+        "Disproven"
+      ]
+    ]
+  },
+  {
+    "viewport": "mobile",
+    "viewport_width": 390,
+    "viewport_height": 844,
+    "theme": "light",
+    "locale": "zh",
+    "access": "synthetic_fixture_session",
+    "captured": true,
+    "file": "0cf77498c0ad74ae--findings-all-rejected.png",
+    "sha256": "0cf77498c0ad74ae4b21f1adacd2f6e618370e174ec1cf748b954825dbd96859",
+    "bytes": 49915,
+    "width": 362,
+    "height": 572,
+    "applied_theme": "light",
+    "applied_locale": "zh",
+    "force_state": {
+      "name": "findings_all-rejected",
+      "operation": "Actual fixture-case input through real Handler/loader; native details click and element screenshot"
+    },
+    "base_url": "http://127.0.0.1:61519",
+    "capture_tool_module_sha256": "1d6dac3002d3fb5d8a15e8975439091e8347a704495f85653509d2902159a8c5",
+    "assets": {
+      "/app.js": {
+        "status": 200,
+        "sha256": "6728183681df41e488494fd2f310c4ee62d990252149af9a118b97cc2a513772"
+      },
+      "/styles.css": {
+        "status": 200,
+        "sha256": "203f9d806f35441e598189654b91b0c97243feecb5319c5943df3617e0cabe60"
+      }
+    },
+    "visible_text": "记录的观点分歧\n仅作背景注释 · 这些记录保留原有范围和日期，不能据此确认当前验证状态。\n来源时间\n2026-10-11\n无法关联到引擎的条目\n0\n未能显示的所有者记录\n1\n数值来源核验\n此视图暂不可核验\n此视图暂无数值来源核验凭据。\n此不完整记录中暂无可显示的有效条目。\n记录的来源缺口 · 1\n记录来源\n路径\ndata/neuralweb/confluence_graph.json\n来源内容摘要\nd0c3f69b1a435d6fd829873ba66b3565fa6e623fd3e54dc37a88fe544dfbe367",
+    "geometry": {
+      "width": 360,
+      "scrollWidth": 360,
+      "children": [
+        {
+          "width": 328,
+          "scrollWidth": 328
+        },
+        {
+          "width": 328,
+          "scrollWidth": 328
+        },
+        {
+          "width": 328,
+          "scrollWidth": 328
+        },
+        {
+          "width": 328,
+          "scrollWidth": 328
+        },
+        {
+          "width": 328,
+          "scrollWidth": 328
+        },
+        {
+          "width": 328,
+          "scrollWidth": 328
+        }
+      ]
+    },
+    "api": {
+      "source_sha256": "d0c3f69b1a435d6fd829873ba66b3565fa6e623fd3e54dc37a88fe544dfbe367",
+      "status": "partial",
+      "rejected": 1,
+      "unbound": 0,
+      "detail_records": 0
+    },
+    "band_dispositions": [
+      [
+        "engine/synthetic-supported-scope-unknown.py::synthetic-fixture",
+        "Accruing"
+      ],
+      [
+        "engine/synthetic-unclassified.py::synthetic-fixture",
+        "Accruing"
+      ],
+      [
+        "engine/synthetic-descriptive.py::synthetic-fixture",
+        "Ungraded by design"
+      ],
+      [
+        "engine/synthetic-immature.py::synthetic-fixture",
+        "Degraded"
+      ],
+      [
+        "engine/synthetic-partial.py::synthetic-fixture",
+        "Degraded"
+      ],
+      [
+        "engine/synthetic-retired.py::synthetic-fixture",
+        "Degraded"
+      ],
+      [
+        "engine/synthetic-falsified.py::synthetic-fixture",
+        "Disproven"
+      ]
+    ]
+  }
+]

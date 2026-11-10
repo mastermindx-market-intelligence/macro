@@ -55,15 +55,61 @@ def _text(value: Any) -> str | None:
     return text or None
 
 
-def _bool(value: Any) -> bool:
+def _strict_bool(value: Any) -> tuple[bool, bool]:
+    """Return ``(flag, ok)``.
+
+    Missing is a valid False. Real booleans and the stored int8 0/1 flag are
+    valid. Strings such as ``"true"`` / ``"False"`` and mapping flags are not:
+    ``bool("False")`` is True, which would let an untrusted cell authorize a
+    target.
+    """
     if value is None:
-        return False
+        return False, True
+    if isinstance(value, (bool, np.bool_)):
+        return bool(value), True
+    if isinstance(value, (int, np.integer)):
+        as_int = int(value)
+        if as_int in (0, 1):
+            return bool(as_int), True
+        return False, False
     try:
-        if pd.isna(value):
-            return False
+        missing = pd.isna(value)
     except (TypeError, ValueError):
-        pass
-    return bool(value)
+        return False, False
+    if isinstance(missing, (bool, np.bool_)) and bool(missing):
+        return False, True
+    return False, False
+
+
+def _json_bool(value: Any) -> bool | None:
+    """Accept only a real boolean. Strings, ints, and mappings are refused."""
+    if isinstance(value, (bool, np.bool_)):
+        return bool(value)
+    return None
+
+
+def _budget_pct(value: Any) -> int | None:
+    """Integral display percent in 0..100.
+
+    Fractional replacements are not rounded into a budget. ``0.4`` must not
+    become 0, and float ``1.0`` collides with a 100% fraction, so both are
+    refused. Integer 0, 1, and 100 stay distinct.
+    """
+    if isinstance(value, (bool, np.bool_)):
+        return None
+    if isinstance(value, (int, np.integer)):
+        number = int(value)
+    elif isinstance(value, float):
+        if not math.isfinite(value) or not value.is_integer():
+            return None
+        if 0.0 < value <= 1.0:
+            return None
+        number = int(value)
+    else:
+        return None
+    if 0 <= number <= 100:
+        return number
+    return None
 
 
 def _pct(fraction: float | None) -> float | None:
@@ -253,9 +299,9 @@ def build_decision(
     raw = _finite(last.get("alloc_optimal_raw"))
     previous, previous_error = _previous_exposure(signals)
 
-    override_active = _bool(last.get("override_active"))
+    override_active, active_ok = _strict_bool(last.get("override_active"))
     override_id = _text(last.get("override_id"))
-    override_released = _bool(last.get("override_released"))
+    override_released, released_ok = _strict_bool(last.get("override_released"))
     release_frac = _finite(last.get("override_release_frac"))
 
     final_present = final is not None
@@ -295,6 +341,8 @@ def build_decision(
         errors.append("RAW_ALLOCATION_OUT_OF_RANGE")
     if not release_frac_in_range:
         errors.append("OVERRIDE_RELEASE_FRAC_OUT_OF_RANGE")
+    if not active_ok or not released_ok:
+        errors.append("OVERRIDE_FLAG_NOT_BOOLEAN")
     if override_active and override_id is None:
         errors.append("ACTIVE_OVERRIDE_WITHOUT_ID")
     if mismatch and not mismatch_explained:
@@ -393,12 +441,18 @@ def build_decision(
     return base
 
 
-def project_budget(decision: Mapping[str, Any] | None) -> dict[str, Any]:
+def project_budget(
+    decision: Mapping[str, Any] | None,
+    *,
+    page_as_of: str | None = None,
+) -> dict[str, Any]:
     """Project the canonical decision into the minimal total-budget contract.
 
     The projection is intentionally fail-closed: an integrity-invalid decision
     may retain diagnostic final fields in btc.decision/v1, but no downstream
     class allocator may treat those diagnostics as an actionable budget.
+    Untrusted flags, fractional percents, and a decision dated for a different
+    page are unavailable. They are not coerced into a number.
     """
     source = decision if isinstance(decision, Mapping) else {}
     integrity = source.get("integrity")
@@ -407,29 +461,43 @@ def project_budget(decision: Mapping[str, Any] | None) -> dict[str, Any]:
     final = final if isinstance(final, Mapping) else {}
     errors = integrity.get("errors")
     errors = list(errors) if isinstance(errors, (list, tuple)) else []
+    authority = source.get("authority")
+    authority = authority if isinstance(authority, Mapping) else {}
 
     schema = _text(source.get("schema"))
     status = _text(source.get("status")) or "unavailable"
-    integrity_ok = bool(integrity.get("ok"))
-    exposure_pct = _finite(final.get("exposure_pct"))
-    exposure_in_range = bool(
-        exposure_pct is not None and 0.0 <= exposure_pct <= 100.0
-    )
+    as_of = _text(source.get("as_of"))
+    parsed_ok = _json_bool(integrity.get("ok"))
+    integrity_ok = parsed_ok is True
+    exposure_pct = _budget_pct(final.get("exposure_pct"))
+    source_ok = authority.get("allocation_source") == "signals.alloc_optimal"
+    page_as_of_text = _text(page_as_of)
+    date_ok = page_as_of_text is None or as_of == page_as_of_text
+
+    if integrity.get("ok") is not None and parsed_ok is None:
+        errors.append("INTEGRITY_FLAG_NOT_BOOLEAN")
+    if final.get("exposure_pct") is not None and exposure_pct is None:
+        errors.append("FINAL_EXPOSURE_PCT_REJECTED")
+    if status == "ok" and not source_ok:
+        errors.append("ALLOCATION_SOURCE_MISMATCH")
+    if page_as_of_text is not None and not date_ok and status == "ok" and integrity_ok:
+        errors.append("DECISION_AS_OF_MISMATCH")
+
     available = bool(
         schema == SCHEMA
         and status == "ok"
         and integrity_ok
-        and exposure_in_range
+        and exposure_pct is not None
+        and source_ok
+        and date_ok
     )
 
     return {
         "schema": SCHEMA,
         "status": "ok" if available else "unavailable",
-        "as_of": _text(source.get("as_of")),
+        "as_of": as_of,
         "integrity_ok": integrity_ok,
-        "final_exposure_pct": (
-            _display_pct(exposure_pct) if available and exposure_pct is not None else None
-        ),
+        "final_exposure_pct": exposure_pct if available else None,
         "errors": errors,
         "authority_source": "btc.decision/v1.final.exposure_pct",
     }
