@@ -1,6 +1,6 @@
 /**
  * Node replica of calculator parseNum / compute / curveGeometry from
- * templates/calculators/{compounding,dollar_cost_averaging}.html.j2.
+ * templates/calculators/{compounding,dollar_cost_averaging,sharpe_ratio}.html.j2.
  *
  * Pins whole-token number parsing, bilingual domain/overflow messages,
  * WORKED_EXAMPLES, and compounding chart geometry (time-based x, t=0 point).
@@ -939,4 +939,136 @@ test('compounding latest rejected operation still performs successful legacy cop
   assert.equal(ui.legacyWrites.length, 1, 'current-attempt fallback retained');
   assert.equal(ui.showCopied(), true);
   assert.equal(ui.fallbackShown(), false);
+});
+
+
+// Sharpe: interpretation must use the displayed reporting basis, never raw
+// monthly/daily values as annual quality bands. Run actual template JS, not a
+// copied implementation; source/page equality also protects the committed reader.
+const SHARPE_SRC = readFileSync(join(TEMPLATE_DIR, 'sharpe_ratio.html.j2'), 'utf8');
+const SHARPE_PAGE = readFileSync(join(ROOT, 'site/tools/calculators/sharpe-ratio.html'), 'utf8');
+function sharpeScript(source) {
+  const scripts = [...source.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/g)]
+    .map(m => m[1]).filter(s => s.includes('function compute(inp)'));
+  assert.equal(scripts.length, 1, 'exactly one calculator script must be present');
+  return scripts[0];
+}
+function makeSharpePage(source = SHARPE_SRC) {
+  const els = new Map(), writes = [], errors = [];
+  let boot;
+  function el(id) {
+    if (!els.has(id)) {
+      const classes = new Set();
+      els.set(id, {value: '', textContent: '', className: '', disabled: false,
+        listeners: {}, classList: {add: c => classes.add(c), remove: c => classes.delete(c), contains: c => classes.has(c)},
+        addEventListener(type, fn) { this.listeners[type] = fn; }, select() {}});
+    }
+    return els.get(id);
+  }
+  const ctx = vm.createContext({
+    document: {addEventListener: (_t, f) => { boot = f; }, getElementById: el,
+      createElement: () => el('@temp'), body: {appendChild() {}, removeChild() {}}, execCommand: () => true},
+    navigator: {clipboard: {writeText: text => new Promise(resolve => writes.push({text, resolve}))}},
+    console: {error: (...args) => errors.push(args)}, setTimeout() {}, Number, Math, isFinite, parseFloat,
+  });
+  vm.runInContext(sharpeScript(source), ctx);
+  boot();
+  return {el, writes, errors,
+    set(values) { for (const [key, value] of Object.entries(values)) el(key).value = String(value); el('rp').listeners.input(); },
+    copy() { el('copy-result').listeners.click(); },
+    async settle(index) { writes[index].resolve(); await Promise.resolve(); await Promise.resolve(); },
+  };
+}
+const sharpeFns = loadTemplate(SHARPE_SRC, ['compute', 'band']);
+sharpeFns.periodsFrom = el => loadTemplate(SHARPE_SRC, ['periodsFrom']).periodsFrom(el);
+const sharpeInput = {Rp: 1, Rf: 0.25, sd: 1.25};
+
+test('Sharpe canonical template and committed page execute byte-identical calculator JS', () => {
+  assert.equal(sharpeScript(SHARPE_SRC), sharpeScript(SHARPE_PAGE));
+});
+
+test('Sharpe ordinary, zero, negative and worked-example arithmetic stays intact', () => {
+  for (const [input, value] of [
+    [{Rp:12, Rf:3, sd:15}, 0.6], [{Rp:8, Rf:2, sd:12, k:12}, 0.5],
+    [{Rp:3, Rf:3, sd:15, k:12}, 0], [{Rp:-3, Rf:3, sd:15, k:12}, -0.4],
+  ]) {
+    const got = sharpeFns.compute(input);
+    assert.equal(got.ok, true);
+    assert.equal(got.sharpe, value);
+    if (input.k) assert.equal(got.annualized, value * Math.sqrt(input.k));
+  }
+});
+
+test('Sharpe 100 equivalent additive reporting conventions retain the same annual band', () => {
+  for (let k=1; k<=100; k++) {
+    const a=sharpeFns.compute({...sharpeInput, k});
+    const b=sharpeFns.compute({Rp:k, Rf:0.25*k, sd:1.25*Math.sqrt(k), k:1});
+    assert.ok(Math.abs(a.annualized-b.annualized)<1e-12);
+    assert.equal(sharpeFns.band(a.annualized), sharpeFns.band(b.annualized));
+  }
+  for (const source of [SHARPE_SRC, SHARPE_PAGE]) {
+    const ui=makeSharpePage(source);
+    ui.set({rp:1,rf:0.25,sd:1.25,k:12});
+    assert.equal(ui.el('out-main').textContent, '0.60');
+    assert.equal(ui.el('out-annual').textContent, '2.08');
+    assert.match(ui.el('out-plain').textContent, /annualized convention.*above 2/);
+    assert.doesNotMatch(ui.el('out-plain').textContent, /subpar/);
+    ui.set({rp:12,rf:3,sd:4.330127018922193,k:1});
+    assert.equal(ui.el('out-annual').textContent, '2.08');
+    assert.match(ui.el('out-plain').textContent, /annualized convention.*above 2/);
+    assert.equal(ui.errors.length, 0);
+  }
+});
+
+test('Sharpe omitted and invalid periods preserve raw result but never assign a quality band', () => {
+  for (const [raw, label] of [['','omitted'],['0','unavailable'],['-12','unavailable'],['abc','unavailable'],['1e309','unavailable'],['12months','unavailable'],['1,2','unavailable']]) {
+    const ui=makeSharpePage(); ui.set({rp:1,rf:0.25,sd:1.25,k:raw});
+    assert.equal(ui.el('out-main').textContent, '0.60', raw);
+    assert.equal(ui.el('out-annual').textContent, '—', raw);
+    assert.match(ui.el('out-plain').textContent, new RegExp('Annualization '+label));
+    assert.doesNotMatch(ui.el('out-plain').textContent, /commonly read/);
+    assert.equal(ui.el('copy-result').disabled, false);
+    ui.copy(); assert.match(ui.writes[0].text, new RegExp('Annualization '+label));
+  }
+});
+
+test('Sharpe period parser preserves grouped, fractional and scientific notation without suffixes', () => {
+  for (const [raw, want] of [['12',12],['252',252],['1,000',1000],['1.2e1',12],['.5',0.5],['+12',12]])
+    assert.equal(sharpeFns.periodsFrom({value:raw}),want);
+  for (const raw of ['12abc','0x10','1,2','1,0000','Infinity','1e309'])
+    assert.ok(Number.isNaN(sharpeFns.periodsFrom({value:raw})),raw);
+});
+
+test('Sharpe required and derived failures clear output and prevent copying', () => {
+  for (const values of [
+    {rp:'',rf:3,sd:15}, {rp:12,rf:'',sd:15}, {rp:12,rf:3,sd:0},
+    {rp:12,rf:3,sd:-1}, {rp:'1e308',rf:'-1e308',sd:1}, {rp:1,rf:0,sd:'5e-324'},
+  ]) {
+    const ui=makeSharpePage(); ui.set({rp:12,rf:3,sd:15,k:12});
+    ui.set(values);
+    for (const id of ['out-main','out-excess','out-perrisk','out-annual']) assert.equal(ui.el(id).textContent,'—');
+    assert.equal(ui.el('copy-result').disabled,true);
+    ui.copy(); assert.equal(ui.writes.length,0);
+    ui.set({rp:12,rf:3,sd:15,k:1}); assert.equal(ui.el('out-main').textContent,'0.60');
+  }
+});
+
+test('Sharpe annualization-only overflow preserves finite raw output and explicit copy warning', () => {
+  const got=sharpeFns.compute({Rp:1e308,Rf:0,sd:1,k:100});
+  assert.equal(got.ok,true); assert.equal(got.sharpe,1e308);
+  assert.equal(got.annualState,'overflow'); assert.equal(got.annualized,null);
+  const ui=makeSharpePage(); ui.set({rp:'1e308',rf:0,sd:1,k:100});
+  assert.equal(ui.el('out-annual').textContent,'—');
+  assert.match(ui.el('out-plain').textContent,/Annualization unavailable: result exceeds/);
+  ui.copy(); assert.match(ui.writes[0].text,/Annualization unavailable: result exceeds/);
+  assert.doesNotMatch(ui.writes[0].text,/Infinity|NaN/);
+});
+
+test('Sharpe input changes clear prior copy feedback and ignore delayed successes', async () => {
+  const ui=makeSharpePage(); ui.set({rp:12,rf:3,sd:15,k:1});
+  ui.copy(); ui.set({k:12}); await ui.settle(0);
+  assert.equal(ui.el('copied').classList.contains('show'),false);
+  ui.copy(); await ui.settle(1);
+  assert.equal(ui.el('copied').classList.contains('show'),true);
+  ui.set({rp:''}); assert.equal(ui.el('copied').classList.contains('show'),false);
 });
