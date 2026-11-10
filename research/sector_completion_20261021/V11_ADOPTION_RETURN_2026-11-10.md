@@ -955,7 +955,9 @@ The #1429 defects in plain terms:
 
 ### 20.3 Push rule for this status record
 
-Every push to this branch cancels the CI run in progress for the previous head (runs 42829286555 and 42830350986 were cancelled this way), which is why #10945 has not merged. From 14:12Z new sections are committed locally and pushed only when #10945 has merged, in which case later sections go on a fresh branch from main with a new armed pull request, or when the CI run for the pushed head has concluded. At 14:23Z run 42831237204 is in progress on `3a5a6b422d57`.
+Every push to this branch cancels the CI run in progress for the previous head (runs 42829286555 and 42830350986 were cancelled this way), which is why #10945 has not merged. At 14:23Z run 42831237204 is in progress on `3a5a6b422d57`.
+
+Arrangement from 14:25Z: the first status branch (`claude/si-v11-adoption-status-20261110`, #10945) stays at `3a5a6b422d57` and receives no further pushes, so its CI run can finish and the controller can merge it. Section 20 and every later section go on a second branch, `claude/si-v11-adoption-status-b-20261110`, stacked on the first, with its own pull request. That pull request is not armed while #10945 is open, because merging it would move #10945's head and cancel its run again. Once #10945 has merged, the second branch merges main, its pull request is pointed at main, and it is armed.
 
 ### 20.4 Observed pull request state, 14:22Z
 
