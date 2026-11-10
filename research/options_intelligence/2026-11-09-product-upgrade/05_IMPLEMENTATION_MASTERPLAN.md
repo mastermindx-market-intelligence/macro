@@ -1,12 +1,12 @@
-# Options Suite — Round 4 Implementation Masterplan
+# Options Suite — Implementation Masterplan Through Round 5
 
 ## Production design baseline and Fable/T3 build contract · 10 November 2026 UTC
 
-**Status: round-4 planning baseline complete; the extended Options programme remains open.** This is the current implementation architecture, source reuse map, acceptance contract and programme sequence. It supersedes the earlier “next round 3” frontier for planning. It does not supersede accepted source, release holds, original requirement text, existing scientific contracts or runtime authority.
+**Status: Round 5 recovery and source-readiness planning complete; the extended programme remains open.** This is the integrated implementation baseline, amended by [10](10_ROUND5_SOURCE_READINESS.md) and [11](11_RELEASE_AND_DESIGN_CONTRACT.md). Those files govern updated source semantics, exact original vertical scope and Round 6 work. Accepted source, release holds, original requirements, scientific contracts and runtime authority remain intact.
 
 **Canonical carrier:** [Macro PR #10898](https://github.com/mastermindx-market-intelligence/macro/pull/10898), branch claude/options-suite-production-plan-20261109. **Programme parent:** [Terminal #599](https://github.com/mastermindx-market-intelligence/mastermind-terminal/issues/599); narrower workbench [#603](https://github.com/mastermindx-market-intelligence/mastermind-terminal/issues/603). Fable-led T3 implementation is the intended later execution model. No Fable message, worker commission, activation, merge, deployment or trade was sent or performed in this planning round.
 
-The Chairman has authorized additional rounds after round 4. [06_FUTURE_ROUNDS.md](06_FUTURE_ROUNDS.md) defines them. The next round starts with source/requirement closure and the highest-value unresolved integration contracts. This baseline is final for the current four-round design cycle, while later evidence can amend it explicitly on this same programme.
+The Chairman authorized further rounds. Round 5 recovered and verified the original packet, reconciled 528 references and completed the source-readiness/release dossier. Round 6 now uses those findings in Paper. [06_FUTURE_ROUNDS.md](06_FUTURE_ROUNDS.md) preserves later research, lifecycle, portfolio, monitoring and production-proof work. The same programme and Draft PR continue; this is not a final whole-suite implementation acceptance.
 
 ## 1. The product we are building
 
@@ -45,8 +45,11 @@ Production design requires:
 | [04_ARCHITECTURE_HARDENING.md](04_ARCHITECTURE_HARDENING.md) | Exact contracts and source adjudications behind the plan |
 | [02_PAPER_DESIGN.md](02_PAPER_DESIGN.md) | 34 editable boards, 44 states, interaction contract and synthetic fixture |
 | [03_PAPER_MANIFEST.json](03_PAPER_MANIFEST.json) | Exact page/node identities and design verification; documentation inventory only |
-| [07_REQUIREMENT_TRACEABILITY.csv](07_REQUIREMENT_TRACEABILITY.csv) | 294 recovered reference rows with source, original status, design mapping and next proof |
-| [08_COVERAGE_GAPS.json](08_COVERAGE_GAPS.json) | Explicit unrecovered OPT/OPR packet and namespace boundaries |
+| [07_REQUIREMENT_TRACEABILITY.csv](07_REQUIREMENT_TRACEABILITY.csv) | 528 reference rows; prior 294 fields preserved and actual 104 OPT/130 OPR appended with Round 5 adjudication |
+| [08_COVERAGE_GAPS.json](08_COVERAGE_GAPS.json) | Recovered packet disposition, actual remaining gaps and namespace boundaries |
+| [10_ROUND5_SOURCE_READINESS.md](10_ROUND5_SOURCE_READINESS.md) | Current source/owner contracts and production-proof limits |
+| [11_RELEASE_AND_DESIGN_CONTRACT.md](11_RELEASE_AND_DESIGN_CONTRACT.md) | Exact original release scope, next Paper work and consumer proof |
+| [12_PACKET_RECOVERY.json](12_PACKET_RECOVERY.json) / [13_ROUND5_VALIDATION.json](13_ROUND5_VALIDATION.json) | Exact archive/graph and current documentation verification |
 | [06_FUTURE_ROUNDS.md](06_FUTURE_ROUNDS.md) | Further architecture/design/proof rounds and the final dispatch condition |
 | [01_MASTERPLAN.md](01_MASTERPLAN.md) | Preserved census, progress history, original 245-board estate and earlier decisions |
 | [Frontend review](appendices/FRONTEND_REVIEW.md) | Full route/action/return mapping and source counterexamples |
@@ -68,14 +71,14 @@ The traceability file is a versioned planning projection. It is not a replacemen
 | Exposure | Legacy analytics plus distinct dated provider-Gamma observed-v2 progress | Show exact valuation class and population; qualify stronger capabilities separately |
 | Scientific programme | Six fixed OIF pilots and separate FS-5, candidate/quote-ruler and sleeve programmes | Preserve endpoints, stages, losses, multiplicity and authority boundaries |
 | R1/R2 | Substantial accepted/merged subsets and retained design/acceptance ledgers | Reuse scoped evidence; discharge remaining rows individually, including P74 and P76 |
-| Full inherited parity | 104 OPT tasks and 130 OPR requirements attested in original packet | Recover the exact packet before a full-scope dispatch or full-parity acceptance claim |
+| Full inherited parity | Exact 104-task/130-requirement packet recovered with full checksums and original statuses | Apply original dependencies and row-specific acceptance; recovery does not establish implementation or full parity |
 
 Source pins and direct references are in 04 §2/§12 and the review appendices. “Exists” is not “installed and production accepted.”
 
 ### Current material holds
 
 - **Terminal #804:** Draft at 27df56d997df0ae94a17b6b8e2d14867431bb394; release hold 5989604142. Exact migration/application, admission, integration and authenticated consumer gates remain under the original owner. Accepted unchanged backup/restore and source receipts must not be rerun merely to make a new packet.
-- **Macro #10866:** open at f9d9c1883b9a25ea2bd5f6b5b21f922a01307434; merge-on-green and merge-blocked observed. Retain the exact wire scope and its source/consumer limitations.
+- **Macro #10866:** original head f9d9c1883b9a25ea2bd5f6b5b21f922a01307434 remains unmerged. Current controller hold 6756074745 records changed main CI definitions and a content conflict; earlier green checks do not prove current-base acceptance. Keep the original root/effects and exact wire limits.
 - **Paper:** D08D p-2-0/1N2L-0 stays read-only. Adjacent p-Q-0/1B5H-0 and p-1-0/189S-0 custody is preserved. No substitute-board replay.
 - **Other inherited held carriers:** Intraday#6867, campaign#9677, expression#9682, coverage#8191, Outlook#7328 and the full 01 register retain their dated dispositions until affected facts are refreshed. This round does not claim a new status for every carrier.
 - **Uncertain/denied effects:** the original T03k/P09 and other fenced operations remain with their original owners and carriers. A new UI, a clearer document or another worker does not authorize replay.
@@ -140,7 +143,7 @@ flowchart TD
   Q --> A
 ```
 
-The research edge reaches production only for the specific advanced claim being released. A held predictive programme does not block an observational release that satisfies its own requirements. Existing admitted Exposure cases provide an independent Watch/Review path; held Plan integration is a dependency only for Plan-bearing cases. Unrecovered OPR rows gate whole-packet dispatch, not an independently bounded correctness slice.
+This graph orders capability slices; its “Production acceptance” node is acceptance of the particular admitted slice, not OPT-100 or whole-suite closure. The recovered original OPT-100 has 15 direct/36 transitive unconditional predecessors, including core conditional Trade Lab comparison, selected-node monitoring and outcome review; see 11 §4. A read-only observational precursor or ordinary saved-case/watch/assessment increment cannot close it. Held science is required only for claims that use it; held Plan admission applies to Plan-bearing cases. Independently ready repairs such as OPT-032 retain their original prerequisites and do not wait for the entire Paper programme.
 
 ### Slice: selection integrity and coherent navigation
 
@@ -166,9 +169,9 @@ The research edge reaches production only for the specific advanced claim being 
 
 **Incumbents:** F01–F02, D01–D04, Intraday publication, flowSource/API/cache/stream. F03/F04 prospective lifecycle obligations remain with the research/lineage slice below.
 
-**Work:** bind aggregate fallback first; add real child-print/version/quote/correction evidence only through a qualified incumbent producer. Reconcile child counts/contracts/premium with the parent. Keep unknown signing and unavailable package membership visible. Expose source detail and actual DOI/Unusual rules without implying all populations match.
+**Work:** bind the useful aggregate and reuse its existing measured NBBO block through the existing validator. Keep pre-signing measured, post-signing event and loaded-feed populations separate; shares use covered premium, with no current maximum quote-age qualification. Disclose fixed-100 arithmetic. Add source-confirmed child-print/version/quote/correction evidence only when supplied; reconcile children to their actual declared parent population, not an incompatible measured denominator. Keep unknown signing/package membership and actual DOI/Unusual rules visible.
 
-**Exit proof:** source→publication→API→browser trace for one non-fixture qualified case; aggregate-only fallback; unknown quote/terms; child correction/cancellation; duplicate child; partial membership; quiet/absent/failed/access-denied distinctions; one transport owner.
+**Exit proof:** source→publication→API→browser trace for one non-fixture qualified aggregate; optional measured-block admission and coverage arithmetic; unknown quote/terms; quiet/absent/failed/access-denied distinctions; one transport owner. Child-enabled slices additionally prove correction/cancellation, duplicate child and partial membership. Those absent capabilities do not become a new gate on a truthful aggregate precursor.
 
 **Release boundary:** aggregate inspection remains useful before children qualify. At-ask timeline and richer classification cannot be faked to satisfy Paper.
 
@@ -176,7 +179,7 @@ The research edge reaches production only for the specific advanced claim being 
 
 **Incumbents:** M01–M04, V01–V02, D01–D04, Lab A–G programme, #10866 and its existing supplier/consumer owners. V03's Plan mechanics and V04's prospective expression obligations remain separately assigned below.
 
-**Work:** preserve exact dated Gamma class; expose full versus known-subset totals; compare exact matched/added/removed/unknown cohorts; add root/expiry receiver and missing-expiry behavior; integrate lossless retained selection through the sole Lab adapter; preserve same-data exact table and 3D fallback.
+**Work:** bind the actual GEX chart receiver and exact dated Gamma class; show known-subset versus full totals and nullable dated spot. Separate reported membership from qualification changes; current comparator refuses same-session corrections. Qualify a real DEX supplier before claiming receiver readiness as publication. Repair Volatility tenor/percentile/history-window semantics and add the real root/expiry receiver. Integrate lossless schema-specific retained selection through the sole Lab adapter, with correct own-side admission and exact table/2D/3D selection.
 
 **Exit proof:** missing versus zero; raw precision; foreign/duplicate identity refusal; both-side/membership qualification; independently dated source clocks; comparable versus incompatible books; corrected exact bytes; same selected data across representations; first-availability unknown remains unknown.
 
@@ -186,11 +189,19 @@ The research edge reaches production only for the specific advanced claim being 
 
 **Incumbents:** V03 and U02 explicitly, with U01/U04 integration, existing Plan/payoff/terms owners, original #804 and its accepted integration source. N01–N03 retain their distinct near-expiry latency, lifecycle and workflow requirements; ordinary Plan save does not discharge them.
 
-**Work:** compose the held detached Plan bridge with the new interface; preserve explicit New research/Add/Save and native operation journal; first save is revision 1 of a new case; retain canonical/embedded history modes; map authored case fields explicitly; reopen only the acknowledged exact revision; separately calculate and compare. B04's existing-case revision-2 attachment requires a design correction or a separately qualified extension by the incumbent owner; it is not implemented by the held bridge.
+**Work:** compose the held detached Plan bridge with the new interface; preserve explicit New research/Add/Save and native operation journal; first save is revision 1 of a new case. Reconcile original uncertain operations; keep known-commit/read-failed distinct from not-applied. Compose 0047/0043 predicates and TypeScript/admission probe forward through their original owner based on actual installed identity. Retain canonical/embedded exact readers and native lifetime guards. B04's existing-case revision-2 attachment requires correction or a separately qualified extension; it is not implemented by this bridge.
 
 **Exit proof:** qualified ordinary-domain Plan; unresolved/adjusted terms refusal; two-leg arithmetic and aligned sampled axis; dirty input; detached copy after Add; lost response/reload; exact operation lookup; no duplicate mutation; two-tab revision conflict; account revocation; exact revision missing; reader invalidation; correct canonical and embedded return.
 
 **Release boundary:** only after the existing migration/admission/release gates permit the real path. Reusing branch source does not clear those gates.
+
+### Slice: core Trade Lab comparison for the first complete vertical
+
+**Incumbents:** original OPT-062 with OPT-026/027/054/060/064, existing Plan/shortlist/conditional-valuation/terms/quote owners. This is required core scope before OPT-100, not wholly optional Round 8 depth.
+
+**Work:** compare stock, one supported long option, one defined-risk vertical and wait. Show price-IV-time loss table and separately named expiry payoff, exact terms, executable quote convention, costs and mark clock. Reuse accepted numerical machinery in its admitted domain; the dated Gamma class or intrinsic-payoff calculator cannot masquerade as pre-expiry repricing.
+
+**Exit proof:** the user understands what must happen and what can fail; exact assumptions/terms/clocks remain visible and reproducible. Modeled P&L, expiry payoff, quote-based research outcomes and actual fills remain separate. Unsupported structures/terms/models refuse honestly. Broader lifecycle/instrument/structure expansion stays in later rounds without erasing this core.
 
 ### Slice: watch → selected firing → review revision
 
@@ -198,7 +209,7 @@ The research edge reaches production only for the specific advanced claim being 
 
 **Work:** retain clear preview and separate Arm; reconcile ambiguous creation under the existing alert owner; add exact firing selection and history lookup/pagination where needed; keep source/read/queue/delivery states distinct; implement Unicode-safe assessment input; save a new immutable revision.
 
-**Exit proof:** cadence and expiry reflect the actual evaluator; unknown arm does not duplicate; one-shot/re-arm identity; pending/deferred/suppressed/failed/sent distinctions; source clock absent; capped/unreadable history; newer firing arrives while editing; exact old firing remains selected; explicit inconclusive assessment saves/reopens correctly.
+**Exit proof:** condition copy reflects strict sampled >/< or the actual wall-transition semantics; show expiry/consent only where admitted by that condition owner. Unknown Arm does not duplicate; one-shot/re-arm identity, valid delivery status, absent source clock and capped/unreadable history remain explicit. New firing cannot change the selected event during authoring; inconclusive assessment saves/reopens exactly. Ordinary price watch/assessment does not close original selected-node OPT-035 or the outcome journal.
 
 **Release boundary:** do not promise reliable observation until the admitted evaluator and delivery receipts are observed. The condition firing never auto-confirms a thesis.
 
@@ -225,8 +236,8 @@ The research edge reaches production only for the specific advanced claim being 
 | Contract | Existing source/command owner | Required extension or composition |
 |---|---|---|
 | Selection/return | Workspace/route reducers, authenticated owner lifetime | Tagged responses, strict handoff receiver, same history decoder, exact return |
-| Flow evidence | Flow producer/API/stream/cache | Stable children, revision/correction lineage, qualified quote method/clocks, denominator reconciliation |
-| Exposure/volatility | options_hub, projection/terms/model owners, Lab adapter | Specific capability classes, exact population, compatible comparisons, explicit missing metadata |
+| Flow evidence | Flow producer/API/stream/cache and existing measured validator | Reuse aggregate NBBO; preserve distinct populations/covered denominator and terms limits; qualify later children/lineage separately |
+| Exposure/volatility | options_hub, projection/terms/model owners, Lab adapter | Dated chart domain, DEX supplier proof, lossless side admission, actual tenor/percentile/history window and compatible comparisons |
 | Candidate/sleeve | Formation/campaign/evaluation/trial owners | Per-claim maturity/attrition projection; preserve existing activation/use contract |
 | Plan and calculation | optionsPlanDraft/payoff/terms + #804 | Integrate existing v3 option_plan and exact reader; no duplicate calculator/save owner |
 | Retained evidence | Native source retention/resolver + Investigation references | Exact historical resolution, current rights, correction/retention behavior |
@@ -270,10 +281,10 @@ Research can revisit expressly reopened hypotheses while retaining earlier negat
 | R2 | 76 | Original product requirements; production acceptance is not established by the design |
 | SUP | 123 | Dated claim dispositions, not 123 new implementation tasks |
 | Paper | 34 boards /44 state components | Design artifacts and specimens |
-| OPT | 104 attested tasks | Full row contents unrecovered |
-| OPR | 130 attested requirements | 112 competitor-referenced +18 product; full row contents unrecovered |
+| OPT | 104 recovered tasks | Exact source rows, dependencies, conditions and child contracts preserved |
+| OPR | 130 recovered requirements | Exact 112 competitor-referenced +18 product rows, owners and acceptance preserved |
 
-The 294 recovered rows are reference rows across overlapping layers. They are not 294 independent acceptance tests or a completion percentage.
+The 528 rows reference overlapping layers; they are not 528 independent tests or a completion percentage. All original fields of the prior 294 rows are retained unchanged in the CSV. Added round5_* columns provide current adjudication/next proof; original_acceptance_text and dependency/child-contract columns preserve recovered semantics. OPT/OPR IDs are intrinsically qualified; earlier qualified IDs remain unchanged. The archive contains the complete original documents.
 
 The 123-claim source register contains 75 accepted/do-not-redo, 17 held, 17 superseded/obsolete, 13 retained/open and 1 unknown claim. Preserve each as a dated disposition; later exact receipts may qualify a change. The unknown claim remains unknown.
 
@@ -357,7 +368,7 @@ This is a planned responsibility map, not a list of started workers. At dispatch
 The full brief lives here and in its linked sources. It must bind:
 
 1. the exact accepted revision of this package and current affected source heads;
-2. original requirement packet recovery or an explicit scope decision;
+2. the verified original packet, exact original rows and explicitly bound conditional dependencies;
 3. one ready useful slice with exact paths, inputs, outputs and non-goals;
 4. original dependency/hold and mutation-carrier identities;
 5. design targets and truthful degraded behavior;
@@ -368,13 +379,12 @@ The full brief lives here and in its linked sources. It must bind:
 
 Do not dispatch a packet consisting only of “make it billion-dollar quality” or a link to a screenshot.
 
-## 11. Round-4 disposition and next action
+## 11. Current disposition and next action — Round 5
 
-**Completed in this round:** architecture hardening against protected and held source; exact Plan reuse decision; route/selection corrections; retained-source and firing-history contracts; explicit signal/sleeve/science boundaries; build dependency graph; production acceptance ruler;294-row recovered traceability; the additional-round roadmap.
+**Completed:** exact original packet recovery with CRC/checksums; 104-task CSV/JSON/graph and 130-OPR ownership validation; 528-row crosswalk preserving prior rows; source-readiness dossier; updated native Plan/Matrix/Save/watch contracts; exact first-vertical dependencies; and concrete Round 6 design inputs. Prior Round 4 architecture, accepted narrow source work and the 34-board/44-state Paper artifact remain preserved.
 
-**Still owed by the programme:** original OPT/OPR row recovery, closed source contracts for richer Flow/history/qualification, remaining deep design, implementation, authentic persistence and installed-consumer proof, P74/P76, original scientific stages and release acceptance. No claim of a production-ready implemented Options system is made.
+**Still owed:** remaining deep design and source contracts; semantic repairs identified in 10; held integration/admission; exact retained-source and firing-history behavior; real implementation/installation/consumer proof; P74/P75/P76; original scientific stages; usefulness and release acceptance. Recovery is not acceptance.
 
-**Next round:** follow 06 Round 5. First recover the original packet through its actual provenance, then close the source-contract readiness dossier and choose the first admitted vertical integration slice. Preserve this round's decisions and the existing Paper candidate; do not restart the census or reopen accepted work without an invalidator.
+**Next:** Round 6 Paper work in 11 §8, especially B04, Flow aggregate semantics, Volatility correctness, Opportunities, core Trade Lab and Monitor. Independently ready original correctness work retains its own prerequisites. No restart of the census, new task hierarchy or Fable/T3 dispatch is required by this document.
 
-The planning PR remains Draft while the extended design/architecture programme is being completed. Later whole-suite dispatch and final acceptance require the explicit gates above. This does not prevent a separately authorized, well-bounded source-qualified slice from advancing through its existing owner.
-
+The planning PR remains Draft. The eventual commission must cite the exact accepted package, real runtime grants, original effects/holds and bounded acceptance return. No application, Paper, production, SQL or activation effect occurred in Round 5.

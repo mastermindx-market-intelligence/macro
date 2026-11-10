@@ -1,7 +1,7 @@
 # Options Suite — Production Design and Implementation Masterplan
-## November 9–10, 2026 · Rounds 1–4 baseline · Extended programme authorized
+## November 9–10, 2026 · Rounds 1–5 · Extended programme authorized
 
-**Status: DRAFT — rounds 1–4 planning baseline complete; additional design, architecture and qualification rounds are authorized.** The current implementation contract is [05_IMPLEMENTATION_MASTERPLAN.md](05_IMPLEMENTATION_MASTERPLAN.md). Production implementation and whole-suite acceptance remain open.  
+**Status: DRAFT — Round 5 scope recovery and source-readiness planning complete; Round 6 Paper work is next.** The current baseline is [05_IMPLEMENTATION_MASTERPLAN.md](05_IMPLEMENTATION_MASTERPLAN.md), amended by [10_ROUND5_SOURCE_READINESS.md](10_ROUND5_SOURCE_READINESS.md) and [11_RELEASE_AND_DESIGN_CONTRACT.md](11_RELEASE_AND_DESIGN_CONTRACT.md). Production implementation and whole-suite acceptance remain open.  
 **Commission:** Chairman’s four-round Options upgrade, now extended with additional rounds: census, Paper design, architecture hardening and the current implementation baseline, followed by deeper scope/source/design/capability work and eventual Fable-led T3 implementation.  
 **Programme parent:** Terminal issue #599, with #603 for the narrower workbench.  
 **Primary workstream:** WS-ADVANCED-DATA-OPTIONS, alongside the existing Options Alpha, Intraday Flow, and context-audit workstreams. No new workstream or task hierarchy is created.  
@@ -12,7 +12,36 @@ This is an additive product and architecture amendment to the October 31 Fable p
 
 ---
 
-## Current programme state — after round 4
+## Current programme state — after Round 5
+
+**The missing original scope is now recovered, verified and retained on the same draft PR.** The October 21 ZIP is 189,700 bytes with SHA-256 `f08759dc8755000dcf8fcf335a1ca409fa6dd796dd757c8d29f2f3330ddba0ad`; ZIP CRC and every manifest checksum pass. Its actual 104 OPT tasks and 130 OPR requirements are now reconciled with the prior 294 references, giving **528 reference rows**, not 528 independent tests or a completion percentage. All historical statuses and accepted narrower receipts remain intact.
+
+Read the current work in this order:
+
+1. [10 — Source readiness](10_ROUND5_SOURCE_READINESS.md): recovered scope, exact source findings, existing owners, held effects and production-proof limits.
+2. [11 — Release and Round 6 design contract](11_RELEASE_AND_DESIGN_CONTRACT.md): useful precursor versus the original complete vertical, exact dependencies, user jobs and Paper edits.
+3. [05 — Implementation masterplan](05_IMPLEMENTATION_MASTERPLAN.md) and [04 — preserved architecture](04_ARCHITECTURE_HARDENING.md): integrated baseline and prior detailed contracts.
+4. [07 — 528-row crosswalk](07_REQUIREMENT_TRACEABILITY.csv), [08 — current gaps](08_COVERAGE_GAPS.json), [12 — exact recovery receipt](12_PACKET_RECOVERY.json) and [13 — Round 5 validation](13_ROUND5_VALIDATION.json).
+5. [06 — further rounds](06_FUTURE_ROUNDS.md), [02 — historical Paper contract](02_PAPER_DESIGN.md) and [03 — unchanged exact manifest](03_PAPER_MANIFEST.json).
+
+### Decisions that change the next build
+
+- **Use existing Flow measurement.** Aggregate NBBO evidence and its validator already exist. Preserve pre-signing measurement, post-signing event and loaded-feed populations; no fabricated children, packages or executable-quote claim. Fixed-100 premium arithmetic is not exact terms qualification.
+- **Repair Volatility meaning.** Nearest-tenor fallback is not strict 30D; current “rank” is an empirical percentile; the “52-week” range consumes only the last 90 observations. Historical spot fallback and RV endpoint require explicit eligibility before causal claims.
+- **Compose native admission forward.** Existing #804 supplies new-case whole-Plan revision 1. Its predicate/TypeScript composition must preserve protected Matrix 0047; original 0030/0043/0047 holds and installed-body qualification remain. Do not rebuild the bridge or replay effects.
+- **Make recovery and review stable.** Reconcile the original Save/Arm operation; a missing receipt is inconclusive. Freeze the selected firing, expose bounded history, and distinguish original/current/comparable evidence.
+- **Preserve the original complete release.** Read-only Flow→dated Gamma→return is useful but does not close OPT-100/OPR-129. The complete vertical retains Brief, core Trade Lab price-IV-time and stock/option/spread/wait comparison, Save, selected-node watch, Monitor, outcome review and usefulness.
+- **Keep all five jobs in the six destinations.** Opportunities, Trade Lab and Monitor need deeper design; maturity cards, expiry payoff and ordinary assessment are narrower. Restore original 1280 and 1920 proof obligations alongside current responsive representatives.
+
+Affected source was refreshed at Terminal `d15741d452403594a4ddb540a97b9a981c2a62ca` and Macro `e1e4552be495ea53ff804c58f76dce1500836223`. #804 and #10866 remain at their original held heads. Source review did not observe a natural market payload or an authenticated installed consumer. Paper nodes, applications, databases, deployments and scientific activation were unchanged.
+
+**Next round: Round 6 in Paper.** Correct B04 and the source-dependent specimens, map all retained deep jobs, and design the missing candidate/comparison/Monitor journeys through the existing file. Independently ready original correctness repairs retain their own dependencies; the whole design programme is not a new gate. No Fable/T3 message or worker dispatch was sent.
+
+**Reading note:** everything below labeled Round 1–4 is historical, including its former missing-packet and next-round wording. Current 10/11 and the reconciled 05–08 govern the planning frontier; original acceptance, law and release holds remain authoritative.
+
+---
+
+## Historical programme state — after round 4
 
 **The current four-round planning baseline is complete and the extended programme remains open.** This round hardened the actual Paper/source integration, produced the implementation graph and release proof contract, recovered 294 requirement-reference rows, and defined the next rounds. No application source, Paper nodes, production runtime, scientific activation or Fable/T3 dispatch changed in this round.
 

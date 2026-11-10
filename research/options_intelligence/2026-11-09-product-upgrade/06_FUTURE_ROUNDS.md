@@ -1,10 +1,10 @@
 # Options Suite — Additional Rounds and Convergence Plan
 
-## Rounds 5–12 · Proposed sequence under the extended commission · 10 November 2026 UTC
+## Round 5 complete · Rounds 6–12 next under the extended commission · 10 November 2026 UTC
 
 **Authority:** the Chairman authorized additional rounds after round 4 to build a substantially more robust Options system. This document specifies the next planning, design and qualification work. It does not dispatch Fable/T3, start workers, authorize a held effect, change scientific admission or imply that a live product has been accepted.
 
-**Current baseline:** [05_IMPLEMENTATION_MASTERPLAN.md](05_IMPLEMENTATION_MASTERPLAN.md) and [04_ARCHITECTURE_HARDENING.md](04_ARCHITECTURE_HARDENING.md). The existing [Paper candidate](02_PAPER_DESIGN.md), original task hierarchy and acceptance sources remain inputs. All new findings amend this same programme and documentation carrier.
+**Current baseline:** [05_IMPLEMENTATION_MASTERPLAN.md](05_IMPLEMENTATION_MASTERPLAN.md), [10_ROUND5_SOURCE_READINESS.md](10_ROUND5_SOURCE_READINESS.md) and [11_RELEASE_AND_DESIGN_CONTRACT.md](11_RELEASE_AND_DESIGN_CONTRACT.md), with the preserved [earlier architecture](04_ARCHITECTURE_HARDENING.md). The existing [Paper candidate](02_PAPER_DESIGN.md), original task hierarchy and acceptance sources remain inputs. All new findings amend this same programme and documentation carrier.
 
 The eight rounds below are a useful sequence, not a requirement to spend eight more conversations. Combine independently ready work when it improves the result; skip an already satisfied item after citing its accepted proof. Preserve real dependencies. No architecture round can substitute for elapsed market history, original source access, an installed consumer or a binding release decision.
 
@@ -28,7 +28,7 @@ These are product outcomes. More charts, more services, larger model names or ex
 
 | Round | Main question | Concrete result | Dependency and exit |
 |---|---|---|---|
-| **5 — Recover scope and close source contracts** | What exactly do we owe, and which inputs actually support it? | Recovered original packet or an explicit scope disposition; row-complete coverage; source readiness dossier; first useful release slice | Exact provenance and identities; no invented OPT/OPR rows; per-slice available inputs and original holds |
+| **5 — Complete: scope recovery and source readiness** | What exactly do we owe, and which inputs support it? | Exact verified archive; 528 reference rows; source dossier and precise release/design contracts | Recovery/structure validation complete; implementation, natural artifacts and held admission remain open |
 | **6 — Complete the deep Paper experience** | Can users perform every retained important job intuitively? | Precise retained-board mapping and edited missing deep workflows, responsive states and action contracts | Source-qualified design domains from round 5; every action has a real receiver and return |
 | **7 — Harden intelligence, sleeves and evaluation** | What can each insight claim, and how does it earn a stronger claim? | Claim/maturity contract, exact family/target map, evaluation workbench design, implementation-ready scientific dependencies | Original pilot/FS-5/formation laws preserved; empirical results only when actually available |
 | **8 — Deepen Plan, liquidity and contract mechanics** | What does the exact expression mean before, at and after expiry? | Lifecycle and liquidity architecture, supported-model matrix, deeper Plan designs and falsifiers | Existing exact terms, quotes, models and held persistence owner; unsupported domains remain explicit |
@@ -37,53 +37,19 @@ These are product outcomes. More charts, more services, larger model names or ex
 | **11 — Prove production readiness** | Does the implemented, admitted experience survive real use and failure? | Affected operational/security/performance/accessibility proof dossier and release decisions | Actual source/build/data installation for any claimed proof; design-only checks remain labeled |
 | **12 — Converge the full implementation commission** | What precisely will Fable/T3 build or finish, with what evidence? | Final reconciled masterplan, ready bounded packets, dependency order and acceptance return contract | Original row scope resolved; no duplicate work; exact remaining authority/effects recorded |
 
-**Recommended next turn:** round 5. Do not restart the census or redraw the existing 34-board set. Recover the missing original scope and resolve the source contracts that most strongly affect the next design and implementation decisions.
+**Recommended next turn: Round 6, Paper.** Use the concrete board/action changes in 11 §8. Preserve the existing 34-board set, 44 states and original 245-board inventory; correct and deepen only the missing or semantically affected work. No repeat packet search or broad census is needed.
 
-Core correctness obligations in rounds 5–7 are part of the current upgrade. Advanced work in rounds 8–10 extends depth; it must not become an excuse to defer accepted-path integration, usability or production proof. Round 11 can collect actual evidence incrementally for each admitted slice rather than waiting for every research capability. Round 12 can be brought forward for a bounded release while later capability work remains explicitly open.
+Core correctness obligations remain part of the upgrade. Selected-domain pre-expiry Trade Lab comparison, quotes/costs and conditional valuation are required by original OPT-062 before the complete first vertical; they cannot all be deferred to Round 8. Later rounds expand that admitted core. Independently ready repairs, including OPT-032, do not wait for all Round 6 design. Additional depth must not defer accepted-path integration, usability or production proof. Round 11 can collect actual evidence incrementally for each admitted slice rather than waiting for every research capability. Round 12 can be brought forward for a bounded release while later capability work remains explicitly open.
 
-## 3. Round 5 — Original scope, source readiness and the first useful release
+## 3. Round 5 — Completed planning outcome
 
-### User benefit
+The exact original October 21 ZIP was recovered from its known M2 Downloads provenance, validated and archived unchanged. Full SHA-256 is `f08759dc8755000dcf8fcf335a1ca409fa6dd796dd757c8d29f2f3330ddba0ad`; 189,700 bytes; 17 members; all 16 manifest checksums and CRC pass. Actual 104 OPT/130 OPR rows, 60 features, 92 sources and 11 competitors are retained. The 528-reference crosswalk preserves all prior 294 fields. No current competitor-parity or implementation acceptance follows from recovery.
 
-Avoid a beautiful but incomplete replacement. Preserve the capabilities already promised, discover the precise remaining gaps, and make the next designs depend on actual available data.
+The source dossier resolves the next design decisions: existing aggregate NBBO evidence and separate populations; qualified dated-Gamma chart receiver; volatility tenor/percentile/window defects; lossless schema-specific Matrix admission; native Plan/Matrix forward composition; original-operation Save/Arm recovery; original/current evidence distinction; and explicit selected-firing/limited-history review.
 
-### Work to perform
+The next observational precursor is natural Flow aggregate → independently qualified dated Gamma → exact return. It does not close original OPT-100/OPR-129. The complete declared-cohort vertical retains Brief, Workbench, exact stock/option/spread/wait and price-IV-time comparison, real Save, selected-node watch, Monitor, source-linked outcomes and measured usefulness. Exact 15 direct and 36 unconditional transitive predecessors are preserved, along with conditional binding rules.
 
-**Recover the original October 21 packet.** The historical D86 continuation attests to:
-
-- TERMINAL_OPTIONS_FABLE_MASTERPLAN_PACKET_2026-10-21.zip;
-- 189,700 bytes;
-- SHA-256 prefix f08759dc8755000d; the full hash is not currently known;
-- 104 OPT tasks;
-- 130 OPR requirements: 112 competitor-referenced and 18 product requirements;
-- 11 competitor entries, historically not accepted as full parity.
-
-The exact original row texts and OPR ID universe remain unrecovered. Follow actual known provenance or storage references. The bounded GitHub and connected-file searches performed in round 4 did not locate the packet. Do not search arbitrary host directories, recreate a plausible archive, infer missing rows from the grouped ranges, or replay a denied historical census. See [08_COVERAGE_GAPS.json](08_COVERAGE_GAPS.json).
-
-Validate the recovered bytes, complete checksum, archive manifest and original documents. Map their actual rows to the incumbent execution hierarchy, AC01–AC60, R1/R2, supersession dispositions, source carriers and Paper targets. Retain overlapping obligations rather than counting them as independent completion. If recovery proves impossible, the existing decision owner must explicitly resolve the missing scope. The row-complete whole-suite commission remains conditional until then; already recovered, independently bounded work is still useful.
-
-**Produce a source readiness dossier through existing owners.** For every material display/action, record:
-
-| Contract | Minimum evidence to resolve |
-|---|---|
-| Flow aggregate/children | Parent and child schema, actual membership, trade and quote clocks, classification method, cancellation/correction, denominators |
-| Dated Exposure | Exact observed-v2 policy, root/date eligibility, terms/model identity, expected and qualified population, per-metric capability |
-| Volatility | Exact expiry/tenor, source date, delta convention, missing wings/history and comparable methods |
-| Retained Matrix/Lab | Exact captured bytes and decimal tokens, source artifact, permitted known-snapshot use, missing temporal/correction facts |
-| Original-source reopen | Existing resolver, artifact/member identity, retention behavior, current access, correction/restatement policy |
-| Plan | Held #804 head and admission/migration/release prerequisites, supported terms domain, exact reader and field mapping |
-| Watch and review | Supported evaluator/cadence, arm reconciliation, exact firing/history scope, delivery receipts and immutable assessment |
-| Candidate/sleeve | Exact family/expression identity, source and outcome availability, maturity and currently permitted claim |
-
-This dossier is documentation over incumbent contracts. It is not a new source catalog, capability registry, ingestion service or approval plane.
-
-**Lock the next useful release.** Prefer a coherent admitted observational loop over an arbitrary collection of components: stable selection → truthful Flow or qualified Exposure → existing saved research → supported watch/review where admitted. Exact Plan remains on its original release path. Rich child timelines, joint Greeks and predictive cards require their own positive qualification.
-
-### Completion proof
-
-Every recovered requirement has exact source text, original status, owner, design disposition and next proof. Every proposed enabled action has a currently available source contract or a precise original dependency. The first slice has exact paths, source/build inputs, positive and negative consumer witnesses, rollout and rollback.
-
-No new purchase, provider contract, source-rights expansion, model activation or held installation is implied. A source gap should identify the required owner decision and allow independent design work to continue.
+See [10](10_ROUND5_SOURCE_READINESS.md), [11](11_RELEASE_AND_DESIGN_CONTRACT.md), [12](12_PACKET_RECOVERY.json) and [13](13_ROUND5_VALIDATION.json). Round 5 edited documentation only; no Paper, application, runtime, SQL or dispatch effects. Natural source/installed-consumer evidence and original holds remain open.
 
 ## 4. Round 6 — Full depth in Paper
 
@@ -121,7 +87,7 @@ Bind each control to its actual handler, receiver, input, resulting state and re
 
 Keep the three-level reading hierarchy: assessment, evidence, inspection. Use typographic hierarchy, carefully aligned numerical tables, clear units and restrained status colors. Support light and dark as deliberate compositions. Preserve Inter/PingFang SC and established tokens. No decorative colored edge stripes.
 
-Test the important jobs at the existing 1440/820/390 representatives and 320px/zoom conditions, EN/ZH, keyboard and touch. Inspect long translated errors, unknown data, charts with exact-table alternatives, focus restoration and explicit selection withdrawal. Do not judge usability from the hero screen alone.
+Test affected jobs at original 1440/1280/820/390 and 200% zoom, with OPR-116’s 1920 readability case; retain existing 320px component checks, EN/ZH, themes, keyboard and touch. Inspect long translated errors, unknown data, charts with exact-table alternatives, focus restoration and explicit selection withdrawal. Do not judge usability from the hero screen alone.
 
 ### Completion proof
 
@@ -168,6 +134,8 @@ Retain the scoped October 2 research revival and previous negative evidence. An 
 Every proposed signal label is supported by its exact source and allowed use. Negative, inconclusive, blocked and unrun results remain distinguishable. No new probability, rank, sizing rule or activation is introduced without its existing scientific and runtime authority. Required historical sessions and matured outcomes remain elapsed-time dependencies, not promises for the next conversation.
 
 ## 6. Round 8 — Contract mechanics, liquidity and deeper Plan
+
+**Dependency correction from Round 5:** the supported-domain price-IV-time comparison and exact quote/cost semantics required by OPT-062 precede the complete first vertical. This round expands instruments, structures, lifecycle and deeper mechanics beyond that core; it is not permission to ship the original vertical with expiry payoff alone.
 
 ### User benefit
 
@@ -238,7 +206,7 @@ Extend existing alert/evaluator/outbox and Investigation owners for the exact su
 
 Keep condition evaluation, firing, notification delivery and case assessment separate. The chosen firing stays fixed while an assessment is authored. Newer events offer an explicit switch. Distinguish readable empty history from unavailable or capped history; the current last-200 outbox read does not prove the whole history was searched.
 
-Material-change watches require an exact defined observable, baseline, comparator, schedule and termination. A price-crossing watch does not satisfy exposure level-crossing, regime-change or calibrated forecast requirements. These need their own admitted source and evaluator contracts.
+Material-change watches require an exact defined observable, baseline, comparator, schedule and termination. The current ordinary price condition samples strict >/<; it is not continuous crossing and does not satisfy selected-node exposure, regime-change or calibrated forecast requirements. These need their own admitted source and evaluator contracts.
 
 For replay, retain original artifact/member identity, available-by cutoff and correction lineage through existing temporal owners. Original and restated analysis are deliberate separate views. Nearest later data, digest order or a current fetch cannot fill an unknown historical observation.
 
@@ -305,9 +273,9 @@ A whole-suite completion claim requires the original accepted scope, useful inte
 
 ## 11. Carry-forward record
 
-**Do not redo:** rounds 1–2 census/design, accepted R1 W1/W2 and other scoped receipts, exact Plan source already on #804, original Lab/Matrix wire work, existing numerical fixtures, accepted methods reviews and preserved scientific definitions unless affected evidence invalidates them.
+**Do not redo:** Round 5 exact archive recovery/checksums and original graph reconstruction; rounds 1–2 census/design, accepted R1 W1/W2 and other scoped receipts, exact Plan source already on #804, original Lab/Matrix wire work, existing numerical fixtures, accepted methods reviews and preserved scientific definitions unless affected evidence invalidates them.
 
-**Still open:** original packet recovery; deep-view disposition and missing design; selection/routing/source contracts; held source integration; original-source retention; exact watch/firing semantics; actual implementation/installation/consumer proof; P74/P75/P76 and the remaining inherited rows; empirical stages and stronger claim admission.
+**Still open:** deep-view disposition and missing design; selection/routing/source contracts; held source integration; original-source retention; exact watch/firing semantics; actual implementation/installation/consumer proof; P74/P75/P76 and the remaining inherited rows; empirical stages and stronger claim admission.
 
 **Next concrete action:** use the known D86 provenance to recover and verify the original packet, then reconcile actual rows into the existing traceability projection. In parallel only where independent, bind the source readiness dossier and first useful release slice. If a lane is blocked, continue other authorized useful work and preserve the exact blocker.
 

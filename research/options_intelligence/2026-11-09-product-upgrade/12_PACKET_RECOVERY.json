@@ -101,7 +101,6 @@
       "sha256": "35e5f5565dcf6211995c5650ebde9ffd49d56c1c1a2b6232d19fb2443e84b8dd"
     }
   ],
-  "remote_write_effects": false,
   "historical_packet_instructions_are_current_authority": false,
   "structure_validation": {
     "csv_json_task_roundtrip_identical": true,
@@ -184,5 +183,12 @@
       "Experience and parity proof": 18
     }
   },
-  "canonical_archival_intent": "Preserve archive and all17 original members byte-for-byte under original_2026-10-21 in the same planning PR; original dates/statuses remain historical, not new dispatch or acceptance."
+  "canonical_archival_intent": "Preserve archive and all17 original members byte-for-byte under original_2026-10-21 in the same planning PR; original dates/statuses remain historical, not new dispatch or acceptance.",
+  "source_device_write_effects": false,
+  "canonical_archive_recovery_commit": "ae6da70390a7574f87eb44a730ad31105dbcf598",
+  "canonical_archive_readback": {
+    "exact_git_blobs_verified": 20,
+    "branch_readback_matches": true,
+    "scope": "18 archive files including ZIP, recovery receipt and milestone note; later integration replaces the note and expands this receipt"
+  }
 }

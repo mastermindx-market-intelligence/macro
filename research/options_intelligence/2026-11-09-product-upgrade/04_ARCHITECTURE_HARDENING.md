@@ -2,6 +2,8 @@
 
 ## Rounds 3–4 · Source adjudication and integration contracts · 10 November 2026 UTC
 
+**Round-5 precedence note:** this document preserves the dated Round 3–4 architecture. [10_ROUND5_SOURCE_READINESS.md](10_ROUND5_SOURCE_READINESS.md) updates source semantics, resolves original packet recovery, and specifies native Plan/Matrix composition, Save/Arm reconciliation and selected-firing limits. [11_RELEASE_AND_DESIGN_CONTRACT.md](11_RELEASE_AND_DESIGN_CONTRACT.md) preserves the original complete first-vertical scope. The 294-reference/missing-packet statements below describe the earlier review; the current crosswalk has 528 actual references. Historical #10866 D06/CI observations are superseded as current blocker by controller hold 6756074745. Original held effects remain unchanged.
+
 **Purpose:** turn the completed Paper candidate into a buildable extension of the existing Terminal and Macro systems. This is architecture and acceptance work. It is not a production release, source-rights grant, scientific promotion, or implementation dispatch.
 
 **Programme:** Terminal [#599](https://github.com/mastermindx-market-intelligence/mastermind-terminal/issues/599), workbench [#603](https://github.com/mastermindx-market-intelligence/mastermind-terminal/issues/603), existing WS-ADVANCED-DATA-OPTIONS and associated Options Alpha, Intraday and context-audit owners. The canonical planning carrier remains [Macro draft PR #10898](https://github.com/mastermindx-market-intelligence/macro/pull/10898).
