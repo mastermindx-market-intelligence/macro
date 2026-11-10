@@ -1,15 +1,15 @@
 {
-  "date": "2026-11-06",
-  "generated_utc": "2026-11-08 05:56",
+  "date": "2026-11-09",
+  "generated_utc": "2026-11-10 00:56",
   "business_cycle": {
     "available": true,
     "asof": "2026-11-30",
     "tiers": {
       "leading": {
         "asof": "2026-11-30",
-        "index": 94.26584601272855,
-        "mom6": -0.6168268995023567,
-        "trend": 0.3637126627796377,
+        "index": 94.27470402441868,
+        "mom6": -0.6079688878122198,
+        "trend": 0.3662435232625337,
         "diffusion": 33.333333333333336,
         "n_legs": 3,
         "direction": "falling",
@@ -385,7 +385,7 @@
           1.23,
           0.91,
           0.54,
-          -0.62
+          -0.61
         ],
         "spark_trend": [
           -0.52,
@@ -759,7 +759,7 @@
           0.82,
           0.84,
           0.76,
-          0.36
+          0.37
         ],
         "spark_index": [
           96.3,
@@ -1138,7 +1138,7 @@
       },
       "coincident": {
         "asof": "2026-09-30",
-        "index": 36.172033532522036,
+        "index": 36.17203353252201,
         "mom6": -0.11649963869779612,
         "trend": -0.06812151658686595,
         "diffusion": 100.0,
@@ -2269,9 +2269,9 @@
       },
       "lagging": {
         "asof": "2026-10-31",
-        "index": 93.15891748799788,
-        "mom6": 0.6844956990398856,
-        "trend": 0.39166547656995276,
+        "index": 93.15891748799791,
+        "mom6": 0.6844956990398998,
+        "trend": 0.39166547656995715,
         "diffusion": 100.0,
         "n_legs": 2,
         "direction": "rising",
@@ -3612,7 +3612,7 @@
       "reason": "version-matched + fresh",
       "calibration_version": "w2.7-loro-v1",
       "calibration_generated_at": "2026-07-02T12:32:51Z",
-      "calibration_age_days": 128
+      "calibration_age_days": 130
     },
     "lag_passport": {
       "basis": "per_leg_schedule",
@@ -4021,55 +4021,55 @@
     "vintages": {
       "nfci": {
         "asof": "2026-10-30",
-        "age_days": 7,
+        "age_days": 10,
         "stale": false,
         "label": "NFCI (financial conditions)",
         "cadence_days": 14
       },
       "anfci": {
         "asof": "2026-10-30",
-        "age_days": 7,
+        "age_days": 10,
         "stale": false,
         "label": "ANFCI (adjusted)",
         "cadence_days": 14
       },
       "stlfsi": {
         "asof": "2026-10-30",
-        "age_days": 7,
+        "age_days": 10,
         "stale": false,
         "label": "St. Louis Fed stress index",
         "cadence_days": 14
       },
       "hy_oas": {
         "asof": "2026-11-05",
-        "age_days": 1,
+        "age_days": 4,
         "stale": false,
         "label": "High-yield OAS",
         "cadence_days": 5
       },
       "ebp": {
         "asof": "2026-10-01",
-        "age_days": 36,
+        "age_days": 39,
         "stale": false,
         "label": "Excess bond premium",
         "cadence_days": 70
       },
       "ofr_fsi": {
         "asof": "2026-11-04",
-        "age_days": 2,
+        "age_days": 5,
         "stale": false,
         "label": "OFR financial stress index",
         "cadence_days": 6
       },
       "vix": {
-        "asof": "2026-11-06",
+        "asof": "2026-11-09",
         "age_days": 0,
         "stale": false,
         "label": "VIX",
         "cadence_days": 5
       },
       "vix_term": {
-        "asof": "2026-11-06",
+        "asof": "2026-11-09",
         "age_days": 0,
         "stale": false,
         "label": "VIX term structure",
@@ -4077,20 +4077,20 @@
       },
       "pct_above_200": {
         "asof": "2026-11-06",
-        "age_days": 0,
+        "age_days": 3,
         "stale": false,
         "label": "Breadth (%>200dma)",
         "cadence_days": 5
       },
       "us10y": {
         "asof": "2026-11-05",
-        "age_days": 1,
+        "age_days": 4,
         "stale": false,
         "label": "10-year Treasury yield",
         "cadence_days": 5
       },
       "recession_risk": {
-        "asof": "2026-11-06",
+        "asof": "2026-11-09",
         "age_days": 0,
         "stale": false,
         "label": "Recession-risk composite",
@@ -4100,7 +4100,7 @@
     "stale_inputs": [],
     "financial_conditions": {
       "nfci": -0.459,
-      "nfci_pctile": 0.3888888888888889,
+      "nfci_pctile": 0.3884920634920635,
       "nfci_change_13w": 0.08300000000000002,
       "state": "loose",
       "trend": "tightening",
@@ -4113,8 +4113,8 @@
     },
     "systemic_stress": {
       "ofr_fsi": -2.162,
-      "ofr_fsi_pctile": 0.21071428571428572,
-      "ofr_fsi_change_13w": 0.602,
+      "ofr_fsi_pctile": 0.21031746031746032,
+      "ofr_fsi_change_13w": 0.701,
       "state": "calm",
       "trend": "rising",
       "functional": {
@@ -4132,29 +4132,27 @@
       "leading_driver": null,
       "leading_driver_key": null,
       "a2p2_spread_bps": 20.0,
-      "a2p2_spread_pctile": 0.16866812227074235,
+      "a2p2_spread_pctile": 0.16902944383860413,
       "cp_bill_spread_bps": 11.0,
-      "cp_bill_spread_pctile": 0.7800212539851222,
+      "cp_bill_spread_pctile": 0.779723991507431,
       "cp_stress": "normal",
       "lead_lag": "coincident",
       "evidence": "OFR Financial Stress Index: a daily 33-variable global stress gauge with functional (credit / equity valuation / safe assets / funding / volatility) and regional (US / other-advanced / EM) decomposition. A coincident gauge \u2014 it names the stress CHANNEL when markets move as one; display + an optional risk-OFF gate, never cross-sectional alpha."
     },
     "recession": {
-      "score": 5.437095672077724,
+      "score": 7.194197706593323,
       "label": "low",
       "components": {
         "prob": 0.4,
         "ebp_prob": 11.939321668604688,
-        "curve": 0.0,
-        "ebp_level": 24.841269841269842,
+        "ebp_level": 24.86111111111111,
         "claims": 0.0
       },
       "curve_raw": 0.35,
-      "curve_tp_adjusted": 1.2589000000000001,
+      "curve_tp_adjusted": null,
       "sahm": 0.0,
       "ebp": -0.26533114775416333,
-      "ny_fed_prob": 0.4,
-      "curve_note": "raw curve and legacy TP10 heuristic have the same sign"
+      "ny_fed_prob": 0.4
     },
     "growth_nowcast": {
       "wei": 3.47,
@@ -4165,10 +4163,10 @@
       "initial_claims_4wk": 194750.0,
       "continued_claims": 1718000.0,
       "claims_yoy_pct": -13.348164627363735,
-      "claims_z": -2.2327339980885026,
+      "claims_z": -2.2243462918308383,
       "claims_trend": "falling",
       "indeed_postings": 103.7931426722,
-      "indeed_chg_3m_pct": 1.9841553009566804,
+      "indeed_chg_3m_pct": 2.017524015603267,
       "indeed_trend": "rising",
       "withheld_tax_yoy_pct": 5.4850983276100385,
       "income_trend": "rising",
@@ -4198,26 +4196,26 @@
       "read": "transitory (flexible-led)"
     },
     "risk_appetite": {
-      "vrp": 5.967987499219806,
-      "vrp_pctile": 0.5515873015873016,
-      "vrp_state": "normal",
-      "realized_vol": 19.67201189042863,
-      "vix_term": 1.0422763817907135,
-      "vix_term_state": "backwardation (stress)",
+      "vrp": -1.5662644982729326,
+      "vrp_pctile": 0.061507936507936505,
+      "vrp_state": "stress (realized > implied)",
+      "realized_vol": 21.486264574566878,
+      "vix_term": 0.9553956696325862,
+      "vix_term_state": "contango (calm)",
       "vix_term_lead_lag": "coincident",
       "skew": 153.55,
-      "skew_pctile": 0.7976190476190477,
-      "stock_bond_corr": 0.0028826723648382197,
+      "skew_pctile": 0.7986111111111112,
+      "stock_bond_corr": 0.0023836225855914327,
       "stock_bond_regime": "mixed",
-      "roro": -1.3971650783892284,
+      "roro": -0.8465243873086872,
       "roro_state": "risk-off",
-      "vol_target_scalar": 0.6100036979867103,
+      "vol_target_scalar": 0.5584963341745455,
       "news_sentiment": 0.03577227517962456,
-      "news_sentiment_z": 0.7172513524626022,
+      "news_sentiment_z": 0.7117208872300436,
       "news_sentiment_state": "optimistic"
     },
     "drawdown_risk": {
-      "score": 40.77535707233594,
+      "score": 43.03672502303541,
       "band": "low",
       "dd10_prob_pct": 10,
       "base_rate_pct": 19,
@@ -4286,15 +4284,15 @@
       "strong": false,
       "state": "neutral",
       "vix_low": false,
-      "vix_pctile": 0.9384920634920635,
+      "vix_pctile": 0.7757936507936508,
       "contango": false,
-      "vix_term": 1.0422763817907135,
+      "vix_term": 0.9553956696325862,
       "breadth_div": false,
-      "spy_high_prox": 0.9437805037693667,
-      "breadth_above200_pctile": 0.35912698412698413,
+      "spy_high_prox": 0.9661142826835851,
+      "breadth_above200_pctile": 0.3601190476190476,
       "credit_widen": true,
-      "hy_oas_chg_21d_bp": 33.0,
-      "hy_oas_chg_21d_bp_exact": 33.0,
+      "hy_oas_chg_21d_bp": 37.0,
+      "hy_oas_chg_21d_bp_exact": 37.0,
       "lead_lag": "leading",
       "breadth_div_caution": false,
       "caution": false,
@@ -4302,7 +4300,7 @@
       "caution_reason_zh": null
     },
     "style_tilt": {
-      "yield_chg_1m_bp": -38.0,
+      "yield_chg_1m_bp": -40.0,
       "tilt": "growth",
       "driver": "10y yield direction",
       "measured": "rising 10y -> value (+0.84%/63d, t=+3.0, all 4 sub-periods); Q1->value, Q4->growth"
@@ -4353,7 +4351,7 @@
   "fear_euphoria": {
     "fe_score": 4,
     "band": "Panic",
-    "roro": -1.3971650783892284,
+    "roro": -0.8465243873086872,
     "roro_state": "risk-off",
     "legs": [
       {
@@ -5328,7 +5326,7 @@
     ],
     "n_legs_qualifying": 11,
     "as_of": "2026-11-06",
-    "generated_utc": "2026-11-08T04:24:15Z",
+    "generated_utc": "2026-11-09T23:31:26Z",
     "disclaimer_en": "Sentiment context only \u2014 display-only composite of public market indicators. Never scored, never feeds the regime engine, no forward claim. Greed/fear readings are not contrarian signals without regime context.",
     "disclaimer_zh": "\u4ec5\u4e3a\u60c5\u7eea\u53c2\u8003 \u2014 \u516c\u5f00\u5e02\u573a\u6307\u6807\u7684\u4ec5\u5c55\u793a\u5408\u6210\u3002\u4e0d\u8ba1\u5206\uff0c\u4e0d\u8fdb\u5165\u5468\u671f\u5f15\u64ce\uff0c\u65e0\u524d\u77bb\u6027\u5224\u65ad\u3002\u8d2a\u5a6a/\u6050\u60e7\u8bfb\u6570\u82e5\u65e0\u5468\u671f\u80cc\u666f\uff0c\u4e0d\u6784\u6210\u53cd\u5411\u4fe1\u53f7\u3002"
   },
@@ -5888,7 +5886,7 @@
       }
     ],
     "as_of": "2026-11-06",
-    "generated_utc": "2026-11-08T04:24:16Z",
+    "generated_utc": "2026-11-09T23:31:28Z",
     "n_young": 0,
     "disclaimer_en": "Display-only context \u2014 volatility surface indicators from public CBOE / Yahoo data. Never scored, no forward claim. These chips describe the current vol environment; they do not predict direction.",
     "disclaimer_zh": "\u4ec5\u4f9b\u5c55\u793a\u7684\u80cc\u666f \u2014 \u6765\u81ea\u516c\u5f00 CBOE / Yahoo \u6570\u636e\u7684\u6ce2\u52a8\u7387\u66f2\u9762\u6307\u6807\u3002\u4e0d\u8ba1\u5206\uff0c\u65e0\u524d\u77bb\u5224\u65ad\u3002\u8fd9\u4e9b\u82af\u7247\u63cf\u8ff0\u5f53\u524d\u6ce2\u52a8\u7387\u73af\u5883\uff0c\u4e0d\u9884\u6d4b\u65b9\u5411\u3002"
@@ -6049,7 +6047,7 @@
   },
   "evw_snap": {
     "schema": "event_window.snapshot.v1",
-    "asof": "2026-11-07",
+    "asof": "2026-11-09",
     "available": true,
     "is_context_only": true,
     "phase": "nfp_day",
@@ -6071,7 +6069,7 @@
     "ex_ante": {
       "schema": "event_window.ex_ante.v1",
       "release_type": "NFP",
-      "asof": "2026-11-07",
+      "asof": "2026-11-09",
       "is_context_only": true,
       "display_only": true,
       "available": true,
@@ -6165,8 +6163,8 @@
     },
     "doctrine": "Event-window calendar seasonality \u2014 thin, widely-known calendar tilts measured on price history. Context only, never a buy/sell. Pre-FOMC drift expected DEAD post-2016 (house ruling)."
   },
-  "growth_score": 0.067,
-  "inflation_score": -0.2,
+  "growth_score": 0.2,
+  "inflation_score": -0.36,
   "components_confirming": [
     "<span class=\"l-en\">growth \u00b7 small caps</span><span class=\"l-zh\">\u589e\u957f \u00b7 \u5c0f\u76d8\u80a1</span>",
     "<span class=\"l-en\">growth \u00b7 market breadth</span><span class=\"l-zh\">\u589e\u957f \u00b7 \u5e02\u573a\u5e7f\u5ea6</span>",
@@ -6176,11 +6174,11 @@
     "<span class=\"l-en\">growth \u00b7 gdpnow_trend</span><span class=\"l-zh\">\u589e\u957f \u00b7 gdpnow_trend</span>",
     "<span class=\"l-en\">inflation \u00b7 10-yr inflation expectations</span><span class=\"l-zh\">\u901a\u80c0 \u00b7 10\u5e74\u671f\u901a\u80c0\u9884\u671f</span>",
     "<span class=\"l-en\">inflation \u00b7 long-run inflation expectations</span><span class=\"l-zh\">\u901a\u80c0 \u00b7 \u957f\u671f\u901a\u80c0\u9884\u671f</span>",
+    "<span class=\"l-en\">inflation \u00b7 oil</span><span class=\"l-zh\">\u901a\u80c0 \u00b7 \u539f\u6cb9</span>",
     "<span class=\"l-en\">inflation \u00b7 TIPS spread</span><span class=\"l-zh\">\u901a\u80c0 \u00b7 TIPS \u5229\u5dee</span>"
   ],
   "components_contradicting": [
     "<span class=\"l-en\">growth \u00b7 copper vs gold</span><span class=\"l-zh\">\u589e\u957f \u00b7 \u94dc\u5bf9\u9ec4\u91d1</span>",
-    "<span class=\"l-en\">growth \u00b7 consumer confidence trade</span><span class=\"l-zh\">\u589e\u957f \u00b7 \u6d88\u8d39\u4fe1\u5fc3\u4ea4\u6613</span>",
     "<span class=\"l-en\">growth \u00b7 2-yr yield</span><span class=\"l-zh\">\u589e\u957f \u00b7 2\u5e74\u671f\u6536\u76ca\u7387</span>",
     "<span class=\"l-en\">growth \u00b7 cyclical sectors</span><span class=\"l-zh\">\u589e\u957f \u00b7 \u5468\u671f\u6027\u677f\u5757</span>",
     "<span class=\"l-en\">inflation \u00b7 inflation-winners basket</span><span class=\"l-zh\">\u901a\u80c0 \u00b7 \u901a\u80c0\u53d7\u76ca\u7bee\u5b50</span>",
@@ -6190,62 +6188,62 @@
     {
       "ticker": "GC=F",
       "name": "Gold",
-      "price": 4074.9,
+      "price": 4152.1,
       "above50": false,
       "above200": false,
-      "pct_vs_50dma": -3.2,
-      "pct_vs_200dma": -8.3,
-      "rsi14": 48.0,
+      "pct_vs_50dma": -1.0,
+      "pct_vs_200dma": -6.4,
+      "rsi14": 54.0,
       "macd_pos": true,
-      "off_52w_high_pct": -23.4,
-      "season_this": "Nov: +1.4% avg, up 59% of years (n=27)",
-      "season_this_zh": "11\u6708\uff1a\u5e73\u5747 +1.4%\uff0c59% \u7684\u5e74\u4efd\u4e0a\u6da8\uff08n=27\uff09",
-      "mom_60d_pct": -13.2
+      "off_52w_high_pct": -21.9,
+      "season_this": "Nov: +1.5% avg, up 59% of years (n=27)",
+      "season_this_zh": "11\u6708\uff1a\u5e73\u5747 +1.5%\uff0c59% \u7684\u5e74\u4efd\u4e0a\u6da8\uff08n=27\uff09",
+      "mom_60d_pct": -11.0
     },
     {
       "ticker": "CL=F",
       "name": "Crude Oil",
-      "price": 90.83,
+      "price": 86.22,
       "above50": false,
-      "above200": true,
-      "pct_vs_50dma": -5.7,
-      "pct_vs_200dma": 2.0,
-      "rsi14": 42.0,
+      "above200": false,
+      "pct_vs_50dma": -10.3,
+      "pct_vs_200dma": -3.4,
+      "rsi14": 36.0,
       "macd_pos": false,
-      "off_52w_high_pct": -19.6,
-      "season_this": "Nov: -3.0% avg, up 41% of years (n=27)",
-      "season_this_zh": "11\u6708\uff1a\u5e73\u5747 -3.0%\uff0c41% \u7684\u5e74\u4efd\u4e0a\u6da8\uff08n=27\uff09",
-      "mom_60d_pct": 10.3
+      "off_52w_high_pct": -23.7,
+      "season_this": "Nov: -3.2% avg, up 41% of years (n=27)",
+      "season_this_zh": "11\u6708\uff1a\u5e73\u5747 -3.2%\uff0c41% \u7684\u5e74\u4efd\u4e0a\u6da8\uff08n=27\uff09",
+      "mom_60d_pct": 3.2
     },
     {
       "ticker": "HG=F",
       "name": "Copper",
-      "price": 6.22,
+      "price": 6.39,
       "above50": false,
-      "above200": false,
-      "pct_vs_50dma": -5.2,
-      "pct_vs_200dma": -0.8,
-      "rsi14": 35.0,
+      "above200": true,
+      "pct_vs_50dma": -2.3,
+      "pct_vs_200dma": 1.8,
+      "rsi14": 46.0,
       "macd_pos": false,
-      "off_52w_high_pct": -8.6,
-      "season_this": "Nov: +1.4% avg, up 52% of years (n=27)",
-      "season_this_zh": "11\u6708\uff1a\u5e73\u5747 +1.4%\uff0c52% \u7684\u5e74\u4efd\u4e0a\u6da8\uff08n=27\uff09",
-      "mom_60d_pct": -7.3
+      "off_52w_high_pct": -6.1,
+      "season_this": "Nov: +1.5% avg, up 52% of years (n=27)",
+      "season_this_zh": "11\u6708\uff1a\u5e73\u5747 +1.5%\uff0c52% \u7684\u5e74\u4efd\u4e0a\u6da8\uff08n=27\uff09",
+      "mom_60d_pct": -3.0
     },
     {
       "ticker": "DX-Y.NYB",
       "name": "US Dollar",
-      "price": 102.3,
+      "price": 101.68,
       "above50": true,
       "above200": true,
-      "pct_vs_50dma": 1.1,
-      "pct_vs_200dma": 2.4,
-      "rsi14": 59.0,
+      "pct_vs_50dma": 0.4,
+      "pct_vs_200dma": 1.7,
+      "rsi14": 49.0,
       "macd_pos": false,
-      "off_52w_high_pct": -0.3,
-      "season_this": "Nov: +0.2% avg, up 54% of years (n=56)",
-      "season_this_zh": "11\u6708\uff1a\u5e73\u5747 +0.2%\uff0c54% \u7684\u5e74\u4efd\u4e0a\u6da8\uff08n=56\uff09",
-      "mom_60d_pct": 3.3
+      "off_52w_high_pct": -0.9,
+      "season_this": "Nov: +0.2% avg, up 52% of years (n=56)",
+      "season_this_zh": "11\u6708\uff1a\u5e73\u5747 +0.2%\uff0c52% \u7684\u5e74\u4efd\u4e0a\u6da8\uff08n=56\uff09",
+      "mom_60d_pct": 2.5
     }
   ],
   "vix": {
@@ -6352,7 +6350,7 @@
     }
   },
   "fx": {
-    "asof": "2026-11-07",
+    "asof": "2026-11-09",
     "dollar_desk": {
       "lean": "mixed backdrop",
       "lean_zh": "\u5206\u5316\u80cc\u666f",
@@ -6360,7 +6358,7 @@
       "lean_n": 4,
       "real_rate_regime": "Restrictive real yields",
       "real_rate_z": 0.78,
-      "fed_path_bps": 39.0,
+      "fed_path_bps": 42.0,
       "fed_path_lean": "dovish_repricing",
       "usd_pos_pctile": 76.0,
       "usd_pos_state": "neutral",
@@ -6378,43 +6376,43 @@
         "current": "Risk-off haven bid",
         "prev": "Global reflation",
         "changed_on": "2026-10-05",
-        "days_in_state": 34
+        "days_in_state": 36
       },
       "lean": {
         "current": "mixed backdrop",
         "prev": "dollar-supportive backdrop",
         "changed_on": "2026-11-04",
-        "days_in_state": 4
+        "days_in_state": 6
       },
       "risk": {
         "current": "risk-off",
         "prev": "risk-on",
         "changed_on": "2026-09-30",
-        "days_in_state": 39
+        "days_in_state": 41
       },
       "fed_path_lean": {
         "current": "dovish_repricing",
         "prev": "steady",
         "changed_on": "2026-10-17",
-        "days_in_state": 22
+        "days_in_state": 24
       },
       "liquidity_dir": {
         "current": "soft",
         "prev": "supportive",
         "changed_on": "2026-11-04",
-        "days_in_state": 4
+        "days_in_state": 6
       },
       "trend": {
         "current": "up",
         "prev": "mixed",
         "changed_on": "2026-10-05",
-        "days_in_state": 34
+        "days_in_state": 36
       },
       "triple_red": {
         "current": false,
         "prev": true,
         "changed_on": "2026-09-18",
-        "days_in_state": 51
+        "days_in_state": 53
       },
       "cnh_basis_state": {
         "current": "neutral",
@@ -6423,22 +6421,24 @@
         "days_in_state": null
       },
       "regime_radar_dominant": {
-        "current": null,
+        "current": "em_crisis_capital_flight",
         "prev": null,
-        "changed_on": null,
-        "days_in_state": null
+        "changed_on": "2026-11-08",
+        "days_in_state": 2
       }
     },
     "regime_radar": {
-      "dominant": null,
-      "active": [],
+      "dominant": "em_crisis_capital_flight",
+      "active": [
+        "em_crisis_capital_flight"
+      ],
       "intensity": {
-        "carry_unwind": 8.6,
-        "dollar_wrecking_ball": 8.0,
-        "em_crisis_capital_flight": 29.9,
-        "haven_flight_risk_off": 26.2,
-        "reflation_risk_on": 4.5,
-        "intervention_risk": 5.5
+        "carry_unwind": 0.0,
+        "dollar_wrecking_ball": 7.9,
+        "em_crisis_capital_flight": 58.1,
+        "haven_flight_risk_off": 21.7,
+        "reflation_risk_on": 55.5,
+        "intervention_risk": 0.8
       }
     },
     "strength": {
@@ -6447,15 +6447,15 @@
         "ccy": "CHF",
         "ccy_zh": "\u745e\u90ce",
         "em": false,
-        "strength": 0.341,
-        "vs_usd_pct": 1.9
+        "strength": 0.273,
+        "vs_usd_pct": 1.1
       },
       "bottom": {
         "ccy": "BRL",
         "ccy_zh": "\u5df4\u897f\u96f7\u4e9a\u5c14",
         "em": true,
         "strength": -1.0,
-        "vs_usd_pct": -9.8
+        "vs_usd_pct": -9.9
       }
     }
   }
