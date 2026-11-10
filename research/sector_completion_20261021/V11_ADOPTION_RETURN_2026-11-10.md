@@ -644,3 +644,51 @@ and of the worker's files, not an assumption.
 ### 14.5 Rung reached
 
 Unchanged. Nothing of v1.1 is merged or served. Integrated-proof count: 0 of 44 rows.
+
+## 15. Status at 12:55Z (lane 7 return and rulings)
+
+### 15.1 Lane 7 return
+
+Terminal #1419 at `6f4f7844f4adc795af67e0c922577b9d5067d019`: open, not draft, not armed, behind
+its base. Lane 7 reports its v1.1 delta as PARTIAL. Its own gates: 171 unit tests, `tsc` 0,
+`eslint` 0, e2e desktop and mobile 26 passed. Not re-run by the COO and not independently
+reviewed at this head.
+
+- Flows: the Terminal reader now takes lane 1's carried `etf_flows` block as carried (labels
+  1D/3D/1W/2W/1M, unit `usd_mn`, `full_window: false` marks a partial window, an absent window
+  is no reading and never zero, a malformed block is unavailable).
+- Bottoming Watch: the carried block matches the consumer field for field.
+- Evidence label: the flows fixture is the committed producer's run over `data/flows`
+  (2026-11-05, 11 funds). It is not a nightly run and not served bytes.
+
+### 15.2 What the carried blocks do not yet give the Terminal
+
+| Block | Carried today | What the consumer needs | Ruling |
+|---|---|---|---|
+| `confluence` | Per-universe id lists and coverage | Full per-universe payloads: scored group rows with members, entry and regime | Stays typed-unavailable. Queued as a lane 1 increment. |
+| `theme_table` | A 49-key state dict with no names, links or series | A row array with `name`, `name_zh`, `href` and window measures for all 49 ids | Stays typed-unavailable. Same increment. |
+| `etf_flows` funds | Tickers only | Optional display names | No change. Ticker is the identity. |
+
+Neither block is sourced client-side and the Terminal reads no Macro file directly.
+
+### 15.3 Decisions
+
+1. Fourth universe: curated Baskets. The frozen packet fixes the order S&P, Nasdaq, Russell,
+   Baskets (packet section 5.1; rows R3A-63 and R3A-64). The carried `china` lists are not
+   mounted and no China tab is added.
+2. Lane 1 increment queue, in order: the round 3 follow-up (running); point-in-time fields
+   (section 13.2); full confluence payloads and theme rows (this section); the one-line
+   `hazard_qualification` carry after #10924 merges. Each stays inside the existing owner
+   route and the 4 MiB encoded bound, and each gets its own review.
+3. Lane 7 next: emergence rendering to the bound R6-09 board, driven only by owner-carried
+   fields, then the e2e tablet run. Strings that must live in lane 3's lex file go to lane 3
+   as written hunks.
+4. #1419 gets an independent review at the head lane 7 returns next. It is not armed before
+   that.
+5. Lane 3 was told the mount rules: `etf_flows` and `bottoming_watch` from the carried blocks
+   behind an availability check; `confluence` and `theme_table` unavailable; and `complete:
+   true` is not to be shown as "all members" (R3-S1).
+
+### 15.4 Rung reached
+
+Unchanged. Lane 7's delta is delivered to its PR. Nothing of v1.1 is merged or served.
