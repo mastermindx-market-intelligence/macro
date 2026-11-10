@@ -93,3 +93,83 @@ mid-read latest-pointer mixing.
 Remaining capabilities are those in §3's right-hand column plus lane 9. Acceptance stays the
 original 134 / B / P / J items plus SI01–SI20 and SP01–SP24 evidence; "tests pass" on a fixture is
 not acceptance. Lane returns land in each lane's PR and are joined here by the COO.
+
+## 7. Status at 09:20Z (first adjudication pass)
+
+Sections 1–6 are the 07:15Z record and are left as written. This section supersedes them where it
+differs. Nothing below is merged, served, applied or accepted unless it says so.
+
+### 7.1 Lane returns
+
+| Lane | Head now | Rung reached | What the return established |
+|---|---|---|---|
+| 1 | macro #10929 @`8c3fed6ffa34`, draft, held | DELIVERED, reviewed, third pass running | Entitled `GET /api/sector-generation/population` with signed cursors; finite JSON in both ordinary writers; seven typed blocks carried from existing artifacts. Review result in §7.3. |
+| 3 | Terminal #1414 @`3004b74f48bc` | RUNNING | No v1.1 return yet. Entitled capture still unreported. Auto-merge was enabled on this PR by the Terminal PR-duty recovery writer at 08:09Z. |
+| 4 | Terminal #1413 @`3445b49a3cd1` | RUNNING | No v1.1 return yet. |
+| 5 | macro #10931 @`b25fd58e351e` | RUNNING | No v1.1 return, nothing pushed. Three provider failures; resumed on the same thread each time. |
+| 6 | Terminal #1410 @`dc02f1c28879` | DELIVERED (a, b, c); v3 build running | §7.2. |
+| 7 | Terminal #1419 @`f6f2bfac4ef8` | RUNNING | No v1.1 return yet. Asked to check lane 1's carried blocks against its components. |
+| 8 | macro #10924 @`3e6b51ef09fc`, armed | DELIVERED, armed, not merged | Four forecast heads judged individually on real US tapes: remaining-return distribution failed and is withheld; adverse tail, target-before-invalidation and transition time qualify in research only and stay withheld on live records (no live record carries the protocol epoch). Comparators: sector allocation did not beat passive SPY; member-selection comparators unavailable for lack of point-in-time constituents. Independent statistical review returned and adjudicated. Out-of-scope finding filed as macro #10943. |
+| 9 | not started | — | Waits on lane 3's return. |
+
+### 7.2 Persistence (lane 6) — replaces §5
+
+- **Installed preimage, observed.** One read-only catalog SELECT through Terminal's documented
+  census path: `public.valid_investigation_manifest_v2` has `md5(prosrc) =
+  16f7838c8e797663d64783cff92fb6ef`, the **0040** body. It is neither the 0047 body (`a554c15c…`)
+  nor the sector admission body (`75f2b7fe…`). The other guarded functions are absent. 0042 and 0047
+  are unapplied; the sector guard would refuse today. Terminal has no migration ledger.
+- **0049 was double-claimed.** Terminal #1290 (opened 2026-11-04) holds 0049. Lane 6's file on
+  #1410 was a later, second claim made on a wrong census. The COO recorded a `hold` and disabled
+  auto-merge on #1410 (issuecomment-6762436659). Lane 6 renumbered through the README allocator to
+  **`0052_sector_intelligence_investigation_admission.sql`** (commit `dc02f1c28879`; body, md5 pins,
+  guards and rollback unchanged). The COO verified the PR file list, removed the hold and restored
+  auto-merge (issuecomment-6763279738). #1410 is not merged.
+- **One v2 → v3 sequence, written, not built.** (1) Python/TS `review` parity — done. (2) Prefix —
+  done. (3) v3 readers in TS and Python, no writes. (4) Sector carrier, operator order
+  0042 → 0047 → 0052. (5) One additive v3 migration composed over the sector body, prefix taken from
+  the allocator when authored. (6) Retention and current-rights qualification before v3 writes open.
+  (7) Rollback in reverse; created-record readers stay. Steps 3 and 5 are commissioned on a new PR
+  stacked on #1410, source-only. No APPLY.
+- **Open dependency.** Terminal #1312 (prefix 0051) pins bodies of
+  `apply_investigation_revision_v2`, which the v3 migration also changes. Whichever merges later
+  composes over the earlier one's exact body.
+
+### 7.3 Independent review of lane 1's route (`eabee55527a3..5129620204c4`)
+
+Read-only reviewer, separate context; report at `/tmp/si_plan/reviews/lane1_population_review.md`,
+adjudicated by the COO. Passed: denied-before-read and gate order, no arbitrary generation / path /
+domain reads, cursor signing, one capture per read (SP01), the 4 MiB bound, one reader, `no-store`,
+finite JSON. Upheld against the lane:
+
+- **Blocker — the population is reported complete when it is not.** `complete` can never be false
+  because the producer's member count is the count of listed members. Five current configured
+  members are not served and not counted; two removed members are reported as "missing". SP02 and
+  the "full membership" requirement are therefore **not** evidenced yet.
+- **Should-fix.** With no cursor secret configured, a restart turns every cursor and context
+  reference into `400` instead of a reset, and the "retained original" reference is not durable.
+  Tests for those paths were missing.
+- **Factual correction.** A current GICS industry field exists for 617 of 698 symbols
+  (`site/stagedata/screener.json`); the lane had reported 424 from a different source. Neither is
+  point-in-time, so SI02's point-in-time identity remains unsatisfied.
+
+Lane 1 is fixing all of these on the same PR; a follow-up review of the new commits is owed.
+
+### 7.4 Carriers and platform
+
+- The local inference gateway refused `glm-5.3` routes at 07:42–07:59Z (`FABRIC_ALL_ROUTES_COOLING`)
+  and dropped a connection at 08:53Z. Lanes 1, 5 and 6 failed mid-delta and were recovered on their
+  own threads; no duplicate worker and no new team was started. Lanes 1, 6 and 7 now run on
+  `claude-sonnet-5-5`; lanes 3, 4 and 5 on `glm-5.3`.
+- `gemini-4-argon` was withdrawn by the Chairman on 2026-11-10 and is removed from the lane charter.
+
+### 7.5 Open, with owners
+
+- **#10929 cannot be served while held.** It stays draft on the CI-registration check that needs
+  edits to the fenced `.github/ci/legacy-jobs.yml` and `tests/test_ci_pack.py`. Until it merges,
+  the first entitled proof (§4) and lane 9 can only run on fixtures. Decision owed by the Chairman:
+  lift the fence for lane 1 on those two files, or name the owner who registers the checks.
+- **`SECTOR_GENERATION_CURSOR_SECRET`** must be provisioned for durable cursors; no owner yet.
+- **Point-in-time constituent membership** does not exist in any producer. It blocks SI02's
+  identity requirement (lane 1) and comparators C4 / C5 (lane 8).
+- **Prophet eligibility** is not produced on any member row.
