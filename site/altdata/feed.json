@@ -1,5 +1,5 @@
 {
-  "generated_utc": "2026-11-09T20:59:19.276200+00:00",
+  "generated_utc": "2026-11-09T22:44:09.370055+00:00",
   "as_of": "2026-11-09",
   "schema": "altdata.feed.v1",
   "source": "Quiver Quantitative (Trader plan)",
@@ -28184,11 +28184,11 @@
           "sellers": 0
         },
         {
-          "ticker": "BRVE",
-          "buy_usd": 89640000.0,
+          "ticker": "ETRA",
+          "buy_usd": 87210213.0,
           "sell_usd": 0.0,
-          "net_usd": 89640000.0,
-          "buyers": 5,
+          "net_usd": 87210213.0,
+          "buyers": 28,
           "sellers": 0
         }
       ],
