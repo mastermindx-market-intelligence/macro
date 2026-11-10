@@ -1,6 +1,6 @@
 {
   "schema": "neuralweb.health.v1",
-  "produced_at": "2026-11-09T10:32:56.032110+00:00",
+  "produced_at": "2026-11-10T02:26:15.050636+00:00",
   "as_of": "2026-11-06",
   "overall_status": "degraded",
   "lobes": [
@@ -3274,7 +3274,7 @@
   ],
   "cortex": {
     "cortex_source": "current_run",
-    "memo_as_of": "2026-11-09T10:28:27+00:00",
+    "memo_as_of": "2026-11-10T02:21:44+00:00",
     "run_status": {
       "status": "degraded",
       "degraded": true,
@@ -3287,7 +3287,7 @@
           "attempted": true,
           "ok": false,
           "error_type": "auth",
-          "error_message": "Error code: 401 - {'type': 'error', 'error': {'type': 'authentication_error', 'message': 'OAuth access token has been revoked.'}, 'request_id': 'req_011CgsCMfUQSbHywEAonkfSN'}"
+          "error_message": "Error code: 401 - {'type': 'error', 'error': {'type': 'authentication_error', 'message': 'OAuth access token has been revoked.'}, 'request_id': 'req_011CgtT449QYXLAXSPaDxHRh'}"
         },
         {
           "provider": "oauth",
@@ -3295,7 +3295,7 @@
           "attempted": true,
           "ok": false,
           "error_type": "rate_limit",
-          "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CgsCMoeXnhk811GE6SSZ2'}"
+          "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CgtT4BqG9myo35zgbFqg4'}"
         },
         {
           "provider": "oauth",
@@ -3303,7 +3303,7 @@
           "attempted": true,
           "ok": false,
           "error_type": "rate_limit",
-          "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CgsCP4BB1UL6ifDFsZ4Er'}"
+          "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CgtT5SNuSGA56RDyfMAuB'}"
         },
         {
           "provider": "oauth",
@@ -3311,7 +3311,7 @@
           "attempted": true,
           "ok": false,
           "error_type": "rate_limit",
-          "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CgsCTdMaS7gwzBhYYd17G'}"
+          "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CgtTA1SMNRr9V4ZTka86n'}"
         },
         {
           "provider": "oauth",
@@ -3319,7 +3319,7 @@
           "attempted": true,
           "ok": false,
           "error_type": "rate_limit",
-          "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CgsCh31Uz7NjJrNdRoXoZ'}"
+          "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CgtTPRULkxGdv3FucAsnY'}"
         },
         {
           "provider": "oauth",
@@ -3327,13 +3327,13 @@
           "attempted": true,
           "ok": false,
           "error_type": "auth",
-          "error_message": "Error code: 401 - {'type': 'error', 'error': {'type': 'authentication_error', 'message': 'OAuth access token has been revoked.'}, 'request_id': 'req_011CgsCh3u3tqqXpi1VjuuEU'}"
+          "error_message": "Error code: 401 - {'type': 'error', 'error': {'type': 'authentication_error', 'message': 'OAuth access token has been revoked.'}, 'request_id': 'req_011CgtTPSS8rPPMjsJ5nnpWt'}"
         }
       ],
       "tool_call_batches": 0,
       "individual_tool_calls": 0,
       "expected_min_tool_calls": 1,
-      "context_stale": false,
+      "context_stale": true,
       "context_as_of": "2026-11-09T10:15:20Z"
     },
     "probation": {
