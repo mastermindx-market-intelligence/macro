@@ -549,7 +549,7 @@
             <div class="ms-alerts-wrap">
               <label class="ms-alerts" for="ms-alerts-toggle" tabindex="0" aria-haspopup="dialog" aria-controls="ms-alerts-pop">
                 <span class="dot"></span><span class="l-en">Fired alerts</span><span class="l-zh">已触发警报</span>
-                <span class="ct">9</span>
+                <span class="ct">10</span>
               </label>
               <div class="ms-alerts-pop" id="ms-alerts-pop" role="dialog" aria-label="Fired alerts · 已触发警报">
                 <div class="ms-pop-head">
@@ -563,6 +563,15 @@
                   
                   
                   
+                  
+                  
+                  
+                  <a class="ms-sig sev-warn" href="macro_context.html#board">
+                    <div class="ms-sig-head"><span class="ms-sig-ico">🧲</span><span class="ms-sig-title"><span class="l-en">Options “gravity” flipped — bigger swings more likely</span><span class="l-zh">期权“引力”反转 — 波动可能加大</span></span><span class="ms-sig-jump"><span class="l-en">View →</span><span class="l-zh">查看 →</span></span></div>
+                    <div class="ms-sig-detail"><span class="l-en">GEX: net GEX changed sign (net +11bn, spot vs flip -1.0%)</span><span class="l-zh">GEX：净 GEX 转变方向（净 +11bn，现价相对翻转点 -1.0%）</span></div>
+                    <div class="ms-sig-what"><span class="l-en">Dealer gamma (GEX) measures how options hedging pushes the market around. Positive gamma damps moves (calmer); negative amplifies them (sharper swings, both ways). This flag means that backdrop just changed — expect the market to move more freely until it flips back.</span><span class="l-zh">做市商 gamma（GEX）衡量期权对冲如何推动市场。正 gamma 抑制波动（更平静）；负 gamma 放大波动（双向更剧烈）。此信号表示该背景刚刚改变 —在它再次反转前，市场可能波动得更自由。</span></div>
+                    <div class="ms-sig-edge"><b><span class="l-en">Conviction:</span><span class="l-zh">可信度：</span></b> <span class="l-en">Medium — changes the volatility backdrop, not the direction.</span><span class="l-zh">中 — 改变的是波动背景，而非方向。</span></div>
+                  </a>
                   
                   
                   
@@ -5300,13 +5309,13 @@
       
       <div class="mx5-ai-ticker-pills">
         
-        <span class="mx5-ai-ticker-pill">SPY</span>
-        
-        <span class="mx5-ai-ticker-pill">XLF</span>
-        
         <span class="mx5-ai-ticker-pill">QQQ</span>
         
         <span class="mx5-ai-ticker-pill">NVDA</span>
+        
+        <span class="mx5-ai-ticker-pill">XLF</span>
+        
+        <span class="mx5-ai-ticker-pill">XHB</span>
         
       </div>
       
@@ -5314,14 +5323,14 @@
       <div class="mx5-ai-body">
         
         <span class="l-en">
-          <span style="color:var(--ink-3,rgba(255,255,255,.36));font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;">8 High-Impact Items</span><br>
+          <span style="color:var(--ink-3,rgba(255,255,255,.36));font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;">6 High-Impact Items</span><br>
           Dominant theme: <span style="color:var(--mx5-accent-ink);font-weight:600">earnings</span><br>
-          8 high-impact signals across channels
+          6 high-impact signals across channels
         </span>
         <span class="l-zh">
-          <span style="color:var(--ink-3,rgba(255,255,255,.36));font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;">8 条高影响信息</span><br>
+          <span style="color:var(--ink-3,rgba(255,255,255,.36));font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;">6 条高影响信息</span><br>
           主线：<span style="color:var(--mx5-accent-ink);font-weight:600">业绩</span><br>
-          8 条高影响信号
+          6 条高影响信号
         </span>
         
       </div>
@@ -5367,8 +5376,8 @@
         
         
         <div class="mx5-card-badge" style="color:var(--mx5-warn-ink);background:var(--mx5-warn-dim);border:1px solid rgba(245,158,11,.20);">
-          <span class="l-en">1 need action · of 9</span>
-          <span class="l-zh">1 条需处理 · 共 9 条</span>
+          <span class="l-en">2 need action · of 10</span>
+          <span class="l-zh">2 条需处理 · 共 10 条</span>
         </div>
         
       </div>
@@ -5376,6 +5385,23 @@
       
       
       <div class="mx5-alerts-list">
+        
+        
+        
+        <div class="mx5-alert-item warn">
+          <div class="mx5-alert-dot warn"></div>
+          <div class="mx5-alert-content">
+            <div class="mx5-alert-title warn">
+              <span style="font-size:12px;margin-right:3px">🧲</span>
+              <span class="l-en">Options “gravity” flipped — bigger swings more likely</span>
+              <span class="l-zh">期权“引力”反转 — 波动可能加大</span>
+            </div>
+            <div class="mx5-alert-detail">
+              <span class="l-en">Options hedging just flipped from damping moves to amplifying them — expect bigger swings both ways.</span>
+              <span class="l-zh">期权对冲由抑制波动转为放大波动——双向波动可能加大。</span>
+            </div>
+          </div>
+        </div>
         
         
         
@@ -5404,8 +5430,8 @@
             <div class="mx5-alert-title">
               <span class="mx5-alert-k"><span class="l-en">Headline</span><span class="l-zh">头条</span></span>
               <span style="font-size:12px;margin-right:3px">📰</span>
-              <span class="l-en">Credicorp posts higher Q3 earnings, reaffirms full-year ROE outlook</span>
-              <span class="l-zh">Credicorp公布第三季度盈利上升，重申全年ROE展望</span>
+              <span class="l-en">Atour Lifestyle reports mixed Q3 results; updates FY26 outlook</span>
+              <span class="l-zh">Atour Lifestyle公布喜忧参半的Q3业绩；更新FY26展望</span>
             </div>
             <div class="mx5-alert-detail">
               <span>Seeking Alpha - Market Currents</span> · 
@@ -5422,8 +5448,8 @@
       <div class="mx5-alert-footer">
         <span>
           
-          <span class="l-en">1 need action · of 9</span>
-          <span class="l-zh">1 条需处理 · 共 9 条</span>
+          <span class="l-en">2 need action · of 10</span>
+          <span class="l-zh">2 条需处理 · 共 10 条</span>
           
         </span>
         <button type="button" class="gbtn gbtn-sm gbtn-quiet" onclick="event.stopPropagation();mx5OpenDlg('dlg-news')">
@@ -6577,7 +6603,7 @@
   
 
 <section class="riskdlg-context" id="risk-envelope-band" aria-labelledby="gde-title"
-         data-bundle-id="620ba42b1f5abf96" data-settled-session="2026-11-09" data-coherence="MIXED">
+         data-bundle-id="c8d390d8b3feca5d" data-settled-session="2026-11-09" data-coherence="MIXED">
   <div class="gde-head">
     <h3 id="gde-title"><span class="l-en">Market internals</span><span class="l-zh">市场内部</span></h3>
     <span class="gde-scope"><span class="l-en">Broad US market</span><span class="l-zh">美国大盘</span></span>
@@ -6745,7 +6771,7 @@
           
 
           <p class="gde-receipt tnum">
-            grey-deer-v1-2026-08-19 · bundle 620ba42b1f5abf96 ·
+            grey-deer-v1-2026-08-19 · bundle c8d390d8b3feca5d ·
             coverage DEGRADED ·
             coherence MIXED (scope market_reads) ·
             stage null (required_coverage_unavailable) ·
@@ -8378,6 +8404,30 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
             <div style="flex:1;min-width:0">
               <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:4px">
                 <div style="font-size:13px;font-weight:600;color:var(--mx5-warn)">
+                  <span style="font-size:12px;margin-right:3px">🧲</span>
+                  <span class="l-en">Options “gravity” flipped — bigger swings more likely</span><span class="l-zh">期权“引力”反转 — 波动可能加大</span>
+                </div>
+                
+                
+                <span style="font-size:10px;font-weight:700;padding:1px 6px;border-radius:4px;background:rgba(245,158,11,.12);color:var(--mx5-warn-ink,#9c6212);border:1px solid rgba(245,158,11,.22);white-space:nowrap"><span class="l-en">Watch</span><span class="l-zh">关注</span></span>
+                
+              </div>
+              <div style="font-size:11px;color:var(--ink-3,rgba(255,255,255,.36));line-height:1.5"><span class="l-en">GEX: net GEX changed sign (net +11bn, spot vs flip -1.0%)</span><span class="l-zh">GEX：净 GEX 转变方向（净 +11bn，现价相对翻转点 -1.0%）</span></div>
+              
+              <div style="font-size:11px;color:var(--ink-2);line-height:1.5;margin-top:6px"><span class="l-en">Dealer gamma (GEX) measures how options hedging pushes the market around. Positive gamma damps moves (calmer); negative amplifies them (sharper swings, both ways). This flag means that backdrop just changed — expect the market to move more freely until it flips back.</span><span class="l-zh">做市商 gamma（GEX）衡量期权对冲如何推动市场。正 gamma 抑制波动（更平静）；负 gamma 放大波动（双向更剧烈）。此信号表示该背景刚刚改变 —在它再次反转前，市场可能波动得更自由。</span></div>
+              
+            </div>
+          </div>
+          </div>
+          
+          
+          
+          <div data-al-row>
+          <div style="display:flex;gap:10px;padding:12px;background:rgba(245,158,11,.06);border-radius:10px;border:1px solid rgba(245,158,11,.18)">
+            <div style="width:8px;height:8px;border-radius:50%;background:var(--mx5-warn);flex-shrink:0;margin-top:5px"></div>
+            <div style="flex:1;min-width:0">
+              <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:4px">
+                <div style="font-size:13px;font-weight:600;color:var(--mx5-warn)">
                   <span style="font-size:12px;margin-right:3px">📅</span>
                   <span class="l-en">Major event on deck — expect bigger swings either way</span><span class="l-zh">重大事件临近 — 双向波动或加大</span>
                 </div>
@@ -8566,10 +8616,10 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
           
           
           
-          <a class="nbx-item" href="https://seekingalpha.com/news/4669576-credicorp-posts-higher-q3-earnings-reaffirms-full-year-roe-outlook?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener">
+          <a class="nbx-item" href="https://seekingalpha.com/news/4669620-atour-lifestyle-reports-mixed-q3-results-updates-fy26-outlook?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener">
             <div class="nbx-top">
-              <span class="nbx-theme"><span class="l-en">Earnings</span><span class="l-zh">业绩</span></span>
-              <span class="nbx-title"><span class="l-en">Credicorp posts higher Q3 earnings, reaffirms full-year ROE outlook</span><span class="l-zh">Credicorp公布第三季度盈利上升，重申全年ROE展望</span></span>
+              <span class="nbx-theme"><span class="l-en">Guidance</span><span class="l-zh">指引</span></span>
+              <span class="nbx-title"><span class="l-en">Atour Lifestyle reports mixed Q3 results; updates FY26 outlook</span><span class="l-zh">Atour Lifestyle公布喜忧参半的Q3业绩；更新FY26展望</span></span>
             </div>
             <div class="nbx-meta">
               <span class="nbx-src">news_rss</span>
@@ -8584,10 +8634,10 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
           
           
           
-          <a class="nbx-item" href="https://seekingalpha.com/news/4669577-mitsui-kinzoku-company-gaap-eps-of-6912-revenue-of-43106b-updates-fy2027-outlook?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener">
+          <a class="nbx-item" href="https://seekingalpha.com/news/4669623-keyera-gaap-eps-of-c023-updates-fy2026-outlook?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener">
             <div class="nbx-top">
               <span class="nbx-theme"><span class="l-en">Earnings</span><span class="l-zh">业绩</span></span>
-              <span class="nbx-title"><span class="l-en">Mitsui Kinzoku Company GAAP EPS of ¥69.12, revenue of ¥431.06B; updates FY2027 outlook</span><span class="l-zh">Mitsui Kinzoku Company GAAP每股收益为¥69.12，营收为¥431.06B；更新FY2027展望</span></span>
+              <span class="nbx-title"><span class="l-en">Keyera GAAP EPS of -C$0.23; updates FY2026 outlook</span><span class="l-zh">Keyera GAAP每股收益为-C$0.23；更新FY2026展望</span></span>
             </div>
             <div class="nbx-meta">
               <span class="nbx-src">news_rss</span>
@@ -8602,28 +8652,10 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
           
           
           
-          <a class="nbx-item" href="https://seekingalpha.com/news/4669580-mandatum-oyj-gaap-eps-of-006-reaffirms-fy2026-outlook?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener">
-            <div class="nbx-top">
-              <span class="nbx-theme"><span class="l-en">Earnings</span><span class="l-zh">业绩</span></span>
-              <span class="nbx-title"><span class="l-en">Mandatum Oyj GAAP EPS of €0.06; reaffirms FY2026 outlook</span><span class="l-zh">Mandatum Oyj GAAP每股收益为€0.06；重申FY2026展望</span></span>
-            </div>
-            <div class="nbx-meta">
-              <span class="nbx-src">news_rss</span>
-              <span class="nbx-dot">·</span>
-              <span class="nbx-date">Nov 10</span>
-              <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
-            </div>
-            
-          </a>
-          
-          
-          
-          
-          
-          <a class="nbx-item" href="https://www.cnbc.com/2026/11/10/ai-softbank-sk-hynix-samsung-wall-street-tech-stocks.html" target="_blank" rel="noopener">
+          <a class="nbx-item" href="https://www.cnbc.com/2026/11/10/nvidia-nvda-jensen-huang-affair-chinese-spy.html" target="_blank" rel="noopener">
             <div class="nbx-top">
               <span class="nbx-theme"><span class="l-en">Stocks</span><span class="l-zh">个股</span></span>
-              <span class="nbx-title"><span class="l-en">SoftBank Group shares surge 14% as Asian tech stocks track Wall Street rebound</span><span class="l-zh">软银集团股价飙升14%，亚洲科技股追随华尔街反弹</span></span>
+              <span class="nbx-title"><span class="l-en">Nvidia stock edges higher as investors weigh potential fallout of CEO&#39;s affair with alleged spy</span><span class="l-zh">Nvidia股价小幅走高，投资者权衡CEO与涉嫌间谍的婚外情可能带来的影响</span></span>
             </div>
             <div class="nbx-meta">
               <span class="nbx-src">news_rss</span>
@@ -8638,10 +8670,28 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
           
           
           
-          <a class="nbx-item" href="https://seekingalpha.com/news/4669578-ttec-holdings-non-gaap-eps-of-0_22-beats-by-0_02-revenue-of-492_2m-beats-by-12m?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener">
+          <a class="nbx-item" href="https://seekingalpha.com/news/4669622-mcewen-mining-gaap-eps-of-0_60-revenue-of-43_64m?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener">
             <div class="nbx-top">
               <span class="nbx-theme"><span class="l-en">Earnings</span><span class="l-zh">业绩</span></span>
-              <span class="nbx-title"><span class="l-en">TTEC Holdings Non-GAAP EPS of $0.22 beats by $0.02, revenue of $492.2M beats by $12M</span><span class="l-zh">TTEC Holdings非GAAP每股收益为$0.22，超出预期$0.02，营收为$492.2M，超出预期$12M</span></span>
+              <span class="nbx-title"><span class="l-en">McEwen Mining GAAP EPS of -$0.60, revenue of $43.64M</span><span class="l-zh">McEwen Mining GAAP每股收益为-$0.60，营收为$43.64M</span></span>
+            </div>
+            <div class="nbx-meta">
+              <span class="nbx-src">news_rss</span>
+              <span class="nbx-dot">·</span>
+              <span class="nbx-date">Nov 10</span>
+              <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
+            </div>
+            
+          </a>
+          
+          
+          
+          
+          
+          <a class="nbx-item" href="https://www.marketwatch.com/story/anthropic-reportedly-retracts-ipo-terms-sent-to-banks-by-mistake-exposing-jitters-over-ai-investments-6116578d?mod=mw_rss_topstories" target="_blank" rel="noopener">
+            <div class="nbx-top">
+              <span class="nbx-theme"><span class="l-en">Deals</span><span class="l-zh">并购/IPO</span></span>
+              <span class="nbx-title"><span class="l-en">Anthropic reportedly retracts IPO terms sent to banks by mistake, exposing jitters over AI investments</span><span class="l-zh">据报道Anthropic误将IPO条款发送给银行后撤回，暴露出对AI投资的担忧</span></span>
             </div>
             <div class="nbx-meta">
               <span class="nbx-src">news_rss</span>
@@ -8659,7 +8709,7 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
           <a class="nbx-item" href="https://www.cnbc.com/2026/11/09/anthropic-ipo-ai-trade-jim-cramer.html" target="_blank" rel="noopener">
             <div class="nbx-top">
               <span class="nbx-theme"><span class="l-en">Deals</span><span class="l-zh">并购/IPO</span></span>
-              <span class="nbx-title"><span class="l-en">Jim Cramer says Anthropic&#39;s IPO could make or break the AI trade. Here&#39;s why</span><span class="l-zh">Jim Cramer称Anthropic的IPO可能成就或毁掉AI交易。原因如下</span></span>
+              <span class="nbx-title"><span class="l-en">Jim Cramer says Anthropic&#39;s IPO could make or break the AI trade. Here&#39;s why</span><span class="l-zh">Jim Cramer表示Anthropic的IPO可能成就或毁掉AI交易。原因如下</span></span>
             </div>
             <div class="nbx-meta">
               <span class="nbx-src">news_rss</span>
@@ -8677,7 +8727,7 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
           <a class="nbx-item" href="https://www.cnbc.com/2026/11/09/lucid-group-lcid-earnings-q3-2026.html" target="_blank" rel="noopener">
             <div class="nbx-top">
               <span class="nbx-theme"><span class="l-en">Earnings</span><span class="l-zh">业绩</span></span>
-              <span class="nbx-title"><span class="l-en">Lucid misses Wall Street’s earnings expectations, expands loan from Saudi Arabia fund</span><span class="l-zh">Lucid未达华尔街盈利预期，扩大从沙特阿拉伯基金的贷款</span></span>
+              <span class="nbx-title"><span class="l-en">Lucid misses Wall Street’s earnings expectations, expands loan from Saudi Arabia fund</span><span class="l-zh">Lucid未达华尔街盈利预期，扩大来自沙特阿拉伯基金的贷款</span></span>
             </div>
             <div class="nbx-meta">
               <span class="nbx-src">news_rss</span>
@@ -8695,7 +8745,7 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
           <a class="nbx-item" href="https://www.marketwatch.com/story/feds-waller-puts-half-point-rate-hike-into-the-mix-for-december-1bebdffc?mod=mw_rss_topstories" target="_blank" rel="noopener">
             <div class="nbx-top">
               <span class="nbx-theme"><span class="l-en">Fed</span><span class="l-zh">美联储</span></span>
-              <span class="nbx-title"><span class="l-en">Fed’s Waller puts half-point rate hike into the mix for December</span><span class="l-zh">美联储的Waller将12月加息半个百分点纳入考量</span></span>
+              <span class="nbx-title"><span class="l-en">Fed’s Waller puts half-point rate hike into the mix for December</span><span class="l-zh">美联储Waller将加息半个基点纳入12月选项</span></span>
             </div>
             <div class="nbx-meta">
               <span class="nbx-src">news_rss</span>
@@ -8710,15 +8760,15 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
           
           
           
-          <a class="nbx-item" href="https://www.marketwatch.com/story/how-wall-street-is-reacting-to-the-news-of-nvidias-jensen-huang-investigation-into-spy-claims-d8c839ab?mod=mw_rss_topstories" target="_blank" rel="noopener">
+          <a class="nbx-item" href="https://seekingalpha.com/news/4669621-rocket-lab-projects-q4-2026-revenue-of-270m-290m-as-neutron-bookings-put-first-16-launches?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener">
             <div class="nbx-top">
-              <span class="nbx-theme"><span class="l-en">Stocks</span><span class="l-zh">个股</span></span>
-              <span class="nbx-title"><span class="l-en">As Nvidia’s stock falls, here’s what Wall Street has to say about the Jensen Huang scandal</span><span class="l-zh">随着Nvidia股价下跌，华尔街对Jensen Huang丑闻有何看法</span></span>
+              <span class="nbx-theme"><span class="l-en">Earnings</span><span class="l-zh">业绩</span></span>
+              <span class="nbx-title"><span class="l-en">Rocket Lab projects Q4 2026 revenue of $270M-$290M as Neutron bookings put first 16 launches into the 2030s</span><span class="l-zh">Rocket Lab预计2026年Q4营收为$270M-$290M，Neutron订单将首批16次发射推至2030年代</span></span>
             </div>
             <div class="nbx-meta">
               <span class="nbx-src">news_rss</span>
               <span class="nbx-dot">·</span>
-              <span class="nbx-date">Nov 9</span>
+              <span class="nbx-date">Nov 10</span>
               <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
             </div>
             
@@ -8728,15 +8778,15 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
           
           
           
-          <a class="nbx-item" href="https://www.marketwatch.com/story/the-stock-market-rally-keeps-spreading-beyond-big-tech-october-inflation-data-could-put-it-to-the-test-c1b87dcd?mod=mw_rss_topstories" target="_blank" rel="noopener">
+          <a class="nbx-item" href="https://www.benzinga.com/money/best-method-of-analysis-forex-trading" target="_blank" rel="noopener">
             <div class="nbx-top">
-              <span class="nbx-theme"><span class="l-en">Inflation</span><span class="l-zh">通胀</span></span>
-              <span class="nbx-title"><span class="l-en">The stock-market rally keeps spreading beyond Big Tech. October inflation data could put it to the test.</span><span class="l-zh">股市涨势持续蔓延至大型科技股之外。10月通胀数据可能对其构成考验。</span></span>
+              <span class="nbx-theme"><span class="l-en">Stocks</span><span class="l-zh">个股</span></span>
+              <span class="nbx-title"><span class="l-en">Forex Analysis: What it is &amp; Best Analysis for Trading</span><span class="l-zh">外汇分析：什么是外汇分析及最佳交易分析方法</span></span>
             </div>
             <div class="nbx-meta">
               <span class="nbx-src">news_rss</span>
               <span class="nbx-dot">·</span>
-              <span class="nbx-date">Nov 9</span>
+              <span class="nbx-date">Nov 10</span>
               <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
             </div>
             
@@ -12252,9 +12302,9 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
     </table>
       </div>
     <p class="muted"><span class="l-en">A failed source never crashes the dashboard — affected signals just lose confidence until it heals.
-       Generated 2026-11-10 09:36 UTC · <a href="aibrief.html">AI daily brief</a> ·
+       Generated 2026-11-10 11:36 UTC · <a href="aibrief.html">AI daily brief</a> ·
        <a href="history.html">history & charts</a></span><span class="l-zh">数据源失败绝不会让仪表盘崩溃 — 受影响的信号只是降低置信度，直到其恢复。
-       生成于 2026-11-10 09:36 UTC · <a href="aibrief.html">AI每日简报</a> ·
+       生成于 2026-11-10 11:36 UTC · <a href="aibrief.html">AI每日简报</a> ·
        <a href="history.html">历史与图表</a></span></p>
     </template>
   </details>

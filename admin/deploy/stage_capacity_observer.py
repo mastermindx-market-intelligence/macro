@@ -49,13 +49,12 @@ def main():
     if target.exists():
         raise SystemExit("staged generation already exists; inspect its receipt")
     originals = {}
-    scan_root = base / "ops"
-    for source in sorted(scan_root.rglob("*")):
-        # Prune on the path relative to the scan root, never the absolute
-        # path: an absolute-parts prune also matches directories above the
-        # scan root and silently skips every file under some checkouts
-        # (test_no_absolute_path_part_prunes, #3802).
-        if "__pycache__" in source.relative_to(scan_root).parts or source.suffix == ".pyc":
+    ops_root = base / "ops"
+    for source in sorted(ops_root.rglob("*")):
+        # Prune on the path RELATIVE to the scan root. `source.parts` is absolute,
+        # so a `__pycache__` component anywhere above `base` (a worktree or temp
+        # directory named that way) would silently skip every file in the tree.
+        if "__pycache__" in source.relative_to(ops_root).parts or source.suffix == ".pyc":
             continue
         if source.is_symlink():
             raise SystemExit("source release contains a symlink; reconcile before copying")

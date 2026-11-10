@@ -101,7 +101,7 @@ function block(start, end) {
     assert result.returncode == 0, result.stdout + result.stderr
 
 
-def test_workspace_keeps_every_route_once_but_only_14_primary_pages():
+def test_workspace_keeps_every_route_once_with_capacity_router_primary():
     _node_assert("""
 const groups = new Function(block('const NAV_GROUPS = [', 'const TAB_LABELS = ') + '; return NAV_GROUPS;')();
 const ids = groups.flatMap(group => group.items.map(item => item[0]));
@@ -109,7 +109,12 @@ const expected = 'overview capacity_router health system deploy analytics users 
 assert.equal(ids.length, 55);
 assert.equal(new Set(ids).size, 55);
 assert.deepEqual([...ids].sort(), expected.sort());
-assert.equal(groups.filter(group => group.primary).flatMap(group => group.items).length, 14);
+// #10950 intentionally adds Workspace → Capacity Router. Bind the exact primary
+// set, not just a larger count, so no unrelated route can silently become primary.
+const primary = groups.filter(group => group.primary).flatMap(group => group.items.map(item => item[0]));
+const expectedPrimary = 'overview capacity_router health system deploy analytics users support_tickets email_center revenue marketing_floor marketing_outbox marketing_content marketing_publish'.split(' ');
+assert.equal(primary.length, 14);
+assert.deepEqual([...primary].sort(), expectedPrimary.sort());
 """)
 
 

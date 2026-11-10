@@ -538,9 +538,9 @@
     ]
   },
   "generation": {
-    "built_at": "2026-11-10T08:33:34Z",
+    "built_at": "2026-11-10T11:36:38Z",
     "calculation_as_of": "2026-09-01",
-    "code_version": "49216ab3a889fe1df56fa916df1fec2489662585",
+    "code_version": "7e115b6f1f10832b4b123149215ea7a041279753",
     "content_sha256": "a8c0571d7ed0713b29f36fb7a85dd361e9156919fc08c44f9255aabf2ca6f797",
     "generation_id": "consumer_payments-US-a8c0571d7ed0713b",
     "producer": "engine.market_os.macro_workspaces.consumer_payments",
