@@ -1,6 +1,6 @@
 # Prophet × Sector Intelligence — Paper review and build specification
 
-**Version 5.0.** Actual editable designs and embedded builder instructions, 9 November 2026 America/Vancouver. All figures are synthetic design fixtures, not current market data or a strategy result.
+**Version 5.1.** Actual editable designs and embedded builder instructions, 9 November 2026 America/Vancouver. The completion pass corrects attribution presentation and specifies the remaining qualification/coverage controls. All figures are synthetic design fixtures, not current market data or a strategy result. SX05 remains held; source corrections do not assert an applied product-board change.
 
 **Design:** https://app.paper.design/file/01M3NT5Y3G5HTJHVR0K5W2MDJM/p-H-0
 
@@ -55,6 +55,26 @@ Use a purely synthetic single-period Brinson–Fachler illustration with cash as
 Allocation uses (policy weight − benchmark weight) × (benchmark segment return − total benchmark return). Equity allocation +0.6pp; cash allocation −2.5pp. Selection +0.5pp; interaction −0.1pp. Identity: 8.0 + 0.6 − 2.5 + 0.5 − 0.1 − 0.4 = 6.1. Cash is not counted again inside equity allocation; FX is zero only in this single-currency fixture. A production multiperiod view requires its explicit linking/cash/FX/cost convention.
 
 Label 68.75% **starting invested allocation**, not average invested capital: end-period drift and trades are not supplied by this one-period fixture. The unknown original HTML used an average-invested label; if that effect is later observed, correct it after reconciliation. Do not edit or reproduce that unknown subtree now. Positive selection in this example coexists with market underperformance. It is not an accepted strategy result or populated Model-plan Record.
+
+### Completion-pass corrections — apply to SX05 only after reconciliation
+
+The next pass found three additional concrete presentation defects in the retained original HTML and already-applied answer copy. These are required corrections, not evidence that SX05 was edited:
+
+| Element | Required presentation | Why |
+|---|---|---|
+| Attribution contribution bars | One common percentage-point scale, a visible zero/direction, signed values and an accessible equivalent. At 120 pixels per percentage point, absolute widths for +0.6 / −2.5 / +0.5 / −0.1 / −0.4 are 72 / 300 / 60 / 12 / 48 pixels. Negative values extend in the negative direction. A signed-value table is an acceptable compact alternative. | The original 150 / 300 / 125 / 25 / 100 widths silently compressed the cash loss. No independent per-row normalization or unlabeled clipping. |
+| Benchmark-gap answer subtitle | “Includes invested assets and cash.” | This fixture has one period and starting weights; it does not supply invested/cash periods. |
+| Invested and cash labels | “Starting invested allocation · 68.75%” and “Starting cash allocation · 31.25%”. | Starting allocations do not establish average exposure or period-by-period participation. |
+| Cash explanation | “Inspect the original reasons capital remained in cash and the opportunities available at those decision times.” | A positive realized benchmark return does not establish an ex-ante positive opportunity forecast. |
+
+The qualification/method/coverage/Portfolio controls were never issued. Their exact user-facing destinations are:
+
+1. **Evaluation details:** synthetic/accepted status; result and protocol identity; benchmark; period; currency and return basis; actual versus simulated capital/weights. The current specimen says “Illustrative example”; it cannot imply an accepted strategy run.
+2. **How attribution works:** the single-period Brinson–Fachler method; cash as one allocation segment; cost deduction once; single-currency FX assumption; full inputs and reconciliation. Production multiperiod linking must identify its own method and cannot silently inherit this fixture.
+3. **Coverage:** eligible, observed, missing, no-entry and no-fill meanings and actual counts where supplied. “All eligible decisions” is a scope label, not proof of completeness. No invented denominator, decision, fill or holding count.
+4. **Open Portfolio:** the existing authorized Portfolio destination; research lists and model-plan outcomes do not become actual holdings. Missing positions/weights withhold reconciliation, and zero/near-zero benchmark returns withhold unsupported capture ratios.
+
+Each disclosure must have a designed opening/closing path, keyboard/touch access, focus return and preserved investigation context. Show absent data explicitly. The original Record population enum remains `MODEL_PLAN_RECORD | REGISTERED_OPPORTUNITY_COHORT`; Strategy evaluation is a separate qualified adapter. These corrections strengthen SI13 and SP19/SP20 without adding a new registry or changing any scientific permission.
 
 ## Embedded builder cards
 
@@ -183,12 +203,12 @@ The following exact substance is embedded natively in SX10 and SX11. It is also 
 
 - **User job:** Show participation and attribution without inventing holdings from research or plan outcomes.
 - **Owner/source:** Existing Evaluation result adapter; actual Portfolio/Risk and factor_exposure. Original Record contract remains closed.
-- **Inputs/identity:** Qualified result/protocol; actual or simulated weights/capital/cash; benchmark; period; costs/FX; attribution method/coverage.
-- **Calculation/claim:** Preserve MODEL_PLAN_RECORD | REGISTERED_OPPORTUNITY_COHORT. Strategy evaluation is an explicit compatible adapter/view.
-- **Interaction:** Record → Strategy evaluation → benchmark/attribution source; actual Portfolio is a distinct authorized view.
+- **Inputs/identity:** Qualified result/protocol; actual or simulated capital/weights; benchmark, period, currency and return basis; cash, costs/FX, method and actual coverage. This example supplies starting allocations, not average exposure or decision counts.
+- **Calculation/claim:** Preserve MODEL_PLAN_RECORD | REGISTERED_OPPORTUNITY_COHORT; Strategy evaluation is separate. Use one signed pp scale. Starting invested/cash allocations are 68.75%/31.25%. Realized benchmark gains do not establish an earlier opportunity forecast.
+- **Interaction:** Evaluation details → How attribution works → Coverage → existing authorized Portfolio. Preserve keyboard/focus/return context. “All eligible decisions” is a scope label; show actual missingness and never invent counts.
 - **States:** Missing holdings/weights withholds reconciliation. HK/CN/CA native factor coverage cannot inherit the US-clock model.
-- **Proof:** SP19 / SP20: cash + allocation + selection + interaction + costs reconcile; near-zero denominators never fabricate capture.
-- **Custody:** SX05 is partial: its attribution edit has unknown effect on root 1G21-0 / target 1G3F-0. Do not duplicate or finish that subtree.
+- **Proof:** SP19 / SP20: cash counted once; 8.0 + 0.6 − 2.5 + 0.5 − 0.1 − 0.4 = 6.1%. At 120px/pp, widths are 72/300/60/12/48px, with zero and direction. No unsupported capture ratio, average-exposure label or hindsight opportunity claim.
+- **Custody:** SX05 root 1G21-0 / target 1G3F-0 remains EFFECT_UNKNOWN. Correct scale, cash wording and starting labels only after original reconciliation; then add unissued qualification/coverage/Portfolio controls. This build card is disjoint from the held product root.
 
 ### K — Follow meaningful sector changes
 
@@ -218,4 +238,6 @@ The following exact substance is embedded natively in SX10 and SX11. It is also 
 
 ## Next lawful design action
 
-The architecture/source package and ten reviewed new roots are usable now. The only uncompleted new board is SX05. Obtain terminal/cancellation evidence or a verified later effect for the exact original operation. If present, inspect its native children and correct the starting-allocation label; if terminal no-effect is established, the original owner may make one reconciled continuation. Then add the unissued qualification/Portfolio controls, review the full board and finish only its exact root. Mere absence or a new turn is not authorization to replay. No need to repeat the census, recreate the ten completed boards or reopen the entire architecture.
+The architecture/source package and ten reviewed new roots are usable now. The only uncompleted new board is SX05. Obtain terminal/cancellation evidence or a verified later effect for the exact original operation. If present, inspect its native children and apply all four completion-pass corrections; if terminal no-effect is established, the original owner may make one reconciled continuation. Then add the unissued qualification/method/coverage/Portfolio controls, review the full board and finish only its exact root. Mere absence or a new turn is not authorization to replay. No need to repeat the census, recreate the ten completed boards or reopen the entire architecture.
+
+The fresh continuation check found the same five original heading/answer children under target 1G3F-0 and no attribution children. Absence does not prove no effect. Paper 0.5.18 still exposes no operation-status lookup. The inspected pinned bridge explicitly retains no persistent operation/retry ledger; its status action reports current connection/document state, not the terminal state of an old edit. Source diagnostics therefore identify the missing reconciliation control and do not manufacture a terminal receipt. No host restart, alternate writer or replay is authorized by this finding.
